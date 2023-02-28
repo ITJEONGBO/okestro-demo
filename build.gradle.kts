@@ -4,8 +4,6 @@ plugins {
     kotlin("jvm") version Versions.kotlin
 }
 
-
-
 allprojects {
     repositories {
         mavenCentral()
