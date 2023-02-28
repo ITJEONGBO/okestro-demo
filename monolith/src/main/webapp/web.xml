@@ -8,7 +8,7 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            classpath*:castanets/spring/*-context.xml /WEB-INF/config/security-context.xml
+            classpath*:com/itinfo/spring/*-context.xml /WEB-INF/config/security-context.xml
         </param-value>
     </context-param>
     <filter>
@@ -22,8 +22,8 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     <resource-ref>
-        <description>castanets</description>
-        <res-ref-name>jdbc/castanets</res-ref-name>
+        <description>itinfo</description>
+        <res-ref-name>jdbc/itinfo</res-ref-name>
         <res-type>javax.sql.DataSource</res-type>
         <res-auth>Container</res-auth>
     </resource-ref>

@@ -26,24 +26,24 @@
 	 -->
 	
 	<!-- query for postgresql context -->
-	<import resource="classpath*:castanets/spring/query-postgresql-context.xml" />
+	<import resource="classpath*:com/itinfo/spring/query-postgresql-context.xml" />
 	
 	<!-- query for h2db context -->
-	<import resource="classpath*:castanets/spring/query-h2db-context.xml" />
+	<import resource="classpath*:com/itinfo/spring/query-h2db-context.xml" />
 	
 	<!-- karajan context -->
 	<import resource="classpath*:karajan/spring/karajan-context.xml"/>
 	
-	<context:component-scan base-package="castanets">
+	<context:component-scan base-package="com.itinfo">
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
 	</context:component-scan>
 	
 	<!-- h2db -->
 	<!-- <jdbc:embedded-database id="dataSourceSystem" type="H2">
-	    <jdbc:script location="classpath*:castanets/sqlmap/castanets/system/*.sql" />
+	    <jdbc:script location="classpath*:com.itinfo/sqlmap/com.itinfo/system/*.sql" />
 	</jdbc:embedded-database> -->
 	<jdbc:initialize-database data-source="dataSourceSystem" ignore-failures="ALL">
-	    <jdbc:script location="classpath*:castanets/sqlmap/castanets/system/*.sql" />
+	    <jdbc:script location="classpath*:com/itinfo/sqlmap/com/itinfo/system/*.sql" />
 	</jdbc:initialize-database>
 	
 	<bean id="systemJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
@@ -51,7 +51,7 @@
     </bean>
 
 	<!-- jdbcTemplate -->
-	<bean id="castanetsJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+	<bean id="itinfoJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
 		<constructor-arg ref="dataSource" />
 	</bean>
 
@@ -67,7 +67,7 @@
 	<bean id="karajanService" class="com.itinfo.engine.KarajanService" />
 	
 	<!-- workload prediction service -->
-	<bean id="workloadPredictionService" class="com.itinfo.engine.WorkloadPredictionService" p:jdbcTemplate-ref="castanetsJdbcTemplate">
+	<bean id="workloadPredictionService" class="com.itinfo.engine.WorkloadPredictionService" p:jdbcTemplate-ref="itinfoJdbcTemplate">
 		<constructor-arg>
 			<ref bean="queryGetVmWorkload" />
 		</constructor-arg>

@@ -8,10 +8,10 @@
 
  	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
-		<property name="configLocation" value="classpath:castanets/sqlmap/sql-map-config.xml" />
+		<property name="configLocation" value="classpath:com/itinfo/sqlmap/sql-map-config.xml" />
 		<property name="mapperLocations">
 			<util:list>
-				<value>classpath:castanets/sqlmap/**/*-SQL.xml</value>
+				<value>classpath:com/itinfo/sqlmap/**/*-SQL.xml</value>
 			</util:list>
 		</property>
 	</bean>
@@ -19,10 +19,10 @@
 
 	<bean id="sqlSessionFactoryEngine" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSourceEngine" />
-		<property name="configLocation" value="classpath:castanets/sqlmap/sql-map-config.xml" />
+		<property name="configLocation" value="classpath:com/itinfo/sqlmap/sql-map-config.xml" />
 		<property name="mapperLocations">
 			<util:list>
-				<value>classpath:castanets/sqlmap/**/*-SQL.xml</value>
+				<value>classpath:com/itinfo/sqlmap/**/*-SQL.xml</value>
 			</util:list>
 		</property>
 	</bean>
@@ -30,8 +30,8 @@
 
 	<bean id="systemSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean"
 		p:dataSource-ref="dataSourceSystem"
-		p:configLocation="classpath:castanets/sqlmap/sql-map-config.xml"
-		p:mapperLocations="classpath:castanets/sqlmap/castanets/admin/*-SQL.xml" />
+		p:configLocation="classpath:com/itinfo/sqlmap/sql-map-config.xml"
+		p:mapperLocations="classpath:com/itinfo/sqlmap/com/itinfo/admin/*-SQL.xml" />
 		
 	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate" destroy-method="clearCache">
 		<constructor-arg index="0" ref="sqlSessionFactory" />

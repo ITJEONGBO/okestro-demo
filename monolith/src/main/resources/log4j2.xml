@@ -56,11 +56,11 @@
 		<Logger name="java.sqlPreparedStatement" level="debug">
 			<AppenderRef ref="FILE" />
 		</Logger>
-		<Logger name="castanets" level="debug">
+		<Logger name="com.itinfo" level="debug">
 			<AppenderRef ref="FILE" />
 		</Logger>
 
-		<Logger name="castanets.security" level="debug">
+		<Logger name="com.itinfo.security" level="debug">
 			<AppenderRef ref="ACCESS_FILE" />
 		</Logger>
 
