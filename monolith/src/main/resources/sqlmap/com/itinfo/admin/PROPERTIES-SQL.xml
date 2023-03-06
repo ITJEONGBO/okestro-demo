@@ -17,6 +17,7 @@
 			MAX(CASE WHEN PROPERTY = 'login_limit' THEN PROPERTY_VALUE ELSE '' END) AS LOGIN_LIMIT
 		FROM
 			SYSTEM_PROPERTIES
+		WHERE 1=1
 	</select>
 	<update id="updateSystemProperties" parameterType="com.itinfo.model.SystemPropertiesVo">
 		UPDATE

@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS system_properties (
-	property VARCHAR(50) PRIMARY KEY NOT NULL,
-	property_value VARCHAR(200) NOT NULL
+	property            VARCHAR(50) PRIMARY KEY NOT NULL
+	, property_value    VARCHAR(200)          NOT NULL
 );
 
 INSERT INTO system_properties (property, property_value) 

@@ -18,6 +18,8 @@ object Versions {
     const val mybatisSpring = "1.2.2"
     const val log4j = "1.2.17"
     const val log4jApache = "2.17.0"
+    const val javaxServlet = "2.5"
+    const val javaxServletJsp = "2.2"
     const val javaxServletJstl = "1.2"
 
     const val jquery = "2.1.4"
@@ -39,6 +41,7 @@ object Versions {
     const val aspectj = "1.8.0"
 
     const val cglib = "3.1"
+    const val lombok = "1.18.26" // compatible with jdk11
 
     const val junit = "4.10"
     const val hamcrest = "1.1"

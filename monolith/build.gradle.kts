@@ -49,6 +49,7 @@ dependencies {
     implementation(Dependencies.tiles)
     implementation(Dependencies.mybatis)
     implementation(Dependencies.log4j)
+    providedCompile(Dependencies.javaxServlet)
     implementation(Dependencies.javaxServletJstl)
     implementation(Dependencies.javaxInject)
     implementation(Dependencies.webjars)
@@ -59,6 +60,8 @@ dependencies {
     implementation(Dependencies.jsonSimple)
     implementation(Dependencies.aspectj)
     implementation(Dependencies.cglib)
+    compileOnly(Dependencies.lombok)
+    annotationProcessor(Dependencies.lombok)
     testImplementation(Dependencies.springTest)
     testImplementation(Dependencies.hamcrest)
 }

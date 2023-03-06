@@ -60,7 +60,7 @@
 	</bean>
 	
 	<!-- admin connection service -->
-	<bean id="adminConnectionService" class="com.itinfo.engine.AdminConnectionService">
+	<bean id="adminConnectionService" class="com.itinfo.service.engine.AdminConnectionService">
 	</bean>
 
 	<!-- karajan service -->

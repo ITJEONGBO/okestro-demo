@@ -1,0 +1,61 @@
+package com.itinfo.service;
+
+import com.itinfo.model.ClusterVo;
+import com.itinfo.model.DashboardTopVo;
+import com.itinfo.model.DiskProfileVo;
+import com.itinfo.model.DiskVo;
+import com.itinfo.model.EventVo;
+import com.itinfo.model.HostVo;
+import com.itinfo.model.SnapshotVo;
+import com.itinfo.model.StorageDomainVo;
+import com.itinfo.model.VmCreateVo;
+import com.itinfo.model.VmDeviceVo;
+import com.itinfo.model.VmNicVo;
+import com.itinfo.model.VmSystemVo;
+import com.itinfo.model.VmVo;
+import java.util.List;
+import java.util.Map;
+
+public interface VirtualMachinesService {
+	void createVmNic(VmNicVo paramVmNicVo);
+	void updateVmNic(VmNicVo paramVmNicVo);
+	void removeVmNic(VmNicVo paramVmNicVo);
+	void startVm(List<VmVo> vms);
+	void stopVm(List<VmVo> vms);
+	void rebootVm(List<VmVo> vms);
+	void suspendVm(List<VmVo> vms);
+	void removeVm(List<VmVo> vms);
+	List<VmVo> retrieveVmsAll();
+	List<VmVo> retrieveVms(String paramString);
+	List<HostVo> retrieveVmsHosts();
+	List<ClusterVo> retrieveVmsClusters();
+	VmVo retrieveVm(String paramString);
+	VmSystemVo retrieveVmSystem(String paramString);
+	List<VmNicVo> retrieveVmNics(String paramString);
+	List<VmNicVo> retrieveVmNics(String paramString, VmVo paramVmVo);
+	List<SnapshotVo> retrieveVmSnapshots(String paramString);
+	List<Map<String, Object>> retrieveVmRole(String paramString);
+	List<VmDeviceVo> retrieveVmDevices(String paramString);
+	List<EventVo> retrieveVmEvents(String paramString);
+	List<String[]> recommendHosts(VmCreateVo paramVmCreateVo);
+	List<DiskVo> retrieveDisks();
+	List<DiskVo> retrieveDisks(String paramString);
+	VmCreateVo retrieveVmCreateInfo();
+	VmCreateVo retrieveVmUpdateInfo(String paramString);
+	VmCreateVo retrieveVmCloneInfo(String paramString1, String paramString2);
+	boolean checkDuplicateName(String paramString);
+	boolean checkDuplicateDiskName(DiskVo paramDiskVo);
+	void createVm(VmCreateVo paramVmCreateVo);
+	void updateVm(VmCreateVo paramVmCreateVo);
+	void cloneVm(VmCreateVo paramVmCreateVo);
+	List<DiskProfileVo> retrieveDiskProfiles();
+	void createSnapshot(SnapshotVo paramSnapshotVo);
+	void previewSnapshot(SnapshotVo paramSnapshotVo);
+	void commitSnapshot(String paramString);
+	void undoSnapshot(String paramString);
+	void removeSnapshot(SnapshotVo paramSnapshotVo);
+	List<StorageDomainVo> retrieveDiscs();
+	void changeDisc(VmVo vm);
+	List<DashboardTopVo> retrieveVmsTop(List<VmVo> totalVms);
+}
+

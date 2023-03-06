@@ -22,6 +22,15 @@ allprojects {
         }
     }
 
+    tasks.withType<JavaCompile> {
+        sourceCompatibility = Versions.java
+        targetCompatibility = Versions.java
+        options.encoding = "UTF-8"
+        options.isIncremental = true
+    }
+
+
+
     tasks.withType<Test> {
         useJUnitPlatform()
     }

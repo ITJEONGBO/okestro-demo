@@ -4,129 +4,102 @@
 <mapper namespace="USERS">
 	<select id="retrieveUsers" resultType="com.itinfo.UserVo">
 		SELECT
-			NO,
-			ID,
-			ADMINISTRATIVE,
-			NAME,
-			LAST_NAME,
-			PRINCIPAL,
-			NAMESPACE,
-			EMAIL,
-			AUTH_PROVIDER,
-			LOGIN_COUNT,
-			BLOCK_TIME
+			NO, ID, ADMINISTRATIVE, NAME, LAST_NAME
+			, PRINCIPAL, NAMESPACE, EMAIL, AUTH_PROVIDER, LOGIN_COUNT
+			, BLOCK_TIME
 		FROM
 			SYSTEM_USERS
+		WHERE 1=1
 	</select>
 	
 	<select id="retrieveUser" parameterType="String" resultType="com.itinfo.UserVo">
 		SELECT
-			NO,
-			ID,
-			'admin!123' AS PASSWORD,
-			ADMINISTRATIVE,
-			NAME,
-			LAST_NAME,
-			PRINCIPAL,
-			NAMESPACE,
-			EMAIL,
-			AUTH_PROVIDER,
-			LOGIN_COUNT,
-			BLOCK_TIME
+			NO, ID, 'admin!123' AS PASSWORD, ADMINISTRATIVE, NAME
+			, LAST_NAME, PRINCIPAL, NAMESPACE, EMAIL, AUTH_PROVIDER
+			, LOGIN_COUNT, BLOCK_TIME
 		FROM
 			SYSTEM_USERS
-		WHERE
-			ID = #{id}
+		WHERE 1=1
+		AND ID = #{id}
 	</select>
 	
 	<select id="isExistUser" parameterType="com.itinfo.UserVo" resultType="java.lang.Boolean">
-		SELECT
-			EXISTS(
-				SELECT
-					NO
-				FROM
-					SYSTEM_USERS
-				WHERE
-					ID = #{id})
+		SELECT EXISTS(
+			SELECT NO FROM SYSTEM_USERS WHERE 1=1 AND ID = #{id}
+		)
 	</select>
 	
 	<select id="login" parameterType="String" resultType="String">
-		SELECT
-			PASSWORD
-		FROM
-			SYSTEM_USERS
-		WHERE
-			ID::TEXT = #{id}
+		SELECT PASSWORD FROM SYSTEM_USERS WHERE 1=1
+		AND ID::TEXT = #{id}
 	</select>
 	
 	<update id="updateUser" parameterType="com.itinfo.UserVo">
-		UPDATE SYSTEM_USERS
+		UPDATE
+			SYSTEM_USERS
 		SET
-			ADMINISTRATIVE = #{administrative},
-			NAME = #{name},
-			LAST_NAME = #{lastName},
-			EMAIL = #{email}
-		WHERE
-			NO = #{no}
+			ADMINISTRATIVE = #{administrative}
+			, NAME = #{name}
+			, LAST_NAME = #{lastName}
+			, EMAIL = #{email}
+		WHERE 1=1
+		AND NO = #{no}
 	</update>
 
 	<update id="updatePassword" parameterType="com.itinfo.UserVo">
-		UPDATE SYSTEM_USERS
+		UPDATE
+			SYSTEM_USERS
 		SET
 			PASSWORD = #{newPassword}
-		WHERE
-			ID::TEXT = #{id}
+		WHERE 1=1
+		AND ID::TEXT = #{id}
 	</update>
 
 	<update id="updateLoginCount" parameterType="com.itinfo.UserVo">
-		UPDATE SYSTEM_USERS
+		UPDATE
+			SYSTEM_USERS
 		SET
 			LOGIN_COUNT = #{loginCount}
-		WHERE
-			ID::TEXT = #{id}
+		WHERE 1=1
+		AND ID::TEXT = #{id}
 	</update>
 
 	<update id="setBlockTime" parameterType="com.itinfo.UserVo">
-		UPDATE SYSTEM_USERS
+		UPDATE
+			SYSTEM_USERS
 		SET
 			BLOCK_TIME = #{blockTime}
-		WHERE
-			ID::TEXT = #{id}
+		WHERE 1=1
+		AND ID::TEXT = #{id}
 	</update>
 
 	<update id="initLoginCount" parameterType="String">
-		UPDATE SYSTEM_USERS
+		UPDATE
+			SYSTEM_USERS
 		SET
-			LOGIN_COUNT = 0,
-			BLOCK_TIME = null
-		WHERE
-			ID::TEXT = #{userId}
+			LOGIN_COUNT = 0
+			, BLOCK_TIME = null
+		WHERE 1=1
+		AND ID::TEXT = #{userId}
 	</update>
 	
 	<insert id="addUser" parameterType="com.itinfo.UserVo">
 		INSERT INTO SYSTEM_USERS (
-			ID,
-			PASSWORD,
-			ADMINISTRATIVE,
-			NAME,
-			LAST_NAME,
-			EMAIL )
-		VALUES (
-			#{id},
-			#{password},
-			#{administrative},
-			#{name},
-			#{lastName},
-			#{email}
+			ID, PASSWORD, ADMINISTRATIVE, NAME, LAST_NAME
+			, EMAIL
+		) VALUES (
+			#{id}, #{password}, #{administrative}, #{name}, #{lastName}
+			, #{email}
 		)
 	</insert>
 	
 	<delete id="removeUsers" parameterType="java.util.List">
-		DELETE FROM SYSTEM_USERS 
-		WHERE
-			NO IN 
-			<foreach collection="list" item="users" index="index" open="(" close=")" separator=",">
-				#{users.no}
-			</foreach>
+		DELETE FROM
+			SYSTEM_USERS
+		WHERE 1=1
+		AND NO IN
+		<foreach collection="list" item="users" index="index" open="(" close=")" separator=",">
+		#{users.no}
+		</foreach>
 	</delete>
 </mapper>

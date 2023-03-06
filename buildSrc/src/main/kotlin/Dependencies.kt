@@ -73,6 +73,10 @@ object Dependencies {
     )
     val gson = "com.google.code.gson:gson:${Versions.gson}"
     val jsonSimple = "com.googlecode.json-simple:json-simple:${Versions.jsonSimple}"
+    val javaxServlet = listOf(
+        "javax.servlet.jsp:jsp-api:${Versions.javaxServletJsp}",
+        "javax.servlet:servlet-api:${Versions.javaxServlet}",
+    )
     val javaxServletJstl = "javax.servlet:jstl:${Versions.javaxServletJstl}"
     val javaxInject = "javax.inject:javax.inject:1"
     val aspectj = listOf(
@@ -82,6 +86,7 @@ object Dependencies {
     val cglib = listOf(
         "cglib:cglib-nodep:${Versions.cglib}",
     )
+    val lombok = "org.projectlombok:lombok:${Versions.lombok}"
     val kotlinStdlib = listOf(
         "org.jetbrains.kotlin:kotlin-reflect:${Versions.kotlin}",
         "org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}",
@@ -109,6 +114,12 @@ fun DependencyHandler.kapt(list: List<String>) {
 fun DependencyHandler.implementation(list: List<String>) {
     list.forEach { dependency ->
         add("implementation", dependency)
+    }
+}
+
+fun DependencyHandler.providedCompile(list: List<String>) {
+    list.forEach { dependency ->
+        add("providedCompile", dependency)
     }
 }
 

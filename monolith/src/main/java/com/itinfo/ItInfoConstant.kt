@@ -1,4 +1,4 @@
-package com.itinfo.constant
+package com.itinfo
 
 object ItInfoConstant {
     const val RESULT_KEY = "resultKey"
