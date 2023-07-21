@@ -18,7 +18,6 @@ allprojects {
 
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict")
-            jvmTarget = Versions.java
         }
     }
 

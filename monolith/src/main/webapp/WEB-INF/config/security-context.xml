@@ -31,7 +31,7 @@
 			username-parameter="userid"
 			password-parameter="passwd"
 			authentication-failure-url="/login"
-			authentication-failure-handler-ref="customAuthenticationfailurehandler"
+			authentication-failure-handler-ref="customAuthFailureHandler"
 			always-use-default-target='true' />
 
 		<logout invalidate-session="true" logout-url="/logout"
@@ -44,17 +44,16 @@
 	<beans:bean class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler"/>
 
 	<authentication-manager>
-		<authentication-provider ref="customAuthenticationProvider" />
+		<authentication-provider ref="customAuthProvider" />
 	</authentication-manager>
 	
 
 	
 
-	<beans:bean id="customAuthenticationProvider" class="com.itinfo.security.CustomAuthenticationProvider">
-
+	<beans:bean id="customAuthProvider" class="com.itinfo.security.CustomAuthProvider">
 	</beans:bean>
 	
-	<beans:bean id="customAuthenticationfailurehandler" class="com.itinfo.security.CustomAuthenticationfailurehandler">
+	<beans:bean id="customAuthFailureHandler" class="com.itinfo.security.CustomAuthFailureHandler">
 	</beans:bean>
 
 

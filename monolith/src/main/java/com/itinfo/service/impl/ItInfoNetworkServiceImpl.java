@@ -197,7 +197,7 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 	public List<ItInfoNetworkHostVo> getNetworkHost(String networkId) {
 		Connection connection = adminConnectionService.getConnection();
 		List<Host> hosts
-				= SystemServiceHelper.getInstance().findAllHosts(connection);
+				= SystemServiceHelper.getInstance().findAllHosts(connection, "");
 		return ModelsKt.toItInfoNetworkHostVos(hosts, connection);
 	}
 

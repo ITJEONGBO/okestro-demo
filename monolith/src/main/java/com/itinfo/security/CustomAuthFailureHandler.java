@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 public class CustomAuthFailureHandler implements AuthenticationFailureHandler {
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException authenticationException) throws IOException, ServletException {
-		log.error("CustomAuthenticationfailurehandler message : " + authenticationException.getMessage());
+		log.error("CustomAuthFailurehandler message : " + authenticationException.getMessage());
 		if (authenticationException.getMessage().equalsIgnoreCase("connectionTimeOut"))
 			response.setStatus(300);
 		else if (authenticationException.getMessage().equalsIgnoreCase("readTimedOut"))

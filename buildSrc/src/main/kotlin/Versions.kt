@@ -2,16 +2,16 @@ object Versions {
     object Project {
         val BATCH_PROCESSING_DEMO = "0.0.1"
     }
-    const val java = "11"
+    const val java = "1.8"
     const val gradle = "7.4.2"
     const val kotlin = "1.4.31"
 
     const val tomcatPlugin = "2.5"
-    const val tomcatEmbedded = "7.0.59"
+    const val tomcatEmbedded = "8.5.2"
 
     const val spring = "4.3.14.RELEASE"
     const val springSecurity = "4.2.2.RELEASE"
-    const val ovirt = "4.2.1" // latest: 4.5.1
+    const val ovirt = "4.4.0" // latest: 4.5.1
     const val qemu = "1.0.6"
     const val tiles = "3.0.5"
     const val mybatis = "3.2.8"

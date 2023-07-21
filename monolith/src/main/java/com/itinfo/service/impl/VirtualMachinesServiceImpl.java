@@ -230,7 +230,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 
 				Gson gson = new Gson();
 				VmVo result
-						= ModelsKt.toVmVoAfterReboot(item);
+						= ModelsKt.toVmVo(item, connection);
 				websocketService.sendMessage("/topic/vms", gson.toJson(result));
 				MessageVo message
 					= MessageVo.createMessage(MessageType.VIRTUAL_MACHINE_REBOOT, true, item.name(), "");
@@ -315,7 +315,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 				VmService vmService
 						= systemService.vmsService().vmService(item.id());
 				VmVo vm
-						= ModelsKt.toVmVoAfterReboot(item);
+						= ModelsKt.toVmVo(item, connection);
 				List<Nic> nics
 						= vmService.nicsService().list().send().nics();
 				String ips = "";
@@ -421,7 +421,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		List<Host> hostItems
 				= systemService.hostsService().list().send().hosts();
 		List<HostVo> hosts
-				= ModelsKt.toHostVos(hostItems, systemService);
+				= ModelsKt.toHostVos(hostItems, connection);
 		return hosts;
 	}
 
@@ -431,7 +431,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		List<Cluster> clusterItems
 				= systemService.clustersService().list().send().clusters();
 		List<ClusterVo> clusters
-				= ModelsKt.toClusterVos(clusterItems);
+				= ModelsKt.toClusterVos(clusterItems, connection);
 		return clusters;
 	}
 
@@ -707,7 +707,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		List<Nic> nicItems
 				= systemService.vmsService().vmService(id).nicsService().list().send().nics();
 		List<VmNicVo> nics
-				= ModelsKt.toVmNicVos(nicItems, systemService);
+				= ModelsKt.toVmNicVos(nicItems, connection);
 		return nics;
 	}
 
@@ -1032,7 +1032,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 
 		List<Disk> diskList
 				= systemService.disksService().list().send().disks();
-		disks.addAll(ModelsKt.toDiskVos(diskList, systemService, ids));
+		disks.addAll(ModelsKt.toDiskVos(diskList, connection, ids));
 		return disks;
 	}
 
@@ -1042,7 +1042,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		List<Cluster> clusterItemList
 				= systemService.clustersService().list().send().clusters();
 		List<ClusterVo> clusters
-				= ModelsKt.toClusterVos4VmCreate(clusterItemList, systemService);
+				= ModelsKt.toClusterVos4VmCreate(clusterItemList, connection);
 
 		VmCreateVo vmCreate = new VmCreateVo();
 		vmCreate.setClusters(clusters);
@@ -1081,7 +1081,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		List<InstanceType> instanceTypeList
 				= systemService.instanceTypesService().list().send().instanceType();
 		List<InstanceTypeVo> instanceTypes
-				= ModelsKt.toInstanceTypeVos(instanceTypeList, systemService);
+				= ModelsKt.toInstanceTypeVos(instanceTypeList, connection);
 		vmCreate.setInstanceTypes(instanceTypes);
 
 		List<VnicProfile> nicItemList
@@ -1093,7 +1093,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		List<Host> hostList
 				= systemService.hostsService().list().send().hosts();
 		List<HostVo> hosts
-				= ModelsKt.toHostVos(hostList, systemService);
+				= ModelsKt.toHostVos(hostList, connection);
 		vmCreate.setHosts(hosts);
 		vmCreate.setAffinity("migratable");
 
@@ -1171,11 +1171,11 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 			Disk item
 					= diskService.get().send().disk();
 			if (item.storageDomains().size() > 0) {
-				DiskVo diskVo = ModelsKt.toDiskVo(item, systemService, diskAttachment);
+				DiskVo diskVo = ModelsKt.toDiskVo(item, connection, diskAttachment);
 				disks.add(diskVo);
 				continue;
 			}
-			DiskVo disk = ModelsKt.toDiskVo(item, systemService, diskAttachment);
+			DiskVo disk = ModelsKt.toDiskVo(item, connection, diskAttachment);
 			disks.add(disk);
 		}
 		vmInfo.setDisks(disks);
@@ -1649,7 +1649,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 			vm.setStatus("created");
 			websocketService.sendMessage("/topic/vms", gson.toJson(vm));
 			MessageVo message
-					= MessageVo.Companion.createMessage(MessageType.VIRTUAL_MACHINE_CREATE, true, vm.getName());
+					= MessageVo.Companion.createMessage(MessageType.VIRTUAL_MACHINE_CREATE, true, vm.getName(), "");
 			websocketService.sendMessage("/topic/notify", gson.toJson(message));
 		} catch (Exception e) {
 			try {
@@ -1662,7 +1662,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 			e.printStackTrace();
 			Gson gson = new Gson();
 			MessageVo message
-					= MessageVo.Companion.createMessage(MessageType.VIRTUAL_MACHINE_CREATE, false, e.getMessage());
+					= MessageVo.Companion.createMessage(MessageType.VIRTUAL_MACHINE_CREATE, false, e.getMessage(), e.getLocalizedMessage());
 			websocketService.sendMessage("/topic/notify", gson.toJson(message));
 		}
 	}
@@ -2001,13 +2001,13 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 			e.printStackTrace();
 			Gson gson1 = new Gson();
 			MessageVo messageVo
-					= MessageVo.Companion.createMessage(MessageType.VIRTUAL_MACHINE_MODIFY, false, e.getMessage());
+					= MessageVo.Companion.createMessage(MessageType.VIRTUAL_MACHINE_MODIFY, false, e.getMessage(), e.getCause().getLocalizedMessage());
 			websocketService.sendMessage("/topic/notify", gson1.toJson(messageVo));
 			return;
 		}
 		Gson gson = new Gson();
 		MessageVo message
-				= MessageVo.Companion.createMessage(MessageType.VIRTUAL_MACHINE_MODIFY, true, response.name());
+				= MessageVo.Companion.createMessage(MessageType.VIRTUAL_MACHINE_MODIFY, true, response.name(), "");
 		websocketService.sendMessage("/topic/notify", gson.toJson(message));
 	}
 
@@ -2167,7 +2167,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 			vm.setStatus("created");
 			websocketService.sendMessage("/topic/vms", gson.toJson(vm));
 			MessageVo message
-					= MessageVo.Companion.createMessage(MessageType.VIRTUAL_MACHINE_COPY, true, vm.getName());
+					= MessageVo.Companion.createMessage(MessageType.VIRTUAL_MACHINE_COPY, true, vm.getName(), "");
 			websocketService.sendMessage("/topic/notify", gson.toJson(message));
 		} catch (Exception e) {
 			try {
@@ -2180,7 +2180,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 			e.printStackTrace();
 			Gson gson = new Gson();
 			MessageVo message
-					= MessageVo.Companion.createMessage(MessageType.VIRTUAL_MACHINE_COPY, false, e.getMessage());
+					= MessageVo.Companion.createMessage(MessageType.VIRTUAL_MACHINE_COPY, false, e.getMessage(), e.getCause().getLocalizedMessage());
 			websocketService.sendMessage("/topic/notify", gson.toJson(message));
 		}
 	}
@@ -2256,7 +2256,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		Connection connection = connectionService.getConnection();
 
 		List<StorageDomain> storageDomainList
-				= SystemServiceHelper.getInstance().findAllStorageDomains(connection);
+				= SystemServiceHelper.getInstance().findAllStorageDomains(connection, "");
 
 		List<StorageDomainVo> discs = new ArrayList<>();
 		for (StorageDomain item : storageDomainList) {
@@ -2290,7 +2290,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		String vmName
 				= SystemServiceHelper.getInstance().findVm(connection, vmId).name();
 		MessageVo message
-				= MessageVo.createMessage(MessageType.CHANGE_CD_ROM, res, vmName);
+				= MessageVo.createMessage(MessageType.CHANGE_CD_ROM, res, vmName, "");
 		websocketService.sendMessage("/topic/notify", new Gson().toJson(message));
 	}
 

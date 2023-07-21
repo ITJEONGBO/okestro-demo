@@ -2,7 +2,15 @@
 
 오케스트로 데모
 
-## TODO
+## 🚀Quickstart
+
+### Prerequisite(s)
+
+- JDK (OpenJDK 1.8_201)
+- Tomcat (8.5.38)
+- Docker
+
+## 🎯TODO
 
 - [ ] 소스코드 초기상태 복구
   - [x] 버전 및 의존라이브러리 목록 정리
