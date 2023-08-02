@@ -79,6 +79,7 @@ object Dependencies {
     )
     val javaxServletJstl = "javax.servlet:jstl:${Versions.javaxServletJstl}"
     val javaxInject = "javax.inject:javax.inject:1"
+    val javaxAnnotation = "javax.annotation:javax.annotation-api:1.3.2"
     val aspectj = listOf(
         "org.aspectj:aspectjweaver:${Versions.aspectj}",
         "org.aspectj:aspectjrt:${Versions.aspectjrt}",

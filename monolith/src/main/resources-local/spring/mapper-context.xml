@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:p="http://www.springframework.org/schema/p"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
 	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd">
 
  	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
-		<property name="configLocation" value="classpath:com/itinfo/sqlmap/sql-map-config.xml" />
+		<property name="configLocation" value="classpath:sqlmap/sql-map-config.xml" />
 		<property name="mapperLocations">
 			<util:list>
-				<value>classpath:com/itinfo/sqlmap/**/*-SQL.xml</value>
+				<value>classpath:sqlmap/**/*-SQL.xml</value>
 			</util:list>
 		</property>
 	</bean>
@@ -19,10 +21,10 @@
 
 	<bean id="sqlSessionFactoryEngine" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSourceEngine" />
-		<property name="configLocation" value="classpath:com/itinfo/sqlmap/sql-map-config.xml" />
+		<property name="configLocation" value="classpath:sqlmap/sql-map-config.xml" />
 		<property name="mapperLocations">
 			<util:list>
-				<value>classpath:com/itinfo/sqlmap/**/*-SQL.xml</value>
+				<value>classpath:sqlmap/**/*-SQL.xml</value>
 			</util:list>
 		</property>
 	</bean>
@@ -30,8 +32,8 @@
 
 	<bean id="systemSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean"
 		p:dataSource-ref="dataSourceSystem"
-		p:configLocation="classpath:com/itinfo/sqlmap/sql-map-config.xml"
-		p:mapperLocations="classpath:com/itinfo/sqlmap/com/itinfo/admin/*-SQL.xml" />
+		p:configLocation="classpath:sqlmap/sql-map-config.xml"
+		p:mapperLocations="classpath:sqlmap/com/itinfo/admin/*-SQL.xml" />
 		
 	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate" destroy-method="clearCache">
 		<constructor-arg index="0" ref="sqlSessionFactory" />
@@ -48,5 +50,4 @@
 		<constructor-arg index="1" value="REUSE" />
 	</bean>
 
-	
 </beans>

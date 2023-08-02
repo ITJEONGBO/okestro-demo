@@ -11,12 +11,17 @@ import java.util.List;
 import org.mybatis.spring.SqlSessionTemplate;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
+
+import javax.annotation.Resource;
 
 @Repository
 public class ClustersDao {
-	@Autowired private SqlSessionTemplate sqlSessionTemplate;
-	@Autowired private SqlSessionTemplate sqlSessionTemplateEngine;
+	@Resource(name = "sqlSessionTemplate")
+	private SqlSessionTemplate sqlSessionTemplate;
+	@Resource(name = "sqlSessionTemplateEngine")
+	private SqlSessionTemplate sqlSessionTemplateEngine;
 
 	public List<HostUsageVo> retrieveClusterUsage(List<String> ids) {
 		return this.sqlSessionTemplate.selectList("COMPUTE-CLUSTER.retrieveClusterChartUsage", ids);

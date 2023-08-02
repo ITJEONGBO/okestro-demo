@@ -5,12 +5,14 @@ import com.itinfo.model.UserVo;
 import java.util.List;
 
 import org.mybatis.spring.SqlSessionTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import javax.annotation.Resource;
 
 @Repository("usersDao")
 public class UsersDao {
-	@Autowired private SqlSessionTemplate systemSqlSessionTemplate;
+	@Resource(name = "systemSqlSessionTemplate")
+	private SqlSessionTemplate systemSqlSessionTemplate;
 	public List<UserVo> retrieveUsers() {
 		return this.systemSqlSessionTemplate.selectList("USERS.retrieveUsers");
 	}

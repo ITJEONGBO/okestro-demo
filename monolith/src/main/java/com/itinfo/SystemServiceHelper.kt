@@ -73,12 +73,12 @@ class SystemServiceHelper {
 	//endregion
 
 	//region: Host
-	private fun srvHosts(c: Connection): HostsService
+	fun srvHosts(c: Connection): HostsService
 		= getSystemService(c).hostsService()
 	fun findAllHosts(c: Connection, searchQuery: String = ""): List<Host>
 		= if (searchQuery == "")	srvHosts(c).list().send().hosts()
 		else 						srvHosts(c).list().search(searchQuery).caseSensitive(false).send().hosts()
-	private fun srvHost(c: Connection, hostId: String): HostService
+	fun srvHost(c: Connection, hostId: String): HostService
 		= srvHosts(c).hostService(hostId)
 	fun findHost(c: Connection, hostId: String): Host
 		= srvHost(c, hostId).get().send().host()
@@ -86,10 +86,16 @@ class SystemServiceHelper {
 		= srvHost(c, hostId).nicsService()
 	fun findNicsFromHost(c: Connection, hostId: String): List<HostNic>
 		= srvNicsFromHost(c, hostId).list().send().nics()
+	private fun srvNicFromHost(c: Connection, hostId: String, hostNicId: String): HostNicService
+		= srvNicsFromHost(c, hostId).nicService(hostNicId)
+	fun findNicFromHost(c: Connection, hostId: String, hostNicId: String): HostNic
+		= srvNicFromHost(c, hostId, hostNicId).get().send().nic()
 	private fun srvStatisticsFromHost(c: Connection, hostId: String): StatisticsService
 		= srvHost(c, hostId).statisticsService()
 	fun findAllStatisticsFromHost(c: Connection, hostId: String): List<Statistic>
 		= srvStatisticsFromHost(c, hostId).list().send().statistics()
+	fun findAllStatisticsFromHostNic(c: Connection, hostId: String, hostNicId: String): List<Statistic>
+		= srvNicsFromHost(c, hostId).nicService(hostNicId).statisticsService().list().send().statistics()
 	private fun srvStoragesFromHost(c: Connection, hostId: String): HostStorageService
 		= srvHost(c, hostId).storageService()
 	fun findAllStoragesFromHost(c: Connection, hostId: String): List<HostStorage>
@@ -98,6 +104,23 @@ class SystemServiceHelper {
 		= srvHost(c, hostId).networkAttachmentsService()
 	fun findAllNetworkAttachmentsFromHost(c: Connection, hostId: String): List<NetworkAttachment>
 		= srvNetworkAttachmentsFromHost(c, hostId).list().send().attachments()
+	private fun srvNetworkAttachmentFromHost(c: Connection, hostId: String, networkAttachmentId: String): NetworkAttachmentService
+		= srvNetworkAttachmentsFromHost(c, hostId).attachmentService(networkAttachmentId)
+	fun removeNetworkAttachmentFromHost(c: Connection, hostId: String, networkAttachmentId: String): Boolean = try {
+		srvNetworkAttachmentFromHost(c, hostId, networkAttachmentId).remove().send()
+		true
+	} catch (e: Exception) {
+		e.printStackTrace()
+		false
+	}
+	private fun srvFenceAgents(c: Connection, hostId: String): FenceAgentsService
+		= srvHost(c, hostId).fenceAgentsService()
+	fun addFenceAgent(c: Connection, hostId: String, agent: Agent): Agent? = try {
+		srvFenceAgents(c, hostId).add().agent(agent).send().agent()
+	} catch (e: Exception) {
+		e.printStackTrace()
+		null
+	}
 	//endregion
 
 

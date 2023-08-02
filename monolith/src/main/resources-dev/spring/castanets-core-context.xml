@@ -37,10 +37,10 @@
 	
 	<!-- h2db -->
 	<!-- <jdbc:embedded-database id="dataSourceSystem" type="H2">
-	    <jdbc:script location="classpath*:com/itinfo/sqlmap/com/itinfo/system/*.sql" />
+	    <jdbc:script location="classpath:sqlmap/com/itinfo/system/*.sql" />
 	</jdbc:embedded-database> -->
 	<jdbc:initialize-database data-source="dataSourceSystem" ignore-failures="ALL">
-	    <jdbc:script location="classpath*:com/itinfo/sqlmap/com/itinfo/system/*.sql" />
+	    <jdbc:script location="classpath:sqlmap/com/itinfo/system/*.sql" />
 	</jdbc:initialize-database>
 	
 	<bean id="systemJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
@@ -61,7 +61,7 @@
 	</bean>
 	
 	<!-- karajan service -->
-	<bean id="karajanService" class="com.itinfo.engine.KarajanService" />
+	<bean id="karajanService" class="com.itinfo.service.engine.KarajanService" />
 
 	<!-- workload prediction service -->
 	<bean id="workloadPredictionService" class="com.itinfo.engine.WorkloadPredictionService" p:jdbcTemplate-ref="itinfoJdbcTemplate">

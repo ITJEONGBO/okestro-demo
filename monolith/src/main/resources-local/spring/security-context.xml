@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <beans:beans xmlns="http://www.springframework.org/schema/security"
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -37,30 +36,17 @@
 		<logout invalidate-session="true" logout-url="/logout"
 			logout-success-url="/login" />
 		<access-denied-handler error-page="/login/accessDenied" />
-
 	</http>
-
 
 	<beans:bean class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler"/>
 
 	<authentication-manager>
 		<authentication-provider ref="customAuthProvider" />
 	</authentication-manager>
-	
-
-	
 
 	<beans:bean id="customAuthProvider" class="com.itinfo.security.CustomAuthProvider">
 	</beans:bean>
 	
 	<beans:bean id="customAuthFailureHandler" class="com.itinfo.security.CustomAuthFailureHandler">
 	</beans:bean>
-
-
-
-
-
-
-
-
 </beans:beans>

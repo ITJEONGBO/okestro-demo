@@ -2,23 +2,21 @@
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
-
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>
-            classpath*:com/itinfo/spring/*-context.xml /WEB-INF/config/security-context.xml
-        </param-value>
+        <param-value>classpath*:spring/*-context.xml</param-value>
     </context-param>
+
     <filter>
         <filter-name>springSecurityFilterChain</filter-name>
-        <filter-class>
-            org.springframework.web.filter.DelegatingFilterProxy
-        </filter-class>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
     </filter>
+
     <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+
     <resource-ref>
         <description>itinfo</description>
         <res-ref-name>jdbc/itinfo</res-ref-name>
@@ -27,9 +25,7 @@
     </resource-ref>
     <filter>
         <filter-name>encodingFilter</filter-name>
-        <filter-class>
-            org.springframework.web.filter.CharacterEncodingFilter
-        </filter-class>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
         <init-param>
             <param-name>encoding</param-name>
             <param-value>utf-8</param-value>

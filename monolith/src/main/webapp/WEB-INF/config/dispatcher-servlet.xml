@@ -14,8 +14,9 @@
 
   	<context:component-scan base-package="com.itinfo">
 	    <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
-         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
-        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
 	</context:component-scan>
 	
 	<bean id="userConvenienceInterceptor" class="com.itinfo.interceptor.UserConvenienceInterceptor" p:paramName="menuSize"/>
@@ -51,8 +52,7 @@
 		p:viewClass="org.springframework.web.servlet.view.JstlView"
 		p:prefix="/WEB-INF/jsp/com.itinfo"
 		p:suffix=".jsp"
-		p:order="10" 
-		>
+		p:order="10">
 	</bean>
 	
  	<bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">

@@ -26,13 +26,13 @@
 	 -->
 	
 	<!-- query for postgresql context -->
-	<import resource="classpath*:com/itinfo/spring/query-postgresql-context.xml" />
+	<import resource="classpath*:spring/query-postgresql-context.xml" />
 	
 	<!-- query for h2db context -->
-	<import resource="classpath*:com/itinfo/spring/query-h2db-context.xml" />
+	<import resource="classpath*:spring/query-h2db-context.xml" />
 	
 	<!-- karajan context -->
-	<import resource="classpath*:karajan/spring/karajan-context.xml"/>
+	<import resource="classpath*:spring/karajan-context.xml"/>
 	
 	<context:component-scan base-package="com.itinfo">
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
@@ -40,10 +40,10 @@
 	
 	<!-- h2db -->
 	<!-- <jdbc:embedded-database id="dataSourceSystem" type="H2">
-	    <jdbc:script location="classpath*:com.itinfo/sqlmap/com.itinfo/system/*.sql" />
+	    <jdbc:script location="classpath:com.itinfo/sqlmap/com.itinfo/system/*.sql" />
 	</jdbc:embedded-database> -->
 	<jdbc:initialize-database data-source="dataSourceSystem" ignore-failures="ALL">
-	    <jdbc:script location="classpath*:com/itinfo/sqlmap/com/itinfo/system/*.sql" />
+	    <jdbc:script location="classpath:sqlmap/com/itinfo/system/*.sql" />
 	</jdbc:initialize-database>
 	
 	<bean id="systemJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
@@ -64,10 +64,10 @@
 	</bean>
 
 	<!-- karajan service -->
-	<bean id="karajanService" class="com.itinfo.engine.KarajanService" />
+	<bean id="karajanService" class="com.itinfo.service.engine.KarajanService" />
 	
 	<!-- workload prediction service -->
-	<bean id="workloadPredictionService" class="com.itinfo.engine.WorkloadPredictionService" p:jdbcTemplate-ref="itinfoJdbcTemplate">
+	<bean id="workloadPredictionService" class="com.itinfo.service.engine.WorkloadPredictionService" p:jdbcTemplate-ref="itinfoJdbcTemplate">
 		<constructor-arg>
 			<ref bean="queryGetVmWorkload" />
 		</constructor-arg>

@@ -100,6 +100,8 @@ dependencies {
     providedCompile(Dependencies.javaxServlet)
     implementation(Dependencies.javaxServletJstl)
     implementation(Dependencies.javaxInject)
+    implementation(Dependencies.javaxAnnotation)
+    annotationProcessor(Dependencies.javaxAnnotation)
     implementation(Dependencies.webjars)
     implementation(Dependencies.jdbc)
     implementation(Dependencies.commons)

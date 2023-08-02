@@ -11,13 +11,14 @@ import org.ovirt.engine.sdk4.ConnectionBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import lombok.Getter;
 
 @Scope(value="session", proxyMode= ScopedProxyMode.TARGET_CLASS)
 @Getter
-@Service
+@Component
 public class ConnectionService {
 	@Autowired private SystemPropertiesService systemPropertiesService;
 	private final String uid;

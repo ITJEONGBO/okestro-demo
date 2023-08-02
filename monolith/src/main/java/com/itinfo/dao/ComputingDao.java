@@ -7,13 +7,14 @@ import com.itinfo.model.VmUsageVo;
 import java.util.List;
 
 import org.mybatis.spring.SqlSessionTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import javax.annotation.Resource;
 
 @Repository
 public class ComputingDao {
 
-	@Autowired
+	@Resource(name = "sqlSessionTemplate")
 	private SqlSessionTemplate sqlSessionTemplate;
 
 	public List<VmUsageVo> retrieveVmUsage(String id) {
