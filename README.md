@@ -9,6 +9,34 @@
 - JDK (OpenJDK 1.8_201)
 - Tomcat (8.5.38)
 - Docker
+  - `tomcat:8.5.38-jre8-alpine` (ssl: 8443) 
+  - `postgres:10.12-alpine` (port: 5432)
+  
+---
+
+## 🐳Docker 
+
+### ▶️Run 
+
+```sh
+# postgres
+docker run -d -it \
+  --name cst_postgres \
+  -e POSTGRES_PASSWORD=mysecretpassword \
+  -e PGDATA=/var/lib/postgresql/data/pgdata \
+  -v where/to/mount:/var/lib/postgresql/data \
+  postgres:10.12-alpine
+```
+
+```batch
+REM postgres
+docker run -d -it ^
+  --name cst_postgres ^
+  -e POSTGRES_PASSWORD=mysecretpassword ^
+  -e PGDATA=/var/lib/postgresql/data/pgdata ^
+  -v where/to/mount:/var/lib/postgresql/data ^
+  postgres:10.12-alpine
+```
 
 ## 🎯TODO
 
@@ -16,7 +44,9 @@
   - [x] 버전 및 의존라이브러리 목록 정리
   - [x] model 및 상수
   - [x] tomcat embedded 구성
+  - [ ] docker 관련 정보 수집
 - [ ] package별 endpoint구현
+
 
 
 ## Dependencies 주입

@@ -66,7 +66,7 @@ public class CustomAuthProvider implements AuthenticationProvider {
 			roles.add(new SimpleGrantedAuthority("ROLE_USER"));
 			UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(userId, passwd, roles);
 			result.setDetails(new MemberService(userId, passwd, this.securityConnectionService.getUrl()));
-			return (Authentication)result;
+			return result;
 		} catch (Exception e) {
 			String exception = ExceptionUtils.getStackTrace(e);
 			String message = authenticationExceptionMessage(exception);
