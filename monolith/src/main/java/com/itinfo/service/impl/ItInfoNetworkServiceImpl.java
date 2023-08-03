@@ -289,11 +289,11 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 									? Builders.vlan().id(Integer.parseInt(castanetsNetworkVo.getVlan()))
 									: null
 					)
-					.usages(List.of(
+					.usages(
 							castanetsNetworkVo.getUsage().equalsIgnoreCase("true")
 									? NetworkUsage.VM
 									: NetworkUsage.DEFAULT_ROUTE
-					))
+					)
 					.mtu(!"".equals(castanetsNetworkVo.getMtu())
 							? Integer.parseInt(castanetsNetworkVo.getMtu())
 							: 1500
@@ -378,11 +378,11 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 									? Builders.vlan().id(Integer.parseInt(castanetsNetworkVo.getVlan()))
 									: null
 					)
-					.usages(List.of(
+					.usages(
 							castanetsNetworkVo.getUsage().equalsIgnoreCase("true")
 									? NetworkUsage.VM
 									: NetworkUsage.DEFAULT_ROUTE
-					))
+					)
 					.dnsResolverConfiguration(Builders.dnsResolverConfiguration().nameServers(nameServers))
 					.qos(!"".equals(castanetsNetworkVo.getQos())
 							? Builders.qos().id(castanetsNetworkVo.getQos()).build()

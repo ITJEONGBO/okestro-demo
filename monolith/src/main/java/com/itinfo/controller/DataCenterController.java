@@ -1,5 +1,6 @@
 package com.itinfo.controller;
 
+import com.itinfo.ItInfoConstant;
 import com.itinfo.service.DataCenterService;
 import com.itinfo.model.DataCenterVo;
 
@@ -17,7 +18,7 @@ public class DataCenterController {
 	@RequestMapping({"/compute/dataCenters/retrieveDataCenters"})
 	public String retrieveDataCentersInfo(Model model) {
 		List<DataCenterVo> dataCenters = this.dataCenterService.retrieveDataCenters();
-		model.addAttribute("resultKey", dataCenters);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, dataCenters);
+		return ItInfoConstant.JSON_VIEW;
 	}
 }

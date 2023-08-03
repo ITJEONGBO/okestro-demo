@@ -1,5 +1,6 @@
 package com.itinfo.security;
 
+import com.itinfo.ItInfoConstant;
 import com.itinfo.service.SystemPropertiesService;
 import com.itinfo.service.UsersService;
 import com.itinfo.model.SystemPropertiesVo;
@@ -32,16 +33,16 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-		String userId = (String)authentication.getPrincipal();
-		String passwd = this.securityUtils.decodeBase64((String)authentication.getCredentials());
+		String userId = authentication.getPrincipal().toString();
+		String passwd = this.securityUtils.decodeBase64(authentication.getCredentials().toString());
 		String retrievePasswd = this.usersService.login(userId);
-		WebAuthenticationDetails wad = null;
-		String userIPAddress = null;
-		wad = (WebAuthenticationDetails)authentication.getDetails();
-		userIPAddress = wad.getRemoteAddress();
+
+		WebAuthenticationDetails wad = (WebAuthenticationDetails) authentication.getDetails();
+		String userIPAddress = wad.getRemoteAddress();
 		try {
-			String blockTime = this.usersService.retrieveUser(userId).getBlockTime();
-			if (blockTime != null && blockTime.length() > 0) {
+			String blockTime
+					= this.usersService.retrieveUser(userId).getBlockTime();
+			if (!blockTime.isEmpty()) {
 				if (!SecurityUtils.compareTime(blockTime))
 					throw new BadCredentialsException("loginAttemptExceed");
 				this.usersService.initLoginCount(userId);
@@ -58,7 +59,7 @@ public class CustomAuthProvider implements AuthenticationProvider {
 				if (this.systemPropertiesService.retrieveSystemProperties().getLoginLimit() <= user.getLoginCount())
 					this.usersService.setBlockTime(user);
 				log.error("Login fail [ userId :  " + userId + " ] [ request ip : " + userIPAddress + " ]");
-				throw new BadCredentialsException("passwordError");
+				throw new BadCredentialsException(ItInfoConstant.PASSWORD_ERROR);
 			}
 			this.usersService.initLoginCount(userId);
 			List<GrantedAuthority> roles = new ArrayList<>();
@@ -69,7 +70,7 @@ public class CustomAuthProvider implements AuthenticationProvider {
 		} catch (Exception e) {
 			String exception = ExceptionUtils.getStackTrace(e);
 			String message = authenticationExceptionMessage(exception);
-			if (!message.equalsIgnoreCase("connectionTimeOut"))
+			if (!message.equalsIgnoreCase(ItInfoConstant.CONNECTION_TIME_OUT))
 				message = e.getMessage();
 			throw new BadCredentialsException(message);
 		}
@@ -82,7 +83,7 @@ public class CustomAuthProvider implements AuthenticationProvider {
 	public String authenticationExceptionMessage(String exception) {
 		String result = "";
 		if (exception.indexOf("org.apache.http.conn.HttpHostConnectException") > 0)
-			result = "connectionTimeOut";
+			result = ItInfoConstant.CONNECTION_TIME_OUT;
 		return result;
 	}
 }

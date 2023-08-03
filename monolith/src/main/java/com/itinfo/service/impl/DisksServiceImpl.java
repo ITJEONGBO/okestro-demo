@@ -1,5 +1,6 @@
 package com.itinfo.service.impl;
 
+import com.itinfo.ItInfoConstant;
 import com.itinfo.SystemServiceHelper;
 import com.itinfo.service.engine.ConnectionService;
 import com.itinfo.service.engine.AdminConnectionService;
@@ -452,9 +453,9 @@ public class DisksServiceImpl implements DisksService {
 							this.websocketService.sendMessage("/topic/disks/uploadDisk", (new Gson()).toJson(message));
 						} while (read < length);
 						int responseCode = https.getResponseCode();
-						if (responseCode == 200) {
+						if (responseCode == ItInfoConstant.STATUS_OK) {
 							message.setTitle(disk.id());
-							message.setText(String.format("완료", new Object[0]));
+							message.setText("완료");
 							this.websocketService.sendMessage("/topic/disks/uploadDisk", (new Gson()).toJson(message));
 						}
 						is.close();

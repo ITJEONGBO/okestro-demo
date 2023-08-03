@@ -1,5 +1,6 @@
 package com.itinfo.controller;
 
+import com.itinfo.ItInfoConstant;
 import com.itinfo.service.KarajanDashboardService;
 import com.itinfo.model.karajan.ConsolidationVo;
 import com.itinfo.model.karajan.KarajanVo;
@@ -29,15 +30,15 @@ public class KarajanDashboardController {
 	@RequestMapping({"/symphony/retrieveDataCenterStatus"})
 	public String retrieveDataCenterStatus(Model model) {
 		KarajanVo karajan = this.karajanDashboardService.retrieveDataCenterStatus();
-		model.addAttribute("resultKey", karajan);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, karajan);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/symphony/consolidateVm"})
 	public String consolidateVm(String clusterId, Model model) {
 		List<ConsolidationVo> consolidated = this.karajanDashboardService.consolidateVm(clusterId);
-		model.addAttribute("resultKey", consolidated);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, consolidated);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/symphony/migrateVm"})
@@ -45,20 +46,20 @@ public class KarajanDashboardController {
 		String result = this.karajanDashboardService.migrateVm(hostId, vmId);
 		if (result.equalsIgnoreCase(VmStatus.MIGRATING.value()))
 			this.karajanDashboardService.publishVmStatus(hostId, vmId);
-		model.addAttribute("resultKey", result);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, result);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/symphony/relocateVms"})
 	public String relocateVms(@RequestBody List<ConsolidationVo> consolidations, Model model) {
 		this.karajanDashboardService.relocateVms(consolidations);
-		return "jsonView";
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/symphony/workload"})
 	public String getWorkload(Model model) {
 		WorkloadVo workload = this.workloadPredictionService.getWorkload();
-		model.addAttribute("resultKey", workload);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, workload);
+		return ItInfoConstant.JSON_VIEW;
 	}
 }

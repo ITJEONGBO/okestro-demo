@@ -1,5 +1,6 @@
 package com.itinfo.controller;
 
+import com.itinfo.ItInfoConstant;
 import com.itinfo.service.MacAddressService;
 import com.itinfo.model.MacAddressPoolsVo;
 
@@ -23,8 +24,8 @@ public class MacAddressPoolsController {
 	@RequestMapping(value = {"/admin/retrieveMacAddressPools"}, method = {RequestMethod.GET})
 	public String retrieveMacAddressPools(Model model) {
 		List<MacAddressPoolsVo> macAddressVo = this.macAddressService.retrieveMacAddressPools();
-		model.addAttribute("resultKey", macAddressVo);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, macAddressVo);
+		return ItInfoConstant.JSON_VIEW;
 	}
 }
 

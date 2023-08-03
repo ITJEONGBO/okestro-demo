@@ -1,5 +1,6 @@
 package com.itinfo.controller;
 
+import com.itinfo.ItInfoConstant;
 import com.itinfo.service.engine.AdminConnectionService;
 import com.itinfo.service.engine.WebsocketService;
 import com.itinfo.model.DiskCreateVo;
@@ -10,8 +11,8 @@ import com.itinfo.service.DisksService;
 import java.io.InputStream;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,67 +23,54 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
+@Slf4j
 public class DisksController {
-	@Autowired
-	@Qualifier("disksServiceImpl")
-	private DisksService disksService;
-
-	@Autowired
-	private AdminConnectionService adminConnectionService;
-
-	@Autowired
-	private WebsocketService websocketService;
+	@Autowired private DisksService disksService;
+	@Autowired private AdminConnectionService adminConnectionService;
+	@Autowired private WebsocketService websocketService;
 
 	@RequestMapping({"/storage/disks"})
-	public String disksView() { return "/castanets/storage/disks";  }
+	public String disksView() {
+		return "/castanets/storage/disks";
+	}
 	@RequestMapping({"/storage/createDisk"})
-	public String createDiskView() {    return "/castanets/storage/createDisk"; }
+	public String createDiskView() {
+		return "/castanets/storage/createDisk";
+	}
 
 	@RequestMapping(value = {"/storage/disks/retrieveDisks"}, method = {RequestMethod.GET})
 	public String retrievedisks(Model model) {
 		List<DiskVo> disks = this.disksService.retrieveDisks();
-		model.addAttribute("resultKey", disks);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, disks);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/storage/disks/createDisk"}, method = {RequestMethod.POST})
 	public String createDisk(@RequestBody DiskCreateVo diskCreateVo, Model model) {
 		this.disksService.createDisk(diskCreateVo);
-		try {
-			Thread.sleep(500L);
-		} catch (Exception exception) {
-		}
-		return "jsonView";
+		try { Thread.sleep(500L); } catch (Exception e) { e.getLocalizedMessage(); }
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/storage/disks/createLunDisk"}, method = {RequestMethod.POST})
 	public String createLunDisk(@RequestBody DiskCreateVo diskCreateVo, Model model) {
 		this.disksService.createLunDisk(diskCreateVo);
-		try {
-			Thread.sleep(500L);
-		} catch (Exception exception) {
-		}
-		return "jsonView";
+		try { Thread.sleep(500L); } catch (Exception e) { e.getLocalizedMessage(); }
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/storage/disks/removeDisk"}, method = {RequestMethod.POST})
 	public String removeDisk(@RequestBody List<String> disks, Model model) {
 		this.disksService.removeDisk(disks);
-		try {
-			Thread.sleep(500L);
-		} catch (Exception exception) {
-		}
-		return "jsonView";
+		try { Thread.sleep(500L); } catch (Exception e) { e.getLocalizedMessage(); }
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/storage/disks/migrationDisk"}, method = {RequestMethod.POST})
 	public String migrationDisk(@RequestBody DiskMigrationVo diskMigrationVo, Model model) {
 		this.disksService.migrationDisk(diskMigrationVo);
-		try {
-			Thread.sleep(500L);
-		} catch (Exception exception) {
-		}
-		return "jsonView";
+		try { Thread.sleep(500L); } catch (Exception e) { e.getLocalizedMessage(); }
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@Async("karajanTaskExecutor")
@@ -96,16 +84,12 @@ public class DisksController {
 		} catch (Exception e) {
 			e.fillInStackTrace();
 		}
-		try {
-			Thread.sleep(500L);
-		} catch (Exception e) {
-			e.fillInStackTrace();
-		}
+		try { Thread.sleep(500L); } catch (Exception e) { e.getLocalizedMessage(); }
 	}
 
 	@Async("karajanTaskExecutor")
 	@RequestMapping(value = {"/storage/disks/retrieveDiskImage"}, method = {RequestMethod.POST})
 	public String retrieveDiskImage(@RequestParam("file") MultipartFile diskFile) throws Exception {
-		return "jsonView";
+		return ItInfoConstant.JSON_VIEW;
 	}
 }

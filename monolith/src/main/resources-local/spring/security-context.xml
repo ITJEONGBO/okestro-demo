@@ -6,10 +6,9 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd
 		http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket-4.3.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
-	<http auto-config='true' use-expressions="true">
 
+	<http auto-config='true' use-expressions="true">
 		<csrf disabled="true"/>
-	
 		<intercept-url pattern="/websocket/**" access="permitAll" />
 		<intercept-url pattern="/css/**" access="permitAll" />
 		<intercept-url pattern="/images/**" access="permitAll" />
@@ -33,9 +32,10 @@
 			authentication-failure-handler-ref="customAuthFailureHandler"
 			always-use-default-target='true' />
 
-		<logout invalidate-session="true" logout-url="/logout"
-			logout-success-url="/login" />
-		<access-denied-handler error-page="/login/accessDenied" />
+		<logout invalidate-session="true" logout-url="/logout" logout-success-url="/login" />
+
+		<access-denied-handler error-page="/com/itinfo/login/accessDenied" />
+        <!-- ref="customAccessDeniedHandler" -->
 	</http>
 
 	<beans:bean class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler"/>
@@ -48,5 +48,8 @@
 	</beans:bean>
 	
 	<beans:bean id="customAuthFailureHandler" class="com.itinfo.security.CustomAuthFailureHandler">
+	</beans:bean>
+
+	<beans:bean id="customAccessDeniedHandler" class="com.itinfo.security.CustomAccessDeniedHandler">
 	</beans:bean>
 </beans:beans>

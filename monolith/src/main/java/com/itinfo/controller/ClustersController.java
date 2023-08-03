@@ -1,5 +1,6 @@
 package com.itinfo.controller;
 
+import com.itinfo.ItInfoConstant;
 import com.itinfo.service.ClustersService;
 import com.itinfo.service.engine.WebsocketService;
 
@@ -32,8 +33,8 @@ public class ClustersController {
 	@RequestMapping(value = {"/test/websocket"}, method = {RequestMethod.GET})
 	public String testWebsocket(String id, Model model) {
 		this.websocketService.sendMessage("/topic/test", "hello world");
-		model.addAttribute("resultKey", "");
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, "");
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/createCluster"})
@@ -43,7 +44,7 @@ public class ClustersController {
 
 	@RequestMapping(value = {"/compute/updateCluster"}, method = {RequestMethod.GET})
 	public String updateCluster(String id, Model model) {
-		model.addAttribute("resultKey", id);
+		model.addAttribute(ItInfoConstant.RESULT_KEY, id);
 		return "/castanets/compute/createCluster";
 	}
 
@@ -54,40 +55,36 @@ public class ClustersController {
 
 	@RequestMapping(value = {"/compute/cluster"}, method = {RequestMethod.GET})
 	public String clusterView(String id, Model model) {
-		model.addAttribute("resultKey", id);
+		model.addAttribute(ItInfoConstant.RESULT_KEY, id);
 		return "/castanets/compute/cluster";
 	}
 
 	@RequestMapping({"/compute/clusters/retrieveClusters"})
 	public String retrieveClustersInfo(Model model) {
 		List<ClusterVo> clusters = this.clustersService.retrieveClusters();
-		model.addAttribute("resultKey", clusters);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, clusters);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/clusters/retrieveCluster"}, method = {RequestMethod.GET})
 	public String retrieveClusterDetail(String id, Model model) {
 		ClusterVo cluster = this.clustersService.retrieveCluster(id);
-		model.addAttribute("resultKey", cluster);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, cluster);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/clusters/createCluster"}, method = {RequestMethod.POST})
 	public String createCluster(@RequestBody ClusterCreateVo clusterCreateVo, Model model) {
 		this.clustersService.createCluster(clusterCreateVo);
-		try {
-			Thread.sleep(500L);
-		} catch (Exception exception) {}
-		return "jsonView";
+		try { Thread.sleep(500L); } catch (Exception exception) { log.error(exception.getLocalizedMessage());}
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/clusters/updateCluster"}, method = {RequestMethod.POST})
 	public String updateCluster(@RequestBody ClusterCreateVo clusterCreateVo, Model model) {
 		this.clustersService.updateCluster(clusterCreateVo);
-		try {
-			Thread.sleep(500L);
-		} catch (Exception exception) {}
-		return "jsonView";
+		try { Thread.sleep(500L); } catch (Exception exception) { log.error(exception.getLocalizedMessage());}
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/clusters/removeCluster"}, method = {RequestMethod.GET})
@@ -96,27 +93,27 @@ public class ClustersController {
 		try {
 			Thread.sleep(500L);
 		} catch (Exception exception) {}
-		return "jsonView";
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/clusters/retrieveCreateClusterInfo"}, method = {RequestMethod.GET})
 	public String retrieveCreateClusterInfo(String id, Model model) {
 		ClusterCreateVo clusterCreateVo = this.clustersService.retrieveCreateClusterInfo(id);
-		model.addAttribute("resultKey", clusterCreateVo);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, clusterCreateVo);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/clusters/retrieveNetworks"}, method = {RequestMethod.GET})
 	public String retrieveNetworks(Model model) {
 		List<NetworkVo> networks = this.clustersService.retrieveNetworks();
-		model.addAttribute("resultKey", networks);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, networks);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/clusters/retrieveNetworkProviders"}, method = {RequestMethod.GET})
 	public String retrieveNetworkProviders(Model model) {
 		List<NetworkProviderVo> networkProviders = this.clustersService.retrieveNetworkProviders();
-		model.addAttribute("resultKey", networkProviders);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, networkProviders);
+		return ItInfoConstant.JSON_VIEW;
 	}
 }

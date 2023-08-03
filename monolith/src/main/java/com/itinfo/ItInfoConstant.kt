@@ -1,5 +1,12 @@
 package com.itinfo
 
+/**
+ * [ItInfoConstant]
+ * 관련 상수
+ *
+ * @author chlee
+ * @since 2023-08-08
+ */
 object ItInfoConstant {
     const val RESULT_KEY = "resultKey"
     const val JSON_VIEW = "jsonView"

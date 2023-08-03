@@ -1,5 +1,6 @@
 package com.itinfo.controller;
 
+import com.itinfo.ItInfoConstant;
 import com.itinfo.service.SystemPermissionsService;
 import com.itinfo.service.UsersService;
 import com.itinfo.model.PermissionVo;
@@ -32,34 +33,34 @@ public class SystemPermissionsController {
 	@RequestMapping({"/admin/systemPermissions/retrieveSystemPermissions"})
 	public String retrieveSystemPermissions(Model model) {
 		List<PermissionVo> permissions = this.systemPermissionsService.retrieveSystemPermissions();
-		model.addAttribute("resultKey", permissions);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, permissions);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/admin/systemPermissions/retrieveRoles"})
 	public String retrieveRoles(Model model) {
 		List<RoleVo> roles = this.systemPermissionsService.retrieveRoles();
-		model.addAttribute("resultKey", roles);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, roles);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/admin/users/retrieveAllUsers"})
 	public String retrieveAllUsers(Model model) {
 		List<UserVo> users = this.usersService.retrieveUsers();
-		model.addAttribute("resultKey", users);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, users);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/admin/systemPermissions/addSystemPermissions"})
 	public String addSystemPermissions(@RequestBody List<UserVo> users, Model model) {
 		this.systemPermissionsService.addSystemPermissions(users);
-		return "jsonView";
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/admin/systemPermissions/removeSystemPermissions"})
 	public String removeSystemPermissions(@RequestBody List<PermissionVo> permissions, Model model) {
 		this.systemPermissionsService.removeSystemPermissions(permissions);
-		return "jsonView";
+		return ItInfoConstant.JSON_VIEW;
 	}
 }
 

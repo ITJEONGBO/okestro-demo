@@ -1,5 +1,6 @@
 package com.itinfo.controller;
 
+import com.itinfo.ItInfoConstant;
 import com.itinfo.service.TemplatesService;
 import com.itinfo.model.CpuProfileVo;
 import com.itinfo.model.TemplateDiskVo;
@@ -37,85 +38,85 @@ public class TemplatesController {
 	@RequestMapping(value = {"/compute/template/retrieveTemplates"}, method = {RequestMethod.GET})
 	public String retrieveTemplates(Model model) {
 		List<TemplateVo> tamplates = this.templatesService.retrieveTemplates();
-		model.addAttribute("resultKey", tamplates);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, tamplates);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/template/retrieveTemplate"}, method = {RequestMethod.GET})
 	public String retrieveTemplate(String id, Model model) {
 		System.out.println("retrieveTemplate called");
 		TemplateVo template = this.templatesService.retrieveTemplate(id);
-		model.addAttribute("resultKey", template);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, template);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/template/cpuProfiles"}, method = {RequestMethod.GET})
 	public String retrieveCpuProfiles(Model model) {
 		List<CpuProfileVo> cpuProfiles = this.templatesService.retrieveCpuProfiles();
-		model.addAttribute("resultKey", cpuProfiles);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, cpuProfiles);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/template/rootTemplates"}, method = {RequestMethod.GET})
 	public String retrieveRootTemplates(Model model) {
 		List<TemplateVo> rootTemplates = this.templatesService.retrieveRootTemplates();
-		model.addAttribute("resultKey", rootTemplates);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, rootTemplates);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/template/retrieveDisks"}, method = {RequestMethod.GET})
 	public String retrieveDisks(String id, Model model) {
 		List<TemplateDiskVo> list = this.templatesService.retrieveDisks(id);
-		model.addAttribute("resultKey", list);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, list);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/template/checkDuplicateName"})
 	public String checkDuplicateName(String name, Model model) {
 		Boolean result = this.templatesService.checkDuplicateName(name);
-		model.addAttribute("resultKey", Boolean.valueOf(result));
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, Boolean.valueOf(result));
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/createTemplate"})
 	public String createTemplate(@RequestBody TemplateVo template, Model model) {
 		this.templatesService.createTemplate(template);
-		model.addAttribute("resultKey");
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/removeTemplate"})
 	public String removeTemplate(String id, Model model) {
 		this.templatesService.removeTemplate(id);
-		model.addAttribute("resultKey");
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/retrieveTemplateEditInfo"})
 	public String retrieveTemplateEditInfo(String id, Model model) {
 		TemplateEditVo templateEditInfo = this.templatesService.retrieveTemplateEditInfo(id);
-		model.addAttribute("resultKey", templateEditInfo);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, templateEditInfo);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/updateTemplate"})
 	public String updateTemplate(@RequestBody TemplateEditVo templateEditInfo, Model model) {
 		String result = this.templatesService.updateTemplate(templateEditInfo);
-		model.addAttribute("resultKey", result);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, result);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/exportTemplate"})
 	public String exportTemplate(@RequestBody TemplateVo template, Model model) {
 		this.templatesService.exportTemplate(template);
-		model.addAttribute("resultKey");
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/checkExportTemplate"})
 	public String checkExportTemplate(String id, Model model) {
 		boolean result = this.templatesService.checkExportTemplate(id);
-		model.addAttribute("resultKey", Boolean.valueOf(result));
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, result);
+		return ItInfoConstant.JSON_VIEW;
 	}
 }

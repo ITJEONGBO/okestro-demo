@@ -1,5 +1,6 @@
 package com.itinfo.controller;
 
+import com.itinfo.ItInfoConstant;
 import com.itinfo.service.VmConsoleService;
 import com.itinfo.model.VmConsoleVo;
 
@@ -21,7 +22,7 @@ public class VmConsoleController {
 			model.addAttribute("result", "error");
 		}
 		model.addAttribute("vmConsoleVo", vmConsoleVo);
-		return "jsonView";
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/vmconsole/ticket2"})
@@ -31,7 +32,7 @@ public class VmConsoleController {
 		vo.setVmName("nested-host");
 		vo = this.vmConsoleService.getDisplayTicket(vo);
 		model.addAttribute("vo", vo);
-		return "jsonView";
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/vmConsole/vncView"})

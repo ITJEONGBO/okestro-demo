@@ -1,5 +1,6 @@
 package com.itinfo.controller;
 
+import com.itinfo.ItInfoConstant;
 import com.itinfo.service.SystemPropertiesService;
 import com.itinfo.model.SystemPropertiesVo;
 
@@ -22,22 +23,22 @@ public class SystemPropertiesController {
 	@RequestMapping(value = {"/admin/retrieveSystemProperties"}, method = {RequestMethod.GET})
 	public String retrieveSystemProperties(Model model) {
 		SystemPropertiesVo systemProperties = this.systemPropertiesService.retrieveSystemProperties();
-		model.addAttribute("resultKey", systemProperties);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, systemProperties);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/admin/saveSystemProperties"})
 	public String saveSystemProperties(@RequestBody SystemPropertiesVo systemProperties, Model model) {
 		int result = this.systemPropertiesService.saveSystemProperties(systemProperties);
-		model.addAttribute("resultKey", Integer.valueOf(result));
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, result);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/admin/retrieveProgramVersion"})
 	public String retrieveProgramVersion(Model model) {
 		Object[] result = this.systemPropertiesService.retrieveProgramVersion();
-		model.addAttribute("resultKey", result);
-		return "jsonView";
+		model.addAttribute(ItInfoConstant.RESULT_KEY, result);
+		return ItInfoConstant.JSON_VIEW;
 	}
 
 }
