@@ -162,7 +162,7 @@ fun Host.toHostVo(connection: Connection): HostVo {
 	val vmVos: List<VmVo>
 		= vms.toVmVos(connection)
 	val cpuVmUsed: Int
-		= vmVos.map { it.cores + it.sockets + it.threads }.reduce { acc, i -> acc + i }
+		= vmVos.map { it.cores + it.sockets + it.threads }.reduceOrNull { acc, i -> acc + i } ?: 0
 	val stats
 			= SystemServiceHelper.getInstance().findAllStatisticsFromHost(connection, id())
 	stats.forEach(Consumer { _: Statistic? ->
@@ -227,8 +227,10 @@ fun Vm.toVmVo(connection: Connection) : VmVo {
 		id(),
 		name(),
 		status().value(),
-		host().id(),
-		host().name(),
+		if (hostPresent() &&
+			host().idPresent()) host().id() else "",
+		if (hostPresent() &&
+			host().namePresent()) host().name() else "",
 		if (cpuPresent() &&
 			cpu().topologyPresent() &&
 			cpu().topology().coresAsInteger() != null) cpu().topology().coresAsInteger() else 0,

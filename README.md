@@ -2,20 +2,48 @@
 
 오케스트로 데모
 
+---
+
+## What's included?
+
+![shield-java][shield-java]
+![shield-spring][shield-spring]
+![shield-spring-security][shield-spring-security]
+![shield-kotlin][shield-kotlin]
+![shield-gradle][shield-gradle]
+
+---
+
 ## 🚀Quickstart
 
 ### 🧰Prerequisite(s)
 
 - 🛠Intellij IDEA 
 - ☕JDK (OpenJDK 1.8_201)
-- 🐘Gradle (7.4.2)
-- 😺Tomcat (8.5.38)
+- 🍃Spring (`4.3.14.RELEASE`)
+- 🐘Gradle (`7.4.2`)
+- 😺Tomcat (`8.5.38`)
 - 🛅H2 Database
 - 🐳Docker
   - `tomcat:8.5.38-jre8-alpine` (ssl: `8443`) 
   - `postgres:10.12-alpine` (port: `5432`)
 
-### 😺Tomcat 
+---
+
+## 🐘Gradle
+
+Run this script to create artifact
+
+```sh
+./gradlew monolith:war -Pprofile=staging
+# 프로퍼티 `profile` 유형
+# - local: 로컬 (개발환경)
+# - staging
+```
+
+---
+
+## 😺Tomcat 
 
 오케스트로는 https 프토토콜을 기본적으로 사용하기 때문에 톰캣 구성을 아래와 같이 해 준다.
 
@@ -70,13 +98,13 @@
 
 ```sh
 # war 빌드 후 (monolith/build/lib) 진행
-docker build -t okestro-tomcat:0.0.1 \
+docker build -t okestro/cst_tomcat:0.0.1 \
   docker/okestro
 ```
 
 ```batch
 REM war 빌드 후 (monolith/build/lib) 진행
-docker build -t okestro-tomcat:0.0.1 ^
+docker build -t okestro/cst_tomcat:0.0.1 ^
   docker/okestro
 ```
 
@@ -87,7 +115,8 @@ docker build -t okestro-tomcat:0.0.1 ^
 docker run -d -it \
   --name cst_tomcat \
   -p 8080:8080 \
-  okestro-tomcat:0.0.1 
+  -p 8443:8443 \
+  okestro/cst_tomcat:0.0.1
 
 # postgres
 docker run -d -it \
@@ -101,10 +130,10 @@ docker run -d -it \
 ```batch
 REM okestro
 docker run -d -it ^
-  --name cst_tomcat ^
+  --name okestro/cst_tomcat ^
   -p 8080:8080 ^
   -p 8443:8443 ^
-  okestro-tomcat:0.0.1
+  okestro/cst_tomcat:0.0.1
 
 REM postgres
 docker run -d -it ^
@@ -213,3 +242,9 @@ docker run -d -it ^
 
 
 [toH2]: docs/H2.md
+
+[shield-java]: https://img.shields.io/badge/OpenJDK-11-f3812a?logo=java&logoColor=f3812a&style=flat-square
+[shield-spring]: https://img.shields.io/badge/Spring-4.3.14.RELEASE-6DB33F?logo=spring&logoColor=6DB33F&style=flat-square
+[shield-spring-security]: https://img.shields.io/badge/Spring%20Security-4.2.2.RELEASE-6DB33F?logo=springsecurity&logoColor=6DB33F&style=flat-square
+[shield-kotlin]: https://img.shields.io/badge/Kotlin-1.4.31-0095D5?logo=kotlin&logoColor=0095D5&style=flat-square
+[shield-gradle]: https://img.shields.io/badge/Gradle-7.4.2-abd759?logo=gradle&logoColor=abd759&style=flat-square

@@ -11,6 +11,7 @@ group = "com.itinfo"
 version = "0.0.1"
 
 val profile: String = if (project.hasProperty("profile")) project.property("profile") as? String ?: "local" else "local"
+var artifactName: String = "okestro-monolith-${profile}"
 println("profile  : $profile")
 
 tasks {
@@ -39,7 +40,8 @@ tasks.compileKotlin {dependsOn(tasks.clean) }
 
 tasks.war {
     // webXml = file("src/main/webapp/WEB-INF/web.xml")
-    baseName = "okestro-monolith-${profile}"
+    baseName = artifactName
+    finalizedBy(tasks.named("placeOutputToDocker"))
 }
 
 task("openBrowser") {
@@ -58,7 +60,15 @@ task("exploreOutput") {
         Desktop.getDesktop().open(layout.buildDirectory.dir("libs").get().asFile)
     }
 }
-// tasks.war { finalizedBy(tasks.named("exploreOutput")) }
+
+tasks.register<Copy>("placeOutputToDocker") {
+    println("execute placeOutputToDocker!")
+    from(layout.buildDirectory.dir("libs"))
+    include("*.war")
+    into(file("${project.rootDir}/docker/okestro"))
+    rename("${artifactName}-${version}", "ROOT")
+}
+
 
 tomcat {
     httpProtocol = "org.apache.coyote.http11.Http11Nio2Protocol"

@@ -1018,8 +1018,8 @@ fun HostStorage.toLunVo(): LunVo = LunVo(
 	logicalUnits()[0].productId(),
 	logicalUnits()[0].serial(),
 	type().value(),
-	name(),
-	description(),
+	if (namePresent()) name() else "",
+	if (descriptionPresent()) description() else "",
 	if (logicalUnits()[0].diskIdPresent()) logicalUnits()[0].diskId() else "",
 	id(),
 )
@@ -2134,7 +2134,8 @@ fun VnicProfile.toVmNicVo(): VmNicVo {
 		if (namePresent()) name() else "",
 		id(),
 		name(),
-		if (networkPresent()) network().name() else "",
+		if (networkPresent() &&
+			network().namePresent()) network().name() else "",
 	)
 }
 
@@ -2397,15 +2398,24 @@ fun Vm.toVmVo(connection: Connection): VmVo {
 	).apply {
 		this.ipAddress = ipAddress
 		this.fqdn = if (fqdnPresent()) fqdn() else ""
-		this.host = if (hostPresent()) host().name() else ""
-		this.hostId = if (hostPresent()) host().id() else ""
+		this.host =
+			if (hostPresent() &&
+				host().namePresent()) host().name() else ""
+		this.hostId =
+			if (hostPresent() &&
+				host().idPresent()) host().id() else ""
 		this.type = if (typePresent()) type().value() else ""
-		this.cluster = if (clusterPresent()) cluster().name() else ""
-		this.clusterId = if (clusterPresent()) cluster().id() else ""
+		this.clusterId =
+			if (clusterPresent()) cluster().id() else ""
+		this.cluster =
+			if (clusterPresent() &&
+				cluster().namePresent()) cluster().name() else ""
 		this.status = if (statusPresent()) status().value() else ""
 		this.nextRunConfigurationExists = nextRunConfigurationExists()
 		this.headlessMode = !displayPresent()
-		this.graphicProtocol = if (displayPresent()) display().type().toString() else "없음"
+		this.graphicProtocol =
+			if (displayPresent() &&
+				display().typePresent()) display().type().toString() else "없음"
 		this.startTime =
 			if ("up" == status().value() && startTimePresent())
 				"${date.time - startTime().time / 60000L}"
@@ -2417,8 +2427,6 @@ fun Vm.toVmVo(connection: Connection): VmVo {
 
 fun List<Vm>.toVmVos(connection: Connection): List<VmVo>
 	= this.map { it.toVmVo(connection) }
-
-
 
 fun VmVo.stop(connection: Connection): Boolean =
 	SystemServiceHelper.getInstance().stopVm(connection, id)
