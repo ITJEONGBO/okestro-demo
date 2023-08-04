@@ -8,6 +8,7 @@
 
 - 🛠Intellij IDEA 
 - ☕JDK (OpenJDK 1.8_201)
+- 🐘Gradle (7.4.2)
 - 😺Tomcat (8.5.38)
 - 🛅H2 Database
 - 🐳Docker
