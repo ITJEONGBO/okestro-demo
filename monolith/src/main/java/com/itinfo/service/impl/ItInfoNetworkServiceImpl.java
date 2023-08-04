@@ -8,7 +8,6 @@ import com.itinfo.service.engine.WebsocketService;
 
 import com.google.gson.Gson;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,8 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.builders.Builders;
 import org.ovirt.engine.sdk4.builders.NetworkBuilder;
-import org.ovirt.engine.sdk4.services.NetworkLabelsService;
-import org.ovirt.engine.sdk4.services.NetworkService;
 import org.ovirt.engine.sdk4.types.Cluster;
 import org.ovirt.engine.sdk4.types.DataCenter;
 import org.ovirt.engine.sdk4.types.Host;
@@ -67,7 +64,7 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 		DataCenter dataCenter
 				= SystemServiceHelper.getInstance().findAllDataCenters(connection).get(0);
 		List<Cluster> clusters
-				= SystemServiceHelper.getInstance().findAllClusters(connection);
+				= SystemServiceHelper.getInstance().findAllClusters(connection, "");
 		List<Network> networkList
 				= SystemServiceHelper.getInstance().findAllNetworks(connection);
 		List<OpenStackNetworkProvider> openStackNetworkProviders
@@ -148,7 +145,7 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 	public ItInfoNetworkGroupVo getNetworkDetail(ItInfoNetworkVo castanetsNetworkVo) {
 		Connection connection = adminConnectionService.getConnection();
 		List<Cluster> clusters
-				= SystemServiceHelper.getInstance().findAllClusters(connection);
+				= SystemServiceHelper.getInstance().findAllClusters(connection, "");
 		List<ItInfoNetworkClusterVo> castanetsNetworkClusterVos
 				= ModelsKt.toItInfoNetworkClusterVos(clusters, connection, castanetsNetworkVo.getId());
 
@@ -170,7 +167,7 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 	public List<ItInfoNetworkClusterVo> getNetworkCluster(String clusterId, String networkId) {
 		Connection connection = adminConnectionService.getConnection();
 		List<Cluster> clusters
-				= SystemServiceHelper.getInstance().findAllClusters(connection);
+				= SystemServiceHelper.getInstance().findAllClusters(connection, "");
 		List<ItInfoNetworkClusterVo> list
 				= ModelsKt.toItInfoNetworkClusterVos(clusters, connection, networkId);
 		return list;
@@ -207,7 +204,7 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 		List<Vm> vms
 				= SystemServiceHelper.getInstance().findAllVms(connection, "");
 		List<Cluster> clusters
-				= SystemServiceHelper.getInstance().findAllClusters(connection);
+				= SystemServiceHelper.getInstance().findAllClusters(connection, "");
 		List<VnicProfile> vnicProfiles
 				= SystemServiceHelper.getInstance().findAllVnicProfilesFromNetwork(connection, networkId);
 
@@ -229,7 +226,7 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 		DataCenter dataCenter
 				= SystemServiceHelper.getInstance().findAllDataCenters(connection).get(0);
 		List<Cluster> clusters
-				= SystemServiceHelper.getInstance().findAllClusters(connection);
+				= SystemServiceHelper.getInstance().findAllClusters(connection, "");
 		List<Network> networks
 				= SystemServiceHelper.getInstance().findAllNetworks(connection);
 		List<Qos> qoss

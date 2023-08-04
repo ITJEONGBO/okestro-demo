@@ -1,7 +1,10 @@
 package com.itinfo
 
+import com.itinfo.model.StorageDomainVo
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.services.*
+import org.ovirt.engine.sdk4.services.HostService.IscsiDiscoverRequest
+import org.ovirt.engine.sdk4.services.HostService.IscsiDiscoverResponse
 import org.ovirt.engine.sdk4.types.*
 
 class SystemServiceHelper {
@@ -21,8 +24,9 @@ class SystemServiceHelper {
 		= getSystemService(c).clustersService()
 	private fun srvCluster(c: Connection, clusterId: String): ClusterService
 		= srvClusters(c).clusterService(clusterId)
-	fun findAllClusters(c: Connection): List<Cluster>
-		= srvClusters(c).list().send().clusters() ?: listOf()
+	fun findAllClusters(c: Connection, searchQuery: String = ""): List<Cluster> =
+		if (searchQuery.isEmpty()) 	srvClusters(c).list().send().clusters() ?: listOf()
+		else 						srvClusters(c).list().search(searchQuery).caseSensitive(false).send().clusters() ?: listOf()
 	fun findCluster(c: Connection, clusterId: String): Cluster
 		= srvCluster(c, clusterId).get().send().cluster()
 	fun addCluster(c: Connection, cluster: Cluster): Cluster? = try {
@@ -121,6 +125,10 @@ class SystemServiceHelper {
 		e.printStackTrace()
 		null
 	}
+	private fun srvAllIscsiDetailsFromHost(c: Connection, hostId: String): IscsiDiscoverRequest
+		= srvHost(c, hostId).iscsiDiscover()
+	fun findAllIscsiDetailsFromHost(c: Connection, hostId: String, iscsiDetails: IscsiDetails): List<IscsiDetails>
+		= srvAllIscsiDetailsFromHost(c, hostId).iscsi(iscsiDetails).send().discoveredTargets()
 	//endregion
 
 
@@ -412,14 +420,42 @@ class SystemServiceHelper {
 		= srvStorageDomains(c).storageDomainService(storageId)
 	fun findStorageDomain(c: Connection, storageId: String): StorageDomain
 		= srvStorageDomain(c, storageId).get().send().storageDomain()
-	private fun srvFileFromStorageDomain(c: Connection, storageId: String): FilesService
+	fun removeStorageDomain(c: Connection, storageId: String, format: Boolean): Boolean = try {
+		srvStorageDomain(c, storageId).remove().destroy(true).format(format)
+		true
+	} catch (e: Exception) {
+		e.printStackTrace()
+		false
+	}
+	fun updateStorageDomain(c: Connection, storageId: String, storageDomain: StorageDomain): Boolean = try {
+		srvStorageDomain(c, storageId).update().storageDomain(storageDomain).send()
+		true
+	} catch (e: Exception) {
+		e.printStackTrace()
+		false
+	}
+	fun addStorageDomain(c: Connection, storageDomain: StorageDomain): StorageDomain? = try {
+		srvStorageDomains(c).add().storageDomain(storageDomain).send().storageDomain()
+	} catch (e: Exception) {
+		e.printStackTrace()
+		null
+	}
+	private fun srvAllFilesFromStorageDomain(c: Connection, storageId: String): FilesService
 		= srvStorageDomain(c, storageId).filesService()
 	fun findAllFilesFromStorageDomain(c: Connection, storageId: String): List<File>
-		= srvFileFromStorageDomain(c, storageId).list().send().file()
+		= srvAllFilesFromStorageDomain(c, storageId).list().send().file()
+	private fun srvFileFromStorageDomain(c: Connection, storageId: String, fileId: String): FileService
+		= srvAllFilesFromStorageDomain(c, storageId).fileService(fileId)
+	fun findFileFromStorageDomain(c: Connection, storageId: String, fileId: String): File
+		= srvFileFromStorageDomain(c, storageId, fileId).get().send().file()
 	private fun srvDisksFromStorageDomain(c: Connection, storageId: String): StorageDomainDisksService
 		= srvStorageDomain(c, storageId).disksService()
 	fun findAllDisksFromStorageDomain(c: Connection, storageId: String): List<Disk>
 		= srvDisksFromStorageDomain(c, storageId).list().send().disks()
+	private fun srvAllDiskSnapshotsFromStorageDomain(c: Connection, storageId: String): DiskSnapshotsService
+		= srvStorageDomain(c, storageId).diskSnapshotsService()
+	fun findAllDiskSnapshotsFromStorageDomain(c: Connection, storageId: String): List<DiskSnapshot>
+		= srvAllDiskSnapshotsFromStorageDomain(c, storageId).list().send().snapshots()
 	private fun srvTemplatesFromStorageDomain(c: Connection, storageId: String): StorageDomainTemplatesService
 		= srvStorageDomain(c, storageId ).templatesService()
 	fun findAllTemplatesFromStorageDomain(c: Connection, storageId: String): List<Template>
@@ -462,6 +498,35 @@ class SystemServiceHelper {
 		= srvDataCenters(c).dataCenterService(dataCenterId)
 	fun findDataCenter(c: Connection, dataCenterId: String): DataCenter
 		= srvDataCenter(c, dataCenterId).get().send().dataCenter()
+	private fun srvAllAttachedStorageDomainsFromDataCenter(c: Connection, dataCenterId: String): AttachedStorageDomainsService
+		= srvDataCenter(c, dataCenterId).storageDomainsService()
+	fun findAllAttachedStorageDomainsFromDataCenter(c: Connection, dataCenterId: String): List<StorageDomain>
+		= srvAllAttachedStorageDomainsFromDataCenter(c, dataCenterId).list().send().storageDomains()
+	fun srvAttachedStorageDomainFromDataCenter(c: Connection, dataCenterId: String, storageDomainId: String): AttachedStorageDomainService
+		= srvAllAttachedStorageDomainsFromDataCenter(c, dataCenterId).storageDomainService(storageDomainId)
+	fun findAttachedStorageDomainFromDataCenter(c: Connection, dataCenterId: String, storageDomainId: String): StorageDomain
+		= srvAttachedStorageDomainFromDataCenter(c, dataCenterId, storageDomainId).get().send().storageDomain()
+	fun activeAttachedStorageDomainFromDataCenter(c: Connection, dataCenterId: String, storageDomainId: String): Boolean = try {
+		srvAttachedStorageDomainFromDataCenter(c, dataCenterId, storageDomainId).activate().send()
+		true
+	} catch (e: Exception) {
+		e.printStackTrace()
+		false
+	}
+	fun deactiveAttachedStorageDomainFromDataCenter(c: Connection, dataCenterId: String, storageDomainId: String): Boolean = try {
+		srvAttachedStorageDomainFromDataCenter(c, dataCenterId, storageDomainId).deactivate().force(true).send()
+		true
+	} catch (e: Exception) {
+		e.printStackTrace()
+		false
+	}
+	fun removeAttachedStorageDomainFromDataCenter(c: Connection, dataCenterId: String, storageDomainId: String): Boolean = try {
+		srvAttachedStorageDomainFromDataCenter(c, dataCenterId, storageDomainId).remove().async(true).send()
+		true
+	} catch (e: Exception) {
+		e.printStackTrace()
+		false
+	}
 	private fun srvQossFromDataCenter(c: Connection, dataCenterId: String): QossService
 		= srvDataCenter(c, dataCenterId).qossService()
 	fun findAllQossFromDataCenter(c: Connection, dataCenterId: String): List<Qos>

@@ -826,8 +826,8 @@ fun List<Host>.toHostVos(connection: Connection): List<HostVo> =
 	}.map { it.toHostVo(connection) }
 
 data class ImageFileVo(
-	var id: String,
-	var name: String,
+	var id: String = "",
+	var name: String = "",
 )
 
 data class ImageTransferVo(
@@ -987,13 +987,13 @@ fun List<InstanceType>.toInstanceTypeVos(connection: Connection): List<InstanceT
 	= this.map { it.toInstanceTypeVo(connection) }
 
 data class IscsiVo(
-	var address: String,
-	var port: String,
-	var authAt: String,
-	var id: String,
-	var password: String,
-	var target: String,
-	var loginAt: Boolean,
+	var address: String = "",
+	var port: String = "",
+	var authAt: String = "",
+	var id: String = "",
+	var password: String = "",
+	var target: String = "",
+	var loginAt: Boolean = false
 )
 
 data class LunVo(
@@ -1589,18 +1589,18 @@ data class SshVo(
 )
 
 data class StorageDomainCreateVo(
-	var id: String,
-	var name: String,
-	var description: String,
-	var domainType: String,
-	var storageType: String,
-	var wipeAfterDelete: Boolean,
-	var discardAfterDelete: Boolean,
-	var hostId: String,
-	var path: String,
-	var iscsi: IscsiVo,
-	var importAt: Boolean,
-	var lunVos: List<LunVo>,  
+	var id: String = "",
+	var name: String = "",
+	var description: String = "",
+	var domainType: String = "",
+	var storageType: String = "",
+	var wipeAfterDelete: Boolean = false,
+	var discardAfterDelete: Boolean = false,
+	var hostId: String = "",
+	var path: String = "",
+	var iscsi: IscsiVo? = null,
+	var importAt: Boolean = false,
+	var lunVos: List<LunVo> = listOf()
 )
 
 

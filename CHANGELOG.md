@@ -14,13 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- model 관리 세부봐 (null처리)
+- model 관리 세부봐 (null 처리 대상 세부화)
 
 
 ### Mod
 
 - `build.gradle.kts`: `monolith:war`생성 시 바로 `docker/okestro`폴더 밑으로 위치하도록 구성
-- 
 
 ---
 

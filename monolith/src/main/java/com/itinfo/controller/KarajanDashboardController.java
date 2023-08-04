@@ -24,7 +24,7 @@ public class KarajanDashboardController {
 
 	@Autowired private WorkloadPredictionService workloadPredictionService;
 
-	@RequestMapping({"/dashboard"})
+	@RequestMapping({"/symphony"})
 	public String getDashboardView() {
 		log.info("... getDashboardView");
 		return "/castanets/karajan/karajan";

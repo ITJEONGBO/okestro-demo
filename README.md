@@ -1,5 +1,7 @@
 # okestro-demo
 
+![favicon](monolith/src/main/webapp/favicon.ico)
+
 오케스트로 데모
 
 ---
@@ -11,6 +13,7 @@
 ![shield-spring-security][shield-spring-security]
 ![shield-kotlin][shield-kotlin]
 ![shield-gradle][shield-gradle]
+![shield-tomcat][shield-tomcat]
 
 ---
 
@@ -22,11 +25,13 @@
 - ☕JDK (OpenJDK 1.8_201)
 - 🍃Spring (`4.3.14.RELEASE`)
 - 🐘Gradle (`7.4.2`)
-- 😺Tomcat (`8.5.38`)
+- 😺Apache Tomcat (`8.5.38`)
 - 🛅H2 Database
+- Grafana (_Optional_)
 - 🐳Docker
-  - `tomcat:8.5.38-jre8-alpine` (ssl: `8443`) 
-  - `postgres:10.12-alpine` (port: `5432`)
+  - `tomcat:8.5.38-jre8-alpine` (ssl port: `8443`)
+  - `postgres:10.12-alpine` (jdbc port: `5432`)
+  - ...
 
 ---
 
@@ -96,19 +101,25 @@ Run this script to create artifact
 
 ### 🛠Okestro 
 
+#### On Linux
+
 ```sh
 # war 빌드 후 (monolith/build/lib) 진행
-docker build -t okestro/cst_tomcat:0.0.1 \
+docker build -t okestro/cst_tomcat:0.0.2 \
   docker/okestro
 ```
 
+#### On Windows
+
 ```batch
 REM war 빌드 후 (monolith/build/lib) 진행
-docker build -t okestro/cst_tomcat:0.0.1 ^
+docker build -t okestro/cst_tomcat:0.0.2 ^
   docker/okestro
 ```
 
 ### ▶️Run 
+
+#### On Linux
 
 ```sh
 # okestro
@@ -116,7 +127,7 @@ docker run -d -it \
   --name cst_tomcat \
   -p 8080:8080 \
   -p 8443:8443 \
-  okestro/cst_tomcat:0.0.1
+  okestro/cst_tomcat:0.0.2
 
 # postgres
 docker run -d -it \
@@ -127,13 +138,15 @@ docker run -d -it \
   postgres:10.12-alpine
 ```
 
+#### On Windows
+
 ```batch
 REM okestro
 docker run -d -it ^
   --name okestro/cst_tomcat ^
   -p 8080:8080 ^
   -p 8443:8443 ^
-  okestro/cst_tomcat:0.0.1
+  okestro/cst_tomcat:0.0.2
 
 REM postgres
 docker run -d -it ^
@@ -151,6 +164,7 @@ docker run -d -it ^
   - [x] model 및 상수
   - [x] tomcat embedded 구성
   - [ ] docker 관련 정보 수집
+  - [ ] model 안정화
 - [ ] package별 endpoint구현
 
 
@@ -242,9 +256,13 @@ docker run -d -it ^
 
 
 [toH2]: docs/H2.md
+[toENDPOINTS]: docs/ENDPOINTS.md
+[toPOSTGRES]: docs/POSTGRES.md
 
-[shield-java]: https://img.shields.io/badge/OpenJDK-11-f3812a?logo=java&logoColor=f3812a&style=flat-square
+
+[shield-java]: https://img.shields.io/badge/Temurin-11-f3812a?logo=openjdk&logoColor=f3812a&style=flat-square
 [shield-spring]: https://img.shields.io/badge/Spring-4.3.14.RELEASE-6DB33F?logo=spring&logoColor=6DB33F&style=flat-square
 [shield-spring-security]: https://img.shields.io/badge/Spring%20Security-4.2.2.RELEASE-6DB33F?logo=springsecurity&logoColor=6DB33F&style=flat-square
 [shield-kotlin]: https://img.shields.io/badge/Kotlin-1.4.31-0095D5?logo=kotlin&logoColor=0095D5&style=flat-square
 [shield-gradle]: https://img.shields.io/badge/Gradle-7.4.2-abd759?logo=gradle&logoColor=abd759&style=flat-square
+[shield-tomcat]: https://img.shields.io/badge/Tomcat-8.5.38-F8DC75?logo=apachetomcat&logoColor=F8DC75&style=flat-square

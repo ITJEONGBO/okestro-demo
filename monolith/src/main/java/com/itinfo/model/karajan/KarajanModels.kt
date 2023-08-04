@@ -136,22 +136,22 @@ data class HistoryVo(
 	, var memoryUsage: BigDecimal
 )
 data class HostVo(
-	var id: String
-	, var name: String
-	, var status: String
-	, var clusterId: String
-	, var cores: Int
-	, var sockets: Int
-	, var threads: Int
-	, var cpuVmUsed: Int
-	, var cpuCurrentUser: Double
-	, var cpuCurrentSystem: Double
-	, var cpuCurrentIdle: Double
-	, var maxSchedulingMemory: BigInteger
-	, var memoryTotal: BigDecimal
-	, var memoryUsed: BigDecimal
-	, var memoryFree: BigDecimal
-	, var vms: List<VmVo>
+	var id: String = "",
+	var name: String = "",
+	var status: String = "",
+	var clusterId: String = "",
+	var cores: Int = 0,
+	var sockets: Int = 0,
+	var threads: Int = 0,
+	var cpuVmUsed: Int = 0,
+	var cpuCurrentUser: Double = 0.0,
+	var cpuCurrentSystem: Double = 0.0,
+	var cpuCurrentIdle: Double = 0.0,
+	var maxSchedulingMemory: BigInteger = BigInteger.ZERO,
+	var memoryTotal: BigDecimal = BigDecimal.ZERO,
+	var memoryUsed: BigDecimal = BigDecimal.ZERO,
+	var memoryFree: BigDecimal = BigDecimal.ZERO,
+	var vms: List<VmVo> = listOf()
 )
 
 fun Host.toHostVo(connection: Connection): HostVo {

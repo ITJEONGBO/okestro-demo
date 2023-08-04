@@ -1,8 +1,8 @@
 package com.itinfo.service.impl;
 
 import com.google.gson.Gson;
-import com.itinfo.SystemServiceHelper;
 import com.itinfo.dao.ClustersDao;
+
 import com.itinfo.model.*;
 import com.itinfo.model.karajan.ConsolidationVo;
 import com.itinfo.model.karajan.HostVo;
@@ -28,7 +28,7 @@ import java.util.*;
 
 @Service
 @Slf4j
-public class HostsServiceImpl implements HostsService {
+public class HostsServiceImpl extends BaseService implements HostsService {
 	@Autowired private AdminConnectionService adminConnectionService;
 	@Autowired private KarajanService karajanService;
 	@Autowired private Ffd ffd;
@@ -42,7 +42,7 @@ public class HostsServiceImpl implements HostsService {
 		List<ConsolidationVo> consolidationLIst = new ArrayList<>();
 		try {
 			for (String id : hosts) {
-				Host host = SystemServiceHelper.getInstance().findHost(connection, id);
+				Host host = getSysSrvHelper().findHost(connection, id);
 				KarajanVo karajan
 						= this.karajanService.getDataCenter();
 				consolidationLIst = this.ffd.reassignVirtualMachine(karajan, host.cluster().id(), host.id());
@@ -62,7 +62,7 @@ public class HostsServiceImpl implements HostsService {
 		message.setTitle("호스트 유지보수 모드 시작");
 		for (String id : hosts) {
 			HostService hostService =
-					SystemServiceHelper.getInstance().srvHost(connection, id);
+					getSysSrvHelper().srvHost(connection, id);
 			Host host = (hostService.get().send()).host();
 			try {
 				Host item;
@@ -93,7 +93,7 @@ public class HostsServiceImpl implements HostsService {
 		message.setTitle("호스트 활성 모드 시작");
 		for (String id : hosts) {
 			HostService hostService =
-					SystemServiceHelper.getInstance().srvHost(connection, id);
+					getSysSrvHelper().srvHost(connection, id);
 			Host host = (hostService.get().send()).host();
 			try {
 				Host item;
@@ -124,7 +124,7 @@ public class HostsServiceImpl implements HostsService {
 		message.setTitle("호스트 재시작");
 		for (String id : hosts) {
 			HostService hostService =
-					SystemServiceHelper.getInstance().srvHost(connection, id);
+					getSysSrvHelper().srvHost(connection, id);
 			Host host = (hostService.get().send()).host();
 			try {
 				Host item;
@@ -154,7 +154,7 @@ public class HostsServiceImpl implements HostsService {
 		message.setTitle("호스트 시작");
 		for (String id : hosts) {
 			HostService hostService =
-					SystemServiceHelper.getInstance().srvHost(connection, id);
+					getSysSrvHelper().srvHost(connection, id);
 			Host host = (hostService.get().send()).host();
 			try {
 				Host item;
@@ -184,7 +184,7 @@ public class HostsServiceImpl implements HostsService {
 		message.setTitle("호스트 정지");
 		for (String id : hosts) {
 			HostService hostService =
-					SystemServiceHelper.getInstance().srvHost(connection, id);
+					getSysSrvHelper().srvHost(connection, id);
 			Host host = (hostService.get().send()).host();
 			try {
 				Host item;
@@ -211,7 +211,7 @@ public class HostsServiceImpl implements HostsService {
 	public void createHost(HostCreateVo hostCreateVo) {
 		Connection connection = this.adminConnectionService.getConnection();
 		Cluster cluster =
-				SystemServiceHelper.getInstance().findCluster(connection, hostCreateVo.getClusterId());
+				getSysSrvHelper().findCluster(connection, hostCreateVo.getClusterId());
 		HostBuilder hostBuilder = new HostBuilder();
 		if (hostCreateVo.getSsh() != null && hostCreateVo.getSsh().getPort() == 22) {
 			hostBuilder
@@ -236,10 +236,10 @@ public class HostsServiceImpl implements HostsService {
 		message.setTitle("호스트 추가");
 		try {
 			Host host = (hostCreateVo.getHostEngineEnabled())
-					? (SystemServiceHelper.getInstance().srvHosts(connection).add().deployHostedEngine(true).host(hostBuilder).send()).host()
-					: (SystemServiceHelper.getInstance().srvHosts(connection).add().host(hostBuilder).send()).host();
+					? (getSysSrvHelper().srvHosts(connection).add().deployHostedEngine(true).host(hostBuilder).send()).host()
+					: (getSysSrvHelper().srvHosts(connection).add().host(hostBuilder).send()).host();
 
-			HostService hostService = SystemServiceHelper.getInstance().srvHost(connection, host.id());
+			HostService hostService = getSysSrvHelper().srvHost(connection, host.id());
 			do {
 				Thread.sleep(2000L);
 				host = (hostService.get().send()).host();
@@ -254,7 +254,7 @@ public class HostsServiceImpl implements HostsService {
 						.type(hostCreateVo.getFenceAgent().getType())
 						.order(1)
 						.encryptOptions(false);
-				Agent agent = SystemServiceHelper.getInstance().addFenceAgent(connection, host.id(), agentBuilder.build());
+				Agent agent = getSysSrvHelper().addFenceAgent(connection, host.id(), agentBuilder.build());
 				hostBuilder.powerManagement((new PowerManagementBuilder())
 						.enabled(true)
 						.kdumpDetection(true)
@@ -285,7 +285,7 @@ public class HostsServiceImpl implements HostsService {
 	public void updateHost(HostCreateVo hostCreateVo) {
 		Connection connection = this.adminConnectionService.getConnection();
 		HostService hostService
-				= SystemServiceHelper.getInstance().srvHost(connection, hostCreateVo.getId());
+				= getSysSrvHelper().srvHost(connection, hostCreateVo.getId());
 		HostCreateVo srcHostCreateVo = retrieveCreateHostInfo(hostCreateVo.getId());
 		HostBuilder hostBuilder = new HostBuilder();
 		if (!"".equals(hostCreateVo.getName()) && !srcHostCreateVo.getName().equals(hostCreateVo.getName()))
@@ -295,7 +295,7 @@ public class HostsServiceImpl implements HostsService {
 			hostBuilder.port(54321)
 					.ssh((new SshBuilder()).port(hostCreateVo.getSsh().getPort()));
 		if (!srcHostCreateVo.getClusterId().equals(hostCreateVo.getClusterId())) {
-			Cluster cluster = SystemServiceHelper.getInstance().findCluster(connection, hostCreateVo.getClusterId());
+			Cluster cluster = getSysSrvHelper().findCluster(connection, hostCreateVo.getClusterId());
 			hostBuilder.cluster((new ClusterBuilder()).name(cluster.name()));
 		}
 		if (hostCreateVo.getFenceAgent() != null)
@@ -307,7 +307,7 @@ public class HostsServiceImpl implements HostsService {
 						.type(hostCreateVo.getFenceAgent().getType())
 						.order(1)
 						.encryptOptions(false);
-				Agent agent = SystemServiceHelper.getInstance().addFenceAgent(connection, hostCreateVo.getId(), agentBuilder.build());
+				Agent agent = getSysSrvHelper().addFenceAgent(connection, hostCreateVo.getId(), agentBuilder.build());
 				hostBuilder.powerManagement((new PowerManagementBuilder())
 						.enabled(true)
 						.kdumpDetection(true)
@@ -345,9 +345,9 @@ public class HostsServiceImpl implements HostsService {
 		Connection connection = this.adminConnectionService.getConnection();
 
 		HostService hostService
-				= SystemServiceHelper.getInstance().srvHost(connection, hosts.get(0));
+				= getSysSrvHelper().srvHost(connection, hosts.get(0));
 		Host host
-				= SystemServiceHelper.getInstance().findHost(connection, hosts.get(0));
+				= getSysSrvHelper().findHost(connection, hosts.get(0));
 		MessageVo message = new MessageVo();
 		message.setTitle("호스트 삭제");
 		try {
@@ -384,9 +384,9 @@ public class HostsServiceImpl implements HostsService {
 		}
 
 		Host host
-				= SystemServiceHelper.getInstance().findHost(connection, hostId);
+				= getSysSrvHelper().findHost(connection, hostId);
 		HostService hostService
-				= SystemServiceHelper.getInstance().srvHost(connection, host.id());
+				= getSysSrvHelper().srvHost(connection, host.id());
 		HostNicsService hostNicsService = hostService.nicsService();
 		List<HostNic> hostNics = hostNicsService.list().send().nics();
 		String networkAttachmentId = null;
@@ -609,7 +609,7 @@ public class HostsServiceImpl implements HostsService {
 						NetworkBuilder network5 = new NetworkBuilder();
 						network5.id(nicUsageApiVo.getNetworkId());
 						network5.name(
-								SystemServiceHelper.getInstance().findNetwork(connection, nicUsageApiVo.getNetworkId()).name()
+								getSysSrvHelper().findNetwork(connection, nicUsageApiVo.getNetworkId()).name()
 						);
 						hostService.setupNetworks().modifiedBonds(new HostNicBuilder[]{Builders.hostNic().name(nicUsageApiVo.getName()).bonding(Builders.bonding().options(new OptionBuilder[]{Builders.option().name("mode").value(nicUsageApiVo.getBondingMode()), Builders.option().name("miimon").value("100")}).slaves((HostNicBuilder[]) slaves6.toArray(new HostNicBuilder[0])))}).send();
 						hostService.commitNetConfig().send();
@@ -934,9 +934,9 @@ public class HostsServiceImpl implements HostsService {
 	public void modifyNicNetwork(NetworkAttachmentVo networkAttachmentVo) {
 		Connection connection = this.adminConnectionService.getConnection();
 		Host host
-				= SystemServiceHelper.getInstance().findHost(connection, networkAttachmentVo.getNetHostId());
+				= getSysSrvHelper().findHost(connection, networkAttachmentVo.getNetHostId());
 		HostService hostService
-				= SystemServiceHelper.getInstance().srvHost(connection, host.id());
+				= getSysSrvHelper().srvHost(connection, host.id());
 		MessageVo message = new MessageVo();
 		message.setTitle("호스트 네트워크 수정");
 		try {
@@ -946,7 +946,7 @@ public class HostsServiceImpl implements HostsService {
 				network.name(networkAttachmentVo.getNicNetworkName());
 				network.id(networkAttachmentVo.getNicNetworkId());
 
-				SystemServiceHelper.getInstance().removeNetworkAttachmentFromHost(connection, host.id(), networkAttachmentVo.getNetAttachmentId());
+				getSysSrvHelper().removeNetworkAttachmentFromHost(connection, host.id(), networkAttachmentVo.getNetAttachmentId());
 				hostService.setupNetworks()
 						.modifiedNetworkAttachments(new NetworkAttachmentBuilder[] { Builders.networkAttachment()
 								.hostNic(Builders.hostNic().name(networkAttachmentVo.getHostNicName()))
@@ -1072,7 +1072,7 @@ public class HostsServiceImpl implements HostsService {
 	public HostCreateVo retrieveCreateHostInfo(String hostId) {
 		Connection connection = this.adminConnectionService.getConnection();
 		HostService hostService
-				= SystemServiceHelper.getInstance().srvHost(connection, hostId);
+				= getSysSrvHelper().srvHost(connection, hostId);
 		Host host
 				= (hostService.get().send()).host();
 		HostCreateVo hostCreateVo = new HostCreateVo();
@@ -1111,11 +1111,11 @@ public class HostsServiceImpl implements HostsService {
 		Connection connection = this.adminConnectionService.getConnection();
 		List<Host> hosts = null;
 		if ("all".equalsIgnoreCase(status)) {
-			hosts = SystemServiceHelper.getInstance().findAllHosts(connection, "");
+			hosts = getSysSrvHelper().findAllHosts(connection, "");
 		} else if (HostStatus.UP.value().equalsIgnoreCase(status)) {
-			hosts = SystemServiceHelper.getInstance().findAllHosts(connection, "status=up");
+			hosts = getSysSrvHelper().findAllHosts(connection, "status=up");
 		} else {
-			hosts = SystemServiceHelper.getInstance().findAllHosts(connection, "status!=up");
+			hosts = getSysSrvHelper().findAllHosts(connection, "status!=up");
 		}
 		List<HostHaVo> hostHaList = this.clustersDao.retrieveHostHaInfo();
 		List<HostDetailVo> hostDetailList = new ArrayList<>();
@@ -1136,7 +1136,7 @@ public class HostsServiceImpl implements HostsService {
 
 	private void setClusterInfo(Connection connection, String clusterId, HostDetailVo hostDetailVo) {
 		Cluster cluster
-				= SystemServiceHelper.getInstance().findCluster(connection, clusterId);
+				= getSysSrvHelper().findCluster(connection, clusterId);
 		hostDetailVo.setClusterId(cluster.id());
 		hostDetailVo.setClusterName(cluster.name());
 		hostDetailVo.setCpuType(cluster.cpu().type());
@@ -1145,7 +1145,7 @@ public class HostsServiceImpl implements HostsService {
 	private void setHosCpuMemory(Connection connection, Host host, HostDetailVo hostDetailVo) {
 		try {
 			List<Statistic> stats =
-					SystemServiceHelper.getInstance().findAllStatisticsFromHost(connection, host.id());
+					getSysSrvHelper().findAllStatisticsFromHost(connection, host.id());
 			for (Statistic stat : stats) {
 				if (stat.name().equals("memory.total"))
 					hostDetailVo.setMemoryTotal((stat.values().get(0)).datum());
@@ -1180,13 +1180,13 @@ public class HostsServiceImpl implements HostsService {
 	public List<HostDetailVo> retrieveLunHostsInfo(String status) {
 		Connection connection = this.adminConnectionService.getConnection();
 		List<Host> hosts
-				= SystemServiceHelper.getInstance().findAllHosts(connection, "");
+				= getSysSrvHelper().findAllHosts(connection, "");
 		List<HostDetailVo> hostDetailList = new ArrayList<>();
 		for (Host host : hosts) {
 			if ("up".equals(host.status().value())) {
 				HostDetailVo hostDetailVo = getHostInfo(connection, host);
 				List<HostStorage> luns
-						= SystemServiceHelper.getInstance().findAllStoragesFromHost(connection, host.id());
+						= getSysSrvHelper().findAllStoragesFromHost(connection, host.id());
 				List<LunVo> lunVos = new ArrayList<>();
 				for (HostStorage lun : luns) {
 					LunVo lunVo = new LunVo();
@@ -1213,7 +1213,7 @@ public class HostsServiceImpl implements HostsService {
 	public HostDetailVo retrieveHostDetail(String hostId) {
 		Connection connection = this.adminConnectionService.getConnection();
 		Host host
-				= SystemServiceHelper.getInstance().findHost(connection, hostId);
+				= getSysSrvHelper().findHost(connection, hostId);
 		HostDetailVo hostDetailVo = getHostInfo(connection, host);
 		setHostDetail(connection, host, hostDetailVo);
 		setNetworkAttachment(connection, host, hostDetailVo);
@@ -1230,7 +1230,7 @@ public class HostsServiceImpl implements HostsService {
 		List<NicUsageApiVo> nicsUsageApiVo = new ArrayList<>();
 		try {
 			List<HostNic> hostNics
-					= SystemServiceHelper.getInstance().findNicsFromHost(connection, host.id());
+					= getSysSrvHelper().findNicsFromHost(connection, host.id());
 			boolean[] slaveFlagList = new boolean[hostNics.size()];
 			for (HostNic hostNic : hostNics) {
 				NicUsageApiVo nicUsageApiVo = new NicUsageApiVo();
@@ -1272,7 +1272,7 @@ public class HostsServiceImpl implements HostsService {
 					nicUsageApiVo.setMacAddress("");
 				}
 				List<Statistic> nicStats
-						= SystemServiceHelper.getInstance().findAllStatisticsFromHostNic(connection, host.id(), hostNic.id());
+						= getSysSrvHelper().findAllStatisticsFromHostNic(connection, host.id(), hostNic.id());
 				for (Statistic nicStat : nicStats) {
 					if (nicStat.name().equals("data.current.rx"))
 						nicUsageApiVo.setDataCurrentRx(((Value)nicStat.values().get(0)).datum());
@@ -1326,7 +1326,7 @@ public class HostsServiceImpl implements HostsService {
 										nicUsageApiVo2.setVlanNetworkList(tempVlanList);
 									}
 								List<Statistic> nicStats2
-										= SystemServiceHelper.getInstance().findAllStatisticsFromHostNic(connection, host.id(), hostNics.get(j).id());
+										= getSysSrvHelper().findAllStatisticsFromHostNic(connection, host.id(), hostNics.get(j).id());
 								for (Statistic nicStat : nicStats2) {
 									if (nicStat.name().equals("data.current.rx"))
 										nicUsageApiVo2.setDataCurrentRx(((Value)nicStat.values().get(0)).datum());
@@ -1362,7 +1362,7 @@ public class HostsServiceImpl implements HostsService {
 		HostSwVo hostSw = this.clustersDao.retrieveHostSw(host.id());
 		hostDetailVo.setHostSw(hostSw);
 		Cluster cluster
-				= SystemServiceHelper.getInstance().findCluster(connection, host.cluster().id());
+				= getSysSrvHelper().findCluster(connection, host.cluster().id());
 		hostDetailVo.setClusterName(cluster.name());
 		hostDetailVo.setCpuType(cluster.cpu().type());
 	}
@@ -1373,7 +1373,7 @@ public class HostsServiceImpl implements HostsService {
 		List<NetworkAttachmentVo> networkAttachmentListVo = new ArrayList<>();
 		try {
 			List<NetworkAttachment> networkAttachmentList
-					= SystemServiceHelper.getInstance().findAllNetworkAttachmentsFromHost(connection, host.id());
+					= getSysSrvHelper().findAllNetworkAttachmentsFromHost(connection, host.id());
 			for (NetworkAttachment networkAttachment : networkAttachmentList) {
 				NetworkAttachmentVo networkAttachmentVo = new NetworkAttachmentVo();
 				if (networkAttachment.dnsResolverConfiguration() != null)
@@ -1389,11 +1389,11 @@ public class HostsServiceImpl implements HostsService {
 				networkAttachmentVo.setNetHostName(host.name());
 				networkAttachmentVo.setHostNicId(networkAttachment.hostNic().id());
 				networkAttachmentVo.setHostNicName(
-						SystemServiceHelper.getInstance().findNicFromHost(connection, host.id(), networkAttachmentVo.getHostNicId()).name()
+						getSysSrvHelper().findNicFromHost(connection, host.id(), networkAttachmentVo.getHostNicId()).name()
 				);
 				networkAttachmentVo.setNicNetworkId(networkAttachment.network().id());
 				networkAttachmentVo.setNicNetworkName(
-						SystemServiceHelper.getInstance().findNetwork(connection, networkAttachmentVo.getNicNetworkId()).name()
+						getSysSrvHelper().findNetwork(connection, networkAttachmentVo.getNicNetworkId()).name()
 				);
 				networkAttachmentListVo.add(networkAttachmentVo);
 			}
@@ -1409,9 +1409,9 @@ public class HostsServiceImpl implements HostsService {
 	public List<EventVo> retrieveHostEvents(String hostId) {
 		Connection connection = this.adminConnectionService.getConnection();
 		Host host
-				= SystemServiceHelper.getInstance().findHost(connection, hostId);
+				= getSysSrvHelper().findHost(connection, hostId);
 		List<Event> events
-				= SystemServiceHelper.getInstance().findAllEvents(connection, "host.name=" + host.name());
+				= getSysSrvHelper().findAllEvents(connection, "host.name=" + host.name());
 		List<EventVo> eventVoList = new ArrayList<>();
 		for (Event event : events) {
 			EventVo eventVo = new EventVo();
@@ -1430,7 +1430,7 @@ public class HostsServiceImpl implements HostsService {
 	private void setVmsInfo(Connection connection, Host host, HostDetailVo hostDetailVo) {
 		List<VmSummaryVo> vmSummaries = new ArrayList<>();
 		List<Vm> vms
-				= SystemServiceHelper.getInstance().findAllVms(connection, "host = " + host.name()) ;
+				= getSysSrvHelper().findAllVms(connection, "host = " + host.name()) ;
 		for (Vm vm : vms) {
 			VmSummaryVo vmSummary = getVmInfo(connection, vm);
 			vmSummaries.add(vmSummary);
@@ -1472,7 +1472,7 @@ public class HostsServiceImpl implements HostsService {
 		}
 		hostDetailVo.setUsageVos(usageVos);
 		List<HostNic> hostNics
-				= SystemServiceHelper.getInstance().findNicsFromHost(connection, host.id());
+				= getSysSrvHelper().findNicsFromHost(connection, host.id());
 		List<NicUsageVo> hostNicsLastUsage = new ArrayList<>();
 		for (HostNic hostNic : hostNics) {
 			NicUsageVo nicUsageVo = this.clustersDao.retrieveHostNicUsage(hostNic.id());
@@ -1501,7 +1501,7 @@ public class HostsServiceImpl implements HostsService {
 		int upCnt = 0;
 		int downCnt = 0;
 		List<Vm> vms
-				= SystemServiceHelper.getInstance().findAllVms(connection, "host = " + host.name());
+				= getSysSrvHelper().findAllVms(connection, "host = " + host.name());
 		for (Vm vm : vms) {
 			if ("up".equalsIgnoreCase(vm.status().value())) {
 				upCnt++;
@@ -1526,14 +1526,14 @@ public class HostsServiceImpl implements HostsService {
 		vmSummary.setStatus(vm.status().value());
 		if (vm.host() != null && !"".equals(vm.host().id())) {
 			Host host =
-					SystemServiceHelper.getInstance().findHost(connection, vm.host().id());
+					getSysSrvHelper().findHost(connection, vm.host().id());
 			vmSummary.setHostId(host.id());
 			vmSummary.setHostName(host.name());
 		}
 		VmUsageVo vmLastUsage = this.clustersDao.retrieveVmUsage(vm.id());
 		vmSummary.setVmLastUsage(vmLastUsage);
 		List<Nic> vmNics =
-				SystemServiceHelper.getInstance().findNicsFromVm(connection, vm.id());
+				getSysSrvHelper().findNicsFromVm(connection, vm.id());
 		List<NicUsageVo> vmNicsLastUsage = new ArrayList<>();
 		for (Nic vmNic : vmNics) {
 			NicUsageVo nicUsageVo = this.clustersDao.retrieveVmNicUsage(vmNic.id());
@@ -1573,13 +1573,13 @@ public class HostsServiceImpl implements HostsService {
 
 	@Async("karajanTaskExecutor")
 	@Override
-	public boolean connectTestFenceAgent(FenceAgentVo fenceAgentVo) {
+	public Boolean connectTestFenceAgent(FenceAgentVo fenceAgentVo) {
 		Connection connection = this.adminConnectionService.getConnection();
 		List<Host> hosts =
-				SystemServiceHelper.getInstance().findAllHosts(connection, "");
+				getSysSrvHelper().findAllHosts(connection, "");
 		if (hosts.size() == 0) return false;
 		HostService hostService
-				= SystemServiceHelper.getInstance().srvHost(connection, hosts.get(0).id());
+				= getSysSrvHelper().srvHost(connection, hosts.get(0).id());
 		AgentBuilder agentBuilder = new AgentBuilder();
 		agentBuilder.address(fenceAgentVo.getAddress());
 		agentBuilder.username(fenceAgentVo.getUsername());
@@ -1588,7 +1588,7 @@ public class HostsServiceImpl implements HostsService {
 		agentBuilder.encryptOptions(false);
 		agentBuilder.order(1);
 		Agent agent
-				= SystemServiceHelper.getInstance().addFenceAgent(connection, hosts.get(0).id(), agentBuilder.build());
+				= getSysSrvHelper().addFenceAgent(connection, hosts.get(0).id(), agentBuilder.build());
 		String status
 				= (hostService.fence().fenceType(FenceType.START.name()).send()).powerManagement().status().value();
 		return agent != null;
@@ -1602,9 +1602,9 @@ public class HostsServiceImpl implements HostsService {
 		MessageVo message = new MessageVo();
 		for (HostVo hostVo : hosts) {
 			HostService hostService =
-					SystemServiceHelper.getInstance().srvHost(connection, hostVo.getId());
+					getSysSrvHelper().srvHost(connection, hostVo.getId());
 			Host host =
-					SystemServiceHelper.getInstance().findHost(connection, hostVo.getId());
+					getSysSrvHelper().findHost(connection, hostVo.getId());
 			try {
 				if (!host.powerManagement().enabled()) {
 					Thread.sleep(500L);

@@ -87,7 +87,7 @@ public class ClustersServiceImpl extends BaseService implements ClustersService 
 	public List<ClusterVo> retrieveClusters() {
 		Connection connection = adminConnectionService.getConnection();
 		List<Cluster> clusters
-				= getSysSrvHelper().findAllClusters(connection);
+				= getSysSrvHelper().findAllClusters(connection, "");
 		log.info("clusters size : " + clusters.size());
 		List<ClusterVo> clustersInfo
 				= ModelsKt.toClusterVos(clusters, connection);

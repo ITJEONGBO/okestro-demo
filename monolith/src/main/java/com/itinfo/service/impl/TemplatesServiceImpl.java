@@ -319,7 +319,7 @@ public class TemplatesServiceImpl extends BaseService implements TemplatesServic
 		Template template
 				= getSysSrvHelper().findTemplate(connection, id);
 		List<Cluster> clusterItemList
-				= getSysSrvHelper().findAllClusters(connection);
+				= getSysSrvHelper().findAllClusters(connection, "");
 		List<ClusterVo> clusters
 				= ModelsKt.toClusterVos(clusterItemList, connection);
 

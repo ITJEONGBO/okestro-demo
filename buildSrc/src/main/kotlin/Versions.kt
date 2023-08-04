@@ -1,6 +1,6 @@
 object Versions {
     object Project {
-        val BATCH_PROCESSING_DEMO = "0.0.1"
+        val OKESTRO = "0.0.2"
     }
     const val java = "1.8"
     const val gradle = "7.4.2"
