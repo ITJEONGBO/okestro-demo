@@ -39,8 +39,7 @@ tasks.compileKotlin {dependsOn(tasks.clean) }
 
 tasks.war {
     // webXml = file("src/main/webapp/WEB-INF/web.xml")
-    baseName = "okestro-monolith"
-
+    baseName = "okestro-monolith-${profile}"
 }
 
 task("openBrowser") {

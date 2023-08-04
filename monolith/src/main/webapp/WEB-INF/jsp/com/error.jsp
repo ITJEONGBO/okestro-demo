@@ -1,7 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-
-<%@ page import="java.io.PrintWriter" %> 
+<%@ page import="java.io.PrintWriter" %>
 <%@ page import="java.io.StringWriter" %> 
 
 <%
@@ -18,7 +16,5 @@
 		throwable.printStackTrace(new PrintWriter(sw));
 		message = sw.toString();
 		System.out.println("컨트롤러 : "+ message);
-
  	}
-	
 %>

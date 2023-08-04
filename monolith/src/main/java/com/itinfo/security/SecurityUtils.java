@@ -9,10 +9,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
+
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,6 +29,7 @@ public class SecurityUtils {
 	public static final int PBKDF2_INDEX = 2;
 
 	public static String createHash(String password) {
+		log.info("... createHash");
 		String result = null;
 		try {
 			result = createHash(password.toCharArray());
@@ -37,14 +40,16 @@ public class SecurityUtils {
 	}
 
 	public static String createHash(char[] password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		log.info("... createHash");
 		SecureRandom random = new SecureRandom();
-		byte[] salt = new byte[24];
+		byte[] salt = new byte[SALT_BYTES];
 		random.nextBytes(salt);
-		byte[] hash = pbkdf2(password, salt, 1000, 24);
-		return "1000:" + toHex(salt) + ":" + toHex(hash);
+		byte[] hash = pbkdf2(password, salt, 1000, HASH_BYTES);
+		return PBKDF2_ITERATIONS + ":" + toHex(salt) + ":" + toHex(hash);
 	}
 
 	public static boolean validatePassword(String password, String goodHash) {
+		log.info("... validatePassword");
 		boolean result = false;
 		try {
 			result = validatePassword(password.toCharArray(), goodHash);
@@ -55,10 +60,11 @@ public class SecurityUtils {
 	}
 
 	public static boolean validatePassword(char[] password, String goodHash) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		log.info("... validatePassword");
 		String[] params = goodHash.split(":");
-		int iterations = Integer.parseInt(params[0]);
-		byte[] salt = fromHex(params[1]);
-		byte[] hash = fromHex(params[2]);
+		int iterations = Integer.parseInt(params[ITERATION_INDEX]);
+		byte[] salt = fromHex(params[SALT_INDEX]);
+		byte[] hash = fromHex(params[PBKDF2_INDEX]);
 		byte[] testHash = pbkdf2(password, salt, iterations, hash.length);
 		return slowEquals(hash, testHash);
 	}
@@ -71,24 +77,27 @@ public class SecurityUtils {
 	}
 
 	private static byte[] pbkdf2(char[] password, byte[] salt, int iterations, int bytes) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		log.info("... pbkdf2");
 		PBEKeySpec spec = new PBEKeySpec(password, salt, iterations, bytes * 8);
-		SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+		SecretKeyFactory skf = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
 		return skf.generateSecret(spec).getEncoded();
 	}
 
 	private static byte[] fromHex(String hex) {
+		log.info("... fromHex");
 		byte[] binary = new byte[hex.length() / 2];
 		for (int i = 0; i < binary.length; i++)
-			binary[i] = (byte)Integer.parseInt(hex.substring(2 * i, 2 * i + 2), 16);
+			binary[i] = (byte)Integer.parseInt(hex.substring(2*i, 2*i + 2), 16);
 		return binary;
 	}
 
 	private static String toHex(byte[] array) {
+		log.info("... toHex");
 		BigInteger bi = new BigInteger(1, array);
 		String hex = bi.toString(16);
 		int paddingLength = array.length * 2 - hex.length();
 		if (paddingLength > 0)
-			return String.format("%0" + paddingLength + "d", new Object[] { Integer.valueOf(0) }) + hex;
+			return String.format("%0" + paddingLength + "d", 0) + hex;
 		return hex;
 	}
 
@@ -122,6 +131,7 @@ public class SecurityUtils {
 	}
 
 	public String decodeBase64(String str) {
+		log.info("... decodeBase64");
 		String result = "";
 		try {
 			Base64.Decoder decoder = Base64.getDecoder();
@@ -134,6 +144,7 @@ public class SecurityUtils {
 	}
 
 	public static boolean compareTime(String time) {
+		log.info("... compareTime");
 		boolean result = false;
 		try {
 			SimpleDateFormat sf = new SimpleDateFormat("yyyyMMddHHmmss");

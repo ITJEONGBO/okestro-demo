@@ -3,8 +3,7 @@
 
 <script type="text/javascript">
 	if (document.location.protocol == 'http:') {
-	    if(window.location.hostname == 'localhost') {
-	    } else if(window.location.hostname == 'demo.okestro.com') {
+	    if (window.location.hostname == 'demo.okestro.com') {
 			document.location.href = "https://"+window.location.hostname;
 		} else {
 			document.location.href = "https://"+window.location.hostname+":8443";

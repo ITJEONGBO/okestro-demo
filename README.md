@@ -4,21 +4,90 @@
 
 ## 🚀Quickstart
 
-### Prerequisite(s)
+### 🧰Prerequisite(s)
 
-- JDK (OpenJDK 1.8_201)
-- Tomcat (8.5.38)
-- Docker
-  - `tomcat:8.5.38-jre8-alpine` (ssl: 8443) 
-  - `postgres:10.12-alpine` (port: 5432)
+- 🛠Intellij IDEA 
+- ☕JDK (OpenJDK 1.8_201)
+- 😺Tomcat (8.5.38)
+- 🛅H2 Database
+- 🐳Docker
+  - `tomcat:8.5.38-jre8-alpine` (ssl: `8443`) 
+  - `postgres:10.12-alpine` (port: `5432`)
+
+### 😺Tomcat 
+
+오케스트로는 https 프토토콜을 기본적으로 사용하기 때문에 톰캣 구성을 아래와 같이 해 준다.
+
+> Intellij IDEA Community Edition을 사용할 경우 [Smart Tomcat 플러그인](https://github.com/zengkid/SmartTomcat) 을 활용하여 구성 
+
+- 톰켓 환경 구성: 📁`<catalina base path>`
+  - Environment Variables (환경변수) 설정: `-Dprofile=local`
+  - SSL 포트: `8443`
+  - p12 파일 구성: 📁`<catalina base path>/keystore/okestro.p12`) 비밀번호: `okestro2018`
+  - context path: `/`
+  - 📁`<catalina base path>/conf/server.xml` 수정
+
+#### 📁`conf/server.xml`
+     
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Server port="8015" shutdown="SHUTDOWN">
+  <Service name="Catalina">
+    <Connector port="8080" protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="8443"
+               maxParameterCount="1000"
+    />
+   
+    <!-- ... 생략 ...   -->
+    <Connector port="8443" protocol="HTTP/1.1"
+               maxThreads="150" SSLEnabled="true" scheme="https" secure="true"
+               clientAuth="false" sslProtocol="TLS"
+               keystoreFile="<catalina base path>/keystore/okestro.p12" keystorePass="okestro2018" />
+  </Service>
+</Server>
+```
+
+--- 
+
+## 🛅H2 
+
+| title | description |
+| :---: | :--- |
+| 목적 | 오케스트로 핵심정보 관리 |
+| 🔌jdbc (로컬) | `jdbc:h2:<프로젝트경로>\docker\okestro\symphony?CIPER=AES` |
+| 🔌jdbc (운영) | `jdbc:h2:~\.symphony\symphony?CIPER=AES` |
+| 🔑id / pw | `symphony` / `symphony!123 symphony!123` |
   
+[🧾자세한 정보 ... ][toH2]
+
 ---
 
 ## 🐳Docker 
 
+### 🛠Okestro 
+
+```sh
+# war 빌드 후 (monolith/build/lib) 진행
+docker build -t okestro-tomcat:0.0.1 \
+  docker/okestro
+```
+
+```batch
+REM war 빌드 후 (monolith/build/lib) 진행
+docker build -t okestro-tomcat:0.0.1 ^
+  docker/okestro
+```
+
 ### ▶️Run 
 
 ```sh
+# okestro
+docker run -d -it \
+  --name cst_tomcat \
+  -p 8080:8080 \
+  okestro-tomcat:0.0.1 
+
 # postgres
 docker run -d -it \
   --name cst_postgres \
@@ -29,6 +98,13 @@ docker run -d -it \
 ```
 
 ```batch
+REM okestro
+docker run -d -it ^
+  --name cst_tomcat ^
+  -p 8080:8080 ^
+  -p 8443:8443 ^
+  okestro-tomcat:0.0.1
+
 REM postgres
 docker run -d -it ^
   --name cst_postgres ^
@@ -133,3 +209,6 @@ docker run -d -it ^
 | ✅ | `org.apache.tiles:tiles-servlet:3.0.5` |
 | ✅ | `org.apache.tiles:tiles-template:3.0.5` |
 | 🔆 spring의존 | `com.sun.xml.txw2:txw2:20110809` |
+
+
+[toH2]: docs/H2.md

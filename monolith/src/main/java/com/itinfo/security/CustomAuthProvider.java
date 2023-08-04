@@ -25,7 +25,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 @Slf4j
 public class CustomAuthProvider implements AuthenticationProvider {
-
 	@Autowired private UsersService usersService;
 	@Autowired private SystemPropertiesService systemPropertiesService;
 	@Autowired private SecurityUtils securityUtils;
@@ -33,6 +32,7 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+		log.info("... authenticate");
 		String userId = authentication.getPrincipal().toString();
 		String passwd = this.securityUtils.decodeBase64(authentication.getCredentials().toString());
 		String retrievePasswd = this.usersService.login(userId);
@@ -40,13 +40,13 @@ public class CustomAuthProvider implements AuthenticationProvider {
 		WebAuthenticationDetails wad = (WebAuthenticationDetails) authentication.getDetails();
 		String userIPAddress = wad.getRemoteAddress();
 		try {
-			String blockTime
-					= this.usersService.retrieveUser(userId).getBlockTime();
+			String blockTime = this.usersService.retrieveUser(userId).getBlockTime();
 			if (!blockTime.isEmpty()) {
 				if (!SecurityUtils.compareTime(blockTime))
 					throw new BadCredentialsException("loginAttemptExceed");
 				this.usersService.initLoginCount(userId);
 			}
+
 			if (SecurityUtils.validatePassword(passwd, retrievePasswd)) {
 				SystemPropertiesVo systemProperties = this.systemPropertiesService.retrieveSystemProperties();
 				this.securityConnectionService.setUser(systemProperties.getId());

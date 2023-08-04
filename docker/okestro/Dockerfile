@@ -4,7 +4,7 @@ RUN rm -rf /usr/local/tomcat/webapps/*
 
 ADD server.xml /usr/local/tomcat/conf/server.xml
 ADD okestro.p12 /usr/local/tomcat/keystore/okestro.p12
-ADD ../../monolith/build/libs/okestro-monolith-*.war /usr/local/tomcat/webapps/ROOT.war
+ADD okestro-monolith-0.0.1.war /usr/local/tomcat/webapps/ROOT.war
 
 EXPOSE 8080
 

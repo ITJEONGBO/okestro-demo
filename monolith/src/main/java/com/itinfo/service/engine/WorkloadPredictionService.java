@@ -39,12 +39,12 @@ public class WorkloadPredictionService extends BaseService {
 	@Scheduled(cron = "0 0 01 * * ?")
 	public void makeLearning() {
 		SystemPropertiesVo properties = systemPropertiesService.retrieveSystemProperties();
-		if (properties.getDeepLearningUri().length() > 0) {
-			log.info("make learning " + properties.getDeepLearningUri());
+		if (properties.getDeeplearningUri().length() > 0) {
+			log.info("make learning " + properties.getDeeplearningUri());
 			WorkloadVo workload = getWorkload();
 			RestTemplate rest = new RestTemplate();
 			String result
-					= (String)rest.postForObject(properties.getDeepLearningUri(), workload, String.class, new Object[0]);
+					= (String)rest.postForObject(properties.getDeeplearningUri(), workload, String.class, new Object[0]);
 			log.info("result: {}" + result);
 		}
 	}

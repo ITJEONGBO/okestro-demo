@@ -21,6 +21,7 @@ public class SecurityConnectionService {
 	private String password;
 
 	public Connection getConnection() {
+		log.info("... getConnection");
 		SystemPropertiesVo systemProperties = this.systemPropertiesService.retrieveSystemProperties();
 		String url = "https://" + systemProperties.getIp() + "/ovirt-engine/api";
 		String user = systemProperties.getId() + "@internal";

@@ -18,8 +18,7 @@ public class SystemPropertiesDao {
 	private SqlSessionTemplate sqlSessionTemplate;
 
 	public SystemPropertiesVo retrieveSystemProperties() {
-		return (SystemPropertiesVo)
-				this.sqlSessionTemplate.selectOne("PROPERTIES.retrieveSystemProperties");
+		return this.sqlSessionTemplate.selectOne("PROPERTIES.retrieveSystemProperties");
 	}
 
 	public int updateSystemProperties(SystemPropertiesVo systemProperties) {

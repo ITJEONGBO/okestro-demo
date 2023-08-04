@@ -1734,18 +1734,19 @@ data class StorageVo(
 	var storageDomainStatus: Int,  
 )
 
+
 data class SystemPropertiesVo(
-   var id: String,
-   var password: String,
-   var ip: String,
-   var vncIp: String,
-   var vncPort: String,
-   var cpuThreshold: Int,
-   var memoryThreshold: Int,
-   var grafanaUri: String,
-   var deepLearningUri: String,
-   var symphonyPowerControll: Boolean,
-   var loginLimit: Int,
+   var id: String = "admin",
+   var password: String = "admin!123",
+   var ip: String = "localhost",
+   var vncIp: String = "localhost",
+   var vncPort: String = "9999",
+   var cpuThreshold: Int = 80,
+   var memoryThreshold: Int = 78,
+   var grafanaUri: String = "",
+   var deeplearningUri: String = "",
+   var symphonyPowerControll: Boolean = false,
+   var loginLimit: Int = 5,
 )
 
 data class TemplateDiskVo(

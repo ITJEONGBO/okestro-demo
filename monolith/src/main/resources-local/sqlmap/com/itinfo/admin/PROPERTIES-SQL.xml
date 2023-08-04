@@ -19,6 +19,7 @@
 			SYSTEM_PROPERTIES
 		WHERE 1=1
 	</select>
+
 	<update id="updateSystemProperties" parameterType="com.itinfo.model.SystemPropertiesVo">
 		UPDATE
 			SYSTEM_PROPERTIES
