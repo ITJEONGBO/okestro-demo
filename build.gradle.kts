@@ -28,8 +28,6 @@ allprojects {
         options.isIncremental = true
     }
 
-
-
     tasks.withType<Test> {
         useJUnitPlatform()
     }

@@ -6,8 +6,11 @@ import com.itinfo.service.DisksService;
 import com.itinfo.service.DomainsService;
 import com.itinfo.service.engine.AdminConnectionService;
 import com.itinfo.service.engine.WebsocketService;
+
 import lombok.extern.slf4j.Slf4j;
+
 import com.google.gson.Gson;
+
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -45,6 +48,7 @@ import org.ovirt.engine.sdk4.types.Vm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 @Service
 @Slf4j
@@ -56,23 +60,28 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 
 	@Override
 	public List<StorageDomainVo> retrieveStorageDomains(String status, String domainType) {
+		log.info("... retrieveStorageDomains('{}', '{}')", status, domainType);
 		Connection connection = this.adminConnectionService.getConnection();
+		/*
 		String dataCenterId
 				= getSysSrvHelper().findAllDataCenters(connection).get(0).id();
-
+		*/
 		List<StorageDomain> storageDomains
 				= getSysSrvHelper().findAllStorageDomains(connection, "");
+
 		if ("all".equalsIgnoreCase(status)) {
-			storageDomains =
-					getSysSrvHelper().findAllStorageDomains(connection, "");
+			storageDomains = getSysSrvHelper().findAllStorageDomains(connection, "");
 		} else if (StorageDomainStatus.ACTIVE.value().equalsIgnoreCase(status)) {
-			getSysSrvHelper().findAllStorageDomains(connection, "status=active");
+			storageDomains = getSysSrvHelper().findAllStorageDomains(connection, "status=active");
 		} else {
-			getSysSrvHelper().findAllStorageDomains(connection, "status!=active");
+			storageDomains = getSysSrvHelper().findAllStorageDomains(connection, "status!=active");
 		}
+
+		List<StorageDomainVo> StorageDomainVoList
+				= ModelsKt.toStorageDomainVos(storageDomains, connection);
+		/*
 		List<DiskProfile> diskProfiles
 				= getSysSrvHelper().findAllDiskProfiles(connection);
-		List<StorageDomainVo> StorageDomainVoList = new ArrayList<>();
 		storageDomains.forEach(storageDomain -> {
 			if ("all".equals(domainType) || storageDomain.type().name().equalsIgnoreCase(domainType)) {
 				StorageDomainVo storageDomainVo = new StorageDomainVo();
@@ -116,12 +125,14 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 				StorageDomainVoList.add(storageDomainVo);
 			}
 		});
+		*/
 		return StorageDomainVoList;
 	}
 
 	@Async("karajanTaskExecutor")
 	@Override
 	public void maintenanceStart(List<String> domains) {
+		log.info("... maintenanceStart");
 		Connection connection = this.adminConnectionService.getConnection();
 		MessageVo message = new MessageVo();
 		message.setTitle("스토리지 도메인 유지보수 모드");

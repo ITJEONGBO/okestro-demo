@@ -38,14 +38,15 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 
 	@Override
 	public List<ConsolidationVo> maintenanceBeforeConsolidateVms(List<String> hosts) {
+		log.info("... maintenanceBeforeConsolidateVms");
 		Connection connection = this.adminConnectionService.getConnection();
 		List<ConsolidationVo> consolidationLIst = new ArrayList<>();
 		try {
 			for (String id : hosts) {
 				Host host = getSysSrvHelper().findHost(connection, id);
-				KarajanVo karajan
-						= this.karajanService.getDataCenter();
-				consolidationLIst = this.ffd.reassignVirtualMachine(karajan, host.cluster().id(), host.id());
+				KarajanVo karajan = karajanService.getDataCenter();
+				consolidationLIst
+						= ffd.reassignVirtualMachine(karajan, host.cluster().id(), host.id());
 			}
 		} catch (Exception e) {
 			log.error(e.getLocalizedMessage());
@@ -58,8 +59,7 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 	@Override
 	public void maintenanceStart(List<String> hosts) {
 		Connection connection = this.adminConnectionService.getConnection();
-		MessageVo message = new MessageVo();
-		message.setTitle("호스트 유지보수 모드 시작");
+		MessageVo message;
 		for (String id : hosts) {
 			HostService hostService =
 					getSysSrvHelper().srvHost(connection, id);
@@ -72,13 +72,13 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 					Thread.sleep(5000L);
 					item = (hostService.get().send()).host();
 				} while (item.status() != HostStatus.MAINTENANCE);
-				message.setText("호스트 유지보수 모드 완료("+ host.name() + ")");
-				message.setStyle("success");
+				message
+						= MessageVo.createMessage(MessageType.MAINTENANCE_START, true, host.name(), "");
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.error(e.getLocalizedMessage());
-				message.setText("호스트 유지보수 모드 실패("+ host.name() + ")");
-				message.setStyle("error");
+				message
+						= MessageVo.createMessage(MessageType.MAINTENANCE_START, false, host.name(), e.getLocalizedMessage());
 			}
 			this.websocketService.sendMessage("/topic/notify", (new Gson()).toJson(message));
 			this.websocketService.sendMessage("/topic/hosts/reload", "");
@@ -89,11 +89,9 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 	@Override
 	public void maintenanceStop(List<String> hosts) {
 		Connection connection = this.adminConnectionService.getConnection();
-		MessageVo message = new MessageVo();
-		message.setTitle("호스트 활성 모드 시작");
+		MessageVo message;
 		for (String id : hosts) {
-			HostService hostService =
-					getSysSrvHelper().srvHost(connection, id);
+			HostService hostService = getSysSrvHelper().srvHost(connection, id);
 			Host host = (hostService.get().send()).host();
 			try {
 				Host item;
@@ -102,14 +100,13 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 					Thread.sleep(5000L);
 					item = (hostService.get().send()).host();
 				} while (item.status() != HostStatus.UP);
-				message.setText("호스트 활성 모드 완료(" + host.name() + ")");
-				message.setStyle("success");
+				message
+						= MessageVo.createMessage(MessageType.MAINTENANCE_STOP, true, host.name(), "");
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.error(e.getLocalizedMessage());
-				message.setText("호스트 활성 모드 실패(" + host.name() + ")");
-				message.setText("+ host.name() + ");
-				message.setStyle("error");
+				message
+						= MessageVo.createMessage(MessageType.MAINTENANCE_STOP, false, host.name(), e.getLocalizedMessage());
 			}
 			this.websocketService.sendMessage("/topic/notify", (new Gson()).toJson(message));
 			this.websocketService.sendMessage("/topic/hosts/reload", "");
@@ -120,8 +117,7 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 	@Override
 	public void restartHost(List<String> hosts) {
 		Connection connection = this.adminConnectionService.getConnection();
-		MessageVo message = new MessageVo();
-		message.setTitle("호스트 재시작");
+		MessageVo message;
 		for (String id : hosts) {
 			HostService hostService =
 					getSysSrvHelper().srvHost(connection, id);
@@ -133,13 +129,13 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 					Thread.sleep(5000L);
 					item = (hostService.get().send()).host();
 				} while (item.status() != HostStatus.UP);
-				message.setText("호스트 재시작 완료(" + host.name() + ")");
-				message.setStyle("success");
+				message
+						= MessageVo.createMessage(MessageType.HOST_RESTART, true, host.name(), "");
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.error(e.getLocalizedMessage());
-				message.setText("호스트 재시작 실패("+ host.name() + ")");
-				message.setStyle("error");
+				message
+						= MessageVo.createMessage(MessageType.HOST_RESTART, false, host.name(), e.getLocalizedMessage());
 			}
 			this.websocketService.sendMessage("/topic/notify", (new Gson()).toJson(message));
 			this.websocketService.sendMessage("/topic/hosts/reload", "");
@@ -150,8 +146,7 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 	@Override
 	public void startHost(List<String> hosts) {
 		Connection connection = this.adminConnectionService.getConnection();
-		MessageVo message = new MessageVo();
-		message.setTitle("호스트 시작");
+		MessageVo message;
 		for (String id : hosts) {
 			HostService hostService =
 					getSysSrvHelper().srvHost(connection, id);
@@ -163,13 +158,13 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 					Thread.sleep(5000L);
 					item = (hostService.get().send()).host();
 				} while (item.status() != HostStatus.UP);
-				message.setText("호스트 시작 완료(" + host.name() + ")");
-				message.setStyle("success");
+				message
+						= MessageVo.createMessage(MessageType.HOST_START, true, host.name(), "");
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.error(e.getLocalizedMessage());
-				message.setText("호스트 시작 실패("+ host.name() + ")");
-				message.setStyle("error");
+				message
+						= MessageVo.createMessage(MessageType.HOST_START, false, host.name(), e.getLocalizedMessage());
 			}
 			this.websocketService.sendMessage("/topic/notify", (new Gson()).toJson(message));
 			this.websocketService.sendMessage("/topic/hosts/reload", "");
@@ -180,8 +175,7 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 	@Override
 	public void stopHost(List<String> hosts) {
 		Connection connection = this.adminConnectionService.getConnection();
-		MessageVo message = new MessageVo();
-		message.setTitle("호스트 정지");
+		MessageVo message;
 		for (String id : hosts) {
 			HostService hostService =
 					getSysSrvHelper().srvHost(connection, id);
@@ -193,13 +187,13 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 					Thread.sleep(5000L);
 					item = (hostService.get().send()).host();
 				} while (item.status() != HostStatus.DOWN);
-				message.setText("호스트 정지 완료(" + host.name() + ")");
-				message.setStyle("success");
+				message
+						= MessageVo.createMessage(MessageType.HOST_STOP, true, host.name(), "");
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.error(e.getLocalizedMessage());
-				message.setText("호스트 정지 실패(" + host.name() + ")");
-				message.setStyle("error");
+				message
+						= MessageVo.createMessage(MessageType.HOST_STOP, false, host.name(), e.getLocalizedMessage());
 			}
 			this.websocketService.sendMessage("/topic/notify", (new Gson()).toJson(message));
 			this.websocketService.sendMessage("/topic/hosts/reload", "");
@@ -213,7 +207,9 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 		Cluster cluster =
 				getSysSrvHelper().findCluster(connection, hostCreateVo.getClusterId());
 		HostBuilder hostBuilder = new HostBuilder();
-		if (hostCreateVo.getSsh() != null && hostCreateVo.getSsh().getPort() == 22) {
+		if (hostCreateVo.getSsh() != null &&
+			hostCreateVo.getSsh().getPort() != null &&
+			hostCreateVo.getSsh().getPort() == 22) {
 			hostBuilder
 					.name(hostCreateVo.getName())
 					.comment(hostCreateVo.getComment())
@@ -232,6 +228,7 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 					.rootPassword(hostCreateVo.getSsh().getPassword())
 					.cluster((new ClusterBuilder()).name(cluster.name()));
 		}
+
 		MessageVo message = new MessageVo();
 		message.setTitle("호스트 추가");
 		try {
@@ -291,7 +288,11 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 		if (!"".equals(hostCreateVo.getName()) && !srcHostCreateVo.getName().equals(hostCreateVo.getName()))
 			hostBuilder.name(hostCreateVo.getName());
 		hostBuilder.comment(hostCreateVo.getComment());
-		if (hostCreateVo.getSsh() != null && srcHostCreateVo.getSsh().getPort() != hostCreateVo.getSsh().getPort())
+		if (hostCreateVo.getSsh() != null &&
+			hostCreateVo.getSsh().getPort() != null &&
+			srcHostCreateVo.getSsh() != null &&
+			srcHostCreateVo.getSsh().getPort() != null &&
+			srcHostCreateVo.getSsh().getPort().equals(hostCreateVo.getSsh().getPort()))
 			hostBuilder.port(54321)
 					.ssh((new SshBuilder()).port(hostCreateVo.getSsh().getPort()));
 		if (!srcHostCreateVo.getClusterId().equals(hostCreateVo.getClusterId())) {
@@ -317,22 +318,18 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 						.enabled(false)
 						.kdumpDetection(true));
 			}
-		MessageVo message = new MessageVo();
-		message.setTitle("호스트 수정");
+
+		MessageVo message;
 		try {
 			(hostService.update().host(hostBuilder).send()).host();
-			try {
-				Thread.sleep(2000L);
-			} catch (InterruptedException e) {
-				log.error(e.getLocalizedMessage());
-				e.printStackTrace();
-			}
-			message.setText("호스트 수정 완료("+ hostCreateVo.getName() + ")");
-			message.setStyle("success");
+			try { Thread.sleep(2000L); } catch (InterruptedException e) { log.error(e.getLocalizedMessage()); }
+			message
+					= MessageVo.createMessage(MessageType.HOST_MODIFY, true, hostCreateVo.getName(), "");
 		} catch (Exception e) {
 			e.printStackTrace();
-			message.setText("호스트 수정 실패("+ hostCreateVo.getName() + ")");
-			message.setStyle("error");
+			log.error(e.getLocalizedMessage());
+			message
+					= MessageVo.createMessage(MessageType.HOST_MODIFY, false, hostCreateVo.getName(), e.getLocalizedMessage());
 		}
 		this.websocketService.sendMessage("/topic/notify", (new Gson()).toJson(message));
 		this.websocketService.sendMessage("/topic/hosts/reload", "");
@@ -343,22 +340,21 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 	@Override
 	public void removeHost(List<String> hosts) {
 		Connection connection = this.adminConnectionService.getConnection();
-
 		HostService hostService
 				= getSysSrvHelper().srvHost(connection, hosts.get(0));
 		Host host
 				= getSysSrvHelper().findHost(connection, hosts.get(0));
-		MessageVo message = new MessageVo();
-		message.setTitle("호스트 삭제");
+
+		MessageVo message;
 		try {
 			hostService.remove().send();
-			message.setText("호스트 삭제 완료("+ host.name() + ")");
-			message.setStyle("success");
+			message
+					= MessageVo.createMessage(MessageType.HOST_REMOVE, true, host.name(), "");
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error(e.getLocalizedMessage());
-			message.setText("호스트 삭제 실패("+ host.name() + ")");
-			message.setStyle("error");
+			message
+					= MessageVo.createMessage(MessageType.HOST_REMOVE, false, host.name(), e.getLocalizedMessage());
 		}
 		try { Thread.sleep(2000L); } catch (Exception e) { log.error(e.getLocalizedMessage()); }
 		this.websocketService.sendMessage("/topic/notify", (new Gson()).toJson(message));
@@ -967,7 +963,6 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 						.modifiedNetworkAttachments(new NetworkAttachmentBuilder[] { Builders.networkAttachment()
 								.hostNic(Builders.hostNic().name(networkAttachmentVo.getHostNicName()))
 								.network(network)
-
 								.ipAddressAssignments(Builders.ipAddressAssignment()
 										.assignmentMethod(BootProtocol.NONE)).dnsResolverConfiguration(dnsContainer) }).send();
 				hostService.commitNetConfig().send();
@@ -996,12 +991,13 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 				}
 				hostService.networkAttachmentsService().attachmentService(networkAttachmentVo.getNetAttachmentId()).remove().send();
 				hostService.setupNetworks()
-						.modifiedNetworkAttachments(new NetworkAttachmentBuilder[] { Builders.networkAttachment()
+						.modifiedNetworkAttachments(Builders.networkAttachment()
 								.hostNic(Builders.hostNic().name(networkAttachmentVo.getHostNicName()))
 								.network(network)
-
 								.ipAddressAssignments(Builders.ipAddressAssignment()
-										.assignmentMethod(BootProtocol.DHCP)).dnsResolverConfiguration(dnsContainer) }).send();
+										.assignmentMethod(BootProtocol.DHCP))
+										.dnsResolverConfiguration(dnsContainer)
+						).send();
 				hostService.commitNetConfig().send();
 			} else if ("static".equals(networkAttachmentVo.getBootProtocol()) && ""
 					.equals(networkAttachmentVo.getDnsServer().get(0))) {
@@ -1011,17 +1007,17 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 				hostService.networkAttachmentsService()
 						.attachmentService(networkAttachmentVo.getNetAttachmentId())
 						.update().attachment(
-								Builders.networkAttachment()
-										.network(network)
-
-										.hostNic(Builders.hostNic().name(networkAttachmentVo.getHostNicName()))
-										.ipAddressAssignments(Builders.ipAddressAssignment()
-												.assignmentMethod(BootProtocol.STATIC)
-												.ip(
-												Builders.ip()
-														.address(networkAttachmentVo.getNicAddress())
-														.netmask(networkAttachmentVo.getNicNetmask())
-														.gateway(networkAttachmentVo.getNicGateway())))).send();
+							Builders.networkAttachment()
+									.network(network)
+									.hostNic(Builders.hostNic().name(networkAttachmentVo.getHostNicName()))
+									.ipAddressAssignments(Builders.ipAddressAssignment()
+										.assignmentMethod(BootProtocol.STATIC)
+										.ip(Builders.ip()
+												.address(networkAttachmentVo.getNicAddress())
+												.netmask(networkAttachmentVo.getNicNetmask())
+												.gateway(networkAttachmentVo.getNicGateway()))
+									)
+						).send();
 				hostService.commitNetConfig().send();
 			} else if ("static".equals(networkAttachmentVo.getBootProtocol()) &&
 					!networkAttachmentVo.getDnsServer().isEmpty()) {
@@ -1108,8 +1104,9 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 
 	@Override
 	public List<HostDetailVo> retrieveHostsInfo(String status) {
+		log.info("... retrieveHostsInfo('{}')", status);
 		Connection connection = this.adminConnectionService.getConnection();
-		List<Host> hosts = null;
+		List<Host> hosts;
 		if ("all".equalsIgnoreCase(status)) {
 			hosts = getSysSrvHelper().findAllHosts(connection, "");
 		} else if (HostStatus.UP.value().equalsIgnoreCase(status)) {
@@ -1224,6 +1221,7 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 
 	// TODO: 함수로 뺴내기
 	private void setHostDetail(Connection connection, Host host, HostDetailVo hostDetailVo) {
+		log.info("... setHostDetail");
 		hostDetailVo.setHwManufacturer(host.hardwareInformation().manufacturer());
 		hostDetailVo.setHwProductName(host.hardwareInformation().productName());
 		List<NicUsageApiVo> nicsUsageApiVo3 = new ArrayList<>();
@@ -1430,7 +1428,7 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 	private void setVmsInfo(Connection connection, Host host, HostDetailVo hostDetailVo) {
 		List<VmSummaryVo> vmSummaries = new ArrayList<>();
 		List<Vm> vms
-				= getSysSrvHelper().findAllVms(connection, "host = " + host.name()) ;
+				= getSysSrvHelper().findAllVms(connection, "host=" + host.name()) ;
 		for (Vm vm : vms) {
 			VmSummaryVo vmSummary = getVmInfo(connection, vm);
 			vmSummaries.add(vmSummary);
@@ -1440,6 +1438,8 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 
 	@Override
 	public HostDetailVo getHostInfo(Connection connection, Host host) {
+		HostDetailVo hostDetailVo = ModelsKt.toHostDetailVo(host, connection, clustersDao);
+		/*
 		HostDetailVo hostDetailVo = new HostDetailVo();
 		hostDetailVo.setId(host.id());
 		hostDetailVo.setName(host.name());
@@ -1452,38 +1452,29 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 		hostDetailVo.setCpuCores(host.cpu().topology().cores());
 		hostDetailVo.setCpuSockets(host.cpu().topology().sockets());
 		hostDetailVo.setCpuThreads(host.cpu().topology().threads());
-		if (host.cpu().topology().cores() == null || host.cpu().topology().sockets() == null || host.cpu().topology().threads() == null) {
+		if (host.cpu().topology().cores() == null ||
+			host.cpu().topology().sockets() == null ||
+			host.cpu().topology().threads() == null) {
 			hostDetailVo.setCpuTotal(0);
 		} else {
 			hostDetailVo.setCpuTotal(host.cpu().topology().cores().intValue() * host.cpu().topology().sockets().intValue() * host.cpu().topology().threads().intValue());
 		}
+		*/
 		HostUsageVo hostLastUsage = this.clustersDao.retrieveHostLastUsage(host.id());
 		hostDetailVo.setHostLastUsage(hostLastUsage);
-		List<HostUsageVo> hostUsageList = this.clustersDao.retrieveHostUsage(host.id());
-		List<UsageVo> usageVos = new ArrayList<>();
-		for (HostUsageVo hostUsageVo : hostUsageList) {
-			UsageVo usageVo = new UsageVo();
-			if (hostUsageVo.getCpuUsagePercent() == "" || hostUsageVo.getMemoryUsagePercent() == "") {
-				usageVo.setCpuUsages(Integer.parseInt(hostUsageVo.getCpuUsagePercent()));
-				usageVo.setMemoryUsages(Integer.parseInt(hostUsageVo.getMemoryUsagePercent()));
-				usageVo.setUsageDate(hostUsageVo.getHistoryDatetime());
-				usageVos.add(usageVo);
-			}
-		}
+		List<HostUsageVo> hostUsageList
+				= this.clustersDao.retrieveHostUsage(host.id());
+		List<UsageVo> usageVos
+				= ModelsKt.toUsageVosWithHostUsage(hostUsageList);
 		hostDetailVo.setUsageVos(usageVos);
 		List<HostNic> hostNics
 				= getSysSrvHelper().findNicsFromHost(connection, host.id());
 		List<NicUsageVo> hostNicsLastUsage = new ArrayList<>();
 		for (HostNic hostNic : hostNics) {
 			NicUsageVo nicUsageVo = this.clustersDao.retrieveHostNicUsage(hostNic.id());
-			if (nicUsageVo == null)
-				continue;
+			if (nicUsageVo == null)	continue;
 			nicUsageVo.setHostInterfaceName(hostNic.name());
-			if (hostNic.mac() != null) {
-				nicUsageVo.setMacAddress(hostNic.mac().address());
-			} else {
-				nicUsageVo.setMacAddress("");
-			}
+			nicUsageVo.setMacAddress(hostNic.macPresent() ? hostNic.mac().address() : "");
 			hostNicsLastUsage.add(nicUsageVo);
 		}
 		hostDetailVo.setHostNicsLastUsage(hostNicsLastUsage);
@@ -1501,7 +1492,7 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 		int upCnt = 0;
 		int downCnt = 0;
 		List<Vm> vms
-				= getSysSrvHelper().findAllVms(connection, "host = " + host.name());
+				= getSysSrvHelper().findAllVms(connection, "host=" + host.name());
 		for (Vm vm : vms) {
 			if ("up".equalsIgnoreCase(vm.status().value())) {
 				upCnt++;
@@ -1524,7 +1515,7 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 		vmSummary.setComment(vm.comment());
 		vmSummary.setDescription(vm.description());
 		vmSummary.setStatus(vm.status().value());
-		if (vm.host() != null && !"".equals(vm.host().id())) {
+		if (vm.hostPresent() && vm.host().idPresent() && !vm.host().id().isEmpty()) {
 			Host host =
 					getSysSrvHelper().findHost(connection, vm.host().id());
 			vmSummary.setHostId(host.id());
@@ -1547,11 +1538,8 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 			} else {
 				nicUsageVo.setVmInterfaceName(vmNic.name());
 			}
-			if (vmNic.mac() != null) {
-				nicUsageVo.setMacAddress(vmNic.mac().address());
-			} else {
-				nicUsageVo.setMacAddress("");
-			}
+			nicUsageVo.setMacAddress(vmNic.macPresent() && vmNic.mac().addressPresent() ? vmNic.mac().address() : "");
+
 			if (vmNic.reportedDevicesPresent() && (vmNic.reportedDevices().get(0)).ips() != null && (vmNic.reportedDevices().get(0)).ips().size() != 0) {
 				List<Ip> ips = (vmNic.reportedDevices().get(0)).ips();
 				vmSummary.setAddress((ips.get(0)).address());
@@ -1566,7 +1554,8 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 
 	@Override
 	public List<String> retrieveFanceAgentType() {
-		Connection connection = this.adminConnectionService.getConnection();
+		Connection connection
+				= this.adminConnectionService.getConnection();
 		List<String> result = new ArrayList<>();
 		return result;
 	}
@@ -1580,15 +1569,8 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 		if (hosts.size() == 0) return false;
 		HostService hostService
 				= getSysSrvHelper().srvHost(connection, hosts.get(0).id());
-		AgentBuilder agentBuilder = new AgentBuilder();
-		agentBuilder.address(fenceAgentVo.getAddress());
-		agentBuilder.username(fenceAgentVo.getUsername());
-		agentBuilder.password(fenceAgentVo.getPassword());
-		agentBuilder.type(fenceAgentVo.getType());
-		agentBuilder.encryptOptions(false);
-		agentBuilder.order(1);
 		Agent agent
-				= getSysSrvHelper().addFenceAgent(connection, hosts.get(0).id(), agentBuilder.build());
+				= getSysSrvHelper().addFenceAgent(connection, hosts.get(0).id(), ModelsKt.toAgent(fenceAgentVo));
 		String status
 				= (hostService.fence().fenceType(FenceType.START.name()).send()).powerManagement().status().value();
 		return agent != null;

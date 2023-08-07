@@ -5,11 +5,12 @@ import com.itinfo.service.KarajanDashboardService;
 import com.itinfo.model.karajan.ConsolidationVo;
 import com.itinfo.model.karajan.KarajanVo;
 import com.itinfo.model.karajan.WorkloadVo;
+import com.itinfo.service.engine.WorkloadPredictionService;
 
 import java.util.List;
 
-import com.itinfo.service.engine.WorkloadPredictionService;
 import lombok.extern.slf4j.Slf4j;
+
 import org.ovirt.engine.sdk4.types.VmStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

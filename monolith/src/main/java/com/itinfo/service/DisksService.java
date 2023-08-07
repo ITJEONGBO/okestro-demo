@@ -18,7 +18,7 @@ public interface DisksService {
 
 	void createLunDisk(DiskCreateVo diskCreateVo);
 
-	void removeDisk(List<String> disks);
+	void removeDisk(List<String> diskIds);
 
 	void migrationDisk(DiskMigrationVo diskMigrationVo);
 

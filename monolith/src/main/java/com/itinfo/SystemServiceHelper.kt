@@ -1,14 +1,16 @@
 package com.itinfo
 
-import com.itinfo.model.StorageDomainVo
+import com.itinfo.common.LoggerDelegate
+
 import org.ovirt.engine.sdk4.Connection
+import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.services.*
 import org.ovirt.engine.sdk4.services.HostService.IscsiDiscoverRequest
-import org.ovirt.engine.sdk4.services.HostService.IscsiDiscoverResponse
 import org.ovirt.engine.sdk4.types.*
 
 class SystemServiceHelper {
 	companion object {
+		private val log by LoggerDelegate()
 		@Volatile private var INSTANCE: SystemServiceHelper? = null
 		@JvmStatic fun getInstance(): SystemServiceHelper = INSTANCE ?: synchronized(this) {
 			INSTANCE
@@ -27,53 +29,66 @@ class SystemServiceHelper {
 	fun findAllClusters(c: Connection, searchQuery: String = ""): List<Cluster> =
 		if (searchQuery.isEmpty()) 	srvClusters(c).list().send().clusters() ?: listOf()
 		else 						srvClusters(c).list().search(searchQuery).caseSensitive(false).send().clusters() ?: listOf()
-	fun findCluster(c: Connection, clusterId: String): Cluster
-		= srvCluster(c, clusterId).get().send().cluster()
+	fun findCluster(c: Connection, clusterId: String): Cluster? = try {
+		srvCluster(c, clusterId).get().send().cluster()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		null
+	}
+		 
 	fun addCluster(c: Connection, cluster: Cluster): Cluster? = try {
 		srvClusters(c).add().cluster(cluster).send().cluster()
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
 		null
 	}
 
 	fun updateCluster(c: Connection, clusterId: String, cluster: Cluster): Cluster? = try {
 		srvCluster(c, clusterId).update().cluster(cluster).send().cluster()
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
 		null
 	}
 	fun removeCluster(c: Connection, clusterId: String): Boolean = try {
 		srvCluster(c, clusterId).remove().send()
 		true
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
 		false
 	}
 
 	private fun srvClusterNetworks(c: Connection, clusterId: String): ClusterNetworksService
 		= srvCluster(c, clusterId).networksService()
 
-	fun findAllNetworksFromCluster(c: Connection, clusterId: String): List<Network>
-		= srvClusterNetworks(c, clusterId).list().send().networks()
+	fun findAllNetworksFromCluster(c: Connection, clusterId: String): List<Network> = try {
+		srvClusterNetworks(c, clusterId).list().send().networks()	
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		listOf<Network>()
+	}
 	fun addNetworkFromCluster(c: Connection, clusterId: String, network: Network): Network? = try {
 		srvCluster(c, clusterId).networksService().add().network(network).send().network()
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
 		null
 	}
 	private fun srvClusterNetwork(c: Connection, clusterId: String, networkId: String): ClusterNetworkService
 		= srvClusterNetworks(c, clusterId).networkService(networkId)
 	fun updateNetworkFromCluster(c: Connection, clusterId: String, network: Network): Network? = try {
 		srvClusterNetwork(c, clusterId, network.id()).update().network(network).send().network()
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
 		null
 	}
 	private fun srvExternalNetworkProviders(c: Connection, clusterId: String): ClusterExternalProvidersService
 		= srvCluster(c, clusterId).externalNetworkProvidersService()
 
-	fun findExternalNetworkProviders(c: Connection, clusterId: String): List<ExternalProvider>
-		= srvExternalNetworkProviders(c, clusterId).list().send().providers()
+	fun findExternalNetworkProviders(c: Connection, clusterId: String): List<ExternalProvider> = try {
+		srvExternalNetworkProviders(c, clusterId).list().send().providers()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		listOf<ExternalProvider>()
+	}
 	//endregion
 
 	//region: Host
@@ -86,6 +101,14 @@ class SystemServiceHelper {
 		= srvHosts(c).hostService(hostId)
 	fun findHost(c: Connection, hostId: String): Host
 		= srvHost(c, hostId).get().send().host()
+	fun migrateHostFromVm(c: Connection, vmId: String, host: Host): Boolean = try {
+		srvVm(c, vmId).migrate().host(host).send()
+		true
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
+		false
+	}
 	private fun srvNicsFromHost(c: Connection, hostId: String): HostNicsService
 		= srvHost(c, hostId).nicsService()
 	fun findNicsFromHost(c: Connection, hostId: String): List<HostNic>
@@ -113,16 +136,20 @@ class SystemServiceHelper {
 	fun removeNetworkAttachmentFromHost(c: Connection, hostId: String, networkAttachmentId: String): Boolean = try {
 		srvNetworkAttachmentFromHost(c, hostId, networkAttachmentId).remove().send()
 		true
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		false
 	}
-	private fun srvFenceAgents(c: Connection, hostId: String): FenceAgentsService
+	private fun srvFenceAgentsFromHost(c: Connection, hostId: String): FenceAgentsService
 		= srvHost(c, hostId).fenceAgentsService()
+	fun findAllFenceAgentsFromHost(c: Connection, hostId: String): List<Agent>
+		= srvFenceAgentsFromHost(c, hostId).list().send().agents()
 	fun addFenceAgent(c: Connection, hostId: String, agent: Agent): Agent? = try {
-		srvFenceAgents(c, hostId).add().agent(agent).send().agent()
-	} catch (e: Exception) {
-		e.printStackTrace()
+		srvFenceAgentsFromHost(c, hostId).add().agent(agent).send().agent()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		null
 	}
 	private fun srvAllIscsiDetailsFromHost(c: Connection, hostId: String): IscsiDiscoverRequest
@@ -143,9 +170,12 @@ class SystemServiceHelper {
 		= getVmsService(c).vmService(vmId)
 	fun findVm(c: Connection, vmId: String): Vm
 		= srvVm(c, vmId).get().send().vm()
-	fun startVm(c: Connection, vmId: String): Boolean = try { srvVm(c, vmId).start().send();true } catch (e: Exception) { e.printStackTrace();false }
-	fun stopVm(c: Connection, vmId: String): Boolean = try { srvVm(c, vmId).stop().send();true } catch (e: Exception) { e.printStackTrace();false }
-	fun rebootVm(c: Connection, vmId: String): Boolean = try { srvVm(c, vmId).reboot().send();true; } catch (e: Exception) { e.printStackTrace();false }
+	fun startVm(c: Connection, vmId: String): Boolean = try { srvVm(c, vmId).start().send();true } catch (e: Error) { log.error(e.localizedMessage)
+;false }
+	fun stopVm(c: Connection, vmId: String): Boolean = try { srvVm(c, vmId).stop().send();true } catch (e: Error) { log.error(e.localizedMessage)
+;false }
+	fun rebootVm(c: Connection, vmId: String): Boolean = try { srvVm(c, vmId).reboot().send();true; } catch (e: Error) { log.error(e.localizedMessage)
+;false }
 
 	private fun srvVmCdromsFromVm(c: Connection, vmId: String): VmCdromsService
 		= srvVm(c, vmId).cdromsService()
@@ -158,7 +188,7 @@ class SystemServiceHelper {
 	fun updateVmCdromFromVm(c: Connection, vmId: String, cdromId: String, cdrom: Cdrom): Boolean = try {
 		srvVmCdromFromVm(c, vmId, cdromId).update().cdrom(cdrom).current(true).send()
 		true
-	} catch (e: Exception) {
+	} catch (e: Error) {
 		false
 	}
 	private fun srvNicsFromVm(c: Connection, vmId: String): VmNicsService
@@ -181,39 +211,40 @@ class SystemServiceHelper {
 	fun addSnapshotFromVm(c: Connection, vmId: String, snapshot: Snapshot): Boolean = try {
 		srvSnapshotsFromVm(c, vmId).add().snapshot(snapshot).send().snapshot()
 		true
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
 		false
 	}
 
 	fun removeSnapshotFromVm(c: Connection, vmId: String, snapshotId: String): Boolean = try {
 		srvSnapshotFromVm(c, vmId, snapshotId).remove().send()
 		true
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
 		false
 	}
 
 	fun undoSnapshotFromVm(c: Connection, vmId: String): Boolean = try {
 		srvVm(c, vmId).undoSnapshot().send()
 		true
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
 		false
 	}
 
 	fun commitSnapshotFromVm(c: Connection, vmId: String): Boolean = try {
 		srvVm(c, vmId).commitSnapshot().send()
-		true	} catch (e: Exception) {
-		e.printStackTrace()
+		true
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
 		false
 	}
 
 	fun previewSnapshotFromVm(c: Connection, vmId: String, snapshot: Snapshot, restoreMemory: Boolean): Boolean = try {
 		srvVm(c, vmId).previewSnapshot().restoreMemory(restoreMemory).snapshot(snapshot).send()
 		true
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
 		false
 	}
 
@@ -263,25 +294,32 @@ class SystemServiceHelper {
 
 	fun addNetwork(c: Connection, network: Network): Network? = try {
 		srvNetworks(c).add().network(network).send().network()
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		null
 	}
 
 	fun updateNetwork(c: Connection, networkId: String, network: Network): Network? = try {
 		srvNetwork(c, networkId).update().network(network).send().network()
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		null
 	}
 	private fun srvNetworkLabelsFromNetwork(c: Connection, networkId: String): NetworkLabelsService
 		= srvNetwork(c, networkId).networkLabelsService()
-	fun findAllNetworkLabelsFromNetwork(c: Connection, networkId: String): List<NetworkLabel>
-		= srvNetworkLabelsFromNetwork(c, networkId).list().send().labels()
+	fun findAllNetworkLabelsFromNetwork(c: Connection, networkId: String): List<NetworkLabel> = try {
+		srvNetworkLabelsFromNetwork(c, networkId).list().send().labels()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		listOf<NetworkLabel>()
+	}
+
 	fun addNetworkLabelFromNetwork(c: Connection, networkId: String, networkLabel: NetworkLabel): NetworkLabel? = try {
 		srvNetworkLabelsFromNetwork(c, networkId).add().label(networkLabel).send().label()
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
 		null
 	}
 
@@ -290,8 +328,8 @@ class SystemServiceHelper {
 	fun removeNetworkLabelFromNetwork(c: Connection, networkId: String, networkLabelId: String): Boolean = try {
 		srvNetworkLabelFromNetwork(c, networkId, networkLabelId).remove().send()
 		true
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
 		false
 	}
 	private fun srvVnicProfilesFromNetwork(c: Connection, networkId: String): AssignedVnicProfilesService
@@ -360,8 +398,9 @@ class SystemServiceHelper {
 	fun removeTemplate(c: Connection, templateId: String): Boolean = try {
 		srvTemplate(c, templateId).remove().send()
 		true
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		false
 	}
 	fun exportTemplate(c: Connection, templateId: String, exclusive: Boolean, toStorageDomain: StorageDomain): Boolean = try {
@@ -370,8 +409,9 @@ class SystemServiceHelper {
 			.storageDomain(toStorageDomain)
 			.send()
 		true
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		false
 	}
 
@@ -380,8 +420,9 @@ class SystemServiceHelper {
 			.clonePermissions(clonePermissions)
 			.seal(seal)
 			.send().template()
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		null
 	}
 	private fun srvWatchdogsFromTemplate(c: Connection, templateId: String): TemplateWatchdogsService
@@ -423,27 +464,34 @@ class SystemServiceHelper {
 	fun removeStorageDomain(c: Connection, storageId: String, format: Boolean): Boolean = try {
 		srvStorageDomain(c, storageId).remove().destroy(true).format(format)
 		true
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		false
 	}
 	fun updateStorageDomain(c: Connection, storageId: String, storageDomain: StorageDomain): Boolean = try {
 		srvStorageDomain(c, storageId).update().storageDomain(storageDomain).send()
 		true
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		false
 	}
 	fun addStorageDomain(c: Connection, storageDomain: StorageDomain): StorageDomain? = try {
 		srvStorageDomains(c).add().storageDomain(storageDomain).send().storageDomain()
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		null
 	}
 	private fun srvAllFilesFromStorageDomain(c: Connection, storageId: String): FilesService
 		= srvStorageDomain(c, storageId).filesService()
-	fun findAllFilesFromStorageDomain(c: Connection, storageId: String): List<File>
-		= srvAllFilesFromStorageDomain(c, storageId).list().send().file()
+	fun findAllFilesFromStorageDomain(c: Connection, storageId: String): List<File> = try {
+		srvAllFilesFromStorageDomain(c, storageId).list().send().file()
+	} catch (e: Error) {
+		
+		listOf<File>()
+	}
 	private fun srvFileFromStorageDomain(c: Connection, storageId: String, fileId: String): FileService
 		= srvAllFilesFromStorageDomain(c, storageId).fileService(fileId)
 	fun findFileFromStorageDomain(c: Connection, storageId: String, fileId: String): File
@@ -481,11 +529,46 @@ class SystemServiceHelper {
 	//endregion
 
 	//region: Disk
-	private fun srvDisks(c: Connection): DisksService
+	private fun srvAllDisks(c: Connection): DisksService
 		= getSystemService(c).disksService()
 	fun findAllDisks(c: Connection, searchQuery: String = ""): List<Disk> {
-		return if (searchQuery == "")	srvDisks(c).list().send().disks()
-		else							srvDisks(c).list().search(searchQuery).caseSensitive(false).send().disks()
+		return if (searchQuery == "")	srvAllDisks(c).list().send().disks()
+		else							srvAllDisks(c).list().search(searchQuery).caseSensitive(false).send().disks()
+	}
+	fun addDisk(c: Connection, disk: Disk): Disk? = try {
+		srvAllDisks(c).add().disk(disk).send().disk()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
+		null
+	}
+	fun moveDisk(c: Connection, diskId: String, storageDomain: StorageDomain): Boolean = try {
+		srvDisk(c, diskId).move().storageDomain(storageDomain).send()
+		true
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
+		false
+	}
+	fun copyDisk(c: Connection, diskId: String, disk: Disk, storageDomain: StorageDomain): Boolean = try {
+		srvDisk(c, diskId).copy().disk(disk).storageDomain(storageDomain).send()
+		true
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
+		false
+	}
+	private fun srvDisk(c: Connection, diskId: String): DiskService
+		= srvAllDisks(c).diskService(diskId)
+	fun findDisk(c: Connection, diskId: String): Disk
+		= srvDisk(c, diskId).get().send().disk()
+	fun removeDisk(c: Connection, diskId: String): Boolean = try {
+		srvDisk(c, diskId).remove().send()
+		true
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
+		false
 	}
 	//endregion
 
@@ -509,22 +592,25 @@ class SystemServiceHelper {
 	fun activeAttachedStorageDomainFromDataCenter(c: Connection, dataCenterId: String, storageDomainId: String): Boolean = try {
 		srvAttachedStorageDomainFromDataCenter(c, dataCenterId, storageDomainId).activate().send()
 		true
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		false
 	}
 	fun deactiveAttachedStorageDomainFromDataCenter(c: Connection, dataCenterId: String, storageDomainId: String): Boolean = try {
 		srvAttachedStorageDomainFromDataCenter(c, dataCenterId, storageDomainId).deactivate().force(true).send()
 		true
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		false
 	}
 	fun removeAttachedStorageDomainFromDataCenter(c: Connection, dataCenterId: String, storageDomainId: String): Boolean = try {
 		srvAttachedStorageDomainFromDataCenter(c, dataCenterId, storageDomainId).remove().async(true).send()
 		true
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		false
 	}
 	private fun srvQossFromDataCenter(c: Connection, dataCenterId: String): QossService
@@ -537,8 +623,9 @@ class SystemServiceHelper {
 		= srvQuotasFromDataCenter(c, dataCenterId).list().send().quotas()
 	fun addQuotaFromDataCenter(c: Connection, dataCenterId: String, quota: Quota): Quota? = try {
 		srvQuotasFromDataCenter(c, dataCenterId).add().quota(quota).send().quota()
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		null
 	}
 	private fun srvQuotaFromDataCenter(c: Connection, dataCenterId: String, quotaId: String): QuotaService
@@ -569,32 +656,37 @@ class SystemServiceHelper {
 	fun addNicForInstanceType(c: Connection, instanceTypeId: String, nic: Nic): Boolean = try {
 		srvNicsFromInstanceType(c, instanceTypeId).add().nic(nic).send()
 		true
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		false
 	}
 
 	fun addInstanceType(c: Connection, instanceType: InstanceType): InstanceType? = try {
 		srvInstanceTypes(c).add().instanceType(instanceType).send().instanceType()
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		null
 	}
 
 	fun updateInstanceType(c: Connection, instanceType: InstanceType): InstanceType? = try {
 		srvInstanceType(c, instanceType.id()).update().send().instanceType()
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		null
 	}
 	fun removeInstanceType(c: Connection, instanceTypeId: String): Boolean = try {
 		srvInstanceType(c, instanceTypeId).remove().send()
 		true
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		false
 	}
 	//endregion
+
 
 	//region: MacPool
 	private fun srvMacPools(c: Connection): MacPoolsService
@@ -622,8 +714,9 @@ class SystemServiceHelper {
 		= srvSystemPermissions(c).list().send().permissions()
 	fun addPermission(c: Connection, permission: Permission): Permission? = try {
 		srvSystemPermissions(c).add().permission(permission).send().permission()
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		null
 	}
 	fun srvSystemPermission(c: Connection, permissionId: String): PermissionService
@@ -631,8 +724,9 @@ class SystemServiceHelper {
 	fun removePermission(c: Connection, permissionId: String): Boolean = try {
 		srvSystemPermission(c, permissionId).remove().send()
 		true
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		false
 	}
 	//endregion
@@ -644,8 +738,9 @@ class SystemServiceHelper {
 		= srvUsers(c).list().send().users()
 	fun addUser(c: Connection, user: User): User? = try {
 		srvUsers(c).add().user(user).send().user()
-	} catch (e: Exception) {
-		e.printStackTrace()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+
 		null
 	}
 	private fun srvUser(c: Connection, userId: String): UserService

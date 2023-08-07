@@ -2,6 +2,7 @@ package com.itinfo.service;
 
 import com.itinfo.model.karajan.ConsolidationVo;
 import com.itinfo.model.karajan.KarajanVo;
+
 import java.util.List;
 
 public interface KarajanDashboardService {

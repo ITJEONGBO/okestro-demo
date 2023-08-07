@@ -1,6 +1,5 @@
 package com.itinfo.service.impl;
 
-
 import com.itinfo.SystemServiceHelper;
 import com.itinfo.dao.ComputingDao;
 import com.itinfo.model.*;
@@ -19,6 +18,7 @@ import java.util.*;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.builders.BootBuilder;
 import org.ovirt.engine.sdk4.builders.Builders;
@@ -431,7 +431,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		List<Cluster> clusterItems
 				= systemService.clustersService().list().send().clusters();
 		List<ClusterVo> clusters
-				= ModelsKt.toClusterVos(clusterItems, connection);
+				= ModelsKt.toClusterVos(clusterItems, connection, null);
 		return clusters;
 	}
 

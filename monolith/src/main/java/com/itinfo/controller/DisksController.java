@@ -60,8 +60,8 @@ public class DisksController {
 	}
 
 	@RequestMapping(value = {"/storage/disks/removeDisk"}, method = {RequestMethod.POST})
-	public String removeDisk(@RequestBody List<String> disks, Model model) {
-		this.disksService.removeDisk(disks);
+	public String removeDisk(@RequestBody List<String> diskIds, Model model) {
+		this.disksService.removeDisk(diskIds);
 		try { Thread.sleep(500L); } catch (Exception e) { e.getLocalizedMessage(); }
 		return ItInfoConstant.JSON_VIEW;
 	}

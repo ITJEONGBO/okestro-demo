@@ -38,6 +38,7 @@ public class DashboardController {
 
     @RequestMapping({"/dashboard/retrieveEvents"})
     public String retrieveEvents(Model model) {
+        log.info("... retrieveEvents");
         List<EventVo> events = this.dashboardService.retrieveEvents();
         model.addAttribute("resultKey", events);
         return "jsonView";
@@ -45,22 +46,24 @@ public class DashboardController {
 
     @RequestMapping(value = {"/dashboard/retrieveVms"}, method = {RequestMethod.GET})
     public String retrieveVms(String status, Model model) {
+        log.info("... retrieveVms('{}')", status);
         List<VmVo> vms
-                = this.virtualMachinesService.retrieveVmsAll();
-        List<DashboardTopVo> vmsTop = new ArrayList<>();
-        if (!vms.isEmpty())
-            vmsTop = this.virtualMachinesService.retrieveVmsTop(vms);
+                = virtualMachinesService.retrieveVmsAll();
+        List<DashboardTopVo> vmsTop = !vms.isEmpty()
+                ? virtualMachinesService.retrieveVmsTop(vms)
+                : new ArrayList<>();
         model.addAttribute("resultKey", vmsTop);
         return "jsonView";
     }
 
     @RequestMapping(value = {"/dashboard/retrieveHosts"}, method = {RequestMethod.GET})
     public String retrieveHosts(String status, Model model) {
+        log.info("... retrieveHosts('{}')", status);
         List<HostDetailVo> hosts
-                = this.hostsService.retrieveHostsInfo(status);
-        List<DashboardTopVo> hostsTop = new ArrayList<>();
-        if (!hosts.isEmpty())
-            hostsTop = this.hostsService.retrieveHostsTop(hosts);
+                = hostsService.retrieveHostsInfo(status);
+        List<DashboardTopVo> hostsTop = !hosts.isEmpty()
+            ? hostsService.retrieveHostsTop(hosts)
+            : new ArrayList<>();
         model.addAttribute("resultKey", hostsTop);
         return "jsonView";
     }

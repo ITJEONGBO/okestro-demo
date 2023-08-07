@@ -62,6 +62,7 @@ public class TemplatesServiceImpl extends BaseService implements TemplatesServic
 	}
 
 	public TemplateVo retrieveTemplate(String id) {
+		log.info("... retrieveTemplate('{}')", id);
 		Connection connection = connectionService.getConnection();
 		Template item
 				= getSysSrvHelper().findTemplate(connection, id);
@@ -89,6 +90,7 @@ public class TemplatesServiceImpl extends BaseService implements TemplatesServic
 
 	@Override
 	public VmSystemVo retrieveSystemInfo(String id) {
+		log.info("... retrieveSystemInfo('{}')", id);
 		Connection connection = this.connectionService.getConnection();
 		Template template
 				= getSysSrvHelper().findTemplate(connection, id);
@@ -96,6 +98,7 @@ public class TemplatesServiceImpl extends BaseService implements TemplatesServic
 	}
 
 	public List<VmNicVo> retrieveNicInfo(String id) {
+		log.info("... retrieveNicInfo('{}')", id);
 		Connection connection = connectionService.getConnection();
 		List<Nic> nics
 				= getSysSrvHelper().findAllNicsFromTemplate(connection, id);
@@ -103,10 +106,11 @@ public class TemplatesServiceImpl extends BaseService implements TemplatesServic
 	}
 
 	public List<StorageDomainVo> retrieveStorageInfo(String id) {
+		log.info("... retrieveStorageInfo('{}')", id);
 		Connection connection = connectionService.getConnection();
 		List<StorageDomain> storageDomainList
 				= getSysSrvHelper().findAllStorageDomains(connection, "");
-		return ModelsKt.toStorageDomainVos(storageDomainList);
+		return ModelsKt.toStorageDomainVos(storageDomainList, connection);
 	}
 
 	public List<EventVo> retrieveEvents(String id) {
@@ -321,7 +325,7 @@ public class TemplatesServiceImpl extends BaseService implements TemplatesServic
 		List<Cluster> clusterItemList
 				= getSysSrvHelper().findAllClusters(connection, "");
 		List<ClusterVo> clusters
-				= ModelsKt.toClusterVos(clusterItemList, connection);
+				= ModelsKt.toClusterVos(clusterItemList, connection, null);
 
 		TemplateEditVo templateEditInfo = new TemplateEditVo();
 		templateEditInfo.setClusters(clusters);

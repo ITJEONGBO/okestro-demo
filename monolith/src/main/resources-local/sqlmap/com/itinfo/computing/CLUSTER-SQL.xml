@@ -2,7 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "src/org/apache/ibatis/builder/xml/mybatis-3-mapper.dtd" >
 
 <mapper namespace="COMPUTE-CLUSTER">
-	
 	<select id="retrieveHostSw" parameterType="String" resultType="com.itinfo.model.HostSwVo">
 		SELECT
 			HOST_ID, HOST_OS, KERNEL_VERSION, KVM_VERSION, VDSM_VERSION
@@ -104,6 +103,4 @@
 		WHERE 1=1
 		AND HA_CONFIGURED IS TRUE
 	</select>
-
-	
 </mapper>

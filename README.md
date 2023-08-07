@@ -105,7 +105,7 @@ Run this script to create artifact
 
 ```sh
 # war 빌드 후 (monolith/build/lib) 진행
-docker build -t okestro/cst_tomcat:0.0.2 \
+docker build -t okestro/cst_tomcat:0.0.3 \
   docker/okestro
 ```
 
@@ -113,7 +113,7 @@ docker build -t okestro/cst_tomcat:0.0.2 \
 
 ```batch
 REM war 빌드 후 (monolith/build/lib) 진행
-docker build -t okestro/cst_tomcat:0.0.2 ^
+docker build -t okestro/cst_tomcat:0.0.3 ^
   docker/okestro
 ```
 
@@ -124,10 +124,10 @@ docker build -t okestro/cst_tomcat:0.0.2 ^
 ```sh
 # okestro
 docker run -d -it \
-  --name cst_tomcat \
-  -p 8080:8080 \
-  -p 8443:8443 \
-  okestro/cst_tomcat:0.0.2
+  --name cst_tomcat2 \
+  -p 8081:8080 \
+  -p 8444:8443 \
+  okestro/cst_tomcat:0.0.3
 
 # postgres
 docker run -d -it \
@@ -146,7 +146,7 @@ docker run -d -it ^
   --name okestro/cst_tomcat ^
   -p 8080:8080 ^
   -p 8443:8443 ^
-  okestro/cst_tomcat:0.0.2
+  okestro/cst_tomcat:0.0.3
 
 REM postgres
 docker run -d -it ^

@@ -7,9 +7,9 @@ import com.itinfo.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
+
 import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.types.Cluster;
 import org.ovirt.engine.sdk4.types.Event;
@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class DashboardServiceImpl extends BaseService implements DashboardService {
-
     @Autowired private ConnectionService connectionService;
     @Autowired private DashboardDao dashboardDao;
 
@@ -35,14 +34,15 @@ public class DashboardServiceImpl extends BaseService implements DashboardServic
     @Override
     public DataCenterVo retrieveDataCenterStatus() {
         Connection connection = this.connectionService.getConnection();
-        this.dcv = new DataCenterVo();
+        this.dcv = DataCenterVo.Companion.simpleSetup(connection);
         this.usageVos = new ArrayList<>();
-        getClusters(connection);
+        // getClusters(connection);
         getHosts(connection);
-        getVms(connection);
+        // getVms(connection);
         return this.dcv;
     }
 
+    @Deprecated
     private void getClusters(Connection connection) {
         List<Cluster> clusters
                 = getSysSrvHelper().findAllClusters(connection, "");
@@ -149,31 +149,23 @@ public class DashboardServiceImpl extends BaseService implements DashboardServic
     }
 
 
+    @Deprecated
     private void getVms(Connection connection) {
         List<Vm> vms =
                 getSysSrvHelper().findAllVms(connection, "status!=up");
         this.dcv.setVmsDown(vms.size());
         vms =
-                getSysSrvHelper().findAllVms(connection, "status=up");
+            getSysSrvHelper().findAllVms(connection, "status=up");
         this.dcv.setVmsUp(vms.size());
     }
 
 
     @Override
     public List<EventVo> retrieveEvents() {
+        log.info("... retrieveEvents");
         Connection connection = this.connectionService.getConnection();
         List<Event> items =
                 getSysSrvHelper().findAllEvents(connection, "time>today");
-        return items.stream().map(e -> {
-            EventVo event = new EventVo();
-            event.setId(e.id());
-            event.setCorrelationId(e.correlationId());
-            event.setCode(e.code());
-            event.setSeverity(e.severity().value());
-            event.setDescription(e.description());
-            event.setOrigin(e.origin());
-            event.setTime(e.time());
-            return event;
-        }).collect(Collectors.toList());
+        return ModelsKt.toEventVos(items);
     }
 }

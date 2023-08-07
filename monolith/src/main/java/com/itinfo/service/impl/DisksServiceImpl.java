@@ -2,27 +2,24 @@ package com.itinfo.service.impl;
 
 import com.itinfo.ItInfoConstant;
 import com.itinfo.SystemServiceHelper;
+import com.itinfo.model.*;
 import com.itinfo.service.engine.ConnectionService;
 import com.itinfo.service.engine.AdminConnectionService;
 import com.itinfo.service.engine.WebsocketService;
-import com.itinfo.model.DiskCreateVo;
-import com.itinfo.model.DiskMigrationVo;
-import com.itinfo.model.DiskVo;
-import com.itinfo.model.MessageVo;
 import com.itinfo.service.DisksService;
 
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
@@ -48,32 +45,19 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.builders.DiskBuilder;
-import org.ovirt.engine.sdk4.builders.HostBuilder;
-import org.ovirt.engine.sdk4.builders.HostStorageBuilder;
-import org.ovirt.engine.sdk4.builders.LogicalUnitBuilder;
 import org.ovirt.engine.sdk4.internal.containers.ImageContainer;
 import org.ovirt.engine.sdk4.internal.containers.ImageTransferContainer;
-import org.ovirt.engine.sdk4.services.DiskService;
-import org.ovirt.engine.sdk4.services.HostStorageService;
-import org.ovirt.engine.sdk4.services.HostsService;
 import org.ovirt.engine.sdk4.services.ImageTransferService;
 import org.ovirt.engine.sdk4.services.ImageTransfersService;
-import org.ovirt.engine.sdk4.services.StorageDomainService;
 import org.ovirt.engine.sdk4.services.SystemService;
-import org.ovirt.engine.sdk4.services.VmsService;
 import org.ovirt.engine.sdk4.types.Disk;
 import org.ovirt.engine.sdk4.types.DiskAttachment;
 import org.ovirt.engine.sdk4.types.DiskFormat;
-import org.ovirt.engine.sdk4.types.DiskProfile;
 import org.ovirt.engine.sdk4.types.DiskStatus;
-import org.ovirt.engine.sdk4.types.Host;
-import org.ovirt.engine.sdk4.types.HostStorage;
 import org.ovirt.engine.sdk4.types.Image;
 import org.ovirt.engine.sdk4.types.ImageTransfer;
 import org.ovirt.engine.sdk4.types.ImageTransferPhase;
-import org.ovirt.engine.sdk4.types.LogicalUnit;
 import org.ovirt.engine.sdk4.types.StorageDomain;
-import org.ovirt.engine.sdk4.types.StorageType;
 import org.ovirt.engine.sdk4.types.Vm;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,19 +66,19 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class DisksServiceImpl implements DisksService {
+public class DisksServiceImpl extends BaseService implements DisksService {
 	@Autowired private AdminConnectionService adminConnectionService;
 	@Autowired private WebsocketService websocketService;
 	@Autowired private ConnectionService connectionService;
 
 	@Override
 	public List<DiskVo> retrieveDisks() {
+		log.info("... retrieveDisks");
 		Connection connection = adminConnectionService.getConnection();
 		List<Disk> disks
 				= SystemServiceHelper.getInstance().findAllDisks(connection, "");
 		List<Vm> vms
 				= SystemServiceHelper.getInstance().findAllVms(connection, "");
-
 		Map<String, String> vmDiskIdMap = new HashMap<>();
 		vms.forEach(vm -> {
 			List<DiskAttachment> diskAttachments
@@ -105,7 +89,10 @@ public class DisksServiceImpl implements DisksService {
 			});
 		});
 
-		List<DiskVo> diskVoList = new ArrayList<>();
+		// TODO: 값 검증필요
+		List<DiskVo> diskVoList
+				= ModelsKt.toDiskVos(disks, connection, null);
+		/*
 		for (Disk disk : disks) {
 			DiskVo diskVo = new DiskVo();
 			diskVo.setId(disk.id());
@@ -113,16 +100,12 @@ public class DisksServiceImpl implements DisksService {
 			diskVo.setDescription(disk.description());
 			diskVo.setType(disk.storageType().name());
 			diskVo.setSharable(disk.shareable());
-			if (disk.provisionedSize() != null) {
+			if (disk.provisionedSizePresent()) {
 				diskVo.setVirtualSize(String.valueOf(disk.provisionedSize()));
 			} else if (disk.provisionedSize() == null && disk.storageType().name().equals("LUN")) {
 				diskVo.setVirtualSize(String.valueOf((disk.lunStorage().logicalUnits().get(0)).size()));
 			}
-			if (disk.status() != null) {
-				diskVo.setStatus(disk.status().value());
-			} else if (disk.status() == null) {
-				diskVo.setStatus("ok");
-			}
+			diskVo.setStatus(disk.statusPresent() ? disk.status().value() : "ok");
 			if (disk.storageDomains() != null && disk.storageDomains().size() > 0) {
 				diskVo.setStorageDomainId(disk.storageDomains().get(0).id());
 				String storageDomainName = SystemServiceHelper.getInstance().findStorageDomain(connection, diskVo.getStorageDomainId()).name();
@@ -133,29 +116,32 @@ public class DisksServiceImpl implements DisksService {
 				diskVo.setAttachedTo(vmDiskIdMap.get(disk.id()));
 			diskVoList.add(diskVo);
 		}
+		*/
 		return diskVoList;
 	}
 
 	@Override
 	public List<DiskVo> retrieveDisks(String storageDomainName) {
+		log.info("... retrieveDisks('{}')", storageDomainName);
 		Connection connection = this.adminConnectionService.getConnection();
-
 		List<Disk> disks
 				= SystemServiceHelper.getInstance().findAllDisks(connection, " Storage=" + storageDomainName);
 		List<Vm> vms
 				= SystemServiceHelper.getInstance().findAllVms(connection, "");
 
-		Map<String, String> vmDiskIdMap = new HashMap<>();
+		// Map<String, String> vmDiskIdMap = new HashMap<>();
 		vms.forEach(vm -> {
 			List<DiskAttachment> diskAttachments =
 					SystemServiceHelper.getInstance().findDiskAttachmentsFromVm(connection, vm.id());
-			// TODO: DiskAttach처리 필요
 			diskAttachments.forEach(att -> {
 				// vmDiskIdMap.put(vm.id(), diskAttachments)
 			});
 		});
 
-		List<DiskVo> diskVoList = new ArrayList<>();
+		List<DiskVo> diskVoList
+				= ModelsKt.toDiskVos(disks, connection, new ArrayList<>());
+		// TODO: vmDiskIdMap 연결 작업 필요
+		/*
 		for (Disk disk : disks) {
 			DiskVo diskVo = new DiskVo();
 			diskVo.setId(disk.id());
@@ -170,58 +156,42 @@ public class DisksServiceImpl implements DisksService {
 				diskVo.setAttachedTo(vmDiskIdMap.get(disk.id()));
 			diskVoList.add(diskVo);
 		}
+		*/
 		return diskVoList;
 	}
 
 	@Override
 	public void createDisk(DiskCreateVo diskCreateVo) {
+		log.info("... createDisk");
 		Connection connection = this.adminConnectionService.getConnection();
-		SystemService systemService = connection.systemService();
-		StorageDomain storageDomain
-				= systemService.storageDomainsService().storageDomainService(diskCreateVo.getStorageDomainId()).get().send().storageDomain();
-		List<DiskProfile> diskProfiles
-				= systemService.diskProfilesService().list().send().profile();
-		DiskProfile diskProfile
-				= systemService.diskProfilesService().diskProfileService(diskCreateVo.getDiskProfileId()).get().send().profile();
-		org.ovirt.engine.sdk4.services.DisksService disksService
-				= systemService.disksService();
-
-		Disk disk = null;
-		MessageVo message = null;
+		Disk disk;
+		MessageVo message;
 		try {
-			DiskBuilder diskBuilder = new DiskBuilder();
-			diskBuilder.name(diskCreateVo.getName());
-			diskBuilder.description(diskCreateVo.getDescription());
-			if (diskCreateVo.getShareable()) {
-				diskBuilder.format(DiskFormat.RAW);
-			} else {
-				diskBuilder.format(DiskFormat.COW);
+			/*
+			DiskBuilder diskBuilder = new DiskBuilder()
+					.name(diskCreateVo.getName())
+					.description(diskCreateVo.getDescription())
+					.format(diskCreateVo.getShareable() ? DiskFormat.RAW : DiskFormat.COW)
+					.shareable(diskCreateVo.getShareable())
+					.wipeAfterDelete(diskCreateVo.getWipeAfterDelete())
+					.provisionedSize(BigInteger.valueOf(Integer.parseInt(diskCreateVo.getSize())).multiply(BigInteger.valueOf(2L).pow(30)))
+					.storageDomains(storageDomain);
+			*/
+			disk
+					= getSysSrvHelper().addDisk(connection, ModelsKt.toDisk(diskCreateVo, connection));
+			if (disk != null) {
+				do {
+					try { Thread.sleep(5000L); } catch (InterruptedException e) { log.error(e.getLocalizedMessage()); }
+					if (disk.idPresent()) disk = getSysSrvHelper().findDisk(connection, disk.id());
+				} while (disk.status() != DiskStatus.OK);
 			}
-			diskBuilder.shareable(diskCreateVo.getShareable());
-			diskBuilder.wipeAfterDelete(diskCreateVo.getWipeAfterDelete());
-			diskBuilder.provisionedSize(BigInteger.valueOf(Integer.parseInt(diskCreateVo.getSize())).multiply(BigInteger.valueOf(2L).pow(30)));
-			diskBuilder.storageDomains(new StorageDomain[] { storageDomain });
-			disk = disksService.add().disk(diskBuilder).send().disk();
-			DiskService diskService = disksService.diskService(disk.id());
-			do {
-				try {
-					Thread.sleep(5000L);
-				} catch (InterruptedException e) { e.printStackTrace(); }
-				disk = diskService.get().send().disk();
-			} while (disk.status() != DiskStatus.OK);
-			message = new MessageVo(
-					"디스크 생성",
-					"디스크 생성 완료("+ disk.name() + ")",
-					"success"
-			);
+			message
+					= MessageVo.createMessage(MessageType.DISK_ADD, true, diskCreateVo.getName(), "");
 		} catch (Exception e) {
 			log.error(e.getLocalizedMessage());
 			e.printStackTrace();
-			message = new MessageVo(
-					"디스크 생성",
-					"디스크 생성 실패("+ diskCreateVo.getName() + ")",
-					"error"
-			);
+			message
+					= MessageVo.createMessage(MessageType.DISK_ADD, false, diskCreateVo.getName(), e.getLocalizedMessage());
 		}
 		this.websocketService.sendMessage("/topic/notify", (new Gson()).toJson(message));
 		this.websocketService.sendMessage("/topic/disks/reload", "");
@@ -230,56 +200,52 @@ public class DisksServiceImpl implements DisksService {
 	@Async("karajanTaskExecutor")
 	@Override
 	public void createLunDisk(DiskCreateVo diskCreateVo) {
+		log.info("... createLunDisk");
 		Connection connection = this.adminConnectionService.getConnection();
+		/*
 		SystemService systemService = connection.systemService();
 		List<HostStorage> luns
 				= systemService.hostsService().hostService(diskCreateVo.getHostId()).storageService().list().send().storages();
 		List<Host> hosts
 				= systemService.hostsService().list().send().hosts();
-		org.ovirt.engine.sdk4.services.DisksService disksService
-				= systemService.disksService();
-		MessageVo message;
-		Disk disk = null;
+		*/
+		MessageVo message = null;
+		Disk disk;
 		try {
-			DiskBuilder diskBuilder = new DiskBuilder();
-			diskBuilder.alias(diskCreateVo.getName());
-			diskBuilder.description(diskCreateVo.getDescription());
-			diskBuilder.shareable(diskCreateVo.getShareable());
+			/*
+			DiskBuilder diskBuilder = new DiskBuilder()
+				.alias(diskCreateVo.getName())
+				.description(diskCreateVo.getDescription())
+				.shareable(diskCreateVo.getShareable());
 			HostStorageBuilder lunStorage = new HostStorageBuilder();
 			for (HostStorage lun : luns) {
 				if (lun.id().equals(diskCreateVo.getLunId())) {
-					LogicalUnitBuilder logicalUnitBuilder = new LogicalUnitBuilder();
-					logicalUnitBuilder.id(diskCreateVo.getLunId());
-					logicalUnitBuilder.lunMapping(((LogicalUnit)lun.logicalUnits().get(0)).lunMapping());
-					logicalUnitBuilder.productId(((LogicalUnit)lun.logicalUnits().get(0)).productId());
-					logicalUnitBuilder.serial(((LogicalUnit)lun.logicalUnits().get(0)).serial());
-					logicalUnitBuilder.size(((LogicalUnit)lun.logicalUnits().get(0)).size());
-					logicalUnitBuilder.vendorId(((LogicalUnit)lun.logicalUnits().get(0)).vendorId());
-					HostBuilder hostBuilder = new HostBuilder();
-					hostBuilder.id(diskCreateVo.getHostId());
+					LogicalUnitBuilder logicalUnitBuilder = new LogicalUnitBuilder()
+						.id(diskCreateVo.getLunId())
+						.lunMapping((lun.logicalUnits().get(0)).lunMapping())
+						.productId((lun.logicalUnits().get(0)).productId())
+						.serial((lun.logicalUnits().get(0)).serial())
+						.size((lun.logicalUnits().get(0)).size())
+						.vendorId((lun.logicalUnits().get(0)).vendorId());
+
+					HostBuilder hostBuilder = new HostBuilder()
+						.id(diskCreateVo.getHostId());
+
 					lunStorage.host(hostBuilder);
 					lunStorage.type(StorageType.FCP);
-					lunStorage.logicalUnits(new LogicalUnitBuilder[] { logicalUnitBuilder });
+					lunStorage.logicalUnits(logicalUnitBuilder);
 					diskBuilder.lunStorage(lunStorage);
 					break;
 				}
 			}
-			disk = disksService.add().disk(diskBuilder).send().disk();
-			DiskService diskService
-					= disksService.diskService(disk.id());
-			message = new MessageVo(
-					"디스크 생성",
-					"디스크 생성 완료("+ disk.name() +")",
-					"success"
-			);
+			*/
+			disk = getSysSrvHelper().addDisk(connection, ModelsKt.toDisk4Lun(diskCreateVo, connection));
+			if (disk != null)
+				message = MessageVo.createMessage(MessageType.DISK_ADD, true, disk.name(), "");
 		} catch (Exception e) {
 			log.error(e.getLocalizedMessage());
 			e.printStackTrace();
-			message = new MessageVo(
-					"디스크 생성",
-					"디스크 생성 실패("+ diskCreateVo.getName() +")",
-					"error"
-			);
+			message = MessageVo.createMessage(MessageType.DISK_ADD, false, diskCreateVo.getName(), e.getLocalizedMessage());
 		}
 		this.websocketService.sendMessage("/topic/notify", (new Gson()).toJson(message));
 		this.websocketService.sendMessage("/topic/disks/reload", "");
@@ -287,87 +253,67 @@ public class DisksServiceImpl implements DisksService {
 
 	@Async("karajanTaskExecutor")
 	@Override
-	public void removeDisk(List<String> disks) {
+	public void removeDisk(List<String> diskIds) {
+		log.info("... removeDisk");
 		Connection connection = this.adminConnectionService.getConnection();
-		SystemService systemService = connection.systemService();
 		MessageVo message;
 		String diskName = "";
-		try {
-			DiskService diskService = systemService.disksService().diskService(disks.get(0));
-			Disk disk
-					= diskService.get().send().disk();
-			diskName
-					= disk.name();
-			diskService.remove().send();
-			message = new MessageVo(
-					"디스크 삭제",
-					"디스크 삭제 완료("+ diskName + ")",
-					"success"
-			);
-		} catch (Exception e) {
-			e.printStackTrace();
-			message = new MessageVo(
-					"디스크 삭제",
-					"디스크 삭제 실패("+ diskName + ")",
-					"error"
-			);
+		for (String diskId: diskIds) {
+			try {
+				Disk disk = getSysSrvHelper().findDisk(connection, diskId);
+				diskName = disk.name();
+				boolean res = getSysSrvHelper().removeDisk(connection, diskId);
+				message = MessageVo.createMessage(MessageType.DISK_REMOVE, res, diskName, "");
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.error(e.getLocalizedMessage());
+				message = MessageVo.createMessage(MessageType.DISK_REMOVE, false, diskName, e.getLocalizedMessage());
+			}
+			try { Thread.sleep(1000L); } catch (InterruptedException e) { e.getLocalizedMessage(); }
+			websocketService.sendMessage("/topic/notify", (new Gson()).toJson(message));
+			websocketService.sendMessage("/topic/disks/reload", "");
 		}
-		try {
-			Thread.sleep(1000L);
-		} catch (Exception exception) {}
-		websocketService.sendMessage("/topic/notify", (new Gson()).toJson(message));
-		websocketService.sendMessage("/topic/disks/reload", "");
 	}
 
 	@Async("karajanTaskExecutor")
 	@Override
 	public void migrationDisk(DiskMigrationVo diskMigrationVo) {
+		log.info("... migrationDisk");
 		Connection connection = this.adminConnectionService.getConnection();
-		SystemService systemService = connection.systemService();
-		String actionName = "";
-		if ("move".equalsIgnoreCase(diskMigrationVo.getMigrationType())) {
-			actionName = "디스크 이동";
-		} else if ("copy".equalsIgnoreCase(diskMigrationVo.getMigrationType())) {
-			actionName = "디스크 복사";
+		if (!("move".equalsIgnoreCase(diskMigrationVo.getMigrationType()) ||
+			"copy".equalsIgnoreCase(diskMigrationVo.getMigrationType()))) {
+			log.error("처리 보류 ... 찾을 수 없는 디스크 처리 행위 ... migrationType: "+diskMigrationVo.getMigrationType());
+			return;
 		}
 		MessageVo message;
 		Disk disk = null;
+		boolean res = false;
+
 		try {
-			DiskService diskService
-					= systemService.disksService().diskService(diskMigrationVo.getDisk().getId());
 			StorageDomain target
-					= systemService.storageDomainsService().storageDomainService(diskMigrationVo.getTargetStorageDomainId()).get().send().storageDomain();
+					= getSysSrvHelper().findStorageDomain(connection, diskMigrationVo.getTargetStorageDomainId());
 			if ("move".equalsIgnoreCase(diskMigrationVo.getMigrationType())) {
-				DiskService.MoveResponse moveResponse = (DiskService.MoveResponse)diskService.move().storageDomain(target).send();
+				res = getSysSrvHelper().moveDisk(connection, diskMigrationVo.getDisk().getId(), target);
 			} else if ("copy".equalsIgnoreCase(diskMigrationVo.getMigrationType())) {
-				diskService.copy()
-						.disk((new DiskBuilder()).name(diskMigrationVo.getTargetDiskName()))
-						.storageDomain(target)
-						.send();
+				Disk disk2copy = new DiskBuilder().name(diskMigrationVo.getTargetDiskName()).build();
+				res = getSysSrvHelper().copyDisk(connection, diskMigrationVo.getDisk().getId(), disk2copy, target);
 			}
 			do {
-				try {
-					Thread.sleep(5000L);
-				} catch (InterruptedException e) { e.printStackTrace(); }
-				disk = diskService.get().send().disk();
+				try { Thread.sleep(5000L); } catch (InterruptedException e) { log.error(e.getLocalizedMessage()); }
+				disk = getSysSrvHelper().findDisk(connection, diskMigrationVo.getDisk().getId());
 			} while (disk.status() != DiskStatus.OK);
-			message = new MessageVo(
-					actionName,
-					actionName + " 완료(" + disk.name() + ")",
-					"success"
-			);
+			message = MessageVo.createMessage(
+						"move".equalsIgnoreCase(diskMigrationVo.getMigrationType()) ? MessageType.DISK_MOVE : MessageType.DISK_COPY,
+						res, disk.name(), "");
+
 		} catch (Exception e) {
 			log.error(e.getLocalizedMessage());
 			e.printStackTrace();
-			message = new MessageVo(
-					actionName,
-					actionName + " 실패(" + disk.name() + ")",
-					"error"
-			);
+			message = MessageVo.createMessage(
+					"move".equalsIgnoreCase(diskMigrationVo.getMigrationType()) ? MessageType.DISK_MOVE : MessageType.DISK_COPY,
+					res, disk.name(), e.getLocalizedMessage());
 		}
-		try {
-			Thread.sleep(1000L);
-		} catch (Exception exception) {}
+		try { Thread.sleep(1000L); } catch (InterruptedException e) { e.getLocalizedMessage(); }
 		this.websocketService.sendMessage("/topic/notify", (new Gson()).toJson(message));
 		this.websocketService.sendMessage("/topic/disks/reload", "");
 	}
@@ -387,12 +333,8 @@ public class DisksServiceImpl implements DisksService {
 			diskBuilder.name(diskCreateVo.getName());
 			diskBuilder.description(diskCreateVo.getDescription());
 			if ("qcow2".equals(diskCreateVo.getFormat())) {
-				if (diskCreateVo.getShareable()) {
-					diskBuilder.format(DiskFormat.RAW);
-				} else {
-					diskBuilder.format(DiskFormat.COW);
-				}
-			} else if (!"qcow2".equals(diskCreateVo.getFormat())) {
+				diskBuilder.format(diskCreateVo.getShareable() ? DiskFormat.RAW : DiskFormat.COW);
+			} else {
 				diskBuilder.format(DiskFormat.RAW);
 			}
 			diskBuilder.shareable(diskCreateVo.getShareable());
@@ -402,7 +344,7 @@ public class DisksServiceImpl implements DisksService {
 			} else if ("qcow2".equals(diskCreateVo.getFormat())) {
 				diskBuilder.provisionedSize(diskCreateVo.getVirtualSize());
 			}
-			diskBuilder.storageDomains(new StorageDomain[] { storageDomain });
+			diskBuilder.storageDomains(storageDomain);
 			Disk disk = disksService.add().disk(diskBuilder).send().disk();
 			do {
 				Thread.sleep(3000L);
@@ -489,7 +431,6 @@ public class DisksServiceImpl implements DisksService {
 	@Override
 	public String retrieveDiskImage(File file) throws IOException {
 		return null;
-
 	}
 
 	public static void setTrustStore() throws Exception {
@@ -497,7 +438,8 @@ public class DisksServiceImpl implements DisksService {
 		log.info("path는 ... "+ path);
 		TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("X509");
 		KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-		InputStream is = new FileInputStream("../webapps/ROOT/WEB-INF/cert.pem");
+		InputStream is = Files.newInputStream(Paths.get("../webapps/ROOT/WEB-INF/cert.pem"));
+
 		MessageVo message = new MessageVo();
 		message.setTitle("cert.pem");
 		CertificateFactory cf = CertificateFactory.getInstance("X.509");
@@ -547,8 +489,8 @@ public class DisksServiceImpl implements DisksService {
 			outputStream.close();
 			inputStream = conn.getInputStream();
 			bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-			String buf = new String();
-			String resultBuf = new String();
+			String buf = "";
+			String resultBuf = "";
 			while ((buf = bufferedReader.readLine()) != null)
 				resultBuf = resultBuf + buf;
 			resultString = resultBuf;
@@ -557,8 +499,10 @@ public class DisksServiceImpl implements DisksService {
 			bufferedReader.close();
 		} catch (MalformedURLException | KeyManagementException | NoSuchAlgorithmException e) {
 			e.printStackTrace();
+			log.error(e.getLocalizedMessage());
 		} catch (IOException e) {
 			e.printStackTrace();
+			log.error(e.getLocalizedMessage());
 			return "timeout";
 		} finally {
 			try {

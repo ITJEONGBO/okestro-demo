@@ -106,6 +106,11 @@ object Dependencies {
 }
 
 //util functions for adding the different type dependencies from build.gradle file
+fun DependencyHandler.api(list: List<String>) {
+    list.forEach { dependency ->
+        add("api", dependency)
+    }
+}
 fun DependencyHandler.kapt(list: List<String>) {
     list.forEach { dependency ->
         add("kapt", dependency)
@@ -139,5 +144,11 @@ fun DependencyHandler.androidTestImplementation(list: List<String>) {
 fun DependencyHandler.testImplementation(list: List<String>) {
     list.forEach { dependency ->
         add("testImplementation", dependency)
+    }
+}
+
+fun DependencyHandler.compileOnly(list: List<String>) {
+    list.forEach { dependency ->
+        add("compileOnly", dependency)
     }
 }

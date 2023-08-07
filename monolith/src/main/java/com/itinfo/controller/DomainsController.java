@@ -57,7 +57,7 @@ public class DomainsController {
 
 	@RequestMapping({"/storage/domains/retrieveDomains"})
 	public String retrieveDomains(String status, String domainType, Model model) {
-		log.info("... domainView("+status+")");
+		log.info("... domainView('{}', '{}')", status, domainType);
 		List<StorageDomainVo> storageDomains = this.domainsService.retrieveStorageDomains(status, domainType);
 		model.addAttribute("resultKey", storageDomains);
 		return "jsonView";

@@ -9,4 +9,6 @@ bin
 .externalNativeBuild
 .cxx
 docker/okestro/*.war
+docker/okestro/okestro-*
+docker/okestro/ROOT
 *.tar

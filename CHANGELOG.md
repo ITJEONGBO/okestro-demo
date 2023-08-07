@@ -8,6 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v0.0.3: 2023-08-08][v0.0.3]
+
+프로젝트 안정화
+
+### Fixed
+
+- model 관리 세부봐 (null 처리 대상 세부화)
+- SystemService 예외대비 호출 기능 강화
+- dashboardView 안정화
+- (환경에 따른) database.properties 와 common.properties로 변수 관리
+
+### Added
+
+- 모듈 추가 (`common`, `util`)
+- exploded war로 관리 하도록 구성 (docker)
+ 
+---
+
 ## [v0.0.2: 2023-08-05][v0.0.2]
 
 프로젝트 안정화
@@ -31,4 +49,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 프로젝트 초기구성완료
 
+[v0.0.3]: https://github.com/ITJEONGBO/okestro-demo/compare/v0.0.2...v0.0.3
 [v0.0.2]: https://github.com/ITJEONGBO/okestro-demo/compare/v0.0.1...v0.0.2

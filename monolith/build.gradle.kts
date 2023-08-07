@@ -8,22 +8,25 @@ plugins {
 }
 
 group = "com.itinfo"
-version = "0.0.1"
+version = Versions.Project.OKESTRO
 
 val profile: String = if (project.hasProperty("profile")) project.property("profile") as? String ?: "local" else "local"
 var artifactName: String = "okestro-monolith-${profile}"
 println("profile  : $profile")
+val defaultBuildClassPath: String = "build/classes/kotlin/main"
+val explodedWarName: String = "$artifactName-exploded"
+val explodedWarPath: String = "$buildDir/libs/$explodedWarName"
+println("explodedWarPath  : $explodedWarPath")
 
 tasks {
     processResources {
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }
-
 }
 
 sourceSets {
     main {
-        java.srcDirs(listOf("src/main/java"))
+        java.srcDirs(listOf("src/main/java", "src/main/kotlin"))
         resources.srcDirs(listOf("src/main/resources"))
         resources {
             srcDirs("src/main/resources-local", "src/main/resources-$profile")
@@ -38,11 +41,76 @@ tasks.compileJava { dependsOn(tasks.clean) }
 tasks.compileKotlin {dependsOn(tasks.clean) }
 // tasks.clean { finalizedBy(tasks.named("war")) }
 
+
+dependencies {
+    providedCompile(project(":common"))
+    providedCompile(project(":util"))
+    tomcat(Dependencies.tomcatEmbedded)
+    api(Dependencies.kotlinStdlib)
+    implementation(Dependencies.ovirt)
+    implementation(Dependencies.spring)
+    implementation(Dependencies.springSecurity)
+    implementation(Dependencies.qemu)
+    implementation(Dependencies.tiles)
+    implementation(Dependencies.mybatis)
+    implementation(Dependencies.log4j)
+    providedCompile(Dependencies.javaxServlet)
+    implementation(Dependencies.javaxServletJstl)
+    implementation(Dependencies.javaxInject)
+    implementation(Dependencies.javaxAnnotation)
+    annotationProcessor(Dependencies.javaxAnnotation)
+    implementation(Dependencies.webjars)
+    implementation(Dependencies.jdbc)
+    implementation(Dependencies.commons)
+    implementation(Dependencies.jasypt)
+    implementation(Dependencies.gson)
+    implementation(Dependencies.jsonSimple)
+    implementation(Dependencies.aspectj)
+    implementation(Dependencies.cglib)
+    compileOnly(Dependencies.lombok)
+    annotationProcessor(Dependencies.lombok)
+    testImplementation(Dependencies.springTest)
+    testImplementation(Dependencies.hamcrest)
+}
+
+
 tasks.war {
     // webXml = file("src/main/webapp/WEB-INF/web.xml")
     baseName = artifactName
-    finalizedBy(tasks.named("placeOutputToDocker"))
+    finalizedBy(explodedWar)
+//    into("$explodedWarPath/WEB-INF/classes") {
+//        from("${project.rootDir}/util/${defaultBuildClassPath}")
+//        from("${project.rootDir}/common/${defaultBuildClassPath}")
+//    }
 }
+
+val explodedWar by tasks.register<Copy>("explodedWar") {
+    into(explodedWarPath)
+    with(tasks.war.get())
+}
+val putModules = task("putModules") {
+    doLast {
+        copy {
+            from("${project.rootDir}/util/${defaultBuildClassPath}")
+            into("$explodedWarPath/WEB-INF/classes")
+        }
+        copy {
+            from("${project.rootDir}/common/${defaultBuildClassPath}")
+            into("$explodedWarPath/WEB-INF/classes")
+        }
+    }
+}
+
+val placeOutputToDocker by tasks.register<Copy>("placeOutputToDocker") {
+    println("execute placeOutputToDocker!")
+    from(explodedWarPath)
+    into(file("${project.rootDir}/docker/okestro/$explodedWarName"))
+    include(explodedWarName)
+    rename(explodedWarName, "ROOT")
+}
+explodedWar.finalizedBy(putModules)
+putModules.finalizedBy(placeOutputToDocker)
+
 
 task("openBrowser") {
     description = "open browser to the running application"
@@ -61,13 +129,8 @@ task("exploreOutput") {
     }
 }
 
-tasks.register<Copy>("placeOutputToDocker") {
-    println("execute placeOutputToDocker!")
-    from(layout.buildDirectory.dir("libs"))
-    include("*.war")
-    into(file("${project.rootDir}/docker/okestro"))
-    rename("${artifactName}-${version}", "ROOT")
-}
+
+explodedWar.finalizedBy(placeOutputToDocker)
 
 
 tomcat {
@@ -94,33 +157,4 @@ configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
     }
-}
-
-dependencies {
-    tomcat(Dependencies.tomcatEmbedded)
-    implementation(Dependencies.kotlinStdlib)
-    implementation(Dependencies.ovirt)
-    implementation(Dependencies.spring)
-    implementation(Dependencies.springSecurity)
-    implementation(Dependencies.qemu)
-    implementation(Dependencies.tiles)
-    implementation(Dependencies.mybatis)
-    implementation(Dependencies.log4j)
-    providedCompile(Dependencies.javaxServlet)
-    implementation(Dependencies.javaxServletJstl)
-    implementation(Dependencies.javaxInject)
-    implementation(Dependencies.javaxAnnotation)
-    annotationProcessor(Dependencies.javaxAnnotation)
-    implementation(Dependencies.webjars)
-    implementation(Dependencies.jdbc)
-    implementation(Dependencies.commons)
-    implementation(Dependencies.jasypt)
-    implementation(Dependencies.gson)
-    implementation(Dependencies.jsonSimple)
-    implementation(Dependencies.aspectj)
-    implementation(Dependencies.cglib)
-    compileOnly(Dependencies.lombok)
-    annotationProcessor(Dependencies.lombok)
-    testImplementation(Dependencies.springTest)
-    testImplementation(Dependencies.hamcrest)
 }

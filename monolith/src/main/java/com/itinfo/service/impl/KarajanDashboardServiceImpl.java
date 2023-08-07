@@ -18,7 +18,6 @@ import com.itinfo.service.engine.WebsocketService;
 import lombok.extern.slf4j.Slf4j;
 
 import org.ovirt.engine.sdk4.Connection;
-import org.ovirt.engine.sdk4.services.VmService;
 import org.ovirt.engine.sdk4.types.Host;
 import org.ovirt.engine.sdk4.types.Vm;
 import org.ovirt.engine.sdk4.types.VmStatus;
@@ -45,25 +44,27 @@ public class KarajanDashboardServiceImpl extends BaseService implements KarajanD
 
 	@Override
 	public KarajanVo retrieveDataCenterStatus() {
+		log.info("... retrieveDataCenterStatus");
 		return this.karajanService.getDataCenter();
 	}
 
 	@Override
 	public List<ConsolidationVo> consolidateVm(String clusterId) {
+		log.info("... consolidateVm('{}')", clusterId);
 		KarajanVo karajan = this.karajanService.getDataCenter();
 		return this.ffd.optimizeDataCenter(karajan, clusterId);
 	}
 
 	@Override
 	public String migrateVm(String hostId, String vmId) {
-		String result = null;
+		log.info("... migrateVm('{}', '{}')", hostId, vmId);
 		Connection connection = this.connectionService.getConnection();
 		Host host
 				= getSysSrvHelper().findHost(connection, hostId);
-		VmService vmService
-				= getSysSrvHelper().srvVm(connection, vmId);
+		String result;
 		try {
-			vmService.migrate().host(host).send();
+			getSysSrvHelper().migrateHostFromVm(connection, vmId, host);
+			try { Thread.sleep(3000L); } catch (InterruptedException e) { log.error(e.getLocalizedMessage()); }
 			result = VmStatus.MIGRATING.value();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -76,34 +77,29 @@ public class KarajanDashboardServiceImpl extends BaseService implements KarajanD
 	@Async("karajanTaskExecutor")
 	@Override
 	public void publishVmStatus(String hostId, String vmId) {
-		Vm vm = null;
+		log.info("... publishVmStatus('{}', '{}')", hostId, vmId);
 		Connection connection = this.adminConnectionService.getConnection();
-		VmService vmService
-				= getSysSrvHelper().srvVm(connection, vmId);
+
+		Vm vm;
 		do {
 			try { Thread.sleep(3000L); } catch (InterruptedException e) { log.error(e.getLocalizedMessage()); }
-			vm = vmService.get().send().vm();
+			vm = getSysSrvHelper().findVm(connection, vmId);
 		} while (vm.status() != VmStatus.UP);
-		if (hostId.equals(vm.host().id())) {
-			notify(vm.name(), "success");
-		} else {
-			notify(vm.name(), "error");
-		}
+
+		notify(vm.name(), hostId.equals(vm.host().id()) ? "success" : "error");
 	}
 
 	@Async("karajanTaskExecutor")
 	@Override
 	public void relocateVms(List<ConsolidationVo> consolidations) {
-		Vm vm = null;
+		log.info("... relocateVms");
 		Connection connection = this.adminConnectionService.getConnection();
-
+		Vm vm = null;
 		for (ConsolidationVo consolidation : consolidations) {
 			Host host =
 					getSysSrvHelper().findHost(connection, consolidation.getHostId());
-			VmService vmService =
-					getSysSrvHelper().srvVm(connection, consolidation.getVmId());
 			try {
-				vmService.migrate().host(host).send();
+				getSysSrvHelper().migrateHostFromVm(connection, consolidation.getVmId(), host);
 			} catch (Exception e) {
 				notify(consolidation.getVmName(), "error");
 				break;
@@ -111,7 +107,7 @@ public class KarajanDashboardServiceImpl extends BaseService implements KarajanD
 
 			do {
 				try { Thread.sleep(3000L); } catch (InterruptedException e) { log.error(e.getLocalizedMessage());  }
-				vm = vmService.get().send().vm();
+				getSysSrvHelper().findVm(connection, consolidation.getVmId());
 			} while (vm.status() != VmStatus.UP);
 			if (consolidation.getHostId().equals(vm.host().id())) {
 				notify(vm.name(), "success");
@@ -126,12 +122,13 @@ public class KarajanDashboardServiceImpl extends BaseService implements KarajanD
 	}
 
 	private void turnOffHosts(List<ConsolidationVo> consolidations) {
+		log.info("... turnOffHosts");
 		KarajanVo karajan = this.karajanService.getDataCenter();
 		for (ClusterVo cluster : karajan.getClusters()) {
 			for (HostVo host : cluster.getHosts()) {
 				if ((consolidations.get(0)).getHostId().equals(host.getId())) {
 					List<HostVo> turnOffHosts = cluster.getHosts().stream().filter(target ->
-							target.getVms().size() <= 0
+							target.getVms().size() == 0
 					).collect(Collectors.toList());
 					this.hostsService.shutdownHost(turnOffHosts);
 				}
@@ -140,17 +137,13 @@ public class KarajanDashboardServiceImpl extends BaseService implements KarajanD
 	}
 
 	private void notify(String vmName, String status) {
-		Gson gson = new Gson();
-		MessageVo message = new MessageVo();
-		message.setTitle("가상머신 이동");
-		if ("success".equals(status)) {
-			message.setText("가상머신 이동 완료("+ vmName + ")");
-			message.setStyle("success");
-			this.websocketService.sendMessage("/topic/migrateVm", gson.toJson(message));
-		} else {
-			message.setText("가상머신 이동 실패("+ vmName + ")");
-			message.setStyle("error");
-		}
-		this.websocketService.sendMessage("/topic/notify", gson.toJson(message));
+		MessageVo message = "success".equals(status)
+				? MessageVo.createMessage(MessageType.VIRTUAL_MACHINE_RELOCATE, true, vmName, "")
+				: MessageVo.createMessage(MessageType.VIRTUAL_MACHINE_RELOCATE, false, vmName, "");
+		this.websocketService.sendMessage(
+				"success".equals(status)
+						? "/topic/migrateVm"
+						: "/topic/notify", new Gson().toJson(message)
+		);
 	}
 }

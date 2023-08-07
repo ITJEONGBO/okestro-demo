@@ -8,15 +8,15 @@ import com.itinfo.model.VmUsageVo;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.SqlSessionTemplate;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 
 @Repository
+@Slf4j
 public class ClustersDao {
 	@Resource(name = "sqlSessionTemplate")
 	private SqlSessionTemplate sqlSessionTemplate;
@@ -24,15 +24,18 @@ public class ClustersDao {
 	private SqlSessionTemplate sqlSessionTemplateEngine;
 
 	public List<HostUsageVo> retrieveClusterUsage(List<String> ids) {
+		log.info("... retrieveClusterUsage('{}')", ids);
 		return this.sqlSessionTemplate.selectList("COMPUTE-CLUSTER.retrieveClusterChartUsage", ids);
 	}
 
 	public List<HostUsageVo> retrieveHostUsage(String hostId) {
+		log.info("... retrieveHostUsage('{}')", hostId);
 		return this.sqlSessionTemplate.selectList("COMPUTE-CLUSTER.retrieveHostChartUsage", hostId);
 	}
 
 	public HostUsageVo retrieveHostLastUsage(String hostId) {
-		return (HostUsageVo)this.sqlSessionTemplate.selectOne("COMPUTE-CLUSTER.retrieveHostLastUsage", hostId);
+		log.info("... retrieveHostLastUsage('{}')", hostId);
+		return this.sqlSessionTemplate.selectOne("COMPUTE-CLUSTER.retrieveHostLastUsage", hostId);
 	}
 
 	public NicUsageVo retrieveHostNicUsage(String nicId) {
