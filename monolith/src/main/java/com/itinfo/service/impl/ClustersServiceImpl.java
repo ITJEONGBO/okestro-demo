@@ -137,6 +137,10 @@ public class ClustersServiceImpl extends BaseService implements ClustersService 
 		Connection connection = adminConnectionService.getConnection();
 		Cluster cluster
 				= getSysSrvHelper().findCluster(connection, clusterId);
+		if (cluster == null) {
+			log.warn("no cluster FOUND! id: '{}'", clusterId);
+			return new ClusterCreateVo();
+		}
 		return ModelsKt.toClusterCreateVo(cluster, connection);
 	}
 

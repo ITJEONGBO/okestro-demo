@@ -1,7 +1,7 @@
 package com.itinfo.service.impl;
 
 import com.itinfo.ItInfoConstant;
-import com.itinfo.SystemServiceHelper;
+import com.itinfo.common.CloseableExtKt;
 import com.itinfo.model.*;
 import com.itinfo.service.engine.ConnectionService;
 import com.itinfo.service.engine.AdminConnectionService;
@@ -28,10 +28,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -54,7 +51,6 @@ import org.ovirt.engine.sdk4.types.Disk;
 import org.ovirt.engine.sdk4.types.DiskAttachment;
 import org.ovirt.engine.sdk4.types.DiskFormat;
 import org.ovirt.engine.sdk4.types.DiskStatus;
-import org.ovirt.engine.sdk4.types.Image;
 import org.ovirt.engine.sdk4.types.ImageTransfer;
 import org.ovirt.engine.sdk4.types.ImageTransferPhase;
 import org.ovirt.engine.sdk4.types.StorageDomain;
@@ -76,13 +72,13 @@ public class DisksServiceImpl extends BaseService implements DisksService {
 		log.info("... retrieveDisks");
 		Connection connection = adminConnectionService.getConnection();
 		List<Disk> disks
-				= SystemServiceHelper.getInstance().findAllDisks(connection, "");
+				= getSysSrvHelper().findAllDisks(connection, "");
 		List<Vm> vms
-				= SystemServiceHelper.getInstance().findAllVms(connection, "");
+				= getSysSrvHelper().findAllVms(connection, "");
 		Map<String, String> vmDiskIdMap = new HashMap<>();
 		vms.forEach(vm -> {
 			List<DiskAttachment> diskAttachments
-					= SystemServiceHelper.getInstance().findDiskAttachmentsFromVm(connection, vm.id());
+					= getSysSrvHelper().findAllDiskAttachmentsFromVm(connection, vm.id());
 			// TODO: DiskAttach처리 필요
 			diskAttachments.forEach(att -> {
 				// vmDiskIdMap.put(vm.id(), diskAttachments)
@@ -108,7 +104,7 @@ public class DisksServiceImpl extends BaseService implements DisksService {
 			diskVo.setStatus(disk.statusPresent() ? disk.status().value() : "ok");
 			if (disk.storageDomains() != null && disk.storageDomains().size() > 0) {
 				diskVo.setStorageDomainId(disk.storageDomains().get(0).id());
-				String storageDomainName = SystemServiceHelper.getInstance().findStorageDomain(connection, diskVo.getStorageDomainId()).name();
+				String storageDomainName = getSysSrvHelper().findStorageDomain(connection, diskVo.getStorageDomainId()).name();
 				diskVo.setStorageDomainName(storageDomainName);
 			}
 
@@ -125,14 +121,14 @@ public class DisksServiceImpl extends BaseService implements DisksService {
 		log.info("... retrieveDisks('{}')", storageDomainName);
 		Connection connection = this.adminConnectionService.getConnection();
 		List<Disk> disks
-				= SystemServiceHelper.getInstance().findAllDisks(connection, " Storage=" + storageDomainName);
+				= getSysSrvHelper().findAllDisks(connection, " Storage=" + storageDomainName);
 		List<Vm> vms
-				= SystemServiceHelper.getInstance().findAllVms(connection, "");
+				= getSysSrvHelper().findAllVms(connection, "");
 
 		// Map<String, String> vmDiskIdMap = new HashMap<>();
 		vms.forEach(vm -> {
 			List<DiskAttachment> diskAttachments =
-					SystemServiceHelper.getInstance().findDiskAttachmentsFromVm(connection, vm.id());
+					getSysSrvHelper().findAllDiskAttachmentsFromVm(connection, vm.id());
 			diskAttachments.forEach(att -> {
 				// vmDiskIdMap.put(vm.id(), diskAttachments)
 			});
@@ -321,6 +317,7 @@ public class DisksServiceImpl extends BaseService implements DisksService {
 	@Async("karajanTaskExecutor")
 	@Override
 	public void uploadDisk(byte[] bytes, DiskCreateVo diskCreateVo, InputStream is, long diskSize) {
+		log.info("... uploadDisk");
 		Connection connection = this.adminConnectionService.getConnection();
 		SystemService systemService = connection.systemService();
 		StorageDomain storageDomain
@@ -356,8 +353,8 @@ public class DisksServiceImpl extends BaseService implements DisksService {
 			ImageTransferContainer transfer2 = new ImageTransferContainer();
 			ImageContainer image = new ImageContainer();
 			image.id(disk.id());
-			transfer2.image((Image)image);
-			ImageTransfer transfer = ((ImageTransfersService.AddResponse)transfersService.add().imageTransfer((ImageTransfer)transfer2).send()).imageTransfer();
+			transfer2.image(image);
+			ImageTransfer transfer = (transfersService.add().imageTransfer(transfer2).send()).imageTransfer();
 			while (true) {
 				Thread.sleep(1000L);
 				if (transfer.phase() != ImageTransferPhase.INITIALIZING) {
@@ -430,10 +427,12 @@ public class DisksServiceImpl extends BaseService implements DisksService {
 
 	@Override
 	public String retrieveDiskImage(File file) throws IOException {
+		log.info("... retrieveDiskImage");
 		return null;
 	}
 
 	public static void setTrustStore() throws Exception {
+		log.info("... setTrustStore");
 		String path = System.getProperty("user.dir");
 		log.info("path는 ... "+ path);
 		TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("X509");
@@ -455,6 +454,7 @@ public class DisksServiceImpl extends BaseService implements DisksService {
 	}
 
 	public static String requestVfrontConnection(URL url, byte[] bytes) throws InterruptedException {
+		log.info("... requestVfrontConnection('{}')", url);
 		HttpsURLConnection conn = null;
 		OutputStream outputStream = null;
 		InputStream inputStream = null;
@@ -505,10 +505,8 @@ public class DisksServiceImpl extends BaseService implements DisksService {
 			log.error(e.getLocalizedMessage());
 			return "timeout";
 		} finally {
+			CloseableExtKt.doCloseAll(Arrays.asList(bufferedReader, inputStream, outputStream));
 			try {
-				if (bufferedReader != null)	bufferedReader.close();
-				if (inputStream != null)	inputStream.close();
-				if (outputStream != null)	outputStream.close();
 				if (conn != null)			conn.disconnect();
 			} catch (Exception e) {
 				log.error(e.getLocalizedMessage());

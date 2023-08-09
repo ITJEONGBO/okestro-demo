@@ -29,9 +29,7 @@ public class DataCenterServiceImpl extends BaseService implements DataCenterServ
 		Connection connection = connectionService.getConnection();
 		List<DataCenter> dataCenters
 				= getSysSrvHelper().findAllDataCenters(connection);
-		List<DataCenterVo> dataCentersInfo
-				= ModelsKt.toDataCenterVos(dataCenters, connection);
-		return dataCentersInfo;
+		return ModelsKt.toDataCenterVos(dataCenters, connection);
 	}
 }
 

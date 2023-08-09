@@ -22,8 +22,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ProvidersServiceImpl extends BaseService implements ProvidersService {
 	@Autowired private ConnectionService connectionService;
+
 	@Override
 	public List<ProviderVo> retrieveProviders() {
+		log.info("... retrieveProviders");
 		Connection connection = connectionService.getConnection();
 
 		List<ExternalHostProvider> externalHostProviders

@@ -13,6 +13,7 @@ version = Versions.Project.OKESTRO
 val profile: String = if (project.hasProperty("profile")) project.property("profile") as? String ?: "local" else "local"
 var artifactName: String = "okestro-monolith-${profile}"
 println("profile  : $profile")
+
 val defaultBuildClassPath: String = "build/classes/kotlin/main"
 val explodedWarName: String = "$artifactName-exploded"
 val explodedWarPath: String = "$buildDir/libs/$explodedWarName"
@@ -73,21 +74,26 @@ dependencies {
     testImplementation(Dependencies.hamcrest)
 }
 
-
 tasks.war {
-    // webXml = file("src/main/webapp/WEB-INF/web.xml")
     baseName = artifactName
+    doLast {
+        copy {
+            from("${project.rootDir}/util/${defaultBuildClassPath}")
+            into("$buildDir/classes/kotlin/main")
+        }
+        copy {
+            from("${project.rootDir}/common/${defaultBuildClassPath}")
+            into("$buildDir/classes/kotlin/main")
+        }
+    }
     finalizedBy(explodedWar)
-//    into("$explodedWarPath/WEB-INF/classes") {
-//        from("${project.rootDir}/util/${defaultBuildClassPath}")
-//        from("${project.rootDir}/common/${defaultBuildClassPath}")
-//    }
 }
 
 val explodedWar by tasks.register<Copy>("explodedWar") {
     into(explodedWarPath)
     with(tasks.war.get())
 }
+
 val putModules = task("putModules") {
     doLast {
         copy {
@@ -102,7 +108,6 @@ val putModules = task("putModules") {
 }
 
 val placeOutputToDocker by tasks.register<Copy>("placeOutputToDocker") {
-    println("execute placeOutputToDocker!")
     from(explodedWarPath)
     into(file("${project.rootDir}/docker/okestro/$explodedWarName"))
     include(explodedWarName)
@@ -128,9 +133,6 @@ task("exploreOutput") {
         Desktop.getDesktop().open(layout.buildDirectory.dir("libs").get().asFile)
     }
 }
-
-
-explodedWar.finalizedBy(placeOutputToDocker)
 
 
 tomcat {

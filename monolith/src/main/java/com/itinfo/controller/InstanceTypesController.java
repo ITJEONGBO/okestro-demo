@@ -39,7 +39,7 @@ public class InstanceTypesController {
 	@RequestMapping(value = {"/admin/retrieveInstanceTypes"}, method = {RequestMethod.GET})
 	public String retrieveInstanceTypes(Model model) {
 		log.info("... retrieveInstanceTypes");
-		List<InstanceTypeVo> instanceTypes = this.instanceTypesService.retrieveInstanceTypes();
+		List<InstanceTypeVo> instanceTypes = instanceTypesService.retrieveInstanceTypes();
 		model.addAttribute(ItInfoConstant.RESULT_KEY, instanceTypes);
 		return ItInfoConstant.JSON_VIEW;
 	}
@@ -47,7 +47,7 @@ public class InstanceTypesController {
 	@RequestMapping(value = {"/admin/retrieveInstanceTypeCreateInfo"}, method = {RequestMethod.GET})
 	public String retrieveInstanceTypeCreateInfo(Model model) throws Exception {
 		log.info("... retrieveInstanceTypeCreateInfo");
-		InstanceTypeVo instanceType = this.instanceTypesService.retrieveInstanceTypeCreateInfo();
+		InstanceTypeVo instanceType = instanceTypesService.retrieveInstanceTypeCreateInfo();
 		model.addAttribute(ItInfoConstant.RESULT_KEY, instanceType);
 		return ItInfoConstant.JSON_VIEW;
 	}
@@ -55,15 +55,15 @@ public class InstanceTypesController {
 	@RequestMapping({"/admin/instanceType/createInstanceType"})
 	public String createInstanceType(@RequestBody InstanceTypeVo instanceType, Model model) {
 		log.info("... createInstanceType");
-		String instanceTypeId = this.instanceTypesService.createInstanceType(instanceType);
+		String instanceTypeId = instanceTypesService.createInstanceType(instanceType);
 		model.addAttribute(ItInfoConstant.RESULT_KEY, instanceTypeId);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/admin/retrieveInstanceTypeUpdateInfo"})
 	public String retrieveInstanceTypeUpdateInfo(String id, Model model) {
-		log.info("... retrieveInstanceTypeUpdateInfo");
-		InstanceTypeVo instanceType = this.instanceTypesService.retrieveInstanceTypeUpdateInfo(id);
+		log.info("... retrieveInstanceTypeUpdateInfo('{}')", id);
+		InstanceTypeVo instanceType = instanceTypesService.retrieveInstanceTypeUpdateInfo(id);
 		model.addAttribute(ItInfoConstant.RESULT_KEY, instanceType);
 		return ItInfoConstant.JSON_VIEW;
 	}
@@ -71,7 +71,7 @@ public class InstanceTypesController {
 	@RequestMapping({"/admin/instanceType/updateInstanceType"})
 	public String updateInstanceType(@RequestBody InstanceTypeVo instanceType, Model model) {
 		log.info("... updateInstanceType");
-		String instanceTypeId = this.instanceTypesService.updateInstanceType(instanceType);
+		String instanceTypeId = instanceTypesService.updateInstanceType(instanceType);
 		model.addAttribute(ItInfoConstant.RESULT_KEY, instanceTypeId);
 		return ItInfoConstant.JSON_VIEW;
 	}
@@ -79,7 +79,7 @@ public class InstanceTypesController {
 	@RequestMapping({"/admin/instanceType/removeInstanceType"})
 	public String removeInstanceType(@RequestBody InstanceTypeVo instanceType, Model model) {
 		log.info("... removeInstanceType");
-		String result = this.instanceTypesService.removeInstanceType(instanceType);
+		String result = instanceTypesService.removeInstanceType(instanceType);
 		model.addAttribute(ItInfoConstant.RESULT_KEY, result);
 		return ItInfoConstant.JSON_VIEW;
 	}

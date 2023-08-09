@@ -15,9 +15,9 @@ import kotlin.reflect.KProperty
  */
 class LoggerDelegate: ReadOnlyProperty<Any?, Logger> {
     private var logger: Logger? = null
-    override fun getValue(thisRef: Any?, property: KProperty<*>): Logger {
-        TODO("Not yet implemented")
-    }
+    override fun getValue(thisRef: Any?, property: KProperty<*>): Logger
+        = logger ?: createLogger(thisRef!!.javaClass)
+
     companion object {
         private fun <T> createLogger(clazz: Class<T>): Logger =
             LoggerFactory.getLogger(clazz)

@@ -11,31 +11,33 @@ import org.ovirt.engine.sdk4.types.*
 class SystemServiceHelper {
 	companion object {
 		private val log by LoggerDelegate()
-		@Volatile private var INSTANCE: SystemServiceHelper? = null
-		@JvmStatic fun getInstance(): SystemServiceHelper = INSTANCE ?: synchronized(this) {
+		@Volatile
+		private var INSTANCE: SystemServiceHelper? = null
+		@JvmStatic
+		fun getInstance(): SystemServiceHelper = INSTANCE ?: synchronized(this) {
 			INSTANCE
 				?: build().also { INSTANCE = it }
 		}
+
 		private fun build(): SystemServiceHelper = SystemServiceHelper()
 	}
 
 	private fun getSystemService(c: Connection): SystemService = c.systemService()
 
 	//region: Cluster
-	private fun srvClusters(c: Connection): ClustersService
-		= getSystemService(c).clustersService()
-	private fun srvCluster(c: Connection, clusterId: String): ClusterService
-		= srvClusters(c).clusterService(clusterId)
+	private fun srvClusters(c: Connection): ClustersService = getSystemService(c).clustersService()
+	private fun srvCluster(c: Connection, clusterId: String): ClusterService = srvClusters(c).clusterService(clusterId)
 	fun findAllClusters(c: Connection, searchQuery: String = ""): List<Cluster> =
-		if (searchQuery.isEmpty()) 	srvClusters(c).list().send().clusters() ?: listOf()
-		else 						srvClusters(c).list().search(searchQuery).caseSensitive(false).send().clusters() ?: listOf()
+		if (searchQuery.isEmpty()) srvClusters(c).list().send().clusters() ?: listOf()
+		else srvClusters(c).list().search(searchQuery).caseSensitive(false).send().clusters() ?: listOf()
+
 	fun findCluster(c: Connection, clusterId: String): Cluster? = try {
 		srvCluster(c, clusterId).get().send().cluster()
 	} catch (e: Error) {
 		log.error(e.localizedMessage)
 		null
 	}
-		 
+
 	fun addCluster(c: Connection, cluster: Cluster): Cluster? = try {
 		srvClusters(c).add().cluster(cluster).send().cluster()
 	} catch (e: Error) {
@@ -49,6 +51,7 @@ class SystemServiceHelper {
 		log.error(e.localizedMessage)
 		null
 	}
+
 	fun removeCluster(c: Connection, clusterId: String): Boolean = try {
 		srvCluster(c, clusterId).remove().send()
 		true
@@ -57,31 +60,35 @@ class SystemServiceHelper {
 		false
 	}
 
-	private fun srvClusterNetworks(c: Connection, clusterId: String): ClusterNetworksService
-		= srvCluster(c, clusterId).networksService()
+	private fun srvClusterNetworks(c: Connection, clusterId: String): ClusterNetworksService =
+		srvCluster(c, clusterId).networksService()
 
 	fun findAllNetworksFromCluster(c: Connection, clusterId: String): List<Network> = try {
-		srvClusterNetworks(c, clusterId).list().send().networks()	
+		srvClusterNetworks(c, clusterId).list().send().networks()
 	} catch (e: Error) {
 		log.error(e.localizedMessage)
 		listOf<Network>()
 	}
+
 	fun addNetworkFromCluster(c: Connection, clusterId: String, network: Network): Network? = try {
 		srvCluster(c, clusterId).networksService().add().network(network).send().network()
 	} catch (e: Error) {
 		log.error(e.localizedMessage)
 		null
 	}
-	private fun srvClusterNetwork(c: Connection, clusterId: String, networkId: String): ClusterNetworkService
-		= srvClusterNetworks(c, clusterId).networkService(networkId)
+
+	private fun srvClusterNetwork(c: Connection, clusterId: String, networkId: String): ClusterNetworkService =
+		srvClusterNetworks(c, clusterId).networkService(networkId)
+
 	fun updateNetworkFromCluster(c: Connection, clusterId: String, network: Network): Network? = try {
 		srvClusterNetwork(c, clusterId, network.id()).update().network(network).send().network()
 	} catch (e: Error) {
 		log.error(e.localizedMessage)
 		null
 	}
-	private fun srvExternalNetworkProviders(c: Connection, clusterId: String): ClusterExternalProvidersService
-		= srvCluster(c, clusterId).externalNetworkProvidersService()
+
+	private fun srvExternalNetworkProviders(c: Connection, clusterId: String): ClusterExternalProvidersService =
+		srvCluster(c, clusterId).externalNetworkProvidersService()
 
 	fun findExternalNetworkProviders(c: Connection, clusterId: String): List<ExternalProvider> = try {
 		srvExternalNetworkProviders(c, clusterId).list().send().providers()
@@ -92,122 +99,197 @@ class SystemServiceHelper {
 	//endregion
 
 	//region: Host
-	fun srvHosts(c: Connection): HostsService
-		= getSystemService(c).hostsService()
-	fun findAllHosts(c: Connection, searchQuery: String = ""): List<Host>
-		= if (searchQuery == "")	srvHosts(c).list().send().hosts()
-		else 						srvHosts(c).list().search(searchQuery).caseSensitive(false).send().hosts()
-	fun srvHost(c: Connection, hostId: String): HostService
-		= srvHosts(c).hostService(hostId)
-	fun findHost(c: Connection, hostId: String): Host
-		= srvHost(c, hostId).get().send().host()
+	fun srvHosts(c: Connection): HostsService = getSystemService(c).hostsService()
+	fun findAllHosts(c: Connection, searchQuery: String = ""): List<Host> =
+		if (searchQuery == "") srvHosts(c).list().send().hosts()
+		else srvHosts(c).list().search(searchQuery).caseSensitive(false).send().hosts()
+
+	fun srvHost(c: Connection, hostId: String): HostService = srvHosts(c).hostService(hostId)
+	fun findHost(c: Connection, hostId: String): Host? = try {
+		srvHost(c, hostId).get().send().host()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		null
+	}
+
 	fun migrateHostFromVm(c: Connection, vmId: String, host: Host): Boolean = try {
 		srvVm(c, vmId).migrate().host(host).send()
 		true
 	} catch (e: Error) {
 		log.error(e.localizedMessage)
-
 		false
 	}
-	private fun srvNicsFromHost(c: Connection, hostId: String): HostNicsService
-		= srvHost(c, hostId).nicsService()
-	fun findNicsFromHost(c: Connection, hostId: String): List<HostNic>
-		= srvNicsFromHost(c, hostId).list().send().nics()
-	private fun srvNicFromHost(c: Connection, hostId: String, hostNicId: String): HostNicService
-		= srvNicsFromHost(c, hostId).nicService(hostNicId)
-	fun findNicFromHost(c: Connection, hostId: String, hostNicId: String): HostNic
-		= srvNicFromHost(c, hostId, hostNicId).get().send().nic()
-	private fun srvStatisticsFromHost(c: Connection, hostId: String): StatisticsService
-		= srvHost(c, hostId).statisticsService()
-	fun findAllStatisticsFromHost(c: Connection, hostId: String): List<Statistic>
-		= srvStatisticsFromHost(c, hostId).list().send().statistics()
-	fun findAllStatisticsFromHostNic(c: Connection, hostId: String, hostNicId: String): List<Statistic>
-		= srvNicsFromHost(c, hostId).nicService(hostNicId).statisticsService().list().send().statistics()
-	private fun srvStoragesFromHost(c: Connection, hostId: String): HostStorageService
-		= srvHost(c, hostId).storageService()
-	fun findAllStoragesFromHost(c: Connection, hostId: String): List<HostStorage>
-		= srvStoragesFromHost(c, hostId).list().send().storages()
-	private fun srvNetworkAttachmentsFromHost(c: Connection, hostId: String): NetworkAttachmentsService
-		= srvHost(c, hostId).networkAttachmentsService()
-	fun findAllNetworkAttachmentsFromHost(c: Connection, hostId: String): List<NetworkAttachment>
-		= srvNetworkAttachmentsFromHost(c, hostId).list().send().attachments()
-	private fun srvNetworkAttachmentFromHost(c: Connection, hostId: String, networkAttachmentId: String): NetworkAttachmentService
-		= srvNetworkAttachmentsFromHost(c, hostId).attachmentService(networkAttachmentId)
+
+	private fun srvNicsFromHost(c: Connection, hostId: String): HostNicsService = srvHost(c, hostId).nicsService()
+	fun findNicsFromHost(c: Connection, hostId: String): List<HostNic> = srvNicsFromHost(c, hostId).list().send().nics()
+	private fun srvNicFromHost(c: Connection, hostId: String, hostNicId: String): HostNicService =
+		srvNicsFromHost(c, hostId).nicService(hostNicId)
+
+	fun findNicFromHost(c: Connection, hostId: String, hostNicId: String): HostNic? = try {
+		srvNicFromHost(c, hostId, hostNicId).get().send().nic()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		null
+	}
+
+	private fun srvStatisticsFromHost(c: Connection, hostId: String): StatisticsService =
+		srvHost(c, hostId).statisticsService()
+
+	fun findAllStatisticsFromHost(c: Connection, hostId: String): List<Statistic> =
+		srvStatisticsFromHost(c, hostId).list().send().statistics()
+
+	fun findAllStatisticsFromHostNic(c: Connection, hostId: String, hostNicId: String): List<Statistic> =
+		srvNicsFromHost(c, hostId).nicService(hostNicId).statisticsService().list().send().statistics()
+
+	private fun srvStoragesFromHost(c: Connection, hostId: String): HostStorageService =
+		srvHost(c, hostId).storageService()
+
+	fun findAllStoragesFromHost(c: Connection, hostId: String): List<HostStorage> =
+		srvStoragesFromHost(c, hostId).list().send().storages()
+
+	private fun srvNetworkAttachmentsFromHost(c: Connection, hostId: String): NetworkAttachmentsService =
+		srvHost(c, hostId).networkAttachmentsService()
+
+	fun findAllNetworkAttachmentsFromHost(c: Connection, hostId: String): List<NetworkAttachment> =
+		srvNetworkAttachmentsFromHost(c, hostId).list().send().attachments()
+
+	private fun srvNetworkAttachmentFromHost(
+		c: Connection,
+		hostId: String,
+		networkAttachmentId: String
+	): NetworkAttachmentService = srvNetworkAttachmentsFromHost(c, hostId).attachmentService(networkAttachmentId)
+
 	fun removeNetworkAttachmentFromHost(c: Connection, hostId: String, networkAttachmentId: String): Boolean = try {
 		srvNetworkAttachmentFromHost(c, hostId, networkAttachmentId).remove().send()
 		true
 	} catch (e: Error) {
 		log.error(e.localizedMessage)
-
 		false
 	}
-	private fun srvFenceAgentsFromHost(c: Connection, hostId: String): FenceAgentsService
-		= srvHost(c, hostId).fenceAgentsService()
-	fun findAllFenceAgentsFromHost(c: Connection, hostId: String): List<Agent>
-		= srvFenceAgentsFromHost(c, hostId).list().send().agents()
+
+	private fun srvFenceAgentsFromHost(c: Connection, hostId: String): FenceAgentsService =
+		srvHost(c, hostId).fenceAgentsService()
+
+	fun findAllFenceAgentsFromHost(c: Connection, hostId: String): List<Agent> =
+		srvFenceAgentsFromHost(c, hostId).list().send().agents()
+
 	fun addFenceAgent(c: Connection, hostId: String, agent: Agent): Agent? = try {
 		srvFenceAgentsFromHost(c, hostId).add().agent(agent).send().agent()
 	} catch (e: Error) {
 		log.error(e.localizedMessage)
-
 		null
 	}
-	private fun srvAllIscsiDetailsFromHost(c: Connection, hostId: String): IscsiDiscoverRequest
-		= srvHost(c, hostId).iscsiDiscover()
-	fun findAllIscsiDetailsFromHost(c: Connection, hostId: String, iscsiDetails: IscsiDetails): List<IscsiDetails>
-		= srvAllIscsiDetailsFromHost(c, hostId).iscsi(iscsiDetails).send().discoveredTargets()
+
+	private fun srvAllIscsiDetailsFromHost(c: Connection, hostId: String): IscsiDiscoverRequest =
+		srvHost(c, hostId).iscsiDiscover()
+
+	fun findAllIscsiDetailsFromHost(c: Connection, hostId: String, iscsiDetails: IscsiDetails): List<IscsiDetails> =
+		srvAllIscsiDetailsFromHost(c, hostId).iscsi(iscsiDetails).send().discoveredTargets()
 	//endregion
 
 
 	//region: Vm
-	private fun getVmsService(c: Connection): VmsService
-		= getSystemService(c).vmsService()
+	private fun getVmsService(c: Connection): VmsService = getSystemService(c).vmsService()
 	fun findAllVms(c: Connection, searchQuery: String = ""): List<Vm> {
-		return if (searchQuery == "")	getVmsService(c).list().send().vms()
-		else 							getVmsService(c).list().search(searchQuery).caseSensitive(false).send().vms()
+		return if (searchQuery == "") getVmsService(c).list().send().vms()
+		else getVmsService(c).list().search(searchQuery).caseSensitive(false).send().vms()
 	}
-	fun srvVm(c: Connection, vmId: String): VmService
-		= getVmsService(c).vmService(vmId)
-	fun findVm(c: Connection, vmId: String): Vm
-		= srvVm(c, vmId).get().send().vm()
-	fun startVm(c: Connection, vmId: String): Boolean = try { srvVm(c, vmId).start().send();true } catch (e: Error) { log.error(e.localizedMessage)
-;false }
-	fun stopVm(c: Connection, vmId: String): Boolean = try { srvVm(c, vmId).stop().send();true } catch (e: Error) { log.error(e.localizedMessage)
-;false }
-	fun rebootVm(c: Connection, vmId: String): Boolean = try { srvVm(c, vmId).reboot().send();true; } catch (e: Error) { log.error(e.localizedMessage)
-;false }
 
-	private fun srvVmCdromsFromVm(c: Connection, vmId: String): VmCdromsService
-		= srvVm(c, vmId).cdromsService()
-	fun findAllVmCdromsFromVm(c: Connection, vmId: String): List<Cdrom>
-		= srvVmCdromsFromVm(c, vmId).list().send().cdroms()
-	private fun srvVmCdromFromVm(c: Connection, vmId: String, cdromId: String): VmCdromService
-		= srvVmCdromsFromVm(c, vmId).cdromService(cdromId)
-	fun findVmCdromFromVm(c: Connection, vmId: String, cdromId: String): Cdrom
-		= srvVmCdromFromVm(c, vmId, cdromId).get().send().cdrom()
+	fun srvVm(c: Connection, vmId: String): VmService = getVmsService(c).vmService(vmId)
+	fun findVm(c: Connection, vmId: String): Vm? = try {
+		srvVm(c, vmId).get().send().vm()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		null
+	}
+
+	fun startVm(c: Connection, vmId: String): Boolean = try {
+		srvVm(c, vmId).start().send()
+		true
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		false
+	}
+
+	fun stopVm(c: Connection, vmId: String): Boolean = try {
+		srvVm(c, vmId).stop().send()
+		true
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		false
+	}
+
+	fun suspendVm(c: Connection, vmId: String): Boolean = try {
+		srvVm(c, vmId).suspend().send()
+		true
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		false
+	}
+
+	fun rebootVm(c: Connection, vmId: String): Boolean = try {
+		srvVm(c, vmId).reboot().send()
+		true
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		false
+	}
+
+	fun removeVm(c: Connection, vmId: String, detachOnly: Boolean = false): Boolean = try {
+		srvVm(c, vmId).remove().detachOnly(detachOnly).send()
+		true
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		false
+	}
+
+	private fun srvVmCdromsFromVm(c: Connection, vmId: String): VmCdromsService = srvVm(c, vmId).cdromsService()
+	fun findAllVmCdromsFromVm(c: Connection, vmId: String): List<Cdrom> =
+		srvVmCdromsFromVm(c, vmId).list().send().cdroms()
+
+	private fun srvVmCdromFromVm(c: Connection, vmId: String, cdromId: String): VmCdromService =
+		srvVmCdromsFromVm(c, vmId).cdromService(cdromId)
+
+	fun findVmCdromFromVm(c: Connection, vmId: String, cdromId: String): Cdrom =
+		srvVmCdromFromVm(c, vmId, cdromId).get().send().cdrom()
+
 	fun updateVmCdromFromVm(c: Connection, vmId: String, cdromId: String, cdrom: Cdrom): Boolean = try {
 		srvVmCdromFromVm(c, vmId, cdromId).update().cdrom(cdrom).current(true).send()
 		true
 	} catch (e: Error) {
 		false
 	}
-	private fun srvNicsFromVm(c: Connection, vmId: String): VmNicsService
-		= srvVm(c, vmId).nicsService()
-	fun findNicsFromVm(c: Connection, vmId: String): List<Nic>
-		= srvNicsFromVm(c, vmId).list().send().nics()
-	private fun srvDiskAttachmentsFromVm(c: Connection, vmId: String): DiskAttachmentsService
-		= srvVm(c, vmId).diskAttachmentsService()
-	fun findDiskAttachmentsFromVm(c: Connection, vmId: String): List<DiskAttachment>
-		= srvDiskAttachmentsFromVm(c, vmId).list().send().attachments()
 
-	private fun srvSnapshotsFromVm(c: Connection, vmId: String): SnapshotsService
-		= srvVm(c, vmId).snapshotsService()
-	fun findAllSnapshotsFromVm(c: Connection, vmId: String): List<Snapshot>
-		= srvSnapshotsFromVm(c, vmId).list().send().snapshots()
-	private fun srvSnapshotFromVm(c: Connection, vmId: String, snapshotId: String): SnapshotService
-		= srvSnapshotsFromVm(c, vmId).snapshotService(snapshotId)
-	fun findSnapshotFromVm(c: Connection, vmId: String, snapshotId: String): Snapshot
-		= srvSnapshotFromVm(c, vmId, snapshotId).get().send().snapshot()
+	private fun srvNicsFromVm(c: Connection, vmId: String): VmNicsService = srvVm(c, vmId).nicsService()
+	fun findNicsFromVm(c: Connection, vmId: String): List<Nic> = srvNicsFromVm(c, vmId).list().send().nics()
+	private fun srvNicFromVm(c: Connection, vmId: String, nicId: String): VmNicService =
+		srvNicsFromVm(c, vmId).nicService(nicId)
+
+	fun findNicFromVm(c: Connection, vmId: String, nicId: String): Nic? = try {
+		srvNicFromVm(c, vmId, nicId).get().send().nic()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		null
+	}
+
+	private fun srvAllDiskAttachmentsFromVm(c: Connection, vmId: String): DiskAttachmentsService =
+		srvVm(c, vmId).diskAttachmentsService()
+	fun findAllDiskAttachmentsFromVm(c: Connection, vmId: String): List<DiskAttachment> =
+		srvAllDiskAttachmentsFromVm(c, vmId).list().send().attachments()
+	private fun srvSnapshotsFromVm(c: Connection, vmId: String): SnapshotsService = srvVm(c, vmId).snapshotsService()
+	fun findAllSnapshotsFromVm(c: Connection, vmId: String): List<Snapshot> =
+		srvSnapshotsFromVm(c, vmId).list().send().snapshots()
+
+	private fun srvSnapshotFromVm(c: Connection, vmId: String, snapshotId: String): SnapshotService =
+		srvSnapshotsFromVm(c, vmId).snapshotService(snapshotId)
+
+	fun findSnapshotFromVm(c: Connection, vmId: String, snapshotId: String): Snapshot? = try {
+		srvSnapshotFromVm(c, vmId, snapshotId).get().send().snapshot()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		null
+	}
+
 	fun addSnapshotFromVm(c: Connection, vmId: String, snapshot: Snapshot): Boolean = try {
 		srvSnapshotsFromVm(c, vmId).add().snapshot(snapshot).send().snapshot()
 		true
@@ -248,23 +330,36 @@ class SystemServiceHelper {
 		false
 	}
 
-	private fun srvSnapshotDisksFromVm(c: Connection, vmId: String, snapshotId: String): SnapshotDisksService
-		= srvSnapshotFromVm(c, vmId, snapshotId).disksService()
-	fun findAllSnapshotDisksFromVm(c: Connection, vmId: String, snapshotId: String): List<Disk>
-		= srvSnapshotDisksFromVm(c, vmId, snapshotId).list().send().disks()
+	private fun srvSnapshotDisksFromVm(c: Connection, vmId: String, snapshotId: String): SnapshotDisksService =
+		srvSnapshotFromVm(c, vmId, snapshotId).disksService()
 
-	private fun srvSnapshotNicsFromVm(c: Connection, vmId: String, snapshotId: String): SnapshotNicsService
-		= srvSnapshotFromVm(c, vmId, snapshotId).nicsService()
-	fun findAllSnapshotNicsFromVm(c: Connection, vmId: String, snapshotId: String): List<Nic>
-		= srvSnapshotNicsFromVm(c, vmId, snapshotId).list().send().nics()
-	private fun srvVmGraphicsConsolesFromVm(c: Connection, vmId: String): VmGraphicsConsolesService
-		= srvVm(c, vmId).graphicsConsolesService()
-	fun findAllVmGraphicsConsolesFromVm(c: Connection, vmId: String): List<GraphicsConsole>
-		= srvVmGraphicsConsolesFromVm(c, vmId).list().current(true).send().consoles()
-	private fun srvVmGraphicsConsoleFromVm(c: Connection, vmId: String, graphicsConsoleId: String): VmGraphicsConsoleService
-		= srvVmGraphicsConsolesFromVm(c, vmId).consoleService(graphicsConsoleId)
-	fun findTicketFromVm(c: Connection, vmId: String, graphicsConsoleId: String): Ticket
-		= srvVmGraphicsConsoleFromVm(c, vmId, graphicsConsoleId).ticket().send().ticket()
+	fun findAllSnapshotDisksFromVm(c: Connection, vmId: String, snapshotId: String): List<Disk> =
+		srvSnapshotDisksFromVm(c, vmId, snapshotId).list().send().disks()
+
+	private fun srvSnapshotNicsFromVm(c: Connection, vmId: String, snapshotId: String): SnapshotNicsService =
+		srvSnapshotFromVm(c, vmId, snapshotId).nicsService()
+
+	fun findAllSnapshotNicsFromVm(c: Connection, vmId: String, snapshotId: String): List<Nic> =
+		srvSnapshotNicsFromVm(c, vmId, snapshotId).list().send().nics()
+
+	private fun srvVmGraphicsConsolesFromVm(c: Connection, vmId: String): VmGraphicsConsolesService =
+		srvVm(c, vmId).graphicsConsolesService()
+
+	fun findAllVmGraphicsConsolesFromVm(c: Connection, vmId: String): List<GraphicsConsole> =
+		srvVmGraphicsConsolesFromVm(c, vmId).list().current(true).send().consoles()
+
+	private fun srvVmGraphicsConsoleFromVm(
+		c: Connection,
+		vmId: String,
+		graphicsConsoleId: String
+	): VmGraphicsConsoleService = srvVmGraphicsConsolesFromVm(c, vmId).consoleService(graphicsConsoleId)
+
+	fun findTicketFromVm(c: Connection, vmId: String, graphicsConsoleId: String): Ticket? = try {
+		srvVmGraphicsConsoleFromVm(c, vmId, graphicsConsoleId).ticket().send().ticket()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		null
+	}
 	private fun srvStatisticsFromVm(c: Connection, vmId: String): StatisticsService
 		= srvVm(c, vmId).statisticsService()
 	fun findAllStatisticsFromVm(c: Connection, vmId: String): List<Statistic>
@@ -278,8 +373,12 @@ class SystemServiceHelper {
 		= srvVnicProfiles(c).list().send().profiles()
 	private fun srvVnicProfile(c: Connection, vnicProfileId: String): VnicProfileService
 		= srvVnicProfiles(c).profileService(vnicProfileId)
-	fun findVnicProfile(c: Connection, vnicProfileId: String): VnicProfile
-		= srvVnicProfile(c, vnicProfileId).get().send().profile()
+	fun findVnicProfile(c: Connection, vnicProfileId: String): VnicProfile? = try {
+		srvVnicProfile(c, vnicProfileId).get().send().profile()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		null
+	}
 	//endregion
 
 	//region: Network
@@ -289,22 +388,22 @@ class SystemServiceHelper {
 		= srvNetworks(c).list().send().networks()
 	private fun srvNetwork(c: Connection, networkId: String): NetworkService
 		= srvNetworks(c).networkService(networkId)
-	fun findNetwork(c: Connection, networkId: String): Network
-		= srvNetwork(c, networkId).get().send().network()
-
+	fun findNetwork(c: Connection, networkId: String): Network? = try {
+		srvNetwork(c, networkId).get().send().network()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		null
+	}
 	fun addNetwork(c: Connection, network: Network): Network? = try {
 		srvNetworks(c).add().network(network).send().network()
 	} catch (e: Error) {
 		log.error(e.localizedMessage)
-
 		null
 	}
-
 	fun updateNetwork(c: Connection, networkId: String, network: Network): Network? = try {
 		srvNetwork(c, networkId).update().network(network).send().network()
 	} catch (e: Error) {
 		log.error(e.localizedMessage)
-
 		null
 	}
 	private fun srvNetworkLabelsFromNetwork(c: Connection, networkId: String): NetworkLabelsService
@@ -358,8 +457,12 @@ class SystemServiceHelper {
 		= srvOpenStackImageProviders(c).list().send().providers()
 	private fun srvOpenStackImageProvider(c: Connection, openStackImageProviderId: String): OpenstackImageProviderService
 		= srvOpenStackImageProviders(c).providerService(openStackImageProviderId)
-	fun findOpenStackImageProvider(c: Connection, openStackImageProviderId: String): OpenStackImageProvider
-		= srvOpenStackImageProvider(c, openStackImageProviderId).get().send().provider()
+	fun findOpenStackImageProvider(c: Connection, openStackImageProviderId: String): OpenStackImageProvider? = try {
+		srvOpenStackImageProvider(c, openStackImageProviderId).get().send().provider()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		null
+	}
 	//endregion
 
 	//region: OpenStackVolumeProvider
@@ -437,6 +540,7 @@ class SystemServiceHelper {
 		= srvTemplate(c, templateId).diskAttachmentsService()
 	fun findAllDiskAttachmentsFromTemplate(c: Connection, templateId: String): List<DiskAttachment>
 		= srvDiskAttachmentsFromTemplate(c, templateId).list().send().attachments()
+
 	private fun srvNicsFromTemplate(c: Connection, templateId: String): TemplateNicsService
 		= srvTemplate(c, templateId).nicsService()
 	fun findAllNicsFromTemplate(c: Connection, templateId: String): List<Nic>
@@ -587,14 +691,17 @@ class SystemServiceHelper {
 		= srvAllAttachedStorageDomainsFromDataCenter(c, dataCenterId).list().send().storageDomains()
 	fun srvAttachedStorageDomainFromDataCenter(c: Connection, dataCenterId: String, storageDomainId: String): AttachedStorageDomainService
 		= srvAllAttachedStorageDomainsFromDataCenter(c, dataCenterId).storageDomainService(storageDomainId)
-	fun findAttachedStorageDomainFromDataCenter(c: Connection, dataCenterId: String, storageDomainId: String): StorageDomain
-		= srvAttachedStorageDomainFromDataCenter(c, dataCenterId, storageDomainId).get().send().storageDomain()
+	fun findAttachedStorageDomainFromDataCenter(c: Connection, dataCenterId: String, storageDomainId: String): StorageDomain? = try {
+		srvAttachedStorageDomainFromDataCenter(c, dataCenterId, storageDomainId).get().send().storageDomain()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		null
+	}
 	fun activeAttachedStorageDomainFromDataCenter(c: Connection, dataCenterId: String, storageDomainId: String): Boolean = try {
 		srvAttachedStorageDomainFromDataCenter(c, dataCenterId, storageDomainId).activate().send()
 		true
 	} catch (e: Error) {
 		log.error(e.localizedMessage)
-
 		false
 	}
 	fun deactiveAttachedStorageDomainFromDataCenter(c: Connection, dataCenterId: String, storageDomainId: String): Boolean = try {
@@ -602,7 +709,6 @@ class SystemServiceHelper {
 		true
 	} catch (e: Error) {
 		log.error(e.localizedMessage)
-
 		false
 	}
 	fun removeAttachedStorageDomainFromDataCenter(c: Connection, dataCenterId: String, storageDomainId: String): Boolean = try {
@@ -610,7 +716,6 @@ class SystemServiceHelper {
 		true
 	} catch (e: Error) {
 		log.error(e.localizedMessage)
-
 		false
 	}
 	private fun srvQossFromDataCenter(c: Connection, dataCenterId: String): QossService
@@ -625,7 +730,6 @@ class SystemServiceHelper {
 		srvQuotasFromDataCenter(c, dataCenterId).add().quota(quota).send().quota()
 	} catch (e: Error) {
 		log.error(e.localizedMessage)
-
 		null
 	}
 	private fun srvQuotaFromDataCenter(c: Connection, dataCenterId: String, quotaId: String): QuotaService

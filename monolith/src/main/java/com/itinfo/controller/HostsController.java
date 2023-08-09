@@ -1,5 +1,6 @@
 package com.itinfo.controller;
 
+import com.itinfo.ItInfoConstant;
 import com.itinfo.service.ClustersService;
 import com.itinfo.service.HostsService;
 import com.itinfo.model.karajan.ConsolidationVo;
@@ -33,8 +34,8 @@ public class HostsController {
 
 	@RequestMapping(value = {"/compute/updateHost"}, method = {RequestMethod.GET})
 	public String createHostView(String id, Model model) {
-		log.info("... createHostView("+id+")");
-		model.addAttribute("resultKey", id);
+		log.info("... createHostView('{}')", id);
+		model.addAttribute(ItInfoConstant.RESULT_KEY, id);
 		return "/castanets/compute/createHost";
 	}
 
@@ -46,99 +47,99 @@ public class HostsController {
 
 	@RequestMapping(value = {"/compute/host"}, method = {RequestMethod.GET})
 	public String hostView(String id, Model model) {
-		log.info("... hostView("+id+")");
-		model.addAttribute("resultKey", id);
+		log.info("... hostView('{}')", id);
+		model.addAttribute(ItInfoConstant.RESULT_KEY, id);
 		return "/castanets/compute/host";
 	}
 
 	@RequestMapping(value = {"/compute/hosts/retrieveCreateHostInfo"}, method = {RequestMethod.GET})
 	public String retrieveCreateClusterInfo(String id, Model model) {
-		log.info("... retrieveCreateClusterInfo("+id+")");
+		log.info("... retrieveCreateClusterInfo('{}')", id);
 		HostCreateVo hostCreateVo
-				= this.hostsService.retrieveCreateHostInfo(id);
-		model.addAttribute("resultKey", hostCreateVo);
+				= hostsService.retrieveCreateHostInfo(id);
+		model.addAttribute(ItInfoConstant.RESULT_KEY, hostCreateVo);
 		return "jsonView";
 	}
 
 	@RequestMapping(value = {"/compute/hosts/retrieveHostsInfo"}, method = {RequestMethod.GET})
 	public String retrieveHostsInfo(String status, Model model) {
-		log.info("... retrieveHostsInfo("+status+")");
+		log.info("... retrieveHostsInfo('{}')", status);
 		List<HostDetailVo> hosts
-				= this.hostsService.retrieveHostsInfo(status);
-		model.addAttribute("resultKey", hosts);
+				= hostsService.retrieveHostsInfo(status);
+		model.addAttribute(ItInfoConstant.RESULT_KEY, hosts);
 		return "jsonView";
 	}
 
 	@RequestMapping(value = {"/compute/hosts/retrieveLunHostsInfo"}, method = {RequestMethod.GET})
 	public String retrieveLunHostsInfo(String status, Model model) {
-		log.info("... retrieveLunHostsInfo("+status+")");
+		log.info("... retrieveLunHostsInfo('{}')", status);
 		List<HostDetailVo> hosts
-				= this.hostsService.retrieveLunHostsInfo(status);
-		model.addAttribute("resultKey", hosts);
+				= hostsService.retrieveLunHostsInfo(status);
+		model.addAttribute(ItInfoConstant.RESULT_KEY, hosts);
 		return "jsonView";
 	}
 
 	@RequestMapping(value = {"/compute/hosts/retrieveHostDetail"}, method = {RequestMethod.GET})
 	public String retrieveHostDetail(String id, Model model) {
-		log.info("... retrieveHostDetail("+id+")");
+		log.info("... retrieveHostDetail('{}')", id);
 		HostDetailVo hostDetailVo
-				= this.hostsService.retrieveHostDetail(id);
-		model.addAttribute("resultKey", hostDetailVo);
+				= hostsService.retrieveHostDetail(id);
+		model.addAttribute(ItInfoConstant.RESULT_KEY, hostDetailVo);
 		return "jsonView";
 	}
 
 	@RequestMapping(value = {"/compute/hosts/retrieveHostEvents"}, method = {RequestMethod.GET})
 	public String retrieveHostEvents(String id, Model model) {
-		log.info("... retrieveHostEvents("+id+")");
-		List<EventVo> events = this.hostsService.retrieveHostEvents(id);
-		model.addAttribute("resultKey", events);
+		log.info("... retrieveHostEvents('{}')", id);
+		List<EventVo> events = hostsService.retrieveHostEvents(id);
+		model.addAttribute(ItInfoConstant.RESULT_KEY, events);
 		return "jsonView";
 	}
 
 	@RequestMapping(value = {"/compute/hosts/consolidateVms"}, method = {RequestMethod.POST})
 	public String consolidateVms(@RequestBody List<String> hosts, Model model) {
-		log.info("... consolidateVms");
-		List<ConsolidationVo> result = this.hostsService.maintenanceBeforeConsolidateVms(hosts);
-		model.addAttribute("resultKey", result);
+		log.info("... consolidateVms[{}]", hosts.size());
+		List<ConsolidationVo> result = hostsService.maintenanceBeforeConsolidateVms(hosts);
+		model.addAttribute(ItInfoConstant.RESULT_KEY, result);
 		return "jsonView";
 	}
 
 	@RequestMapping(value = {"/compute/hosts/maintenanceStart"}, method = {RequestMethod.POST})
 	public String maintenanceStart(@RequestBody List<String> hosts, Model model) {
-		log.info("... maintenanceStart");
-		this.hostsService.maintenanceStart(hosts);
+		log.info("... maintenanceStart[{}]", hosts.size());
+		hostsService.maintenanceStart(hosts);
 		try { Thread.sleep(500L); } catch (Exception e) { log.error(e.getLocalizedMessage()); }
 		return "jsonView";
 	}
 
 	@RequestMapping(value = {"/compute/hosts/maintenanceStop"}, method = {RequestMethod.POST})
 	public String maintenanceStop(@RequestBody List<String> hosts, Model model) {
-		log.info("... maintenanceStop");
-		this.hostsService.maintenanceStop(hosts);
+		log.info("... maintenanceStop[{}]", hosts.size());
+		hostsService.maintenanceStop(hosts);
 		try { Thread.sleep(500L); } catch (Exception e) { log.error(e.getLocalizedMessage()); }
 		return "jsonView";
 	}
 
 	@RequestMapping(value = {"/compute/hosts/restartHost"}, method = {RequestMethod.POST})
 	public String restartHost(@RequestBody List<String> hosts, Model model) {
-		log.info("... restartHost");
-		this.hostsService.restartHost(hosts);
+		log.info("... restartHost[{}]", hosts.size());
+		hostsService.restartHost(hosts);
 		try { Thread.sleep(500L); } catch (Exception e) { log.error(e.getLocalizedMessage()); }
 		return "jsonView";
 	}
 
 	@RequestMapping(value = {"/compute/hosts/startHost"}, method = {RequestMethod.POST})
 	public String startHost(@RequestBody List<String> hosts, Model model) {
-		log.info("... startHost");
-		this.hostsService.startHost(hosts);
+		log.info("... startHost[{}]", hosts.size());
+		hostsService.startHost(hosts);
 		try { Thread.sleep(500L); } catch (Exception e) { log.error(e.getLocalizedMessage()); }
 		return "jsonView";
 	}
 
 	@RequestMapping(value = {"/compute/hosts/stopHost"}, method = {RequestMethod.POST})
 	public String stopHost(@RequestBody List<String> hosts, Model model) {
-		log.info("... stopHost");
-		this.hostsService.stopHost(hosts);
+		log.info("... stopHost[{}]", hosts.size());
+		hostsService.stopHost(hosts);
 		try { Thread.sleep(500L); } catch (Exception e) { log.error(e.getLocalizedMessage()); }
 		return "jsonView";
 	}
@@ -146,7 +147,7 @@ public class HostsController {
 	@RequestMapping(value = {"/compute/hosts/createHost"}, method = {RequestMethod.POST})
 	public String createHost(@RequestBody HostCreateVo hostCreateVo, Model model) throws Exception {
 		log.info("... createHost");
-		this.hostsService.createHost(hostCreateVo);
+		hostsService.createHost(hostCreateVo);
 		try { Thread.sleep(500L); } catch (Exception e) { log.error(e.getLocalizedMessage()); }
 		return "jsonView";
 	}
@@ -154,15 +155,15 @@ public class HostsController {
 	@RequestMapping(value = {"/compute/hosts/updateHost"}, method = {RequestMethod.POST})
 	public String updateHost(@RequestBody HostCreateVo hostCreateVo, Model model) throws Exception {
 		log.info("... updateHost");
-		this.hostsService.updateHost(hostCreateVo);
+		hostsService.updateHost(hostCreateVo);
 		try { Thread.sleep(500L); } catch (Exception e) { log.error(e.getLocalizedMessage()); }
 		return "jsonView";
 	}
 
 	@RequestMapping(value = {"/compute/hosts/removeHost"}, method = {RequestMethod.POST})
 	public String removeHost(@RequestBody List<String> hosts, Model model) throws Exception {
-		log.info("... removeHost");
-		this.hostsService.removeHost(hosts);
+		log.info("... removeHost[{}]", hosts.size());
+		hostsService.removeHost(hosts);
 		try { Thread.sleep(500L); } catch (Exception e) { log.error(e.getLocalizedMessage()); }
 		return "jsonView";
 	}
@@ -171,49 +172,49 @@ public class HostsController {
 	public String retrieveClusters(Model model) {
 		log.info("... retrieveClusters");
 		List<ClusterVo> clusters = this.clustersService.retrieveClusters();
-		model.addAttribute("resultKey", clusters);
+		model.addAttribute(ItInfoConstant.RESULT_KEY, clusters);
 		return "jsonView";
 	}
 
 	@RequestMapping(value = {"/compute/hosts/retrieveFanceAgentType"}, method = {RequestMethod.GET})
 	public String retrieveFanceAgentType(Model model) {
 		log.info("... retrieveClusters");
-		List<String> fenceAgentTypes = this.hostsService.retrieveFanceAgentType();
-		model.addAttribute("resultKey", fenceAgentTypes);
+		List<String> fenceAgentTypes = hostsService.retrieveFanceAgentType();
+		model.addAttribute(ItInfoConstant.RESULT_KEY, fenceAgentTypes);
 		return "jsonView";
 	}
 
 	@RequestMapping(value = {"/compute/hosts/connectTestFenceAgent"}, method = {RequestMethod.POST})
 	public String connectTestFenceAgent(@RequestBody FenceAgentVo fenceAgentVo, Model model) {
 		log.info("... connectTestFenceAgent");
-		this.hostsService.connectTestFenceAgent(fenceAgentVo);
+		hostsService.connectTestFenceAgent(fenceAgentVo);
 		return "jsonView";
 	}
 
 	@RequestMapping(value = {"/compute/hosts/shutdownHost"}, method = {RequestMethod.GET})
 	public String shutdownHost(@RequestParam("id") String id, Model model) throws Exception {
-		log.info("... shutdownHost");
+		log.info("... shutdownHost('{}')", id);
 		HostVo host = new HostVo();
 		host.setId(id);
 		List<HostVo> hosts = new ArrayList<>();
 		hosts.add(host);
-		this.hostsService.shutdownHost(hosts);
+		hostsService.shutdownHost(hosts);
 		return "jsonView";
 	}
 
 	@RequestMapping(value = {"/compute/hosts/setupHostNetwork"}, method = {RequestMethod.POST})
 	public String setupHostNetwork(@RequestBody List<NicUsageApiVo> nicUsageApiVoList, Model model) {
 		log.info("... setupHostNetwork");
-		this.hostsService.setupHostNetwork(nicUsageApiVoList);
-		model.addAttribute("resultKey");
+		hostsService.setupHostNetwork(nicUsageApiVoList);
+		model.addAttribute(ItInfoConstant.RESULT_KEY);
 		return "jsonView";
 	}
 
 	@RequestMapping(value = {"/compute/hosts/modifyNicNetwork"}, method = {RequestMethod.POST})
 	public String modifyNicNetwork(@RequestBody NetworkAttachmentVo networkAttachmentVo, Model model) {
 		log.info("... modifyNicNetwork");
-		this.hostsService.modifyNicNetwork(networkAttachmentVo);
-		model.addAttribute("resultKey");
+		hostsService.modifyNicNetwork(networkAttachmentVo);
+		model.addAttribute(ItInfoConstant.RESULT_KEY);
 		return "jsonView";
 	}
 }

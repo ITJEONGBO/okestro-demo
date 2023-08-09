@@ -33,9 +33,12 @@ public class DashboardServiceImpl extends BaseService implements DashboardServic
 
     @Override
     public DataCenterVo retrieveDataCenterStatus() {
-        Connection connection = this.connectionService.getConnection();
-        this.dcv = DataCenterVo.Companion.simpleSetup(connection);
-        this.usageVos = new ArrayList<>();
+        log.info("... retrieveDataCenterStatus");
+        Connection connection = connectionService.getConnection();
+        this.dcv
+                = DataCenterVo.Companion.simpleSetup(connection);
+        this.usageVos
+                = new ArrayList<>();
         // getClusters(connection);
         getHosts(connection);
         // getVms(connection);
@@ -44,12 +47,14 @@ public class DashboardServiceImpl extends BaseService implements DashboardServic
 
     @Deprecated
     private void getClusters(Connection connection) {
+        log.info("... getClusters");
         List<Cluster> clusters
                 = getSysSrvHelper().findAllClusters(connection, "");
         this.dcv.setClusters(clusters.size());
     }
 
     private void getHosts(Connection connection) {
+        log.info("... getHosts");
         // VmsService vmsService = systemService.vmsService();
         // HostsService hostsService = systemService.hostsService();
         List<Host> hosts =
@@ -96,8 +101,8 @@ public class DashboardServiceImpl extends BaseService implements DashboardServic
             ids.add(host.id());
         }
         this.dcv.setTotalcpu(sumTotalCpu);
-        if (ids.size() > 0) {
-            List<HostVo> hostStat = this.dashboardDao.retrieveHosts(ids);
+        if (!ids.isEmpty()) {
+            List<HostVo> hostStat = dashboardDao.retrieveHosts(ids);
             if (hostStat.size() > 0)
                 hostStat.forEach(stat -> {
                     UsageVo usageVo = new UsageVo();
@@ -108,7 +113,7 @@ public class DashboardServiceImpl extends BaseService implements DashboardServic
                 });
         }
         if (interfaceIds.size() > 0) {
-            List<HostInterfaceVo> hostInterfaces = this.dashboardDao.retrieveHostsInterface(interfaceIds);
+            List<HostInterfaceVo> hostInterfaces = dashboardDao.retrieveHostsInterface(interfaceIds);
             if (hostInterfaces.size() > 0)
                 for (int i = 0; i < hostInterfaces.size(); i++) {
                     (this.usageVos.get(i)).setReceiveUsages((hostInterfaces.get(i)).getReceiveRatePercent());
@@ -120,6 +125,7 @@ public class DashboardServiceImpl extends BaseService implements DashboardServic
 
 
     private void getStorageDomains(Connection connection) {
+        log.info("... getStorageDomains");
         List<StorageDomain> storageDomains =
                 getSysSrvHelper().findAllStorageDomains(connection, "status=unattached");
         storageDomains.forEach(storageDomain -> {
@@ -138,7 +144,7 @@ public class DashboardServiceImpl extends BaseService implements DashboardServic
         });
         this.dcv.setStoragesActive(storageIds.size());
         if (storageIds.size() > 0) {
-            List<StorageVo> storages = this.dashboardDao.retireveStorages(storageIds);
+            List<StorageVo> storages = dashboardDao.retireveStorages(storageIds);
             if (storages.size() > 0)
                 for (int j = 0; j < storages.size(); j++) {
                     (this.usageVos.get(j)).setStorageUsages(( storages.get(j)).getUsedDiskSizeGb() * 100 / ((storages.get(j)).getAvailableDiskSizeGb() + (storages.get(j)).getUsedDiskSizeGb()));
@@ -163,7 +169,7 @@ public class DashboardServiceImpl extends BaseService implements DashboardServic
     @Override
     public List<EventVo> retrieveEvents() {
         log.info("... retrieveEvents");
-        Connection connection = this.connectionService.getConnection();
+        Connection connection = connectionService.getConnection();
         List<Event> items =
                 getSysSrvHelper().findAllEvents(connection, "time>today");
         return ModelsKt.toEventVos(items);

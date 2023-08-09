@@ -1,6 +1,5 @@
 package com.itinfo.service.impl;
 
-import com.itinfo.SystemServiceHelper;
 import com.itinfo.model.*;
 import com.itinfo.service.InstanceTypesService;
 
@@ -26,16 +25,17 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @NoArgsConstructor
-public class InstanceTypesServiceImpl implements InstanceTypesService {
+public class InstanceTypesServiceImpl extends BaseService implements InstanceTypesService {
 	@Autowired private ConnectionService connectionService;
 	@Autowired private AdminConnectionService adminConnectionService;
 	@Autowired private WebsocketService websocketService;
 
 	@Override
 	public List<InstanceTypeVo> retrieveInstanceTypes() {
+		log.info("retrieveInstanceTypes ...");
 		Connection connection = connectionService.getConnection();
 		List<InstanceType> instanceTypeList
-				= SystemServiceHelper.getInstance().findAllInstanceTypes(connection);
+				= getSysSrvHelper().findAllInstanceTypes(connection);
 
 		return ModelsKt.toInstanceTypeVos(instanceTypeList, connection);
 	}
@@ -45,7 +45,7 @@ public class InstanceTypesServiceImpl implements InstanceTypesService {
 		log.info("retrieveInstanceTypeCreateInfo ...");
 		Connection connection = connectionService.getConnection();
 		List<VnicProfile> nicItemList
-				= SystemServiceHelper.getInstance().findAllVnicProfiles(connection);
+				= getSysSrvHelper().findAllVnicProfiles(connection);
 		List<VmNicVo> vnics
 				= ModelsKt.toVmNicVos(nicItemList);
 
@@ -66,14 +66,14 @@ public class InstanceTypesServiceImpl implements InstanceTypesService {
 			InstanceType it
 					= ModelsKt.toInstanceType(instanceType);
 			response
-					= SystemServiceHelper.getInstance().addInstanceType(connection, it);
+					= getSysSrvHelper().addInstanceType(connection, it);
 			if (instanceType.getSelectNics().size() > 0) {
 				VmNicVo vmNic = instanceType.getSelectNics().get(0);
 				Nic nic = Builders.nic()
 						.name(vmNic.getNicName())
 						.vnicProfile(Builders.vnicProfile().id(vmNic.getId())).build();
 				Boolean res
-					= SystemServiceHelper.getInstance().addNicForInstanceType(connection, response.id(), nic);
+					= getSysSrvHelper().addNicForInstanceType(connection, response.id(), nic);
 			}
 			Thread.sleep(3000L);
 			MessageVo message
@@ -91,10 +91,10 @@ public class InstanceTypesServiceImpl implements InstanceTypesService {
 
 	@Override
 	public InstanceTypeVo retrieveInstanceTypeUpdateInfo(String id) {
+		log.info("retrieveInstanceTypeUpdateInfo('{}') ...", id);
 		Connection connection = connectionService.getConnection();
-
 		InstanceType item
-				= SystemServiceHelper.getInstance().findInstanceType(connection, id);
+				= getSysSrvHelper().findInstanceType(connection, id);
 		InstanceTypeVo instanceType
 				= ModelsKt.toInstanceTypeVo(item, connection);
 		return instanceType;
@@ -103,6 +103,7 @@ public class InstanceTypesServiceImpl implements InstanceTypesService {
 	@Async("karajanTaskExecutor")
 	@Override
 	public String updateInstanceType(InstanceTypeVo instanceType) {
+		log.info("updateInstanceType ...");
 		Connection connection = this.adminConnectionService.getConnection();
 		InstanceType response = null;
 		Gson gson = new Gson();
@@ -110,7 +111,7 @@ public class InstanceTypesServiceImpl implements InstanceTypesService {
 			InstanceType it
 					= ModelsKt.toInstanceType(instanceType);
 			response
-					= SystemServiceHelper.getInstance().updateInstanceType(connection, it);
+					= getSysSrvHelper().updateInstanceType(connection, it);
 			Thread.sleep(3000L);
 			MessageVo message
 					= MessageVo.createMessage(MessageType.INSTANCE_TYPE_UPDATE, true, response.name(), "");
@@ -127,9 +128,10 @@ public class InstanceTypesServiceImpl implements InstanceTypesService {
 
 	@Override
 	public String removeInstanceType(InstanceTypeVo instanceType) {
+		log.info("removeInstanceType ...");
 		Connection connection = connectionService.getConnection();
 		Boolean res
-				= SystemServiceHelper.getInstance().removeInstanceType(connection, instanceType.getId());
+				= getSysSrvHelper().removeInstanceType(connection, instanceType.getId());
 		String result = instanceType.getName() + " 삭제 " + (res ? "완료" : "실패");
 		return result;
 	}

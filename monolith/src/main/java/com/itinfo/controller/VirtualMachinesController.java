@@ -17,312 +17,350 @@ import com.itinfo.model.VmVo;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@Controller("virtualMachinesController")
+@Controller
+@Slf4j
 public class VirtualMachinesController {
 	@Autowired private VirtualMachinesService virtualMachinesService;
 	@Autowired private SystemPropertiesService systemPropertiesService;
 
 	@RequestMapping({"/compute/vms"})
 	public String vms() {
+		log.info("... vms");
 		return "/castanets/compute/vms";
 	}
 
 	@RequestMapping({"/compute/vm"})
 	public String vm() {
+		log.info("... vm");
 		return "/castanets/compute/vmDetail";
 	}
 
 	@RequestMapping({"/compute/createVmView"})
 	public String createVm() {
+		log.info("... createVm");
 		return "/castanets/compute/createVm";
 	}
 
 	@RequestMapping({"/compute/updateVmInfo"})
 	public String updateVm() {
+		log.info("... updateVm");
 		return "/castanets/compute/updateVm";
 	}
 
 	@RequestMapping({"/compute/cloneVmInfo"})
 	public String cloneVm() {
+		log.info("... cloneVm");
 		return "/castanets/compute/cloneVm";
 	}
 
 	@RequestMapping(value = {"/compute/vmList"}, method = {RequestMethod.GET})
 	public String retrieveVms(String status, Model model) {
+		log.info("... retrieveVms('{}')", status);
 		List<VmVo> vms = (status.equals("all"))
-				? this.virtualMachinesService.retrieveVmsAll()
-				: this.virtualMachinesService.retrieveVms(status);
+				? virtualMachinesService.retrieveVmsAll()
+				: virtualMachinesService.retrieveVms(status);
 		model.addAttribute(ItInfoConstant.RESULT_KEY, vms);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/vmList/hosts"}, method = {RequestMethod.GET})
 	public String retrieveVmsHosts(Model model) {
-		List<HostVo> hosts = this.virtualMachinesService.retrieveVmsHosts();
+		log.info("... retrieveVmsHosts");
+		List<HostVo> hosts = virtualMachinesService.retrieveVmsHosts();
 		model.addAttribute(ItInfoConstant.RESULT_KEY, hosts);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/vmList/clusters"}, method = {RequestMethod.GET})
 	public String retrieveVmsClusters(Model model) {
-		List<ClusterVo> clusters = this.virtualMachinesService.retrieveVmsClusters();
+		log.info("... retrieveVmsClusters");
+		List<ClusterVo> clusters = virtualMachinesService.retrieveVmsClusters();
 		model.addAttribute(ItInfoConstant.RESULT_KEY, clusters);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/vmDetail"}, method = {RequestMethod.GET})
 	public String retrieveVm(String id, Model model) {
-		VmVo vm = this.virtualMachinesService.retrieveVm(id);
+		log.info("... retrieveVm('{}')", id);
+		VmVo vm = virtualMachinesService.retrieveVm(id);
 		model.addAttribute(ItInfoConstant.RESULT_KEY, vm);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/vm/nic"}, method = {RequestMethod.GET})
 	public String retrieveVmNetworkInterface(String id, Model model) {
-		List<VmNicVo> vmNics = this.virtualMachinesService.retrieveVmNics(id);
+		log.info("... retrieveVmNetworkInterface('{}')", id);
+		List<VmNicVo> vmNics = virtualMachinesService.retrieveVmNics(id);
 		model.addAttribute(ItInfoConstant.RESULT_KEY, vmNics);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/vm/createVmNic"}, method = {RequestMethod.POST})
 	public String createVmNic(@RequestBody VmNicVo vmNicVo, Model model) {
-		this.virtualMachinesService.createVmNic(vmNicVo);
+		log.info("... createVmNic");
+		virtualMachinesService.createVmNic(vmNicVo);
 		model.addAttribute(ItInfoConstant.RESULT_KEY);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/vm/updateVmNic"}, method = {RequestMethod.POST})
 	public String updateVmNic(@RequestBody VmNicVo vmNicVo, Model model) {
-		this.virtualMachinesService.updateVmNic(vmNicVo);
+		log.info("... updateVmNic");
+		virtualMachinesService.updateVmNic(vmNicVo);
 		model.addAttribute(ItInfoConstant.RESULT_KEY);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/vm/removeVmNic"}, method = {RequestMethod.POST})
 	public String reMoveVmNic(@RequestBody VmNicVo vmNicVo, Model model) {
-		this.virtualMachinesService.removeVmNic(vmNicVo);
+		log.info("... reMoveVmNic");
+		virtualMachinesService.removeVmNic(vmNicVo);
 		model.addAttribute(ItInfoConstant.RESULT_KEY);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/vm/disks"}, method = {RequestMethod.GET})
 	public String retrieveVmDisks(String id, Model model) {
-		List<DiskVo> list = this.virtualMachinesService.retrieveDisks(id);
+		log.info("... retrieveVmDisks('{}')", id);
+		List<DiskVo> list = virtualMachinesService.retrieveDisks(id);
 		model.addAttribute(ItInfoConstant.RESULT_KEY, list);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/vm/snapshots"}, method = {RequestMethod.GET})
 	public String retrieveVmSnapshots(String id, Model model) {
-		List<SnapshotVo> list = this.virtualMachinesService.retrieveVmSnapshots(id);
+		log.info("... retrieveVmSnapshots('{}')", id);
+		List<SnapshotVo> list = virtualMachinesService.retrieveVmSnapshots(id);
 		model.addAttribute(ItInfoConstant.RESULT_KEY, list);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/vm/devices"}, method = {RequestMethod.GET})
 	public String retrieveVmDevices(String id, Model model) {
-		List<VmDeviceVo> list = this.virtualMachinesService.retrieveVmDevices(id);
+		log.info("... retrieveVmDevices('{}')", id);
+		List<VmDeviceVo> list = virtualMachinesService.retrieveVmDevices(id);
 		model.addAttribute(ItInfoConstant.RESULT_KEY, list);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/vm/events"}, method = {RequestMethod.GET})
 	public String retrieveVmEvents(String id, Model model) {
-		List<EventVo> list = this.virtualMachinesService.retrieveVmEvents(id);
+		log.info("... retrieveVmEvents('{}')", id);
+		List<EventVo> list = virtualMachinesService.retrieveVmEvents(id);
 		model.addAttribute(ItInfoConstant.RESULT_KEY, list);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/startVm"}, method = {RequestMethod.POST})
 	public String startVm(@RequestBody List<VmVo> vms, Model model) {
-		this.virtualMachinesService.startVm(vms);
+		log.info("... startVm[{}]", vms.size());
+		virtualMachinesService.startVm(vms);
 		model.addAttribute(ItInfoConstant.RESULT_KEY);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/stopVm"}, method = {RequestMethod.POST})
 	public String stopVm(@RequestBody List<VmVo> vms, Model model) {
-		this.virtualMachinesService.stopVm(vms);
+		log.info("... stopVm[{}]", vms.size());
+		virtualMachinesService.stopVm(vms);
 		model.addAttribute(ItInfoConstant.RESULT_KEY);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/rebootVm"}, method = {RequestMethod.POST})
 	public String rebootVm(@RequestBody List<VmVo> vms, Model model) {
-		this.virtualMachinesService.rebootVm(vms);
+		log.info("... rebootVm[{}]", vms.size());
+		virtualMachinesService.rebootVm(vms);
 		model.addAttribute(ItInfoConstant.RESULT_KEY);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/suspendVm"}, method = {RequestMethod.POST})
 	public String suspendVm(@RequestBody List<VmVo> vms, Model model) {
-		this.virtualMachinesService.suspendVm(vms);
+		log.info("... suspendVm[{}]", vms.size());
+		virtualMachinesService.suspendVm(vms);
 		model.addAttribute(ItInfoConstant.RESULT_KEY);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/removeVm"})
 	public String removeVm(@RequestBody List<VmVo> vms, Model model) {
-		this.virtualMachinesService.removeVm(vms);
+		log.info("... removeVm[{}]", vms.size());
+		virtualMachinesService.removeVm(vms);
 		model.addAttribute(ItInfoConstant.RESULT_KEY);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/vm/checkDuplicateName"})
 	public String checkDuplicateName(String name, Model model) {
-		boolean result = this.virtualMachinesService.checkDuplicateName(name);
-		model.addAttribute(ItInfoConstant.RESULT_KEY, Boolean.valueOf(result));
+		log.info("... checkDuplicateName('{}')", name);
+		boolean result = virtualMachinesService.checkDuplicateName(name);
+		model.addAttribute(ItInfoConstant.RESULT_KEY, result);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/createVm/checkDuplicateDiskName"})
 	public String checkDuplicateDiskName(DiskVo disk, Model model) {
-		boolean result = this.virtualMachinesService.checkDuplicateDiskName(disk);
-		model.addAttribute(ItInfoConstant.RESULT_KEY, Boolean.valueOf(result));
+		log.info("... checkDuplicateDiskName");
+		boolean result = virtualMachinesService.checkDuplicateDiskName(disk);
+		model.addAttribute(ItInfoConstant.RESULT_KEY, result);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/createVm/info"}, method = {RequestMethod.GET})
 	public String createVmInfo(Model model) throws Exception {
-		VmCreateVo vmCreate = this.virtualMachinesService.retrieveVmCreateInfo();
-		System.out.println("return createVmGeneral");
+		log.info("... createVmInfo");
+		VmCreateVo vmCreate = virtualMachinesService.retrieveVmCreateInfo();
 		model.addAttribute(ItInfoConstant.RESULT_KEY, vmCreate);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/createVm"})
 	public String createVm(@RequestBody VmCreateVo vmCreate, Model model) {
-		this.virtualMachinesService.createVm(vmCreate);
+		log.info("... createVm");
+		virtualMachinesService.createVm(vmCreate);
 		model.addAttribute(ItInfoConstant.RESULT_KEY);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/updateVm/info"})
 	public String updateVmInfo(String id, Model model) {
-		System.out.println("updateVmGeneral called, " + id);
-		VmCreateVo vmCreate = this.virtualMachinesService.retrieveVmUpdateInfo(id);
+		log.info("... updateVmInfo('{}')", id);
+		VmCreateVo vmCreate = virtualMachinesService.retrieveVmUpdateInfo(id);
 		model.addAttribute(ItInfoConstant.RESULT_KEY, vmCreate);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/updateVm"})
 	public String updateVm(@RequestBody VmCreateVo vmUpdate, Model model) {
-		this.virtualMachinesService.updateVm(vmUpdate);
+		log.info("... updateVm");
+		virtualMachinesService.updateVm(vmUpdate);
 		model.addAttribute(ItInfoConstant.RESULT_KEY);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/cloneVm/info"})
 	public String cloneVmInfo(String vmId, String snapshotId, Model model) {
-		VmCreateVo vmCreate = this.virtualMachinesService.retrieveVmCloneInfo(vmId, snapshotId);
+		log.info("... cloneVmInfo('{}')", vmId);
+		VmCreateVo vmCreate = virtualMachinesService.retrieveVmCloneInfo(vmId, snapshotId);
 		model.addAttribute(ItInfoConstant.RESULT_KEY, vmCreate);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/cloneVm"})
 	public String cloneVm(@RequestBody VmCreateVo vmCreate, Model model) {
-		this.virtualMachinesService.cloneVm(vmCreate);
+		log.info("... cloneVm");
+		virtualMachinesService.cloneVm(vmCreate);
 		model.addAttribute(ItInfoConstant.RESULT_KEY);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/createVm/recommendHosts"})
 	public String recommendHosts(@RequestBody VmCreateVo vmCreate, Model model) {
-		List<String[]> recommendHosts = this.virtualMachinesService.recommendHosts(vmCreate);
+		log.info("... recommendHosts");
+		List<String[]> recommendHosts = virtualMachinesService.recommendHosts(vmCreate);
 		model.addAttribute(ItInfoConstant.RESULT_KEY, recommendHosts);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/createVm/disks"})
 	public String retrieveDisks(Model model) {
-		List<DiskVo> disks = this.virtualMachinesService.retrieveDisks();
+		log.info("... retrieveDisks");
+		List<DiskVo> disks = virtualMachinesService.retrieveDisks();
 		model.addAttribute(ItInfoConstant.RESULT_KEY, disks);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/retrieveDiskProfiles"})
 	public String retrieveDiskProfiles(Model model) {
-		List<DiskProfileVo> diskProfiles = this.virtualMachinesService.retrieveDiskProfiles();
+		log.info("... retrieveDiskProfiles");
+		List<DiskProfileVo> diskProfiles = virtualMachinesService.retrieveDiskProfiles();
 		model.addAttribute(ItInfoConstant.RESULT_KEY, diskProfiles);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/vm/createSnapshot"})
 	public String createSnapshot(@RequestBody SnapshotVo snapshot, Model model) {
-		this.virtualMachinesService.createSnapshot(snapshot);
+		log.info("... createSnapshot");
+		virtualMachinesService.createSnapshot(snapshot);
 		model.addAttribute(ItInfoConstant.RESULT_KEY);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/vm/previewSnapshot"})
 	public String previewSnapshot(@RequestBody SnapshotVo snapshot, Model model) {
-		System.out.println("called previewSnapshot");
-		this.virtualMachinesService.previewSnapshot(snapshot);
+		log.info("... previewSnapshot");
+		virtualMachinesService.previewSnapshot(snapshot);
 		model.addAttribute(ItInfoConstant.RESULT_KEY);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/vm/commitSnapshot"}, method = {RequestMethod.GET})
 	public String commitSnapshot(String vmId, Model model) {
-		System.out.println("called commitSnapshot");
-		this.virtualMachinesService.commitSnapshot(vmId);
+		log.info("... commitSnapshot('{}')", vmId);
+		virtualMachinesService.commitSnapshot(vmId);
 		model.addAttribute(ItInfoConstant.RESULT_KEY);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/vm/undoSnapshot"}, method = {RequestMethod.GET})
 	public String undoSnapshot(String vmId, Model model) {
-		System.out.println("called undoSnapshot");
-		this.virtualMachinesService.undoSnapshot(vmId);
+		log.info("... undoSnapshot('{}')", vmId);
+		virtualMachinesService.undoSnapshot(vmId);
 		model.addAttribute(ItInfoConstant.RESULT_KEY);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/vm/removeSnapshot"})
 	public String removeSnapshot(@RequestBody SnapshotVo snapshot, Model model) {
-		System.out.println("called removeSnapshot");
-		this.virtualMachinesService.removeSnapshot(snapshot);
+		log.info("... removeSnapshot");
+		virtualMachinesService.removeSnapshot(snapshot);
 		model.addAttribute(ItInfoConstant.RESULT_KEY);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/discs"}, method = {RequestMethod.GET})
 	public String retrieveDiscs(Model model) {
-		List<StorageDomainVo> discs = this.virtualMachinesService.retrieveDiscs();
+		log.info("... retrieveDiscs");
+		List<StorageDomainVo> discs = virtualMachinesService.retrieveDiscs();
 		model.addAttribute(ItInfoConstant.RESULT_KEY, discs);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/changeDisc"}, method = {RequestMethod.POST})
 	public String changeDisc(@RequestBody VmVo vm, Model model) {
-		this.virtualMachinesService.changeDisc(vm);
+		log.info("... changeDisc");
+		virtualMachinesService.changeDisc(vm);
 		model.addAttribute(ItInfoConstant.RESULT_KEY);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/compute/retrieveEngineIp"}, method = {RequestMethod.GET})
 	public String retrieveEngineIp(Model model) {
-		String engineIp = this.systemPropertiesService.retrieveSystemProperties().getIp();
+		log.info("... retrieveEngineIp");
+		String engineIp = systemPropertiesService.retrieveSystemProperties().getIp();
 		model.addAttribute(ItInfoConstant.RESULT_KEY, engineIp);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/compute/vm/metrics"})
 	public String getVmOverview() {
+		log.info("... getVmOverview");
 		return "/castanets/compute/vmMetrics";
 	}
 
 	@RequestMapping({"/compute/vm/metrics/uri"})
 	public String getGrafanaUri(Model model) {
-		model.addAttribute(ItInfoConstant.RESULT_KEY, this.systemPropertiesService.retrieveSystemProperties().getGrafanaUri());
+		log.info("... getGrafanaUri");
+		model.addAttribute(ItInfoConstant.RESULT_KEY, systemPropertiesService.retrieveSystemProperties().getGrafanaUri());
 		return ItInfoConstant.JSON_VIEW;
 	}
 }

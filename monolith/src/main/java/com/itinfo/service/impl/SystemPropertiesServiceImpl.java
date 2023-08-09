@@ -11,29 +11,33 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class SystemPropertiesServiceImpl implements SystemPropertiesService {
+public class SystemPropertiesServiceImpl extends BaseService implements SystemPropertiesService {
 	@Autowired private SystemPropertiesDao systemPropertiesDao;
 
+	@Override
 	public SystemPropertiesVo retrieveSystemProperties() {
 		log.info("... retrieveSystemProperties");
 		return systemPropertiesDao.retrieveSystemProperties();
 	}
 
+	@Override
 	public Integer saveSystemProperties(SystemPropertiesVo systemProperties) {
 		log.info("... saveSystemProperties");
 		return systemPropertiesDao.updateSystemProperties(systemProperties);
 	}
 
+	@Override
 	public Object[] retrieveProgramVersion() {
 		log.info("... retrieveProgramVersion");
 		Object[] result = new Object[2];
-		ClassPathResource resource = new ClassPathResource("castanets/version.txt");
+		ClassPathResource resource = new ClassPathResource("version.txt");
 		try {
 			Path path = Paths.get(resource.getURI());
 			List<String> content = Files.readAllLines(path);
@@ -43,6 +47,7 @@ public class SystemPropertiesServiceImpl implements SystemPropertiesService {
 			log.error(e.getLocalizedMessage());
 			e.printStackTrace();
 		}
+		log.info("... retrieveProgramVersion ... res: {}", result);
 		return result;
 	}
 }

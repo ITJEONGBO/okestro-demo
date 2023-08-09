@@ -31,7 +31,6 @@ import org.ovirt.engine.sdk4.services.DataCenterService;
 import org.ovirt.engine.sdk4.services.HostService;
 import org.ovirt.engine.sdk4.services.SystemService;
 import org.ovirt.engine.sdk4.types.DataCenter;
-import org.ovirt.engine.sdk4.types.DiskProfile;
 import org.ovirt.engine.sdk4.types.DiskSnapshot;
 import org.ovirt.engine.sdk4.types.Event;
 import org.ovirt.engine.sdk4.types.File;
@@ -48,7 +47,6 @@ import org.ovirt.engine.sdk4.types.Vm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
 @Service
 @Slf4j
@@ -61,7 +59,7 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 	@Override
 	public List<StorageDomainVo> retrieveStorageDomains(String status, String domainType) {
 		log.info("... retrieveStorageDomains('{}', '{}')", status, domainType);
-		Connection connection = this.adminConnectionService.getConnection();
+		Connection connection = adminConnectionService.getConnection();
 		/*
 		String dataCenterId
 				= getSysSrvHelper().findAllDataCenters(connection).get(0).id();
@@ -69,13 +67,12 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 		List<StorageDomain> storageDomains
 				= getSysSrvHelper().findAllStorageDomains(connection, "");
 
-		if ("all".equalsIgnoreCase(status)) {
-			storageDomains = getSysSrvHelper().findAllStorageDomains(connection, "");
-		} else if (StorageDomainStatus.ACTIVE.value().equalsIgnoreCase(status)) {
+		if (StorageDomainStatus.ACTIVE.value().equalsIgnoreCase(status))
 			storageDomains = getSysSrvHelper().findAllStorageDomains(connection, "status=active");
-		} else {
+		else if (StorageDomainStatus.INACTIVE.value().equalsIgnoreCase(status))
 			storageDomains = getSysSrvHelper().findAllStorageDomains(connection, "status!=active");
-		}
+		else
+			storageDomains = getSysSrvHelper().findAllStorageDomains(connection, "");
 
 		List<StorageDomainVo> StorageDomainVoList
 				= ModelsKt.toStorageDomainVos(storageDomains, connection);
@@ -132,17 +129,16 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 	@Async("karajanTaskExecutor")
 	@Override
 	public void maintenanceStart(List<String> domains) {
-		log.info("... maintenanceStart");
-		Connection connection = this.adminConnectionService.getConnection();
+		log.info("... maintenanceStart[{}]", domains.size());
+		Connection connection = adminConnectionService.getConnection();
 		MessageVo message = new MessageVo();
 		message.setTitle("스토리지 도메인 유지보수 모드");
 		for (String id : domains) {
 			String dataCenterId
 					= getSysSrvHelper().findAllStorageDomains(connection, id).get(0).id();
-			AttachedStorageDomainService attachedStorageDomainService
-					= getSysSrvHelper().srvAttachedStorageDomainFromDataCenter(connection, dataCenterId, id);
 			StorageDomain domain
 					= getSysSrvHelper().findAttachedStorageDomainFromDataCenter(connection, dataCenterId, id);
+
 			try {
 				if (domain.status() != StorageDomainStatus.MAINTENANCE)
 					getSysSrvHelper().deactiveAttachedStorageDomainFromDataCenter(connection, dataCenterId, id);
@@ -166,7 +162,8 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 	@Async("karajanTaskExecutor")
 	@Override
 	public void maintenanceStop(List<String> domains) {
-		Connection connection = this.adminConnectionService.getConnection();
+		log.info("... maintenanceStop[{}]", domains.size());
+		Connection connection = adminConnectionService.getConnection();
 		MessageVo message = new MessageVo();
 		message.setTitle("스토리지 도메인 활성 모드");
 		for (String id : domains) {
@@ -197,7 +194,8 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 
 	@Override
 	public StorageDomainVo retrieveStorageDomain(String id) {
-		Connection connection = this.adminConnectionService.getConnection();
+		log.info("... retrieveStorageDomain('{}')", id);
+		Connection connection = adminConnectionService.getConnection();
 		StorageDomain storageDomain
 				= getSysSrvHelper().findStorageDomain(connection, id);
 		StorageDomainVo storageDomainVo = new StorageDomainVo();
@@ -238,10 +236,10 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 				= getSysSrvHelper().findAllVms(connection, "");
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		List<VmVo> attaachedVmList = vmList.stream().filter(vm ->
-			!getSysSrvHelper().findDiskAttachmentsFromVm(connection, vm.id()).isEmpty()
+			!getSysSrvHelper().findAllDiskAttachmentsFromVm(connection, vm.id()).isEmpty()
 		).map(vm -> {
 			VmVo attachedVm = new VmVo();
-			attachedVm.setId(getSysSrvHelper().findDiskAttachmentsFromVm(connection, vm.id()).get(0).id());
+			attachedVm.setId(getSysSrvHelper().findAllDiskAttachmentsFromVm(connection, vm.id()).get(0).id());
 			attachedVm.setName(vm.name());
 			Long cdateLong = getSysSrvHelper().findAllSnapshotsFromVm(connection, vm.id()).get(0).date().getTime();
 			attachedVm.setCdate(format.format(cdateLong));
@@ -273,7 +271,8 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 
 	@Override
 	public StorageDomainCreateVo retrieveCreateDomainInfo(String storageDomainId) {
-		Connection connection = this.adminConnectionService.getConnection();
+		log.info("... retrieveCreateDomainInfo('{}')", storageDomainId);
+		Connection connection = adminConnectionService.getConnection();
 		StorageDomain storageDomain
 				= getSysSrvHelper().findStorageDomain(connection, storageDomainId);
 		StorageDomainCreateVo storageDomainCreateVo = new StorageDomainCreateVo();
@@ -295,6 +294,7 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 
 	@Override
 	public List<List<String>> retrieveStorageDomainUsage(String storageDomainId) {
+		log.info("... retrieveStorageDomainUsage('{}')", storageDomainId);
 		List<StorageDomainUsageVo> storageDomainUsageVoList = this.domainsDao.retrieveStorageDomainUsage(storageDomainId);
 		return storageDomainUsageVoList.stream().map(e -> {
 			List<String> storageDomain = new ArrayList<>();
@@ -306,25 +306,17 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 
 	@Override
 	public List<EventVo> retrieveDomainEvents(String id) {
-		Connection connection = this.adminConnectionService.getConnection();
+		log.info("... retrieveDomainEvents('{}')", id);
+		Connection connection = adminConnectionService.getConnection();
 		List<Event> items
 				= getSysSrvHelper().findAllEvents(connection, "");
-		return items.stream().filter(e -> e.storageDomainPresent() && id.equals(e.storageDomain().id())).map(e -> {
-			EventVo eventVo = new EventVo();
-			eventVo.setId(e.id());
-			eventVo.setCorrelationId(e.correlationId());
-			eventVo.setCode(e.code());
-			eventVo.setSeverity(e.severity().value());
-			eventVo.setDescription(e.description());
-			eventVo.setOrigin(e.origin());
-			eventVo.setTime(e.time());
-			return eventVo;
-		}).collect(Collectors.toList());
+		return items.stream().filter(e -> e.storageDomainPresent() && id.equals(e.storageDomain().id())).map(ModelsKt::toEventVo).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<HostDetailVo> retrieveHosts() {
-		Connection connection = this.adminConnectionService.getConnection();
+		log.info("... retrieveHosts");
+		Connection connection = adminConnectionService.getConnection();
 		List<Host> hosts =
 				getSysSrvHelper().findAllHosts(connection, "");
 		return hosts.stream().map(e -> {
@@ -339,7 +331,8 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 	@Async("karajanTaskExecutor")
 	@Override
 	public void createDomain(StorageDomainCreateVo storageDomainCreateVo) {
-		Connection connection = this.adminConnectionService.getConnection();
+		log.info("... createDomain");
+		Connection connection = adminConnectionService.getConnection();
 		SystemService systemService = connection.systemService();
 		DataCenter dataCenter =
 				getSysSrvHelper().findAllDataCenters(connection).get(0);
@@ -457,7 +450,8 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 	@Async("karajanTaskExecutor")
 	@Override
 	public void updateDomain(StorageDomainCreateVo storageDomainCreateVo) {
-		Connection connection = this.adminConnectionService.getConnection();
+		log.info("... updateDomain");
+		Connection connection = adminConnectionService.getConnection();
 		MessageVo message = new MessageVo();
 		message.setTitle("스토리지 도메인 수정");
 		try {
@@ -481,7 +475,8 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 	@Async("karajanTaskExecutor")
 	@Override
 	public void removeDomain(StorageDomainVo storageDomainVo) {
-		Connection connection = this.adminConnectionService.getConnection();
+		log.info("... removeDomain");
+		Connection connection = adminConnectionService.getConnection();
 		MessageVo message = new MessageVo();
 		message.setTitle("스토리지 도메인 삭제");
 
@@ -529,10 +524,8 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 
 	@Override
 	public List<IscsiVo> iscsiDiscover(StorageDomainCreateVo storageDomainCreateVo) {
-		Connection connection = this.adminConnectionService.getConnection();
-		SystemService systemService = connection.systemService();
-		HostService hostService = systemService.hostsService().hostService(storageDomainCreateVo.getHostId());
-
+		log.info("... iscsiDiscover");
+		Connection connection = adminConnectionService.getConnection();
 		List<IscsiDetails> iscsisDiscovered = getSysSrvHelper().findAllIscsiDetailsFromHost(connection, storageDomainCreateVo.getHostId(),
 				Builders.iscsiDetails()
 						.address(storageDomainCreateVo.getIscsi().getAddress())
@@ -552,7 +545,8 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 
 	@Override
 	public boolean iscsiLogin(StorageDomainCreateVo storageDomainCreateVo) {
-		Connection connection = this.adminConnectionService.getConnection();
+		log.info("... iscsiLogin");
+		Connection connection = adminConnectionService.getConnection();
 		SystemService systemService = connection.systemService();
 		HostService hostService = systemService.hostsService().hostService(storageDomainCreateVo.getHostId());
 		try {

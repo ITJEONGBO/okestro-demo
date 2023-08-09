@@ -105,7 +105,7 @@ Run this script to create artifact
 
 ```sh
 # war 빌드 후 (monolith/build/lib) 진행
-docker build -t okestro/cst_tomcat:0.0.3 \
+docker build -t okestro/cst_tomcat:0.0.4 \
   docker/okestro
 ```
 
@@ -113,7 +113,7 @@ docker build -t okestro/cst_tomcat:0.0.3 \
 
 ```batch
 REM war 빌드 후 (monolith/build/lib) 진행
-docker build -t okestro/cst_tomcat:0.0.3 ^
+docker build -t okestro/cst_tomcat:0.0.4 ^
   docker/okestro
 ```
 
@@ -127,7 +127,7 @@ docker run -d -it \
   --name cst_tomcat2 \
   -p 8081:8080 \
   -p 8444:8443 \
-  okestro/cst_tomcat:0.0.3
+  okestro/cst_tomcat:0.0.4
 
 # postgres
 docker run -d -it \
@@ -146,7 +146,7 @@ docker run -d -it ^
   --name okestro/cst_tomcat ^
   -p 8080:8080 ^
   -p 8443:8443 ^
-  okestro/cst_tomcat:0.0.3
+  okestro/cst_tomcat:0.0.4
 
 REM postgres
 docker run -d -it ^
@@ -166,7 +166,8 @@ docker run -d -it ^
   - [ ] docker 관련 정보 수집
   - [ ] model 안정화
 - [ ] package별 endpoint구현
-
+- [ ] docker 생성 자동화 스크립트
+- [ ] dokka 또는 swagger 구성 필요
 
 
 ## Dependencies 주입

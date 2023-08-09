@@ -34,33 +34,33 @@ public class KarajanDashboardController {
 	@RequestMapping({"/symphony/retrieveDataCenterStatus"})
 	public String retrieveDataCenterStatus(Model model) {
 		log.info("... retrieveDataCenterStatus");
-		KarajanVo karajan = this.karajanDashboardService.retrieveDataCenterStatus();
+		KarajanVo karajan = karajanDashboardService.retrieveDataCenterStatus();
 		model.addAttribute(ItInfoConstant.RESULT_KEY, karajan);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/symphony/consolidateVm"})
 	public String consolidateVm(String clusterId, Model model) {
-		log.info("... consolidateVm");
-		List<ConsolidationVo> consolidated = this.karajanDashboardService.consolidateVm(clusterId);
+		log.info("... consolidateVm('{}')", clusterId);
+		List<ConsolidationVo> consolidated = karajanDashboardService.consolidateVm(clusterId);
 		model.addAttribute(ItInfoConstant.RESULT_KEY, consolidated);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/symphony/migrateVm"})
 	public String migrateVm(String hostId, String vmId, Model model) {
-		log.info("... migrateVm");
-		String result = this.karajanDashboardService.migrateVm(hostId, vmId);
+		log.info("... migrateVm('{}', '{}')", hostId, vmId);
+		String result = karajanDashboardService.migrateVm(hostId, vmId);
 		if (result.equalsIgnoreCase(VmStatus.MIGRATING.value()))
-			this.karajanDashboardService.publishVmStatus(hostId, vmId);
+			karajanDashboardService.publishVmStatus(hostId, vmId);
 		model.addAttribute(ItInfoConstant.RESULT_KEY, result);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/symphony/relocateVms"})
 	public String relocateVms(@RequestBody List<ConsolidationVo> consolidations, Model model) {
-		log.info("... relocateVms");
-		this.karajanDashboardService.relocateVms(consolidations);
+		log.info("... relocateVms[{}]", consolidations.size());
+		karajanDashboardService.relocateVms(consolidations);
 		return ItInfoConstant.JSON_VIEW;
 	}
 

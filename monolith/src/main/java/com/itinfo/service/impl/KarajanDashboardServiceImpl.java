@@ -78,7 +78,7 @@ public class KarajanDashboardServiceImpl extends BaseService implements KarajanD
 	@Override
 	public void publishVmStatus(String hostId, String vmId) {
 		log.info("... publishVmStatus('{}', '{}')", hostId, vmId);
-		Connection connection = this.adminConnectionService.getConnection();
+		Connection connection = adminConnectionService.getConnection();
 
 		Vm vm;
 		do {
@@ -92,8 +92,8 @@ public class KarajanDashboardServiceImpl extends BaseService implements KarajanD
 	@Async("karajanTaskExecutor")
 	@Override
 	public void relocateVms(List<ConsolidationVo> consolidations) {
-		log.info("... relocateVms");
-		Connection connection = this.adminConnectionService.getConnection();
+		log.info("... relocateVms[{}]", consolidations.size());
+		Connection connection = adminConnectionService.getConnection();
 		Vm vm = null;
 		for (ConsolidationVo consolidation : consolidations) {
 			Host host =
@@ -116,7 +116,7 @@ public class KarajanDashboardServiceImpl extends BaseService implements KarajanD
 			notify(vm.name(), "error");
 		}
 
-		SystemPropertiesVo properties = this.systemPropertiesService.retrieveSystemProperties();
+		SystemPropertiesVo properties = systemPropertiesService.retrieveSystemProperties();
 		if (properties.getSymphonyPowerControll())
 			turnOffHosts(consolidations);
 	}

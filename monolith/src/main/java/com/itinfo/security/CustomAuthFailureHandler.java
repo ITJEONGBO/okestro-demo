@@ -18,7 +18,7 @@ public class CustomAuthFailureHandler implements AuthenticationFailureHandler {
 	public void onAuthenticationFailure(HttpServletRequest request,
 										HttpServletResponse response,
 										AuthenticationException authenticationException) throws IOException, ServletException {
-		log.error("CustomAuthFailurehandler message : " + authenticationException.getMessage());
+		log.error("...  onAuthenticationFailure('{}')", authenticationException.getMessage());
 		if (authenticationException.getMessage().equalsIgnoreCase(ItInfoConstant.CONNECTION_TIME_OUT))
 			response.setStatus(ItInfoConstant.STATUS_CONNECTION_TIME_OUT);
 		else if (authenticationException.getMessage().equalsIgnoreCase(ItInfoConstant.READ_TIME_OUT))

@@ -5,6 +5,7 @@ import com.itinfo.service.SystemPropertiesService;
 import com.itinfo.model.SystemPropertiesVo;
 
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,26 +20,30 @@ public class SystemPropertiesController {
 
 	@RequestMapping({"/admin/systemProperties"})
 	public String systemProperties() {
+		log.info("... systemProperties");
 		return "/castanets/admin/systemProperties";
 	}
 
 	@RequestMapping(value = {"/admin/retrieveSystemProperties"}, method = {RequestMethod.GET})
 	public String retrieveSystemProperties(Model model) {
-		SystemPropertiesVo systemProperties = this.systemPropertiesService.retrieveSystemProperties();
+		log.info("... retrieveSystemProperties");
+		SystemPropertiesVo systemProperties = systemPropertiesService.retrieveSystemProperties();
 		model.addAttribute(ItInfoConstant.RESULT_KEY, systemProperties);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/admin/saveSystemProperties"})
 	public String saveSystemProperties(@RequestBody SystemPropertiesVo systemProperties, Model model) {
-		int result = this.systemPropertiesService.saveSystemProperties(systemProperties);
+		log.info("... saveSystemProperties");
+		int result = systemPropertiesService.saveSystemProperties(systemProperties);
 		model.addAttribute(ItInfoConstant.RESULT_KEY, result);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping({"/admin/retrieveProgramVersion"})
 	public String retrieveProgramVersion(Model model) {
-		Object[] result = this.systemPropertiesService.retrieveProgramVersion();
+		log.info("... retrieveProgramVersion");
+		Object[] result = systemPropertiesService.retrieveProgramVersion();
 		model.addAttribute(ItInfoConstant.RESULT_KEY, result);
 		return ItInfoConstant.JSON_VIEW;
 	}

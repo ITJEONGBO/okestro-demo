@@ -1,6 +1,5 @@
 package com.itinfo.service.impl;
 
-import com.itinfo.SystemServiceHelper;
 import com.itinfo.dao.ComputingDao;
 import com.itinfo.model.*;
 import com.itinfo.service.VirtualMachinesService;
@@ -112,7 +111,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @NoArgsConstructor
-public class VirtualMachinesServiceImpl implements VirtualMachinesService {
+public class VirtualMachinesServiceImpl extends BaseService implements VirtualMachinesService {
 	@Autowired private ConnectionService connectionService;
 	@Autowired private AdminConnectionService adminConnectionService;
 	@Autowired private KarajanService karajanService;
@@ -121,13 +120,15 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 	@Autowired private WebsocketService websocketService;
 
 	@Async("karajanTaskExecutor")
+	@Override
 	public void startVm(List<VmVo> vms) {
+		log.info("... startVm[{}]", vms.size());
 		Connection connection = this.adminConnectionService.getConnection();
 
 		for (int i = 0; i < vms.size(); i++) {
 			VmVo vm = vms.get(i);
 			VmService vmService
-					= SystemServiceHelper.getInstance().srvVm(connection, vm.getId());
+					= getSysSrvHelper().srvVm(connection, vm.getId());
 			try {
 				if (vmService.get().send().vm().initializationPresent())
 					vmService.start().useCloudInit(true).send();
@@ -164,13 +165,11 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 				Vm item;
 				do {
 					Thread.sleep(5000L);
-					item = SystemServiceHelper.getInstance().findVm(connection, vm.getId());
+					item = getSysSrvHelper().findVm(connection, vm.getId());
 				} while (item.status() != VmStatus.UP);
+				VmVo result = ModelsKt.toVmVOBasic(item);
+
 				Gson gson = new Gson();
-				VmVo result = new VmVo();
-				result.setId(item.id());
-				result.setName(item.name());
-				result.setStatus(item.status().value());
 				MessageVo message
 						= MessageVo.createMessage(MessageType.VIRTUAL_MACHINE_START, true, item.name(), "");
 				websocketService.sendMessage("/topic/vms", gson.toJson(result));
@@ -179,29 +178,30 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		} catch (Exception e) {
 			log.error(e.getLocalizedMessage());
 			e.printStackTrace();
+			Gson gson = new Gson();
+			MessageVo message
+					= MessageVo.createMessage(MessageType.VIRTUAL_MACHINE_START, false, "none", "");
+			websocketService.sendMessage("/topic/vms", gson.toJson("{}"));
+			websocketService.sendMessage("/topic/notify", gson.toJson(message));
 		}
 	}
 
 	@Async("karajanTaskExecutor")
+	@Override
 	public void stopVm(List<VmVo> vms) {
-		Connection connection = this.adminConnectionService.getConnection();
-		SystemService systemService = connection.systemService();
+		log.info("... stopVm[{}]", vms.size());
+		Connection connection = adminConnectionService.getConnection();
+		Gson gson = new Gson();
 		try {
-			Boolean res
-					= ModelsKt.stopAllVms(vms, connection);
+			Boolean res = ModelsKt.stopAllVms(vms, connection);
 			for (VmVo vm : vms) {
 				Vm item;
 				do {
 					Thread.sleep(2000L);
-					item = SystemServiceHelper.getInstance().findVm(connection, vm.getId());
+					item = getSysSrvHelper().findVm(connection, vm.getId());
 				} while (item.status() != VmStatus.DOWN);
 
-				Gson gson = new Gson();
-				VmVo result = new VmVo();
-				result.setId(item.id());
-				result.setName(item.name());
-				result.setStatus(item.status().value());
-
+				VmVo result = ModelsKt.toVmVOBasic(item);
 				MessageVo message
 						= MessageVo.createMessage(MessageType.VIRTUAL_MACHINE_STOP, true, item.name(), "");
 				websocketService.sendMessage("/topic/vms", gson.toJson(result));
@@ -210,12 +210,18 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		} catch (Exception e) {
 			log.error(e.getLocalizedMessage());
 			e.printStackTrace();
+			MessageVo message
+					= MessageVo.createMessage(MessageType.VIRTUAL_MACHINE_STOP, false, "none", e.getLocalizedMessage());
+			websocketService.sendMessage("/topic/vms", gson.toJson("{}"));
+			websocketService.sendMessage("/topic/notify", gson.toJson(message));
 		}
+		
 	}
 
 	@Override
 	@Async("karajanTaskExecutor")
 	public void rebootVm(List<VmVo> vms) {
+		log.info("... rebootVm[{}]", vms.size());
 		Connection connection = this.adminConnectionService.getConnection();
 
 		try {
@@ -225,7 +231,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 				Vm item;
 				do {
 					Thread.sleep(5000L);
-					item = SystemServiceHelper.getInstance().findVm(connection, vm.getId());
+					item = getSysSrvHelper().findVm(connection, vm.getId());
 				} while (item.status() != VmStatus.UP);
 
 				Gson gson = new Gson();
@@ -245,65 +251,66 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 	@Override
 	@Async("karajanTaskExecutor")
 	public void suspendVm(List<VmVo> vms) {
+		log.info("... suspendVm[{}]", vms.size());
 		Connection connection = this.adminConnectionService.getConnection();
 		SystemService systemService = connection.systemService();
 		try {
 			for (VmVo vm : vms)
-				systemService.vmsService().vmService(vm.getId()).suspend().send();
+				getSysSrvHelper().suspendVm(connection, vm.getId());
 			for (VmVo vm : vms) {
 				Vm item;
 				do {
 					Thread.sleep(5000L);
-					item = systemService.vmsService().vmService(vm.getId()).get().send().vm();
+					item = getSysSrvHelper().findVm(connection, vm.getId());
 				} while (item.status() != VmStatus.SUSPENDED);
+				VmVo result = ModelsKt.toVmVOBasic(item);
 				Gson gson = new Gson();
-				VmVo result = new VmVo();
-				result.setId(item.id());
-				result.setName(item.name());
-				result.setStatus(item.status().value());
+				MessageVo message =
+						MessageVo.createMessage(MessageType.VIRTUAL_MACHINE_SUSPEND, true, item.name(), "");
 				websocketService.sendMessage("/topic/vms", gson.toJson(result));
-				MessageVo message = new MessageVo(
-						"가상머신 일시정지",
-						"가상머신 일시정지 완료(" + item.name() + ")",
-						"success"
-				);
 				websocketService.sendMessage("/topic/notify", gson.toJson(message));
 			}
 		} catch (Exception e) {
 			log.error(e.getLocalizedMessage());
 			e.printStackTrace();
+			Gson gson = new Gson();
+			MessageVo message =
+					MessageVo.createMessage(MessageType.VIRTUAL_MACHINE_SUSPEND, false, "{}", "");
+			websocketService.sendMessage("/topic/vms", gson.toJson("{}"));
+			websocketService.sendMessage("/topic/notify", gson.toJson(message));
 		}
 	}
 
 	@Async("karajanTaskExecutor")
+	@Override
 	public void removeVm(List<VmVo> vms) {
-		Connection connection = this.adminConnectionService.getConnection();
-		SystemService systemService = connection.systemService();
+		log.info("... removeVm[{}]", vms.size());
+		Connection connection = adminConnectionService.getConnection();
 		try {
 			for (VmVo vm : vms)
-				systemService.vmsService().vmService(vm.getId()).remove().detachOnly(!vm.getDiskDetach()).send();
+				getSysSrvHelper().removeVm(connection, vm.getId(), !vm.getDiskDetach());
 			for (VmVo vm : vms) {
-				do {
-					Thread.sleep(5000L);
-				} while (((VmsService.ListResponse)systemService.vmsService().list().search(" id=" + vm.getId()).send()).vms().size() != 0);
-				Gson gson = new Gson();
+				do { Thread.sleep(5000L); } while (getSysSrvHelper().findAllVms(connection, " id=" + vm.getId()).size() != 0);
 				vm.setStatus("removed");
+				Gson gson = new Gson();
+				MessageVo message = MessageVo.createMessage(MessageType.VIRTUAL_MACHINE_REMOVE, true, vm.getName(), "");
 				websocketService.sendMessage("/topic/vms", gson.toJson(vm));
-				MessageVo message = new MessageVo(
-						"가상머신 삭제",
-						"가상머신 삭제 완료(" + vm.getName() + ")",
-						"success"
-				);
 				websocketService.sendMessage("/topic/notify", gson.toJson(message));
 			}
 		} catch (Exception e) {
 			log.error(e.getLocalizedMessage());
 			e.printStackTrace();
+			Gson gson = new Gson();
+			MessageVo message = MessageVo.createMessage(MessageType.VIRTUAL_MACHINE_REMOVE, false, "none", "");
+			websocketService.sendMessage("/topic/vms", gson.toJson("{}"));
+			websocketService.sendMessage("/topic/notify", gson.toJson(message));
 		}
 	}
 
+	@Override
 	public List<VmVo> retrieveVmsAll() {
-		Connection connection = this.connectionService.getConnection();
+		log.info("... retrieveVmsAll");
+		Connection connection = connectionService.getConnection();
 		SystemService systemService = connection.systemService();
 		VmsService vmsService = systemService.vmsService();
 		List<Vm> vmList
@@ -415,32 +422,35 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		return vms;
 	}
 
+	@Override
 	public List<HostVo> retrieveVmsHosts() {
-		Connection connection = this.connectionService.getConnection();
-		SystemService systemService = connection.systemService();
+		log.info("... retrieveVmsHosts");
+		Connection connection = connectionService.getConnection();
 		List<Host> hostItems
-				= systemService.hostsService().list().send().hosts();
+				= getSysSrvHelper().findAllHosts(connection, "");
 		List<HostVo> hosts
 				= ModelsKt.toHostVos(hostItems, connection);
 		return hosts;
 	}
 
+	@Override
 	public List<ClusterVo> retrieveVmsClusters() {
-		Connection connection = this.connectionService.getConnection();
-		SystemService systemService = connection.systemService();
+		log.info("... retrieveVmsClusters");
+		Connection connection = connectionService.getConnection();
 		List<Cluster> clusterItems
-				= systemService.clustersService().list().send().clusters();
+				= getSysSrvHelper().findAllClusters(connection, "");
 		List<ClusterVo> clusters
 				= ModelsKt.toClusterVos(clusterItems, connection, null);
 		return clusters;
 	}
 
 	public List<VmVo> retrieveVms(String status) {
-		Connection connection = this.connectionService.getConnection();
+		log.info("... retrieveVms('{}')", status);
+		Connection connection = connectionService.getConnection();
 		SystemService systemService = connection.systemService();
 		VmsService vmsService = systemService.vmsService();
 		List<Vm> vmList
-				= vmsService.list().send().vms();
+				= getSysSrvHelper().findAllVms(connection, "");
 		Date date = new Date();
 		List<VmVo> vms = new ArrayList<>();
 		try {
@@ -613,11 +623,13 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		return vms;
 	}
 
+	@Override
 	public VmVo retrieveVm(String id) {
-		Connection connection = this.connectionService.getConnection();
+		log.info("... retrieveVm('{}')", id);
+		Connection connection = connectionService.getConnection();
 		SystemService systemService = connection.systemService();
 		Vm item
-				= systemService.vmsService().vmService(id).get().send().vm();
+				= getSysSrvHelper().findVm(connection, id);
 		VmVo vm = new VmVo();
 		try {
 			vm.setId(id);
@@ -692,30 +704,35 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		return vm;
 	}
 
+	@Override
 	public VmSystemVo retrieveVmSystem(String id) {
+		log.info("... retrieveVmSystem('{}')", id);
 		Connection connection = connectionService.getConnection();
-		SystemService systemService = connection.systemService();
 		Vm vm
-				= systemService.vmsService().vmService(id).get().send().vm();
-		VmSystemVo vmSystem = ModelsKt.toVmSystemVo(vm);
+				= getSysSrvHelper().findVm(connection, id);
+		VmSystemVo vmSystem
+				= ModelsKt.toVmSystemVo(vm);
 		return vmSystem;
 	}
 
+	@Override
 	public List<VmNicVo> retrieveVmNics(String id) {
-		Connection connection = this.connectionService.getConnection();
-		SystemService systemService = connection.systemService();
+		log.info("... retrieveVmNics('{}')", id);
+		Connection connection = connectionService.getConnection();
 		List<Nic> nicItems
-				= systemService.vmsService().vmService(id).nicsService().list().send().nics();
+				= getSysSrvHelper().findNicsFromVm(connection, id);
 		List<VmNicVo> nics
 				= ModelsKt.toVmNicVos(nicItems, connection);
 		return nics;
 	}
 
+	@Override
 	public List<VmNicVo> retrieveVmNics(String id, VmVo vm) {
-		Connection connection = this.connectionService.getConnection();
+		log.info("... retrieveVmNics('{}')", id);
+		Connection connection = connectionService.getConnection();
 		SystemService systemService = connection.systemService();
 		List<Nic> nicItems
-				= systemService.vmsService().vmService(id).nicsService().list().send().nics();
+				= getSysSrvHelper().findNicsFromVm(connection, id);
 		List<VmNicVo> nics = new ArrayList<>();
 		if (nicItems.size() > 0) {
 			for (Nic nicItem : nicItems) {
@@ -760,10 +777,12 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		return nics;
 	}
 
+	@Override
 	public void createVmNic(VmNicVo vmNicVo) {
+		log.info("... createVmNic");
 		MessageVo message;
 		try {
-			Connection connection = this.connectionService.getConnection();
+			Connection connection = connectionService.getConnection();
 			SystemService systemService = connection.systemService();
 			if (vmNicVo.getProfileId() != null && !vmNicVo.getProfileId().equals("none")) {
 				systemService.vmsService().vmService(vmNicVo.getId()).nicsService().add()
@@ -805,19 +824,21 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		websocketService.sendMessage("/topic/notify", (new Gson()).toJson(message));
 	}
 
+	@Override
 	public void updateVmNic(VmNicVo vmNicVo) {
-		Connection connection = this.connectionService.getConnection();
+		log.info("... updateVmNic");
+		Connection connection = connectionService.getConnection();
 		SystemService systemService = connection.systemService();
 		VmNicService vmNicService
 				= systemService.vmsService().vmService(vmNicVo.getId()).nicsService().nicService(vmNicVo.getNicId());
 		VnicProfileService vnicProfileService
 				= systemService.vnicProfilesService().profileService(vmNicVo.getProfileId());
 		VmNicVo srcVmNicVo
-				= setUpdateNicInfo(systemService, vmNicVo.getId(), vmNicVo.getNicId(), vmNicVo.getProfileId());
+				= setUpdateNicInfo(connection, vmNicVo.getId(), vmNicVo.getNicId(), vmNicVo.getProfileId());
 		Nic nic
 				= systemService.vmsService().vmService(vmNicVo.getId()).nicsService().nicService(vmNicVo.getNicId()).get().send().nic();
 		VnicProfileVo srcVnicProfileVo = (nic.vnicProfile() != null)
-				? setUpdateNicProfileInfo(systemService, vmNicVo.getId(), vmNicVo.getNicId())
+				? setUpdateNicProfileInfo(connection, vmNicVo.getId(), vmNicVo.getNicId())
 				: null;
 		List<Nic> vmNics
 				= systemService.vmsService().vmService(vmNicVo.getId()).nicsService().list().send().nics();
@@ -896,12 +917,13 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 	}
 
 	public void removeVmNic(VmNicVo vmNicVo) {
+		log.info("... removeVmNic");
 		MessageVo message;
-
 		try {
-			Connection connection = this.connectionService.getConnection();
+			Connection connection = connectionService.getConnection();
 			SystemService systemService = connection.systemService();
-			VmService vmService = systemService.vmsService().vmService(vmNicVo.getId());
+			VmService vmService = 
+					systemService.vmsService().vmService(vmNicVo.getId());
 			vmService.nicsService().nicService(vmNicVo.getNicId()).remove().send();
 			try {
 				Thread.sleep(2000L);
@@ -927,26 +949,30 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		websocketService.sendMessage("/topic/notify", (new Gson()).toJson(message));
 	}
 
-	public VnicProfileVo setUpdateNicProfileInfo(SystemService systemService, String vmId, String nicId) {
+	private VnicProfileVo setUpdateNicProfileInfo(Connection connection, String vmId, String nicId) {
+		log.info("... setUpdateNicProfileInfo");
 		Nic nic
-				= systemService.vmsService().vmService(vmId).nicsService().nicService(nicId).get().send().nic();
+				= getSysSrvHelper().findNicFromVm(connection, vmId, nicId);
 		VnicProfile vnicProfile
-				= systemService.vnicProfilesService().profileService(nic.vnicProfile().id()).get().send().profile();
+				= getSysSrvHelper().findVnicProfile(connection, nic.vnicProfile().id());
 		VnicProfileVo vnicProfileVo
 				= ModelsKt.toVnicProfileVo(vnicProfile);
 		return vnicProfileVo;
 	}
 
-	public VmNicVo setUpdateNicInfo(SystemService systemService, String vmId, String nicId, String profileId) {
+	private VmNicVo setUpdateNicInfo(Connection connection, String vmId, String nicId, String profileId) {
+		log.info("... setUpdateNicInfo");
 		Nic nic
-				= systemService.vmsService().vmService(vmId).nicsService().nicService(nicId).get().send().nic();
+				= getSysSrvHelper().findNicFromVm(connection, vmId, nicId);
 		VmNicVo vmNicVo
 				= ModelsKt.toVmNicVo(nic, vmId, nicId, profileId);
 		return vmNicVo;
 	}
 
+	@Override
 	public List<DiskVo> retrieveDisks(String id) {
-		Connection connection = this.connectionService.getConnection();
+		log.info("... retrieveDisks('{}')", id);
+		Connection connection = connectionService.getConnection();
 		SystemService systemService = connection.systemService();
 		VmService vmService = systemService.vmsService().vmService(id);
 		List<DiskAttachment> diskAttachments
@@ -977,8 +1003,11 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		return disks;
 	}
 
+	
+	@Override
 	public List<Map<String, Object>> retrieveVmRole(String id) {
-		Connection connection = this.connectionService.getConnection();
+		log.info("... retrieveVmRole('{}')", id);
+		Connection connection = connectionService.getConnection();
 		SystemService systemService = connection.systemService();
 		VmService vmService = systemService.vmsService().vmService(id);
 		List<Map<String, Object>> list = new ArrayList<>();
@@ -996,21 +1025,26 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		return list;
 	}
 
+	
+	@Override
 	public List<VmDeviceVo> retrieveVmDevices(String id) {
+		log.info("... retrieveVmDevices('{}')", id);
 		return this.computingDao.retrieveVmDevices(id);
 	}
 
+	@Override
 	public List<EventVo> retrieveVmEvents(String id) {
-		Connection connection = this.connectionService.getConnection();
-		SystemService systemService = connection.systemService();
+		log.info("... retrieveVmEvents('{}')", id);
+		Connection connection = connectionService.getConnection();
 		List<Event> items
-				= systemService.eventsService().list().search("severity!=normal").send().events();
+				= getSysSrvHelper().findAllEvents(connection, "severity!=normal");
 		List<EventVo> events
 				= ModelsKt.toEventVos4Vm(items, id);
 		return events;
 	}
 
 	public List<String[]> recommendHosts(VmCreateVo vmCreate) {
+		log.info("... recommendHosts");
 		com.itinfo.model.karajan.VmVo vm
 				= ModelsKt.toVmVoKarajan(vmCreate);
 
@@ -1021,23 +1055,26 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 	}
 
 	public List<DiskVo> retrieveDisks() {
-		Connection connection = this.connectionService.getConnection();
-		SystemService systemService = connection.systemService();
+		log.info("... recommendHosts");
+		Connection connection = connectionService.getConnection();
+		List<Vm> vms = getSysSrvHelper().findAllVms(connection, "");
 		List<DiskVo> disks = new ArrayList<>();
 		List<String> ids = new ArrayList<>();
-		for (Vm vm : systemService.vmsService().list().send().vms()) {
-			for (DiskAttachment diskAttachment : systemService.vmsService().vmService(vm.id()).diskAttachmentsService().list().send().attachments())
+		for (Vm vm : vms) {
+			List<DiskAttachment> diskAttachments = getSysSrvHelper().findAllDiskAttachmentsFromVm(connection, vm.id());
+			for (DiskAttachment diskAttachment : diskAttachments)
 				ids.add(diskAttachment.id());
 		}
 
 		List<Disk> diskList
-				= systemService.disksService().list().send().disks();
+				= getSysSrvHelper().findAllDisks(connection, "");
 		disks.addAll(ModelsKt.toDiskVos(diskList, connection, ids));
 		return disks;
 	}
 
 	public VmCreateVo retrieveVmCreateInfo() {
-		Connection connection = this.connectionService.getConnection();
+		log.info("... retrieveVmCreateInfo");
+		Connection connection = connectionService.getConnection();
 		SystemService systemService = connection.systemService();
 		List<Cluster> clusterItemList
 				= systemService.clustersService().list().send().clusters();
@@ -1140,11 +1177,11 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 	}
 
 	public VmCreateVo retrieveVmUpdateInfo(String id) {
-		Connection connection = this.connectionService.getConnection();
+		log.info("... retrieveVmUpdateInfo('{}')", id);
+		Connection connection = connectionService.getConnection();
 		SystemService systemService = connection.systemService();
 		VmService vmService = systemService.vmsService().vmService(id);
-		Vm vm
-				= vmService.get().send().vm();
+		Vm vm = getSysSrvHelper().findVm(connection, id);
 
 		VmCreateVo vmInfo = retrieveVmCreateInfo();
 		vmInfo.setId(id);
@@ -1153,7 +1190,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		vmInfo.setCluster(vm.cluster().id());
 		vmInfo.setTemplate(vm.template().id());
 		List<OperatingSystemInfo> osItemList
-				= systemService.operatingSystemsService().list().send().operatingSystem();
+				= getSysSrvHelper().findAllOperatingSystems(connection);
 		for (OperatingSystemInfo item : osItemList) {
 			if (vm.os().type().equals(item.name()))
 				vmInfo.setOperatingSystem(item.name());
@@ -1164,12 +1201,12 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		vmInfo.setName(vm.name());
 		vmInfo.setDescription(vm.comment());
 		vmInfo.setUse(vm.description());
+		List<DiskAttachment> diskAttachments 
+				= getSysSrvHelper().findAllDiskAttachmentsFromVm(connection, id);
 		List<DiskVo> disks = new ArrayList<>();
-		for (DiskAttachment diskAttachment : vmService.diskAttachmentsService().list().send().attachments()) {
-			DiskService diskService
-					= systemService.disksService().diskService(diskAttachment.disk().id());
+		for (DiskAttachment diskAttachment : diskAttachments) {
 			Disk item
-					= diskService.get().send().disk();
+					= getSysSrvHelper().findDisk(connection, diskAttachment.disk().id());
 			if (item.storageDomains().size() > 0) {
 				DiskVo diskVo = ModelsKt.toDiskVo(item, connection, diskAttachment);
 				disks.add(diskVo);
@@ -1180,20 +1217,20 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		}
 		vmInfo.setDisks(disks);
 		List<Cluster> clusterItemList
-				= systemService.clustersService().list().send().clusters();
+				= getSysSrvHelper().findAllClusters(connection, "");
 		List<ClusterVo> clusters = new ArrayList<>();
 
-		for (int i = 0; i < clusterItemList.size(); i++) {
+		for (Cluster value : clusterItemList) {
 			ClusterVo cluster = new ClusterVo();
-			cluster.setId(((Cluster)clusterItemList.get(i)).id());
-			cluster.setName(((Cluster)clusterItemList.get(i)).name());
+			cluster.setId(((Cluster) value).id());
+			cluster.setName(((Cluster) value).name());
 			List<NetworkVo> networkVos = new ArrayList<>();
-			List<Network> networkList 
-					= systemService.clustersService().clusterService(((Cluster)clusterItemList.get(i)).id()).networksService().list().send().networks();
-			for (int j = 0; j < networkList.size(); j++) {
+			List<Network> networkList
+					= systemService.clustersService().clusterService(((Cluster) value).id()).networksService().list().send().networks();
+			for (Network network : networkList) {
 				NetworkVo networkVo1 = new NetworkVo();
-				networkVo1.setId(networkList.get(j).id());
-				networkVo1.setName(networkList.get(j).name());
+				networkVo1.setId(network.id());
+				networkVo1.setName(network.name());
 				networkVos.add(networkVo1);
 			}
 			cluster.setClusterNetworkList(networkVos);
@@ -1212,7 +1249,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 					vmNic.setNetworkId(null);
 					vmNic.setNetworkName(null);
 				} else {
-					VnicProfile vnicProfile = ((VnicProfileService.GetResponse)systemService.vnicProfilesService().profileService(nic.vnicProfile().id()).get().send()).profile();
+					VnicProfile vnicProfile = (systemService.vnicProfilesService().profileService(nic.vnicProfile().id()).get().send()).profile();
 					vmNic.setId(vnicProfile.id());
 					vmNic.setNetworkId(vnicProfile.network().id());
 					vmNic.setNetworkName(vnicProfile.name());
@@ -1301,7 +1338,8 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 	}
 
 	public VmCreateVo retrieveVmCloneInfo(String vmId, String snapshotId) {
-		Connection connection = this.connectionService.getConnection();
+		log.info("... retrieveVmCloneInfo('{}', '{}')", vmId, snapshotId);
+		Connection connection = connectionService.getConnection();
 		SystemService systemService = connection.systemService();
 		VmService vmService = systemService.vmsService().vmService(vmId);
 		SnapshotService snapshotService
@@ -1371,13 +1409,13 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 	}
 
 	public boolean checkDuplicateName(String name) {
-		Connection connection = this.connectionService.getConnection();
-		SystemService systemService = connection.systemService();
-		boolean result = systemService.vmsService().list().search(" name=" + name).send().vms().size() > 0;
-		return result;
+		log.info("... checkDuplicateName('{}')", name);
+		Connection connection = connectionService.getConnection();
+		return !getSysSrvHelper().findAllVms(connection, " name=" + name).isEmpty();
 	}
 
 	public boolean checkDuplicateDiskName(DiskVo disk) {
+		log.info("... checkDuplicateDiskName");
 		boolean result = false;
 		return result;
 	}
@@ -1385,6 +1423,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 	@Async("karajanTaskExecutor")
 	@Override
 	public void createVm(VmCreateVo vmCreate) {
+		log.info("... createVm");
 		Connection connection = this.adminConnectionService.getConnection();
 		SystemService systemService = connection.systemService();
 		VmsService vmsService = systemService.vmsService();
@@ -1609,11 +1648,13 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 						}
 						continue;
 					}
-					Disk disk = ((DiskService.GetResponse)systemService.disksService().diskService(diskCreate.getId()).get().send()).disk();
-					DiskAttachment diskAttachResponse = ((DiskAttachmentsService.AddResponse)diskAttachmentsService.add().attachment(Builders.diskAttachment().disk(disk).interface_(DiskInterface.fromValue(diskCreate.getDiskInterface()))).send()).attachment();
+					Disk disk 
+							= (systemService.disksService().diskService(diskCreate.getId()).get().send()).disk();
+					DiskAttachment diskAttachResponse 
+							= (diskAttachmentsService.add().attachment(Builders.diskAttachment().disk(disk).interface_(DiskInterface.fromValue(diskCreate.getDiskInterface()))).send()).attachment();
 					if (diskAttachResponse != null && (diskCreate.getBootable() || diskCreate.getReadOnly())) {
 						Thread.sleep(1000L);
-						((DiskAttachmentService.UpdateResponse)diskAttachmentsService.attachmentService(diskAttachResponse.id()).update().diskAttachment(Builders.diskAttachment()
+						(diskAttachmentsService.attachmentService(diskAttachResponse.id()).update().diskAttachment(Builders.diskAttachment()
 										.bootable(diskCreate.getBootable())
 										.readOnly(diskCreate.getReadOnly()))
 								.send())
@@ -1630,17 +1671,17 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 			}
 			do {
 				Thread.sleep(5000L);
-			} while (((VmsService.ListResponse)systemService.vmsService().list().search(" id=" + response.id()).send()).vms().size() <= 0 &&
-					!((VmService.GetResponse)systemService.vmsService().vmService(response.id()).get().send()).vm().status().equals(VmStatus.DOWN));
+			} while ((systemService.vmsService().list().search(" id=" + response.id()).send()).vms().size() <= 0 &&
+					!(systemService.vmsService().vmService(response.id()).get().send()).vm().status().equals(VmStatus.DOWN));
 			Gson gson = new Gson();
 			VmVo vm = new VmVo();
 			vm.setId(response.id());
 			vm.setName(response.name());
 			vm.setComment(response.comment());
-			vm.setCluster(((ClusterService.GetResponse)systemService.clustersService().clusterService(response.cluster().id()).get().send()).cluster().name());
+			vm.setCluster((systemService.clustersService().clusterService(response.cluster().id()).get().send()).cluster().name());
 			vm.setClusterId(response.cluster().id());
 			if (vmCreate.getHeadlessMode()) {
-				String consoleId = ((GraphicsConsole)((VmGraphicsConsolesService.ListResponse)systemService.vmsService().vmService(response.id()).graphicsConsolesService().list().send()).consoles().get(0)).id();
+				String consoleId = ((systemService.vmsService().vmService(response.id()).graphicsConsolesService().list().send()).consoles().get(0)).id();
 				systemService.vmsService().vmService(response.id()).graphicsConsolesService().consoleService(consoleId).remove().send();
 				vm.setGraphicProtocol("null");
 			} else {
@@ -1668,7 +1709,9 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 	}
 
 	@Async("karajanTaskExecutor")
+	@Override
 	public void updateVm(VmCreateVo vmUpdate) {
+		log.info("... updateVm");
 		Connection connection = this.adminConnectionService.getConnection();
 		SystemService systemService = connection.systemService();
 		VmService vmService = systemService.vmsService().vmService(vmUpdate.getId());
@@ -1734,9 +1777,9 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 				List<Host> runHosts = new ArrayList<>();
 				if (vmUpdate.getPickHost().equals("targetHost")) {
 					if (vmUpdate.getRecommendHost() != null) {
-						runHosts.add(((HostService.GetResponse)systemService.hostsService().hostService(vmUpdate.getRecommendHost()).get().send()).host());
+						runHosts.add((systemService.hostsService().hostService(vmUpdate.getRecommendHost()).get().send()).host());
 					} else {
-						runHosts.add(((HostService.GetResponse)systemService.hostsService().hostService(vmUpdate.getTargetHost()).get().send()).host());
+						runHosts.add((systemService.hostsService().hostService(vmUpdate.getTargetHost()).get().send()).host());
 					}
 					vmPlacementPolicyBuilder.hosts(runHosts);
 				}
@@ -1761,7 +1804,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 			highAvailabilityBuilder.priority(vmUpdate.getPriority());
 			vmBuilder.highAvailability(highAvailabilityBuilder);
 			StorageDomainLeaseBuilder storageDomainLeaseBuilder = new StorageDomainLeaseBuilder();
-			storageDomainLeaseBuilder.storageDomain(((StorageDomainService.GetResponse)systemService.storageDomainsService().storageDomainService(vmUpdate.getLeaseStorageDomain()).get().send()).storageDomain());
+			storageDomainLeaseBuilder.storageDomain((systemService.storageDomainsService().storageDomainService(vmUpdate.getLeaseStorageDomain()).get().send()).storageDomain());
 			vmBuilder.lease(storageDomainLeaseBuilder);
 			vmBuilder.storageErrorResumeBehaviour(VmStorageErrorResumeBehaviour.fromValue(vmUpdate.getResumeBehaviour()));
 			List<BootDevice> bootDevices = new ArrayList<>();
@@ -1808,13 +1851,11 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 									.attachment(
 											Builders.diskAttachment()
 													.disk((new DiskBuilder())
-
 															.name(diskCreate.getName())
 															.description(diskCreate.getDescription())
 															.format(DiskFormat.COW)
-
 															.provisionedSize(BigInteger.valueOf(Integer.parseInt(diskCreate.getVirtualSize())).multiply(BigInteger.valueOf(2L).pow(30)))
-															.storageDomains(new StorageDomain[] { storageDomain })).interface_(DiskInterface.fromValue(diskCreate.getDiskInterface()))
+															.storageDomains(storageDomain)).interface_(DiskInterface.fromValue(diskCreate.getDiskInterface()))
 													.bootable(diskCreate.getBootable())
 													.readOnly(diskCreate.getReadOnly())
 													.active(true))
@@ -1871,64 +1912,64 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 
 			if (vmUpdate.getExSelectNics().size() == vmUpdate.getSelectNics().size()) {
 				for (int i = 0; i < vmUpdate.getExSelectNics().size(); i++) {
-					if (((VmNicVo)vmUpdate.getExSelectNics().get(i)).getId().equals("none") && ((VmNicVo)vmUpdate.getSelectNics().get(i)).getId().equals("empty")) {
+					if ((vmUpdate.getExSelectNics().get(i)).getId().equals("none") && 
+						(vmUpdate.getSelectNics().get(i)).getId().equals("empty")) {
 						systemService.vmsService().vmService(vmUpdate.getId()).nicsService().add()
-								.nic(
-										Builders.nic()
-												.name("nic" + (i + 1)))
-
+								.nic(Builders.nic()
+									.name("nic" + (i + 1))
+								)
 								.send();
-					} else if (((Nic)nics.get(i)).vnicProfile() == null) {
-						if (!((VmNicVo)vmUpdate.getSelectNics().get(i)).getId().equals("empty") && !((VmNicVo)vmUpdate.getExSelectNics().get(i)).getId().equals(((VmNicVo)vmUpdate.getSelectNics().get(i)).getId())) {
+					} else if ((nics.get(i)).vnicProfile() == null) {
+						if (!(vmUpdate.getSelectNics().get(i)).getId().equals("empty") && !(vmUpdate.getExSelectNics().get(i)).getId().equals((vmUpdate.getSelectNics().get(i)).getId())) {
 							NicBuilder nic = new NicBuilder();
 							VnicProfileBuilder vnicProfileBuilder = new VnicProfileBuilder();
-							nic.id(((Nic)nics.get(i)).id()).vnicProfile(vnicProfileBuilder.id(((VmNicVo)vmUpdate.getSelectNics().get(i)).getId()));
-							vmService.nicsService().nicService(((Nic)nics.get(i)).id()).update().nic(nic).send();
+							nic.id((nics.get(i)).id()).vnicProfile(vnicProfileBuilder.id((vmUpdate.getSelectNics().get(i)).getId()));
+							vmService.nicsService().nicService((nics.get(i)).id()).update().nic(nic).send();
 						}
-					} else if (!((VmNicVo)vmUpdate.getSelectNics().get(i)).getId().equals("empty")) {
+					} else if (!(vmUpdate.getSelectNics().get(i)).getId().equals("empty")) {
 						NicBuilder nic = new NicBuilder();
 						VnicProfileBuilder vnicProfileBuilder = new VnicProfileBuilder();
-						nic.id(((Nic)nics.get(i)).id()).vnicProfile(vnicProfileBuilder.id(((VmNicVo)vmUpdate.getSelectNics().get(i)).getId()));
-						vmService.nicsService().nicService(((Nic)nics.get(i)).id()).update().nic(nic).send();
-					} else if (((VmNicVo)vmUpdate.getSelectNics().get(i)).getId().equals("empty")) {
+						nic.id((nics.get(i)).id()).vnicProfile(vnicProfileBuilder.id((vmUpdate.getSelectNics().get(i)).getId()));
+						vmService.nicsService().nicService((nics.get(i)).id()).update().nic(nic).send();
+					} else if ((vmUpdate.getSelectNics().get(i)).getId().equals("empty")) {
 						NicBuilder nic = new NicBuilder();
 						VnicProfileBuilder vnicProfileBuilder = new VnicProfileBuilder();
-						nic.id(((Nic)nics.get(i)).id()).vnicProfile(vnicProfileBuilder);
-						vmService.nicsService().nicService(((Nic)nics.get(i)).id()).update().nic(nic).send();
-					} else if (((VmNicVo)vmUpdate.getSelectNics().get(i)).getId().equals("none")) {
-						vmService.nicsService().nicService(((Nic)nics.get(i)).id()).remove().send();
+						nic.id((nics.get(i)).id()).vnicProfile(vnicProfileBuilder);
+						vmService.nicsService().nicService((nics.get(i)).id()).update().nic(nic).send();
+					} else if ((vmUpdate.getSelectNics().get(i)).getId().equals("none")) {
+						vmService.nicsService().nicService((nics.get(i)).id()).remove().send();
 					}
 				}
 			} else if (vmUpdate.getExSelectNics().size() > vmUpdate.getSelectNics().size()) {
-				if (!((VmService.GetResponse)vmService.get().send()).vm().status().value().equals("up"))
+				if (!(vmService.get().send()).vm().status().value().equals("up"))
 					for (int i = vmUpdate.getSelectNics().size(); i < vmUpdate.getExSelectNics().size(); i++) {
-						if (!((VmNicVo)vmUpdate.getExSelectNics().get(i)).getId().equals("none"))
-							nicsService.nicService(((Nic)nics.get(i)).id()).remove().send();
+						if (!(vmUpdate.getExSelectNics().get(i)).getId().equals("none"))
+							nicsService.nicService((nics.get(i)).id()).remove().send();
 					}
 				if (((VmNicsService.ListResponse)vmService.nicsService().list().send()).nics().size() == vmUpdate.getSelectNics().size()) {
 					List<Nic> nicList = ((VmNicsService.ListResponse)vmService.nicsService().list().send()).nics();
 					for (int i = 0; i < vmUpdate.getSelectNics().size(); i++) {
 						if (((Nic)nicList.get(i)).vnicProfile() == null) {
-							if (!((VmNicVo)vmUpdate.getSelectNics().get(i)).getId().equals("none"))
-								if (!((VmNicVo)vmUpdate.getExSelectNics().get(i)).getId().equals(((VmNicVo)vmUpdate.getSelectNics().get(i)).getId())) {
+							if (!(vmUpdate.getSelectNics().get(i)).getId().equals("none"))
+								if (!(vmUpdate.getExSelectNics().get(i)).getId().equals((vmUpdate.getSelectNics().get(i)).getId())) {
 									NicBuilder nic = new NicBuilder();
 									VnicProfileBuilder vnicProfileBuilder = new VnicProfileBuilder();
-									nic.id(((Nic)nics.get(i)).id()).vnicProfile(vnicProfileBuilder.id(((VmNicVo)vmUpdate.getSelectNics().get(i)).getId()));
+									nic.id((nics.get(i)).id()).vnicProfile(vnicProfileBuilder.id((vmUpdate.getSelectNics().get(i)).getId()));
 									nic.name("nic" + (i + 1));
-									vmService.nicsService().nicService(((Nic)nicList.get(i)).id()).update().nic(nic).send();
+									vmService.nicsService().nicService((nicList.get(i)).id()).update().nic(nic).send();
 								}
-						} else if (!((VmNicVo)vmUpdate.getSelectNics().get(i)).getId().equals("none") || !((VmNicVo)vmUpdate.getSelectNics().get(i)).getId().equals("empty")) {
+						} else if (!(vmUpdate.getSelectNics().get(i)).getId().equals("none") || !(vmUpdate.getSelectNics().get(i)).getId().equals("empty")) {
 							NicBuilder nic = new NicBuilder();
 							VnicProfileBuilder vnicProfileBuilder = new VnicProfileBuilder();
-							nic.id(((Nic)nicList.get(i)).id()).vnicProfile(vnicProfileBuilder.id(((VmNicVo)vmUpdate.getSelectNics().get(i)).getId()));
+							nic.id((nicList.get(i)).id()).vnicProfile(vnicProfileBuilder.id((vmUpdate.getSelectNics().get(i)).getId()));
 							nic.name("nic" + (i + 1));
-							vmService.nicsService().nicService(((Nic)nicList.get(i)).id()).update().nic(nic).send();
-						} else if (((VmNicVo)vmUpdate.getSelectNics().get(i)).getId().equals("empty")) {
+							vmService.nicsService().nicService((nicList.get(i)).id()).update().nic(nic).send();
+						} else if ((vmUpdate.getSelectNics().get(i)).getId().equals("empty")) {
 							NicBuilder nic = new NicBuilder();
 							VnicProfileBuilder vnicProfileBuilder = new VnicProfileBuilder();
-							nic.id(((Nic)nicList.get(i)).id()).vnicProfile(vnicProfileBuilder);
+							nic.id((nicList.get(i)).id()).vnicProfile(vnicProfileBuilder);
 							nic.name("nic" + (i + 1));
-							vmService.nicsService().nicService(((Nic)nicList.get(i)).id()).update().nic(nic).send();
+							vmService.nicsService().nicService((nicList.get(i)).id()).update().nic(nic).send();
 						}
 					}
 				}
@@ -1936,39 +1977,40 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 				List<Nic> nicList = ((VmNicsService.ListResponse)vmService.nicsService().list().send()).nics();
 				int i;
 				for (i = 0; i < vmUpdate.getExSelectNics().size(); i++) {
-					if (((VmNicVo)vmUpdate.getExSelectNics().get(i)).getId().equals("none") && ((VmNicVo)vmUpdate.getSelectNics().get(i)).getId().equals("empty")) {
+					if ((vmUpdate.getExSelectNics().get(i)).getId().equals("none") && 
+						(vmUpdate.getSelectNics().get(i)).getId().equals("empty")) {
 						systemService.vmsService().vmService(vmUpdate.getId()).nicsService().add()
 								.nic(
 										Builders.nic()
 												.name("nic" + (i + 1)))
 
 								.send();
-					} else if (((Nic)nicList.get(i)).vnicProfile() == null) {
-						if (!((VmNicVo)vmUpdate.getSelectNics().get(i)).getId().equals("empty") && !((VmNicVo)vmUpdate.getExSelectNics().get(i)).getId().equals(((VmNicVo)vmUpdate.getSelectNics().get(i)).getId())) {
+					} else if ((nicList.get(i)).vnicProfile() == null) {
+						if (!(vmUpdate.getSelectNics().get(i)).getId().equals("empty") && !(vmUpdate.getExSelectNics().get(i)).getId().equals((vmUpdate.getSelectNics().get(i)).getId())) {
 							NicBuilder nic = new NicBuilder();
 							VnicProfileBuilder vnicProfileBuilder = new VnicProfileBuilder();
-							nic.id(((Nic)nics.get(i)).id()).vnicProfile(vnicProfileBuilder.id(((VmNicVo)vmUpdate.getSelectNics().get(i)).getId()));
+							nic.id((nics.get(i)).id()).vnicProfile(vnicProfileBuilder.id((vmUpdate.getSelectNics().get(i)).getId()));
 							nic.name("nic" + (i + 1));
-							vmService.nicsService().nicService(((Nic)nicList.get(i)).id()).update().nic(nic).send();
+							vmService.nicsService().nicService((nicList.get(i)).id()).update().nic(nic).send();
 						}
-					} else if (!((VmNicVo)vmUpdate.getSelectNics().get(i)).getId().equals("empty")) {
+					} else if (!(vmUpdate.getSelectNics().get(i)).getId().equals("empty")) {
 						NicBuilder nic = new NicBuilder();
 						VnicProfileBuilder vnicProfileBuilder = new VnicProfileBuilder();
-						nic.id(((Nic)nicList.get(i)).id()).vnicProfile(vnicProfileBuilder.id(((VmNicVo)vmUpdate.getSelectNics().get(i)).getId()));
+						nic.id((nicList.get(i)).id()).vnicProfile(vnicProfileBuilder.id((vmUpdate.getSelectNics().get(i)).getId()));
 						nic.name("nic" + (i + 1));
-						vmService.nicsService().nicService(((Nic)nicList.get(i)).id()).update().nic(nic).send();
-					} else if (((VmNicVo)vmUpdate.getSelectNics().get(i)).getId().equals("empty")) {
+						vmService.nicsService().nicService((nicList.get(i)).id()).update().nic(nic).send();
+					} else if ((vmUpdate.getSelectNics().get(i)).getId().equals("empty")) {
 						NicBuilder nic = new NicBuilder();
 						VnicProfileBuilder vnicProfileBuilder = new VnicProfileBuilder();
-						nic.id(((Nic)nicList.get(i)).id()).vnicProfile(vnicProfileBuilder);
+						nic.id((nicList.get(i)).id()).vnicProfile(vnicProfileBuilder);
 						nic.name("nic" + (i + 1));
-						vmService.nicsService().nicService(((Nic)nicList.get(i)).id()).update().nic(nic).send();
+						vmService.nicsService().nicService((nicList.get(i)).id()).update().nic(nic).send();
 					}
 				}
 				for (i = vmUpdate.getExSelectNics().size(); i < vmUpdate.getSelectNics().size(); i++) {
-					if (!((VmNicVo)vmUpdate.getSelectNics().get(i)).getId().equals("empty")) {
+					if (!(vmUpdate.getSelectNics().get(i)).getId().equals("empty")) {
 						vmService.nicsService().add().nic(Builders.nic().name("nic" + (i + 1))
-										.vnicProfile(Builders.vnicProfile().id(((VmNicVo)vmUpdate.getSelectNics().get(i)).getId())))
+										.vnicProfile(Builders.vnicProfile().id((vmUpdate.getSelectNics().get(i)).getId())))
 								.send();
 					} else {
 						VnicProfileBuilder vnicProfileBuilder = new VnicProfileBuilder();
@@ -2012,25 +2054,28 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 	}
 
 	@Async("karajanTaskExecutor")
+	@Override
 	public void cloneVm(VmCreateVo vmClone) {
+		log.info("... cloneVm");
 		Connection connection = this.adminConnectionService.getConnection();
 		SystemService systemService = connection.systemService();
-		Vm response = null;
+		Vm response;
 		try {
 			VmBuilder vmBuilder = new VmBuilder();
 			for (Snapshot snapshot : (systemService.vmsService().vmService(vmClone.getId()).snapshotsService().list().send()).snapshots()) {
 				if (snapshot.id().equals(vmClone.getSnapshotId()))
-					vmBuilder.snapshots(new Snapshot[] { snapshot });
+					vmBuilder.snapshots(snapshot);
 			}
 			try {
-				vmBuilder.cluster(((ClusterService.GetResponse)systemService.clustersService().clusterService(vmClone.getCluster()).get().send()).cluster());
+				vmBuilder.cluster((systemService.clustersService().clusterService(vmClone.getCluster()).get().send()).cluster());
 			} catch (Exception e) {
 				throw new Exception(e);
 			}
 			OperatingSystemBuilder operatingSystemBuilder = new OperatingSystemBuilder();
 			operatingSystemBuilder.type(vmClone.getOperatingSystem());
-			for (InstanceType instanceType : ((InstanceTypesService.ListResponse)systemService.instanceTypesService().list().send()).instanceType()) {
-				if (vmClone.getInstanceType() != null && vmClone.getInstanceType().equalsIgnoreCase(instanceType.id()))
+			for (InstanceType instanceType : (systemService.instanceTypesService().list().send()).instanceType()) {
+				if (!vmClone.getInstanceType().isEmpty() && 
+					vmClone.getInstanceType().equalsIgnoreCase(instanceType.id()))
 					vmBuilder.instanceType(instanceType);
 			}
 			vmBuilder.type(!"".equals(vmClone.getType()) ? VmType.fromValue(vmClone.getType()) : VmType.SERVER);
@@ -2045,7 +2090,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 				displayBuilder.smartcardEnabled(vmClone.getSmartcard());
 				if (vmClone.getSingleSignOn()) {
 					SsoBuilder ssoBuilder = new SsoBuilder();
-					ssoBuilder.methods(new MethodBuilder[] { (new MethodBuilder()).id(SsoMethod.GUEST_AGENT) });
+					ssoBuilder.methods((new MethodBuilder()).id(SsoMethod.GUEST_AGENT));
 					vmBuilder.sso(ssoBuilder);
 				}
 				vmBuilder.display(displayBuilder);
@@ -2076,14 +2121,14 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 			memoryPolicy.ballooning(vmClone.getMemoryBalloon());
 			vmBuilder.memoryPolicy(memoryPolicy);
 			VmPlacementPolicyBuilder vmPlacementPolicyBuilder = new VmPlacementPolicyBuilder();
-			if (vmClone.getAffinity() != null)
+			if (!vmClone.getAffinity().isEmpty())
 				vmPlacementPolicyBuilder.affinity(VmAffinity.fromValue(vmClone.getAffinity()));
-			if (vmClone.getRecommendHost() != null || vmClone.getTargetHost() != null) {
+			if (!vmClone.getRecommendHost().isEmpty() || !vmClone.getTargetHost().isEmpty()) {
 				List<Host> runHosts = new ArrayList<>();
-				if (vmClone.getRecommendHost() != null) {
-					runHosts.add(((HostService.GetResponse)systemService.hostsService().hostService(vmClone.getRecommendHost()).get().send()).host());
+				if (!vmClone.getRecommendHost().isEmpty()) {
+					runHosts.add((systemService.hostsService().hostService(vmClone.getRecommendHost()).get().send()).host());
 				} else {
-					runHosts.add(((HostService.GetResponse)systemService.hostsService().hostService(vmClone.getTargetHost()).get().send()).host());
+					runHosts.add((systemService.hostsService().hostService(vmClone.getTargetHost()).get().send()).host());
 				}
 				vmPlacementPolicyBuilder.hosts(runHosts);
 			}
@@ -2186,23 +2231,26 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 	}
 
 	public List<DiskProfileVo> retrieveDiskProfiles() {
+		log.info("... retrieveDiskProfiles");
 		Connection connection = connectionService.getConnection();
 		List<DiskProfile> items
-				= SystemServiceHelper.getInstance().findAllDiskProfiles(connection);
+				= getSysSrvHelper().findAllDiskProfiles(connection);
 		return ModelsKt.toDiskProfileVos(items, connection);
 	}
 
 	public List<SnapshotVo> retrieveVmSnapshots(String id) {
+		log.info("... retrieveVmSnapshots('{}')", id);
 		Connection connection = connectionService.getConnection();
 		List<Snapshot> snapshots
-				= SystemServiceHelper.getInstance().findAllSnapshotsFromVm(connection, id);
+				= getSysSrvHelper().findAllSnapshotsFromVm(connection, id);
 		return ModelsKt.toSnapshotVos(snapshots, connection);
 	}
 
 	public void createSnapshot(SnapshotVo snapshot) {
+		log.info("... createSnapshot");
 		Connection connection = connectionService.getConnection();
 		List<DiskAttachment> diskAttachments
-				= SystemServiceHelper.getInstance().findDiskAttachmentsFromVm(connection, snapshot.getVmId());
+				= getSysSrvHelper().findAllDiskAttachmentsFromVm(connection, snapshot.getVmId());
 
 		List<DiskAttachment> attachments = new ArrayList<>();
 		for (DiskAttachment diskAttachment : diskAttachments) {
@@ -2215,7 +2263,7 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 				= Builders.snapshot().description(snapshot.getDescription())
 					.diskAttachments(attachments).build();
 		Boolean res
-				= SystemServiceHelper.getInstance().addSnapshotFromVm(connection, snapshot.getVmId(), s);
+				= getSysSrvHelper().addSnapshotFromVm(connection, snapshot.getVmId(), s);
 		log.info("createSnapshot ... res: "+res);
 	}
 
@@ -2223,52 +2271,60 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 		log.info("previewSnapshot ... vmId:" + snapshot.getVmId() + ", snapshot id:" + snapshot.getId() + ", memoryRestored:" + snapshot.getMemoryRestore());
 		Connection connection = connectionService.getConnection();
 		Snapshot previewSnapshot
-				= SystemServiceHelper.getInstance().findSnapshotFromVm(connection, snapshot.getVmId(), snapshot.getId());
+				= getSysSrvHelper().findSnapshotFromVm(connection, snapshot.getVmId(), snapshot.getId());
 		Boolean res
-				= SystemServiceHelper.getInstance().previewSnapshotFromVm(connection, snapshot.getVmId(), previewSnapshot, snapshot.getMemoryRestore());
+				= getSysSrvHelper().previewSnapshotFromVm(connection, snapshot.getVmId(), previewSnapshot, snapshot.getMemoryRestore());
 		log.info("previewSnapshot ... res: "+res);
 	}
 
+	@Override
 	public void commitSnapshot(String vmId) {
-		log.info("commitSnapshot ... vmId: " + vmId);
+		log.info("... commitSnapshot('{}')", vmId);
 		Connection connection = connectionService.getConnection();
 		Boolean res
-				= SystemServiceHelper.getInstance().commitSnapshotFromVm(connection, vmId);
+				= getSysSrvHelper().commitSnapshotFromVm(connection, vmId);
 		log.info("commitSnapshot ... res: "+res);
 	}
 
+	@Override
 	public void undoSnapshot(String vmId) {
-		log.info("undoSnapshot ... vmId: " + vmId);
+		log.info("... undoSnapshot('{}')", vmId);
 		Connection connection = connectionService.getConnection();
 		Boolean res
-				= SystemServiceHelper.getInstance().undoSnapshotFromVm(connection, vmId);
-		log.info("undoSnapshot ... res: "+res);
+				= getSysSrvHelper().undoSnapshotFromVm(connection, vmId);
+		log.info("undoSnapshot ... res: {}", res);
 	}
 
+
+	@Override
 	public void removeSnapshot(SnapshotVo snapshot) {
+		log.info("... removeSnapshot");
 		Connection connection = connectionService.getConnection();
 		Boolean res
-				= SystemServiceHelper.getInstance().removeSnapshotFromVm(connection, snapshot.getVmId(), snapshot.getId());
-		log.info("removeSnapshot ... res: "+res);
+				= getSysSrvHelper().removeSnapshotFromVm(connection, snapshot.getVmId(), snapshot.getId());
+		log.info("... removeSnapshot ... res: "+res);
 	}
 
+
+	@Override
 	public List<StorageDomainVo> retrieveDiscs() {
+		log.info("... retrieveDiscs");
 		Connection connection = connectionService.getConnection();
 
 		List<StorageDomain> storageDomainList
-				= SystemServiceHelper.getInstance().findAllStorageDomains(connection, "");
+				= getSysSrvHelper().findAllStorageDomains(connection, "");
 
 		List<StorageDomainVo> discs = new ArrayList<>();
 		for (StorageDomain item : storageDomainList) {
 			if (item.type().value().equals("iso")) {
 				List<File> fileList
-						= SystemServiceHelper.getInstance().findAllFilesFromStorageDomain(connection, item.id());
+						= getSysSrvHelper().findAllFilesFromStorageDomain(connection, item.id());
 				discs.addAll(ModelsKt.toStorageDomainVosUsingFiles(fileList));
 			}
 		}
 
 		List<Disk> disks
-				= SystemServiceHelper.getInstance().findAllDisks(connection, "");
+				= getSysSrvHelper().findAllDisks(connection, "");
 		discs.addAll(ModelsKt.toStorageDomainVosUsingDisks(disks));
 		return discs;
 	}
@@ -2276,25 +2332,27 @@ public class VirtualMachinesServiceImpl implements VirtualMachinesService {
 	@Async("karajanTaskExecutor")
 	@Override
 	public void changeDisc(VmVo vm) {
+		log.info("... changeDisc");
 		Connection connection = this.adminConnectionService.getConnection();
 		String vmId = vm.getId();
 		List<Cdrom> vmCdroms
-				= SystemServiceHelper.getInstance().findAllVmCdromsFromVm(connection, vmId);
+				= getSysSrvHelper().findAllVmCdromsFromVm(connection, vmId);
 		FileBuilder fb
 				= Builders.file().id("eject".equals(vm.getDisc()) ? "" : vm.getDisc());
 		Cdrom cdrom
 				= Builders.cdrom().file(fb).build();
 		Boolean res
-				= SystemServiceHelper.getInstance().updateVmCdromFromVm(connection, vm.getId(), vmCdroms.get(0).id(), cdrom);
+				= getSysSrvHelper().updateVmCdromFromVm(connection, vm.getId(), vmCdroms.get(0).id(), cdrom);
 
 		String vmName
-				= SystemServiceHelper.getInstance().findVm(connection, vmId).name();
+				= getSysSrvHelper().findVm(connection, vmId).name();
 		MessageVo message
 				= MessageVo.createMessage(MessageType.CHANGE_CD_ROM, res, vmName, "");
 		websocketService.sendMessage("/topic/notify", new Gson().toJson(message));
 	}
 
 	public List<DashboardTopVo> retrieveVmsTop(List<VmVo> totalVms) {
+		log.info("... retrieveVmsTop");
 		List<DashboardTopVo> data = new ArrayList<>();
 		Map<String, Integer> vmCpuParamMap = new HashMap<>();
 		Map<String, Integer> vmMemoryParamMap = new HashMap<>();

@@ -1,13 +1,13 @@
 package com.itinfo.service.engine;
 
 import com.itinfo.model.karajan.*;
-import com.itinfo.service.SystemPropertiesService;
 import com.itinfo.model.SystemPropertiesVo;
+import com.itinfo.service.impl.BaseService;
+import com.itinfo.service.SystemPropertiesService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.itinfo.service.impl.BaseService;
 import lombok.extern.slf4j.Slf4j;
 
 import org.ovirt.engine.sdk4.Connection;
@@ -38,26 +38,30 @@ public class WorkloadPredictionService extends BaseService {
 
 	@Scheduled(cron = "0 0 01 * * ?")
 	public void makeLearning() {
+		log.info("... makeLearning");
 		SystemPropertiesVo properties = systemPropertiesService.retrieveSystemProperties();
 		if (properties.getDeeplearningUri().length() > 0) {
 			log.info("make learning " + properties.getDeeplearningUri());
 			WorkloadVo workload = getWorkload();
 			RestTemplate rest = new RestTemplate();
 			String result
-					= (String)rest.postForObject(properties.getDeeplearningUri(), workload, String.class, new Object[0]);
-			log.info("result: {}" + result);
+					= rest.postForObject(properties.getDeeplearningUri(), workload, String.class);
+			log.info("result: {}", result);
 		}
 	}
 
 	public WorkloadVo getWorkload() {
-		Connection connection = this.adminConnectionService.getConnection();
-		SystemPropertiesVo properties = systemPropertiesService.retrieveSystemProperties();
+		log.info("... getWorkload");
+		Connection connection = adminConnectionService.getConnection();
+		SystemPropertiesVo properties
+				= systemPropertiesService.retrieveSystemProperties();
 		WorkloadVo workload
 				= KarajanModelsKt.toWorkloadVo(properties, connection);
 		return workload;
 	}
 
 	private List<WorkloadVmVo> getVms(Connection connection, String clusterName) {
+		log.info("... getVms");
 		List<WorkloadVmVo> targets = new ArrayList<>();
 		List<Vm> vms
 				= getSysSrvHelper().findAllVms(connection, "cluster=" + clusterName);

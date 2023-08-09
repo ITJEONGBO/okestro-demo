@@ -20,11 +20,10 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 					   HttpServletResponse response,
 					   AccessDeniedException e) throws ServletException, IOException {
 		log.info("..." + this.errorPage);
-		log.info("Exception : {}", e.getClass().getCanonicalName());
-		log.info("LocalizedMessage : {}", e.getLocalizedMessage());
-		log.info("Message : {}", e.getMessage());
-		log.info("StackTrace : {}", e.getStackTrace());
-
+		log.info("    - Exception : {}", e.getClass().getCanonicalName());
+		log.info("    - LocalizedMessage : {}", e.getLocalizedMessage());
+		log.info("    - Message : {}", e.getMessage());
+		log.info("    - StackTrace : {}", e.getStackTrace());
 		request.setAttribute("errMsg", e.getMessage());
 		request.getRequestDispatcher("/WEB-INF/jsp/com/itinfo/login/accessDenied.jsp").forward(request, response);
 	}

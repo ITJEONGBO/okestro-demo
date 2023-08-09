@@ -7,6 +7,7 @@ import com.itinfo.service.QuotasService;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.builders.QuotaClusterLimitBuilder;
 import org.ovirt.engine.sdk4.builders.QuotaStorageLimitBuilder;
@@ -20,12 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class QuotasServiceImpl extends BaseService implements QuotasService {
 	@Autowired private ConnectionService connectionService;
 	@Override
 	public List<QuotaVo> retrieveQuotas() {
+		log.info("... retrieveQuotas");
 		Connection connection = connectionService.getConnection();
-
 		String dataCenterId
 				= getSysSrvHelper().findAllDataCenters(connection).get(0).id();
 		List<Quota> quotas
@@ -35,8 +37,8 @@ public class QuotasServiceImpl extends BaseService implements QuotasService {
 
 	@Override
 	public QuotaVo retrieveQuotaDetail(String quotaId) {
+		log.info("... retrieveQuotaDetail('{}')", quotaId);
 		Connection connection = connectionService.getConnection();
-
 		String dataCenterId
 				= getSysSrvHelper().findAllDataCenters(connection).get(0).id();
 		Quota quota
@@ -46,6 +48,7 @@ public class QuotasServiceImpl extends BaseService implements QuotasService {
 
 	@Override
 	public List<EventVo> retrieveQuotaEvents(String quotaId) {
+		log.info("... retrieveQuotaEvents('{}')", quotaId);
 		Connection connection = connectionService.getConnection();
 		List<Event> events
 				= SystemServiceHelper.getInstance().findAllEvents(connection, " Quota = test-quota");
@@ -54,6 +57,7 @@ public class QuotasServiceImpl extends BaseService implements QuotasService {
 
 	@Override
 	public QuotaCreateVo createQuota(QuotaCreateVo quotaCreateVo) {
+		log.info("... createQuota");
 		Connection connection = connectionService.getConnection();
 		SystemService systemService = connection.systemService();
 		DataCenter dataCenter
@@ -75,6 +79,8 @@ public class QuotasServiceImpl extends BaseService implements QuotasService {
 
 	@Override
 	public QuotaCreateVo updateQuota(QuotaCreateVo quotaCreateVo) {
+		log.info("... updateQuota");
+		// TODO: 처리내용 확인필요
 		return null;
 	}
 }

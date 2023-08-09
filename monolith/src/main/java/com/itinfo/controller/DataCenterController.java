@@ -21,7 +21,7 @@ public class DataCenterController {
 	@RequestMapping({"/compute/dataCenters/retrieveDataCenters"})
 	public String retrieveDataCentersInfo(Model model) {
 		log.info("... retrieveDataCentersInfo");
-		List<DataCenterVo> dataCenters = this.dataCenterService.retrieveDataCenters();
+		List<DataCenterVo> dataCenters = dataCenterService.retrieveDataCenters();
 		model.addAttribute(ItInfoConstant.RESULT_KEY, dataCenters);
 		return ItInfoConstant.JSON_VIEW;
 	}

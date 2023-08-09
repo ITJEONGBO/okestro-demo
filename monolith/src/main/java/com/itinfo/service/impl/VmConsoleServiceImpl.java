@@ -21,17 +21,16 @@ import org.ovirt.engine.sdk4.types.Vm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service("vmConsoleServiceImpl")
+@Service
 @Slf4j
 @NoArgsConstructor
-public class VmConsoleServiceImpl implements VmConsoleService {
+public class VmConsoleServiceImpl extends BaseService implements VmConsoleService {
 	@Autowired private AdminConnectionService adminConnectionService;
-
-
 	@Autowired private SystemPropertiesService systemPropertiesService;
 
 	@Override
 	public VmConsoleVo getDisplayTicket(VmConsoleVo vmConsoleVo) {
+		log.info("getDisplayTicket ...");
 		Connection connection = adminConnectionService.getConnection();
 		Vm vm
 				= SystemServiceHelper.getInstance().findAllVms(connection, "name=" + vmConsoleVo.getVmName()).get(0);

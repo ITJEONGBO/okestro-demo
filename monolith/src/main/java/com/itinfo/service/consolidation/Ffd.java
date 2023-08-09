@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class Ffd {
 	public List<ConsolidationVo> optimizeDataCenter(KarajanVo karajan, String clusterId) {
+		log.info("... optimizeDataCenter('{}')", clusterId);
 		List<ClusterVo> clusterInfo = karajan.getClusters();
 		List<HostVo> afterHostInfo = new ArrayList<>();
 		int i;
@@ -36,7 +37,7 @@ public class Ffd {
 			migrationScheduleInfo = consolidateVM(karajan, afterHostInfo);
 			if (migrationScheduleInfo.size() == 0) continue;
 			afterHostInfo = updateHostInfo(afterHostInfo, migrationScheduleInfo);
-		} while (migrationScheduleInfo.size() > 0);
+		} while (!migrationScheduleInfo.isEmpty());
 		return getMigrationSchedule(afterHostInfo);
 	}
 

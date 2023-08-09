@@ -24,49 +24,49 @@ public class UsersServiceImpl implements UsersService {
 
 	public List<UserVo> retrieveUsers() {
 		log.info("... retrieveUsers");
-		return this.usersDao.retrieveUsers();
+		return usersDao.retrieveUsers();
 	}
 
 	public Integer removeUsers(List<UserVo> users) {
 		log.info("... removeUsers");
-		return this.usersDao.removeUsers(users);
+		return usersDao.removeUsers(users);
 	}
 
 	public Boolean isExistUser(UserVo user) {
 		log.info("... isExistUser");
-		return this.usersDao.isExistUser(user);
+		return usersDao.isExistUser(user);
 	}
 
 	public Integer addUser(UserVo user) {
 		log.info("... addUser");
 		user.setPassword(SecurityUtils.createHash(user.getPassword()));
-		return this.usersDao.addUser(user);
+		return usersDao.addUser(user);
 	}
 
 	public String login(String id) {
 		log.info("... login("+id+")");
-		return this.usersDao.login(id);
+		return usersDao.login(id);
 	}
 
 	public UserVo retrieveUser(String id) {
 		log.info("... retrieveUser("+id+")");
-		return this.usersDao.retrieveUser(id);
+		return usersDao.retrieveUser(id);
 	}
 
 	public Integer updateUser(UserVo user) {
 		log.info("... retrieveUser");
-		return this.usersDao.updateUser(user);
+		return usersDao.updateUser(user);
 	}
 
 	public Integer updatePassword(UserVo user) {
 		log.info("... updatePassword");
 		user.setNewPassword(SecurityUtils.createHash(user.getNewPassword()));
-		return this.usersDao.updatePassword(user);
+		return usersDao.updatePassword(user);
 	}
 
 	public Integer updateLoginCount(UserVo user) {
 		log.info("... updateLoginCount");
-		return this.usersDao.updateLoginCount(user);
+		return usersDao.updateLoginCount(user);
 	}
 
 	public void setBlockTime(UserVo user) {
@@ -74,11 +74,11 @@ public class UsersServiceImpl implements UsersService {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 		String blockTime = LocalDateTime.now().plusMinutes(10L).format(formatter);
 		user.setBlockTime(blockTime);
-		this.usersDao.setBlockTime(user);
+		usersDao.setBlockTime(user);
 	}
 
 	public void initLoginCount(String userId) {
 		log.info("... initLoginCount("+userId+")");
-		this.usersDao.initLoginCount(userId);
+		usersDao.initLoginCount(userId);
 	}
 }

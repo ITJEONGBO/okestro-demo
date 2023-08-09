@@ -3,6 +3,7 @@ package com.itinfo.model
 import com.itinfo.SystemServiceHelper
 import com.itinfo.dao.ClustersDao
 import org.ovirt.engine.sdk4.Connection
+import org.ovirt.engine.sdk4.ConnectionBuilder
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.internal.containers.*
 import org.ovirt.engine.sdk4.services.HostService
@@ -17,6 +18,9 @@ import java.util.*
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
+
+private val sysSrvH: SystemServiceHelper
+	get() = SystemServiceHelper.getInstance()
 data class ItInfoNetworkClusterVo(
 	var clusterName: String = "",
 	var clusterVersion: String = "",
@@ -30,7 +34,7 @@ data class ItInfoNetworkClusterVo(
 
 fun Cluster.toItInfoNetworkClusterVo(connection: Connection, networkId: String): ItInfoNetworkClusterVo {
 	val networks: List<Network>
-		= SystemServiceHelper.getInstance().findAllNetworksFromCluster(connection, id())
+		= sysSrvH.findAllNetworksFromCluster(connection, id())
 	val networkFound: Network?
 		= networks.firstOrNull { it.id().equals(networkId, ignoreCase = true) }
 	val networkUsages: List<NetworkUsage>
@@ -89,9 +93,9 @@ data class ItInfoNetworkHostVo(
 
 fun Host.toItInfoNetworkHostVo(connection: Connection): ItInfoNetworkHostVo {
 	val cluster: List<Cluster>
-		= SystemServiceHelper.getInstance().findAllClusters(connection)
+		= sysSrvH.findAllClusters(connection)
 	val hostNics: List<HostNic>
-		= SystemServiceHelper.getInstance().findNicsFromHost(connection, id())
+		= sysSrvH.findNicsFromHost(connection, id())
 	return ItInfoNetworkHostVo(
 		if (statusPresent()) status().value() else "",
 		if (namePresent()) name() else "",
@@ -156,17 +160,17 @@ fun Network.toItInfoNetworkVo(connection: Connection): ItInfoNetworkVo {
 		= if (usagesPresent()) usages().firstOrNull { it.name.equals("VM", true) }?.name ?: ""
 		else ""
 	val vms: List<Vm>
-		= SystemServiceHelper.getInstance().findAllVms(connection)
+		= sysSrvH.findAllVms(connection)
 	val clusters: List<Cluster>
-		= SystemServiceHelper.getInstance().findAllClusters(connection)
+		= sysSrvH.findAllClusters(connection)
 	val dataCenter: DataCenter
-		= SystemServiceHelper.getInstance().findAllDataCenters(connection).first()
+		= sysSrvH.findAllDataCenters(connection).first()
 	val openStackNetworkProviders: List<OpenStackNetworkProvider>
-		= SystemServiceHelper.getInstance().findAllOpenStackNetworkProviders(connection);
+		= sysSrvH.findAllOpenStackNetworkProviders(connection);
 	val labels: List<NetworkLabel>
-		= SystemServiceHelper.getInstance().findAllNetworkLabelsFromNetwork(connection, id())
+		= sysSrvH.findAllNetworkLabelsFromNetwork(connection, id())
 	val qoss: List<Qos>
-		= SystemServiceHelper.getInstance().findAllQossFromDataCenter(connection, dataCenter.id())
+		= sysSrvH.findAllQossFromDataCenter(connection, dataCenter.id())
 
 	return ItInfoNetworkVo(
 		id(),
@@ -212,11 +216,11 @@ data class ClusterCreateVo(
 
 fun ClusterCreateVo.toCluster(connection: Connection): Cluster {
 	val dataCenter: DataCenter
-		= SystemServiceHelper.getInstance().findAllDataCenters(connection).first()
+		= sysSrvH.findAllDataCenters(connection).first()
 	val networkProvider: OpenStackNetworkProvider
-		= SystemServiceHelper.getInstance().findOpenStackNetworkProvider(connection, networkProviderId)
-	val network: Network
-		= SystemServiceHelper.getInstance().findNetwork(connection, networkId)
+		= sysSrvH.findOpenStackNetworkProvider(connection, networkProviderId)
+	val network: Network?
+		= sysSrvH.findNetwork(connection, networkId)
 
 	return ClusterBuilder()
 		.name(name)
@@ -236,9 +240,9 @@ fun ClusterCreateVo.toCluster(connection: Connection): Cluster {
 
 fun Cluster.toClusterCreateVo(connetion: Connection): ClusterCreateVo {
 	val externalProvider: ExternalProvider? =
-		SystemServiceHelper.getInstance().findExternalNetworkProviders(connetion, id()).firstOrNull()
+		sysSrvH.findExternalNetworkProviders(connetion, id()).firstOrNull()
 	val network: Network?
-		= SystemServiceHelper.getInstance().findAllNetworksFromCluster(connetion, id()).firstOrNull()
+		= sysSrvH.findAllNetworksFromCluster(connetion, id()).firstOrNull()
 
 	return ClusterCreateVo(
 		if (idPresent()) id() else "",
@@ -287,18 +291,18 @@ data class ClusterVo(
 
 fun Cluster.toClusterVo(c: Connection, clustersDao: ClustersDao?): ClusterVo {
 	val network: List<Network>
-		= SystemServiceHelper.getInstance().findAllNetworksFromCluster(c, id())
+		= sysSrvH.findAllNetworksFromCluster(c, id())
 	val networkVos: List<NetworkVo>
 		= network.toNetworkVos()
 
 	val hosts: List<Host>
-		= SystemServiceHelper.getInstance().findAllHosts(c).filter { it.cluster().id() == id() }
+		= sysSrvH.findAllHosts(c).filter { it.cluster().id() == id() }
 	val hostCnt: Int = hosts.size
 	val hostsUp: Int = hosts.filter { "up".equals(it.status().name, true) }.size
 	val hostsDown: Int = hostCnt - hostsUp
 
 	val vms: List<Vm>
-		= SystemServiceHelper.getInstance().findAllVms(c).filter { it.cluster().id() == id() }
+		= sysSrvH.findAllVms(c).filter { it.cluster().id() == id() }
 	val vmCnt: Int = vms.size
 	val vmsUp: Int = vms.filter { "up".equals(it.status().name, true) }.size
 	val vmsDown: Int = vmCnt - vmsUp
@@ -350,7 +354,7 @@ fun List<Cluster>.toClusterVos(connection: Connection, clustersDao: ClustersDao?
 
 fun Cluster.toClusterVo4VmCreate(connection: Connection): ClusterVo {
 	val clusterNetworks:List<NetworkVo>
-		= SystemServiceHelper.getInstance().findAllNetworksFromCluster(connection, id()).toNetworkVos()
+		= sysSrvH.findAllNetworksFromCluster(connection, id()).toNetworkVos()
 	return this.toClusterVo(connection, null).apply {
 		clusterNetworkList = clusterNetworks
 	}
@@ -469,32 +473,32 @@ data class DataCenterVo(
 	companion object {
 		fun simpleSetup(c: Connection): DataCenterVo {
 			val clusters: List<Cluster>
-				= SystemServiceHelper.getInstance().findAllClusters(c)
+				= sysSrvH.findAllClusters(c)
 
 			val hostsDown: List<Host>
-				= SystemServiceHelper.getInstance().findAllHosts(c, "status!=up")
+				= sysSrvH.findAllHosts(c, "status!=up")
 			val hostsUp: List<Host>
-				= SystemServiceHelper.getInstance().findAllHosts(c, "status=up")
+				= sysSrvH.findAllHosts(c, "status=up")
 
 			val vmsDown: List<Vm>
-				= SystemServiceHelper.getInstance().findAllVms(c, "status!=up")
+				= sysSrvH.findAllVms(c, "status!=up")
 			val vmsUp: List<Vm>
-				= SystemServiceHelper.getInstance().findAllVms(c, "status=up")
+				= sysSrvH.findAllVms(c, "status=up")
 
 			val storageDomainsUnattached: List<StorageDomain>
-				= SystemServiceHelper.getInstance().findAllStorageDomains(c, "status=unattached")
+				= sysSrvH.findAllStorageDomains(c, "status=unattached")
 			val storageDomainsUnattachedCnt: Int
 				= storageDomainsUnattached.filter { it.type().name == "DATA" }.size
 			val storageDomainsActive: List<StorageDomain>
-				= SystemServiceHelper.getInstance().findAllStorageDomains(c, "status=active")
+				= sysSrvH.findAllStorageDomains(c, "status=active")
 			val storageDomainsActiveCnt: Int
 				= storageDomainsActive.filter { it.type().name == "DATA" }.size
 
 			val events: List<Event>
-				= SystemServiceHelper.getInstance().findAllEvents(c, "time>today")
+				= sysSrvH.findAllEvents(c, "time>today")
 
 			val statsWithinHost: List<List<Statistic>>
-				= hostsUp.map { SystemServiceHelper.getInstance().findAllStatisticsFromHost(c, it.id()) }
+				= hostsUp.map { sysSrvH.findAllStatisticsFromHost(c, it.id()) }
 			val memoryTotal: Int
 				= statsWithinHost.flatten().filter { it.name() == "memory.total" }.sumBy { it.values().firstOrNull()?.datum()?.toInt() ?: 0 }
 			val memoryUsed: Int
@@ -517,7 +521,7 @@ data class DataCenterVo(
 
 			val vmTopologyWithinHost: List<List<Int>>
 				= hostsUp.map {
-					SystemServiceHelper.getInstance().findAllVms(c, "host=${it.name()}").map { vm ->
+					sysSrvH.findAllVms(c, "host=${it.name()}").map { vm ->
 						vm.cpu().topology().cores().toInt() *
 						vm.cpu().topology().sockets().toInt() *
 						vm.cpu().topology().threads().toInt()
@@ -527,7 +531,7 @@ data class DataCenterVo(
 
 			val interfaceIds: List<List<String>>
 				= hostsUp.map {
-					SystemServiceHelper.getInstance().findNicsFromHost(c, it.id()).map { nic ->
+					sysSrvH.findNicsFromHost(c, it.id()).map { nic ->
 						nic.id()
 					}
 				}
@@ -551,7 +555,7 @@ data class DataCenterVo(
 
 fun DataCenter.toDataCenterVo(c: Connection): DataCenterVo {
 	val clusters: List<Cluster>
-		= SystemServiceHelper.getInstance().findAllClusters(c)
+		= sysSrvH.findAllClusters(c)
 	val clusterSize: Int
 		= if (clustersPresent()) clusters().size else clusters.size
 
@@ -590,7 +594,7 @@ data class DiskCreateVo(
 
 fun DiskCreateVo.toDisk(c: Connection): Disk {
 	val storageDomain: StorageDomain
-		= SystemServiceHelper.getInstance().findStorageDomain(c, storageDomainId)
+		= sysSrvH.findStorageDomain(c, storageDomainId)
 
 	return DiskBuilder()
 			.name(name)
@@ -607,7 +611,7 @@ fun DiskCreateVo.toDisk(c: Connection): Disk {
 
 fun DiskCreateVo.toDisk4Lun(c: Connection): Disk {
 	val luns: List<HostStorage>
-		= SystemServiceHelper.getInstance().findAllStoragesFromHost(c, hostId)
+		= sysSrvH.findAllStoragesFromHost(c, hostId)
 
 	val logicalUnits: List<LogicalUnit>
 		= luns.filter { it.id() == lunId }.map {
@@ -700,7 +704,7 @@ fun Disk.toDiskVo(
 	diskAttachment: DiskAttachment? = null,
 ): DiskVo {
 	val storageDomains: List<StorageDomain>
-		= SystemServiceHelper.getInstance().findAllStorageDomains(connection)
+		= sysSrvH.findAllStorageDomains(connection)
 
 	val virtualSize: String
 		= if (storageTypePresent() &&
@@ -734,7 +738,7 @@ fun Disk.toDiskVo(
 
 	val storageDomain: StorageDomain? = storageDomains.firstOrNull {
 			it.type() == StorageDomainType.DATA &&
-				SystemServiceHelper.getInstance().findAllDisksFromStorageDomain(connection, it.id()).any { disk ->
+				sysSrvH.findAllDisksFromStorageDomain(connection, it.id()).any { disk ->
 			it.id() == disk.id()
 		}
 	}
@@ -756,15 +760,20 @@ fun Disk.toDiskVo(
 		actualSize,
 		if (formatPresent()) format().value() else "",
 		if (wipeAfterDeletePresent()) wipeAfterDelete() else false,
-		if (diskAttachment == null || !diskAttachment.bootablePresent()) bootable() else diskAttachment.bootable(),
+		if (diskAttachment?.bootablePresent() == true) diskAttachment.bootable()
+		else if (bootablePresent()) bootable() else
+		false,
 		shareable(),
-		if (diskAttachment == null || !diskAttachment.readOnlyPresent()) readOnly() else diskAttachment.readOnly(),
-		if (diskAttachment == null || !diskAttachment.passDiscardPresent()) false else diskAttachment.passDiscard(),
+		if (diskAttachment?.readOnlyPresent() == true) diskAttachment.readOnly()
+		else if (readOnlyPresent())	readOnly()
+		else false,
+		if (diskAttachment?.passDiscardPresent() == true) diskAttachment.passDiscard()
+		else false,
 		"",
 		storageDomainId,
 		storageDomainName,
 		"",
-		if (diskAttachment == null || !diskAttachment.interface_Present()) "" else diskAttachment.interface_().value(),
+		if (diskAttachment?.interface_Present() == true) diskAttachment.interface_().value() else "",
 		"",
 		if (statusPresent()) status().value() else "ok",
 		if (storageTypePresent()) storageType().value().toUpperCase() else "",
@@ -778,13 +787,13 @@ fun Disk.toDiskVo(
 
 fun List<Disk>.toDiskVos(
 	connection: Connection,
-	diskAttachmentIds: List<String> = arrayListOf(),
-): List<DiskVo> = if (diskAttachmentIds.isEmpty()) this.map {
+	diskAttachmentIds: List<String>? = arrayListOf(),
+): List<DiskVo> = if (diskAttachmentIds.isNullOrEmpty()) this.map {
 	it.toDiskVo(connection)
 }.sortedBy {
 	it.name
 } else this.filter {
-	diskAttachmentIds.contains(it.id())
+	diskAttachmentIds?.contains(it.id())
 }.map {
 	it.toDiskVo(connection)
 }.sortedBy {
@@ -861,7 +870,7 @@ data class HostCreateVo(
 
 fun Host.toHostCreateVo(c: Connection, hostId: String, hostHas: List<HostHaVo>): HostCreateVo {
 	val agents: List<Agent>
-		= SystemServiceHelper.getInstance().findAllFenceAgentsFromHost(c, hostId)
+		= sysSrvH.findAllFenceAgentsFromHost(c, hostId)
 	val powerManagementEnabled: Boolean
 		= if (powerManagementPresent() &&
 		powerManagement().enabledPresent()) powerManagement().enabled() else false
@@ -937,12 +946,12 @@ data class HostDetailVo(
 fun Host.toHostDetailVo(c: Connection, clustersDao: ClustersDao?): HostDetailVo {
 
 	val vms: List<Vm>
-		= SystemServiceHelper.getInstance().findAllVms(c, "host=${name()}")
+		= sysSrvH.findAllVms(c, "host=${name()}")
 	val cntUp: Int = vms.filter { it.statusPresent() && "up".equals(it.status().value(), true) }.size
 	val cntDown: Int = vms.size - cntUp
 
 	val stats: List<Statistic>
-		= SystemServiceHelper.getInstance().findAllStatisticsFromHost(c, id())
+		= sysSrvH.findAllStatisticsFromHost(c, id())
 	val memTot: BigDecimal = stats.first { it.namePresent() && it.name() == "memory.total" }.values().first().datum()
 	val memUsed: BigDecimal = stats.first { it.namePresent() && it.name() == "memory.used" }.values().first().datum()
 	val memFree: BigDecimal = stats.first { it.namePresent() && it.name() == "memory.free" }.values().first().datum()
@@ -959,7 +968,7 @@ fun Host.toHostDetailVo(c: Connection, clustersDao: ClustersDao?): HostDetailVo 
 	val bootTime: BigDecimal = stats.first { it.namePresent() && it.name() == "boot.time" }.values().first().datum()
 
 	val cluster: Cluster?
-		 = if (clusterPresent()) SystemServiceHelper.getInstance().findCluster(c, cluster().id()) else null
+		 = if (clusterPresent()) sysSrvH.findCluster(c, cluster().id()) else null
 
 	val cpuCores: BigInteger
 		= if (cpuPresent() &&
@@ -989,7 +998,7 @@ fun Host.toHostDetailVo(c: Connection, clustersDao: ClustersDao?): HostDetailVo 
 		= clustersDao?.retrieveHostUsage(id()) ?: listOf()
 
 	val hostNics: List<HostNic>
-		= SystemServiceHelper.getInstance().findNicsFromHost(c, id())
+		= sysSrvH.findNicsFromHost(c, id())
 
 //	val nicUsage: NicUsageVo?
 //		= clustersDao?.retrieveHostNicUsage()
@@ -1001,7 +1010,7 @@ fun Host.toHostDetailVo(c: Connection, clustersDao: ClustersDao?): HostDetailVo 
 		= clustersDao?.retrieveHostLastUsage(id())
 
 	val hostNicsLastUsage: List<HostNic>
-		= SystemServiceHelper.getInstance().findNicsFromHost(c, id())
+		= sysSrvH.findNicsFromHost(c, id())
 
 	return HostDetailVo(
 		id(),
@@ -1121,9 +1130,9 @@ data class HostVo(
 
 fun Host.toHostVo(connection: Connection): HostVo {
 	val hostStorages: List<HostStorage>
-		= SystemServiceHelper.getInstance().findAllStoragesFromHost(connection, id())
+		= sysSrvH.findAllStoragesFromHost(connection, id())
 	val networkAttachments: List<NetworkAttachment>
-		= SystemServiceHelper.getInstance().findAllNetworkAttachmentsFromHost(connection, id())
+		= sysSrvH.findAllNetworkAttachmentsFromHost(connection, id())
 	val luns: List<LunVo>
 		= hostStorages.toLunVos()
 	val networks: List<NetworkAttachmentVo>
@@ -1254,7 +1263,7 @@ fun InstanceTypeVo.toInstanceType(): InstanceType {
 
 fun InstanceType.toInstanceTypeVo(connection: Connection): InstanceTypeVo {
 	val nicItemList: List<VnicProfile>
-		= SystemServiceHelper.getInstance().findAllVnicProfiles(connection)
+		= sysSrvH.findAllVnicProfiles(connection)
 	val vnics: MutableList<VmNicVo>
 		= nicItemList.toVmNicVos().toMutableList()
 	if (vnics.isEmpty()) vnics.addAll(nics().toVmNicVos(connection))
@@ -1441,6 +1450,7 @@ enum class MessageType(
 	VIRTUAL_MACHINE_SUSPEND("가상머신 일시정지"),
 	VIRTUAL_MACHINE_CREATE("가상머신 생성"),
 	VIRTUAL_MACHINE_MODIFY("가상머신 수정"),
+	VIRTUAL_MACHINE_REMOVE("가상머신 삭제"),
 	VIRTUAL_MACHINE_COPY("가상머신 복제"),
 	VIRTUAL_MACHINE_RELOCATE("가상머신 이동"),
 	INSTANCE_TYPE_ADD("인스턴스 유형 생성"),
@@ -1463,6 +1473,7 @@ enum class MessageType(
 	NETWORK_ADD("네트워크 생성"),
 	NETWORK_UPDATE("네트워크 수정"),
 	NETWORK_REMOVE("네트워크 삭제"),
+	NETWORK_INTERFACE_ADD("네트워크 인터페이스 생성"),
 	CHANGE_CD_ROM("CD 변경")
 }
 
@@ -1591,6 +1602,74 @@ data class NicUsageApiVo(
 	var unBondName: String = ""
 )
 
+fun HostNic.toNicUsageApiVo(c: Connection, hostId: String): NicUsageApiVo {
+	val nicStats: List<Statistic>
+		= sysSrvH.findAllStatisticsFromHostNic(c, hostId, id())
+
+	val dataCurrentRx: Int
+		= nicStats.filter { it.name() == "data.current.rx" }.sumBy { it.values().firstOrNull()?.datum()?.toInt() ?: 0 }
+	val dataCurrentTx: Int
+		= nicStats.filter { it.name() == "data.current.tx" }.sumBy { it.values().firstOrNull()?.datum()?.toInt() ?: 0 }
+	val dataCurrentRxBps: Int
+		= nicStats.filter { it.name() == "data.current.rx.bps" }.sumBy { it.values().firstOrNull()?.datum()?.toInt() ?: 0 }
+	val dataCurrentTxBps: Int
+		= nicStats.filter { it.name() == "data.current.tx.bps" }.sumBy { it.values().firstOrNull()?.datum()?.toInt() ?: 0 }
+	val dataTotalRx: Int
+		= nicStats.filter { it.name() == "data.total.rx" }.sumBy { it.values().firstOrNull()?.datum()?.toInt() ?: 0 }
+	val dataTotalTx: Int
+		= nicStats.filter { it.name() == "data.total.tx" }.sumBy { it.values().firstOrNull()?.datum()?.toInt() ?: 0 }
+	val bondingOptionFound: Option?
+		= if (bondingPresent() &&
+			bonding().optionsPresent()) bonding().options().firstOrNull { "mode" == it.name() }
+		else null
+	val bondingMode: String = bondingOptionFound?.value() ?: ""
+	val bondingModeName: String = bondingOptionFound?.type() ?: ""
+	val networkId: String
+		= if (networkPresent() && !vlanPresent()) network().id() else ""
+	val networkName: String
+		= if (networkPresent() && !vlanPresent()) network().id() else ""
+
+	val networkAttachmentId: String = "" // TODO: 내용찾기
+	val vlanNetworkList: List<String>
+		= if (vlanPresent()) listOf(network().id()) else listOf()
+	val nicExNetExist: Boolean = false // TODO: 내용찾기
+	val insertSlave: Boolean = false // TODO: 내용찾기
+	val unBondName: String = "" // TODO: 내용찾기
+
+	return NicUsageApiVo(
+		id(),
+		if (namePresent()) name() else "",
+		if (macPresent() &&
+			mac().addressPresent()) mac().address() else "",
+		if (ipPresent() &&
+			ip().addressPresent()) ip().address() else "",
+		BigDecimal.valueOf(dataCurrentRx.toLong()),
+		BigDecimal.valueOf(dataCurrentTx.toLong()),
+		BigDecimal.valueOf(dataCurrentRxBps.toLong()),
+		BigDecimal.valueOf(dataCurrentTxBps.toLong()),
+		BigDecimal.valueOf(dataTotalRx.toLong()),
+		BigDecimal.valueOf(dataTotalTx.toLong()),
+		bondingMode,
+		bondingModeName,
+		listOf(), // TODO: 내용 찾기
+		networkId,
+		networkName,
+		if (statusPresent()) status().value() else "",
+		hostId,
+		if (hostPresent() &&
+			host().namePresent()) host().name() else "",
+		networkAttachmentId,
+		false,
+		if (vlanPresent()) vlan().id() else BigInteger.ZERO,
+		if (baseInterfacePresent()) baseInterface() else "",
+		if (baseInterfacePresent()) baseInterface() else if (namePresent()) name() else "",
+		vlanNetworkList,
+		nicExNetExist,
+		insertSlave,
+		unBondName
+	)
+}
+
 data class NicUsageVo(
 	var hostInterfaceId: String = "",
 	var hostInterfaceName: String = "",
@@ -1650,13 +1729,13 @@ fun Permission.toPermissionVo(connection: Connection): PermissionVo {
 
 	val user: User?
 		= if (userPresent() &&
-			user().idPresent()) SystemServiceHelper.getInstance().findUser(connection, user().id()) else null
+			user().idPresent()) sysSrvH.findUser(connection, user().id()) else null
 	val group: Group?
 		= if (groupPresent() &&
-			group().idPresent()) SystemServiceHelper.getInstance().findGroup(connection, group().id()) else null
+			group().idPresent()) sysSrvH.findGroup(connection, group().id()) else null
 	val role: Role?
 		= if (rolePresent() &&
-			role().idPresent()) SystemServiceHelper.getInstance().findRole(connection, role().id()) else null
+			role().idPresent()) sysSrvH.findRole(connection, role().id()) else null
 
 	return PermissionVo(
 		if (idPresent()) id() else "",
@@ -1819,14 +1898,14 @@ data class QuotaVo(
 
 fun Quota.toQuotaVo(connection: Connection): QuotaVo {
 	val dataCenterId: String
-		= SystemServiceHelper.getInstance().findAllDataCenters(connection).first().id()
+		= sysSrvH.findAllDataCenters(connection).first().id()
 
 	val quotaClusterLimits: List<QuotaClusterLimit>
-		= SystemServiceHelper.getInstance().findAllQuotaClusterLimitsFromDataCenter(connection, dataCenterId, id())
+		= sysSrvH.findAllQuotaClusterLimitsFromDataCenter(connection, dataCenterId, id())
 	val quotaClusterLimitVos: List<QuotaClusterLimitVo>
 		= quotaClusterLimits.toQuotaClusterLimitVos()
 	val quotaStorageLimits: List<QuotaStorageLimit>
-		= SystemServiceHelper.getInstance().findAllQuotaStorageLimitsFromDataCenter(connection, dataCenterId, id())
+		= sysSrvH.findAllQuotaStorageLimitsFromDataCenter(connection, dataCenterId, id())
 	val quotaStorageLimitVos: List<QuotaStorageLimitVo>
 		= quotaStorageLimits.toQuotaStorageLimitVos()
 
@@ -1912,11 +1991,11 @@ data class SnapshotVo(
 
 fun Snapshot.toSnapshotVo(connection: Connection, vmId: String? = null): SnapshotVo {
 	val diskList: List<Disk>
-		= SystemServiceHelper.getInstance().findAllSnapshotDisksFromVm(connection, vmId ?: vm().id(), id())
+		= sysSrvH.findAllSnapshotDisksFromVm(connection, vmId ?: vm().id(), id())
 	val disks: List<DiskVo>
 		= diskList.toDiskVos(connection)
 	val nicList: List<Nic>
-		= SystemServiceHelper.getInstance().findAllSnapshotNicsFromVm(connection, vmId ?: vm().id(), id())
+		= sysSrvH.findAllSnapshotNicsFromVm(connection, vmId ?: vm().id(), id())
 	val nics: List<VmNicVo>
 		= nicList.toSnapshotVmNicVos()
 	return SnapshotVo(
@@ -2000,14 +2079,18 @@ data class StorageDomainVo(
 
 fun StorageDomain.toStorageDomainVo(c: Connection): StorageDomainVo {
 	val dataCenterId: String
-		= SystemServiceHelper.getInstance().findAllDataCenters(c).first().id()
+		= sysSrvH.findAllDataCenters(c).first().id()
 	val sdAttached: StorageDomain?
-		= SystemServiceHelper.getInstance().findAttachedStorageDomainFromDataCenter(c, dataCenterId, id())
+		= sysSrvH.findAttachedStorageDomainFromDataCenter(c, dataCenterId, id())
 	val files: List<File>
-		= SystemServiceHelper.getInstance().findAllFilesFromStorageDomain(c, id())
+		= sysSrvH.findAllFilesFromStorageDomain(c, id())
+
+	val type: String
+		= (if (typePresent()) type().value().toUpperCase() else "") +
+			if (masterPresent() && master()) " (Master)" else ""
 
 	val diskProfiles: List<DiskProfile>
-		= SystemServiceHelper.getInstance().findAllDiskProfiles(c)
+		= sysSrvH.findAllDiskProfiles(c)
 	val diskProfileFound: DiskProfile?
 		= diskProfiles.firstOrNull { it.storageDomainPresent() && it.storageDomain().id() == id() }
 	val diskProfileId: String = diskProfileFound?.id() ?: ""
@@ -2018,18 +2101,18 @@ fun StorageDomain.toStorageDomainVo(c: Connection): StorageDomainVo {
 		if (namePresent()) name() else "",
 		if (descriptionPresent()) description() else "",
 		if (commentPresent()) comment() else "",
-		if (typePresent()) "${type().value().capitalize()} ${if (master()) "(Master)" else ""}" else "",
+		type,
 		false,
-		if (statusPresent()) status().value().capitalize()
-		else if (sdAttached?.statusPresent() == true) sdAttached.status().value().capitalize()
+		if (statusPresent()) status().value()
+		else if (sdAttached?.statusPresent() == true) sdAttached.status().value()
 		else "-",
 		if (storageConnectionsPresent() &&
 			storageConnections().first() != null) storageConnections().first().address() else "",
 		if (storagePresent() &&
 			storage().pathPresent()) storage().path() else "",
 		if (storagePresent() &&
-			storage().typePresent()) storage().type().value() else "",
-		if (storageFormatPresent()) storageFormat().value() else "",
+			storage().typePresent()) storage().type().value().toUpperCase() else "",
+		if (storageFormatPresent()) storageFormat().value().toUpperCase() else "",
 		"",
 		if (availablePresent()) available() else BigInteger.ZERO,
 		if (usedPresent()) used() else BigInteger.ZERO,
@@ -2127,7 +2210,20 @@ data class SystemPropertiesVo(
    var deeplearningUri: String = "",
    var symphonyPowerControll: Boolean = false,
    var loginLimit: Int = 5,
-)
+) {
+	val ovirtEngineApiUrl: String
+		get() = "https://${ip}/ovirt-engine/api"
+	val ovirtUserId: String
+		get() = "${id}@internal"
+}
+
+fun SystemPropertiesVo.toConnection(): Connection = ConnectionBuilder.connection()
+	.url(ovirtEngineApiUrl)
+	.user(ovirtUserId)
+	.password(password)
+	.insecure(true)
+	.timeout(20000)
+	.build()
 
 data class TemplateDiskVo(
   var id: String = "",
@@ -2148,11 +2244,11 @@ data class TemplateDiskVo(
 
 fun TemplateDiskVo.toDiskAttachment(connection: Connection, dataCenterId: String): DiskAttachment {
 	val storageDomain: StorageDomain
-		= SystemServiceHelper.getInstance().findStorageDomain(connection, storageDomainId)
+		= sysSrvH.findStorageDomain(connection, storageDomainId)
 	val diskProfile: DiskProfile
-		= SystemServiceHelper.getInstance().findDiskProfile(connection, diskProfileId)
+		= sysSrvH.findDiskProfile(connection, diskProfileId)
 	val quota: Quota
-		= SystemServiceHelper.getInstance().findQuotaFromDataCenter(connection, dataCenterId, quotaId)
+		= sysSrvH.findQuotaFromDataCenter(connection, dataCenterId, quotaId)
 
 	val d2Add: Disk = Builders.disk()
 		.id(id)
@@ -2281,22 +2377,22 @@ data class TemplateVo(
 
 fun Template.toTemplateVo(connection: Connection): TemplateVo {
 	val osFound: OperatingSystemInfo?
-		= SystemServiceHelper.getInstance().findAllOperatingSystems(connection).firstOrNull { it.name() == os().type() }
+		= sysSrvH.findAllOperatingSystems(connection).firstOrNull { it.name() == os().type() }
 	val os: String
 		 = osFound?.name() ?: ""
 	val clusterFound: Cluster?
-		= if (clusterPresent()) SystemServiceHelper.getInstance().findCluster(connection, cluster().id())
+		= if (clusterPresent()) sysSrvH.findCluster(connection, cluster().id())
 		else null
 	val clusterVo: ClusterVo?
 		= clusterFound?.toClusterVo(connection, null)
 
 	val nics: List<Nic>
-		= SystemServiceHelper.getInstance().findAllNicsFromTemplate(connection, id())
+		= sysSrvH.findAllNicsFromTemplate(connection, id())
 	val nicVos: List<VmNicVo>
 		= nics.toVmNicVos(connection)
 
 	val vms: List<Vm>
-		= SystemServiceHelper.getInstance().findAllVms(connection)
+		= sysSrvH.findAllVms(connection)
 
 	val vmVos: List<VmVo>
 		= vms.toVmVos(connection)
@@ -2545,20 +2641,20 @@ fun Nic.toSnapshotVmNicVo(): VmNicVo = VmNicVo(
 
 fun Nic.toVmNicVo(connection: Connection): VmNicVo {
 	val profiles: List<VmNicVo>
-		= SystemServiceHelper.getInstance().findAllVnicProfiles(connection).toVmNicVos()
-	val vnicProfile: VnicProfile
-		= SystemServiceHelper.getInstance().findVnicProfile(connection, vnicProfile().id())
-	val network: Network
-		= SystemServiceHelper.getInstance().findNetwork(connection, vnicProfile.network().id())
+		= sysSrvH.findAllVnicProfiles(connection).toVmNicVos()
+	val vnicProfile: VnicProfile?
+		= sysSrvH.findVnicProfile(connection, vnicProfile().id())
+	val network: Network?
+		= sysSrvH.findNetwork(connection, vnicProfile?.network()?.id() ?: "")
 
 	return VmNicVo(
-		if (networkPresent()) network().id() else (network.id() ?: ""),
+		if (networkPresent()) network().id() else (network?.id() ?: ""),
 		if (idPresent()) id() else "",
 		if (namePresent()) name() else "",
 		id(),
 		name(),
-		if (networkPresent()) network().name() else (network.name() ?: ""),
-		if (vnicProfilePresent()) vnicProfile().name() else (vnicProfile.name() ?: ""),
+		if (networkPresent()) network().name() else (network?.name() ?: ""),
+		if (vnicProfilePresent()) vnicProfile().name() else (vnicProfile?.name() ?: ""),
 		if (reportedDevicesPresent()) reportedDevices().first().ips()[0].address() else "해당 없음",
 		if (reportedDevicesPresent()) reportedDevices().first().ips()[1].address() else "해당 없음",
 		if (macPresent()) mac().address() else "",
@@ -2568,7 +2664,7 @@ fun Nic.toVmNicVo(connection: Connection): VmNicVo {
 		null,
 		null,
 		if (interface_Present()) interface_().value().toUpperCase() else "",
-		if (vnicProfilePresent()) vnicProfile().id() else (vnicProfile.id() ?: ""),
+		if (vnicProfilePresent()) vnicProfile().id() else (vnicProfile?.id() ?: ""),
 		profiles,
 	)
 }
@@ -2634,10 +2730,10 @@ data class VmSummaryVo(
 
 fun Vm.toVmSummaryVo(c: Connection, clustersDao: ClustersDao?): VmSummaryVo {
 	val vmNics: List<Nic>
-		= SystemServiceHelper.getInstance().findNicsFromVm(c, id())
+		= sysSrvH.findNicsFromVm(c, id())
 	val hostFound: Host?
 		= if (hostPresent() &&
-			host().idPresent()) SystemServiceHelper.getInstance().findHost(c, host().id()) else null
+			host().idPresent()) sysSrvH.findHost(c, host().id()) else null
 
 	return VmSummaryVo(
 		id(),
@@ -2789,9 +2885,18 @@ data class VmVo(
 	var networkUsages: List<Int> = arrayListOf(),
 )
 
+fun Vm.toVmVOBasic(): VmVo {
+	return VmVo(
+		id(),
+		if (namePresent()) name() else "",
+	).apply {
+		this.status = if (statusPresent()) status().value() else ""
+	}
+}
+
 fun Vm.toVmVo(connection: Connection): VmVo {
 	val nicsFromVm: List<Nic>
-		= SystemServiceHelper.getInstance().findNicsFromVm(connection, id())
+		= sysSrvH.findNicsFromVm(connection, id())
 	val ipAddress: String
 		= if (nicsFromVm.isNotEmpty() &&
 			nicsFromVm.first().reportedDevicesPresent() &&
@@ -2841,11 +2946,13 @@ fun List<Vm>.toVmVos(connection: Connection): List<VmVo>
 	= this.map { it.toVmVo(connection) }
 
 fun VmVo.stop(connection: Connection): Boolean =
-	SystemServiceHelper.getInstance().stopVm(connection, id)
-fun List<VmVo>.stopAllVms(connection: Connection): Boolean 
+	sysSrvH.stopVm(connection, id)
+
+fun List<VmVo>.stopAllVms(connection: Connection): Boolean
 	= this.map { it.stop(connection) }.reduce { acc, b -> acc && b }
+
 fun VmVo.reboot(connection: Connection): Boolean =
-	SystemServiceHelper.getInstance().rebootVm(connection, id)
+	sysSrvH.rebootVm(connection, id)
 
 fun List<VmVo>.rebootAllVms(connection: Connection): Boolean = this.map { it.reboot(connection) }.reduce { acc, b -> acc && b }
 		

@@ -1,5 +1,6 @@
 package com.itinfo.controller;
 
+import com.itinfo.ItInfoConstant;
 import com.itinfo.service.HostsService;
 import com.itinfo.service.VirtualMachinesService;
 import com.itinfo.service.DashboardService;
@@ -31,16 +32,16 @@ public class DashboardController {
     @RequestMapping({"/dashboard/retrieveDataCenterStatus"})
     public String retrieveDataCenterStatus(Model model) {
         log.info("... retrieveDataCenterStatus");
-        DataCenterVo dcv = this.dashboardService.retrieveDataCenterStatus();
-        model.addAttribute("resultKey", dcv);
+        DataCenterVo dcv = dashboardService.retrieveDataCenterStatus();
+        model.addAttribute(ItInfoConstant.RESULT_KEY, dcv);
         return "jsonView";
     }
 
     @RequestMapping({"/dashboard/retrieveEvents"})
     public String retrieveEvents(Model model) {
         log.info("... retrieveEvents");
-        List<EventVo> events = this.dashboardService.retrieveEvents();
-        model.addAttribute("resultKey", events);
+        List<EventVo> events = dashboardService.retrieveEvents();
+        model.addAttribute(ItInfoConstant.RESULT_KEY, events);
         return "jsonView";
     }
 
@@ -52,7 +53,7 @@ public class DashboardController {
         List<DashboardTopVo> vmsTop = !vms.isEmpty()
                 ? virtualMachinesService.retrieveVmsTop(vms)
                 : new ArrayList<>();
-        model.addAttribute("resultKey", vmsTop);
+        model.addAttribute(ItInfoConstant.RESULT_KEY, vmsTop);
         return "jsonView";
     }
 
@@ -64,7 +65,7 @@ public class DashboardController {
         List<DashboardTopVo> hostsTop = !hosts.isEmpty()
             ? hostsService.retrieveHostsTop(hosts)
             : new ArrayList<>();
-        model.addAttribute("resultKey", hostsTop);
+        model.addAttribute(ItInfoConstant.RESULT_KEY, hostsTop);
         return "jsonView";
     }
 }

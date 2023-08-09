@@ -81,9 +81,8 @@ public class CustomAuthProvider implements AuthenticationProvider {
 	}
 
 	public String authenticationExceptionMessage(String exception) {
-		String result = "";
-		if (exception.indexOf("org.apache.http.conn.HttpHostConnectException") > 0)
-			result = ItInfoConstant.CONNECTION_TIME_OUT;
-		return result;
+		return (exception.indexOf("org.apache.http.conn.HttpHostConnectException") > 0)
+				? ItInfoConstant.CONNECTION_TIME_OUT
+				: "";
 	}
 }

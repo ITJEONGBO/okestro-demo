@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
@@ -31,44 +32,51 @@ public class DisksController {
 
 	@RequestMapping({"/storage/disks"})
 	public String disksView() {
+		log.info("... disksView");
 		return "/castanets/storage/disks";
 	}
 	@RequestMapping({"/storage/createDisk"})
 	public String createDiskView() {
+		log.info("... createDiskView");
 		return "/castanets/storage/createDisk";
 	}
 
 	@RequestMapping(value = {"/storage/disks/retrieveDisks"}, method = {RequestMethod.GET})
 	public String retrievedisks(Model model) {
-		List<DiskVo> disks = this.disksService.retrieveDisks();
+		log.info("... retrievedisks");
+		List<DiskVo> disks = disksService.retrieveDisks();
 		model.addAttribute(ItInfoConstant.RESULT_KEY, disks);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/storage/disks/createDisk"}, method = {RequestMethod.POST})
 	public String createDisk(@RequestBody DiskCreateVo diskCreateVo, Model model) {
-		this.disksService.createDisk(diskCreateVo);
+		log.info("... createDisk");
+		disksService.createDisk(diskCreateVo);
 		try { Thread.sleep(500L); } catch (Exception e) { e.getLocalizedMessage(); }
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/storage/disks/createLunDisk"}, method = {RequestMethod.POST})
 	public String createLunDisk(@RequestBody DiskCreateVo diskCreateVo, Model model) {
-		this.disksService.createLunDisk(diskCreateVo);
+		log.info("... createLunDisk");
+		disksService.createLunDisk(diskCreateVo);
 		try { Thread.sleep(500L); } catch (Exception e) { e.getLocalizedMessage(); }
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/storage/disks/removeDisk"}, method = {RequestMethod.POST})
 	public String removeDisk(@RequestBody List<String> diskIds, Model model) {
-		this.disksService.removeDisk(diskIds);
+		log.info("... removeDisk[{}]", diskIds.size());
+		disksService.removeDisk(diskIds);
 		try { Thread.sleep(500L); } catch (Exception e) { e.getLocalizedMessage(); }
 		return ItInfoConstant.JSON_VIEW;
 	}
 
 	@RequestMapping(value = {"/storage/disks/migrationDisk"}, method = {RequestMethod.POST})
 	public String migrationDisk(@RequestBody DiskMigrationVo diskMigrationVo, Model model) {
-		this.disksService.migrationDisk(diskMigrationVo);
+		log.info("... migrationDisk");
+		disksService.migrationDisk(diskMigrationVo);
 		try { Thread.sleep(500L); } catch (Exception e) { e.getLocalizedMessage(); }
 		return ItInfoConstant.JSON_VIEW;
 	}
@@ -80,8 +88,9 @@ public class DisksController {
 			byte[] bytes = diskFile.getBytes();
 			InputStream is = diskFile.getInputStream();
 			long diskSize = diskFile.getSize();
-			this.disksService.uploadDisk(bytes, diskCreateVo, is, diskSize);
+			disksService.uploadDisk(bytes, diskCreateVo, is, diskSize);
 		} catch (Exception e) {
+			log.error(e.getLocalizedMessage());
 			e.fillInStackTrace();
 		}
 		try { Thread.sleep(500L); } catch (Exception e) { e.getLocalizedMessage(); }

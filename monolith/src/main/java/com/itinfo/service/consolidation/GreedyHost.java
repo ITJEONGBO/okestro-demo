@@ -11,11 +11,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class GreedyHost {
 	public List<String[]> recommendHosts(String clusterId, KarajanVo karajan, VmVo newVM) {
+		log.info("... recommendHosts('{}')", clusterId);
 		List<ClusterVo> clusterInfo = karajan.getClusters();
 		List<HostVo> hostInfo = new ArrayList<>();
 		int clusterMemoryThreshold = karajan.getMemoryThreshold();

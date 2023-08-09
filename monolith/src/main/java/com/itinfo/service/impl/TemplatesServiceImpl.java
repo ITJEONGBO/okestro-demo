@@ -54,13 +54,16 @@ public class TemplatesServiceImpl extends BaseService implements TemplatesServic
 	@Autowired private AdminConnectionService adminConnectionService;
 	@Autowired private WebsocketService websocketService;
 
+	@Override
 	public List<TemplateVo> retrieveTemplates() {
-		Connection connection = this.connectionService.getConnection();
+		log.info("... retrieveTemplate");
+		Connection connection = connectionService.getConnection();
 		List<Template> items
 				= getSysSrvHelper().findAllTemplates(connection, "");
 		return ModelsKt.toTemplateVos(items, connection);
 	}
 
+	@Override
 	public TemplateVo retrieveTemplate(String id) {
 		log.info("... retrieveTemplate('{}')", id);
 		Connection connection = connectionService.getConnection();
@@ -91,12 +94,13 @@ public class TemplatesServiceImpl extends BaseService implements TemplatesServic
 	@Override
 	public VmSystemVo retrieveSystemInfo(String id) {
 		log.info("... retrieveSystemInfo('{}')", id);
-		Connection connection = this.connectionService.getConnection();
+		Connection connection = connectionService.getConnection();
 		Template template
 				= getSysSrvHelper().findTemplate(connection, id);
 		return ModelsKt.toVmSystemVoFromTemplate(template);
 	}
 
+	@Override
 	public List<VmNicVo> retrieveNicInfo(String id) {
 		log.info("... retrieveNicInfo('{}')", id);
 		Connection connection = connectionService.getConnection();
@@ -105,6 +109,7 @@ public class TemplatesServiceImpl extends BaseService implements TemplatesServic
 		return ModelsKt.toVmNicVos(nics, connection);
 	}
 
+	@Override
 	public List<StorageDomainVo> retrieveStorageInfo(String id) {
 		log.info("... retrieveStorageInfo('{}')", id);
 		Connection connection = connectionService.getConnection();
@@ -113,7 +118,9 @@ public class TemplatesServiceImpl extends BaseService implements TemplatesServic
 		return ModelsKt.toStorageDomainVos(storageDomainList, connection);
 	}
 
+	@Override
 	public List<EventVo> retrieveEvents(String id) {
+		log.info("... retrieveEvents('{}')", id);
 		Connection connection = connectionService.getConnection();
 		List<Event> items
 				= getSysSrvHelper().findAllEvents(connection, "");
@@ -124,15 +131,19 @@ public class TemplatesServiceImpl extends BaseService implements TemplatesServic
 		return events;
 	}
 
+
+	@Override
 	public List<CpuProfileVo> retrieveCpuProfiles() {
-		log.info("retrieveCpuProfiles ...");
+		log.info("... retrieveCpuProfiles");
 		Connection connection = connectionService.getConnection();
 		List<CpuProfile> items
 				= getSysSrvHelper().findAllCpuProfiles(connection);
 		return ModelsKt.toCpuProfileVos(items);
 	}
 
+	@Override
 	public List<TemplateVo> retrieveRootTemplates() {
+		log.info("... retrieveRootTemplates");
 		Connection connection = connectionService.getConnection();
 		List<Template> items = getSysSrvHelper().findAllTemplates(connection, "")
 				.stream().filter(item -> item.version().versionNumber().intValue() == 1)
@@ -141,6 +152,7 @@ public class TemplatesServiceImpl extends BaseService implements TemplatesServic
 	}
 
 	public List<TemplateDiskVo> retrieveDisks(String id) {
+		log.info("... retrieveDisks('{}')", id);
 		Connection connection = connectionService.getConnection();
 		SystemService systemService = connection.systemService();
 		VmService vmService = systemService.vmsService().vmService(id);
@@ -218,16 +230,20 @@ public class TemplatesServiceImpl extends BaseService implements TemplatesServic
 		return templateDisks;
 	}
 
+	@Override
 	public Boolean checkDuplicateName(String name) {
+		log.info("... checkDuplicateName('{}')", name);
 		Connection connection = connectionService.getConnection();
 		Boolean result
 				= getSysSrvHelper().findAllTemplates(connection, " name=" + name).size() > 0;
-		log.debug("result: "+result);
+		log.info("... result: {}", result);
 		return result;
 	}
 
 	@Async("karajanTaskExecutor")
+	@Override
 	public void createTemplate(TemplateVo template) {
+		log.info("... createTemplate");
 		Connection connection = adminConnectionService.getConnection();
 		List<DataCenter> dataCenter
 				= getSysSrvHelper().findAllDataCenters(connection);
@@ -277,7 +293,9 @@ public class TemplatesServiceImpl extends BaseService implements TemplatesServic
 	}
 
 	@Async("karajanTaskExecutor")
+	@Override
 	public void removeTemplate(String id) {
+		log.info("... removeTemplate('{}')", id);
 		Connection connection = adminConnectionService.getConnection();
 		Gson gson = new Gson();
 		Template template
@@ -318,7 +336,10 @@ public class TemplatesServiceImpl extends BaseService implements TemplatesServic
 		}
 	}
 
+
+	@Override
 	public TemplateEditVo retrieveTemplateEditInfo(String id) {
+		log.info("... retrieveTemplateEditInfo('{}')", id);
 		Connection connection = connectionService.getConnection();
 		Template template
 				= getSysSrvHelper().findTemplate(connection, id);
@@ -453,7 +474,9 @@ public class TemplatesServiceImpl extends BaseService implements TemplatesServic
 	}
 
 	@Async("karajanTaskExecutor")
+	@Override
 	public String updateTemplate(TemplateEditVo templateEditInfo) {
+		log.info("... updateTemplate");
 		Connection connection = adminConnectionService.getConnection();
 		SystemService systemService = connection.systemService();
 		TemplateService templateService = systemService.templatesService().templateService(templateEditInfo.getId());
@@ -576,6 +599,7 @@ public class TemplatesServiceImpl extends BaseService implements TemplatesServic
 	@Async("karajanTaskExecutor")
 	@Override
 	public void exportTemplate(TemplateVo template) {
+		log.info("... exportTemplate");
 		Connection connection = adminConnectionService.getConnection();
 		StorageDomain exportDomain
 				= getSysSrvHelper().findAllStorageDomains(connection, "export").get(0);

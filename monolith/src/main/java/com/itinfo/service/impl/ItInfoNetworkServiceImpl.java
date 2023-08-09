@@ -1,6 +1,5 @@
 package com.itinfo.service.impl;
 
-import com.itinfo.SystemServiceHelper;
 import com.itinfo.model.*;
 import com.itinfo.service.ItInfoNetworkService;
 import com.itinfo.service.engine.AdminConnectionService;
@@ -38,15 +37,16 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @NoArgsConstructor
-public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
+public class ItInfoNetworkServiceImpl extends BaseService implements ItInfoNetworkService {
 	@Autowired private AdminConnectionService adminConnectionService;
 	@Autowired	private WebsocketService websocketService;
 
 	@Override
 	public List<ItInfoNetworkVo> getNetworkList() {
+		log.info("... getNetworkList");
 		Connection connection = adminConnectionService.getConnection();
 		List<Network> networkList
-				= SystemServiceHelper.getInstance().findAllNetworks(connection);
+				= getSysSrvHelper().findAllNetworks(connection);
 		List<ItInfoNetworkVo> list
 				= ModelsKt.toItInfoNetworkVos(networkList, connection);
 		return list;
@@ -55,22 +55,23 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 
 	@Override
 	public List<ItInfoNetworkVo> getHostNetworkList(String id) {
+		log.info("... getHostNetworkList('{}')", id);
 		Connection connection = adminConnectionService.getConnection();
 
 		List<HostNic> hostNics
-				= SystemServiceHelper.getInstance().findNicsFromHost(connection, id);
+				= getSysSrvHelper().findNicsFromHost(connection, id);
 		List<Vm> vms
-				= SystemServiceHelper.getInstance().findAllVms(connection, "");
+				= getSysSrvHelper().findAllVms(connection, "");
 		DataCenter dataCenter
-				= SystemServiceHelper.getInstance().findAllDataCenters(connection).get(0);
+				= getSysSrvHelper().findAllDataCenters(connection).get(0);
 		List<Cluster> clusters
-				= SystemServiceHelper.getInstance().findAllClusters(connection, "");
+				= getSysSrvHelper().findAllClusters(connection, "");
 		List<Network> networkList
-				= SystemServiceHelper.getInstance().findAllNetworks(connection);
+				= getSysSrvHelper().findAllNetworks(connection);
 		List<OpenStackNetworkProvider> openStackNetworkProviders
-				= SystemServiceHelper.getInstance().findAllOpenStackNetworkProviders(connection);
+				= getSysSrvHelper().findAllOpenStackNetworkProviders(connection);
 		List<Qos> qoss
-				= SystemServiceHelper.getInstance().findAllQossFromDataCenter(connection, dataCenter.id());
+				= getSysSrvHelper().findAllQossFromDataCenter(connection, dataCenter.id());
 
 		List<ItInfoNetworkClusterVo> itInfoNetworkClusterVos = new ArrayList<>();
 		List<ItInfoNetworkClusterVo> itInfoNetworkClusterVoList = new ArrayList<>();
@@ -92,7 +93,7 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 			}
 			for (Cluster cluster : clusters) {
 				List<Network> networkss
-						= SystemServiceHelper.getInstance().findAllNetworksFromCluster(connection, cluster.id());;
+						= getSysSrvHelper().findAllNetworksFromCluster(connection, cluster.id());;
 				for (Network clusterNetwork : networkss) {
 					ItInfoNetworkClusterVo castanetsNetworkClusterVo = new ItInfoNetworkClusterVo();
 					List<ItInfoNetworkUsagesVo> usages = new ArrayList<>();
@@ -108,13 +109,13 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 				}
 			}
 			List<VnicProfile> vnicProfiles
-					= SystemServiceHelper.getInstance().findAllVnicProfilesFromNetwork(connection, network.id());
+					= getSysSrvHelper().findAllVnicProfilesFromNetwork(connection, network.id());
 			List<String> vnicIds = new ArrayList<>();
 			for (VnicProfile vnic : vnicProfiles)
 				vnicIds.add(vnic.id());
 			for (Vm vm : vms) {
 				List<Nic> nics
-						= SystemServiceHelper.getInstance().findNicsFromVm(connection, vm.id());
+						= getSysSrvHelper().findNicsFromVm(connection, vm.id());
 				for (Nic nic : nics) {
 					if (nic.idPresent())
 						for (String vnicId : vnicIds) {
@@ -133,7 +134,7 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 				networkVo.setVlan(String.valueOf(network.vlan().id().intValue()));
 			list.add(networkVo);
 		});
-		if (networkList != null && networkList.size() != 0)
+		if (!networkList.isEmpty())
 			itInfoNetworkClusterVoList = itInfoNetworkClusterVos.subList(0, networkList.size());
 		for (int j = 0; j < list.size(); j++) {
 			list.get(j).setUsages((itInfoNetworkClusterVoList.get(j)).getUsages());
@@ -143,9 +144,10 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 	}
 
 	public ItInfoNetworkGroupVo getNetworkDetail(ItInfoNetworkVo castanetsNetworkVo) {
+		log.info("... getNetworkDetail");
 		Connection connection = adminConnectionService.getConnection();
 		List<Cluster> clusters
-				= SystemServiceHelper.getInstance().findAllClusters(connection, "");
+				= getSysSrvHelper().findAllClusters(connection, "");
 		List<ItInfoNetworkClusterVo> castanetsNetworkClusterVos
 				= ModelsKt.toItInfoNetworkClusterVos(clusters, connection, castanetsNetworkVo.getId());
 
@@ -165,24 +167,28 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 	}
 
 	public List<ItInfoNetworkClusterVo> getNetworkCluster(String clusterId, String networkId) {
+		log.info("... getNetworkCluster('{}', '{}')", clusterId, networkId);
 		Connection connection = adminConnectionService.getConnection();
 		List<Cluster> clusters
-				= SystemServiceHelper.getInstance().findAllClusters(connection, "");
+				= getSysSrvHelper().findAllClusters(connection, "");
 		List<ItInfoNetworkClusterVo> list
 				= ModelsKt.toItInfoNetworkClusterVos(clusters, connection, networkId);
 		return list;
 	}
 
 	public ItInfoNetworkVo getNetwork(String networkId) {
+		log.info("... getNetwork('{}')", networkId);
 		Connection connection = adminConnectionService.getConnection();
 		List<Network> networkList
-				= SystemServiceHelper.getInstance().findAllNetworks(connection);
+				= getSysSrvHelper().findAllNetworks(connection);
+		/*
 		DataCenter dataCenter
-				= SystemServiceHelper.getInstance().findAllDataCenters(connection).get(0);
+				= getSysSrvHelper().findAllDataCenters(connection).get(0);
 		List<OpenStackNetworkProvider> openStackNetworkProviders
-				= SystemServiceHelper.getInstance().findAllOpenStackNetworkProviders(connection);
+				= getSysSrvHelper().findAllOpenStackNetworkProviders(connection);
 		List<Qos> qoss
-				= SystemServiceHelper.getInstance().findAllQossFromDataCenter(connection, dataCenter.id());
+				= getSysSrvHelper().findAllQossFromDataCenter(connection, dataCenter.id());
+		*/
 
 		Network n = networkList.stream()
 					.filter((Network network) -> network.id().equalsIgnoreCase(networkId))
@@ -192,28 +198,30 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 	}
 
 	public List<ItInfoNetworkHostVo> getNetworkHost(String networkId) {
+		log.info("... getNetworkHost('{}')", networkId);
 		Connection connection = adminConnectionService.getConnection();
 		List<Host> hosts
-				= SystemServiceHelper.getInstance().findAllHosts(connection, "");
+				= getSysSrvHelper().findAllHosts(connection, "");
 		return ModelsKt.toItInfoNetworkHostVos(hosts, connection);
 	}
 
 	public List<ItInfoNetworkVmVo> getNetworkVm(String networkId) {
+		log.info("... getNetworkVm('{}')", networkId);
 		Connection connection = adminConnectionService.getConnection();
 		List<ItInfoNetworkVmVo> networkVmVos = new ArrayList<>();
 		List<Vm> vms
-				= SystemServiceHelper.getInstance().findAllVms(connection, "");
+				= getSysSrvHelper().findAllVms(connection, "");
 		List<Cluster> clusters
-				= SystemServiceHelper.getInstance().findAllClusters(connection, "");
+				= getSysSrvHelper().findAllClusters(connection, "");
 		List<VnicProfile> vnicProfiles
-				= SystemServiceHelper.getInstance().findAllVnicProfilesFromNetwork(connection, networkId);
+				= getSysSrvHelper().findAllVnicProfilesFromNetwork(connection, networkId);
 
 		List<String> vnicIds = new ArrayList<>();
 		for (VnicProfile vnic : vnicProfiles)
 			vnicIds.add(vnic.id());
 		vms.forEach(vm -> {
 			List<Nic> nics
-					= SystemServiceHelper.getInstance().findNicsFromVm(connection, vm.id());
+					= getSysSrvHelper().findNicsFromVm(connection, vm.id());
 			nics.forEach(nic -> {
 
 			});
@@ -222,15 +230,16 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 	}
 
 	public ItInfoNetworkCreateVo getNetworkCreateResource() {
+		log.info("... getNetworkCreateResource");
 		Connection connection = adminConnectionService.getConnection();
 		DataCenter dataCenter
-				= SystemServiceHelper.getInstance().findAllDataCenters(connection).get(0);
+				= getSysSrvHelper().findAllDataCenters(connection).get(0);
 		List<Cluster> clusters
-				= SystemServiceHelper.getInstance().findAllClusters(connection, "");
+				= getSysSrvHelper().findAllClusters(connection, "");
 		List<Network> networks
-				= SystemServiceHelper.getInstance().findAllNetworks(connection);
+				= getSysSrvHelper().findAllNetworks(connection);
 		List<Qos> qoss
-				= SystemServiceHelper.getInstance().findAllQossFromDataCenter(connection, dataCenter.id());
+				= getSysSrvHelper().findAllQossFromDataCenter(connection, dataCenter.id());
 
 		ItInfoNetworkCreateVo castanetsNetworkCreateVo = new ItInfoNetworkCreateVo();
 		List<ItInfoNetworkClusterVo> clusterList = new ArrayList<>();
@@ -253,7 +262,7 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 			qosList.add(castanetsNetworkQosVo);
 		});
 
-		if (qosList != null)	castanetsNetworkCreateVo.setQoss(qosList);
+		if (!qosList.isEmpty())	castanetsNetworkCreateVo.setQoss(qosList);
 		List<String> networkList = new ArrayList<>();
 		networks.forEach(network -> {
 			if (network.namePresent()) networkList.add(network.name());
@@ -265,10 +274,11 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 	@Async("karajanTaskExecutor")
 	@Override
 	public void addLogicalNetwork(ItInfoNetworkVo castanetsNetworkVo) {
+		log.info("... addLogicalNetwork");
 		Connection connection = adminConnectionService.getConnection();
 		Gson gson = new Gson();
 		DataCenter dataCenter
-				= SystemServiceHelper.getInstance().findAllDataCenters(connection).get(0);
+				= getSysSrvHelper().findAllDataCenters(connection).get(0);
 		List<String> nameServers = new ArrayList<>();
 		if (!castanetsNetworkVo.getDnss().isEmpty()) {
 			castanetsNetworkVo.getDnss().forEach(dnsIp -> {
@@ -302,21 +312,21 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 					);
 
 			Network network
-					= SystemServiceHelper.getInstance().addNetwork(connection, networkBuilder.build());
+					= getSysSrvHelper().addNetwork(connection, networkBuilder.build());
 
 			castanetsNetworkVo.getClusters().forEach(clusterVo -> {
 				if (clusterVo.getConnect()) {
 					Network n2add
 							= Builders.network().id(network.id()).required(clusterVo.getRequired()).build();
 					String clusterId
-							= SystemServiceHelper.getInstance().addNetworkFromCluster(connection, clusterVo.getClusterId(), n2add).id();
+							= getSysSrvHelper().addNetworkFromCluster(connection, clusterVo.getClusterId(), n2add).id();
 				}
 			});
 
 			if (!"".equals(castanetsNetworkVo.getLabel())) {
 				NetworkLabel nl2add
 						= Builders.networkLabel().id(castanetsNetworkVo.getLabel()).build();
-				SystemServiceHelper.getInstance().addNetworkLabelFromNetwork(connection, network.id(), nl2add);
+				getSysSrvHelper().addNetworkLabelFromNetwork(connection, network.id(), nl2add);
 			}
 			Thread.sleep(2000L);
 			MessageVo message
@@ -333,10 +343,11 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 
 	@Override
 	public void deleteNetworks(List<ItInfoNetworkVo> itinfoNetworkVos) {
+		log.info("... deleteNetworks[{}]", itinfoNetworkVos.size());
 		Connection connection = adminConnectionService.getConnection();
 		Gson gson = new Gson();
 		try {
-			SystemServiceHelper.getInstance().findAllNetworks(connection).forEach(network ->
+			getSysSrvHelper().findAllNetworks(connection).forEach(network ->
 				itinfoNetworkVos.forEach(itinfoNetworkVo -> {
 
 				})
@@ -354,11 +365,13 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 	}
 
 	@Async("karajanTaskExecutor")
+	@Override
 	public void updateNetwork(ItInfoNetworkVo castanetsNetworkVo) {
+		log.info("... updateNetwork");
 		Connection connection = adminConnectionService.getConnection();
 		Gson gson = new Gson();
 		DataCenter dataCenter
-				= SystemServiceHelper.getInstance().findAllDataCenters(connection).get(0);
+				= getSysSrvHelper().findAllDataCenters(connection).get(0);
 		List<String> nameServers = new ArrayList<>();
 		if (!castanetsNetworkVo.getDnss().isEmpty()) {
 			castanetsNetworkVo.getDnss().forEach(dnsIp -> {
@@ -386,17 +399,17 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 							: Builders.qos().build()
 					).build();
 			Network nUpdated
-					= SystemServiceHelper.getInstance().updateNetwork(connection, castanetsNetworkVo.getId(), n2Update);
+					= getSysSrvHelper().updateNetwork(connection, castanetsNetworkVo.getId(), n2Update);
 			List<NetworkLabel> networkLabels
-					= SystemServiceHelper.getInstance().findAllNetworkLabelsFromNetwork(connection, castanetsNetworkVo.getId());
+					= getSysSrvHelper().findAllNetworkLabelsFromNetwork(connection, castanetsNetworkVo.getId());
 			networkLabels.forEach(networkLabel ->
-					SystemServiceHelper.getInstance().removeNetworkLabelFromNetwork(connection, castanetsNetworkVo.getId(), networkLabel.id())
+					getSysSrvHelper().removeNetworkLabelFromNetwork(connection, castanetsNetworkVo.getId(), networkLabel.id())
 			);
 
 			if (!"".equals(castanetsNetworkVo.getLabel())) {
 				NetworkLabel lbl2add
 						= Builders.networkLabel().id(castanetsNetworkVo.getLabel()).build();
-				SystemServiceHelper.getInstance().addNetworkLabelFromNetwork(connection, castanetsNetworkVo.getId(), lbl2add);
+				getSysSrvHelper().addNetworkLabelFromNetwork(connection, castanetsNetworkVo.getId(), lbl2add);
 			}
 
 			List<ItInfoNetworkClusterVo> clusterVos
@@ -408,16 +421,14 @@ public class ItInfoNetworkServiceImpl implements ItInfoNetworkService {
 				else
 					castanetsNetworkVo.getClusters().forEach(cluster -> {});
 			});
-			Thread.sleep(2000L);
+			try { Thread.sleep(2000L); } catch (InterruptedException e2) { log.error(e2.getLocalizedMessage());}
 			MessageVo message
 					= MessageVo.createMessage(MessageType.NETWORK_UPDATE, true, castanetsNetworkVo.getName(), "");
 			websocketService.sendMessage("/topic/notify", gson.toJson(message));
 		} catch (Exception e) {
 			log.error(e.getLocalizedMessage());
 			e.printStackTrace();
-			try {
-				Thread.sleep(2000L);
-			} catch (InterruptedException interruptedException) {}
+			try { Thread.sleep(2000L); } catch (InterruptedException e2) { log.error(e2.getLocalizedMessage());}
 			MessageVo message
 					= MessageVo.createMessage(MessageType.NETWORK_UPDATE, false, castanetsNetworkVo.getName(), "");
 			websocketService.sendMessage("/topic/notify", gson.toJson(message));

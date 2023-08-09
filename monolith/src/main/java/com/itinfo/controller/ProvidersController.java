@@ -1,5 +1,6 @@
 package com.itinfo.controller;
 
+import com.itinfo.ItInfoConstant;
 import com.itinfo.service.ProvidersService;
 import com.itinfo.model.ProviderVo;
 
@@ -27,7 +28,7 @@ public class ProvidersController {
 	public String retrieveUsers(Model model) {
 		log.info("... retrieveUsers");
 		List<ProviderVo> providers = this.providersService.retrieveProviders();
-		model.addAttribute("resultKey", providers);
+		model.addAttribute(ItInfoConstant.RESULT_KEY, providers);
 		return "jsonView";
 	}
 }

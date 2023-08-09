@@ -1,5 +1,6 @@
 package com.itinfo.security;
 
+import com.itinfo.model.ModelsKt;
 import com.itinfo.service.SystemPropertiesService;
 
 import com.itinfo.model.SystemPropertiesVo;
@@ -7,8 +8,9 @@ import com.itinfo.model.SystemPropertiesVo;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+
 import org.ovirt.engine.sdk4.Connection;
-import org.ovirt.engine.sdk4.ConnectionBuilder;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
@@ -22,16 +24,8 @@ public class SecurityConnectionService {
 
 	public Connection getConnection() {
 		log.info("... getConnection");
-		SystemPropertiesVo systemProperties = this.systemPropertiesService.retrieveSystemProperties();
-		String url = "https://" + systemProperties.getIp() + "/ovirt-engine/api";
-		String user = systemProperties.getId() + "@internal";
-		String password = systemProperties.getPassword();
-		Connection connection = ConnectionBuilder.connection().url(url)
-				.user(user)
-				.password(password)
-				.insecure(true)
-				.timeout(10000)
-				.build();
+		SystemPropertiesVo systemProperties = systemPropertiesService.retrieveSystemProperties();
+		Connection connection = ModelsKt.toConnection(systemProperties);
 		return connection;
 	}
 
