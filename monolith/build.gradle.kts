@@ -4,7 +4,7 @@ import java.net.URL
 plugins {
     kotlin("jvm")
     application
-    id("com.bmuschko.tomcat") version Versions.tomcatPlugin
+    war
 }
 
 group = "com.itinfo"
@@ -17,6 +17,7 @@ println("profile  : $profile")
 val defaultBuildClassPath: String = "build/classes/kotlin/main"
 val explodedWarName: String = "$artifactName-exploded"
 val explodedWarPath: String = "$buildDir/libs/$explodedWarName"
+val explodedWarDockerPath: String = "${project.rootDir}/docker/okestro"
 println("explodedWarPath  : $explodedWarPath")
 
 tasks {
@@ -38,6 +39,10 @@ sourceSets {
         resources.srcDirs(listOf("src/test/resources"))
     }
 }
+
+tasks.clean {
+    delete(file("$explodedWarDockerPath/ROOT"))
+}
 tasks.compileJava { dependsOn(tasks.clean) }
 tasks.compileKotlin {dependsOn(tasks.clean) }
 // tasks.clean { finalizedBy(tasks.named("war")) }
@@ -46,7 +51,7 @@ tasks.compileKotlin {dependsOn(tasks.clean) }
 dependencies {
     providedCompile(project(":common"))
     providedCompile(project(":util"))
-    tomcat(Dependencies.tomcatEmbedded)
+    // tomcat(Dependencies.tomcatEmbedded)
     api(Dependencies.kotlinStdlib)
     implementation(Dependencies.ovirt)
     implementation(Dependencies.spring)
@@ -76,7 +81,13 @@ dependencies {
 
 tasks.war {
     baseName = artifactName
-    doLast {
+    into("WEB-INF/classes") {
+        from("../util/${defaultBuildClassPath}")
+        from("../common/${defaultBuildClassPath}")
+
+    }
+    /*
+    doFirst {
         copy {
             from("${project.rootDir}/util/${defaultBuildClassPath}")
             into("$buildDir/classes/kotlin/main")
@@ -86,8 +97,10 @@ tasks.war {
             into("$buildDir/classes/kotlin/main")
         }
     }
+    */
     finalizedBy(explodedWar)
 }
+
 
 val explodedWar by tasks.register<Copy>("explodedWar") {
     into(explodedWarPath)
@@ -107,12 +120,17 @@ val putModules = task("putModules") {
     }
 }
 
-val placeOutputToDocker by tasks.register<Copy>("placeOutputToDocker") {
-    from(explodedWarPath)
-    into(file("${project.rootDir}/docker/okestro/$explodedWarName"))
-    include(explodedWarName)
-    rename(explodedWarName, "ROOT")
+val placeOutputToDocker = task("placeOutputToDocker") {
+    doLast {
+        // delete(file("$explodedWarDockerPath/ROOT"))
+        copy {
+            from(explodedWarPath)
+            into(file("${explodedWarDockerPath}/ROOT"))
+        }
+    }
 }
+
+
 explodedWar.finalizedBy(putModules)
 putModules.finalizedBy(placeOutputToDocker)
 
@@ -132,27 +150,6 @@ task("exploreOutput") {
     doLast {
         Desktop.getDesktop().open(layout.buildDirectory.dir("libs").get().asFile)
     }
-}
-
-
-tomcat {
-    httpProtocol = "org.apache.coyote.http11.Http11Nio2Protocol"
-    ajpProtocol  = "org.apache.coyote.ajp.AjpNio2Protocol"
-    httpPort = 8089
-    httpsPort = 8079
-    ajpPort = 8019
-    enableSSL = false
-    contextPath = ""
-    /*
-    jasper {
-        validateTld = true
-        validateXml = true
-    }
-    */
-}
-
-tasks.tomcatRunWar {
-    configFile = file("src/main/webapp/META-INF/context.xml")
 }
 
 configurations {

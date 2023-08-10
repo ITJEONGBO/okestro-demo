@@ -15,15 +15,17 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.function.Consumer
 
+private val sysSrvH: SystemServiceHelper
+	get() = SystemServiceHelper.getInstance()
 data class KarajanVo(
-	var clusters: List<ClusterVo>
+	var clusters: List<ClusterVo> = listOf()
 	, var cpuThreshold: Int = -1
 	, var memoryThreshold: Int = -1
 )
 
 fun SystemPropertiesVo.toKarajanVo(connection: Connection): KarajanVo {
 	val clusters: List<Cluster>
-		= SystemServiceHelper.getInstance().findAllClusters(connection)
+		= sysSrvH.findAllClusters(connection)
 	val tgtClusters: List<ClusterVo>
 		= clusters.toClusterVos(connection)
 	return KarajanVo(
@@ -34,20 +36,20 @@ fun SystemPropertiesVo.toKarajanVo(connection: Connection): KarajanVo {
 }
 
 data class ClusterVo(
-	var id: String
-	, var name: String
-	, var cpuType: String
-	, var hosts: List<HostVo>
-	, var vms: List<WorkloadVmVo>
+	var id: String = ""
+	, var name: String = ""
+	, var cpuType: String = ""
+	, var hosts: List<HostVo> = listOf()
+	, var vms: List<WorkloadVmVo> = listOf()
 )
 
 fun Cluster.toClusterVo(connection: Connection): ClusterVo {
 	val hosts2Add: List<Host>
-		= SystemServiceHelper.getInstance().findAllHosts(connection, "cluster=${name()}")
+		= sysSrvH.findAllHosts(connection, "cluster=${name()}")
 	val hostVos2Add: List<HostVo>
 		= hosts2Add.toHostVos(connection)
 	val vms2Add: List<Vm>
-		= SystemServiceHelper.getInstance().findAllVms(connection, "cluster=${name()}")
+		= sysSrvH.findAllVms(connection, "cluster=${name()}")
 	val workloadVos2Add: List<WorkloadVmVo>
 		= vms2Add.toWorkloadVmVos(connection)
 
@@ -66,13 +68,13 @@ fun List<Cluster>.toClusterVos(connection: Connection): List<ClusterVo>
 
 
 data class ConsolidationVo(
-	var hostId: String
-	, var hostName: String
-	, var vmId: String
-	, var vmName: String
-	, var fromHostId: String
-	, var fromHostName: String
-	, var description: String
+	var hostId: String = ""
+	, var hostName: String = ""
+	, var vmId: String = ""
+	, var vmName: String = ""
+	, var fromHostId: String = ""
+	, var fromHostName: String = ""
+	, var description: String = ""
 )
 
 fun List<HostVo>.findHostId(vmId: String): String {
@@ -95,7 +97,10 @@ fun List<HostVo>.findHostname(vmId: String): String {
 	return hostname
 }
 
-fun VmVo.toConsolidationVo(vmDesc: String = "", host: HostVo? = null): ConsolidationVo = ConsolidationVo(
+fun VmVo.toConsolidationVo(
+	vmDesc: String = "",
+	host: HostVo? = null
+): ConsolidationVo = ConsolidationVo(
 	host?.id ?: this.hostId,
 	host?.name ?: hostName,
 	id,
@@ -130,10 +135,10 @@ fun VmVo.toConsolidationVoWithSpecificHost(host: HostVo) : ConsolidationVo = Con
 
 
 data class HistoryVo(
-	var historyDatetime: String
-	, var cpuUsagePercent: Int
-	, var memoryUsagePercent: Int
-	, var memoryUsage: BigDecimal
+	var historyDatetime: String = ""
+	, var cpuUsagePercent: Int = -1
+	, var memoryUsagePercent: Int = -1
+	, var memoryUsage: BigDecimal = BigDecimal.ZERO
 )
 data class HostVo(
 	var id: String = "",
@@ -156,7 +161,7 @@ data class HostVo(
 
 fun Host.toHostVo(connection: Connection): HostVo {
 	val vms: List<Vm>
-		= SystemServiceHelper.getInstance().findAllVms(connection, "Hosts.name=${name()}").filter {
+		= sysSrvH.findAllVms(connection, "Hosts.name=${name()}").filter {
 			it.cpuPresent() && it.cpu().topologyPresent()
 		}
 	val vmVos: List<VmVo>
@@ -164,7 +169,7 @@ fun Host.toHostVo(connection: Connection): HostVo {
 	val cpuVmUsed: Int
 		= vmVos.map { it.cores + it.sockets + it.threads }.reduceOrNull { acc, i -> acc + i } ?: 0
 	val stats
-			= SystemServiceHelper.getInstance().findAllStatisticsFromHost(connection, id())
+			= sysSrvH.findAllStatisticsFromHost(connection, id())
 	stats.forEach(Consumer { _: Statistic? ->
 
 	})
@@ -217,13 +222,11 @@ data class VmVo(
 )
 
 fun Vm.toVmVo(connection: Connection) : VmVo {
-	val stats
-			= SystemServiceHelper.getInstance().findAllStatisticsFromVm(connection, id())
+	val stats = sysSrvH.findAllStatisticsFromVm(connection, id())
 	stats.forEach(Consumer { _: Statistic? ->
-
 	})
 
-	val vo = VmVo(
+	return VmVo(
 		id(),
 		name(),
 		status().value(),
@@ -250,7 +253,6 @@ fun Vm.toVmVo(connection: Connection) : VmVo {
 		BigDecimal.ZERO,
 		placementPolicy().affinity().value()
 	)
-	return vo
 }
 
 fun List<Vm>.toVmVos(connection: Connection): List<VmVo> =
@@ -271,7 +273,7 @@ data class WorkloadVmVo(
 
 fun Vm.toWorkloadVmVo(connection: Connection, jdbcTemplate: JdbcTemplate? = null): WorkloadVmVo {
 	val stats: List<Statistic>
-		= SystemServiceHelper.getInstance().findAllStatisticsFromVm(connection, id())
+		= sysSrvH.findAllStatisticsFromVm(connection, id())
 	val histories: List<HistoryVo>
 		= arrayListOf()
 
@@ -308,7 +310,7 @@ data class WorkloadVo(
 
 fun SystemPropertiesVo.toWorkloadVo(connection: Connection): WorkloadVo {
 	val clusters: List<Cluster>
-		= SystemServiceHelper.getInstance().findAllClusters(connection)
+		= sysSrvH.findAllClusters(connection)
 	val tgtClusters: List<ClusterVo>
 		= clusters.toClusterVos(connection)
 	return WorkloadVo(

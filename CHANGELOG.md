@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v0.0.5: 2023-08-10][v0.0.5]
+
+프로젝트 안정화 5차
+
+### Modified
+
+- 도커 이미지 구성을 위한 gradle 스크립트 안정화
+
+---
+
 ## [v0.0.4: 2023-08-09][v0.0.4]
 
 프로젝트 안정화 4차
@@ -62,6 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 프로젝트 초기구성완료
 
+[v0.0.5]: https://github.com/ITJEONGBO/okestro-demo/compare/v0.0.4...v0.0.5
 [v0.0.4]: https://github.com/ITJEONGBO/okestro-demo/compare/v0.0.3...v0.0.4
 [v0.0.3]: https://github.com/ITJEONGBO/okestro-demo/compare/v0.0.2...v0.0.3
 [v0.0.2]: https://github.com/ITJEONGBO/okestro-demo/compare/v0.0.1...v0.0.2

@@ -1,6 +1,6 @@
 object Versions {
     object Project {
-        val OKESTRO = "0.0.4"
+        val OKESTRO = "0.0.5"
     }
     const val java = "1.8"
     const val gradle = "7.4.2"

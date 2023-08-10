@@ -68,7 +68,7 @@ data class ItInfoNetworkCreateVo(
 )
 
 data class ItInfoNetworkDnsVo(
-	val dnsIp: String
+	val dnsIp: String = ""
 )
 
 data class ItInfoNetworkGroupVo(
@@ -91,11 +91,17 @@ data class ItInfoNetworkHostVo(
 	var dataTotalTx: BigDecimal = BigDecimal.ZERO,
 )
 
-fun Host.toItInfoNetworkHostVo(connection: Connection): ItInfoNetworkHostVo {
+fun Host.toItInfoNetworkHostVo(c: Connection): ItInfoNetworkHostVo {
 	val cluster: List<Cluster>
-		= sysSrvH.findAllClusters(connection)
+		= sysSrvH.findAllClusters(c)
 	val hostNics: List<HostNic>
-		= sysSrvH.findNicsFromHost(connection, id())
+		= sysSrvH.findNicsFromHost(c, id())
+
+	val nicStats: List<List<Statistic>>
+		= hostNics.map { sysSrvH.findAllStatisticsFromHostNic(c, id(), it.id()) }
+
+	// val dataCurrentRxBps = nicStats.filter { it.name() == "data.current.rx.bps" }.sumBy { it.values().firstOrNull()?.datum()?.toInt() ?: 0 }
+
 	return ItInfoNetworkHostVo(
 		if (statusPresent()) status().value() else "",
 		if (namePresent()) name() else "",
@@ -120,17 +126,17 @@ data class ItInfoNetworkUsagesVo(
 )
 
 data class ItInfoNetworkVmVo(
-	var vmStatus: String,
-	var vmName: String,
-	var vmCluster: String,
-	var ip: String,
-	var fqdn: String,
-	var linked: String,
-	var nicName: String,
-	var dataCurrentRxBps: BigDecimal,
-	var dataCurrentTxBps: BigDecimal,
-	var dataTotalRx: BigDecimal,
-	var dataTotalTx: BigDecimal,
+	var vmStatus: String = "",
+	var vmName: String = "",
+	var vmCluster: String = "",
+	var ip: String = "",
+	var fqdn: String = "",
+	var linked: String = "",
+	var nicName: String = "",
+	var dataCurrentRxBps: BigDecimal = BigDecimal.ZERO,
+	var dataCurrentTxBps: BigDecimal = BigDecimal.ZERO,
+	var dataTotalRx: BigDecimal = BigDecimal.ZERO,
+	var dataTotalTx: BigDecimal = BigDecimal.ZERO,
 )
 
 data class ItInfoNetworkVo(
@@ -181,10 +187,8 @@ fun Network.toItInfoNetworkVo(connection: Connection): ItInfoNetworkVo {
 		"",
 		if (vlanPresent() &&
 			vlan().idPresent()) "${vlan().id()}" else "",
-		if (qosPresent())
-			qos().id() else "",
-		if (qosPresent())
-			qos().id() else "",
+		if (qosPresent()) qos().id() else "",
+		if (qosPresent()) qos().id() else "",
 		usage,
 		labels.joinToString { it.name() },
 		"",
@@ -375,17 +379,17 @@ fun CpuProfile.toCpuProfileVo(shares: Int = 0): CpuProfileVo = CpuProfileVo(
 	shares
 )
 
-fun List<CpuProfile>.toCpuProfileVos(): List<CpuProfileVo> =  this.map { it.toCpuProfileVo() }
+fun List<CpuProfile>.toCpuProfileVos(): List<CpuProfileVo> = this.map { it.toCpuProfileVo() }
 
 data class DashboardTopVo(
-	var vmCpuKey: List<String>,
-	var vmCpuVal: List<String>,
-	var vmMemoryKey: List<String>,
-	var vmMemoryVal: List<String>,
-	var hostCpuKey: List<String>,
-	var hostCpuVal: List<String>,
-	var hostMemoryKey: List<String>,
-	var hostMemoryVal: List<String>,
+	var vmCpuKey: List<String> = listOf(),
+	var vmCpuVal: List<String> = listOf(),
+	var vmMemoryKey: List<String> = listOf(),
+	var vmMemoryVal: List<String> = listOf(),
+	var hostCpuKey: List<String> = listOf(),
+	var hostCpuVal: List<String> = listOf(),
+	var hostMemoryKey: List<String> = listOf(),
+	var hostMemoryVal: List<String> = listOf(),
 )
 
 fun List<VmVo>.toDashboardTopVo(): DashboardTopVo = DashboardTopVo(
@@ -793,7 +797,7 @@ fun List<Disk>.toDiskVos(
 }.sortedBy {
 	it.name
 } else this.filter {
-	diskAttachmentIds?.contains(it.id())
+	diskAttachmentIds.contains(it.id())
 }.map {
 	it.toDiskVo(connection)
 }.sortedBy {

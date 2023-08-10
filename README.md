@@ -101,20 +101,19 @@ Run this script to create artifact
 
 ### 🛠Okestro 
 
+⚠ war 빌드 후 진행!
+- `docker/okestro` 밑 📁`ROOT`폴더가 생기도록
+
 #### On Linux
 
 ```sh
-# war 빌드 후 (monolith/build/lib) 진행
-docker build -t okestro/cst_tomcat:0.0.4 \
-  docker/okestro
+docker build -t okestro/cst_tomcat:0.0.5
 ```
 
 #### On Windows
 
 ```batch
-REM war 빌드 후 (monolith/build/lib) 진행
-docker build -t okestro/cst_tomcat:0.0.4 ^
-  docker/okestro
+docker build -t okestro/cst_tomcat:0.0.5 
 ```
 
 ### ▶️Run 
@@ -127,7 +126,7 @@ docker run -d -it \
   --name cst_tomcat2 \
   -p 8081:8080 \
   -p 8444:8443 \
-  okestro/cst_tomcat:0.0.4
+  okestro/cst_tomcat:0.0.5
 
 # postgres
 docker run -d -it \
@@ -146,7 +145,7 @@ docker run -d -it ^
   --name okestro/cst_tomcat ^
   -p 8080:8080 ^
   -p 8443:8443 ^
-  okestro/cst_tomcat:0.0.4
+  okestro/cst_tomcat:0.0.5
 
 REM postgres
 docker run -d -it ^
