@@ -27,6 +27,10 @@ object Dependencies {
         "org.springframework.security:spring-security-taglibs:${Versions.springSecurity}",
         "org.springframework.security:spring-security-web:${Versions.springSecurity}",
     )
+    val swagger2 = listOf(
+        "io.springfox:springfox-swagger2:${Versions.swagger2}",
+        "io.springfox:springfox-swagger-ui:${Versions.swagger2}"
+    )
     var ovirt = listOf(
         "org.ovirt.engine.api:sdk:${Versions.ovirt}",
     )

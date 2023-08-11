@@ -25,7 +25,6 @@ public class AdminConnectionService {
 			connection = ModelsKt.toConnection(systemProperties);
 		} catch (Exception e) {
 			log.error(e.getLocalizedMessage() + "adminConnectionERROR");
-			e.printStackTrace();
 		}
 		return connection;
 	}

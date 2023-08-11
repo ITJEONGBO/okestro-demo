@@ -35,33 +35,33 @@ public class CustomAuthProvider implements AuthenticationProvider {
 		log.info("... authenticate");
 		String userId = authentication.getPrincipal().toString();
 		String passwd = this.securityUtils.decodeBase64(authentication.getCredentials().toString());
-		String retrievePasswd = this.usersService.login(userId);
+		String retrievePasswd = usersService.login(userId);
 
 		WebAuthenticationDetails wad = (WebAuthenticationDetails) authentication.getDetails();
 		String userIPAddress = wad.getRemoteAddress();
 		try {
-			String blockTime = this.usersService.retrieveUser(userId).getBlockTime();
+			String blockTime = usersService.retrieveUser(userId).getBlockTime();
 			if (!blockTime.isEmpty()) {
 				if (!SecurityUtils.compareTime(blockTime))
 					throw new BadCredentialsException("loginAttemptExceed");
-				this.usersService.initLoginCount(userId);
+				usersService.initLoginCount(userId);
 			}
 
 			if (SecurityUtils.validatePassword(passwd, retrievePasswd)) {
 				SystemPropertiesVo systemProperties = this.systemPropertiesService.retrieveSystemProperties();
 				this.securityConnectionService.setUser(systemProperties.getId());
 				this.securityConnectionService.setPassword(systemProperties.getPassword());
-				log.info("Login successful [ userId :  " + systemProperties.getId() + " ] [ request ip : " + userIPAddress + " ]");
+				log.info("Login successful [ userId : {} ] [ request ip : {} ]", systemProperties.getId(), userIPAddress);
 			} else {
-				UserVo user = this.usersService.retrieveUser(userId);
+				UserVo user = usersService.retrieveUser(userId);
 				user.setLoginCount(user.getLoginCount() + 1);
-				this.usersService.updateLoginCount(user);
+				usersService.updateLoginCount(user);
 				if (this.systemPropertiesService.retrieveSystemProperties().getLoginLimit() <= user.getLoginCount())
-					this.usersService.setBlockTime(user);
-				log.error("Login fail [ userId :  " + userId + " ] [ request ip : " + userIPAddress + " ]");
+					usersService.setBlockTime(user);
+				log.error("Login fail [ userId :  {} ] [ request ip : {} ]", userId, userIPAddress);
 				throw new BadCredentialsException(ItInfoConstant.PASSWORD_ERROR);
 			}
-			this.usersService.initLoginCount(userId);
+			usersService.initLoginCount(userId);
 			List<GrantedAuthority> roles = new ArrayList<>();
 			roles.add(new SimpleGrantedAuthority("ROLE_USER"));
 			UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(userId, passwd, roles);

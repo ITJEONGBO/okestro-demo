@@ -9,8 +9,9 @@ object Versions {
     const val tomcatPlugin = "2.5"
     const val tomcatEmbedded = "8.5.2"
 
-    const val spring = "4.3.14.RELEASE"
-    const val springSecurity = "4.2.2.RELEASE"
+    const val spring = "4.3.18.RELEASE"
+    const val springSecurity = "4.2.7.RELEASE"
+    const val swagger2 = "2.9.2"
     const val ovirt = "4.4.0" // latest: 4.5.1
     const val qemu = "1.0.6"
     const val tiles = "3.0.5"

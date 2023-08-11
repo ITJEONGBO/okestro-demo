@@ -371,7 +371,7 @@ public class TemplatesServiceImpl extends BaseService implements TemplatesServic
 		List<StorageDomainVo> storageDomains = new ArrayList<>();
 		List<StorageDomainVo> bootImages = new ArrayList<>();
 		for (StorageDomain item : storageDomainList) {
-			if (item.type().value().equals("data")) {
+			if ("data".equals(item.type().value())) {
 				StorageDomainVo storageDomain = new StorageDomainVo();
 				storageDomain.setId(item.id());
 				storageDomain.setName(item.name());
@@ -379,7 +379,7 @@ public class TemplatesServiceImpl extends BaseService implements TemplatesServic
 				storageDomains.add(storageDomain);
 				continue;
 			}
-			if (item.type().value().equals("iso")) {
+			if ("iso".equals(item.type().value())) {
 				List<File> filesFromStorageDomain
 						= getSysSrvHelper().findAllFilesFromStorageDomain(connection, item.id()) ;
 				templateEditInfo.setImageStorage(item.id());

@@ -1,5 +1,6 @@
 package com.itinfo.service.impl;
 
+import com.itinfo.dao.ClustersDao;
 import com.itinfo.dao.ComputingDao;
 import com.itinfo.model.*;
 import com.itinfo.service.VirtualMachinesService;
@@ -50,60 +51,21 @@ import org.ovirt.engine.sdk4.builders.VirtioScsiBuilder;
 import org.ovirt.engine.sdk4.builders.VmBuilder;
 import org.ovirt.engine.sdk4.builders.VmPlacementPolicyBuilder;
 import org.ovirt.engine.sdk4.builders.VnicProfileBuilder;
-import org.ovirt.engine.sdk4.services.ClusterService;
 import org.ovirt.engine.sdk4.services.DiskAttachmentService;
 import org.ovirt.engine.sdk4.services.DiskAttachmentsService;
-import org.ovirt.engine.sdk4.services.DiskService;
 import org.ovirt.engine.sdk4.services.HostService;
 import org.ovirt.engine.sdk4.services.HostStorageService;
-import org.ovirt.engine.sdk4.services.InstanceTypesService;
 import org.ovirt.engine.sdk4.services.SnapshotService;
 import org.ovirt.engine.sdk4.services.StorageDomainService;
 import org.ovirt.engine.sdk4.services.SystemService;
 import org.ovirt.engine.sdk4.services.TemplateService;
 import org.ovirt.engine.sdk4.services.VmCdromService;
-import org.ovirt.engine.sdk4.services.VmCdromsService;
-import org.ovirt.engine.sdk4.services.VmGraphicsConsolesService;
 import org.ovirt.engine.sdk4.services.VmNicService;
 import org.ovirt.engine.sdk4.services.VmNicsService;
 import org.ovirt.engine.sdk4.services.VmService;
 import org.ovirt.engine.sdk4.services.VmsService;
 import org.ovirt.engine.sdk4.services.VnicProfileService;
-import org.ovirt.engine.sdk4.types.BootDevice;
-import org.ovirt.engine.sdk4.types.Cdrom;
-import org.ovirt.engine.sdk4.types.Cluster;
-import org.ovirt.engine.sdk4.types.CpuProfile;
-import org.ovirt.engine.sdk4.types.Disk;
-import org.ovirt.engine.sdk4.types.DiskAttachment;
-import org.ovirt.engine.sdk4.types.DiskFormat;
-import org.ovirt.engine.sdk4.types.DiskInterface;
-import org.ovirt.engine.sdk4.types.DiskProfile;
-import org.ovirt.engine.sdk4.types.DisplayType;
-import org.ovirt.engine.sdk4.types.Event;
-import org.ovirt.engine.sdk4.types.File;
-import org.ovirt.engine.sdk4.types.GraphicsConsole;
-import org.ovirt.engine.sdk4.types.Host;
-import org.ovirt.engine.sdk4.types.HostStorage;
-import org.ovirt.engine.sdk4.types.InheritableBoolean;
-import org.ovirt.engine.sdk4.types.InstanceType;
-import org.ovirt.engine.sdk4.types.Ip;
-import org.ovirt.engine.sdk4.types.Network;
-import org.ovirt.engine.sdk4.types.NetworkAttachment;
-import org.ovirt.engine.sdk4.types.Nic;
-import org.ovirt.engine.sdk4.types.OperatingSystemInfo;
-import org.ovirt.engine.sdk4.types.ReportedDevice;
-import org.ovirt.engine.sdk4.types.RngSource;
-import org.ovirt.engine.sdk4.types.Snapshot;
-import org.ovirt.engine.sdk4.types.SsoMethod;
-import org.ovirt.engine.sdk4.types.StorageDomain;
-import org.ovirt.engine.sdk4.types.StorageType;
-import org.ovirt.engine.sdk4.types.Template;
-import org.ovirt.engine.sdk4.types.Vm;
-import org.ovirt.engine.sdk4.types.VmAffinity;
-import org.ovirt.engine.sdk4.types.VmStatus;
-import org.ovirt.engine.sdk4.types.VmStorageErrorResumeBehaviour;
-import org.ovirt.engine.sdk4.types.VmType;
-import org.ovirt.engine.sdk4.types.VnicProfile;
+import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -117,6 +79,7 @@ public class VirtualMachinesServiceImpl extends BaseService implements VirtualMa
 	@Autowired private KarajanService karajanService;
 	@Autowired private GreedyHost greedyHost;
 	@Autowired private ComputingDao computingDao;
+	@Autowired private ClustersDao clustersDao;
 	@Autowired private WebsocketService websocketService;
 
 	@Async("karajanTaskExecutor")
@@ -253,7 +216,7 @@ public class VirtualMachinesServiceImpl extends BaseService implements VirtualMa
 	public void suspendVm(List<VmVo> vms) {
 		log.info("... suspendVm[{}]", vms.size());
 		Connection connection = this.adminConnectionService.getConnection();
-		SystemService systemService = connection.systemService();
+
 		try {
 			for (VmVo vm : vms)
 				getSysSrvHelper().suspendVm(connection, vm.getId());
@@ -324,7 +287,7 @@ public class VirtualMachinesServiceImpl extends BaseService implements VirtualMa
 				VmVo vm
 						= ModelsKt.toVmVo(item, connection);
 				List<Nic> nics
-						= vmService.nicsService().list().send().nics();
+						= getSysSrvHelper().findNicsFromVm(connection, item.id());
 				String ips = "";
 				List<String> nicIds = new ArrayList<>();
 				for (Nic nic : nics) {
@@ -346,14 +309,15 @@ public class VirtualMachinesServiceImpl extends BaseService implements VirtualMa
 					vm.setHeadlessMode(false);
 					vm.setGraphicProtocol(item.display().type().toString());
 				}
-				if (item.status().value().equals("up") && item.startTimePresent()) {
+				if ("up".equals(item.status().value()) && item.startTimePresent()) {
 					vm.setStartTime(""+(date.getTime() - item.startTime().getTime()) / 60000L);
-				} else if (item.status().value().equals("up") && item.creationTimePresent()) {
+				} else if ("up".equals(item.status().value()) && item.creationTimePresent()) {
 					vm.setStartTime(""+(date.getTime() - item.creationTime().getTime()) / 60000L);
 				}
 				if (item.host() != null) {
+					Host h = getSysSrvHelper().findHost(connection, item.host().id());
 					vm.setHostId(item.host().id());
-					vm.setHostName(systemService.hostsService().hostService(item.host().id()).get().send().host().name());
+					vm.setHostName((h != null && h.namePresent()) ? h.name() : "");
 				}
 				vm.setClusterId(item.cluster().id());
 				VmUsageVo usage = this.computingDao.retrieveVmUsageOne(item.id());
@@ -400,17 +364,17 @@ public class VirtualMachinesServiceImpl extends BaseService implements VirtualMa
 					networkUsages.add(network);
 					vm.setNetworkUsage(networkUsages);
 				}
-				vm.setDiskSize(((DiskAttachmentsService.ListResponse)vmService.diskAttachmentsService().list().send()).attachments().size());
-				VmCdromService vmCdromService = vmService.cdromsService().cdromService(((Cdrom)((VmCdromsService.ListResponse)vmService.cdromsService().list().send()).cdroms().get(0)).id());
-				if (((VmCdromService.GetResponse)vmCdromService.get().current(Boolean.valueOf(true)).send()).cdrom().filePresent())
-					vm.setDisc(((VmCdromService.GetResponse)vmCdromService.get().current(Boolean.valueOf(true)).send()).cdrom().file().id());
+				vm.setDiskSize((vmService.diskAttachmentsService().list().send()).attachments().size());
+				VmCdromService vmCdromService = vmService.cdromsService().cdromService(((vmService.cdromsService().list().send()).cdroms().get(0)).id());
+				if ((vmCdromService.get().current(true).send()).cdrom().filePresent())
+					vm.setDisc((vmCdromService.get().current(true).send()).cdrom().file().id());
 				VmSystemVo vmSystem = new VmSystemVo();
-				vmSystem.setDefinedMemory((item.memoryAsLong().longValue() / 1024L / 1024L) + " MB");
-				vmSystem.setGuaranteedMemory((item.memoryPolicy().guaranteedAsLong().longValue() / 1024L / 1024L) + " MB");
-				vmSystem.setMaxMemoryPolicy((item.memoryPolicy().maxAsLong().longValue() / 1024L / 1024L) + " MB");
-				vmSystem.setVirtualSockets(item.cpu().topology().socketsAsInteger().intValue());
-				vmSystem.setCoresPerVirtualSocket(item.cpu().topology().coresAsInteger().intValue());
-				vmSystem.setThreadsPerCore(item.cpu().topology().threadsAsInteger().intValue());
+				vmSystem.setDefinedMemory((item.memoryAsLong() / 1024L / 1024L) + " MB");
+				vmSystem.setGuaranteedMemory((item.memoryPolicy().guaranteedAsLong() / 1024L / 1024L) + " MB");
+				vmSystem.setMaxMemoryPolicy((item.memoryPolicy().maxAsLong() / 1024L / 1024L) + " MB");
+				vmSystem.setVirtualSockets(item.cpu().topology().socketsAsInteger());
+				vmSystem.setCoresPerVirtualSocket(item.cpu().topology().coresAsInteger());
+				vmSystem.setThreadsPerCore(item.cpu().topology().threadsAsInteger());
 				vmSystem.setTotalVirtualCpus(vmSystem.getVirtualSockets() * vmSystem.getCoresPerVirtualSocket() * vmSystem.getThreadsPerCore());
 				vm.setVmSystem(vmSystem);
 				vms.add(vm);
@@ -444,6 +408,7 @@ public class VirtualMachinesServiceImpl extends BaseService implements VirtualMa
 		return clusters;
 	}
 
+	@Override
 	public List<VmVo> retrieveVms(String status) {
 		log.info("... retrieveVms('{}')", status);
 		Connection connection = connectionService.getConnection();
@@ -664,7 +629,7 @@ public class VirtualMachinesServiceImpl extends BaseService implements VirtualMa
 			List<VmUsageVo> usageList
 					= this.computingDao.retrieveVmUsage(item.id());
 			List<UsageVo> usageVos
-					= ModelsKt.toUsageVos(usageList);
+					= ModelsKt.toUsageVos(usageList, connection);
 
 			List<Integer> networkUsage = new ArrayList<>();
 			String networkType = null;
@@ -708,10 +673,10 @@ public class VirtualMachinesServiceImpl extends BaseService implements VirtualMa
 	public VmSystemVo retrieveVmSystem(String id) {
 		log.info("... retrieveVmSystem('{}')", id);
 		Connection connection = connectionService.getConnection();
-		Vm vm
-				= getSysSrvHelper().findVm(connection, id);
-		VmSystemVo vmSystem
-				= ModelsKt.toVmSystemVo(vm);
+		Vm vm = getSysSrvHelper().findVm(connection, id);
+		VmSystemVo vmSystem = (vm != null)
+				? ModelsKt.toVmSystemVo(vm)
+				: null;
 		return vmSystem;
 	}
 
@@ -873,7 +838,7 @@ public class VirtualMachinesServiceImpl extends BaseService implements VirtualMa
 						!"해당 없음".equals(vmNicVo.getIpv4()) &&
 						!"해당 없음".equals(vmNicVo.getIpv6()) &&
 						vmNic.reportedDevices().size() >= 1)
-				if (!"".equals(vmNicVo.getMacAddress()) &&
+				if (!vmNicVo.getMacAddress().isEmpty() &&
 						!srcVmNicVo.getMacAddress().equals(vmNicVo.getMacAddress())) {
 					ReportedDeviceBuilder reportedDeviceBuilder = new ReportedDeviceBuilder();
 					reportedDeviceBuilder.ips(vmNic.reportedDevices().get(0).ips());
@@ -1008,17 +973,21 @@ public class VirtualMachinesServiceImpl extends BaseService implements VirtualMa
 	public List<Map<String, Object>> retrieveVmRole(String id) {
 		log.info("... retrieveVmRole('{}')", id);
 		Connection connection = connectionService.getConnection();
-		SystemService systemService = connection.systemService();
-		VmService vmService = systemService.vmsService().vmService(id);
+
 		List<Map<String, Object>> list = new ArrayList<>();
-		(vmService.permissionsService().list().send()).permissions().forEach(permission -> {
+		getSysSrvHelper().findAllAssignedPermissionsFromVm(connection, id).forEach(permission -> {
 			Map<String, Object> map = new HashMap<>();
-			log.info("role name:" + systemService.rolesService().roleService(permission.role().id()).get().send().role().name());
-			map.put("역할", systemService.rolesService().roleService(permission.role().id()).get().send().role().name());
-			log.info(""+systemService.rolesService().roleService(permission.role().id()).get().send().role().href());
+			Role rFound = getSysSrvHelper().findRole(connection, permission.role().id());
+			String rName = rFound.namePresent() ? rFound.name() : "";
+			String rHref = rFound.hrefPresent() ? rFound.href() : "";
+			log.info("role name: {}", rName);
+			map.put("역할", rName);
+			log.info("role href: {}", rHref);
 			if (permission.userPresent()) {
-				log.info("user name:" + systemService.usersService().userService(permission.user().id()).get().send().user().name());
-				map.put("사용자", systemService.usersService().userService(permission.user().id()).get().send().user().name());
+				User userFound = getSysSrvHelper().findUser(connection, permission.user().id());
+				String uName = (userFound.namePresent()) ? userFound.name() : "";
+				log.info("user name: {}", uName);
+				map.put("사용자", uName);
 			}
 			list.add(map);
 		});
@@ -2035,9 +2004,9 @@ public class VirtualMachinesServiceImpl extends BaseService implements VirtualMa
 		} catch (Exception e) {
 			try {
 				Thread.sleep(1000L);
-			} catch (InterruptedException interruptedException) {
-				log.error(interruptedException.getLocalizedMessage());
-				interruptedException.printStackTrace();
+			} catch (InterruptedException ie) {
+				log.error(ie.getLocalizedMessage());
+				ie.printStackTrace();
 			}
 			log.error(e.getLocalizedMessage());
 			e.printStackTrace();

@@ -35,7 +35,15 @@
 			</list>
 		</property>
 	</bean>
-	
+<!--	<bean-->
+<!--		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">-->
+<!--		<property name="webBindingInitializer">-->
+<!--			<list>-->
+<!--				<ref bean="userConvenienceInterceptor" />-->
+<!--			</list>-->
+<!--		</property>-->
+<!--	</bean>-->
+<!--	-->
 
 	
 	<bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView" />
@@ -52,6 +60,11 @@
 		</mvc:message-converters>
 	</mvc:annotation-driven>
 	<mvc:default-servlet-handler/>
+
+    <!-- swagger2Config -->
+	<bean id="swagger2Config" class="com.itinfo.configuration.Swagger2Config"></bean>
+	<mvc:resources mapping="swagger-ui.html" location="classpath:/META-INF/resources/"/>
+	<mvc:resources mapping="/webjars/**" 	 location="classpath:/META-INF/resources/webjars/"/>
 
  	<bean id="tilesViewResolver"
 		  class="org.springframework.web.servlet.view.tiles3.TilesViewResolver">

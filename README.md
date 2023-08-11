@@ -2,7 +2,7 @@
 
 ![favicon](monolith/src/main/webapp/favicon.ico)
 
-오케스트로 데모
+오케스트로 (복구 중)
 
 ---
 
@@ -11,6 +11,7 @@
 ![shield-java][shield-java]
 ![shield-spring][shield-spring]
 ![shield-spring-security][shield-spring-security]
+![shield-swagger][shield-swagger]
 ![shield-kotlin][shield-kotlin]
 ![shield-gradle][shield-gradle]
 ![shield-tomcat][shield-tomcat]
@@ -82,7 +83,7 @@ Run this script to create artifact
 </Server>
 ```
 
---- 
+---
 
 ## 🛅H2 
 
@@ -107,16 +108,18 @@ Run this script to create artifact
 #### On Linux
 
 ```sh
-docker build -t okestro/cst_tomcat:0.0.5
+docker build -t okestro/cst_tomcat:0.0.5 \
+  ./
 ```
 
 #### On Windows
 
 ```batch
-docker build -t okestro/cst_tomcat:0.0.5 
+docker build -t okestro/cst_tomcat:0.0.5 ^
+  \.
 ```
 
-### ▶️Run 
+### ▶️Run
 
 #### On Linux
 
@@ -124,8 +127,8 @@ docker build -t okestro/cst_tomcat:0.0.5
 # okestro
 docker run -d -it \
   --name cst_tomcat2 \
-  -p 8081:8080 \
-  -p 8444:8443 \
+  -p 8080:8080 \
+  -p 8443:8443 \
   okestro/cst_tomcat:0.0.5
 
 # postgres
@@ -165,8 +168,9 @@ docker run -d -it ^
   - [ ] docker 관련 정보 수집
   - [ ] model 안정화
 - [ ] package별 endpoint구현
-- [ ] docker 생성 자동화 스크립트
-- [ ] dokka 또는 swagger 구성 필요
+- [ ] docker 생성 자동화 스크립트 (환경변수 지정 > ovirt ip주소)
+- [x] swagger 구성
+- [ ] dokka 구성
 
 
 ## Dependencies 주입
@@ -263,6 +267,7 @@ docker run -d -it ^
 [shield-java]: https://img.shields.io/badge/Temurin-11-f3812a?logo=openjdk&logoColor=f3812a&style=flat-square
 [shield-spring]: https://img.shields.io/badge/Spring-4.3.14.RELEASE-6DB33F?logo=spring&logoColor=6DB33F&style=flat-square
 [shield-spring-security]: https://img.shields.io/badge/Spring%20Security-4.2.2.RELEASE-6DB33F?logo=springsecurity&logoColor=6DB33F&style=flat-square
+[shield-swagger]: https://img.shields.io/badge/Swagger-2.9.2-85EA2D?logo=swagger&logoColor=85EA2D&style=flat-square 
 [shield-kotlin]: https://img.shields.io/badge/Kotlin-1.4.31-0095D5?logo=kotlin&logoColor=0095D5&style=flat-square
 [shield-gradle]: https://img.shields.io/badge/Gradle-7.4.2-abd759?logo=gradle&logoColor=abd759&style=flat-square
 [shield-tomcat]: https://img.shields.io/badge/Tomcat-8.5.38-F8DC75?logo=apachetomcat&logoColor=F8DC75&style=flat-square

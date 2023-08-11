@@ -23,6 +23,14 @@
 		<intercept-url pattern="/vendors/**" access="permitAll" />
 		<intercept-url pattern="/**" access="hasRole('ROLE_USER')" />
 
+		<!-- swagger -->
+		<intercept-url pattern="/swagger-ui.html/**" access="isAnonymous()" />
+		<intercept-url pattern="/configuration/**" access="isAnonymous()" />
+		<intercept-url pattern="/swagger-resources/**" access="isAnonymous()" />
+		<intercept-url pattern="/v2/api-docs" access="isAnonymous()" />
+		<intercept-url pattern="/webjars/**" access="isAnonymous()" />
+		<intercept-url pattern="/webjars/springfox-swagger-ui/*.{js,css}" access="isAnonymous()" />
+
 		<form-login login-page="/login"
 			default-target-url="/loginSuccess"
 			

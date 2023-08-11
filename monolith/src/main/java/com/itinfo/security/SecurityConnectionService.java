@@ -25,7 +25,8 @@ public class SecurityConnectionService {
 	public Connection getConnection() {
 		log.info("... getConnection");
 		SystemPropertiesVo systemProperties = systemPropertiesService.retrieveSystemProperties();
-		Connection connection = ModelsKt.toConnection(systemProperties);
+		Connection connection
+				= ModelsKt.toConnection(systemProperties);
 		return connection;
 	}
 

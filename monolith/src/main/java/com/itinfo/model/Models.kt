@@ -1,20 +1,21 @@
 package com.itinfo.model
 
+import com.itinfo.OvirtStatsName
 import com.itinfo.SystemServiceHelper
 import com.itinfo.dao.ClustersDao
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.ConnectionBuilder
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.internal.containers.*
+import org.ovirt.engine.sdk4.services.HostNicsService
 import org.ovirt.engine.sdk4.services.HostService
 import org.ovirt.engine.sdk4.services.NetworkService
 import org.ovirt.engine.sdk4.services.SystemService
 import org.ovirt.engine.sdk4.types.*
-
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
-
+import java.util.function.Consumer
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -91,30 +92,131 @@ data class ItInfoNetworkHostVo(
 	var dataTotalTx: BigDecimal = BigDecimal.ZERO,
 )
 
-fun Host.toItInfoNetworkHostVo(c: Connection): ItInfoNetworkHostVo {
-	val cluster: List<Cluster>
+fun Host.toItInfoNetworkHostVo(c: Connection, networkId: String): ItInfoNetworkHostVo {
+	val clusters: List<Cluster>
 		= sysSrvH.findAllClusters(c)
+	val clusterFound: Cluster?
+		= clusters.firstOrNull { clusterPresent() && it.id() == cluster().id() }
+	val hostClusterName: String =
+		if (clusterFound?.namePresent() == true) clusterFound.name() ?: ""
+		else if (clusterPresent() && cluster().namePresent()) cluster().name()
+		else ""
+
 	val hostNics: List<HostNic>
-		= sysSrvH.findNicsFromHost(c, id())
+		= sysSrvH.findAllNicsFromHost(c, id())
+	val hostNicFound: HostNic?
+		= hostNics.firstOrNull { it.networkPresent() && it.network().id() == networkId }
+
+	val nicStatus: String =
+		if (hostNicFound?.statusPresent() == true) hostNicFound.status().value() ?: "none"
+		else if (nicsPresent()) "ok"
+		else "none"
+	val nicName: String =
+		if (hostNicFound?.namePresent() == true) hostNicFound.name() ?: ""
+		else if (nicsPresent() && nics().isNotEmpty()) nics().firstOrNull()?.name() ?: ""
+		else ""
+	val number = BigDecimal("1000000")
+	val bigNumber = BigInteger("1000000")
+	val nicSpeed: BigInteger
+		= if (hostNicFound?.speedPresent() == true) hostNicFound.speed().divide(bigNumber) else BigInteger.ZERO
 
 	val nicStats: List<List<Statistic>>
 		= hostNics.map { sysSrvH.findAllStatisticsFromHostNic(c, id(), it.id()) }
 
-	// val dataCurrentRxBps = nicStats.filter { it.name() == "data.current.rx.bps" }.sumBy { it.values().firstOrNull()?.datum()?.toInt() ?: 0 }
+	val allDataCurrentRxBps: List<BigDecimal>
+		= nicStats.map {
+			it.filter { statistic ->
+				statistic.namePresent() && statistic.name().equals(OvirtStatsName.DATA_CURRENT_RX_BPS, ignoreCase = true)
+			}.map { statistic ->  statistic.values().firstOrNull()?.datum()?.divide(number, 1, 0) ?: BigDecimal.ZERO }
+		}.flatten()
+	val allDataCurrentTxBps: List<BigDecimal>
+		= nicStats.map {
+			it.filter { statistic ->
+				statistic.namePresent() && statistic.name().equals(OvirtStatsName.DATA_CURRENT_TX_BPS, ignoreCase = true)
+			}.map { statistic ->  statistic.values().firstOrNull()?.datum()?.divide(number, 1, 0) ?: BigDecimal.ZERO }
+		}.flatten()
+	val allDataTotalRx: List<BigDecimal>
+		= nicStats.map {
+			it.filter { statistic ->
+				statistic.namePresent() && statistic.name().equals(OvirtStatsName.DATA_TOTAL_RX, ignoreCase = true)
+			}.map { statistic ->  statistic.values().firstOrNull()?.datum()?.divide(number, 1, 0) ?: BigDecimal.ZERO }
+		}.flatten()
+	val allDataTotalTx: List<BigDecimal>
+		= nicStats.map {
+			it.filter { statistic ->
+				statistic.namePresent() && statistic.name().equals(OvirtStatsName.DATA_TOTAL_TX, ignoreCase = true)
+			}.map { statistic ->  statistic.values().firstOrNull()?.datum()?.divide(number, 1, 0) ?: BigDecimal.ZERO }
+		}.flatten()
+
+	// TODO: 값 검증 후 제거
+//	nics.forEach(Consumer { nic: HostNic ->
+//		if (nic.networkPresent() && nic.network().id().equals(networkId, ignoreCase = true)) {
+//			if (nic.speedPresent())
+//				castanetsNetworkHostVo.setNicSpeed(nic.speed().divide(bigNumber))
+//			}
+//			if (nic.statusPresent()) {
+//				castanetsNetworkHostVo.setNicStatus(nic.status().value())
+//			}
+//			if (nic.namePresent()) {
+//				castanetsNetworkHostVo.setNicName(nic.name())
+//			}
+//			if (nic.idPresent()) {
+//				val hostNicService = nicsService.nicService(nic.id())
+//				val statisticsService = hostNicService.statisticsService()
+//				val statistics =
+//					statisticsService.list().send().statistics()
+//				statistics.forEach(Consumer { statistic: Statistic ->
+//					if (statistic.namePresent()) {
+//						val values = statistic.values()
+//						if (statistic.name().equalsIgnoreCase("data.current.rx.bps")) {
+//							values.forEach(Consumer { value: Value ->
+//								castanetsNetworkHostVo.setDataCurrentRxBps(
+//									value.datum().divide(number, 1, 0)
+//								)
+//							})
+//						}
+//						if (statistic.name().equalsIgnoreCase("data.current.tx.bps")) {
+//							values.forEach(Consumer { value2: Value ->
+//								castanetsNetworkHostVo.setDataCurrentTxBps(
+//									value2.datum().divide(number, 1, 0)
+//								)
+//							})
+//						}
+//						if (statistic.name().equalsIgnoreCase("data.total.rx")) {
+//							values.forEach(Consumer { value3: Value ->
+//								System.out.println("data.total.rx : " + value3.datum())
+//								castanetsNetworkHostVo.setDataTotalRx(value3.datum().divide(number, 1, 0))
+//							})
+//						}
+//						if (statistic.name().equalsIgnoreCase("data.total.tx")) {
+//							values.forEach(Consumer { value4: Value ->
+//								System.out.println("data.total.tx" + value4.datum())
+//								castanetsNetworkHostVo.setDataTotalTx(value4.datum().divide(number, 1, 0))
+//							})
+//						}
+//					}
+//				})
+//			}
+//			castanetsNetworkHostVoList.add(castanetsNetworkHostVo)
+//		}
+//	})
 
 	return ItInfoNetworkHostVo(
 		if (statusPresent()) status().value() else "",
 		if (namePresent()) name() else "",
-		if (nicsPresent()) "ok" else "none",
-		if (nicsPresent() &&
-			nics().isNotEmpty()) nics().firstOrNull()?.name() ?: "" else "",
-		if (clusterPresent() &&
-			cluster().namePresent()) cluster().name() else "",
+		nicStatus,
+		nicName,
+		hostClusterName,
+		nicSpeed,
+		allDataCurrentRxBps.firstOrNull() ?: BigDecimal.ZERO,
+		allDataCurrentTxBps.firstOrNull() ?: BigDecimal.ZERO,
+		allDataTotalRx.firstOrNull() ?: BigDecimal.ZERO,
+		allDataTotalTx.firstOrNull() ?: BigDecimal.ZERO
 	)
 }
 
-fun List<Host>.toItInfoNetworkHostVos(connection: Connection): List<ItInfoNetworkHostVo>
-	= this.map { it.toItInfoNetworkHostVo(connection) }
+fun List<Host>.toItInfoNetworkHostVos(connection: Connection, networkId: String): List<ItInfoNetworkHostVo>
+	= this.map { it.toItInfoNetworkHostVo(connection, networkId) }
 
 data class ItInfoNetworkQosVo(
 	var name: String = "",
@@ -146,7 +248,7 @@ data class ItInfoNetworkVo(
 	var comment: String = "",
 	var mtu: String = "",
 	var provider: String = "",
-	var vlan: String? = "",
+	var vlan: String = "",
 	var qos: String = "",
 	var qosId: String = "",
 	var usage: String = "",
@@ -504,13 +606,13 @@ data class DataCenterVo(
 			val statsWithinHost: List<List<Statistic>>
 				= hostsUp.map { sysSrvH.findAllStatisticsFromHost(c, it.id()) }
 			val memoryTotal: Int
-				= statsWithinHost.flatten().filter { it.name() == "memory.total" }.sumBy { it.values().firstOrNull()?.datum()?.toInt() ?: 0 }
+				= statsWithinHost.flatten().filter { it.name() == OvirtStatsName.MEMORY_TOTAL }.sumBy { it.values().firstOrNull()?.datum()?.toInt() ?: 0 }
 			val memoryUsed: Int
-				= statsWithinHost.flatten().filter { it.name() == "memory.used" }.sumBy { it.values().firstOrNull()?.datum()?.toInt() ?: 0 }
+				= statsWithinHost.flatten().filter { it.name() == OvirtStatsName.MEMORY_USED }.sumBy { it.values().firstOrNull()?.datum()?.toInt() ?: 0 }
 			val memoryFree: Int
-				= statsWithinHost.flatten().filter { it.name() == "memory.free" }.sumBy { it.values().firstOrNull()?.datum()?.toInt() ?: 0 }
+				= statsWithinHost.flatten().filter { it.name() == OvirtStatsName.MEMORY_FREE }.sumBy { it.values().firstOrNull()?.datum()?.toInt() ?: 0 }
 			val cpuCurrentUser: Int
-				= statsWithinHost.flatten().filter { it.name() == "cpu.current.user" }.sumBy { it.values().firstOrNull()?.datum()?.toInt() ?: 0 }
+				= statsWithinHost.flatten().filter { it.name() == OvirtStatsName.CPU_CURRENT_USER }.sumBy { it.values().firstOrNull()?.datum()?.toInt() ?: 0 }
 			val cpuCurrentSystem: Int
 				= statsWithinHost.flatten().filter { it.name() == "cpu.current.system" }.sumBy { it.values().firstOrNull()?.datum()?.toInt() ?: 0 }
 			val cpuCurrentIdle: Int
@@ -535,7 +637,7 @@ data class DataCenterVo(
 
 			val interfaceIds: List<List<String>>
 				= hostsUp.map {
-					sysSrvH.findNicsFromHost(c, it.id()).map { nic ->
+					sysSrvH.findAllNicsFromHost(c, it.id()).map { nic ->
 						nic.id()
 					}
 				}
@@ -789,6 +891,7 @@ fun Disk.toDiskVo(
 	)
 }
 
+// TODO: 값 검증필요
 fun List<Disk>.toDiskVos(
 	connection: Connection,
 	diskAttachmentIds: List<String>? = arrayListOf(),
@@ -1002,7 +1105,7 @@ fun Host.toHostDetailVo(c: Connection, clustersDao: ClustersDao?): HostDetailVo 
 		= clustersDao?.retrieveHostUsage(id()) ?: listOf()
 
 	val hostNics: List<HostNic>
-		= sysSrvH.findNicsFromHost(c, id())
+		= sysSrvH.findAllNicsFromHost(c, id())
 
 //	val nicUsage: NicUsageVo?
 //		= clustersDao?.retrieveHostNicUsage()
@@ -1014,7 +1117,7 @@ fun Host.toHostDetailVo(c: Connection, clustersDao: ClustersDao?): HostDetailVo 
 		= clustersDao?.retrieveHostLastUsage(id())
 
 	val hostNicsLastUsage: List<HostNic>
-		= sysSrvH.findNicsFromHost(c, id())
+		= sysSrvH.findAllNicsFromHost(c, id())
 
 	return HostDetailVo(
 		id(),
@@ -1167,6 +1270,13 @@ data class ImageFileVo(
 	var id: String = "",
 	var name: String = "",
 )
+
+fun File.toImageFileVo(): ImageFileVo = ImageFileVo(
+	id(),
+	if (namePresent()) name() else ""
+)
+
+fun List<File>.toImageFileVos(): List<ImageFileVo> = this.map { it.toImageFileVo() }
 
 data class ImageTransferVo(
 	var active: Boolean,
@@ -1708,8 +1818,8 @@ data class OsInfoVo(
 )
 
 fun OperatingSystemInfo.toOsInfoVo(): OsInfoVo = OsInfoVo(
-	description(),
-	name(),
+	if (descriptionPresent()) description() else "",
+	if (namePresent()) name() else "",
 )
 
 fun List<OperatingSystemInfo>.toOsInfoVos(): List<OsInfoVo> {
@@ -1768,37 +1878,36 @@ data class ProviderVo(
 
 fun ExternalHostProvider.toProviderVo(): ProviderVo = ProviderVo(
 	id(),
-	name(),
-	description(),
+	if (namePresent()) name() else "",
+	if (descriptionPresent()) description() else "",
 	"외부 공급자",
-	url(),
+	if (urlPresent()) url() else "",
 )
 
 fun OpenStackImageProvider.toProviderVo(): ProviderVo = ProviderVo(
 	id(),
-	name(),
-	description(),
+	if (namePresent()) name() else "",
+	if (descriptionPresent()) description() else "",
 	"Openstack Image 공급자",
-	url(),
+	if (urlPresent()) url() else "",
 )
 fun OpenStackNetworkProvider.toProviderVo(): ProviderVo = ProviderVo(
 	id(),
-	name(),
-	description(),
+	if (namePresent()) name() else "",
+	if (descriptionPresent()) description() else "",
 	"Openstack Network 공급자",
-	url(),
+	if (urlPresent()) url() else "",
 )
 
 fun OpenStackVolumeProvider.toProviderVo(): ProviderVo = ProviderVo(
 	id(),
-	name(),
-	description(),
+	if (namePresent()) name() else "",
+	if (descriptionPresent()) description() else "",
 	"Openstack Volume 공급자",
-	url(),
+	if (urlPresent()) url() else "",
 )
 
 fun List<ExternalHostProvider>.toProviderVosWithExternalHost(): List<ProviderVo> = this.map { it.toProviderVo() }
-
 fun List<OpenStackImageProvider>.toProviderVosWithOpenStackImage(): List<ProviderVo> = this.map { it.toProviderVo() }
 fun List<OpenStackNetworkProvider>.toProviderVosWithOpenStackNetwork(): List<ProviderVo> = this.map { it.toProviderVo() }
 fun List<OpenStackVolumeProvider>.toProviderVosWithOpenStackVolume(): List<ProviderVo> = this.map { it.toProviderVo() }
@@ -1972,14 +2081,13 @@ data class RoleVo(
 
 fun Role.toRoleVo(): RoleVo = RoleVo(
 	id(),
-	name(),
-	administrative(),
-	mutable()
+	if (namePresent()) name() else "",
+	if (administrativePresent()) administrative() else false,
+	if (mutablePresent()) mutable() else false
 )
 
-fun List<Role>.toRoleVos(): List<RoleVo> {
-	return this.map { it.toRoleVo() }
-}
+fun List<Role>.toRoleVos(): List<RoleVo> = this.map { it.toRoleVo() }
+
 
 data class SnapshotVo(
 	var vmId: String = "",
@@ -2441,8 +2549,6 @@ data class UsageVo(
 	var storageUsageDate: String = "",
 )
 
-
-
 data class UserVo(
 	var no: Int = -1,
 	var id: String = "",
@@ -2831,17 +2937,16 @@ data class VmUsageVo(
 	var memoryUsagePercent: Int = 0,
 )
 
-fun VmUsageVo.toUsageVo(): UsageVo {
-	val vo = UsageVo(
+fun VmUsageVo.toUsageVo(c: Connection): UsageVo {
+	return UsageVo(
 		cpuUsagePercent,
 		memoryUsagePercent
 	).apply {
 		usageDate = historyDatetime
 	}
-	return vo
 }
 
-fun List<VmUsageVo>.toUsageVos(): List<UsageVo> = this.map { it.toUsageVo() }
+fun List<VmUsageVo>.toUsageVos(c: Connection): List<UsageVo> = this.map { it.toUsageVo(c) }
 
 data class VmVo(
 	var id: String = "",

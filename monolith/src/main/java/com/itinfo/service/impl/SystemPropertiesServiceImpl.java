@@ -45,7 +45,6 @@ public class SystemPropertiesServiceImpl extends BaseService implements SystemPr
 			result[1] = content.get(1);
 		} catch (IOException e) {
 			log.error(e.getLocalizedMessage());
-			e.printStackTrace();
 		}
 		log.info("... retrieveProgramVersion ... res: {}", result);
 		return result;

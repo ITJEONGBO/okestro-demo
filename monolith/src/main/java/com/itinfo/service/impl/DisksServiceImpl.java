@@ -77,18 +77,16 @@ public class DisksServiceImpl extends BaseService implements DisksService {
 				= getSysSrvHelper().findAllVms(connection, "");
 		Map<String, String> vmDiskIdMap = new HashMap<>();
 		vms.forEach(vm -> {
-			List<DiskAttachment> diskAttachments
-					= getSysSrvHelper().findAllDiskAttachmentsFromVm(connection, vm.id());
-			// TODO: DiskAttach처리 필요
+			List<DiskAttachment> diskAttachments =
+					getSysSrvHelper().findAllDiskAttachmentsFromVm(connection, vm.id());
 			diskAttachments.forEach(att -> {
-				// vmDiskIdMap.put(vm.id(), diskAttachments)
+				vmDiskIdMap.put(att.id(), vm.name());
 			});
 		});
 
-		// TODO: 값 검증필요
 		List<DiskVo> diskVoList
 				= ModelsKt.toDiskVos(disks, connection, null);
-		/*
+
 		for (Disk disk : disks) {
 			DiskVo diskVo = new DiskVo();
 			diskVo.setId(disk.id());
@@ -112,7 +110,6 @@ public class DisksServiceImpl extends BaseService implements DisksService {
 				diskVo.setAttachedTo(vmDiskIdMap.get(disk.id()));
 			diskVoList.add(diskVo);
 		}
-		*/
 		return diskVoList;
 	}
 
@@ -125,19 +122,18 @@ public class DisksServiceImpl extends BaseService implements DisksService {
 		List<Vm> vms
 				= getSysSrvHelper().findAllVms(connection, "");
 
-		// Map<String, String> vmDiskIdMap = new HashMap<>();
+		Map<String, String> vmDiskIdMap = new HashMap<>();
 		vms.forEach(vm -> {
 			List<DiskAttachment> diskAttachments =
 					getSysSrvHelper().findAllDiskAttachmentsFromVm(connection, vm.id());
 			diskAttachments.forEach(att -> {
-				// vmDiskIdMap.put(vm.id(), diskAttachments)
+				vmDiskIdMap.put(att.id(), vm.name());
 			});
 		});
 
 		List<DiskVo> diskVoList
 				= ModelsKt.toDiskVos(disks, connection, new ArrayList<>());
-		// TODO: vmDiskIdMap 연결 작업 필요
-		/*
+
 		for (Disk disk : disks) {
 			DiskVo diskVo = new DiskVo();
 			diskVo.setId(disk.id());
@@ -152,7 +148,6 @@ public class DisksServiceImpl extends BaseService implements DisksService {
 				diskVo.setAttachedTo(vmDiskIdMap.get(disk.id()));
 			diskVoList.add(diskVo);
 		}
-		*/
 		return diskVoList;
 	}
 

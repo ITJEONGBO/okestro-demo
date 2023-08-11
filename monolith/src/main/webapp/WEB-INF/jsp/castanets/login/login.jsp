@@ -124,7 +124,7 @@ function resetAdminLoginCount(){
 				</div>
 				<section class="login_content">
 					<form>
-						<h2>Symphony Virtualization Manager</h2>
+						<h2>아이티정보기술</h2>
 						<div>
 							<input type="text" class="form-control" placeholder="아이디"
 								id="usr" onkeypress="return runScript(event)" required />

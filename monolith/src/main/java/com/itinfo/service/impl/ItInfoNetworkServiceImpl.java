@@ -7,28 +7,17 @@ import com.itinfo.service.engine.WebsocketService;
 
 import com.google.gson.Gson;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.builders.Builders;
 import org.ovirt.engine.sdk4.builders.NetworkBuilder;
-import org.ovirt.engine.sdk4.types.Cluster;
-import org.ovirt.engine.sdk4.types.DataCenter;
-import org.ovirt.engine.sdk4.types.Host;
-import org.ovirt.engine.sdk4.types.HostNic;
-import org.ovirt.engine.sdk4.types.Network;
-import org.ovirt.engine.sdk4.types.NetworkLabel;
-import org.ovirt.engine.sdk4.types.NetworkUsage;
-import org.ovirt.engine.sdk4.types.Nic;
-import org.ovirt.engine.sdk4.types.OpenStackNetworkProvider;
-import org.ovirt.engine.sdk4.types.Qos;
-import org.ovirt.engine.sdk4.types.Vm;
-import org.ovirt.engine.sdk4.types.VnicProfile;
+import org.ovirt.engine.sdk4.types.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -36,7 +25,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@NoArgsConstructor
 public class ItInfoNetworkServiceImpl extends BaseService implements ItInfoNetworkService {
 	@Autowired private AdminConnectionService adminConnectionService;
 	@Autowired	private WebsocketService websocketService;
@@ -59,7 +47,7 @@ public class ItInfoNetworkServiceImpl extends BaseService implements ItInfoNetwo
 		Connection connection = adminConnectionService.getConnection();
 
 		List<HostNic> hostNics
-				= getSysSrvHelper().findNicsFromHost(connection, id);
+				= getSysSrvHelper().findAllNicsFromHost(connection, id);
 		List<Vm> vms
 				= getSysSrvHelper().findAllVms(connection, "");
 		DataCenter dataCenter
@@ -95,17 +83,18 @@ public class ItInfoNetworkServiceImpl extends BaseService implements ItInfoNetwo
 				List<Network> networkss
 						= getSysSrvHelper().findAllNetworksFromCluster(connection, cluster.id());;
 				for (Network clusterNetwork : networkss) {
-					ItInfoNetworkClusterVo castanetsNetworkClusterVo = new ItInfoNetworkClusterVo();
+					ItInfoNetworkClusterVo networkClusterVo = new ItInfoNetworkClusterVo();
 					List<ItInfoNetworkUsagesVo> usages = new ArrayList<>();
 					if (clusterNetwork.id().equalsIgnoreCase(network.id()) && clusterNetwork.required())
 						networkVo.setRequired(clusterNetwork.required());
 					clusterNetwork.usages().forEach(cn -> {
-
+						ItInfoNetworkUsagesVo usageVo = new ItInfoNetworkUsagesVo();
+						usageVo.setUsage(cn.name());
+						usages.add(usageVo);
 					});
-					// ItInfoNetworkUsagesVo usageVo = new ItInfoNetworkUsagesVo();
-					castanetsNetworkClusterVo.setUsages(usages);
-					castanetsNetworkClusterVo.setStatus(clusterNetwork.status().value());
-					itInfoNetworkClusterVos.add(castanetsNetworkClusterVo);
+					networkClusterVo.setUsages(usages);
+					networkClusterVo.setStatus(clusterNetwork.status().value());
+					itInfoNetworkClusterVos.add(networkClusterVo);
 				}
 			}
 			List<VnicProfile> vnicProfiles
@@ -143,29 +132,34 @@ public class ItInfoNetworkServiceImpl extends BaseService implements ItInfoNetwo
 		return list;
 	}
 
+	@Override
 	public ItInfoNetworkGroupVo getNetworkDetail(ItInfoNetworkVo castanetsNetworkVo) {
-		log.info("... getNetworkDetail");
-		Connection connection = adminConnectionService.getConnection();
+		String networkId = castanetsNetworkVo.getId();
+		log.info("... getNetworkDetail({})", networkId);
+		Connection c = adminConnectionService.getConnection();
 		List<Cluster> clusters
-				= getSysSrvHelper().findAllClusters(connection, "");
-		List<ItInfoNetworkClusterVo> castanetsNetworkClusterVos
-				= ModelsKt.toItInfoNetworkClusterVos(clusters, connection, castanetsNetworkVo.getId());
+				= getSysSrvHelper().findAllClusters(c, "");
+		List<ItInfoNetworkClusterVo> networkClusterVos
+				= ModelsKt.toItInfoNetworkClusterVos(clusters, c, networkId);
 
-		List<ItInfoNetworkHostVo> CastanetsNetworkHostVos
-				= getNetworkHost(castanetsNetworkVo.getId());
+		List<ItInfoNetworkHostVo> networkHostVos
+				= getNetworkHost(networkId);
 		castanetsNetworkVo
-				= getNetwork(castanetsNetworkVo.getId());
+				= getNetwork(networkId);
 
 		List<ItInfoNetworkVmVo> castanetsNetworkVmVos
-				= getNetworkVm(castanetsNetworkVo.getId());
+				= getNetworkVm(networkId);
+
+
 		return new ItInfoNetworkGroupVo(
 				castanetsNetworkVo,
-				castanetsNetworkClusterVos,
-				CastanetsNetworkHostVos,
+				networkClusterVos,
+				networkHostVos,
 				castanetsNetworkVmVos
 		);
 	}
 
+	@Override
 	public List<ItInfoNetworkClusterVo> getNetworkCluster(String clusterId, String networkId) {
 		log.info("... getNetworkCluster('{}', '{}')", clusterId, networkId);
 		Connection connection = adminConnectionService.getConnection();
@@ -197,14 +191,17 @@ public class ItInfoNetworkServiceImpl extends BaseService implements ItInfoNetwo
 		return ModelsKt.toItInfoNetworkVo(n, connection);
 	}
 
+
+	@Override
 	public List<ItInfoNetworkHostVo> getNetworkHost(String networkId) {
 		log.info("... getNetworkHost('{}')", networkId);
 		Connection connection = adminConnectionService.getConnection();
 		List<Host> hosts
 				= getSysSrvHelper().findAllHosts(connection, "");
-		return ModelsKt.toItInfoNetworkHostVos(hosts, connection);
+		return ModelsKt.toItInfoNetworkHostVos(hosts, connection, networkId);
 	}
 
+	@Override
 	public List<ItInfoNetworkVmVo> getNetworkVm(String networkId) {
 		log.info("... getNetworkVm('{}')", networkId);
 		Connection connection = adminConnectionService.getConnection();
@@ -215,15 +212,71 @@ public class ItInfoNetworkServiceImpl extends BaseService implements ItInfoNetwo
 				= getSysSrvHelper().findAllClusters(connection, "");
 		List<VnicProfile> vnicProfiles
 				= getSysSrvHelper().findAllVnicProfilesFromNetwork(connection, networkId);
-
 		List<String> vnicIds = new ArrayList<>();
 		for (VnicProfile vnic : vnicProfiles)
 			vnicIds.add(vnic.id());
+		BigDecimal number = new BigDecimal("1000000");
 		vms.forEach(vm -> {
 			List<Nic> nics
 					= getSysSrvHelper().findNicsFromVm(connection, vm.id());
 			nics.forEach(nic -> {
+				if (nic.idPresent()) {
+					Boolean vnicIdCheck = false;
+					for (String vnicId : vnicIds)
+						if (nic.vnicProfile() != null && vnicId.equalsIgnoreCase(nic.vnicProfile().id()))
+							vnicIdCheck = true;
 
+					if (vnicIdCheck) {
+						ItInfoNetworkVmVo castanetsNetworkVmVo = new ItInfoNetworkVmVo();
+						castanetsNetworkVmVo.setVmName(vm.name());
+						castanetsNetworkVmVo.setVmStatus(vm.status().value());
+						for (Cluster cluster : clusters)
+							if (cluster.id().equalsIgnoreCase(vm.cluster().id()))
+								castanetsNetworkVmVo.setVmCluster(cluster.name());
+
+						castanetsNetworkVmVo.setNicName(nic.name());
+						if (nic.reportedDevicesPresent()) {
+							String ips = "";
+							for (int i = 0; i < nic.reportedDevices().size(); i++) {
+								for (int j = 0; j < (nic.reportedDevices().get(i)).ips().size(); j++) {
+									ips = ips + " " + ((nic.reportedDevices().get(i)).ips().get(j)).address();
+								}
+							}
+							castanetsNetworkVmVo.setIp(ips);
+						}
+						if (vm.fqdnPresent()) castanetsNetworkVmVo.setFqdn(vm.fqdn());
+						if (nic.linkedPresent()) castanetsNetworkVmVo.setLinked(nic.linked() ? "true" : "false");
+
+						List<Statistic> statistics
+								= getSysSrvHelper().findAllStatisticsFromVmNic(connection, vm.id(), nic.id());
+						statistics.forEach(statistic -> {
+							if (statistic.namePresent()) {
+								List<Value> values = statistic.values();
+								if (statistic.name().equalsIgnoreCase("data.current.rx.bps")) {
+									values.forEach(value -> {
+										castanetsNetworkVmVo.setDataCurrentRxBps(value.datum().divide(number, 1, 0));
+									});
+								}
+								if (statistic.name().equalsIgnoreCase("data.current.tx.bps")) {
+									values.forEach(value2 -> {
+										castanetsNetworkVmVo.setDataCurrentTxBps(value2.datum().divide(number, 1, 0));
+									});
+								}
+								if (statistic.name().equalsIgnoreCase("data.total.rx")) {
+									values.forEach(value3 -> {
+										castanetsNetworkVmVo.setDataTotalRx(value3.datum());
+									});
+								}
+								if (statistic.name().equalsIgnoreCase("data.total.tx")) {
+									values.forEach(value4 -> {
+										castanetsNetworkVmVo.setDataTotalTx(value4.datum());
+									});
+								}
+							}
+						});
+						networkVmVos.add(castanetsNetworkVmVo);
+					}
+				}
 			});
 		});
 		return networkVmVos;
@@ -247,11 +300,10 @@ public class ItInfoNetworkServiceImpl extends BaseService implements ItInfoNetwo
 			ItInfoNetworkClusterVo castanetsNetworkClusterVo = new ItInfoNetworkClusterVo();
 			if (cluster.idPresent())		castanetsNetworkClusterVo.setClusterId(cluster.id());
 			if (cluster.namePresent())		castanetsNetworkClusterVo.setClusterName(cluster.name());
-			if (castanetsNetworkClusterVo != null) {
-				castanetsNetworkClusterVo.setConnect(true);
-				castanetsNetworkClusterVo.setRequired(true);
-				clusterList.add(castanetsNetworkClusterVo);
-			}
+
+			castanetsNetworkClusterVo.setConnect(true);
+			castanetsNetworkClusterVo.setRequired(true);
+			clusterList.add(castanetsNetworkClusterVo);
 		});
 		castanetsNetworkCreateVo.setClusters(clusterList);
 		List<ItInfoNetworkQosVo> qosList = new ArrayList<>();
@@ -292,7 +344,7 @@ public class ItInfoNetworkServiceImpl extends BaseService implements ItInfoNetwo
 					.description(castanetsNetworkVo.getDescription())
 					.dataCenter(Builders.dataCenter().id(dataCenter.id()))
 					.vlan(
-							(castanetsNetworkVo.getVlan() != null && !"".equals(castanetsNetworkVo.getVlan()))
+							!castanetsNetworkVo.getVlan().isEmpty()
 									? Builders.vlan().id(Integer.parseInt(castanetsNetworkVo.getVlan()))
 									: null
 					)
@@ -301,7 +353,7 @@ public class ItInfoNetworkServiceImpl extends BaseService implements ItInfoNetwo
 									? NetworkUsage.VM
 									: NetworkUsage.DEFAULT_ROUTE
 					)
-					.mtu(!"".equals(castanetsNetworkVo.getMtu())
+					.mtu(!castanetsNetworkVo.getMtu().isEmpty()
 							? Integer.parseInt(castanetsNetworkVo.getMtu())
 							: 1500
 					)
@@ -323,7 +375,7 @@ public class ItInfoNetworkServiceImpl extends BaseService implements ItInfoNetwo
 				}
 			});
 
-			if (!"".equals(castanetsNetworkVo.getLabel())) {
+			if (!castanetsNetworkVo.getLabel().isEmpty()) {
 				NetworkLabel nl2add
 						= Builders.networkLabel().id(castanetsNetworkVo.getLabel()).build();
 				getSysSrvHelper().addNetworkLabelFromNetwork(connection, network.id(), nl2add);
@@ -347,11 +399,14 @@ public class ItInfoNetworkServiceImpl extends BaseService implements ItInfoNetwo
 		Connection connection = adminConnectionService.getConnection();
 		Gson gson = new Gson();
 		try {
-			getSysSrvHelper().findAllNetworks(connection).forEach(network ->
+			getSysSrvHelper().findAllNetworks(connection).forEach(network -> {
 				itinfoNetworkVos.forEach(itinfoNetworkVo -> {
-
-				})
-			);
+					if (network.id().equalsIgnoreCase(itinfoNetworkVo.getId())) {
+						if (network.status() != NetworkStatus.OPERATIONAL)
+							getSysSrvHelper().removeNetwork(connection, itinfoNetworkVo.getId());
+					}
+				});
+			});
 			MessageVo message
 					= MessageVo.createMessage(MessageType.NETWORK_REMOVE, true, itinfoNetworkVos.get(0).getName(), "");
 			websocketService.sendMessage("/topic/notify", gson.toJson(message));
@@ -384,17 +439,17 @@ public class ItInfoNetworkServiceImpl extends BaseService implements ItInfoNetwo
 					.description(castanetsNetworkVo.getDescription())
 					.dataCenter(Builders.dataCenter().id(dataCenter.id()))
 					.vlan(
-							(castanetsNetworkVo.getVlan() != null && !"".equals(castanetsNetworkVo.getVlan()))
+							(!castanetsNetworkVo.getVlan().isEmpty())
 									? Builders.vlan().id(Integer.parseInt(castanetsNetworkVo.getVlan()))
 									: null
 					)
 					.usages(
-							castanetsNetworkVo.getUsage().equalsIgnoreCase("true")
+							"true".equalsIgnoreCase(castanetsNetworkVo.getUsage())
 									? NetworkUsage.VM
 									: NetworkUsage.DEFAULT_ROUTE
 					)
 					.dnsResolverConfiguration(Builders.dnsResolverConfiguration().nameServers(nameServers))
-					.qos(!"".equals(castanetsNetworkVo.getQos())
+					.qos(!castanetsNetworkVo.getQos().isEmpty()
 							? Builders.qos().id(castanetsNetworkVo.getQos()).build()
 							: Builders.qos().build()
 					).build();
@@ -417,9 +472,33 @@ public class ItInfoNetworkServiceImpl extends BaseService implements ItInfoNetwo
 
 			clusterVos.forEach(clusterVo -> {
 				if (clusterVo.getConnect())
-					castanetsNetworkVo.getClusters().forEach(cluster -> {});
+					castanetsNetworkVo.getClusters().forEach(cluster -> {
+						if (cluster.getClusterId().equalsIgnoreCase(clusterVo.getClusterId())) {
+							if (!cluster.getConnect()) {
+								getSysSrvHelper().removeNetworkFromCluster(connection, clusterVo.getClusterId(), castanetsNetworkVo.getId());
+								return;
+							}
+
+							if (cluster.getRequired() && !clusterVo.getRequired()) {
+								getSysSrvHelper().updateNetworkFromCluster(connection, clusterVo.getClusterId(), Builders.network().id(castanetsNetworkVo.getId()).required(true).build());
+							} else if (clusterVo.getRequired()) {
+								getSysSrvHelper().updateNetworkFromCluster(connection, clusterVo.getClusterId(), Builders.network().id(castanetsNetworkVo.getId()).required(false).build());
+							}
+						}
+					});
 				else
-					castanetsNetworkVo.getClusters().forEach(cluster -> {});
+					castanetsNetworkVo.getClusters().forEach(cluster2 -> {
+						if (cluster2.getClusterId().equalsIgnoreCase(clusterVo.getClusterId())) {
+							if (cluster2.getConnect()) {
+								String clusterId
+										= getSysSrvHelper().addNetworkFromCluster(connection, clusterVo.getClusterId(), Builders.network().id(castanetsNetworkVo.getId()).required(true).build())
+										.id();
+								if (!cluster2.getRequired()) {
+									getSysSrvHelper().updateNetworkFromCluster(connection, clusterId, Builders.network().id(castanetsNetworkVo.getId()).required(false).build());
+								}
+							}
+						}
+					});
 			});
 			try { Thread.sleep(2000L); } catch (InterruptedException e2) { log.error(e2.getLocalizedMessage());}
 			MessageVo message

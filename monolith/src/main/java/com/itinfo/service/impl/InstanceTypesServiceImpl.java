@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@NoArgsConstructor
 public class InstanceTypesServiceImpl extends BaseService implements InstanceTypesService {
 	@Autowired private ConnectionService connectionService;
 	@Autowired private AdminConnectionService adminConnectionService;

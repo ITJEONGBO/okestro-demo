@@ -11,6 +11,7 @@ import com.itinfo.service.DisksService;
 import java.io.InputStream;
 import java.util.List;
 
+import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,65 +26,106 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @Slf4j
-public class DisksController {
+@Api(value = "DisksController", tags = {"disks"})
+public class DisksController extends BaseController {
 	@Autowired private DisksService disksService;
 	@Autowired private AdminConnectionService adminConnectionService;
 	@Autowired private WebsocketService websocketService;
 
-	@RequestMapping({"/storage/disks"})
+	@ApiOperation(httpMethod = "GET", value = "disksView", notes = "페이지 이동 > /storage/disks")
+	@ApiImplicitParams({})
+	@ApiResponses({@ApiResponse(code = 200, message = "OK")})
+	@RequestMapping(method = {RequestMethod.GET}, value = {"/storage/disks"})
 	public String disksView() {
 		log.info("... disksView");
 		return "/castanets/storage/disks";
 	}
-	@RequestMapping({"/storage/createDisk"})
+	@ApiOperation(httpMethod = "GET", value = "createDiskView", notes = "페이지 이동 > /storage/createDisk")
+	@ApiImplicitParams({})
+	@ApiResponses({@ApiResponse(code = 200, message = "OK")})
+	@RequestMapping(method = {RequestMethod.GET}, value = {"/storage/createDisk"})
 	public String createDiskView() {
 		log.info("... createDiskView");
 		return "/castanets/storage/createDisk";
 	}
 
-	@RequestMapping(value = {"/storage/disks/retrieveDisks"}, method = {RequestMethod.GET})
-	public String retrievedisks(Model model) {
-		log.info("... retrievedisks");
+	@ApiOperation(httpMethod = "GET", value = "retrieveDisks", notes = "디스크 목록 조회")
+	@ApiImplicitParams({})
+	@ApiResponses({@ApiResponse(code = 200, message = "OK")})
+	@RequestMapping(method = {RequestMethod.GET}, value = {"/storage/disks/retrieveDisks"})
+	public String retrieveDisks(Model model) {
+		log.info("... retrieveDisks");
 		List<DiskVo> disks = disksService.retrieveDisks();
 		model.addAttribute(ItInfoConstant.RESULT_KEY, disks);
 		return ItInfoConstant.JSON_VIEW;
 	}
 
-	@RequestMapping(value = {"/storage/disks/createDisk"}, method = {RequestMethod.POST})
-	public String createDisk(@RequestBody DiskCreateVo diskCreateVo, Model model) {
+	@ApiOperation(httpMethod = "GET", value = "createDisk", notes = "디스크 생성")
+	@ApiImplicitParams({})
+	@ApiResponses({@ApiResponse(code = 200, message = "OK")})
+	@RequestMapping(method = {RequestMethod.POST}, value = {"/storage/disks/createDisk"})
+	public String createDisk(@RequestBody DiskCreateVo diskCreateVo, 
+							 Model model) {
 		log.info("... createDisk");
 		disksService.createDisk(diskCreateVo);
-		try { Thread.sleep(500L); } catch (Exception e) { e.getLocalizedMessage(); }
+		doSleep();
+		model.addAttribute(ItInfoConstant.RESULT_KEY, "ok");
 		return ItInfoConstant.JSON_VIEW;
 	}
 
-	@RequestMapping(value = {"/storage/disks/createLunDisk"}, method = {RequestMethod.POST})
-	public String createLunDisk(@RequestBody DiskCreateVo diskCreateVo, Model model) {
+	@ApiOperation(httpMethod = "GET", value = "createLunDisk", notes = "LUN 디스크 생성")
+	@ApiImplicitParams({})
+	@ApiResponses({@ApiResponse(code = 200, message = "OK")})
+	@RequestMapping(method = {RequestMethod.POST}, value = {"/storage/disks/createLunDisk"})
+	public String createLunDisk(@RequestBody DiskCreateVo diskCreateVo,
+								Model model) {
 		log.info("... createLunDisk");
 		disksService.createLunDisk(diskCreateVo);
-		try { Thread.sleep(500L); } catch (Exception e) { e.getLocalizedMessage(); }
+		doSleep();
+		model.addAttribute(ItInfoConstant.RESULT_KEY, "ok");
 		return ItInfoConstant.JSON_VIEW;
 	}
 
-	@RequestMapping(value = {"/storage/disks/removeDisk"}, method = {RequestMethod.POST})
-	public String removeDisk(@RequestBody List<String> diskIds, Model model) {
+	@ApiOperation(httpMethod = "POST", value = "removeDisk", notes = "디스크 제거")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name="diskIds", value = "제거할 디스크 ID", required = true)
+	})
+	@ApiResponses({@ApiResponse(code = 200, message = "OK")})
+	@RequestMapping(method = {RequestMethod.POST}, value = {"/storage/disks/removeDisk"})
+	public String removeDisk(@RequestBody List<String> diskIds,
+							 Model model) {
 		log.info("... removeDisk[{}]", diskIds.size());
 		disksService.removeDisk(diskIds);
-		try { Thread.sleep(500L); } catch (Exception e) { e.getLocalizedMessage(); }
+		doSleep();
+		model.addAttribute(ItInfoConstant.RESULT_KEY, "ok");
 		return ItInfoConstant.JSON_VIEW;
 	}
 
-	@RequestMapping(value = {"/storage/disks/migrationDisk"}, method = {RequestMethod.POST})
-	public String migrationDisk(@RequestBody DiskMigrationVo diskMigrationVo, Model model) {
+	@ApiOperation(httpMethod = "POST", value = "migrationDisk", notes = "디스크 이관")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name="diskMigrationVo", value = "이관할 디스크", required = true)
+	})
+	@ApiResponses({@ApiResponse(code = 200, message = "OK")})
+	@RequestMapping(method = {RequestMethod.POST}, value = {"/storage/disks/migrationDisk"})
+	public String migrationDisk(@RequestBody DiskMigrationVo diskMigrationVo,
+								Model model) {
 		log.info("... migrationDisk");
 		disksService.migrationDisk(diskMigrationVo);
-		try { Thread.sleep(500L); } catch (Exception e) { e.getLocalizedMessage(); }
+		doSleep();
+		model.addAttribute(ItInfoConstant.RESULT_KEY, "ok");
 		return ItInfoConstant.JSON_VIEW;
 	}
 
+	@ApiOperation(httpMethod = "POST", value = "uploadDisk", notes = "디스크 이관")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name="file", value = "업로드 할 디스크 파일", required = true)
+	})
+	@ApiResponses({@ApiResponse(code = 200, message = "OK")})
 	@Async("karajanTaskExecutor")
-	@RequestMapping(value = {"/storage/disks/uploadDisk"}, method = {RequestMethod.POST})
-	public void uploadDisk(@RequestParam("file") MultipartFile diskFile, DiskCreateVo diskCreateVo) throws Exception {
+	@RequestMapping(method = {RequestMethod.POST}, value = {"/storage/disks/uploadDisk"})
+	public String uploadDisk(@RequestParam("file") MultipartFile diskFile,
+						   DiskCreateVo diskCreateVo,
+						   Model model) {
 		try {
 			byte[] bytes = diskFile.getBytes();
 			InputStream is = diskFile.getInputStream();
@@ -93,12 +135,19 @@ public class DisksController {
 			log.error(e.getLocalizedMessage());
 			e.fillInStackTrace();
 		}
-		try { Thread.sleep(500L); } catch (Exception e) { e.getLocalizedMessage(); }
+		doSleep();
+		model.addAttribute(ItInfoConstant.RESULT_KEY, "ok");
+		return ItInfoConstant.JSON_VIEW;
 	}
 
+	@ApiOperation(httpMethod = "GET", value = "retrieveDiskImage", notes = "디스크 이미지 정보 조회")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name="file", value = "업로드 할 디스크 파일", required = true)
+	})
+	@ApiResponses({@ApiResponse(code = 200, message = "OK")})
 	@Async("karajanTaskExecutor")
-	@RequestMapping(value = {"/storage/disks/retrieveDiskImage"}, method = {RequestMethod.POST})
-	public String retrieveDiskImage(@RequestParam("file") MultipartFile diskFile) throws Exception {
+	@RequestMapping(method = {RequestMethod.GET}, value = {"/storage/disks/retrieveDiskImage"})
+	public String retrieveDiskImage(@RequestParam("file") MultipartFile diskFile){
 		return ItInfoConstant.JSON_VIEW;
 	}
 }

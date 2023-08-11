@@ -5,7 +5,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.itinfo.ItInfoConstant;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.util.WebUtils;
 
@@ -15,7 +17,9 @@ public class UserConvenienceInterceptor extends HandlerInterceptorAdapter {
 	private Cookie userConvenienceCookie;
 
 	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+	public boolean preHandle(HttpServletRequest request,
+							 HttpServletResponse response,
+							 Object handler) {
 		String menuSize = request.getParameter(getParamName());
 		if (WebUtils.getCookie(request, "userConvenienceCookie") != null) {
 			this.userConvenienceCookie = WebUtils.getCookie(request, "userConvenienceCookie");

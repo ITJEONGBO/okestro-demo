@@ -56,6 +56,7 @@ dependencies {
     implementation(Dependencies.ovirt)
     implementation(Dependencies.spring)
     implementation(Dependencies.springSecurity)
+    implementation(Dependencies.swagger2)
     implementation(Dependencies.qemu)
     implementation(Dependencies.tiles)
     implementation(Dependencies.mybatis)
@@ -84,7 +85,6 @@ tasks.war {
     into("WEB-INF/classes") {
         from("../util/${defaultBuildClassPath}")
         from("../common/${defaultBuildClassPath}")
-
     }
     /*
     doFirst {
@@ -109,6 +109,16 @@ val explodedWar by tasks.register<Copy>("explodedWar") {
 
 val putModules = task("putModules") {
     doLast {
+        // Smart Tomcat 을 위해 구성
+        copy {
+            from("${project.rootDir}/util/${defaultBuildClassPath}")
+            into("$buildDir/classes/kotlin/main")
+        }
+        copy {
+            from("${project.rootDir}/common/${defaultBuildClassPath}")
+            into("$buildDir/classes/kotlin/main")
+        }
+        // 실제 exploded-war에 배치하도록 구성
         copy {
             from("${project.rootDir}/util/${defaultBuildClassPath}")
             into("$explodedWarPath/WEB-INF/classes")

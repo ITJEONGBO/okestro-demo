@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v0.0.6: 2023-08-1x][v0.0.6]
+
+프로젝트 안정화 6차
+
+### Added
+
+- Swagger2 적용
+- API 설명추가 (DashboardController, LoginController)
+
+### Modified
+
+- Docker 빌드 전 환경변수 주입
+- Smart Tomcat 구동 시 build 된 모듈 class 이동처리
+ 
+---
+
 ## [v0.0.5: 2023-08-10][v0.0.5]
 
 프로젝트 안정화 5차
@@ -72,6 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 프로젝트 초기구성완료
 
+[v0.0.6]: https://github.com/ITJEONGBO/okestro-demo/compare/v0.0.5...v0.0.6
 [v0.0.5]: https://github.com/ITJEONGBO/okestro-demo/compare/v0.0.4...v0.0.5
 [v0.0.4]: https://github.com/ITJEONGBO/okestro-demo/compare/v0.0.3...v0.0.4
 [v0.0.3]: https://github.com/ITJEONGBO/okestro-demo/compare/v0.0.2...v0.0.3

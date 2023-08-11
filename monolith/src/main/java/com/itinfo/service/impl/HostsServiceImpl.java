@@ -1224,7 +1224,7 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 		List<NicUsageApiVo> nicsUsageApiVo = new ArrayList<>();
 		try {
 			List<HostNic> hostNics
-					= getSysSrvHelper().findNicsFromHost(connection, host.id());
+					= getSysSrvHelper().findAllNicsFromHost(connection, host.id());
 			boolean[] slaveFlagList = new boolean[hostNics.size()];
 			for (HostNic hostNic : hostNics) {
 				NicUsageApiVo nicUsageApiVo
@@ -1458,7 +1458,7 @@ public class HostsServiceImpl extends BaseService implements HostsService {
 				= ModelsKt.toUsageVosWithHostUsage(hostUsageList);
 		hostDetailVo.setUsageVos(usageVos);
 		List<HostNic> hostNics
-				= getSysSrvHelper().findNicsFromHost(connection, host.id());
+				= getSysSrvHelper().findAllNicsFromHost(connection, host.id());
 		List<NicUsageVo> hostNicsLastUsage = new ArrayList<>();
 		for (HostNic hostNic : hostNics) {
 			NicUsageVo nicUsageVo = clustersDao.retrieveHostNicUsage(hostNic.id());

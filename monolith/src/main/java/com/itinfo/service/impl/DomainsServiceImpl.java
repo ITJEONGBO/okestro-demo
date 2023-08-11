@@ -30,20 +30,7 @@ import org.ovirt.engine.sdk4.services.DataCenterService;
 
 import org.ovirt.engine.sdk4.services.HostService;
 import org.ovirt.engine.sdk4.services.SystemService;
-import org.ovirt.engine.sdk4.types.DataCenter;
-import org.ovirt.engine.sdk4.types.DiskSnapshot;
-import org.ovirt.engine.sdk4.types.Event;
-import org.ovirt.engine.sdk4.types.File;
-import org.ovirt.engine.sdk4.types.Host;
-import org.ovirt.engine.sdk4.types.HostStorage;
-import org.ovirt.engine.sdk4.types.IscsiDetails;
-import org.ovirt.engine.sdk4.types.LogicalUnit;
-import org.ovirt.engine.sdk4.types.NfsVersion;
-import org.ovirt.engine.sdk4.types.StorageDomain;
-import org.ovirt.engine.sdk4.types.StorageDomainStatus;
-import org.ovirt.engine.sdk4.types.StorageDomainType;
-import org.ovirt.engine.sdk4.types.StorageType;
-import org.ovirt.engine.sdk4.types.Vm;
+import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -60,10 +47,8 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 	public List<StorageDomainVo> retrieveStorageDomains(String status, String domainType) {
 		log.info("... retrieveStorageDomains('{}', '{}')", status, domainType);
 		Connection connection = adminConnectionService.getConnection();
-		/*
 		String dataCenterId
 				= getSysSrvHelper().findAllDataCenters(connection).get(0).id();
-		*/
 		List<StorageDomain> storageDomains
 				= getSysSrvHelper().findAllStorageDomains(connection, "");
 
@@ -76,7 +61,7 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 
 		List<StorageDomainVo> StorageDomainVoList
 				= ModelsKt.toStorageDomainVos(storageDomains, connection);
-		/*
+
 		List<DiskProfile> diskProfiles
 				= getSysSrvHelper().findAllDiskProfiles(connection);
 		storageDomains.forEach(storageDomain -> {
@@ -100,15 +85,15 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 						storageDomainVo.setStatus(sd.status().value());
 					} catch (Exception e) {
 						log.error(e.getLocalizedMessage());
-						storageDomainVo.setStatus(null);
+						storageDomainVo.setStatus("");
 					}
 				} else {
 					storageDomainVo.setStatus(storageDomain.status().value());
 				}
 				if (storageDomain.type().name().equals(StorageDomainType.ISO.name())) {
-					List<ImageFileVo> imageFiles = new ArrayList<>();
+
 					List<File> files = getSysSrvHelper().findAllFilesFromStorageDomain(connection, storageDomain.id());
-					// files.forEach();
+					List<ImageFileVo> imageFiles = ModelsKt.toImageFileVos(files);
 					storageDomainVo.setImageFileList(imageFiles);
 				}
 
@@ -122,7 +107,6 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 				StorageDomainVoList.add(storageDomainVo);
 			}
 		});
-		*/
 		return StorageDomainVoList;
 	}
 
@@ -259,8 +243,8 @@ public class DomainsServiceImpl extends BaseService implements DomainsService {
 			diskSnapshotVo.setType(snapshot.contentType().toString());
 			for (VmVo vmVo : attaachedVmList) {
 				if (vmVo.getId().equals(snapshot.disk().id())) {
-					diskSnapshotVo.setAttachedTo(((VmVo) vmVo).getName());
-					diskSnapshotVo.setCdate(((VmVo) vmVo).getCdate());
+					diskSnapshotVo.setAttachedTo(( vmVo).getName());
+					diskSnapshotVo.setCdate(( vmVo).getCdate());
 				}
 			}
 			diskSnapshotVoList.add(diskSnapshotVo);

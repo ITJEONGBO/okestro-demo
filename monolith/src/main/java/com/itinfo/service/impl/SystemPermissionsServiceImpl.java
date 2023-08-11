@@ -48,10 +48,9 @@ public class SystemPermissionsServiceImpl extends BaseService implements SystemP
 		log.info("... addSystemPermissions[{}]", users.size());
 		Connection connection = connectionService.getConnection();
 		users.forEach(user -> {
-			if (!"".equals(user.getRoleId())) {
+			if (!user.getRoleId().isEmpty()) {
 				User user2Add = ModelsKt.user2Add(user);
 				Permission p2Add = ModelsKt.permission2Add(user);
-
 				getSysSrvHelper().addUser(connection, user2Add);
 				getSysSrvHelper().addPermission(connection, p2Add);
 			}

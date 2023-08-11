@@ -11,12 +11,9 @@ import org.ovirt.engine.sdk4.types.*
 class SystemServiceHelper {
 	companion object {
 		private val log by LoggerDelegate()
-		@Volatile
-		private var INSTANCE: SystemServiceHelper? = null
-		@JvmStatic
-		fun getInstance(): SystemServiceHelper = INSTANCE ?: synchronized(this) {
-			INSTANCE
-				?: build().also { INSTANCE = it }
+		@Volatile private var INSTANCE: SystemServiceHelper? = null
+		@JvmStatic fun getInstance(): SystemServiceHelper = INSTANCE ?: synchronized(this) {
+			INSTANCE ?: build().also { INSTANCE = it }
 		}
 
 		private fun build(): SystemServiceHelper = SystemServiceHelper()
@@ -69,24 +66,38 @@ class SystemServiceHelper {
 		log.error(e.localizedMessage)
 		listOf<Network>()
 	}
-
-	fun addNetworkFromCluster(c: Connection, clusterId: String, network: Network): Network? = try {
-		srvCluster(c, clusterId).networksService().add().network(network).send().network()
+	private fun srvNetworkFromCluster(c: Connection, clusterId: String, networkId: String): ClusterNetworkService
+		= srvClusterNetworks(c, clusterId).networkService(networkId)
+	fun findNetworkFromCluster(c: Connection, clusterId: String, networkId: String): Network? = try {
+		val n: Network? = srvNetworkFromCluster(c, clusterId, networkId).get().send().network()
+		log.info("network found ... id: ${n?.id()}")
+		n
 	} catch (e: Error) {
 		log.error(e.localizedMessage)
 		null
 	}
-
-	private fun srvClusterNetwork(c: Connection, clusterId: String, networkId: String): ClusterNetworkService =
-		srvClusterNetworks(c, clusterId).networkService(networkId)
+	fun addNetworkFromCluster(c: Connection, clusterId: String, network: Network): Network? = try {
+		val n: Network? = srvCluster(c, clusterId).networksService().add().network(network).send().network()
+		log.info("network created successfully ... id: ${n?.id()}")
+		n
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		null
+	}
 
 	fun updateNetworkFromCluster(c: Connection, clusterId: String, network: Network): Network? = try {
-		srvClusterNetwork(c, clusterId, network.id()).update().network(network).send().network()
+		srvNetworkFromCluster(c, clusterId, network.id()).update().network(network).send().network()
 	} catch (e: Error) {
 		log.error(e.localizedMessage)
 		null
 	}
-
+	fun removeNetworkFromCluster(c: Connection, clusterId: String, networkId: String): Boolean = try {
+		srvNetworkFromCluster(c, clusterId, networkId).remove().send()
+		false
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		true
+	}
 	private fun srvExternalNetworkProviders(c: Connection, clusterId: String): ClusterExternalProvidersService =
 		srvCluster(c, clusterId).externalNetworkProvidersService()
 
@@ -106,7 +117,9 @@ class SystemServiceHelper {
 
 	fun srvHost(c: Connection, hostId: String): HostService = srvHosts(c).hostService(hostId)
 	fun findHost(c: Connection, hostId: String): Host? = try {
-		srvHost(c, hostId).get().send().host()
+		val h: Host? = srvHost(c, hostId).get().send().host()
+		log.info("host found ... id: ${h?.id()}")
+		h
 	} catch (e: Error) {
 		log.error(e.localizedMessage)
 		null
@@ -120,10 +133,10 @@ class SystemServiceHelper {
 		false
 	}
 
-	private fun srvNicsFromHost(c: Connection, hostId: String): HostNicsService = srvHost(c, hostId).nicsService()
-	fun findNicsFromHost(c: Connection, hostId: String): List<HostNic> = srvNicsFromHost(c, hostId).list().send().nics()
+	private fun srvAllNicsFromHost(c: Connection, hostId: String): HostNicsService = srvHost(c, hostId).nicsService()
+	fun findAllNicsFromHost(c: Connection, hostId: String): List<HostNic> = srvAllNicsFromHost(c, hostId).list().send().nics()
 	private fun srvNicFromHost(c: Connection, hostId: String, hostNicId: String): HostNicService =
-		srvNicsFromHost(c, hostId).nicService(hostNicId)
+		srvAllNicsFromHost(c, hostId).nicService(hostNicId)
 
 	fun findNicFromHost(c: Connection, hostId: String, hostNicId: String): HostNic? = try {
 		srvNicFromHost(c, hostId, hostNicId).get().send().nic()
@@ -139,7 +152,7 @@ class SystemServiceHelper {
 		srvStatisticsFromHost(c, hostId).list().send().statistics()
 
 	fun findAllStatisticsFromHostNic(c: Connection, hostId: String, hostNicId: String): List<Statistic> =
-		srvNicsFromHost(c, hostId).nicService(hostNicId).statisticsService().list().send().statistics()
+		srvAllNicsFromHost(c, hostId).nicService(hostNicId).statisticsService().list().send().statistics()
 
 	private fun srvStoragesFromHost(c: Connection, hostId: String): HostStorageService =
 		srvHost(c, hostId).storageService()
@@ -185,6 +198,7 @@ class SystemServiceHelper {
 
 	fun findAllIscsiDetailsFromHost(c: Connection, hostId: String, iscsiDetails: IscsiDetails): List<IscsiDetails> =
 		srvAllIscsiDetailsFromHost(c, hostId).iscsi(iscsiDetails).send().discoveredTargets()
+
 	//endregion
 
 
@@ -364,6 +378,19 @@ class SystemServiceHelper {
 		= srvVm(c, vmId).statisticsService()
 	fun findAllStatisticsFromVm(c: Connection, vmId: String): List<Statistic>
 		= srvStatisticsFromVm(c, vmId).list().send().statistics()
+	private fun srvAllAssignedPermissionsFromVm(c: Connection, vmId: String): AssignedPermissionsService
+		= srvVm(c, vmId).permissionsService()
+	fun findAllAssignedPermissionsFromVm(c: Connection, vmId: String): List<Permission> = try {
+		srvAllAssignedPermissionsFromVm(c, vmId).list().send().permissions()
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		listOf<Permission>()
+	}
+	private fun srvStatisticsFromVmNic(c: Connection, vmId: String, nicId: String): StatisticsService
+		= srvVm(c, vmId).nicsService().nicService(nicId).statisticsService()
+	fun findAllStatisticsFromVmNic(c: Connection, vmId: String, nicId: String): List<Statistic>
+		= srvStatisticsFromVmNic(c, vmId, nicId).list().send().statistics()
+
 	//endregion
 
 	//region: VnicProfile
@@ -405,6 +432,13 @@ class SystemServiceHelper {
 	} catch (e: Error) {
 		log.error(e.localizedMessage)
 		null
+	}
+	fun removeNetwork(c: Connection, networkId: String): Boolean = try {
+		srvNetwork(c, networkId).remove().send()
+		true
+	} catch (e: Error) {
+		log.error(e.localizedMessage)
+		false
 	}
 	private fun srvNetworkLabelsFromNetwork(c: Connection, networkId: String): NetworkLabelsService
 		= srvNetwork(c, networkId).networkLabelsService()
