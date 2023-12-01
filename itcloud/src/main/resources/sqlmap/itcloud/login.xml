@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Login">
+
+    <!--com.itinfo.itcloud.login-->
+
+    <!-- TEST -->
+    <!--<select id="userCount" parameterType="String" resultType="Integer">
+        SELECT count(*)
+        FROM users
+    </select>
+
+
+    <select id="login" parameterType="com.itinfo.itcloud.login.LoginDTO" resultType="String">
+        select name
+        from users
+        where id=#{id} and password=#{password}
+    </select>
+
+    <select id="users" resultType="com.itinfo.itcloud.VO.UserVO">
+        SELECT *
+        FROM users
+    </select>-->
+
+
+</mapper>
+
+

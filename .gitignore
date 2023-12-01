@@ -7,8 +7,12 @@ build
 bin
 /captures
 .externalNativeBuild
+out
 .cxx
 docker/okestro/*.war
 docker/okestro/okestro-*
 docker/okestro/ROOT
+docker/itcloud/*.war
+docker/itcloud/itcloud-*
+docker/itcloud/ROOT
 *.tar

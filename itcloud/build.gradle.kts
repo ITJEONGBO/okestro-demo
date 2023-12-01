@@ -7,17 +7,17 @@ plugins {
     war
 }
 
-group = "com.itinfo"
-version = Versions.Project.OKESTRO
+group = "com.itinfo.itcloud"
+version = Versions.Project.ITCLOUD
 
 val profile: String = if (project.hasProperty("profile")) project.property("profile") as? String ?: "local" else "local"
-var artifactName: String = "okestro-monolith-${profile}"
+var artifactName: String = "itcloud-${profile}"
 println("profile  : $profile")
 
 val defaultBuildClassPath: String = "build/classes/kotlin/main"
 val explodedWarName: String = "exploded"
 val explodedWarPath: String = "$buildDir/libs/$explodedWarName"
-val explodedWarDockerPath: String = "${project.rootDir}/docker/okestro"
+val explodedWarDockerPath: String = "${project.rootDir}/docker/itcloud"
 println("explodedWarPath  : $explodedWarPath")
 
 tasks {
@@ -31,7 +31,7 @@ sourceSets {
         java.srcDirs(listOf("src/main/java", "src/main/kotlin"))
         resources.srcDirs(listOf("src/main/resources"))
         resources {
-            srcDirs("src/main/resources-local", "src/main/resources-$profile")
+            srcDirs("src/main/resources", "src/main/resources-$profile")
         }
     }
     test {

@@ -1,6 +1,7 @@
 object Versions {
     object Project {
         val OKESTRO = "0.0.5"
+        val ITCLOUD = "0.0.1"
     }
     const val java = "1.8"
     const val gradle = "7.4.2"
@@ -27,7 +28,7 @@ object Versions {
     const val bootstrap = "3.3.6"
 
     const val h2 = "1.4.197"
-    const val postgresql = "42.1.4"
+    const val postgresql = "42.6.0"
 
     const val commonsDbcp = "1.4"
     const val commonsConf = "1.9"
