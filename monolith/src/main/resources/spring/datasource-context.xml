@@ -7,7 +7,8 @@
 						http://www.springframework.org/schema/jdbc
 						http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd">
 
-	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	<bean id="propertyConfigurer"
+		  class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
 			<list>
 				<value>classpath:/properties/common.properties</value>
@@ -16,24 +17,28 @@
 		</property>
 	</bean>
 
-	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-		<property name="driverClassName" value="org.postgresql.Driver" />
-		<property name="url" value="jdbc:postgresql://192.168.0.180:5432/ovirt_engine_history" />
+	<bean id="dataSource"
+		  class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${postgres.driverClassName}" />
+		<property name="url" value="${postgres.jdbc.protocol}${postgres.jdbc.url}:${postgres.jdbc.port}/${postgres.dataSource.db}" />
 		<property name="username" value="${postgres.dataSource.jdbc.id}" />
 		<property name="password" value="${postgres.dataSource.jdbc.pw}" />
 	</bean>
 
-	<bean id="dataSourceEngine" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-		<property name="driverClassName" value="org.postgresql.Driver" />
-		<property name="url" value="jdbc:postgresql://192.168.0.180:5432/engine" />
+
+	<bean id="dataSourceEngine"
+		  class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${postgres.driverClassName}" />
+		<property name="url" value="${postgres.jdbc.protocol}${postgres.jdbc.url}:${postgres.jdbc.port}/${postgres.dataSourceEngine.db}" />
 		<property name="username" value="${postgres.dataSourceEngine.jdbc.id}" />
 		<property name="password" value="${postgres.dataSourceEngine.jdbc.pw}" />
 	</bean>
-	
+
 	<!-- h2db -->
-	<bean id="dataSourceSystem" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+	<bean id="dataSourceSystem"
+		  class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<property name="driverClassName" value="org.h2.Driver" />
-		<property name="url" value="jdbc:h2:file:~/.symphony/symphony;CIPHER=AES" />
+		<property name="url" value="jdbc:h2:file:~/.symphony/symphony;CIPHER=AES;AUTO_SERVER=TRUE" />
 		<property name="username" value="symphony" />
 		<property name="password" value="symphony!123 symphony!123" />
 	</bean>

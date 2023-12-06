@@ -144,7 +144,6 @@ val placeOutputToDocker = task("placeOutputToDocker") {
 explodedWar.finalizedBy(putModules)
 putModules.finalizedBy(placeOutputToDocker)
 
-
 task("openBrowser") {
     description = "open browser to the running application"
     doLast {

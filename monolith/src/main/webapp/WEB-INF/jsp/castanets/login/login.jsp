@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 
 <script type="text/javascript">
+    /*
 	if (document.location.protocol == 'http:') {
 	    if (window.location.hostname == 'demo.okestro.com') {
 			document.location.href = "https://"+window.location.hostname;
@@ -9,6 +10,7 @@
 			document.location.href = "https://"+window.location.hostname+":8443";
 		}
 	}
+	*/
 
 var loginBtnBoolean = true;
 
@@ -77,18 +79,18 @@ function runScript(e) {
     }
 }
 
-$(document).ready(function(){
-	
+$(document).ready(function() {
 	$("#loginBtn").click(function(){
 		login();
 	});
 
-	/*let url = window.location.protocol;
+	/*
+	let url = window.location.protocol;
 	if(url == "http:") {
 		console.log("http로 접속했습니다. ");
 		window.location.href = "https://"+window.location.hostname+":8443";
-
-	}*/
+	}
+	*/
 });
 
 //LoginCount 초기화 jh 20200630

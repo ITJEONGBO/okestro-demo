@@ -51,12 +51,11 @@ Run this script to create artifact
 
 ## 😺Tomcat 
 
-오케스트로는 https 프토토콜을 기본적으로 사용하기 때문에 톰캣 구성을 아래와 같이 해 준다.
-
+> 오케스트로는 https 프토토콜을 기본적으로 사용하기 때문에 톰캣 구성을 아래와 같이 해 준다.
+>
 > Intellij IDEA Community Edition을 사용할 경우 [Smart Tomcat 플러그인](https://github.com/zengkid/SmartTomcat) 을 활용하여 구성 
 
 - 톰켓 환경 구성: 📁`<catalina base path>`
-  - Environment Variables (환경변수) 설정: `-Dprofile=local`
   - SSL 포트: `8443`
   - p12 파일 구성: 📁`<catalina base path>/keystore/okestro.p12`) 비밀번호: `okestro2018`
   - context path: `/`

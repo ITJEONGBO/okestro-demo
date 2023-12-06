@@ -76,7 +76,6 @@
         	clientAuth="false" sslProtocol="TLS"
       		keystoreFile="/usr/local/tomcat/keystore/okestro.p12" keystorePass="okestro2018" />
 
-
     <!-- A "Connector" using the shared thread pool-->
     <!--
     <Connector executor="tomcatThreadPool"

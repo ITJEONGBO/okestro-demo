@@ -22,11 +22,11 @@
 	<!-- query for postgresql context -->
 	<import resource="classpath*:spring/query-postgresql-context.xml" />
 	
-	<!-- query for h2db context -->
-	<import resource="classpath*:spring/query-h2db-context.xml" />
-	
-	<!-- karajan context -->
-	<import resource="classpath*:spring/karajan-context.xml"/>
+	<!-- query for h2db context
+	<import resource="classpath*:spring/query-h2db-context.xml" /-->
+
+	<!-- karajan context
+	<import resource="classpath*:spring/karajan-context.xml"/-->
 	
 	<context:component-scan base-package="com.itinfo">
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />

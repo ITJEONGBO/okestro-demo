@@ -1,8 +1,12 @@
 package com.itinfo.model
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.itinfo.BasicConfiguration
 import com.itinfo.OvirtStatsName
 import com.itinfo.SystemServiceHelper
 import com.itinfo.dao.ClustersDao
+import com.itinfo.util.PropertiesHelper
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.ConnectionBuilder
 import org.ovirt.engine.sdk4.builders.*
@@ -15,6 +19,7 @@ import org.ovirt.engine.sdk4.types.*
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
+import java.io.Serializable
 import java.util.function.Consumer
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -22,6 +27,12 @@ import kotlin.math.roundToInt
 
 private val sysSrvH: SystemServiceHelper
 	get() = SystemServiceHelper.getInstance()
+private val gson: Gson
+	get() = GsonBuilder()
+		.setPrettyPrinting()
+		.disableHtmlEscaping()
+		.create()
+
 data class ItInfoNetworkClusterVo(
 	var clusterName: String = "",
 	var clusterVersion: String = "",
@@ -2309,24 +2320,47 @@ data class StorageVo(
 	var storageDomainStatus: Int = 0,
 )
 
+val basicConf: BasicConfiguration
+	get() = BasicConfiguration.getInstance()
 
-data class SystemPropertiesVo(
-   var id: String = "admin",
-   var password: String = "admin!123",
-   var ip: String = "localhost",
-   var vncIp: String = "localhost",
-   var vncPort: String = "9999",
-   var cpuThreshold: Int = 80,
-   var memoryThreshold: Int = 78,
-   var grafanaUri: String = "",
-   var deeplearningUri: String = "",
-   var symphonyPowerControll: Boolean = false,
-   var loginLimit: Int = 5,
-) {
+class SystemPropertiesVo(
+   var id: String = basicConf.systemAdminId,
+   var password: String = basicConf.systemAdminPw,
+   var ip: String = basicConf.ovirtIp,
+   var vncIp: String = basicConf.ovirtVncIp,
+   var vncPort: String = "${basicConf.ovirtVncPort}",
+   var cpuThreshold: Int = basicConf.ovirtThresholdCpu,
+   var memoryThreshold: Int = basicConf.ovirtThresholdMemory,
+   var grafanaUri: String = basicConf.ovirtGrafanaUri,
+   var deeplearningUri: String = basicConf.deeplearningUri,
+   var symphonyPowerControll: Boolean = basicConf.symphonyPowerControl,
+   var loginLimit: Int = basicConf.loginLimit,
+): Serializable {
 	val ovirtEngineApiUrl: String
 		get() = "https://${ip}/ovirt-engine/api"
 	val ovirtUserId: String
 		get() = "${id}@internal"
+
+	override fun toString(): String
+		= gson.toJson(this)
+
+	class Builder {
+		private var bId: String = "";fun id(block: () -> String?) { bId = block() ?: basicConf.systemAdminId }
+		private var bPassword: String = "";fun password(block: () -> String?) { bPassword = block() ?: basicConf.systemAdminPw }
+		private var bIp: String = "";fun ip(block: () -> String?) { bIp = block() ?: basicConf.ovirtIp }
+		private var bVncIp: String = "";fun vncIp(block: () -> String?) { bVncIp = block() ?: basicConf.ovirtVncIp }
+		private var bVncPort: String = "";fun vncPort(block: () -> String?) { bVncPort = block() ?: "${basicConf.ovirtVncPort}" }
+		private var bCpuThreshold: Int = -1;fun cpuThreshold(block: () -> Int?) { bCpuThreshold = block() ?: basicConf.ovirtThresholdCpu }
+		private var bMemoryThreshold: Int = -1;fun memoryThreshold(block: () -> Int?) { bMemoryThreshold = block() ?: basicConf.ovirtThresholdMemory }
+		private var bGrafanaUri: String = "";fun grafanaUri(block: () -> String?) { bGrafanaUri = block() ?: basicConf.ovirtGrafanaUri }
+		private var bDeeplearningUri: String = "";fun deeplearningUri(block: () -> String?) { bDeeplearningUri = block() ?: basicConf.deeplearningUri }
+		private var bSymphonyPowerControll: Boolean = false;fun symphonyPowerControll(block: () -> Boolean?) { bSymphonyPowerControll = block() ?: basicConf.symphonyPowerControl }
+		private var bLoginLimit: Int = 5;fun loginLimit(block: () -> Int?) { bLoginLimit = block() ?: basicConf.loginLimit }
+		fun build(): SystemPropertiesVo = SystemPropertiesVo(bId, bPassword, bIp, bVncIp, bVncPort, bCpuThreshold, bMemoryThreshold, bGrafanaUri, bDeeplearningUri, bSymphonyPowerControll, bLoginLimit)
+	}
+	companion object {
+		@JvmStatic inline fun systemPropertiesVo(block: Builder.() -> Unit): SystemPropertiesVo = Builder().apply(block).build()
+	}
 }
 
 fun SystemPropertiesVo.toConnection(): Connection = ConnectionBuilder.connection()

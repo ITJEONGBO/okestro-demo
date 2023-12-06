@@ -1,5 +1,6 @@
 package com.itinfo.service.impl;
 
+import com.itinfo.BasicConfiguration;
 import com.itinfo.service.SystemPropertiesService;
 import com.itinfo.dao.SystemPropertiesDao;
 import com.itinfo.model.SystemPropertiesVo;
@@ -23,8 +24,9 @@ public class SystemPropertiesServiceImpl extends BaseService implements SystemPr
 
 	@Override
 	public SystemPropertiesVo retrieveSystemProperties() {
-		log.info("... retrieveSystemProperties");
-		return systemPropertiesDao.retrieveSystemProperties();
+		SystemPropertiesVo vo = BasicConfiguration.getInstance().getSystemProperties();
+		log.info("... retrieveSystemProperties ... result: {}", vo.toString());
+		return BasicConfiguration.getInstance().getSystemProperties();
 	}
 
 	@Override
