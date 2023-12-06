@@ -31,7 +31,7 @@ sourceSets {
         java.srcDirs(listOf("src/main/java", "src/main/kotlin"))
         resources.srcDirs(listOf("src/main/resources"))
         resources {
-            srcDirs("src/main/resources-local", "src/main/resources-$profile")
+            srcDirs("src/main/resources", "src/main/resources-$profile")
         }
     }
     test {
