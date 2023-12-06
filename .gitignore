@@ -16,3 +16,4 @@ docker/itcloud/*.war
 docker/itcloud/itcloud-*
 docker/itcloud/ROOT
 *.tar
+README.html

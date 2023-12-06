@@ -51,8 +51,6 @@ Run this script to create artifact
 
 ## 😺Tomcat 
 
-> 오케스트로는 https 프토토콜을 기본적으로 사용하기 때문에 톰캣 구성을 아래와 같이 해 준다.
->
 > Intellij IDEA Community Edition을 사용할 경우 [Smart Tomcat 플러그인](https://github.com/zengkid/SmartTomcat) 을 활용하여 구성 
 
 - 톰켓 환경 구성: 📁`<catalina base path>`
@@ -61,7 +59,21 @@ Run this script to create artifact
   - context path: `/`
   - 📁`<catalina base path>/conf/server.xml` 수정
 
-#### 📁`conf/server.xml`
+### Intellij Ultimate에서 설정
+
+| no. | step | image |
+| :---: | :--- | :---: |
+| 1 | 톰캣 설정 생성 | ![intellij-ue-tomcat00a](imgs/intellij-ue-tomcat00a.png) |
+| 2 | 톰캣 설정 구성 | ![intellij-ue-tomcat01a](imgs/intellij-ue-tomcat01a.png) |
+| 3 | 배포 대상 아티팩트 설정 | ![intellij-ue-tomcat02a](imgs/intellij-ue-tomcat02a.png)<br/>context path 를 꼭 `/`으로 설정 |
+| 4 | 배포 아티팩트 구성 | ![intellij-ue-tomcat03a](imgs/intellij-ue-tomcat03a.png)<br/><ul><li>`/WEB-INF/classes`밑에 두개 모듈(`common`, `util`) 추가</li><li>Output Directory 수정 필요할 경우 진행 (Optional)</li></ul> |
+
+> [이슈 #1][issue1] 확인 내용
+> 
+> macOS에서 진행 했을 때 📁`monolith/build/libs/exploded/okestro-*.war/`경로가 생김
+> Windows에서는 📁`monolith/build/libs/exploded/` 까지만 생기고 `okestro-*.war` 파일이 생김
+
+### 📁`conf/server.xml`
      
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -270,3 +282,5 @@ docker run -d -it ^
 [shield-kotlin]: https://img.shields.io/badge/Kotlin-1.4.31-0095D5?logo=kotlin&logoColor=0095D5&style=flat-square
 [shield-gradle]: https://img.shields.io/badge/Gradle-7.4.2-abd759?logo=gradle&logoColor=abd759&style=flat-square
 [shield-tomcat]: https://img.shields.io/badge/Tomcat-8.5.38-F8DC75?logo=apachetomcat&logoColor=F8DC75&style=flat-square
+
+[issue1]: https://github.com/ITJEONGBO/okestro-demo/issues/1
