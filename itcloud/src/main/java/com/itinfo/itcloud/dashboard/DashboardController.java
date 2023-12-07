@@ -2,15 +2,16 @@ package com.itinfo.itcloud.dashboard;
 
 import com.itinfo.itcloud.VO.DashBoardVO;
 import com.itinfo.itcloud.ovirt.ConnectionService;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
 @Controller("DashboardController")
 public class DashboardController {
+    private static Logger logger = Logger.getLogger(DashboardController.class);
 
     @Autowired
     private ConnectionService ovirtConnection;
@@ -30,9 +31,11 @@ public class DashboardController {
         return "dashboard";
     }
 
-    @GetMapping("/databoardStatus")
+    @GetMapping("/dashboardStatus")
     @ResponseBody
     public DashBoardVO compute(){
+        logger.info("--- databaord");
+
         DashBoardVO dashboardStatus = null;
 
         long start = System.currentTimeMillis();
@@ -45,7 +48,6 @@ public class DashboardController {
 
         long end = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
         System.out.println("수행시간(ms): " + (end-start));
-
         return dashboardStatus;
     }
 
