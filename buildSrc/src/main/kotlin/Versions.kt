@@ -5,7 +5,8 @@ object Versions {
     }
     const val java = "1.8"
     const val gradle = "7.4.2"
-    const val kotlin = "1.4.31"
+    const val kotlin = "1.5.31"
+    const val kotlinDsl = "2.1.7"
 
     const val tomcatPlugin = "2.5"
     const val tomcatEmbedded = "8.5.2"
