@@ -2,7 +2,7 @@ package com.itinfo.itcloud.dashboard;
 
 import com.itinfo.itcloud.VO.DashBoardVO;
 import com.itinfo.itcloud.ovirt.ConnectionService;
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller("DashboardController")
+@Slf4j
 public class DashboardController {
-    private static Logger logger = Logger.getLogger(DashboardController.class);
 
     @Autowired
     private ConnectionService ovirtConnection;
@@ -34,7 +34,7 @@ public class DashboardController {
     @GetMapping("/dashboardStatus")
     @ResponseBody
     public DashBoardVO compute(){
-        logger.info("--- databaord");
+        log.info("--- databaord");
 
         DashBoardVO dashboardStatus = null;
 
