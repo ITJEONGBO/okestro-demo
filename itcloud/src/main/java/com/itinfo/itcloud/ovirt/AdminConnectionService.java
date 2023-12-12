@@ -1,7 +1,7 @@
 package com.itinfo.itcloud.ovirt;
 
-import com.itinfo.itcloud.VO.SystemPropertiesVO;
-import com.itinfo.itcloud.admin.property.SystemPropertiesService;
+import com.itinfo.itcloud.model.SystemPropertiesVO;
+import com.itinfo.itcloud.service.SystemPropertiesService;
 import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.ConnectionBuilder;
 import org.springframework.beans.factory.annotation.Autowired;

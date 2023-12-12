@@ -14,13 +14,13 @@
     </select>
 
 
-    <select id="login" parameterType="com.itinfo.itcloud.login.LoginDTO" resultType="String">
+    <select id="login" parameterType="com.itinfo.itcloud.model.LoginDTO" resultType="String">
         select name
         from users
         where id=#{id} and password=#{password}
     </select>
 
-    <select id="users" resultType="com.itinfo.itcloud.VO.UserVO">
+    <select id="users" resultType="com.itinfo.itcloud.model.UserVO">
         SELECT *
         FROM users
     </select>-->

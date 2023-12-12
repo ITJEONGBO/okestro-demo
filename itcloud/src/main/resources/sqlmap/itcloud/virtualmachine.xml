@@ -5,7 +5,7 @@
 
 <mapper namespace="Virtualmachine">
 
-    <!--<select id="retrieveVmUsage" parameterType="String" resultType="com.itinfo.itcloud.VO.VmUsageVO">
+    <!--<select id="retrieveVmUsage" parameterType="String" resultType="com.itinfo.itcloud.model.VmUsageVO">
         SELECT
             EXTRACT(EPOCH FROM HISTORY_DATETIME AT TIME ZONE 'ASIA/SEOUL') * 1000 AS HISTORY_DATETIME,
             CPU_USAGE_PERCENT,
@@ -16,7 +16,7 @@
             LIMIT 360
     </select>
 
-    <select id="retrieveVmUsageOne" parameterType="String" resultType="com.itinfo.itcloud.VO.VmUsageVO">
+    <select id="retrieveVmUsageOne" parameterType="String" resultType="com.itinfo.itcloud.model.VmUsageVO">
         SELECT
             EXTRACT(EPOCH FROM HISTORY_DATETIME AT TIME ZONE 'ASIA/SEOUL') * 1000 AS HISTORY_DATETIME,
             CPU_USAGE_PERCENT,
@@ -27,7 +27,7 @@
             LIMIT 1
     </select>
 
-    <select id="retrieveVmNetworkUsage" parameterType="String" resultType="com.itinfo.itcloud.VO.VmNetworkUsageVO">
+    <select id="retrieveVmNetworkUsage" parameterType="String" resultType="com.itinfo.itcloud.model.VmNetworkUsageVO">
         SELECT
             EXTRACT(EPOCH FROM HISTORY_DATETIME AT TIME ZONE 'ASIA/SEOUL') * 1000 AS HISTORY_DATETIME,
             AVG(RECEIVE_RATE_PERCENT) AS RECEIVE_RATE_PERCENT,
@@ -42,7 +42,7 @@
             LIMIT 360
     </select>
 
-    <select id="retrieveVmNetworkUsageOne" parameterType="String" resultType="com.itinfo.itcloud.VO.VmNetworkUsageVO">
+    <select id="retrieveVmNetworkUsageOne" parameterType="String" resultType="com.itinfo.itcloud.model.VmNetworkUsageVO">
         SELECT
             EXTRACT(EPOCH FROM HISTORY_DATETIME AT TIME ZONE 'ASIA/SEOUL') * 1000 AS HISTORY_DATETIME,
             AVG(RECEIVE_RATE_PERCENT) AS RECEIVE_RATE_PERCENT,

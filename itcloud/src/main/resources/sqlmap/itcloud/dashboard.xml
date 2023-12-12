@@ -6,7 +6,7 @@
 <!--com.itinfo.itcloud.dashboard-->
 <mapper namespace="Dashboard">
 
-    <!--<select id="retrieveHosts" parameterType="java.util.List" resultType="com.itinfo.itcloud.VO.computing.HostVO">
+    <!--<select id="retrieveHosts" parameterType="java.util.List" resultType="com.itinfo.itcloud.model.computing.HostVO">
         /*
             EXTRACT 추출
             ( 해당 값에서 원하는 시간이나 분 을 추출 가능. 하지만 75분 같은 전체 값을 분 단위나 시간 단위의 형태로 변환 불가능 )

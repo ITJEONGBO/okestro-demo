@@ -5,7 +5,7 @@
 
 <mapper namespace="Properties">
 
-    <select id="searchSystemProperties" resultType="com.itinfo.itcloud.VO.SystemPropertiesVO">
+    <select id="searchSystemProperties" resultType="com.itinfo.itcloud.model.SystemPropertiesVO">
         SELECT
             MAX(CASE WHEN PROPERTY = 'id' THEN PROPERTY_VALUE ELSE '' END) AS ID,
             MAX(CASE WHEN PROPERTY = 'password' THEN PROPERTY_VALUE ELSE '' END) AS PASSWORD,
@@ -20,7 +20,7 @@
     </select>
 
 
-    <update id="updateSystemProperties" parameterType="com.itinfo.itcloud.VO.SystemPropertiesVO">
+    <update id="updateSystemProperties" parameterType="com.itinfo.itcloud.model.SystemPropertiesVO">
         UPDATE PROPERTIES
         SET PROPERTY_VALUE = CASE
              WHEN PROPERTY = 'id'							THEN #{id}
