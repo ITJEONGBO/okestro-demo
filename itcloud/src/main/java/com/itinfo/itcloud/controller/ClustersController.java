@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.controller;
 
-import com.itinfo.itcloud.service.ClustersService;
+import com.itinfo.itcloud.service.ItClusterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
 public class ClustersController {
 
     @Autowired
-    private ClustersService clustersService;
+    private ItClusterService itClusterService;
 
     public ClustersController(){}
 

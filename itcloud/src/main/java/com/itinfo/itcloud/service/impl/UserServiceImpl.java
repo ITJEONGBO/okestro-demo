@@ -1,13 +1,13 @@
 package com.itinfo.itcloud.service.impl;
 
 import com.itinfo.itcloud.dao.UserDAO;
-import com.itinfo.itcloud.service.UserService;
+import com.itinfo.itcloud.service.ItUserService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements ItUserService {
 
     @Inject
     UserDAO userDAO;

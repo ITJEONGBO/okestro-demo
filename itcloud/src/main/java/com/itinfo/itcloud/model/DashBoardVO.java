@@ -13,6 +13,9 @@ public class DashBoardVO {
     private String description;*/
 
     private int datacenterCnt;
+    private int datacenterActive;
+    private int datacenterInactive;
+
     private int clusterCnt;
 
     private int hostCnt;

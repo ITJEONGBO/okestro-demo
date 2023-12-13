@@ -1,7 +1,7 @@
 package com.itinfo.itcloud.ovirt;
 
 import com.itinfo.itcloud.model.SystemPropertiesVO;
-import com.itinfo.itcloud.service.SystemPropertiesService;
+import com.itinfo.itcloud.service.ItSystemPropertyService;
 import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.ConnectionBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 public class AdminConnectionService {
 
     @Autowired
-    private SystemPropertiesService systemPropertiesService;
+    private ItSystemPropertyService itSystemPropertyService;
 
     public AdminConnectionService(){}
 
     public Connection getConnection(){
         Connection connection = null;
-        SystemPropertiesVO systemPropertiesVO = this.systemPropertiesService.searchSystemProperties();
+        SystemPropertiesVO systemPropertiesVO = this.itSystemPropertyService.searchSystemProperties();
 
         try {
             String url = "https://" + systemPropertiesVO.getIp() + "/ovirt-engine/api";

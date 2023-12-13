@@ -1,7 +1,7 @@
 package com.itinfo.itcloud.controller;
 
-import com.itinfo.itcloud.service.SystemPropertiesService;
-import com.itinfo.itcloud.service.UserService;
+import com.itinfo.itcloud.service.ItSystemPropertyService;
+import com.itinfo.itcloud.service.ItUserService;
 import com.itinfo.itcloud.ovirt.ConnectionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +16,10 @@ public class LoginController {
     private ConnectionService ovirtConnection;
 
     @Autowired
-    private SystemPropertiesService systemPropertiesService;
+    private ItSystemPropertyService itSystemPropertyService;
 
     @Autowired
-    private UserService userService;
+    private ItUserService itUserService;
 
 
     public LoginController(){}

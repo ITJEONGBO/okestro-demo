@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.controller;
 
-import com.itinfo.itcloud.service.HostdService;
+import com.itinfo.itcloud.service.ItHostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
 public class HostController {
 
     @Autowired
-    private HostdService hostdService;
+    private ItHostService itHostService;
 
     public HostController(){}
 

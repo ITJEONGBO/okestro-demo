@@ -1,194 +1,197 @@
 package com.itinfo.itcloud.service.impl;
 
-import com.itinfo.itcloud.dao.DashboardDAO;
 import com.itinfo.itcloud.model.DashBoardVO;
 import com.itinfo.itcloud.ovirt.ConnectionService;
-import com.itinfo.itcloud.service.ClustersService;
-import com.itinfo.itcloud.service.DashboardService;
+import com.itinfo.itcloud.service.ItDashboardService;
+import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Iterator;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-public class DashboardServiceImpl implements DashboardService {
+@Slf4j
+public class DashboardServiceImpl implements ItDashboardService {
 
     @Autowired
     private ConnectionService ovirtConnection;
 
-    @Autowired
-    private DashboardDAO dashboardDAO;
-
     private DashBoardVO dashBoardVO;
 
-//    private List<UsageVO> usageVOList;
 
     public DashboardServiceImpl() {
     }
 
 
+    // Dashbord 값
     @Override
-    public DashBoardVO showDashboard(){
+    public DashBoardVO showDashboard() {
         Connection connection = this.ovirtConnection.getConnection();
         SystemService systemService = connection.systemService();
 
-        // 선언 후 사용
-        /*DataCentersService dataCentersService = systemService.dataCentersService();
-        ClustersService clustersService = systemService.clustersService();
-        HostsService hostsService = systemService.hostsService();
-        VmsService vmsService = systemService.vmsService();
-
-        List<DataCenter> dataCenterList = ((DataCentersService.ListResponse)dataCentersService.list().send()).dataCenters();
-        List<Cluster> clusterList = ((ClustersService.ListResponse)clustersService.list().send()).clusters();
-        List<Host> hostList = ((HostsService.ListResponse)hostsService.list().send()).hosts();
-        List<Vm> vmList = ((VmsService.ListResponse)vmsService.list().send()).vms();*/
-
-        // 선언하지 않고 사용, 시간차이 없음
-        /*List<DataCenter> dataCenterList = ((DataCentersService.ListResponse)systemService.dataCentersService().list().send()).dataCenters();
-        List<Cluster> clusterList = ((ClustersService.ListResponse)systemService.clustersService().list().send()).clusters();
-        List<Host> hostList = ((HostsService.ListResponse)systemService.hostsService().list().send()).hosts();
-        List<Vm> vmList = ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
-
-        this.dashBoardVO = new DashBoardVO();
-        dashBoardVO.setDatacenterCnt(dataCenterList.size());
-        dashBoardVO.setClusterCnt(clusterList.size());
-        dashBoardVO.setHostCnt(hostList.size());
-        dashBoardVO.setVmCnt(vmList.size());*/
-
-        this.dashBoardVO = new DashBoardVO();
+        dashBoardVO = new DashBoardVO();
         getDatacenterCnt(systemService);
         getClusterCnt(systemService);
         getHostCnt(systemService);
         getVmCnt(systemService);
-//        getHosts(systemService);
+        getTotalCpu(systemService);
+        getTotalMemory(systemService);
+        getTotalStorage(systemService);
 
+        log.info("------showDashboard");
         return dashBoardVO;
-    } // showDashboard
-
-
-    private void getDatacenterCnt(SystemService systemService){
-        List<DataCenter> dataCenterList = ((DataCentersService.ListResponse)systemService.dataCentersService().list().send()).dataCenters();
-        this.dashBoardVO.setDatacenterCnt(dataCenterList.size());
     }
 
+
+    // 데이터센터 수
+    private void getDatacenterCnt(SystemService systemService) {
+        List<DataCenter> dataCenterList =
+                ((DataCentersService.ListResponse) systemService.dataCentersService().list().send()).dataCenters();
+        dashBoardVO.setDatacenterCnt(dataCenterList.size());
+
+        // DataCenter status=up 개수
+        int datacenterCnt = (int) dataCenterList.stream()
+                .filter(dataCenter -> dataCenter.status().value().equals("up"))
+                .count();
+        dashBoardVO.setDatacenterActive(datacenterCnt);
+        dashBoardVO.setDatacenterInactive(dataCenterList.size() - datacenterCnt);
+    }
+
+    // 클러스터 수
     private void getClusterCnt(SystemService systemService) {
-        List<Cluster> clusterList = ((ClustersService.ListResponse)systemService.clustersService().list().send()).clusters();
-        this.dashBoardVO.setClusterCnt(clusterList.size());
+        List<Cluster> clusterList =
+                ((ClustersService.ListResponse) systemService.clustersService().list().send()).clusters();
+
+        dashBoardVO.setClusterCnt(clusterList.size());
     }
 
-    // 오케스트로
-   /* private void getHosts(SystemService systemService) {
-        List<Host> hosts = ((HostsService.ListResponse)systemService.hostsService().list().search("status!=up").caseSensitive(false).send()).hosts();
-        this.dashBoardVO.setVmInactive(hosts.size());
-        hosts = ((HostsService.ListResponse)systemService.hostsService().list().search("status=up").caseSensitive(false).send()).hosts();
-        this.dashBoardVO.setHostActive(hosts.size());
 
-        int sumTotalCpu = 0;
-        Iterator var8 = hosts.iterator();
+    // 호스트 수
+    private void getHostCnt(SystemService systemService) {
+        List<Host> hostList =
+                ((HostsService.ListResponse) systemService.hostsService().list().send()).hosts();
+        dashBoardVO.setHostCnt(hostList.size());
 
-        while(var8.hasNext()) {
-            Host host = (Host)var8.next();
-            StatisticsService statisticsService = systemService.hostsService().hostService(host.id()).statisticsService();
+        // Host status=up 개수
+        int hostUpCnt = (int) hostList.stream()
+                .filter(host -> host.status().value().equals("up"))
+                .count();
 
-            sumTotalCpu += host.cpu().topology().cores().intValue() * host.cpu().topology().sockets().intValue() * host.cpu().topology().threads().intValue();
-
-            List<Vm> vms = ((VmsService.ListResponse)systemService.vmsService().list().search("host = " + host.name()).caseSensitive(false).send()).vms();
-            int sumCpu = 0;
-
-            System.out.println("host.name(): " + host.name());
-
-            Vm vm;
-            for(Iterator var14 = vms.iterator();
-                    var14.hasNext();
-                    sumCpu += vm.cpu().topology().cores().intValue() * vm.cpu().topology().sockets().intValue() * vm.cpu().topology().threads().intValue()) {
-                System.out.println("시작 sumCpu: " + sumCpu);
-                vm = (Vm)var14.next();
-                System.out.println("넘어간 vm.name(): " + vm.name() + ", sumCpu: " + sumCpu);
-            }
-
-            this.dashBoardVO.setCpuUsed(sumCpu);
-            System.out.println("총 sumCpu: " + sumCpu);
-        }
-
-        System.out.println("dashBoardVO.getCpuUsed(): "+dashBoardVO.getCpuUsed());
-
-        this.dashBoardVO.setCpuTotal(sumTotalCpu);
-    }*/
+        dashBoardVO.setHostActive(hostUpCnt);
+        dashBoardVO.setHostInactive(dashBoardVO.getHostCnt() - hostUpCnt);
+    }
 
 
+    // 가상머신 수
+    private void getVmCnt(SystemService systemService) {
+        List<Vm> vmList = ((VmsService.ListResponse) systemService.vmsService().list().send()).vms();
+        dashBoardVO.setVmCnt(vmList.size());
 
-    private void getHostCnt(SystemService systemService){
-        List<Host> hostList = ((HostsService.ListResponse)systemService.hostsService().list().send()).hosts();
-        this.dashBoardVO.setHostCnt(hostList.size());
+        // Host status=up 개수
+        int vmUpCnt = (int) vmList.stream()
+                .filter(vm -> vm.status().value().equals("up"))
+                .count();
 
-        hostList = ((HostsService.ListResponse)systemService.hostsService().list().search("status=up").send()).hosts();
-        this.dashBoardVO.setHostActive(hostList.size());
-        this.dashBoardVO.setHostInactive(dashBoardVO.getHostCnt() - dashBoardVO.getHostActive());
+        dashBoardVO.setVmActive(vmUpCnt);
+        dashBoardVO.setVmInactive(vmList.size() - vmUpCnt);
+    }
 
+
+    // 전체사용량
+    // cpu
+    public void getTotalCpu(SystemService systemService) {
         int cpuTotal = 0;
         int cpuCommit = 0;
         int cpuAssigned = 0;
 
-        Iterator<Host> hostIterator = hostList.iterator();
+        List<Host> hostList =
+                ((HostsService.ListResponse) systemService.hostsService().list().send()).hosts();
 
-        while (hostIterator.hasNext()) {
-            Host host = (Host) hostIterator.next();
-            List<Statistic> statisticList = ((StatisticsService.ListResponse) systemService.hostsService().hostService(host.id()).statisticsService().list().send()).statistics();
+        List<Vm> vmList =
+                ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
+
+        // 호스트에 있는 cpu
+        for (Host host : hostList) {
+            // cpu
+            cpuTotal += host.cpu().topology().cores().intValue()
+                        * host.cpu().topology().sockets().intValue()
+                        * host.cpu().topology().threads().intValue();
+        }
+
+        // 가상머신에 할당된 cpu
+        for(Vm vm : vmList){
+            cpuAssigned += vm.cpu().topology().cores().intValue()
+                    * vm.cpu().topology().sockets().intValue()
+                    * vm.cpu().topology().threads().intValue();
+
+        }
+
+        dashBoardVO.setCpuTotal(cpuTotal);
+        dashBoardVO.setCpuAssigned(cpuAssigned);
+    }
+
+
+    // memory
+    public void getTotalMemory(SystemService systemService) {
+        List<Host> hostList =
+                ((HostsService.ListResponse) systemService.hostsService().list().send()).hosts();
+
+        // host id
+        for (Host host : hostList) {
+            List<Statistic> statisticList =
+                    ((StatisticsService.ListResponse) systemService.hostsService().hostService(host.id()).statisticsService().list().send()).statistics();
 
             // memory
-            Iterator<Statistic> statisticIterator = statisticList.iterator();
-            while (statisticIterator.hasNext()) {
-                Statistic statistic = (Statistic) statisticIterator.next();
-
-                // memory
+            for (Statistic statistic : statisticList) {
                 if (statistic.name().equals("memory.total")) {
-                    this.dashBoardVO.setMemoryTotal(dashBoardVO.getMemoryTotal() == null ? statistic.values().get(0).datum() : dashBoardVO.getMemoryTotal().add(statistic.values().get(0).datum()));
+                    dashBoardVO.setMemoryTotal(dashBoardVO.getMemoryTotal() == null ?
+                            statistic.values().get(0).datum() : dashBoardVO.getMemoryTotal().add(statistic.values().get(0).datum()));
                 }
                 if (statistic.name().equals("memory.used")) {
-                    this.dashBoardVO.setMemoryUsed(dashBoardVO.getMemoryUsed() == null ? statistic.values().get(0).datum() : dashBoardVO.getMemoryUsed().add(statistic.values().get(0).datum()));
+                    dashBoardVO.setMemoryUsed(dashBoardVO.getMemoryUsed() == null ?
+                            statistic.values().get(0).datum() : dashBoardVO.getMemoryUsed().add(statistic.values().get(0).datum()));
                 }
                 if (statistic.name().equals("memory.free")) {
-                    this.dashBoardVO.setMemoryFree(dashBoardVO.getMemoryFree() == null ? statistic.values().get(0).datum() : dashBoardVO.getMemoryFree().add(statistic.values().get(0).datum()));
+                    dashBoardVO.setMemoryFree(dashBoardVO.getMemoryFree() == null ?
+                            statistic.values().get(0).datum() : dashBoardVO.getMemoryFree().add(statistic.values().get(0).datum()));
                 }
             }
-
-            cpuTotal += host.cpu().topology().cores().intValue() * host.cpu().topology().sockets().intValue() * host.cpu().topology().threads().intValue();
         }
+    }
 
-        // 할당받은 cpu
-        List<Vm> vmList = ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
-        for(Vm vm : vmList){
-            if(vm.status().value().equals("up")){
-                cpuAssigned += (vm.cpu().topology().cores().intValue() * vm.cpu().topology().sockets().intValue() * vm.cpu().topology().threads().intValue());
+
+    // storage
+    public void getTotalStorage(SystemService systemService){
+        List<StorageDomain> storageDomainList =
+                ((StorageDomainsService.ListResponse)systemService.storageDomainsService().list().send()).storageDomains();
+
+        // storage datacenter 붙어있는지
+        int storageActive = (int) storageDomainList.stream()
+                .filter(storage -> !storage.dataCenters().isEmpty())
+                .count();
+
+        dashBoardVO.setStorageDomainCnt(storageDomainList.size());
+        dashBoardVO.setStorageDomainActive(storageActive);
+        dashBoardVO.setStorageDomainInactive(storageDomainList.size() - storageActive);
+
+        // 스토리지 값
+        for(StorageDomain storageDomain : storageDomainList){
+            if(!storageDomain.dataCenters().isEmpty()){
+                dashBoardVO.setStorageTotal(dashBoardVO.getStorageTotal() == null ?
+                        new BigDecimal(storageDomain.available()) : dashBoardVO.getStorageTotal().add(new BigDecimal(storageDomain.available())));
+
+                dashBoardVO.setStorageUsed(dashBoardVO.getStorageUsed() == null ?
+                        new BigDecimal(storageDomain.used()) : dashBoardVO.getStorageUsed().add(new BigDecimal(storageDomain.used())));
+
+                dashBoardVO.setStorageFree(dashBoardVO.getStorageTotal().subtract(dashBoardVO.getStorageUsed()));
             }
-            cpuCommit += (vm.cpu().topology().cores().intValue() * vm.cpu().topology().sockets().intValue() * vm.cpu().topology().threads().intValue());
         }
-
-        /*
-        vmList = ((VmsService.ListResponse)systemService.vmsService().list().search("status=up").send()).vms();
-        for(Vm vml : vmList){
-            cpuAssigned += (vml.cpu().topology().cores().intValue() * vml.cpu().topology().sockets().intValue() * vml.cpu().topology().threads().intValue());
-        }*/
-
-        this.dashBoardVO.setCpuCommit(cpuCommit);
-        this.dashBoardVO.setCpuAssigned(cpuAssigned);
-        this.dashBoardVO.setCpuTotal(cpuTotal);
     }
-
-    private void getVmCnt(SystemService systemService){
-        List<Vm> vmList = ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
-        this.dashBoardVO.setVmCnt(vmList.size());
-
-        vmList = ((VmsService.ListResponse)systemService.vmsService().list().search("status=up").send()).vms();
-        this.dashBoardVO.setVmActive(vmList.size());
-        vmList = ((VmsService.ListResponse)systemService.vmsService().list().search("status=down").send()).vms();
-        this.dashBoardVO.setVmInactive(vmList.size());
-    }
-
-
 
 }
+

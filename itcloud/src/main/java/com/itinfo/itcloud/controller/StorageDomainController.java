@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.controller;
 
-import com.itinfo.itcloud.service.StorageDomainService;
+import com.itinfo.itcloud.service.ItStorageDomainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
 public class StorageDomainController {
 
     @Autowired
-    private StorageDomainService storageDomainService;
+    private ItStorageDomainService itStorageDomainService;
 
     public StorageDomainController(){}
 

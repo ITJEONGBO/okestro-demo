@@ -2,13 +2,13 @@ package com.itinfo.itcloud.service.impl;
 
 import com.itinfo.itcloud.dao.ClustersDAO;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
-import com.itinfo.itcloud.service.ClustersService;
-import com.itinfo.itcloud.service.HostdService;
+import com.itinfo.itcloud.service.ItClusterService;
+import com.itinfo.itcloud.service.ItHostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ClustersServiceImpl implements ClustersService {
+public class ClusterServiceImpl implements ItClusterService {
 
     @Autowired
     private AdminConnectionService adminConnectionService;
@@ -17,12 +17,14 @@ public class ClustersServiceImpl implements ClustersService {
     private ClustersDAO clustersDAO;
 
     @Autowired
-    private HostdService hostdService;
+    private ItHostService itHostService;
 
     @Autowired
-    private ClustersService clustersService;
+    private ItClusterService itClusterService;
 
-    public ClustersServiceImpl(){}
+    public ClusterServiceImpl(){}
+
+
 
     /*public List<ClusterVO> retrieveClusters(){
         Connection connection = this.adminConnectionService.getConnection();

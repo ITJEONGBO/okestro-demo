@@ -1,17 +1,17 @@
 package com.itinfo.itcloud.service.impl;
 
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
-import com.itinfo.itcloud.service.HostdService;
+import com.itinfo.itcloud.service.ItHostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class HostdServiceImpl implements HostdService {
+public class HostServiceImpl implements ItHostService {
 
     @Autowired
     private AdminConnectionService adminConnectionService;
 
-    public HostdServiceImpl(){}
+    public HostServiceImpl(){}
 
     // 그냥 host 정보 받아오는거
     /*public List<HostDetailVO> retrieveHosts(){

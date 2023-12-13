@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.controller;
 
-import com.itinfo.itcloud.service.TemplateService;
+import com.itinfo.itcloud.service.ItTemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
 public class TemplateController {
 
     @Autowired
-    private TemplateService templateService;
+    private ItTemplateService itTemplateService;
 
     public TemplateController(){}
 

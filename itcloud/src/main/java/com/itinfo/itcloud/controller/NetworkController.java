@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.controller;
 
-import com.itinfo.itcloud.service.NetworkService;
+import com.itinfo.itcloud.service.ItNetworkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
 public class NetworkController {
 
     @Autowired
-    private NetworkService networkService;
+    private ItNetworkService itNetworkService;
 
     public NetworkController(){}
 

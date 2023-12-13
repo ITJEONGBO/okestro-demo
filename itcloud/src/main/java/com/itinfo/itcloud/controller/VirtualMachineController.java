@@ -1,8 +1,8 @@
 package com.itinfo.itcloud.controller;
 
-import com.itinfo.itcloud.service.VirtualMachineSerivce;
+import com.itinfo.itcloud.service.ItVmService;
 import com.itinfo.itcloud.model.computing.VmVO;
-import com.itinfo.itcloud.service.SystemPropertiesService;
+import com.itinfo.itcloud.service.ItSystemPropertyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,17 +15,17 @@ import java.util.List;
 public class VirtualMachineController {
 
     @Autowired
-    private VirtualMachineSerivce virtualMachineSerivce;
+    private ItVmService itVmService;
 
     @Autowired
-    private SystemPropertiesService systemPropertiesService;
+    private ItSystemPropertyService itSystemPropertyService;
 
     public VirtualMachineController(){}
 
 
     @GetMapping("/computing/vms")
     public String vmList(Model model){
-        List<VmVO> vmVOList = virtualMachineSerivce.showVmList();
+        List<VmVO> vmVOList = itVmService.showVmList();
         model.addAttribute("vmList", vmVOList);
         return "compute/vms";
     }
@@ -37,7 +37,7 @@ public class VirtualMachineController {
         try{
             long start = System.currentTimeMillis();
 
-            vmsList = virtualMachineSerivce.showVmList();
+            vmsList = itVmService.showVmList();
 
             long end = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
             System.out.println("수행시간(ms): " + (end-start));

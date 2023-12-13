@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public interface StorageDiskSerivce {
+public interface ItStorageDiskService {
 
     List<DiskVO> showDiskList();
 

@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.controller;
 
-import com.itinfo.itcloud.service.SystemPropertiesService;
+import com.itinfo.itcloud.service.ItSystemPropertyService;
 import com.itinfo.itcloud.model.SystemPropertiesVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class SystemPropertiesController {
 
     @Autowired
-    private SystemPropertiesService systemPropertiesService;
+    private ItSystemPropertyService itSystemPropertyService;
 
     public SystemPropertiesController(){}
 
     @GetMapping("/admin/setting")
     public String setting(Model model){
-        SystemPropertiesVO systemProperties = this.systemPropertiesService.searchSystemProperties();
+        SystemPropertiesVO systemProperties = this.itSystemPropertyService.searchSystemProperties();
         model.addAttribute("setting", systemProperties);
         return "admin/setting";
     }
@@ -28,7 +28,7 @@ public class SystemPropertiesController {
     public SystemPropertiesVO searchSystemProperties() {
         SystemPropertiesVO systemPropertiesVO = null;
         try{
-            systemPropertiesVO = this.systemPropertiesService.searchSystemProperties();
+            systemPropertiesVO = this.itSystemPropertyService.searchSystemProperties();
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -43,7 +43,7 @@ public class SystemPropertiesController {
         SystemPropertiesVO systemPropertiesVO = null;
         int result = 0;
         try{
-            result = systemPropertiesService.saveSystemProperties(systemPropertiesVO);
+            result = itSystemPropertyService.saveSystemProperties(systemPropertiesVO);
         }catch (Exception e){
             e.printStackTrace();
         }

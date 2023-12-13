@@ -2,12 +2,12 @@ package com.itinfo.itcloud.service.impl;
 
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.dao.StorageDomainDAO;
-import com.itinfo.itcloud.service.StorageDomainService;
+import com.itinfo.itcloud.service.ItStorageDomainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class StorageStorageDomainServiceImpl implements StorageDomainService {
+public class StorageItStorageDomainServiceImpl implements ItStorageDomainService {
 
     @Autowired
     private AdminConnectionService adminConnectionService;
@@ -15,7 +15,7 @@ public class StorageStorageDomainServiceImpl implements StorageDomainService {
     @Autowired
     private StorageDomainDAO storageDomainDAO;
 
-    public StorageStorageDomainServiceImpl(){}
+    public StorageItStorageDomainServiceImpl(){}
 
     /*public List<SDomainVO> retrieveStorageDomains(String status, String domainType) {
         Connection connection = this.adminConnectionService.getConnection();

@@ -2,7 +2,7 @@ package com.itinfo.itcloud.controller;
 
 import com.itinfo.itcloud.model.storage.DiskVO;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
-import com.itinfo.itcloud.service.StorageDiskSerivce;
+import com.itinfo.itcloud.service.ItStorageDiskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,7 +15,7 @@ import java.util.List;
 public class StorageDiskController {
 
     @Autowired
-    private StorageDiskSerivce storageDiskSerivce;
+    private ItStorageDiskService storageDiskSerivce;
 
     @Autowired
     private AdminConnectionService adminConnectionService;

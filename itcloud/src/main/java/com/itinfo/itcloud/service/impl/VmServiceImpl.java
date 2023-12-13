@@ -5,7 +5,7 @@ import com.itinfo.itcloud.model.computing.VmNicVO;
 import com.itinfo.itcloud.model.computing.VmSystemVO;
 import com.itinfo.itcloud.model.computing.VmVO;
 import com.itinfo.itcloud.ovirt.ConnectionService;
-import com.itinfo.itcloud.service.VirtualMachineSerivce;
+import com.itinfo.itcloud.service.ItVmService;
 import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.services.TemplateService;
@@ -19,7 +19,7 @@ import java.util.List;
 
 
 @Service
-public class VirtualMachineServiceImpl implements VirtualMachineSerivce {
+public class VmServiceImpl implements ItVmService {
 
     @Autowired
     private ConnectionService ovirtConnection;

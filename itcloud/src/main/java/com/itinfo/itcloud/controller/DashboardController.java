@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.controller;
 
-import com.itinfo.itcloud.service.DashboardService;
+import com.itinfo.itcloud.service.ItDashboardService;
 import com.itinfo.itcloud.model.DashBoardVO;
 import com.itinfo.itcloud.ovirt.ConnectionService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,10 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class DashboardController {
 
     @Autowired
-    private ConnectionService ovirtConnection;
-
-    @Autowired
-    private DashboardService dashboardService;
+    private ItDashboardService itDashboardService;
 
     public DashboardController() {
     }
@@ -27,30 +24,27 @@ public class DashboardController {
     // dashboard 화면
     @GetMapping("/dashboard")
     public String dashboard(Model model){
-        DashBoardVO dashboard = dashboardService.showDashboard();
+        DashBoardVO dashboard = itDashboardService.showDashboard();
         model.addAttribute("dashboard", dashboard);
+        log.info("---view dashboard");
         return "dashboard";
     }
 
     @GetMapping("/dashboardStatus")
     @ResponseBody
     public DashBoardVO compute(){
-        log.info("--- databaord");
-
-        DashBoardVO dashboardStatus = null;
-
         long start = System.currentTimeMillis();
 
-        try{
-            dashboardStatus = dashboardService.showDashboard();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        DashBoardVO dashboardStatus = itDashboardService.showDashboard();
 
         long end = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
-        System.out.println("수행시간(ms): " + (end-start));
+        log.info("수행시간(ms): " + (end-start));
+
+        log.info("----- databaordStatus");
         return dashboardStatus;
     }
+
+
 
 
 }

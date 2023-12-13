@@ -1,14 +1,14 @@
 package com.itinfo.itcloud.service.impl;
 
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
-import com.itinfo.itcloud.service.NetworkService;
+import com.itinfo.itcloud.service.ItNetworkService;
 import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class NetworkServiceImpl implements NetworkService {
+public class NetworkServiceImpl implements ItNetworkService {
 
     @Autowired
     private AdminConnectionService adminConnectionService;
