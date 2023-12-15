@@ -1,16 +1,16 @@
 package com.itinfo
 
-import com.itinfo.common.LoggerDelegate
-
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.services.*
 import org.ovirt.engine.sdk4.services.HostService.IscsiDiscoverRequest
 import org.ovirt.engine.sdk4.types.*
+import org.slf4j.LoggerFactory
+
+private val log = LoggerFactory.getLogger("com.itinfo.SystemServiceHelperKt")
 
 class SystemServiceHelper {
 	companion object {
-		private val log by LoggerDelegate()
 		@Volatile private var INSTANCE: SystemServiceHelper? = null
 		@JvmStatic fun getInstance(): SystemServiceHelper = INSTANCE ?: synchronized(this) {
 			INSTANCE ?: build().also { INSTANCE = it }
@@ -21,892 +21,984 @@ class SystemServiceHelper {
 
 	private fun getSystemService(c: Connection): SystemService = c.systemService()
 
-	//region: Cluster
-	private fun srvClusters(c: Connection): ClustersService = getSystemService(c).clustersService()
-	private fun srvCluster(c: Connection, clusterId: String): ClusterService = srvClusters(c).clusterService(clusterId)
-	fun findAllClusters(c: Connection, searchQuery: String = ""): List<Cluster> =
-		if (searchQuery.isEmpty()) srvClusters(c).list().send().clusters() ?: listOf()
-		else srvClusters(c).list().search(searchQuery).caseSensitive(false).send().clusters() ?: listOf()
 
-	fun findCluster(c: Connection, clusterId: String): Cluster? = try {
-		srvCluster(c, clusterId).get().send().cluster()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
 
-	fun addCluster(c: Connection, cluster: Cluster): Cluster? = try {
-		srvClusters(c).add().cluster(cluster).send().cluster()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
-
-	fun updateCluster(c: Connection, clusterId: String, cluster: Cluster): Cluster? = try {
-		srvCluster(c, clusterId).update().cluster(cluster).send().cluster()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
-
-	fun removeCluster(c: Connection, clusterId: String): Boolean = try {
-		srvCluster(c, clusterId).remove().send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		false
-	}
-
-	private fun srvClusterNetworks(c: Connection, clusterId: String): ClusterNetworksService =
-		srvCluster(c, clusterId).networksService()
-
-	fun findAllNetworksFromCluster(c: Connection, clusterId: String): List<Network> = try {
-		srvClusterNetworks(c, clusterId).list().send().networks()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		listOf<Network>()
-	}
-	private fun srvNetworkFromCluster(c: Connection, clusterId: String, networkId: String): ClusterNetworkService
-		= srvClusterNetworks(c, clusterId).networkService(networkId)
-	fun findNetworkFromCluster(c: Connection, clusterId: String, networkId: String): Network? = try {
-		val n: Network? = srvNetworkFromCluster(c, clusterId, networkId).get().send().network()
-		log.info("network found ... id: ${n?.id()}")
-		n
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
-	fun addNetworkFromCluster(c: Connection, clusterId: String, network: Network): Network? = try {
-		val n: Network? = srvCluster(c, clusterId).networksService().add().network(network).send().network()
-		log.info("network created successfully ... id: ${n?.id()}")
-		n
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
-
-	fun updateNetworkFromCluster(c: Connection, clusterId: String, network: Network): Network? = try {
-		srvNetworkFromCluster(c, clusterId, network.id()).update().network(network).send().network()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
-	fun removeNetworkFromCluster(c: Connection, clusterId: String, networkId: String): Boolean = try {
-		srvNetworkFromCluster(c, clusterId, networkId).remove().send()
-		false
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		true
-	}
-	private fun srvExternalNetworkProviders(c: Connection, clusterId: String): ClusterExternalProvidersService =
-		srvCluster(c, clusterId).externalNetworkProvidersService()
-
-	fun findExternalNetworkProviders(c: Connection, clusterId: String): List<ExternalProvider> = try {
-		srvExternalNetworkProviders(c, clusterId).list().send().providers()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		listOf<ExternalProvider>()
-	}
-	//endregion
-
-	//region: Host
-	fun srvHosts(c: Connection): HostsService = getSystemService(c).hostsService()
-	fun findAllHosts(c: Connection, searchQuery: String = ""): List<Host> =
-		if (searchQuery == "") srvHosts(c).list().send().hosts()
-		else srvHosts(c).list().search(searchQuery).caseSensitive(false).send().hosts()
-
-	fun srvHost(c: Connection, hostId: String): HostService = srvHosts(c).hostService(hostId)
-	fun findHost(c: Connection, hostId: String): Host? = try {
-		val h: Host? = srvHost(c, hostId).get().send().host()
-		log.info("host found ... id: ${h?.id()}")
-		h
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
-
-	fun migrateHostFromVm(c: Connection, vmId: String, host: Host): Boolean = try {
-		srvVm(c, vmId).migrate().host(host).send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		false
-	}
-
-	private fun srvAllNicsFromHost(c: Connection, hostId: String): HostNicsService = srvHost(c, hostId).nicsService()
-	fun findAllNicsFromHost(c: Connection, hostId: String): List<HostNic> = srvAllNicsFromHost(c, hostId).list().send().nics()
-	private fun srvNicFromHost(c: Connection, hostId: String, hostNicId: String): HostNicService =
-		srvAllNicsFromHost(c, hostId).nicService(hostNicId)
-
-	fun findNicFromHost(c: Connection, hostId: String, hostNicId: String): HostNic? = try {
-		srvNicFromHost(c, hostId, hostNicId).get().send().nic()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
-
-	private fun srvStatisticsFromHost(c: Connection, hostId: String): StatisticsService =
-		srvHost(c, hostId).statisticsService()
-
-	fun findAllStatisticsFromHost(c: Connection, hostId: String): List<Statistic> =
-		srvStatisticsFromHost(c, hostId).list().send().statistics()
-
-	fun findAllStatisticsFromHostNic(c: Connection, hostId: String, hostNicId: String): List<Statistic> =
-		srvAllNicsFromHost(c, hostId).nicService(hostNicId).statisticsService().list().send().statistics()
-
-	private fun srvStoragesFromHost(c: Connection, hostId: String): HostStorageService =
-		srvHost(c, hostId).storageService()
-
-	fun findAllStoragesFromHost(c: Connection, hostId: String): List<HostStorage> =
-		srvStoragesFromHost(c, hostId).list().send().storages()
-
-	private fun srvNetworkAttachmentsFromHost(c: Connection, hostId: String): NetworkAttachmentsService =
-		srvHost(c, hostId).networkAttachmentsService()
-
-	fun findAllNetworkAttachmentsFromHost(c: Connection, hostId: String): List<NetworkAttachment> =
-		srvNetworkAttachmentsFromHost(c, hostId).list().send().attachments()
-
-	private fun srvNetworkAttachmentFromHost(
-		c: Connection,
-		hostId: String,
-		networkAttachmentId: String
-	): NetworkAttachmentService = srvNetworkAttachmentsFromHost(c, hostId).attachmentService(networkAttachmentId)
-
-	fun removeNetworkAttachmentFromHost(c: Connection, hostId: String, networkAttachmentId: String): Boolean = try {
-		srvNetworkAttachmentFromHost(c, hostId, networkAttachmentId).remove().send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		false
-	}
-
-	private fun srvFenceAgentsFromHost(c: Connection, hostId: String): FenceAgentsService =
-		srvHost(c, hostId).fenceAgentsService()
-
-	fun findAllFenceAgentsFromHost(c: Connection, hostId: String): List<Agent> =
-		srvFenceAgentsFromHost(c, hostId).list().send().agents()
-
-	fun addFenceAgent(c: Connection, hostId: String, agent: Agent): Agent? = try {
-		srvFenceAgentsFromHost(c, hostId).add().agent(agent).send().agent()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
-
-	private fun srvAllIscsiDetailsFromHost(c: Connection, hostId: String): IscsiDiscoverRequest =
-		srvHost(c, hostId).iscsiDiscover()
-
-	fun findAllIscsiDetailsFromHost(c: Connection, hostId: String, iscsiDetails: IscsiDetails): List<IscsiDetails> =
-		srvAllIscsiDetailsFromHost(c, hostId).iscsi(iscsiDetails).send().discoveredTargets()
-
-	//endregion
-
-
-	//region: Vm
-	private fun getVmsService(c: Connection): VmsService = getSystemService(c).vmsService()
-	fun findAllVms(c: Connection, searchQuery: String = ""): List<Vm> {
-		return if (searchQuery == "") getVmsService(c).list().send().vms()
-		else getVmsService(c).list().search(searchQuery).caseSensitive(false).send().vms()
-	}
-
-	fun srvVm(c: Connection, vmId: String): VmService = getVmsService(c).vmService(vmId)
-	fun findVm(c: Connection, vmId: String): Vm? = try {
-		srvVm(c, vmId).get().send().vm()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
-
-	fun startVm(c: Connection, vmId: String): Boolean = try {
-		srvVm(c, vmId).start().send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		false
-	}
-
-	fun stopVm(c: Connection, vmId: String): Boolean = try {
-		srvVm(c, vmId).stop().send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		false
-	}
-
-	fun suspendVm(c: Connection, vmId: String): Boolean = try {
-		srvVm(c, vmId).suspend().send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		false
-	}
-
-	fun rebootVm(c: Connection, vmId: String): Boolean = try {
-		srvVm(c, vmId).reboot().send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		false
-	}
-
-	fun removeVm(c: Connection, vmId: String, detachOnly: Boolean = false): Boolean = try {
-		srvVm(c, vmId).remove().detachOnly(detachOnly).send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		false
-	}
-
-	private fun srvVmCdromsFromVm(c: Connection, vmId: String): VmCdromsService = srvVm(c, vmId).cdromsService()
-	fun findAllVmCdromsFromVm(c: Connection, vmId: String): List<Cdrom> =
-		srvVmCdromsFromVm(c, vmId).list().send().cdroms()
-
-	private fun srvVmCdromFromVm(c: Connection, vmId: String, cdromId: String): VmCdromService =
-		srvVmCdromsFromVm(c, vmId).cdromService(cdromId)
-
-	fun findVmCdromFromVm(c: Connection, vmId: String, cdromId: String): Cdrom =
-		srvVmCdromFromVm(c, vmId, cdromId).get().send().cdrom()
-
-	fun updateVmCdromFromVm(c: Connection, vmId: String, cdromId: String, cdrom: Cdrom): Boolean = try {
-		srvVmCdromFromVm(c, vmId, cdromId).update().cdrom(cdrom).current(true).send()
-		true
-	} catch (e: Error) {
-		false
-	}
-
-	private fun srvNicsFromVm(c: Connection, vmId: String): VmNicsService = srvVm(c, vmId).nicsService()
-	fun findNicsFromVm(c: Connection, vmId: String): List<Nic> = srvNicsFromVm(c, vmId).list().send().nics()
-	private fun srvNicFromVm(c: Connection, vmId: String, nicId: String): VmNicService =
-		srvNicsFromVm(c, vmId).nicService(nicId)
-
-	fun findNicFromVm(c: Connection, vmId: String, nicId: String): Nic? = try {
-		srvNicFromVm(c, vmId, nicId).get().send().nic()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
-
-	private fun srvAllDiskAttachmentsFromVm(c: Connection, vmId: String): DiskAttachmentsService =
-		srvVm(c, vmId).diskAttachmentsService()
-	fun findAllDiskAttachmentsFromVm(c: Connection, vmId: String): List<DiskAttachment> =
-		srvAllDiskAttachmentsFromVm(c, vmId).list().send().attachments()
-	private fun srvSnapshotsFromVm(c: Connection, vmId: String): SnapshotsService = srvVm(c, vmId).snapshotsService()
-	fun findAllSnapshotsFromVm(c: Connection, vmId: String): List<Snapshot> =
-		srvSnapshotsFromVm(c, vmId).list().send().snapshots()
-
-	private fun srvSnapshotFromVm(c: Connection, vmId: String, snapshotId: String): SnapshotService =
-		srvSnapshotsFromVm(c, vmId).snapshotService(snapshotId)
-
-	fun findSnapshotFromVm(c: Connection, vmId: String, snapshotId: String): Snapshot? = try {
-		srvSnapshotFromVm(c, vmId, snapshotId).get().send().snapshot()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
-
-	fun addSnapshotFromVm(c: Connection, vmId: String, snapshot: Snapshot): Boolean = try {
-		srvSnapshotsFromVm(c, vmId).add().snapshot(snapshot).send().snapshot()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		false
-	}
-
-	fun removeSnapshotFromVm(c: Connection, vmId: String, snapshotId: String): Boolean = try {
-		srvSnapshotFromVm(c, vmId, snapshotId).remove().send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		false
-	}
-
-	fun undoSnapshotFromVm(c: Connection, vmId: String): Boolean = try {
-		srvVm(c, vmId).undoSnapshot().send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		false
-	}
-
-	fun commitSnapshotFromVm(c: Connection, vmId: String): Boolean = try {
-		srvVm(c, vmId).commitSnapshot().send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		false
-	}
-
-	fun previewSnapshotFromVm(c: Connection, vmId: String, snapshot: Snapshot, restoreMemory: Boolean): Boolean = try {
-		srvVm(c, vmId).previewSnapshot().restoreMemory(restoreMemory).snapshot(snapshot).send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		false
-	}
-
-	private fun srvSnapshotDisksFromVm(c: Connection, vmId: String, snapshotId: String): SnapshotDisksService =
-		srvSnapshotFromVm(c, vmId, snapshotId).disksService()
-
-	fun findAllSnapshotDisksFromVm(c: Connection, vmId: String, snapshotId: String): List<Disk> =
-		srvSnapshotDisksFromVm(c, vmId, snapshotId).list().send().disks()
-
-	private fun srvSnapshotNicsFromVm(c: Connection, vmId: String, snapshotId: String): SnapshotNicsService =
-		srvSnapshotFromVm(c, vmId, snapshotId).nicsService()
-
-	fun findAllSnapshotNicsFromVm(c: Connection, vmId: String, snapshotId: String): List<Nic> =
-		srvSnapshotNicsFromVm(c, vmId, snapshotId).list().send().nics()
-
-	private fun srvVmGraphicsConsolesFromVm(c: Connection, vmId: String): VmGraphicsConsolesService =
-		srvVm(c, vmId).graphicsConsolesService()
-
-	fun findAllVmGraphicsConsolesFromVm(c: Connection, vmId: String): List<GraphicsConsole> =
-		srvVmGraphicsConsolesFromVm(c, vmId).list().current(true).send().consoles()
-
-	private fun srvVmGraphicsConsoleFromVm(
-		c: Connection,
-		vmId: String,
-		graphicsConsoleId: String
-	): VmGraphicsConsoleService = srvVmGraphicsConsolesFromVm(c, vmId).consoleService(graphicsConsoleId)
-
-	fun findTicketFromVm(c: Connection, vmId: String, graphicsConsoleId: String): Ticket? = try {
-		srvVmGraphicsConsoleFromVm(c, vmId, graphicsConsoleId).ticket().send().ticket()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
-	private fun srvStatisticsFromVm(c: Connection, vmId: String): StatisticsService
-		= srvVm(c, vmId).statisticsService()
-	fun findAllStatisticsFromVm(c: Connection, vmId: String): List<Statistic>
-		= srvStatisticsFromVm(c, vmId).list().send().statistics()
-	private fun srvAllAssignedPermissionsFromVm(c: Connection, vmId: String): AssignedPermissionsService
-		= srvVm(c, vmId).permissionsService()
-	fun findAllAssignedPermissionsFromVm(c: Connection, vmId: String): List<Permission> = try {
-		srvAllAssignedPermissionsFromVm(c, vmId).list().send().permissions()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		listOf<Permission>()
-	}
-	private fun srvStatisticsFromVmNic(c: Connection, vmId: String, nicId: String): StatisticsService
-		= srvVm(c, vmId).nicsService().nicService(nicId).statisticsService()
-	fun findAllStatisticsFromVmNic(c: Connection, vmId: String, nicId: String): List<Statistic>
-		= srvStatisticsFromVmNic(c, vmId, nicId).list().send().statistics()
-
-	//endregion
-
-	//region: VnicProfile
-	private fun srvVnicProfiles(c: Connection): VnicProfilesService
-		= getSystemService(c).vnicProfilesService()
-	fun findAllVnicProfiles(c: Connection): List<VnicProfile>
-		= srvVnicProfiles(c).list().send().profiles()
-	private fun srvVnicProfile(c: Connection, vnicProfileId: String): VnicProfileService
-		= srvVnicProfiles(c).profileService(vnicProfileId)
-	fun findVnicProfile(c: Connection, vnicProfileId: String): VnicProfile? = try {
-		srvVnicProfile(c, vnicProfileId).get().send().profile()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
-	//endregion
-
-	//region: Network
-	private fun srvNetworks(c: Connection): NetworksService
-		= getSystemService(c).networksService()
-	fun findAllNetworks(c: Connection): List<Network>
-		= srvNetworks(c).list().send().networks()
-	private fun srvNetwork(c: Connection, networkId: String): NetworkService
-		= srvNetworks(c).networkService(networkId)
-	fun findNetwork(c: Connection, networkId: String): Network? = try {
-		srvNetwork(c, networkId).get().send().network()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
-	fun addNetwork(c: Connection, network: Network): Network? = try {
-		srvNetworks(c).add().network(network).send().network()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
-	fun updateNetwork(c: Connection, networkId: String, network: Network): Network? = try {
-		srvNetwork(c, networkId).update().network(network).send().network()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
-	fun removeNetwork(c: Connection, networkId: String): Boolean = try {
-		srvNetwork(c, networkId).remove().send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		false
-	}
-	private fun srvNetworkLabelsFromNetwork(c: Connection, networkId: String): NetworkLabelsService
-		= srvNetwork(c, networkId).networkLabelsService()
-	fun findAllNetworkLabelsFromNetwork(c: Connection, networkId: String): List<NetworkLabel> = try {
-		srvNetworkLabelsFromNetwork(c, networkId).list().send().labels()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		listOf<NetworkLabel>()
-	}
-
-	fun addNetworkLabelFromNetwork(c: Connection, networkId: String, networkLabel: NetworkLabel): NetworkLabel? = try {
-		srvNetworkLabelsFromNetwork(c, networkId).add().label(networkLabel).send().label()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
-
-	private fun srvNetworkLabelFromNetwork(c: Connection, networkId: String, networkLabelId: String): NetworkLabelService
-		= srvNetworkLabelsFromNetwork(c, networkId).labelService(networkLabelId)
-	fun removeNetworkLabelFromNetwork(c: Connection, networkId: String, networkLabelId: String): Boolean = try {
-		srvNetworkLabelFromNetwork(c, networkId, networkLabelId).remove().send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		false
-	}
-	private fun srvVnicProfilesFromNetwork(c: Connection, networkId: String): AssignedVnicProfilesService
-		= srvNetwork(c, networkId).vnicProfilesService()
-	fun findAllVnicProfilesFromNetwork(c: Connection, networkId: String): List<VnicProfile>
-		= srvVnicProfilesFromNetwork(c, networkId).list().send().profiles()
-
-
-	//endregion
-
-	//region: OpenStackNetworkProvider
-	private fun srvOpenStackNetworkProviders(c: Connection): OpenstackNetworkProvidersService
-		= getSystemService(c).openstackNetworkProvidersService()
-	fun findAllOpenStackNetworkProviders(c: Connection): List<OpenStackNetworkProvider>
-		= srvOpenStackNetworkProviders(c).list().send().providers()
-	private fun srvOpenStackNetworkProvider(c: Connection, networkProviderId: String): OpenstackNetworkProviderService
-		 = srvOpenStackNetworkProviders(c).providerService(networkProviderId)
-	fun findOpenStackNetworkProvider(c: Connection, networkProviderId: String): OpenStackNetworkProvider
-		= srvOpenStackNetworkProvider(c, networkProviderId).get().send().provider()
-	//endregion
-
-	//region: OpenStackImageProvider
-	private fun srvOpenStackImageProviders(c: Connection): OpenstackImageProvidersService
-		= getSystemService(c).openstackImageProvidersService()
-	fun findAllOpenStackImageProviders(c: Connection): List<OpenStackImageProvider>
-		= srvOpenStackImageProviders(c).list().send().providers()
-	private fun srvOpenStackImageProvider(c: Connection, openStackImageProviderId: String): OpenstackImageProviderService
-		= srvOpenStackImageProviders(c).providerService(openStackImageProviderId)
-	fun findOpenStackImageProvider(c: Connection, openStackImageProviderId: String): OpenStackImageProvider? = try {
-		srvOpenStackImageProvider(c, openStackImageProviderId).get().send().provider()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
-	//endregion
-
-	//region: OpenStackVolumeProvider
-	private fun srvOpenStackVolumeProviders(c: Connection): OpenstackVolumeProvidersService
-			= getSystemService(c).openstackVolumeProvidersService()
-	fun findAllOpenStackVolumeProviders(c: Connection): List<OpenStackVolumeProvider>
-			= srvOpenStackVolumeProviders(c).list().send().providers()
-	private fun srvOpenStackVolumeProvider(c: Connection, openStackVolumeProviderId: String): OpenstackVolumeProviderService
-			= srvOpenStackVolumeProviders(c).providerService(openStackVolumeProviderId)
-	fun findOpenStackVolumeProvider(c: Connection, openStackVolumeProviderId: String): OpenStackVolumeProvider
-			= srvOpenStackVolumeProvider(c, openStackVolumeProviderId).get().send().provider()
-	//endregion
-
-	//region: ExternalHostProvider
-	private fun srvExternalHostProviders(c: Connection): ExternalHostProvidersService
-		= getSystemService(c).externalHostProvidersService()
-	fun findAllExternalHostProviders(c: Connection): List<ExternalHostProvider>
-		= srvExternalHostProviders(c).list().send().providers()
-	private fun srvExternalHostProvider(c: Connection, externalHostProviderId: String): ExternalHostProviderService
-		= srvExternalHostProviders(c).providerService(externalHostProviderId)
-	fun findExternalHostProvider(c: Connection, externalHostProviderId: String): ExternalHostProvider
-		= srvExternalHostProvider(c, externalHostProviderId).get().send().provider()
-	//endregion
-
-	//region Template
-	private fun srvTemplates(c: Connection): TemplatesService
-		= getSystemService(c).templatesService()
-	fun findAllTemplates(c: Connection, searchQuery: String = ""): List<Template> {
-		return if (searchQuery == "")	srvTemplates(c).list().send().templates()
-		else							srvTemplates(c).list().search(searchQuery).send().templates()
-	}
-	private fun srvTemplate(c: Connection, templateId: String): TemplateService
-		= getSystemService(c).templatesService().templateService(templateId)
-	fun findTemplate(c: Connection, templateId: String): Template
-		= srvTemplate(c, templateId).get().send().template()
-	fun removeTemplate(c: Connection, templateId: String): Boolean = try {
-		srvTemplate(c, templateId).remove().send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-
-		false
-	}
-	fun exportTemplate(c: Connection, templateId: String, exclusive: Boolean, toStorageDomain: StorageDomain): Boolean = try {
-		srvTemplate(c, templateId).export()
-			.exclusive(exclusive)
-			.storageDomain(toStorageDomain)
-			.send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-
-		false
-	}
-
-	fun addTemplate(c: Connection, template: Template, clonePermissions: Boolean = false, seal: Boolean = false): Template? = try {
-		srvTemplates(c).add().template(template)
-			.clonePermissions(clonePermissions)
-			.seal(seal)
-			.send().template()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-
-		null
-	}
-	private fun srvWatchdogsFromTemplate(c: Connection, templateId: String): TemplateWatchdogsService
-		= srvTemplate(c, templateId).watchdogsService()
-	fun findAllWatchdogsFromTemplate(c: Connection, templateId: String): List<Watchdog>
-		= srvWatchdogsFromTemplate(c, templateId).list().send().watchdogs()
-	private fun srvCdromsFromTemplate(c: Connection, templateId: String): TemplateCdromsService
-		= srvTemplate(c, templateId).cdromsService()
-	fun findAllCdromsFromTemplate(c: Connection, templateId: String): List<Cdrom>
-		= srvCdromsFromTemplate(c, templateId).list().send().cdroms()
-	private fun srvDiskAttachmentsFromTemplate(c: Connection, templateId: String): TemplateDiskAttachmentsService
-		= srvTemplate(c, templateId).diskAttachmentsService()
-	fun findAllDiskAttachmentsFromTemplate(c: Connection, templateId: String): List<DiskAttachment>
-		= srvDiskAttachmentsFromTemplate(c, templateId).list().send().attachments()
-
-	private fun srvNicsFromTemplate(c: Connection, templateId: String): TemplateNicsService
-		= srvTemplate(c, templateId).nicsService()
-	fun findAllNicsFromTemplate(c: Connection, templateId: String): List<Nic>
-		= srvNicsFromTemplate(c, templateId).list().send().nics()
-
-	//endregion
-
-	//region: OperatingSystemInfo
-	private fun srvOperatingSystems(c: Connection): OperatingSystemsService
-		= getSystemService(c).operatingSystemsService()
-	fun findAllOperatingSystems(c: Connection): List<OperatingSystemInfo>
-		= srvOperatingSystems(c).list().send().operatingSystem()
-	//endregion
-
-	//region: StorageDomain
-	private fun srvStorageDomains(c: Connection): StorageDomainsService
-		= getSystemService(c).storageDomainsService()
-	fun findAllStorageDomains(c: Connection, searchQuery: String = ""): List<StorageDomain>
-		= if (searchQuery == "")	srvStorageDomains(c).list().search(searchQuery).send().storageDomains()
-		else 						srvStorageDomains(c).list().send().storageDomains()
-	private fun srvStorageDomain(c: Connection, storageId: String): StorageDomainService
-		= srvStorageDomains(c).storageDomainService(storageId)
-	fun findStorageDomain(c: Connection, storageId: String): StorageDomain
-		= srvStorageDomain(c, storageId).get().send().storageDomain()
-	fun removeStorageDomain(c: Connection, storageId: String, format: Boolean): Boolean = try {
-		srvStorageDomain(c, storageId).remove().destroy(true).format(format)
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-
-		false
-	}
-	fun updateStorageDomain(c: Connection, storageId: String, storageDomain: StorageDomain): Boolean = try {
-		srvStorageDomain(c, storageId).update().storageDomain(storageDomain).send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-
-		false
-	}
-	fun addStorageDomain(c: Connection, storageDomain: StorageDomain): StorageDomain? = try {
-		srvStorageDomains(c).add().storageDomain(storageDomain).send().storageDomain()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-
-		null
-	}
-	private fun srvAllFilesFromStorageDomain(c: Connection, storageId: String): FilesService
-		= srvStorageDomain(c, storageId).filesService()
-	fun findAllFilesFromStorageDomain(c: Connection, storageId: String): List<File> = try {
-		srvAllFilesFromStorageDomain(c, storageId).list().send().file()
-	} catch (e: Error) {
-		
-		listOf<File>()
-	}
-	private fun srvFileFromStorageDomain(c: Connection, storageId: String, fileId: String): FileService
-		= srvAllFilesFromStorageDomain(c, storageId).fileService(fileId)
-	fun findFileFromStorageDomain(c: Connection, storageId: String, fileId: String): File
-		= srvFileFromStorageDomain(c, storageId, fileId).get().send().file()
-	private fun srvDisksFromStorageDomain(c: Connection, storageId: String): StorageDomainDisksService
-		= srvStorageDomain(c, storageId).disksService()
-	fun findAllDisksFromStorageDomain(c: Connection, storageId: String): List<Disk>
-		= srvDisksFromStorageDomain(c, storageId).list().send().disks()
-	private fun srvAllDiskSnapshotsFromStorageDomain(c: Connection, storageId: String): DiskSnapshotsService
-		= srvStorageDomain(c, storageId).diskSnapshotsService()
-	fun findAllDiskSnapshotsFromStorageDomain(c: Connection, storageId: String): List<DiskSnapshot>
-		= srvAllDiskSnapshotsFromStorageDomain(c, storageId).list().send().snapshots()
-	private fun srvTemplatesFromStorageDomain(c: Connection, storageId: String): StorageDomainTemplatesService
-		= srvStorageDomain(c, storageId ).templatesService()
-	fun findAllTemplatesFromStorageDomain(c: Connection, storageId: String): List<Template>
-		= srvTemplatesFromStorageDomain(c, storageId).list().send().templates()
-	//endregion
-
-	//region: CPUProfile
-	private fun srvCpuProfiles(c: Connection): CpuProfilesService
-		= getSystemService(c).cpuProfilesService()
-	fun findAllCpuProfiles(c: Connection): List<CpuProfile>
-		= srvCpuProfiles(c).list().send().profile()
-	//endregion
-
-	//region: DiskProfile
-	private fun srvDiskProfiles(c: Connection): DiskProfilesService
-		= getSystemService(c).diskProfilesService()
-	fun findAllDiskProfiles(c: Connection): List<DiskProfile>
-		= srvDiskProfiles(c).list().send().profile()
-	private fun srvDiskProfile(c: Connection, diskProfileId: String): DiskProfileService
-		= srvDiskProfiles(c).diskProfileService(diskProfileId)
-	fun findDiskProfile(c: Connection, diskProfileId: String): DiskProfile
-		= srvDiskProfile(c, diskProfileId).get().send().profile()
-	//endregion
-
-	//region: Disk
-	private fun srvAllDisks(c: Connection): DisksService
-		= getSystemService(c).disksService()
-	fun findAllDisks(c: Connection, searchQuery: String = ""): List<Disk> {
-		return if (searchQuery == "")	srvAllDisks(c).list().send().disks()
-		else							srvAllDisks(c).list().search(searchQuery).caseSensitive(false).send().disks()
-	}
-	fun addDisk(c: Connection, disk: Disk): Disk? = try {
-		srvAllDisks(c).add().disk(disk).send().disk()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-
-		null
-	}
-	fun moveDisk(c: Connection, diskId: String, storageDomain: StorageDomain): Boolean = try {
-		srvDisk(c, diskId).move().storageDomain(storageDomain).send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-
-		false
-	}
-	fun copyDisk(c: Connection, diskId: String, disk: Disk, storageDomain: StorageDomain): Boolean = try {
-		srvDisk(c, diskId).copy().disk(disk).storageDomain(storageDomain).send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-
-		false
-	}
-	private fun srvDisk(c: Connection, diskId: String): DiskService
-		= srvAllDisks(c).diskService(diskId)
-	fun findDisk(c: Connection, diskId: String): Disk
-		= srvDisk(c, diskId).get().send().disk()
-	fun removeDisk(c: Connection, diskId: String): Boolean = try {
-		srvDisk(c, diskId).remove().send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-
-		false
-	}
-	//endregion
-
-	//region: DataCenter
-	private fun srvDataCenters(c: Connection): DataCentersService
-		= getSystemService(c).dataCentersService()
-	fun findAllDataCenters(c: Connection): List<DataCenter>
-		= srvDataCenters(c).list().send().dataCenters()
-	private fun srvDataCenter(c: Connection, dataCenterId: String): DataCenterService
-		= srvDataCenters(c).dataCenterService(dataCenterId)
-	fun findDataCenter(c: Connection, dataCenterId: String): DataCenter
-		= srvDataCenter(c, dataCenterId).get().send().dataCenter()
-	private fun srvAllAttachedStorageDomainsFromDataCenter(c: Connection, dataCenterId: String): AttachedStorageDomainsService
-		= srvDataCenter(c, dataCenterId).storageDomainsService()
-	fun findAllAttachedStorageDomainsFromDataCenter(c: Connection, dataCenterId: String): List<StorageDomain>
-		= srvAllAttachedStorageDomainsFromDataCenter(c, dataCenterId).list().send().storageDomains()
-	fun srvAttachedStorageDomainFromDataCenter(c: Connection, dataCenterId: String, storageDomainId: String): AttachedStorageDomainService
-		= srvAllAttachedStorageDomainsFromDataCenter(c, dataCenterId).storageDomainService(storageDomainId)
-	fun findAttachedStorageDomainFromDataCenter(c: Connection, dataCenterId: String, storageDomainId: String): StorageDomain? = try {
-		srvAttachedStorageDomainFromDataCenter(c, dataCenterId, storageDomainId).get().send().storageDomain()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
-	fun activeAttachedStorageDomainFromDataCenter(c: Connection, dataCenterId: String, storageDomainId: String): Boolean = try {
-		srvAttachedStorageDomainFromDataCenter(c, dataCenterId, storageDomainId).activate().send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		false
-	}
-	fun deactiveAttachedStorageDomainFromDataCenter(c: Connection, dataCenterId: String, storageDomainId: String): Boolean = try {
-		srvAttachedStorageDomainFromDataCenter(c, dataCenterId, storageDomainId).deactivate().force(true).send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		false
-	}
-	fun removeAttachedStorageDomainFromDataCenter(c: Connection, dataCenterId: String, storageDomainId: String): Boolean = try {
-		srvAttachedStorageDomainFromDataCenter(c, dataCenterId, storageDomainId).remove().async(true).send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		false
-	}
-	private fun srvQossFromDataCenter(c: Connection, dataCenterId: String): QossService
-		= srvDataCenter(c, dataCenterId).qossService()
-	fun findAllQossFromDataCenter(c: Connection, dataCenterId: String): List<Qos>
-		= srvQossFromDataCenter(c, dataCenterId).list().send().qoss()
-	private fun srvQuotasFromDataCenter(c: Connection, dataCenterId: String): QuotasService
-		= srvDataCenter(c, dataCenterId).quotasService()
-	fun findAllQuotasFromDataCenter(c: Connection, dataCenterId: String): List<Quota>
-		= srvQuotasFromDataCenter(c, dataCenterId).list().send().quotas()
-	fun addQuotaFromDataCenter(c: Connection, dataCenterId: String, quota: Quota): Quota? = try {
-		srvQuotasFromDataCenter(c, dataCenterId).add().quota(quota).send().quota()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-		null
-	}
-	private fun srvQuotaFromDataCenter(c: Connection, dataCenterId: String, quotaId: String): QuotaService
-		= srvQuotasFromDataCenter(c, dataCenterId).quotaService(quotaId)
-	fun findQuotaFromDataCenter(c: Connection, dataCenterId: String, quotaId: String): Quota
-		= srvQuotaFromDataCenter(c, dataCenterId, quotaId).get().send().quota()
-	private fun srvQuotaClusterLimitsFromDataCenter(c: Connection, dataCenterId: String, quotaId: String): QuotaClusterLimitsService
-		= srvQuotaFromDataCenter(c, dataCenterId, quotaId).quotaClusterLimitsService()
-	fun findAllQuotaClusterLimitsFromDataCenter(c: Connection, dataCenterId: String, quotaId: String): List<QuotaClusterLimit>
-		= srvQuotaClusterLimitsFromDataCenter(c, dataCenterId, quotaId).list().send().limits()
-	private fun srvQuotaStorageLimitsFromDataCenter(c: Connection, dataCenterId: String, quotaId: String): QuotaStorageLimitsService
-		= srvQuotaFromDataCenter(c, dataCenterId, quotaId).quotaStorageLimitsService()
-	fun findAllQuotaStorageLimitsFromDataCenter(c: Connection, dataCenterId: String, quotaId: String): List<QuotaStorageLimit>
-		= srvQuotaStorageLimitsFromDataCenter(c, dataCenterId, quotaId).list().send().limits()
-	//endregion
-
-	//region: InstanceType
-	private fun srvInstanceTypes(c: Connection): InstanceTypesService
-		= getSystemService(c).instanceTypesService()
-	fun findAllInstanceTypes(c: Connection): List<InstanceType>
-		= srvInstanceTypes(c).list().send().instanceType()
-	private fun srvInstanceType(c: Connection, instanceTypeId: String): InstanceTypeService
-		= srvInstanceTypes(c).instanceTypeService(instanceTypeId)
-	fun findInstanceType(c: Connection, instanceTypeId: String): InstanceType
-		= srvInstanceType(c, instanceTypeId).get().send().instanceType()
-	private fun srvNicsFromInstanceType(c: Connection, instanceTypeId: String): InstanceTypeNicsService
-		= srvInstanceType(c, instanceTypeId).nicsService()
-	fun addNicForInstanceType(c: Connection, instanceTypeId: String, nic: Nic): Boolean = try {
-		srvNicsFromInstanceType(c, instanceTypeId).add().nic(nic).send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-
-		false
-	}
-
-	fun addInstanceType(c: Connection, instanceType: InstanceType): InstanceType? = try {
-		srvInstanceTypes(c).add().instanceType(instanceType).send().instanceType()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-
-		null
-	}
-
-	fun updateInstanceType(c: Connection, instanceType: InstanceType): InstanceType? = try {
-		srvInstanceType(c, instanceType.id()).update().send().instanceType()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-
-		null
-	}
-	fun removeInstanceType(c: Connection, instanceTypeId: String): Boolean = try {
-		srvInstanceType(c, instanceTypeId).remove().send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-
-		false
-	}
-	//endregion
-
-
-	//region: MacPool
-	private fun srvMacPools(c: Connection): MacPoolsService
-		= getSystemService(c).macPoolsService()
-	fun findAllMacPools(c: Connection): List<MacPool>
-		= srvMacPools(c).list().send().pools()
-	//endregion
-
-	//region: Event
-	private fun srvEvents(c: Connection): EventsService
-		= getSystemService(c).eventsService()
-	fun findAllEvents(c: Connection, searchQuery: String = ""): List<Event> =
-		if (searchQuery == "")	srvEvents(c).list().send().events()
-		else 							srvEvents(c).list().search(searchQuery).caseSensitive(false).send().events()
-	private fun srvEvent(c: Connection, eventId: String): EventService
-		= srvEvents(c).eventService(eventId)
-	fun findEvent(c: Connection, eventId: String): Event
-		= srvEvent(c, eventId).get().send().event()
-	//endregion
-
-	//region: SystemPermissions
-	private fun srvSystemPermissions(c: Connection): SystemPermissionsService
-		= getSystemService(c).permissionsService()
-	fun findAllPermissions(c: Connection): List<Permission>
-		= srvSystemPermissions(c).list().send().permissions()
-	fun addPermission(c: Connection, permission: Permission): Permission? = try {
-		srvSystemPermissions(c).add().permission(permission).send().permission()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-
-		null
-	}
-	fun srvSystemPermission(c: Connection, permissionId: String): PermissionService
-		= srvSystemPermissions(c).permissionService(permissionId)
-	fun removePermission(c: Connection, permissionId: String): Boolean = try {
-		srvSystemPermission(c, permissionId).remove().send()
-		true
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-
-		false
-	}
-	//endregion
-
-	//region: User
-	private fun srvUsers(c: Connection): UsersService
-		= getSystemService(c).usersService()
-	fun findAllUsers(c: Connection): List<User>
-		= srvUsers(c).list().send().users()
-	fun addUser(c: Connection, user: User): User? = try {
-		srvUsers(c).add().user(user).send().user()
-	} catch (e: Error) {
-		log.error(e.localizedMessage)
-
-		null
-	}
-	private fun srvUser(c: Connection, userId: String): UserService
-		= srvUsers(c).userService(userId)
-	fun findUser(c: Connection, userId: String): User
-		= srvUser(c, userId).get().send().user()
-
-	//endregion
-
-	//region: Group
-	private fun srvGroups(c: Connection): GroupsService
-		= getSystemService(c).groupsService()
-	fun findAllGroups(c: Connection): List<Group>
-		= srvGroups(c).list().send().groups()
-	private fun srvGroup(c: Connection, groupId: String): GroupService
-		= srvGroups(c).groupService(groupId)
-	fun findGroup(c: Connection, groupId: String): Group
-		= srvGroup(c, groupId).get().send().get()
-	//endregion
-
-	//region: Role
-	private fun srvRoles(c: Connection): RolesService
-		= getSystemService(c).rolesService()
-	fun findAllRoles(c: Connection): List<Role>
-		= srvRoles(c).list().send().roles()
-	private fun srvRole(c: Connection, roleId: String): RoleService
-		= srvRoles(c).roleService(roleId)
-	fun findRole(c: Connection, roleId: String): Role
-		= srvRole(c, roleId).get().send().role()
-	//endregion
 }
+
+val Connection.systemService: SystemService
+	get() = this.systemService()
+
+private fun Connection.srvClusters(): ClustersService = this.systemService.clustersService()
+private fun Connection.srvCluster(id: String): ClusterService = this.srvClusters().clusterService(id)
+
+fun Connection.findAllClusters(searchQuery: String = ""): List<Cluster> =
+	if (searchQuery.isEmpty()) this.srvClusters().list().send().clusters() ?: listOf()
+	else this.srvClusters().list().search(searchQuery).caseSensitive(false).send().clusters() ?: listOf()
+
+fun Connection.findCluster(clusterId: String): Cluster? = try {
+	this.srvCluster(clusterId).get().send().cluster()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+
+fun Connection.addCluster(cluster: Cluster): Cluster? = try {
+	this.srvClusters().add().cluster(cluster).send().cluster()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+
+fun Connection.updateCluster(clusterId: String, cluster: Cluster): Cluster? = try {
+	this.srvCluster(clusterId).update().cluster(cluster).send().cluster()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+
+fun Connection.removeCluster(clusterId: String): Boolean = try {
+	this.srvCluster(clusterId).remove().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+private fun Connection.srvClusterNetworks(clusterId: String): ClusterNetworksService =
+	this.srvCluster(clusterId).networksService()
+
+fun Connection.findAllNetworksFromCluster(clusterId: String): List<Network> = try {
+	this.srvClusterNetworks(clusterId).list().send().networks()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	listOf()
+}
+private fun Connection.srvNetworkFromCluster(clusterId: String, networkId: String): ClusterNetworkService =
+	this.srvClusterNetworks(clusterId).networkService(networkId)
+fun Connection.findNetworkFromCluster(clusterId: String, networkId: String): Network? = try {
+	val n: Network? = this.srvNetworkFromCluster(clusterId, networkId).get().send().network()
+	log.info("network found ... id: ${n?.id()}")
+	n
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+fun Connection.addNetworkFromCluster(clusterId: String, network: Network): Network? = try {
+	val n: Network? = this.srvCluster(clusterId).networksService().add().network(network).send().network()
+	log.info("network created successfully ... id: ${n?.id()}")
+	n
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+
+fun Connection.updateNetworkFromCluster(clusterId: String, network: Network): Network? = try {
+	this.srvNetworkFromCluster(clusterId, network.id()).update().network(network).send().network()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+fun Connection.removeNetworkFromCluster(clusterId: String, networkId: String): Boolean = try {
+	this.srvNetworkFromCluster(clusterId, networkId).remove().send()
+	false
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	true
+}
+private fun Connection.srvExternalNetworkProviders(clusterId: String): ClusterExternalProvidersService =
+	this.srvCluster(clusterId).externalNetworkProvidersService()
+
+fun Connection.findExternalNetworkProviders(clusterId: String): List<ExternalProvider> = try {
+	srvExternalNetworkProviders(clusterId).list().send().providers()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	listOf<ExternalProvider>()
+}
+//endregion
+
+//region: Vm
+private fun Connection.srvVms(): VmsService = this.systemService.vmsService()
+fun Connection.findAllVms(searchQuery: String = ""): List<Vm> {
+	return if (searchQuery == "") srvVms().list().send().vms()
+	else srvVms().list().search(searchQuery).caseSensitive(false).send().vms()
+}
+
+fun Connection.srvVm(vmId: String): VmService = this.srvVms().vmService(vmId)
+fun Connection.findVm(vmId: String): Vm? = try {
+	this.srvVm(vmId).get().send().vm()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+
+fun Connection.startVm(vmId: String): Boolean = try {
+	this.srvVm(vmId).start().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+fun Connection.stopVm(vmId: String): Boolean = try {
+	this.srvVm(vmId).stop().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+fun Connection.suspendVm(vmId: String): Boolean = try {
+	this.srvVm(vmId).suspend().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+fun Connection.rebootVm(vmId: String): Boolean = try {
+	this.srvVm(vmId).reboot().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+fun Connection.removeVm(vmId: String, detachOnly: Boolean = false): Boolean = try {
+	this.srvVm(vmId).remove().detachOnly(detachOnly).send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+private fun Connection.srvVmCdromsFromVm(vmId: String): VmCdromsService =
+	this.srvVm(vmId).cdromsService()
+fun Connection.findAllVmCdromsFromVm(vmId: String): List<Cdrom> =
+	this.srvVmCdromsFromVm(vmId).list().send().cdroms()
+
+private fun Connection.srvVmCdromFromVm(vmId: String, cdromId: String): VmCdromService =
+	this.srvVmCdromsFromVm(vmId).cdromService(cdromId)
+
+fun Connection.findVmCdromFromVm(vmId: String, cdromId: String): Cdrom =
+	this.srvVmCdromFromVm(vmId, cdromId).get().send().cdrom()
+
+fun Connection.updateVmCdromFromVm(vmId: String, cdromId: String, cdrom: Cdrom): Boolean = try {
+	this.srvVmCdromFromVm(vmId, cdromId).update().cdrom(cdrom).current(true).send()
+	true
+} catch (e: Error) {
+	false
+}
+
+private fun Connection.srvNicsFromVm(vmId: String): VmNicsService =
+	this.srvVm(vmId).nicsService()
+fun Connection.findNicsFromVm(vmId: String): List<Nic> =
+	this.srvNicsFromVm(vmId).list().send().nics()
+private fun Connection.srvNicFromVm(vmId: String, nicId: String): VmNicService =
+	this.srvNicsFromVm(vmId).nicService(nicId)
+
+fun Connection.findNicFromVm(vmId: String, nicId: String): Nic? = try {
+	this.srvNicFromVm(vmId, nicId).get().send().nic()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+
+fun Connection.addNicFromVm(vmId: String, nic: Nic): Nic? = try {
+	srvNicsFromVm(vmId).add().nic(nic).send().nic()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+
+fun Connection.updateNicFromVm(vmId: String, nicId: String, nic: Nic): Nic? = try {
+	srvNicFromVm(vmId, nicId).update().nic(nic).send().nic()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+
+private fun Connection.srvAllDiskAttachmentsFromVm(vmId: String): DiskAttachmentsService =
+	this.srvVm(vmId).diskAttachmentsService()
+fun Connection.findAllDiskAttachmentsFromVm(vmId: String): List<DiskAttachment> =
+	this.srvAllDiskAttachmentsFromVm(vmId).list().send().attachments()
+private fun Connection.srvSnapshotsFromVm(vmId: String): SnapshotsService =
+	this.srvVm(vmId).snapshotsService()
+fun Connection.findAllSnapshotsFromVm(vmId: String): List<Snapshot> =
+	srvSnapshotsFromVm(vmId).list().send().snapshots()
+
+private fun Connection.srvSnapshotFromVm(vmId: String, snapshotId: String): SnapshotService =
+	this.srvSnapshotsFromVm(vmId).snapshotService(snapshotId)
+
+fun Connection.findSnapshotFromVm(vmId: String, snapshotId: String): Snapshot? = try {
+	this.srvSnapshotFromVm(vmId, snapshotId).get().send().snapshot()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+
+fun Connection.addSnapshotFromVm(vmId: String, snapshot: Snapshot): Boolean = try {
+	this.srvSnapshotsFromVm(vmId).add().snapshot(snapshot).send().snapshot()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+fun Connection.removeSnapshotFromVm(vmId: String, snapshotId: String): Boolean = try {
+	this.srvSnapshotFromVm(vmId, snapshotId).remove().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+fun Connection.undoSnapshotFromVm(vmId: String): Boolean = try {
+	this.srvVm(vmId).undoSnapshot().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+fun Connection.commitSnapshotFromVm(vmId: String): Boolean = try {
+	this.srvVm(vmId).commitSnapshot().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+fun Connection.previewSnapshotFromVm(vmId: String, snapshot: Snapshot, restoreMemory: Boolean): Boolean = try {
+	this.srvVm(vmId).previewSnapshot().restoreMemory(restoreMemory).snapshot(snapshot).send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+private fun Connection.srvSnapshotDisksFromVm(vmId: String, snapshotId: String): SnapshotDisksService =
+	this.srvSnapshotFromVm(vmId, snapshotId).disksService()
+
+fun Connection.findAllSnapshotDisksFromVm(vmId: String, snapshotId: String): List<Disk> =
+	this.srvSnapshotDisksFromVm(vmId, snapshotId).list().send().disks()
+
+private fun Connection.srvSnapshotNicsFromVm(vmId: String, snapshotId: String): SnapshotNicsService =
+	this.srvSnapshotFromVm(vmId, snapshotId).nicsService()
+
+fun Connection.findAllSnapshotNicsFromVm(vmId: String, snapshotId: String): List<Nic> =
+	this.srvSnapshotNicsFromVm(vmId, snapshotId).list().send().nics()
+
+private fun Connection.srvVmGraphicsConsolesFromVm(vmId: String): VmGraphicsConsolesService =
+	this.srvVm(vmId).graphicsConsolesService()
+
+fun Connection.findAllVmGraphicsConsolesFromVm(vmId: String): List<GraphicsConsole> =
+	this.srvVmGraphicsConsolesFromVm(vmId).list().current(true).send().consoles()
+
+private fun Connection.srvVmGraphicsConsoleFromVm(vmId: String, graphicsConsoleId: String): VmGraphicsConsoleService =
+	this.srvVmGraphicsConsolesFromVm(vmId).consoleService(graphicsConsoleId)
+
+fun Connection.findTicketFromVm(vmId: String, graphicsConsoleId: String): Ticket? = try {
+	this.srvVmGraphicsConsoleFromVm(vmId, graphicsConsoleId).ticket().send().ticket()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+private fun Connection.srvStatisticsFromVm(vmId: String): StatisticsService =
+	this.srvVm(vmId).statisticsService()
+fun Connection.findAllStatisticsFromVm(vmId: String): List<Statistic> =
+	this.srvStatisticsFromVm(vmId).list().send().statistics()
+private fun Connection.srvAllAssignedPermissionsFromVm(vmId: String): AssignedPermissionsService =
+	this.srvVm(vmId).permissionsService()
+fun Connection.findAllAssignedPermissionsFromVm(vmId: String): List<Permission> = try {
+	this.srvAllAssignedPermissionsFromVm(vmId).list().send().permissions()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	listOf()
+}
+private fun Connection.srvStatisticsFromVmNic(vmId: String, nicId: String): StatisticsService =
+	this.srvVm(vmId).nicsService().nicService(nicId).statisticsService()
+fun Connection.findAllStatisticsFromVmNic(vmId: String, nicId: String): List<Statistic> =
+	this.srvStatisticsFromVmNic(vmId, nicId).list().send().statistics()
+//endregion
+
+//region: Hosts
+private fun Connection.srvHosts(): HostsService = this.systemService.hostsService()
+private fun Connection.srvHost(hostId: String): HostService = this.srvHosts().hostService(hostId)
+fun Connection.findAllHosts(searchQuery: String = ""): List<Host> =
+	if (searchQuery == "") this.srvHosts().list().send().hosts()
+	else this.srvHosts().list().search(searchQuery).caseSensitive(false).send().hosts()
+
+fun Connection.findHost(hostId: String): Host? = try {
+	val h: Host? = srvHost(hostId).get().send().host()
+	log.info("host found ... id: ${h?.id()}")
+	h
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+
+fun Connection.addHost(host: Host, deployHostedEngine: Boolean = false): Host? = try {
+	val host: Host? =
+		if (deployHostedEngine) srvHosts().add().deployHostedEngine(true).host(host).send().host()
+		else srvHosts().add().host(host).send().host()
+	log.info("add host result: $host")
+	host
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+fun Connection.updateHost(host: Host): Host? = try {
+	val host: Host? =
+		srvHost(host.id()).update().host(host).send().host()
+	log.info("update host result: $host")
+	host
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+fun Connection.removeHost(hostId: String): Boolean = try {
+	val res = srvHost(hostId).remove().send()
+	log.info("activate host result: $res")
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+fun Connection.activateHost(hostId: String): Boolean = try {
+	val res = srvHost(hostId).activate().send()
+	log.info("activate host result: $res")
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+fun Connection.deactivateHost(hostId: String): Boolean = try {
+	val res = srvHost(hostId).deactivate().send()
+	log.info("deactivate host result: $res")
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+fun Connection.findPowerManagementFromHost(hostId: String, fenceType: FenceType): PowerManagement? = try {
+	val res = srvHost(hostId).fence().fenceType(fenceType.name).send().powerManagement()
+	log.info("powerManagementFromHost result: $res")
+	res
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+
+fun Connection.migrateHostFromVm(vmId: String, host: Host): Boolean = try {
+	this.srvVm(vmId).migrate().host(host).send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+private fun Connection.srvAllNicsFromHost(hostId: String): HostNicsService =
+	this.srvHost(hostId).nicsService()
+fun Connection.findAllNicsFromHost(hostId: String): List<HostNic> =
+	this.srvAllNicsFromHost(hostId).list().send().nics()
+private fun Connection.srvNicFromHost(hostId: String, hostNicId: String): HostNicService =
+	this.srvAllNicsFromHost(hostId).nicService(hostNicId)
+
+fun Connection.findNicFromHost(hostId: String, hostNicId: String): HostNic? = try {
+	this.srvNicFromHost(hostId, hostNicId).get().send().nic()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+
+private fun Connection.srvStatisticsFromHost(hostId: String): StatisticsService =
+	this.srvHost(hostId).statisticsService()
+
+fun Connection.findAllStatisticsFromHost(hostId: String): List<Statistic> =
+	this.srvStatisticsFromHost(hostId).list().send().statistics()
+
+fun Connection.findAllStatisticsFromHostNic(hostId: String, hostNicId: String): List<Statistic> =
+	this.srvAllNicsFromHost(hostId).nicService(hostNicId).statisticsService().list().send().statistics()
+
+private fun Connection.srvStoragesFromHost(hostId: String): HostStorageService =
+	this.srvHost(hostId).storageService()
+
+fun Connection.findAllStoragesFromHost(hostId: String): List<HostStorage> =
+	this.srvStoragesFromHost(hostId).list().send().storages()
+
+private fun Connection.srvNetworkAttachmentsFromHost(hostId: String): NetworkAttachmentsService =
+	this.srvHost(hostId).networkAttachmentsService()
+
+fun Connection.findAllNetworkAttachmentsFromHost(hostId: String): List<NetworkAttachment> =
+	this.srvNetworkAttachmentsFromHost(hostId).list().send().attachments()
+
+private fun Connection.srvNetworkAttachmentFromHost(hostId: String, networkAttachmentId: String): NetworkAttachmentService =
+	this.srvNetworkAttachmentsFromHost(hostId).attachmentService(networkAttachmentId)
+
+fun Connection.modifyNetworkAttachmentsFromHost(hostId: String, networkAttachments: List<NetworkAttachment>): Boolean = try {
+	this.srvHost(hostId).setupNetworks().modifiedNetworkAttachments(networkAttachments).send()
+	this.srvHost(hostId).commitNetConfig().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+fun Connection.modifyNetworkAttachmentFromHost(hostId: String, networkAttachments: NetworkAttachment): Boolean = try {
+	this.srvHost(hostId).setupNetworks().modifiedNetworkAttachments(networkAttachments).send()
+	this.srvHost(hostId).commitNetConfig().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+fun Connection.updateNetworkAttachmentFromHost(hostId: String, networkAttachmentId: String, networkAttachment: NetworkAttachment): Boolean = try {
+	this.srvNetworkAttachmentFromHost(hostId, networkAttachmentId).update().attachment(networkAttachment).send()
+	this.srvHost(hostId).commitNetConfig().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+fun Connection.removeNetworkAttachmentFromHost(hostId: String, networkAttachmentId: String): Boolean = try {
+	this.srvNetworkAttachmentFromHost(hostId, networkAttachmentId).remove().send()
+	this.srvHost(hostId).commitNetConfig().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+fun Connection.removeBondsFromHost(hostId: String, hostNics: List<HostNic> = listOf()): Boolean = try {
+	this.srvHost(hostId).setupNetworks().removedBonds(hostNics).send()
+	this.srvHost(hostId).commitNetConfig().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+fun Connection.setupNetworksFromHost(
+	hostId: String,
+	hostNics: HostNic,
+	networkAttachments: List<NetworkAttachment> = listOf()
+): Boolean = try {
+	if (networkAttachments.isEmpty())
+		this.srvHost(hostId).setupNetworks().modifiedBonds(hostNics).send()
+	else
+		this.srvHost(hostId).setupNetworks().modifiedBonds(hostNics).modifiedNetworkAttachments(networkAttachments).send()
+	this.srvHost(hostId).commitNetConfig().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+private fun Connection.srvFenceAgentsFromHost(hostId: String): FenceAgentsService =
+	this.srvHost(hostId).fenceAgentsService()
+
+fun Connection.findAllFenceAgentsFromHost(hostId: String): List<Agent> =
+	this.srvFenceAgentsFromHost(hostId).list().send().agents()
+
+fun Connection.addFenceAgent(hostId: String, agent: Agent): Agent? = try {
+	this.srvFenceAgentsFromHost(hostId).add().agent(agent).send().agent()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+
+private fun Connection.srvAllIscsiDetailsFromHost(hostId: String): IscsiDiscoverRequest =
+	this.srvHost(hostId).iscsiDiscover()
+
+fun Connection.findAllIscsiDetailsFromHost(hostId: String, iscsiDetails: IscsiDetails): List<IscsiDetails> =
+	this.srvAllIscsiDetailsFromHost(hostId).iscsi(iscsiDetails).send().discoveredTargets()
+
+//endregion
+
+//region: DataCenter
+private fun Connection.srvDataCenters(): DataCentersService = this.systemService.dataCentersService()
+fun Connection.findAllDataCenters(): List<DataCenter> =
+	this.srvDataCenters().list().send().dataCenters()
+private fun Connection.srvDataCenter(dataCenterId: String): DataCenterService = this.srvDataCenters().dataCenterService(dataCenterId)
+fun Connection.findDataCenter(dataCenterId: String): DataCenter =
+	this.srvDataCenter(dataCenterId).get().send().dataCenter()
+private fun Connection.srvAllAttachedStorageDomainsFromDataCenter(dataCenterId: String): AttachedStorageDomainsService =
+	this.srvDataCenter(dataCenterId).storageDomainsService()
+fun Connection.findAllAttachedStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomain>
+		= this.srvAllAttachedStorageDomainsFromDataCenter(dataCenterId).list().send().storageDomains()
+fun Connection.srvAttachedStorageDomainFromDataCenter(dataCenterId: String, storageDomainId: String): AttachedStorageDomainService
+		= this.srvAllAttachedStorageDomainsFromDataCenter(dataCenterId).storageDomainService(storageDomainId)
+fun Connection.findAttachedStorageDomainFromDataCenter(dataCenterId: String, storageDomainId: String): StorageDomain? = try {
+	srvAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId).get().send().storageDomain()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+fun Connection.activeAttachedStorageDomainFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean = try {
+	this.srvAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId).activate().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+fun Connection.deactiveAttachedStorageDomainFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean = try {
+	this.srvAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId).deactivate().force(true).send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+fun Connection.removeAttachedStorageDomainFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean = try {
+	this.srvAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId).remove().async(true).send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+private fun Connection.srvQossFromDataCenter(dataCenterId: String): QossService =
+	this.srvDataCenter(dataCenterId).qossService()
+fun Connection.findAllQossFromDataCenter(dataCenterId: String): List<Qos> =
+	this.srvQossFromDataCenter(dataCenterId).list().send().qoss()
+private fun Connection.srvQuotasFromDataCenter(dataCenterId: String): QuotasService =
+	this.srvDataCenter(dataCenterId).quotasService()
+fun Connection.findAllQuotasFromDataCenter(dataCenterId: String): List<Quota> =
+	this.srvQuotasFromDataCenter(dataCenterId).list().send().quotas()
+fun Connection.addQuotaFromDataCenter(dataCenterId: String, quota: Quota): Quota? = try {
+	this.srvQuotasFromDataCenter(dataCenterId).add().quota(quota).send().quota()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+private fun Connection.srvQuotaFromDataCenter(dataCenterId: String, quotaId: String): QuotaService =
+	this.srvQuotasFromDataCenter(dataCenterId).quotaService(quotaId)
+fun Connection.findQuotaFromDataCenter(dataCenterId: String, quotaId: String): Quota =
+	this.srvQuotaFromDataCenter(dataCenterId, quotaId).get().send().quota()
+private fun Connection.srvQuotaClusterLimitsFromDataCenter(dataCenterId: String, quotaId: String): QuotaClusterLimitsService =
+	this.srvQuotaFromDataCenter(dataCenterId, quotaId).quotaClusterLimitsService()
+fun Connection.findAllQuotaClusterLimitsFromDataCenter(dataCenterId: String, quotaId: String): List<QuotaClusterLimit> =
+	this.srvQuotaClusterLimitsFromDataCenter(dataCenterId, quotaId).list().send().limits()
+private fun Connection.srvQuotaStorageLimitsFromDataCenter(dataCenterId: String, quotaId: String): QuotaStorageLimitsService =
+	this.srvQuotaFromDataCenter(dataCenterId, quotaId).quotaStorageLimitsService()
+fun Connection.findAllQuotaStorageLimitsFromDataCenter(dataCenterId: String, quotaId: String): List<QuotaStorageLimit> =
+	this.srvQuotaStorageLimitsFromDataCenter(dataCenterId, quotaId).list().send().limits()
+//endregion
+
+//region: StorageDomain
+private fun Connection.srvStorageDomains(): StorageDomainsService =
+	this.systemService.storageDomainsService()
+fun Connection.findAllStorageDomains(searchQuery: String = ""): List<StorageDomain> =
+	if (searchQuery == "")	srvStorageDomains().list().search(searchQuery).send().storageDomains()
+	else 					srvStorageDomains().list().send().storageDomains()
+private fun Connection.srvStorageDomain(storageId: String): StorageDomainService =
+	this.srvStorageDomains().storageDomainService(storageId)
+fun Connection.findStorageDomain(storageId: String): StorageDomain =
+	this.srvStorageDomain(storageId).get().send().storageDomain()
+fun Connection.removeStorageDomain(storageId: String, format: Boolean): Boolean = try {
+	srvStorageDomain(storageId).remove().destroy(true).format(format)
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+
+	false
+}
+fun Connection.updateStorageDomain(storageId: String, storageDomain: StorageDomain): Boolean = try {
+	this.srvStorageDomain(storageId).update().storageDomain(storageDomain).send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+
+	false
+}
+fun Connection.addStorageDomain(storageDomain: StorageDomain): StorageDomain? = try {
+	this.srvStorageDomains().add().storageDomain(storageDomain).send().storageDomain()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+
+	null
+}
+private fun Connection.srvAllFilesFromStorageDomain(storageId: String): FilesService =
+	this.srvStorageDomain(storageId).filesService()
+fun Connection.findAllFilesFromStorageDomain(storageId: String): List<File> = try {
+	this.srvAllFilesFromStorageDomain(storageId).list().send().file()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	listOf()
+}
+private fun Connection.srvFileFromStorageDomain(storageId: String, fileId: String): FileService =
+	this.srvAllFilesFromStorageDomain(storageId).fileService(fileId)
+fun Connection.findFileFromStorageDomain(storageId: String, fileId: String): File =
+	this.srvFileFromStorageDomain(storageId, fileId).get().send().file()
+private fun Connection.srvDisksFromStorageDomain(storageId: String): StorageDomainDisksService =
+	this.srvStorageDomain(storageId).disksService()
+fun Connection.findAllDisksFromStorageDomain(storageId: String): List<Disk> =
+	this.srvDisksFromStorageDomain(storageId).list().send().disks()
+private fun Connection.srvAllDiskSnapshotsFromStorageDomain(storageId: String): DiskSnapshotsService =
+	this.srvStorageDomain(storageId).diskSnapshotsService()
+fun Connection.findAllDiskSnapshotsFromStorageDomain(storageId: String): List<DiskSnapshot> =
+	this.srvAllDiskSnapshotsFromStorageDomain(storageId).list().send().snapshots()
+private fun Connection.srvTemplatesFromStorageDomain(storageId: String): StorageDomainTemplatesService =
+	this.srvStorageDomain(storageId).templatesService()
+fun Connection.findAllTemplatesFromStorageDomain(storageId: String): List<Template> =
+	this.srvTemplatesFromStorageDomain(storageId).list().send().templates()
+//endregion
+
+//region: CPUProfile
+private fun Connection.srvCpuProfiles(): CpuProfilesService = systemService.cpuProfilesService()
+fun Connection.findAllCpuProfiles(): List<CpuProfile> =
+	this.srvCpuProfiles().list().send().profile()
+//endregion
+
+//region: DiskProfile
+private fun Connection.srvDiskProfiles(): DiskProfilesService =
+	systemService.diskProfilesService()
+fun Connection.findAllDiskProfiles(): List<DiskProfile> =
+	this.srvDiskProfiles().list().send().profile()
+
+private fun Connection.srvDiskProfile(diskProfileId: String): DiskProfileService =
+	this.srvDiskProfiles().diskProfileService(diskProfileId)
+fun Connection.findDiskProfile(diskProfileId: String): DiskProfile =
+	this.srvDiskProfile(diskProfileId).get().send().profile()
+//endregion
+
+//region: Disk
+private fun Connection.srvAllDisks(): DisksService = systemService.disksService()
+private fun Connection.srvDisk(diskId: String): DiskService = srvAllDisks().diskService(diskId)
+
+fun Connection.findAllDisks(searchQuery: String = ""): List<Disk> {
+	return if (searchQuery == "")	this.srvAllDisks().list().send().disks()
+	else							this.srvAllDisks().list().search(searchQuery).caseSensitive(false).send().disks()
+}
+fun Connection.addDisk(disk: Disk): Disk? = try {
+	this.srvAllDisks().add().disk(disk).send().disk()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+fun Connection.moveDisk(diskId: String, storageDomain: StorageDomain): Boolean = try {
+	this.srvDisk(diskId).move().storageDomain(storageDomain).send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+fun Connection.copyDisk(diskId: String, disk: Disk, storageDomain: StorageDomain): Boolean = try {
+	this.srvDisk(diskId).copy().disk(disk).storageDomain(storageDomain).send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+fun Connection.findDisk(diskId: String): Disk =
+	this.srvDisk(diskId).get().send().disk()
+fun Connection.removeDisk(diskId: String): Boolean = try {
+	this.srvDisk(diskId).remove().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+//endregion
+
+//region: VnicProfile
+private fun Connection.srvVnicProfiles(): VnicProfilesService = this.systemService.vnicProfilesService()
+fun Connection.findAllVnicProfiles(): List<VnicProfile> =
+	this.srvVnicProfiles().list().send().profiles()
+private fun Connection.srvVnicProfile(vnicProfileId: String): VnicProfileService =
+	this.srvVnicProfiles().profileService(vnicProfileId)
+fun Connection.findVnicProfile(vnicProfileId: String): VnicProfile? = try {
+	this.srvVnicProfile(vnicProfileId).get().send().profile()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+//endregion
+
+//region: Network
+private fun Connection.srvNetworks(): NetworksService = this.systemService.networksService()
+private fun Connection.srvNetwork(networkId: String): NetworkService = this.srvNetworks().networkService(networkId)
+private fun Connection.srvNetworkLabelsFromNetwork(networkId: String): NetworkLabelsService =
+	this.srvNetwork(networkId).networkLabelsService()
+
+fun Connection.findAllNetworks(): List<Network> =
+	this.srvNetworks().list().send().networks()
+fun Connection.findNetwork(networkId: String): Network? = try {
+	this.srvNetwork(networkId).get().send().network()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+fun Connection.addNetwork(network: Network): Network? = try {
+	this.srvNetworks().add().network(network).send().network()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+fun Connection.updateNetwork(networkId: String, network: Network): Network? = try {
+	this.srvNetwork(networkId).update().network(network).send().network()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+fun Connection.removeNetwork(networkId: String): Boolean = try {
+	this.srvNetwork(networkId).remove().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+fun Connection.findAllNetworkLabelsFromNetwork(networkId: String): List<NetworkLabel> = try {
+	this.srvNetworkLabelsFromNetwork(networkId).list().send().labels()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	listOf()
+}
+
+fun Connection.addNetworkLabelFromNetwork(networkId: String, networkLabel: NetworkLabel): NetworkLabel? = try {
+	this.srvNetworkLabelsFromNetwork(networkId).add().label(networkLabel).send().label()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+
+private fun Connection.srvNetworkLabelFromNetwork(networkId: String, networkLabelId: String): NetworkLabelService =
+	this.srvNetworkLabelsFromNetwork(networkId).labelService(networkLabelId)
+fun Connection.removeNetworkLabelFromNetwork(networkId: String, networkLabelId: String): Boolean = try {
+	this.srvNetworkLabelFromNetwork(networkId, networkLabelId).remove().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+private fun Connection.srvVnicProfilesFromNetwork(networkId: String): AssignedVnicProfilesService =
+	this.srvNetwork(networkId).vnicProfilesService()
+fun Connection.findAllVnicProfilesFromNetwork(networkId: String): List<VnicProfile>
+		= this.srvVnicProfilesFromNetwork(networkId).list().send().profiles()
+
+//endregion
+
+//region: OpenStackNetworkProvider
+private fun Connection.srvOpenStackNetworkProviders(): OpenstackNetworkProvidersService = systemService.openstackNetworkProvidersService()
+fun Connection.findAllOpenStackNetworkProviders(): List<OpenStackNetworkProvider> =
+	this.srvOpenStackNetworkProviders().list().send().providers()
+private fun Connection.srvOpenStackNetworkProvider(networkProviderId: String): OpenstackNetworkProviderService =
+	this.srvOpenStackNetworkProviders().providerService(networkProviderId)
+fun Connection.findOpenStackNetworkProvider(networkProviderId: String): OpenStackNetworkProvider =
+	this.srvOpenStackNetworkProvider(networkProviderId).get().send().provider()
+//endregion
+
+//region: OpenStackImageProvider
+private fun Connection.srvOpenStackImageProviders(): OpenstackImageProvidersService
+		= systemService.openstackImageProvidersService()
+fun Connection.findAllOpenStackImageProviders(): List<OpenStackImageProvider>
+		= this.srvOpenStackImageProviders().list().send().providers()
+private fun Connection.srvOpenStackImageProvider(openStackImageProviderId: String): OpenstackImageProviderService
+		= this.srvOpenStackImageProviders().providerService(openStackImageProviderId)
+fun Connection.findOpenStackImageProvider(openStackImageProviderId: String): OpenStackImageProvider? = try {
+	this.srvOpenStackImageProvider(openStackImageProviderId).get().send().provider()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+//endregion
+
+//region: OpenStackVolumeProvider
+private fun Connection.srvOpenStackVolumeProviders(): OpenstackVolumeProvidersService = this.systemService.openstackVolumeProvidersService()
+private fun Connection.srvOpenStackVolumeProvider(openStackVolumeProviderId: String): OpenstackVolumeProviderService = this.srvOpenStackVolumeProviders().providerService(openStackVolumeProviderId)
+
+fun Connection.findAllOpenStackVolumeProviders(): List<OpenStackVolumeProvider> =
+	this.srvOpenStackVolumeProviders().list().send().providers()
+fun Connection.findOpenStackVolumeProvider(openStackVolumeProviderId: String): OpenStackVolumeProvider =
+	this.srvOpenStackVolumeProvider(openStackVolumeProviderId).get().send().provider()
+//endregion
+
+//region: ExternalHostProvider
+private fun Connection.srvExternalHostProviders(): ExternalHostProvidersService = systemService.externalHostProvidersService()
+private fun Connection.srvExternalHostProvider(externalHostProviderId: String): ExternalHostProviderService = this.srvExternalHostProviders().providerService(externalHostProviderId)
+
+fun Connection.findAllExternalHostProviders(): List<ExternalHostProvider> =
+	this.srvExternalHostProviders().list().send().providers()
+fun Connection.findExternalHostProvider(externalHostProviderId: String): ExternalHostProvider =
+	this.srvExternalHostProvider(externalHostProviderId).get().send().provider()
+//endregion
+
+//region Template
+private fun Connection.srvTemplates(): TemplatesService = systemService().templatesService()
+private fun Connection.srvTemplate(templateId: String): TemplateService = systemService.templatesService().templateService(templateId)
+
+fun Connection.findAllTemplates(searchQuery: String = ""): List<Template> {
+	return if (searchQuery.isEmpty())	this.srvTemplates().list().send().templates()
+	else								this.srvTemplates().list().search(searchQuery).send().templates()
+}
+fun Connection.findTemplate(templateId: String): Template =
+	this.srvTemplate(templateId).get().send().template()
+fun Connection.removeTemplate(templateId: String): Boolean = try {
+	this.srvTemplate(templateId).remove().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+fun Connection.exportTemplate(templateId: String, exclusive: Boolean, toStorageDomain: StorageDomain): Boolean = try {
+	this.srvTemplate(templateId).export()
+		.exclusive(exclusive)
+		.storageDomain(toStorageDomain)
+		.send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+fun Connection.addTemplate(template: Template, clonePermissions: Boolean = false, seal: Boolean = false): Template? = try {
+	this.srvTemplates().add().template(template)
+		.clonePermissions(clonePermissions)
+		.seal(seal)
+		.send().template()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+
+	null
+}
+private fun Connection.srvWatchdogsFromTemplate(templateId: String): TemplateWatchdogsService = this.srvTemplate(templateId).watchdogsService()
+fun Connection.findAllWatchdogsFromTemplate(templateId: String): List<Watchdog> =
+	this.srvWatchdogsFromTemplate(templateId).list().send().watchdogs()
+private fun Connection.srvCdromsFromTemplate(templateId: String): TemplateCdromsService = this.srvTemplate(templateId).cdromsService()
+fun Connection.findAllCdromsFromTemplate(templateId: String): List<Cdrom> =
+	this.srvCdromsFromTemplate(templateId).list().send().cdroms()
+private fun Connection.srvDiskAttachmentsFromTemplate(templateId: String): TemplateDiskAttachmentsService = this.srvTemplate(templateId).diskAttachmentsService()
+fun Connection.findAllDiskAttachmentsFromTemplate(templateId: String): List<DiskAttachment> =
+	this.srvDiskAttachmentsFromTemplate(templateId).list().send().attachments()
+
+private fun Connection.srvNicsFromTemplate(templateId: String): TemplateNicsService =
+	this.srvTemplate(templateId).nicsService()
+fun Connection.findAllNicsFromTemplate(templateId: String): List<Nic> =
+	this.srvNicsFromTemplate(templateId).list().send().nics()
+//endregion
+
+//region: OperatingSystemInfo
+private fun Connection.srvOperatingSystems(): OperatingSystemsService = systemService.operatingSystemsService()
+fun Connection.findAllOperatingSystems(): List<OperatingSystemInfo> =
+	this.srvOperatingSystems().list().send().operatingSystem()
+//endregion
+
+
+
+
+//region: InstanceType
+private fun Connection.srvInstanceTypes(): InstanceTypesService = systemService.instanceTypesService()
+private fun Connection.srvInstanceType(instanceTypeId: String): InstanceTypeService = this.srvInstanceTypes().instanceTypeService(instanceTypeId)
+
+fun Connection.findAllInstanceTypes(): List<InstanceType> =
+	srvInstanceTypes().list().send().instanceType()
+fun Connection.findInstanceType(instanceTypeId: String): InstanceType =
+	this.srvInstanceType(instanceTypeId).get().send().instanceType()
+private fun Connection.srvNicsFromInstanceType(instanceTypeId: String): InstanceTypeNicsService =
+	this.srvInstanceType(instanceTypeId).nicsService()
+fun Connection.addNicForInstanceType(instanceTypeId: String, nic: Nic): Boolean = try {
+	this.srvNicsFromInstanceType(instanceTypeId).add().nic(nic).send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+
+fun Connection.addInstanceType(instanceType: InstanceType): InstanceType? = try {
+	this.srvInstanceTypes().add().instanceType(instanceType).send().instanceType()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+
+fun Connection.updateInstanceType(instanceType: InstanceType): InstanceType? = try {
+	this.srvInstanceType(instanceType.id()).update().send().instanceType()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+
+	null
+}
+fun Connection.removeInstanceType(instanceTypeId: String): Boolean = try {
+	this.srvInstanceType(instanceTypeId).remove().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+
+	false
+}
+//endregion
+
+
+//region: MacPool
+private fun Connection.srvMacPools(): MacPoolsService = systemService.macPoolsService()
+fun Connection.findAllMacPools(): List<MacPool> =
+	this.srvMacPools().list().send().pools()
+//endregion
+
+//region: Event
+private fun Connection.srvEvents(): EventsService = systemService.eventsService()
+fun Connection.findAllEvents(searchQuery: String = ""): List<Event> =
+	if (searchQuery == "")	this.srvEvents().list().send().events()
+	else 					this.srvEvents().list().search(searchQuery).caseSensitive(false).send().events()
+private fun Connection.srvEvent(eventId: String): EventService =
+	this.srvEvents().eventService(eventId)
+fun Connection.findEvent(eventId: String): Event =
+	this.srvEvent(eventId).get().send().event()
+//endregion
+
+//region: SystemPermissions
+private fun Connection.srvSystemPermissions(): SystemPermissionsService = systemService.permissionsService()
+fun Connection.findAllPermissions(): List<Permission> =
+	this.srvSystemPermissions().list().send().permissions()
+fun Connection.addPermission(permission: Permission): Permission? = try {
+	this.srvSystemPermissions().add().permission(permission).send().permission()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+fun Connection.srvSystemPermission(permissionId: String): PermissionService = this.srvSystemPermissions().permissionService(permissionId)
+fun Connection.removePermission(permissionId: String): Boolean = try {
+	this.srvSystemPermission(permissionId).remove().send()
+	true
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	false
+}
+//endregion
+
+//region: User
+private fun Connection.srvUsers(): UsersService = systemService().usersService()
+private fun Connection.srvUser(userId: String): UserService = this.srvUsers().userService(userId)
+
+fun Connection.findAllUsers(): List<User> = this.srvUsers().list().send().users()
+fun Connection.findUser(userId: String): User = this.srvUser(userId).get().send().user()
+fun Connection.addUser(user: User): User? = try {
+	this.srvUsers().add().user(user).send().user()
+} catch (e: Error) {
+	log.error(e.localizedMessage)
+	null
+}
+
+//endregion
+
+//region: Group
+private fun Connection.srvGroups(): GroupsService = this.systemService.groupsService()
+private fun Connection.srvGroup(groupId: String): GroupService = this.srvGroups().groupService(groupId)
+
+fun Connection.findAllGroups(): List<Group> =
+	this.srvGroups().list().send().groups()
+fun Connection.findGroup(groupId: String): Group =
+	this.srvGroup(groupId).get().send().get()
+//endregion
+
+//region: Role
+private fun Connection.srvRoles(): RolesService = this.systemService.rolesService()
+private fun Connection.srvRole(roleId: String): RoleService = this.srvRoles().roleService(roleId)
+
+fun Connection.findAllRoles(): List<Role> =
+	srvRoles().list().send().roles()
+fun Connection.findRole(roleId: String): Role =
+	this.srvRole(roleId).get().send().role()
+//endregion

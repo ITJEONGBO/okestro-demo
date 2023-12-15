@@ -4,6 +4,7 @@ import com.itinfo.model.karajan.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -350,8 +351,8 @@ public class Ffd {
 
 	static class DescendingHostComparator implements Comparator<HostVo> {
 		public int compare(HostVo firstHost, HostVo secondHost) {
-			BigDecimal firstValue = firstHost.getMemoryFree().divide(firstHost.getMemoryTotal(), 2, 4);
-			BigDecimal secondValue = secondHost.getMemoryFree().divide(secondHost.getMemoryTotal(), 2, 4);
+			BigDecimal firstValue = firstHost.getMemoryFree().divide(firstHost.getMemoryTotal(), 2, RoundingMode.HALF_UP);
+			BigDecimal secondValue = secondHost.getMemoryFree().divide(secondHost.getMemoryTotal(), 2, RoundingMode.HALF_UP);
 			return firstValue.compareTo(secondValue);
 		}
 	}

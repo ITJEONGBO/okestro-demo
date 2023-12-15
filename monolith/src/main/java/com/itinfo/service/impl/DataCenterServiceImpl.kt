@@ -1,6 +1,7 @@
 package com.itinfo.service.impl
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.findAllDataCenters
 import com.itinfo.model.DataCenterVo
 import com.itinfo.model.toDataCenterVos
 import com.itinfo.service.DataCenterService
@@ -21,14 +22,13 @@ import org.springframework.stereotype.Service
 @Service
 class DataCenterServiceImpl : BaseService(), DataCenterService {
 	@Autowired private lateinit var adminConnectionService: AdminConnectionService
+	@Autowired private lateinit var connectionService: ConnectionService
 
-	@Autowired
-	private val connectionService: ConnectionService? = null
 	override fun retrieveDataCenters(): List<DataCenterVo> {
 		log.info("... retrieveDataCenters")
-		val connection = connectionService!!.connection
-		val dataCenters = sysSrvHelper.findAllDataCenters(connection)
-		return dataCenters.toDataCenterVos(connection)
+		val conn = connectionService.getConnection()
+		val dataCenters = conn.findAllDataCenters()
+		return dataCenters.toDataCenterVos(conn)
 	}
 
 	companion object {

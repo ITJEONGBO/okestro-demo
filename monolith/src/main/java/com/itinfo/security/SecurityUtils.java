@@ -154,13 +154,4 @@ public class SecurityUtils {
 		}
 		return result;
 	}
-
-	public static String changeTimeFormat(String time) {
-		return time.substring(0, 4) + "-"
-				+ time.substring(4, 6) + "-"
-				+ time.substring(6, 8) + " "
-				+ time.substring(8, 10) + ":"
-				+ time.substring(10, 12) + ":"
-				+ time.substring(12, 14);
-	}
 }

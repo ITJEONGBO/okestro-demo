@@ -18,8 +18,6 @@
 		<intercept-url pattern="/login/**" access="permitAll" />
 		<intercept-url pattern="/resources/**" access="permitAll" />
 		<intercept-url pattern="/js/**" access="permitAll" />
-
-
 		<intercept-url pattern="/vendors/**" access="permitAll" />
 		<intercept-url pattern="/**" access="hasRole('ROLE_USER')" />
 

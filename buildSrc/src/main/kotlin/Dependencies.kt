@@ -3,8 +3,10 @@ import org.gradle.api.artifacts.dsl.DependencyHandler
 object Dependencies {
     val tomcatEmbedded = listOf(
         "org.apache.tomcat.embed:tomcat-embed-core:${Versions.tomcatEmbedded}",
-        "org.apache.tomcat.embed:tomcat-embed-logging-juli:${Versions.tomcatEmbedded}",
-        "org.apache.tomcat.embed:tomcat-embed-jasper:${Versions.tomcatEmbedded}"
+        "org.apache.tomcat.embed:tomcat-embed-el:${Versions.tomcatEmbedded}",
+        "org.apache.tomcat.embed:tomcat-embed-jasper:${Versions.tomcatEmbedded}",
+        "org.apache.tomcat.embed:tomcat-embed-websocket:${Versions.tomcatEmbedded}"
+
     )
     val spring = listOf(
         "org.springframework:spring-aop:${Versions.spring}",
@@ -21,15 +23,51 @@ object Dependencies {
     )
     val springTest = "org.springframework:spring-test:${Versions.spring}"
     val springSecurity = listOf(
-        "org.springframework.security:spring-security-acl:${Versions.springSecurity}",
-        "org.springframework.security:spring-security-config:${Versions.springSecurity}",
-        "org.springframework.security:spring-security-core:${Versions.springSecurity}",
-        "org.springframework.security:spring-security-taglibs:${Versions.springSecurity}",
-        "org.springframework.security:spring-security-web:${Versions.springSecurity}",
+        "org.springframework.boot:spring-boot-starter-security:${Versions.springBoot}",
+//        "org.springframework.security:spring-security-acl:${Versions.springSecurity}",
+//        "org.springframework.security:spring-security-config:${Versions.springSecurity}",
+//        "org.springframework.security:spring-security-core:${Versions.springSecurity}",
+//        "org.springframework.security:spring-security-taglibs:${Versions.springSecurity}",
+//        "org.springframework.security:spring-security-web:${Versions.springSecurity}",
+    )
+    val springBoot = listOf(
+        "org.springframework.boot:spring-boot-starter:${Versions.springBoot}",
+        "org.springframework.boot:spring-boot-starter-jdbc:${Versions.springBoot}",
+        "org.springframework.boot:spring-boot-starter-data-jpa:${Versions.springBoot}",
+        "org.springframework.boot:spring-boot-starter-data-jdbc:${Versions.springBoot}",
+        "org.springframework.boot:spring-boot-starter-web-services:${Versions.springBoot}",
+        "org.springframework.boot:spring-boot-starter-websocket:${Versions.springBoot}",
+        "org.springframework.boot:spring-boot-starter-log4j2:${Versions.springBoot}",
+    )
+    val springBootWeb = "org.springframework.boot:spring-boot-starter-web:${Versions.springBoot}"
+
+    val springBootAnnotation =
+        "org.springframework.boot:spring-boot-configuration-processor:${Versions.springBoot}"
+    val springBootTomcat =
+        "org.springframework.boot:spring-boot-starter-tomcat:${Versions.springBoot}"
+    val springBootDevtools =
+        "org.springframework.boot:spring-boot-devtools:${Versions.springBoot}"
+    val jackson = listOf(
+        "com.fasterxml.jackson.core:jackson-core:${Versions.jackson}",
+        "com.fasterxml.jackson.core:jackson-databind:${Versions.jackson}",
+        "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${Versions.jackson}",
+        "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${Versions.jackson}",
+        "com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.jackson}",
+        "com.fasterxml.jackson.module:jackson-module-parameter-names:${Versions.jackson}",
+    )
+    val jacksonAnnotation =
+        "com.fasterxml.jackson.core:jackson-annotations:${Versions.jackson}"
+
+    val springBootTest = listOf(
+        "org.springframework.boot:spring-boot-starter-test:${Versions.springBoot}",
     )
     val swagger2 = listOf(
         "io.springfox:springfox-swagger2:${Versions.swagger2}",
         "io.springfox:springfox-swagger-ui:${Versions.swagger2}"
+    )
+    val swagger3 = listOf(
+        "io.springfox:springfox-boot-starter:${Versions.swagger3}",
+        "io.springfox:springfox-swagger-ui:${Versions.swagger3}"
     )
     var ovirt = listOf(
         "org.ovirt.engine.api:sdk:${Versions.ovirt}",
@@ -52,21 +90,20 @@ object Dependencies {
         "org.mybatis:mybatis-spring:${Versions.mybatisSpring}"
     )
     val log4j = listOf(
-        "log4j:log4j:${Versions.log4j}",
-        "org.apache.logging.log4j:log4j-api:${Versions.log4jApache}",
         "org.apache.logging.log4j:log4j-core:${Versions.log4jApache}",
+        "org.apache.logging.log4j:log4j-api:${Versions.log4jApache}",
+        "org.apache.logging.log4j:log4j-jul:${Versions.log4jApache}",
         "org.apache.logging.log4j:log4j-slf4j-impl:${Versions.log4jApache}",
     )
     val webjars = listOf(
         "org.webjars:jquery:${Versions.jquery}",
         "org.webjars:bootstrap:${Versions.bootstrap}",
     )
-    val jdbc = listOf(
-        "com.h2database:h2:${Versions.h2}",
-        "org.postgresql:postgresql:${Versions.postgresql}",
-        "commons-dbcp:commons-dbcp:${Versions.commonsDbcp}",
-    )
+    val jdbc =
+        "org.postgresql:postgresql:${Versions.postgresql}"
+
     val commons = listOf(
+        "commons-dbcp:commons-dbcp:${Versions.commonsDbcp}",
         "commons-configuration:commons-configuration:${Versions.commonsConf}",
         "commons-fileupload:commons-fileupload:${Versions.commonsFileUpload}",
         "org.apache.commons:commons-lang3:3.4",
@@ -94,12 +131,7 @@ object Dependencies {
     val lombok = "org.projectlombok:lombok:${Versions.lombok}"
     val kotlinStdlib = listOf(
         "org.jetbrains.kotlin:kotlin-reflect:${Versions.kotlin}",
-        "org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}",
-        "org.jetbrains.kotlin:kotlin-stdlib-common:${Versions.kotlin}",
-        "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}",
         "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}",
-        "org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:${Versions.kotlin}",
-        "org.jetbrains.kotlin:kotlin-sam-with-receiver:${Versions.kotlin}",
     )
     val junit = listOf(
         "junit:junit:${Versions.junit}"

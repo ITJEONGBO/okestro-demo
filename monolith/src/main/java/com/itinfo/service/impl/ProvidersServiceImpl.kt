@@ -1,26 +1,42 @@
 package com.itinfo.service.impl
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.model.*
+import com.itinfo.findAllExternalHostProviders
+import com.itinfo.findAllOpenStackImageProviders
+import com.itinfo.findAllOpenStackNetworkProviders
+import com.itinfo.findAllOpenStackVolumeProviders
+
 import com.itinfo.service.ProvidersService
 import com.itinfo.service.engine.ConnectionService
+
+import com.itinfo.model.ProviderVo
+import com.itinfo.model.toProviderVosWithExternalHost
+import com.itinfo.model.toProviderVosWithOpenStackImage
+import com.itinfo.model.toProviderVosWithOpenStackNetwork
+import com.itinfo.model.toProviderVosWithOpenStackVolume
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
+/**
+ * [ProvidersServiceImpl]
+ * 프로바이더 관리 서비스 응용체
+ *
+ * @author chlee
+ * @since 2023.12.07
+ */
 @Service
 class ProvidersServiceImpl : BaseService(), ProvidersService {
 
 	@Autowired private lateinit var connectionService: ConnectionService
-
 	override fun retrieveProviders(): List<ProviderVo> {
 		log.info("... retrieveProviders")
-		val connection = connectionService.connection
+		val c = connectionService.getConnection()
 
-		val externalHostProviders = sysSrvHelper.findAllExternalHostProviders(connection)
-		val openStackImageProviders = sysSrvHelper.findAllOpenStackImageProviders(connection)
-		val openStackNetworkProviders = sysSrvHelper.findAllOpenStackNetworkProviders(connection)
-		val openStackVolumeProviders = sysSrvHelper.findAllOpenStackVolumeProviders(connection)
+		val externalHostProviders = c.findAllExternalHostProviders()
+		val openStackImageProviders = c.findAllOpenStackImageProviders()
+		val openStackNetworkProviders = c.findAllOpenStackNetworkProviders()
+		val openStackVolumeProviders = c.findAllOpenStackVolumeProviders()
 
 		val targets: MutableList<ProviderVo> = arrayListOf()
 		targets.addAll(externalHostProviders.toProviderVosWithExternalHost())

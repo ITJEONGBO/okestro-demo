@@ -24,16 +24,17 @@
 
 - 🛠Intellij IDEA 
 - ☕JDK (OpenJDK 1.8_201)
-- 🍃Spring (`4.3.14.RELEASE`)
+- 🍃Spring (`5.3.20`)
+- 🍃Spring Boot (`2.7.0`)
 - 🐘Gradle (`7.4.2`)
-- 😺Apache Tomcat (`8.5.38`)
-- 🛅H2 Database
-- Grafana (_Optional_)
+- 😺Apache Tomcat (`9.0.63`)
+- ~~🛅H2 Database~~
 - 🐳Docker
   - `tomcat:8.5.38-jre8-alpine` (ssl port: `8443`)
   - `postgres:10.12-alpine` (jdbc port: `5432`)
   - ...
-
+- Grafana (ovirt안에 내장)
+- 
 ---
 
 ## 🐘Gradle
@@ -96,7 +97,9 @@ Run this script to create artifact
 
 ---
 
-## 🛅H2 
+## ~~🛅H2~~ 
+
+> 더이상 사용하지 않음
 
 | title | description |
 | :---: | :--- |
@@ -170,6 +173,40 @@ docker run -d -it ^
   postgres:10.12-alpine
 ```
 
+### (사용자 정보 접근을 위한) PostgresDB 초기 구성
+
+> Postgres 관리자 권한으로 로그인
+
+```sh
+su - postgres # postgres 사용자로 su 로그인
+psql -U postgres -d engine # psql로 로그인 (비밀번호X)
+```
+
+```sql
+GRANT ALL ON SCHEMA aaa_jdbc TO okestro;
+#
+# GRANT
+```
+
+### 유용한 쿼리
+
+```sql
+# DESCRIBE 테이블
+SELECT 
+   table_name, column_name, data_type 
+FROM 
+   information_schema.columns
+WHERE 1=1
+AND table_schema = 'aaa_jdbc'
+AND table_name = 'users';
+```
+
+```sh
+cd /etc/pki/ovirt-engine/certs
+```
+---
+
+
 ## 🎯TODO
 
 - [ ] 소스코드 초기상태 복구
@@ -180,9 +217,22 @@ docker run -d -it ^
   - [ ] model 안정화
 - [ ] package별 endpoint구현
 - [ ] docker 생성 자동화 스크립트 (환경변수 지정 > ovirt ip주소)
-- [x] swagger 구성
+- [x] swagger 구성 (`/swagger-ui.html`)
 - [ ] dokka 구성
 
+---
+
+## Spring Boot 구성 
+
+https://github.com/Gaia3D/mago3d 참고
+
+---
+
+## Swagger 3 
+
+- 접속URL: `/swagger-ui/index.html`
+
+---
 
 ## Dependencies 주입
 

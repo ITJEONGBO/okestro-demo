@@ -2,6 +2,11 @@ package com.itinfo.model.karajan
 
 import com.itinfo.SystemServiceHelper
 import com.itinfo.model.SystemPropertiesVo
+import com.itinfo.findAllClusters
+import com.itinfo.findAllHosts
+import com.itinfo.findAllVms
+import com.itinfo.findAllStatisticsFromHost
+import com.itinfo.findAllStatisticsFromVm
 
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.types.Cluster
@@ -24,10 +29,10 @@ data class KarajanVo(
 )
 
 fun SystemPropertiesVo.toKarajanVo(connection: Connection): KarajanVo {
-	val clusters: List<Cluster>
-		= sysSrvH.findAllClusters(connection)
-	val tgtClusters: List<ClusterVo>
-		= clusters.toClusterVos(connection)
+	val clusters: List<Cluster> =
+		connection.findAllClusters()
+	val tgtClusters: List<ClusterVo> =
+		clusters.toClusterVos(connection)
 	return KarajanVo(
 		tgtClusters,
 		cpuThreshold,
@@ -43,15 +48,15 @@ data class ClusterVo(
 	, var vms: List<WorkloadVmVo> = listOf()
 )
 
-fun Cluster.toClusterVo(connection: Connection): ClusterVo {
-	val hosts2Add: List<Host>
-		= sysSrvH.findAllHosts(connection, "cluster=${name()}")
-	val hostVos2Add: List<HostVo>
-		= hosts2Add.toHostVos(connection)
-	val vms2Add: List<Vm>
-		= sysSrvH.findAllVms(connection, "cluster=${name()}")
-	val workloadVos2Add: List<WorkloadVmVo>
-		= vms2Add.toWorkloadVmVos(connection)
+fun Cluster.toClusterVo(c: Connection): ClusterVo {
+	val hosts2Add: List<Host> =
+		c.findAllHosts("cluster=${name()}")
+	val hostVos2Add: List<HostVo> =
+		hosts2Add.toHostVos(c)
+	val vms2Add: List<Vm> =
+		c.findAllVms("cluster=${name()}")
+	val workloadVos2Add: List<WorkloadVmVo> =
+		vms2Add.toWorkloadVmVos(c)
 
 	return ClusterVo(
 		if (idPresent()) id() else ""				// id
@@ -159,17 +164,17 @@ data class HostVo(
 	var vms: List<VmVo> = listOf()
 )
 
-fun Host.toHostVo(connection: Connection): HostVo {
-	val vms: List<Vm>
-		= sysSrvH.findAllVms(connection, "Hosts.name=${name()}").filter {
+fun Host.toHostVo(c: Connection): HostVo {
+	val vms: List<Vm> =
+		c.findAllVms("Hosts.name=${name()}").filter {
 			it.cpuPresent() && it.cpu().topologyPresent()
 		}
-	val vmVos: List<VmVo>
-		= vms.toVmVos(connection)
-	val cpuVmUsed: Int
-		= vmVos.map { it.cores + it.sockets + it.threads }.reduceOrNull { acc, i -> acc + i } ?: 0
-	val stats
-			= sysSrvH.findAllStatisticsFromHost(connection, id())
+	val vmVos: List<VmVo> =
+		vms.toVmVos(c)
+	val cpuVmUsed: Int =
+		vmVos.map { it.cores + it.sockets + it.threads }.reduceOrNull { acc, i -> acc + i } ?: 0
+	val stats =
+		c.findAllStatisticsFromHost(id())
 	stats.forEach(Consumer { _: Statistic? ->
 
 	})
@@ -222,7 +227,7 @@ data class VmVo(
 )
 
 fun Vm.toVmVo(connection: Connection) : VmVo {
-	val stats = sysSrvH.findAllStatisticsFromVm(connection, id())
+	val stats = connection.findAllStatisticsFromVm(id())
 	stats.forEach(Consumer { _: Statistic? ->
 	})
 
@@ -272,8 +277,8 @@ data class WorkloadVmVo(
 )
 
 fun Vm.toWorkloadVmVo(connection: Connection, jdbcTemplate: JdbcTemplate? = null): WorkloadVmVo {
-	val stats: List<Statistic>
-		= sysSrvH.findAllStatisticsFromVm(connection, id())
+	val stats: List<Statistic> =
+		connection.findAllStatisticsFromVm(id())
 	val histories: List<HistoryVo>
 		= arrayListOf()
 
@@ -309,10 +314,10 @@ data class WorkloadVo(
 )
 
 fun SystemPropertiesVo.toWorkloadVo(connection: Connection): WorkloadVo {
-	val clusters: List<Cluster>
-		= sysSrvH.findAllClusters(connection)
-	val tgtClusters: List<ClusterVo>
-		= clusters.toClusterVos(connection)
+	val clusters: List<Cluster> =
+		connection.findAllClusters()
+	val tgtClusters: List<ClusterVo> =
+		clusters.toClusterVos(connection)
 	return WorkloadVo(
 		tgtClusters,
 		cpuThreshold,

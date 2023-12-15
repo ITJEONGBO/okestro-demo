@@ -1,5 +1,12 @@
 package com.itinfo
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+
+val gson: Gson
+	get() = GsonBuilder()
+		.setPrettyPrinting()
+		.create()
 /**
  * [ItInfoConstant]
  * 관련 상수
@@ -9,7 +16,7 @@ package com.itinfo
  */
 object ItInfoConstant {
 	const val RESULT_KEY = "resultKey"
-	const val JSON_VIEW = "jsonView"
+//	const val JSON_VIEW = "jsonView"
 
 	const val MENU_SIZE_M = "nav-md"
 	const val MENU_SIZE_S = "nav-sm"
