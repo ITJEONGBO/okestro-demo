@@ -58,5 +58,8 @@ public class HostVO {
     private HostSwVO hostSwVO;
 
     List<VmVO> vmVOList;
+    List<HostNicVO> hostNicVOList;
+    List<HostDeviceVO> hostDeviceVOList;
+    List<AffinityLabelVO> affinityLabelVOList;
 
 }

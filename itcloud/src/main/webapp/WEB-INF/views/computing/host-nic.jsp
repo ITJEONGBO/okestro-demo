@@ -102,21 +102,18 @@
         </tr>
         <tr><td colspan="9"></td></tr>
 
-        <c:if test="${empty vm}">
+        <c:if test="${empty nic}">
             <tr>
-                <td>가상머신이 없음</td>
+                <td>nic 없음</td>
             </tr>
         </c:if>
-        <c:forEach var="vm" items="${vm.vmVOList}" varStatus="status">
+        <c:forEach var="nic" items="${nic.hostNicVOList}" varStatus="status">
             <tr>
                 <td colspan="9">
-                    이름: &nbsp;${vm.vmName} <br>
-                    상태: &nbsp;${vm.status} <br>
-                    클러스터: ${vm.clusterName} <br>
-                    ip 주소(v4): &nbsp;${vm.ipv4} <br>
-                    ip 주소(v6): &nbsp;${vm.ipv6} <br>
-                    fqdn: ${vm.fqdn} <br>
-                    start타임: &nbsp;${vm.startTime} <br>
+                    id: &nbsp;${nic.id} <br>
+                    이름: &nbsp;${nic.name} <br>
+                    MAC: &nbsp;${nic.macAddress} <br>
+                    속도: &nbsp;${nic.speed} <br>
                 </td>
             </tr>
         </c:forEach>

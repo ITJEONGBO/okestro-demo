@@ -35,4 +35,6 @@ public class AffinityGroupVO {
 //    private List<VmVO> vmVOList;
 //    private List<HostVO> hostVOList;
 
+
+
 }

@@ -178,7 +178,7 @@ public class ClusterServiceImpl implements ItClusterService {
                 networkVO.setStatus(network.status().value());
                 networkVO.setDescription(network.description());
 
-                // 역할
+                // 역할 일단 대충나오게만 하기 이후 변경 필요
 //                System.out.println("------"+network.usages().stream().count());
                 for(int i=0; i < (int) network.usages().stream().count(); i++){
                     if(network.usages().get(i).value().equals("vm")) {

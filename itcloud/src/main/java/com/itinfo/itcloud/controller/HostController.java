@@ -101,12 +101,60 @@ public class HostController {
         return "computing/host-vm";
     }
 
-    //    http://localhost:8080/computing/host/status?id=
     @GetMapping("/computing/host/vmstatus")
     @ResponseBody
     public HostVO vm(String id){
         log.info("----- host vm 일반 불러오기: " + id);
         return itHostService.getVm(id);
+    }
+
+    @GetMapping("/computing/host-nic")
+    public String nic(String id, Model model){
+        HostVO nic = itHostService.getNic(id);
+        model.addAttribute("nic", nic);
+        model.addAttribute("id", id);
+
+        return "computing/host-nic";
+    }
+
+    @GetMapping("/computing/host/nicstatus")
+    @ResponseBody
+    public HostVO nic(String id){
+        log.info("----- host nic 일반 불러오기: " + id);
+        return itHostService.getNic(id);
+    }
+
+
+    @GetMapping("/computing/host-device")
+    public String device(String id, Model model){
+        HostVO device = itHostService.getHostDevice(id);
+        model.addAttribute("device", device);
+        model.addAttribute("id", id);
+
+        return "computing/host-device";
+    }
+
+    @GetMapping("/computing/host/devicestatus")
+    @ResponseBody
+    public HostVO device(String id){
+        log.info("----- host device 일반 불러오기: " + id);
+        return itHostService.getHostDevice(id);
+    }
+
+    @GetMapping("/computing/host-aff")
+    public String aff(String id, Model model){
+        HostVO aff = itHostService.getAffinitylabels(id);
+        model.addAttribute("aff", aff);
+        model.addAttribute("id", id);
+
+        return "computing/host-aff";
+    }
+
+    @GetMapping("/computing/host/affstatus")
+    @ResponseBody
+    public HostVO aff(String id){
+        log.info("----- host aff 일반 불러오기: " + id);
+        return itHostService.getAffinitylabels(id);
     }
 
 

@@ -102,21 +102,16 @@
         </tr>
         <tr><td colspan="9"></td></tr>
 
-        <c:if test="${empty vm}">
+        <c:if test="${empty aff}">
             <tr>
-                <td>가상머신이 없음</td>
+                <td>aff 없음</td>
             </tr>
         </c:if>
-        <c:forEach var="vm" items="${vm.vmVOList}" varStatus="status">
+        <c:forEach var="aff" items="${aff.affinityLabelVOList}" varStatus="status">
             <tr>
                 <td colspan="9">
-                    이름: &nbsp;${vm.vmName} <br>
-                    상태: &nbsp;${vm.status} <br>
-                    클러스터: ${vm.clusterName} <br>
-                    ip 주소(v4): &nbsp;${vm.ipv4} <br>
-                    ip 주소(v6): &nbsp;${vm.ipv6} <br>
-                    fqdn: ${vm.fqdn} <br>
-                    start타임: &nbsp;${vm.startTime} <br>
+                    아이디: &nbsp;${aff.id} <br>
+                    이름: &nbsp;${aff.name} <br>
                 </td>
             </tr>
         </c:forEach>

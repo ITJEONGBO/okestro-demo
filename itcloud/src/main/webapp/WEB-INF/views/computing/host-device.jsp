@@ -87,7 +87,7 @@
         <li><a class="side" href="/storage">Storage</a></li>
     </ul>
 </div>
-
+&nbsp;
 <h2 align="center">호스트</h2>
 <div class="cluster-container">
     <table align="center">
@@ -100,24 +100,26 @@
             <td><a href="/computing/host-aff?id=${id}">선호도 레이블</a></td>
             <td>이벤트</td>
         </tr>
-        <tr><td colspan="9"></td></tr>
-
-        <c:if test="${empty vm}">
+        <tr> <td colspan="9"></td> </tr>
+        <tr>
+            <td>이름</td>
+            <td>기능</td>
+            <td>벤더</td>
+            <td>제품</td>
+            <td>드라이버</td>
+        </tr>
+        <c:if test="${empty device}">
             <tr>
-                <td>가상머신이 없음</td>
+                <td>nic 없음</td>
             </tr>
         </c:if>
-        <c:forEach var="vm" items="${vm.vmVOList}" varStatus="status">
+        <c:forEach var="device" items="${device.hostDeviceVOList}" varStatus="status">
             <tr>
-                <td colspan="9">
-                    이름: &nbsp;${vm.vmName} <br>
-                    상태: &nbsp;${vm.status} <br>
-                    클러스터: ${vm.clusterName} <br>
-                    ip 주소(v4): &nbsp;${vm.ipv4} <br>
-                    ip 주소(v6): &nbsp;${vm.ipv6} <br>
-                    fqdn: ${vm.fqdn} <br>
-                    start타임: &nbsp;${vm.startTime} <br>
-                </td>
+                <td>${device.name}</td>
+                <td>${device.capability}</td>
+                <td>${device.vendor}</td>
+                <td>${device.product}</td>
+                <td>${device.driver}</td>
             </tr>
         </c:forEach>
     </table>

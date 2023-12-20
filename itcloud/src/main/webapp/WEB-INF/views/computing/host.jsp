@@ -94,8 +94,8 @@
         <tr>
             <td><a href="/computing/host?id=${id}">일반</a></td>
             <td><a href="/computing/host-vm?id=${id}">가상머신</a></td>
-            <td><a href="/computing/host-network?id=${id}">네트워크 인터페이스</a></td>
-            <td><a href="/computing/host-host?id=${id}">호스트 장치</a></td>
+            <td><a href="/computing/host-nic?id=${id}">네트워크 인터페이스</a></td>
+            <td><a href="/computing/host-device?id=${id}">호스트 장치</a></td>
             <td>권한</td>
             <td><a href="/computing/host-aff?id=${id}">선호도 레이블</a></td>
             <td>이벤트</td>

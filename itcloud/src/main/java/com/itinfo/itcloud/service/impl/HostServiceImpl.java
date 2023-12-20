@@ -1,9 +1,6 @@
 package com.itinfo.itcloud.service.impl;
 
-import com.itinfo.itcloud.model.computing.HostHwVO;
-import com.itinfo.itcloud.model.computing.HostSwVO;
-import com.itinfo.itcloud.model.computing.HostVO;
-import com.itinfo.itcloud.model.computing.VmVO;
+import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItHostService;
 import org.ovirt.engine.sdk4.Connection;
@@ -12,7 +9,6 @@ import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -334,12 +330,66 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public HostVO getNic(String id) {
-        return null;
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        HostVO hostVO = new HostVO();
+        hostVO.setId(id);
+
+        List<HostNicVO> hostNicVOList = new ArrayList<>();
+        HostNicVO hostNicVO = null;
+        List<HostNic> hostNicList =
+                ((HostNicsService.ListResponse)systemService.hostsService().hostService(id).nicsService().list().send()).nics();
+
+        for(HostNic hostNic : hostNicList){
+            hostNicVO = new HostNicVO();
+
+            hostNicVO.setId(hostNic.id());
+            hostNicVO.setName(hostNic.name());
+            hostNicVO.setMacAddress(hostNic.mac().address());
+            hostNicVO.setSpeed(hostNic.speed());
+
+            hostNicVOList.add(hostNicVO);
+        }
+        hostVO.setHostNicVOList(hostNicVOList);
+        return hostVO;
     }
 
     @Override
     public HostVO getHostDevice(String id) {
-        return null;
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        HostVO hostVO = new HostVO();
+        hostVO.setId(id);
+
+        List<HostDeviceVO> hostDeviceVOList = new ArrayList<>();
+        HostDeviceVO hostDeviceVO = null;
+
+        List<HostDevice> hostDeviceList =
+                ((HostDevicesService.ListResponse)systemService.hostsService().hostService(id).devicesService().list().send()).devices();
+
+        for(HostDevice hostDevice : hostDeviceList){
+            hostDeviceVO = new HostDeviceVO();
+
+            hostDeviceVO.setName(hostDevice.name());
+            hostDeviceVO.setCapability(hostDevice.capability());
+
+            if(hostDevice.vendor() != null){
+                hostDeviceVO.setVendor(hostDevice.vendor().name());
+            }
+            if(hostDevice.product() != null){
+                hostDeviceVO.setProduct(hostDevice.product().name());
+            }
+            if(hostDevice.driver() != null){
+                hostDeviceVO.setDriver(hostDevice.driver());
+            }
+
+            hostDeviceVOList.add(hostDeviceVO);
+        }
+        hostVO.setHostDeviceVOList(hostDeviceVOList);
+        // hostvo를 쓸필요없는데 왜 쓰고 이썽쓸까
+        return hostVO;
     }
 
     @Override
@@ -349,7 +399,29 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public HostVO getAffinitylabels(String id) {
-        return null;
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        HostVO hostVO = new HostVO();
+        hostVO.setId(id);
+
+        List<AffinityLabelVO> affinityLabelVOList = new ArrayList<>();
+        AffinityLabelVO affinityLabelVO = null;
+
+        List<AffinityLabel> affinityLabelList =
+                ((AffinityLabelsService.ListResponse)systemService.hostsService().hostService(id).affinityLabelsService().list().send()).labels();
+
+        for(AffinityLabel a : affinityLabelList) {
+            affinityLabelVO = new AffinityLabelVO();
+
+            affinityLabelVO.setId(a.id());
+            affinityLabelVO.setName(a.name());
+
+            affinityLabelVOList.add(affinityLabelVO);
+        }
+
+        hostVO.setAffinityLabelVOList(affinityLabelVOList);
+        return hostVO;
     }
 
 
