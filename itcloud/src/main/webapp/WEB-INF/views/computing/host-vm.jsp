@@ -66,7 +66,7 @@
 
         tr,td{
             border: #535c55 1px solid;
-            text-align: center;
+            /*text-align: center;*/
             padding: 10px;
         }
 
@@ -78,56 +78,54 @@
 <header>
     <h1>&nbsp;&nbsp; It Cloud</h1>
 </header>
-
-<ul>
-    <li><a class="side" href="/computing/datacenters">DataCenter</a></li>
-    <li><a class="side" href="/computing/clusters">Clsuter</a></li>
-    <li><a class="side" href="/computing/hosts">Host</a></li>
-    <li><a class="side" href="/computing/vms">vm</a></li>
-    <li><a class="side" href="/storage">Storage</a></li>
-</ul>
+<div>
+    <ul>
+        <li><a class="side" href="/computing/datacenters">DataCenter</a></li>
+        <li><a class="side" href="/computing/clusters">Clsuter</a></li>
+        <li><a class="side" href="/computing/hosts">Host</a></li>
+        <li><a class="side" href="/computing/vms">vm</a></li>
+        <li><a class="side" href="/storage">Storage</a></li>
+    </ul>
+</div>
 
 <h2 align="center">호스트</h2>
 <div class="cluster-container">
     <table align="center">
         <tr>
-            <td></td>
-            <td></td>
-            <td>이름</td>
-            <td>코멘트</td>
-            <td>호스트이름/IP</td>
-            <td>클러스터</td>
-            <td>데이터 센터</td>
-            <td>상태</td>
-            <td>가상머신</td>
-            <td>SPM</td>
+            <td><a href="/computing/host?id=${id}">일반</a></td>
+            <td><a href="/computing/host-vm?id=${id}">가상머신</a></td>
+            <td><a href="/computing/host-network?id=${id}">네트워크 인터페이스</a></td>
+            <td><a href="/computing/host-host?id=${id}">호스트 장치</a></td>
+            <td>권한</td>
+            <td><a href="/computing/host-aff?id=${id}">선호도 레이블</a></td>
+            <td>이벤트</td>
         </tr>
+        <tr><td colspan="9"></td></tr>
 
-        <c:if test="${empty hostVOList}">
+        <c:if test="${empty vm}">
             <tr>
-                <td colspan="10">host 없음</td>
+                <td>가상머신이 없음</td>
             </tr>
         </c:if>
-        <c:forEach var="hostVOList" items="${hostVOList}" varStatus="status">
+        <c:forEach var="vm" items="${vm.vmVOList}" varStatus="status">
             <tr>
-                <td>${hostVOList.status}</td>
-                <td></td>
-                <td> <a href="/computing/host?id=${hostVOList.id}">${hostVOList.name}</a> </td>
-                <td>${hostVOList.comment}</td>
-                <td>${hostVOList.address}</td>
-                <td><a href="/computing/cluster?id=${hostVOList.clusterId}">${hostVOList.clusterName}</a></td>
-                <td><a href="/computing/datacenter-storage?id=${hostVOList.datacenterId}">${hostVOList.datacenterName}</a></td>
-                <td>${hostVOList.status}</td>
-                <td>${hostVOList.vmCnt}</td>
-                <td>${hostVOList.spm}</td>
+                <td colspan="9">
+                    이름: &nbsp;${vm.vmName} <br>
+                    상태: &nbsp;${vm.status} <br>
+                    클러스터: ${vm.clusterName} <br>
+                    ip 주소(v4): &nbsp;${vm.ipv4} <br>
+                    ip 주소(v6): &nbsp;${vm.ipv6} <br>
+                    fqdn: ${vm.fqdn} <br>
+                    start타임: &nbsp;${vm.startTime} <br>
+                </td>
             </tr>
         </c:forEach>
     </table>
-
-
 
 
 </div>
 
 </body>
 </html>
+
+

@@ -5,45 +5,45 @@ import com.itinfo.itcloud.model.network.NetworkVO;
 import com.itinfo.itcloud.model.UsageVO;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import org.ovirt.engine.sdk4.types.AffinityGroup;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-@Getter @Setter
+@Getter @Setter @ToString
 public class ClusterVO {
 
-    private String clusterId;
-    private String clusterName;
+    private String id;
+    private String name;
+    private String comment;
+    private String version;
     private String description;
-    private String dataCenter;
 
     private String cpuType;
-    private String cpuImage;
-    private String chipsetFirmwareType; // 추가
+    private String status;
+    private String upgradeStatus;
 
-    private List<NetworkVO> clusterNetworks;
+
+    private String dataCenter;
+    private boolean threadsAsCPU;
+    private int memoryOverCommit;
+    private boolean restoration;
+    private String chipsetFirmwareType;
+
 
     private int hostCnt;
-    private int hostsUp;
-    private int hostsDown;
+    private int hostUpCnt;
+    private int hostDownCnt;
 
     private int vmCnt;
-    private int vmsUp;
-    private int vmsDown;
+    private int vmUpCnt;
+    private int vmDownCnt;
 
-    private BigDecimal memoryTotal;
-    private BigDecimal memoryUsed;
-    private BigDecimal memoryFree;
-    private BigDecimal memoryUsagePercent;
-    private BigDecimal ksmCpuUsagePercent;
-    private BigDecimal userCpuUsagePercent;
-    private BigDecimal systemCpuUsagePercent;
-    private BigDecimal idleCpuUsagePercent;
-    private List<List<String>> cpuUsage;
-    private List<List<String>> memoryUsage;
-    private NetworkVO network;
-    private List<HostDetailVO> hostDetailList;
-//    private List<VmSummaryVo> vmSummaries;
-    private List<UsageVO> usageVOList;
+    private List<NetworkVO> networkVOList;
+    private List<HostVO> hostVOList;
+    private List<VmVO> vmVOList;
+    private List<AffinityGroupVO> affinityGroupVOList;
+    private List<CpuProfileVO> cpuProfileVOList;
 
 }

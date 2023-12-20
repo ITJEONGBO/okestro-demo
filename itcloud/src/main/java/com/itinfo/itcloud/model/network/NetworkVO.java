@@ -2,12 +2,15 @@ package com.itinfo.itcloud.model.network;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
-@Getter @Setter
+@Getter @Setter @ToString
 public class NetworkVO {
 
-    private String networkId;
-    private String networkName;
+    private String id;
+    private String name;
+
+    private String status; // 클러스터에서 필요한 값
 
     private String comment;
     private String description;     // 설명
@@ -16,6 +19,15 @@ public class NetworkVO {
     private boolean vmNetwork;
     private String mtu;
     private String vlanTag;
+
+    // 네트워크 관리
+    private boolean vm;
+    private boolean management;
+    private boolean display;
+    private boolean migration;
+    private boolean gluster;
+    private boolean defaultRoute;
+
 
     /*vnic프로파일
     클러스터

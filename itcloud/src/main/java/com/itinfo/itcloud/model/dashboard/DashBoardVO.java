@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 @Getter @Setter
-public class DashBoardVOd {
+public class DashBoardVO {
 
     // 사용자 정보
     private String name;

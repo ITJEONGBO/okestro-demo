@@ -87,41 +87,35 @@
     <li><a class="side" href="/storage">Storage</a></li>
 </ul>
 
-<h2 align="center">호스트</h2>
+<h2 align="center">데이터센터</h2>
 <div class="cluster-container">
     <table align="center">
         <tr>
-            <td></td>
-            <td></td>
+            <td>상태</td>
             <td>이름</td>
             <td>코멘트</td>
-            <td>호스트이름/IP</td>
-            <td>클러스터</td>
-            <td>데이터 센터</td>
+            <td>스토리지 유형</td>
             <td>상태</td>
-            <td>가상머신</td>
-            <td>SPM</td>
+            <td>호환 버전</td>
+            <td>설명</td>
         </tr>
 
-        <c:if test="${empty hostVOList}">
-            <tr>
-                <td colspan="10">host 없음</td>
-            </tr>
-        </c:if>
-        <c:forEach var="hostVOList" items="${hostVOList}" varStatus="status">
-            <tr>
-                <td>${hostVOList.status}</td>
-                <td></td>
-                <td> <a href="/computing/host?id=${hostVOList.id}">${hostVOList.name}</a> </td>
-                <td>${hostVOList.comment}</td>
-                <td>${hostVOList.address}</td>
-                <td><a href="/computing/cluster?id=${hostVOList.clusterId}">${hostVOList.clusterName}</a></td>
-                <td><a href="/computing/datacenter-storage?id=${hostVOList.datacenterId}">${hostVOList.datacenterName}</a></td>
-                <td>${hostVOList.status}</td>
-                <td>${hostVOList.vmCnt}</td>
-                <td>${hostVOList.spm}</td>
-            </tr>
-        </c:forEach>
+    <c:if test="${empty datacenters}">
+        <tr>
+            <td>데이터센터가 없음 / 근데 이거 말이 안됨요</td>
+        </tr>
+    </c:if>
+    <c:forEach var="datacenters" items="${datacenters}" varStatus="status">
+        <tr>
+            <td>${datacenters.status}</td>
+            <td> <a href="/computing/datacenter-storage?id=${datacenters.id}">${datacenters.name}</a> </td>
+            <td>${datacenters.comment}</td>
+            <td>${datacenters.storageType ? "로컬" : "공유됨"}</td>
+            <td>${datacenters.status}</td>
+            <td>${datacenters.version}</td>
+            <td>${datacenters.description}</td>
+        </tr>
+    </c:forEach>
     </table>
 
 
@@ -131,3 +125,5 @@
 
 </body>
 </html>
+
+

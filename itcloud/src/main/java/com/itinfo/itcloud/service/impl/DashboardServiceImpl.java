@@ -58,6 +58,7 @@ public class DashboardServiceImpl implements ItDashboardService {
         int datacenterCnt = (int) dataCenterList.stream()
                 .filter(dataCenter -> dataCenter.status().value().equals("up"))
                 .count();
+
         dashBoardVO.setDatacenterActive(datacenterCnt);
         dashBoardVO.setDatacenterInactive(dataCenterList.size() - datacenterCnt);
     }
@@ -66,7 +67,6 @@ public class DashboardServiceImpl implements ItDashboardService {
     private void getClusterCnt(SystemService systemService) {
         List<Cluster> clusterList =
                 ((ClustersService.ListResponse) systemService.clustersService().list().send()).clusters();
-
         dashBoardVO.setClusterCnt(clusterList.size());
     }
 
@@ -117,10 +117,9 @@ public class DashboardServiceImpl implements ItDashboardService {
 
         // 호스트에 있는 cpu
         for (Host host : hostList) {
-            // cpu
             cpuTotal += host.cpu().topology().cores().intValue()
-                        * host.cpu().topology().sockets().intValue()
-                        * host.cpu().topology().threads().intValue();
+                    * host.cpu().topology().sockets().intValue()
+                    * host.cpu().topology().threads().intValue();
         }
 
         // 가상머신에 할당된 cpu

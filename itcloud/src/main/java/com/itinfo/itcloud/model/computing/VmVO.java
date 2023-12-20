@@ -22,6 +22,9 @@ public class VmVO {
     private String ipAddress;       // address + "/"+ fe:00
     private String fqdn;            // 호스트와 도메인을 함께 명시하여 전체 경로를 모두 표기하는 것
 
+    private String ipv4;
+    private String ipv6;
+
     private String hostId;          // hostId
     private String hostName;        // hostName
 

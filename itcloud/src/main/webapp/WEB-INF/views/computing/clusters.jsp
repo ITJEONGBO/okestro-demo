@@ -1,18 +1,16 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>It Cloud</title>
-
+    <title>It Cloud | 대시보드</title>
     <style>
         body {
             margin: 0;
         }
 
         header {
-            background-color: #59cd74;
+            background-color: #535c55;
             color: #fff;
             padding: 5px;
             /*text-align: center;*/
@@ -37,39 +35,20 @@
         }
 
         li a.side{
-            text-align: right;
+            text-align: left;
             size: 10px;
-        }
-
-        li a.active {
-            background-color: #7CE193;
-            color: white;
-        }
-
-        #act{
-            background-color: #b1f1bf;
-            color: black;
         }
 
 
         li a:hover:not(.active) {
             background-color: #555;
-            color: white;
+            color: #ffffff;
         }
 
-        .dashboard-container {
+        .cluster-container {
             display: flex;
             justify-content: space-around;
-            margin: 20px;
-        }
-
-        .widget {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            flex: 1;
-            margin: 0 10px;
+            margin: 15px;
         }
 
         .widget h2 {
@@ -80,74 +59,70 @@
             color: #555;
         }
 
-        td{
-            border: #dddddd 1px solid;
+        table{
+            border: #535c55 1px solid;
+            border-collapse: collapse;
         }
+
+        tr,td{
+            border: #535c55 1px solid;
+            text-align: center;
+            padding: 10px;
+        }
+
     </style>
+
 </head>
 <body>
 
 <header>
     <h1>&nbsp;&nbsp; It Cloud</h1>
-    <p align="right">로그인한 사용자</p>
 </header>
 
 <ul>
-    <li><a href="/dashboard">대시보드</a></li>
-    <li><a class="active" href="/computing/vms">컴퓨팅</a></li>
-        <li><a class="side" href="/computing/vms">가상머신</a></li>
-        <li><a class="side" href="/computing/templates">템플릿</a></li>
-        <li><a class="side" href="/computing/hosts">호스트</a></li>
-        <li><a class="side" id="act" href="/computing/clusters">클러스터</a></li>
-    <li><a href="/networks">네트워크</a></li>
-    <li><a href="/storage/domains">스토리지</a></li>
-        <li><a class="side" href="/storage/domains">도메인</a></li>
-        <li><a class="side" href="/storage/disks">디스크</a></li>
-    <li><a href="/admin/user">관리</a></li>
-        <li><a class="side" href="/admin/user">사용자</a></li>
-        <li><a class="side" href="/admin/instanceType">인스턴스 유형</a></li>
-        <li><a class="side" href="/admin/macAddress">맥 주소 풀</a></li>
-        <li><a class="side" href="/admin/setting">설정</a></li>
+    <li><a class="side" href="/computing/datacenters">DataCenter</a></li>
+    <li><a class="side" href="/computing/clusters">Clsuter</a></li>
+    <li><a class="side" href="/computing/hosts">Host</a></li>
+    <li><a class="side" href="/computing/vms">vm</a></li>
+    <li><a class="side" href="/storage">Storage</a></li>
 </ul>
 
-<div style="margin-left:25%; padding:1px 16px; height:1000px; ">
+<h2 align="center">클러스터</h2>
+<div class="cluster-container">
+    <table align="center">
+        <tr>
+            <td>상태</td>
+            <td>이름</td>
+            <td>코멘트</td>
+            <td>호환 버전</td>
+            <td>설명</td>
+            <td>클러스터 CPU 유형</td>
+            <td>호스트 수</td>
+            <td>가상머신 수</td>
+            <td>업그레이드 상태</td>
+        </tr>
 
-    <div class="dashboard-container">
+    <c:if test="${empty clusters}">
+        <tr>
+            <td>클러스터가 없음</td>
+        </tr>
+    </c:if>
+    <c:forEach var="clusters" items="${clusters}" varStatus="status">
+        <tr>
+            <td>${clusters.status}</td>
+            <td> <a href="/computing/cluster?id=${clusters.id}">${clusters.name}</a> </td>
+            <td>${clusters.comment}</td>
+            <td>${clusters.version}</td>
+            <td>${clusters.description}</td>
+            <td>${clusters.cpuType}</td>
+            <td>${clusters.hostCnt}</td>
+            <td>${clusters.vmCnt}</td>
+            <td>업그레이드 상태</td>
+        </tr>
+    </c:forEach>
+    </table>
 
-        <div class="widget">
-            <h2>클러스터</h2>
 
-            <table width="1100px">
-                <thead>
-                    <th>이름</th>
-                    <th>설명</th>
-                    <th>CPU 유형</th>
-                    <th>호스트</th>
-                    <th>가상머신 수</th>
-                </thead>
-
-                <c:if test="${empty clusterList}">
-                    <tbody>
-                    <tr>
-                        <td colspan="6" align="center">템플릿이 없음</td>
-                    </tr>
-                    </tbody>
-                </c:if>
-                <c:forEach var="clusterList" items="${clusterList}" varStatus="status">
-                    <tbody align="center">
-                    <tr>
-                        <td>${clusterList.name}</td>
-                        <td>${clusterList.description}</td>
-                        <td>${clusterList.cpuType}</td>
-                        <td>${clusterList.hostCnt}</td>
-                        <td>${clusterList.vmCnt}</td>
-                    </tr>
-                    </tbody>
-                </c:forEach>
-            </table>
-
-        </div>
-    </div>
 
 
 </div>

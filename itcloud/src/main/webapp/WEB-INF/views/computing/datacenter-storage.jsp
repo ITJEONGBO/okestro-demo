@@ -66,7 +66,7 @@
 
         tr,td{
             border: #535c55 1px solid;
-            text-align: center;
+            /*text-align: center;*/
             padding: 10px;
         }
 
@@ -87,47 +87,42 @@
     <li><a class="side" href="/storage">Storage</a></li>
 </ul>
 
-<h2 align="center">호스트</h2>
+<h2 align="center">데이터센터 - 스토리지</h2>
 <div class="cluster-container">
     <table align="center">
         <tr>
-            <td></td>
-            <td></td>
-            <td>이름</td>
-            <td>코멘트</td>
-            <td>호스트이름/IP</td>
-            <td>클러스터</td>
-            <td>데이터 센터</td>
-            <td>상태</td>
-            <td>가상머신</td>
-            <td>SPM</td>
+            <td><a href="/computing/datacenter-storage?id=${id}">스토리지</a></td>
+            <td><a href="/computing/datacenter-network?id=${id}">네트워크</a></td>
+            <td><a href="/computing/datacenter-cluster?id=${id}">클러스터</a></td>
+            <td><a href="#permission">권한</a></td>
         </tr>
+        <tr><td colspan="9"></td></tr>
 
-        <c:if test="${empty hostVOList}">
+        <c:if test="${empty storage}">
             <tr>
-                <td colspan="10">host 없음</td>
+                <td>스토리지 없음</td>
             </tr>
         </c:if>
-        <c:forEach var="hostVOList" items="${hostVOList}" varStatus="status">
+        <c:forEach var="storage" items="${storage.domainVOList}" varStatus="status">
             <tr>
-                <td>${hostVOList.status}</td>
-                <td></td>
-                <td> <a href="/computing/host?id=${hostVOList.id}">${hostVOList.name}</a> </td>
-                <td>${hostVOList.comment}</td>
-                <td>${hostVOList.address}</td>
-                <td><a href="/computing/cluster?id=${hostVOList.clusterId}">${hostVOList.clusterName}</a></td>
-                <td><a href="/computing/datacenter-storage?id=${hostVOList.datacenterId}">${hostVOList.datacenterName}</a></td>
-                <td>${hostVOList.status}</td>
-                <td>${hostVOList.vmCnt}</td>
-                <td>${hostVOList.spm}</td>
+                <td colspan="9">
+                    도메인 이름: ${storage.name}<br>
+                    도메인 유형: ${storage.domainType}<br>
+                    상태: ${storage.status}<br>
+                    여유공간(GB): ${storage.availableDiskSize /(1024*1024*1024)}GB <br>
+                    사용된 공간:&nbsp;${storage.usedDiskSize /(1024*1024*1024)}GB <br>
+                    전체공간(GB): ${storage.diskSize /(1024*1024*1024)}GB <br>
+                    설명: ${storage.description} <br>
+                </td>
             </tr>
         </c:forEach>
+
     </table>
-
-
 
 
 </div>
 
 </body>
 </html>
+
+

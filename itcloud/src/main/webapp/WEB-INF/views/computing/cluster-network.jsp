@@ -66,7 +66,7 @@
 
         tr,td{
             border: #535c55 1px solid;
-            text-align: center;
+            /*text-align: center;*/
             padding: 10px;
         }
 
@@ -87,47 +87,42 @@
     <li><a class="side" href="/storage">Storage</a></li>
 </ul>
 
-<h2 align="center">호스트</h2>
+<h2 align="center">클러스터 - 네트워크</h2>
 <div class="cluster-container">
     <table align="center">
         <tr>
-            <td></td>
-            <td></td>
-            <td>이름</td>
-            <td>코멘트</td>
-            <td>호스트이름/IP</td>
-            <td>클러스터</td>
-            <td>데이터 센터</td>
-            <td>상태</td>
-            <td>가상머신</td>
-            <td>SPM</td>
+            <td><a href="/computing/cluster?id=${id}">일반</a></td>
+            <td><a href="/computing/cluster-network?id=${id}">논리 네트워크</a></td>
+            <td><a href="/computing/cluster-host?id=${id}">호스트</a></td>
+            <td><a href="/computing/cluster-vm?id=${id}">가상머신</a></td>
+            <td><a href="/computing/cluster-aff?id=${id}">선호도 그룹</a></td>
+            <td>선호도 레이블</td>
+            <td><a href="/computing/cluster-cpu?id=${id}">CPU 프로파일</a></td>
+            <td>권한</td>
         </tr>
+        <tr><td colspan="9"></td></tr>
 
-        <c:if test="${empty hostVOList}">
+        <c:if test="${empty network}">
             <tr>
-                <td colspan="10">host 없음</td>
+                <td>네트워크가 없음</td>
             </tr>
         </c:if>
-        <c:forEach var="hostVOList" items="${hostVOList}" varStatus="status">
-            <tr>
-                <td>${hostVOList.status}</td>
-                <td></td>
-                <td> <a href="/computing/host?id=${hostVOList.id}">${hostVOList.name}</a> </td>
-                <td>${hostVOList.comment}</td>
-                <td>${hostVOList.address}</td>
-                <td><a href="/computing/cluster?id=${hostVOList.clusterId}">${hostVOList.clusterName}</a></td>
-                <td><a href="/computing/datacenter-storage?id=${hostVOList.datacenterId}">${hostVOList.datacenterName}</a></td>
-                <td>${hostVOList.status}</td>
-                <td>${hostVOList.vmCnt}</td>
-                <td>${hostVOList.spm}</td>
-            </tr>
+        <c:forEach var="network" items="${network.networkVOList}" varStatus="status">
+        <tr>
+            <td colspan="9">
+                이름: &nbsp;${network.name} <br>
+                상태: &nbsp;${network.status} <br>
+                역할: &nbsp;${network.vm ? "VM" : ""}&nbsp;${network.management ? "관리" : ""}&nbsp;${network.display ? "네트워크 출력" : ""}&nbsp;${network.migration ? "마이그레이션" : ""}&nbsp;${network.gluster ? "Gluster" : ""}&nbsp;${network.defaultRoute ? "기본 라우팅" : ""} <br>
+                설명: &nbsp;${network.description} <br>
+            </td>
+        </tr>
         </c:forEach>
     </table>
-
-
 
 
 </div>
 
 </body>
 </html>
+
+

@@ -80,14 +80,15 @@
     </header>
 
     <ul>
-        <li><a class="side" href="#datacenter">DataCenter</a></li>
-        <li><a class="side" href="#cluster">Clsuter</a></li>
-        <li><a class="side" href="#host">Host</a></li>
-        <li><a class="side" href="#vm">vm</a></li>
-        <li><a class="side" href="#storage">Storage</a></li>
+        <li><a class="side" href="/computing/datacenters">DataCenter</a></li>
+        <li><a class="side" href="/computing/clusters">Clsuter</a></li>
+        <li><a class="side" href="/computing/hosts">Host</a></li>
+        <li><a class="side" href="/computing/vms">vm</a></li>
+        <li><a class="side" href="/storage">Storage</a></li>
     </ul>
 
     <div class="dashboard-container">
+        <h2 align="center">클러스터</h2>
         <table align="center">
             <tr>
                 <td>[${dashboard.datacenterCnt}]&nbsp;데이터센터</td>
