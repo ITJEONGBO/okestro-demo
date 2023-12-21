@@ -1,7 +1,10 @@
-package com.itinfo.itcloud.model.aaa;
+package com.itinfo.itcloud.model.aaa.computing;
 
+import com.itinfo.itcloud.model.aaa.network.NetworkVo;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter @Setter
 public class DataCenterVo {
@@ -14,6 +17,10 @@ public class DataCenterVo {
     private String storageFormat;
     private String supportedVersion;
     private String version;
+
+    // 스토리지
+    private List<NetworkVo> networkVoList;
+    private List<ClusterVo> clusterVoList;
 
 
 

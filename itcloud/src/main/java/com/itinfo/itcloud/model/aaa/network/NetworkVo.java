@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.model.aaa;
+package com.itinfo.itcloud.model.aaa.network;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,6 +1,9 @@
-package com.itinfo.itcloud.model.aaa;
+package com.itinfo.itcloud.model.aaa.computing;
+import com.itinfo.itcloud.model.aaa.network.NetworkVo;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter @Setter
 public class ClusterVo {
@@ -19,6 +22,8 @@ public class ClusterVo {
 
     private String datacenterId;
     private String datacenterName;
+
+    private List<NetworkVo> networkVoList;
 
 
     // 리스트-> 상태, 이름(id), 코멘트, 호환버전, 설명, 클러스터cpu유형, 호스트수, 가상머신수, 업그레이드 상태
