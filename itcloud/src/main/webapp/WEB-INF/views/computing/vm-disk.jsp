@@ -92,32 +92,51 @@
 <div class="cluster-container">
     <table align="center">
         <tr>
-            <td><a href="/computing/host?id=${id}">일반</a></td>
-            <td><a href="/computing/host-vm?id=${id}">가상머신</a></td>
-            <td><a href="/computing/host-nic?id=${id}">네트워크 인터페이스</a></td>
-            <td><a href="/computing/host-device?id=${id}">호스트 장치</a></td>
+            <td><a href="/computing/vm?id=${id}">일반</a></td>
+            <td><a href="/computing/vm-nic?id=${id}">네트워크 인터페이스</a></td>
+            <td><a href="/computing/vm-disk?id=${id}">디스크</a></td>
+            <td><a href="/computing/vm-snapshot?id=${id}">스냅샷</a></td>
+            <td><a href="/computing/vm-application?id=${id}">애플리케이션</a></td>
+            <td><a href="/computing/vm-affgroup?id=${id}">선호도 그룹</a></td>
+            <td><a href="/computing/vm-afflabel?id=${id}">선호도 레이블</a></td>
+            <td><a href="/computing/vm-guest?id=${id}">게스트 정보</a></td>
             <td>권한</td>
-            <td><a href="/computing/host-aff?id=${id}">선호도 레이블</a></td>
             <td>이벤트</td>
         </tr>
         <tr><td colspan="9"></td></tr>
+        <tr>
+            <td>상태</td>
+            <td>별칭</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>가상크기</td>
+            <td>연결대상</td>
+            <td>인터페이스</td>
+            <td>논리적 이름</td>
+            <td>상태</td>
+            <td>유형</td>
+            <td>설명</td>
+        </tr>
 
-        <c:if test="${empty vm}">
+        <c:if test="${empty disk}">
             <tr>
-                <td>가상머신이 없음</td>
+                <td>disk 없음</td>
             </tr>
         </c:if>
-        <c:forEach var="vm" items="${vm.vmVOList}" varStatus="status">
+        <c:forEach var="disk" items="${disk}" varStatus="status">
             <tr>
-                <td colspan="9">
-                    이름: &nbsp;${vm.name} <br>
-                    상태: &nbsp;${vm.status} <br>
-                    클러스터: ${vm.clusterName} <br>
-                    ip 주소(v4): &nbsp;${vm.ipv4} <br>
-                    ip 주소(v6): &nbsp;${vm.ipv6} <br>
-                    fqdn: ${vm.fqdn} <br>
-                    start타임: &nbsp;${vm.startTime} <br>
-                </td>
+                <td>${disk.acitve}</td>
+                <td>${disk.diskId}</td>
+                <td>${disk.bootable}</td>
+                <td>${disk.passDiscard}</td>
+                <td>${disk.readOnly}</td>
+                <td>가상크기</td>
+                <td>${disk.contentType}</td>
+<%--                <td>${disks.interfaceName}</td>--%>
+<%--                <td>${disks.logicalName}</td>--%>
+<%--                <td>${disks.storageType}</td>--%>
+<%--                <td>${disks.description}</td>--%>
             </tr>
         </c:forEach>
     </table>

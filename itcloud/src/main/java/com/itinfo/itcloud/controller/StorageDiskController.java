@@ -17,29 +17,9 @@ public class StorageDiskController {
     @Autowired
     private ItStorageDiskService storageDiskSerivce;
 
-    @Autowired
-    private AdminConnectionService adminConnectionService;
 
     public StorageDiskController(){}
 
-    @GetMapping ("/storage/disks")
-    public String disks(Model model){
-        List<DiskVO> diskVOList = this.storageDiskSerivce.showDiskList();
-        model.addAttribute("diskVOList", diskVOList);
-        return "storage/disks";
-    }
-
-    @GetMapping("/diskStatus")
-    @ResponseBody
-    public List<DiskVO> disk(){
-        List<DiskVO> diskList = null;
-        try{
-            diskList = storageDiskSerivce.showDiskList();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return diskList;
-    }
 
 
 }

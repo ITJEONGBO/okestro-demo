@@ -293,8 +293,8 @@ public class HostServiceImpl implements ItHostService {
             if (vm.host() != null && vm.host().id().equals(id)) {
                 vmVO = new VmVO();
 
-                vmVO.setVmId(vm.id());
-                vmVO.setVmName(vm.name());
+                vmVO.setId(vm.id());
+                vmVO.setName(vm.name());
                 vmVO.setStatus(vm.status().value());
                 vmVO.setFqdn(vm.fqdn());
 
@@ -409,7 +409,7 @@ public class HostServiceImpl implements ItHostService {
         AffinityLabelVO affinityLabelVO = null;
 
         List<AffinityLabel> affinityLabelList =
-                ((AffinityLabelsService.ListResponse)systemService.hostsService().hostService(id).affinityLabelsService().list().send()).labels();
+                ((AssignedAffinityLabelsService.ListResponse)systemService.hostsService().hostService(id).affinityLabelsService().list().send()).label();
 
         for(AffinityLabel a : affinityLabelList) {
             affinityLabelVO = new AffinityLabelVO();

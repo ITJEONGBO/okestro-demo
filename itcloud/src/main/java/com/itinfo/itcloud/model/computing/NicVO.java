@@ -3,26 +3,35 @@ package com.itinfo.itcloud.model.computing;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigInteger;
+
 @Getter @Setter
-public class VmNicVO {
-    // https://192.168.0.70/ovirt-engine/api/vms/aa8a3c93-0ce3-4d6e-9ff7-aa4267cc74e8/nics
+public class NicVO {
     // https://192.168.0.70/ovirt-engine/api/vnicprofiles
 
-    private String nicId;       // nic id
-    private String nicName;     // nic 이름
+    private String id;       // nic id
+    private String name;     // nic 이름
     
-    private String vmsId;
-    private String vmsName;
-
+    private String networkId;
     private String networkName;
-    private String profileName;
 
     private String ipv4;
     private String ipv6;
     private String macAddress;
+    private BigInteger speed;
+
+    // vm
+    private String vmId;
+    private String vmName;
+
+    private String profileName;
+    private String qosName;
 
     private String type;            // 유형
     private boolean linkStatus;     // 연결상태 up&down
     private boolean plugged;        // 카드상태  connect&unconnect
+    private boolean portMirror;
+
+    private String historyDatetime;
 
 }

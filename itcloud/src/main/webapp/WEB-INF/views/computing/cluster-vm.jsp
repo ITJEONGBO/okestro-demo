@@ -110,7 +110,7 @@
         <c:forEach var="vms" items="${vms.vmVOList}" varStatus="status">
         <tr>
             <td colspan="9">
-                이름: &nbsp;${vms.vmName} <br>
+                이름: &nbsp;${vms.name} <br>
                 상태: &nbsp;${vms.status} <br>
                 start타임: &nbsp;${vms.startTime} <br>
                 ip 주소(v4): &nbsp;${vms.ipv4} <br>

@@ -19,7 +19,7 @@ public class TemplateVO {
     private String os;
     private VmSystemVO systemInfo;
     private List<VmVO> vms;
-    private List<VmNicVO> nics;
+    private List<NicVO> nics;
 //    private List<EventVo> events;
 //    private ClusterVo cluster;
     private String cpuProfileId;

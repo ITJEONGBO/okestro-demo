@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.model;
 
-import com.itinfo.itcloud.model.computing.VmNicVO;
+import com.itinfo.itcloud.model.computing.NicVO;
 import com.itinfo.itcloud.model.computing.VmSystemVO;
 import com.itinfo.itcloud.model.storage.DiskVO;
 import lombok.Getter;
@@ -27,5 +27,5 @@ public class SnapshotVO {
 
     private boolean memoryRestore;
 
-    private List<VmNicVO> nics;
+    private List<NicVO> nics;
 }

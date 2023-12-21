@@ -6,14 +6,15 @@ import lombok.Setter;
 @Getter @Setter
 public class DiskVO {
 
-    private String diskId;
-    private String diskName;
+    private String id;
+    private String name;
     private String description;
 
     private String status;
     private String format;
 
     private String diskProfileId;
+    private String contentType;     //연결대상
 
     private String virtualSize;
     private String actualSize;

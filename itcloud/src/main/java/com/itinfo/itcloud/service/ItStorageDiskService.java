@@ -8,7 +8,5 @@ import java.util.List;
 @Service
 public interface ItStorageDiskService {
 
-    List<DiskVO> showDiskList();
 
-//    List<DiskVO> showDisk(String vmId);
 }

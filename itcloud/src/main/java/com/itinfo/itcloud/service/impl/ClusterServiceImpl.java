@@ -281,8 +281,8 @@ public class ClusterServiceImpl implements ItClusterService {
             if (vm.cluster().id().equals(id)) {
                 vmVO = new VmVO();
 
-                vmVO.setVmId(vm.id());
-                vmVO.setVmName(vm.name());
+                vmVO.setId(vm.id());
+                vmVO.setName(vm.name());
                 vmVO.setStatus(vm.status().value());
 
                 // uptime

@@ -92,31 +92,57 @@
 <div class="cluster-container">
     <table align="center">
         <tr>
-            <td><a href="/computing/host?id=${id}">일반</a></td>
-            <td><a href="/computing/host-vm?id=${id}">가상머신</a></td>
-            <td><a href="/computing/host-nic?id=${id}">네트워크 인터페이스</a></td>
-            <td><a href="/computing/host-device?id=${id}">호스트 장치</a></td>
+            <td><a href="/computing/vm?id=${id}">일반</a></td>
+            <td><a href="/computing/vm-nic?id=${id}">네트워크 인터페이스</a></td>
+            <td><a href="/computing/vm-disk?id=${id}">디스크</a></td>
+            <td><a href="/computing/vm-snapshot?id=${id}">스냅샷</a></td>
+            <td><a href="/computing/vm-application?id=${id}">애플리케이션</a></td>
+            <td><a href="/computing/vm-affgroup?id=${id}">선호도 그룹</a></td>
+            <td><a href="/computing/vm-afflabel?id=${id}">선호도 레이블</a></td>
+            <td><a href="/computing/vm-guest?id=${id}">게스트 정보</a></td>
             <td>권한</td>
-            <td><a href="/computing/host-aff?id=${id}">선호도 레이블</a></td>
             <td>이벤트</td>
         </tr>
         <tr><td colspan="9"></td></tr>
 
-        <c:if test="${empty vm}">
+        <c:if test="${empty nic}">
             <tr>
-                <td>가상머신이 없음</td>
+                <td>nic 없음</td>
             </tr>
         </c:if>
-        <c:forEach var="vm" items="${vm.vmVOList}" varStatus="status">
+        <c:forEach var="nic" items="${nic.hostNicVOList}" varStatus="status">
             <tr>
                 <td colspan="9">
-                    이름: &nbsp;${vm.name} <br>
-                    상태: &nbsp;${vm.status} <br>
-                    클러스터: ${vm.clusterName} <br>
-                    ip 주소(v4): &nbsp;${vm.ipv4} <br>
-                    ip 주소(v6): &nbsp;${vm.ipv6} <br>
-                    fqdn: ${vm.fqdn} <br>
-                    start타임: &nbsp;${vm.startTime} <br>
+                    id: &nbsp;${nic.id} <br>
+                    네트워크 이름: &nbsp;${nic.name} <br>
+                    IPv4:&nbsp;${nic.ipv4} <br>
+                    IPv6:&nbsp;${nic.ipv6} <br>
+                    MAC:&nbsp;${nic.macAddress} <br>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>일반</h3>
+                    연결됨: ${nic.} <br>
+                    네트워크 이름: ${nic.} <br>
+                    프로파일 이름: ${nic.} <br>
+                    Qos 이름: ${nic.} <br>
+                    링크 상태: ${nic.} <br>
+                    유형: ${nic.} <br>
+                    속도(Mbps): ${nic.} <br>
+                    포트 미러링: ${nic.} <br>
+                    게스트 인터페이스 이름: ${nic.} <br>
+                </td>
+                <td>
+                    <h3>통계</h3>
+                    Rx 속도(Mbps): ${nic.} <br>
+                    Tx 속도(Mbps): ${nic.} <br>
+                    총 Rx: ${nic.} <br>
+                    총 Tx: ${nic.} <br>
+                    중단 (Pkts): ${nic.} <br>
+                </td>
+                <td>
+                    <h3>네트워크 필터 매개변수</h3>
                 </td>
             </tr>
         </c:forEach>
