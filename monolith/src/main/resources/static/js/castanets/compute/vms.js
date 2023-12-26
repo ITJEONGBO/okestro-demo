@@ -441,7 +441,7 @@ var vmsVue = new Vue({
 
         // retrieve clusters
         retrieveClusters: function () {
-            this.$http.get('/compute/clusters/retrieveClusters').then(function (response) {
+            this.$http.get('/v2/clusters').then(function (response) {
                 this.clusters = response.data.resultKey;
                 this.newTemplate.clusterId = this.clusters[0].id;
                 this.newVmWithTemplate.cluster = this.clusters[0].id;

@@ -71,7 +71,7 @@ import java.util.*
 
 
 @Service
-open class TemplatesServiceImpl : BaseService(), TemplatesService {
+class TemplatesServiceImpl : TemplatesService {
 	@Autowired private lateinit var connectionService: ConnectionService
 	@Autowired private lateinit var adminConnectionService: AdminConnectionService
 	@Autowired private lateinit var websocketService: WebsocketService

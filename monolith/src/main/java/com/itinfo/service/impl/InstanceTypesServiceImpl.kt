@@ -40,7 +40,7 @@ import org.springframework.stereotype.Service
  * @since 2023.12.07
  */
 @Service
-open class InstanceTypesServiceImpl : BaseService(), InstanceTypesService {
+class InstanceTypesServiceImpl : InstanceTypesService {
 	@Autowired private lateinit var connectionService: ConnectionService
 	@Autowired private lateinit var adminConnectionService: AdminConnectionService
 	@Autowired private lateinit var websocketService: WebsocketService

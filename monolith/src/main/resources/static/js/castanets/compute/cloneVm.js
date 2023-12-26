@@ -758,7 +758,7 @@ new Vue({
 //
 // 		// 디스크 생성 화면
 // 		retrieveStorageDomains: function() {
-// 			this.$http.get('/storage/domains/retrieveDomains?status=active&domainType=DATA').then(function(response) {
+// 			this.$http.get('/v2/storage/domains?status=active&domainType=DATA').then(function(response) {
 // 				this.storageDomains = response.data.resultKey;
 //
 // 				for(var i=0; i<this.storageDomains.length; i++) {

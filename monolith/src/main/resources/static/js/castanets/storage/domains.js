@@ -66,7 +66,7 @@ var domainsVue = new Vue({
 				this.spinnerOn = false;
 			}
 
-			this.$http.get('/storage/domains/retrieveDomains?status=' + this.status + '&domainType=' + this.domainType).then(function(response) {
+			this.$http.get('/v2/storage/domains?status='+this.status+'&domainType='+this.domainType).then(function(response) {
 				this.domains = response.data.resultKey;
 
 				this.selectedDomains = [];

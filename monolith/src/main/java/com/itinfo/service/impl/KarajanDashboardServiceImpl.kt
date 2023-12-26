@@ -33,7 +33,7 @@ import java.util.stream.Collectors
 
 
 @Service
-class KarajanDashboardServiceImpl : BaseService(), KarajanDashboardService {
+class KarajanDashboardServiceImpl : KarajanDashboardService {
 	@Autowired private lateinit var connectionService: ConnectionService
 	@Autowired private lateinit var adminConnectionService: AdminConnectionService
 	@Autowired private lateinit var karajanService: KarajanService

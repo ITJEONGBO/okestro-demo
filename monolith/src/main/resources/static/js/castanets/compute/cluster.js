@@ -169,7 +169,7 @@ var clusterVue = new Vue({
         },
 
         retrieveClusterDetail: function () {
-            this.$http.get('/compute/clusters/retrieveCluster?id=' + this.clusterId).then(function (response) {
+            this.$http.get('/v2/clusters/' + this.clusterId).then(function (response) {
                 this.cluster = response.data.resultKey;
 
                 //init chart data

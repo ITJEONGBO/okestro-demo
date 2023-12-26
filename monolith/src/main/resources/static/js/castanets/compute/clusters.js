@@ -77,7 +77,7 @@ var clustersVue = new Vue({
             if(type === 'update'){
                 this.spinnerOn = true;
             }
-            this.$http.get('/compute/clusters/retrieveClusters').then(function (response) {
+            this.$http.get('/v2/clusters').then(function (response) {
                 this.clusters = response.data.resultKey;
                 this.selectedClusters = [];
 
@@ -111,7 +111,7 @@ var clustersVue = new Vue({
             }
             $("#deleteClusterModal").removeClass('active');
             // if (confirm('다음의 클러스터를 삭제하시겠습니까?\n' + this.selectedClusters[0].name)) {
-                this.$http.get('/compute/clusters/removeCluster?id=' + this.selectedClusters[0].id).then(function (response) {
+                this.$http.delete('/v2/clusters/'+this.selectedClusters[0].id).then(function (response) {
                     this.spinnerOn = true;
                     this.retrieveClusters();
                     // selectedClusters 초기화

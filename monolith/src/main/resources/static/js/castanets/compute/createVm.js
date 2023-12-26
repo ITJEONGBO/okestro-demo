@@ -882,7 +882,7 @@ new Vue({
         // 디스크 생성 화면
         retrieveStorageDomains: function () {
             "use strict";
-            this.$http.get('/storage/domains/retrieveDomains?status=active&domainType=DATA').then(function (response) {
+            this.$http.get('/v2/storage/domains?status=active&domainType=DATA').then(function (response) {
                 this.storageDomains = response.data.resultKey;
                 this.selectVo.selStrgDomainVo.list = JSON.parse(JSON.stringify(this.storageDomains));
 

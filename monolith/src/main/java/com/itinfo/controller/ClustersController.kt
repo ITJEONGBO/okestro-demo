@@ -9,35 +9,30 @@ import com.itinfo.service.ClustersService
 import com.itinfo.service.engine.WebsocketService
 
 import io.swagger.annotations.*
+import org.apache.ibatis.annotations.Delete
 
 import org.json.simple.JSONObject
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.ResponseBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 
 @RestController
-@RequestMapping("compute")
+@RequestMapping("v2")
 @Api(value="ClustersController", tags=["clusters"])
 class ClustersController {
 	@Autowired private lateinit var clustersService: ClustersService
 	@Autowired private lateinit var websocketService: WebsocketService
 
 
-	@ApiOperation(httpMethod="GET", value="retrieveClustersInfo", notes="클러스터 목록 조회")
+	@ApiOperation(httpMethod="GET", value="fetchClusters", notes="클러스터 목록 조회")
 	@ApiImplicitParams
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@GetMapping(value=["/clusters/retrieveClusters"])
+	@GetMapping("/clusters")
 	@ResponseBody
-	fun retrieveClustersInfo(): JSONObject {
-		log.info("... retrieveClustersInfo")
+	fun fetchClusters(): JSONObject {
+		log.info("... fetchClusters")
 		val clusters =
 			clustersService.retrieveClusters()
 		return JSONObject().apply { 
@@ -47,15 +42,15 @@ class ClustersController {
 
 	@ApiOperation(httpMethod="GET", value="retrieveClusterDetail", notes="클러스터 상세 조회")
 	@ApiImplicitParams(
-		ApiImplicitParam(name="id", value="클러스터 ID", required=true, paramType="query", dataTypeClass=String::class)
+		ApiImplicitParam(name="id", value="클러스터 ID", required=true, paramType="path", dataTypeClass=String::class)
 	)
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@GetMapping(value=["/clusters/retrieveCluster"])
+	@GetMapping(value=["/{id}"])
 	@ResponseBody
 	fun retrieveClusterDetail(
-		@RequestParam(name = "id") id: String
+		@PathVariable(name = "id") id: String
 	): JSONObject {
 		log.info("... retrieveClusterDetail('$id')")
 		val cluster =
@@ -72,12 +67,12 @@ class ClustersController {
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@PostMapping("/clusters/createCluster")
+	@PostMapping("/clusters")
 	@ResponseBody
 	fun createCluster(
 		@RequestBody clusterCreateVo: ClusterCreateVo
 	): JSONObject {
-		log.info("... retrieveClustersInfo")
+		log.info("... createCluster")
 		clustersService.createCluster(clusterCreateVo)
 		doSleep()
 		return JSONObject().apply {
@@ -85,19 +80,21 @@ class ClustersController {
 		}
 	}
 
-	@ApiOperation(httpMethod="POST", value="updateCluster", notes="클러스터 갱신")
+	@ApiOperation(httpMethod="PUT", value="updateCluster", notes="클러스터 갱신")
 	@ApiImplicitParams(
 		ApiImplicitParam(name="clusterCreateVo", value="갱신 할 클러스터 정보", paramType="body", dataTypeClass=ClusterCreateVo::class)
 	)
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@PostMapping("/clusters/updateCluster")
+	@PutMapping("/clusters/{id}")
 	@ResponseBody
 	fun updateCluster(
-		@RequestBody clusterCreateVo: ClusterCreateVo
+		@RequestBody clusterCreateVo: ClusterCreateVo,
+		@PathVariable(name="id") clusterId: String
 	): JSONObject {
 		log.info("... updateCluster")
+		clusterCreateVo.id = clusterId
 		clustersService.updateCluster(clusterCreateVo)
 		doSleep()
 		// TODO: 성공여부 값 처리 필요
@@ -106,20 +103,20 @@ class ClustersController {
 		}
 	}
 
-	@ApiOperation(httpMethod="POST", value="deleteCluster", notes="클러스터 제거")
+	@ApiOperation(httpMethod="DELETE", value="removeCluster", notes="클러스터 제거")
 	@ApiImplicitParams(
 		ApiImplicitParam(name="id", value="제거 할 클러스터 ID", paramType="query", dataTypeClass=String::class)
 	)
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@PostMapping("/clusters/removeCluster") // TODO: POST로 변경 필요
+	@DeleteMapping("/clusters/{id}") // TODO: POST로 변경 필요
 	@ResponseBody
-	fun deleteCluster(
-		@RequestParam(name="id") id: String
+	fun removeCluster(
+		@PathVariable(name="id") clusterId: String
 	): JSONObject {
-		log.info("... deleteCluster('$id')")
-		clustersService.removeCluster(id)
+		log.info("... removeCluster('$clusterId')")
+		clustersService.removeCluster(clusterId)
 		doSleep()
 		// TODO: 성공여부 값 처리 필요
 		return JSONObject().apply {
@@ -134,10 +131,10 @@ class ClustersController {
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@GetMapping("/clusters/retrieveCreateClusterInfo")
+	@GetMapping("/clusters/{id}/create")
 	@ResponseBody
 	fun retrieveCreateClusterInfo(
-		@RequestParam(name="id") id: String
+		@PathVariable(name="id") id: String
 	): JSONObject {
 		log.info("... retrieveCreateClusterInfo('$id')")
 		val clusterCreateVo: ClusterCreateVo =
@@ -152,7 +149,7 @@ class ClustersController {
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@GetMapping("/clusters/retrieveNetworks")
+	@GetMapping("/clusters/networks")
 	@ResponseBody
 	fun retrieveNetworks(): JSONObject {
 		log.info("... retrieveNetworks")
@@ -168,7 +165,7 @@ class ClustersController {
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@GetMapping("/clusters/retrieveNetworkProviders")
+	@GetMapping("/clusters/networkProviders")
 	@ResponseBody
 	fun retrieveNetworkProviders(): JSONObject {
 		log.info("... retrieveNetworkProviders")
@@ -186,7 +183,7 @@ class ClustersController {
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@GetMapping("/test/websocket")
+	@GetMapping("/clusters/websocket")
 	@ResponseBody
 	fun testWebsocket(
 		@RequestParam(name="id") id: String

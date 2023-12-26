@@ -4,14 +4,13 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.model.karajan.KarajanVo
 import com.itinfo.model.karajan.toKarajanVo
 import com.itinfo.service.SystemPropertiesService
-import com.itinfo.service.impl.BaseService
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 
 @Component
-class KarajanService : BaseService() {
+class KarajanService {
 	@Autowired private lateinit var adminConnectionService: AdminConnectionService
 	@Autowired private lateinit var systemPropertiesService: SystemPropertiesService
 	fun getDataCenter(): KarajanVo {

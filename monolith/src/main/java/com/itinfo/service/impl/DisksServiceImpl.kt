@@ -61,7 +61,7 @@ import kotlin.math.floor
 
 
 @Service
-class DisksServiceImpl : BaseService(), DisksService {
+class DisksServiceImpl : DisksService {
 	@Autowired private lateinit var adminConnectionService: AdminConnectionService
 	@Autowired private lateinit var websocketService: WebsocketService
 	@Autowired private lateinit var connectionService: ConnectionService

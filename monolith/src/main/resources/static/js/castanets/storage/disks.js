@@ -247,7 +247,7 @@ var disksVue = new Vue({
 		},// end init
 
 		retrieveDataCenter: function(){
-			this.$http.get('/compute/dataCenters/retrieveDataCenters').then(function (response) {
+			this.$http.get('/v2/dataCenters').then(function (response) {
 				this.dataCenters = response.data.resultKey;
 
 				this.selectVoDataCenter.list = this.dataCenters;
@@ -270,7 +270,7 @@ var disksVue = new Vue({
 				this.spinnerOn = false;
 			}
 
-			this.$http.get('/storage/disks/retrieveDisks')
+			this.$http.get('/v2/storage/disks')
 				.then(function(response) {
 					this.disks = response.data.resultKey;
 					this.spinnerOn = false;
@@ -284,7 +284,7 @@ var disksVue = new Vue({
 		},// end retrieveDisks
 
 		retrieveDomains: function() {
-			this.$http.get('/storage/domains/retrieveDomains?status=all&domainType=DATA').then(function(response) {
+			this.$http.get('/v2/storage/domains?status=all&domainType=DATA').then(function(response) {
 				this.storageDomains.storageDomainInfo ='';
 				this.selectVoStorageDomain.list = [];
 				this.selectVoDiskProfile.list = [];
@@ -361,7 +361,7 @@ var disksVue = new Vue({
 
 			// if(confirm('디스크를 삭제하시겠습니까?\n' + this.selectedDisks[0].name)){
 			// 	this.$http.post('/storage/disks/removeDisk', this.getSelectedDiskIds() ).then(function(response) {
-			this.$http.post('/storage/disks/removeDisk', selectedDiskIds ).then(function(response) {
+			this.$http.delete('/storage/disks', selectedDiskIds).then(function(response) {
 				this.spinnerOn = true;
 				this.init();
 
@@ -425,7 +425,7 @@ var disksVue = new Vue({
 		},// end copyDisk
 
 		migrationDisk: function() {
-			this.$http.post('/storage/disks/migrationDisk', this.migDisk).then(function(response) {
+			this.$http.post('/storage/disks/migrate', this.migDisk).then(function(response) {
 				this.spinnerOn = true;
 				this.init();
 			}.bind(this)).catch(function(error) {

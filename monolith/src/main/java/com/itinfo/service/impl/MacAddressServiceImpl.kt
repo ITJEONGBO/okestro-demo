@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service
  * @since 2023.12.07
  */
 @Service
-class MacAddressServiceImpl : BaseService(), MacAddressService {
+class MacAddressServiceImpl : MacAddressService {
 	@Autowired private lateinit var connectionService: ConnectionService
 	
 	override fun retrieveMacAddressPools(): List<MacAddressPoolsVo> {

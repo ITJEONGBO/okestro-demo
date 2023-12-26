@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service
  * @since 2023.08.18
  */
 @Service
-class DataCenterServiceImpl : BaseService(), DataCenterService {
+class DataCenterServiceImpl : DataCenterService {
 	@Autowired private lateinit var adminConnectionService: AdminConnectionService
 	@Autowired private lateinit var connectionService: ConnectionService
 

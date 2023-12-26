@@ -113,7 +113,7 @@ new Vue({
         },
         // retrieve events
         retrieveEvents: function () {
-            this.$http.get('/dashboard/retrieveEvents')
+            this.$http.get('/v2/dashboard/events')
                 .then(function (response) {
                     this.events = response.data.resultKey;
                 }.bind(this))
@@ -170,7 +170,7 @@ new Vue({
 
             //가상머신 cpu, memory 사용량 큰 순으로 정렬 jh
             // this.$http.get('/compute/vmList?status=all').then(function (response) {
-            this.$http.get('/dashboard/retrieveVms').then(function (response) {
+            this.$http.get('/v2/dashboard/vms').then(function (response) {
                 this.vmTop = response.data.resultKey;
                 // console.log('this.vms = ', this.vms);
 
@@ -220,7 +220,7 @@ new Vue({
         },// end retrieveHosts
 
         retrieveHost: function () {
-            this.$http.get('/dashboard/retrieveHosts?status=all').then(function (response) {
+            this.$http.get('/v2/dashboard/hosts?status=all').then(function (response) {
                 this.hostTop = response.data.resultKey;
                 // console.log('hosts = ', this.hosts);
 

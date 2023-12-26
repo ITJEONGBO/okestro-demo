@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service
 
 
 @Service
-class VmConsoleServiceImpl : BaseService(), VmConsoleService {
+class VmConsoleServiceImpl : VmConsoleService {
 	@Autowired private lateinit var adminConnectionService: AdminConnectionService
 	@Autowired private lateinit var systemPropertiesService: SystemPropertiesService
 	

@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service
  * @since 2023.12.07
  */
 @Service
-class ProvidersServiceImpl : BaseService(), ProvidersService {
+class ProvidersServiceImpl : ProvidersService {
 
 	@Autowired private lateinit var connectionService: ConnectionService
 	override fun retrieveProviders(): List<ProviderVo> {

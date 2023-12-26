@@ -21,6 +21,7 @@ import com.itinfo.addStorageDomain
 import com.itinfo.updateStorageDomain
 import com.itinfo.removeStorageDomain
 import com.itinfo.activeAttachedStorageDomainFromDataCenter
+import com.itinfo.controller.doSleep
 import com.itinfo.deactiveAttachedStorageDomainFromDataCenter
 import com.itinfo.removeAttachedStorageDomainFromDataCenter
 
@@ -63,7 +64,7 @@ import java.util.function.Consumer
 import java.util.stream.Collectors
 
 @Service
-open class DomainsServiceImpl : BaseService(), DomainsService {
+class DomainsServiceImpl : DomainsService {
 	@Autowired private lateinit var adminConnectionService: AdminConnectionService
 	@Autowired private lateinit var domainsDao: DomainsDao
 	@Autowired private lateinit var disksService: DisksService
@@ -464,43 +465,38 @@ open class DomainsServiceImpl : BaseService(), DomainsService {
 	@Async("karajanTaskExecutor")
 	override fun removeDomain(storageDomainVo: StorageDomainVo) {
 		log.info("... removeDomain")
-		val connection: Connection = adminConnectionService.getConnection()
+		val c: Connection = adminConnectionService.getConnection()
 		val message = MessageVo()
 		message.title = "스토리지 도메인 삭제"
 		var sd: StorageDomain? =
-			connection.findStorageDomain(storageDomainVo.id)
-		val dataCenterId: String = connection.findAllDataCenters().first().id()
+			c.findStorageDomain(storageDomainVo.id)
+		val dataCenterId: String =
+			c.findAllDataCenters().first().id()
 		try {
 			if (sd?.dataCenters() != null && sd.dataCenters().size != 0) {
-				sd = connection.findAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainVo.id)
+				sd = c.findAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainVo.id)
 				if (!StorageDomainStatus.MAINTENANCE.value().equals(sd?.status()?.value(), ignoreCase = true)) return
 				try {
-					connection.removeAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainVo.id)
+					c.removeAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainVo.id)
 				} catch (e: Exception) {
 					log.error(e.localizedMessage)
 					e.printStackTrace()
 				}
 			}
 			do {
-				try {
-					Thread.sleep(2000L)
-				} catch (interruptedException: InterruptedException) {
-					log.error(interruptedException.localizedMessage)
-				}
-				sd = connection.findAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainVo.id)
+				doSleep(2000L)
+				sd =
+					c.findAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainVo.id)
 			} while (sd?.status() != StorageDomainStatus.UNATTACHED)
+
 			try {
-				try { Thread.sleep(3000L) } catch (ie: InterruptedException) { log.error(ie.localizedMessage) }
-				connection.removeStorageDomain(storageDomainVo.id, storageDomainVo.format)
+				doSleep(3000L)
+				c.removeStorageDomain(storageDomainVo.id, storageDomainVo.format)
 			} catch (e: Exception) {
 				log.error(e.localizedMessage)
 				e.printStackTrace()
 			}
-			try {
-				Thread.sleep(2000L)
-			} catch (interruptedException: InterruptedException) {
-				log.error(interruptedException.localizedMessage)
-			}
+			doSleep(2000L)
 			message.text = "스토리지 도메인 삭제 완료(${sd.name()})"
 			message.style = "success"
 		} catch (e: Exception) {

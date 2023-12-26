@@ -1,6 +1,5 @@
 package com.itinfo.service.impl
 
-import com.google.gson.Gson
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.dao.ClustersDao
 import com.itinfo.findAllClusters
@@ -42,7 +41,7 @@ import org.springframework.stereotype.Service
 
 
 @Service
-open class ClustersServiceImpl : BaseService(), ClustersService {
+class ClustersServiceImpl: ClustersService {
 	@Autowired private lateinit var adminConnectionService: AdminConnectionService
 	@Autowired private lateinit var clustersDao: ClustersDao
 	@Autowired private lateinit var hostsService: HostsService

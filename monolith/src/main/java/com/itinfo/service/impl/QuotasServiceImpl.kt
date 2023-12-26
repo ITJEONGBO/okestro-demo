@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service
  * @since 2023.12.07
  */
 @Service
-class QuotasServiceImpl : BaseService(), QuotasService {
+class QuotasServiceImpl : QuotasService {
 	@Autowired private lateinit var connectionService: ConnectionService
 	
 	override fun retrieveQuotas(): List<QuotaVo> {

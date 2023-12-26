@@ -191,7 +191,7 @@ var clusterVue = new Vue({
             }
 
             // if (confirm('클러스터를 생성하시겠습니까?')) {
-            this.$http.post('/compute/clusters/createCluster', this.cluster).then(function (response) {
+            this.$http.post('/v2/clusters/createCluster', this.cluster).then(function (response) {
                 this.returnCluster = response.data.resultKey;
                 location.href = '/compute/clusters';
             }.bind(this)).catch(function (error) {
@@ -209,7 +209,7 @@ var clusterVue = new Vue({
             }
 
             // if (confirm('클러스터를 수정하시겠습니까?')) {
-                this.$http.post('/compute/clusters/updateCluster', this.cluster).then(function (response) {
+                this.$http.put('/v2/clusters/'+this.clusterId, this.cluster).then(function (response) {
                     this.returnCluster = response.data.resultKey;
                     location.href = '/compute/clusters';
                 }.bind(this)).catch(function (error) {
@@ -218,7 +218,7 @@ var clusterVue = new Vue({
             // }
         },// end updateCluster
         retrieveUpdateClusterInfo: function () {
-            this.$http.get('/compute/clusters/retrieveCreateClusterInfo?id=' + this.clusterId).then(function (response) {
+            this.$http.get('/v2/clusters/'+this.clusterId+'/create').then(function (response) {
                 this.cluster = response.data.resultKey;
                 this.clusterName = this.cluster.name;
 
@@ -232,7 +232,7 @@ var clusterVue = new Vue({
             });
         },// end retrieveCreateClusterInfo
         retrieveNetworks: function () {
-            this.$http.get('/compute/clusters/retrieveNetworks').then(function (response) {
+            this.$http.get('/v2/clusters/networks').then(function (response) {
                 this.networks = response.data.resultKey;
                 // this.cluster.networkId = this.networks[0].id;
 
@@ -249,7 +249,7 @@ var clusterVue = new Vue({
         },// end retrieveNetworks
 
         retrieveNetworkProviders: function () {
-            this.$http.get('/compute/clusters/retrieveNetworkProviders').then(function (response) {
+            this.$http.get('/v2/clusters/networkProviders').then(function (response) {
                 this.networkProviders = response.data.resultKey;
                 // 기본값 셋팅
                 // this.cluster.networkProviderId = this.networkProviders[0].id;

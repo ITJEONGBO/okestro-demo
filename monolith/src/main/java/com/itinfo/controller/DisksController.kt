@@ -14,6 +14,7 @@ import org.json.simple.JSONObject
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Async
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -25,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile
 
 
 @RestController
-@RequestMapping("storage/disks")
+@RequestMapping("v2/storage/disks")
 @Api(value="DisksController", tags=["disks"])
 class DisksController {
 	@Autowired private lateinit var disksService: DisksService
@@ -37,7 +38,7 @@ class DisksController {
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@GetMapping("/retrieveDisks")
+	@GetMapping
 	@ResponseBody
 	fun retrieveDisks(): JSONObject {
 		log.info("... retrieveDisks")
@@ -46,12 +47,12 @@ class DisksController {
 		return asJsonResponse(disks)
 	}
 
-	@ApiOperation(httpMethod="GET", value="createDisk", notes="디스크 생성")
+	@ApiOperation(httpMethod="POST", value="createDisk", notes="디스크 생성")
 	@ApiImplicitParams
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@PostMapping("/createDisk")
+	@PostMapping("/create")
 	@ResponseBody
 	fun createDisk(
 		@RequestBody diskCreateVo: DiskCreateVo
@@ -62,12 +63,12 @@ class DisksController {
 		return asJsonResponse("OK")
 	}
 
-	@ApiOperation(httpMethod="GET", value="createLunDisk", notes="LUN 디스크 생성")
+	@ApiOperation(httpMethod="POST", value="createLunDisk", notes="LUN 디스크 생성")
 	@ApiImplicitParams
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@PostMapping("/createLunDisk")
+	@PostMapping("/lun/create")
 	@ResponseBody
 	fun createLunDisk(
 		@RequestBody diskCreateVo: DiskCreateVo
@@ -78,14 +79,14 @@ class DisksController {
 		return asJsonResponse("OK")
 	}
 
-	@ApiOperation(httpMethod="POST", value="removeDisk", notes="디스크 제거")
+	@ApiOperation(httpMethod="DELETE", value="removeDisk", notes="디스크 제거")
 	@ApiImplicitParams(
 		ApiImplicitParam(name="diskIds", value="제거할 디스크 ID", required=true, paramType="body", dataTypeClass=Array<String>::class)
 	)
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@PostMapping("/removeDisk")
+	@DeleteMapping
 	@ResponseBody
 	fun removeDisk(
 		@RequestBody diskIds: List<String>
@@ -103,7 +104,7 @@ class DisksController {
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@PostMapping("/migrationDisk")
+	@PostMapping("/migrate")
 	@ResponseBody
 	fun migrationDisk(
 		@RequestBody diskMigrationVo: DiskMigrationVo,
@@ -122,7 +123,7 @@ class DisksController {
 		ApiResponse(code=200, message="OK")
 	)
 	@Async("karajanTaskExecutor")
-	@PostMapping("/uploadDisk")
+	@PostMapping("/upload")
 	@ResponseBody
 	fun uploadDisk(
 		@RequestParam("file") diskFile: MultipartFile,
@@ -150,7 +151,7 @@ class DisksController {
 		ApiResponse(code=200, message="OK")
 	)
 	@Async("karajanTaskExecutor")
-	@GetMapping("retrieveDiskImage")
+	@GetMapping("image")
 	@ResponseBody
 	fun retrieveDiskImage(@RequestParam("file") diskFile: MultipartFile?): JSONObject {
 		// TODO: 구현 내용 추가

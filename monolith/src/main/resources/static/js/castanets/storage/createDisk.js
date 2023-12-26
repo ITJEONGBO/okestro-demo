@@ -106,7 +106,7 @@ var createDiskVue = new Vue({
 		},// end retrieveHosts
 
 		retrieveStorageDomains: function () {
-			this.$http.get('/storage/domains/retrieveDomains?status=all&domainType=DATA').then(function (response) {
+			this.$http.get('/v2/storage/domains?status=all&domainType=DATA').then(function (response) {
 				this.storageDomains.list = response.data.resultKey;
 
 			}.bind(this)).catch(function (error) {
@@ -129,7 +129,7 @@ var createDiskVue = new Vue({
 					return;
 				}
 
-				this.$http.post('/storage/disks/createDisk', this.disk).then(function (response) {
+				this.$http.post('/v2/storage/disks/create', this.disk).then(function (response) {
 					// 성공시 되돌아가기
 					location.href = '/storage/disks';
 				}.bind(this)).catch(function (error) {
@@ -159,7 +159,7 @@ var createDiskVue = new Vue({
 				this.disk.hostId = this.selectedLun[0].lunHostId;
 				this.disk.lunId = this.selectedLun[0].lunId;
 
-				this.$http.post('/storage/disks/createLunDisk', this.disk).then(function (response) {
+				this.$http.post('/v2/storage/disks/lun/create', this.disk).then(function (response) {
 					// 성공시 되돌아가기
 					location.href = '/storage/disks';
 				}.bind(this)).catch(function (error) {

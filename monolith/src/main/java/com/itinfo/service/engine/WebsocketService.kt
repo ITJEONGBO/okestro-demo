@@ -3,15 +3,13 @@ package com.itinfo.service.engine
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.model.MessageVo
-import com.itinfo.service.impl.BaseService
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Component
 
 @Component
-class WebsocketService : BaseService() {
+class WebsocketService {
 	private val gson: Gson
 		get() = GsonBuilder().create()
 

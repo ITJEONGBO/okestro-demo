@@ -42,7 +42,7 @@ import java.util.function.Consumer
 
 
 @Service
-class ItInfoNetworkServiceImpl : BaseService(), ItInfoNetworkService {
+class ItInfoNetworkServiceImpl : ItInfoNetworkService {
 	@Autowired private lateinit var adminConnectionService: AdminConnectionService
 	@Autowired private lateinit var websocketService: WebsocketService
 

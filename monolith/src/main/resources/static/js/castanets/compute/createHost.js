@@ -228,14 +228,14 @@ var createHostVue = new Vue({
             });
         },
         retrieveNetworks: function () {
-            this.$http.get('/compute/clusters/retrieveNetworks').then(function (response) {
+            this.$http.get('/v2/clusters/networks').then(function (response) {
                 this.networks = response.data.resultKey;
             }.bind(this)).catch(function (error) {
                 // console.log(error);
             });
         },
         retrieveNetworkProviders: function () {
-            this.$http.get('/compute/clusters/retrieveNetworkProviders').then(function (response) {
+            this.$http.get('/v2/clusters/etworkProviders').then(function (response) {
                 this.networkProviders = response.data.resultKey;
             }.bind(this)).catch(function (error) {
                 // console.log(error);

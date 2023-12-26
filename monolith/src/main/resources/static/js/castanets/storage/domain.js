@@ -40,7 +40,7 @@ var domainVue = new Vue({
 	},
 	methods: {
 		retrieveDomain: function() {
-			this.$http.get('/storage/domains/retrieveDomain?id=' + this.domainId)
+			this.$http.get('/v2/storage/domains/' + this.domainId)
 				.then(function(response) {
 					this.domain = response.data.resultKey;
 					this.spinnerOn = false;
@@ -63,7 +63,7 @@ var domainVue = new Vue({
 			});
 		},
 		retrieveDomainEvents: function() {
-			this.$http.get('/storage/domains/retrieveDomainEvents?id=' + this.domainId).then(function(response) {
+			this.$http.get('/v2/storage/domains/'+this.domainId+'/events').then(function(response) {
 				this.events = response.data.resultKey;
 			}.bind(this)).catch(function(error) {
 			    console.log(error);

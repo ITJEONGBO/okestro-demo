@@ -58,19 +58,6 @@
 
 | Method | Path |
 | :---: | :--- |
-| `POST` | /compute/clusters/createCluster
-| `GET` | /compute/updateCluster
-| `POST` | /compute/clusters/updateCluster
-| `GET` | /compute/clusters/retrieveCreateClusterInfo
-| `GET` | /compute/clusters/retrieveNetworks
-| `GET` | /compute/clusters/retrieveNetworkProviders
-/test/websocket],methods=[GET
-| `GET` | /compute/createCluster
-| `GET` | /compute/clusters
-| `GET` | /compute/cluster
-| `GET` | /compute/clusters/retrieveClusters
-| `GET` | /compute/clusters/retrieveCluster
-| `GET` | /compute/clusters/removeCluster
 | `GET` | /vmConsole/vncView 
 | `GET` | /vmConsole/ticket 
 | `GET` | /vmconsole/ticket2 
@@ -157,10 +144,6 @@
 /compute/cloneVm/info
 /compute/retrieveEngineIp],methods=[GET
 /compute/vm/metrics
-/dashboard/retrieveEvents
-/dashboard/retrieveVms],methods=[GET
-/dashboard/retrieveDataCenterStatus
-/dashboard/retrieveHosts],methods=[GET
 /dashboard
 /symphony/workload
 /symphony/consolidateVm
@@ -191,20 +174,10 @@
 /network/modifiedNetwork
 /storage/disks
 /storage/createDisk
-/storage/disks/retrieveDisks],methods=[GET
-/storage/disks/createLunDisk],methods=[POST
-/storage/disks/createDisk],methods=[POST
-/storage/disks/removeDisk],methods=[POST
-/storage/disks/migrationDisk],methods=[POST
-/storage/disks/uploadDisk],methods=[POST
-/storage/disks/retrieveDiskImage],methods=[POST
 /storage/domains/maintenanceStart],methods=[POST
 /storage/domains/maintenanceStop],methods=[POST
-/storage/domains/retrieveCreateDomainInfo],methods=[GET
 /storage/domains/retrieveDomainEvents],methods=[GET
 /storage/domains/createDomain],methods=[POST
-/storage/updateDomain],methods=[GET
-/storage/domains/updateDomain],methods=[POST
 /storage/domains/removeDomain],methods=[POST
 /storage/domains/iscsiDiscover],methods=[POST
 /storage/domains/iscsiLogin],methods=[POST
@@ -212,8 +185,4 @@
 /storage/domains
 /storage/createDomain
 /storage/importDomain],methods=[GET
-/storage/domain],methods=[GET
-/storage/domains/retrieveDomains
-| `GET` | /storage/domains/retrieveDomain |
-| `GET` | /storage/domains/retrieveDomainUsage |
 | `GET` | /storage/domains/retrieveDomainMeta |

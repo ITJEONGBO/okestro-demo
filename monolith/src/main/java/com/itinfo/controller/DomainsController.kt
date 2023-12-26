@@ -13,8 +13,11 @@ import org.ovirt.engine.sdk4.types.StorageDomainType
 import org.ovirt.engine.sdk4.types.StorageType
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -23,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController
 
 
 @RestController
-@RequestMapping("storage/domains")
+@RequestMapping("v2/storage/domains")
 @Api(value="DomainsController", tags=["domains"])
 class DomainsController {
 	@Autowired private lateinit var domainsService: DomainsService
@@ -36,7 +39,7 @@ class DomainsController {
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@GetMapping("/retrieveDomains")
+	@GetMapping
 	@ResponseBody
 	fun retrieveDomains(
 		@RequestParam(name = "status") status: String,
@@ -56,7 +59,7 @@ class DomainsController {
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@GetMapping("/retrieveCreateDomainInfo")
+	@GetMapping("/{id}/create")
 	@ResponseBody
 	fun retrieveCreateDomainInfo(
 		@RequestParam(name="id") id: String
@@ -75,7 +78,7 @@ class DomainsController {
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@GetMapping("/retrieveDomain")
+	@GetMapping("/{id}")
 	@ResponseBody
 	fun retrieveDomain(
 		@RequestParam(name="id") id: String
@@ -87,14 +90,14 @@ class DomainsController {
 	}
 
 
-	@ApiOperation(httpMethod="GET", value="retrieveDomain", notes="도메인 상세 조회")
+	@ApiOperation(httpMethod="GET", value="retrieveDomainUsage", notes="도메인 상세 조회")
 	@ApiImplicitParams(
 		ApiImplicitParam(name="id", value="도메인 ID", dataType="string", paramType="query", dataTypeClass=String::class),
 	)
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@GetMapping("/retrieveDomainUsage")
+	@GetMapping("{id}/usage")
 	@ResponseBody
 	fun retrieveDomainUsage(
 		@RequestParam(name="id") id: String
@@ -111,7 +114,7 @@ class DomainsController {
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@GetMapping("/retrieveDomainEvents")
+	@GetMapping("/{id}/events")
 	@ResponseBody
 	fun retrieveDomainEvents(
 		@RequestParam(name="id") id: String
@@ -122,14 +125,14 @@ class DomainsController {
 		return asJsonResponse(events)
 	}
 
-	@ApiOperation(httpMethod="POST", value="retrieveDomainEvents", notes="도메인 생성")
+	@ApiOperation(httpMethod="POST", value="createDomain", notes="도메인 생성")
 	@ApiImplicitParams(
 		ApiImplicitParam(name="storageDomainCreateVo", value="생성할 도메인 정보", paramType="body", dataTypeClass=StorageDomainCreateVo::class),
 	)
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@PostMapping("/createDomain")
+	@PostMapping
 	@ResponseBody
 	fun createDomain(
 		@RequestBody storageDomainCreateVo: StorageDomainCreateVo,
@@ -141,20 +144,23 @@ class DomainsController {
 		return asJsonResponse("OK")
 	}
 
-	@ApiOperation(httpMethod="POST", value="updateDomain", notes="도메인 수정")
+	@ApiOperation(httpMethod="PUT", value="updateDomain", notes="도메인 수정")
 	@ApiImplicitParams(
+		ApiImplicitParam(name="id", value="도메인 ID", paramType="body", dataTypeClass=String::class),
 		ApiImplicitParam(name="storageDomainCreateVo", value="수정할 도메인 정보", paramType="body", dataTypeClass=StorageDomainCreateVo::class),
 	)
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@PostMapping("/updateDomain")
+	@PutMapping("/{id}")
 	@ResponseBody
 	fun updateDomain(
+		@PathVariable(name="id") storageDomainId: String,
 		@RequestBody storageDomainCreateVo: StorageDomainCreateVo
 	): JSONObject {
 		log.info("... updateDomain")
 		// TODO 실행 시 결과 값 반환하도록 구현
+		storageDomainCreateVo.id = storageDomainId
 		domainsService.updateDomain(storageDomainCreateVo)
 		doLongSleep()
 		return asJsonResponse("OK")
@@ -167,7 +173,7 @@ class DomainsController {
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@PostMapping("/removeDomain")
+	@DeleteMapping("/{id}")
 	@ResponseBody
 	fun removeDomain(
 		@RequestBody storageDomainVo: StorageDomainVo

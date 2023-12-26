@@ -45,7 +45,7 @@ import java.util.*
 
 
 @Service
-class HostsServiceImpl : BaseService(), HostsService {
+class HostsServiceImpl : HostsService {
 	@Autowired private lateinit var adminConnectionService: AdminConnectionService
 	@Autowired private lateinit var karajanService: KarajanService
 	@Autowired private lateinit var ffd: Ffd

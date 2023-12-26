@@ -1,7 +1,9 @@
 package com.itinfo.controller
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.model.DataCenterVo
 import com.itinfo.model.EventVo
+import com.itinfo.model.HostDetailVo
 import com.itinfo.service.DashboardService
 import com.itinfo.service.HostsService
 import com.itinfo.service.VirtualMachinesService
@@ -12,6 +14,7 @@ import org.json.simple.JSONObject
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
@@ -26,22 +29,28 @@ import org.springframework.web.bind.annotation.RestController
  */
 @Api(value = "DashboardController", tags = ["dashboard"])
 @RestController
-@RequestMapping("dashboard")
+@RequestMapping("v2/dashboard")
 class DashboardController {
 	@Autowired private lateinit var dashboardService: DashboardService
 	@Autowired private lateinit var virtualMachinesService: VirtualMachinesService
 	@Autowired private lateinit var hostsService: HostsService
 
+	@Deprecated(
+		message="not used"
+		, replaceWith = ReplaceWith("retrieveDataCenterStatus", "KarajanDashboardController")
+		, level = DeprecationLevel.WARNING
+	)
 	@ApiOperation(httpMethod="GET", value="retrieveDataCenterStatus", notes="데이터센터 상태 조회")
 	@ApiImplicitParams
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@GetMapping("/retrieveDataCenterStatus")
+	@GetMapping("/dataCenter")
 	@ResponseBody
 	fun retrieveDataCenterStatus(): JSONObject {
 		log.info("... retrieveDataCenterStatus")
-		val dcv = dashboardService.retrieveDataCenterStatus()
+		val dcv: DataCenterVo =
+			dashboardService.retrieveDataCenterStatus()
 		return asJsonResponse(dcv)
 	}
 
@@ -50,7 +59,7 @@ class DashboardController {
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@GetMapping("/retrieveEvents")
+	@GetMapping("/events")
 	@ResponseBody
 	fun retrieveEvents(): JSONObject {
 		log.info("... retrieveEvents")
@@ -66,7 +75,7 @@ class DashboardController {
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@GetMapping("/retrieveVms")
+	@GetMapping("/vms")
 	@ResponseBody
 	fun retrieveVms(
 		@RequestParam(name="status") status: String?
@@ -89,13 +98,14 @@ class DashboardController {
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@GetMapping(value=["/retrieveHosts"])
+	@GetMapping(value=["/hosts/{status}"])
 	@ResponseBody
 	fun retrieveHosts(
-		@RequestParam(name="status") status: String?
+		@PathVariable(name="status") status: String?
 	): JSONObject {
 		log.info("... retrieveHosts('$status')")
-		val hosts = hostsService.retrieveHostsInfo(status ?: "all")
+		val hosts: List<HostDetailVo> =
+			hostsService.retrieveHostsInfo(status ?: "all")
 		val hostsTop =
 			if (hosts.isNotEmpty())
 				hostsService.retrieveHostsTop(hosts)

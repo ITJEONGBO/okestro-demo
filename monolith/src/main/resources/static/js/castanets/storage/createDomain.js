@@ -137,7 +137,7 @@ var createDomainVue = new Vue({
 			});
 		}, // end retrieveDomainISO
 		retrieveCreateDomainInfo: function() {
-			this.$http.get('/storage/domains/retrieveCreateDomainInfo?id='+this.domainId).then(function(response) {
+			this.$http.get('/v2/storage/domains/'+this.domainId+'/create').then(function(response) {
 				this.domain = response.data.resultKey;
 				// if (this.domain.storageType == "FCP") {
 				// 	this.domain.storageType = "파이버 채널";
@@ -252,7 +252,7 @@ var createDomainVue = new Vue({
 			}
 
 			this.spinnerOn = true;
-			this.$http.post('/storage/domains/createDomain', this.domain).then(function(response) {
+			this.$http.post('/v2/storage/domains', this.domain).then(function(response) {
 				this.spinnerOn = false;
 				this.$EventBus.$emit('retrieveDomains');
 				this.init();
@@ -268,7 +268,7 @@ var createDomainVue = new Vue({
 //			setTimeout(() => {this.spinnerOn = true;}, 1000);
 		}, // end createDomain
 		updateDomain: function(){
-			this.$http.post('/storage/domains/updateDomain', this.domain).then(function(response) {
+			this.$http.put('/storage/domains/'+this.domainId, this.domain).then(function(response) {
 				// location.href='/storage/domains';
 			}.bind(this)).catch(function(error) {
 				console.log(error);

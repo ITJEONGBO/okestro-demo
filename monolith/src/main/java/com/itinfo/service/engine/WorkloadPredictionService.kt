@@ -10,7 +10,6 @@ import com.itinfo.model.karajan.toWorkloadVmVo
 import com.itinfo.model.karajan.HistoryVo
 
 import com.itinfo.service.SystemPropertiesService
-import com.itinfo.service.impl.BaseService
 
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.types.Vm
@@ -26,9 +25,7 @@ import java.util.function.Consumer
 
 
 @Component
-class WorkloadPredictionService(
-	private var queryGetVmWorkload: String,
-) : BaseService() {
+class WorkloadPredictionService(private var queryGetVmWorkload: String) {
 	lateinit var jdbcTemplate: JdbcTemplate
 
 	@Autowired private lateinit var adminConnectionService: AdminConnectionService
@@ -61,7 +58,7 @@ class WorkloadPredictionService(
 			connection.findAllVms("cluster=$clusterName")
 		vms.forEach(Consumer { vm: Vm ->
 			val target = vm.toWorkloadVmVo(connection, jdbcTemplate)
-			val histories: MutableList<HistoryVo>? =
+			val histories: MutableList<HistoryVo> =
 				jdbcTemplate?.query(queryGetVmWorkload, arrayOf(
 					(if (target.memoryInstalled != null) target.memoryInstalled else 0).toString(), vm.id()
 				), BeanPropertyRowMapper(HistoryVo::class.java)

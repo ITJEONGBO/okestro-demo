@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController
  * @since 2023.12.24
  */
 @RestController
-@RequestMapping("compute/dataCenters")
+@RequestMapping("v2/dataCenters")
 @Api(value="DataCenterController", tags=["data-center"])
 class DataCenterController {
 	@Autowired private lateinit var dataCenterService: DataCenterService
@@ -33,7 +33,7 @@ class DataCenterController {
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@GetMapping("/retrieveDataCenters")
+	@GetMapping
 	@ResponseBody
 	fun retrieveDataCentersInfo(): JSONObject {
 		log.info("... retrieveDataCentersInfo")

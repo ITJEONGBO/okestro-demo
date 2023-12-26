@@ -5,11 +5,7 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.model.SystemPropertiesVo
 import com.itinfo.service.SystemPropertiesService
 
-import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
-import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.Paths
 
 
 /**
@@ -20,7 +16,7 @@ import java.nio.file.Paths
  * @since 2023.12.07
  */
 @Service
-class SystemPropertiesServiceImpl : BaseService(), SystemPropertiesService {
+class SystemPropertiesServiceImpl : SystemPropertiesService {
 	// @Autowired private lateinit var systemPropertiesDao: SystemPropertiesDao
 	private val basicConf: BasicConfiguration
 		get() = BasicConfiguration.getInstance()

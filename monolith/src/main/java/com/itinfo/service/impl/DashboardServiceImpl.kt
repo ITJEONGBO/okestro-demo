@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service
 import java.math.BigDecimal
 
 @Service
-class DashboardServiceImpl : BaseService(), DashboardService {
+class DashboardServiceImpl : DashboardService {
 	@Autowired private lateinit var connectionService: ConnectionService
 	@Autowired private lateinit var dashboardDao: DashboardDao
 	
@@ -37,9 +37,9 @@ class DashboardServiceImpl : BaseService(), DashboardService {
 	
 	override fun retrieveDataCenterStatus(): DataCenterVo {
 		log.info("... retrieveDataCenterStatus")
-		val connection = connectionService.getConnection()
-		dcv = simpleSetup(connection)
-		getHosts(connection)
+		val c = connectionService.getConnection()
+		dcv = simpleSetup(c)
+		getHosts(c)
 		return dcv!!
 	}
 

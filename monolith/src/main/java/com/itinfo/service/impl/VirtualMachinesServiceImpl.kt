@@ -34,7 +34,7 @@ import kotlin.math.pow
 
 
 @Service
-class VirtualMachinesServiceImpl : BaseService(), VirtualMachinesService {
+class VirtualMachinesServiceImpl : VirtualMachinesService {
 	@Autowired private lateinit var connectionService: ConnectionService
 	@Autowired private lateinit var adminConnectionService: AdminConnectionService
 	@Autowired private lateinit var karajanService: KarajanService
