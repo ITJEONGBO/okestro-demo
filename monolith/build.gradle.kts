@@ -2,6 +2,7 @@ import java.awt.Desktop
 import java.net.URL
 
 plugins {
+    id("org.jetbrains.dokka")
     war
 }
 
@@ -167,5 +168,23 @@ task("exploreOutput") {
 configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
+    }
+}
+
+tasks {
+    dokkaHtml {
+        dokkaSourceSets {
+            named("main") {
+                noAndroidSdkLink.set(false)
+            }
+        }
+        outputDirectory.set(file("../${project.name}-dokka"))
+        suppressInheritedMembers.set(true)
+    }
+}
+
+val cleanDokkaModuleDocs by tasks.register<Copy>("cleanDokkaModuleDocs") {
+    subprojects {
+        delete(file("${project.name}-dokka"))
     }
 }

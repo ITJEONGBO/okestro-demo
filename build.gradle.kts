@@ -6,6 +6,7 @@ plugins {
     kotlin("plugin.spring") version Versions.kotlin
     kotlin("plugin.jpa") version Versions.kotlin
     id("org.springframework.boot") version Versions.springBoot
+    id("org.jetbrains.dokka") version Versions.kotlin
     id("io.spring.dependency-management") version "1.1.4"
 }
 

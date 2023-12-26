@@ -8,6 +8,7 @@ import com.itinfo.findAllNetworks
 import com.itinfo.findAllOpenStackNetworkProviders
 import com.itinfo.findCluster
 import com.itinfo.addCluster
+import com.itinfo.controller.doSleep
 import com.itinfo.updateCluster
 import com.itinfo.removeCluster
 
@@ -34,6 +35,8 @@ import com.itinfo.service.engine.WebsocketService
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.types.Cluster
 import org.ovirt.engine.sdk4.types.Host
+import org.ovirt.engine.sdk4.types.Network
+import org.ovirt.engine.sdk4.types.OpenStackNetworkProvider
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Async
@@ -47,6 +50,7 @@ class ClustersServiceImpl: ClustersService {
 	@Autowired private lateinit var hostsService: HostsService
 	@Autowired private lateinit var websocketService: WebsocketService
 
+
 	@Async("karajanTaskExecutor")
 	override fun createCluster(clusterCreateVo: ClusterCreateVo) {
 		log.info("... createCluster")
@@ -55,7 +59,7 @@ class ClustersServiceImpl: ClustersService {
 		val res = conn.addCluster(cluster)
 		val message: MessageVo =
 			MessageVo.createMessage(MessageType.CLUSTER_ADD, res != null, clusterCreateVo.name, "")
-		try { Thread.sleep(1000L) } catch (e: Exception) { log.error(e.localizedMessage) }
+		doSleep(1000L)
 		websocketService.notify(message)
 		websocketService.reload(message, "clusters")
 	}
@@ -69,7 +73,7 @@ class ClustersServiceImpl: ClustersService {
 		val res = conn.updateCluster(clusterCreateVo.id, cluster)
 		val message: MessageVo =
 			MessageVo.createMessage(MessageType.CLUSTER_UPDATE, res != null, clusterCreateVo.name, "")
-		try { Thread.sleep(1000L) } catch (e: Exception) { log.error(e.localizedMessage) }
+		doSleep(1000L)
 		websocketService.notify(message)
 		websocketService.reload(message, "clusters")
 	}
@@ -86,7 +90,7 @@ class ClustersServiceImpl: ClustersService {
 		val removeRes = conn.removeCluster(clusterId)
 		val message: MessageVo =
 			MessageVo.createMessage(MessageType.CLUSTER_REMOVE, removeRes, cluster!!.name(), "")
-		try { Thread.sleep(1000L) } catch (e: Exception) { log.error(e.localizedMessage) }
+		doSleep(1000L)
 		websocketService.notify(message)
 		websocketService.reload(message, "clusters")
 	}
@@ -94,8 +98,10 @@ class ClustersServiceImpl: ClustersService {
 	override fun retrieveClusters(): List<ClusterVo> {
 		log.info("... retrieveClusters")
 		val conn: Connection = adminConnectionService.getConnection()
-		val clustersFound: List<Cluster> = conn.findAllClusters("")
-		val res: List<ClusterVo> = clustersFound.toClusterVos(conn, clustersDao)
+		val clustersFound: List<Cluster> =
+			conn.findAllClusters("")
+		val res: List<ClusterVo> =
+			clustersFound.toClusterVos(conn, clustersDao)
 		log.info("... retrieveClusters clustersFound[${res.size}]")
 		return clustersFound.toClusterVos(conn, clustersDao)
 	}
@@ -103,7 +109,8 @@ class ClustersServiceImpl: ClustersService {
 	override fun retrieveCluster(clusterId: String): ClusterVo? {
 		log.info("... retrieveCluster('$clusterId')")
 		val conn: Connection = adminConnectionService.getConnection()
-		val clusterFound: Cluster? = conn.findCluster(clusterId)
+		val clusterFound: Cluster? =
+			conn.findCluster(clusterId)
 		if (clusterFound == null) {
 			// 무조건 있어야 하기 때문에 여기를 들어가면 안됨
 			log.error("[CRITICAL] something went WRONG! ... reason: NO cluster found")
@@ -141,15 +148,17 @@ class ClustersServiceImpl: ClustersService {
 
 	override fun retrieveNetworks(): List<NetworkVo> {
 		log.info("... retrieveNetworks")
-		val connection = adminConnectionService.getConnection()
-		val nws = connection.findAllNetworks()
+		val c = adminConnectionService.getConnection()
+		val nws: List<Network> =
+			c.findAllNetworks()
 		return nws.toNetworkVos()
 	}
 
 	override fun retrieveNetworkProviders(): List<NetworkProviderVo> {
 		log.info("... retrieveNetworkProviders")
-		val connection = adminConnectionService.getConnection()
-		val nwps = connection.findAllOpenStackNetworkProviders()
+		val c = adminConnectionService.getConnection()
+		val nwps: List<OpenStackNetworkProvider> =
+			c.findAllOpenStackNetworkProviders()
 		return nwps.toNetworkProviderVos()
 	}
 	

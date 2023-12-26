@@ -13,12 +13,60 @@ import com.itinfo.model.NetworkVo
  * @author chlee
  */
 interface ClustersService {
+	/**
+	 * [com.itinfo.service.impl.ClustersServiceImpl.createCluster]
+	 *
+	 * @param clusterCreateVo [ClusterCreateVo]
+	 */
 	fun createCluster(clusterCreateVo: ClusterCreateVo)
+
+	/**
+	 * [com.itinfo.service.impl.ClustersServiceImpl.updateCluster]
+	 *
+	 * @param clusterCreateVo [ClusterCreateVo]
+	 */
 	fun updateCluster(clusterCreateVo: ClusterCreateVo)
+
+	/**
+	 * [com.itinfo.service.impl.ClustersServiceImpl.removeCluster]
+	 *
+	 * @param clusterId [String]
+	 */
 	fun removeCluster(clusterId: String)
+
+	/**
+	 * [com.itinfo.service.impl.ClustersServiceImpl.retrieveClusters]
+	 *
+	 */
 	fun retrieveClusters(): List<ClusterVo>
+
+	/**
+	 * [com.itinfo.service.impl.ClustersServiceImpl.retrieveCluster]
+	 *
+	 * @param clusterId [String]
+	 * @return [ClusterVo]
+	 */
 	fun retrieveCluster(clusterId: String): ClusterVo?
+
+	/**
+	 * [com.itinfo.service.impl.ClustersServiceImpl.retrieveCreateClusterInfo]
+	 *
+	 * @param clusterId [String]
+	 * @return [ClusterCreateVo]
+	 */
 	fun retrieveCreateClusterInfo(clusterId: String): ClusterCreateVo
+
+	/**
+	 * [com.itinfo.service.impl.ClustersServiceImpl.retrieveNetworks]
+	 *
+	 * @return [List]<[NetworkVo]>
+	 */
 	fun retrieveNetworks(): List<NetworkVo>
+
+	/**
+	 * [com.itinfo.service.impl.ClustersServiceImpl.retrieveNetworkProviders]
+	 *
+	 * @return [List]<[NetworkProviderVo]>
+	 */
 	fun retrieveNetworkProviders(): List<NetworkProviderVo>
 }

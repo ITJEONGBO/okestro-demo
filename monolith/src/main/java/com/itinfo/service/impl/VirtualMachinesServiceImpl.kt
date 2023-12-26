@@ -65,7 +65,7 @@ class VirtualMachinesServiceImpl : VirtualMachinesService {
 					val message = MessageVo.createMessage(MessageType.VIRTUAL_MACHINE_START, false, vm.name, 
 						"이 사용할 호스트가 없습니다. 클러스터에 최소 하나의 Up 상태의 호스트가 있는지 확인하십시오."
 					)
-					websocketService.sendMessage("/topic/vms", gson.toJson(result))
+					websocketService.custom(result, "vms")
 					websocketService.notify(message)
 				} else if (e.message?.contains("did not satisfy internal filter Memory because its available memory is too low")  == true) {
 					log.error(e.localizedMessage)
@@ -76,7 +76,7 @@ class VirtualMachinesServiceImpl : VirtualMachinesService {
 					val message = MessageVo.createMessage(MessageType.VIRTUAL_MACHINE_START, false, vm.name,
 						"을 실행 할 수 없습니다. 가상 머신을 실행하기 위한 여유 메모리가 충분하지 않습니다."
 					)
-					websocketService.sendMessage("/topic/vms", gson.toJson(result))
+					websocketService.custom(result, "vms")
 					websocketService.notify(message)
 				}
 			}

@@ -218,7 +218,7 @@ cd /etc/pki/ovirt-engine/certs
 - [ ] package별 endpoint구현
 - [ ] docker 생성 자동화 스크립트 (환경변수 지정 > ovirt ip주소)
 - [x] swagger 구성 (`/swagger-ui.html`)
-- [ ] dokka 구성
+- [x] dokka 구성
 
 ---
 
