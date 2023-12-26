@@ -1,6 +1,6 @@
 package com.itinfo.service
 
-import com.itinfo.model.SystemPropertiesVo
+import com.itinfo.util.model.SystemPropertiesVo
 
 // import com.itinfo.model.AppInfoVo
 

@@ -3,7 +3,6 @@ import java.net.URL
 
 plugins {
     id("org.jetbrains.dokka")
-    war
 }
 
 val profile: String = if (project.hasProperty("profile")) project.property("profile") as? String ?: "local" else "local"
@@ -65,7 +64,7 @@ dependencies {
     implementation(Dependencies.tiles)
     implementation(Dependencies.mybatis)
     // implementation(Dependencies.log4j)
-    providedCompile(Dependencies.javaxServlet)
+    implementation(Dependencies.javaxServlet)
     implementation(Dependencies.javaxServletJstl)
     implementation(Dependencies.javaxInject)
     implementation(Dependencies.javaxAnnotation)
@@ -84,24 +83,13 @@ dependencies {
     testImplementation(Dependencies.hamcrest)
 }
 
+/*
 tasks.war {
     baseName = artifactName
     into("WEB-INF/classes") {
         from("../util/${defaultBuildClassPath}")
         from("../common/${defaultBuildClassPath}")
     }
-    /*
-    doFirst {
-        copy {
-            from("${project.rootDir}/util/${defaultBuildClassPath}")
-            into("$buildDir/classes/kotlin/main")
-        }
-        copy {
-            from("${project.rootDir}/common/${defaultBuildClassPath}")
-            into("$buildDir/classes/kotlin/main")
-        }
-    }
-    */
     finalizedBy(explodedWar)
 }
 
@@ -133,6 +121,7 @@ val putModules = task("putModules") {
         }
     }
 }
+*/
 
 val placeOutputToDocker = task("placeOutputToDocker") {
     doLast {
@@ -144,9 +133,8 @@ val placeOutputToDocker = task("placeOutputToDocker") {
     }
 }
 
-
-explodedWar.finalizedBy(putModules)
-putModules.finalizedBy(placeOutputToDocker)
+// explodedWar.finalizedBy(putModules)
+// putModules.finalizedBy(placeOutputToDocker)
 
 task("openBrowser") {
     description = "open browser to the running application"

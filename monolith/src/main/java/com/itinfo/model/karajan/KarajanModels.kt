@@ -1,7 +1,7 @@
 package com.itinfo.model.karajan
 
 import com.itinfo.SystemServiceHelper
-import com.itinfo.model.SystemPropertiesVo
+import com.itinfo.util.model.SystemPropertiesVo
 import com.itinfo.findAllClusters
 import com.itinfo.findAllHosts
 import com.itinfo.findAllVms

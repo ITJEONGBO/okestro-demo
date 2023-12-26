@@ -2,13 +2,14 @@ package com.itinfo.service.impl
 
 import com.google.gson.Gson
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.util.model.SystemPropertiesVo
+
 import com.itinfo.controller.doSleep
 import com.itinfo.findHost
 import com.itinfo.findVm
 import com.itinfo.migrateHostFromVm
 import com.itinfo.model.MessageType
 import com.itinfo.model.MessageVo.Companion.createMessage
-import com.itinfo.model.SystemPropertiesVo
 import com.itinfo.model.karajan.ConsolidationVo
 import com.itinfo.model.karajan.HostVo
 import com.itinfo.model.karajan.KarajanVo

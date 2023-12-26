@@ -93,8 +93,7 @@ Run this script to create artifact
 #### On Linux
 
 ```sh
-docker build -t okestro/cst_tomcat:0.0.5 \
-  ./
+docker build -t itinfo/okestro:0.0.5 .
 ```
 
 #### On Windows
@@ -111,7 +110,7 @@ docker build -t okestro/cst_tomcat:0.0.5 ^
 ```sh
 # okestro
 docker run -d -it \
-  --name cst_tomcat2 \
+  --name itcloudBoot \
   -p 8080:8080 \
   -p 8443:8443 \
   okestro/cst_tomcat:0.0.5

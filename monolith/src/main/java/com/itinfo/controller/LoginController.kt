@@ -1,7 +1,7 @@
 package com.itinfo.controller
 
 import com.itinfo.ItInfoConstant
-import com.itinfo.model.SystemPropertiesVo
+import com.itinfo.util.model.SystemPropertiesVo
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.service.SystemPropertiesService
 import com.itinfo.service.UsersService

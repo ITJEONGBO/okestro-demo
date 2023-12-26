@@ -2,7 +2,7 @@ package com.itinfo.controller
 
 import com.itinfo.ItInfoConstant
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.model.SystemPropertiesVo
+import com.itinfo.util.model.SystemPropertiesVo
 import com.itinfo.service.SystemPropertiesService
 
 import io.swagger.annotations.*
