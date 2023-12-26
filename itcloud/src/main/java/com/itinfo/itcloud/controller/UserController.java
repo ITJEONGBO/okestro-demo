@@ -1,16 +1,13 @@
 package com.itinfo.itcloud.controller;
 
 import com.itinfo.itcloud.service.ItUserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 
 @Controller
+@RequiredArgsConstructor
+@Slf4j
 public class UserController {
-
-    @Autowired
-    private ItUserService itUserService;
-
-
-
-
+	private final ItUserService itUserService;
 }

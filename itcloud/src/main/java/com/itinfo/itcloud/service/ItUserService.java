@@ -5,12 +5,13 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ItUserService {
 
-    /*public int getTestValue();
+/*
+	public int getTestValue();
 
-    public String login(LoginDTO loginDTO);
+	public String login(LoginDTO loginDTO);
 
-    public void logout(HttpSession httpSession);
+	public void logout(HttpSession httpSession);
 
-    public List<UserVO> allUsers();*/
-
+	public List<UserVO> allUsers();
+*/
 }

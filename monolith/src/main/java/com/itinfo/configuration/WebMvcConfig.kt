@@ -10,7 +10,10 @@ import org.springframework.stereotype.Component
 import org.springframework.stereotype.Controller
 import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
-import org.springframework.web.servlet.config.annotation.*
+import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
+import org.springframework.web.servlet.config.annotation.ViewResolverRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.servlet.view.InternalResourceViewResolver
 import org.springframework.web.servlet.view.JstlView
 import org.springframework.web.servlet.view.UrlBasedViewResolver
@@ -19,7 +22,6 @@ import org.springframework.web.servlet.view.tiles3.SimpleSpringPreparerFactory
 import org.springframework.web.servlet.view.tiles3.TilesConfigurer
 import org.springframework.web.servlet.view.tiles3.TilesView
 import org.springframework.web.servlet.view.tiles3.TilesViewResolver
-import kotlin.math.log
 
 @Configuration
 // @EnableWebMvc

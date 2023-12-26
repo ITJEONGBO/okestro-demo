@@ -1,16 +1,21 @@
 package com.itinfo.itcloud.dao;
 
-import com.itinfo.itcloud.model.HostInterfaceVO;
-import com.itinfo.itcloud.model.computing.HostVO;
-import com.itinfo.itcloud.model.storage.DomainVO;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
+@Repository
+public class DashboardDAO {
+/*
+	public List<HostVO> retrieveHosts(List<String> ids) {
+		return SqlSession.selectList("Dashboard.retrieveHosts", ids);
+	}
 
-public interface DashboardDAO {
+	public List<DomainVO> retireveStorages(List<String> storageIds) {
+		return SqlSession.selectList("Dashboard.retrieveStorages", storageIds);
+	}
 
-    List<HostVO> retrieveHosts(List<String> ids);
+	public List<HostInterfaceVO> retrieveHostsInterface(List<String> interfaceIds) {
+		return SqlSession.selectList("Dashboard.retrieveHostsInterface", interfaceIds);
+	}
+*/
 
-    List<DomainVO> retireveStorages(List<String> storageIds);
-
-    List<HostInterfaceVO> retrieveHostsInterface(List<String> interfaceIds);
 }

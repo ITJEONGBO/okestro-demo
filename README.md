@@ -28,7 +28,6 @@
 - 🍃Spring Boot (`2.7.0`)
 - 🐘Gradle (`7.4.2`)
 - 😺Apache Tomcat (`9.0.63`)
-- ~~🛅H2 Database~~
 - 🐳Docker
   - `tomcat:8.5.38-jre8-alpine` (ssl port: `8443`)
   - `postgres:10.12-alpine` (jdbc port: `5432`)
@@ -42,7 +41,7 @@
 Run this script to create artifact
 
 ```sh
-./gradlew monolith:war -Pprofile=staging
+./gradlew monolith:bootJar -Pprofile=staging
 # 프로퍼티 `profile` 유형
 # - local: 로컬 (개발환경)
 # - staging
@@ -52,27 +51,13 @@ Run this script to create artifact
 
 ## 😺Tomcat 
 
-> Intellij IDEA Community Edition을 사용할 경우 [Smart Tomcat 플러그인](https://github.com/zengkid/SmartTomcat) 을 활용하여 구성 
+> ~~Intellij IDEA Community Edition을 사용할 경우 [Smart Tomcat 플러그인](https://github.com/zengkid/SmartTomcat) 을 활용하여 구성~~
 
 - 톰켓 환경 구성: 📁`<catalina base path>`
   - SSL 포트: `8443`
   - p12 파일 구성: 📁`<catalina base path>/keystore/okestro.p12`) 비밀번호: `okestro2018`
   - context path: `/`
   - 📁`<catalina base path>/conf/server.xml` 수정
-
-### Intellij Ultimate에서 설정
-
-| no. | step | image |
-| :---: | :--- | :---: |
-| 1 | 톰캣 설정 생성 | ![intellij-ue-tomcat00a](imgs/intellij-ue-tomcat00a.png) |
-| 2 | 톰캣 설정 구성 | ![intellij-ue-tomcat01a](imgs/intellij-ue-tomcat01a.png) |
-| 3 | 배포 대상 아티팩트 설정 | ![intellij-ue-tomcat02a](imgs/intellij-ue-tomcat02a.png)<br/>context path 를 꼭 `/`으로 설정 |
-| 4 | 배포 아티팩트 구성 | ![intellij-ue-tomcat03a](imgs/intellij-ue-tomcat03a.png)<br/><ul><li>`/WEB-INF/classes`밑에 두개 모듈(`common`, `util`) 추가</li><li>Output Directory 수정 필요할 경우 진행 (Optional)</li></ul> |
-
-> [이슈 #1][issue1] 확인 내용
-> 
-> macOS에서 진행 했을 때 📁`monolith/build/libs/exploded/okestro-*.war/`경로가 생김
-> Windows에서는 📁`monolith/build/libs/exploded/` 까지만 생기고 `okestro-*.war` 파일이 생김
 
 ### 📁`conf/server.xml`
      
@@ -97,26 +82,12 @@ Run this script to create artifact
 
 ---
 
-## ~~🛅H2~~ 
-
-> 더이상 사용하지 않음
-
-| title | description |
-| :---: | :--- |
-| 목적 | 오케스트로 핵심정보 관리 |
-| 🔌jdbc (로컬) | `jdbc:h2:<프로젝트경로>\docker\okestro\symphony?CIPER=AES` |
-| 🔌jdbc (운영) | `jdbc:h2:~\.symphony\symphony?CIPER=AES` |
-| 🔑id / pw | `symphony` / `symphony!123 symphony!123` |
-  
-[🧾자세한 정보 ... ][toH2]
-
----
-
 ## 🐳Docker 
 
 ### 🛠Okestro 
 
-⚠ war 빌드 후 진행!
+⚠ jar 빌드 후 진행!
+
 - `docker/okestro` 밑 📁`ROOT`폴더가 생기도록
 
 #### On Linux
@@ -213,7 +184,7 @@ cd /etc/pki/ovirt-engine/certs
   - [x] 버전 및 의존라이브러리 목록 정리
   - [x] model 및 상수
   - [x] tomcat embedded 구성
-  - [ ] docker 관련 정보 수집
+  - [x] docker 관련 정보 수집
   - [ ] model 안정화
 - [ ] package별 endpoint구현
 - [ ] docker 생성 자동화 스크립트 (환경변수 지정 > ovirt ip주소)
@@ -320,10 +291,8 @@ https://github.com/Gaia3D/mago3d 참고
 | 🔆 spring의존 | `com.sun.xml.txw2:txw2:20110809` |
 
 
-[toH2]: docs/H2.md
 [toENDPOINTS]: docs/ENDPOINTS.md
 [toPOSTGRES]: docs/POSTGRES.md
-
 
 [shield-java]: https://img.shields.io/badge/Temurin-11-f3812a?logo=openjdk&logoColor=f3812a&style=flat-square
 [shield-spring]: https://img.shields.io/badge/Spring-4.3.14.RELEASE-6DB33F?logo=spring&logoColor=6DB33F&style=flat-square
@@ -332,5 +301,3 @@ https://github.com/Gaia3D/mago3d 참고
 [shield-kotlin]: https://img.shields.io/badge/Kotlin-1.5.31-0095D5?logo=kotlin&logoColor=0095D5&style=flat-square
 [shield-gradle]: https://img.shields.io/badge/Gradle-7.4.2-abd759?logo=gradle&logoColor=abd759&style=flat-square
 [shield-tomcat]: https://img.shields.io/badge/Tomcat-8.5.38-F8DC75?logo=apachetomcat&logoColor=F8DC75&style=flat-square
-
-[issue1]: https://github.com/ITJEONGBO/okestro-demo/issues/1

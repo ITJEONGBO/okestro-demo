@@ -3,9 +3,9 @@ package com.itinfo.model
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 
-import com.itinfo.BasicConfiguration
 import com.itinfo.OvirtStatsName
-import com.itinfo.SystemServiceHelper
+
+import com.itinfo.util.model.SystemPropertiesVo
 import com.itinfo.findAllClusters
 import com.itinfo.findAllHosts
 import com.itinfo.findAllEvents
@@ -71,13 +71,19 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 
-private val sysSrvH: SystemServiceHelper
-	get() = SystemServiceHelper.getInstance()
 private val gson: Gson
 	get() = GsonBuilder()
 		.setPrettyPrinting()
 		.disableHtmlEscaping()
 		.create()
+
+fun SystemPropertiesVo.toConnection(): Connection = ConnectionBuilder.connection()
+	.url(ovirtEngineApiUrl)
+	.user(ovirtUserId)
+	.password(password)
+	.insecure(true)
+	.timeout(20000)
+	.build()
 
 data class ItInfoNetworkClusterVo(
 	var clusterName: String = "",
@@ -2495,58 +2501,6 @@ class StorageVo(
 	}
 }
 
-
-
-val basicConf: BasicConfiguration
-	get() = BasicConfiguration.getInstance()
-
-class SystemPropertiesVo(
-   var id: String = basicConf.systemAdminId,
-   var password: String = basicConf.systemAdminPw,
-   var ip: String = basicConf.ovirtIp,
-   var vncIp: String = basicConf.ovirtVncIp,
-   var vncPort: String = "${basicConf.ovirtVncPort}",
-   var cpuThreshold: Int = basicConf.ovirtThresholdCpu,
-   var memoryThreshold: Int = basicConf.ovirtThresholdMemory,
-   var grafanaUri: String = basicConf.ovirtGrafanaUri,
-   var deeplearningUri: String = basicConf.deeplearningUri,
-   var symphonyPowerControll: Boolean = basicConf.symphonyPowerControl,
-   var loginLimit: Int = basicConf.loginLimit,
-): Serializable {
-	val ovirtEngineApiUrl: String
-		get() = "https://${ip}/ovirt-engine/api"
-	val ovirtUserId: String
-		get() = "${id}@internal"
-
-	override fun toString(): String
-		= gson.toJson(this)
-
-	class Builder {
-		private var bId: String = "";fun id(block: () -> String?) { bId = block() ?: basicConf.systemAdminId }
-		private var bPassword: String = "";fun password(block: () -> String?) { bPassword = block() ?: basicConf.systemAdminPw }
-		private var bIp: String = "";fun ip(block: () -> String?) { bIp = block() ?: basicConf.ovirtIp }
-		private var bVncIp: String = "";fun vncIp(block: () -> String?) { bVncIp = block() ?: basicConf.ovirtVncIp }
-		private var bVncPort: String = "";fun vncPort(block: () -> String?) { bVncPort = block() ?: "${basicConf.ovirtVncPort}" }
-		private var bCpuThreshold: Int = -1;fun cpuThreshold(block: () -> Int?) { bCpuThreshold = block() ?: basicConf.ovirtThresholdCpu }
-		private var bMemoryThreshold: Int = -1;fun memoryThreshold(block: () -> Int?) { bMemoryThreshold = block() ?: basicConf.ovirtThresholdMemory }
-		private var bGrafanaUri: String = "";fun grafanaUri(block: () -> String?) { bGrafanaUri = block() ?: basicConf.ovirtGrafanaUri }
-		private var bDeeplearningUri: String = "";fun deeplearningUri(block: () -> String?) { bDeeplearningUri = block() ?: basicConf.deeplearningUri }
-		private var bSymphonyPowerControll: Boolean = false;fun symphonyPowerControll(block: () -> Boolean?) { bSymphonyPowerControll = block() ?: basicConf.symphonyPowerControl }
-		private var bLoginLimit: Int = 5;fun loginLimit(block: () -> Int?) { bLoginLimit = block() ?: basicConf.loginLimit }
-		fun build(): SystemPropertiesVo = SystemPropertiesVo(bId, bPassword, bIp, bVncIp, bVncPort, bCpuThreshold, bMemoryThreshold, bGrafanaUri, bDeeplearningUri, bSymphonyPowerControll, bLoginLimit)
-	}
-	companion object {
-		@JvmStatic inline fun systemPropertiesVo(block: Builder.() -> Unit): SystemPropertiesVo = Builder().apply(block).build()
-	}
-}
-
-fun SystemPropertiesVo.toConnection(): Connection = ConnectionBuilder.connection()
-	.url(ovirtEngineApiUrl)
-	.user(ovirtUserId)
-	.password(password)
-	.insecure(true)
-	.timeout(20000)
-	.build()
 
 data class TemplateDiskVo(
   var id: String = "",

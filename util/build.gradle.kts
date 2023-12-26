@@ -20,4 +20,6 @@ tasks.compileKotlin {dependsOn(tasks.clean) }
 
 dependencies {
     compileOnly(Dependencies.kotlinStdlib)
+    compileOnly(Dependencies.log4j)
+    compileOnly(Dependencies.gson)
 }

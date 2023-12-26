@@ -7,8 +7,15 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface VirtualMachineDAO {
-    VmUsageVO retrieveVmUsageOne(String id);
+public class VirtualMachineDAO {
 
-    VmNetworkUsageVO retrieveVmNetworkUsageOne(List<String> nicIds);
+/*
+	public VmUsageVO retrieveVmUsageOne(String id) {
+		return (VmUsageVO) this.SqlSession.selectOne("Virtualmachine.retrieveVmUsageOne", id);
+	}
+
+	public VmNetworkUsageVO retrieveVmNetworkUsageOne(List<String> nicIds) {
+		return (VmNetworkUsageVO) this.SqlSession.selectOne("Virtualmachine.retrieveVmNetworkUsageOne", nicIds);
+	}
+ */
 }

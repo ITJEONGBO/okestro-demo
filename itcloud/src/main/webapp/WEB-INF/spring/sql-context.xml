@@ -50,8 +50,7 @@
 
     <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
         <constructor-arg index="0" ref="sqlSessionFactory"/>
-        <!--        <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"/>-->
+        <!-- <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"/> -->
     </bean>
-
 
 </beans>

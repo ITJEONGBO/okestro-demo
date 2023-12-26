@@ -1,8 +1,9 @@
 package com.itinfo.service.impl
 
-import com.itinfo.BasicConfiguration
+
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.model.SystemPropertiesVo
+import com.itinfo.util.BasicConfiguration
+import com.itinfo.util.model.SystemPropertiesVo
 import com.itinfo.service.SystemPropertiesService
 
 import org.springframework.stereotype.Service

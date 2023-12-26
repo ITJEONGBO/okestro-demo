@@ -1,9 +1,9 @@
 package com.itinfo.itcloud.service;
 
-import com.itinfo.itcloud.model.SystemPropertiesVO;
+import com.itinfo.util.model.SystemPropertiesVo;
 
 public interface ItSystemPropertyService {
-    SystemPropertiesVO searchSystemProperties();
+    SystemPropertiesVo searchSystemProperties();
 
-    int saveSystemProperties(SystemPropertiesVO systemPropertiesVO);
+    int saveSystemProperties(SystemPropertiesVo systemPropertiesVO);
 }

@@ -1,28 +1,28 @@
 package com.itinfo.itcloud.service.impl;
 
-import com.itinfo.itcloud.dao.SystemPropertiesDAO;
-import com.itinfo.itcloud.model.SystemPropertiesVO;
+import com.itinfo.util.BasicConfiguration;
+import com.itinfo.util.model.SystemPropertiesVo;
 import com.itinfo.itcloud.service.ItSystemPropertyService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class SystemPropertyServiceImpl implements ItSystemPropertyService {
 
-    @Autowired
-    private SystemPropertiesDAO systemPropertiesDAO;
+//	private final SystemPropertiesDAO systemPropertiesDAO;
+	private BasicConfiguration getBasicConf() {
+		return BasicConfiguration.getInstance();
+	}
 
-    public SystemPropertyServiceImpl(){}
+	@Override
+	public SystemPropertiesVo searchSystemProperties() {
+		return getBasicConf().getSystemProperties();
+	}
 
-    @Override
-    public SystemPropertiesVO searchSystemProperties() {
-        return this.systemPropertiesDAO.searchSystemProperties();
-    }
-
-    @Override
-    public int saveSystemProperties(SystemPropertiesVO systemPropertiesVO) {
-        return this.systemPropertiesDAO.updateSystemProperties(systemPropertiesVO);
-    }
-
-
+	@Override
+	public int saveSystemProperties(SystemPropertiesVo systemPropertiesVO) {
+		return 1;
+	}
 }

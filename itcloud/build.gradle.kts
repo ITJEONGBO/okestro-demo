@@ -2,13 +2,8 @@ import java.awt.Desktop
 import java.net.URL
 
 plugins {
-    kotlin("jvm")
-    application
     war
 }
-
-group = "com.itinfo.itcloud"
-version = Versions.Project.ITCLOUD
 
 val profile: String = if (project.hasProperty("profile")) project.property("profile") as? String ?: "local" else "local"
 var artifactName: String = "itcloud-${profile}"
@@ -45,29 +40,34 @@ tasks.clean {
 }
 tasks.compileJava { dependsOn(tasks.clean) }
 tasks.compileKotlin {dependsOn(tasks.clean) }
-// tasks.clean { finalizedBy(tasks.named("war")) }
-
 
 dependencies {
-    providedCompile(project(":common"))
-    providedCompile(project(":util"))
-    // tomcat(Dependencies.tomcatEmbedded)
+    implementation(project(":common"))
+    implementation(project(":util"))
+    implementation(Dependencies.springBootTomcat)
+    implementation(Dependencies.tomcatEmbedded)
     api(Dependencies.kotlinStdlib)
     implementation(Dependencies.ovirt)
+    implementation(Dependencies.springBoot)
+    implementation(Dependencies.springBootWeb) {
+        exclude("org.springframework.boot", "spring-boot-starter-logging")
+    }
+    annotationProcessor(Dependencies.springBootAnnotation)
+    developmentOnly(Dependencies.springBootDevtools)
     implementation(Dependencies.spring)
     implementation(Dependencies.springSecurity)
     implementation(Dependencies.swagger3)
     implementation(Dependencies.qemu)
     implementation(Dependencies.tiles)
     implementation(Dependencies.mybatis)
-    implementation(Dependencies.log4j)
+    // implementation(Dependencies.log4j)
     providedCompile(Dependencies.javaxServlet)
     implementation(Dependencies.javaxServletJstl)
     implementation(Dependencies.javaxInject)
     implementation(Dependencies.javaxAnnotation)
     annotationProcessor(Dependencies.javaxAnnotation)
     implementation(Dependencies.webjars)
-    runtimeOnly(Dependencies.jdbc)
+    implementation(Dependencies.jdbc)
     implementation(Dependencies.commons)
     implementation(Dependencies.jasypt)
     implementation(Dependencies.gson)

@@ -1,18 +1,23 @@
 package com.itinfo.itcloud.dao;
 
-import com.itinfo.itcloud.model.UserVO;
-import com.itinfo.itcloud.model.LoginDTO;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 
 @Repository
-public interface UserDAO {
+public class UserDAO {
 
-    public int getTestValue();
+/*
+	public int getTestValue() {
+		return SqlSession.selectOne("Login.userCount");
+	}
 
-    public String login(LoginDTO loginDTO);
+	public String login(LoginDTO loginDTO) {
+		return SqlSession.selectOne("Login.login", loginDTO);
+	}
 
-    public List<UserVO> allUsers();
+	public List<UserVO> allUsers() {
+		return SqlSession.selectList("Login.users");
+	}
+*/
 
 }
