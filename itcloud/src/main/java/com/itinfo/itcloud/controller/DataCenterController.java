@@ -1,6 +1,9 @@
 package com.itinfo.itcloud.controller;
 
-import com.itinfo.itcloud.model.computing.DataCenterVO;
+import com.itinfo.itcloud.model.computing.ClusterVo;
+import com.itinfo.itcloud.model.computing.DataCenterVo;
+import com.itinfo.itcloud.model.network.NetworkVo;
+import com.itinfo.itcloud.model.storage.StorageDomainVo;
 import com.itinfo.itcloud.service.ItDataCenterService;
 
 import lombok.RequiredArgsConstructor;
@@ -22,17 +25,16 @@ public class DataCenterController {
 
 	@GetMapping("/computing/datacenters")
 	public String datacenters(Model model) {
-		List<DataCenterVO> dataCenterVOList = itDataCenterService.getDatacenters();
+		List<DataCenterVo> dataCenterVOList = itDataCenterService.getDatacenters();
 		model.addAttribute("datacenters", dataCenterVOList);
 		log.info("***** datacenters 목록 화면출력");
 
 		return "computing/datacenters";
 	}
 
-	// datacenters 목록
 	@GetMapping("/computing/datacenters/status")
 	@ResponseBody
-	public List<DataCenterVO> datacenters() {
+	public List<DataCenterVo> datacenters() {
 		log.info("----- datacenters 목록 불러오기");
 		return itDataCenterService.getDatacenters();
 	}
@@ -41,7 +43,7 @@ public class DataCenterController {
 	// 스토리지
 	@GetMapping("/computing/datacenter-storage")
 	public String storage(String id, Model model) {
-		DataCenterVO storage = itDataCenterService.getStorage(id);
+		List<StorageDomainVo> storage = itDataCenterService.getStorage(id);
 		model.addAttribute("storage", storage);
 		model.addAttribute("id", id);
 
@@ -50,7 +52,7 @@ public class DataCenterController {
 
 	@GetMapping("/computing/datacenter/storageStatus")
 	@ResponseBody
-	public DataCenterVO storage(String id) {
+	public List<StorageDomainVo> storage(String id) {
 		log.info("----- 데이터센터 스토리지 목록 불러오기: " + id);
 		return itDataCenterService.getStorage(id);
 	}
@@ -59,7 +61,7 @@ public class DataCenterController {
 	// 네트워크
 	@GetMapping("/computing/datacenter-network")
 	public String network(String id, Model model) {
-		DataCenterVO network = itDataCenterService.getNetwork(id);
+		List<NetworkVo> network = itDataCenterService.getNetwork(id);
 		model.addAttribute("network", network);
 		model.addAttribute("id", id);
 
@@ -68,15 +70,16 @@ public class DataCenterController {
 
 	@GetMapping("/computing/datacenter/networkStatus")
 	@ResponseBody
-	public DataCenterVO network(String id) {
+	public List<NetworkVo> network(String id) {
 		log.info("----- 데이터센터 network 목록 불러오기: " + id);
 		return itDataCenterService.getNetwork(id);
 	}
 
+
 	// 네트워크
 	@GetMapping("/computing/datacenter-cluster")
 	public String cluster(String id, Model model) {
-		DataCenterVO cluster = itDataCenterService.getCluster(id);
+		List<ClusterVo> cluster = itDataCenterService.getCluster(id);
 		model.addAttribute("cluster", cluster);
 		model.addAttribute("id", id);
 
@@ -85,7 +88,7 @@ public class DataCenterController {
 
 	@GetMapping("/computing/datacenter/clusterStatus")
 	@ResponseBody
-	public DataCenterVO cluster(String id) {
+	public List<ClusterVo> cluster(String id) {
 		log.info("----- 데이터센터 cluster 목록 불러오기: " + id);
 		return itDataCenterService.getCluster(id);
 	}

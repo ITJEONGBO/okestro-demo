@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.service.impl;
 
-import com.itinfo.itcloud.model.DashBoardVO;
+import com.itinfo.itcloud.model.DashboardVo;
 import com.itinfo.itcloud.ovirt.ConnectionService;
 import com.itinfo.itcloud.service.ItDashboardService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,88 +19,89 @@ public class DashboardServiceImpl implements ItDashboardService {
 
 	@Autowired private ConnectionService ovirtConnection;
 
-	private DashBoardVO dashBoardVO;
+	private DashboardVo dbVo;
 
 
 	// Dashbord 값
 	@Override
-	public DashBoardVO showDashboard() {
-		Connection connection = this.ovirtConnection.getConnection();
+	public DashboardVo getDashboard() {
+		Connection connection = ovirtConnection.getConnection();
 		SystemService systemService = connection.systemService();
 
-		dashBoardVO = new DashBoardVO();
-		getDatacenterCnt(systemService);
-		getClusterCnt(systemService);
-		getHostCnt(systemService);
-		getVmCnt(systemService);
-		getTotalCpu(systemService);
-		getTotalMemory(systemService);
-		getTotalStorage(systemService);
+		dbVo = new DashboardVo();
+
+		getDatacenter(systemService);
+		getCluster(systemService);
+		getHost(systemService);
+		getVm(systemService);
+		getCpu(systemService);
+		getMemory(systemService);
+		getStorage(systemService);
 
 		log.info("------showDashboard");
-		return dashBoardVO;
+		return dbVo;
 	}
 
 
 	// 데이터센터 수
-	private void getDatacenterCnt(SystemService systemService) {
+	private void getDatacenter(SystemService systemService) {
 		List<DataCenter> dataCenterList =
 				((DataCentersService.ListResponse) systemService.dataCentersService().list().send()).dataCenters();
-		dashBoardVO.setDatacenterCnt(dataCenterList.size());
+		dbVo.setDatacenterCnt(dataCenterList.size());
 
 		// DataCenter status=up 개수
 		int datacenterCnt = (int) dataCenterList.stream()
 				.filter(dataCenter -> dataCenter.status().value().equals("up"))
 				.count();
 
-		dashBoardVO.setDatacenterActive(datacenterCnt);
-		dashBoardVO.setDatacenterInactive(dataCenterList.size() - datacenterCnt);
+		dbVo.setDatacenterActive(datacenterCnt);
+		dbVo.setDatacenterInactive(dataCenterList.size() - datacenterCnt);
 	}
 
 	// 클러스터 수
-	private void getClusterCnt(SystemService systemService) {
+	private void getCluster(SystemService systemService) {
 		List<Cluster> clusterList =
 				((ClustersService.ListResponse) systemService.clustersService().list().send()).clusters();
-		dashBoardVO.setClusterCnt(clusterList.size());
+		dbVo.setClusterCnt(clusterList.size());
 	}
 
 
 	// 호스트 수
-	private void getHostCnt(SystemService systemService) {
+	private void getHost(SystemService systemService) {
 		List<Host> hostList =
 				((HostsService.ListResponse) systemService.hostsService().list().send()).hosts();
-		dashBoardVO.setHostCnt(hostList.size());
+		dbVo.setHostCnt(hostList.size());
 
 		// Host status=up 개수
 		int hostUpCnt = (int) hostList.stream()
 				.filter(host -> host.status().value().equals("up"))
 				.count();
 
-		dashBoardVO.setHostActive(hostUpCnt);
-		dashBoardVO.setHostInactive(dashBoardVO.getHostCnt() - hostUpCnt);
+		dbVo.setHostActive(hostUpCnt);
+		dbVo.setHostInactive(dbVo.getHostCnt() - hostUpCnt);
 	}
 
 
 	// 가상머신 수
-	private void getVmCnt(SystemService systemService) {
+	private void getVm(SystemService systemService) {
 		List<Vm> vmList = ((VmsService.ListResponse) systemService.vmsService().list().send()).vms();
-		dashBoardVO.setVmCnt(vmList.size());
+		dbVo.setVmCnt(vmList.size());
 
 		// Host status=up 개수
 		int vmUpCnt = (int) vmList.stream()
 				.filter(vm -> vm.status().value().equals("up"))
 				.count();
 
-		dashBoardVO.setVmActive(vmUpCnt);
-		dashBoardVO.setVmInactive(vmList.size() - vmUpCnt);
+		dbVo.setVmActive(vmUpCnt);
+		dbVo.setVmInactive(vmList.size() - vmUpCnt);
 	}
 
 
 	// 전체사용량
 	// cpu
-	public void getTotalCpu(SystemService systemService) {
+	public void getCpu(SystemService systemService) {
 		int cpuTotal = 0;
-		int cpuCommit = 0;
+//		int cpuCommit = 0;
 		int cpuAssigned = 0;
 
 		List<Host> hostList =
@@ -124,13 +125,13 @@ public class DashboardServiceImpl implements ItDashboardService {
 
 		}
 
-		dashBoardVO.setCpuTotal(cpuTotal);
-		dashBoardVO.setCpuAssigned(cpuAssigned);
+		dbVo.setCpuTotal(cpuTotal);
+		dbVo.setCpuAssigned(cpuAssigned);
 	}
 
 
 	// memory
-	public void getTotalMemory(SystemService systemService) {
+	public void getMemory(SystemService systemService) {
 		List<Host> hostList =
 				((HostsService.ListResponse) systemService.hostsService().list().send()).hosts();
 
@@ -142,16 +143,16 @@ public class DashboardServiceImpl implements ItDashboardService {
 			// memory
 			for (Statistic statistic : statisticList) {
 				if (statistic.name().equals("memory.total")) {
-					dashBoardVO.setMemoryTotal(dashBoardVO.getMemoryTotal() == null ?
-							statistic.values().get(0).datum() : dashBoardVO.getMemoryTotal().add(statistic.values().get(0).datum()));
+					dbVo.setMemoryTotal(dbVo.getMemoryTotal() == null ?
+							statistic.values().get(0).datum() : dbVo.getMemoryTotal().add(statistic.values().get(0).datum()));
 				}
 				if (statistic.name().equals("memory.used")) {
-					dashBoardVO.setMemoryUsed(dashBoardVO.getMemoryUsed() == null ?
-							statistic.values().get(0).datum() : dashBoardVO.getMemoryUsed().add(statistic.values().get(0).datum()));
+					dbVo.setMemoryUsed(dbVo.getMemoryUsed() == null ?
+							statistic.values().get(0).datum() : dbVo.getMemoryUsed().add(statistic.values().get(0).datum()));
 				}
 				if (statistic.name().equals("memory.free")) {
-					dashBoardVO.setMemoryFree(dashBoardVO.getMemoryFree() == null ?
-							statistic.values().get(0).datum() : dashBoardVO.getMemoryFree().add(statistic.values().get(0).datum()));
+					dbVo.setMemoryFree(dbVo.getMemoryFree() == null ?
+							statistic.values().get(0).datum() : dbVo.getMemoryFree().add(statistic.values().get(0).datum()));
 				}
 			}
 		}
@@ -159,7 +160,7 @@ public class DashboardServiceImpl implements ItDashboardService {
 
 
 	// storage
-	public void getTotalStorage(SystemService systemService) {
+	public void getStorage(SystemService systemService) {
 		List<StorageDomain> storageDomainList =
 				((StorageDomainsService.ListResponse) systemService.storageDomainsService().list().send()).storageDomains();
 
@@ -168,20 +169,20 @@ public class DashboardServiceImpl implements ItDashboardService {
 				.filter(storage -> !storage.dataCenters().isEmpty())
 				.count();
 
-		dashBoardVO.setStorageDomainCnt(storageDomainList.size());
-		dashBoardVO.setStorageDomainActive(storageActive);
-		dashBoardVO.setStorageDomainInactive(storageDomainList.size() - storageActive);
+		dbVo.setStorageDomainCnt(storageDomainList.size());
+		dbVo.setStorageDomainActive(storageActive);
+		dbVo.setStorageDomainInactive(storageDomainList.size() - storageActive);
 
 		// 스토리지 값
 		for (StorageDomain storageDomain : storageDomainList) {
 			if (!storageDomain.dataCenters().isEmpty()) {
-				dashBoardVO.setStorageTotal(dashBoardVO.getStorageTotal() == null ?
-						new BigDecimal(storageDomain.available()) : dashBoardVO.getStorageTotal().add(new BigDecimal(storageDomain.available())));
+				dbVo.setStorageTotal(dbVo.getStorageTotal() == null ?
+						new BigDecimal(storageDomain.available()) : dbVo.getStorageTotal().add(new BigDecimal(storageDomain.available())));
 
-				dashBoardVO.setStorageUsed(dashBoardVO.getStorageUsed() == null ?
-						new BigDecimal(storageDomain.used()) : dashBoardVO.getStorageUsed().add(new BigDecimal(storageDomain.used())));
+				dbVo.setStorageUsed(dbVo.getStorageUsed() == null ?
+						new BigDecimal(storageDomain.used()) : dbVo.getStorageUsed().add(new BigDecimal(storageDomain.used())));
 
-				dashBoardVO.setStorageFree(dashBoardVO.getStorageTotal().subtract(dashBoardVO.getStorageUsed()));
+				dbVo.setStorageFree(dbVo.getStorageTotal().subtract(dbVo.getStorageUsed()));
 			}
 		}
 	}

@@ -1,7 +1,9 @@
 package com.itinfo.itcloud.controller;
 
+import com.itinfo.itcloud.model.computing.NicVo;
+import com.itinfo.itcloud.model.computing.VmDiskVo;
+import com.itinfo.itcloud.model.computing.VmVo;
 import com.itinfo.itcloud.service.ItVmService;
-import com.itinfo.itcloud.model.computing.VmVO;
 import com.itinfo.itcloud.service.ItSystemPropertyService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,17 +27,17 @@ public class VmController {
 
 	@GetMapping("/computing/vms")
 	public String vmList(Model model) {
-		List<VmVO> vmVOList = itVmService.getList();
+		List<VmVo> vmVOList = itVmService.getList();
 		model.addAttribute("vmList", vmVOList);
 		return "computing/vms";
 	}
 
 	@GetMapping("/vmsList")
 	@ResponseBody
-	public List<VmVO> vms() {
+	public List<VmVo> vms() {
 		long start = System.currentTimeMillis();
 
-		List<VmVO> vmsList = itVmService.getList();
+		List<VmVo> vmsList = itVmService.getList();
 
 		long end = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
 		log.debug("수행시간(ms): {}", end - start);
@@ -45,7 +47,7 @@ public class VmController {
 
 	@GetMapping("/computing/vm")
 	public String vm(String id, Model model) {
-		VmVO vm = itVmService.getInfo(id);
+		VmVo vm = itVmService.getInfo(id);
 		model.addAttribute("vm", vm);
 		model.addAttribute("id", id);
 
@@ -54,7 +56,7 @@ public class VmController {
 
 	@GetMapping("/computing/vm/status")
 	@ResponseBody
-	public VmVO vm(String id) {
+	public VmVo vm(String id) {
 		log.info("----- vm id 일반 불러오기: {}", id);
 		return itVmService.getInfo(id);
 	}
@@ -62,7 +64,7 @@ public class VmController {
 
 	@GetMapping("/computing/vm-nic")
 	public String nic(String id, Model model) {
-		VmVO nic = itVmService.getNic(id);
+		List<NicVo> nic = itVmService.getNic(id);
 		model.addAttribute("nic", nic);
 		model.addAttribute("id", id);
 
@@ -71,7 +73,7 @@ public class VmController {
 
 	@GetMapping("/computing/vm/nicstatus")
 	@ResponseBody
-	public VmVO nic(String id) {
+	public List<NicVo> nic(String id) {
 		log.info("----- vm nic 일반 불러오기: " + id);
 		return itVmService.getNic(id);
 	}
@@ -79,7 +81,7 @@ public class VmController {
 
 	@GetMapping("/computing/vm-disk")
 	public String disk(String id, Model model) {
-		VmVO disk = itVmService.getDisk(id);
+		List<VmDiskVo> disk = itVmService.getDisk(id);
 		model.addAttribute("disk", disk);
 		model.addAttribute("id", id);
 
@@ -88,7 +90,7 @@ public class VmController {
 
 	@GetMapping("/computing/vm/diskstatus")
 	@ResponseBody
-	public VmVO disk(String id) {
+	public List<VmDiskVo> disk(String id) {
 		log.info("----- vm disk 일반 불러오기: " + id);
 		return itVmService.getDisk(id);
 	}

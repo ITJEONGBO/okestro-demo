@@ -1,20 +1,21 @@
 package com.itinfo.itcloud.service;
 
-import com.itinfo.itcloud.model.computing.HostVO;
+import com.itinfo.itcloud.model.computing.HostDeviceVo;
+import com.itinfo.itcloud.model.computing.HostVo;
+import com.itinfo.itcloud.model.computing.NicVo;
+import com.itinfo.itcloud.model.computing.VmVo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public interface ItHostService {
-    List<HostVO> getHosts();
-    List<HostVO> getList();
-
-    HostVO getInfo(String id);
-    HostVO getVm(String id);
-    HostVO getNic(String id);
-    HostVO getHostDevice(String id);
-    HostVO getPermission(String id);
-    HostVO getAffinitylabels(String id);
+    List<HostVo> getList();
+    HostVo getInfo(String id);
+    List<VmVo> getVm(String id);
+    List<NicVo> getNic(String id);
+    List<HostDeviceVo> getHostDevice(String id);
+//    HostVO getPermission(String id);
+//    HostVO getAffinitylabels(String id);
 
 }

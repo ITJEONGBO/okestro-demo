@@ -1,10 +1,6 @@
 package com.itinfo.itcloud.dao;
 
-import com.itinfo.itcloud.model.VmNetworkUsageVO;
-import com.itinfo.itcloud.model.VmUsageVO;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public class VirtualMachineDAO {

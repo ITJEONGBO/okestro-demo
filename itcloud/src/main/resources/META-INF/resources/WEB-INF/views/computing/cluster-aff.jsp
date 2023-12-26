@@ -107,7 +107,7 @@
                 <td>선호도 그룹이 없음</td>
             </tr>
         </c:if>
-        <c:forEach var="aff" items="${aff.affinityGroupVOList}" varStatus="status">
+        <c:forEach var="aff" items="${aff}" varStatus="status">
         <tr>
             <td colspan="9">
                 상태: &nbsp;${aff.status} <br>

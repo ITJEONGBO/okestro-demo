@@ -1,9 +1,6 @@
 package com.itinfo.itcloud.service.impl;
 
-import com.itinfo.itcloud.model.computing.NicVO;
-import com.itinfo.itcloud.model.computing.VmDiskVO;
-import com.itinfo.itcloud.model.computing.VmVO;
-import com.itinfo.itcloud.model.storage.DiskVO;
+import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItVmService;
 import org.ovirt.engine.sdk4.Connection;
@@ -25,74 +22,43 @@ public class VmServiceImpl implements ItVmService {
 
     public VmServiceImpl(){}
 
-
     @Override
-    public List<VmVO> getVms() {
+    public List<VmVo> getList() {
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
 
-        List<VmVO> vmVOList = new ArrayList<>();
-        VmVO vmVO = null;
+        List<VmVo> vmVoList = new ArrayList<>();
+        VmVo vmVo = null;
 
         List<Vm> vmList =
                 ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
 
         for(Vm vm : vmList){
-            vmVO = new VmVO();
+            vmVo = new VmVo();
 
-            vmVO.setId(vm.id());
-            vmVO.setName(vm.name());
-            vmVO.setStatus(vm.status().value());
-            vmVO.setStartTime(String.valueOf(vm.startTime()));  // 고쳐야됨
-            vmVO.setTemplateID(vm.template().id());
-            vmVO.setTemplateName(vm.template().name());
-            vmVO.setOs(vm.os().type());
-            vmVO.setPriority(String.valueOf(vm.highAvailability().priority()));  //타입수정?
-            vmVO.setOptimizeOption(String.valueOf(vm.type()));
+            vmVo.setStatus(vm.status().value());    // 상태는 두번표시됨. 그림과 글자로
+            vmVo.setId(vm.id());
+            vmVo.setName(vm.name());
+            vmVo.setDescription(vm.description());
 
-
-
-        }
-
-        return null;
-    }
-
-    @Override
-    public List<VmVO> getList() {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
-
-        List<VmVO> vmVOList = new ArrayList<>();
-        VmVO vmVO = null;
-
-        List<Vm> vmList =
-                ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
-
-        for(Vm vm : vmList){
-            vmVO = new VmVO();
-
-            vmVO.setStatus(vm.status().value());    // 상태는 두번표시됨. 그림과 글자로
-            vmVO.setId(vm.id());
-            vmVO.setName(vm.name());
-            vmVO.setDescription(vm.description());
-
-//            vmVO.setHostId();
-//            vmVO.setHostName();
+//            Host host =
+//                    ((HostService.GetResponse)systemService.hostsService().hostService(vm.host().id()).get().send()).host();
+//            vmVo.setHostId(host.id());
+//            vmVo.setHostName(host.name());
 
             Cluster cluster =
                     ((ClusterService.GetResponse)systemService.clustersService().clusterService(vm.cluster().id()).get().send()).cluster();
-            vmVO.setClusterId(cluster.id());
-            vmVO.setClusterName(cluster.name());
-            vmVO.setDataCenterId(cluster.dataCenter().id());
+            vmVo.setClusterId(cluster.id());
+            vmVo.setClusterName(cluster.name());
+            vmVo.setDatacenterId(cluster.dataCenter().id());
 
             DataCenter dataCenter =
                     ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send()).dataCenter();
-            vmVO.setDataCenterName(dataCenter.name());
-
-            vmVO.setFqdn(vm.fqdn());
+            vmVo.setDatacenterName(dataCenter.name());
+            vmVo.setFqdn(vm.fqdn());
 
             if(vm.startTime() != null) {
-                vmVO.setStartTime(vm.startTime().toString());
+                vmVo.setStartTime(vm.startTime());
             }
 
             if(!vm.status().value().equals("down")){
@@ -104,187 +70,284 @@ public class VmServiceImpl implements ItVmService {
                     List<ReportedDevice> reportedDeviceList
                             = ((VmReportedDevicesService.ListResponse)systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).reportedDevicesService().list().send()).reportedDevice();
                     for (ReportedDevice r : reportedDeviceList){
-                        vmVO.setIpv4(r.ips().get(0).address());
-                        vmVO.setIpv6(r.ips().get(1).address());
+                        vmVo.setIpv4(r.ips().get(0).address());
+                        vmVo.setIpv6(r.ips().get(1).address());
                     }
                 }
             }else{
-                vmVO.setIpv4("");
-                vmVO.setIpv6("");
+                vmVo.setIpv4("");
+                vmVo.setIpv6("");
             }
 
-            vmVOList.add(vmVO);
-            System.out.println("vmVO: "+vmVO.toString());
+            vmVoList.add(vmVo);
         }
-        return vmVOList;
+        return vmVoList;
     }
 
     @Override
-    public VmVO getInfo(String id) {
+    public VmVo getInfo(String id) {
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
 
-        VmVO vmVO = new VmVO();
-        vmVO.setId(id);
+        VmVo vmVo = new VmVo();
+        vmVo.setId(id);
 
-        Vm vm = ((VmService.GetResponse)systemService.vmsService().vmService(id).get().send()).vm();
+        Vm vm =
+                ((VmService.GetResponse)systemService.vmsService().vmService(id).get().send()).vm();
 
-        vmVO.setStatus(vm.status().value());    // 상태는 두번표시됨. 그림과 글자로
-        vmVO.setName(vm.name());
-        vmVO.setDescription(vm.description());
-        vmVO.setTemplateName(vm.template().name());
-        vmVO.setOs(vm.os().type());
-        vmVO.setChipsetFirmType(vm.bios().type().value());
-        vmVO.setPriority(String.valueOf(vm.highAvailability().priority()));  //타입수정?
-        vmVO.setOptimizeOption(String.valueOf(vm.type()));  // 최적화 옵션
-        System.out.println(vmVO.getOptimizeOption());
+        vmVo.setStatus(vm.status().value());    // 상태는 두번표시됨. 그림과 글자로
+        vmVo.setName(vm.name());
+        vmVo.setDescription(vm.description());
+        vmVo.setTemplateName(vm.template().name());
+        vmVo.setOsSystem(vm.os().type());
+        vmVo.setChipsetFirmwareType(vm.bios().type().value());
+        vmVo.setPriority(String.valueOf(vm.highAvailability().priority()));  //타입수정?
+        vmVo.setOptimizeOption(String.valueOf(vm.type()));  // 최적화 옵션
+        System.out.println(vmVo.getOptimizeOption());
 
-        vmVO.setMemory(vm.memory());
-        vmVO.setRealMemory(vm.memoryPolicy().guaranteed());
+        vmVo.setMemory(vm.memory());
+        vmVo.setMemoryActual(vm.memoryPolicy().guaranteed());
 
         // 게스트os의 여유/캐시+버퍼된 메모리
 
-        vmVO.setCpuCore(vm.cpu().topology().coresAsInteger() * vm.cpu().topology().socketsAsInteger() * vm.cpu().topology().socketsAsInteger());
-        vmVO.setGuestCpuCnt(vmVO.getCpuCore());     // 게스트 cpu 수
+        vmVo.setCpuCoreCnt(vm.cpu().topology().coresAsInteger() * vm.cpu().topology().socketsAsInteger() * vm.cpu().topology().socketsAsInteger());
+//        vmVo.setGuestCpuCnt(vmVo.getGuestCpuCnt());     // 게스트 cpu 수
 
         // 게스트 cpu
         // 고가용성
 
-        vmVO.setMonitor(vm.display().monitorsAsInteger());      // 모니터 수
-        vmVO.setUsb(vm.usb().enabled());   // usb
+        vmVo.setMonitor(vm.display().monitorsAsInteger());      // 모니터 수
+        vmVo.setUsb(vm.usb().enabled());   // usb
         // 작성자
         // 소스
         // 실행 호스트(Host)item.placementPolicy().hosts().get(0)    ..get().send()).host().name()
-        if (vm.placementPolicyPresent() && vm.placementPolicy().hostsPresent()) {
-            vmVO.setRunHost(((HostService.GetResponse)systemService.hostsService().hostService(((Host)vm.placementPolicy().hosts().get(0)).id()).get().send()).host().name());
-        }
+//        if (vm.placementPolicyPresent() && vm.placementPolicy().hostsPresent()) {
+//            vmVo.setRunHost(((HostService.GetResponse)systemService.hostsService().hostService(((Host)vm.placementPolicy().hosts().get(0)).id()).get().send()).host().name());
+//        }
         // 사용자 정의 속성
         // 클러스터 호환 버전
         // 가상머신의 id
 
-        vmVO.setFqdn(vm.fqdn());
+        vmVo.setFqdn(vm.fqdn());
 
-        vmVO.setHwTimeOffset(vm.timeZone().name());     // 하드웨어 클럭의 시간 오프셋
+        vmVo.setHwTimeOffset(vm.timeZone().name());     // 하드웨어 클럭의 시간 오프셋
 
         if (vm.startTime() != null) {
-            vmVO.setStartTime(vm.startTime().toString());
+            vmVo.setStartTime(vm.startTime());
         }
 
-        return vmVO;
+        return vmVo;
     }
 
     @Override
-    public VmVO getNic(String id) {
+    public List<NicVo> getNic(String id) {
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
 
-        VmVO vmVO = new VmVO();
-        vmVO.setId(id);
-
-        List<NicVO> nicVOList = new ArrayList<>();
-        NicVO nicVO = null;
+        List<NicVo> nVoList = new ArrayList<>();
+        NicVo nVo = null;
 
         List<Nic> nicList =
                 ((VmNicsService.ListResponse)systemService.vmsService().vmService(id).nicsService().list().send()).nics();
 
         for(Nic nic : nicList){
-            nicVO = new NicVO();
+            nVo = new NicVo();
 
-            nicVO.setId(nic.id());
-            nicVO.setName(nic.name());
+            nVo.setId(nic.id());
+            nVo.setName(nic.name());
             if(nic.network() != null){
-                nicVO.setNetworkName(nic.network().name());
+                nVo.setNetworkName(nic.network().name());
             }
-//            nicVO.setProfileName(nic.);
-            nicVO.setLinkStatus(nic.linked());
-            nicVO.setPlugged(nic.plugged());
-            nicVO.setType(nic.interface_().value());
+//            nVo.setProfileName(nic.);
+            nVo.setLinkStatus(nic.linked());
+            nVo.setPlugged(nic.plugged());    // 연결상태
+            nVo.setType(nic.interface_().value());
 
-//            nicVO.setIpv4(nic.reportedDevices().get(0).ips().get(0).address());
-//            nicVO.setIpv4(nic.reportedDevices().get(0).ips().get(1).address());
-//            System.out.println(nicVO.getIpv4() + "/ "+nicVO.getIpv6());
-
-            nicVOList.add(nicVO);
+//            nVo.setIpv4(nic.reportedDevices().get(0).ips().get(0).address());
+//            nVo.setIpv4(nic.reportedDevices().get(0).ips().get(1).address());
+//            System.out.println(nVo.getIpv4() + "/ "+nVo.getIpv6());
+            nVoList.add(nVo);
         }
-        vmVO.setNicVOList(nicVOList);
-        return vmVO;
+        return nVoList;
     }
 
     @Override
-    public VmVO getDisk(String id) {
+    public List<VmDiskVo> getDisk(String id) {
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
 
-        VmVO vmVO = new VmVO();
-        vmVO.setId(id);
-
-        List<VmDiskVO> vmDiskVOList = new ArrayList<>();
-        VmDiskVO vmDiskVO = null;
-
+        List<VmDiskVo> vdVoList = new ArrayList<>();
+        VmDiskVo vdVo = null;
 
         List<DiskAttachment> vmdiskList =
                 ((DiskAttachmentsService.ListResponse)systemService.vmsService().vmService(id).diskAttachmentsService().list().send()).attachments();
         // 별칭, 가상크기, 연결대상, 인터페이스, 논리적 이름, 상태, 유형, 설명
 
-        for(DiskAttachment disk : vmdiskList){
-            vmDiskVO = new VmDiskVO();
-            vmDiskVO.setDiskId(disk.id());
-            vmDiskVO.setInterfaceName(disk.interface_().value());
-            vmDiskVO.setReadOnly(disk.readOnly());
-            vmDiskVO.setBootable(disk.bootable());
-            vmDiskVO.setLogicalName(disk.logicalName());
-            vmDiskVO.setAcitve(disk.active());
+        for(DiskAttachment diskAttachment : vmdiskList){
+            vdVo = new VmDiskVo();
+            vdVo.setId(diskAttachment.id());
+            vdVo.setInterfaceName(diskAttachment.interface_().value());
+            vdVo.setReadOnly(diskAttachment.readOnly());
+            vdVo.setBootAble(diskAttachment.bootable());
+            vdVo.setLogicalName(diskAttachment.logicalName());
+            vdVo.setActive(diskAttachment.active());
 
-            Disk disk1 =
-                    ((DiskService.GetResponse)systemService.disksService().diskService(disk.id()).get().send()).disk();
+            Disk disk =
+                    ((DiskService.GetResponse)systemService.disksService().diskService(diskAttachment.id()).get().send()).disk();
 
-            DiskVO diskVO = new DiskVO();
-            diskVO.setId(disk1.id());
-            diskVO.setDescription(disk1.description());
+            vdVo.setDescription(disk.description());
 //            diskVO.setVirtualSize(disk1.);
-            diskVO.setStorageType(disk1.storageType().value());
-            diskVO.setContentType(disk1.contentType().value());
+//            vdVo.setStorageType(disk.storageType().value());
+//            vdVo.setContentType(disk.contentType().value());
 
-            vmDiskVO.setDiskVO(diskVO);
-            vmDiskVOList.add(vmDiskVO);
+            vdVoList.add(vdVo);
         }
-        vmVO.setVmDiskVOList(vmDiskVOList);
+        return vdVoList;
+    }
 
-        return vmVO;
+//    https://192.168.0.80/ovirt-engine/api/vms/931ad1d3-0782-4727-947d-6a765cfcc401/snapshots
+//    @Override
+//    public vmVo getSnapshot(String id) {
+//        return null;
+//    }
+
+    @Override
+    public List<AppVo> getApplication(String id) {
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        List<AppVo> appVoList = new ArrayList<>();
+        AppVo appVo = null;
+
+        List<Application> appList =
+                ((VmApplicationsService.ListResponse)systemService.vmsService().vmService(id).applicationsService().list().send()).applications();
+
+        for(Application application : appList) {
+            appVo = new AppVo();
+            appVo.setId(application.id());
+            appVo.setName(application.name());
+
+            appVoList.add(appVo);
+        }
+        return appVoList;
+    }
+
+    // 문제있음
+    @Override
+    public List<AffinityGroupVo> getAffinitygroup(String id) {
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        List<AffinityGroupVo> agVoList = new ArrayList<>();
+        AffinityGroupVo agVo = null;
+
+        Vm vm = ((VmService.GetResponse)systemService.vmsService().vmService(id).get().send()).vm();
+        List<AffinityGroup> affGroup =
+                ((AffinityGroupsService.ListResponse)systemService.clustersService().clusterService(vm.cluster().id()).affinityGroupsService().list().send()).groups();
+
+        for(AffinityGroup a : affGroup){
+            agVo = new AffinityGroupVo();
+            System.out.println(a.name());
+            agVo.setName(a.name());
+            agVo.setDescription(a.description());
+//            agVo.setStatus(a.); //상태 수정 필요
+            agVo.setPriority(a.priority().intValue());
+
+            agVo.setVmEnabled(a.vmsRule().enabled());
+            agVo.setVmPositive(a.vmsRule().positive());
+            agVo.setVmEnforcing(a.vmsRule().enforcing());
+
+            // 수정 필요
+//            if(a.positive() != null){
+//                affinityGroupVO.setVmPositive(a.positive());    // 애매 a.positive()와 a.vmsRule().positive()
+//            }
+//            affinityGroupVO.setVmEnforcing(a.enforcing());  // 얘도 마찬가지
+
+            agVo.setHostEnabled(a.hostsRule().enabled());
+            agVo.setHostPositive(a.hostsRule().positive());
+            agVo.setHostEnforcing(a.hostsRule().enforcing());
+
+            // 수정 필요
+            if(a.hostLabels().isEmpty()){
+                agVo.setHostLabels("레이블 없음");
+            }
+            if(a.vmLabels().isEmpty()){
+                agVo.setVmLabels("레이블 없음");
+            }
+
+            // 가상머신 멤버 (수정 필요)
+            List<Vm> vmList =
+                    ((AffinityGroupVmsService.ListResponse)systemService.clustersService().clusterService(id).affinityGroupsService().groupService(a.id()).vmsService().list().send()).vms();
+            String vmNames = "";
+
+            for(Vm vm1 : vmList){
+                vmNames += vm1.name() + " ";
+            }
+            agVo.setVmList(vmNames);
+
+            // 호스트 멤버 (수정 필요)
+            List<Host> hostList =
+                    ((AffinityGroupHostsService.ListResponse)systemService.clustersService().clusterService(id).affinityGroupsService().groupService(a.id()).hostsService().list().send()).hosts();
+            String hostNames = "";
+
+            for(Host host : hostList){
+                hostNames += host.name() + " ";
+            }
+            agVo.setHostList(hostNames);
+
+            agVoList.add(agVo);
+        }
+        return agVoList;
     }
 
     @Override
-    public VmVO getSnapshot(String id) {
-        return null;
+    public List<AffinityLabelVo> getAffinitylabel(String id) {
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        List<AffinityLabelVo> alVoList = new ArrayList<>();
+        AffinityLabelVo alVo = null;
+
+        List<AffinityLabel> affinityLabelList =
+                ((AssignedAffinityLabelsService.ListResponse)systemService.vmsService().vmService(id).affinityLabelsService().list().send()).label();
+
+        for(AffinityLabel a : affinityLabelList) {
+            alVo = new AffinityLabelVo();
+            alVo.setName(a.name());
+            alVoList.add(alVo);
+        }
+        return alVoList;
     }
 
     @Override
-    public VmVO getApplication(String id) {
-        return null;
+    public GuestInfoVo getGuestInfo(String id) {
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        Vm vm =
+                ((VmService.GetResponse)systemService.vmsService().vmService(id).get().send()).vm();
+
+        GuestInfoVo gif = new GuestInfoVo();
+
+        if(vm.guestOperatingSystemPresent()){
+            gif.setArchitecture(vm.guestOperatingSystem().architecture());
+            System.out.println(gif.getArchitecture());
+            gif.setType(vm.guestOperatingSystem().family());
+            gif.setKernalVersion(vm.guestOperatingSystem().kernel().version().fullVersion());
+            gif.setOs(vm.guestOperatingSystem().distribution());
+            gif.setGuestTime(vm.guestTimeZone().name() + vm.guestTimeZone().utcOffset());
+        }
+        return gif;
     }
 
-    @Override
-    public VmVO getAffinitygroup(String id) {
-        return null;
-    }
+//    @Override
+//    public vmVo getPermission(String id) {
+//        return null;
+//    }
+//
+//    @Override
+//    public vmVo getEvent(String id) {
+//        return null;
+//    }
 
-    @Override
-    public VmVO getAffinitylabel(String id) {
-        return null;
-    }
-
-    @Override
-    public VmVO getGuestInfo(String id) {
-        return null;
-    }
-
-    @Override
-    public VmVO getPermission(String id) {
-        return null;
-    }
-
-    @Override
-    public VmVO getEvent(String id) {
-        return null;
-    }
 }

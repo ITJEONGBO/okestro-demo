@@ -1,7 +1,7 @@
 package com.itinfo.itcloud.controller;
 
+import com.itinfo.itcloud.model.DashboardVo;
 import com.itinfo.itcloud.service.ItDashboardService;
-import com.itinfo.itcloud.model.DashBoardVO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ public class DashboardController {
 	// dashboard 화면
 	@GetMapping("/dashboard")
 	public String dashboard(Model model) {
-		DashBoardVO dashboard = itDashboardService.showDashboard();
+		DashboardVo dashboard = itDashboardService.getDashboard();
 		model.addAttribute("dashboard", dashboard);
 		log.info("---view dashboard");
 		return "dashboard";
@@ -29,10 +29,9 @@ public class DashboardController {
 
 	@GetMapping("/dashboardStatus")
 	@ResponseBody
-	public DashBoardVO compute() {
-		log.info("--- databaord");
+	public DashboardVo dashboard() {
 		long start = System.currentTimeMillis();
-		DashBoardVO dashboardStatus = itDashboardService.showDashboard();
+		DashboardVo dashboardStatus = itDashboardService.getDashboard();
 
 		long end = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
 		log.info("수행시간(ms): {}", end - start);
@@ -41,3 +40,4 @@ public class DashboardController {
 		return dashboardStatus;
 	}
 }
+

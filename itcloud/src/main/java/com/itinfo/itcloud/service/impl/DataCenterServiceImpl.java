@@ -1,9 +1,9 @@
 package com.itinfo.itcloud.service.impl;
 
-import com.itinfo.itcloud.model.computing.ClusterVO;
-import com.itinfo.itcloud.model.computing.DataCenterVO;
-import com.itinfo.itcloud.model.network.NetworkVO;
-import com.itinfo.itcloud.model.storage.DomainVO;
+import com.itinfo.itcloud.model.computing.ClusterVo;
+import com.itinfo.itcloud.model.computing.DataCenterVo;
+import com.itinfo.itcloud.model.network.NetworkVo;
+import com.itinfo.itcloud.model.storage.StorageDomainVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItDataCenterService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,122 +28,107 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
     public DataCenterServiceImpl() { }
 
-    public List<DataCenterVO> getDatacenters(){
+    public List<DataCenterVo> getDatacenters(){
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
 
-        List<DataCenterVO> dataCenterVOList = new ArrayList<>();
-        DataCenterVO dataCenterVO = null;
+        List<DataCenterVo> dcVoList = new ArrayList<>();
+        DataCenterVo dcVo = null;
 
         List<DataCenter> dataCenterList =
                 ((DataCentersService.ListResponse)systemService.dataCentersService().list().send()).dataCenters();
 
         for(DataCenter dataCenter : dataCenterList){
-            dataCenterVO = new DataCenterVO();
+            dcVo = new DataCenterVo();
 
-            dataCenterVO.setId(dataCenter.id());
-            dataCenterVO.setName(dataCenter.name());
-            dataCenterVO.setComment(dataCenter.comment());
-            dataCenterVO.setStorageType(dataCenter.local());
-            dataCenterVO.setStatus(dataCenter.status().value());
-            dataCenterVO.setVersion(dataCenter.version().major() + "." + dataCenter.version().minor());
-            dataCenterVO.setDescription(dataCenter.description());
+            dcVo.setId(dataCenter.id());
+            dcVo.setName(dataCenter.name());
+            dcVo.setComment(dataCenter.comment());
+            dcVo.setStorageType(dataCenter.local());
+            dcVo.setStatus(dataCenter.status().value());
+            dcVo.setVersion(dataCenter.version().major() + "." + dataCenter.version().minor());
+            dcVo.setDescription(dataCenter.description());
 
-            dataCenterVOList.add(dataCenterVO);
+            dcVoList.add(dcVo);
         }
-
-        return dataCenterVOList;
+        return dcVoList;
     }
 
     @Override
-    public DataCenterVO getStorage(String id) {
+    public List<StorageDomainVo> getStorage(String id) {
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
 
-        DataCenterVO dataCenterVO = new DataCenterVO();
-        dataCenterVO.setId(id);
-
-        List<DomainVO> domainVOList = new ArrayList<>();
-        DomainVO domainVO = null;
+        List<StorageDomainVo> sdVoList = new ArrayList<>();
+        StorageDomainVo sdVo = null;
 
         List<StorageDomain> storageDomainList =
                 ((AttachedStorageDomainsService.ListResponse)systemService.dataCentersService().dataCenterService(id).storageDomainsService().list().send()).storageDomains();
 
         for(StorageDomain storageDomain : storageDomainList) {
-            domainVO = new DomainVO();
+            sdVo = new StorageDomainVo();
 
-            domainVO.setId(storageDomain.id());
-            domainVO.setName(storageDomain.name());
-            domainVO.setDomainType(storageDomain.type().value() + (storageDomain.master() ? "(마스터)":""));
-            domainVO.setStatus(storageDomain.status().value());
-            domainVO.setAvailableDiskSize(storageDomain.available()); // 여유공간
-            domainVO.setUsedDiskSize(storageDomain.used()); // 사용된 공간
-            domainVO.setDiskSize(storageDomain.available().add(storageDomain.used()));
-            domainVO.setDescription(storageDomain.description());
+            sdVo.setId(storageDomain.id());
+            sdVo.setName(storageDomain.name());
+            sdVo.setDomainType(storageDomain.type().value() + (storageDomain.master() ? "(마스터)":""));
+            sdVo.setStatus(storageDomain.status().value());
+            sdVo.setAvailableSize(storageDomain.available()); // 여유공간
+            sdVo.setUsedSize(storageDomain.used()); // 사용된 공간
+            sdVo.setDiskSize(storageDomain.available().add(storageDomain.used()));
+            sdVo.setDescription(storageDomain.description());
 
-            domainVOList.add(domainVO);
+            sdVoList.add(sdVo);
         }
-        dataCenterVO.setDomainVOList(domainVOList);
-
-        return dataCenterVO;
+        return sdVoList;
     }
 
 
-
     @Override
-    public DataCenterVO getNetwork(String id) {
+    public List<NetworkVo> getNetwork(String id) {
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
 
-        DataCenterVO dataCenterVO = new DataCenterVO();
-        dataCenterVO.setId(id);
-        List<NetworkVO> networkVOList = new ArrayList<>();
-        NetworkVO networkVO = null;
+        List<NetworkVo> nwVoList = new ArrayList<>();
+        NetworkVo nwVo = null;
 
         List<Network> networkList =
                 ((DataCenterNetworksService.ListResponse)systemService.dataCentersService().dataCenterService(id).networksService().list().send()).networks();
 
         for(Network network : networkList){
-            networkVO = new NetworkVO();
+            nwVo = new NetworkVo();
 
-            networkVO.setId(network.id());
-            networkVO.setName(network.name());
-            networkVO.setDescription(network.description());
+            nwVo.setId(network.id());
+            nwVo.setName(network.name());
+            nwVo.setDescription(network.description());
 
-            networkVOList.add(networkVO);
+            nwVoList.add(nwVo);
         }
-        dataCenterVO.setNetworkVOList(networkVOList);
-
-        return dataCenterVO;
+        return nwVoList;
     }
 
+
     @Override
-    public DataCenterVO getCluster(String id) {
+    public List<ClusterVo> getCluster(String id) {
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
 
-        DataCenterVO dataCenterVO = new DataCenterVO();
-        dataCenterVO.setId(id);
-
-        List<ClusterVO> clusterVOList = new ArrayList<>();
-        ClusterVO clusterVO = null;
+        List<ClusterVo> cVoList = new ArrayList<>();
+        ClusterVo cVo = null;
 
         List<Cluster> clusterList =
                 ((ClustersService.ListResponse) systemService.dataCentersService().dataCenterService(id).clustersService().list().send()).clusters();
 
         for(Cluster cluster : clusterList){
-            clusterVO = new ClusterVO();
+            cVo = new ClusterVo();
 
-            clusterVO.setId(cluster.id());
-            clusterVO.setName(cluster.name());
-            clusterVO.setVersion(cluster.version().major() + "." + cluster.version().minor());
-            clusterVO.setDescription(cluster.description());
+            cVo.setId(cluster.id());
+            cVo.setName(cluster.name());
+            cVo.setVersion(cluster.version().major() + "." + cluster.version().minor());
+            cVo.setDescription(cluster.description());
 
-            clusterVOList.add(clusterVO);
+            cVoList.add(cVo);
         }
-        dataCenterVO.setClusterVOList(clusterVOList);
-
-        return dataCenterVO;
+        return cVoList;
     }
 
 
