@@ -58,7 +58,7 @@ public class VmVo {
 
 
     private List<VnicProfileVo> vnicProfileVoList;
-
+    private List<VmDiskVo> vmDiskVoList;
 
     // 리스트-> 상태, 이름(id), 호스트(id), ip주소, fqdn, 클러스터(id), 데이터센터(id)
     //          메모리,cpu,네트워크, 상태, 업타임, 설명

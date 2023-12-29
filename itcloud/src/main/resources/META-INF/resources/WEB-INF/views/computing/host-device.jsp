@@ -1,133 +1,64 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
-<html>
-<head>
-    <title>It Cloud | 대시보드</title>
-    <style>
-        body {
-            margin: 0;
-        }
+<html lang="en">
+<%@ include file="../base/header.jsp" %>
 
-        header {
-            background-color: #535c55;
-            color: #fff;
-            padding: 5px;
-            /*text-align: center;*/
-        }
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+                    <h1 class="mt-4">Host</h1>
+                    <a href="/computing/hosts" style="text-decoration-line: none">호스트</a> - 호스트 장치 <br><br>
 
-        ul {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            width: 15%;
-            background-color: #f1f1f1;
-            position: fixed;
-            height: 100%;
-            overflow: auto;
-        }
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <p class="mb-0">
+                                <a href="/computing/host?id=${id}" style="text-decoration-line: none">일반</a> |
+                                <a href="/computing/host-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
+                                <a href="/computing/host-nic?id=${id}" style="text-decoration-line: none">네트워크 인터페이스</a> |
+                                <a href="/computing/host-device?id=${id}">호스트 장치</a> |
+                                <a href="#" style="text-decoration-line: none">권한</a> |
+                                <a href="/computing/host-aff?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
+                                <a href="#" style="text-decoration-line: none">이벤트</a>
+                            </p>
+                        </div>
+                    </div>
 
-        li a {
-            display: block;
-            color: #000;
-            padding: 8px 16px;
-            text-decoration: none;
-        }
+                    <table>
+                        <tr>
+                            <td>이름</td>
+                            <td>기능</td>
+                            <td>벤더</td>
+                            <td>제품</td>
+                            <td>드라이버</td>
+                        </tr>
 
-        li a.side{
-            text-align: left;
-            size: 10px;
-        }
+                        <c:if test="${empty device}">
+                            <tr>
+                                <td>nic 없음</td>
+                            </tr>
+                        </c:if>
+                        <c:forEach var="device" items="${device}" varStatus="status">
+                            <tr>
+                                <td>${device.name}</td>
+                                <td>${device.capability}</td>
+                                <td>${device.vendor}</td>
+                                <td>${device.product}</td>
+                                <td>${device.driver}</td>
+                            </tr>
+                        </c:forEach>
+                    </table>
 
+                </div>
+            </main>
+        </div>
 
-        li a:hover:not(.active) {
-            background-color: #555;
-            color: #ffffff;
-        }
-
-        .cluster-container {
-            display: flex;
-            justify-content: space-around;
-            margin: 15px;
-        }
-
-        .widget h2 {
-            color: #333;
-        }
-
-        .widget p {
-            color: #555;
-        }
-
-        table{
-            border: #535c55 1px solid;
-            border-collapse: collapse;
-        }
-
-        tr,td{
-            border: #535c55 1px solid;
-            /*text-align: center;*/
-            padding: 10px;
-        }
-
-    </style>
-
-</head>
-<body>
-
-<header>
-    <h1>&nbsp;&nbsp; It Cloud</h1>
-</header>
-<div>
-    <ul>
-        <li><a class="side" href="/computing/datacenters">DataCenter</a></li>
-        <li><a class="side" href="/computing/clusters">Cluster</a></li>
-        <li><a class="side" href="/computing/hosts">Host</a></li>
-        <li><a class="side" href="/computing/vms">Vm</a></li>
-        <li><a class="side" href="/storage">Storage</a></li>
-    </ul>
-</div>
-&nbsp;
-<h2 align="center">호스트</h2>
-<div class="cluster-container">
-    <table align="center">
-        <tr>
-            <td><a href="/computing/host?id=${id}">일반</a></td>
-            <td><a href="/computing/host-vm?id=${id}">가상머신</a></td>
-            <td><a href="/computing/host-nic?id=${id}">네트워크 인터페이스</a></td>
-            <td><a href="/computing/host-device?id=${id}">호스트 장치</a></td>
-            <td>권한</td>
-            <td><a href="/computing/host-aff?id=${id}">선호도 레이블</a></td>
-            <td>이벤트</td>
-        </tr>
-        <tr> <td colspan="9"></td> </tr>
-        <tr>
-            <td>이름</td>
-            <td>기능</td>
-            <td>벤더</td>
-            <td>제품</td>
-            <td>드라이버</td>
-        </tr>
-        <c:if test="${empty device}">
-            <tr>
-                <td>nic 없음</td>
-            </tr>
-        </c:if>
-        <c:forEach var="device" items="${device.hostDeviceVOList}" varStatus="status">
-            <tr>
-                <td>${device.name}</td>
-                <td>${device.capability}</td>
-                <td>${device.vendor}</td>
-                <td>${device.product}</td>
-                <td>${device.driver}</td>
-            </tr>
-        </c:forEach>
-    </table>
-
-
-</div>
-
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="js/scripts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+    <script src="assets/demo/chart-area-demo.js"></script>
+    <script src="assets/demo/chart-bar-demo.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+    <script src="js/datatables-simple-demo.js"></script>
+    </body>
 </html>
-
-

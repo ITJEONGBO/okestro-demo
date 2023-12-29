@@ -34,11 +34,12 @@ public class DashboardServiceImpl implements ItDashboardService {
 		getCluster(systemService);
 		getHost(systemService);
 		getVm(systemService);
+
 		getCpu(systemService);
 		getMemory(systemService);
 		getStorage(systemService);
 
-		log.info("------showDashboard");
+		log.info("------getDashboard");
 		return dbVo;
 	}
 
@@ -47,13 +48,13 @@ public class DashboardServiceImpl implements ItDashboardService {
 	private void getDatacenter(SystemService systemService) {
 		List<DataCenter> dataCenterList =
 				((DataCentersService.ListResponse) systemService.dataCentersService().list().send()).dataCenters();
-		dbVo.setDatacenterCnt(dataCenterList.size());
 
 		// DataCenter status=up 개수
 		int datacenterCnt = (int) dataCenterList.stream()
 				.filter(dataCenter -> dataCenter.status().value().equals("up"))
 				.count();
 
+		dbVo.setDatacenterCnt(dataCenterList.size());
 		dbVo.setDatacenterActive(datacenterCnt);
 		dbVo.setDatacenterInactive(dataCenterList.size() - datacenterCnt);
 	}
@@ -70,13 +71,13 @@ public class DashboardServiceImpl implements ItDashboardService {
 	private void getHost(SystemService systemService) {
 		List<Host> hostList =
 				((HostsService.ListResponse) systemService.hostsService().list().send()).hosts();
-		dbVo.setHostCnt(hostList.size());
 
 		// Host status=up 개수
 		int hostUpCnt = (int) hostList.stream()
 				.filter(host -> host.status().value().equals("up"))
 				.count();
 
+		dbVo.setHostCnt(hostList.size());
 		dbVo.setHostActive(hostUpCnt);
 		dbVo.setHostInactive(dbVo.getHostCnt() - hostUpCnt);
 	}
@@ -85,13 +86,13 @@ public class DashboardServiceImpl implements ItDashboardService {
 	// 가상머신 수
 	private void getVm(SystemService systemService) {
 		List<Vm> vmList = ((VmsService.ListResponse) systemService.vmsService().list().send()).vms();
-		dbVo.setVmCnt(vmList.size());
 
 		// Host status=up 개수
 		int vmUpCnt = (int) vmList.stream()
 				.filter(vm -> vm.status().value().equals("up"))
 				.count();
 
+		dbVo.setVmCnt(vmList.size());
 		dbVo.setVmActive(vmUpCnt);
 		dbVo.setVmInactive(vmList.size() - vmUpCnt);
 	}
@@ -122,7 +123,6 @@ public class DashboardServiceImpl implements ItDashboardService {
 			cpuAssigned += vm.cpu().topology().cores().intValue()
 					* vm.cpu().topology().sockets().intValue()
 					* vm.cpu().topology().threads().intValue();
-
 		}
 
 		dbVo.setCpuTotal(cpuTotal);
