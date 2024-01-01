@@ -41,20 +41,17 @@ public class VmServiceImpl implements ItVmService {
             vmVo.setName(vm.name());
             vmVo.setDescription(vm.description());
 
-//            Host host =
-//                    ((HostService.GetResponse)systemService.hostsService().hostService(vm.host().id()).get().send()).host();
-//            vmVo.setHostId(host.id());
-//            vmVo.setHostName(host.name());
+            // host
+            vmVo.setHostId(vm.host().id());
+            vmVo.setHostName(((HostService.GetResponse)systemService.hostsService().hostService(vm.host().id()).get().send()).host().name());
 
             Cluster cluster =
                     ((ClusterService.GetResponse)systemService.clustersService().clusterService(vm.cluster().id()).get().send()).cluster();
             vmVo.setClusterId(cluster.id());
             vmVo.setClusterName(cluster.name());
-            vmVo.setDatacenterId(cluster.dataCenter().id());
 
-            DataCenter dataCenter =
-                    ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send()).dataCenter();
-            vmVo.setDatacenterName(dataCenter.name());
+            vmVo.setDatacenterId(cluster.dataCenter().id());
+            vmVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send()).dataCenter().name() );
             vmVo.setFqdn(vm.fqdn());
 
             if(vm.startTime() != null) {
@@ -98,12 +95,13 @@ public class VmServiceImpl implements ItVmService {
         vmVo.setStatus(vm.status().value());    // 상태는 두번표시됨. 그림과 글자로
         vmVo.setName(vm.name());
         vmVo.setDescription(vm.description());
-        vmVo.setTemplateName(vm.template().name());
+        System.out.println(((TemplateService.GetResponse)systemService.templatesService().templateService(vm.template().id()).get().send()).template().name());
+        vmVo.setTemplateName( ((TemplateService.GetResponse)systemService.templatesService().templateService(vm.template().id()).get().send()).template().name() );
+
         vmVo.setOsSystem(vm.os().type());
         vmVo.setChipsetFirmwareType(vm.bios().type().value());
-        vmVo.setPriority(String.valueOf(vm.highAvailability().priority()));  //타입수정?
-        vmVo.setOptimizeOption(String.valueOf(vm.type()));  // 최적화 옵션
-        System.out.println(vmVo.getOptimizeOption());
+        vmVo.setPriority(vm.highAvailability().priorityAsInteger());  // 우선순위
+        vmVo.setOptimizeOption(vm.type().value());  // 최적화 옵션
 
         vmVo.setMemory(vm.memory());
         vmVo.setMemoryActual(vm.memoryPolicy().guaranteed());
@@ -185,20 +183,22 @@ public class VmServiceImpl implements ItVmService {
 
         for(DiskAttachment diskAttachment : vmdiskList){
             vdVo = new VmDiskVo();
+
             vdVo.setId(diskAttachment.id());
-            vdVo.setInterfaceName(diskAttachment.interface_().value());
+            vdVo.setActive(diskAttachment.active());
             vdVo.setReadOnly(diskAttachment.readOnly());
             vdVo.setBootAble(diskAttachment.bootable());
             vdVo.setLogicalName(diskAttachment.logicalName());
-            vdVo.setActive(diskAttachment.active());
+            vdVo.setInterfaceName(diskAttachment.interface_().value());
 
             Disk disk =
-                    ((DiskService.GetResponse)systemService.disksService().diskService(diskAttachment.id()).get().send()).disk();
-
+                    ((DiskService.GetResponse)systemService.disksService().diskService(diskAttachment.disk().id()).get().send()).disk();
+            vdVo.setName(disk.name());
             vdVo.setDescription(disk.description());
-//            diskVO.setVirtualSize(disk1.);
-//            vdVo.setStorageType(disk.storageType().value());
-//            vdVo.setContentType(disk.contentType().value());
+            vdVo.setVirtualSize(disk.provisionedSize());
+            vdVo.setStatus(String.valueOf(disk.status()));  // 유형
+            vdVo.setType(disk.storageType().value());
+            vdVo.setConnection(disk.contentType().value());
 
             vdVoList.add(vdVo);
         }
@@ -206,25 +206,43 @@ public class VmServiceImpl implements ItVmService {
     }
 
 //    https://192.168.0.80/ovirt-engine/api/vms/931ad1d3-0782-4727-947d-6a765cfcc401/snapshots
-//    @Override
-//    public vmVo getSnapshot(String id) {
-//        return null;
-//    }
-
     @Override
-    public List<AppVo> getApplication(String id) {
+    public List<SnapshotVo> getSnapshot(String id) {
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
 
-        List<AppVo> appVoList = new ArrayList<>();
-        AppVo appVo = null;
+        List<SnapshotVo> sVoList = new ArrayList<>();
+        SnapshotVo sVo = null;
+
+        List<Snapshot> snapList =
+                ((SnapshotsService.ListResponse)systemService.vmsService().vmService(id).snapshotsService().list().send()).snapshots();
+
+        for(Snapshot snapshot : snapList){
+            sVo = new SnapshotVo();
+
+            sVo.setDate(snapshot.date());
+            sVo.setStatus(String.valueOf(snapshot.snapshotStatus()));   // 데이터형고민
+            sVo.setPersistMemory(snapshot.persistMemorystate());
+            sVo.setDescription(snapshot.description());
+
+            sVoList.add(sVo);
+        }
+        return sVoList;
+    }
+
+    @Override
+    public List<ApplicationVo> getApplication(String id) {
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        List<ApplicationVo> appVoList = new ArrayList<>();
+        ApplicationVo appVo = null;
 
         List<Application> appList =
                 ((VmApplicationsService.ListResponse)systemService.vmsService().vmService(id).applicationsService().list().send()).applications();
 
         for(Application application : appList) {
-            appVo = new AppVo();
-            appVo.setId(application.id());
+            appVo = new ApplicationVo();
             appVo.setName(application.name());
 
             appVoList.add(appVo);

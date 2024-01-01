@@ -2,16 +2,17 @@ package com.itinfo.itcloud.model.computing;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Date;
 
-@Getter @Setter
+@Getter @Setter @ToString
 public class SnapshotVo {
     private String description;
     private Date date;
     private boolean persistMemory;
     private String status;
-    private String type;
+//    private String type;
 
 
     // 일반-> 날짜, 상태, 메모리, 설명, 설정된 메모리, 할당할 실제메모리, cpu코어수
@@ -19,4 +20,11 @@ public class SnapshotVo {
     // nic-> 이름, 네트워크이름, 프로파일이름, 유형, mac, rx, tx, 중단
     // 설치된 애플리케이션
 
+
+//    <c:if test="${empty snapshot.nic}">
+//        표시할 항목이 없습니다.<br>
+//    </c:if>
+//    <c:forEach var="snapshot" items="${snapshot}" varStatus="status">
+//
+//    </c:forEach>
 }

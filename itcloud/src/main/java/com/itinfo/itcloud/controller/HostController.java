@@ -1,9 +1,6 @@
 package com.itinfo.itcloud.controller;
 
-import com.itinfo.itcloud.model.computing.HostDeviceVo;
-import com.itinfo.itcloud.model.computing.HostVo;
-import com.itinfo.itcloud.model.computing.NicVo;
-import com.itinfo.itcloud.model.computing.VmVo;
+import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.service.ItHostService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,8 +22,8 @@ public class HostController {
 
 	@GetMapping("/computing/hosts")
 	public String hosts(Model model) {
-		List<HostVo> hostVOList = itHostService.getList();
-		model.addAttribute("hostVOList", hostVOList);
+		List<HostVo> hosts = itHostService.getList();
+		model.addAttribute("hosts", hosts);
 		log.info("***** hosts 목록 화면출력");
 
 		return "computing/hosts";
@@ -108,21 +105,21 @@ public class HostController {
 		return itHostService.getHostDevice(id);
 	}
 
-//	@GetMapping("/computing/host-aff")
-//	public String aff(String id, Model model) {
-//		HostVO aff = itHostService.getAffinitylabels(id);
-//		model.addAttribute("aff", aff);
-//		model.addAttribute("id", id);
-//
-//		return "computing/host-aff";
-//	}
-//
-//	@GetMapping("/computing/host/affstatus")
-//	@ResponseBody
-//	public HostVO aff(String id) {
-//		log.info("----- host aff 일반 불러오기: " + id);
-//		return itHostService.getAffinitylabels(id);
-//	}
+	@GetMapping("/computing/host-aff")
+	public String aff(String id, Model model) {
+		List<AffinityLabelVo> aff = itHostService.getAffinitylabels(id);
+		model.addAttribute("aff", aff);
+		model.addAttribute("id", id);
+
+		return "computing/host-aff";
+	}
+
+	@GetMapping("/computing/host/affstatus")
+	@ResponseBody
+	public List<AffinityLabelVo> aff(String id) {
+		log.info("----- host aff 일반 불러오기: " + id);
+		return itHostService.getAffinitylabels(id);
+	}
 
 
 }

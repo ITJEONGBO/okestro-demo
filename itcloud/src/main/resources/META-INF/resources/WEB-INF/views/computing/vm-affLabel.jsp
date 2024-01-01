@@ -7,18 +7,21 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">Host</h1>
-                    컴퓨팅 > <a href="/computing/hosts" style="text-decoration-line: none">호스트</a> > 선호도 레이블 <br><br>
+                    <h1 class="mt-4">Vm</h1>
+                    컴퓨팅 > <a href="/computing/vms" style="text-decoration-line: none">가상머신</a> > 선호도 레이블 <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
                             <p class="mb-0">
-                                <a href="/computing/host?id=${id}" style="text-decoration-line: none">일반</a> |
-                                <a href="/computing/host-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
-                                <a href="/computing/host-nic?id=${id}" style="text-decoration-line: none">네트워크 인터페이스</a> |
-                                <a href="/computing/host-device?id=${id}" style="text-decoration-line: none">호스트 장치</a> |
+                                <a href="/computing/vm?id=${id}" style="text-decoration-line: none">일반</a> |
+                                <a href="/computing/vm-nic?id=${id}" style="text-decoration-line: none">네트워크 인터페이스</a> |
+                                <a href="/computing/vm-disk?id=${id}" style="text-decoration-line: none">디스크</a> |
+                                <a href="/computing/vm-snapshot?id=${id}" style="text-decoration-line: none">스냅샷</a> |
+                                <a href="/computing/vm-application?id=${id}" style="text-decoration-line: none">애플리케이션</a> |
+                                <a href="/computing/vm-affGroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
+                                <a href="/computing/vm-affLabel?id=${id}">선호도 레이블</a> |
+                                <a href="/computing/vm-guest?id=${id}" style="text-decoration-line: none">게스트 정보</a> |
                                 <a href="#" style="text-decoration-line: none">권한</a> |
-                                <a href="/computing/host-aff?id=${id}">선호도 레이블</a> |
                                 <a href="#" style="text-decoration-line: none">이벤트</a>
                             </p>
                         </div>
@@ -26,22 +29,22 @@
 
                     <table width="700px">
                         <tr>
-                            <td>아이디</td>
+                            <td>이름</td>
                             <td>가상머신 멤버</td>
                             <td>호스트 멤버</td>
                         </tr>
 
                         <c:if test="${empty aff}">
                             <tr>
-                                <td colspan="3" rowspan="3">표시할 항목이 없습니다.</td>
+                                <td colspan="3" rowspan="3">표시할 항목이 없습니다</td>
                             </tr>
                         </c:if>
                         <c:forEach var="aff" items="${aff}" varStatus="status">
-                            <tr>
-                                <td>${aff.id}</td>
-                                <td></td>
-                                <td></td>
-                            </tr>
+                        <tr>
+                            <td>${aff.name}</td>
+                            <td>${aff.vmList}</td>
+                            <td>${aff.hostList}</td>
+                        </tr>
                         </c:forEach>
                     </table>
 

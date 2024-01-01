@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Cluster</h1>
-                    <a href="/computing/clusters" style="text-decoration-line: none">클러스터</a> - 일반 <br><br>
+                    컴퓨팅 > <a href="/computing/clusters" style="text-decoration-line: none">클러스터</a> > ${cluster.datacenterName} <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
@@ -17,7 +17,7 @@
                                 <a href="/computing/cluster-network?id=${id}" style="text-decoration-line: none">논리 네트워크</a> |
                                 <a href="/computing/cluster-host?id=${id}" style="text-decoration-line: none">호스트</a> |
                                 <a href="/computing/cluster-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
-                                <a href="/computing/cluster-aff?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
+                                <a href="/computing/cluster-affGroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
                                 <a href="/computing/cluster-affLabel?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
                                 <a href="/computing/cluster-cpu?id=${id}" style="text-decoration-line: none">CPU 프로파일</a> |
                                 <a href="#" style="text-decoration-line: none">권한</a>
@@ -26,17 +26,20 @@
                     </div>
 
                     <div>
-                        이름: &nbsp;${cluster.name} <br>
-                        설명: &nbsp;${cluster.description} <br>
-                        데이터센터: &nbsp;${cluster.datacenterId} <br>
-                        호환버전: &nbsp;${cluster.version} <br>
-                        클러스터 ID: &nbsp;${cluster.id} <br>
-                        클러스터 CPU 유형: &nbsp;${cluster.cpuType} <br>
-                        스레드를 CPU로 사용: &nbsp;${cluster.threadsAsCore ? "예":"아니요"} <br>
-                        최대 메모리 오버 커밋: &nbsp;${cluster.memoryOverCommit} <br>
-                        복구정책: &nbsp;(해야함) <br>
-                        칩셋/펌웨어 유형: &nbsp;${cluster.chipsetFirmwareType} <br>
-                        가상머신 수: &nbsp;${cluster.vmCnt} <br>
+                        이름: ${cluster.name}<br>
+                        설명: ${cluster.description}<br>
+                        데이터센터: ${cluster.datacenterName}<br>
+                        호환버전: ${cluster.version}<br>
+                        클러스터 ID: ${cluster.id}<br><br>
+
+                        클러스터 CPU 유형: ${cluster.cpuType}<br>
+                        스레드를 CPU로 사용: ${cluster.threadsAsCore ? "예":"아니요"}<br>
+                        최대 메모리 오버 커밋: ${cluster.memoryOverCommit}%<br>
+                        복구정책: (해야함)<br>
+                        칩셋/펌웨어 유형: ${cluster.chipsetFirmwareType}<br>
+                        가상머신 수: ${cluster.vmCnt}<br>
+
+                        <br><br><br><br>
                     </div>
                 </div>
             </main>

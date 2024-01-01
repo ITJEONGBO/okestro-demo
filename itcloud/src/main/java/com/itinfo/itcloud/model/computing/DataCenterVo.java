@@ -20,9 +20,9 @@ public class DataCenterVo {
     private String supportedVersion;
     private String version;
 
-    private List<StorageDomainVo> storageDomainVoList;
-    private List<NetworkVo> networkVoList;
-    private List<ClusterVo> clusterVoList;
+//    private List<StorageDomainVo> storageDomainVoList;
+//    private List<NetworkVo> networkVoList;
+//    private List<ClusterVo> clusterVoList;
 
 
 

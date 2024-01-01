@@ -17,7 +17,7 @@
                                 <a href="/computing/cluster-network?id=${id}" style="text-decoration-line: none">논리 네트워크</a> |
                                 <a href="/computing/cluster-host?id=${id}">호스트</a> |
                                 <a href="/computing/cluster-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
-                                <a href="/computing/cluster-aff?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
+                                <a href="/computing/cluster-affGroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
                                 <a href="/computing/cluster-affLabel?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
                                 <a href="/computing/cluster-cpu?id=${id}" style="text-decoration-line: none">CPU 프로파일</a> |
                                 <a href="#" style="text-decoration-line: none">권한</a>
@@ -25,8 +25,9 @@
                         </div>
                     </div>
 
-                    <table>
+                    <table width="700px">
                         <tr>
+                            <td></td>
                             <td>이름</td>
                             <td>호스트이름/IP</td>
                             <td>상태</td>
@@ -40,7 +41,8 @@
                         </c:if>
                         <c:forEach var="host" items="${hosts}" varStatus="status">
                             <tr>
-                                <td>${host.name}</td>
+                                <td>${host.status == "up" ? "🔼" : "🔽"}</td>
+                                <td><a href="/computing/host?id=${host.id}">${host.name}</a></td>
                                 <td>${host.address}</td>
                                 <td>${host.status}</td>
                                 <td>${host.vmUpCnt}대의 가상머신</td>

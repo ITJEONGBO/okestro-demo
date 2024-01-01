@@ -17,7 +17,7 @@
                                 <a href="/computing/cluster-network?id=${id}" style="text-decoration-line: none">논리 네트워크</a> |
                                 <a href="/computing/cluster-host?id=${id}" style="text-decoration-line: none">호스트</a> |
                                 <a href="/computing/cluster-vm?id=${id}">가상머신</a> |
-                                <a href="/computing/cluster-aff?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
+                                <a href="/computing/cluster-affGroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
                                 <a href="/computing/cluster-affLabel?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
                                 <a href="/computing/cluster-cpu?id=${id}" style="text-decoration-line: none">CPU 프로파일</a> |
                                 <a href="#" style="text-decoration-line: none">권한</a>
@@ -27,25 +27,34 @@
 
                     <table>
                         <tr>
+                            <td></td>
                             <td>이름</td>
+                            <td></td>
                             <td>상태</td>
-                            <td>start타임</td>
-                            <td>ip 주소(v4)</td>
-                            <td>ip 주소(v6)</td>
+                            <td>업타임</td>
+                            <td>CPU</td>
+                            <td>메모리</td>
+                            <td>네트워크</td>
+                            <td>IP 주소</td>
                         </tr>
 
                         <c:if test="${empty vms}">
                                 <tr>
-                                    <td>가상머신이 없음</td>
+                                    <td colspan="9" rowspan="3">가상머신이 없음</td>
                                 </tr>
                         </c:if>
                         <c:forEach var="vms" items="${vms}" varStatus="status">
                             <tr>
-                                <td>${vms.name}</td>
+                                <td>${vms.status == "up" ? "🔼" : "🔽"}</td>
+                                <td><a href="/computing/vm?id=${vms.id}">${vms.name}</a></td>
+                                <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                 <td>${vms.status}</td>
-                                <td>${vms.startTime}</td>
-                                <td>${vms.ipv4}</td>
-                                <td>${vms.ipv6}</td>
+                                <td>${vms.creationTime}</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td> ${vms.ipv4}<br> ${vms.ipv6}</td>
+
                             </tr>
                         </c:forEach>
                     </table>

@@ -26,8 +26,8 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     @Autowired
     private AdminConnectionService adminConnectionService;
 
-    public DataCenterServiceImpl() { }
 
+    @Override
     public List<DataCenterVo> getDatacenters(){
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
@@ -71,11 +71,12 @@ public class DataCenterServiceImpl implements ItDataCenterService {
             sdVo.setId(storageDomain.id());
             sdVo.setName(storageDomain.name());
             sdVo.setDomainType(storageDomain.type().value() + (storageDomain.master() ? "(마스터)":""));
-            sdVo.setStatus(storageDomain.status().value());
+            sdVo.setStatus(storageDomain.status().value());     // storageDomainStatus 10개 한글변환 생각해봐야됨
             sdVo.setAvailableSize(storageDomain.available()); // 여유공간
             sdVo.setUsedSize(storageDomain.used()); // 사용된 공간
             sdVo.setDiskSize(storageDomain.available().add(storageDomain.used()));
             sdVo.setDescription(storageDomain.description());
+//            sdVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name() );
 
             sdVoList.add(sdVo);
         }
@@ -100,6 +101,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
             nwVo.setId(network.id());
             nwVo.setName(network.name());
             nwVo.setDescription(network.description());
+            nwVo.setDatacenterName(((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name());
 
             nwVoList.add(nwVo);
         }

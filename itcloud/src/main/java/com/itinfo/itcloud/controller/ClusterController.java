@@ -25,15 +25,15 @@ public class ClusterController {
 	public String clusters(Model model) {
 		List<ClusterVo> clusterVOList = itClusterService.getList();
 		model.addAttribute("clusters", clusterVOList);
-		log.info("***** 클러스터 목록 화면출력");
+		log.info("---clusters");
 		return "computing/clusters";
 	}
 
 	// cluster 목록
-	@GetMapping("/computing/clusters/status")
+	@GetMapping("/computing/clustersStatus")
 	@ResponseBody
 	public List<ClusterVo> clusters() {
-		log.info("----- 클러스터 목록 불러오기");
+		log.info("-----clustersStatus");
 		return itClusterService.getList();
 	}
 
@@ -43,14 +43,15 @@ public class ClusterController {
 		ClusterVo cluster = itClusterService.getInfo(id);
 		model.addAttribute("cluster", cluster);
 		model.addAttribute("id", id);
+		log.info("---cluster: " + id);
+
 		return "computing/cluster";
 	}
 
-	//    http://localhost:8080/computing/cluster/status?id=c7ea23ce-8810-11ee-af5e-00163e0202ee
-	@GetMapping("/computing/cluster/status")
+	@GetMapping("/computing/clusterStatus")
 	@ResponseBody
 	public ClusterVo cluster(String id) {
-		log.info("----- 클러스터 id 일반 불러오기: " + id);
+		log.info("-----clusterStatus: " + id);
 		return itClusterService.getInfo(id);
 	}
 
@@ -60,6 +61,7 @@ public class ClusterController {
 		List<NetworkVo> network = itClusterService.getNetwork(id);
 		model.addAttribute("network", network);
 		model.addAttribute("id", id);
+		log.info("---cluster-network: " + id);
 
 		return "computing/cluster-network";
 	}
@@ -68,7 +70,7 @@ public class ClusterController {
 	@GetMapping("/computing/cluster/networkStatus")
 	@ResponseBody
 	public List<NetworkVo> network(String id) {
-		log.info("----- 클러스터 network 목록 불러오기: " + id);
+		log.info("-----cluster/networkStatus: " + id);
 		return itClusterService.getNetwork(id);
 	}
 
@@ -108,20 +110,36 @@ public class ClusterController {
 		return itClusterService.getVm(id);
 	}
 
-	@GetMapping("/computing/cluster-aff")
+	@GetMapping("/computing/cluster-affGroup")
 	public String aff(String id, Model model) {
 		List<AffinityGroupVo> aff = itClusterService.getAffinitygroups(id);
 		model.addAttribute("aff", aff);
 		model.addAttribute("id", id);
-		return "computing/cluster-aff";
+		return "computing/cluster-affGroup";
 	}
 
 
-	@GetMapping("/computing/cluster/affStatus")
+	@GetMapping("/computing/cluster/affGroupStatus")
 	@ResponseBody
-	public List<AffinityGroupVo> aff(String id) {
+	public List<AffinityGroupVo> affGroup(String id) {
 		log.info("----- 클러스터 선호도 목록 불러오기: " + id);
 		return itClusterService.getAffinitygroups(id);
+	}
+
+	@GetMapping("/computing/cluster-affLabel")
+	public String affLabel(String id, Model model) {
+		List<AffinityGroupVo> aff = itClusterService.getAffinitygroups(id);
+		model.addAttribute("aff", aff);
+		model.addAttribute("id", id);
+		return "computing/cluster-affLabel";
+	}
+
+
+	@GetMapping("/computing/cluster/affLabelStatus")
+	@ResponseBody
+	public List<AffinityLabelVo> affLabel(String id) {
+		log.info("----- 클러스터 선호도 목록 불러오기: " + id);
+		return itClusterService.getAffinitylabels(id);
 	}
 
 	@GetMapping("/computing/cluster-cpu")

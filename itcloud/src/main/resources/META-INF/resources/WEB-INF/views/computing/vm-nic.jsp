@@ -18,8 +18,8 @@
                                 <a href="/computing/vm-disk?id=${id}" style="text-decoration-line: none">디스크</a> |
                                 <a href="/computing/vm-snapshot?id=${id}" style="text-decoration-line: none">스냅샷</a> |
                                 <a href="/computing/vm-application?id=${id}" style="text-decoration-line: none">애플리케이션</a> |
-                                <a href="/computing/vm-affgroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
-                                <a href="/computing/vm-afflabel?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
+                                <a href="/computing/vm-affGroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
+                                <a href="/computing/vm-affLabel?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
                                 <a href="/computing/vm-guest?id=${id}" style="text-decoration-line: none">게스트 정보</a> |
                                 <a href="#" style="text-decoration-line: none">권한</a> |
                                 <a href="#" style="text-decoration-line: none">이벤트</a>
@@ -43,11 +43,11 @@
                         <c:forEach var="nic" items="${nic}" varStatus="status">
                             <tr>
                                 <td colspan="9">
-                                    id: &nbsp;${nic.id} <br>
-                                    네트워크 이름: &nbsp;${nic.name} <br>
-                                    IPv4:&nbsp;${nic.ipv4} <br>
-                                    IPv6:&nbsp;${nic.ipv6} <br>
-                                    MAC:&nbsp;${nic.macAddress} <br>
+                                    id: ${nic.id} <br>
+                                    네트워크 이름: ${nic.name} <br>
+                                    IPv4: ${nic.ipv4} <br>
+                                    IPv6: ${nic.ipv6} <br>
+                                    MAC: ${nic.macAddress} <br>
                                 </td>
                             </tr>
                             <tr>

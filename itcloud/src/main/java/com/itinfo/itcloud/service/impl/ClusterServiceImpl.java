@@ -23,6 +23,7 @@ public class ClusterServiceImpl implements ItClusterService {
 
     // 컴퓨팅-클러스터 목록
     // 상태, 이름, 코멘트, 호환버전, 설명, 클러스터cpu유형, 호스트수, 가상머신수, (업그레이드 상태)
+    @Override
     public List<ClusterVo> getList(){
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
@@ -55,7 +56,7 @@ public class ClusterServiceImpl implements ItClusterService {
         return cVoList;
     }
 
-
+    @Override
     public ClusterVo getInfo(String id){
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
@@ -110,26 +111,24 @@ public class ClusterServiceImpl implements ItClusterService {
                 nwVo.setName(network.name());
                 nwVo.setStatus(network.status().value());
                 nwVo.setDescription(network.description());
+                System.out.println("클러스터 이름: " + ((ClusterService.GetResponse)systemService.clustersService().clusterService(id).get().send()).cluster().name() );
+                nwVo.setDatacenterName( ((ClusterService.GetResponse)systemService.clustersService().clusterService(id).get().send()).cluster().name() );
 
-                // 역할 일단 대충나오게만 하기 이후 변경 필요
-//                for(int i=0; i < (int) network.usages().stream().count(); i++){
-//                    if(network.usages().get(i).value().equals("gluster")) {
-//                        networkVo.setGluster(true);
-//                        break;
-//                    }
-//                }
-//                networkVO.setVm(network.usages().get(i).value().equals("vm"));
-//                networkVO.setDisplay(network.usages().get(i).value().equals("display"));
-//                networkVO.setMigration(network.usages().get(i).value().equals("migration"));
-//                networkVO.setManagement(network.usages().get(i).value().equals("management"));
-//                networkVO.setDefaultRoute(network.usages().get(i).value().equals("default_route"));
-//                networkVO.setGluster(network.usages().get(i).value().equals("gluster"));
+                // usages
+                nwVo.setVm(network.usages().contains(NetworkUsage.VM));
+                nwVo.setDisplay(network.usages().contains(NetworkUsage.DISPLAY));
+                nwVo.setMigration(network.usages().contains(NetworkUsage.MIGRATION));
+                nwVo.setManagement(network.usages().contains(NetworkUsage.MANAGEMENT));
+                nwVo.setDefaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE));
+                nwVo.setGluster(network.usages().contains(NetworkUsage.GLUSTER));
+
                 nwVoList.add(nwVo);
             }
         }
         return nwVoList;
     }
 
+    @Override
     public List<HostVo> getHost(String id) {
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
@@ -141,14 +140,18 @@ public class ClusterServiceImpl implements ItClusterService {
                 ((HostsService.ListResponse) systemService.hostsService().list().send()).hosts();
 
         for (Host host : hostList) {
-            hVo = new HostVo();
-            hVo.setId(host.id());
-            hVo.setName(host.name());
-            hVo.setAddress(host.address());
-            hVo.setStatus(host.status().value());
-            hVo.setVmUpCnt(getHostVmsCnt(systemService, host.id()));
+            if (host.cluster().id().equals(id)) {
+                hVo = new HostVo();
 
-            hVoList.add(hVo);
+                hVo.setId(host.id());
+                hVo.setName(host.name());
+                hVo.setStatus(host.status().value());
+                hVo.setAddress(host.address());
+                hVo.setStatus(host.status().value());
+                hVo.setVmUpCnt(getHostVmsCnt(systemService, host.id()));
+
+                hVoList.add(hVo);
+            }
         }
         return hVoList;
     }
@@ -166,37 +169,46 @@ public class ClusterServiceImpl implements ItClusterService {
                 ((VmsService.ListResponse) systemService.vmsService().list().send()).vms();
 
         for (Vm vm : vmList) {
-            vmVo = new VmVo();
-            vmVo.setId(vm.id());
-            vmVo.setName(vm.name());
-            vmVo.setStatus(vm.status().value());
+            if(vm.cluster().id().equals(id)) {
+                vmVo = new VmVo();
 
-            // startTime
-            if(vm.startTime() != null) {
-                vmVo.setStartTime(vm.startTime());
-            }
+                vmVo.setId(vm.id());
+                vmVo.setName(vm.name());
+                vmVo.setStatus(vm.status().value());        // vmstatus 많음
 
-            if(!vm.status().value().equals("down")){
-                // ipv4 부분. vms-nic-reporteddevice
-                List<Nic> nicList =
-                        ((VmNicsService.ListResponse) systemService.vmsService().vmService(vm.id()).nicsService().list().send()).nics();
+                // startTime
 
-                for (Nic nic : nicList){
-                    List<ReportedDevice> reportedDeviceList
-                            = ((VmReportedDevicesService.ListResponse)systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).reportedDevicesService().list().send()).reportedDevice();
-                    for (ReportedDevice r : reportedDeviceList){
-                        vmVo.setIpv4(r.ips().get(0).address());
-                        vmVo.setIpv6(r.ips().get(1).address());
-                    }
+                if(vm.startTimePresent()) {
+                    vmVo.setStartTime(vm.startTime());
                 }
-            }else{
-                vmVo.setIpv4("");
-                vmVo.setIpv6("");
+                if(vm.creationTimePresent()){
+                    vmVo.setCreationTime(vm.creationTime());
+                }
+
+                if(!vm.status().value().equals("down")){
+                    // ipv4 부분. vms-nic-reporteddevice
+                    List<Nic> nicList =
+                            ((VmNicsService.ListResponse) systemService.vmsService().vmService(vm.id()).nicsService().list().send()).nics();
+
+                    for (Nic nic : nicList){
+                        List<ReportedDevice> reportedDeviceList
+                                = ((VmReportedDevicesService.ListResponse)systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).reportedDevicesService().list().send()).reportedDevice();
+                        for (ReportedDevice r : reportedDeviceList){
+                            vmVo.setIpv4(r.ips().get(0).address());
+                            vmVo.setIpv6(r.ips().get(1).address());
+                        }
+                    }
+                }else{
+                    vmVo.setIpv4("");
+                    vmVo.setIpv6("");
+                }
+                vmVoList.add(vmVo);
             }
-            vmVoList.add(vmVo);
         }
         return vmVoList;
     }
+
+    @Override
     public List<AffinityGroupVo> getAffinitygroups(String id){
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
@@ -261,22 +273,28 @@ public class ClusterServiceImpl implements ItClusterService {
         return agVoList;
     }
 
-//    @Override
-//    public List<AffinityLabelVo> getAffinitylabels(String id) {
-//        Connection connection = adminConnectionService.getConnection();
-//        SystemService systemService = connection.systemService();
-//
-//        List<AffinityLabelVo> affinityLabelVoList = new ArrayList<>();
-//        AffinityLabelVo affinityLabelVo = null;
-//
-//        List<AffinityLabel> affinityGroupList =
-//                ((AffinityLabelsService.ListResponse) systemService.clustersService().clusterService(id).af().list().send()).groups();
-//
-//        for (AffinityGroup a : affinityGroupList) {
-//            affinityGroupVo = new AffinityGroupVo();
-//            affinityGroupVo.setName(a.name());
-//        }
-//    }
+
+    @Override
+    public List<AffinityLabelVo> getAffinitylabels(String id) {
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        List<AffinityLabelVo> alVoList = new ArrayList<>();
+        AffinityLabelVo alVo = null;
+
+        List<AffinityLabel> affinityGroupList =
+                ((AffinityLabelsService.ListResponse)systemService.clustersService().clusterService(id).get().send()).labels();
+
+        for(AffinityLabel affinityLabel : affinityGroupList){
+            if(affinityLabel.hasImplicitAffinityGroup()){
+                alVo = new AffinityLabelVo();
+                alVo.setName(affinityLabel.name());
+//                alVo.setHostsLabel();
+            }
+            alVoList.add(alVo);
+        }
+        return alVoList;
+    }
 
 
     public List<CpuProfileVo> getCpuProfile(String id){

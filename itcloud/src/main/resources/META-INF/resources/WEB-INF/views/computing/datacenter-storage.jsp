@@ -7,22 +7,24 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">데이터센터</h1>
-                    <a href="/computing/datacenters" style="text-decoration-line: none">데이터센터</a> - 스토리지 <br><br>
-
+                    <h1 class="mt-4">DataCenter</h1>
+                    컴퓨팅 > <a href="/computing/datacenters" style="text-decoration-line: none">데이터 센터</a> <br><br>
                     <div class="card mb-4">
                         <div class="card-body">
                             <p class="mb-0">
                                 <a href="/computing/datacenter-storage?id=${id}">스토리지</a> |
                                 <a href="/computing/datacenter-network?id=${id}" style="text-decoration-line: none">논리 네트워크</a> |
-                                <a href="/computing/datacenter-cluster?id=${id}"  style="text-decoration-line: none">클러스터</a> |
-                                <a href="#permission"  style="text-decoration-line: none">권한</a>
+                                <a href="/computing/datacenter-cluster?id=${id}" style="text-decoration-line: none">클러스터</a> |
+                                <a href="#" style="text-decoration-line: none">권한</a> |
+                                <a href="#" style="text-decoration-line: none">이벤트</a>
                             </p>
                         </div>
                     </div>
 
                 <table>
                     <tr>
+                        <td></td>
+                        <td></td>
                         <td>도메인 이름</td>
                         <td>도메인 유형</td>
                         <td>상태</td>
@@ -34,12 +36,14 @@
 
                     <c:if test="${empty storage}">
                         <tr>
-                            <td>스토리지 없음</td>
+                            <td colspan="9" rowspan="3">스토리지 없음</td>
                         </tr>
                     </c:if>
                     <c:forEach var="storage" items="${storage}" varStatus="status">
                         <tr>
-                            <td>${storage.name}</td>
+                            <td>${storage.status == "active"?  "🔼" : "🔽"} ?</td>
+                            <td>&nbsp;&nbsp;&nbsp;</td>
+                            <td><a href="/storage/storage?id=${storage.id}" style="text-decoration-line: none">${storage.name}</a></td>
                             <td>${storage.domainType}</td>
                             <td>${storage.status}</td>
                             <td>${storage.availableSize /(1024*1024*1024)}GB</td>

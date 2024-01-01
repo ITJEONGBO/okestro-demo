@@ -1,9 +1,6 @@
 package com.itinfo.itcloud.service;
 
-import com.itinfo.itcloud.model.computing.HostDeviceVo;
-import com.itinfo.itcloud.model.computing.HostVo;
-import com.itinfo.itcloud.model.computing.NicVo;
-import com.itinfo.itcloud.model.computing.VmVo;
+import com.itinfo.itcloud.model.computing.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +13,6 @@ public interface ItHostService {
     List<NicVo> getNic(String id);
     List<HostDeviceVo> getHostDevice(String id);
 //    HostVO getPermission(String id);
-//    HostVO getAffinitylabels(String id);
+    List<AffinityLabelVo> getAffinitylabels(String id);
 
 }

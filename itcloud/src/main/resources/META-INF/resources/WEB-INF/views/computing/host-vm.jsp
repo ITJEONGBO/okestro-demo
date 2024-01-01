@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Host</h1>
-                    <a href="/computing/hosts" style="text-decoration-line: none">호스트</a> - 가상머신 <br><br>
+                    컴퓨팅 > <a href="/computing/hosts" style="text-decoration-line: none">호스트</a> > 가상머신 <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
@@ -26,13 +26,17 @@
 
                     <table>
                         <tr>
+                            <td></td>
                             <td>이름</td>
-                            <td>상태</td>
+                            <td></td>
                             <td>클러스터</td>
-                            <td>ip 주소(v4)</td>
-                            <td>ip 주소(v6)</td>
+                            <td>IP 주소</td>
                             <td>fqdn</td>
-                            <td>startTime</td>
+                            <td>메모리</td>
+                            <td>CPU</td>
+                            <td>네트워크</td>
+                            <td>상태</td>
+                            <td>업타임</td>
                         </tr>
 
                         <c:if test="${empty vm}">
@@ -42,13 +46,17 @@
                         </c:if>
                         <c:forEach var="vm" items="${vm}" varStatus="status">
                             <tr>
-                                <td>${vm.name}</td>
-                                <td>${vm.status}</td>
+                                <td>${vm.status == "up" ? "🔼" : "🔽"}</td>
+                                <td><a href="/computing/vm?id=${vm.id}" style="text-decoration-line: none">${vm.name}</a></td>
+                                <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                 <td>${vm.clusterName}</td>
-                                <td>${vm.ipv4}</td>
-                                <td>${vm.ipv6}</td>
+                                <td>${vm.ipv4}<br> ${vm.ipv6}</td>
                                 <td>${vm.fqdn}</td>
-                                <td>${vm.startTime}</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>${vm.status}</td>
+                                <td></td>
                             </tr>
                         </c:forEach>
                     </table>

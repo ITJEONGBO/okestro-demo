@@ -19,7 +19,15 @@ public class NetworkVo {
 
     // cluster
     // https://192.168.0.80/ovirt-engine/api/clusters/ac0ec8c8-8917-11ee-aa39-00163e58bee5/networks
-    private String status;
+    private String status;      // operational / non-operational
+
+    // usages
+    private boolean vm;
+    private boolean management;
+    private boolean display; //출력
+    private boolean migration;
+    private boolean gluster;
+    private boolean defaultRoute;
 
 
     // 리스트 -> Vlan, 레이블, 공급자

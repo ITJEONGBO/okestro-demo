@@ -27,26 +27,30 @@
                         <td>데이터 센터</td>
                         <td>상태</td>
                         <td>가상머신</td>
-                        <td>SPM</td>
+                        <td>CPU</td>
+                        <td>메모리</td>
+                        <td>네트워크</td>
                     </tr>
 
-                    <c:if test="${empty hostVOList}">
+                    <c:if test="${empty hosts}">
                         <tr>
-                            <td colspan="10">host 없음</td>
+                            <td colspan="12" rowspan="2">host 없음</td>
                         </tr>
                     </c:if>
-                    <c:forEach var="hostVOList" items="${hostVOList}" varStatus="status">
+                    <c:forEach var="hosts" items="${hosts}" varStatus="status">
                         <tr>
-                            <td>${hostVOList.status}</td>
+                            <td>${hosts.status == "up" ? "🔼" : "🔽"}</td>
+                            <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                            <td> <a href="/computing/host?id=${hosts.id}">${hosts.name}</a> </td>
+                            <td>${hosts.comment}</td>
+                            <td>${hosts.address}</td>
+                            <td><a href="/computing/cluster?id=${hosts.clusterId}">${hosts.clusterName}</a></td>
+                            <td><a href="/computing/datacenter-storage?id=${hosts.datacenterId}">${hosts.datacenterName}</a></td>
+                            <td>${hosts.status}</td>
+                            <td>${hosts.vmCnt}</td>
                             <td></td>
-                            <td> <a href="/computing/host?id=${hostVOList.id}">${hostVOList.name}</a> </td>
-                            <td>${hostVOList.comment}</td>
-                            <td>${hostVOList.address}</td>
-                            <td><a href="/computing/cluster?id=${hostVOList.clusterId}">${hostVOList.clusterName}</a></td>
-                            <td><a href="/computing/datacenter-storage?id=${hostVOList.datacenterId}">${hostVOList.datacenterName}</a></td>
-                            <td>${hostVOList.status}</td>
-                            <td>${hostVOList.vmCnt}</td>
-
+                            <td></td>
+                            <td></td>
                         </tr>
                     </c:forEach>
                 </table>

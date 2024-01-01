@@ -11,7 +11,7 @@
                     <div class="card mb-4">
                         <div class="card-body">
                             <p class="mb-0">
-                                여기는 클러스터
+                                컴퓨팅 > <a href="/computing/clusters" style="text-decoration-line: none">클러스터</a>
                             </p>
                         </div>
                     </div>
@@ -36,8 +36,15 @@
                     </c:if>
                     <c:forEach var="clusters" items="${clusters}" varStatus="status">
                         <tr>
-                            <td> <a href="/computing/cluster?id=${clusters.id}">${clusters.name}</a> </td>
-
+                            <td></td>
+                            <td><a href="/computing/cluster?id=${clusters.id}">${clusters.name}</a> </td>
+                            <td>${clusters.comment}</td>
+                            <td>${clusters.version}</td>
+                            <td>${clusters.description}</td>
+                            <td>${clusters.cpuType}</td>
+                            <td>${clusters.hostCnt}</td>
+                            <td>${clusters.vmCnt}</td>
+                            <td></td>
                         </tr>
                     </c:forEach>
                 </table>

@@ -14,6 +14,9 @@ public interface ItClusterService {
     List<HostVo> getHost(String id);
     List<VmVo> getVm(String id);
     List<AffinityGroupVo> getAffinitygroups(String id);
-    //    List<AffinityLabelVo> getAffinitylabels(String id);
+    List<AffinityLabelVo> getAffinitylabels(String id);
     List<CpuProfileVo> getCpuProfile(String id);
+//    List<> getPermission(String id);
+//    List<> getEvent(String id);
+
 }

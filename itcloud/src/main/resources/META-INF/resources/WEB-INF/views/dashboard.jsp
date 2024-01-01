@@ -52,8 +52,8 @@
                         <div class="col-xl-3 col-md-6">
                             <div class="card bg-danger text-white mb-4">
                                 <div class="card-body">
-                                [${dashboard.storageDomainCnt}]&nbsp;데이터 스토리지 도메인<br>
-                                UP &nbsp;${dashboard.storageDomainActive} / DOWN &nbsp; ${dashboard.storageDomainInactive}
+                                [${dashboard.vmCnt}]&nbsp;가상머신<br>
+                                UP &nbsp;${dashboard.vmActive} / DOWN &nbsp; ${dashboard.vmInactive}
                                 </div>
                                 <div class="card-footer d-flex align-items-center justify-content-between">
                                     <a class="small text-white stretched-link" href="/storages">더보기</a>
@@ -64,8 +64,8 @@
                         <div class="col-xl-3 col-md-6">
                             <div class="card bg-info text-white mb-4">
                                 <div class="card-body">
-                                [${dashboard.vmCnt}]&nbsp;가상머신<br>
-                                UP &nbsp;${dashboard.vmActive} / DOWN &nbsp; ${dashboard.vmInactive}
+                                [${dashboard.storageDomainCnt}]&nbsp;데이터 스토리지 도메인<br>
+                                UP &nbsp;${dashboard.storageDomainActive} / DOWN &nbsp; ${dashboard.storageDomainInactive}
                                 </div>
                                 <div class="card-footer d-flex align-items-center justify-content-between">
                                     <a class="small text-white stretched-link" href="/computing/vms">더보기</a>

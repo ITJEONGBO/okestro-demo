@@ -20,7 +20,7 @@ public class VmVo {
     private Date stopTime;
     private String osSystem;
     private String chipsetFirmwareType; // bios.type
-    private String priority;
+    private int priority;    // 고가용성 HighAvailability
     private String optimizeOption;
 
     private BigInteger memory;
@@ -57,8 +57,8 @@ public class VmVo {
     private String ipv6;
 
 
-    private List<VnicProfileVo> vnicProfileVoList;
-    private List<VmDiskVo> vmDiskVoList;
+//    private List<VnicProfileVo> vnicProfileVoList;
+//    private List<VmDiskVo> vmDiskVoList;
 
     // 리스트-> 상태, 이름(id), 호스트(id), ip주소, fqdn, 클러스터(id), 데이터센터(id)
     //          메모리,cpu,네트워크, 상태, 업타임, 설명

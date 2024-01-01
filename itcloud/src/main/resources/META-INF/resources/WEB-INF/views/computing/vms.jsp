@@ -11,44 +11,50 @@
                     <div class="card mb-4">
                         <div class="card-body">
                             <p class="mb-0">
-                                여기는 가상머신
+                                컴퓨팅 > <a href="/computing/vms">가상머신</a>
                             </p>
                         </div>
                     </div>
 
                 <table>
                     <tr>
-                        <td>상태</td>
+                        <td></td>
                         <td></td>
                         <td>이름</td>
-            <%--            <td>호스트</td>--%>
+                        <td>호스트</td>
                         <td>IP주소</td>
                         <td>FQDN</td>
                         <td>클러스터</td>
-            <%--            <td>데이터 센터</td>--%>
+                        <td>데이터 센터</td>
+                        <td>메모리</td>
+                        <td>CPU</td>
+                        <td>네트워크</td>
                         <td>상태</td>
                         <td>업타임</td>
                         <td>설명</td>
                     </tr>
 
-                    <c:if test="${empty vmList}">
+                    <c:if test="${empty vms}">
                         <tr>
-                            <td colspan="10">host 없음</td>
+                            <td colspan="14">host 없음</td>
                         </tr>
                     </c:if>
-                    <c:forEach var="vmList" items="${vmList}" varStatus="status">
+                    <c:forEach var="vms" items="${vms}" varStatus="status">
                         <tr>
-                            <td>${vmList.status}</td>
+                            <td>${vms.status == "up" ? "🔼" : "🔽"}</td>
+                            <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                            <td><a href="/computing/vm?id=${vms.id}">${vms.name}</a> </td>
+                            <td><a href="/computing/host?id=${vms.hostId}">${vms.hostName}</a></td>
+                            <td>${vms.ipv4}<br> ${vms.ipv6}</td>
+                            <td>${vms.fqdn}</td>
+                            <td><a href="/computing/cluster?id=${vms.clusterId}">${vms.clusterName}</a></td>
+                            <td><a href="/computing/datacenter-storage?id=${vms.datacenterId}">${vms.datacenterName}</a></td>
                             <td></td>
-                            <td><a href="/computing/vm?id=${vmList.id}">${vmList.name}</a> </td>
-            <%--                <td><a href="/computing/host?id=${vmList.hostId}">${vmList.hostName}</a></td>--%>
-                            <td>${vmList.ipv4} / ${vmList.ipv6}</td>
-                            <td>${vmList.fqdn}</td>
-                            <td><a href="/computing/cluster?id=${vmList.clusterId}">${vmList.clusterName}</a></td>
-            <%--                <td><a href="/computing/datacenter-storage?id=${vmList.datacenterId}">${vmList.datacenterName}</a></td>--%>
-                            <td>${vmList.status}</td>
-                            <td>${vmList.startTime}</td>
-                            <td>${vmList.description}</td>
+                            <td></td>
+                            <td></td>
+                            <td>${vms.status}</td>
+                            <td></td>
+                            <td>${vms.description}</td>
                         </tr>
                     </c:forEach>
                 </table>

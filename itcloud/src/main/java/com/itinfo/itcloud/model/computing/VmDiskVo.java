@@ -23,9 +23,9 @@ public class VmDiskVo {
 
     // DiskVo 에 있는 내용임
     private BigInteger virtualSize;
-    private String connection;
+    private String connection;  // 연결대상 ?
     private String status;  // 상태
-    private String type;
+    private String type;    // 유형
     private String description;
 
 

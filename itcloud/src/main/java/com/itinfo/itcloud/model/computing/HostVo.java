@@ -3,7 +3,9 @@ package com.itinfo.itcloud.model.computing;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
 
 @Getter @Setter
 public class HostVo {
@@ -20,14 +22,24 @@ public class HostVo {
     private boolean devicePassThrough;
     private String iscsi;
     private String kdump;
-    private String bootingTime;
-    private BigInteger maxMemory; // 새 가상머신 최대여유메모리
+    private BigDecimal bootingTime;
+
+    private BigInteger memoryMax; // 새 가상머신 최대여유메모리
     private BigInteger memory;
     private BigInteger memoryUsed;
     private BigInteger memoryFree;
+
+    private BigInteger memoryShared;
+
+    private BigInteger swapTotal;
+    private BigInteger swapUsed;
+    private BigInteger swapFree;
+
+
     private String seLinux;
     private String spmStatus;   // spm 상태
     private int spmPriority;    // spm 우선순위
+
 
     // Hosted Engine HA
     // Swap 크기

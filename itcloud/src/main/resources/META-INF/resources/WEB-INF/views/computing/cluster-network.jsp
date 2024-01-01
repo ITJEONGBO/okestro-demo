@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Cluster</h1>
-                    <a href="/computing/clusters" style="text-decoration-line: none">클러스터</a> - 논리 네트워크 <br><br>
+                    컴퓨팅 > <a href="/computing/clusters" style="text-decoration-line: none">클러스터</a> > <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
@@ -17,7 +17,7 @@
                                 <a href="/computing/cluster-network?id=${id}">논리 네트워크</a> |
                                 <a href="/computing/cluster-host?id=${id}" style="text-decoration-line: none">호스트</a> |
                                 <a href="/computing/cluster-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
-                                <a href="/computing/cluster-aff?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
+                                <a href="/computing/cluster-affGroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
                                 <a href="/computing/cluster-affLabel?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
                                 <a href="/computing/cluster-cpu?id=${id}" style="text-decoration-line: none">CPU 프로파일</a> |
                                 <a href="#" style="text-decoration-line: none">권한</a>
@@ -25,8 +25,9 @@
                         </div>
                     </div>
 
-                    <table>
+                    <table width="700px">
                         <tr>
+                            <td></td>
                             <td>이름</td>
                             <td>상태</td>
                             <td>역할</td>
@@ -40,9 +41,17 @@
                         </c:if>
                         <c:forEach var="network" items="${network}" varStatus="status">
                             <tr>
-                                <td>${network.name}</td>
-                                <td>${network.status}</td>
-
+                                <td>${network.status == "operational" ? "🔼" : "🔽"}</td>
+                                <td><a href="/network/network?id=${network.id}">${network.name}</a></td>
+                                <td>${network.status == "operational" ? "가동 중" : "비 가동?"}</td>
+                                <td>
+                                    ${network.vm =="true" ? "vm":""}<br>
+                                    ${network.management =="true" ? "management":""}<br>
+                                    ${network.display =="true" ? "display":""}<br>
+                                    ${network.migration =="true" ? "migration":""}<br>
+                                    ${network.gluster =="true" ? "gluster":""}<br>
+                                    ${network.defaultRoute =="true" ? "defaultRoute":""}
+                                </td>
                                 <td>${network.description}</td>
                             </tr>
                         </c:forEach>

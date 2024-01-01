@@ -7,35 +7,37 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">DataCenter</h1>
-                    컴퓨팅 > <a href="/computing/datacenters" style="text-decoration-line: none">데이터 센터</a> <br><br>
+                    <h1 class="mt-4">VNIC 프로파일</h1>
                     <div class="card mb-4">
                         <div class="card-body">
                             <p class="mb-0">
-                                <a href="/computing/datacenter-storage?id=${id}" style="text-decoration-line: none">스토리지</a> |
-                                <a href="/computing/datacenter-network?id=${id}">논리 네트워크</a> |
-                                <a href="/computing/datacenter-cluster?id=${id}" style="text-decoration-line: none">클러스터</a> |
-                                <a href="#permission"  style="text-decoration-line: none">권한</a> |
-                                <a href="#"  style="text-decoration-line: none">이벤트</a>
+                                네트워크 > <a href="/network/vnicProfiles" style="text-decoration-line: none">VNIC 프로파일</a>
                             </p>
                         </div>
                     </div>
 
-                <table width="700px">
+                <table>
                     <tr>
                         <td>이름</td>
+                        <td>네트워크</td>
+                        <td>데이터 센터</td>
+                        <td>호환 버전</td>
+                        <td>네트워크 필터</td>
+                        <td>포트 미러링</td>
+                        <td>통과</td>
+                        <td>페일오버 vNIC 프로파일</td>
                         <td>설명</td>
                     </tr>
 
-                    <c:if test="${empty network}">
+                    <c:if test="${empty vnics}">
                         <tr>
-                            <td>네트워크가 없음</td>
+                            <td>표시할 항목이 없음</td>
                         </tr>
                     </c:if>
-                    <c:forEach var="network" items="${network}" varStatus="status">
+                    <c:forEach var="vnics" items="${vnics}" varStatus="status">
                         <tr>
-                            <td><a href="/network/network?id=${network.id}" style="text-decoration-line: none">${network.name}</a></td>
-                            <td>${network.description}</td>
+                            <td></td>
+                            <td></td>
                         </tr>
                     </c:forEach>
                 </table>

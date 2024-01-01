@@ -11,8 +11,8 @@ public interface ItVmService {
     VmVo getInfo(String id);
     List<NicVo> getNic(String id);
     List<VmDiskVo> getDisk(String id);
-    //    VmVO getSnapshot(String id);
-    List<AppVo> getApplication(String id);
+    List<SnapshotVo> getSnapshot(String id);
+    List<ApplicationVo> getApplication(String id);
     List<AffinityGroupVo> getAffinitygroup(String id);
     List<AffinityLabelVo> getAffinitylabel(String id);
     GuestInfoVo getGuestInfo(String id);

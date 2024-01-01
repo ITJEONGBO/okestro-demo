@@ -18,7 +18,6 @@ public class HostServiceImpl implements ItHostService {
     @Autowired
     private AdminConnectionService adminConnectionService;
 
-    public HostServiceImpl(){}
 
     @Override
     public List<HostVo> getList() {
@@ -92,7 +91,7 @@ public class HostServiceImpl implements ItHostService {
 
         hostVo.setKdump(host.kdumpStatus().value());  // kdump intergration status
         hostVo.setDevicePassThrough(host.devicePassthrough().enabled());    // 장치통과
-        hostVo.setMaxMemory(host.maxSchedulingMemory());      // 최대 여유 메모리
+        hostVo.setMemoryMax(host.maxSchedulingMemory());      // 최대 여유 메모리
 
         //메모리 페이지 공유  비활성
 
@@ -105,45 +104,47 @@ public class HostServiceImpl implements ItHostService {
 
         // 클러스터 호환버전
 
+        // 온라인 논리 cpu 코어 수 ?
+        // https://192.168.0.70/ovirt-engine/api/hosts/3bbd27b9-13d8-4fff-ad29-c0350994ca88/numanodes
 
-        int a = 0;
-        int aa = 0;
-        int b = 0;
-        int bb = 0;
 
         List<Statistic> statisticList =
                 ((StatisticsService.ListResponse)systemService.hostsService().hostService(id).statisticsService().list().send()).statistics();
 
-//        for(Statistic statistic : statisticList){
-//            // 물리메모리
-//            if(statistic.name().equals("memory.total")){
-//                hostVo.setMemory(statistic.values().get(0).datum().toBigInteger());
+        for(Statistic statistic : statisticList){
+            // 물리메모리
+            if(statistic.name().equals("memory.total")){
+                hostVo.setMemory(statistic.values().get(0).datum().toBigInteger());
+            }
+            if(statistic.name().equals("memory.used")){
+                hostVo.setMemoryUsed(statistic.values().get(0).datum().toBigInteger());
+            }
+            if(statistic.name().equals("memory.free")){
+                hostVo.setMemoryFree(statistic.values().get(0).datum().toBigInteger());
+            }
+            // 공유메모리?
+//            if(statistic.name().equals("memory.shared")){
+//                hostVo.setMemoryShared(statistic.values().get(0).datum().toBigInteger());
 //            }
-//            if(statistic.name().equals("memory.used")){
-//                hostVo.setUsedMemory(statistic.values().get(0).datum().toBigInteger());
-//            }
-//            if(statistic.name().equals("memory.free")){
-//                hostVo.setFreeMemory(statistic.values().get(0).datum().toBigInteger());
-//            }
-//
-//            // swap 크기
-//            if(statistic.name().equals("swap.total")){
-//                hostVo.setSwapMemory(statistic.values().get(0).datum().toBigInteger());
-//            }
-//            if(statistic.name().equals("swap.used")){
-//                hostVo.setSwapUsedMemory(statistic.values().get(0).datum().toBigInteger());
-//            }
-//            if(statistic.name().equals("swap.free")){
-//                hostVo.setSwapFreeMemory(statistic.values().get(0).datum().toBigInteger());
-//            }
-//
-//            // 부팅시간
-//            if(statistic.name().equals("boot.time")){
-//                hostVo.setBootTime(statistic.values().get(0).datum());
-//            }
-//
-//
-//            // Huge pages(size:free/total)
+
+            // swap 크기
+            if(statistic.name().equals("swap.total")){
+                hostVo.setSwapTotal(statistic.values().get(0).datum().toBigInteger());
+            }
+            if(statistic.name().equals("swap.used")){
+                hostVo.setSwapUsed(statistic.values().get(0).datum().toBigInteger());
+            }
+            if(statistic.name().equals("swap.free")){
+                hostVo.setSwapFree(statistic.values().get(0).datum().toBigInteger());
+            }
+
+            // 부팅시간
+            if(statistic.name().equals("boot.time")){
+                hostVo.setBootingTime(statistic.values().get(0).datum());
+            }
+
+
+            // Huge pages(size:free/total)
 //            if(statistic.name().equals("hugepages.2048.free")){
 //                a = statistic.values().get(0).datum().intValue();
 //            }
@@ -157,7 +158,7 @@ public class HostServiceImpl implements ItHostService {
 //            if(statistic.name().equals("hugepages.1048576.total")){
 //                bb = statistic.values().get(0).datum().intValue();
 //            }
-//        }
+        }
 
         // 코드 수정 필요
 //        hostVo.setHugePagesType("2048: " + a + "/" + aa);
@@ -195,9 +196,10 @@ public class HostServiceImpl implements ItHostService {
         hostHwVo.setCpuType(host.cpu().type());      // cpu 유형
         hostHwVo.setUuid(host.hardwareInformation().uuid());       // uuid
         hostHwVo.setSerialNum(host.hardwareInformation().serialNumber());   // 일련번호
-        hostHwVo.setCoreThread(host.cpu().topology().threadsAsInteger());     // 코어당 cpu 스레드
-        hostHwVo.setSocketCore(host.cpu().topology().socketsAsInteger());     // 소켓당 cpu 코어
+
         hostHwVo.setCpuSocket(host.cpu().topology().socketsAsInteger());      // cpu 소켓
+        hostHwVo.setCoreThread(host.cpu().topology().threadsAsInteger());     // 코어당 cpu 스레드
+        hostHwVo.setCoreSocket(host.cpu().topology().coresAsInteger());     // 소켓당 cpu 코어
 
         hostVo.setHostHwVo(hostHwVo);
     }
@@ -330,32 +332,26 @@ public class HostServiceImpl implements ItHostService {
     }
 
 
-//    @Override
-//    public hostVo getAffinitylabels(String id) {
-//        Connection connection = adminConnectionService.getConnection();
-//        SystemService systemService = connection.systemService();
-//
-//        hostVo hostVo = new hostVo();
-//        hostVo.setId(id);
-//
-//        List<AffinityLabelVO> affinityLabelVOList = new ArrayList<>();
-//        AffinityLabelVO affinityLabelVO = null;
-//
-//        List<AffinityLabel> affinityLabelList =
-//                ((AssignedAffinityLabelsService.ListResponse)systemService.hostsService().hostService(id).affinityLabelsService().list().send()).label();
-//
-//        for(AffinityLabel a : affinityLabelList) {
-//            affinityLabelVO = new AffinityLabelVO();
-//
-//            affinityLabelVO.setId(a.id());
-//            affinityLabelVO.setName(a.name());
-//
-//            affinityLabelVOList.add(affinityLabelVO);
-//        }
-//
-//        hostVo.setAffinityLabelVOList(affinityLabelVOList);
-//        return hostVo;
-//    }
+    @Override
+    public List<AffinityLabelVo> getAffinitylabels(String id) {
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        List<AffinityLabelVo> alVoList = new ArrayList<>();
+        AffinityLabelVo alVo = null;
+
+        List<AffinityLabel> affinityLabelList =
+                ((AssignedAffinityLabelsService.ListResponse)systemService.hostsService().hostService(id).affinityLabelsService().list().send()).label();
+
+        for(AffinityLabel a : affinityLabelList) {
+            alVo = new AffinityLabelVo();
+
+            alVo.setId(a.id());
+
+            alVoList.add(alVo);
+        }
+        return alVoList;
+    }
 
 
 

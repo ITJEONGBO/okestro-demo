@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Host</h1>
-                    <a href="/computing/hosts" style="text-decoration-line: none">호스트</a> - 호스트 장치 <br><br>
+                    컴퓨팅 > <a href="/computing/hosts" style="text-decoration-line: none">호스트</a> > 호스트 장치 <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
@@ -31,6 +31,10 @@
                             <td>벤더</td>
                             <td>제품</td>
                             <td>드라이버</td>
+                            <td>현재 사용중</td>
+                            <td>가상 머신에 연결됨</td>
+                            <td>IOMMU 그룹</td>
+                            <td>Mdev 유형</td>
                         </tr>
 
                         <c:if test="${empty device}">
@@ -40,11 +44,15 @@
                         </c:if>
                         <c:forEach var="device" items="${device}" varStatus="status">
                             <tr>
-                                <td>${device.name}</td>
+                                <td width="250px" style="word-break:break-all">${device.name}</td>
                                 <td>${device.capability}</td>
                                 <td>${device.vendor}</td>
-                                <td>${device.product}</td>
+                                <td width="260px" style="word-break:break-all">${device.product}</td>
                                 <td>${device.driver}</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                             </tr>
                         </c:forEach>
                     </table>

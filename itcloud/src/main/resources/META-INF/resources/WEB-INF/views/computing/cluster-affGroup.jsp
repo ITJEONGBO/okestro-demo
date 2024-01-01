@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Cluster</h1>
-                    <a href="/computing/clusters" style="text-decoration-line: none">클러스터</a> - CPU 프로파일 <br><br>
+                    <a href="/computing/clusters" style="text-decoration-line: none">클러스터</a> - 선호도 그룹 <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
@@ -17,31 +17,50 @@
                                 <a href="/computing/cluster-network?id=${id}" style="text-decoration-line: none">논리 네트워크</a> |
                                 <a href="/computing/cluster-host?id=${id}" style="text-decoration-line: none">호스트</a> |
                                 <a href="/computing/cluster-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
-                                <a href="/computing/cluster-affGroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
+                                <a href="/computing/cluster-affGroup?id=${id}">선호도 그룹</a> |
                                 <a href="/computing/cluster-affLabel?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
-                                <a href="/computing/cluster-cpu?id=${id}">CPU 프로파일</a> |
+                                <a href="/computing/cluster-cpu?id=${id}" style="text-decoration-line: none">CPU 프로파일</a> |
                                 <a href="#" style="text-decoration-line: none">권한</a>
                             </p>
                         </div>
                     </div>
 
-                    <table width="700px">
+                    <table>
                         <tr>
+                            <td>상태</td>
                             <td>이름</td>
                             <td>설명</td>
-                            <td>Qos이름</td>
+                            <td>우선순위</td>
+                            <td>가상머신 측 극성</td>
+                            <td>가상머신 강제적용</td>
+                            <td>호스트 측 극성</td>
+                            <td>호스트 강제적용</td>
+                            <td>가상머신 멤버</td>
+                            <td>가상머신 레이블</td>
+                            <td>호스트 멤버</td>
+                            <td>호스트 레이블</td>
                         </tr>
 
-                        <c:if test="${empty cpu}">
+                        <c:if test="${empty aff}">
                             <tr>
-                                <td>CPU 프로파일이 없음</td>
+                                <td colspan="12">표시할 항목이 없습니다</td>
                             </tr>
                         </c:if>
-                        <c:forEach var="cpu" items="${cpu}" varStatus="status">
+                        <c:forEach var="aff" items="${aff}" varStatus="status">
                         <tr>
-                            <td>${cpu.name}</td>
-                            <td>${cpu.description}</td>
-                            <td>${cpu.qosName}</td>
+                            <td>${aff.status}</td>
+                            <td>${aff.name}</td>
+                            <td></td>
+                            <td>${aff.description}</td>
+                            <td>${aff.priority}</td>
+                            <td>${aff.vmPositive}</td>
+                            <td>${aff.vmEnforcing ? "하드" : "소프트"}</td>
+                            <td>${aff.hostPositive}</td>
+                            <td>${aff.hostEnforcing ? "하드" : "소프트"}</td>
+                            <td>${aff.vmList}</td>
+                            <td>${aff.vmLabels}</td>
+                            <td>${aff.hostList}</td>
+                            <td>${aff.hostLabels}</td>
                         </tr>
                         </c:forEach>
                     </table>

@@ -7,44 +7,35 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">Host</h1>
-                    컴퓨팅 > <a href="/computing/hosts" style="text-decoration-line: none">호스트</a> > 네트워크 인터페이스 <br><br>
+                    <h1 class="mt-4">VNIC 프로파일</h1>
+                    네트워크 > <a href="/network/vnicProfiles" style="text-decoration-line: none">VNIC 프로파일</a>
 
                     <div class="card mb-4">
                         <div class="card-body">
                             <p class="mb-0">
-                                <a href="/computing/host?id=${id}" style="text-decoration-line: none">일반</a> |
-                                <a href="/computing/host-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
-                                <a href="/computing/host-nic?id=${id}">네트워크 인터페이스</a> |
-                                <a href="/computing/host-device?id=${id}" style="text-decoration-line: none">호스트 장치</a> |
-                                <a href="#" style="text-decoration-line: none">권한</a> |
-                                <a href="/computing/host-aff?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
-                                <a href="#" style="text-decoration-line: none">이벤트</a>
+                                <a href="/network/vnicProfile-vm?id=${id}">가상머신</a> |
+                                <a href="/network/vnicProfile-template?id=${id}" style="text-decoration-line: none">템플릿</a> |
+                                <a href="#" style="text-decoration-line: none">권한</a>
                             </p>
                         </div>
                     </div>
 
-                    <table>
+                    <table width="700px">
                         <tr>
-                            <td>id</td>
                             <td>이름</td>
-                            <td>MAC</td>
-                            <td>속도</td>
                         </tr>
 
-                        <c:if test="${empty nic}">
+                        <c:if test="${empty vm}">
                             <tr>
-                                <td>nic 없음</td>
+                                <td>vm 없음</td>
                             </tr>
                         </c:if>
-                        <c:forEach var="nic" items="${nic}" varStatus="status">
+                        <c:forEach var="vm" items="${vm}" varStatus="status">
                             <tr>
-                                <td>${nic.id}</td>
-                                <td>${nic.name}</td>
-                                <td>${nic.macAddress}</td>
-                                <td>${nic.speed}</td>
+                                <td><a href="/computing/vm?id=${vm.id}" style="text-decoration-line: none">${vm.name}</a></td>
                             </tr>
                         </c:forEach>
+
                     </table>
 
                 </div>

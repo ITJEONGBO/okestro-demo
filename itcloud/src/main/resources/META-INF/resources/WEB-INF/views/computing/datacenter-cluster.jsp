@@ -7,8 +7,8 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">데이터센터</h1>
-                    <a href="/computing/datacenters" style="text-decoration-line: none">데이터센터</a> - 논리 네트워크 <br><br>
+                    <h1 class="mt-4">DataCenter</h1>
+                    컴퓨팅 > <a href="/computing/datacenters" style="text-decoration-line: none">데이터 센터</a> <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
@@ -16,12 +16,13 @@
                                  <a href="/computing/datacenter-storage?id=${id}" style="text-decoration-line: none">스토리지</a> |
                                  <a href="/computing/datacenter-network?id=${id}" style="text-decoration-line: none">논리 네트워크</a> |
                                  <a href="/computing/datacenter-cluster?id=${id}">클러스터</a> |
-                                 <a href="#permission"  style="text-decoration-line: none">권한</a>
+                                 <a href="#permission"  style="text-decoration-line: none">권한</a> |
+                                 <a href="#"  style="text-decoration-line: none">이벤트</a>
                             </p>
                         </div>
                     </div>
 
-                <table>
+                <table width="700px">
                     <tr>
                         <td>이름</td>
                         <td>호환버전</td>
@@ -35,7 +36,7 @@
                     </c:if>
                     <c:forEach var="cluster" items="${cluster}" varStatus="status">
                         <tr>
-                            <td>${cluster.name}</td>
+                            <td><a href="/computing/cluster?id=${cluster.id}" style="text-decoration-line: none">${cluster.name}</a></td>
                             <td>${cluster.version}</td>
                             <td>${cluster.description}</td>
                         </tr>

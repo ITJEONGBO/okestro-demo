@@ -27,15 +27,15 @@ public class DataCenterController {
 	public String datacenters(Model model) {
 		List<DataCenterVo> dataCenterVOList = itDataCenterService.getDatacenters();
 		model.addAttribute("datacenters", dataCenterVOList);
-		log.info("***** datacenters 목록 화면출력");
+		log.info("---datacenters");
 
 		return "computing/datacenters";
 	}
 
-	@GetMapping("/computing/datacenters/status")
+	@GetMapping("/computing/datacentersStatus")
 	@ResponseBody
 	public List<DataCenterVo> datacenters() {
-		log.info("----- datacenters 목록 불러오기");
+		log.info("-----datacentersStatus");
 		return itDataCenterService.getDatacenters();
 	}
 
@@ -46,6 +46,7 @@ public class DataCenterController {
 		List<StorageDomainVo> storage = itDataCenterService.getStorage(id);
 		model.addAttribute("storage", storage);
 		model.addAttribute("id", id);
+		log.info("---datacenter-storage");
 
 		return "computing/datacenter-storage";
 	}
@@ -53,7 +54,7 @@ public class DataCenterController {
 	@GetMapping("/computing/datacenter/storageStatus")
 	@ResponseBody
 	public List<StorageDomainVo> storage(String id) {
-		log.info("----- 데이터센터 스토리지 목록 불러오기: " + id);
+		log.info("-----datacenter/storageStatus: " + id);
 		return itDataCenterService.getStorage(id);
 	}
 

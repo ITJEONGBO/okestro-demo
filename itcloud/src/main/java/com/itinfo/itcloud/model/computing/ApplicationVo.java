@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class AppVo {
+public class ApplicationVo {
     private String id;
     private String name;
 }

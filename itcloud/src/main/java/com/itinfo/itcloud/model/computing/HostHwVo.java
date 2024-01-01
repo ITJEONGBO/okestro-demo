@@ -14,9 +14,9 @@ public class HostHwVo {
 
     private String cpuName;
     private String cpuType;
-    private int socketCore;
-    private int coreThread;
     private int cpuSocket;
+    private int coreThread;
+    private int coreSocket;
     // cpu소켓
     // TSC 주파수
 
