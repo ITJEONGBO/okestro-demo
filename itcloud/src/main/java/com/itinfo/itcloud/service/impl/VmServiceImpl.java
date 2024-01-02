@@ -20,7 +20,6 @@ public class VmServiceImpl implements ItVmService {
     @Autowired
     private AdminConnectionService adminConnectionService;
 
-    public VmServiceImpl(){}
 
     @Override
     public List<VmVo> getList() {

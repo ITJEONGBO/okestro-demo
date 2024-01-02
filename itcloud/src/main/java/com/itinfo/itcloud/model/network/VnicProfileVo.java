@@ -2,19 +2,23 @@ package com.itinfo.itcloud.model.network;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
-@Getter @Setter
+@Getter @Setter @ToString
 public class VnicProfileVo {
     private String id;
     private String name;
     private String passThrough;
     private boolean portMirroring;
+    private String description;
 
     private String networkId;
     private String networkName;
     private String networkFilterId;
     private String networkFilterName;
 
+    private String datacenterId;
+    private String datacenterName;
 
 
     // 리스트-> 이름(id), 네트워크이름, 데이터센터(id), 호환버전, 네트워크 필터, 포트 미러링, 통과, 페일오버 vnic 프로파일, 설명

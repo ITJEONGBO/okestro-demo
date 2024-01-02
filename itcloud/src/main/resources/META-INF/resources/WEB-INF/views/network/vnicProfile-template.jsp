@@ -7,19 +7,14 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">Cluster</h1>
-                    컴퓨팅 > <a href="/computing/clusters" style="text-decoration-line: none">클러스터</a>  <br><br>
+                    <h1 class="mt-4">VNIC 프로파일</h1>
+                    네트워크 > <a href="/network/vnicProfiles" style="text-decoration-line: none">VNIC 프로파일</a><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
                             <p class="mb-0">
-                                <a href="/computing/cluster?id=${id}" style="text-decoration-line: none">일반</a> |
-                                <a href="/computing/cluster-network?id=${id}" style="text-decoration-line: none">논리 네트워크</a> |
-                                <a href="/computing/cluster-host?id=${id}" style="text-decoration-line: none">호스트</a> |
-                                <a href="/computing/cluster-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
-                                <a href="/computing/cluster-affGroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
-                                <a href="/computing/cluster-affLabel?id=${id}">선호도 레이블</a> |
-                                <a href="/computing/cluster-cpu?id=${id}" style="text-decoration-line: none">CPU 프로파일</a> |
+                                <a href="/network/vnicProfile-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
+                                <a href="/network/vnicProfile-template?id=${id}">템플릿</a> |
                                 <a href="#" style="text-decoration-line: none">권한</a>
                             </p>
                         </div>
@@ -28,22 +23,20 @@
                     <table width="700px">
                         <tr>
                             <td>이름</td>
-                            <td>가상머신 멤버</td>
-                            <td>호스트 멤버</td>
+                            <td>버전</td>
                         </tr>
 
-                        <c:if test="${empty aff}">
+                        <c:if test="${empty template}">
                             <tr>
-                                <td colspan="3" rowspan="3">표시할 항목이 없습니다</td>
+                                <td colspan="2">표시할 항목이 없습니다.</td>
                             </tr>
                         </c:if>
-                        <c:forEach var="aff" items="${aff}" varStatus="status">
-                        <tr>
-                            <td>${aff.name}</td>
-                            <td>${aff.vmList}</td>
-                            <td>${aff.hostList}</td>
-                        </tr>
+                        <c:forEach var="template" items="${template}" varStatus="status">
+                            <tr>
+                                <td><a href="/computing/vm?id=${template.id}" style="text-decoration-line: none">${template.name}</a></td>
+                            </tr>
                         </c:forEach>
+
                     </table>
 
                 </div>

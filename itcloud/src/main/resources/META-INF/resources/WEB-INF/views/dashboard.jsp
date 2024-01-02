@@ -56,7 +56,7 @@
                                 UP &nbsp;${dashboard.vmActive} / DOWN &nbsp; ${dashboard.vmInactive}
                                 </div>
                                 <div class="card-footer d-flex align-items-center justify-content-between">
-                                    <a class="small text-white stretched-link" href="/storages">더보기</a>
+                                    <a class="small text-white stretched-link" href="/computing/vms">더보기</a>
                                     <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                                 </div>
                             </div>
@@ -68,7 +68,7 @@
                                 UP &nbsp;${dashboard.storageDomainActive} / DOWN &nbsp; ${dashboard.storageDomainInactive}
                                 </div>
                                 <div class="card-footer d-flex align-items-center justify-content-between">
-                                    <a class="small text-white stretched-link" href="/computing/vms">더보기</a>
+                                    <a class="small text-white stretched-link" href="/storages">더보기</a>
                                     <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                                 </div>
                             </div>

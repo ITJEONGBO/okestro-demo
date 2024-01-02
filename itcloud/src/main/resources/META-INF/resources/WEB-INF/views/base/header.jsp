@@ -68,7 +68,7 @@
                             <div class="collapse" id="collapseLayouts2" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link" href="/network/vnicProfiles">vNIC 프로파일</a>
-                                    <a class="nav-link" href="/network/network">네트워크</a>
+                                    <a class="nav-link" href="/network/networks">네트워크</a>
                                 </nav>
                             </div>
 

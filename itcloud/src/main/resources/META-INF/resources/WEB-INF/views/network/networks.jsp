@@ -7,11 +7,11 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">VNIC 프로파일</h1>
+                    <h1 class="mt-4">Network</h1>
                     <div class="card mb-4">
                         <div class="card-body">
                             <p class="mb-0">
-                                네트워크 > <a href="/network/vnicProfiles" style="text-decoration-line: none">VNIC 프로파일</a>
+                                네트워크 > <a href="/network/networks" style="text-decoration-line: none">네트워크</a>
                             </p>
                         </div>
                     </div>
@@ -19,31 +19,40 @@
                 <table>
                     <tr>
                         <td>이름</td>
-                        <td>네트워크</td>
+                        <td>코멘트</td>
                         <td>데이터 센터</td>
-                        <td>호환 버전</td>
-                        <td>네트워크 필터</td>
-                        <td>포트 미러링</td>
-                        <td>통과</td>
-                        <td>페일오버 vNIC 프로파일</td>
                         <td>설명</td>
+                        <td>역할</td>
+                        <td>VLAN 태그</td>
+                        <td>레이블</td>
+                        <td>공급자</td>
+                        <td>MTU</td>
+                        <td>포트 분리</td>
                     </tr>
 
-                    <c:if test="${empty vnics}">
+                    <c:if test="${empty networks}">
                         <tr>
                             <td colspan="9">표시할 항목이 없음</td>
                         </tr>
                     </c:if>
-                    <c:forEach var="vnics" items="${vnics}" varStatus="status">
+                    <c:forEach var="networks" items="${networks}" varStatus="status">
                         <tr>
-                            <td><a href="/network/vnicProfile-vm?id=${vnics.id} "style="text-decoration-line: none">${vnics.name}</a></td>
-                            <td><a href="/network/network?id=${vnics.networkId} "style="text-decoration-line: none">${vnics.networkName}</a></td>
+                            <td><a href="/network/network?id=${networks.id} "style="text-decoration-line: none">${networks.name}</a></td>
+                            <td>${networks.comment}</td>
+                            <td><a href="/computing/datacenter-storage?id=${networks.datacenterId} "style="text-decoration-line: none">${networks.datacenterName}</a></td>
+                            <td>${networks.description}</td>
+                            <td>
+                                ${networks.vm =="true" ? "vm":""}<br>
+                                ${networks.management =="true" ? "management":""}<br>
+                                ${networks.display =="true" ? "display":""}<br>
+                                ${networks.migration =="true" ? "migration":""}<br>
+                                ${networks.gluster =="true" ? "gluster":""}<br>
+                                ${networks.defaultRoute =="true" ? "defaultRoute":""}
+                            </td>
                             <td></td>
                             <td></td>
-                            <td>${vnics.networkFilterName}</td>
-                            <td>${vnics.portMirroring}</td>
-                            <td>${vnics.passThrough == "true" ? "예" : "아니요"}</td>
                             <td></td>
+                            <td>${networks.mtu == 0 ? "기본값(1500)" : networks.mtu}</td>
                             <td></td>
                         </tr>
                     </c:forEach>

@@ -3,6 +3,7 @@ package com.itinfo.itcloud.service.impl;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItHostService;
+import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class HostServiceImpl implements ItHostService {
 
     @Autowired

@@ -1,9 +1,17 @@
 package com.itinfo.itcloud.controller;
 
+import com.itinfo.itcloud.model.computing.ClusterVo;
+import com.itinfo.itcloud.model.network.NetworkVo;
+import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.service.ItNetworkService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 @Controller
 @Slf4j
@@ -12,24 +20,63 @@ public class NetworkController {
 
 	private final ItNetworkService itNetworkService;
 
-/*
-	@GetMapping("/networks")
-	public String network(Model model){
-		List<NetworkVO> networkVOList = this.networkService.getNetworkList();
-		model.addAttribute("networkList", networkVOList);
+
+	@GetMapping("/network/networks")
+	public String networks(Model model){
+		List<NetworkVo> networks = itNetworkService.getList();
+		model.addAttribute("networks", networks);
 		return "/network/networks";
+	}
+
+	@GetMapping("/networksStatus")
+	@ResponseBody
+	public List<NetworkVo> networks(){
+		return itNetworkService.getList();
+	}
+
+
+	@GetMapping("/network/network")
+	public String network(String id, Model model){
+		NetworkVo network = itNetworkService.getNetwork(id);
+		model.addAttribute("network", network);
+		model.addAttribute("id", id);
+		return "/network/network";
 	}
 
 	@GetMapping("/networkStatus")
 	@ResponseBody
-	public List<NetworkVO> net(){
-		List<NetworkVO> list = null;
-		try{
-			list = networkService.getNetworkList();
-		}catch (Exception e){
-			e.printStackTrace();
-		}
-		return list;
+	public NetworkVo network(String id){
+		return itNetworkService.getNetwork(id);
 	}
-*/
+
+	@GetMapping("/network/network-vnicProfile")
+	public String vnicProfile(String id, Model model){
+		List<VnicProfileVo> vnic = itNetworkService.getVnic(id);
+		model.addAttribute("vnic", vnic);
+		model.addAttribute("id", id);
+
+		return "/network/network-vnicProfile";
+	}
+
+	@GetMapping("/vnicProfileStatus")
+	@ResponseBody
+	public List<VnicProfileVo> vnic(String id){
+		return itNetworkService.getVnic(id);
+	}
+
+	@GetMapping("/network/network-cluster")
+	public String cluster(String id, Model model){
+		List<ClusterVo> cluster = itNetworkService.getCluster(id);
+		model.addAttribute("cluster", cluster);
+		model.addAttribute("id", id);
+
+		return "/network/network-cluster";
+	}
+
+	@GetMapping("/clusterStatus")
+	@ResponseBody
+	public List<ClusterVo> cluster(String id){
+		return itNetworkService.getCluster(id);
+	}
+
 }

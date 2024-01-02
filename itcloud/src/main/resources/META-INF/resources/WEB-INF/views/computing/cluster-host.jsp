@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Cluster</h1>
-                    <a href="/computing/clusters" style="text-decoration-line: none">클러스터</a> - 호스트 <br><br>
+                    컴퓨팅 > <a href="/computing/clusters" style="text-decoration-line: none">클러스터</a>  <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">

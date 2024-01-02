@@ -7,11 +7,11 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">호스트</h1>
+                    <h1 class="mt-4">Host</h1>
                     <div class="card mb-4">
                         <div class="card-body">
                             <p class="mb-0">
-                                여기는 호스트
+                                컴퓨팅 > <a href="/computing/hosts" style="text-decoration-line: none">호스트</a>
                             </p>
                         </div>
                     </div>

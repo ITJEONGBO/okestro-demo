@@ -2,6 +2,8 @@ package com.itinfo.itcloud.model.network;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigInteger;
+
 @Getter @Setter
 public class NetworkVo {
     private String id;
@@ -13,6 +15,7 @@ public class NetworkVo {
     private boolean stp;
     private String usage;  // 역할
     private String vdsmName;
+    private BigInteger vlan;
 
     private String datacenterId;
     private String datacenterName;
