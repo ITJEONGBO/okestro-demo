@@ -45,12 +45,12 @@
                                 <td><a href="/network/network?id=${network.id}">${network.name}</a></td>
                                 <td>${network.status == "operational" ? "가동 중" : "비 가동?"}</td>
                                 <td>
-                                    ${network.vm =="true" ? "vm":""}<br>
-                                    ${network.management =="true" ? "management":""}<br>
-                                    ${network.display =="true" ? "display":""}<br>
-                                    ${network.migration =="true" ? "migration":""}<br>
-                                    ${network.gluster =="true" ? "gluster":""}<br>
-                                    ${network.defaultRoute =="true" ? "defaultRoute":""}
+                                    ${network.networkUsageVo.vm =="true" ? "vm":""}<br>
+                                    ${network.networkUsageVo.management =="true" ? "management":""}<br>
+                                    ${network.networkUsageVo.display =="true" ? "display":""}<br>
+                                    ${network.networkUsageVo.migration =="true" ? "migration":""}<br>
+                                    ${network.networkUsageVo.gluster =="true" ? "gluster":""}<br>
+                                    ${network.networkUsageVo.defaultRoute =="true" ? "defaultRoute":""}
                                 </td>
                                 <td>${network.description}</td>
                             </tr>

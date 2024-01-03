@@ -35,14 +35,16 @@ public class VmServiceImpl implements ItVmService {
         for(Vm vm : vmList){
             vmVo = new VmVo();
 
-            vmVo.setStatus(vm.status().value());    // 상태는 두번표시됨. 그림과 글자로
+            vmVo.setStatus(vm.status().value());
             vmVo.setId(vm.id());
             vmVo.setName(vm.name());
             vmVo.setDescription(vm.description());
 
             // host
-            vmVo.setHostId(vm.host().id());
-            vmVo.setHostName(((HostService.GetResponse)systemService.hostsService().hostService(vm.host().id()).get().send()).host().name());
+            if(vm.status().value().equals("up") && vm.hostPresent()) {
+                vmVo.setHostId(vm.host().id());
+                vmVo.setHostName(((HostService.GetResponse) systemService.hostsService().hostService(vm.host().id()).get().send()).host().name());
+            }
 
             Cluster cluster =
                     ((ClusterService.GetResponse)systemService.clustersService().clusterService(vm.cluster().id()).get().send()).cluster();
@@ -94,8 +96,12 @@ public class VmServiceImpl implements ItVmService {
         vmVo.setStatus(vm.status().value());    // 상태는 두번표시됨. 그림과 글자로
         vmVo.setName(vm.name());
         vmVo.setDescription(vm.description());
-        System.out.println(((TemplateService.GetResponse)systemService.templatesService().templateService(vm.template().id()).get().send()).template().name());
         vmVo.setTemplateName( ((TemplateService.GetResponse)systemService.templatesService().templateService(vm.template().id()).get().send()).template().name() );
+
+        System.out.println(((TemplateService.GetResponse)systemService.templatesService().templateService(vm.template().id()).get().send()).template().name());
+
+        // host
+        vmVo.setHostName(((HostService.GetResponse) systemService.hostsService().hostService(vm.host().id()).get().send()).host().name());
 
         vmVo.setOsSystem(vm.os().type());
         vmVo.setChipsetFirmwareType(vm.bios().type().value());

@@ -24,6 +24,7 @@ public class StorageDomainVo {
     private String domainType;       // 도메인 유형
     private boolean backup;
 
+
     private String datacenterName;
 
     // LINK: disks

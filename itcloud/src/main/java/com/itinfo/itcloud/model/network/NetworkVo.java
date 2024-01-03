@@ -1,8 +1,12 @@
 package com.itinfo.itcloud.model.network;
+import com.itinfo.itcloud.model.computing.ClusterVo;
+import com.itinfo.itcloud.model.computing.HostVo;
+import com.itinfo.itcloud.model.computing.VmVo;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Getter @Setter
 public class NetworkVo {
@@ -13,9 +17,9 @@ public class NetworkVo {
     private int mtu;
     private boolean portIsolation;
     private boolean stp;
-    private String usage;  // 역할
     private String vdsmName;
     private BigInteger vlan;
+    private boolean required;   // 필수 네트워크
 
     private String datacenterId;
     private String datacenterName;
@@ -24,13 +28,9 @@ public class NetworkVo {
     // https://192.168.0.80/ovirt-engine/api/clusters/ac0ec8c8-8917-11ee-aa39-00163e58bee5/networks
     private String status;      // operational / non-operational
 
-    // usages
-    private boolean vm;
-    private boolean management;
-    private boolean display; //출력
-    private boolean migration;
-    private boolean gluster;
-    private boolean defaultRoute;
+    // usages 역할
+    private NetworkUsageVo networkUsageVo;
+
 
 
     // 리스트 -> Vlan, 레이블, 공급자

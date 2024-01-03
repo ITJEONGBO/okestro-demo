@@ -4,6 +4,7 @@ import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.HostVo;
 import com.itinfo.itcloud.model.computing.TemplateVo;
 import com.itinfo.itcloud.model.computing.VmVo;
+import com.itinfo.itcloud.model.network.NetworkClusterVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ public interface ItNetworkService {
     NetworkVo getNetwork(String id);
 
     List<VnicProfileVo> getVnic(String id);
-    List<ClusterVo> getCluster(String id);
+    List<NetworkClusterVo> getCluster(String id);
     List<HostVo> getHost(String id);
     List<VmVo> getVm(String id);
     List<TemplateVo> getTemplate(String id);

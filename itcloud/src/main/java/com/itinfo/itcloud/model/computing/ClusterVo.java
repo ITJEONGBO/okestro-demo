@@ -32,8 +32,6 @@ public class ClusterVo {
     private int vmUpCnt;
     private int vmDownCnt;
 
-//    private List<NetworkVo> networkVoList;
-
 
     // 리스트-> 상태, 이름(id), 코멘트, 호환버전, 설명, 클러스터cpu유형, 호스트수, 가상머신수, 업그레이드 상태
     // 일반-> 이름, 설명, 데이터센터명, 호환버전, 클러스터id, 클러스터cpu유형, 스레드를cpu로 사용, 최대메모리오버커밋, 복구정책, 칩셋유형, 가상머신수

@@ -2,6 +2,7 @@ package com.itinfo.itcloud.service.impl;
 
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
+import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.storage.StorageDomainVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
@@ -9,10 +10,7 @@ import com.itinfo.itcloud.service.ItDataCenterService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.services.*;
-import org.ovirt.engine.sdk4.types.Cluster;
-import org.ovirt.engine.sdk4.types.DataCenter;
-import org.ovirt.engine.sdk4.types.Network;
-import org.ovirt.engine.sdk4.types.StorageDomain;
+import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -70,14 +68,16 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
             sdVo.setId(storageDomain.id());
             sdVo.setName(storageDomain.name());
-            sdVo.setDomainType(storageDomain.type().value() + (storageDomain.master() ? "(마스터)":""));
-            sdVo.setStatus(storageDomain.status().value());     // storageDomainStatus 10개 한글변환 생각해봐야됨
+            sdVo.setDomainType(storageDomain.type().value() + (storageDomain.master() ? "(master)" : ""));
+            sdVo.setStatus(storageDomain.status().value());     // storageDomainStatus 10개
             sdVo.setAvailableSize(storageDomain.available()); // 여유공간
             sdVo.setUsedSize(storageDomain.used()); // 사용된 공간
             sdVo.setDiskSize(storageDomain.available().add(storageDomain.used()));
             sdVo.setDescription(storageDomain.description());
-//            sdVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name() );
+            sdVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name() );
 
+            System.out.println(sdVo.getDatacenterName());
+            System.out.println(sdVo.getDatacenterName().getClass().getName());
             sdVoList.add(sdVo);
         }
         return sdVoList;
@@ -101,7 +101,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
             nwVo.setId(network.id());
             nwVo.setName(network.name());
             nwVo.setDescription(network.description());
-            nwVo.setDatacenterName(((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name());
+            nwVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name() );
 
             nwVoList.add(nwVo);
         }
@@ -127,10 +127,43 @@ public class DataCenterServiceImpl implements ItDataCenterService {
             cVo.setName(cluster.name());
             cVo.setVersion(cluster.version().major() + "." + cluster.version().minor());
             cVo.setDescription(cluster.description());
+            cVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name()  );
 
             cVoList.add(cVo);
         }
         return cVoList;
+    }
+
+    @Override
+    public List<PermissionVo> getPermission(String id) {
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        List<PermissionVo> pVoList = new ArrayList<>();
+        PermissionVo pVo = null;
+
+        List<Permission> permissionList =
+                ((AssignedPermissionsService.ListResponse)systemService.dataCentersService().dataCenterService(id).permissionsService().list().send()).permissions();
+
+        for(Permission permission : permissionList){
+            System.out.println(permission.id());
+            Group group =
+                    ((GroupService.GetResponse)systemService.groupsService().groupService(permission.group().id()).get().send()).get();
+
+            System.out.println("groupName: "+group.name());
+
+            pVo = new PermissionVo();
+
+            pVo.setPermissionId(permission.id());
+            pVo.setGroupId(permission.group().id());
+
+            pVo.setRoleId(permission.role().id());
+
+
+            pVoList.add(pVo);
+        }
+
+        return pVoList;
     }
 
 

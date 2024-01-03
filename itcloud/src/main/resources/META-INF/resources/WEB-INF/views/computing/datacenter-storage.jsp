@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">DataCenter</h1>
-                    컴퓨팅 > <a href="/computing/datacenters" style="text-decoration-line: none">데이터 센터</a> <br><br>
+                    컴퓨팅 > <a href="/computing/datacenters" style="text-decoration-line: none">데이터 센터</a> > ${storage[0].datacenterName} <br><br>
                     <div class="card mb-4">
                         <div class="card-body">
                             <p class="mb-0">
@@ -41,7 +41,7 @@
                     </c:if>
                     <c:forEach var="storage" items="${storage}" varStatus="status">
                         <tr>
-                            <td>${storage.status == "active"?  "🔼" : "🔽"} ?</td>
+                            <td>${storage.status == "active" ? "🔼" : "🔽"}</td>
                             <td>&nbsp;&nbsp;&nbsp;</td>
                             <td><a href="/storage/storage?id=${storage.id}" style="text-decoration-line: none">${storage.name}</a></td>
                             <td>${storage.domainType}</td>

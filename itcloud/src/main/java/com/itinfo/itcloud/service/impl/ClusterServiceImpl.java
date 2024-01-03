@@ -1,6 +1,7 @@
 package com.itinfo.itcloud.service.impl;
 
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.network.NetworkUsageVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItClusterService;
@@ -115,12 +116,15 @@ public class ClusterServiceImpl implements ItClusterService {
                 nwVo.setDatacenterName( ((ClusterService.GetResponse)systemService.clustersService().clusterService(id).get().send()).cluster().name() );
 
                 // usages
-                nwVo.setVm(network.usages().contains(NetworkUsage.VM));
-                nwVo.setDisplay(network.usages().contains(NetworkUsage.DISPLAY));
-                nwVo.setMigration(network.usages().contains(NetworkUsage.MIGRATION));
-                nwVo.setManagement(network.usages().contains(NetworkUsage.MANAGEMENT));
-                nwVo.setDefaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE));
-                nwVo.setGluster(network.usages().contains(NetworkUsage.GLUSTER));
+                NetworkUsageVo nuVo = new NetworkUsageVo();
+                nuVo.setVm(network.usages().contains(NetworkUsage.VM));
+                nuVo.setDisplay(network.usages().contains(NetworkUsage.DISPLAY));
+                nuVo.setMigration(network.usages().contains(NetworkUsage.MIGRATION));
+                nuVo.setManagement(network.usages().contains(NetworkUsage.MANAGEMENT));
+                nuVo.setDefaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE));
+                nuVo.setGluster(network.usages().contains(NetworkUsage.GLUSTER));
+
+                nwVo.setNetworkUsageVo(nuVo);
 
                 nwVoList.add(nwVo);
             }

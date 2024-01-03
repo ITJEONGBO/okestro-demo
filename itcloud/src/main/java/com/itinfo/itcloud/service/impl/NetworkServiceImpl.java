@@ -4,6 +4,8 @@ import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.HostVo;
 import com.itinfo.itcloud.model.computing.TemplateVo;
 import com.itinfo.itcloud.model.computing.VmVo;
+import com.itinfo.itcloud.model.network.NetworkClusterVo;
+import com.itinfo.itcloud.model.network.NetworkUsageVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
@@ -17,6 +19,7 @@ import org.ovirt.engine.sdk4.types.NetworkUsage;
 import org.ovirt.engine.sdk4.types.VnicProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sun.nio.ch.Net;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,12 +54,16 @@ public class NetworkServiceImpl implements ItNetworkService {
             nwVo.setDatacenterId(network.dataCenter().id());
             nwVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(network.dataCenter().id()).get().send()).dataCenter().name() );
 
-            nwVo.setVm(network.usages().contains(NetworkUsage.VM));
-            nwVo.setDisplay(network.usages().contains(NetworkUsage.DISPLAY));
-            nwVo.setMigration(network.usages().contains(NetworkUsage.MIGRATION));
-            nwVo.setManagement(network.usages().contains(NetworkUsage.MANAGEMENT));
-            nwVo.setDefaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE));
-            nwVo.setGluster(network.usages().contains(NetworkUsage.GLUSTER));
+            // usages
+            NetworkUsageVo nuVo = new NetworkUsageVo();
+            nuVo.setVm(network.usages().contains(NetworkUsage.VM));
+            nuVo.setDisplay(network.usages().contains(NetworkUsage.DISPLAY));
+            nuVo.setMigration(network.usages().contains(NetworkUsage.MIGRATION));
+            nuVo.setManagement(network.usages().contains(NetworkUsage.MANAGEMENT));
+            nuVo.setDefaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE));
+            nuVo.setGluster(network.usages().contains(NetworkUsage.GLUSTER));
+
+            nwVo.setNetworkUsageVo(nuVo);
 
             nwVoList.add(nwVo);
         }
@@ -112,6 +119,7 @@ public class NetworkServiceImpl implements ItNetworkService {
                 vpVo.setName(vnicProfile.name());
                 vpVo.setDescription(vnicProfile.description());
                 vpVo.setNetworkName( ((NetworkService.GetResponse)systemService.networksService().networkService(id).get().send()).network().name() );
+                vpVo.setDatacenterId(network.dataCenter().id());
                 vpVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(network.dataCenter().id()).get().send()).dataCenter().name() );
                 vpVo.setPassThrough(vnicProfile.passThrough().mode().value());
                 vpVo.setPortMirroring(vnicProfile.portMirroring());
@@ -124,37 +132,57 @@ public class NetworkServiceImpl implements ItNetworkService {
     }
 
     @Override
-    public List<ClusterVo> getCluster(String id) {
+    public List<NetworkClusterVo> getCluster(String id) {
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
 
-        List<ClusterVo> cVoList = new ArrayList<>();
-        ClusterVo cVo = null;
+        List<NetworkClusterVo> ncVoList = new ArrayList<>();
+        NetworkClusterVo ncVo = null;
 
         // 클러스터리스트 출력
         List<Cluster> clusterList =
                 ((ClustersService.ListResponse)systemService.clustersService().list().send()).clusters();
 
         for(Cluster cluster : clusterList){
-            // 클러스터 아이디를 넣고 네트워크 검색
             List<Network> networkList =
                     ((ClusterNetworksService.ListResponse)systemService.clustersService().clusterService(cluster.id()).networksService().list().send()).networks();
 
             for(Network network : networkList){
                 if(cluster.id().equals(network.cluster().id())){
-                    cVo = new ClusterVo();
-                    cVo.setName(cluster.name());
-                    cVo.setDescription(cluster.description());
+                    ncVo = new NetworkClusterVo();
 
-                    cVoList.add(cVo);
+                    ncVo.setId(cluster.id());
+                    ncVo.setName(cluster.name());
+                    ncVo.setVersion(cluster.version().major() + "." + cluster.version().minor());
+                    ncVo.setDescription(cluster.description());
+
+                    ncVo.setStatus(network.status().value());
+                    ncVo.setRequired(network.required());
+
+                    // usages
+                    NetworkUsageVo nuVo = new NetworkUsageVo();
+                    nuVo.setVm(network.usages().contains(NetworkUsage.VM));
+                    nuVo.setDisplay(network.usages().contains(NetworkUsage.DISPLAY));
+                    nuVo.setMigration(network.usages().contains(NetworkUsage.MIGRATION));
+                    nuVo.setManagement(network.usages().contains(NetworkUsage.MANAGEMENT));
+                    nuVo.setDefaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE));
+                    nuVo.setGluster(network.usages().contains(NetworkUsage.GLUSTER));
+
+                    ncVo.setNetworkUsageVo(nuVo);
+
+                    ncVoList.add(ncVo);
                 }
             }
         }
-        return cVoList;
+        return ncVoList;
     }
 
     @Override
     public List<HostVo> getHost(String id) {
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+
         return null;
     }
 

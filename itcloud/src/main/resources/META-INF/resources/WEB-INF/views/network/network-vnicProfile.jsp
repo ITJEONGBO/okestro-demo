@@ -46,7 +46,7 @@
                             <tr>
                                 <td>${vnic.name}</td>
                                 <td>${vnic.networkName}</td>
-                                <td>${vnic.datacenterName}</td>
+                                <td><a href="/computing/datacenter?id=${vnic.datacenterId}" style="text-decoration-line: none">${vnic.datacenterName}</a></td>
                                 <td></td>
                                 <td>${vnic.networkFilterName}</td>
                                 <td>${vnic.portMirroring}</td>

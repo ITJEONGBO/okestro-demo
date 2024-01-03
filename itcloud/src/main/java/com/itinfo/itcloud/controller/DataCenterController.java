@@ -2,6 +2,7 @@ package com.itinfo.itcloud.controller;
 
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
+import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.storage.StorageDomainVo;
 import com.itinfo.itcloud.service.ItDataCenterService;
@@ -92,5 +93,13 @@ public class DataCenterController {
 	public List<ClusterVo> cluster(String id) {
 		log.info("----- 데이터센터 cluster 목록 불러오기: " + id);
 		return itDataCenterService.getCluster(id);
+	}
+
+
+	@GetMapping("/computing/datacenter/permissionStatus")
+	@ResponseBody
+	public List<PermissionVo> permission(String id) {
+		log.info("----- permission 목록 불러오기: " + id);
+		return itDataCenterService.getPermission(id);
 	}
 }

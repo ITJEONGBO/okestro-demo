@@ -1,6 +1,7 @@
 package com.itinfo.itcloud.controller;
 
 import com.itinfo.itcloud.model.computing.ClusterVo;
+import com.itinfo.itcloud.model.network.NetworkClusterVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.service.ItNetworkService;
@@ -66,7 +67,7 @@ public class NetworkController {
 
 	@GetMapping("/network/network-cluster")
 	public String cluster(String id, Model model){
-		List<ClusterVo> cluster = itNetworkService.getCluster(id);
+		List<NetworkClusterVo> cluster = itNetworkService.getCluster(id);
 		model.addAttribute("cluster", cluster);
 		model.addAttribute("id", id);
 
@@ -75,7 +76,7 @@ public class NetworkController {
 
 	@GetMapping("/clusterStatus")
 	@ResponseBody
-	public List<ClusterVo> cluster(String id){
+	public List<NetworkClusterVo> cluster(String id){
 		return itNetworkService.getCluster(id);
 	}
 

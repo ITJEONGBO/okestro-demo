@@ -23,9 +23,7 @@
                         <td>이름</td>
                         <td>코멘트</td>
                         <td>호스트이름/IP</td>
-                        <td>클러스터</td>
-                        <td>데이터 센터</td>
-                        <td>상태</td>
+
                         <td>가상머신</td>
                         <td>CPU</td>
                         <td>메모리</td>

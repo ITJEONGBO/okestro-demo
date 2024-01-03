@@ -56,8 +56,7 @@
                             </td>
                             <td width="300px" style="word-break:break-all">
                                 작성자: <br>
-                                소스: <br>
-                                실행 호스트: <br>
+                                실행 호스트: ${vm.hostName}<br>
                                 사용자 정의 속성: <br>
                                 클러스터 호환 버전: <br>
                                 가상 머신의 ID: ${vm.id} <br><br>

@@ -15,8 +15,8 @@
                             <p class="mb-0">
                                 <a href="/network/network?id=${id}" style="text-decoration-line: none">일반</a> |
                                 <a href="/network/network-vnicProfile?id=${id}" style="text-decoration-line: none">vNIC 프로파일</a> |
-                                <a href="/network/network-cluster?id=${id}">클러스터</a> |
-                                <a href="/network/network-host?id=${id}" style="text-decoration-line: none">호스트</a> |
+                                <a href="/network/network-cluster?id=${id}" style="text-decoration-line: none">클러스터</a> |
+                                <a href="/network/network-host?id=${id}">호스트</a> |
                                 <a href="/network/network-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
                                 <a href="/network/network-template?id=${id}" style="text-decoration-line: none">템플릿</a> |
                                 <a href="#" style="text-decoration-line: none">권한</a>
@@ -26,34 +26,38 @@
 
                     <table>
                         <tr>
+                            <td></td>
                             <td>이름</td>
-                            <td>호환 버전</td>
-                            <td>연결된 네트워크</td>
-                            <td>네트워크 상태</td>
-                            <td>필수 네트워크</td>
-                            <td>네트워크 역할</td>
-                            <td>설명</td>
+                            <td>클러스터</td>
+                            <td>데이터 센터</td>
+                            <td>네트워크 장치 상태</td>
+                            <td>비동기</td>
+                            <td>네트워크 장치</td>
+                            <td>속도 (Mbps)</td>
+                            <td>Rx (Mbps)</td>
+                            <td>Tx (Mbps)</td>
+                            <td>총 Rx (바이트)</td>
+                            <td>총 Tx (바이트)</td>
                         </tr>
 
-                        <c:if test="${empty cluster}">
+                        <c:if test="${empty host}">
                             <tr>
-                                <td colspan="7">표시할 항목이 없습니다.</td>
+                                <td colspan="12">표시할 항목이 없습니다.</td>
                             </tr>
                         </c:if>
-                        <c:forEach var="cluster" items="${cluster}" varStatus="status">
+                        <c:forEach var="host" items="${host}" varStatus="status">
                             <tr>
-                                <td><a href="/computing/cluster?id=${cluster.id}" style="text-decoration-line: none">${cluster.name}</a></td>
-                                <td>${cluster.version}</td>
+                                <td><a href="/computing/host?id=${host.id}" style="text-decoration-line: none">${host.name}</a></td>
                                 <td></td>
-                                <td>${cluster.status == "operational" ? "🔼" : "🔽"}</td>
+                                <td>${host.networkVo.status == "operational" ? "🔼" : "🔽"}</td>
                                 <td></td>
                                 <td>
-                                    ${cluster.networkUsageVo.vm == "true" ? "vm" : ""}
-                                    ${cluster.networkUsageVo.management == "true" ? "management" : ""}
-                                    ${cluster.networkUsageVo.display == "true" ? "display" : ""}
-                                    ${cluster.networkUsageVo.migration == "true" ? "migration" : ""}
-                                    ${cluster.networkUsageVo.gluster == "true" ? "gluster" : ""}
-                                    ${cluster.networkUsageVo.defaultRoute == "true" ? "defaultRoute" : ""}
+                                    ${host.vm == "true" ? "vm" : ""}
+                                    ${host.management == "true" ? "management" : ""}
+                                    ${host.display == "true" ? "display" : ""}
+                                    ${host.migration == "true" ? "migration" : ""}
+                                    ${host.gluster == "true" ? "gluster" : ""}
+                                    ${host.defaultRoute == "true" ? "defaultRoute" : ""}
                                 </td>
                                 <td>${cluster.description}</td>
                             </tr>
