@@ -96,6 +96,15 @@ public class DataCenterController {
 	}
 
 
+	@GetMapping("/computing/datacenter-permission")
+	public String permission(String id, Model model) {
+		List<PermissionVo> permission = itDataCenterService.getPermission(id);
+		model.addAttribute("permission", permission);
+		model.addAttribute("id", id);
+
+		return "computing/datacenter-permission";
+	}
+
 	@GetMapping("/computing/datacenter/permissionStatus")
 	@ResponseBody
 	public List<PermissionVo> permission(String id) {

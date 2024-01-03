@@ -4,6 +4,9 @@ import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
+import com.itinfo.itcloud.model.setting.GroupVo;
+import com.itinfo.itcloud.model.setting.RoleVo;
+import com.itinfo.itcloud.model.setting.UserVo;
 import com.itinfo.itcloud.model.storage.StorageDomainVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItDataCenterService;
@@ -76,8 +79,6 @@ public class DataCenterServiceImpl implements ItDataCenterService {
             sdVo.setDescription(storageDomain.description());
             sdVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name() );
 
-            System.out.println(sdVo.getDatacenterName());
-            System.out.println(sdVo.getDatacenterName().getClass().getName());
             sdVoList.add(sdVo);
         }
         return sdVoList;
@@ -146,23 +147,38 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                 ((AssignedPermissionsService.ListResponse)systemService.dataCentersService().dataCenterService(id).permissionsService().list().send()).permissions();
 
         for(Permission permission : permissionList){
-            System.out.println(permission.id());
-            Group group =
-                    ((GroupService.GetResponse)systemService.groupsService().groupService(permission.group().id()).get().send()).get();
-
-            System.out.println("groupName: "+group.name());
-
             pVo = new PermissionVo();
-
             pVo.setPermissionId(permission.id());
-            pVo.setGroupId(permission.group().id());
+            pVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name() );
 
-            pVo.setRoleId(permission.role().id());
+            if(permission.groupPresent() && !permission.userPresent()){
+                Group group =
+                        ((GroupService.GetResponse)systemService.groupsService().groupService(permission.group().id()).get().send()).get();
 
+                pVo.setUser(group.name());
+                pVo.setNameSpace(group.namespace());
 
-            pVoList.add(pVo);
+                Role role =
+                        ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+                pVo.setRole(role.name());
+
+                pVoList.add(pVo);       // 그룹에 추가
+            }
+
+            if(permission.userPresent() && !permission.groupPresent()){
+                User user =
+                        ((UserService.GetResponse)systemService.usersService().userService(permission.user().id()).get().send()).user();
+
+                pVo.setUser(user.name());
+                pVo.setNameSpace(user.namespace());
+
+                Role role =
+                        ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+                pVo.setRole(role.name());
+
+                pVoList.add(pVo);
+            }
         }
-
         return pVoList;
     }
 

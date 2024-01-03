@@ -158,4 +158,22 @@ public class ClusterController {
 		log.info("----- 클러스터 cpu 목록 불러오기: " + id);
 		return itClusterService.getCpuProfile(id);
 	}
+
+
+	@GetMapping("/computing/cluster-permission")
+	public String permission(String id, Model model) {
+		List<PermissionVo> permission = itClusterService.getPermission(id);
+		model.addAttribute("permission", permission);
+		model.addAttribute("id", id);
+
+		return "computing/cluster-permission";
+	}
+
+	//
+	@GetMapping("/computing/cluster/permissionStatus")
+	@ResponseBody
+	public List<PermissionVo> permission(String id) {
+		log.info("----- 클러스터 permission 불러오기: " + id);
+		return itClusterService.getPermission(id);
+	}
 }

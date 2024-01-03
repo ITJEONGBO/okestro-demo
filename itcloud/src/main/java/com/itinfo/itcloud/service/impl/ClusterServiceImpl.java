@@ -324,14 +324,57 @@ public class ClusterServiceImpl implements ItClusterService {
         return cpVoList;
     }
 
-//    public ClusterVO getPermission(String id){
-//        return null;
-//    }
-//
+    @Override
+    public List<PermissionVo> getPermission(String id) {
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        List<PermissionVo> pVoList = new ArrayList<>();
+        PermissionVo pVo = null;
+
+        List<Permission> permissionList =
+                ((AssignedPermissionsService.ListResponse)systemService.clustersService().clusterService(id).permissionsService().list().send()).permissions();
+
+        for(Permission permission : permissionList){
+            pVo = new PermissionVo();
+            pVo.setPermissionId(permission.id());
+            pVo.setDatacenterName( ((ClusterService.GetResponse)systemService.clustersService().clusterService(id).get().send()).cluster().name() );
+
+            if(permission.groupPresent() && !permission.userPresent()){
+                Group group =
+                        ((GroupService.GetResponse)systemService.groupsService().groupService(permission.group().id()).get().send()).get();
+
+                pVo.setUser(group.name());
+                pVo.setNameSpace(group.namespace());
+
+                Role role =
+                        ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+                pVo.setRole(role.name());
+
+                pVoList.add(pVo);       // 그룹에 추가
+            }
+
+            if(permission.userPresent() && !permission.groupPresent()){
+                User user =
+                        ((UserService.GetResponse)systemService.usersService().userService(permission.user().id()).get().send()).user();
+
+                pVo.setUser(user.name());
+                pVo.setNameSpace(user.namespace());
+
+                Role role =
+                        ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+                pVo.setRole(role.name());
+
+                pVoList.add(pVo);
+            }
+        }
+        return pVoList;
+    }
+
+
 //    public ClusterVO getEvent(String id){
 //        return null;
 //    }
-
 
 
 

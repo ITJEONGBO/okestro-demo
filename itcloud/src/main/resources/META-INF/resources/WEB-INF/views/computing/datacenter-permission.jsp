@@ -22,7 +22,7 @@
                         </div>
                     </div>
 
-                <table width="700px">
+                <table>
                     <tr>
                         <td></td>
                         <td>사용자</td>
@@ -40,7 +40,13 @@
                     </c:if>
                     <c:forEach var="permission" items="${permission}" varStatus="status">
                         <tr>
-                            <td>${permission.name}</td>
+                            <td>&nbsp;&nbsp;&nbsp;</td>
+                            <td>${permission.user}</td>
+                            <td></td>
+                            <td>${permission.nameSpace}</td>
+                            <td>${permission.role}</td>
+                            <td></td>
+                            <td></td>
                         </tr>
                     </c:forEach>
                 </table>

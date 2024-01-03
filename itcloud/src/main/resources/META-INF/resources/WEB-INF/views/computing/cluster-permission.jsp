@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Cluster</h1>
-                    컴퓨팅 > <a href="/computing/clusters" style="text-decoration-line: none">클러스터</a>  <br><br>
+                    컴퓨팅 > <a href="/computing/clusters" style="text-decoration-line: none">클러스터</a> > <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
@@ -18,33 +18,41 @@
                                 <a href="/computing/cluster-host?id=${id}" style="text-decoration-line: none">호스트</a> |
                                 <a href="/computing/cluster-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
                                 <a href="/computing/cluster-affGroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
-                                <a href="/computing/cluster-affLabel?id=${id}">선호도 레이블</a> |
+                                <a href="/computing/cluster-affLabel?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
                                 <a href="/computing/cluster-cpu?id=${id}" style="text-decoration-line: none">CPU 프로파일</a> |
-                                <a href="/computing/cluster-permission?id=${id}" style="text-decoration-line: none">권한</a>
+                                <a href="/computing/cluster-permission?id=${id}">권한</a>
                             </p>
                         </div>
                     </div>
 
-                    <table width="700px">
-                        <tr>
-                            <td>이름</td>
-                            <td>가상머신 멤버</td>
-                            <td>호스트 멤버</td>
-                        </tr>
+                <table>
+                    <tr>
+                        <td></td>
+                        <td>사용자</td>
+                        <td>인증 공급자</td>
+                        <td>네임스페이스</td>
+                        <td>역할</td>
+                        <td>생성일</td>
+                        <td>Inherited From</td>
+                    </tr>
 
-                        <c:if test="${empty aff}">
-                            <tr>
-                                <td colspan="3" rowspan="3">표시할 항목이 없습니다</td>
-                            </tr>
-                        </c:if>
-                        <c:forEach var="aff" items="${aff}" varStatus="status">
+                    <c:if test="${empty permission}">
                         <tr>
-                            <td>${aff.name}</td>
-                            <td>${aff.vmList}</td>
-                            <td>${aff.hostList}</td>
+                            <td colspan="2" rowspan="3">표시할 항목이 없습니다.</td>
                         </tr>
-                        </c:forEach>
-                    </table>
+                    </c:if>
+                    <c:forEach var="permission" items="${permission}" varStatus="status">
+                        <tr>
+                            <td>&nbsp;&nbsp;&nbsp;</td>
+                            <td>${permission.user}</td>
+                            <td></td>
+                            <td>${permission.nameSpace}</td>
+                            <td>${permission.role}</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </c:forEach>
+                </table>
 
                 </div>
             </main>

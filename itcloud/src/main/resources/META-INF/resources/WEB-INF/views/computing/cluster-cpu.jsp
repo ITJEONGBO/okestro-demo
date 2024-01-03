@@ -20,7 +20,7 @@
                                 <a href="/computing/cluster-affGroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
                                 <a href="/computing/cluster-affLabel?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
                                 <a href="/computing/cluster-cpu?id=${id}">CPU 프로파일</a> |
-                                <a href="#" style="text-decoration-line: none">권한</a>
+                                <a href="/computing/cluster-permission?id=${id}" style="text-decoration-line: none">권한</a>
                             </p>
                         </div>
                     </div>
