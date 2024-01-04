@@ -77,6 +77,7 @@ dependencies {
     compileOnly(Dependencies.lombok)
     annotationProcessor(Dependencies.lombok)
     testImplementation(Dependencies.springTest)
+    testImplementation(Dependencies.springBootTest)
     testImplementation(Dependencies.hamcrest)
 }
 

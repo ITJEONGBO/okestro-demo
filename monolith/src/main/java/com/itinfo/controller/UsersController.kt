@@ -9,6 +9,7 @@ import com.itinfo.service.UsersService
 import io.swagger.annotations.*
 
 import org.json.simple.JSONObject
+import org.postgresql.util.PSQLException
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
@@ -27,8 +28,13 @@ class UsersController {
 	@ResponseBody
 	fun retrieveUsers(): JSONObject {
 		log.info("... retrieveUsers")
-		val users: List<UserVo> =
+		val users: List<UserVo> = try {
 			usersService.fetchUsers()
+		} catch (e: PSQLException) {
+			log.error(e.localizedMessage)
+			listOf()
+		}
+		// TODO: 예외가 발생했을 경우 에러메세지 보내기
 		return JSONObject().apply {
 			this[ItInfoConstant.RESULT_KEY] = users
 		}
@@ -45,7 +51,13 @@ class UsersController {
 		@RequestParam(name="id") id: String
 	): JSONObject {
 		log.info("... retrieveUser('$id')")
-		val user = usersService.fetchUser(id)
+		val user: UserVo? = try {
+			usersService.fetchUser(id)
+		} catch (e: PSQLException) {
+			log.error(e.localizedMessage)
+			null
+		}
+		// TODO: 예외가 발생했을 경우 에러메세지 보내기 (관리자에게 문의)
 		return JSONObject().apply {
 			this[ItInfoConstant.RESULT_KEY] = user
 		}
@@ -62,8 +74,13 @@ class UsersController {
 		@RequestBody users: List<UserVo>
 	): JSONObject {
 		log.info("... removeUsers[${users.size}]")
-		val count: Int=
+		val count: Int = try {
 			usersService.removeUsers(users)
+		} catch (e: PSQLException) {
+			log.error(e.localizedMessage)
+			-1
+		}
+		// TODO: 예외가 발생했을 경우 에러메세지 보내기 (관리자에게 문의)
 		return JSONObject().apply {
 			this[ItInfoConstant.RESULT_KEY] = count
 		}
@@ -78,8 +95,13 @@ class UsersController {
 	@ResponseBody
 	fun updateUser(@RequestBody user: UserVo): JSONObject {
 		log.info("... updateUser")
-		val count: Int =
+		val count: Int = try {
 			usersService.updateUser(user)
+		} catch (e: PSQLException) {
+			log.error(e.localizedMessage)
+			-1
+		}
+		// TODO: 예외가 발생했을 경우 에러메세지 보내기 (관리자에게 문의)
 		return JSONObject().apply {
 			this[ItInfoConstant.RESULT_KEY] = count
 		}

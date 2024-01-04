@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 
 import com.itinfo.OvirtStatsName
+import com.itinfo.common.GsonLocalDateTimeAdapter
 
 import com.itinfo.util.model.SystemPropertiesVo
 import com.itinfo.findAllClusters
@@ -68,13 +69,15 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
 import java.io.Serializable
+import java.time.LocalDateTime
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
 
 private val gson: Gson
 	get() = GsonBuilder()
-		.setPrettyPrinting()
+		.registerTypeAdapter(LocalDateTime::class.java, GsonLocalDateTimeAdapter())
+		// .setPrettyPrinting()
 		.disableHtmlEscaping()
 		.create()
 

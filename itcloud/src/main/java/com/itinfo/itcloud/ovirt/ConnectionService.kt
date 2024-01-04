@@ -21,7 +21,6 @@ class ConnectionService {
 		log.info(systemPropertiesVO.ip)
 		return systemPropertiesVO.toConnection()
 	}
-
 	companion object {
 		private val log by LoggerDelegate()
 	}

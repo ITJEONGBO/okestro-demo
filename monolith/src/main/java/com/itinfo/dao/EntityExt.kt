@@ -2,6 +2,7 @@ package com.itinfo.dao
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.itinfo.common.GsonLocalDateTimeAdapter
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -17,7 +18,8 @@ val LocalDateTime.toFormatted: String
 
 val gson: Gson
 	get() = GsonBuilder()
-		.setPrettyPrinting()
+		.registerTypeAdapter(LocalDateTime::class.java, GsonLocalDateTimeAdapter())
+		// .setPrettyPrinting()
 		.create()
 
 fun String.toUUID(): UUID
