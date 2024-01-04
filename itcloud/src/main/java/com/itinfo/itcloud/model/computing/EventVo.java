@@ -7,6 +7,7 @@ import java.util.Date;
 
 @Getter @Setter
 public class EventVo {
+    private String id;
     private String severity;    // error 여부
     private String time;
 //    private Date time;

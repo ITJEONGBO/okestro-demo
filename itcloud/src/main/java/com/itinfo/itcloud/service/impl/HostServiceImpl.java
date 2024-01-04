@@ -10,6 +10,7 @@ import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -332,6 +333,47 @@ public class HostServiceImpl implements ItHostService {
         return hostDeviceVoList;
     }
 
+    @Override
+    public List<PermissionVo> getPermission(String id) {
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        List<PermissionVo> pVoList = new ArrayList<>();
+        PermissionVo pVo = null;
+
+        List<Permission> permissionList =
+                ((AssignedPermissionsService.ListResponse)systemService.hostsService().hostService(id).permissionsService().list().send()).permissions();
+
+        for(Permission permission : permissionList){
+            pVo = new PermissionVo();
+            pVo.setPermissionId(permission.id());
+
+            if(permission.groupPresent() && !permission.userPresent()){
+                Group group = ((GroupService.GetResponse)systemService.groupsService().groupService(permission.group().id()).get().send()).get();
+                pVo.setUser(group.name());
+                pVo.setNameSpace(group.namespace());
+                // 생성일의 경우 db에서 가져와야함
+
+                Role role = ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+                pVo.setRole(role.name());
+
+                pVoList.add(pVo);       // 그룹에 추가
+            }
+
+            if(permission.userPresent() && !permission.groupPresent()){
+                User user = ((UserService.GetResponse)systemService.usersService().userService(permission.user().id()).get().send()).user();
+                pVo.setUser(user.name());
+                pVo.setNameSpace(user.namespace());
+
+                Role role = ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+                pVo.setRole(role.name());
+
+                pVoList.add(pVo);
+            }
+        }
+        return pVoList;
+    }
+
 
     @Override
     public List<AffinityLabelVo> getAffinitylabels(String id) {
@@ -354,6 +396,37 @@ public class HostServiceImpl implements ItHostService {
         return alVoList;
     }
 
+    @Override
+    public List<EventVo> getEvent(String id) {
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        List<EventVo> eVoList = new ArrayList<>();
+        EventVo eVo = null;
+
+        // 2024. 1. 4. PM 04:01:21
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. a HH:mm:ss");
+
+        List<Event> eventList =
+                ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
+
+        for(Event event : eventList){
+            // index 446에서 문제가 있아
+                System.out.print(event.hostPresent() ? event.host().id() : event.index()+" ");
+            if(event.hostPresent() && event.host().id().equals(id)){
+                eVo = new EventVo();
+
+                eVo.setSeverity(event.severity().value());
+                eVo.setTime(sdf.format(event.time()));
+                eVo.setMessage(event.description());
+                eVo.setRelationId(event.correlationIdPresent() ? event.correlationId() : null);
+                eVo.setSource(event.origin());
+
+                eVoList.add(eVo);
+            }
+        }
+        return eVoList;
+    }
 
 
 }

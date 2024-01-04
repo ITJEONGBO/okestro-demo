@@ -8,14 +8,14 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Host</h1>
-                    컴퓨팅 > <a href="/computing/hosts" style="text-decoration-line: none">호스트</a> > 네트워크 인터페이스 <br><br>
+                    컴퓨팅 > <a href="/computing/hosts" style="text-decoration-line: none">호스트</a> > ${host.name} <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
                             <p class="mb-0">
-                                <a href="/computing/host?id=${id}" style="text-decoration-line: none">일반</a> |
+                                <a href="/computing/host?id=${id}">일반</a> |
                                 <a href="/computing/host-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
-                                <a href="/computing/host-nic?id=${id}">네트워크 인터페이스</a> |
+                                <a href="/computing/host-nic?id=${id}" style="text-decoration-line: none">네트워크 인터페이스</a> |
                                 <a href="/computing/host-device?id=${id}" style="text-decoration-line: none">호스트 장치</a> |
                                 <a href="/computing/host-permission?id=${id}" style="text-decoration-line: none">권한</a> |
                                 <a href="/computing/host-aff?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
@@ -24,28 +24,34 @@
                         </div>
                     </div>
 
-                    <table>
-                        <tr>
-                            <td>id</td>
-                            <td>이름</td>
-                            <td>MAC</td>
-                            <td>속도</td>
-                        </tr>
+                <table>
+                    <tr>
+                        <td></td>
+                        <td>사용자</td>
+                        <td>인증 공급자</td>
+                        <td>네임스페이스</td>
+                        <td>역할</td>
+                        <td>생성일</td>
+                        <td>Inherited From</td>
+                    </tr>
 
-                        <c:if test="${empty nic}">
-                            <tr>
-                                <td>nic 없음</td>
-                            </tr>
-                        </c:if>
-                        <c:forEach var="nic" items="${nic}" varStatus="status">
-                            <tr>
-                                <td>${nic.id}</td>
-                                <td>${nic.name}</td>
-                                <td>${nic.macAddress}</td>
-                                <td>${nic.speed}</td>
-                            </tr>
-                        </c:forEach>
-                    </table>
+                    <c:if test="${empty permission}">
+                        <tr>
+                            <td colspan="2" rowspan="3">표시할 항목이 없습니다.</td>
+                        </tr>
+                    </c:if>
+                    <c:forEach var="permission" items="${permission}" varStatus="status">
+                        <tr>
+                            <td>&nbsp;&nbsp;&nbsp;</td>
+                            <td>${permission.user}</td>
+                            <td></td>
+                            <td>${permission.nameSpace}</td>
+                            <td>${permission.role}</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </c:forEach>
+                </table>
 
                 </div>
             </main>

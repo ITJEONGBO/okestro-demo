@@ -105,6 +105,24 @@ public class HostController {
 		return itHostService.getHostDevice(id);
 	}
 
+	@GetMapping("/computing/host-permission")
+	public String permission(String id, Model model) {
+		List<PermissionVo> permission = itHostService.getPermission(id);
+		model.addAttribute("permission", permission);
+		model.addAttribute("id", id);
+
+		return "computing/host-permission";
+	}
+
+	//
+	@GetMapping("/computing/host/permissionStatus")
+	@ResponseBody
+	public List<PermissionVo> permission(String id) {
+		log.info("----- host permission 불러오기: " + id);
+		return itHostService.getPermission(id);
+	}
+
+
 	@GetMapping("/computing/host-aff")
 	public String aff(String id, Model model) {
 		List<AffinityLabelVo> aff = itHostService.getAffinitylabels(id);
@@ -119,6 +137,23 @@ public class HostController {
 	public List<AffinityLabelVo> aff(String id) {
 		log.info("----- host aff 일반 불러오기: " + id);
 		return itHostService.getAffinitylabels(id);
+	}
+
+
+	@GetMapping("/computing/host-event")
+	public String event(String id, Model model) {
+		List<EventVo> event = itHostService.getEvent(id);
+		model.addAttribute("event", event);
+		model.addAttribute("id", id);
+
+		return "computing/host-event";
+	}
+
+	@GetMapping("/computing/host/eventStatus")
+	@ResponseBody
+	public List<EventVo> event(String id) {
+		log.info("----- event 목록 불러오기: " + id);
+		return itHostService.getEvent(id);
 	}
 
 

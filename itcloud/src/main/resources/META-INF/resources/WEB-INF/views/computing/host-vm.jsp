@@ -17,9 +17,9 @@
                                 <a href="/computing/host-vm?id=${id}">가상머신</a> |
                                 <a href="/computing/host-nic?id=${id}" style="text-decoration-line: none">네트워크 인터페이스</a> |
                                 <a href="/computing/host-device?id=${id}" style="text-decoration-line: none">호스트 장치</a> |
-                                <a href="#" style="text-decoration-line: none">권한</a> |
+                                <a href="/computing/host-permission?id=${id}" style="text-decoration-line: none">권한</a> |
                                 <a href="/computing/host-aff?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
-                                <a href="#" style="text-decoration-line: none">이벤트</a>
+                                <a href="/computing/host-event?id=${id}" style="text-decoration-line: none">이벤트</a>
                             </p>
                         </div>
                     </div>

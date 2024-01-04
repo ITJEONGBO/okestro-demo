@@ -12,7 +12,7 @@ public interface ItHostService {
     List<VmVo> getVm(String id);
     List<NicVo> getNic(String id);
     List<HostDeviceVo> getHostDevice(String id);
-//    HostVO getPermission(String id);
+    List<PermissionVo> getPermission(String id);
     List<AffinityLabelVo> getAffinitylabels(String id);
-
+    List<EventVo> getEvent(String id);
 }
