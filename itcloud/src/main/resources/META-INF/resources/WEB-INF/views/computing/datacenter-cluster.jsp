@@ -17,7 +17,7 @@
                                  <a href="/computing/datacenter-network?id=${id}" style="text-decoration-line: none">논리 네트워크</a> |
                                  <a href="/computing/datacenter-cluster?id=${id}">클러스터</a> |
                                  <a href="/computing/datacenter-permission?id=${id}" style="text-decoration-line: none">권한</a> |
-                                 <a href="#"  style="text-decoration-line: none">이벤트</a>
+                                 <a href="/computing/datacenter-event?id=${id}" style="text-decoration-line: none">이벤트</a>
                             </p>
                         </div>
                     </div>

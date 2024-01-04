@@ -42,12 +42,12 @@
                             <td><a href="/computing/datacenter-storage?id=${networks.datacenterId} "style="text-decoration-line: none">${networks.datacenterName}</a></td>
                             <td>${networks.description}</td>
                             <td>
-                                ${networks.vm =="true" ? "vm":""}<br>
-                                ${networks.management =="true" ? "management":""}<br>
-                                ${networks.display =="true" ? "display":""}<br>
-                                ${networks.migration =="true" ? "migration":""}<br>
-                                ${networks.gluster =="true" ? "gluster":""}<br>
-                                ${networks.defaultRoute =="true" ? "defaultRoute":""}
+                                ${networks.networkUsageVo.vm =="true" ? "vm":""}
+                                ${networks.networkUsageVo.management =="true" ? "management":""}
+                                ${networks.networkUsageVo.display =="true" ? "display":""}
+                                ${networks.networkUsageVo.migration =="true" ? "migration":""}
+                                ${networks.networkUsageVo.gluster =="true" ? "gluster":""}
+                                ${networks.networkUsageVo.defaultRoute =="true" ? "defaultRoute":""}
                             </td>
                             <td></td>
                             <td></td>

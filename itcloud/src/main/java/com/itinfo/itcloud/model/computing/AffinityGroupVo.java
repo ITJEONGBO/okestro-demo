@@ -8,11 +8,11 @@ public class AffinityGroupVo {
     private String id;
     private String name;
     private String description;
-    private String status;
+    private boolean status;
     private int priority;  // 우선순위
 
-    private String positive;
-    private String enforcing;
+    private boolean positive;   // 양극/음극  | 가상머신에 따라간ㅁ
+    private boolean enforcing;  // 강제적용 | 가상머신에 따라감
 
     // host_rule, 가상머신 측 극성, 가상머신 강제적용
     private boolean vmEnabled;
@@ -29,13 +29,10 @@ public class AffinityGroupVo {
     private String vmLabels;
     private String hostLabels;
 
+
     // 가상머신 멤버, 호스트 멤버
     private String vmList;
     private String hostList;
-
-
-//    private List<VmVO> vmVOList;
-//    private List<HostVO> hostVOList;
 
 
     // LINK: vms, vmlabels, hosts, hostlabels

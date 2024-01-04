@@ -128,9 +128,10 @@ public class ClusterController {
 
 	@GetMapping("/computing/cluster-affLabel")
 	public String affLabel(String id, Model model) {
-		List<AffinityGroupVo> aff = itClusterService.getAffinitygroups(id);
+		List<AffinityLabelVo> aff = itClusterService.getAffinitylabels(id);
 		model.addAttribute("aff", aff);
 		model.addAttribute("id", id);
+
 		return "computing/cluster-affLabel";
 	}
 
@@ -142,22 +143,22 @@ public class ClusterController {
 		return itClusterService.getAffinitylabels(id);
 	}
 
-	@GetMapping("/computing/cluster-cpu")
-	public String cpu(String id, Model model) {
-		List<CpuProfileVo> cpu = itClusterService.getCpuProfile(id);
-		model.addAttribute("cpu", cpu);
-		model.addAttribute("id", id);
-
-		return "computing/cluster-cpu";
-	}
-
-	//
-	@GetMapping("/computing/cluster/cpuStatus")
-	@ResponseBody
-	public List<CpuProfileVo> cpu(String id) {
-		log.info("----- 클러스터 cpu 목록 불러오기: " + id);
-		return itClusterService.getCpuProfile(id);
-	}
+//	@GetMapping("/computing/cluster-cpu")
+//	public String cpu(String id, Model model) {
+//		List<CpuProfileVo> cpu = itClusterService.getCpuProfile(id);
+//		model.addAttribute("cpu", cpu);
+//		model.addAttribute("id", id);
+//
+//		return "computing/cluster-cpu";
+//	}
+//
+//	//
+//	@GetMapping("/computing/cluster/cpuStatus")
+//	@ResponseBody
+//	public List<CpuProfileVo> cpu(String id) {
+//		log.info("----- 클러스터 cpu 목록 불러오기: " + id);
+//		return itClusterService.getCpuProfile(id);
+//	}
 
 
 	@GetMapping("/computing/cluster-permission")
@@ -175,5 +176,21 @@ public class ClusterController {
 	public List<PermissionVo> permission(String id) {
 		log.info("----- 클러스터 permission 불러오기: " + id);
 		return itClusterService.getPermission(id);
+	}
+
+	@GetMapping("/computing/cluster-event")
+	public String event(String id, Model model) {
+		List<EventVo> event = itClusterService.getEvent(id);
+		model.addAttribute("event", event);
+		model.addAttribute("id", id);
+
+		return "computing/cluster-event";
+	}
+
+	@GetMapping("/computing/cluster/eventStatus")
+	@ResponseBody
+	public List<EventVo> event(String id) {
+		log.info("----- event 목록 불러오기: " + id);
+		return itClusterService.getEvent(id);
 	}
 }

@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Cluster</h1>
-                    컴퓨팅 > <a href="/computing/clusters" style="text-decoration-line: none">클러스터</a>  <br><br>
+                    컴퓨팅 > <a href="/computing/clusters" style="text-decoration-line: none">클러스터</a> > ${vms[0].clusterName} <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
@@ -19,8 +19,8 @@
                                 <a href="/computing/cluster-vm?id=${id}">가상머신</a> |
                                 <a href="/computing/cluster-affGroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
                                 <a href="/computing/cluster-affLabel?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
-                                <a href="/computing/cluster-cpu?id=${id}" style="text-decoration-line: none">CPU 프로파일</a> |
-                                <a href="/computing/cluster-permission?id=${id}" style="text-decoration-line: none">권한</a>
+                                <a href="/computing/cluster-permission?id=${id}" style="text-decoration-line: none">권한</a> |
+                                <a href="/computing/cluster-event?id=${id}" style="text-decoration-line: none">이벤트</a>
                             </p>
                         </div>
                     </div>
@@ -46,10 +46,10 @@
                         <c:forEach var="vms" items="${vms}" varStatus="status">
                             <tr>
                                 <td>${vms.status == "up" ? "🔼" : "🔽"}</td>
-                                <td><a href="/computing/vm?id=${vms.id}">${vms.name}</a></td>
+                                <td><a href="/computing/vm?id=${vms.id}" style="text-decoration-line: none">${vms.name}</a></td>
                                 <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                                <td>${vms.status}</td>
-                                <td>${vms.creationTime}</td>
+                                <td>${vms.status == "up" ? " 실행 중" : vms.status}</td>
+                                <td>${vms.upTime != 0 ? vms.upTime : ""}</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -58,6 +58,7 @@
                             </tr>
                         </c:forEach>
                     </table>
+                    <br><br><br><br>
 
                 </div>
             </main>

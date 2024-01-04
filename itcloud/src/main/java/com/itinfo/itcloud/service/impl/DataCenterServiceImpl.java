@@ -2,6 +2,7 @@ package com.itinfo.itcloud.service.impl;
 
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
+import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.setting.GroupVo;
@@ -17,8 +18,10 @@ import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @Slf4j
@@ -180,6 +183,36 @@ public class DataCenterServiceImpl implements ItDataCenterService {
             }
         }
         return pVoList;
+    }
+
+    @Override
+    public List<EventVo> getEvent(String id) {
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        List<EventVo> eVoList = new ArrayList<>();
+        EventVo eVo = null;
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. aaa HH:mm:ss");
+
+        List<Event> eventList =
+                ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
+
+        for(Event event : eventList){
+            if(event.dataCenterPresent() && event.dataCenter().id().equals(id)){
+                eVo = new EventVo();
+                eVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name() );
+
+                eVo.setSeverity(event.severity().value());
+                eVo.setTime(sdf.format(event.time()));
+                eVo.setMessage(event.description());
+                eVo.setRelationId(event.correlationIdPresent() ? event.correlationId() : "");
+                eVo.setSource(event.origin());
+
+                eVoList.add(eVo);
+            }
+        }
+        return eVoList;
     }
 
 

@@ -19,16 +19,16 @@
                                 <a href="/computing/cluster-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
                                 <a href="/computing/cluster-affGroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
                                 <a href="/computing/cluster-affLabel?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
-                                <a href="/computing/cluster-cpu?id=${id}" style="text-decoration-line: none">CPU 프로파일</a> |
-                                <a href="/computing/cluster-permission?id=${id}" style="text-decoration-line: none">권한</a>
+                                <a href="/computing/cluster-permission?id=${id}" style="text-decoration-line: none">권한</a> |
+                                <a href="/computing/cluster-event?id=${id}" style="text-decoration-line: none">이벤트</a>
                             </p>
                         </div>
                     </div>
 
-                    <table width="700px">
+                    <table>
                         <tr>
                             <td></td>
-                            <td>이름</td>
+                            <td width="120px">이름</td>
                             <td>상태</td>
                             <td>역할</td>
                             <td>설명</td>
@@ -42,14 +42,14 @@
                         <c:forEach var="network" items="${network}" varStatus="status">
                             <tr>
                                 <td>${network.status == "operational" ? "🔼" : "🔽"}</td>
-                                <td><a href="/network/network?id=${network.id}">${network.name}</a></td>
+                                <td><a href="/network/network?id=${network.id}" style="text-decoration-line: none">${network.name}</a></td>
                                 <td>${network.status == "operational" ? "가동 중" : "비 가동?"}</td>
                                 <td>
-                                    ${network.networkUsageVo.vm =="true" ? "vm":""}<br>
-                                    ${network.networkUsageVo.management =="true" ? "management":""}<br>
-                                    ${network.networkUsageVo.display =="true" ? "display":""}<br>
-                                    ${network.networkUsageVo.migration =="true" ? "migration":""}<br>
-                                    ${network.networkUsageVo.gluster =="true" ? "gluster":""}<br>
+                                    ${network.networkUsageVo.vm =="true" ? "vm":""}
+                                    ${network.networkUsageVo.management =="true" ? "management":""}
+                                    ${network.networkUsageVo.display =="true" ? "display":""}
+                                    ${network.networkUsageVo.migration =="true" ? "migration":""}
+                                    ${network.networkUsageVo.gluster =="true" ? "gluster":""}
                                     ${network.networkUsageVo.defaultRoute =="true" ? "defaultRoute":""}
                                 </td>
                                 <td>${network.description}</td>

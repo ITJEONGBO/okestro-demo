@@ -2,6 +2,7 @@ package com.itinfo.itcloud.service;
 
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
+import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.storage.StorageDomainVo;
@@ -16,5 +17,5 @@ public interface ItDataCenterService {
     List<NetworkVo> getNetwork(String id);
     List<ClusterVo> getCluster(String id);
     List<PermissionVo> getPermission(String id);
-
+    List<EventVo> getEvent(String id);
 }

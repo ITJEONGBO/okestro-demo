@@ -15,9 +15,9 @@ public class VmVo {
     private String status;
     private String description;
     private String fqdn;
-    private Date creationTime;
     private Date startTime;
-    private Date stopTime;
+
+    private long upTime;
     private String osSystem;
     private String chipsetFirmwareType; // bios.type
     private int priority;    // 고가용성 HighAvailability
@@ -45,12 +45,12 @@ public class VmVo {
     private BigInteger guestBufferedMemory;
 
 
-    private String hostId;
-    private String hostName;
-    private String clusterId;
-    private String clusterName;
     private String datacenterId;
     private String datacenterName;
+    private String clusterId;
+    private String clusterName;
+    private String hostId;
+    private String hostName;
     private String templateID;
     private String templateName;
     private String ipv4;

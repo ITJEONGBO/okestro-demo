@@ -2,6 +2,7 @@ package com.itinfo.itcloud.controller;
 
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
+import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.storage.StorageDomainVo;
@@ -110,5 +111,21 @@ public class DataCenterController {
 	public List<PermissionVo> permission(String id) {
 		log.info("----- permission 목록 불러오기: " + id);
 		return itDataCenterService.getPermission(id);
+	}
+
+	@GetMapping("/computing/datacenter-event")
+	public String event(String id, Model model) {
+		List<EventVo> event = itDataCenterService.getEvent(id);
+		model.addAttribute("event", event);
+		model.addAttribute("id", id);
+
+		return "computing/datacenter-event";
+	}
+
+	@GetMapping("/computing/datacenter/eventStatus")
+	@ResponseBody
+	public List<EventVo> event(String id) {
+		log.info("----- event 목록 불러오기: " + id);
+		return itDataCenterService.getEvent(id);
 	}
 }

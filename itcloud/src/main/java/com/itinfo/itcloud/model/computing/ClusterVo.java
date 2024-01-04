@@ -21,6 +21,7 @@ public class ClusterVo {
     private String chipsetFirmwareType;
     private String version;
 
+
     private String datacenterId;
     private String datacenterName;
 

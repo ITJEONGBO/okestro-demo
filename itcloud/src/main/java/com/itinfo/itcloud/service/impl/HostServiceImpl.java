@@ -41,14 +41,13 @@ public class HostServiceImpl implements ItHostService {
             hostVo.setAddress(host.address());
             hostVo.setStatus(host.status().value());
 
-            hostVo.setClusterId(host.cluster().id());
             Cluster cluster =
                     ((ClusterService.GetResponse)systemService.clustersService().clusterService(host.cluster().id()).get().send()).cluster();
-            hostVo.setClusterName(cluster.name());
-
-            hostVo.setDatacenterId(cluster.dataCenter().id());
             DataCenter dataCenter =
                     ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send()).dataCenter();
+            hostVo.setClusterId(host.cluster().id());
+            hostVo.setClusterName(cluster.name());
+            hostVo.setDatacenterId(cluster.dataCenter().id());
             hostVo.setDatacenterName(dataCenter.name());
 
             List<Vm> vmList =

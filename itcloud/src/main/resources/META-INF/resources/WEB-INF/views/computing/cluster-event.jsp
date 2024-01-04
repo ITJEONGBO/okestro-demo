@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Cluster</h1>
-                    컴퓨팅 > <a href="/computing/clusters" style="text-decoration-line: none">클러스터</a>  <br><br>
+                    컴퓨팅 > <a href="/computing/clusters" style="text-decoration-line: none">클러스터</a> > ${vms[0].clusterName} <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
@@ -17,52 +17,41 @@
                                 <a href="/computing/cluster-network?id=${id}" style="text-decoration-line: none">논리 네트워크</a> |
                                 <a href="/computing/cluster-host?id=${id}" style="text-decoration-line: none">호스트</a> |
                                 <a href="/computing/cluster-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
-                                <a href="/computing/cluster-affGroup?id=${id}">선호도 그룹</a> |
+                                <a href="/computing/cluster-affGroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
                                 <a href="/computing/cluster-affLabel?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
                                 <a href="/computing/cluster-permission?id=${id}" style="text-decoration-line: none">권한</a> |
-                                <a href="/computing/cluster-event?id=${id}" style="text-decoration-line: none">이벤트</a>
+                                <a href="/computing/cluster-event?id=${id}">이벤트</a>
                             </p>
                         </div>
                     </div>
 
-                    <table>
-                        <tr>
-                            <td>상태</td>
-                            <td>이름</td>
-                            <td>설명</td>
-                            <td>우선순위</td>
-                            <td>가상머신 측 극성</td>
-                            <td>가상머신 강제적용</td>
-                            <td>호스트 측 극성</td>
-                            <td>호스트 강제적용</td>
-                            <td>가상머신 멤버</td>
-                            <td>가상머신 레이블</td>
-                            <td>호스트 멤버</td>
-                            <td>호스트 레이블</td>
-                        </tr>
+                <table>
+                    <tr>
+                        <td></td>
+                        <td>시간</td>
+                        <td>메시지</td>
+                        <td>상관 관계 ID</td>
+                        <td>소스</td>
+                        <td>사용자 지정 이벤트 ID</td>
+                    </tr>
 
-                        <c:if test="${empty aff}">
-                            <tr>
-                                <td colspan="12">표시할 항목이 없습니다</td>
-                            </tr>
-                        </c:if>
-                        <c:forEach var="aff" items="${aff}" varStatus="status">
+                    <c:if test="${empty event}">
                         <tr>
-                            <td></td>
-                            <td>${aff.name}</td>
-                            <td>${aff.description}</td>
-                            <td>${aff.priority}</td>
-                            <td>${aff.vmPositive ? "양극" : "음극"}</td>
-                            <td>${aff.vmEnforcing ? "하드" : "소프트"}</td>
-                            <td>${aff.hostPositive ? "양극" : "음극"}</td>
-                            <td>${aff.hostEnforcing ? "하드" : "소프트"}</td>
-                            <td>${aff.vmList}</td>
-                            <td>${aff.vmLabels}</td>
-                            <td>${aff.hostList}</td>
-                            <td>${aff.hostLabels}</td>
+                            <td colspan="2" rowspan="3">표시할 항목이 없습니다.</td>
                         </tr>
-                        </c:forEach>
-                    </table>
+                    </c:if>
+                    <c:forEach var="event" items="${event}" varStatus="status">
+                        <tr>
+                            <td>${event.severity}</td>
+                            <td>${event.time}</td>
+                            <td>${event.message}</td>
+                            <td>${event.relationId}</td>
+                            <td>${event.source}</td>
+                            <td></td>
+                        </tr>
+                    </c:forEach>
+                </table>
+                <br><br><br><br>
 
                 </div>
             </main>

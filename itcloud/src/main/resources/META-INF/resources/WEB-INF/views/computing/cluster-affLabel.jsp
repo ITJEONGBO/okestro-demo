@@ -19,8 +19,8 @@
                                 <a href="/computing/cluster-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
                                 <a href="/computing/cluster-affGroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
                                 <a href="/computing/cluster-affLabel?id=${id}">선호도 레이블</a> |
-                                <a href="/computing/cluster-cpu?id=${id}" style="text-decoration-line: none">CPU 프로파일</a> |
-                                <a href="/computing/cluster-permission?id=${id}" style="text-decoration-line: none">권한</a>
+                                <a href="/computing/cluster-permission?id=${id}" style="text-decoration-line: none">권한</a> |
+                                <a href="/computing/cluster-event?id=${id}" style="text-decoration-line: none">이벤트</a>
                             </p>
                         </div>
                     </div>
@@ -40,8 +40,6 @@
                         <c:forEach var="aff" items="${aff}" varStatus="status">
                         <tr>
                             <td>${aff.name}</td>
-                            <td>${aff.vmList}</td>
-                            <td>${aff.hostList}</td>
                         </tr>
                         </c:forEach>
                     </table>

@@ -16,7 +16,7 @@
                                 <a href="/computing/datacenter-network?id=${id}" style="text-decoration-line: none">논리 네트워크</a> |
                                 <a href="/computing/datacenter-cluster?id=${id}" style="text-decoration-line: none">클러스터</a> |
                                 <a href="/computing/datacenter-permission?id=${id}" style="text-decoration-line: none">권한</a> |
-                                <a href="#" style="text-decoration-line: none">이벤트</a>
+                                <a href="/computing/datacenter-event?id=${id}" style="text-decoration-line: none">이벤트</a>
                             </p>
                         </div>
                     </div>
@@ -27,11 +27,11 @@
                         <td></td>
                         <td>도메인 이름</td>
                         <td>도메인 유형</td>
-                        <td>상태</td>
+                        <td width="80px">상태</td>
                         <td>여유공간(GB)</td>
                         <td>사용된 공간</td>
                         <td>전체공간(GB)</td>
-                        <td>설명</td>
+                        <td width="120px">설명</td>
                     </tr>
 
                     <c:if test="${empty storage}">

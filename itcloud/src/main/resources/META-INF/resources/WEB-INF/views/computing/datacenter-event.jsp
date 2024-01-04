@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">DataCenter</h1>
-                    컴퓨팅 > <a href="/computing/datacenters" style="text-decoration-line: none">데이터 센터</a> > ${permission[0].datacenterName} <br><br>
+                    컴퓨팅 > <a href="/computing/datacenters" style="text-decoration-line: none">데이터 센터</a> > ${event[0].datacenterName} <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
@@ -16,8 +16,8 @@
                                  <a href="/computing/datacenter-storage?id=${id}" style="text-decoration-line: none">스토리지</a> |
                                  <a href="/computing/datacenter-network?id=${id}" style="text-decoration-line: none">논리 네트워크</a> |
                                  <a href="/computing/datacenter-cluster?id=${id}" style="text-decoration-line: none">클러스터</a> |
-                                 <a href="/computing/datacenter-permission?id=${id}">권한</a> |
-                                 <a href="/computing/datacenter-event?id=${id}" style="text-decoration-line: none">이벤트</a>
+                                 <a href="/computing/datacenter-permission?id=${id}" style="text-decoration-line: none">권한</a> |
+                                 <a href="/computing/datacenter-event?id=${id}">이벤트</a>
                             </p>
                         </div>
                     </div>
@@ -25,31 +25,30 @@
                 <table>
                     <tr>
                         <td></td>
-                        <td>사용자</td>
-                        <td>인증 공급자</td>
-                        <td>네임스페이스</td>
-                        <td>역할</td>
-                        <td>생성일</td>
-                        <td>Inherited From</td>
+                        <td>시간</td>
+                        <td>메시지</td>
+                        <td>상관 관계 ID</td>
+                        <td>소스</td>
+                        <td>사용자 지정 이벤트 ID</td>
                     </tr>
 
-                    <c:if test="${empty permission}">
+                    <c:if test="${empty event}">
                         <tr>
                             <td colspan="2" rowspan="3">표시할 항목이 없습니다.</td>
                         </tr>
                     </c:if>
-                    <c:forEach var="permission" items="${permission}" varStatus="status">
+                    <c:forEach var="event" items="${event}" varStatus="status">
                         <tr>
-                            <td>&nbsp;&nbsp;&nbsp;</td>
-                            <td>${permission.user}</td>
-                            <td></td>
-                            <td>${permission.nameSpace}</td>
-                            <td>${permission.role}</td>
-                            <td></td>
+                            <td>${event.severity}</td>
+                            <td>${event.time}</td>
+                            <td>${event.message}</td>
+                            <td>${event.relationId}</td>
+                            <td>${event.source}</td>
                             <td></td>
                         </tr>
                     </c:forEach>
                 </table>
+                <br><br><br><br>
 
                 </div>
             </main>

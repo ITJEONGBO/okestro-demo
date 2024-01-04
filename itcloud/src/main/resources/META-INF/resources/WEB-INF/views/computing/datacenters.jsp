@@ -20,7 +20,7 @@
                     <tr>
                         <td></td>
                         <td></td>
-                        <td>이름</td>
+                        <td width="200px">이름</td>
                         <td>코멘트</td>
                         <td>스토리지 유형</td>
                         <td>상태</td>
