@@ -39,7 +39,7 @@
                     </c:if>
                     <c:forEach var="hosts" items="${hosts}" varStatus="status">
                         <tr>
-                            <td>${hosts.status == "up" ? "🔼" : "🔽"}</td>
+                            <td>${hosts.status == "up" ? "▲" : "▽"}</td>
                             <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                             <td> <a href="/computing/host?id=${hosts.id}">${hosts.name}</a> </td>
                             <td>${hosts.comment}</td>

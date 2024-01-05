@@ -45,7 +45,7 @@
                                 <td><a href="/computing/cluster?id=${cluster.id}" style="text-decoration-line: none">${cluster.name}</a></td>
                                 <td>${cluster.version}</td>
                                 <td></td>
-                                <td>${cluster.status == "operational" ? "🔼" : "🔽"}</td>
+                                <td>${cluster.status == "operational" ? "▲" : "▽"}</td>
                                 <td></td>
                                 <td>
                                     ${cluster.networkUsageVo.vm == "true" ? "vm" : ""}

@@ -16,8 +16,8 @@ public class VmVo {
     private String description;
     private String fqdn;
     private Date startTime;
-
     private long upTime;
+
     private String osSystem;
     private String chipsetFirmwareType; // bios.type
     private int priority;    // 고가용성 HighAvailability

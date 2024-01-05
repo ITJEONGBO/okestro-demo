@@ -31,7 +31,7 @@
 
                         논리 CPU 코어 수: ${host.cpuCnt} <br>
                         온라인 논리 CPU 코어 수: <br>
-                        부팅 시간: ${host.bootingTime}<br>
+                        부팅 시간: ${host.bootingTime * 1000}<br>
                         Hosted Engine HA: <br><br>
 
                         iSCSI 개시자 이름: ${host.iscsi} <br>

@@ -35,7 +35,7 @@
                     </c:if>
                     <c:forEach var="datacenters" items="${datacenters}" varStatus="status">
                         <tr>
-                            <td>${datacenters.status == "up" ? "🔼" : "🔽"}</td>
+                            <td>${datacenters.status == "up" ? "▲" : "▽"}</td>
                             <td>&nbsp;&nbsp;&nbsp;</td>
                             <td><a href="/computing/datacenter-storage?id=${datacenters.id}">${datacenters.name}</a> </td>
                             <td>${datacenters.comment}</td>

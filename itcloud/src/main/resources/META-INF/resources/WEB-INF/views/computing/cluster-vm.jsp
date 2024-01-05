@@ -45,7 +45,7 @@
                         </c:if>
                         <c:forEach var="vms" items="${vms}" varStatus="status">
                             <tr>
-                                <td>${vms.status == "up" ? "🔼" : "🔽"}</td>
+                                <td>${vms.status == "up" ? "▲" : "▽"}</td>
                                 <td><a href="/computing/vm?id=${vms.id}" style="text-decoration-line: none">${vms.name}</a></td>
                                 <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                 <td>${vms.status == "up" ? " 실행 중" : vms.status}</td>

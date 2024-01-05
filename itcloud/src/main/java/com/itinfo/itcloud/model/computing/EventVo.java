@@ -8,7 +8,7 @@ import java.util.Date;
 @Getter @Setter
 public class EventVo {
     private String id;
-    private String severity;    // error 여부
+    private String severity;    // error 여부, Enum LogSeverity: Alert, Error, Normal, warning
     private String time;
 //    private Date time;
     private String message;

@@ -41,7 +41,7 @@
                         </c:if>
                         <c:forEach var="host" items="${hosts}" varStatus="status">
                             <tr>
-                                <td>${host.status == "up" ? "🔼" : "🔽"}</td>
+                                <td>${host.status == "up" ? "▲" : "▽"}</td>
                                 <td><a href="/computing/host?id=${host.id}" style="text-decoration-line: none">${host.name}</a></td>
                                 <td>${host.address}</td>
                                 <td>${host.status}</td>

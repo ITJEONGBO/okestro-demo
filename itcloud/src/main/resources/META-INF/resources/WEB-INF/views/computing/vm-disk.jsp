@@ -50,7 +50,7 @@
                         </c:if>
                         <c:forEach var="disk" items="${disk}" varStatus="status">
                             <tr>
-                                <td>${disk.active == "active" ? "🔼" : "🔽"}</td>
+                                <td>${disk.active == "active" ? "▲" : "▽"}</td>
                                 <td>${disk.name}</td>
                                 <td>${disk.bootAble}</td>
                                 <td></td>

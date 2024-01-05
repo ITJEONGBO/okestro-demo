@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Host</h1>
-                    컴퓨팅 > <a href="/computing/hosts" style="text-decoration-line: none">호스트</a> > 가상머신 <br><br>
+                    컴퓨팅 > <a href="/computing/hosts" style="text-decoration-line: none">호스트</a> > ${vm[0].hostName} <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
@@ -46,7 +46,7 @@
                         </c:if>
                         <c:forEach var="vm" items="${vm}" varStatus="status">
                             <tr>
-                                <td>${vm.status == "up" ? "🔼" : "🔽"}</td>
+                                <td>${vm.status == "up" ? "▲" : "▽"}</td>
                                 <td><a href="/computing/vm?id=${vm.id}" style="text-decoration-line: none">${vm.name}</a></td>
                                 <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                 <td>${vm.clusterName}</td>
@@ -56,7 +56,7 @@
                                 <td></td>
                                 <td></td>
                                 <td>${vm.status}</td>
-                                <td></td>
+                                <td>${vm.upTime != 0 ? vm.upTime:""}</td>
                             </tr>
                         </c:forEach>
                     </table>

@@ -366,7 +366,7 @@ public class ClusterServiceImpl implements ItClusterService {
         EventVo eVo = null;
 
         // 2024. 1. 4. PM 04:01:21
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. aaa HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
         List<Event> eventList =
                 ((EventsService.ListResponse)systemService.eventsService().list().send()).events();

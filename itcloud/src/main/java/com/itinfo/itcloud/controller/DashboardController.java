@@ -18,17 +18,12 @@ public class DashboardController {
 
 	private final ItDashboardService itDashboardService;
 
-	@GetMapping("/test")
-	public String test(Model model){
-		return "test";
-	}
-
 	// dashboard 화면
 	@GetMapping("/dashboard")
 	public String dashboard(Model model) {
 		DashboardVo dashboard = itDashboardService.getDashboard();
 		model.addAttribute("dashboard", dashboard);
-		log.info("---dashboard");
+		log.info("---/dashboard");
 		return "dashboard";
 	}
 
@@ -36,12 +31,13 @@ public class DashboardController {
 	@ResponseBody
 	public DashboardVo dashboard() {
 		long start = System.currentTimeMillis();
+
 		DashboardVo dashboardStatus = itDashboardService.getDashboard();
 
 		long end = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
 		log.info("수행시간(ms): {}", end - start);
 
-		log.info("-----dashboardStatus");
+		log.info("---/dashboardStatus");
 		return dashboardStatus;
 	}
 }

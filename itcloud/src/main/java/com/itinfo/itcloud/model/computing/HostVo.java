@@ -18,11 +18,14 @@ public class HostVo {
     private int cpuTopologySocket;
     private int cpuTopologyThread;
     private int cpuCnt;
+    private String cpuOnline;
 
     private boolean devicePassThrough;
     private String iscsi;
     private String kdump;
-    private BigDecimal bootingTime;
+
+//    private BigDecimal bootingTime;
+    private String bootingTime;
 
     private BigInteger memoryMax; // 새 가상머신 최대여유메모리
     private BigInteger memory;

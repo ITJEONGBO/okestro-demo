@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -30,8 +31,7 @@ public class HostServiceImpl implements ItHostService {
         List<HostVo> hostVoList = new ArrayList<>();
         HostVo hostVo = null;
 
-        List<Host> hostList =
-                ((HostsService.ListResponse)systemService.hostsService().list().send()).hosts();
+        List<Host> hostList = ((HostsService.ListResponse)systemService.hostsService().list().send()).hosts();
 
         for(Host host : hostList){
             hostVo = new HostVo();
@@ -75,8 +75,7 @@ public class HostServiceImpl implements ItHostService {
         HostVo hostVo = new HostVo();
         hostVo.setId(id);
 
-        Host host =
-                ((HostService.GetResponse)systemService.hostsService().hostService(id).get().send()).host();
+        Host host = ((HostService.GetResponse)systemService.hostsService().hostService(id).get().send()).host();
 
         hostVo.setName(host.name());
         hostVo.setAddress(host.address()); //호스트 ip
@@ -142,7 +141,10 @@ public class HostServiceImpl implements ItHostService {
 
             // 부팅시간
             if(statistic.name().equals("boot.time")){
-                hostVo.setBootingTime(statistic.values().get(0).datum());
+                long b = statistic.values().get(0).datum().longValue() *1000;
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. aaa HH:mm:ss");
+                Date now = new Date(b);
+                hostVo.setBootingTime(sdf.format(now));
             }
 
 
@@ -165,6 +167,7 @@ public class HostServiceImpl implements ItHostService {
         // 코드 수정 필요
 //        hostVo.setHugePagesType("2048: " + a + "/" + aa);
 //        hostVo.setHugePagesType2("1048576: " + b + "/" + b);
+
 
         // 가상머신 수
         List<Vm> vmList =
@@ -237,22 +240,30 @@ public class HostServiceImpl implements ItHostService {
 
         List<VmVo> vmVoList = new ArrayList<>();
         VmVo vmVo = null;
+        Date now = new Date(System.currentTimeMillis());
 
         List<Vm> vmList =
                 ((VmsService.ListResponse) systemService.vmsService().list().send()).vms();
 
         for (Vm vm : vmList) {
-            if (vm.host() != null && vm.host().id().equals(id)) {
+            if (vm.hostPresent() && vm.host().id().equals(id)) {
                 vmVo = new VmVo();
 
+                vmVo.setHostName( ((HostService.GetResponse)systemService.hostsService().hostService(vm.host().id()).get().send()).host().name() );
                 vmVo.setId(vm.id());
                 vmVo.setName(vm.name());
+                vmVo.setClusterName( ((ClusterService.GetResponse)systemService.clustersService().clusterService(vm.cluster().id()).get().send()).cluster().name() );
                 vmVo.setStatus(vm.status().value());
                 vmVo.setFqdn(vm.fqdn());
 
-                // uptime
-                if(vm.startTime() != null) {
-                    vmVo.setStartTime(vm.startTime());
+//                vmVo.setStartTime(vm.startTimePresent() ? vm.startTime() : null);
+
+                // uptime 계산
+                if(vm.status().value().equals("up") && vm.startTimePresent()) {
+                    vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60*60*24) );
+                }
+                else if(vm.status().value().equals("up") && !vm.startTimePresent() && vm.creationTimePresent()) {
+                    vmVo.setUpTime( (now.getTime() - vm.creationTime().getTime()) / (1000*60*60*24) );
                 }
 
                 if(!vm.status().value().equals("down")){
@@ -272,6 +283,13 @@ public class HostServiceImpl implements ItHostService {
                     vmVo.setIpv4("");
                     vmVo.setIpv6("");
                 }
+                vmVoList.add(vmVo);
+            } else if(vm.placementPolicyPresent() && vm.placementPolicy().hosts().get(0).id().equals(id)){
+                vmVo = new VmVo();
+                vmVo.setId(vm.id());
+                vmVo.setName(vm.name());
+                vmVo.setStatus(vm.status().value());
+
                 vmVoList.add(vmVo);
             }
         }
@@ -405,15 +423,17 @@ public class HostServiceImpl implements ItHostService {
         EventVo eVo = null;
 
         // 2024. 1. 4. PM 04:01:21
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. a HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
         List<Event> eventList =
                 ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
 
         for(Event event : eventList){
             // index 446에서 문제가 있아
-                System.out.print(event.hostPresent() ? event.host().id() : event.index()+" ");
-            if(event.hostPresent() && event.host().id().equals(id)){
+
+            if(event.hostPresent() && event.host().id() == null){
+                continue;
+            } else if(event.hostPresent() && event.host().id().equals(id)){
                 eVo = new EventVo();
 
                 eVo.setSeverity(event.severity().value());

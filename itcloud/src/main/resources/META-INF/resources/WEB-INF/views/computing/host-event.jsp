@@ -13,7 +13,7 @@
                     <div class="card mb-4">
                         <div class="card-body">
                             <p class="mb-0">
-                                <a href="/computing/host?id=${id}">일반</a> |
+                                <a href="/computing/host?id=${id}" style="text-decoration-line: none">일반</a> |
                                 <a href="/computing/host-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
                                 <a href="/computing/host-nic?id=${id}" style="text-decoration-line: none">네트워크 인터페이스</a> |
                                 <a href="/computing/host-device?id=${id}" style="text-decoration-line: none">호스트 장치</a> |

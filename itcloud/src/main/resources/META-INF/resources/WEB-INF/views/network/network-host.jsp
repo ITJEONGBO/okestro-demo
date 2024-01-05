@@ -49,7 +49,7 @@
                             <tr>
                                 <td><a href="/computing/host?id=${host.id}" style="text-decoration-line: none">${host.name}</a></td>
                                 <td></td>
-                                <td>${host.networkVo.status == "operational" ? "🔼" : "🔽"}</td>
+                                <td>${host.networkVo.status == "operational" ? "▲" : "▽"}</td>
                                 <td></td>
                                 <td>
                                     ${host.vm == "true" ? "vm" : ""}
