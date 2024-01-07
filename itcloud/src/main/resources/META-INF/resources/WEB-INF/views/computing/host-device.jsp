@@ -46,8 +46,8 @@
                             <tr>
                                 <td width="250px" style="word-break:break-all">${device.name}</td>
                                 <td>${device.capability}</td>
-                                <td>${device.vendor}</td>
-                                <td width="260px" style="word-break:break-all">${device.product}</td>
+                                <td>${device.vendorName} (${device.vendorId})</td>
+                                <td width="260px" style="word-break:break-all">${device.productName} (${device.productId})</td>
                                 <td>${device.driver}</td>
                                 <td></td>
                                 <td></td>
@@ -56,6 +56,7 @@
                             </tr>
                         </c:forEach>
                     </table>
+                    <br><br><br><br><br>
 
                 </div>
             </main>

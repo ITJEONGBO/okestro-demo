@@ -3,12 +3,14 @@ package com.itinfo.itcloud.model.computing;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter @Setter
 public class AffinityGroupVo {
     private String id;
     private String name;
     private String description;
-    private boolean status;
+    private boolean status; // broken
     private int priority;  // 우선순위
 
     private boolean positive;   // 양극/음극  | 가상머신에 따라간ㅁ
@@ -26,14 +28,17 @@ public class AffinityGroupVo {
 
 
     // 가상머신 레이블, 호스트 레이블
-    private String vmLabels;
-    private String hostLabels;
+//    private String vmLabels;
+//    private String hostLabels;
+    private List<AffinityLabelVo> vmLabels;
+    private List<AffinityLabelVo> hostLabels;
 
 
     // 가상머신 멤버, 호스트 멤버
-    private String vmList;
-    private String hostList;
-
+//    private String vmList;
+//    private String hostList;
+    private List<VmVo> vmList;
+    private List<VmVo> hostList;
 
     // LINK: vms, vmlabels, hosts, hostlabels
     // cluster, hosts, vms

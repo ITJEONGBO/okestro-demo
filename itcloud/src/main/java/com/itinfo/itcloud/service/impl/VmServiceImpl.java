@@ -1,6 +1,7 @@
 package com.itinfo.itcloud.service.impl;
 
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItVmService;
 import org.ovirt.engine.sdk4.Connection;
@@ -9,7 +10,9 @@ import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -28,6 +31,7 @@ public class VmServiceImpl implements ItVmService {
 
         List<VmVo> vmVoList = new ArrayList<>();
         VmVo vmVo = null;
+        Date now = new Date(System.currentTimeMillis());
 
         List<Vm> vmList =
                 ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
@@ -55,8 +59,12 @@ public class VmServiceImpl implements ItVmService {
             vmVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send()).dataCenter().name() );
             vmVo.setFqdn(vm.fqdn());
 
-            if(vm.startTime() != null) {
-                vmVo.setStartTime(vm.startTime());
+            // uptime 계산
+            if(vm.status().value().equals("up") && vm.startTimePresent()) {
+                vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60*60*24) );
+            }
+            else if(vm.status().value().equals("up") && !vm.startTimePresent() && vm.creationTimePresent()) {
+                vmVo.setUpTime( (now.getTime() - vm.creationTime().getTime()) / (1000*60*60*24) );
             }
 
             if(!vm.status().value().equals("down")){
@@ -98,10 +106,11 @@ public class VmServiceImpl implements ItVmService {
         vmVo.setDescription(vm.description());
         vmVo.setTemplateName( ((TemplateService.GetResponse)systemService.templatesService().templateService(vm.template().id()).get().send()).template().name() );
 
-        System.out.println(((TemplateService.GetResponse)systemService.templatesService().templateService(vm.template().id()).get().send()).template().name());
-
-        // host
-        vmVo.setHostName(((HostService.GetResponse) systemService.hostsService().hostService(vm.host().id()).get().send()).host().name());
+        if(vm.hostPresent()){
+            vmVo.setHostName( ((HostService.GetResponse) systemService.hostsService().hostService(vm.host().id()).get().send()).host().name() );
+        }else if(!vm.hostPresent() && vm.placementPolicy().hostsPresent()){
+            vmVo.setHostName(((HostService.GetResponse) systemService.hostsService().hostService(vm.placementPolicy().hosts().get(0).id()).get().send()).host().name());
+        }
 
         vmVo.setOsSystem(vm.os().type());
         vmVo.setChipsetFirmwareType(vm.bios().type().value());
@@ -113,9 +122,12 @@ public class VmServiceImpl implements ItVmService {
 
         // 게스트os의 여유/캐시+버퍼된 메모리
 
-        vmVo.setCpuCoreCnt(vm.cpu().topology().coresAsInteger() * vm.cpu().topology().socketsAsInteger() * vm.cpu().topology().socketsAsInteger());
-//        vmVo.setGuestCpuCnt(vmVo.getGuestCpuCnt());     // 게스트 cpu 수
+        vmVo.setCpuTopologyCore(vm.cpu().topology().coresAsInteger());
+        vmVo.setCpuTopologySocket(vm.cpu().topology().socketsAsInteger());
+        vmVo.setCpuTopologyThread(vm.cpu().topology().threadsAsInteger());
+        vmVo.setCpuCoreCnt(vmVo.getCpuTopologyCore()* vmVo.getCpuTopologySocket()* vmVo.getCpuTopologyThread());
 
+        // 게스트 cpu수
         // 게스트 cpu
         // 고가용성
 
@@ -123,21 +135,13 @@ public class VmServiceImpl implements ItVmService {
         vmVo.setUsb(vm.usb().enabled());   // usb
         // 작성자
         // 소스
-        // 실행 호스트(Host)item.placementPolicy().hosts().get(0)    ..get().send()).host().name()
-//        if (vm.placementPolicyPresent() && vm.placementPolicy().hostsPresent()) {
-//            vmVo.setRunHost(((HostService.GetResponse)systemService.hostsService().hostService(((Host)vm.placementPolicy().hosts().get(0)).id()).get().send()).host().name());
-//        }
+
         // 사용자 정의 속성
         // 클러스터 호환 버전
-        // 가상머신의 id
-
         vmVo.setFqdn(vm.fqdn());
-
         vmVo.setHwTimeOffset(vm.timeZone().name());     // 하드웨어 클럭의 시간 오프셋
 
-        if (vm.startTime() != null) {
-            vmVo.setStartTime(vm.startTime());
-        }
+        vmVo.setStartTime(vm.startTimePresent() ? vm.startTime() : null);
 
         return vmVo;
     }
@@ -157,18 +161,39 @@ public class VmServiceImpl implements ItVmService {
             nVo = new NicVo();
 
             nVo.setId(nic.id());
-            nVo.setName(nic.name());
-            if(nic.network() != null){
-                nVo.setNetworkName(nic.network().name());
-            }
-//            nVo.setProfileName(nic.);
-            nVo.setLinkStatus(nic.linked());
             nVo.setPlugged(nic.plugged());    // 연결상태
+            nVo.setName(nic.name());
+            nVo.setLinkStatus(nic.linked());
             nVo.setType(nic.interface_().value());
+            nVo.setMacAddress(nic.macPresent() ? nic.mac().address() : null);
 
-//            nVo.setIpv4(nic.reportedDevices().get(0).ips().get(0).address());
-//            nVo.setIpv4(nic.reportedDevices().get(0).ips().get(1).address());
-//            System.out.println(nVo.getIpv4() + "/ "+nVo.getIpv6());
+            List<ReportedDevice> reportedDeviceList =
+                    ((VmReportedDevicesService.ListResponse)systemService.vmsService().vmService(id).reportedDevicesService().list().send()).reportedDevice();
+            for(ReportedDevice rd : reportedDeviceList){
+                nVo.setGuestInterface(rd.name());       // etho0
+
+                if(rd.ipsPresent()){
+                    String ipv6 = "";
+                    nVo.setIpv4(rd.ips().get(0).address());
+
+                    for(int i=0; i < rd.ips().size(); i++){
+                        if(rd.ips().get(i).version().value().equals("v6")){
+                            ipv6 += rd.ips().get(i).address()+" ";
+                        }
+                    }
+                    nVo.setIpv6(ipv6);
+                }
+            }
+
+
+            VnicProfile vnicProfile =
+                    ((VnicProfileService.GetResponse)systemService.vnicProfilesService().profileService(nic.vnicProfile().id()).get().send()).profile();
+            VnicProfileVo vpVo = new VnicProfileVo();
+            vpVo.setName(vnicProfile.name());   // 프로파일 이름
+            vpVo.setPortMirroring(vnicProfile.portMirroring());
+            nVo.setNetworkName( ((NetworkService.GetResponse)systemService.networksService().networkService(vnicProfile.network().id()).get().send()).network().name() );
+            nVo.setVnicProfileVo(vpVo);
+
             nVoList.add(nVo);
         }
         return nVoList;
@@ -203,7 +228,7 @@ public class VmServiceImpl implements ItVmService {
             vdVo.setVirtualSize(disk.provisionedSize());
             vdVo.setStatus(String.valueOf(disk.status()));  // 유형
             vdVo.setType(disk.storageType().value());
-            vdVo.setConnection(disk.contentType().value());
+            vdVo.setConnection(disk.name());
 
             vdVoList.add(vdVo);
         }
@@ -218,6 +243,7 @@ public class VmServiceImpl implements ItVmService {
 
         List<SnapshotVo> sVoList = new ArrayList<>();
         SnapshotVo sVo = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
         List<Snapshot> snapList =
                 ((SnapshotsService.ListResponse)systemService.vmsService().vmService(id).snapshotsService().list().send()).snapshots();
@@ -225,7 +251,8 @@ public class VmServiceImpl implements ItVmService {
         for(Snapshot snapshot : snapList){
             sVo = new SnapshotVo();
 
-            sVo.setDate(snapshot.date());
+            sVo.setDate(sdf.format(snapshot.date().getTime()));
+            sVo.setDescription(snapshot.description());
             sVo.setStatus(String.valueOf(snapshot.snapshotStatus()));   // 데이터형고민
             sVo.setPersistMemory(snapshot.persistMemorystate());
             sVo.setDescription(snapshot.description());
@@ -265,12 +292,20 @@ public class VmServiceImpl implements ItVmService {
         AffinityGroupVo agVo = null;
 
         Vm vm = ((VmService.GetResponse)systemService.vmsService().vmService(id).get().send()).vm();
+
+        // error
         List<AffinityGroup> affGroup =
                 ((AffinityGroupsService.ListResponse)systemService.clustersService().clusterService(vm.cluster().id()).affinityGroupsService().list().send()).groups();
 
         for(AffinityGroup a : affGroup){
             agVo = new AffinityGroupVo();
+
+//            if(a.vmsPresent()){
+//                a.vms().get()
+//            }
+
             System.out.println(a.name());
+
             agVo.setName(a.name());
             agVo.setDescription(a.description());
 //            agVo.setStatus(a.); //상태 수정 필요
@@ -290,33 +325,6 @@ public class VmServiceImpl implements ItVmService {
             agVo.setHostPositive(a.hostsRule().positive());
             agVo.setHostEnforcing(a.hostsRule().enforcing());
 
-            // 수정 필요
-            if(a.hostLabels().isEmpty()){
-                agVo.setHostLabels("레이블 없음");
-            }
-            if(a.vmLabels().isEmpty()){
-                agVo.setVmLabels("레이블 없음");
-            }
-
-            // 가상머신 멤버 (수정 필요)
-            List<Vm> vmList =
-                    ((AffinityGroupVmsService.ListResponse)systemService.clustersService().clusterService(id).affinityGroupsService().groupService(a.id()).vmsService().list().send()).vms();
-            String vmNames = "";
-
-            for(Vm vm1 : vmList){
-                vmNames += vm1.name() + " ";
-            }
-            agVo.setVmList(vmNames);
-
-            // 호스트 멤버 (수정 필요)
-            List<Host> hostList =
-                    ((AffinityGroupHostsService.ListResponse)systemService.clustersService().clusterService(id).affinityGroupsService().groupService(a.id()).hostsService().list().send()).hosts();
-            String hostNames = "";
-
-            for(Host host : hostList){
-                hostNames += host.name() + " ";
-            }
-            agVo.setHostList(hostNames);
 
             agVoList.add(agVo);
         }
@@ -347,8 +355,7 @@ public class VmServiceImpl implements ItVmService {
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
 
-        Vm vm =
-                ((VmService.GetResponse)systemService.vmsService().vmService(id).get().send()).vm();
+        Vm vm = ((VmService.GetResponse)systemService.vmsService().vmService(id).get().send()).vm();
 
         GuestInfoVo gif = new GuestInfoVo();
 
@@ -363,14 +370,77 @@ public class VmServiceImpl implements ItVmService {
         return gif;
     }
 
-//    @Override
-//    public vmVo getPermission(String id) {
-//        return null;
-//    }
-//
-//    @Override
-//    public vmVo getEvent(String id) {
-//        return null;
-//    }
+    @Override
+    public List<PermissionVo> getPermission(String id) {
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        List<PermissionVo> pVoList = new ArrayList<>();
+        PermissionVo pVo = null;
+
+        List<Permission> permissionList =
+                ((AssignedPermissionsService.ListResponse)systemService.vmsService().vmService(id).permissionsService().list().send()).permissions();
+
+        for(Permission permission : permissionList){
+            pVo = new PermissionVo();
+            pVo.setPermissionId(permission.id());
+
+            if(permission.groupPresent() && !permission.userPresent()){
+                Group group = ((GroupService.GetResponse)systemService.groupsService().groupService(permission.group().id()).get().send()).get();
+                pVo.setUser(group.name());
+                pVo.setNameSpace(group.namespace());
+                // 생성일의 경우 db에서 가져와야함?
+
+                Role role = ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+                pVo.setRole(role.name());
+
+                pVoList.add(pVo);       // 그룹에 추가
+            }
+
+            if(permission.userPresent() && !permission.groupPresent()){
+                User user = ((UserService.GetResponse)systemService.usersService().userService(permission.user().id()).get().send()).user();
+                pVo.setUser(user.name());
+                pVo.setNameSpace(user.namespace());
+
+                Role role = ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+                pVo.setRole(role.name());
+
+                pVoList.add(pVo);
+            }
+        }
+        return pVoList;
+    }
+
+
+    @Override
+    public List<EventVo> getEvent(String id) {
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        List<EventVo> eVoList = new ArrayList<>();
+        EventVo eVo = null;
+
+        // 2024. 1. 4. PM 04:01:21
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
+
+        List<Event> eventList =
+                ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
+
+        for(Event event : eventList){
+            if(event.vmPresent() && event.vm().id().equals(id)){
+                eVo = new EventVo();
+
+                eVo.setSeverity(event.severity().value());
+                eVo.setTime(sdf.format(event.time()));
+                eVo.setMessage(event.description());
+                eVo.setRelationId(event.correlationIdPresent() ? event.correlationId() : "");
+                eVo.setSource(event.origin());
+
+                eVoList.add(eVo);
+            }
+        }
+        return eVoList;
+    }
+
 
 }

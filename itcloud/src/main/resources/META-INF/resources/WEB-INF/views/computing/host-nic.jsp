@@ -26,10 +26,15 @@
 
                     <table>
                         <tr>
-                            <td>id</td>
+                            <td>상태</td>
                             <td>이름</td>
                             <td>MAC</td>
+                            <td>Rx 속도(Mbps)</td>
+                            <td>총 Rx 속도</td>
+                            <td>Tx 속도</td>
+                            <td>총 Tx 속도</td>
                             <td>속도</td>
+                            <td>중단 속도</td>
                         </tr>
 
                         <c:if test="${empty nic}">
@@ -39,10 +44,36 @@
                         </c:if>
                         <c:forEach var="nic" items="${nic}" varStatus="status">
                             <tr>
-                                <td>${nic.id}</td>
+                                <td>${nic.status == "up" ? "▲" : "▽"}</td>
                                 <td>${nic.name}</td>
                                 <td>${nic.macAddress}</td>
+                                <td>${nic.rxSpeed}</td>
+                                <td>${nic.rxTotalSpeed}</td>
+                                <td>${nic.txSpeed}</td>
+                                <td>${nic.txTotalSpeed}</td>
                                 <td>${nic.speed}</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td colspan="9"></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td>관리되지 않음</td>
+                                <td>VLAN</td>
+                                <td>네트워크 이름</td>
+                                <td>IPv4 주소</td>
+                                <td>IPv6 주소</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>${nic.networkName}</td>
+                                <td>${nic.ipv4}</td>
+                                <td>${nic.ipv6}</td>
                             </tr>
                         </c:forEach>
                     </table>

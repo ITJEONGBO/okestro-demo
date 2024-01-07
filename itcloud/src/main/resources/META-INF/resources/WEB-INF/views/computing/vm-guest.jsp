@@ -20,32 +20,26 @@
                                 <a href="/computing/vm-application?id=${id}" style="text-decoration-line: none">애플리케이션</a> |
                                 <a href="/computing/vm-affGroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
                                 <a href="/computing/vm-affLabel?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
-                                <a href="/computing/vm-guest?id=${id}" >게스트 정보</a> |
-                                <a href="#" style="text-decoration-line: none">권한</a> |
-                                <a href="#" style="text-decoration-line: none">이벤트</a>
+                                <a href="/computing/vm-guest?id=${id}">게스트 정보</a> |
+                                <a href="/computing/vm-permission?id=${id}" style="text-decoration-line: none">권한</a> |
+                                <a href="/computing/vm-event?id=${id}" style="text-decoration-line: none">이벤트</a>
                             </p>
                         </div>
                     </div>
 
-                    <table>
-                        <tr>
-                            <td>
-                                유형: <br>
-                                아키텍쳐:  <br>
-                                운영체제: <br>
-                                커널 버전:
-                            </td>
-                            <td>
-                                시간대:
-                            </td>
-                            <td>
-                                로그인된 사용자: <br>
-                                콘솔 사용자: <br>
-                                콘솔 클라이언트 IP:
-                            </td>
-                        </tr>
-                    </table>
+                    <div>
+                        유형: ${guest.type}<br>
+                        아키텍쳐: ${guest.architecture}<br>
+                        운영체제: ${guest.os}<br>
+                        커널 버전: ${guest.kernalVersion}<br><br>
 
+                        시간대: ${guest.guestTime}<br><br>
+
+                        로그인된 사용자: <br>
+                        콘솔 사용자: <br>
+                        콘솔 클라이언트 IP:
+                    </div>
+                    <br><br><br><br>
 
                     </div>
                 </div>

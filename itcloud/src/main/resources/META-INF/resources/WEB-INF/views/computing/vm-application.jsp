@@ -21,8 +21,8 @@
                                 <a href="/computing/vm-affGroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
                                 <a href="/computing/vm-affLabel?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
                                 <a href="/computing/vm-guest?id=${id}" style="text-decoration-line: none">게스트 정보</a> |
-                                <a href="#" style="text-decoration-line: none">권한</a> |
-                                <a href="#" style="text-decoration-line: none">이벤트</a>
+                                <a href="/computing/vm-permission?id=${id}" style="text-decoration-line: none">권한</a> |
+                                <a href="/computing/vm-event?id=${id}" style="text-decoration-line: none">이벤트</a>
                             </p>
                         </div>
                     </div>

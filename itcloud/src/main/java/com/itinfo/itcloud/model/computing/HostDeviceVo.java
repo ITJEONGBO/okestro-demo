@@ -7,7 +7,9 @@ import lombok.Setter;
 public class HostDeviceVo {
     private String name;
     private String capability;
-    private String vendor;
-    private String product;
+    private String vendorId;
+    private String vendorName;
+    private String productId;
+    private String productName;
     private String driver;
 }

@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.service.impl;
 
-import com.itinfo.itcloud.model.computing.NicVo;
+import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.computing.TemplateVo;
 import com.itinfo.itcloud.model.computing.VmVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
@@ -92,6 +92,58 @@ public class VnicServiceImpl implements ItVnicService {
         List<Template> templateList =
                 ((TemplatesService.ListResponse)systemService.templatesService().list().send()).templates();
 
-        return null;
+        for(Template template : templateList){
+            if(template.nicsPresent()){
+                tVo = new TemplateVo();
+
+                tVo.setId(template.id());
+                tVo.setName(template.name());
+
+                tVoList.add(tVo);
+            }
+        }
+
+        return tVoList;
+    }
+
+    @Override
+    public List<PermissionVo> getPermission(String id) {
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        List<PermissionVo> pVoList = new ArrayList<>();
+        PermissionVo pVo = null;
+
+        List<Permission> permissionList =
+                ((AssignedPermissionsService.ListResponse)systemService.vnicProfilesService().profileService(id).permissionsService().list().send()).permissions();
+
+        for(Permission permission : permissionList){
+            pVo = new PermissionVo();
+            pVo.setPermissionId(permission.id());
+
+            if(permission.groupPresent() && !permission.userPresent()){
+                Group group = ((GroupService.GetResponse)systemService.groupsService().groupService(permission.group().id()).get().send()).get();
+                pVo.setUser(group.name());
+                pVo.setNameSpace(group.namespace());
+                // 생성일의 경우 db에서 가져와야함?
+
+                Role role = ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+                pVo.setRole(role.name());
+
+                pVoList.add(pVo);       // 그룹에 추가
+            }
+
+            if(permission.userPresent() && !permission.groupPresent()){
+                User user = ((UserService.GetResponse)systemService.usersService().userService(permission.user().id()).get().send()).user();
+                pVo.setUser(user.name());
+                pVo.setNameSpace(user.namespace());
+
+                Role role = ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+                pVo.setRole(role.name());
+
+                pVoList.add(pVo);
+            }
+        }
+        return pVoList;
     }
 }

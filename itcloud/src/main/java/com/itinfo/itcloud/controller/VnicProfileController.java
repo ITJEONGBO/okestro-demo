@@ -1,8 +1,6 @@
 package com.itinfo.itcloud.controller;
 
-import com.itinfo.itcloud.model.computing.HostVo;
-import com.itinfo.itcloud.model.computing.NicVo;
-import com.itinfo.itcloud.model.computing.VmVo;
+import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.service.ItVnicService;
 import org.springframework.ui.Model;
@@ -41,16 +39,53 @@ public class VnicProfileController {
     public String vnicVm(String id, Model model){
         List<VmVo> nicVm = itVnicService.getVmNics(id);
         model.addAttribute("nicVm", nicVm);
+        model.addAttribute("id", id);
         log.info("---nicVm");
         return "/network/vnicProfile-vm";
     }
 
 
-    @GetMapping("/network/vnicProfilesvmStatus")
+    @GetMapping("/network/vnicProfiles/vmStatus")
     @ResponseBody
     public List<VmVo> vm(String id){
         log.info("----- vm 목록 불러오기");
         return itVnicService.getVmNics(id);
+    }
+
+
+    @GetMapping("/network/vnicProfile-template")
+    public String template(String id, Model model){
+        List<TemplateVo> template = itVnicService.getTemplates(id);
+        model.addAttribute("template", template);
+        model.addAttribute("id", id);
+        log.info("---nicVm");
+        return "/network/vnicProfile-template";
+    }
+
+
+    @GetMapping("/network/vnicProfiles/templateStatus")
+    @ResponseBody
+    public List<TemplateVo> template(String id){
+        log.info("----- template 목록 불러오기");
+        return itVnicService.getTemplates(id);
+    }
+
+
+    @GetMapping("/network/vnicProfile-permission")
+    public String permission(String id, Model model){
+        List<PermissionVo> permission = itVnicService.getPermission(id);
+        model.addAttribute("permission", permission);
+        model.addAttribute("id", id);
+        log.info("---permission");
+        return "/network/vnicProfile-permission";
+    }
+
+
+    @GetMapping("/network/vnicProfiles/permissionStatus")
+    @ResponseBody
+    public List<PermissionVo> permission(String id){
+        log.info("----- permission불러오기");
+        return itVnicService.getPermission(id);
     }
 
 

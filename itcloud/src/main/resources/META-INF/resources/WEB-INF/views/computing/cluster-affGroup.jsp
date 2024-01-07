@@ -52,9 +52,9 @@
                             <td>${aff.name}</td>
                             <td>${aff.description}</td>
                             <td>${aff.priority}</td>
-                            <td>${aff.vmPositive ? "양극" : "음극"}</td>
+                            <td>${aff.vmPositive}</td>
                             <td>${aff.vmEnforcing ? "하드" : "소프트"}</td>
-                            <td>${aff.hostPositive ? "양극" : "음극"}</td>
+                            <td>${aff.hostPositive}</td>
                             <td>${aff.hostEnforcing ? "하드" : "소프트"}</td>
                             <td>${aff.vmList}</td>
                             <td>${aff.vmLabels}</td>

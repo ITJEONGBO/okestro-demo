@@ -51,8 +51,7 @@ public class HostServiceImpl implements ItHostService {
             hostVo.setDatacenterId(cluster.dataCenter().id());
             hostVo.setDatacenterName(dataCenter.name());
 
-            List<Vm> vmList =
-                    ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
+            List<Vm> vmList = ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
             int vmsCnt = 0;
             for(Vm vm : vmList){
                 if(vm.host() != null && vm.host().id().equals(host.id())){
@@ -75,18 +74,27 @@ public class HostServiceImpl implements ItHostService {
         HostVo hostVo = new HostVo();
         hostVo.setId(id);
 
-        Host host = ((HostService.GetResponse)systemService.hostsService().hostService(id).get().send()).host();
+        Host host =
+                ((HostService.GetResponse)systemService.hostsService().hostService(id).get().send()).host();
 
         hostVo.setName(host.name());
         hostVo.setAddress(host.address()); //호스트 ip
         hostVo.setSpmPriority(host.spm().priorityAsInteger());  // spm 우선순위
+
+        // Hosted Engine HA
+        // HostsService.AddRequest	deployHostedEngine (Boolean deployHostedEngine)
+        // hosts/5f76a068-8852-4898-af2c-07bf3f60a80c/externalnetworkproviderconfigurations
 
         int cpu = host.cpu().topology().coresAsInteger()
                 * host.cpu().topology().socketsAsInteger()
                 * host.cpu().topology().threadsAsInteger();
         hostVo.setCpuCnt(cpu); // 논리 cpu 코어수
 
-        if(host.iscsiPresent()){    // host.iscsi() != null
+        // 온라인 논리 CPU 코어수
+//        HostCpuUnit hostCpuUnit = host.cpuUnits();
+
+        // host.iscsi() != null
+        if(host.iscsiPresent()){
             hostVo.setIscsi(host.iscsi().initiator());  // iscsi 게시자 이름
         }
 
@@ -94,11 +102,10 @@ public class HostServiceImpl implements ItHostService {
         hostVo.setDevicePassThrough(host.devicePassthrough().enabled());    // 장치통과
         hostVo.setMemoryMax(host.maxSchedulingMemory());      // 최대 여유 메모리
 
-        //메모리 페이지 공유  비활성
-
+        // 메모리 페이지 공유  비활성
 
         // 자동으로 페이지를 크게 (확실하지 않음. 매우)
-//        hostVo.setPageSize(host.transparentHugePages().enabled());
+        hostVo.setPageSize(host.transparentHugePages().enabled());
 
         // selinux모드
         hostVo.setSeLinux(host.seLinux().mode().value());
@@ -141,37 +148,31 @@ public class HostServiceImpl implements ItHostService {
 
             // 부팅시간
             if(statistic.name().equals("boot.time")){
-                long b = statistic.values().get(0).datum().longValue() *1000;
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. aaa HH:mm:ss");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
+                long b = statistic.values().get(0).datum().longValue() * 1000;
                 Date now = new Date(b);
                 hostVo.setBootingTime(sdf.format(now));
             }
 
-
             // Huge pages(size:free/total)
-//            if(statistic.name().equals("hugepages.2048.free")){
-//                a = statistic.values().get(0).datum().intValue();
-//            }
-//            if(statistic.name().equals("hugepages.2048.total")){
-//                aa =  statistic.values().get(0).datum().intValue();
-//            }
-//
-//            if(statistic.name().equals("hugepages.1048576.free")){
-//                b = statistic.values().get(0).datum().intValue();
-//            }
-//            if(statistic.name().equals("hugepages.1048576.total")){
-//                bb = statistic.values().get(0).datum().intValue();
-//            }
-        }
+            if(statistic.name().equals("hugepages.2048.free")){
+                hostVo.setHugePage2048Free(statistic.values().get(0).datum().intValue());
+            }
+            if(statistic.name().equals("hugepages.2048.total")){
+                hostVo.setHugePage2048Total(statistic.values().get(0).datum().intValue());
+            }
 
-        // 코드 수정 필요
-//        hostVo.setHugePagesType("2048: " + a + "/" + aa);
-//        hostVo.setHugePagesType2("1048576: " + b + "/" + b);
+            if(statistic.name().equals("hugepages.1048576.free")){
+                hostVo.setHugePage1048576Free(statistic.values().get(0).datum().intValue());
+            }
+            if(statistic.name().equals("hugepages.1048576.total")){
+                hostVo.setHugePage1048576Total(statistic.values().get(0).datum().intValue());
+            }
+        }
 
 
         // 가상머신 수
-        List<Vm> vmList =
-                ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
+        List<Vm> vmList = ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
 
         int vmsUpCnt = 0;
         for(Vm vm : vmList){
@@ -186,52 +187,6 @@ public class HostServiceImpl implements ItHostService {
 
         return hostVo;
     }
-
-    public void getHardWare(SystemService systemService, HostVo hostVo, String id){
-        Host host =
-                ((HostService.GetResponse)systemService.hostsService().hostService(id).get().send()).host();
-
-        HostHwVo hostHwVo = new HostHwVo();
-
-        hostHwVo.setFamily(host.hardwareInformation().family());            // 생산자
-        hostHwVo.setManufacturer(host.hardwareInformation().manufacturer());    // 제품군
-        hostHwVo.setProductName(host.hardwareInformation().productName());      // 제품 이름
-        hostHwVo.setHwVersion(host.hardwareInformation().version());         // 버전
-        hostHwVo.setCpuName(host.cpu().name());     // cpu 모델
-        hostHwVo.setCpuType(host.cpu().type());      // cpu 유형
-        hostHwVo.setUuid(host.hardwareInformation().uuid());       // uuid
-        hostHwVo.setSerialNum(host.hardwareInformation().serialNumber());   // 일련번호
-
-        hostHwVo.setCpuSocket(host.cpu().topology().socketsAsInteger());      // cpu 소켓
-        hostHwVo.setCoreThread(host.cpu().topology().threadsAsInteger());     // 코어당 cpu 스레드
-        hostHwVo.setCoreSocket(host.cpu().topology().coresAsInteger());     // 소켓당 cpu 코어
-
-        hostVo.setHostHwVo(hostHwVo);
-    }
-
-
-    // 구하는 방법이 db밖에는 없는건지 확인필요
-    public void getSoftWare(SystemService systemService, HostVo hostVo, String id){
-        Host host =
-                ((HostService.GetResponse)systemService.hostsService().hostService(id).get().send()).host();
-
-        HostSwVo hostSwVo = new HostSwVo();
-
-        hostSwVo.setOsVersion(host.os().type() + " " + host.os().version().fullVersion());  // os 버전
-//        hostSwVo.setOsInfo(host.os());   // os 정보
-        hostSwVo.setKernalVersion(host.os().reportedKernelCmdline());   // 커널 버전 db 수정해야함
-        // kvm 버전 db
-        hostSwVo.setLibvirtVersion(host.libvirtVersion().fullVersion());    // LIBVIRT 버전
-        hostSwVo.setVdsmVersion(host.version().fullVersion());  // VDSM 버전 db
-        // SPICE 버전
-        // GlusterFS 버전
-        // CEPH 버전
-        // Open vSwitch 버전
-        // Nmstate 버전
-
-        hostVo.setHostSwVo(hostSwVo);
-    }
-
 
     @Override
     public List<VmVo> getVm(String id) {
@@ -255,6 +210,14 @@ public class HostServiceImpl implements ItHostService {
                 vmVo.setClusterName( ((ClusterService.GetResponse)systemService.clustersService().clusterService(vm.cluster().id()).get().send()).cluster().name() );
                 vmVo.setStatus(vm.status().value());
                 vmVo.setFqdn(vm.fqdn());
+
+                // uptime 계산
+                if(vm.status().value().equals("up") && vm.startTimePresent()) {
+                    vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60*60*24) );
+                }
+                else if(vm.status().value().equals("up") && !vm.startTimePresent() && vm.creationTimePresent()) {
+                    vmVo.setUpTime( (now.getTime() - vm.creationTime().getTime()) / (1000*60*60*24) );
+                }
 
 //                vmVo.setStartTime(vm.startTimePresent() ? vm.startTime() : null);
 
@@ -284,11 +247,13 @@ public class HostServiceImpl implements ItHostService {
                     vmVo.setIpv6("");
                 }
                 vmVoList.add(vmVo);
-            } else if(vm.placementPolicyPresent() && vm.placementPolicy().hosts().get(0).id().equals(id)){
+            } else if(vm.placementPolicy().hostsPresent() && vm.placementPolicy().hosts().get(0).id().equals(id)){
+                // vm이 down 상태일 경우
                 vmVo = new VmVo();
                 vmVo.setId(vm.id());
                 vmVo.setName(vm.name());
                 vmVo.setStatus(vm.status().value());
+                vmVo.setClusterName( ((ClusterService.GetResponse)systemService.clustersService().clusterService(vm.cluster().id()).get().send()).cluster().name() );
 
                 vmVoList.add(vmVo);
             }
@@ -296,29 +261,58 @@ public class HostServiceImpl implements ItHostService {
         return vmVoList;
     }
 
-    // 이해안감, nic의 개수가 무조건 한개인지
+
     @Override
     public List<NicVo> getNic(String id) {
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
 
-
-        List<NicVo> nicVoList = new ArrayList<>();
-        NicVo nicVo = null;
+        List<NicVo> nVoList = new ArrayList<>();
+        NicVo nVo = null;
         List<HostNic> hostNicList =
                 ((HostNicsService.ListResponse)systemService.hostsService().hostService(id).nicsService().list().send()).nics();
 
         for(HostNic hostNic : hostNicList){
-            nicVo = new NicVo();
+            nVo = new NicVo();
 
-            nicVo.setId(hostNic.id());
-            nicVo.setName(hostNic.name());
-            nicVo.setMacAddress(hostNic.mac().address());
-            nicVo.setSpeed(hostNic.speed());
+            nVo.setStatus(hostNic.status().value());
+            nVo.setName(hostNic.name());
+            nVo.setMacAddress(hostNic.mac().address());
 
-            nicVoList.add(nicVo);
+            List<Statistic> statisticList =
+                    ((StatisticsService.ListResponse) systemService.hostsService().hostService(id).statisticsService().list().send()).statistics();
+
+            for(Statistic statistic : statisticList){
+                if(statistic.name().equals("data.current.rx.bps")){
+                    System.out.println(statistic.values().get(0).datum());
+                    nVo.setRxSpeed(statistic.values().get(0).datum().byteValue());
+                }
+                // total rx
+                if(statistic.name().equals("data.total.rx")){
+                    nVo.setRxTotalSpeed(statistic.values().get(0).datum().byteValue());
+                }
+
+                if(statistic.name().equals("data.current.tx.bps")){
+                    nVo.setTxSpeed(statistic.values().get(0).datum().byteValue());
+                }
+                // total tx
+                if(statistic.name().equals("data.total.tx")){
+                    nVo.setTxTotalSpeed(statistic.values().get(0).datum().byteValue());
+                }
+            }
+            System.out.println(nVo.getRxTotalSpeed());
+            System.out.println(nVo.getTxTotalSpeed());
+
+            nVo.setSpeed(hostNic.speed());
+
+            // 논리 네트워크
+            nVo.setNetworkName( ((NetworkService.GetResponse)systemService.networksService().networkService(hostNic.network().id()).get().send()).network().name() );
+            nVo.setIpv4(hostNic.ip().address());
+            nVo.setIpv6(hostNic.ipv6().addressPresent() ? hostNic.ipv6().address() : null);
+
+            nVoList.add(nVo);
         }
-        return nicVoList;
+        return nVoList;
     }
 
     @Override
@@ -338,10 +332,12 @@ public class HostServiceImpl implements ItHostService {
             hostDeviceVo.setCapability(hostDevice.capability());
 
             if(hostDevice.vendor() != null){
-                hostDeviceVo.setVendor(hostDevice.vendor().name());
+                hostDeviceVo.setVendorId(hostDevice.vendor().id());
+                hostDeviceVo.setVendorName(hostDevice.vendor().name());
             }
             if(hostDevice.product() != null){
-                hostDeviceVo.setProduct(hostDevice.product().name());
+                hostDeviceVo.setProductId(hostDevice.product().id());
+                hostDeviceVo.setProductName(hostDevice.product().name());
             }
             if(hostDevice.driver() != null){
                 hostDeviceVo.setDriver(hostDevice.driver());
@@ -404,10 +400,13 @@ public class HostServiceImpl implements ItHostService {
         List<AffinityLabel> affinityLabelList =
                 ((AssignedAffinityLabelsService.ListResponse)systemService.hostsService().hostService(id).affinityLabelsService().list().send()).label();
 
+
         for(AffinityLabel a : affinityLabelList) {
             alVo = new AffinityLabelVo();
 
             alVo.setId(a.id());
+            alVo.setName(a.name());
+
 
             alVoList.add(alVo);
         }
@@ -429,8 +428,6 @@ public class HostServiceImpl implements ItHostService {
                 ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
 
         for(Event event : eventList){
-            // index 446에서 문제가 있아
-
             if(event.hostPresent() && event.host().id() == null){
                 continue;
             } else if(event.hostPresent() && event.host().id().equals(id)){
@@ -446,6 +443,56 @@ public class HostServiceImpl implements ItHostService {
             }
         }
         return eVoList;
+    }
+
+
+
+
+
+
+    public void getHardWare(SystemService systemService, HostVo hostVo, String id){
+        Host host =
+                ((HostService.GetResponse)systemService.hostsService().hostService(id).get().send()).host();
+
+        HostHwVo hostHwVo = new HostHwVo();
+
+        hostHwVo.setFamily(host.hardwareInformation().family());            // 생산자
+        hostHwVo.setManufacturer(host.hardwareInformation().manufacturer());    // 제품군
+        hostHwVo.setProductName(host.hardwareInformation().productName());      // 제품 이름
+        hostHwVo.setHwVersion(host.hardwareInformation().version());         // 버전
+        hostHwVo.setCpuName(host.cpu().name());     // cpu 모델
+        hostHwVo.setCpuType(host.cpu().type());      // cpu 유형
+        hostHwVo.setUuid(host.hardwareInformation().uuid());       // uuid
+        hostHwVo.setSerialNum(host.hardwareInformation().serialNumber());   // 일련번호
+
+        hostHwVo.setCpuSocket(host.cpu().topology().socketsAsInteger());      // cpu 소켓
+        hostHwVo.setCoreThread(host.cpu().topology().threadsAsInteger());     // 코어당 cpu 스레드
+        hostHwVo.setCoreSocket(host.cpu().topology().coresAsInteger());     // 소켓당 cpu 코어
+
+        hostVo.setHostHwVo(hostHwVo);
+    }
+
+
+    // 구하는 방법이 db밖에는 없는건지 확인필요
+    public void getSoftWare(SystemService systemService, HostVo hostVo, String id){
+        Host host =
+                ((HostService.GetResponse)systemService.hostsService().hostService(id).get().send()).host();
+
+        HostSwVo hostSwVo = new HostSwVo();
+
+        hostSwVo.setOsVersion(host.os().type() + " " + host.os().version().fullVersion());  // os 버전
+//        hostSwVo.setOsInfo(host.os());   // os 정보
+        hostSwVo.setKernalVersion(host.os().reportedKernelCmdline());   // 커널 버전 db 수정해야함
+        // kvm 버전 db
+        hostSwVo.setLibvirtVersion(host.libvirtVersion().fullVersion());    // LIBVIRT 버전
+        hostSwVo.setVdsmVersion(host.version().fullVersion());  // VDSM 버전 db
+        // SPICE 버전
+        // GlusterFS 버전
+        // CEPH 버전
+        // Open vSwitch 버전
+        // Nmstate 버전
+
+        hostVo.setHostSwVo(hostSwVo);
     }
 
 

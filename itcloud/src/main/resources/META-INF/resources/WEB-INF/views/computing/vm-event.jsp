@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Vm</h1>
-                    컴퓨팅 > <a href="/computing/vms" style="text-decoration-line: none">가상머신</a> > 선호도 레이블 <br><br>
+                    컴퓨팅 > <a href="/computing/vms" style="text-decoration-line: none">가상머신</a>  <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
@@ -19,34 +19,41 @@
                                 <a href="/computing/vm-snapshot?id=${id}" style="text-decoration-line: none">스냅샷</a> |
                                 <a href="/computing/vm-application?id=${id}" style="text-decoration-line: none">애플리케이션</a> |
                                 <a href="/computing/vm-affGroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
-                                <a href="/computing/vm-affLabel?id=${id}">선호도 레이블</a> |
+                                <a href="/computing/vm-affLabel?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
                                 <a href="/computing/vm-guest?id=${id}" style="text-decoration-line: none">게스트 정보</a> |
                                 <a href="/computing/vm-permission?id=${id}" style="text-decoration-line: none">권한</a> |
-                                <a href="/computing/vm-event?id=${id}" style="text-decoration-line: none">이벤트</a>
+                                <a href="/computing/vm-event?id=${id}">이벤트</a>
                             </p>
                         </div>
                     </div>
 
-                    <table width="700px">
-                        <tr>
-                            <td>이름</td>
-                            <td>가상머신 멤버</td>
-                            <td>호스트 멤버</td>
-                        </tr>
+                <table>
+                    <tr>
+                        <td></td>
+                        <td>시간</td>
+                        <td>메시지</td>
+                        <td>상관 관계 ID</td>
+                        <td>소스</td>
+                        <td>사용자 지정 이벤트 ID</td>
+                    </tr>
 
-                        <c:if test="${empty aff}">
-                            <tr>
-                                <td colspan="3" rowspan="3">표시할 항목이 없습니다</td>
-                            </tr>
-                        </c:if>
-                        <c:forEach var="aff" items="${aff}" varStatus="status">
+                    <c:if test="${empty event}">
                         <tr>
-                            <td>${aff.name}</td>
-                            <td></td>
+                            <td colspan="2" rowspan="3">표시할 항목이 없습니다.</td>
+                        </tr>
+                    </c:if>
+                    <c:forEach var="event" items="${event}" varStatus="status">
+                        <tr>
+                            <td>${event.severity}</td>
+                            <td>${event.time}</td>
+                            <td>${event.message}</td>
+                            <td>${event.relationId}</td>
+                            <td>${event.source}</td>
                             <td></td>
                         </tr>
-                        </c:forEach>
-                    </table>
+                    </c:forEach>
+                </table>
+                <br><br><br><br>
 
                 </div>
             </main>

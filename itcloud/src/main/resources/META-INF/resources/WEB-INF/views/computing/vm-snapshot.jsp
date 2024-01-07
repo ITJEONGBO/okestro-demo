@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Vm</h1>
-                    컴퓨팅 > <a href="/computing/vms" style="text-decoration-line: none">가상머신</a> > 스냅샷 <br><br>
+                    컴퓨팅 > <a href="/computing/vms" style="text-decoration-line: none">가상머신</a><br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
@@ -21,19 +21,20 @@
                                 <a href="/computing/vm-affGroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
                                 <a href="/computing/vm-affLabel?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
                                 <a href="/computing/vm-guest?id=${id}" style="text-decoration-line: none">게스트 정보</a> |
-                                <a href="#" style="text-decoration-line: none">권한</a> |
-                                <a href="#" style="text-decoration-line: none">이벤트</a>
+                                <a href="/computing/vm-permission?id=${id}" style="text-decoration-line: none">권한</a> |
+                                <a href="/computing/vm-event?id=${id}" style="text-decoration-line: none">이벤트</a>
                             </p>
                         </div>
                     </div>
 
-                <table>
                     <c:if test="${empty snapshot}">
-                        <tr>
-                            <td>snapshot 없음</td>
-                        </tr>
+                        <div>snapshot 없음</div>
                     </c:if>
                     <c:forEach var="snapshot" items="${snapshot}" varStatus="status">
+                    <table>
+                        <tr>
+                            <td>${snapshot.description}</td>
+                        </tr>
                         <tr>
                             <td>
                                 <h5>일반</h5>
@@ -99,7 +100,7 @@
                         </tr>
                     </c:forEach>
                 </table>
-
+                <br><br><br><br><br>
                 </div>
             </main>
         </div>

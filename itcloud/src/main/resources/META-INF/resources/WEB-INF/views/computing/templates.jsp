@@ -7,54 +7,40 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">VM</h1>
+                    <h1 class="mt-4">Template</h1>
                     <div class="card mb-4">
                         <div class="card-body">
                             <p class="mb-0">
-                                컴퓨팅 > <a href="/computing/vms">가상머신</a>
+                                컴퓨팅 > <a href="/computing/templates" style="text-decoration-line: none">템플릿</a>
                             </p>
                         </div>
                     </div>
 
                 <table>
                     <tr>
-                        <td></td>
-                        <td></td>
                         <td>이름</td>
-                        <td>호스트</td>
-                        <td>IP주소</td>
-                        <td>FQDN</td>
-                        <td>클러스터</td>
-                        <td>데이터 센터</td>
-                        <td>메모리</td>
-                        <td>CPU</td>
-                        <td>네트워크</td>
+                        <td>버전</td>
+                        <td>생성 일자</td>
                         <td>상태</td>
-                        <td>업타임</td>
+                        <td>클러스터</td>
+                        <td>데이터센터</td>
                         <td>설명</td>
                     </tr>
 
-                    <c:if test="${empty vms}">
+                    <c:if test="${empty templates}">
                         <tr>
-                            <td colspan="14">host 없음</td>
+                            <td colspan="9">templates 없음</td>
                         </tr>
                     </c:if>
-                    <c:forEach var="vms" items="${vms}" varStatus="status">
+                    <c:forEach var="templates" items="${templates}" varStatus="status">
                         <tr>
-                            <td>${vms.status == "up" ? "▲" : "▽"}</td>
-                            <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                            <td><a href="/computing/vm?id=${vms.id}">${vms.name}</a> </td>
-                            <td><a href="/computing/host?id=${vms.hostId}">${vms.hostName}</a></td>
-                            <td>${vms.ipv4}<br> ${vms.ipv6}</td>
-                            <td>${vms.fqdn}</td>
-                            <td><a href="/computing/cluster?id=${vms.clusterId}">${vms.clusterName}</a></td>
-                            <td><a href="/computing/datacenter-storage?id=${vms.datacenterId}">${vms.datacenterName}</a></td>
+                            <td><a href="/computing/template?id=${templates.id}">${templates.name}</a></td>
+                            <td>${templates.version}</td>
+                            <td>${templates.createDate}</td>
+                            <td>${templates.status}</td>
                             <td></td>
                             <td></td>
-                            <td></td>
-                            <td>${vms.status}</td>
-                            <td>${vms.upTime}</td>
-                            <td>${vms.description}</td>
+                            <td>${templates.description}</td>
                         </tr>
                     </c:forEach>
                 </table>

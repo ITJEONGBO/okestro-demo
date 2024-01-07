@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.model.computing;
 
+import com.itinfo.itcloud.model.network.VnicProfileVo;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,35 +11,30 @@ public class NicVo {
     private String id;
     private String name;
     private String macAddress;
+    private String status;
 
-    private int rxSpeed;        // mbps
-    private int rxTotalSpeed;   // byte
-    private int txSpeed;        // mbps
-    private int txTotalSpeed;   // byte
-    private BigInteger speed;          // mbps
+    private byte rxSpeed;        // mbps
+    private byte rxTotalSpeed;   // byte
+    private byte txSpeed;        // mbps
+    private byte txTotalSpeed;   // byte
+    private BigInteger speed;    // mbps
     private int stop;
 
     // 가상머신 nic
     private String networkName;
     private String ipv4;
     private String ipv6;
+    private String vLan;
 
     // 일반
     private boolean plugged;
-    private String profileName;
-    private String qosName;
     private boolean linkStatus;
     private String type;
     private BigInteger speed2;
-    private String portMirroring;
     private String guestInterface;
 
-    // 통계
-//    private int rxSpeed;        // mbps
-//    private int rxTotalSpeed;   // byte
-//    private int txSpeed;        // mbps
-//    private int txTotalSpeed;   // byte
-//    private int stop;
+    // 프로파일, pass_throught, protmirroring
+    private VnicProfileVo vnicProfileVo;
 
 
     // 논리 네트워크: 관리되지 않음, VLAN, 네트워크명, ipv4주소, ipv6주소

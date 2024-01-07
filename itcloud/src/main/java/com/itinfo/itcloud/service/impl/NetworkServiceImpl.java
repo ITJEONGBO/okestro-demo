@@ -1,9 +1,6 @@
 package com.itinfo.itcloud.service.impl;
 
-import com.itinfo.itcloud.model.computing.ClusterVo;
-import com.itinfo.itcloud.model.computing.HostVo;
-import com.itinfo.itcloud.model.computing.TemplateVo;
-import com.itinfo.itcloud.model.computing.VmVo;
+import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.network.NetworkClusterVo;
 import com.itinfo.itcloud.model.network.NetworkUsageVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
@@ -13,10 +10,7 @@ import com.itinfo.itcloud.service.ItNetworkService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.services.*;
-import org.ovirt.engine.sdk4.types.Cluster;
-import org.ovirt.engine.sdk4.types.Network;
-import org.ovirt.engine.sdk4.types.NetworkUsage;
-import org.ovirt.engine.sdk4.types.VnicProfile;
+import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sun.nio.ch.Net;
@@ -86,11 +80,7 @@ public class NetworkServiceImpl implements ItNetworkService {
         nwVo.setVdsmName(network.vdsmName());
 
         // vlan 여부 확인 후 체크
-        if(network.vlanPresent()){
-            nwVo.setVlan(network.vlan().id());
-        }else{
-            nwVo.setVlan(null);
-        }
+        nwVo.setVlan(network.vlanPresent() ? network.vlan().id() : null);
 
         nwVo.setMtu(network.mtuAsInteger());
 
@@ -193,7 +183,68 @@ public class NetworkServiceImpl implements ItNetworkService {
 
     @Override
     public List<TemplateVo> getTemplate(String id) {
-        return null;
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        List<TemplateVo> tVoList = new ArrayList<>();
+        TemplateVo tVo = null;
+
+        List<Template> templateList =
+                ((TemplatesService.ListResponse)systemService.templatesService().list().send()).templates();
+
+        for(Template template : templateList){
+            if(template.nicsPresent()){
+                tVo = new TemplateVo();
+
+                tVo.setId(template.id());
+                tVo.setName(template.name());
+
+                tVoList.add(tVo);
+            }
+        }
+
+        return tVoList;
+    }
+
+    @Override
+    public List<PermissionVo> getPermission(String id) {
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        List<PermissionVo> pVoList = new ArrayList<>();
+        PermissionVo pVo = null;
+
+        List<Permission> permissionList =
+                ((AssignedPermissionsService.ListResponse)systemService.networksService().networkService(id).permissionsService().list().send()).permissions();
+
+        for(Permission permission : permissionList){
+            pVo = new PermissionVo();
+            pVo.setPermissionId(permission.id());
+
+            if(permission.groupPresent() && !permission.userPresent()){
+                Group group = ((GroupService.GetResponse)systemService.groupsService().groupService(permission.group().id()).get().send()).get();
+                pVo.setUser(group.name());
+                pVo.setNameSpace(group.namespace());
+                // 생성일의 경우 db에서 가져와야함?
+
+                Role role = ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+                pVo.setRole(role.name());
+
+                pVoList.add(pVo);       // 그룹에 추가
+            }
+
+            if(permission.userPresent() && !permission.groupPresent()){
+                User user = ((UserService.GetResponse)systemService.usersService().userService(permission.user().id()).get().send()).user();
+                pVo.setUser(user.name());
+                pVo.setNameSpace(user.namespace());
+
+                Role role = ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+                pVo.setRole(role.name());
+
+                pVoList.add(pVo);
+            }
+        }
+        return pVoList;
     }
 
 

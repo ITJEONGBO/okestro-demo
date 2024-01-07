@@ -1,9 +1,6 @@
 package com.itinfo.itcloud.service;
 
-import com.itinfo.itcloud.model.computing.ClusterVo;
-import com.itinfo.itcloud.model.computing.HostVo;
-import com.itinfo.itcloud.model.computing.TemplateVo;
-import com.itinfo.itcloud.model.computing.VmVo;
+import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.network.NetworkClusterVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
@@ -21,6 +18,6 @@ public interface ItNetworkService {
     List<HostVo> getHost(String id);
     List<VmVo> getVm(String id);
     List<TemplateVo> getTemplate(String id);
-//    List<PermissionVo> getPermission(String id);
+    List<PermissionVo> getPermission(String id);
 
 }

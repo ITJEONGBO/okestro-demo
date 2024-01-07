@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.controller;
 
-import com.itinfo.itcloud.model.computing.ClusterVo;
+import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.network.NetworkClusterVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
@@ -59,11 +59,12 @@ public class NetworkController {
 		return "/network/network-vnicProfile";
 	}
 
-	@GetMapping("/vnicProfileStatus")
+	@GetMapping("/network/vnicProfileStatus")
 	@ResponseBody
 	public List<VnicProfileVo> vnic(String id){
 		return itNetworkService.getVnic(id);
 	}
+
 
 	@GetMapping("/network/network-cluster")
 	public String cluster(String id, Model model){
@@ -74,10 +75,74 @@ public class NetworkController {
 		return "/network/network-cluster";
 	}
 
-	@GetMapping("/clusterStatus")
+	@GetMapping("/network/clusterStatus")
 	@ResponseBody
 	public List<NetworkClusterVo> cluster(String id){
 		return itNetworkService.getCluster(id);
+	}
+
+
+	@GetMapping("/network/network-host")
+	public String host(String id, Model model){
+		List<HostVo> host = itNetworkService.getHost(id);
+		model.addAttribute("host", host);
+		model.addAttribute("id", id);
+
+		return "/network/network-host";
+	}
+
+	@GetMapping("/network/hostStatus")
+	@ResponseBody
+	public List<HostVo> host(String id){
+		return itNetworkService.getHost(id);
+	}
+
+
+	@GetMapping("/network/network-vm")
+	public String vm(String id, Model model){
+		List<VmVo> vm = itNetworkService.getVm(id);
+		model.addAttribute("vm", vm);
+		model.addAttribute("id", id);
+
+		return "/network/network-vm";
+	}
+
+	@GetMapping("/network/vmStatus")
+	@ResponseBody
+	public List<VmVo> vm(String id){
+		return itNetworkService.getVm(id);
+	}
+
+
+	@GetMapping("/network/network-template")
+	public String template(String id, Model model){
+		List<TemplateVo> template = itNetworkService.getTemplate(id);
+		model.addAttribute("template", template);
+		model.addAttribute("id", id);
+
+		return "/network/network-template";
+	}
+
+	@GetMapping("/network/templateStatus")
+	@ResponseBody
+	public List<TemplateVo> template(String id){
+		return itNetworkService.getTemplate(id);
+	}
+
+
+	@GetMapping("/network/network-permission")
+	public String permission(String id, Model model){
+		List<PermissionVo> permission = itNetworkService.getPermission(id);
+		model.addAttribute("permission", permission);
+		model.addAttribute("id", id);
+
+		return "/network/network-permission";
+	}
+
+	@GetMapping("/network/permissionStatus")
+	@ResponseBody
+	public List<PermissionVo> permission(String id){
+		return itNetworkService.getPermission(id);
 	}
 
 }

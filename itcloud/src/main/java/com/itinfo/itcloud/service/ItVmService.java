@@ -16,6 +16,6 @@ public interface ItVmService {
     List<AffinityGroupVo> getAffinitygroup(String id);
     List<AffinityLabelVo> getAffinitylabel(String id);
     GuestInfoVo getGuestInfo(String id);
-//    VmVO getPermission(String id);
-//    VmVO getEvent(String id);
+    List<PermissionVo> getPermission(String id);
+    List<EventVo> getEvent(String id);
 }

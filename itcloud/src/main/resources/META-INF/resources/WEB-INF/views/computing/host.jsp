@@ -31,7 +31,7 @@
 
                         논리 CPU 코어 수: ${host.cpuCnt} <br>
                         온라인 논리 CPU 코어 수: <br>
-                        부팅 시간: ${host.bootingTime * 1000}<br>
+                        부팅 시간: ${host.bootingTime}<br>
                         Hosted Engine HA: <br><br>
 
                         iSCSI 개시자 이름: ${host.iscsi} <br>
@@ -44,7 +44,8 @@
 
                         새로운 가상머신의 스케줄링을 위한 최대 여유 메모리: ${host.memoryMax / (1024*1024)}MB <br>
                         메모리 페이지 공유: <br>
-                        자동으로 페이지를 크게: <br>
+                        자동으로 페이지를 크게: ${host.pageSize ? "항상" : host.pageSize}<br>
+                        Huge Pages (size: free/total) : 2048: ${host.hugePage2048Free}/${host.hugePage2048Free}, 1048576: ${host.hugePage1048576Free}/${host.hugePage1048576Free}<br>
                         SELinux 모드: ${host.seLinux} <br>
                         클러스터 호환 버전: <br>
 
@@ -63,10 +64,9 @@
                         소켓당 cpu 코어: ${host.hostHwVo.coreSocket} <br>
                         코어당 cpu 스레드: ${host.hostHwVo.coreThread} <br>
 
-
                     <hr>
                         <h5>소프트웨어</h5>
-                        <hr>
+                    <hr>
                         os 버전: ${host.hostSwVo.osVersion} <br>
                         os 정보:  DB<br>
                         커널 버전: DB<br>

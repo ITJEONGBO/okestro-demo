@@ -10,7 +10,7 @@ public class AffinityLabelVo {
     private String id;
     private String name;
 
-    private List<String> hostsLabel;    // 가상머신 멤버
-    private List<String> vmsLabel;      // 호스트 멤버
+    private List<HostVo> hostsLabel;    // 호스트 멤버
+    private List<VmVo> vmsLabel;      // 가상머신 멤버
 
 }

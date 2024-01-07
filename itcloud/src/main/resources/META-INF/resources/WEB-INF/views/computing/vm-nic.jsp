@@ -7,8 +7,8 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">가상머신</h1>
-                    <a href="/computing/vms" style="text-decoration-line: none">가상머신</a> - 네트워크 인터페이스 <br><br>
+                    <h1 class="mt-4">Vm</h1>
+                    컴퓨팅 > <a href="/computing/vms" style="text-decoration-line: none">가상머신</a>  <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
@@ -21,62 +21,65 @@
                                 <a href="/computing/vm-affGroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
                                 <a href="/computing/vm-affLabel?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
                                 <a href="/computing/vm-guest?id=${id}" style="text-decoration-line: none">게스트 정보</a> |
-                                <a href="#" style="text-decoration-line: none">권한</a> |
-                                <a href="#" style="text-decoration-line: none">이벤트</a>
+                                <a href="/computing/vm-permission?id=${id}" style="text-decoration-line: none">권한</a> |
+                                <a href="/computing/vm-event?id=${id}" style="text-decoration-line: none">이벤트</a>
                             </p>
                         </div>
                     </div>
 
-                    <table>
+                    <c:if test="${empty nic}">
+                        <div> 표시항목 없음 </div>
+                        <br><br><br><br><br>
+                    </c:if>
+                    <c:forEach var="nic" items="${nic}" varStatus="status">
+                     <table>
                         <tr>
-                            <td>id</td>
+                            <td>상태</td>
                             <td>이름</td>
+                            <td>네트워크 이름</td>
+                            <td>IPv4</td>
+                            <td>IPv6</td>
                             <td>MAC</td>
-                            <td>속도</td>
                         </tr>
-
-                        <c:if test="${empty nic}">
-                            <tr>
-                                <td>nic 없음</td>
-                            </tr>
-                        </c:if>
-                        <c:forEach var="nic" items="${nic}" varStatus="status">
-                            <tr>
-                                <td colspan="9">
-                                    id: ${nic.id} <br>
-                                    네트워크 이름: ${nic.name} <br>
-                                    IPv4: ${nic.ipv4} <br>
-                                    IPv6: ${nic.ipv6} <br>
-                                    MAC: ${nic.macAddress} <br>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <h3>일반</h3>
-                                    연결됨: ${nic.} <br>
-                                    네트워크 이름: ${nic.} <br>
-                                    프로파일 이름: ${nic.} <br>
-                                    Qos 이름: ${nic.} <br>
-                                    링크 상태: ${nic.} <br>
-                                    유형: ${nic.} <br>
-                                    속도(Mbps): ${nic.} <br>
-                                    포트 미러링: ${nic.} <br>
-                                    게스트 인터페이스 이름: ${nic.} <br>
-                                </td>
-                                <td>
-                                    <h3>통계</h3>
-                                    Rx 속도(Mbps): ${nic.} <br>
-                                    Tx 속도(Mbps): ${nic.} <br>
-                                    총 Rx: ${nic.} <br>
-                                    총 Tx: ${nic.} <br>
-                                    중단 (Pkts): ${nic.} <br>
-                                </td>
-                                <td>
-                                    <h3>네트워크 필터 매개변수</h3>
-                                </td>
-                            </tr>
-                        </c:forEach>
+                        <tr>
+                            <td>${nic.linkStatus == "true" ? "up" : "down"}</td>
+                            <td>${nic.name}</td>
+                            <td>${nic.networkName}</td>
+                            <td>${nic.ipv4}</td>
+                            <td>${nic.ipv6}</td>
+                            <td>${nic.macAddress}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="6"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <h3>일반</h3>
+                                연결됨: ${nic.plugged == "true" ? "연결됨" : "x"} <br>
+                                네트워크 이름: ${nic.networkName} <br>
+                                프로파일 이름: ${nic.vnicProfileVo.name} <br>
+                                링크 상태: ${nic.linkStatus == "true" ? "up" : "down"} <br>
+                                유형: ${nic.type} <br>
+                                속도(Mbps): ${nic.speed2} <br>
+                                포트 미러링: ${nic.vnicProfileVo.portMirroring == "true" ? "활성화" : "비활성화"} <br>
+                                게스트 인터페이스 이름: ${nic.guestInterface} <br>
+                            </td>
+                            <td colspan="2">
+                                <h3>통계</h3>
+                                Rx 속도(Mbps): ${nic.rxSpeed} <br>
+                                Tx 속도(Mbps): ${nic.txSpeed} <br>
+                                총 Rx: ${nic.rxTotalSpeed} <br>
+                                총 Tx: ${nic.txTotalSpeed} <br>
+                                중단 (Pkts): ${nic.stop} <br>
+                                <br><br><br>
+                            </td>
+                            <td colspan="2">
+                                <h3>네트워크 필터 매개변수</h3>
+                                <br><br><br><br><br><br><br>
+                            </td>
+                        </tr>
                     </table>
+                    </c:forEach>
 
                 </div>
             </main>

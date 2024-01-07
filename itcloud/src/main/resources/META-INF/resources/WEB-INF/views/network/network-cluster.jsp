@@ -19,7 +19,7 @@
                                 <a href="/network/network-host?id=${id}" style="text-decoration-line: none">호스트</a> |
                                 <a href="/network/network-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
                                 <a href="/network/network-template?id=${id}" style="text-decoration-line: none">템플릿</a> |
-                                <a href="#" style="text-decoration-line: none">권한</a>
+                                <a href="/network/network-permission?id=${id}" style="text-decoration-line: none">권한</a>
                             </p>
                         </div>
                     </div>

@@ -32,7 +32,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
 
     @Override
-    public List<DataCenterVo> getDatacenters(){
+    public List<DataCenterVo> getList(){
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
 
@@ -193,7 +193,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         List<EventVo> eVoList = new ArrayList<>();
         EventVo eVo = null;
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. aaa HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
         List<Event> eventList =
                 ((EventsService.ListResponse)systemService.eventsService().list().send()).events();

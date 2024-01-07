@@ -13,30 +13,41 @@
                     <div class="card mb-4">
                         <div class="card-body">
                             <p class="mb-0">
-                                <a href="/network/vnicProfile-vm?id=${id}">가상머신</a> |
+                                <a href="/network/vnicProfile-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
                                 <a href="/network/vnicProfile-template?id=${id}" style="text-decoration-line: none">템플릿</a> |
-                                <a href="/network/vnicProfile-permission?id=${id}" style="text-decoration-line: none">권한</a>
+                                <a href="/network/vnicProfile-permission?id=${id}">권한</a>
                             </p>
                         </div>
                     </div>
 
-                    <table width="700px">
+                <table>
+                    <tr>
+                        <td></td>
+                        <td>사용자</td>
+                        <td>인증 공급자</td>
+                        <td>네임스페이스</td>
+                        <td>역할</td>
+                        <td>생성일</td>
+                        <td>Inherited From</td>
+                    </tr>
+
+                    <c:if test="${empty permission}">
                         <tr>
-                            <td>이름</td>
+                            <td colspan="2" rowspan="3">표시할 항목이 없습니다.</td>
                         </tr>
-
-                        <c:if test="${empty nicVm}">
-                            <tr>
-                                <td>vm 없음</td>
-                            </tr>
-                        </c:if>
-                        <c:forEach var="nicVm" items="${nicVm}" varStatus="status">
-                            <tr>
-                                <td><a href="/computing/vm?id=${nicVm.id}" style="text-decoration-line: none">${nicVm.name}</a></td>
-                            </tr>
-                        </c:forEach>
-
-                    </table>
+                    </c:if>
+                    <c:forEach var="permission" items="${permission}" varStatus="status">
+                        <tr>
+                            <td>&nbsp;&nbsp;&nbsp;</td>
+                            <td>${permission.user}</td>
+                            <td></td>
+                            <td>${permission.nameSpace}</td>
+                            <td>${permission.role}</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </c:forEach>
+                </table>
 
                 </div>
             </main>

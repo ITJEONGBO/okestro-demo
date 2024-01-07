@@ -18,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class VmController {
-
 	private final ItVmService itVmService;
 	private final ItSystemPropertyService itSystemPropertyService;
 
@@ -164,23 +163,54 @@ public class VmController {
 
 
 	@GetMapping("/computing/vm-guest")
-	public String guest(/*String id, Model model*/) {
-//		List<VmDiskVo> disk = itVmService.getDisk(id);
-//		model.addAttribute("disk", disk);
-//		model.addAttribute("id", id);
+	public String guest(String id, Model model) {
+		GuestInfoVo guest = itVmService.getGuestInfo(id);
+		model.addAttribute("guest", guest);
+		model.addAttribute("id", id);
 
 		return "computing/vm-guest";
 	}
 
-//	@GetMapping("/computing/vm/gueststatus")
-//	@ResponseBody
-//	public List<VmDiskVo> disk(String id) {
-//		log.info("----- vm disk 일반 불러오기: " + id);
-//		return itVmService.getDisk(id);
-//	}
+	@GetMapping("/computing/vm/gueststatus")
+	@ResponseBody
+	public GuestInfoVo guest(String id) {
+		log.info("----- vm disk 일반 불러오기: " + id);
+		return itVmService.getGuestInfo(id);
+	}
 
 
+	@GetMapping("/computing/vm-permission")
+	public String permission(String id, Model model) {
+		List<PermissionVo> permission = itVmService.getPermission(id);
+		model.addAttribute("permission", permission);
+		model.addAttribute("id", id);
 
+		return "computing/vm-permission";
+	}
+
+	@GetMapping("/computing/vm/permissionstatus")
+	@ResponseBody
+	public List<PermissionVo> permission(String id) {
+		log.info("----- vm event 일반 불러오기: " + id);
+		return itVmService.getPermission(id);
+	}
+
+
+	@GetMapping("/computing/vm-event")
+	public String event(String id, Model model) {
+		List<EventVo> event = itVmService.getEvent(id);
+		model.addAttribute("event", event);
+		model.addAttribute("id", id);
+
+		return "computing/vm-event";
+	}
+
+	@GetMapping("/computing/vm/eventstatus")
+	@ResponseBody
+	public List<EventVo> event(String id) {
+		log.info("----- vm event 일반 불러오기: " + id);
+		return itVmService.getEvent(id);
+	}
 
 
 }

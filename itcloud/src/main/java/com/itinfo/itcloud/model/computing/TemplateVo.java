@@ -4,33 +4,38 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigInteger;
-import java.util.Date;
 
 @Getter @Setter
 public class TemplateVo {
     private String id;
     private String name;
     private String description;
+    private String comment;
     private String status;
     private String version;
-    private Date createDate;
+    private String createDate;
     private String osType;
     private String chipsetFirmwareType; // bios.type
     private String optimizeOption;
+
     private BigInteger memory;
+    private int cpuCnt;
     private int cpuCoreCnt;
+    private int cpuSocketCnt;
+    private int cpuThreadCnt;
+
     private int monitor;
-    private boolean ha;
-    private String priority;
+    private boolean ha; // 고가용성
+    private int priority;
     private boolean usb;
     // 소스
     // 상태 비저장
+    private String hostCluser;
 
     private String clusterID;
     private String clusterName;
     private String datacenterId;
     private String datacenterName;
-
 
 
     // 리스트-> 이름, 버전, 코멘트, 생성일자, 상태, 보관, 클러스터, 데이터센터, 설명

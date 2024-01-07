@@ -19,25 +19,22 @@
                                 <a href="/network/network-host?id=${id}" style="text-decoration-line: none">호스트</a> |
                                 <a href="/network/network-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
                                 <a href="/network/network-template?id=${id}" style="text-decoration-line: none">템플릿</a> |
-                                <a href="#" style="text-decoration-line: none">권한</a>
+                                <a href="/network/network-permission?id=${id}" style="text-decoration-line: none">권한</a>
                             </p>
                         </div>
                     </div>
 
-                    <table width="700px">
-                        <tr>
-                            <td>
+                    <div>
                                 이름: ${network.name} <br>
                                 Id: ${network.id} <br>
                                 설명: ${network.description} <br>
                                 VDSM 이름: ${network.vdsmName} <br><br>
 
                                 가상머신 네트워크:  <br>
-                                VLAN 태그 ${network.vlan} <br>
+                                VLAN 태그: ${network.vlan} <br>
                                 MTU: ${network.mtu} <br>
-                            </td>
-                        </tr>
-                    </table>
+                    </div>
+                    <br><br><br><br><br>
 
                 </div>
             </main>

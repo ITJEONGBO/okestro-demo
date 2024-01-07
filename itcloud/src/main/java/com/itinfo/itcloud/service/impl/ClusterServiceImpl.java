@@ -210,12 +210,13 @@ public class ClusterServiceImpl implements ItClusterService {
                 ((AffinityGroupsService.ListResponse)systemService.clustersService().clusterService(id).affinityGroupsService().list().send()).groups();
 
         for(AffinityGroup a : affinityGroupList){
-
             agVo = new AffinityGroupVo();
+
             agVo.setName(a.name());
             agVo.setDescription(a.description());
-//            agVo.setStatus(a.);         // a.broken(boolean)으로 선호도 그룹 상태를 파악
-            agVo.setPriority(a.priority().intValue());
+//            agVo.setStatus(a.broken());         // a.broken(boolean)으로 선호도 그룹 상태를 파악
+
+            agVo.setPriority(a.priority().intValue());      //  우선순위
 
             // vmsRule
             agVo.setVmEnabled(a.vmsRule().enabled());
@@ -240,34 +241,33 @@ public class ClusterServiceImpl implements ItClusterService {
             // 호스트에 멤버 레이블
             // 이건 나중에
             // 객체로 할지 그냥 이름만 보여주고 말지를 정해야한다.
-
-            if(a.hostLabelsPresent()){
-                for(AffinityLabel affinityLabel : a.hostLabels()){
-                    agVo.setHostLabels(((AffinityLabelService.GetResponse)systemService.affinityLabelsService().labelService(affinityLabel.id()).get().send()).label().name());
-                    System.out.println("aff : "+affinityLabel.id());
-                    System.out.println("aff : "+ ((AffinityLabelService.GetResponse)systemService.affinityLabelsService().labelService(affinityLabel.id()).get().send()).label().name());
-                }
-            }
-
-            // 가상머신 멤버 (수정 필요)
-            List<Vm> vmList =
-                    ((AffinityGroupVmsService.ListResponse)systemService.clustersService().clusterService(id).affinityGroupsService().groupService(a.id()).vmsService().list().send()).vms();
-            String vmNames = "";
-
-            for(Vm vm : vmList){
-                vmNames += vm.name() + " ";
-            }
-            agVo.setVmList(vmNames);
-
-            // 호스트 멤버 (수정 필요)
-            List<Host> hostList =
-                    ((AffinityGroupHostsService.ListResponse)systemService.clustersService().clusterService(id).affinityGroupsService().groupService(a.id()).hostsService().list().send()).hosts();
-            String hostNames = "";
-
-            for(Host host : hostList){
-                hostNames += host.name() + " ";
-            }
-            agVo.setHostList(hostNames);
+//            if(a.hostLabelsPresent()){
+//                for(AffinityLabel affinityLabel : a.hostLabels()){
+//                    agVo.setHostLabels(((AffinityLabelService.GetResponse)systemService.affinityLabelsService().labelService(affinityLabel.id()).get().send()).label().name());
+//                    System.out.println("aff : "+affinityLabel.id());
+//                    System.out.println("aff : "+ ((AffinityLabelService.GetResponse)systemService.affinityLabelsService().labelService(affinityLabel.id()).get().send()).label().name());
+//                }
+//            }
+//
+//            // 가상머신 멤버 (수정 필요)
+//            List<Vm> vmList =
+//                    ((AffinityGroupVmsService.ListResponse)systemService.clustersService().clusterService(id).affinityGroupsService().groupService(a.id()).vmsService().list().send()).vms();
+//            String vmNames = "";
+//
+//            for(Vm vm : vmList){
+//                vmNames += vm.name() + " ";
+//            }
+//            agVo.setVmList(vmNames);
+//
+//            // 호스트 멤버 (수정 필요)
+//            List<Host> hostList =
+//                    ((AffinityGroupHostsService.ListResponse)systemService.clustersService().clusterService(id).affinityGroupsService().groupService(a.id()).hostsService().list().send()).hosts();
+//            String hostNames = "";
+//
+//            for(Host host : hostList){
+//                hostNames += host.name() + " ";
+//            }
+//            agVo.setHostList(hostNames);
 
             agVoList.add(agVo);
         }

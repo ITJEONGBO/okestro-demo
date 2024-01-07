@@ -27,7 +27,7 @@ public class DataCenterController {
 
 	@GetMapping("/computing/datacenters")
 	public String datacenters(Model model) {
-		List<DataCenterVo> dataCenterVOList = itDataCenterService.getDatacenters();
+		List<DataCenterVo> dataCenterVOList = itDataCenterService.getList();
 		model.addAttribute("datacenters", dataCenterVOList);
 		log.info("---datacenters");
 
@@ -38,7 +38,7 @@ public class DataCenterController {
 	@ResponseBody
 	public List<DataCenterVo> datacenters() {
 		log.info("-----datacentersStatus");
-		return itDataCenterService.getDatacenters();
+		return itDataCenterService.getList();
 	}
 
 

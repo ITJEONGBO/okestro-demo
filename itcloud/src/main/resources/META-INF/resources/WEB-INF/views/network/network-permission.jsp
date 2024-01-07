@@ -14,48 +14,44 @@
                         <div class="card-body">
                             <p class="mb-0">
                                 <a href="/network/network?id=${id}" style="text-decoration-line: none">일반</a> |
-                                <a href="/network/network-vnicProfile?id=${id}">vNIC 프로파일</a> |
+                                <a href="/network/network-vnicProfile?id=${id}" style="text-decoration-line: none">vNIC 프로파일</a> |
                                 <a href="/network/network-cluster?id=${id}" style="text-decoration-line: none">클러스터</a> |
                                 <a href="/network/network-host?id=${id}" style="text-decoration-line: none">호스트</a> |
                                 <a href="/network/network-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
                                 <a href="/network/network-template?id=${id}" style="text-decoration-line: none">템플릿</a> |
-                                <a href="/network/network-permission?id=${id}" style="text-decoration-line: none">권한</a>
+                                <a href="/network/network-permission?id=${id}">권한</a>
                             </p>
                         </div>
                     </div>
 
-                    <table>
-                        <tr>
-                            <td>이름</td>
-                            <td>네트워크</td>
-                            <td>데이터 센터</td>
-                            <td>호환 버전</td>
-                            <td>네트워크 필터</td>
-                            <td>포트 미러링</td>
-                            <td>통과</td>
-                            <td>페일오버 vNIC 프로파일</td>
-                            <td>설명</td>
-                        </tr>
+                <table>
+                    <tr>
+                        <td></td>
+                        <td>사용자</td>
+                        <td>인증 공급자</td>
+                        <td>네임스페이스</td>
+                        <td>역할</td>
+                        <td>생성일</td>
+                        <td>Inherited From</td>
+                    </tr>
 
-                        <c:if test="${empty vnic}">
-                            <tr>
-                                <td colspan="9">표시할 항목이 없습니다.</td>
-                            </tr>
-                        </c:if>
-                        <c:forEach var="vnic" items="${vnic}" varStatus="status">
-                            <tr>
-                                <td>${vnic.name}</td>
-                                <td>${vnic.networkName}</td>
-                                <td><a href="/computing/datacenter?id=${vnic.datacenterId}" style="text-decoration-line: none">${vnic.datacenterName}</a></td>
-                                <td></td>
-                                <td>${vnic.networkFilterName}</td>
-                                <td>${vnic.portMirroring}</td>
-                                <td>${vnic.passThrough}</td>
-                                <td></td>
-                                <td>${vnic.description}</td>
-                            </tr>
-                        </c:forEach>
-                    </table>
+                    <c:if test="${empty permission}">
+                        <tr>
+                            <td colspan="2" rowspan="3">표시할 항목이 없습니다.</td>
+                        </tr>
+                    </c:if>
+                    <c:forEach var="permission" items="${permission}" varStatus="status">
+                        <tr>
+                            <td>&nbsp;&nbsp;&nbsp;</td>
+                            <td>${permission.user}</td>
+                            <td></td>
+                            <td>${permission.nameSpace}</td>
+                            <td>${permission.role}</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </c:forEach>
+                </table>
 
                 </div>
             </main>

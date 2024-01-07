@@ -26,7 +26,7 @@
 
                     <table width="700px">
                         <tr>
-                            <td>아이디</td>
+                            <td>이름</td>
                             <td>가상머신 멤버</td>
                             <td>호스트 멤버</td>
                         </tr>
@@ -38,7 +38,7 @@
                         </c:if>
                         <c:forEach var="aff" items="${aff}" varStatus="status">
                             <tr>
-                                <td>${aff.id}</td>
+                                <td>${aff.name}</td>
                                 <td></td>
                                 <td></td>
                             </tr>

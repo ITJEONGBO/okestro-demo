@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Vm</h1>
-                    컴퓨팅 > <a href="/computing/vms" style="text-decoration-line: none">가상머신</a> > 일반 <br><br>
+                    컴퓨팅 > <a href="/computing/vms" style="text-decoration-line: none">가상머신</a> > ${vm.name} <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
@@ -21,52 +21,47 @@
                                 <a href="/computing/vm-affGroup?id=${id}" style="text-decoration-line: none">선호도 그룹</a> |
                                 <a href="/computing/vm-affLabel?id=${id}" style="text-decoration-line: none">선호도 레이블</a> |
                                 <a href="/computing/vm-guest?id=${id}" style="text-decoration-line: none">게스트 정보</a> |
-                                <a href="#" style="text-decoration-line: none">권한</a> |
-                                <a href="#" style="text-decoration-line: none">이벤트</a>
+                                <a href="/computing/vm-permission?id=${id}" style="text-decoration-line: none">권한</a> |
+                                <a href="/computing/vm-event?id=${id}" style="text-decoration-line: none">이벤트</a>
                             </p>
                         </div>
                     </div>
 
-                    <table>
-                        <tr>
-                            <td width="260px" style="word-break:break-all">
-                                이름: ${vm.name} <br>
-                                설명: ${vm.description} <br>
-                                상태: ${vm.status} <br>
-                                업타임: <br>
-                                템플릿: <br>
-                                운영 시스템: ${vm.osSystem} <br><br>
+                    <div>
+                        이름: ${vm.name} <br>
+                        설명: ${vm.description} <br>
+                        상태: ${vm.status} <br>
+                        업타임: <br>
+                        템플릿: ${vm.templateName}<br>
+                        운영 시스템: ${vm.osSystem} <br><br>
 
-                                칩셋/펌웨어 유형: ${vm.chipsetFirmwareType} <br>
-                                우선순위: ${vm.priority} <br>
-                                최적화 옵션: ${vm.optimizeOption}
-                            </td>
-                            <td width="260px" style="word-break:break-all">
-                                설정된 메모리: ${vm.memory / (1024*1024)}MB <br>
-                                할당할 실제 메모리: ${vm.memoryActual/ (1024*1024)}MB <br><br>
+                        칩셋/펌웨어 유형: ${vm.chipsetFirmwareType} <br>
+                        우선순위: ${vm.priority} <br>
+                        최적화 옵션: ${vm.optimizeOption}<br>
+                        <hr><br>
 
-                                게스트 OS의 여유/캐시+버퍼된 메모리: <br>
-                                CPU 코어 수: ${vm.cpuCoreCnt} <br>
-                                게스트 CPU 수: ${vm.guestCpuCnt} <br><br>
+                        설정된 메모리: ${vm.memory / (1024*1024)}MB <br>
+                        할당할 실제 메모리: ${vm.memoryActual/ (1024*1024)}MB <br><br>
 
-                                게스트 CPU: ${vm.guestCpu} <br>
-                                고가용성: ${vm.ha == "true" ? "예":"아니요"} <br>
-                                모니터 수: ${vm.monitor} <br>
-                                USB: ${vm.usb == "true" ? "활성화" : "비활성화"}
-                            </td>
-                            <td width="300px" style="word-break:break-all">
-                                작성자: <br>
-                                실행 호스트: ${vm.hostName}<br>
-                                사용자 정의 속성: <br>
-                                클러스터 호환 버전: <br>
-                                가상 머신의 ID: ${vm.id} <br><br>
+                        게스트 OS의 여유/캐시+버퍼된 메모리: <br>
+                        CPU 코어 수: ${vm.cpuCoreCnt} (${vm.cpuTopologySocket}:${vm.cpuTopologyCore}:${vm.cpuTopologyThread}) <br>
+                        게스트 CPU 수: ${vm.guestCpuCnt} <br>
+                        게스트 CPU: ${vm.guestCpu} <br>
+                        고가용성: ${vm.ha == "true" ? "예":"아니요"} <br>
+                        모니터 수: ${vm.monitor} <br>
+                        USB: ${vm.usb == "true" ? "활성화" : "비활성화"}<br>
+                        <hr><br>
 
-                                FQDN: ${vm.fqdn} <br>
-                                하드웨어 클럭의 시간 오프셋: ${vm.hwTimeOffset}
-                            </td>
-                        </tr>
-                    </table>
+                        작성자: <br>
+                        실행 호스트: ${vm.hostName}<br>
+                        사용자 정의 속성: <br>
+                        클러스터 호환 버전: <br>
+                        가상 머신의 ID: ${vm.id} <br><br>
 
+                        FQDN: ${vm.fqdn} <br>
+                        하드웨어 클럭의 시간 오프셋: ${vm.hwTimeOffset}
+                    </div>
+                    <br><br><br><br><br>
 
                     </div>
                 </div>
