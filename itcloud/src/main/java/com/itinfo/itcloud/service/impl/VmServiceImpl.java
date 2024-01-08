@@ -4,6 +4,7 @@ import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItVmService;
+import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
@@ -18,6 +19,7 @@ import java.util.List;
 
 // r저거 고쳐야됨 model
 @Service
+@Slf4j
 public class VmServiceImpl implements ItVmService {
 
     @Autowired

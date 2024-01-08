@@ -7,17 +7,20 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">DataCenter</h1>
-                    컴퓨팅 > <a href="/computing/datacenters" style="text-decoration-line: none">데이터 센터</a> > ${permission[0].datacenterName} <br><br>
+                    <h1 class="mt-4">StorageDomain</h1>
+                    스토리지 > <a href="/storage/storageDomains" style="text-decoration-line: none">스토리지 도메인</a> > ${vms[0].clusterName} <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
                             <p class="mb-0">
-                                 <a href="/computing/datacenter-storage?id=${id}" style="text-decoration-line: none">스토리지</a> |
-                                 <a href="/computing/datacenter-network?id=${id}" style="text-decoration-line: none">논리 네트워크</a> |
-                                 <a href="/computing/datacenter-cluster?id=${id}" style="text-decoration-line: none">클러스터</a> |
-                                 <a href="/computing/datacenter-permission?id=${id}">권한</a> |
-                                 <a href="/computing/datacenter-event?id=${id}" style="text-decoration-line: none">이벤트</a>
+                                <a href="/storage/storageDomain?id=${id}" style="text-decoration-line: none">일반</a> |
+                                <a href="/storage/storageDomain-datacenter?id=${id}" style="text-decoration-line: none">데이터 센터</a> |
+                                <a href="/storage/storageDomain-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
+                                <a href="/storage/storageDomain-template?id=${id}" style="text-decoration-line: none">템플릿</a> |
+                                <a href="/storage/storageDomain-disk?id=${id}" style="text-decoration-line: none">디스크</a> |
+                                <a href="/storage/storageDomain-snapshot?id=${id}" style="text-decoration-line: none">디스크 스냅샷</a> |
+                                <a href="/storage/storageDomain-permission?id=${id}">권한</a> |
+                                <a href="/storage/storageDomain-event?id=${id}" style="text-decoration-line: none">이벤트</a>
                             </p>
                         </div>
                     </div>

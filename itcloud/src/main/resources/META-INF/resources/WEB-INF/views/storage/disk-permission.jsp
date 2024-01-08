@@ -7,17 +7,16 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">DataCenter</h1>
-                    컴퓨팅 > <a href="/computing/datacenters" style="text-decoration-line: none">데이터 센터</a> > ${permission[0].datacenterName} <br><br>
+                    <h1 class="mt-4">Disk</h1>
+                    스토리지 > <a href="/storage/disks" style="text-decoration-line: none">디스크</a> > <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
                             <p class="mb-0">
-                                 <a href="/computing/datacenter-storage?id=${id}" style="text-decoration-line: none">스토리지</a> |
-                                 <a href="/computing/datacenter-network?id=${id}" style="text-decoration-line: none">논리 네트워크</a> |
-                                 <a href="/computing/datacenter-cluster?id=${id}" style="text-decoration-line: none">클러스터</a> |
-                                 <a href="/computing/datacenter-permission?id=${id}">권한</a> |
-                                 <a href="/computing/datacenter-event?id=${id}" style="text-decoration-line: none">이벤트</a>
+                                <a href="/storage/disk?id=${id}" style="text-decoration-line: none">일반</a> |
+                                <a href="/storage/disk-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
+                                <a href="/storage/disk-storage?id=${id}" style="text-decoration-line: none">스토리지</a> |
+                                <a href="/storage/disk-permission?id=${id}">권한</a>
                             </p>
                         </div>
                     </div>

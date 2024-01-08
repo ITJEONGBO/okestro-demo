@@ -1,10 +1,7 @@
 package com.itinfo.itcloud.service.impl;
 
 import com.itinfo.itcloud.model.computing.*;
-import com.itinfo.itcloud.model.network.NetworkClusterVo;
-import com.itinfo.itcloud.model.network.NetworkUsageVo;
-import com.itinfo.itcloud.model.network.NetworkVo;
-import com.itinfo.itcloud.model.network.VnicProfileVo;
+import com.itinfo.itcloud.model.network.*;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItNetworkService;
 import lombok.extern.slf4j.Slf4j;
@@ -168,17 +165,92 @@ public class NetworkServiceImpl implements ItNetworkService {
     }
 
     @Override
-    public List<HostVo> getHost(String id) {
+    public List<NetworkHostVo> getHost(String id) {
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
 
+        List<NetworkHostVo> nhVoList = new ArrayList<>();
+        NetworkHostVo nhVo = null;
 
-        return null;
+        List<Host> hostList =
+                ((HostsService.ListResponse)systemService.hostsService().list().send()).hosts();
+
+        for(Host host : hostList){
+            nhVo = new NetworkHostVo();
+
+            nhVo.setHostId(host.id());
+            nhVo.setHostName(host.name());
+            nhVo.setClusterName( ((ClusterService.GetResponse)systemService.clustersService().clusterService(host.cluster().id()).get().send()).cluster().name() );
+            nhVo.setHostStatus(host.status().value());
+//            List<DataCenter> dcList =
+//                    ((DataCentersService.ListResponse)systemService.dataCentersService().list().send()).dataCenters();
+//
+//            for(DataCenter dc : dcList){
+//                if(dc.c)
+//            }
+//
+//            nhVo.setDatacenterName(  );
+
+            List<HostNic> nicList =
+                    ((HostNicsService.ListResponse)systemService.hostsService().hostService(host.id()).nicsService().list().send()).nics();
+            for(HostNic hostNic : nicList){
+                nhVo.setNetworkStatus(hostNic.status().value());
+//                nhVo.setAsynchronism(hostNic.a);
+                nhVo.setNetworkDevice(hostNic.name());
+                // rx, tx
+            }
+            nhVoList.add(nhVo);
+        }
+        return nhVoList;
     }
 
     @Override
-    public List<VmVo> getVm(String id) {
-        return null;
+    public List<NetworkVmVo> getVm(String id) {
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        List<NetworkVmVo> nVmVoList = new ArrayList<>();
+        NetworkVmVo nVmVo = null;
+
+        List<Vm> vmList =
+                ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
+
+        for(Vm vm : vmList){
+            List<Nic> nicList =
+                    ((VmNicsService.ListResponse)systemService.vmsService().vmService(vm.id()).nicsService().list().send()).nics();
+
+            nVmVo = new NetworkVmVo();
+            nVmVo.setVmId(vm.id());
+            nVmVo.setVmName(vm.name());
+            nVmVo.setFqdn(vm.fqdn());
+            nVmVo.setClusterName( ((ClusterService.GetResponse)systemService.clustersService().clusterService(vm.cluster().id()).get().send()).cluster().name() );
+            nVmVo.setDescription(vm.description());
+
+            for(Nic nic : nicList){
+                nVmVo.setVnicStatus(nic.linked());
+                nVmVo.setVnicName(nic.name());
+
+                // nic
+                List<ReportedDevice> reportedDeviceList =
+                        ((VmReportedDevicesService.ListResponse)systemService.vmsService().vmService(vm.id()).reportedDevicesService().list().send()).reportedDevice();
+
+                for(ReportedDevice rd : reportedDeviceList){
+                    if(rd.ipsPresent()){
+                        String ipv6 = "";
+                        nVmVo.setIpv4(rd.ips().get(0).address());
+
+                        for(int i=0; i < rd.ips().size(); i++){
+                            if(rd.ips().get(i).version().value().equals("v6")){
+                                ipv6 += rd.ips().get(i).address()+" ";
+                            }
+                        }
+                        nVmVo.setIpv6(ipv6);
+                    }
+                }
+            }
+            nVmVoList.add(nVmVo);
+        }
+        return nVmVoList;
     }
 
     @Override

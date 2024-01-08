@@ -79,7 +79,7 @@
                             </a>
                             <div class="collapse" id="collapseLayouts3" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="/storage/domains">도메인</a>
+                                    <a class="nav-link" href="/storage/storageDomains">도메인</a>
                                     <a class="nav-link" href="/storage/volumes">볼륨</a>
                                     <a class="nav-link" href="/storage/disks">디스크</a>
                                 </nav>

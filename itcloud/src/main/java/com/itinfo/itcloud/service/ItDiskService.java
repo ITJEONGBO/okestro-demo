@@ -1,0 +1,18 @@
+package com.itinfo.itcloud.service;
+
+import com.itinfo.itcloud.model.computing.PermissionVo;
+import com.itinfo.itcloud.model.computing.VmVo;
+import com.itinfo.itcloud.model.storage.DiskVo;
+import com.itinfo.itcloud.model.storage.StorageDomainVo;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public interface ItDiskService {
+    List<DiskVo> getList();
+    DiskVo getInfo(String id);
+    List<VmVo> getVm(String id);
+    List<StorageDomainVo> getStorage(String id);
+    List<PermissionVo> getPermission(String id);
+}

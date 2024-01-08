@@ -8,14 +8,15 @@ import java.math.BigInteger;
 @Getter @Setter
 public class NetworkHostVo {
     // Host
-    private String id;
-    private String name;
+    private String hostId;
+    private String hostName;
+    private String hostStatus;
     private String clusterName;
     private String datacenterName;
 
 
-    // network
-    private String status;
+    // nic
+    private String networkStatus;
     private String asynchronism;        // 비동기
     private String networkDevice;
 

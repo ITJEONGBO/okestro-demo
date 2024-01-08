@@ -1,9 +1,7 @@
 package com.itinfo.itcloud.controller;
 
 import com.itinfo.itcloud.model.computing.*;
-import com.itinfo.itcloud.model.network.NetworkClusterVo;
-import com.itinfo.itcloud.model.network.NetworkVo;
-import com.itinfo.itcloud.model.network.VnicProfileVo;
+import com.itinfo.itcloud.model.network.*;
 import com.itinfo.itcloud.service.ItNetworkService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -84,7 +82,7 @@ public class NetworkController {
 
 	@GetMapping("/network/network-host")
 	public String host(String id, Model model){
-		List<HostVo> host = itNetworkService.getHost(id);
+		List<NetworkHostVo> host = itNetworkService.getHost(id);
 		model.addAttribute("host", host);
 		model.addAttribute("id", id);
 
@@ -93,14 +91,14 @@ public class NetworkController {
 
 	@GetMapping("/network/hostStatus")
 	@ResponseBody
-	public List<HostVo> host(String id){
+	public List<NetworkHostVo> host(String id){
 		return itNetworkService.getHost(id);
 	}
 
 
 	@GetMapping("/network/network-vm")
 	public String vm(String id, Model model){
-		List<VmVo> vm = itNetworkService.getVm(id);
+		List<NetworkVmVo> vm = itNetworkService.getVm(id);
 		model.addAttribute("vm", vm);
 		model.addAttribute("id", id);
 
@@ -109,7 +107,7 @@ public class NetworkController {
 
 	@GetMapping("/network/vmStatus")
 	@ResponseBody
-	public List<VmVo> vm(String id){
+	public List<NetworkVmVo> vm(String id){
 		return itNetworkService.getVm(id);
 	}
 

@@ -7,17 +7,16 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">DataCenter</h1>
-                    컴퓨팅 > <a href="/computing/datacenters" style="text-decoration-line: none">데이터 센터</a> > ${permission[0].datacenterName} <br><br>
+                    <h1 class="mt-4">Disk</h1>
+                    스토리지 > <a href="/storage/disks" style="text-decoration-line: none">디스크</a> > <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
                             <p class="mb-0">
-                                 <a href="/computing/datacenter-storage?id=${id}" style="text-decoration-line: none">스토리지</a> |
-                                 <a href="/computing/datacenter-network?id=${id}" style="text-decoration-line: none">논리 네트워크</a> |
-                                 <a href="/computing/datacenter-cluster?id=${id}" style="text-decoration-line: none">클러스터</a> |
-                                 <a href="/computing/datacenter-permission?id=${id}">권한</a> |
-                                 <a href="/computing/datacenter-event?id=${id}" style="text-decoration-line: none">이벤트</a>
+                                <a href="/storage/disk?id=${id}" style="text-decoration-line: none">일반</a> |
+                                <a href="/storage/disk-vm?id=${id}">가상머신</a> |
+                                <a href="/storage/disk-storage?id=${id}" style="text-decoration-line: none">스토리지</a> |
+                                <a href="/storage/disk-permission?id=${id}" style="text-decoration-line: none">권한</a>
                             </p>
                         </div>
                     </div>
@@ -25,28 +24,36 @@
                 <table>
                     <tr>
                         <td></td>
-                        <td>사용자</td>
-                        <td>인증 공급자</td>
-                        <td>네임스페이스</td>
-                        <td>역할</td>
-                        <td>생성일</td>
-                        <td>Inherited From</td>
+                        <td>이름</td>
+                        <td></td>
+                        <td>클러스터</td>
+                        <td>IP 주소</td>
+                        <td>FQDN</td>
+                        <td>메모리</td>
+                        <td>CPU</td>
+                        <td>네트워크</td>
+                        <td>상태</td>
+                        <td>업타임</td>
                     </tr>
 
-                    <c:if test="${empty permission}">
+                    <c:if test="${empty vm}">
                         <tr>
-                            <td colspan="7">표시할 항목이 없습니다.</td>
+                            <td colspan="11">표시할 항목이 없습니다.</td>
                         </tr>
                     </c:if>
-                    <c:forEach var="permission" items="${permission}" varStatus="status">
+                    <c:forEach var="vm" items="${vm}" varStatus="status">
                         <tr>
+                            <td>${vm.status == "active" ? "▲" : "▽"}</td>
+                            <td><a href="/computing/vm?id=${vm.id}" style="text-decoration-line: none">${vm.name}</a></td>
                             <td>&nbsp;&nbsp;&nbsp;</td>
-                            <td>${permission.user}</td>
+                            <td>${vm.clsuterName}</td>
+                            <td>${vm.ipv4}<br>${vm.ipv6}</td>
+                            <td>${vm.fqdn}</td>
                             <td></td>
-                            <td>${permission.nameSpace}</td>
-                            <td>${permission.role}</td>
                             <td></td>
                             <td></td>
+                            <td>${vm.status}</td>
+                            <td>${vm.upTime}</td>
                         </tr>
                     </c:forEach>
                 </table>
