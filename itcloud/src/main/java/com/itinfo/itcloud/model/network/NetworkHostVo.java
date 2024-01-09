@@ -21,10 +21,10 @@ public class NetworkHostVo {
     private String networkDevice;
 
     // nic
-    private int rxSpeed;        // mbps
-    private int rxTotalSpeed;   // byte
-    private int txSpeed;        // mbps
-    private int txTotalSpeed;   // byte
+    private String rxSpeed;        // mbps
+    private String rxTotalSpeed;   // byte
+    private String txSpeed;        // mbps
+    private String txTotalSpeed;   // byte
     private BigInteger speed;          // mbps
 
 

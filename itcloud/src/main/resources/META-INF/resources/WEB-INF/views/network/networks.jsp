@@ -49,7 +49,7 @@
                                 ${networks.networkUsageVo.gluster =="true" ? "gluster":""}
                                 ${networks.networkUsageVo.defaultRoute =="true" ? "defaultRoute":""}
                             </td>
-                            <td></td>
+                            <td>${networks.vlan == null ? "없음" : networks.vlan}</td>
                             <td></td>
                             <td></td>
                             <td>${networks.mtu == 0 ? "기본값(1500)" : networks.mtu}</td>

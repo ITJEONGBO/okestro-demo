@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -191,7 +192,6 @@ public class VmServiceImpl implements ItVmService {
             }
 
             DecimalFormat df = new DecimalFormat("###,###");
-
             List<Statistic> statisticList =
                     ((StatisticsService.ListResponse)systemService.vmsService().vmService(id).nicsService().nicService(nic.id()).statisticsService().list().send()).statistics();
 

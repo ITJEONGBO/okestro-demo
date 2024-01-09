@@ -14,13 +14,14 @@ public class NetworkVmVo {
     private String ipv4;
     private String ipv6;
     private String fqdn;
+    private String status;
 
     // vnic
     private boolean vnicStatus;
     private String vnicName;
-    private BigInteger vNicRx;
-    private BigInteger vNicTx;
-    private BigInteger totalRx;
-    private BigInteger totalTx;
+    private String vnicRx;
+    private String vnicTx;
+    private String rxTotalSpeed;
+    private String txTotalSpeed;
     private String description;
 }

@@ -50,12 +50,12 @@
                                 <td><a href="/computing/vm?id=${vm.id}" style="text-decoration-line: none">${vm.name}</a></td>
                                 <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                 <td>${vm.clusterName}</td>
-                                <td>${vm.ipv4}<br> ${vm.ipv6}</td>
+                                <td width="250px" style="word-break:break-all">${vm.ipv4}<br> ${vm.ipv6}</td>
                                 <td>${vm.fqdn}</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td>${vm.status}</td>
+                                <td>${vm.vnicStatus}</td>
                                 <td>${vm.upTime != 0 ? vm.upTime:""}</td>
                             </tr>
                         </c:forEach>

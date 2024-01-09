@@ -50,15 +50,15 @@
                                 <td>${host.hostStatus == "up" ? "▲" : "▽"}</td>
                                 <td><a href="/computing/host?id=${host.hostId}" style="text-decoration-line: none">${host.hostName}</a></td>
                                 <td>${host.clusterName}</td>
-                                <td></td>
+                                <td>${host.datacenterName}</td>
                                 <td>${host.hostStatus == "up" ? "▲" : "▽"}</td>
                                 <td></td>
                                 <td>${host.networkDevice}</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td>${host.speed}</td>
+                                <td>${host.rxSpeed < 1 ? "< 1" : host.rxSpeed}</td>
+                                <td>${host.txSpeed < 1 ? "< 1" : host.txSpeed}</td>
+                                <td>${host.rxTotalSpeed}</td>
+                                <td>${host.txTotalSpeed}</td>
                             </tr>
                         </c:forEach>
                     </table>

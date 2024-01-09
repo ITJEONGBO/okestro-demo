@@ -31,8 +31,8 @@
                                 VDSM 이름: ${network.vdsmName} <br><br>
 
                                 가상머신 네트워크:  <br>
-                                VLAN 태그: ${network.vlan} <br>
-                                MTU: ${network.mtu} <br>
+                                VLAN 태그: ${network.vlan == null ? "없음" : network.vlan} <br>
+                                MTU: ${network.mtu == 0 ? "기본값(1500)" : network.mtu} <br>
                     </div>
                     <br><br><br><br><br>
 

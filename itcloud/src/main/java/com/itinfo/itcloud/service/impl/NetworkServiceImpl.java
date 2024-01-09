@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sun.nio.ch.Net;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +47,7 @@ public class NetworkServiceImpl implements ItNetworkService {
             nwVo.setVdsmName(network.vdsmName());
             nwVo.setDatacenterId(network.dataCenter().id());
             nwVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(network.dataCenter().id()).get().send()).dataCenter().name() );
+            nwVo.setVlan(network.vlanPresent() ? network.vlan().id() : null);
 
             // usages
             NetworkUsageVo nuVo = new NetworkUsageVo();
@@ -75,10 +79,7 @@ public class NetworkServiceImpl implements ItNetworkService {
         nwVo.setName(network.name());
         nwVo.setDescription(network.description());
         nwVo.setVdsmName(network.vdsmName());
-
-        // vlan 여부 확인 후 체크
-        nwVo.setVlan(network.vlanPresent() ? network.vlan().id() : null);
-
+        nwVo.setVlan(network.vlanPresent() ? network.vlan().id() : null);   // vlan
         nwVo.setMtu(network.mtuAsInteger());
 
         return nwVo;
@@ -180,16 +181,11 @@ public class NetworkServiceImpl implements ItNetworkService {
 
             nhVo.setHostId(host.id());
             nhVo.setHostName(host.name());
-            nhVo.setClusterName( ((ClusterService.GetResponse)systemService.clustersService().clusterService(host.cluster().id()).get().send()).cluster().name() );
             nhVo.setHostStatus(host.status().value());
-//            List<DataCenter> dcList =
-//                    ((DataCentersService.ListResponse)systemService.dataCentersService().list().send()).dataCenters();
-//
-//            for(DataCenter dc : dcList){
-//                if(dc.c)
-//            }
-//
-//            nhVo.setDatacenterName(  );
+
+            Cluster c = ((ClusterService.GetResponse)systemService.clustersService().clusterService(host.cluster().id()).get().send()).cluster();
+            nhVo.setClusterName(c.name());
+            nhVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(c.dataCenter().id()).get().send()).dataCenter().name() );
 
             List<HostNic> nicList =
                     ((HostNicsService.ListResponse)systemService.hostsService().hostService(host.id()).nicsService().list().send()).nics();
@@ -197,7 +193,32 @@ public class NetworkServiceImpl implements ItNetworkService {
                 nhVo.setNetworkStatus(hostNic.status().value());
 //                nhVo.setAsynchronism(hostNic.a);
                 nhVo.setNetworkDevice(hostNic.name());
-                // rx, tx
+
+                DecimalFormat df = new DecimalFormat("###,###");
+                List<Statistic> statisticList =
+                        ((StatisticsService.ListResponse)systemService.hostsService().hostService(host.id()).nicsService().nicService(hostNic.id()).statisticsService().list().send()).statistics();
+
+                for(Statistic statistic : statisticList){
+                    String st = "";
+
+                    if(statistic.name().equals("data.current.rx.bps")){
+                        st = df.format( (statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024*1024)) );
+                        nhVo.setRxSpeed( st );
+                    }
+                    if(statistic.name().equals("data.current.tx.bps")){
+                        st = df.format( (statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024*1024)) );
+                        nhVo.setTxSpeed( st );
+                    }
+                    if(statistic.name().equals("data.total.rx")){
+                        st = df.format(statistic.values().get(0).datum());
+                        nhVo.setRxTotalSpeed( st );
+                    }
+                    if(statistic.name().equals("data.total.tx")){
+                        st = df.format(statistic.values().get(0).datum());
+                        nhVo.setTxTotalSpeed( st );
+                    }
+                }
+                nhVo.setSpeed( hostNic.speed() );
             }
             nhVoList.add(nhVo);
         }
@@ -221,6 +242,7 @@ public class NetworkServiceImpl implements ItNetworkService {
 
             nVmVo = new NetworkVmVo();
             nVmVo.setVmId(vm.id());
+            nVmVo.setStatus(vm.status().value());
             nVmVo.setVmName(vm.name());
             nVmVo.setFqdn(vm.fqdn());
             nVmVo.setClusterName( ((ClusterService.GetResponse)systemService.clustersService().clusterService(vm.cluster().id()).get().send()).cluster().name() );
@@ -230,24 +252,55 @@ public class NetworkServiceImpl implements ItNetworkService {
                 nVmVo.setVnicStatus(nic.linked());
                 nVmVo.setVnicName(nic.name());
 
-                // nic
-                List<ReportedDevice> reportedDeviceList =
-                        ((VmReportedDevicesService.ListResponse)systemService.vmsService().vmService(vm.id()).reportedDevicesService().list().send()).reportedDevice();
+                if(vm.status().value().equals("up")) {
+                    // nic
+                    List<ReportedDevice> reportedDeviceList =
+                            ((VmReportedDevicesService.ListResponse)systemService.vmsService().vmService(vm.id()).reportedDevicesService().list().send()).reportedDevice();
 
-                for(ReportedDevice rd : reportedDeviceList){
-                    if(rd.ipsPresent()){
-                        String ipv6 = "";
-                        nVmVo.setIpv4(rd.ips().get(0).address());
+                    for(ReportedDevice rd : reportedDeviceList){
+                        if(rd.ipsPresent()){
+    //                        nVmVo.setVnicName(rd.name());
+                            String ipv6 = "";
+                            nVmVo.setIpv4(rd.ips().get(0).address());
 
-                        for(int i=0; i < rd.ips().size(); i++){
-                            if(rd.ips().get(i).version().value().equals("v6")){
-                                ipv6 += rd.ips().get(i).address()+" ";
+                            for(int i=0; i < rd.ips().size(); i++){
+                                if(rd.ips().get(i).version().value().equals("v6")){
+                                    ipv6 += rd.ips().get(i).address()+" ";
+                                }
                             }
+                            nVmVo.setIpv6(ipv6);
                         }
-                        nVmVo.setIpv6(ipv6);
+                    }
+
+                    // vm이 올라와있는 상태에서만 rx, tx 값 출력
+                    DecimalFormat df = new DecimalFormat("###,###");
+                    List<Statistic> statisticList =
+                            ((StatisticsService.ListResponse) systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).statisticsService().list().send()).statistics();
+
+                    for (Statistic statistic : statisticList) {
+                        String st = "";
+
+                        if (statistic.name().equals("data.current.rx.bps")) {
+                            st = df.format((statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024 * 1024)));
+                            nVmVo.setVnicRx(st);
+                        }
+                        if (statistic.name().equals("data.current.tx.bps")) {
+                            st = df.format((statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024 * 1024)));
+                            nVmVo.setVnicTx(st);
+                        }
+                        if (statistic.name().equals("data.total.rx")) {
+                            System.out.println("asd: " + statistic.name().equals("data.total.rx"));
+                            st = df.format(statistic.valuesPresent() ? statistic.values().get(0).datum() : null);
+                            nVmVo.setRxTotalSpeed(st);
+                        }
+                        if (statistic.name().equals("data.total.tx")) {
+                            st = df.format(statistic.valuesPresent() ? statistic.values().get(0).datum() : null);
+                            nVmVo.setTxTotalSpeed(st);
+                        }
                     }
                 }
             }
+
             nVmVoList.add(nVmVo);
         }
         return nVmVoList;

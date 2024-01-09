@@ -42,9 +42,10 @@ public class StorageDomainServiceImpl implements ItStorageDomainService {
             sdVo.setDomainType(storageDomain.type().value() + (storageDomain.master() ? "(master)" : ""));
             sdVo.setStorageType(storageDomain.storage().type().value());
             sdVo.setDomainFormat(storageDomain.storageFormat().value());
-            sdVo.setAvailableSize(storageDomain.available()); // 여유공간
-            sdVo.setUsedSize(storageDomain.used()); // 사용된 공간
-//            sdVo.setDiskSize(storageDomain.available().add(storageDomain.used()));
+
+            sdVo.setAvailableSize(storageDomain.availablePresent() ? storageDomain.available() : null); // 여유공간
+            sdVo.setUsedSize(storageDomain.usedPresent() ? storageDomain.used() : null); // 사용된 공간
+            sdVo.setDiskSize( (storageDomain.availablePresent() && storageDomain.usedPresent()) ? storageDomain.available().add(storageDomain.used()) : null);
             sdVo.setDescription(storageDomain.description());
 
             if(storageDomain.statusPresent()){
@@ -105,6 +106,8 @@ public class StorageDomainServiceImpl implements ItStorageDomainService {
 
                     dcVo.setId(dc.id());
                     dcVo.setName(dc.name());
+                    dcVo.setStatus(dc.status().value());
+                    // 데이터 센터 내의 도메인 상태
 
                     dcVoList.add(dcVo);
                 }

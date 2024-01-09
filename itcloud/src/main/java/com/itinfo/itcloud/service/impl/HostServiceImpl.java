@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -286,7 +287,6 @@ public class HostServiceImpl implements ItHostService {
             nVo.setIpv6(hostNic.ipv6().addressPresent() ? hostNic.ipv6().address() : null);
 
             DecimalFormat df = new DecimalFormat("###,###");
-
             List<Statistic> statisticList =
                     ((StatisticsService.ListResponse)systemService.hostsService().hostService(id).nicsService().nicService(hostNic.id()).statisticsService().list().send()).statistics();
 

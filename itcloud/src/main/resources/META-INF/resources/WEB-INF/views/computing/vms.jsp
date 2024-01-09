@@ -52,7 +52,7 @@
                             <td></td>
                             <td></td>
                             <td></td>
-                            <td>${vms.status}</td>
+                            <td>${vms.status == "up" ? "실행 중" : vms.status}</td>
                             <td>${vms.upTime}</td>
                             <td>${vms.description}</td>
                         </tr>

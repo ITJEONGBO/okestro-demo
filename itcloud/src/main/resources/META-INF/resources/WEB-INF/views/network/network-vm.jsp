@@ -40,29 +40,29 @@
                             <td>설명</td>
                         </tr>
 
-                        <c:if test="${empty host}">
+                        <c:if test="${empty vm}">
                             <tr>
                                 <td colspan="12">표시할 항목이 없습니다.</td>
                             </tr>
                         </c:if>
                         <c:forEach var="vm" items="${vm}" varStatus="status">
                             <tr>
-                                <td></td>
+                                <td>${vm.status == "up" ? "▲" : "▽"}</td>
                                 <td><a href="/computing/vm?id=${vm.vmId}" style="text-decoration-line: none">${vm.vmName}</a></td>
                                 <td>${vm.clusterName}</td>
                                 <td>${vm.ipv4}<br>${vm.ipv6}</td>
                                 <td>${vm.fqdn}</td>
-                                <td>${vm.vnicStatus}</td>
+                                <td>${vm.vnicStatus == "true" ? "▲" : vm.vnicStatus}</td>
                                 <td>${vm.vnicName}</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td>${vm.vnicRx < 1 ? "< 1" : vm.vnicRx}</td>
+                                <td>${vm.vnicTx < 1 ? "< 1" : vm.vnicTx}</td>
+                                <td>${vm.rxTotalSpeed}</td>
+                                <td>${vm.txTotalSpeed}</td>
                                 <td>${vm.description}</td>
                             </tr>
                         </c:forEach>
                     </table>
-
+                    <br><br><br><br><br>
                 </div>
             </main>
         </div>

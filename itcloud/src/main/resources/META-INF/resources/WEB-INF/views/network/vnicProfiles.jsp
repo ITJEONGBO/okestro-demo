@@ -38,7 +38,7 @@
                         <tr>
                             <td><a href="/network/vnicProfile-vm?id=${vnics.id} "style="text-decoration-line: none">${vnics.name}</a></td>
                             <td><a href="/network/network?id=${vnics.networkId} "style="text-decoration-line: none">${vnics.networkName}</a></td>
-                            <td></td>
+                            <td><a href="/computing/datacenter-storage?id=${vnics.datacenterId} "style="text-decoration-line: none">${vnics.datacenterName}</a></td>
                             <td></td>
                             <td>${vnics.networkFilterName}</td>
                             <td>${vnics.portMirroring}</td>

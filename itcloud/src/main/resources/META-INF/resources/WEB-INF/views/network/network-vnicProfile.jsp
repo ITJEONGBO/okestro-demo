@@ -50,7 +50,7 @@
                                 <td></td>
                                 <td>${vnic.networkFilterName}</td>
                                 <td>${vnic.portMirroring}</td>
-                                <td>${vnic.passThrough}</td>
+                                <td>${vnic.passThrough == "disabled" ? "아니요" : "네"}</td>
                                 <td></td>
                                 <td>${vnic.description}</td>
                             </tr>
