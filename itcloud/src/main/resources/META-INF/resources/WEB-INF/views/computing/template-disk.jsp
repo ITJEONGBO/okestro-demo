@@ -39,7 +39,7 @@
 
                         <c:if test="${empty disk}">
                             <tr>
-                                <td>disk 없음</td>
+                                <td colspan="9">disk 없음</td>
                             </tr>
                         </c:if>
                         <c:forEach var="disk" items="${disk}" varStatus="status">

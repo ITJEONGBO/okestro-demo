@@ -10,6 +10,8 @@ import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -277,38 +279,39 @@ public class HostServiceImpl implements ItHostService {
 
             nVo.setStatus(hostNic.status().value());
             nVo.setName(hostNic.name());
-            nVo.setMacAddress(hostNic.mac().address());
-
-            List<Statistic> statisticList =
-                    ((StatisticsService.ListResponse) systemService.hostsService().hostService(id).statisticsService().list().send()).statistics();
-
-            for(Statistic statistic : statisticList){
-                if(statistic.name().equals("data.current.rx.bps")){
-                    System.out.println(statistic.values().get(0).datum());
-                    nVo.setRxSpeed(statistic.values().get(0).datum().byteValue());
-                }
-                // total rx
-                if(statistic.name().equals("data.total.rx")){
-                    nVo.setRxTotalSpeed(statistic.values().get(0).datum().byteValue());
-                }
-
-                if(statistic.name().equals("data.current.tx.bps")){
-                    nVo.setTxSpeed(statistic.values().get(0).datum().byteValue());
-                }
-                // total tx
-                if(statistic.name().equals("data.total.tx")){
-                    nVo.setTxTotalSpeed(statistic.values().get(0).datum().byteValue());
-                }
-            }
-            System.out.println(nVo.getRxTotalSpeed());
-            System.out.println(nVo.getTxTotalSpeed());
-
-            nVo.setSpeed(hostNic.speed());
-
-            // 논리 네트워크
             nVo.setNetworkName( ((NetworkService.GetResponse)systemService.networksService().networkService(hostNic.network().id()).get().send()).network().name() );
+
+            nVo.setMacAddress(hostNic.mac().address());// 논리 네트워크
             nVo.setIpv4(hostNic.ip().address());
             nVo.setIpv6(hostNic.ipv6().addressPresent() ? hostNic.ipv6().address() : null);
+
+            DecimalFormat df = new DecimalFormat("###,###");
+
+            List<Statistic> statisticList =
+                    ((StatisticsService.ListResponse)systemService.hostsService().hostService(id).nicsService().nicService(hostNic.id()).statisticsService().list().send()).statistics();
+
+            for(Statistic statistic : statisticList){
+                String st = "";
+
+                if(statistic.name().equals("data.current.rx.bps")){
+                    st = df.format( (statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024*1024)) );
+                    nVo.setRxSpeed( st );
+                }
+                if(statistic.name().equals("data.current.tx.bps")){
+                    st = df.format( (statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024*1024)) );
+                    nVo.setTxSpeed( st );
+                }
+                if(statistic.name().equals("data.total.rx")){
+                    st = df.format(statistic.values().get(0).datum());
+                    nVo.setRxTotalSpeed( st );
+                }
+                if(statistic.name().equals("data.total.tx")){
+                    st = df.format(statistic.values().get(0).datum());
+                    nVo.setTxTotalSpeed( st );
+                }
+            }
+            nVo.setSpeed( hostNic.speed() );
+
 
             nVoList.add(nVo);
         }
@@ -330,18 +333,16 @@ public class HostServiceImpl implements ItHostService {
             hostDeviceVo = new HostDeviceVo();
             hostDeviceVo.setName(hostDevice.name());
             hostDeviceVo.setCapability(hostDevice.capability());
+            hostDeviceVo.setDriver(hostDevice.driverPresent() ? hostDevice.driver() : null);
 
-            if(hostDevice.vendor() != null){
-                hostDeviceVo.setVendorId(hostDevice.vendor().id());
-                hostDeviceVo.setVendorName(hostDevice.vendor().name());
+            if(hostDevice.vendorPresent()) {
+                hostDeviceVo.setVendorName(hostDevice.vendor().name() + " (" +hostDevice.vendor().id() + ")" );
             }
-            if(hostDevice.product() != null){
-                hostDeviceVo.setProductId(hostDevice.product().id());
-                hostDeviceVo.setProductName(hostDevice.product().name());
+
+            if(hostDevice.productPresent()){
+                hostDeviceVo.setProductName(hostDevice.product().name() + " (" + hostDevice.product().id() + ")");
             }
-            if(hostDevice.driver() != null){
-                hostDeviceVo.setDriver(hostDevice.driver());
-            }
+
             hostDeviceVoList.add(hostDeviceVo);
         }
         return hostDeviceVoList;

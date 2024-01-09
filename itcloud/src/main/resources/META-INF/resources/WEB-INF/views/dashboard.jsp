@@ -17,7 +17,7 @@
                             <div class="card bg-primary text-white mb-4">
                                 <div class="card-body">
                                 [${dashboard.datacenterCnt}]&nbsp;데이터센터 <br>
-                                UP &nbsp;${dashboard.datacenterActive} / DOWN &nbsp; ${dashboard.datacenterInactive}
+                                 ⬆️ &nbsp;${dashboard.datacenterActive} / ⬇️ &nbsp; ${dashboard.datacenterInactive}
                                 </div>
                                 <div class="card-footer d-flex align-items-center justify-content-between">
                                     <a class="small text-white stretched-link" href="/computing/datacenters">더보기</a>
@@ -41,7 +41,7 @@
                             <div class="card bg-success text-white mb-4">
                                 <div class="card-body">
                                 [${dashboard.hostCnt}]&nbsp;호스트<br>
-                                UP &nbsp;${dashboard.hostActive} / DOWN &nbsp; ${dashboard.hostInactive}
+                                ⬆️ &nbsp;${dashboard.hostActive} / ⬇️ &nbsp; ${dashboard.hostInactive}
                                 </div>
                                 <div class="card-footer d-flex align-items-center justify-content-between">
                                     <a class="small text-white stretched-link" href="/computing/hosts">더보기</a>
@@ -53,7 +53,7 @@
                             <div class="card bg-danger text-white mb-4">
                                 <div class="card-body">
                                 [${dashboard.vmCnt}]&nbsp;가상머신<br>
-                                UP &nbsp;${dashboard.vmActive} / DOWN &nbsp; ${dashboard.vmInactive}
+                                ⬆️ &nbsp;${dashboard.vmActive} / ⬇️ &nbsp; ${dashboard.vmInactive}
                                 </div>
                                 <div class="card-footer d-flex align-items-center justify-content-between">
                                     <a class="small text-white stretched-link" href="/computing/vms">더보기</a>
@@ -65,10 +65,10 @@
                             <div class="card bg-info text-white mb-4">
                                 <div class="card-body">
                                 [${dashboard.storageDomainCnt}]&nbsp;데이터 스토리지 도메인<br>
-                                UP &nbsp;${dashboard.storageDomainActive} / DOWN &nbsp; ${dashboard.storageDomainInactive}
+                                ⬆️ &nbsp;${dashboard.storageDomainActive} / ⬇️ &nbsp; ${dashboard.storageDomainInactive}
                                 </div>
                                 <div class="card-footer d-flex align-items-center justify-content-between">
-                                    <a class="small text-white stretched-link" href="/storages">더보기</a>
+                                    <a class="small text-white stretched-link" href="/storage/storageDomains">더보기</a>
                                     <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                                 </div>
                             </div>

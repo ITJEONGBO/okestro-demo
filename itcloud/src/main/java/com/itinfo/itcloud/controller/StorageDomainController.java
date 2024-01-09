@@ -1,8 +1,7 @@
 package com.itinfo.itcloud.controller;
 
-import com.itinfo.itcloud.model.computing.DataCenterVo;
-import com.itinfo.itcloud.model.computing.EventVo;
-import com.itinfo.itcloud.model.computing.PermissionVo;
+import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.storage.DiskVo;
 import com.itinfo.itcloud.model.storage.StorageDomainVo;
 import com.itinfo.itcloud.service.ItStorageDomainService;
 
@@ -66,7 +65,80 @@ public class StorageDomainController {
 	}
 
 
+	@GetMapping("/storage/storageDomain-vm")
+	public String vm(String id, Model model){
+		List<VmVo> vm = itStorageDomainService.getVm(id);
+		model.addAttribute("vm", vm);
+		model.addAttribute("id", id);
+		return "storage/storageDomain-vm";
+	}
 
+	@GetMapping("/storage/storageDomain/vmStatus")
+	@ResponseBody
+	public List<VmVo> vm(String id){
+		return itStorageDomainService.getVm(id);
+	}
+
+
+
+	@GetMapping("/storage/storageDomain-template")
+	public String template(String id, Model model){
+		List<TemplateVo> template = itStorageDomainService.getTemplate(id);
+		model.addAttribute("template", template);
+		model.addAttribute("id", id);
+		return "storage/storageDomain-template";
+	}
+
+	@GetMapping("/storage/storageDomain/templateStatus")
+	@ResponseBody
+	public List<TemplateVo> template(String id){
+		return itStorageDomainService.getTemplate(id);
+	}
+
+
+	@GetMapping("/storage/storageDomain-disk")
+	public String disk(String id, Model model){
+		List<DiskVo> disk = itStorageDomainService.getDisk(id);
+		model.addAttribute("disk", disk);
+		model.addAttribute("id", id);
+		return "storage/storageDomain-disk";
+	}
+
+	@GetMapping("/storage/storageDomain/diskStatus")
+	@ResponseBody
+	public List<DiskVo> disk(String id){
+		return itStorageDomainService.getDisk(id);
+	}
+
+
+//	@GetMapping("/storage/storageDomain-snapshot")
+//	public String snapshot(String id, Model model){
+//		List<DiskVo> snapshot = itStorageDomainService.getSnapshot(id);
+//		model.addAttribute("snapshot", snapshot);
+//		model.addAttribute("id", id);
+//		return "storage/storageDomain-snapshot";
+//	}
+//
+//	@GetMapping("/storage/storageDomain/snapshotStatus")
+//	@ResponseBody
+//	public List<DiskVo> snapshot(String id){
+//		return itStorageDomainService.getSnapshot(id);
+//	}
+
+
+	@GetMapping("/storage/storageDomain-event")
+	public String event(String id, Model model){
+		List<EventVo> event = itStorageDomainService.getEvent(id);
+		model.addAttribute("event", event);
+		model.addAttribute("id", id);
+		return "storage/storageDomain-event";
+	}
+
+	@GetMapping("/storage/storageDomain/eventStatus")
+	@ResponseBody
+	public List<EventVo> event(String id){
+		return itStorageDomainService.getEvent(id);
+	}
 
 
 	@GetMapping("/storage/storageDomain-permission")
@@ -83,20 +155,6 @@ public class StorageDomainController {
 		return itStorageDomainService.getPermission(id);
 	}
 
-
-	@GetMapping("/storage/storageDomain-event")
-	public String event(String id, Model model){
-		List<EventVo> event = itStorageDomainService.getEvent(id);
-		model.addAttribute("event", event);
-		model.addAttribute("id", id);
-		return "storage/storageDomain-event";
-	}
-
-	@GetMapping("/storage/storageDomain/eventStatus")
-	@ResponseBody
-	public List<EventVo> event(String id){
-		return itStorageDomainService.getEvent(id);
-	}
 
 
 }

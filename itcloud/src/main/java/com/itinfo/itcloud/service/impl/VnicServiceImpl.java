@@ -42,8 +42,15 @@ public class VnicServiceImpl implements ItVnicService {
             vpVo.setPassThrough(String.valueOf(vnicProfile.passThrough().mode()));  // type 여러개
             vpVo.setPortMirroring(vnicProfile.portMirroring());
 
+
+
             vpVo.setNetworkId(vnicProfile.network().id());
             vpVo.setNetworkName( ((NetworkService.GetResponse)systemService.networksService().networkService(vnicProfile.network().id()).get().send()).network().name() );
+
+            vpVo.setDatacenterId( ((NetworkService.GetResponse)systemService.networksService().networkService(vnicProfile.network().id()).get().send()).network().dataCenter().id() );
+            vpVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(vpVo.getDatacenterId()).get().send()).dataCenter().name() );
+            System.out.println(vpVo.getDatacenterId());
+            System.out.println(vpVo.getDatacenterName());
 
             vpVo.setNetworkFilterId(vnicProfile.networkFilter().id());
             vpVo.setNetworkFilterName( ((NetworkFilterService.GetResponse)systemService.networkFiltersService().networkFilterService(vnicProfile.networkFilter().id()).get().send()).networkFilter().name() );

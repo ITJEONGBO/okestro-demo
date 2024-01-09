@@ -99,14 +99,14 @@ public class StorageDomainServiceImpl implements ItStorageDomainService {
         for(StorageDomain storageDomain : storageDomainList){
             if(storageDomain.dataCentersPresent()){
                 for(int i=0; i<storageDomain.dataCenters().size(); i++) {
-                        DataCenter dc = ((DataCenterService.GetResponse) systemService.dataCentersService().dataCenterService(storageDomain.dataCenters().get(i).id()).get().send()).dataCenter();
+                    DataCenter dc = ((DataCenterService.GetResponse) systemService.dataCentersService().dataCenterService(storageDomain.dataCenters().get(i).id()).get().send()).dataCenter();
 
-                        dcVo = new DataCenterVo();
+                    dcVo = new DataCenterVo();
 
-                        dcVo.setId(dc.id());
-                        dcVo.setName(dc.name());
+                    dcVo.setId(dc.id());
+                    dcVo.setName(dc.name());
 
-                        dcVoList.add(dcVo);
+                    dcVoList.add(dcVo);
                 }
             }
         }
@@ -138,8 +138,6 @@ public class StorageDomainServiceImpl implements ItStorageDomainService {
 
         List<DiskVo> dVoList = new ArrayList<>();
 
-        List<Disk> diskList =
-                ((StorageDomainDisksService.ListResponse)systemService.storageDomainsService().storageDomainService(id).storageConnectionsService().list().send()).disks();
 
         return null;
     }

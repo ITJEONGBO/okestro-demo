@@ -16,13 +16,12 @@ import java.util.List;
 @Service
 @Slf4j
 public class DashboardServiceImpl implements ItDashboardService {
-
-	@Autowired private ConnectionService ovirtConnection;
+	@Autowired
+	private ConnectionService ovirtConnection;
 
 	private DashboardVo dbVo;
 
 
-	// Dashbord 값
 	@Override
 	public DashboardVo getDashboard() {
 		Connection connection = ovirtConnection.getConnection();

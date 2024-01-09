@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">StorageDomain</h1>
-                    스토리지 > <a href="/storage/storageDomains" style="text-decoration-line: none">스토리지 도메인</a> > ${vms[0].clusterName} <br><br>
+                    스토리지 > <a href="/storage/storageDomains" style="text-decoration-line: none">스토리지 도메인</a>  <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
@@ -27,39 +27,27 @@
 
                     <table>
                         <tr>
-                            <td></td>
-                            <td>이름</td>
-                            <td>클러스터</td>
-                            <td>IP 주소</td>
-                            <td>FQDN</td>
-                            <td>vNIC 상태</td>
-                            <td>vNIC</td>
-                            <td>vNIC Rx (Mbps)</td>
-                            <td>vNIC Tx (Mbps)</td>
-                            <td>총 Rx (바이트)</td>
-                            <td>총 Tx (바이트)</td>
-                            <td>설명</td>
+                            <td>별칭</td>
+                            <td>디스크</td>
+                            <td>템플릿</td>
+                            <td>가상 크기</td>
+                            <td>실제 크기</td>
+                            <td>생성 일자</td>
                         </tr>
 
-                        <c:if test="${empty host}">
+                        <c:if test="${empty vm}">
                             <tr>
-                                <td colspan="12">표시할 항목이 없습니다.</td>
+                                <td colspan="6">표시할 항목이 없습니다.</td>
                             </tr>
                         </c:if>
                         <c:forEach var="vm" items="${vm}" varStatus="status">
                             <tr>
                                 <td></td>
-                                <td><a href="/computing/vm?id=${vm.vmId}" style="text-decoration-line: none">${vm.vmName}</a></td>
-                                <td>${vm.clusterName}</td>
-                                <td>${vm.ipv4}<br>${vm.ipv6}</td>
-                                <td>${vm.fqdn}</td>
-                                <td>${vm.vnicStatus}</td>
-                                <td>${vm.vnicName}</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td>${vm.description}</td>
+                                <td></td>
                             </tr>
                         </c:forEach>
                     </table>

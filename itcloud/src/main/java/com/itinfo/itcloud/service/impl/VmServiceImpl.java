@@ -11,6 +11,8 @@ import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -171,6 +173,7 @@ public class VmServiceImpl implements ItVmService {
 
             List<ReportedDevice> reportedDeviceList =
                     ((VmReportedDevicesService.ListResponse)systemService.vmsService().vmService(id).reportedDevicesService().list().send()).reportedDevice();
+
             for(ReportedDevice rd : reportedDeviceList){
                 nVo.setGuestInterface(rd.name());       // etho0
 
@@ -184,6 +187,32 @@ public class VmServiceImpl implements ItVmService {
                         }
                     }
                     nVo.setIpv6(ipv6);
+                }
+            }
+
+            DecimalFormat df = new DecimalFormat("###,###");
+
+            List<Statistic> statisticList =
+                    ((StatisticsService.ListResponse)systemService.vmsService().vmService(id).nicsService().nicService(nic.id()).statisticsService().list().send()).statistics();
+
+            for(Statistic statistic : statisticList){
+                String st = "";
+
+                if(statistic.name().equals("data.current.rx.bps")){
+                    st = df.format( (statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024*1024)) );
+                    nVo.setRxSpeed( st );
+                }
+                if(statistic.name().equals("data.current.tx.bps")){
+                    st = df.format( (statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024*1024)) );
+                    nVo.setTxSpeed( st );
+                }
+                if(statistic.name().equals("data.total.rx")){
+                    st = df.format(statistic.values().get(0).datum());
+                    nVo.setRxTotalSpeed( st );
+                }
+                if(statistic.name().equals("data.total.tx")){
+                    st = df.format(statistic.values().get(0).datum());
+                    nVo.setTxTotalSpeed( st );
                 }
             }
 
@@ -230,7 +259,7 @@ public class VmServiceImpl implements ItVmService {
             vdVo.setVirtualSize(disk.provisionedSize());
             vdVo.setStatus(String.valueOf(disk.status()));  // 유형
             vdVo.setType(disk.storageType().value());
-            vdVo.setConnection(disk.name());
+            vdVo.setConnection( ((VmService.GetResponse)systemService.vmsService().vmService(id).get().send()).vm().name() );
 
             vdVoList.add(vdVo);
         }

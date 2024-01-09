@@ -14,8 +14,8 @@
                         <div class="card-body">
                             <p class="mb-0">
                                 <a href="/computing/template?id=${id}" style="text-decoration-line: none">일반</a> |
-                                <a href="/computing/template-vm?id=${id}">가상머신</a> |
-                                <a href="/computing/template-nic?id=${id}" style="text-decoration-line: none">네트워크 인터페이스</a> |
+                                <a href="/computing/template-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
+                                <a href="/computing/template-nic?id=${id}">네트워크 인터페이스</a> |
                                 <a href="/computing/template-disk?id=${id}" style="text-decoration-line: none">디스크</a> |
                                 <a href="/computing/template-storage?id=${id}" style="text-decoration-line: none">스토리지</a> |
                                 <a href="/computing/template-permission?id=${id}" style="text-decoration-line: none">권한</a> |
@@ -28,31 +28,22 @@
                         <tr>
                             <td></td>
                             <td>이름</td>
-                            <td></td>
-                            <td>호스트</td>
-                            <td>IP 주소</td>
-                            <td>fqdn</td>
-                            <td>상태</td>
-                            <td>업타임</td>
-                            <td>콘솔 사용자</td>
-                            <td>로그인된 사용자</td>
+                            <td>연결됨</td>
+                            <td>네트워크 이름</td>
+                            <td>프로파일 이름</td>
+                            <td>링크 상태 </td>
+                            <td>유형</td>
                         </tr>
 
-                        <c:if test="${empty vm}">
+                        <c:if test="${empty nic}">
                             <tr>
-                                <td colspan="10">vm 없음</td>
+                                <td colspan="7">표시할 항목이 없습니다</td>
                             </tr>
                         </c:if>
-                        <c:forEach var="vm" items="${vm}" varStatus="status">
+                        <c:forEach var="nic" items="${nic}" varStatus="status">
                             <tr>
-                                <td>${vm.status == "up" ? "▲" : "▽"}</td>
-                                <td><a href="/computing/vm?id=${vm.id}" style="text-decoration-line: none">${vm.name}</a></td>
-                                <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                                <td>${vm.hostName}</td>
-                                <td>${vm.ipv4}<br> ${vm.ipv6}</td>
-                                <td>${vm.fqdn}</td>
-                                <td>${vm.status =="up" ? "실행 중" : vm.status}</td>
-                                <td>${vm.upTime != 0 ? vm.upTime:""}</td>
+                                <td>${nic.id}</td>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                             </tr>

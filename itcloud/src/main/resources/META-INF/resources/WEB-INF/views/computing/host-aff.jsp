@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Host</h1>
-                    컴퓨팅 > <a href="/computing/hosts" style="text-decoration-line: none">호스트</a> > 선호도 레이블 <br><br>
+                    컴퓨팅 > <a href="/computing/hosts" style="text-decoration-line: none">호스트</a>  <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
@@ -17,7 +17,7 @@
                                 <a href="/computing/host-vm?id=${id}" style="text-decoration-line: none">가상머신</a> |
                                 <a href="/computing/host-nic?id=${id}" style="text-decoration-line: none">네트워크 인터페이스</a> |
                                 <a href="/computing/host-device?id=${id}" style="text-decoration-line: none">호스트 장치</a> |
-                                <a href="#" style="text-decoration-line: none">권한</a> |
+                                <a href="/computing/host-permission?id=${id}" style="text-decoration-line: none">권한</a> |
                                 <a href="/computing/host-aff?id=${id}">선호도 레이블</a> |
                                 <a href="/computing/host-event?id=${id}" style="text-decoration-line: none">이벤트</a>
                             </p>

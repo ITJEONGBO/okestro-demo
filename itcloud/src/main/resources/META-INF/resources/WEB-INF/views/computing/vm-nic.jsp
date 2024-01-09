@@ -42,7 +42,7 @@
                             <td>MAC</td>
                         </tr>
                         <tr>
-                            <td>${nic.linkStatus == "true" ? "up" : "down"}</td>
+                            <td>${nic.linkStatus == "true" ? "⬆️" : "️️️⬇️"}</td>
                             <td>${nic.name}</td>
                             <td>${nic.networkName}</td>
                             <td>${nic.ipv4}</td>
@@ -66,8 +66,8 @@
                             </td>
                             <td colspan="2">
                                 <h3>통계</h3>
-                                Rx 속도(Mbps): ${nic.rxSpeed} <br>
-                                Tx 속도(Mbps): ${nic.txSpeed} <br>
+                                Rx 속도(Mbps): ${nic.rxSpeed < 1 ? "< 1" : nic.rxSpeed} <br>
+                                Tx 속도(Mbps): ${nic.txSpeed < 1 ? "< 1" : nic.txSpeed} <br>
                                 총 Rx: ${nic.rxTotalSpeed} <br>
                                 총 Tx: ${nic.txTotalSpeed} <br>
                                 중단 (Pkts): ${nic.stop} <br>

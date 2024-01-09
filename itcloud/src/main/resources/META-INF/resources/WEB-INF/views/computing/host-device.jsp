@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Host</h1>
-                    컴퓨팅 > <a href="/computing/hosts" style="text-decoration-line: none">호스트</a> > 호스트 장치 <br><br>
+                    컴퓨팅 > <a href="/computing/hosts" style="text-decoration-line: none">호스트</a> <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
@@ -46,8 +46,8 @@
                             <tr>
                                 <td width="250px" style="word-break:break-all">${device.name}</td>
                                 <td>${device.capability}</td>
-                                <td>${device.vendorName} (${device.vendorId})</td>
-                                <td width="260px" style="word-break:break-all">${device.productName} (${device.productId})</td>
+                                <td>${device.vendorName}</td>
+                                <td width="260px" style="word-break:break-all">${device.productName}</td>
                                 <td>${device.driver}</td>
                                 <td></td>
                                 <td></td>

@@ -43,7 +43,7 @@
                         <tr>
                             <td>${storage.status == "active" ? "▲" : "▽"}</td>
                             <td>&nbsp;&nbsp;&nbsp;</td>
-                            <td><a href="/storage/storage?id=${storage.id}" style="text-decoration-line: none">${storage.name}</a></td>
+                            <td><a href="/storage/storageDomain?id=${storage.id}" style="text-decoration-line: none">${storage.name}</a></td>
                             <td>${storage.domainType}</td>
                             <td>${storage.status}</td>
                             <td>${storage.availableSize /(1024*1024*1024)}GB</td>

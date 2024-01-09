@@ -4,6 +4,7 @@ import com.itinfo.itcloud.model.network.VnicProfileVo;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 @Getter @Setter
@@ -13,12 +14,12 @@ public class NicVo {
     private String macAddress;
     private String status;
 
-    private byte rxSpeed;        // mbps
-    private byte rxTotalSpeed;   // byte
-    private byte txSpeed;        // mbps
-    private byte txTotalSpeed;   // byte
+    private String rxSpeed;        // mbps
+    private String txSpeed;        // mbps
+    private String rxTotalSpeed;   // byte
+    private String txTotalSpeed;   // byte
     private BigInteger speed;    // mbps
-    private int stop;
+    private BigInteger stop;
 
     // 가상머신 nic
     private String networkName;

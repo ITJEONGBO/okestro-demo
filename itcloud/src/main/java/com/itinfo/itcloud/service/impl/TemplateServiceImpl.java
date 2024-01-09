@@ -90,7 +90,6 @@ public class TemplateServiceImpl implements ItTemplateService {
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
 
-        System.out.println("vm: "+id);
         List<VmVo> vmVoList = new ArrayList<>();
         VmVo vmVo = null;
         Date now = new Date(System.currentTimeMillis());
@@ -101,7 +100,7 @@ public class TemplateServiceImpl implements ItTemplateService {
         for (Vm vm : vmList) {
             if (vm.templatePresent() && vm.template().id().equals(id)) {
                 vmVo = new VmVo();
-//                vmVo.setHostName( ((HostService.GetResponse)systemService.hostsService().hostService(vm.template().id()).get().send()).host().name() );
+                vmVo.setHostName( vm.hostPresent() ? ((HostService.GetResponse)systemService.hostsService().hostService(vm.host().id()).get().send()).host().name() : null);
                 vmVo.setId(vm.id());
                 vmVo.setName(vm.name());
                 vmVo.setStatus(vm.status().value());
@@ -161,33 +160,33 @@ public class TemplateServiceImpl implements ItTemplateService {
         List<VmDiskVo> vdVoList = new ArrayList<>();
         VmDiskVo vdVo = null;
 
-        List<DiskAttachment> vmdiskList =
-                ((DiskAttachmentsService.ListResponse)systemService.templatesService().templateService(id).diskAttachmentsService().list().send()).attachments();
-        // 별칭, 가상크기, 연결대상, 인터페이스, 논리적 이름, 상태, 유형, 설명
-
-        for(DiskAttachment diskAttachment : vmdiskList) {
-            if (diskAttachment.diskPresent()) {
-                vdVo = new VmDiskVo();
-
-                vdVo.setId(diskAttachment.id());
-                vdVo.setActive(diskAttachment.active());
-                vdVo.setReadOnly(diskAttachment.readOnly());
-                vdVo.setBootAble(diskAttachment.bootable());
-                vdVo.setLogicalName(diskAttachment.logicalName());
-                vdVo.setInterfaceName(diskAttachment.interface_().value());
-
-                Disk disk =
-                        ((DiskService.GetResponse) systemService.disksService().diskService(diskAttachment.disk().id()).get().send()).disk();
-                vdVo.setName(disk.name());
-                vdVo.setDescription(disk.description());
-                vdVo.setVirtualSize(disk.provisionedSize());
-                vdVo.setStatus(String.valueOf(disk.status()));  // 유형
-                vdVo.setType(disk.storageType().value());
-                vdVo.setConnection(disk.name());
-
-                vdVoList.add(vdVo);
-            }
-        }
+//        List<DiskAttachment> vmdiskList =
+//                ((DiskAttachmentsService.ListResponse)systemService.templatesService().templateService(id).diskAttachmentsService().list().send()).attachments();
+//        // 별칭, 가상크기, 연결대상, 인터페이스, 논리적 이름, 상태, 유형, 설명
+//
+//        for(DiskAttachment diskAttachment : vmdiskList) {
+//            if (diskAttachment.diskPresent()) {
+//                vdVo = new VmDiskVo();
+//
+//                vdVo.setId(diskAttachment.id());
+//                vdVo.setActive(diskAttachment.active());
+//                vdVo.setReadOnly(diskAttachment.readOnly());
+//                vdVo.setBootAble(diskAttachment.bootable());
+//                vdVo.setLogicalName(diskAttachment.logicalName());
+//                vdVo.setInterfaceName(diskAttachment.interface_().value());
+//
+//                Disk disk =
+//                        ((DiskService.GetResponse) systemService.disksService().diskService(diskAttachment.disk().id()).get().send()).disk();
+//                vdVo.setName(disk.name());
+//                vdVo.setDescription(disk.description());
+//                vdVo.setVirtualSize(disk.provisionedSize());
+//                vdVo.setStatus(String.valueOf(disk.status()));  // 유형
+//                vdVo.setType(disk.storageType().value());
+//                vdVo.setConnection(disk.name());
+//
+//                vdVoList.add(vdVo);
+//            }
+//        }
         return vdVoList;
     }
 

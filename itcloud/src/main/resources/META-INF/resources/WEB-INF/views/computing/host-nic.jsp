@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Host</h1>
-                    컴퓨팅 > <a href="/computing/hosts" style="text-decoration-line: none">호스트</a> > 네트워크 인터페이스 <br><br>
+                    컴퓨팅 > <a href="/computing/hosts" style="text-decoration-line: none">호스트</a> <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">
@@ -44,12 +44,12 @@
                         </c:if>
                         <c:forEach var="nic" items="${nic}" varStatus="status">
                             <tr>
-                                <td>${nic.status == "up" ? "▲" : "▽"}</td>
+                                <td>${nic.status == "up" ? "⬆️" : "️️️⬇️"}</td>
                                 <td>${nic.name}</td>
                                 <td>${nic.macAddress}</td>
-                                <td>${nic.rxSpeed}</td>
+                                <td>${nic.rxSpeed < 1 ? "< 1" : nic.rxSpeed}</td>
                                 <td>${nic.rxTotalSpeed}</td>
-                                <td>${nic.txSpeed}</td>
+                                <td>${nic.txSpeed< 1 ? "< 1" : nic.txSpeed}</td>
                                 <td>${nic.txTotalSpeed}</td>
                                 <td>${nic.speed}</td>
                                 <td></td>

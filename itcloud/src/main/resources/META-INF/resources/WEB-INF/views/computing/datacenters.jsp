@@ -37,7 +37,7 @@
                         <tr>
                             <td>${datacenters.status == "up" ? "▲" : "▽"}</td>
                             <td>&nbsp;&nbsp;&nbsp;</td>
-                            <td><a href="/computing/datacenter-storage?id=${datacenters.id}">${datacenters.name}</a> </td>
+                            <td><a href="/computing/datacenter-storage?id=${datacenters.id}" style="text-decoration-line: none">${datacenters.name}</a> </td>
                             <td>${datacenters.comment}</td>
                             <td>${datacenters.storageType ? "로컬" : "공유됨"}</td>
                             <td>${datacenters.status}</td>
