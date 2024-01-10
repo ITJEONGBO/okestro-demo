@@ -106,8 +106,9 @@ public class StorageDomainServiceImpl implements ItStorageDomainService {
 
                     dcVo.setId(dc.id());
                     dcVo.setName(dc.name());
-                    dcVo.setStatus(dc.status().value());
+
                     // 데이터 센터 내의 도메인 상태
+//                    dcVo.setStatus( );
 
                     dcVoList.add(dcVo);
                 }

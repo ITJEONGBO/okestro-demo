@@ -55,7 +55,7 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td>${vm.vnicStatus}</td>
+                                <td>${vm.status}</td>
                                 <td>${vm.upTime != 0 ? vm.upTime:""}</td>
                             </tr>
                         </c:forEach>

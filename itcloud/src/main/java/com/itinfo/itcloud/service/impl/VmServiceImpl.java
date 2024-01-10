@@ -3,6 +3,7 @@ package com.itinfo.itcloud.service.impl;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
+import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItVmService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.Connection;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,6 +27,9 @@ public class VmServiceImpl implements ItVmService {
 
     @Autowired
     private AdminConnectionService adminConnectionService;
+
+    private OvirtService ovirt;
+
 
 
     @Override

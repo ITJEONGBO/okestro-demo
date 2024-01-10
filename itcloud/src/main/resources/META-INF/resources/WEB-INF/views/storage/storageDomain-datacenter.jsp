@@ -25,7 +25,7 @@
                         </div>
                     </div>
 
-                    <table>
+                    <table width="700px">
                         <tr>
                             <td></td>
                             <td>이름</td>
@@ -39,9 +39,9 @@
                         </c:if>
                         <c:forEach var="datacenter" items="${datacenter}" varStatus="status">
                             <tr>
-                                <td>&nbsp;&nbsp;&nbsp;</td>
+                                <td>${datacenter.status == "active" ? "▲" : "▽"}</td>
                                 <td><a href="/computing/datacenter-storage?id=${datacenter.id}" style="text-decoration-line: none">${datacenter.name}</a></td>
-                                <td></td>
+                                <td>${datacenter.status}</td>
                             </tr>
                         </c:forEach>
                     </table>
