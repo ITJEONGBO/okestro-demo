@@ -39,18 +39,23 @@ public class VnicServiceImpl implements ItVnicService {
 
             vpVo.setId(vnicProfile.id());
             vpVo.setName(vnicProfile.name());
-            vpVo.setPassThrough(String.valueOf(vnicProfile.passThrough().mode()));  // type 여러개
+            vpVo.setPassThrough(vnicProfile.passThrough().mode().value());
             vpVo.setPortMirroring(vnicProfile.portMirroring());
+            vpVo.setDescription(vnicProfile.description());
+            // 페일오버 생겼음
 
-
+            Network network = ((NetworkService.GetResponse)systemService.networksService().networkService(vnicProfile.network().id()).get().send()).network();
             vpVo.setNetworkId(vnicProfile.network().id());
-            vpVo.setNetworkName( ((NetworkService.GetResponse)systemService.networksService().networkService(vnicProfile.network().id()).get().send()).network().name() );
+            vpVo.setNetworkName(network.name());
 
-            vpVo.setDatacenterId( ((NetworkService.GetResponse)systemService.networksService().networkService(vnicProfile.network().id()).get().send()).network().dataCenter().id() );
-            vpVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(vpVo.getDatacenterId()).get().send()).dataCenter().name() );
+            vpVo.setDatacenterId( network.dataCenter().id() );
+            vpVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(network.dataCenter().id()).get().send()).dataCenter().name() );
 
-            vpVo.setNetworkFilterId(vnicProfile.networkFilter().id());
-            vpVo.setNetworkFilterName( ((NetworkFilterService.GetResponse)systemService.networkFiltersService().networkFilterService(vnicProfile.networkFilter().id()).get().send()).networkFilter().name() );
+            if(vnicProfile.networkFilterPresent()) {
+                NetworkFilter nf = ((NetworkFilterService.GetResponse) systemService.networkFiltersService().networkFilterService(vnicProfile.networkFilter().id()).get().send()).networkFilter();
+                vpVo.setNetworkFilterId(vnicProfile.networkFilter().id());
+                vpVo.setNetworkFilterName(nf.name());
+            }
 
             vpVoList.add(vpVo);
         }

@@ -43,7 +43,7 @@
                             <tr>
                                 <td>${network.status == "operational" ? "▲" : "▽"}</td>
                                 <td><a href="/network/network?id=${network.id}" style="text-decoration-line: none">${network.name}</a></td>
-                                <td>${network.status == "operational" ? "가동 중" : "비 가동?"}</td>
+                                <td>${network.status == "operational" ? "가동 중" : "비 가동"}</td>
                                 <td>
                                     ${network.networkUsageVo.vm =="true" ? "vm":""}
                                     ${network.networkUsageVo.management =="true" ? "management":""}

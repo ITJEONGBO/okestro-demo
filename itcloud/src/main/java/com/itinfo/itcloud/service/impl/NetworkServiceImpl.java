@@ -111,7 +111,7 @@ public class NetworkServiceImpl implements ItNetworkService {
                 vpVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(network.dataCenter().id()).get().send()).dataCenter().name() );
                 vpVo.setPassThrough(vnicProfile.passThrough().mode().value());
                 vpVo.setPortMirroring(vnicProfile.portMirroring());
-                vpVo.setNetworkFilterName( ((NetworkFilterService.GetResponse)systemService.networkFiltersService().networkFilterService(vnicProfile.networkFilter().id()).get().send()).networkFilter().name() );
+//                vpVo.setNetworkFilterName( ((NetworkFilterService.GetResponse)systemService.networkFiltersService().networkFilterService(vnicProfile.networkFilter().id()).get().send()).networkFilter().name() );
 
                 vpVoList.add(vpVo);
             }

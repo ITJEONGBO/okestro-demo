@@ -3,7 +3,6 @@ package com.itinfo.itcloud.service.impl;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
-import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItVmService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.Connection;
@@ -27,9 +26,6 @@ public class VmServiceImpl implements ItVmService {
 
     @Autowired
     private AdminConnectionService adminConnectionService;
-
-    private OvirtService ovirt;
-
 
 
     @Override
