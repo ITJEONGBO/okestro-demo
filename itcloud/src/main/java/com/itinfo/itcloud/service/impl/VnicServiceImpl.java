@@ -45,11 +45,13 @@ public class VnicServiceImpl implements ItVnicService {
             // 페일오버 생겼음
 
             Network network = ((NetworkService.GetResponse)systemService.networksService().networkService(vnicProfile.network().id()).get().send()).network();
-            vpVo.setNetworkId(vnicProfile.network().id());
             vpVo.setNetworkName(network.name());
 
             vpVo.setDatacenterId( network.dataCenter().id() );
             vpVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(network.dataCenter().id()).get().send()).dataCenter().name() );
+
+            DataCenter dataCenter = ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(vpVo.getDatacenterId()).get().send()).dataCenter();
+            vpVo.setVersion(dataCenter.version().major() + "." + dataCenter.version().minor());
 
             if(vnicProfile.networkFilterPresent()) {
                 NetworkFilter nf = ((NetworkFilterService.GetResponse) systemService.networkFiltersService().networkFilterService(vnicProfile.networkFilter().id()).get().send()).networkFilter();

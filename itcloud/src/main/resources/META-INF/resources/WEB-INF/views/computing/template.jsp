@@ -37,11 +37,11 @@
                         CPU 코어수: ${template.cpuCnt}(${template.cpuCoreCnt}:${template.cpuSocketCnt}:${template.cpuThreadCnt})<br>
                         모니터 수: ${template.monitor}<br><br>
 
-                        고가용성: <br>
+                        고가용성: ${template.ha}<br>
                         우선순위: ${template.priority}<br>
                         USB: ${template.usb == "true" ? "활성화됨" : "비활성화됨"}<br><br>
 
-                        소스: <br>
+                        소스: ${template.origin == "true" ? "예" : "아니요"}<br>
                         상태 비저장: <br>
                         템플릿 ID: ${template.id}<br>
                     </div>

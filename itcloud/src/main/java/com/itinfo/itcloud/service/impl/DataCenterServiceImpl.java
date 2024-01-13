@@ -80,10 +80,12 @@ public class DataCenterServiceImpl implements ItDataCenterService {
             sdVo.setUsedSize(storageDomain.used()); // 사용된 공간
             sdVo.setDiskSize(storageDomain.available().add(storageDomain.used()));
             sdVo.setDescription(storageDomain.description());
-            sdVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name() );
+            sdVo.setDatacenterName(((DataCenterService.GetResponse) systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name());
 
+            System.out.println(((DataCenterService.GetResponse) systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name());
             sdVoList.add(sdVo);
         }
+
         return sdVoList;
     }
 
@@ -157,12 +159,11 @@ public class DataCenterServiceImpl implements ItDataCenterService {
             if(permission.groupPresent() && !permission.userPresent()){
                 Group group =
                         ((GroupService.GetResponse)systemService.groupsService().groupService(permission.group().id()).get().send()).get();
+                Role role =
+                        ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
 
                 pVo.setUser(group.name());
                 pVo.setNameSpace(group.namespace());
-
-                Role role =
-                        ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
                 pVo.setRole(role.name());
 
                 pVoList.add(pVo);       // 그룹에 추가
@@ -171,12 +172,11 @@ public class DataCenterServiceImpl implements ItDataCenterService {
             if(permission.userPresent() && !permission.groupPresent()){
                 User user =
                         ((UserService.GetResponse)systemService.usersService().userService(permission.user().id()).get().send()).user();
+                Role role =
+                        ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
 
                 pVo.setUser(user.name());
                 pVo.setNameSpace(user.namespace());
-
-                Role role =
-                        ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
                 pVo.setRole(role.name());
 
                 pVoList.add(pVo);
@@ -189,24 +189,24 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     public List<EventVo> getEvent(String id) {
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
         List<EventVo> eVoList = new ArrayList<>();
         EventVo eVo = null;
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
-
-        List<Event> eventList =
-                ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
+        List<Event> eventList = ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
 
         for(Event event : eventList){
-            if(event.dataCenterPresent() && event.dataCenter().id().equals(id)){
+
+            DataCenter dc = ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter();
+            if( event.dataCenterPresent() && event.dataCenter().name().equals(dc.name()) ){
                 eVo = new EventVo();
-                eVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name() );
+                eVo.setDatacenterName(dc.name());
 
                 eVo.setSeverity(event.severity().value());
                 eVo.setTime(sdf.format(event.time()));
                 eVo.setMessage(event.description());
-                eVo.setRelationId(event.correlationIdPresent() ? event.correlationId() : "");
+                eVo.setRelationId(event.correlationIdPresent() ? event.correlationId() : null);
                 eVo.setSource(event.origin());
 
                 eVoList.add(eVo);

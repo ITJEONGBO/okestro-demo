@@ -37,8 +37,7 @@ public class VmServiceImpl implements ItVmService {
         VmVo vmVo = null;
         Date now = new Date(System.currentTimeMillis());
 
-        List<Vm> vmList =
-                ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
+        List<Vm> vmList = ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
 
         for(Vm vm : vmList){
             vmVo = new VmVo();
@@ -49,7 +48,7 @@ public class VmServiceImpl implements ItVmService {
             vmVo.setDescription(vm.description());
 
             // host
-            if(vm.status().value().equals("up") && vm.hostPresent()) {
+            if(vm.hostPresent() && vm.status().value().equals("up")) {
                 vmVo.setHostId(vm.host().id());
                 vmVo.setHostName(((HostService.GetResponse) systemService.hostsService().hostService(vm.host().id()).get().send()).host().name());
             }
@@ -64,29 +63,25 @@ public class VmServiceImpl implements ItVmService {
             vmVo.setFqdn(vm.fqdn());
 
             // uptime 계산
+            // (1000*60*60*24) = 일
+            // (1000*60*60) = 시간
             if(vm.status().value().equals("up") && vm.startTimePresent()) {
-                vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60*60*24) );
-            }
-            else if(vm.status().value().equals("up") && !vm.startTimePresent() && vm.creationTimePresent()) {
-                vmVo.setUpTime( (now.getTime() - vm.creationTime().getTime()) / (1000*60*60*24) );
+                    vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60) );
+            }else if(vm.status().value().equals("up") && !vm.startTimePresent() && vm.creationTimePresent()) {
+                vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60) );
+//                vmVo.setUpTime( (now.getTime() - vm.creationTime().getTime()) / (1000*60*60*24) );
             }
 
-            if(!vm.status().value().equals("down")){
-                // ipv4 부분. vms-nic-reporteddevice
-                List<Nic> nicList =
-                        ((VmNicsService.ListResponse) systemService.vmsService().vmService(vm.id()).nicsService().list().send()).nics();
-
-                for (Nic nic : nicList){
-                    List<ReportedDevice> reportedDeviceList
-                            = ((VmReportedDevicesService.ListResponse)systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).reportedDevicesService().list().send()).reportedDevice();
-                    for (ReportedDevice r : reportedDeviceList){
-                        vmVo.setIpv4(r.ips().get(0).address());
-                        vmVo.setIpv6(r.ips().get(1).address());
-                    }
+            // ipv4, ipv6
+            List<Nic> nicList =
+                    ((VmNicsService.ListResponse) systemService.vmsService().vmService(vm.id()).nicsService().list().send()).nics();
+            for (Nic nic : nicList){
+                List<ReportedDevice> reportedDeviceList
+                        = ((VmReportedDevicesService.ListResponse)systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).reportedDevicesService().list().send()).reportedDevice();
+                for (ReportedDevice r : reportedDeviceList){
+                    vmVo.setIpv4(vm.status().value().equals("up") ? r.ips().get(0).address() : null);
+                    vmVo.setIpv6(vm.status().value().equals("up") ? r.ips().get(1).address() : null);
                 }
-            }else{
-                vmVo.setIpv4("");
-                vmVo.setIpv6("");
             }
 
             vmVoList.add(vmVo);
@@ -102,8 +97,7 @@ public class VmServiceImpl implements ItVmService {
         VmVo vmVo = new VmVo();
         vmVo.setId(id);
 
-        Vm vm =
-                ((VmService.GetResponse)systemService.vmsService().vmService(id).get().send()).vm();
+        Vm vm = ((VmService.GetResponse)systemService.vmsService().vmService(id).get().send()).vm();
 
         vmVo.setStatus(vm.status().value());    // 상태는 두번표시됨. 그림과 글자로
         vmVo.setName(vm.name());
@@ -145,7 +139,7 @@ public class VmServiceImpl implements ItVmService {
         vmVo.setFqdn(vm.fqdn());
         vmVo.setHwTimeOffset(vm.timeZone().name());     // 하드웨어 클럭의 시간 오프셋
 
-        vmVo.setStartTime(vm.startTimePresent() ? vm.startTime() : null);
+//        vmVo.setStartTime(vm.startTimePresent() ? vm.startTime() : null);
 
         return vmVo;
     }

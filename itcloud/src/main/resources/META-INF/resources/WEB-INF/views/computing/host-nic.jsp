@@ -39,7 +39,7 @@
 
                         <c:if test="${empty nic}">
                             <tr>
-                                <td>nic 없음</td>
+                                <td colspan="9" style="text-align: center">표시할 항목이 없습니다</td>
                             </tr>
                         </c:if>
                         <c:forEach var="nic" items="${nic}" varStatus="status">

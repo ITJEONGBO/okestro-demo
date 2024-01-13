@@ -28,7 +28,7 @@ public class TemplateVo {
     private boolean ha; // 고가용성
     private int priority;
     private boolean usb;
-    // 소스
+    private String origin;  // 소스
     // 상태 비저장
     private String hostCluser;
 

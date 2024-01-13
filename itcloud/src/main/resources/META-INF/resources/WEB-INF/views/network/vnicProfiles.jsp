@@ -37,9 +37,9 @@
                     <c:forEach var="vnics" items="${vnics}" varStatus="status">
                         <tr>
                             <td><a href="/network/vnicProfile-vm?id=${vnics.id} "style="text-decoration-line: none">${vnics.name}</a></td>
-                            <td><a href="/network/network?id=${vnics.networkId} "style="text-decoration-line: none">${vnics.networkName}</a></td>
+                            <td>${vnics.networkName}</td>
                             <td><a href="/computing/datacenter-storage?id=${vnics.datacenterId} "style="text-decoration-line: none">${vnics.datacenterName}</a></td>
-                            <td></td>
+                            <td>${vnics.version}</td>
                             <td>${vnics.networkFilterName}</td>
                             <td>${vnics.portMirroring}</td>
                             <td>${vnics.passThrough == "true" ? "예" : "아니요"}</td>

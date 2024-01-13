@@ -41,7 +41,7 @@
 
                         <c:if test="${empty vm}">
                             <tr>
-                                <td>vm 없음</td>
+                                <td colspan="11" style="text-align: center">표시할 항목이 없습니다</td>
                             </tr>
                         </c:if>
                         <c:forEach var="vm" items="${vm}" varStatus="status">

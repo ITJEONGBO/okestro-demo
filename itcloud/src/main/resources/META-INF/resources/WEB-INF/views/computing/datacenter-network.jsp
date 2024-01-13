@@ -29,8 +29,7 @@
 
                     <c:if test="${empty network}">
                         <tr>
-                            <td>네트워크가 없음</td>
-                        </tr>
+                            <td colspan="2" style="text-align: center">표시할 항목이 없습니다</td>
                     </c:if>
                     <c:forEach var="network" items="${network}" varStatus="status">
                         <tr>

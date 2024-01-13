@@ -74,14 +74,13 @@ public class TemplateServiceImpl implements ItTemplateService {
         tVo.setCpuSocketCnt(template.cpu().topology().socketsAsInteger());
         tVo.setCpuThreadCnt(template.cpu().topology().threadsAsInteger());
         tVo.setCpuCnt(tVo.getCpuCoreCnt() * tVo.getCpuSocketCnt() * tVo.getCpuThreadCnt());
-        tVo.setMonitor(template.display().monitorsAsInteger());      //아마 버전탓으로 나오지 않았을듯
-        // 고가용성
-        tVo.setPriority(template.highAvailability().priorityAsInteger());
+        tVo.setMonitor(template.display().monitorsAsInteger());
+        tVo.setHa(template.highAvailability().enabled());       // 고가용성
+        tVo.setPriority(template.highAvailability().priorityAsInteger()); // 우선순위
         tVo.setUsb(template.usb().enabled());
+        tVo.setOrigin(template.origin());
 
-        // 소스
         // 상태 비저장
-        System.out.println("info: "+id);
         return tVo;
     }
 

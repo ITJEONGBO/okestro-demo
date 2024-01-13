@@ -24,7 +24,7 @@
                         </div>
                     </div>
 
-                    <table>
+                    <table width="700px">
                         <tr>
                             <td>별칭</td>
                             <td>R/O</td>
@@ -39,7 +39,7 @@
 
                         <c:if test="${empty disk}">
                             <tr>
-                                <td colspan="9">disk 없음</td>
+                                <td colspan="9" style="text-align: center">표시할 항목이 없습니다</td>
                             </tr>
                         </c:if>
                         <c:forEach var="disk" items="${disk}" varStatus="status">

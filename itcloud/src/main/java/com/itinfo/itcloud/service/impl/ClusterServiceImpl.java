@@ -174,10 +174,9 @@ public class ClusterServiceImpl implements ItClusterService {
 
                 // uptime 계산
                 if(vm.status().value().equals("up") && vm.startTimePresent()) {
-                    vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60*60*24) );
-                }
-                else if(vm.status().value().equals("up") && !vm.startTimePresent() && vm.creationTimePresent()) {
-                    vmVo.setUpTime( (now.getTime() - vm.creationTime().getTime()) / (1000*60*60*24) );
+                    vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60) );
+                }else if(vm.status().value().equals("up") && !vm.startTimePresent() && vm.creationTimePresent()) {
+                    vmVo.setUpTime( (now.getTime() - vm.creationTime().getTime()) / (1000*60) );
                 }
 
                 // ip 주소
@@ -390,8 +389,7 @@ public class ClusterServiceImpl implements ItClusterService {
 
 
     public int getHostVmsCnt(SystemService systemService, String hostId){
-        List<Vm> vmList =
-                ((VmsService.ListResponse) systemService.vmsService().list().send()).vms();
+        List<Vm> vmList = ((VmsService.ListResponse) systemService.vmsService().list().send()).vms();
 
         int vmsUpCnt = 0;
 

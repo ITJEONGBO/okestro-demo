@@ -27,10 +27,10 @@
                         </div>
                     </div>
 
-                    <c:if test="${empty snapshot}">
+                <c:if test="${empty snapshot}">
                         <div>snapshot 없음</div>
-                    </c:if>
-                    <c:forEach var="snapshot" items="${snapshot}" varStatus="status">
+                </c:if>
+                <c:forEach var="snapshot" items="${snapshot}" varStatus="status">
                     <table>
                         <tr>
                             <td>${snapshot.description}</td>
@@ -94,12 +94,12 @@
                         </tr>
                         <tr>
                             <td>
-                                <h5>네트워크 인터페이스</h5>
+                                <h5>설치된 애플리케이션</h5>
 
                             </td>
                         </tr>
-                    </c:forEach>
-                </table>
+                    </table>
+                </c:forEach>
                 <br><br><br><br><br>
                 </div>
             </main>

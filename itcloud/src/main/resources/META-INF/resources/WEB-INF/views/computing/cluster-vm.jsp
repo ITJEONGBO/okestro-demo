@@ -27,9 +27,9 @@
 
                     <table>
                         <tr>
-                            <td></td>
+                            <td>&nbsp;&nbsp;&nbsp;</td>
                             <td>이름</td>
-                            <td></td>
+                            <td>&nbsp;&nbsp;&nbsp;</td>
                             <td>상태</td>
                             <td>업타임</td>
                             <td>CPU</td>
@@ -39,9 +39,9 @@
                         </tr>
 
                         <c:if test="${empty vms}">
-                                <tr>
-                                    <td colspan="9" rowspan="3">가상머신이 없음</td>
-                                </tr>
+                            <tr>
+                                <td colspan="9" style="text-align: center">표시할 항목이 없습니다</td>
+                            </tr>
                         </c:if>
                         <c:forEach var="vms" items="${vms}" varStatus="status">
                             <tr>
@@ -49,7 +49,9 @@
                                 <td><a href="/computing/vm?id=${vms.id}" style="text-decoration-line: none">${vms.name}</a></td>
                                 <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                 <td>${vms.status == "up" ? " 실행 중" : vms.status}</td>
-                                <td>${vms.upTime != 0 ? vms.upTime : ""}</td>
+                                <td>
+                                    ${vms.upTime/60/60}분
+                                </td>
                                 <td></td>
                                 <td></td>
                                 <td></td>

@@ -43,7 +43,7 @@
 
                         <c:if test="${empty aff}">
                             <tr>
-                                <td colspan="12">표시할 항목이 없습니다</td>
+                                <td colspan="12" style="text-align: center">표시할 항목이 없습니다</td>
                             </tr>
                         </c:if>
                         <c:forEach var="aff" items="${aff}" varStatus="status">

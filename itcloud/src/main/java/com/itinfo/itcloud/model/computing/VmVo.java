@@ -15,7 +15,6 @@ public class VmVo {
     private String status;
     private String description;
     private String fqdn;
-    private Date startTime;
     private long upTime;
 
     private String osSystem;

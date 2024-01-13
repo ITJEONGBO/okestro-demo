@@ -34,7 +34,7 @@
 
                         <c:if test="${empty app}">
                             <tr>
-                                <td>disk 없음</td>
+                                <td style="text-align: center">표시할 항목이 없습니다</td>
                             </tr>
                         </c:if>
                         <c:forEach var="app" items="${app}" varStatus="status">

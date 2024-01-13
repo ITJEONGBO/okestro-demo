@@ -23,8 +23,8 @@
 
                 <table>
                     <tr>
-                        <td></td>
-                        <td></td>
+                        <td>&nbsp;&nbsp;&nbsp;</td>
+                        <td>&nbsp;&nbsp;&nbsp;</td>
                         <td>도메인 이름</td>
                         <td>도메인 유형</td>
                         <td width="80px">상태</td>
@@ -36,7 +36,7 @@
 
                     <c:if test="${empty storage}">
                         <tr>
-                            <td colspan="9" rowspan="3">스토리지 없음</td>
+                            <td colspan="9">표시할 항목이 없습니다.</td>
                         </tr>
                     </c:if>
                     <c:forEach var="storage" items="${storage}" varStatus="status">

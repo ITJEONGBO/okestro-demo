@@ -36,7 +36,7 @@
 
                         <c:if test="${empty hosts}">
                             <tr>
-                                <td>호스트가 없음</td>
+                                <td colspan="5" style="text-align: center">표시할 항목이 없습니다</td>
                             </tr>
                         </c:if>
                         <c:forEach var="host" items="${hosts}" varStatus="status">

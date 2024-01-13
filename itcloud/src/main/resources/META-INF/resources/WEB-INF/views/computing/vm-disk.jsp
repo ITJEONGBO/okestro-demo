@@ -45,7 +45,7 @@
 
                         <c:if test="${empty disk}">
                             <tr>
-                                <td>disk 없음</td>
+                                <td colspan="12" style="text-align: center">표시할 항목이 없습니다</td>
                             </tr>
                         </c:if>
                         <c:forEach var="disk" items="${disk}" varStatus="status">

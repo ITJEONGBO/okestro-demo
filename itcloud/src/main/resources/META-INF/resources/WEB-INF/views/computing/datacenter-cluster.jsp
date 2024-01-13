@@ -31,7 +31,7 @@
 
                     <c:if test="${empty cluster}">
                         <tr>
-                            <td>cluster가 없음</td>
+                            <td colspan="3" style="text-align: center">표시할 항목이 없습니다</td>
                         </tr>
                     </c:if>
                     <c:forEach var="cluster" items="${cluster}" varStatus="status">

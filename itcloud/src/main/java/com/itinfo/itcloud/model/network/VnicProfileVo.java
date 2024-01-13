@@ -11,6 +11,7 @@ public class VnicProfileVo {
     private String passThrough;
     private boolean portMirroring;
     private String description;
+    private String version;
 
     private String networkId;
     private String networkName;

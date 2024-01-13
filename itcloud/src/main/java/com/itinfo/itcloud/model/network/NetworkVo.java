@@ -20,6 +20,7 @@ public class NetworkVo {
     private String vdsmName;
     private BigInteger vlan;
     private boolean required;   // 필수 네트워크
+    private String label;
 
     private String datacenterId;
     private String datacenterName;

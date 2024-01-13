@@ -47,7 +47,11 @@ public class NetworkServiceImpl implements ItNetworkService {
             nwVo.setVdsmName(network.vdsmName());
             nwVo.setDatacenterId(network.dataCenter().id());
             nwVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(network.dataCenter().id()).get().send()).dataCenter().name() );
+//            nwVo.setPortIsolation(network.portIsolationPresent() ? network.	portIsolation() : null);        // 포트 분리
             nwVo.setVlan(network.vlanPresent() ? network.vlan().id() : null);
+//            nwVo.setLabel();      // 네트워크 레이블
+//            https://192.168.0.70/ovirt-engine/api/networks
+//            https://192.168.0.70/ovirt-engine/api/networks/fa393f4e-57f0-4ec0-a676-404ab98838fd/networklabels
 
             // usages
             NetworkUsageVo nuVo = new NetworkUsageVo();
