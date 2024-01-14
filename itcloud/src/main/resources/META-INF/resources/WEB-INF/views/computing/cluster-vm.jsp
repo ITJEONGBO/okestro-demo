@@ -50,7 +50,7 @@
                                 <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                 <td>${vms.status == "up" ? " 실행 중" : vms.status}</td>
                                 <td>
-                                    ${vms.upTime/60/60}분
+                                    ${vms.upTime/60}
                                 </td>
                                 <td></td>
                                 <td></td>

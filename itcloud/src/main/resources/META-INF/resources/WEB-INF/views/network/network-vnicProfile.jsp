@@ -39,7 +39,7 @@
 
                         <c:if test="${empty vnic}">
                             <tr>
-                                <td colspan="9">표시할 항목이 없습니다.</td>
+                                <td colspan="9" style="text-align: center">표시할 항목이 없습니다</td>
                             </tr>
                         </c:if>
                         <c:forEach var="vnic" items="${vnic}" varStatus="status">
@@ -47,9 +47,9 @@
                                 <td>${vnic.name}</td>
                                 <td>${vnic.networkName}</td>
                                 <td><a href="/computing/datacenter-storage?id=${vnic.datacenterId}" style="text-decoration-line: none">${vnic.datacenterName}</a></td>
-                                <td></td>
+                                <td>${vnic.version}</td>
                                 <td>${vnic.networkFilterName}</td>
-                                <td>${vnic.portMirroring}</td>
+                                <td>${vnic.portMirroring == "true" ? "활성화됨" : ""}</td>
                                 <td>${vnic.passThrough == "disabled" ? "아니요" : "네"}</td>
                                 <td></td>
                                 <td>${vnic.description}</td>

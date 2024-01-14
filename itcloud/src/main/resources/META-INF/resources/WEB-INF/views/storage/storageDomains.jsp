@@ -47,9 +47,9 @@
                             <td>${domains.storageType}</td>
                             <td>${domains.domainFormat}</td>
                             <td>${domains.status}</td>
-                            <td>${domains.diskSize/(1024*1024*1024)}</td>
-                            <td>${domains.availableSize /(1024*1024*1024)}GB</td>
-                            <td>${domains.availableSize /(1024*1024*1024)}GB</td>
+                            <td>${ (domains.diskSize/(1024*1024*1024)) == "0" ? "해당없음" : (domains.diskSize/(1024*1024*1024)+="GB") }</td>
+                            <td>${(domains.availableSize/(1024*1024*1024)) == "0" ? "해당없음" : (domains.availableSize/(1024*1024*1024)+="GB") }</td>
+                            <td>${(domains.availableSize/(1024*1024*1024)) == "0" ? "해당없음" : (domains.availableSize/(1024*1024*1024)+="GB") }</td>
                             <td>${domains.description}</td>
                         </tr>
                     </c:forEach>

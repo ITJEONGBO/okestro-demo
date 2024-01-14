@@ -65,12 +65,12 @@ public class VmServiceImpl implements ItVmService {
             // uptime 계산
             // (1000*60*60*24) = 일
             // (1000*60*60) = 시간
-            if(vm.status().value().equals("up") && vm.startTimePresent()) {
-                    vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60) );
-            }else if(vm.status().value().equals("up") && !vm.startTimePresent() && vm.creationTimePresent()) {
-                vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60) );
-//                vmVo.setUpTime( (now.getTime() - vm.creationTime().getTime()) / (1000*60*60*24) );
-            }
+//            if(vm.status().value().equals("up") && vm.startTimePresent()) {
+//                    vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60) );
+//            }else if(vm.status().value().equals("up") && !vm.startTimePresent() && vm.creationTimePresent()) {
+//                vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60) );
+////                vmVo.setUpTime( (now.getTime() - vm.creationTime().getTime()) / (1000*60*60*24) );
+//            }
 
             // ipv4, ipv6
             List<Nic> nicList =
@@ -447,11 +447,11 @@ public class VmServiceImpl implements ItVmService {
         // 2024. 1. 4. PM 04:01:21
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
-        List<Event> eventList =
-                ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
+        List<Event> eventList = ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
+        Vm vm = ((VmService.GetResponse)systemService.vmsService().vmService(id).get().send()).vm();
 
         for(Event event : eventList){
-            if(event.vmPresent() && event.vm().id().equals(id)){
+            if(event.vmPresent() && event.vm().name().equals(vm.name())){
                 eVo = new EventVo();
 
                 eVo.setSeverity(event.severity().value());

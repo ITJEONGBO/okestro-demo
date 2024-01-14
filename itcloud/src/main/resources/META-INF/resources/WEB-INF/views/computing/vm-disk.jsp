@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Vm</h1>
-                    컴퓨팅 > <a href="/computing/vms" style="text-decoration-line: none">가상머신</a> > 디스크 <br><br>
+                    컴퓨팅 > <a href="/computing/vms" style="text-decoration-line: none">가상머신</a> >  <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">

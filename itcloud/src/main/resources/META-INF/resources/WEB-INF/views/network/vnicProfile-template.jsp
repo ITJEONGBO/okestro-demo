@@ -28,7 +28,7 @@
 
                         <c:if test="${empty template}">
                             <tr>
-                                <td colspan="2">표시할 항목이 없습니다.</td>
+                                <td colspan="2" style="text-align: center">표시할 항목이 없습니다</td>
                             </tr>
                         </c:if>
                         <c:forEach var="template" items="${template}" varStatus="status">

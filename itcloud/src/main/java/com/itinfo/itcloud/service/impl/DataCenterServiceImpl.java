@@ -195,10 +195,9 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         EventVo eVo = null;
 
         List<Event> eventList = ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
+        DataCenter dc = ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter();
 
         for(Event event : eventList){
-
-            DataCenter dc = ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter();
             if( event.dataCenterPresent() && event.dataCenter().name().equals(dc.name()) ){
                 eVo = new EventVo();
                 eVo.setDatacenterName(dc.name());

@@ -47,11 +47,22 @@ public class NetworkServiceImpl implements ItNetworkService {
             nwVo.setVdsmName(network.vdsmName());
             nwVo.setDatacenterId(network.dataCenter().id());
             nwVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(network.dataCenter().id()).get().send()).dataCenter().name() );
-//            nwVo.setPortIsolation(network.portIsolationPresent() ? network.	portIsolation() : null);        // 포트 분리
+//            nwVo.setPortIsolation(network.portIsolationPresent() ? network.	portIsolation() : null);        // 포트 분리, 버전문제
             nwVo.setVlan(network.vlanPresent() ? network.vlan().id() : null);
-//            nwVo.setLabel();      // 네트워크 레이블
-//            https://192.168.0.70/ovirt-engine/api/networks
-//            https://192.168.0.70/ovirt-engine/api/networks/fa393f4e-57f0-4ec0-a676-404ab98838fd/networklabels
+
+
+            List<NetworkLabel> nlList =
+                    ((NetworkLabelsService.ListResponse) systemService.networksService().networkService(network.id()).networkLabelsService().list().send()).labels();
+            for(NetworkLabel nl : nlList) {
+                nwVo.setLabel(nl.id());
+            }
+
+            if(network.externalProviderPresent()) {
+                OpenStackNetworkProvider np =
+                        ((OpenstackNetworkProviderService.GetResponse) systemService.openstackNetworkProvidersService().providerService(network.externalProvider().id()).get().send()).provider();
+                nwVo.setProviderId(np.id());
+                nwVo.setProviderName(np.name());
+            }
 
             // usages
             NetworkUsageVo nuVo = new NetworkUsageVo();
@@ -111,12 +122,20 @@ public class NetworkServiceImpl implements ItNetworkService {
                 vpVo.setName(vnicProfile.name());
                 vpVo.setDescription(vnicProfile.description());
                 vpVo.setNetworkName( ((NetworkService.GetResponse)systemService.networksService().networkService(id).get().send()).network().name() );
+
+                DataCenter dataCenter = ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(network.dataCenter().id()).get().send()).dataCenter();
                 vpVo.setDatacenterId(network.dataCenter().id());
-                vpVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(network.dataCenter().id()).get().send()).dataCenter().name() );
+                vpVo.setDatacenterName( dataCenter.name() );
+                vpVo.setVersion(dataCenter.version().major() + "." + dataCenter.version().minor());
+
                 vpVo.setPassThrough(vnicProfile.passThrough().mode().value());
                 vpVo.setPortMirroring(vnicProfile.portMirroring());
-//                vpVo.setNetworkFilterName( ((NetworkFilterService.GetResponse)systemService.networkFiltersService().networkFilterService(vnicProfile.networkFilter().id()).get().send()).networkFilter().name() );
 
+                if(vnicProfile.networkFilterPresent()) {
+                    NetworkFilter nf = ((NetworkFilterService.GetResponse) systemService.networkFiltersService().networkFilterService(vnicProfile.networkFilter().id()).get().send()).networkFilter();
+                    vpVo.setNetworkFilterId(vnicProfile.networkFilter().id());
+                    vpVo.setNetworkFilterName(nf.name());
+                }
                 vpVoList.add(vpVo);
             }
         }
@@ -131,16 +150,14 @@ public class NetworkServiceImpl implements ItNetworkService {
         List<NetworkClusterVo> ncVoList = new ArrayList<>();
         NetworkClusterVo ncVo = null;
 
-        // 클러스터리스트 출력
-        List<Cluster> clusterList =
-                ((ClustersService.ListResponse)systemService.clustersService().list().send()).clusters();
+        List<Cluster> clusterList = ((ClustersService.ListResponse)systemService.clustersService().list().send()).clusters();
 
         for(Cluster cluster : clusterList){
             List<Network> networkList =
                     ((ClusterNetworksService.ListResponse)systemService.clustersService().clusterService(cluster.id()).networksService().list().send()).networks();
 
             for(Network network : networkList){
-                if(cluster.id().equals(network.cluster().id())){
+                if(network.id().equals(id)){
                     ncVo = new NetworkClusterVo();
 
                     ncVo.setId(cluster.id());
@@ -176,55 +193,61 @@ public class NetworkServiceImpl implements ItNetworkService {
 
         List<NetworkHostVo> nhVoList = new ArrayList<>();
         NetworkHostVo nhVo = null;
+        DecimalFormat df = new DecimalFormat("###,###");
 
-        List<Host> hostList =
-                ((HostsService.ListResponse)systemService.hostsService().list().send()).hosts();
+        List<Host> hostList = ((HostsService.ListResponse)systemService.hostsService().list().send()).hosts();
 
-        for(Host host : hostList){
-            nhVo = new NetworkHostVo();
+        for(Host host : hostList) {
+            List<NetworkAttachment> naList = ((NetworkAttachmentsService.ListResponse) systemService.hostsService().hostService(host.id()).networkAttachmentsService().list().send()).attachments();
 
-            nhVo.setHostId(host.id());
-            nhVo.setHostName(host.name());
-            nhVo.setHostStatus(host.status().value());
+            for (NetworkAttachment na : naList) {
+                if (na.networkPresent() && na.network().id().equals(id)) {
+                    nhVo = new NetworkHostVo();
 
-            Cluster c = ((ClusterService.GetResponse)systemService.clustersService().clusterService(host.cluster().id()).get().send()).cluster();
-            nhVo.setClusterName(c.name());
-            nhVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(c.dataCenter().id()).get().send()).dataCenter().name() );
+                    nhVo.setHostId(host.id());
+                    nhVo.setHostName(host.name());
+                    nhVo.setHostStatus(host.status().value());
 
-            List<HostNic> nicList =
-                    ((HostNicsService.ListResponse)systemService.hostsService().hostService(host.id()).nicsService().list().send()).nics();
-            for(HostNic hostNic : nicList){
-                nhVo.setNetworkStatus(hostNic.status().value());
+                    Cluster c = ((ClusterService.GetResponse) systemService.clustersService().clusterService(host.cluster().id()).get().send()).cluster();
+                    nhVo.setClusterName(c.name());
+                    nhVo.setDatacenterName(((DataCenterService.GetResponse) systemService.dataCentersService().dataCenterService(c.dataCenter().id()).get().send()).dataCenter().name());
+
+
+                    List<HostNic> nicList =
+                            ((HostNicsService.ListResponse) systemService.hostsService().hostService(host.id()).nicsService().list().send()).nics();
+                    for (HostNic hostNic : nicList) {
+                        nhVo.setNetworkStatus(hostNic.status().value());
 //                nhVo.setAsynchronism(hostNic.a);
-                nhVo.setNetworkDevice(hostNic.name());
+                        nhVo.setNetworkDevice(hostNic.name());
 
-                DecimalFormat df = new DecimalFormat("###,###");
-                List<Statistic> statisticList =
-                        ((StatisticsService.ListResponse)systemService.hostsService().hostService(host.id()).nicsService().nicService(hostNic.id()).statisticsService().list().send()).statistics();
+                        List<Statistic> statisticList =
+                                ((StatisticsService.ListResponse) systemService.hostsService().hostService(host.id()).nicsService().nicService(hostNic.id()).statisticsService().list().send()).statistics();
 
-                for(Statistic statistic : statisticList){
-                    String st = "";
+                        for (Statistic statistic : statisticList) {
+                            String st = "";
 
-                    if(statistic.name().equals("data.current.rx.bps")){
-                        st = df.format( (statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024*1024)) );
-                        nhVo.setRxSpeed( st );
+                            if (statistic.name().equals("data.current.rx.bps")) {
+                                st = df.format((statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024 * 1024)));
+                                nhVo.setRxSpeed(st);
+                            }
+                            if (statistic.name().equals("data.current.tx.bps")) {
+                                st = df.format((statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024 * 1024)));
+                                nhVo.setTxSpeed(st);
+                            }
+                            if (statistic.name().equals("data.total.rx")) {
+                                st = df.format(statistic.values().get(0).datum());
+                                nhVo.setRxTotalSpeed(st);
+                            }
+                            if (statistic.name().equals("data.total.tx")) {
+                                st = df.format(statistic.values().get(0).datum());
+                                nhVo.setTxTotalSpeed(st);
+                            }
+                        }
+                        nhVo.setSpeed(hostNic.speed());
                     }
-                    if(statistic.name().equals("data.current.tx.bps")){
-                        st = df.format( (statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024*1024)) );
-                        nhVo.setTxSpeed( st );
-                    }
-                    if(statistic.name().equals("data.total.rx")){
-                        st = df.format(statistic.values().get(0).datum());
-                        nhVo.setRxTotalSpeed( st );
-                    }
-                    if(statistic.name().equals("data.total.tx")){
-                        st = df.format(statistic.values().get(0).datum());
-                        nhVo.setTxTotalSpeed( st );
-                    }
+                    nhVoList.add(nhVo);
                 }
-                nhVo.setSpeed( hostNic.speed() );
             }
-            nhVoList.add(nhVo);
         }
         return nhVoList;
     }

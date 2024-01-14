@@ -14,6 +14,7 @@ import java.util.List;
 public class PermissionVo {
     private String permissionId;      // permission
     private String datacenterName;
+    private String clusterName;
 
     // group, user
     private String user;        // 사용자

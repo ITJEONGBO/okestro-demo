@@ -16,12 +16,12 @@ import java.util.List;
 @Service
 @Slf4j
 public class DashboardServiceImpl implements ItDashboardService {
-	@Autowired
-	private ConnectionService ovirtConnection;
+	@Autowired private ConnectionService ovirtConnection;
 
 	private DashboardVo dbVo;
 
 
+	// Dashboard 전체 불러오기
 	@Override
 	public DashboardVo getDashboard() {
 		Connection connection = ovirtConnection.getConnection();
@@ -45,8 +45,7 @@ public class DashboardServiceImpl implements ItDashboardService {
 
 	// 데이터센터 수
 	private void getDatacenter(SystemService systemService) {
-		List<DataCenter> dataCenterList =
-				((DataCentersService.ListResponse) systemService.dataCentersService().list().send()).dataCenters();
+		List<DataCenter> dataCenterList = ((DataCentersService.ListResponse) systemService.dataCentersService().list().send()).dataCenters();
 
 		// DataCenter status=up 개수
 		int datacenterCnt = (int) dataCenterList.stream()
@@ -60,16 +59,13 @@ public class DashboardServiceImpl implements ItDashboardService {
 
 	// 클러스터 수
 	private void getCluster(SystemService systemService) {
-		List<Cluster> clusterList =
-				((ClustersService.ListResponse) systemService.clustersService().list().send()).clusters();
+		List<Cluster> clusterList = ((ClustersService.ListResponse) systemService.clustersService().list().send()).clusters();
 		dbVo.setClusterCnt(clusterList.size());
 	}
 
-
 	// 호스트 수
 	private void getHost(SystemService systemService) {
-		List<Host> hostList =
-				((HostsService.ListResponse) systemService.hostsService().list().send()).hosts();
+		List<Host> hostList = ((HostsService.ListResponse) systemService.hostsService().list().send()).hosts();
 
 		// Host status=up 개수
 		int hostUpCnt = (int) hostList.stream()
@@ -80,7 +76,6 @@ public class DashboardServiceImpl implements ItDashboardService {
 		dbVo.setHostActive(hostUpCnt);
 		dbVo.setHostInactive(dbVo.getHostCnt() - hostUpCnt);
 	}
-
 
 	// 가상머신 수
 	private void getVm(SystemService systemService) {
@@ -97,18 +92,14 @@ public class DashboardServiceImpl implements ItDashboardService {
 	}
 
 
-	// 전체사용량
-	// cpu
+	// 전체사용량: cpu
 	public void getCpu(SystemService systemService) {
 		int cpuTotal = 0;
 //		int cpuCommit = 0;
 		int cpuAssigned = 0;
 
-		List<Host> hostList =
-				((HostsService.ListResponse) systemService.hostsService().list().send()).hosts();
-
-		List<Vm> vmList =
-				((VmsService.ListResponse) systemService.vmsService().list().send()).vms();
+		List<Host> hostList = ((HostsService.ListResponse) systemService.hostsService().list().send()).hosts();
+		List<Vm> vmList = ((VmsService.ListResponse) systemService.vmsService().list().send()).vms();
 
 		// 호스트에 있는 cpu
 		for (Host host : hostList) {
@@ -131,8 +122,7 @@ public class DashboardServiceImpl implements ItDashboardService {
 
 	// memory
 	public void getMemory(SystemService systemService) {
-		List<Host> hostList =
-				((HostsService.ListResponse) systemService.hostsService().list().send()).hosts();
+		List<Host> hostList = ((HostsService.ListResponse) systemService.hostsService().list().send()).hosts();
 
 		// host id
 		for (Host host : hostList) {
@@ -160,8 +150,7 @@ public class DashboardServiceImpl implements ItDashboardService {
 
 	// storage
 	public void getStorage(SystemService systemService) {
-		List<StorageDomain> storageDomainList =
-				((StorageDomainsService.ListResponse) systemService.storageDomainsService().list().send()).storageDomains();
+		List<StorageDomain> storageDomainList = ((StorageDomainsService.ListResponse) systemService.storageDomainsService().list().send()).storageDomains();
 
 		// storage datacenter 붙어있는지
 		int storageActive = (int) storageDomainList.stream()

@@ -27,7 +27,7 @@
 
                         <c:if test="${empty nicVm}">
                             <tr>
-                                <td>vm 없음</td>
+                                <td style="text-align: center">표시할 항목이 없습니다</td>
                             </tr>
                         </c:if>
                         <c:forEach var="nicVm" items="${nicVm}" varStatus="status">

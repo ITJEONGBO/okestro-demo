@@ -31,7 +31,7 @@
 
                     <c:if test="${empty vnics}">
                         <tr>
-                            <td colspan="9">표시할 항목이 없음</td>
+                            <td colspan="9" style="text-align: center">표시할 항목이 없습니다</td>
                         </tr>
                     </c:if>
                     <c:forEach var="vnics" items="${vnics}" varStatus="status">
@@ -41,10 +41,10 @@
                             <td><a href="/computing/datacenter-storage?id=${vnics.datacenterId} "style="text-decoration-line: none">${vnics.datacenterName}</a></td>
                             <td>${vnics.version}</td>
                             <td>${vnics.networkFilterName}</td>
-                            <td>${vnics.portMirroring}</td>
+                            <td>${vnics.portMirroring == "true" ? "활성화됨" : ""}</td>
                             <td>${vnics.passThrough == "true" ? "예" : "아니요"}</td>
                             <td></td>
-                            <td></td>
+                            <td>${vnics.description}</td>
                         </tr>
                     </c:forEach>
                 </table>

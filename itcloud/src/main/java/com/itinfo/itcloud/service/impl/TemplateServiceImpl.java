@@ -278,11 +278,11 @@ public class TemplateServiceImpl implements ItTemplateService {
         // 2024. 1. 4. PM 04:01:21
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
-        List<Event> eventList =
-                ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
+        List<Event> eventList = ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
+        Template t = ((TemplateService.GetResponse)systemService.templatesService().templateService(id).get().send()).template();
 
         for(Event event : eventList){
-            if(event.templatePresent() && event.template().id().equals(id)){
+            if(event.templatePresent() && event.template().name().equals(t.name())){
                 eVo = new EventVo();
 
                 eVo.setSeverity(event.severity().value());

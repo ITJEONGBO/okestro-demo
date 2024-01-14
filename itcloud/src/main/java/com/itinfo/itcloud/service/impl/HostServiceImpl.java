@@ -428,10 +428,9 @@ public class HostServiceImpl implements ItHostService {
         List<Event> eventList =
                 ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
 
+        Host host = ((HostService.GetResponse)systemService.hostsService().hostService(id).get().send()).host();
         for(Event event : eventList){
-            if(event.hostPresent() && event.host().id() == null){
-                continue;
-            } else if(event.hostPresent() && event.host().id().equals(id)){
+            if(event.hostPresent() && event.host().name().equals(host.name())){
                 eVo = new EventVo();
 
                 eVo.setSeverity(event.severity().value());
