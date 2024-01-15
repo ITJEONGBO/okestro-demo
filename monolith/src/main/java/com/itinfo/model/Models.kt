@@ -54,6 +54,7 @@ import com.itinfo.rebootVm
 import com.itinfo.dao.ClustersDao
 
 import com.itinfo.security.CustomUserDetails
+import com.itinfo.service.impl.DomainsServiceImpl
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.ConnectionBuilder
 import org.ovirt.engine.sdk4.builders.*
@@ -2369,6 +2370,38 @@ data class StorageDomainVo(
 )
 
 fun StorageDomain.toStorageDomainVo(c: Connection): StorageDomainVo {
+	//if ("all" == domainType || storageDomain.type().name.equals(domainType, ignoreCase = true)) {
+//		val storageDomainVo = StorageDomainVo()
+//		storageAddress = storage().address()
+//		storageDomainVo.storagePath = storageDomain.storage().path()
+//		storageDomainVo.storageType = storageDomain.storage().type().name
+//		if (storageDomain.status() == null) {
+//			try {
+//				val sd: StorageDomain? =
+//					conn.findAttachedStorageDomainFromDataCenter(dataCenterId, storageDomain.id())
+//				storageDomainVo.status = sd?.status()?.value() ?: ""
+//			} catch (e: Exception) {
+//				DomainsServiceImpl.log.error(e.localizedMessage)
+//				storageDomainVo.status = ""
+//			}
+//		} else {
+//			storageDomainVo.status = storageDomain.status().value()
+//		}
+//
+//		if (storageDomain.type().name == StorageDomainType.ISO.name) {
+//			val files =
+//				conn.findAllFilesFromStorageDomain(storageDomain.id())
+//			val imageFiles = files.toImageFileVos()
+//			storageDomainVo.imageFileList = imageFiles
+//		}
+//		for (dp in diskProfiles) {
+//			if (dp.storageDomain().id() == storageDomain.id()) {
+//				storageDomainVo.diskProfileId = dp.id()
+//				storageDomainVo.diskProfileName = dp.name()
+//				break
+//			}
+//		}
+
 	val dataCenterId: String =
 		c.findAllDataCenters().first().id()
 	val sdAttached: StorageDomain? =
@@ -2377,7 +2410,7 @@ fun StorageDomain.toStorageDomainVo(c: Connection): StorageDomainVo {
 		c.findAllFilesFromStorageDomain(id())
 
 	val type: String
-		= (if (typePresent()) type().value().uppercase() else "") +
+		= (if (typePresent()) type().name.uppercase() else "") +
 			if (masterPresent() && master()) " (Master)" else ""
 
 	val diskProfiles: List<DiskProfile> =
@@ -2403,7 +2436,7 @@ fun StorageDomain.toStorageDomainVo(c: Connection): StorageDomainVo {
 			storage().pathPresent()) storage().path() else "",
 		if (storagePresent() &&
 			storage().typePresent()) storage().type().value().uppercase() else "",
-		if (storageFormatPresent()) storageFormat().value().uppercase() else "",
+		if (storageFormatPresent()) storageFormat().name.uppercase() else "",
 		"",
 		if (availablePresent()) available() else BigInteger.ZERO,
 		if (usedPresent()) used() else BigInteger.ZERO,

@@ -514,8 +514,8 @@ fun Connection.addFenceAgent(hostId: String, agent: Agent): Agent? = try {
 private fun Connection.srvAllIscsiDetailsFromHost(hostId: String): IscsiDiscoverRequest =
 	this.srvHost(hostId).iscsiDiscover()
 
-fun Connection.findAllIscsiDetailsFromHost(hostId: String, iscsiDetails: IscsiDetails): List<IscsiDetails> =
-	this.srvAllIscsiDetailsFromHost(hostId).iscsi(iscsiDetails).send().discoveredTargets()
+fun Connection.findAllIscsiTargetsFromHost(hostId: String, iscsiDetails: IscsiDetails): List<String> =
+	this.srvAllIscsiDetailsFromHost(hostId).iscsi(iscsiDetails).send().iscsiTargets()
 
 //endregion
 

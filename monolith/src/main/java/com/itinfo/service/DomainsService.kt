@@ -25,6 +25,6 @@ interface DomainsService {
 	fun createDomain(storageDomainCreateVo: StorageDomainCreateVo)
 	fun updateDomain(storageDomainCreateVo: StorageDomainCreateVo)
 	fun removeDomain(storageDomainVo: StorageDomainVo)
-	fun iscsiDiscover(storageDomainCreateVo: StorageDomainCreateVo): List<IscsiVo>
+	fun iscsiDiscover(storageDomainCreateVo: StorageDomainCreateVo): List<String>
 	fun iscsiLogin(storageDomainCreateVo: StorageDomainCreateVo): Boolean
 }

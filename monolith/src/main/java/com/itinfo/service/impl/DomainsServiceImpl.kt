@@ -12,7 +12,7 @@ import com.itinfo.findAllVms
 import com.itinfo.findAllDiskAttachmentsFromVm
 import com.itinfo.findAllStoragesFromHost
 import com.itinfo.findAllSnapshotsFromVm
-import com.itinfo.findAllIscsiDetailsFromHost
+import com.itinfo.findAllIscsiTargetsFromHost
 import com.itinfo.findAllDiskSnapshotsFromStorageDomain
 
 import com.itinfo.findHost
@@ -72,63 +72,65 @@ class DomainsServiceImpl : DomainsService {
 	
 	override fun retrieveStorageDomains(status: String, domainType: String): List<StorageDomainVo> {
 		log.info("... retrieveStorageDomains('${status}', '${domainType}')")
-		val conn: Connection = adminConnectionService.getConnection()
-		val dataCenterId: String = conn.findAllDataCenters().first().id() // TODO: 데이터 센터 세분화
-		var storageDomains = conn.findAllStorageDomains("")
-		storageDomains = if (StorageDomainStatus.ACTIVE.value().equals(status, ignoreCase = true)) 
-			conn.findAllStorageDomains("status=active")
-		else if (StorageDomainStatus.INACTIVE.value().equals(status, ignoreCase = true)) 
-			conn.findAllStorageDomains("status!=active")
-		else 
-			conn.findAllStorageDomains("")
+		val conn: Connection =
+			adminConnectionService.getConnection()
+		val dataCenterId: String =
+			conn.findAllDataCenters().first().id() // TODO: 데이터 센터 세분화
+		val storageDomains =
+			if (StorageDomainStatus.ACTIVE.value().equals(status, ignoreCase = true))
+				conn.findAllStorageDomains("status=active")
+			else if (StorageDomainStatus.INACTIVE.value().equals(status, ignoreCase = true))
+				conn.findAllStorageDomains("status!=active")
+			else
+				conn.findAllStorageDomains("")
 		
 		val storageDomainVos: MutableList<StorageDomainVo> =
 			storageDomains.toStorageDomainVos(conn).toMutableList()
-		val diskProfiles =
+		val diskProfiles: List<DiskProfile> =
 			conn.findAllDiskProfiles()
-		storageDomains.forEach(Consumer<StorageDomain> { storageDomain: StorageDomain ->
-			if ("all" == domainType || storageDomain.type().name.equals(domainType, ignoreCase = true)) {
-				val storageDomainVo = StorageDomainVo()
-				storageDomainVo.id = storageDomain.id()
-				storageDomainVo.name = storageDomain.name()
-				storageDomainVo.type = storageDomain.type().name
-				storageDomainVo.comment = storageDomain.comment()
-				storageDomainVo.description = storageDomain.description()
-				storageDomainVo.diskFree = storageDomain.available()
-				storageDomainVo.diskUsed = storageDomain.used()
-				storageDomainVo.storageFormat = storageDomain.storageFormat().name
-				storageDomainVo.storageAddress = storageDomain.storage().address()
-				storageDomainVo.storagePath = storageDomain.storage().path()
-				storageDomainVo.storageType = storageDomain.storage().type().name
-				if (storageDomain.status() == null) {
-					try {
-						val sd: StorageDomain? =
-							conn.findAttachedStorageDomainFromDataCenter(dataCenterId, storageDomain.id())
-						storageDomainVo.status = sd?.status()?.value() ?: ""
-					} catch (e: Exception) {
-						log.error(e.localizedMessage)
-						storageDomainVo.status = ""
-					}
-				} else {
-					storageDomainVo.status = storageDomain.status().value()
-				}
-				
-				if (storageDomain.type().name == StorageDomainType.ISO.name) {
-					val files =
-						conn.findAllFilesFromStorageDomain(storageDomain.id())
-					val imageFiles = files.toImageFileVos()
-					storageDomainVo.imageFileList = imageFiles
-				}
-				for (dp in diskProfiles) {
-					if (dp.storageDomain().id() == storageDomain.id()) {
-						storageDomainVo.diskProfileId = dp.id()
-						storageDomainVo.diskProfileName = dp.name()
-						break
-					}
-				}
-				storageDomainVos.add(storageDomainVo)
-			}
-		})
+//		storageDomains.forEach(Consumer<StorageDomain> { storageDomain: StorageDomain ->
+//			if ("all" == domainType || storageDomain.type().name.equals(domainType, ignoreCase = true)) {
+//				val storageDomainVo = StorageDomainVo()
+//				storageDomainVo.id = storageDomain.id()
+//				storageDomainVo.name = storageDomain.name()
+//				storageDomainVo.type = storageDomain.type().name
+//				storageDomainVo.comment = storageDomain.comment()
+//				storageDomainVo.description = storageDomain.description()
+//				storageDomainVo.diskFree = storageDomain.available()
+//				storageDomainVo.diskUsed = storageDomain.used()
+//				storageDomainVo.storageFormat = storageDomain.storageFormat().name
+//				storageDomainVo.storageAddress = storageDomain.storage().address()
+//				storageDomainVo.storagePath = storageDomain.storage().path()
+//				storageDomainVo.storageType = storageDomain.storage().type().name
+//				if (storageDomain.status() == null) {
+//					try {
+//						val sd: StorageDomain? =
+//							conn.findAttachedStorageDomainFromDataCenter(dataCenterId, storageDomain.id())
+//						storageDomainVo.status = sd?.status()?.value() ?: ""
+//					} catch (e: Exception) {
+//						log.error(e.localizedMessage)
+//						storageDomainVo.status = ""
+//					}
+//				} else {
+//					storageDomainVo.status = storageDomain.status().value()
+//				}
+//
+//				if (storageDomain.type().name == StorageDomainType.ISO.name) {
+//					val files =
+//						conn.findAllFilesFromStorageDomain(storageDomain.id())
+//					val imageFiles = files.toImageFileVos()
+//					storageDomainVo.imageFileList = imageFiles
+//				}
+//				for (dp in diskProfiles) {
+//					if (dp.storageDomain().id() == storageDomain.id()) {
+//						storageDomainVo.diskProfileId = dp.id()
+//						storageDomainVo.diskProfileName = dp.name()
+//						break
+//					}
+//				}
+//				storageDomainVos.add(storageDomainVo)
+//			}
+//		})
 		return storageDomainVos
 	}
 
@@ -508,25 +510,18 @@ class DomainsServiceImpl : DomainsService {
 		websocketService.reload(message, "domains")
 	}
 
-	override fun iscsiDiscover(vo: StorageDomainCreateVo): List<IscsiVo> {
+	override fun iscsiDiscover(vo: StorageDomainCreateVo): List<String> {
 		log.info("... iscsiDiscover")
 		val connection: Connection =
 			adminConnectionService.getConnection()
-		val iscsisDiscovered =
-			connection.findAllIscsiDetailsFromHost(vo.hostId,
+		val iscsisDiscovered: List<String> = connection.findAllIscsiTargetsFromHost(vo.hostId,
 			Builders.iscsiDetails()
 				.address(vo.iscsi?.address)
 				.port(vo.iscsi?.port?.toInt())
 				.build()
 		)
-		return iscsisDiscovered.map { e: IscsiDetails ->
-			log.info("${e.address()}:${e.target()}")
-			val iscsi = IscsiVo()
-			iscsi.address = e.address()
-			iscsi.port = e.port().toString()
-			iscsi.target = e.target()
-			iscsi
-		}
+		// TODO: 4.5.1 이후 IscsiDetail이 사라짐
+		return iscsisDiscovered
 	}
 
 	override fun iscsiLogin(vo: StorageDomainCreateVo): Boolean {

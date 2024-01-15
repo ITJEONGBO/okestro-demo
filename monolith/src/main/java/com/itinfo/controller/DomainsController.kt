@@ -236,7 +236,7 @@ class DomainsController {
 		@RequestBody storageDomainCreateVo: StorageDomainCreateVo
 	): JSONObject {
 		log.info("... iscsiDiscover")
-		val iscsis: List<IscsiVo>
+		val iscsis: List<String>
 				= domainsService.iscsiDiscover(storageDomainCreateVo)
 		return asJsonResponse(iscsis)
 	}
