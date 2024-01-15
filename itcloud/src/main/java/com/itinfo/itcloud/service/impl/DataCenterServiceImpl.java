@@ -27,10 +27,9 @@ import java.util.Locale;
 @Slf4j
 public class DataCenterServiceImpl implements ItDataCenterService {
 
-    @Autowired
-    private AdminConnectionService adminConnectionService;
+    @Autowired private AdminConnectionService adminConnectionService;
 
-
+    // 데이터센터 리스트 불러오기
     @Override
     public List<DataCenterVo> getList(){
         Connection connection = adminConnectionService.getConnection();
@@ -39,8 +38,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         List<DataCenterVo> dcVoList = new ArrayList<>();
         DataCenterVo dcVo = null;
 
-        List<DataCenter> dataCenterList =
-                ((DataCentersService.ListResponse)systemService.dataCentersService().list().send()).dataCenters();
+        List<DataCenter> dataCenterList = ((DataCentersService.ListResponse)systemService.dataCentersService().list().send()).dataCenters();
 
         for(DataCenter dataCenter : dataCenterList){
             dcVo = new DataCenterVo();
@@ -58,6 +56,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         return dcVoList;
     }
 
+    // 데이터센터 - 스토리지
     @Override
     public List<StorageDomainVo> getStorage(String id) {
         Connection connection = adminConnectionService.getConnection();
@@ -74,15 +73,14 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
             sdVo.setId(storageDomain.id());
             sdVo.setName(storageDomain.name());
-            sdVo.setDomainType(storageDomain.type().value() + (storageDomain.master() ? "(master)" : ""));
+            sdVo.setDomainType( storageDomain.type().value() + (storageDomain.master() ? "(master)" : "") );
             sdVo.setStatus(storageDomain.status().value());     // storageDomainStatus 10개
-            sdVo.setAvailableSize(storageDomain.available()); // 여유공간
-            sdVo.setUsedSize(storageDomain.used()); // 사용된 공간
+            sdVo.setAvailableSize(storageDomain.available());   // 여유공간
+            sdVo.setUsedSize(storageDomain.used());             // 사용된 공간
             sdVo.setDiskSize(storageDomain.available().add(storageDomain.used()));
             sdVo.setDescription(storageDomain.description());
             sdVo.setDatacenterName(((DataCenterService.GetResponse) systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name());
 
-            System.out.println(((DataCenterService.GetResponse) systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name());
             sdVoList.add(sdVo);
         }
 
@@ -90,6 +88,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     }
 
 
+    // 데이터센터 - 네트워크
     @Override
     public List<NetworkVo> getNetwork(String id) {
         Connection connection = adminConnectionService.getConnection();
@@ -115,6 +114,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     }
 
 
+    // 데이터센터 - 클러스터
     @Override
     public List<ClusterVo> getCluster(String id) {
         Connection connection = adminConnectionService.getConnection();
@@ -140,6 +140,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         return cVoList;
     }
 
+    // 데이터센터 - 권한
     @Override
     public List<PermissionVo> getPermission(String id) {
         Connection connection = adminConnectionService.getConnection();
@@ -156,6 +157,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
             pVo.setPermissionId(permission.id());
             pVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name() );
 
+            // 그룹이 있고, 유저가 없을때
             if(permission.groupPresent() && !permission.userPresent()){
                 Group group =
                         ((GroupService.GetResponse)systemService.groupsService().groupService(permission.group().id()).get().send()).get();
@@ -169,7 +171,8 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                 pVoList.add(pVo);       // 그룹에 추가
             }
 
-            if(permission.userPresent() && !permission.groupPresent()){
+            // 그룹이 없고, 유저가 있을때
+            if(!permission.groupPresent() && permission.userPresent()){
                 User user =
                         ((UserService.GetResponse)systemService.usersService().userService(permission.user().id()).get().send()).user();
                 Role role =
@@ -185,6 +188,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         return pVoList;
     }
 
+    // 데이터센터 - 이벤트
     @Override
     public List<EventVo> getEvent(String id) {
         Connection connection = adminConnectionService.getConnection();
@@ -198,10 +202,13 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         DataCenter dc = ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter();
 
         for(Event event : eventList){
+            // <data_center href="" id=""> <name> </data_center>
+            // <data_center> <name> </data_center>
             if( event.dataCenterPresent() && event.dataCenter().name().equals(dc.name()) ){
                 eVo = new EventVo();
                 eVo.setDatacenterName(dc.name());
 
+                // 상태[LogSeverity] : alert, error, normal, warning
                 eVo.setSeverity(event.severity().value());
                 eVo.setTime(sdf.format(event.time()));
                 eVo.setMessage(event.description());

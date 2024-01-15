@@ -47,7 +47,7 @@ public class NetworkServiceImpl implements ItNetworkService {
             nwVo.setVdsmName(network.vdsmName());
             nwVo.setDatacenterId(network.dataCenter().id());
             nwVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(network.dataCenter().id()).get().send()).dataCenter().name() );
-//            nwVo.setPortIsolation(network.portIsolationPresent() ? network.	portIsolation() : null);        // 포트 분리, 버전문제
+            nwVo.setPortIsolation(network.	portIsolation());        // 포트 분리, 버전문제
             nwVo.setVlan(network.vlanPresent() ? network.vlan().id() : null);
 
 
@@ -57,6 +57,7 @@ public class NetworkServiceImpl implements ItNetworkService {
                 nwVo.setLabel(nl.id());
             }
 
+            //
             if(network.externalProviderPresent()) {
                 OpenStackNetworkProvider np =
                         ((OpenstackNetworkProviderService.GetResponse) systemService.openstackNetworkProvidersService().providerService(network.externalProvider().id()).get().send()).provider();

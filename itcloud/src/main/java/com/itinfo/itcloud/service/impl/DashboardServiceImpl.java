@@ -59,8 +59,7 @@ public class DashboardServiceImpl implements ItDashboardService {
 
 	// 클러스터 수
 	private void getCluster(SystemService systemService) {
-		List<Cluster> clusterList = ((ClustersService.ListResponse) systemService.clustersService().list().send()).clusters();
-		dbVo.setClusterCnt(clusterList.size());
+		dbVo.setClusterCnt( ((ClustersService.ListResponse) systemService.clustersService().list().send()).clusters().size() );
 	}
 
 	// 호스트 수
@@ -145,6 +144,7 @@ public class DashboardServiceImpl implements ItDashboardService {
 				}
 			}
 		}
+
 	}
 
 
@@ -154,7 +154,7 @@ public class DashboardServiceImpl implements ItDashboardService {
 
 		// storage datacenter 붙어있는지
 		int storageActive = (int) storageDomainList.stream()
-				.filter(storage -> !storage.dataCenters().isEmpty())
+				.filter(StorageDomain::dataCentersPresent)
 				.count();
 
 		dbVo.setStorageDomainCnt(storageDomainList.size());
@@ -163,9 +163,9 @@ public class DashboardServiceImpl implements ItDashboardService {
 
 		// 스토리지 값
 		for (StorageDomain storageDomain : storageDomainList) {
-			if (!storageDomain.dataCenters().isEmpty()) {
-				dbVo.setStorageTotal(dbVo.getStorageTotal() == null ?
-						new BigDecimal(storageDomain.available()) : dbVo.getStorageTotal().add(new BigDecimal(storageDomain.available())));
+			if (storageDomain.dataCentersPresent()) {
+				dbVo.setStorageTotal( dbVo.getStorageTotal() == null ?
+						new BigDecimal(storageDomain.available().add(storageDomain.used())) : dbVo.getStorageTotal().add(new BigDecimal(storageDomain.available().add(storageDomain.used()))) );
 
 				dbVo.setStorageUsed(dbVo.getStorageUsed() == null ?
 						new BigDecimal(storageDomain.used()) : dbVo.getStorageUsed().add(new BigDecimal(storageDomain.used())));
