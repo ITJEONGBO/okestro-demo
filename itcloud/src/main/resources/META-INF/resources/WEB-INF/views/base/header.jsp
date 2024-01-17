@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -16,87 +17,260 @@
                     border: #535c55 1px solid;
                     border-collapse: collapse;
             }
-
             tr,td{
                 border: #535c55 1px solid;
-
                 padding: 10px;
             }
         </style>
     </head>
 
+
     <body class="sb-nav-fixed">
 
+
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <div class="sb-nav-link-icon">&nbsp;&nbsp;<img src="/svg/logo.png" alt="회사로고" width="40" height="auto" /> </div>
             <a class="navbar-brand ps-3" href="/dashboard">IT Cloud</a>
-            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
         </nav>
 
         <div id="layoutSidenav">
             <div id="layoutSidenav_nav">
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <!-- 왼쪽 메뉴 -->
                     <div class="sb-sidenav-menu">
-                        <div class="nav">
 
-                            <a class="nav-link" href="/dashboard">
-                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                                대시보드
+                    <div class="nav" >
+                        <a class="nav-link" href="/dashboard">
+                            <div class="sb-nav-link-icon"><i class="fa-solid fa-window-restore"></i></div>
+                            대시보드
+                        </a>
+                        <a class="nav-link" href="/setting">
+                            <div class="sb-nav-link-icon"><i class="fa-solid fa-gear"></i></div>
+                            설정
+                        </a>
+
+                    <div class="sb-sidenav-menu-heading">itCloud</div>
+
+                        <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+                          <ul class="navbar-nav" style="margin-bottom: 1px">
+
+                            <li class="nav-item">
+                              <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                                <img src="/svg/dc.png" alt="컴퓨팅" width="30" height="auto" />
+                              </a>
+                            </li>
+
+                            <li class="nav-item">
+                              <a class="nav-link collapsed" href="#"  data-bs-toggle="collapse" data-bs-target="#collapseLayouts2" aria-expanded="false" aria-controls="collapseLayouts2">
+                                <img src="/svg/tm.png" alt="템플릿" width="30" height="auto" />
+                              </a>
+                            </li>
+
+                            <li class="nav-item">
+                              <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts3" aria-expanded="false" aria-controls="collapseLayouts3">
+                                <img src="/svg/n.png" alt="네트워크" width="30" height="auto" />
+                              </a>
+                            </li>
+
+                            <li class="nav-item">
+                              <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts5" aria-expanded="false" aria-controls="collapseLayouts5">
+                                <img src="/svg/s.png" alt="스토리지" width="30" height="auto" />
+                              </a>
+                            </li>
+
+                          </ul>
+
+                       </nav>
+
+
+                       <div>
+                         <div class="collapse" id="collapseLayouts"  data-bs-parent="#sidenavAccordion">
+
+                         		<c:forEach var="dc" items="${m.datacenter}" varStatus="status">
+                         			<c:if test="${empty m.datacenter}">
+                         				비었음
+                         			</c:if>
+
+                         			<a class="nav-link" href="/computing/datacenter-storage?id=${dc.id}">
+                         				 <img src="/svg/dcc.png" alt="vm" width="25" height="auto" />&nbsp; ${dc.name}
+                         			</a>
+
+                         			 <c:forEach var="c" items="${m.cluster}" varStatus="status">
+
+                         				<c:if test="${empty m.cluster}">
+                         					비었음
+                         				</c:if>
+
+                         				<c:if test="${dc.id eq c.datacenterId}">
+
+                         					<ul id="sub">
+                         						<li>
+                         							<a class="nav-link" href="/computing/cluster?id=${c.id}">
+                         								  <img src="/svg/dc.png" alt="cluster" width="25" height="auto" />&nbsp;${c.name}
+                         						    </a>
+
+                         							<c:forEach var="h" items="${m.host}" varStatus="status">
+                         								<c:if test="${empty m.host}">
+                         									</li>
+
+                         								</c:if>
+
+                         								<c:if test="${c.id eq h.clusterId}">
+                         									<ul id="sub">
+                                                                 <li>
+                         											<a class="nav-link" href="/computing/host?id=${h.id}">
+                                                                         <img src="/svg/h.png" alt="vm" width="25" height="auto" />&nbsp;${h.name}
+                                                                     </a>
+                         								</c:if>
+
+                         								<c:forEach var="vm" items="${m.vm}" varStatus="status">
+                         									<c:if test="${empty m.vm}">
+                         										</li>
+                         										</ul>
+                         										</li>
+                         										</ul>
+                         									</c:if>
+
+                         									<c:if test="${h.id eq vm.hostId}">
+
+                         										<ul id="sub">
+                         											<li>
+                         												<a class="nav-link" href="/computing/vm?id=${vm.id}">
+                         													<img src="/svg/vm.png" alt="vm" width="25" height="auto" />&nbsp;${vm.name}
+                         												</a>
+                         											</li>
+                         										</ul>
+                         										</li>
+                         										</ul>
+                         										</li>
+                         										</ul>
+                         									</c:if>
+                         							    </c:forEach>
+                         							</c:forEach>
+
+                         				</c:if>
+
+                         			 </c:forEach>
+                         		</c:forEach>
+
+                         </div>
+
+                    <!-- 템플릿 포함 데이터센터 그거 -->
+                         <div class="collapse" id="collapseLayouts2" data-bs-parent="#sidenavAccordion">
+
+                         <c:if test="${empty m.datacenter}">
+                             비었음
+                         </c:if>
+                         <c:forEach var="dc" items="${m.datacenter}" varStatus="status">
+                             <a class="nav-link" href="/computing/datacenter-storage?id=${dc.id}">
+                                 <img src="/svg/dcc.png" alt="vm" width="25" height="auto" />&nbsp; ${dc.name}
+                             </a>
+                         </c:forEach>
+                         <ul id="sub">
+                             <li>
+                                 <c:if test="${empty m.cluster}">
+                                     비었음
+                                 </c:if>
+                                 <c:forEach var="c" items="${m.cluster}" varStatus="status">
+                                     <a class="nav-link" href="/computing/cluster?id=${c.id}">
+                                         <img src="/svg/dc.png" alt="cluster" width="25" height="auto" />&nbsp;${c.name}
+                                     </a>
+                                 </c:forEach>
+
+                                 <ul id="sub">
+                                     <li>
+                                         <c:if test="${empty m.host}">
+                                             비었음
+                                         </c:if>
+                                         <c:forEach var="h" items="${m.host}" varStatus="status">
+                                             <a class="nav-link" href="/computing/host?id=${h.id}">
+                                                 <img src="/svg/h.png" alt="host" width="25" height="auto" />&nbsp;${h.name}
+                                             </a>
+                                         </c:forEach>
+                                         <ul id="sub">
+                                             <li>
+                                                 <c:if test="${empty m.vm}">
+                                                     비었음
+                                                 </c:if>
+                                                 <c:forEach var="vm" items="${m.vm}" varStatus="status">
+                                                     <a class="nav-link" href="/computing/vm?id=${vm.id}">
+                                                         <img src="/svg/vm.png" alt="host" width="25" height="auto" />&nbsp;${vm.name}
+                                                     </a>
+                                                 </c:forEach>
+                                             </li>
+                                         </ul>
+                                     </li>
+                                 </ul>
+                             </li>
+                         </ul>
+
+
+                         <!--  과거버전
+                            <a class="nav-link" href="/computing/datacenters">
+                                 <img src="/svg/dcc.png" alt="vm" width="25" height="auto" />&nbsp;데이터센터
                             </a>
+                            <ul id="sub">
+                                 <li>
+                                     <a class="nav-link" href="/computing/clusters">
+                                         <img src="/svg/dc.png" alt="vm" width="25" height="auto" />&nbsp;클러스터
+                                     </a>
+                                     <ul id="sub">
+                                         <li>
+                                             <a class="nav-link" href="/computing/hosts">
+                                                 <img src="/svg/h.png" alt="vm" width="25" height="auto" />&nbsp;호스트
+                                             </a>
+                                             <ul id="sub">
+                                                 <li>
+                                                     <a class="nav-link" href="/computing/vms">
+                                                         <img src="/svg/vm.png" alt="vm" width="25" height="auto" />&nbsp;가상머신
+                                                     </a>
+                                                     <a class="nav-link" href="/computing/templates">
+                                                         <img src="/svg/vm.png" alt="tm" width="25" height="auto" />&nbsp;템플릿
+                                                     </a>
+                                                 </li>
+                                             </ul>
+                                         </li>
+                                     </ul>
+                                 </li>
+                            </ul>
+                          -->
 
-                            <div class="sb-sidenav-menu-heading">ovirt</div>
+                         </div>
 
-                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
-                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                                컴퓨팅
-                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                            </a>
-                            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                                <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="/computing/datacenters">데이터센터</a>
-                                    <a class="nav-link" href="/computing/clusters">클러스터</a>
-                                    <a class="nav-link" href="/computing/hosts">호스트</a>
-                                    <a class="nav-link" href="/computing/vms">가상머신</a>
-                                    <a class="nav-link" href="/computing/templates">템플릿</a>
-                                </nav>
-                            </div>
+                         <div class="collapse" id="collapseLayouts3" data-bs-parent="#sidenavAccordion">
+                         <ul>
+                             <li>
+                                  <a class="nav-link" href="/network/vnicProfiles">vNIC 프로파일</a>
+                                  <c:if test="${empty m.vnic}">
+                                      비었음
+                                  </c:if>
+                                  <c:forEach var="v" items="${m.vnic}" varStatus="status">
+                                      <a class="nav-link" href="/network/vnicProfile-vm?id=${v.id}">&nbsp;${v.name}</a>
+                                  </c:forEach>
+                             </li>
+                              <li>
+                                   <a class="nav-link" href="/network/networks">네트워크</a>
+                                   <c:if test="${empty m.network}">
+                                       비었음
+                                   </c:if>
+                                   <c:forEach var="n" items="${m.network}" varStatus="status">
+                                       <a class="nav-link" href="/network/network?id=${n.id}">&nbsp;${n.name}</a>
+                                   </c:forEach>
+                              </li>
+                         </ul>
 
-                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts2" aria-expanded="false" aria-controls="collapseLayouts2">
-                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                                네트워크
-                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                            </a>
-                            <div class="collapse" id="collapseLayouts2" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                                <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="/network/vnicProfiles">vNIC 프로파일</a>
-                                    <a class="nav-link" href="/network/networks">네트워크</a>
-                                </nav>
-                            </div>
 
-                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts3" aria-expanded="false" aria-controls="collapseLayouts3">
-                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                                스토리지
-                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                            </a>
-                            <div class="collapse" id="collapseLayouts3" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                                <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="/storage/storageDomains">도메인</a>
-                                    <a class="nav-link" href="/storage/volumes">볼륨</a>
-                                    <a class="nav-link" href="/storage/disks">디스크</a>
-                                </nav>
-                            </div>
+                         </div>
 
-                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts5" aria-expanded="false" aria-controls="collapseLayouts5">
-                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                            관리
-                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                            </a>
-                            <div class="collapse" id="collapseLayouts5" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                                <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="/setting">사용자</a>
-                                </nav>
-                            </div>
+                         <div class="collapse" id="collapseLayouts5" data-bs-parent="#sidenavAccordion">
+                            <a class="nav-link" href="/storage/storageDomains">도메인</a>
+                            <a class="nav-link" href="/storage/volumes">볼륨</a>
+                            <a class="nav-link" href="/storage/disks">디스크</a>
+                         </div>
 
-                        </div>
+                       </div>
+
+                    </div>
                     </div>
                 </nav>
             </div>

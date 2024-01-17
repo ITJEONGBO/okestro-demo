@@ -1,9 +1,12 @@
 package com.itinfo.itcloud.dao;
 
+import com.itinfo.itcloud.model.MenuVo;
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class DashboardDAO {
+public class DashboardDao {
+
 /*
 	public List<HostVO> retrieveHosts(List<String> ids) {
 		return SqlSession.selectList("Dashboard.retrieveHosts", ids);

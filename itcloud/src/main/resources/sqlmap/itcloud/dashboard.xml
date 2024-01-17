@@ -6,6 +6,12 @@
 <!--com.itinfo.itcloud.dashboard-->
 <mapper namespace="Dashboard">
 
+    <select id="showMenu"  resultType="String">
+        select distinct datacenter_id, datacenter_name
+        from datacenter_configuration;
+    </select>
+
+
     <!--<select id="retrieveHosts" parameterType="java.util.List" resultType="com.itinfo.itcloud.model.computing.HostVO">
         /*
             EXTRACT 추출

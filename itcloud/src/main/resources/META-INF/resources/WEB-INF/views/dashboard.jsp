@@ -2,7 +2,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 <html lang="en">
-<%@ include file="base/header.jsp" %>
+<jsp:include page="base/header.jsp" />
+
 
         <div id="layoutSidenav_content">
             <main>

@@ -1,8 +1,10 @@
 package com.itinfo.itcloud.controller;
 
 import com.itinfo.itcloud.model.DashboardVo;
+import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.service.ItDashboardService;
 
+import com.itinfo.itcloud.service.ItMenuService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,12 +19,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class DashboardController {
 
 	private final ItDashboardService itDashboardService;
+	private final ItMenuService menu;
 
 	// dashboard 화면
 	@GetMapping("/dashboard")
 	public String dashboard(Model model) {
 		DashboardVo dashboard = itDashboardService.getDashboard();
 		model.addAttribute("dashboard", dashboard);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		log.info("---/dashboard");
 		return "dashboard";
 	}
@@ -40,5 +47,6 @@ public class DashboardController {
 		log.info("---/dashboardStatus");
 		return dashboardStatus;
 	}
+
 }
 

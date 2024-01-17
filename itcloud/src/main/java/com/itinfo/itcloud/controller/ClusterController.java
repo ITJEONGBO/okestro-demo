@@ -1,9 +1,11 @@
 package com.itinfo.itcloud.controller;
 
+import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.service.ItClusterService;
 
+import com.itinfo.itcloud.service.ItMenuService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,11 +22,16 @@ import java.util.List;
 @Slf4j
 public class ClusterController {
 	private final ItClusterService itClusterService;
+	private final ItMenuService menu;
 
 	@GetMapping("/computing/clusters")
 	public String clusters(Model model) {
 		List<ClusterVo> clusterVOList = itClusterService.getList();
 		model.addAttribute("clusters", clusterVOList);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		log.info("---clusters");
 		return "computing/clusters";
 	}

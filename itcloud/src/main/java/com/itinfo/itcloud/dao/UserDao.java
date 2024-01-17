@@ -4,7 +4,7 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public class UserDAO {
+public class UserDao {
 
 /*
 	public int getTestValue() {
