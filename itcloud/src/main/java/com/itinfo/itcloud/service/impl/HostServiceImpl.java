@@ -215,22 +215,15 @@ public class HostServiceImpl implements ItHostService {
                 vmVo.setFqdn(vm.fqdn());
 
                 // uptime 계산
-                if(vm.status().value().equals("up") && vm.startTimePresent()) {
-                    vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60*60*24) );
-                }
-                else if(vm.status().value().equals("up") && !vm.startTimePresent() && vm.creationTimePresent()) {
-                    vmVo.setUpTime( (now.getTime() - vm.creationTime().getTime()) / (1000*60*60*24) );
-                }
+//                if(vm.status().value().equals("up") && vm.startTimePresent()) {
+//                    vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60*60*24) );
+//                }
+//                else if(vm.status().value().equals("up") && !vm.startTimePresent() && vm.creationTimePresent()) {
+//                    vmVo.setUpTime( (now.getTime() - vm.creationTime().getTime()) / (1000*60*60*24) );
+//                }
 
 //                vmVo.setStartTime(vm.startTimePresent() ? vm.startTime() : null);
 
-                // uptime 계산
-                if(vm.status().value().equals("up") && vm.startTimePresent()) {
-                    vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60*60*24) );
-                }
-                else if(vm.status().value().equals("up") && !vm.startTimePresent() && vm.creationTimePresent()) {
-                    vmVo.setUpTime( (now.getTime() - vm.creationTime().getTime()) / (1000*60*60*24) );
-                }
 
                 if(!vm.status().value().equals("down")){
                     // ipv4 부분. vms-nic-reporteddevice

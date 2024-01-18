@@ -50,6 +50,9 @@ public class ClusterController {
 		ClusterVo cluster = itClusterService.getInfo(id);
 		model.addAttribute("cluster", cluster);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		log.info("---cluster: " + id);
 
 		return "computing/cluster";
@@ -68,6 +71,9 @@ public class ClusterController {
 		List<NetworkVo> network = itClusterService.getNetwork(id);
 		model.addAttribute("network", network);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		log.info("---cluster-network: " + id);
 
 		return "computing/cluster-network";
@@ -88,6 +94,9 @@ public class ClusterController {
 		model.addAttribute("hosts", hosts);
 		model.addAttribute("id", id);
 
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		return "computing/cluster-host";
 	}
 
@@ -106,6 +115,9 @@ public class ClusterController {
 		model.addAttribute("vms", vms);
 		model.addAttribute("id", id);
 
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		return "computing/cluster-vm";
 	}
 
@@ -122,6 +134,9 @@ public class ClusterController {
 		List<AffinityGroupVo> aff = itClusterService.getAffinitygroups(id);
 		model.addAttribute("aff", aff);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		return "computing/cluster-affGroup";
 	}
 
@@ -138,6 +153,9 @@ public class ClusterController {
 		List<AffinityLabelVo> aff = itClusterService.getAffinitylabels(id);
 		model.addAttribute("aff", aff);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 
 		return "computing/cluster-affLabel";
 	}
@@ -174,6 +192,9 @@ public class ClusterController {
 		model.addAttribute("permission", permission);
 		model.addAttribute("id", id);
 
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		return "computing/cluster-permission";
 	}
 
@@ -190,6 +211,9 @@ public class ClusterController {
 		List<EventVo> event = itClusterService.getEvent(id);
 		model.addAttribute("event", event);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 
 		return "computing/cluster-event";
 	}

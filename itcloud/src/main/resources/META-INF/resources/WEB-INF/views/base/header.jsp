@@ -10,7 +10,7 @@
         <title>IT Cloud</title>
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
         <link href="/css/styles.css" rel="stylesheet" />
-        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+
 
         <style>
             table{
@@ -21,6 +21,7 @@
                 border: #535c55 1px solid;
                 padding: 10px;
             }
+
         </style>
     </head>
 
@@ -86,74 +87,74 @@
                        <div>
                          <div class="collapse" id="collapseLayouts"  data-bs-parent="#sidenavAccordion">
 
-                         		<c:forEach var="dc" items="${m.datacenter}" varStatus="status">
-                         			<c:if test="${empty m.datacenter}">
-                         				비었음
-                         			</c:if>
+                        <c:choose>
+                            <c:when test="${not empty m.datacenter}">
+                                <ul id="desc">
+                                    <c:forEach var="dc" items="${m.datacenter}">
+                                        <li id="desc">
 
-                         			<a class="nav-link" href="/computing/datacenter-storage?id=${dc.id}">
-                         				 <img src="/svg/dcc.png" alt="vm" width="25" height="auto" />&nbsp; ${dc.name}
-                         			</a>
+                                            <a href="/computing/datacenter-storage?id=${dc.id}" style="text-decoration-line: none" >
+                                                <img src="/svg/dcc.png" alt="vm" width="20" height="auto" />
+                                            </a>
+                                            <a data-bs-toggle="collapse" href="#collapseDatacenter-${dc.id}" style="text-decoration-line: none; color: grey;">
+                                                ${dc.name}
+                                            </a>
 
-                         			 <c:forEach var="c" items="${m.cluster}" varStatus="status">
+                                            <div class="collapse" id="collapseDatacenter-${dc.id}">
+                                                <ul id="desc">
+                                                    <c:forEach var="c" items="${m.cluster}">
+                                                        <c:if test="${dc.id eq c.datacenterId}">
+                                                            <li>
+                                                                <a href="/computing/cluster?id=${c.id}" style="text-decoration-line: none">
+                                                                    <img src="/svg/dc.png" alt="cluster" width="20" height="auto" />
+                                                                </a>
+                                                                <a data-bs-toggle="collapse" href="#collapseCluster-${c.id}" style="text-decoration-line: none; color: grey;">
+                                                                     ${c.name}
+                                                                </a>
+                                                                <div class="collapse" id="collapseCluster-${c.id}">
+                                                                    <ul id="desc">
+                                                                        <c:forEach var="h" items="${m.host}">
+                                                                            <c:if test="${c.id eq h.clusterId}">
+                                                                                <li>
+                                                                                    <a href="/computing/host?id=${h.id}" style="text-decoration-line: none">
+                                                                                        <img src="/svg/h.png" alt="vm" width="20" height="auto" />
+                                                                                    </a>
+                                                                                    <a data-bs-toggle="collapse" href="#collapseHost-${h.id}" style="text-decoration-line: none; color: grey;">
+                                                                                        ${h.name}
+                                                                                    </a>
+                                                                                    <div class="collapse" id="collapseHost-${h.id}">
+                                                                                        <ul id="desc">
+                                                                                            <c:forEach var="vm" items="${m.vm}">
+                                                                                                <c:if test="${h.id eq vm.hostId}">
+                                                                                                    <li>
+                                                                                                        <a href="/computing/vm?id=${vm.id}" style="text-decoration-line: none; color: grey;">
+                                                                                                            <img src="/svg/vm.png" alt="vm" width="20" height="auto" />&nbsp;${vm.name}
+                                                                                                        </a>
+                                                                                                    </li>
+                                                                                                </c:if>
+                                                                                            </c:forEach>
+                                                                                        </ul>
+                                                                                    </div>
+                                                                                </li>
+                                                                            </c:if>
+                                                                        </c:forEach>
+                                                                    </ul>
+                                                                </div>
+                                                            </li>
+                                                        </c:if>
+                                                    </c:forEach>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                    </c:forEach>
+                                </ul>
+                            </c:when>
+                            <c:otherwise>
+                                비었음
+                            </c:otherwise>
+                        </c:choose>
 
-                         				<c:if test="${empty m.cluster}">
-                         					비었음
-                         				</c:if>
-
-                         				<c:if test="${dc.id eq c.datacenterId}">
-
-                         					<ul id="sub">
-                         						<li>
-                         							<a class="nav-link" href="/computing/cluster?id=${c.id}">
-                         								  <img src="/svg/dc.png" alt="cluster" width="25" height="auto" />&nbsp;${c.name}
-                         						    </a>
-
-                         							<c:forEach var="h" items="${m.host}" varStatus="status">
-                         								<c:if test="${empty m.host}">
-                         									</li>
-
-                         								</c:if>
-
-                         								<c:if test="${c.id eq h.clusterId}">
-                         									<ul id="sub">
-                                                                 <li>
-                         											<a class="nav-link" href="/computing/host?id=${h.id}">
-                                                                         <img src="/svg/h.png" alt="vm" width="25" height="auto" />&nbsp;${h.name}
-                                                                     </a>
-                         								</c:if>
-
-                         								<c:forEach var="vm" items="${m.vm}" varStatus="status">
-                         									<c:if test="${empty m.vm}">
-                         										</li>
-                         										</ul>
-                         										</li>
-                         										</ul>
-                         									</c:if>
-
-                         									<c:if test="${h.id eq vm.hostId}">
-
-                         										<ul id="sub">
-                         											<li>
-                         												<a class="nav-link" href="/computing/vm?id=${vm.id}">
-                         													<img src="/svg/vm.png" alt="vm" width="25" height="auto" />&nbsp;${vm.name}
-                         												</a>
-                         											</li>
-                         										</ul>
-                         										</li>
-                         										</ul>
-                         										</li>
-                         										</ul>
-                         									</c:if>
-                         							    </c:forEach>
-                         							</c:forEach>
-
-                         				</c:if>
-
-                         			 </c:forEach>
-                         		</c:forEach>
-
-                         </div>
+                       </div>
 
                     <!-- 템플릿 포함 데이터센터 그거 -->
                          <div class="collapse" id="collapseLayouts2" data-bs-parent="#sidenavAccordion">

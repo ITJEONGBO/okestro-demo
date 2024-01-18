@@ -1,8 +1,10 @@
 package com.itinfo.itcloud.controller;
 
+import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.service.ItHostService;
 
+import com.itinfo.itcloud.service.ItMenuService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,11 +22,15 @@ import java.util.List;
 public class HostController {
 
 	private final ItHostService itHostService;
+	private final ItMenuService menu;
 
 	@GetMapping("/computing/hosts")
 	public String hosts(Model model) {
 		List<HostVo> hosts = itHostService.getList();
 		model.addAttribute("hosts", hosts);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		log.info("***** hosts 목록 화면출력");
 
 		return "computing/hosts";
@@ -45,6 +51,9 @@ public class HostController {
 		model.addAttribute("host", host);
 		model.addAttribute("id", id);
 
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		return "computing/host";
 	}
 
@@ -63,6 +72,9 @@ public class HostController {
 		model.addAttribute("vm", vm);
 		model.addAttribute("id", id);
 
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		return "computing/host-vm";
 	}
 
@@ -78,6 +90,9 @@ public class HostController {
 		List<NicVo> nic = itHostService.getNic(id);
 		model.addAttribute("nic", nic);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 
 		return "computing/host-nic";
 	}
@@ -96,6 +111,9 @@ public class HostController {
 		model.addAttribute("device", device);
 		model.addAttribute("id", id);
 
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		return "computing/host-device";
 	}
 
@@ -111,6 +129,9 @@ public class HostController {
 		List<PermissionVo> permission = itHostService.getPermission(id);
 		model.addAttribute("permission", permission);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 
 		return "computing/host-permission";
 	}
@@ -130,6 +151,9 @@ public class HostController {
 		model.addAttribute("aff", aff);
 		model.addAttribute("id", id);
 
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		return "computing/host-aff";
 	}
 
@@ -146,6 +170,9 @@ public class HostController {
 		List<EventVo> event = itHostService.getEvent(id);
 		model.addAttribute("event", event);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 
 		return "computing/host-event";
 	}

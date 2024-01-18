@@ -1,7 +1,9 @@
 package com.itinfo.itcloud.controller;
 
+import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
+import com.itinfo.itcloud.service.ItMenuService;
 import com.itinfo.itcloud.service.ItVnicService;
 import org.springframework.ui.Model;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +20,15 @@ import java.util.List;
 public class VnicProfileController {
 
     private final ItVnicService itVnicService;
+    private final ItMenuService menu;
 
     @GetMapping("/network/vnicProfiles")
     public String vnicProfiles(Model model){
         List<VnicProfileVo> vnics = itVnicService.getVnics();
         model.addAttribute("vnics", vnics);
+
+        MenuVo m = menu.getMenu();
+        model.addAttribute("m", m);
         log.info("---vnics");
         return "/network/vnicProfiles";
     }
@@ -40,6 +46,9 @@ public class VnicProfileController {
         List<VmVo> nicVm = itVnicService.getVmNics(id);
         model.addAttribute("nicVm", nicVm);
         model.addAttribute("id", id);
+
+        MenuVo m = menu.getMenu();
+        model.addAttribute("m", m);
         log.info("---nicVm");
         return "/network/vnicProfile-vm";
     }
@@ -58,6 +67,9 @@ public class VnicProfileController {
         List<TemplateVo> template = itVnicService.getTemplates(id);
         model.addAttribute("template", template);
         model.addAttribute("id", id);
+
+        MenuVo m = menu.getMenu();
+        model.addAttribute("m", m);
         log.info("---nicVm");
         return "/network/vnicProfile-template";
     }
@@ -76,6 +88,9 @@ public class VnicProfileController {
         List<PermissionVo> permission = itVnicService.getPermission(id);
         model.addAttribute("permission", permission);
         model.addAttribute("id", id);
+
+        MenuVo m = menu.getMenu();
+        model.addAttribute("m", m);
         log.info("---permission");
         return "/network/vnicProfile-permission";
     }

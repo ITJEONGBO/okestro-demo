@@ -1,7 +1,9 @@
 package com.itinfo.itcloud.controller;
 
+import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.network.*;
+import com.itinfo.itcloud.service.ItMenuService;
 import com.itinfo.itcloud.service.ItNetworkService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,12 +20,16 @@ import java.util.List;
 public class NetworkController {
 
 	private final ItNetworkService itNetworkService;
+	private final ItMenuService menu;
 
 
 	@GetMapping("/network/networks")
 	public String networks(Model model){
 		List<NetworkVo> networks = itNetworkService.getList();
 		model.addAttribute("networks", networks);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		return "/network/networks";
 	}
 
@@ -39,6 +45,9 @@ public class NetworkController {
 		NetworkVo network = itNetworkService.getNetwork(id);
 		model.addAttribute("network", network);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		return "/network/network";
 	}
 
@@ -53,6 +62,9 @@ public class NetworkController {
 		List<VnicProfileVo> vnic = itNetworkService.getVnic(id);
 		model.addAttribute("vnic", vnic);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 
 		return "/network/network-vnicProfile";
 	}
@@ -70,6 +82,9 @@ public class NetworkController {
 		model.addAttribute("cluster", cluster);
 		model.addAttribute("id", id);
 
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		return "/network/network-cluster";
 	}
 
@@ -85,6 +100,9 @@ public class NetworkController {
 		List<NetworkHostVo> host = itNetworkService.getHost(id);
 		model.addAttribute("host", host);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 
 		return "/network/network-host";
 	}
@@ -102,6 +120,9 @@ public class NetworkController {
 		model.addAttribute("vm", vm);
 		model.addAttribute("id", id);
 
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		return "/network/network-vm";
 	}
 
@@ -118,6 +139,9 @@ public class NetworkController {
 		model.addAttribute("template", template);
 		model.addAttribute("id", id);
 
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		return "/network/network-template";
 	}
 
@@ -133,6 +157,9 @@ public class NetworkController {
 		List<PermissionVo> permission = itNetworkService.getPermission(id);
 		model.addAttribute("permission", permission);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 
 		return "/network/network-permission";
 	}

@@ -1,8 +1,10 @@
 package com.itinfo.itcloud.controller;
 
+import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.storage.DiskVo;
 import com.itinfo.itcloud.model.storage.StorageDomainVo;
+import com.itinfo.itcloud.service.ItMenuService;
 import com.itinfo.itcloud.service.ItStorageDomainService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,11 +22,15 @@ import java.util.List;
 @Slf4j
 public class StorageDomainController {
 	private final ItStorageDomainService itStorageDomainService;
+	private final ItMenuService menu;
 
 	@GetMapping("/storage/storageDomains")
 	public String domains(Model model){
 		List<StorageDomainVo> domains = itStorageDomainService.getList();
 		model.addAttribute("domains", domains);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		return "storage/storageDomains";
 	}
 
@@ -40,6 +46,9 @@ public class StorageDomainController {
 		StorageDomainVo domain = itStorageDomainService.getDomain(id);
 		model.addAttribute("domain", domain);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		return "storage/storageDomain";
 	}
 
@@ -55,6 +64,9 @@ public class StorageDomainController {
 		List<DataCenterVo> datacenter = itStorageDomainService.getDatacenter(id);
 		model.addAttribute("datacenter", datacenter);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		return "storage/storageDomain-datacenter";
 	}
 
@@ -70,6 +82,9 @@ public class StorageDomainController {
 		List<VmVo> vm = itStorageDomainService.getVm(id);
 		model.addAttribute("vm", vm);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		return "storage/storageDomain-vm";
 	}
 
@@ -86,6 +101,9 @@ public class StorageDomainController {
 		List<TemplateVo> template = itStorageDomainService.getTemplate(id);
 		model.addAttribute("template", template);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		return "storage/storageDomain-template";
 	}
 
@@ -101,6 +119,9 @@ public class StorageDomainController {
 		List<DiskVo> disk = itStorageDomainService.getDisk(id);
 		model.addAttribute("disk", disk);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		return "storage/storageDomain-disk";
 	}
 
@@ -131,6 +152,9 @@ public class StorageDomainController {
 		List<EventVo> event = itStorageDomainService.getEvent(id);
 		model.addAttribute("event", event);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		return "storage/storageDomain-event";
 	}
 
@@ -146,6 +170,9 @@ public class StorageDomainController {
 		List<PermissionVo> permission = itStorageDomainService.getPermission(id);
 		model.addAttribute("permission", permission);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		return "storage/storageDomain-permission";
 	}
 

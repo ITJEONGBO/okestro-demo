@@ -172,11 +172,11 @@ public class ClusterServiceImpl implements ItClusterService {
                 vmVo.setClusterName( ((ClusterService.GetResponse)systemService.clustersService().clusterService(id).get().send()).cluster().name() );
 
                 // uptime 계산
-                if(vm.status().value().equals("up") && vm.startTimePresent()) {
-                    vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60) );
-                }else if(vm.status().value().equals("up") && !vm.startTimePresent() && vm.creationTimePresent()) {
-                    vmVo.setUpTime( (now.getTime() - vm.creationTime().getTime()) / (1000*60) );
-                }
+//                if(vm.status().value().equals("up") && vm.startTimePresent()) {
+//                    vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60) );
+//                }else if(vm.status().value().equals("up") && !vm.startTimePresent() && vm.creationTimePresent()) {
+//                    vmVo.setUpTime( (now.getTime() - vm.creationTime().getTime()) / (1000*60) );
+//                }
 
                 // ip 주소
                 List<Nic> nicList =

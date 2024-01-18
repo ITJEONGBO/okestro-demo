@@ -64,7 +64,7 @@ public class ItMenuService {
             HostVo hVo = new HostVo();
             hVo.setId(host.id());
             hVo.setName(host.name());
-            hVo.setClusterId(host.cluster().id());
+            hVo.setClusterId(host.clusterPresent() ? host.cluster().id() : null);
             hVoList.add(hVo);
         }
         m.setHost(hVoList);
@@ -74,7 +74,8 @@ public class ItMenuService {
             VmVo vmVo = new VmVo();
             vmVo.setId(vm.id());
             vmVo.setName(vm.name());
-            vmVo.setHostId(vm.host().id());
+            vmVo.setHostId(vm.hostPresent() ? vm.host().id() : null);
+            vmVo.setStatus(vm.status().value());
             vmVoList.add(vmVo);
         }
         m.setVm(vmVoList);

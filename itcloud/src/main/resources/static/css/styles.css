@@ -11244,7 +11244,10 @@ body {
 
 
 
-ul li {
+ul li{
     list-style-type: none;
-    padding-inline-start: 0em;
+}
+
+#desc{
+    margin-left: -10px;
 }

@@ -15,7 +15,7 @@ public class VmVo {
     private String status;
     private String description;
     private String fqdn;
-    private long upTime;
+    private String upTime;
 
     private String osSystem;
     private String chipsetFirmwareType; // bios.type

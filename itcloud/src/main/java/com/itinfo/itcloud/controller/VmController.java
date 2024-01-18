@@ -1,6 +1,8 @@
 package com.itinfo.itcloud.controller;
 
+import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.service.ItMenuService;
 import com.itinfo.itcloud.service.ItVmService;
 import com.itinfo.itcloud.service.ItSystemPropertyService;
 
@@ -20,12 +22,16 @@ import java.util.List;
 public class VmController {
 	private final ItVmService itVmService;
 	private final ItSystemPropertyService itSystemPropertyService;
+	private final ItMenuService menu;
 
 
 	@GetMapping("/computing/vms")
 	public String vmList(Model model) {
 		List<VmVo> vms = itVmService.getList();
 		model.addAttribute("vms", vms);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		return "computing/vms";
 	}
 
@@ -48,6 +54,9 @@ public class VmController {
 		model.addAttribute("vm", vm);
 		model.addAttribute("id", id);
 
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		return "computing/vm";
 	}
 
@@ -65,6 +74,9 @@ public class VmController {
 		model.addAttribute("nic", nic);
 		model.addAttribute("id", id);
 
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		return "computing/vm-nic";
 	}
 
@@ -81,6 +93,9 @@ public class VmController {
 		List<VmDiskVo> disk = itVmService.getDisk(id);
 		model.addAttribute("disk", disk);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 
 		return "computing/vm-disk";
 	}
@@ -100,6 +115,9 @@ public class VmController {
 		model.addAttribute("snapshot", snapshot);
 		model.addAttribute("id", id);
 
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		return "computing/vm-snapshot";
 	}
 
@@ -116,6 +134,9 @@ public class VmController {
 		List<ApplicationVo> app = itVmService.getApplication(id);
 		model.addAttribute("app", app);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 
 		return "computing/vm-application";
 	}
@@ -134,6 +155,9 @@ public class VmController {
 		model.addAttribute("aff", aff);
 		model.addAttribute("id", id);
 
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		return "computing/vm-affGroup";
 	}
 
@@ -150,6 +174,9 @@ public class VmController {
 		List<AffinityLabelVo> aff = itVmService.getAffinitylabel(id);
 		model.addAttribute("aff", aff);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 
 		return "computing/vm-affLabel";
 	}
@@ -168,6 +195,9 @@ public class VmController {
 		model.addAttribute("guest", guest);
 		model.addAttribute("id", id);
 
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		return "computing/vm-guest";
 	}
 
@@ -185,6 +215,9 @@ public class VmController {
 		model.addAttribute("permission", permission);
 		model.addAttribute("id", id);
 
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		return "computing/vm-permission";
 	}
 
@@ -201,6 +234,9 @@ public class VmController {
 		List<EventVo> event = itVmService.getEvent(id);
 		model.addAttribute("event", event);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 
 		return "computing/vm-event";
 	}

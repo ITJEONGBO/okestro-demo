@@ -1,8 +1,10 @@
 package com.itinfo.itcloud.controller;
 
+import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.storage.DiskVo;
 import com.itinfo.itcloud.model.storage.StorageDomainVo;
+import com.itinfo.itcloud.service.ItMenuService;
 import com.itinfo.itcloud.service.ItTemplateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +21,15 @@ import java.util.List;
 @Slf4j
 public class TemplateController {
 	private final ItTemplateService itTemplateService;
+	private final ItMenuService menu;
 
 	@GetMapping("/computing/templates")
 	public String templates(Model model){
 		List<TemplateVo> templates = itTemplateService.getList();
 		model.addAttribute("templates", templates);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		return "computing/templates";
 	}
 
@@ -39,6 +45,9 @@ public class TemplateController {
 		TemplateVo template = itTemplateService.getInfo(id);
 		model.addAttribute("template", template);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		return "computing/template";
 	}
 
@@ -54,6 +63,9 @@ public class TemplateController {
 		List<VmVo> vm = itTemplateService.getVm(id);
 		model.addAttribute("vm", vm);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		return "computing/template-vm";
 	}
 
@@ -68,6 +80,9 @@ public class TemplateController {
 		List<NicVo> nic = itTemplateService.getNic(id);
 		model.addAttribute("nic", nic);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		return "computing/template-nic";
 	}
 
@@ -83,6 +98,9 @@ public class TemplateController {
 		List<VmDiskVo> disk = itTemplateService.getDisk(id);
 		model.addAttribute("disk", disk);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		return "computing/template-disk";
 	}
 
@@ -98,6 +116,9 @@ public class TemplateController {
 		List<StorageDomainVo> storage = itTemplateService.getStorage(id);
 		model.addAttribute("storage", storage);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		return "computing/template-storage";
 	}
 
@@ -113,6 +134,9 @@ public class TemplateController {
 		List<PermissionVo> permission = itTemplateService.getPermission(id);
 		model.addAttribute("permission", permission);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		return "computing/template-permission";
 	}
 
@@ -128,6 +152,9 @@ public class TemplateController {
 		List<EventVo> event = itTemplateService.getEvent(id);
 		model.addAttribute("event", event);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		return "computing/template-event";
 	}
 

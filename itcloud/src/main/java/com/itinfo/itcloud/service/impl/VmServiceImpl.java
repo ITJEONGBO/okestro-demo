@@ -32,6 +32,7 @@ public class VmServiceImpl implements ItVmService {
     public List<VmVo> getList() {
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
         List<VmVo> vmVoList = new ArrayList<>();
         VmVo vmVo = null;
@@ -63,14 +64,28 @@ public class VmServiceImpl implements ItVmService {
             vmVo.setFqdn(vm.fqdn());
 
             // uptime 계산
-            // (1000*60*60*24) = 일
-            // (1000*60*60) = 시간
-//            if(vm.status().value().equals("up") && vm.startTimePresent()) {
-//                    vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60) );
-//            }else if(vm.status().value().equals("up") && !vm.startTimePresent() && vm.creationTimePresent()) {
-//                vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60) );
-////                vmVo.setUpTime( (now.getTime() - vm.creationTime().getTime()) / (1000*60*60*24) );
-//            }
+            //  (1000*60*60*24) = 일
+            //  (1000*60*60) = 시간
+            //  (1000*60) = 분
+            // https://192.168.0.80/ovirt-engine/api/vms/c9c1c52d-d2a4-4f2a-93fe-30200f1e0bff/statistics  elapsed.time
+            List<Statistic> statisticList =
+                    ((StatisticsService.ListResponse)systemService.vmsService().vmService(vm.id()).statisticsService().list().send()).statistics();
+
+            for(Statistic statistic : statisticList) {
+                long hour = 0;
+                if (statistic.name().equals("elapsed.time")) {
+                    hour = statistic.values().get(0).datum().longValue() / (60*60);      //시간
+                    System.out.println(vm.id() + " " +hour);
+
+                    if(hour > 24){
+                        vmVo.setUpTime(hour/24 + "일");
+                    }else if( hour > 1 && hour < 24){
+                        vmVo.setUpTime(hour + "시간");
+                    }else {
+                        vmVo.setUpTime( (statistic.values().get(0).datum().longValue() / 60) + "분");
+                    }
+                }
+            }
 
             // ipv4, ipv6
             List<Nic> nicList =

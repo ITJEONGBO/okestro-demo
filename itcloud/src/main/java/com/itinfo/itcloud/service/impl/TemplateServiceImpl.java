@@ -106,12 +106,12 @@ public class TemplateServiceImpl implements ItTemplateService {
                 vmVo.setFqdn(vm.fqdn());
 
                 // uptime 계산
-                if(vm.status().value().equals("up") && vm.startTimePresent()) {
-                    vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60*60*24) );
-                }
-                else if(vm.status().value().equals("up") && vm.creationTimePresent()) {
-                    vmVo.setUpTime( (now.getTime() - vm.creationTime().getTime()) / (1000*60*60*24) );
-                }
+//                if(vm.status().value().equals("up") && vm.startTimePresent()) {
+//                    vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60*60*24) );
+//                }
+//                else if(vm.status().value().equals("up") && vm.creationTimePresent()) {
+//                    vmVo.setUpTime( (now.getTime() - vm.creationTime().getTime()) / (1000*60*60*24) );
+//                }
 
 
                 if(!vm.status().value().equals("down")){

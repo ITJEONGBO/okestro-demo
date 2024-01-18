@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.controller;
 
+import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
@@ -8,6 +9,7 @@ import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.storage.StorageDomainVo;
 import com.itinfo.itcloud.service.ItDataCenterService;
 
+import com.itinfo.itcloud.service.ItMenuService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,11 +26,15 @@ import java.util.List;
 public class DataCenterController {
 
 	private final ItDataCenterService itDataCenterService;
+	private final ItMenuService menu;
 
 	@GetMapping("/computing/datacenters")
 	public String datacenters(Model model) {
 		List<DataCenterVo> dataCenterVOList = itDataCenterService.getList();
 		model.addAttribute("datacenters", dataCenterVOList);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		log.info("---datacenters");
 
 		return "computing/datacenters";
@@ -48,6 +54,9 @@ public class DataCenterController {
 		List<StorageDomainVo> storage = itDataCenterService.getStorage(id);
 		model.addAttribute("storage", storage);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 		log.info("---datacenter-storage");
 
 		return "computing/datacenter-storage";
@@ -68,6 +77,9 @@ public class DataCenterController {
 		model.addAttribute("network", network);
 		model.addAttribute("id", id);
 
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		return "computing/datacenter-network";
 	}
 
@@ -86,6 +98,9 @@ public class DataCenterController {
 		model.addAttribute("cluster", cluster);
 		model.addAttribute("id", id);
 
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		return "computing/datacenter-cluster";
 	}
 
@@ -103,6 +118,9 @@ public class DataCenterController {
 		model.addAttribute("permission", permission);
 		model.addAttribute("id", id);
 
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
 		return "computing/datacenter-permission";
 	}
 
@@ -118,6 +136,9 @@ public class DataCenterController {
 		List<EventVo> event = itDataCenterService.getEvent(id);
 		model.addAttribute("event", event);
 		model.addAttribute("id", id);
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
 
 		return "computing/datacenter-event";
 	}
