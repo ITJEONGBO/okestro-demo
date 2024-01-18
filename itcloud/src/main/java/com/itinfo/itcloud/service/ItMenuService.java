@@ -72,10 +72,16 @@ public class ItMenuService {
         List<VmVo> vmVoList = new ArrayList<>();
         for(Vm vm : vmList) {
             VmVo vmVo = new VmVo();
+            vmVo.setStatus(vm.status().value());
             vmVo.setId(vm.id());
             vmVo.setName(vm.name());
-            vmVo.setHostId(vm.hostPresent() ? vm.host().id() : null);
-            vmVo.setStatus(vm.status().value());
+
+            if(vm.hostPresent()){
+                vmVo.setHostId( ((HostService.GetResponse) systemService.hostsService().hostService(vm.host().id()).get().send()).host().id() );
+            }else if(!vm.hostPresent() && vm.placementPolicy().hostsPresent()){
+                vmVo.setHostId(((HostService.GetResponse) systemService.hostsService().hostService(vm.placementPolicy().hosts().get(0).id()).get().send()).host().id());
+            }
+
             vmVoList.add(vmVo);
         }
         m.setVm(vmVoList);

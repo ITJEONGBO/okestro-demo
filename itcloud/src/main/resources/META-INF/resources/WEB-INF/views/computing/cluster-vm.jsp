@@ -49,9 +49,7 @@
                                 <td><a href="/computing/vm?id=${vms.id}" style="text-decoration-line: none">${vms.name}</a></td>
                                 <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                 <td>${vms.status == "up" ? " 실행 중" : vms.status}</td>
-                                <td>
-                                    ${vms.upTime/60}
-                                </td>
+                                <td>${vms.upTime}</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>

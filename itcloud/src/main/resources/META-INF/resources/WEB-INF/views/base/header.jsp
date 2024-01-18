@@ -126,11 +126,20 @@
                                                                                         <ul id="desc">
                                                                                             <c:forEach var="vm" items="${m.vm}">
                                                                                                 <c:if test="${h.id eq vm.hostId}">
-                                                                                                    <li>
-                                                                                                        <a href="/computing/vm?id=${vm.id}" style="text-decoration-line: none; color: grey;">
-                                                                                                            <img src="/svg/vm.png" alt="vm" width="20" height="auto" />&nbsp;${vm.name}
-                                                                                                        </a>
-                                                                                                    </li>
+                                                                                                    <c:if test="${vm.status eq 'up'}">
+                                                                                                        <li>
+                                                                                                            <a href="/computing/vm?id=${vm.id}" style="text-decoration-line: none; color: grey;">
+                                                                                                                <img src="/svg/vm.png" alt="vm" width="20" height="auto" />&nbsp;${vm.name}
+                                                                                                            </a>
+                                                                                                        </li>
+                                                                                                    </c:if>
+                                                                                                    <c:if test="${vm.status eq 'down'}">
+                                                                                                        <li>
+                                                                                                            <a href="/computing/vm?id=${vm.id}" style="text-decoration-line: none; color: grey;">
+                                                                                                               ${vm.name}
+                                                                                                            </a>
+                                                                                                        </li>
+                                                                                                    </c:if>
                                                                                                 </c:if>
                                                                                             </c:forEach>
                                                                                         </ul>

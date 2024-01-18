@@ -171,12 +171,24 @@ public class ClusterServiceImpl implements ItClusterService {
                 vmVo.setStatus(vm.status().value());        // vmstatus 많음
                 vmVo.setClusterName( ((ClusterService.GetResponse)systemService.clustersService().clusterService(id).get().send()).cluster().name() );
 
-                // uptime 계산
-//                if(vm.status().value().equals("up") && vm.startTimePresent()) {
-//                    vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60) );
-//                }else if(vm.status().value().equals("up") && !vm.startTimePresent() && vm.creationTimePresent()) {
-//                    vmVo.setUpTime( (now.getTime() - vm.creationTime().getTime()) / (1000*60) );
-//                }
+                List<Statistic> statisticList =
+                        ((StatisticsService.ListResponse)systemService.vmsService().vmService(vm.id()).statisticsService().list().send()).statistics();
+
+                for(Statistic statistic : statisticList) {
+                    long hour = 0;
+                    if (statistic.name().equals("elapsed.time")) {
+                        hour = statistic.values().get(0).datum().longValue() / (60*60);      //시간
+                        System.out.println(vm.id() + " " +hour);
+
+                        if(hour > 24){
+                            vmVo.setUpTime(hour/24 + "일");
+                        }else if( hour > 1 && hour < 24){
+                            vmVo.setUpTime(hour + "시간");
+                        }else {
+                            vmVo.setUpTime( (statistic.values().get(0).datum().longValue() / 60) + "분");
+                        }
+                    }
+                }
 
                 // ip 주소
                 List<Nic> nicList =
