@@ -8,6 +8,7 @@ import java.util.List;
 
 @Service
 public interface ItHostService {
+    String getName(String id);
     List<HostVo> getList();
     HostVo getInfo(String id);
     List<VmVo> getVm(String id);

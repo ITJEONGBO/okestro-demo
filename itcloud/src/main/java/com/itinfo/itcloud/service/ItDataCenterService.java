@@ -12,6 +12,7 @@ import java.util.List;
 
 @Service
 public interface ItDataCenterService {
+    String getName(String id);
     List<DataCenterVo> getList();
     List<StorageDomainVo> getStorage(String id);
     List<NetworkVo> getNetwork(String id);

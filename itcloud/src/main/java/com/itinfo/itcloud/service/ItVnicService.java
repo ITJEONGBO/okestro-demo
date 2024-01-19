@@ -11,6 +11,7 @@ import java.util.List;
 
 @Service
 public interface ItVnicService {
+    String getName(String id);
     List<VnicProfileVo> getVnics();
     List<VmVo> getVmNics(String id);
     List<TemplateVo> getTemplates(String id);

@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">StorageDomain</h1>
-                    스토리지 > <a href="/storage/storageDomains" style="text-decoration-line: none">스토리지 도메인</a> > ${vms[0].clusterName} <br><br>
+                    스토리지 > <a href="/storage/storageDomains" style="text-decoration-line: none">스토리지 도메인</a> > ${name} <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">

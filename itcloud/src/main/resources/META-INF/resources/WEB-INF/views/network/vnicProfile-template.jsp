@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">VNIC 프로파일</h1>
-                    네트워크 > <a href="/network/vnicProfiles" style="text-decoration-line: none">VNIC 프로파일</a><br><br>
+                    네트워크 > <a href="/network/vnicProfiles" style="text-decoration-line: none">VNIC 프로파일</a> > ${name} <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">

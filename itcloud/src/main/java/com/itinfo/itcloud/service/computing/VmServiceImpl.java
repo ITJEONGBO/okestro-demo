@@ -27,6 +27,13 @@ public class VmServiceImpl implements ItVmService {
     @Autowired
     private AdminConnectionService adminConnectionService;
 
+    @Override
+    public String getName(String id){
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        return ((VmService.GetResponse)systemService.vmsService().vmService(id).get().send()).vm().name();
+    }
 
     @Override
     public List<VmVo> getList() {

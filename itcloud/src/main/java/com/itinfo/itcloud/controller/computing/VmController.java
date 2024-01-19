@@ -35,6 +35,141 @@ public class VmController {
 		return "computing/vms";
 	}
 
+	@GetMapping("/computing/vm")
+	public String vm(String id, Model model) {
+		VmVo vm = itVmService.getInfo(id);
+		model.addAttribute("vm", vm);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itVmService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
+		return "computing/vm";
+	}
+
+	@GetMapping("/computing/vm-nic")
+	public String nic(String id, Model model) {
+		List<NicVo> nic = itVmService.getNic(id);
+		model.addAttribute("nic", nic);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itVmService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
+		return "computing/vm-nic";
+	}
+
+	@GetMapping("/computing/vm-disk")
+	public String disk(String id, Model model) {
+		List<VmDiskVo> disk = itVmService.getDisk(id);
+		model.addAttribute("disk", disk);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itVmService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
+		return "computing/vm-disk";
+	}
+
+	@GetMapping("/computing/vm-snapshot")
+	public String snapshot(String id, Model model) {
+		log.info("---snapshot");
+		List<SnapshotVo> snapshot = itVmService.getSnapshot(id);
+		model.addAttribute("snapshot", snapshot);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itVmService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
+		return "computing/vm-snapshot";
+	}
+
+	@GetMapping("/computing/vm-application")
+	public String application(String id, Model model) {
+		List<ApplicationVo> app = itVmService.getApplication(id);
+		model.addAttribute("app", app);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itVmService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
+		return "computing/vm-application";
+	}
+
+	@GetMapping("/computing/vm-affGroup")
+	public String affGroup(String id, Model model) {
+		List<AffinityGroupVo> aff = itVmService.getAffinitygroup(id);
+		model.addAttribute("aff", aff);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itVmService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
+		return "computing/vm-affGroup";
+	}
+
+	@GetMapping("/computing/vm-affLabel")
+	public String affLabel(String id, Model model) {
+		List<AffinityLabelVo> aff = itVmService.getAffinitylabel(id);
+		model.addAttribute("aff", aff);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itVmService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
+		return "computing/vm-affLabel";
+	}
+
+	@GetMapping("/computing/vm-guest")
+	public String guest(String id, Model model) {
+		GuestInfoVo guest = itVmService.getGuestInfo(id);
+		model.addAttribute("guest", guest);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itVmService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
+		return "computing/vm-guest";
+	}
+
+	@GetMapping("/computing/vm-permission")
+	public String permission(String id, Model model) {
+		List<PermissionVo> permission = itVmService.getPermission(id);
+		model.addAttribute("permission", permission);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itVmService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
+		return "computing/vm-permission";
+	}
+
+	@GetMapping("/computing/vm-event")
+	public String event(String id, Model model) {
+		List<EventVo> event = itVmService.getEvent(id);
+		model.addAttribute("event", event);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itVmService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
+		return "computing/vm-event";
+	}
+
+
+
+	//region: ResponseBody
+
 	@GetMapping("/vmsList")
 	@ResponseBody
 	public List<VmVo> vms() {
@@ -48,36 +183,10 @@ public class VmController {
 		return vmsList;
 	}
 
-	@GetMapping("/computing/vm")
-	public String vm(String id, Model model) {
-		VmVo vm = itVmService.getInfo(id);
-		model.addAttribute("vm", vm);
-		model.addAttribute("id", id);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/vm";
-	}
-
 	@GetMapping("/computing/vm/status")
 	@ResponseBody
 	public VmVo vm(String id) {
-		log.info("----- vm id 일반 불러오기: {}", id);
 		return itVmService.getInfo(id);
-	}
-
-
-	@GetMapping("/computing/vm-nic")
-	public String nic(String id, Model model) {
-		List<NicVo> nic = itVmService.getNic(id);
-		model.addAttribute("nic", nic);
-		model.addAttribute("id", id);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/vm-nic";
 	}
 
 	@GetMapping("/computing/vm/nicstatus")
@@ -87,38 +196,11 @@ public class VmController {
 		return itVmService.getNic(id);
 	}
 
-
-	@GetMapping("/computing/vm-disk")
-	public String disk(String id, Model model) {
-		List<VmDiskVo> disk = itVmService.getDisk(id);
-		model.addAttribute("disk", disk);
-		model.addAttribute("id", id);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/vm-disk";
-	}
-
 	@GetMapping("/computing/vm/diskstatus")
 	@ResponseBody
 	public List<VmDiskVo> disk(String id) {
 		log.info("----- vm disk 일반 불러오기: " + id);
 		return itVmService.getDisk(id);
-	}
-
-
-	@GetMapping("/computing/vm-snapshot")
-	public String snapshot(String id, Model model) {
-		log.info("---snapshot");
-		List<SnapshotVo> snapshot = itVmService.getSnapshot(id);
-		model.addAttribute("snapshot", snapshot);
-		model.addAttribute("id", id);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/vm-snapshot";
 	}
 
 	@GetMapping("/computing/vm/snapshotstatus")
@@ -128,37 +210,11 @@ public class VmController {
 		return itVmService.getSnapshot(id);
 	}
 
-
-	@GetMapping("/computing/vm-application")
-	public String application(String id, Model model) {
-		List<ApplicationVo> app = itVmService.getApplication(id);
-		model.addAttribute("app", app);
-		model.addAttribute("id", id);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/vm-application";
-	}
-
 	@GetMapping("/computing/vm/applicationstatus")
 	@ResponseBody
 	public List<ApplicationVo> app(String id) {
 		log.info("----- vm app 불러오기: " + id);
 		return itVmService.getApplication(id);
-	}
-
-
-	@GetMapping("/computing/vm-affGroup")
-	public String affGroup(String id, Model model) {
-		List<AffinityGroupVo> aff = itVmService.getAffinitygroup(id);
-		model.addAttribute("aff", aff);
-		model.addAttribute("id", id);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/vm-affGroup";
 	}
 
 	@GetMapping("/computing/vm/affGroupstatus")
@@ -168,37 +224,11 @@ public class VmController {
 		return itVmService.getAffinitygroup(id);
 	}
 
-
-	@GetMapping("/computing/vm-affLabel")
-	public String affLabel(String id, Model model) {
-		List<AffinityLabelVo> aff = itVmService.getAffinitylabel(id);
-		model.addAttribute("aff", aff);
-		model.addAttribute("id", id);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/vm-affLabel";
-	}
-
 	@GetMapping("/computing/vm/affLabelstatus")
 	@ResponseBody
 	public List<AffinityLabelVo> affLabel(String id) {
 		log.info("----- vm affLabel 불러오기: " + id);
 		return itVmService.getAffinitylabel(id);
-	}
-
-
-	@GetMapping("/computing/vm-guest")
-	public String guest(String id, Model model) {
-		GuestInfoVo guest = itVmService.getGuestInfo(id);
-		model.addAttribute("guest", guest);
-		model.addAttribute("id", id);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/vm-guest";
 	}
 
 	@GetMapping("/computing/vm/gueststatus")
@@ -208,37 +238,11 @@ public class VmController {
 		return itVmService.getGuestInfo(id);
 	}
 
-
-	@GetMapping("/computing/vm-permission")
-	public String permission(String id, Model model) {
-		List<PermissionVo> permission = itVmService.getPermission(id);
-		model.addAttribute("permission", permission);
-		model.addAttribute("id", id);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/vm-permission";
-	}
-
 	@GetMapping("/computing/vm/permissionstatus")
 	@ResponseBody
 	public List<PermissionVo> permission(String id) {
 		log.info("----- vm event 일반 불러오기: " + id);
 		return itVmService.getPermission(id);
-	}
-
-
-	@GetMapping("/computing/vm-event")
-	public String event(String id, Model model) {
-		List<EventVo> event = itVmService.getEvent(id);
-		model.addAttribute("event", event);
-		model.addAttribute("id", id);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/vm-event";
 	}
 
 	@GetMapping("/computing/vm/eventstatus")
@@ -247,6 +251,6 @@ public class VmController {
 		log.info("----- vm event 일반 불러오기: " + id);
 		return itVmService.getEvent(id);
 	}
-
+	//endregion
 
 }

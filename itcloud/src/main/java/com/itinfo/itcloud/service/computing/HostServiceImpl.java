@@ -24,6 +24,13 @@ public class HostServiceImpl implements ItHostService {
     @Autowired
     private AdminConnectionService adminConnectionService;
 
+    @Override
+    public String getName(String id){
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        return ((HostService.GetResponse)systemService.hostsService().hostService(id).get().send()).host().name();
+    }
 
     @Override
     public List<HostVo> getList() {

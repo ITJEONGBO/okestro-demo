@@ -25,6 +25,14 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
     @Autowired private AdminConnectionService adminConnectionService;
 
+    @Override
+    public String getName(String id){
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        return (((DataCenterService.GetResponse) systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name());
+    }
+
     // 데이터센터 리스트 불러오기
     @Override
     public List<DataCenterVo> getList(){

@@ -24,6 +24,14 @@ public class VnicServiceImpl implements ItVnicService {
     private AdminConnectionService adminConnectionService;
 
     @Override
+    public String getName(String id){
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        return ((VnicProfileService.GetResponse)systemService.vnicProfilesService().profileService(id).get().send()).profile().name();
+    }
+
+    @Override
     public List<VnicProfileVo> getVnics() {
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();

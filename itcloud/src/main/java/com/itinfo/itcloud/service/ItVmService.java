@@ -7,6 +7,7 @@ import java.util.List;
 
 @Service
 public interface ItVmService {
+    String getName(String id);
     List<VmVo> getList();
     VmVo getInfo(String id);
     List<NicVo> getNic(String id);

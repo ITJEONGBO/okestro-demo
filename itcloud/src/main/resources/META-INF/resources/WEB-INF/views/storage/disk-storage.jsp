@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Disk</h1>
-                    스토리지 > <a href="/storage/disks" style="text-decoration-line: none">디스크</a> > <br><br>
+                    스토리지 > <a href="/storage/disks" style="text-decoration-line: none">디스크</a> > ${name} <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">

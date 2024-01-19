@@ -26,6 +26,14 @@ public class NetworkServiceImpl implements ItNetworkService {
     private AdminConnectionService adminConnectionService;
 
     @Override
+    public String getName(String id){
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        return ((NetworkService.GetResponse)systemService.networksService().networkService(id).get().send()).network().name();
+    }
+
+    @Override
     public List<NetworkVo> getList() {
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();

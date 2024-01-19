@@ -8,6 +8,7 @@ import java.util.List;
 
 @Service
 public interface ItClusterService {
+    String getName(String id);
     List<ClusterVo> getList();
     ClusterVo getInfo(String id);
     List<NetworkVo> getNetwork(String id);

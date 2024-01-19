@@ -9,6 +9,7 @@ import java.util.List;
 
 @Service
 public interface ItTemplateService {
+    String getName(String id);
     List<TemplateVo> getList();
     TemplateVo getInfo(String id);
     List<VmVo> getVm(String id);

@@ -22,6 +22,13 @@ public class StorageDomainServiceImpl implements ItStorageDomainService {
     @Autowired
     private AdminConnectionService adminConnectionService;
 
+    @Override
+    public String getName(String id){
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        return ((StorageDomainService.GetResponse)systemService.storageDomainsService().storageDomainService(id).get().send()).storageDomain().name();
+    }
 
     @Override
     public List<StorageDomainVo> getList() {

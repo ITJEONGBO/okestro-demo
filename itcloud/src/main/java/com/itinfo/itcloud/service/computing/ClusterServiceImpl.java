@@ -23,6 +23,13 @@ public class ClusterServiceImpl implements ItClusterService {
 
     @Autowired private AdminConnectionService adminConnectionService;
 
+    @Override
+    public String getName(String id){
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        return ((ClusterService.GetResponse)systemService.clustersService().clusterService(id).get().send()).cluster().name();
+    }
 
     // 컴퓨팅-클러스터 목록
     // 상태, 이름, 코멘트, 호환버전, 설명, 클러스터cpu유형, 호스트수, 가상머신수, (업그레이드 상태)

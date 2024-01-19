@@ -35,23 +35,60 @@ public class DiskController {
 		model.addAttribute("m", m);
 		return "storage/disks";
 	}
-
-	@GetMapping("/disksStatus")
-	@ResponseBody
-	public List<DiskVo> disks(){
-		return itDiskService.getList();
-	}
-
-
 	@GetMapping("/storage/disk")
 	public String disk(String id, Model model){
 		DiskVo disk = itDiskService.getInfo(id);
 		model.addAttribute("disk", disk);
 		model.addAttribute("id", id);
+		model.addAttribute("name", itDiskService.getName(id));
 
 		MenuVo m = menu.getMenu();
 		model.addAttribute("m", m);
 		return "storage/disk";
+	}
+
+	@GetMapping("/storage/disk-vm")
+	public String vm(String id, Model model){
+		List<VmVo> vm = itDiskService.getVm(id);
+		model.addAttribute("vm", vm);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itDiskService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+		return "storage/disk-vm";
+	}
+
+	@GetMapping("/storage/disk-storage")
+	public String storage(String id, Model model){
+		List<StorageDomainVo> storage = itDiskService.getStorage(id);
+		model.addAttribute("storage", storage);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itDiskService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+		return "storage/disk-storage";
+	}
+
+	@GetMapping("/storage/disk-permission")
+	public String permission(String id, Model model){
+		List<PermissionVo> permission = itDiskService.getPermission(id);
+		model.addAttribute("permission", permission);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itDiskService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+		return "storage/disk-permission";
+	}
+
+
+	//region: ResponseBody
+	@GetMapping("/disksStatus")
+	@ResponseBody
+	public List<DiskVo> disks(){
+		return itDiskService.getList();
 	}
 
 	@GetMapping("/storage/diskStatus")
@@ -60,33 +97,10 @@ public class DiskController {
 		return itDiskService.getInfo(id);
 	}
 
-	@GetMapping("/storage/disk-vm")
-	public String vm(String id, Model model){
-		List<VmVo> vm = itDiskService.getVm(id);
-		model.addAttribute("vm", vm);
-		model.addAttribute("id", id);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-		return "storage/disk-vm";
-	}
-
-
 	@GetMapping("/storage/disk/vmStatus")
 	@ResponseBody
 	public List<VmVo> vm(String id){
 		return itDiskService.getVm(id);
-	}
-
-	@GetMapping("/storage/disk-storage")
-	public String storage(String id, Model model){
-		List<StorageDomainVo> storage = itDiskService.getStorage(id);
-		model.addAttribute("storage", storage);
-		model.addAttribute("id", id);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-		return "storage/disk-storage";
 	}
 
 	@GetMapping("/storage/disk/storageStatus")
@@ -95,24 +109,13 @@ public class DiskController {
 		return itDiskService.getStorage(id);
 	}
 
-
-	@GetMapping("/storage/disk-permission")
-	public String permission(String id, Model model){
-		List<PermissionVo> permission = itDiskService.getPermission(id);
-		model.addAttribute("permission", permission);
-		model.addAttribute("id", id);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-		return "storage/disk-permission";
-	}
-
 	@GetMapping("/storage/permissionStatus")
 	@ResponseBody
 	public List<PermissionVo> permission(String id){
 		return itDiskService.getPermission(id);
 	}
 
+	//endregion
 
 
 }

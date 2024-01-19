@@ -9,6 +9,7 @@ import java.util.List;
 
 @Service
 public interface ItStorageDomainService {
+    String getName(String id);
     List<StorageDomainVo> getList();
     StorageDomainVo getDomain(String id);
     List<DataCenterVo> getDatacenter(String id);

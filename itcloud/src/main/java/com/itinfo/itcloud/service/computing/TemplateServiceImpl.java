@@ -20,6 +20,13 @@ public class TemplateServiceImpl implements ItTemplateService {
     @Autowired
     private AdminConnectionService adminConnectionService;
 
+    @Override
+    public String getName(String id){
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        return ((TemplateService.GetResponse)systemService.templatesService().templateService(id).get().send()).template().name();
+    }
 
     @Override
     public List<TemplateVo> getList() {

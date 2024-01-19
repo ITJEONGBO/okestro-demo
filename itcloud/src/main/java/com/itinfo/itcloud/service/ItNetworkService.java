@@ -8,6 +8,7 @@ import java.util.List;
 
 @Service
 public interface ItNetworkService {
+    String getName(String id);
     List<NetworkVo> getList();
     NetworkVo getNetwork(String id);
     List<VnicProfileVo> getVnic(String id);

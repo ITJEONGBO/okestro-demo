@@ -10,6 +10,7 @@ import java.util.List;
 
 @Service
 public interface ItDiskService {
+    String getName(String id);
     List<DiskVo> getList();
     DiskVo getInfo(String id);
     List<VmVo> getVm(String id);

@@ -31,22 +31,95 @@ public class TemplateController {
 		return "computing/templates";
 	}
 
-	@GetMapping("/computing/templatesStatus")
-	@ResponseBody
-	public List<TemplateVo> temps(){
-		return itTemplateService.getList();
-	}
-
-
 	@GetMapping("/computing/template")
 	public String template(String id, Model model){
 		TemplateVo template = itTemplateService.getInfo(id);
 		model.addAttribute("template", template);
 		model.addAttribute("id", id);
+		model.addAttribute("name", itTemplateService.getName(id));
 
 		MenuVo m = menu.getMenu();
 		model.addAttribute("m", m);
 		return "computing/template";
+	}
+
+	@GetMapping("/computing/template-vm")
+	public String vm(String id, Model model){
+		List<VmVo> vm = itTemplateService.getVm(id);
+		model.addAttribute("vm", vm);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itTemplateService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+		return "computing/template-vm";
+	}
+
+	@GetMapping("/computing/template-nic")
+	public String nic(String id, Model model){
+		List<NicVo> nic = itTemplateService.getNic(id);
+		model.addAttribute("nic", nic);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itTemplateService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+		return "computing/template-nic";
+	}
+
+	@GetMapping("/computing/template-disk")
+	public String disk(String id, Model model){
+		List<VmDiskVo> disk = itTemplateService.getDisk(id);
+		model.addAttribute("disk", disk);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itTemplateService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+		return "computing/template-disk";
+	}
+
+	@GetMapping("/computing/template-storage")
+	public String storage(String id, Model model){
+		List<StorageDomainVo> storage = itTemplateService.getStorage(id);
+		model.addAttribute("storage", storage);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itTemplateService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+		return "computing/template-storage";
+	}
+
+	@GetMapping("/computing/template-permission")
+	public String permission(String id, Model model){
+		List<PermissionVo> permission = itTemplateService.getPermission(id);
+		model.addAttribute("permission", permission);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itTemplateService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+		return "computing/template-permission";
+	}
+
+	@GetMapping("/computing/template-event")
+	public String event(String id, Model model){
+		List<EventVo> event = itTemplateService.getEvent(id);
+		model.addAttribute("event", event);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itTemplateService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+		return "computing/template-event";
+	}
+
+	//region: ResponseBody
+	@GetMapping("/computing/templatesStatus")
+	@ResponseBody
+	public List<TemplateVo> temps(){
+		return itTemplateService.getList();
 	}
 
 	@GetMapping("/templateStatus")
@@ -55,51 +128,15 @@ public class TemplateController {
 		return itTemplateService.getInfo(id);
 	}
 
-
-	@GetMapping("/computing/template-vm")
-	public String vm(String id, Model model){
-		List<VmVo> vm = itTemplateService.getVm(id);
-		model.addAttribute("vm", vm);
-		model.addAttribute("id", id);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-		return "computing/template-vm";
-	}
-
 	@GetMapping("/computing/template/vmStatus")
 	@ResponseBody
 	public List<VmVo> vm(String id){
 		return itTemplateService.getVm(id);
 	}
-
-	@GetMapping("/computing/template-nic")
-	public String nic(String id, Model model){
-		List<NicVo> nic = itTemplateService.getNic(id);
-		model.addAttribute("nic", nic);
-		model.addAttribute("id", id);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-		return "computing/template-nic";
-	}
-
 	@GetMapping("/computing/template/nicStatus")
 	@ResponseBody
 	public List<NicVo> nic(String id){
 		return itTemplateService.getNic(id);
-	}
-
-
-	@GetMapping("/computing/template-disk")
-	public String disk(String id, Model model){
-		List<VmDiskVo> disk = itTemplateService.getDisk(id);
-		model.addAttribute("disk", disk);
-		model.addAttribute("id", id);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-		return "computing/template-disk";
 	}
 
 	@GetMapping("/computing/template/diskStatus")
@@ -108,34 +145,10 @@ public class TemplateController {
 		return itTemplateService.getDisk(id);
 	}
 
-
-	@GetMapping("/computing/template-storage")
-	public String storage(String id, Model model){
-		List<StorageDomainVo> storage = itTemplateService.getStorage(id);
-		model.addAttribute("storage", storage);
-		model.addAttribute("id", id);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-		return "computing/template-storage";
-	}
-
 	@GetMapping("/computing/template/storageStatus")
 	@ResponseBody
 	public List<StorageDomainVo> storage(String id){
 		return itTemplateService.getStorage(id);
-	}
-
-
-	@GetMapping("/computing/template-permission")
-	public String permission(String id, Model model){
-		List<PermissionVo> permission = itTemplateService.getPermission(id);
-		model.addAttribute("permission", permission);
-		model.addAttribute("id", id);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-		return "computing/template-permission";
 	}
 
 	@GetMapping("/computing/template/permissionStatus")
@@ -144,22 +157,11 @@ public class TemplateController {
 		return itTemplateService.getPermission(id);
 	}
 
-
-	@GetMapping("/computing/template-event")
-	public String event(String id, Model model){
-		List<EventVo> event = itTemplateService.getEvent(id);
-		model.addAttribute("event", event);
-		model.addAttribute("id", id);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-		return "computing/template-event";
-	}
-
 	@GetMapping("/computing/template/eventStatus")
 	@ResponseBody
 	public List<EventVo> event(String id){
 		return itTemplateService.getEvent(id);
 	}
 
+	//endregion
 }

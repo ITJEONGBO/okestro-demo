@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">DataCenter</h1>
-                    컴퓨팅 > <a href="/computing/datacenters" style="text-decoration-line: none">데이터 센터</a> > ${event[0].datacenterName} <br><br>
+                    컴퓨팅 > <a href="/computing/datacenters" style="text-decoration-line: none">데이터 센터</a>  > ${name}  <br><br>
 
                     <div class="card mb-4">
                         <div class="card-body">

@@ -8,7 +8,7 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Network</h1>
-                    네트워크 > <a href="/network/networks" style="text-decoration-line: none">네트워크</a><br>
+                    네트워크 > <a href="/network/networks" style="text-decoration-line: none">네트워크 > ${name} </a><br>
 
                     <div class="card mb-4">
                         <div class="card-body">

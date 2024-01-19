@@ -23,6 +23,14 @@ public class DiskServiceImpl implements ItDiskService {
     private AdminConnectionService adminConnectionService;
 
     @Override
+    public String getName(String id){
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
+        return ((DiskService.GetResponse)systemService.disksService().diskService(id).get().send()).disk().name();
+    }
+
+    @Override
     public List<DiskVo> getList() {
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
