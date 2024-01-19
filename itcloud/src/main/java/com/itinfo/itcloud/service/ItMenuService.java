@@ -4,6 +4,8 @@ import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
+import com.itinfo.itcloud.model.storage.DiskVo;
+import com.itinfo.itcloud.model.storage.StorageDomainVo;
 import com.itinfo.itcloud.ovirt.ConnectionService;
 import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.services.*;
@@ -39,6 +41,7 @@ public class ItMenuService {
         List<Disk> diskList = ((DisksService.ListResponse)systemService.disksService().list().send()).disks();
 
 
+        // region: computing
         List<DataCenterVo> dcVoList = new ArrayList<>();
         for(DataCenter dataCenter : dataCenterList){
             DataCenterVo dcVo = new DataCenterVo();
@@ -94,7 +97,10 @@ public class ItMenuService {
             tVoList.add(tVo);
         }
         m.setTm(tVoList);
+        // endregion
 
+
+        //region: network
         List<VnicProfileVo> vpVoList = new ArrayList<>();
         for(VnicProfile vnicProfile : vnicProfileList) {
             VnicProfileVo vpVo = new VnicProfileVo();
@@ -112,7 +118,40 @@ public class ItMenuService {
             nwVoList.add(nwVo);
         }
         m.setNetwork(nwVoList);
+        //endregion
+
+
+        //region: storage
+        List<StorageDomainVo> sdVoList = new ArrayList<>();
+        for(StorageDomain storageDomain : storageDomainList) {
+            StorageDomainVo sdVo = new StorageDomainVo();
+            sdVo.setId(storageDomain.id());
+            sdVo.setName(storageDomain.name());
+            sdVoList.add(sdVo);
+        }
+        m.setDomain(sdVoList);
+
+        // 볼륨 미완
+
+        List<DiskVo> dVoList = new ArrayList<>();
+        for(Disk disk : diskList) {
+            DiskVo dVo = new DiskVo();
+            dVo.setId(disk.id());
+            dVo.setName(disk.name());
+            dVoList.add(dVo);
+        }
+        m.setDisk(dVoList);
+        //endregion
+
+
+
+        //region: setting
+        //endregion
+
+
 
         return m;
+
     }
+
 }
