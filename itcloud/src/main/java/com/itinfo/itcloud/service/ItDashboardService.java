@@ -1,7 +1,6 @@
 package com.itinfo.itcloud.service;
 
-import com.itinfo.itcloud.model.DashboardVo;
-import com.itinfo.itcloud.model.MenuVo;
+import com.itinfo.itcloud.model.computing.DashboardVo;
 import org.springframework.stereotype.Service;
 
 @Service
