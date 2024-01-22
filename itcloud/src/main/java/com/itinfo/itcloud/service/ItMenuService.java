@@ -101,20 +101,21 @@ public class ItMenuService {
 
 
         //region: network
-        List<VnicProfileVo> vpVoList = new ArrayList<>();
-        for(VnicProfile vnicProfile : vnicProfileList) {
-            VnicProfileVo vpVo = new VnicProfileVo();
-            vpVo.setId(vnicProfile.id());
-            vpVo.setName(vnicProfile.name());
-            vpVoList.add(vpVo);
-        }
-        m.setVnic(vpVoList);
+//        List<VnicProfileVo> vpVoList = new ArrayList<>();
+//        for(VnicProfile vnicProfile : vnicProfileList) {
+//            VnicProfileVo vpVo = new VnicProfileVo();
+//            vpVo.setId(vnicProfile.id());
+//            vpVo.setName(vnicProfile.name());
+//            vpVoList.add(vpVo);
+//        }
+//        m.setVnic(vpVoList);
 
         List<NetworkVo> nwVoList = new ArrayList<>();
         for(Network network : networkList) {
             NetworkVo nwVo = new NetworkVo();
             nwVo.setId(network.id());
             nwVo.setName(network.name());
+            nwVo.setDatacenterId(network.dataCenter().id());
             nwVoList.add(nwVo);
         }
         m.setNetwork(nwVoList);
@@ -127,6 +128,14 @@ public class ItMenuService {
             StorageDomainVo sdVo = new StorageDomainVo();
             sdVo.setId(storageDomain.id());
             sdVo.setName(storageDomain.name());
+
+            if(storageDomain.dataCentersPresent()) {
+                for (int i = 0; i < storageDomain.dataCenters().size(); i++) {
+                    DataCenter dc = ((DataCenterService.GetResponse) systemService.dataCentersService().dataCenterService(storageDomain.dataCenters().get(i).id()).get().send()).dataCenter();
+                    sdVo.setDatacenterId(dc.id());
+                    sdVo.setDatacenterName(dc.name());
+                }
+            }
             sdVoList.add(sdVo);
         }
         m.setDomain(sdVoList);

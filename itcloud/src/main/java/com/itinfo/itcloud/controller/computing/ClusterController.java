@@ -26,6 +26,8 @@ public class ClusterController {
 
 	@GetMapping("/computing/clusters")
 	public String clusters(Model model) {
+		long start = System.currentTimeMillis();
+
 		List<ClusterVo> clusterVOList = itClusterService.getList();
 		model.addAttribute("clusters", clusterVOList);
 
@@ -33,6 +35,10 @@ public class ClusterController {
 		model.addAttribute("m", m);
 
 		log.info("---clusters");
+
+		long end = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
+		System.out.println("cluster 수행시간(ms): " + (end-start));
+
 		return "computing/clusters";
 	}
 

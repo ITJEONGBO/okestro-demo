@@ -35,7 +35,7 @@
                         클러스터 CPU 유형: ${cluster.cpuType}<br>
                         스레드를 CPU로 사용: ${cluster.threadsAsCore ? "예":"아니요"}<br>
                         최대 메모리 오버 커밋: ${cluster.memoryOverCommit}%<br>
-                        복구정책: (해야함)<br>
+                        복구정책: ${cluster.restoration}<br>
                         칩셋/펌웨어 유형: ${cluster.chipsetFirmwareType}<br>
                         가상머신 수: ${cluster.vmCnt}<br>
 

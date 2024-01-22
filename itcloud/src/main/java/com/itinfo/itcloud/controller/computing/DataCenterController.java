@@ -30,13 +30,18 @@ public class DataCenterController {
 
 	@GetMapping("/computing/datacenters")
 	public String datacenters(Model model) {
+		long start = System.currentTimeMillis();
+
 		List<DataCenterVo> dataCenterVOList = itDataCenterService.getList();
 		model.addAttribute("datacenters", dataCenterVOList);
 
 		MenuVo m = menu.getMenu();
 		model.addAttribute("m", m);
-		log.info("---datacenters");
 
+		long end = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
+		System.out.println("datacenters controller 수행시간(ms): " + (end-start));
+
+		log.info("datacenterList");
 		return "computing/datacenters";
 	}
 

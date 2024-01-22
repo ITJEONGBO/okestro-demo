@@ -17,7 +17,7 @@ public class ClusterVo {
     private String cpuType;     // cpu().type()
     private boolean threadsAsCore;
     private int memoryOverCommit;
-    private boolean restoration;
+    private String restoration;    // 복구정책
     private String chipsetFirmwareType;
     private String version;
 

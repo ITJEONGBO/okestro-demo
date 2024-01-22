@@ -254,161 +254,90 @@
 
                     <!-- 네트워크 -->
                     <div class="collapse" id="collapseLayouts3" data-bs-parent="#sidenavAccordion">
+                        <c:choose>
+                            <c:when test="${not empty m.datacenter}">
+                                <ul id="desc">
+                                    <c:forEach var="dc" items="${m.datacenter}">
+                                        <a href="/computing/datacenter-storage?id=${dc.id}" style="text-decoration-line: none" >
+                                            <img src="/svg/dcc.png" alt="datacenter" width="20" height="auto" />
+                                        </a>
+                                        <a data-bs-toggle="collapse" href="#collapseNetworkDc-${dc.id}" style="text-decoration-line: none; color: grey;">
+                                            ${dc.name}
+                                        </a><br>
 
-                    	<ul id="desc">
-                    	    <!-- vnic -->
-                            <a href="/network/vnicProfiles" style="text-decoration-line: none" >
-                                <img src="/svg/vnic.png" alt="vnic" width="20" height="auto" />
-                            </a>
-                            <a data-bs-toggle="collapse" href="#collapseVnic" style="text-decoration-line: none; color: grey;">
-                                vNic 프로파일
-                            </a>
-                    	    <c:forEach var="v" items="${m.vnic}" varStatus="status">
-                    	        <li id="desc">
-                                    <div class="collapse" id="collapseVnic">
-                                        <ul id="desc">
-                                            <li id="desc">
-                                                <c:if test="${empty m.vnic}">
-                                                    비었음
-                                                    </li>
-                                                    </ul>
-                                                    </li>
-                                                </c:if>
-                                                <c:if test="${not empty m.vnic}">
-                                                    <a href="/network/vnicProfile-vm?id=${v.id}" style="text-decoration-line: none; color: grey;">
-                                                        &nbsp;&nbsp;&nbsp;&nbsp;- ${v.name}
-                                                    </a>
-                                                    </li>
-                                                    </ul>
-                                                    </li>
-                                                </c:if>
-                                </c:forEach>
+                                        <div class="collapse" id="collapseNetworkDc-${dc.id}">
+                                            <ul id="desc">
+                                                <c:forEach var="n" items="${m.network}">
 
-                            <!-- network -->
-                            <a href="/network/networks" style="text-decoration-line: none" >
-                                <img src="/svg/n.png" alt="network" width="20" height="auto" />
-                            </a>
-                            <a data-bs-toggle="collapse" href="#collapseNetwork" style="text-decoration-line: none; color: grey;">
-                                Network
-                            </a>
-                            <c:forEach var="n" items="${m.network}" varStatus="status">
-                                <li id="desc">
-                                    <div class="collapse" id="collapseNetwork">
-                                        <ul id="desc">
-                                            <li id="desc">
-                                                <c:if test="${empty m.network}">
-                                                    비었음
-                                                    </li>
-                                                    </ul>
-                                                    </li>
-                                                </c:if>
-                                                <c:if test="${not empty m.network}">
-                                                    <a href="/network/network?id=${n.id}" style="text-decoration-line: none; color: grey;">
-                                                        &nbsp;&nbsp;&nbsp;&nbsp;- ${n.name}
-                                                    </a>
-                                                    </li>
-                                                    </ul>
-                                                    </li>
-                                                </c:if>
-                            </c:forEach>
-                        </ul>
+                                                    <c:if test="${dc.id eq n.datacenterId}">
+                                                        <li>
+                                                            <a href="/network/networks" style="text-decoration-line: none">
+                                                                <img src="/svg/n.png" alt="network" width="20" height="auto" />
+                                                            </a>
+                                                            <a href="/network/network?id=${n.id}" style="text-decoration-line: none; color: grey;">
+                                                                 ${n.name}
+                                                            </a>
+                                                        </li>
+                                                    </c:if>
+                                                </c:forEach>
+                                            </ul>
+                                        </div>
+                                    </c:forEach>
+                                </ul>
+                            </c:when>
+
+                            <c:otherwise>
+                                비었음
+                            </c:otherwise>
+                        </c:choose>
                     </div>
+
 
                     <!-- 스토리지 -->
                     <div class="collapse" id="collapseLayouts4" data-bs-parent="#sidenavAccordion">
+                        <c:choose>
+                            <c:when test="${not empty m.datacenter}">
+                                <ul id="desc">
+                                    <c:forEach var="dc" items="${m.datacenter}">
+                                        <a href="/computing/datacenter-storage?id=${dc.id}" style="text-decoration-line: none" >
+                                            <img src="/svg/dcc.png" alt="datacenter" width="20" height="auto" />
+                                        </a>
+                                        <a data-bs-toggle="collapse" href="#collapseStorageDc-${dc.id}" style="text-decoration-line: none; color: grey;">
+                                            ${dc.name}
+                                        </a><br>
 
-                        <ul id="desc">
-                            <!-- domain -->
-                            <a href="/storage/storageDomains" style="text-decoration-line: none" >
-                                <img src="/svg/s.png" alt="domain" width="20" height="auto" />
-                            </a>
-                            <a data-bs-toggle="collapse" href="#collapseDomain" style="text-decoration-line: none; color: grey;">
-                                도메인
-                            </a>
-                            <c:forEach var="d" items="${m.domain}" varStatus="status">
-                                <li id="desc">
-                                    <div class="collapse" id="collapseDomain">
-                                        <ul id="desc">
-                                            <li id="desc">
-                                                <c:if test="${empty m.domain}">
-                                                    비었음
-                                                    <br>
-                                                    </li>
-                                                    </ul>
-                                                    </li>
-                                                </c:if>
-                                                <c:if test="${not empty m.domain}">
-                                                    <a href="/storage/storageDomain?id=${d.id}" style="text-decoration-line: none; color: grey;">
-                                                        &nbsp;&nbsp;&nbsp;&nbsp;- ${d.name}
-                                                    </a>
-                                                    </li>
-                                                    </ul>
-                                                    </li>
-                                                </c:if>
-                                </c:forEach>
+                                        <div class="collapse" id="collapseStorageDc-${dc.id}">
+                                            <ul id="desc">
+                                                <c:forEach var="s" items="${m.domain}">
 
-                            <!-- 볼륨 -->
-                            <a href="/storage/volumes" style="text-decoration-line: none" >
-                                <img src="/svg/s.png" alt="volume" width="20" height="auto" />
-                            </a>
-                            <a data-bs-toggle="collapse" href="#collapseVolume" style="text-decoration-line: none; color: grey;">
-                                볼륨
-                            </a>
-                            <br>
-                            <c:forEach var="v" items="${m.volume}" varStatus="status">
-                                <li id="desc">
-                                    <div class="collapse" id="collapseVolume">
-                                        <ul id="desc">
-                                            <li id="desc">
-                                                <c:if test="${empty m.volume}">
-                                                    비었음
-                                                    </li>
-                                                    </ul>
-                                                    </li>
-                                                </c:if>
-                                                <c:if test="${not empty m.volume}">
-                                                    <a href="/storage/volume?id=${v.id}" style="text-decoration-line: none; color: grey;">
-                                                        &nbsp;&nbsp;&nbsp;&nbsp;- ${v.name}
-                                                    </a>
-                                                    </li>
-                                                    </ul>
-                                                    </li>
-                                                </c:if>
-                            </c:forEach>
+                                                    <c:if test="${dc.id eq s.datacenterId}">
+                                                        <li>
+                                                            <a href="/storage/storageDomains" style="text-decoration-line: none">
+                                                                <img src="/svg/s.png" alt="storage" width="20" height="auto" />
+                                                            </a>
+                                                            <a href="/storage/storageDomain?id=${s.id}" style="text-decoration-line: none; color: grey;">
+                                                                ${s.name}
+                                                            </a>
+                                                        </li>
+                                                    </c:if>
+                                                </c:forEach>
+                                            </ul>
+                                        </div>
+                                    </c:forEach>
+                                </ul>
+                            </c:when>
 
-                            <!-- 디스크 -->
-                            <a href="/storage/disks" style="text-decoration-line: none" >
-                                <img src="/svg/s.png" alt="disk" width="20" height="auto" />
-                            </a>
-                            <a data-bs-toggle="collapse" href="#collapseDisk" style="text-decoration-line: none; color: grey;">
-                                디스크
-                            </a>
-                            <c:forEach var="d" items="${m.disk}" varStatus="status">
-                                <li id="desc">
-                                    <div class="collapse" id="collapseDisk">
-                                        <ul id="desc">
-                                            <li id="desc">
-                                                <c:if test="${empty m.disk}">
-                                                    비었음
-                                                    </li>
-                                                    </ul>
-                                                    </li>
-                                                </c:if>
-                                                <c:if test="${not empty m.disk}">
-                                                    <a href="/storage/disk?id=${d.id}" style="text-decoration-line: none; color: grey;">
-                                                        &nbsp;&nbsp;&nbsp;&nbsp;- ${d.name}
-                                                    </a>
-                                                    </li>
-                                                    </ul>
-                                                    </li>
-                                                </c:if>
-                            </c:forEach>
-                        </ul>
+                            <c:otherwise>
+                                비었음
+                            </c:otherwise>
+                        </c:choose>
                     </div>
 
-        <div class="collapse" id="collapseLayouts5" data-bs-parent="#sidenavAccordion">
-            <a class="nav-link" href="/setting/user">사용자</a>
-        </div>
+
+
+                    <div class="collapse" id="collapseLayouts5" data-bs-parent="#sidenavAccordion">
+                        <a class="nav-link" href="/setting/user">사용자</a>
+                    </div>
 
         </div>
 
