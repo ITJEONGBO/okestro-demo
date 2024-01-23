@@ -229,6 +229,11 @@ public class VmServiceImpl implements ItVmService {
                     st = df.format(statistic.values().get(0).datum());
                     nVo.setTxTotalSpeed( st );
                 }
+
+                if(statistic.name().equals("errors.total.rx")){
+                    st = df.format(statistic.values().get(0).datum());
+                    nVo.setStop( st );
+                }
             }
 
 
@@ -410,7 +415,7 @@ public class VmServiceImpl implements ItVmService {
             System.out.println(gif.getArchitecture());
             gif.setType(vm.guestOperatingSystem().family());
             gif.setKernalVersion(vm.guestOperatingSystem().kernel().version().fullVersion());
-            gif.setOs(vm.guestOperatingSystem().distribution());
+            gif.setOs(vm.guestOperatingSystem().distribution() + " " + vm.guestOperatingSystem().version().major());
             gif.setGuestTime(vm.guestTimeZone().name() + vm.guestTimeZone().utcOffset());
         }
         return gif;
@@ -447,6 +452,7 @@ public class VmServiceImpl implements ItVmService {
                 User user = ((UserService.GetResponse)systemService.usersService().userService(permission.user().id()).get().send()).user();
                 pVo.setUser(user.name());
                 pVo.setNameSpace(user.namespace());
+                pVo.setProvider(user.domainPresent() ? user.domain().name() : null);
 
                 Role role = ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
                 pVo.setRole(role.name());

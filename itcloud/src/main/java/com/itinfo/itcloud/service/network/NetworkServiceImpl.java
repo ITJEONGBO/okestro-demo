@@ -271,6 +271,8 @@ public class NetworkServiceImpl implements ItNetworkService {
 
         List<Vm> vmList =
                 ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
+        //https://192.168.0.70/ovirt-engine/api/vms/2de1a7c7-9952-4c30-a376-353c3a30625b/nics
+        //https://192.168.0.70/ovirt-engine/api/vnicprofiles/0000000a-000a-000a-000a-000000000398
 
         for(Vm vm : vmList){
             List<Nic> nicList =
@@ -398,6 +400,7 @@ public class NetworkServiceImpl implements ItNetworkService {
                 User user = ((UserService.GetResponse)systemService.usersService().userService(permission.user().id()).get().send()).user();
                 pVo.setUser(user.name());
                 pVo.setNameSpace(user.namespace());
+                pVo.setProvider(user.domainPresent() ? user.domain().name() : null);
 
                 Role role = ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
                 pVo.setRole(role.name());

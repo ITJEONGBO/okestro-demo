@@ -52,7 +52,7 @@
                                 <td>${nic.txSpeed< 1 ? "< 1" : nic.txSpeed}</td>
                                 <td>${nic.txTotalSpeed}</td>
                                 <td>${nic.speed}</td>
-                                <td></td>
+                                <td>${nic.stop}</td>
                             </tr>
                             <tr>
                                 <td colspan="9"></td>

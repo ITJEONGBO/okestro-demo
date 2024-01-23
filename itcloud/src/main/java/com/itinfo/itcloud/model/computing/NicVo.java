@@ -18,8 +18,8 @@ public class NicVo {
     private String txSpeed;        // mbps
     private String rxTotalSpeed;   // byte
     private String txTotalSpeed;   // byte
-    private BigInteger speed;    // mbps
-    private BigInteger stop;
+    private String speed;    // mbps
+    private String stop;
 
     // 가상머신 nic
     private String networkName;

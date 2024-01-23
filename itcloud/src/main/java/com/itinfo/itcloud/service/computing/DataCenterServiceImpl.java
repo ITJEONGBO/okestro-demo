@@ -68,7 +68,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
             sdVo.setId(storageDomain.id());
             sdVo.setName(storageDomain.name());
-            sdVo.setDomainType( storageDomain.type().value() + (storageDomain.master() ? "(master)" : "") );
+            sdVo.setDomainType( storageDomain.type().value() + (storageDomain.master() ? "(마스터)" : "") );
             sdVo.setStatus(storageDomain.status().value());     // storageDomainStatus 10개
             sdVo.setAvailableSize(storageDomain.available());   // 여유공간
             sdVo.setUsedSize(storageDomain.used());             // 사용된 공간
@@ -152,6 +152,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                 Role role = ovirt.role(permission.role().id());
 
                 pVo.setUser(user.name());
+                pVo.setProvider(user.domainPresent() ? user.domain().name() : null);
                 pVo.setNameSpace(user.namespace());
                 pVo.setRole(role.name());
 

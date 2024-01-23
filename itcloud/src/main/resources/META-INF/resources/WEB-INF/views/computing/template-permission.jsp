@@ -44,7 +44,7 @@
                         <tr>
                             <td>&nbsp;&nbsp;&nbsp;</td>
                             <td>${permission.user}</td>
-                            <td></td>
+                            <td>${permission.provider}</td>
                             <td>${permission.nameSpace}</td>
                             <td>${permission.role}</td>
                             <td></td>

@@ -317,29 +317,31 @@ public class ClusterServiceImpl implements ItClusterService {
         List<PermissionVo> pVoList = new ArrayList<>();
         PermissionVo pVo = null;
 
-        List<Permission> permissionList = ovirt.cPermissionList(id);
+        List<Permission> permissionList = ovirt.dcPermissionList(id);
         for(Permission permission : permissionList){
             pVo = new PermissionVo();
             pVo.setPermissionId(permission.id());
 
+            // 그룹이 있고, 유저가 없을때
             if(permission.groupPresent() && !permission.userPresent()){
                 Group group = ovirt.group(permission.group().id());
+                Role role = ovirt.role(permission.role().id());
+
                 pVo.setUser(group.name());
                 pVo.setNameSpace(group.namespace());
-                // 생성일의 경우 db에서 가져와야함
-
-                Role role = ovirt.role(permission.role().id());
                 pVo.setRole(role.name());
 
                 pVoList.add(pVo);       // 그룹에 추가
             }
 
-            if(permission.userPresent() && !permission.groupPresent()){
+            // 그룹이 없고, 유저가 있을때
+            if(!permission.groupPresent() && permission.userPresent()){
                 User user = ovirt.user(permission.user().id());
-                pVo.setUser(user.name());
-                pVo.setNameSpace(user.namespace());
-
                 Role role = ovirt.role(permission.role().id());
+
+                pVo.setUser(user.name());
+                pVo.setProvider(user.domainPresent() ? user.domain().name() : null);
+                pVo.setNameSpace(user.namespace());
                 pVo.setRole(role.name());
 
                 pVoList.add(pVo);

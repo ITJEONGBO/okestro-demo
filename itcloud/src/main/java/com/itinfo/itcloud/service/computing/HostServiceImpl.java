@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -83,8 +84,7 @@ public class HostServiceImpl implements ItHostService {
         HostVo hostVo = new HostVo();
         hostVo.setId(id);
 
-        Host host =
-                ((HostService.GetResponse)systemService.hostsService().hostService(id).get().send()).host();
+        Host host = ((HostService.GetResponse)systemService.hostsService().hostService(id).get().send()).host();
 
         hostVo.setName(host.name());
         hostVo.setAddress(host.address()); //호스트 ip
@@ -99,14 +99,14 @@ public class HostServiceImpl implements ItHostService {
                 * host.cpu().topology().threadsAsInteger();
         hostVo.setCpuCnt(cpu); // 논리 cpu 코어수
 
+
         // 온라인 논리 CPU 코어수
-//        HostCpuUnit hostCpuUnit = host.cpuUnits();
+        // HostCpuUnit 이 없음 인식안됨
+        // https://192.168.0.70/ovirt-engine/api/hosts/3bbd27b9-13d8-4fff-ad29-c0350994ca88/cpuunits
+        // https://192.168.0.70/ovirt-engine/api/hosts/3bbd27b9-13d8-4fff-ad29-c0350994ca88/numanodes
+//        ((HostService.GetResponse)systemService.hostsService().hostService(id).c)
 
-        // host.iscsi() != null
-        if(host.iscsiPresent()){
-            hostVo.setIscsi(host.iscsi().initiator());  // iscsi 게시자 이름
-        }
-
+        hostVo.setIscsi(host.iscsiPresent() ? host.iscsi().initiator() : null);  // iscsi 게시자 이름
         hostVo.setKdump(host.kdumpStatus().value());  // kdump intergration status
         hostVo.setDevicePassThrough(host.devicePassthrough().enabled());    // 장치통과
         hostVo.setMemoryMax(host.maxSchedulingMemory());      // 최대 여유 메모리
@@ -121,8 +121,6 @@ public class HostServiceImpl implements ItHostService {
 
         // 클러스터 호환버전
 
-        // 온라인 논리 cpu 코어 수 ?
-        // https://192.168.0.70/ovirt-engine/api/hosts/3bbd27b9-13d8-4fff-ad29-c0350994ca88/numanodes
 
 
         List<Statistic> statisticList =
@@ -319,9 +317,14 @@ public class HostServiceImpl implements ItHostService {
                     st = df.format(statistic.values().get(0).datum());
                     nVo.setTxTotalSpeed( st );
                 }
-            }
-            nVo.setSpeed( hostNic.speed() );
 
+                if(statistic.name().equals("errors.total.rx")){
+                    st = df.format(statistic.values().get(0).datum());
+                    nVo.setStop( st );
+                }
+            }
+            // 값 표현 오류
+            nVo.setSpeed(String.valueOf(hostNic.speed()));
 
             nVoList.add(nVo);
         }
@@ -389,9 +392,11 @@ public class HostServiceImpl implements ItHostService {
                 User user = ((UserService.GetResponse)systemService.usersService().userService(permission.user().id()).get().send()).user();
                 pVo.setUser(user.name());
                 pVo.setNameSpace(user.namespace());
+                pVo.setProvider(user.domainPresent() ? user.domain().name() : null);
 
                 Role role = ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
                 pVo.setRole(role.name());
+
 
                 pVoList.add(pVo);
             }
