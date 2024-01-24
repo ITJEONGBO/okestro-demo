@@ -93,6 +93,7 @@ public class DataCenterController {
 		model.addAttribute("permission", permission);
 		model.addAttribute("id", id);
 		model.addAttribute("name", itDataCenterService.getName(id));
+		System.out.println("name");
 
 		MenuVo m = menu.getMenu();
 		model.addAttribute("m", m);

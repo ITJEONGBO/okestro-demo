@@ -20,7 +20,7 @@ public class HostVo {
     private int cpuTopologySocket;
     private int cpuTopologyThread;
     private int cpuCnt;
-    private String cpuOnline;
+    private List<Integer> cpuOnline;
 
     private boolean devicePassThrough;
     private String iscsi;

@@ -6,9 +6,13 @@ import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.storage.StorageDomainVo;
+import com.itinfo.itcloud.ovirt.AdminConnectionService;
+import com.itinfo.itcloud.ovirt.ConnectionService;
 import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItDataCenterService;
 import lombok.extern.slf4j.Slf4j;
+import org.ovirt.engine.sdk4.Connection;
+import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +24,7 @@ import java.util.List;
 @Service
 @Slf4j
 public class DataCenterServiceImpl implements ItDataCenterService {
-
+    @Autowired private AdminConnectionService adminConnectionService;
     @Autowired private OvirtService ovirt;
 
     @Override
@@ -105,7 +109,6 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     // 데이터센터 - 클러스터
     @Override
     public List<ClusterVo> getCluster(String id) {
-
         List<ClusterVo> cVoList = new ArrayList<>();
         ClusterVo cVo = null;
 
@@ -126,18 +129,28 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     // 데이터센터 - 권한
     @Override
     public List<PermissionVo> getPermission(String id) {
+        Connection connection = adminConnectionService.getConnection();
+        SystemService systemService = connection.systemService();
+
         List<PermissionVo> pVoList = new ArrayList<>();
         PermissionVo pVo = null;
 
-        List<Permission> permissionList = ovirt.dcPermissionList(id);
+        List<Permission> permissionList =
+                ((AssignedPermissionsService.ListResponse) systemService.dataCentersService().dataCenterService(id).permissionsService().list().send()).permissions();
+        System.out.println("permissionList");
+//        List<Permission> permissionList = ovirt.dcPermissionList(id);
         for(Permission permission : permissionList){
             pVo = new PermissionVo();
             pVo.setPermissionId(permission.id());
 
             // 그룹이 있고, 유저가 없을때
             if(permission.groupPresent() && !permission.userPresent()){
-                Group group = ovirt.group(permission.group().id());
-                Role role = ovirt.role(permission.role().id());
+                Group group = ((GroupService.GetResponse) systemService.groupsService().groupService(permission.group().id()).get().send()).get();
+                System.out.println("goupt");
+//                Group group = ovirt.group(permission.group().id());
+//                Role role = ovirt.role(permission.role().id());
+                Role role = ((RoleService.GetResponse) systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+                System.out.println("roel");
 
                 pVo.setUser(group.name());
                 pVo.setNameSpace(group.namespace());
@@ -148,8 +161,12 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
             // 그룹이 없고, 유저가 있을때
             if(!permission.groupPresent() && permission.userPresent()){
-                User user = ovirt.user(permission.user().id());
-                Role role = ovirt.role(permission.role().id());
+                User user = ((UserService.GetResponse) systemService.usersService().userService(permission.user().id()).get().send()).user();
+                System.out.println("user");
+//                User user = ovirt.user(permission.user().id());
+//                Role role = ovirt.role(permission.role().id());
+                Role role = ((RoleService.GetResponse) systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+                System.out.println("role");
 
                 pVo.setUser(user.name());
                 pVo.setProvider(user.domainPresent() ? user.domain().name() : null);

@@ -30,7 +30,11 @@
                         활성 가상머신: ${host.vmUpCnt} <br><br>
 
                         논리 CPU 코어 수: ${host.cpuCnt} <br>
-                        온라인 논리 CPU 코어 수: <br>
+                        온라인 논리 CPU 코어 수:
+                            <c:forEach var="online" items="${host.cpuOnline}" varStatus="status">
+                                 ${online}
+                            </c:forEach>
+                        <br>
                         부팅 시간: ${host.bootingTime}<br>
                         Hosted Engine HA: <br><br>
 

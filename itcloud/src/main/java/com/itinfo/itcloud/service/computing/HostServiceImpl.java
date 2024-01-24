@@ -2,6 +2,7 @@ package com.itinfo.itcloud.service.computing;
 
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
+import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItHostService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.Connection;
@@ -22,26 +23,25 @@ import java.util.List;
 @Slf4j
 public class HostServiceImpl implements ItHostService {
 
-    @Autowired
-    private AdminConnectionService adminConnectionService;
+    @Autowired private AdminConnectionService adminConnectionService;
+    @Autowired private OvirtService ovirt;
 
     @Override
     public String getName(String id){
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
-
-        return ((HostService.GetResponse)systemService.hostsService().hostService(id).get().send()).host().name();
+        return ovirt.getName("host", id);
     }
 
     @Override
     public List<HostVo> getList() {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+//        Connection connection = adminConnectionService.getConnection();
+//        SystemService systemService = connection.systemService();
+        SystemService s = ovirt.getSystemService();;
 
         List<HostVo> hostVoList = new ArrayList<>();
         HostVo hostVo = null;
 
-        List<Host> hostList = ((HostsService.ListResponse)systemService.hostsService().list().send()).hosts();
+        List<Host> hostList = ovirt.hostList();
+//        List<Host> hostList = ((HostsService.ListResponse)systemService.hostsService().list().send()).hosts();
 
         for(Host host : hostList){
             hostVo = new HostVo();
@@ -52,16 +52,19 @@ public class HostServiceImpl implements ItHostService {
             hostVo.setAddress(host.address());
             hostVo.setStatus(host.status().value());
 
-            Cluster cluster =
-                    ((ClusterService.GetResponse)systemService.clustersService().clusterService(host.cluster().id()).get().send()).cluster();
-            DataCenter dataCenter =
-                    ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send()).dataCenter();
+            Cluster cluster = ovirt.cluster(host.cluster().id());
+//            Cluster cluster =
+//                    ((ClusterService.GetResponse)systemService.clustersService().clusterService(host.cluster().id()).get().send()).cluster();
+            DataCenter dataCenter = ovirt.dataCenter(cluster.dataCenter().id());
+//            DataCenter dataCenter =
+//                    ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send()).dataCenter();
             hostVo.setClusterId(host.cluster().id());
             hostVo.setClusterName(cluster.name());
             hostVo.setDatacenterId(cluster.dataCenter().id());
             hostVo.setDatacenterName(dataCenter.name());
 
-            List<Vm> vmList = ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
+            List<Vm> vmList = ovirt.vmList();
+//            List<Vm> vmList = ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
             int vmsCnt = 0;
             for(Vm vm : vmList){
                 if(vm.host() != null && vm.host().id().equals(host.id())){
@@ -104,7 +107,12 @@ public class HostServiceImpl implements ItHostService {
         // HostCpuUnit 이 없음 인식안됨
         // https://192.168.0.70/ovirt-engine/api/hosts/3bbd27b9-13d8-4fff-ad29-c0350994ca88/cpuunits
         // https://192.168.0.70/ovirt-engine/api/hosts/3bbd27b9-13d8-4fff-ad29-c0350994ca88/numanodes
-//        ((HostService.GetResponse)systemService.hostsService().hostService(id).c)
+        List<HostCpuUnit> hcuList = ((HostCpuUnitsService.ListResponse)systemService.hostsService().hostService(id).cpuUnitsService().list().send()).cpuUnits();
+        List<Integer> online = new ArrayList<>();
+        for(HostCpuUnit hcu : hcuList) {
+            online.add(hcu.cpuIdAsInteger());
+            hostVo.setCpuOnline(online);
+        }
 
         hostVo.setIscsi(host.iscsiPresent() ? host.iscsi().initiator() : null);  // iscsi 게시자 이름
         hostVo.setKdump(host.kdumpStatus().value());  // kdump intergration status
@@ -116,7 +124,7 @@ public class HostServiceImpl implements ItHostService {
         // 자동으로 페이지를 크게 (확실하지 않음. 매우)
         hostVo.setPageSize(host.transparentHugePages().enabled());
 
-        // selinux모드
+        // selinux모드: disabled, enforcing, permissive
         hostVo.setSeLinux(host.seLinux().mode().value());
 
         // 클러스터 호환버전
@@ -137,7 +145,8 @@ public class HostServiceImpl implements ItHostService {
             if(statistic.name().equals("memory.free")){
                 hostVo.setMemoryFree(statistic.values().get(0).datum().toBigInteger());
             }
-            // 공유메모리?
+            // 공유메모리
+            // keep
 //            if(statistic.name().equals("memory.shared")){
 //                hostVo.setMemoryShared(statistic.values().get(0).datum().toBigInteger());
 //            }
@@ -410,11 +419,10 @@ public class HostServiceImpl implements ItHostService {
         Connection connection = adminConnectionService.getConnection();
         SystemService systemService = connection.systemService();
 
-        List<AffinityLabelVo> alVoList = new ArrayList<>();
-        AffinityLabelVo alVo = null;
-
         List<AffinityLabel> affinityLabelList =
                 ((AssignedAffinityLabelsService.ListResponse)systemService.hostsService().hostService(id).affinityLabelsService().list().send()).label();
+        List<AffinityLabelVo> alVoList = new ArrayList<>();
+        AffinityLabelVo alVo = null;
 
 
         for(AffinityLabel a : affinityLabelList) {
