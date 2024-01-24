@@ -7,38 +7,38 @@ import java.util.List;
 
 @Getter @Setter
 public class AffinityGroupVo {
+    // 선호도 그룹
     private String id;
     private String name;
     private String description;
-    private boolean status; // broken
-    private int priority;  // 우선순위
+    private boolean status;     // broken
+    private int priority;       // 우선순위
 
-    private boolean positive;   // 양극/음극  | 가상머신에 따라간ㅁ
-    private boolean enforcing;  // 강제적용 | 가상머신에 따라감
+    private boolean positive;   // 양극/음극    | 가상머신 따라감
+    private boolean enforcing;  // 강제적용     | 가상머신 따라감
 
-    // host_rule, 가상머신 측 극성, 가상머신 강제적용
-    private boolean vmEnabled;
-    private boolean vmPositive;
-    private boolean vmEnforcing;
+    // vms_rule
+    private boolean vmEnabled;      // 가상머신 측 극성 (비활성화)
+    private boolean vmPositive;     // 가상머신 측 극성 (양극, 음극)
+    private boolean vmEnforcing;    // 가상머신 강제적용
 
-    // vms_rule, 호스트 측 극성, 호스트 강제적용
-    private boolean hostEnabled;
-    private boolean hostPositive;
-    private boolean hostEnforcing;
-
-
-    // 가상머신 레이블, 호스트 레이블
-//    private String vmLabels;
-//    private String hostLabels;
-    private List<AffinityLabelVo> vmLabels;
-    private List<AffinityLabelVo> hostLabels;
+    // host_rule
+    private boolean hostEnabled;    // 호스트 측 극성 (비활성화)
+    private boolean hostPositive;   // 호스트 측 극성 (양극, 음극)
+    private boolean hostEnforcing;  // 호스트 강제적용
 
 
-    // 가상머신 멤버, 호스트 멤버
-//    private String vmList;
-//    private String hostList;
-    private List<VmVo> vmList;
-    private List<VmVo> hostList;
+    private List<String> vmLabels;        // 가상머신 레이블
+    private List<String> hostLabels;      // 호스트 레이블
+//    private List<AffinityLabelVo> vmLabels;
+//    private List<AffinityLabelVo> hostLabels;
+
+
+    private List<String> vmList;
+    private List<String> hostList;
+//    private List<VmVo> vmList;      // 가상머신 멤버
+//    private List<VmVo> hostList;    // 호스트 멤버
+
 
     // LINK: vms, vmlabels, hosts, hostlabels
     // cluster, hosts, vms

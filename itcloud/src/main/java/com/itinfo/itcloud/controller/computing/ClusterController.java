@@ -100,7 +100,7 @@ public class ClusterController {
 
 	@GetMapping("/computing/cluster-affGroup")
 	public String aff(String id, Model model) {
-		List<AffinityGroupVo> aff = itClusterService.getAffinitygroups(id);
+		List<AffinityGroupVo> aff = itClusterService.getAffinitygroup(id);
 		model.addAttribute("aff", aff);
 		model.addAttribute("id", id);
 		model.addAttribute("name", itClusterService.getName(id));
@@ -112,7 +112,7 @@ public class ClusterController {
 
 	@GetMapping("/computing/cluster-affLabel")
 	public String affLabel(String id, Model model) {
-		List<AffinityLabelVo> aff = itClusterService.getAffinitylabels(id);
+		List<AffinityLabelVo> aff = itClusterService.getAffinitylabel();
 		model.addAttribute("aff", aff);
 		model.addAttribute("id", id);
 		model.addAttribute("name", itClusterService.getName(id));
@@ -201,14 +201,14 @@ public class ClusterController {
 	@ResponseBody
 	public List<AffinityGroupVo> affGroup(String id) {
 		log.info("----- 클러스터 선호도 목록 불러오기: " + id);
-		return itClusterService.getAffinitygroups(id);
+		return itClusterService.getAffinitygroup(id);
 	}
 
 	@GetMapping("/computing/cluster/affLabelStatus")
 	@ResponseBody
 	public List<AffinityLabelVo> affLabel(String id) {
 		log.info("----- 클러스터 선호도 목록 불러오기: " + id);
-		return itClusterService.getAffinitylabels(id);
+		return itClusterService.getAffinitylabel();
 	}
 
 //	@GetMapping("/computing/cluster/cpuStatus")
