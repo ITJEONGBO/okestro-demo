@@ -23,20 +23,18 @@ import java.util.List;
 public class NetworkServiceImpl implements ItNetworkService {
 
     @Autowired
-    private AdminConnectionService adminConnectionService;
+    private AdminConnectionService admin;
 
     @Override
     public String getName(String id){
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         return ((NetworkService.GetResponse)systemService.networksService().networkService(id).get().send()).network().name();
     }
 
     @Override
     public List<NetworkVo> getList() {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<NetworkVo> nwVoList = new ArrayList<>();
         NetworkVo nwVo = null;
@@ -91,8 +89,7 @@ public class NetworkServiceImpl implements ItNetworkService {
 
     @Override
     public NetworkVo getNetwork(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         NetworkVo nwVo = new NetworkVo();
 
@@ -111,8 +108,7 @@ public class NetworkServiceImpl implements ItNetworkService {
 
     @Override
     public List<VnicProfileVo> getVnic(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<VnicProfileVo> vpVoList = new ArrayList<>();
         VnicProfileVo vpVo = null;
@@ -153,8 +149,7 @@ public class NetworkServiceImpl implements ItNetworkService {
 
     @Override
     public List<NetworkClusterVo> getCluster(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<NetworkClusterVo> ncVoList = new ArrayList<>();
         NetworkClusterVo ncVo = null;
@@ -197,8 +192,7 @@ public class NetworkServiceImpl implements ItNetworkService {
 
     @Override
     public List<NetworkHostVo> getHost(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<NetworkHostVo> nhVoList = new ArrayList<>();
         NetworkHostVo nhVo = null;
@@ -263,8 +257,7 @@ public class NetworkServiceImpl implements ItNetworkService {
 
     @Override
     public List<NetworkVmVo> getVm(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<NetworkVmVo> nVmVoList = new ArrayList<>();
         NetworkVmVo nVmVo = null;
@@ -346,8 +339,7 @@ public class NetworkServiceImpl implements ItNetworkService {
 
     @Override
     public List<TemplateVo> getTemplate(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<TemplateVo> tVoList = new ArrayList<>();
         TemplateVo tVo = null;
@@ -371,8 +363,7 @@ public class NetworkServiceImpl implements ItNetworkService {
 
     @Override
     public List<PermissionVo> getPermission(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<PermissionVo> pVoList = new ArrayList<>();
         PermissionVo pVo = null;

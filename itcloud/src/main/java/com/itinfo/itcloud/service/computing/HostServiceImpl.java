@@ -23,7 +23,7 @@ import java.util.List;
 @Slf4j
 public class HostServiceImpl implements ItHostService {
 
-    @Autowired private AdminConnectionService adminConnectionService;
+    @Autowired private AdminConnectionService admin;
     @Autowired private OvirtService ovirt;
 
     @Override
@@ -33,15 +33,14 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public List<HostVo> getList() {
-//        Connection connection = adminConnectionService.getConnection();
-//        SystemService systemService = connection.systemService();
-        SystemService s = ovirt.getSystemService();;
+        SystemService systemService = admin.getConnection().systemService();
+//        SystemService s = ovirt.getSystemService();;
 
         List<HostVo> hostVoList = new ArrayList<>();
         HostVo hostVo = null;
 
-        List<Host> hostList = ovirt.hostList();
-//        List<Host> hostList = ((HostsService.ListResponse)systemService.hostsService().list().send()).hosts();
+//        List<Host> hostList = ovirt.hostList();
+        List<Host> hostList = ((HostsService.ListResponse)systemService.hostsService().list().send()).hosts();
 
         for(Host host : hostList){
             hostVo = new HostVo();
@@ -52,19 +51,19 @@ public class HostServiceImpl implements ItHostService {
             hostVo.setAddress(host.address());
             hostVo.setStatus(host.status().value());
 
-            Cluster cluster = ovirt.cluster(host.cluster().id());
-//            Cluster cluster =
-//                    ((ClusterService.GetResponse)systemService.clustersService().clusterService(host.cluster().id()).get().send()).cluster();
-            DataCenter dataCenter = ovirt.dataCenter(cluster.dataCenter().id());
-//            DataCenter dataCenter =
-//                    ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send()).dataCenter();
+//            Cluster cluster = ovirt.cluster(host.cluster().id());
+            Cluster cluster =
+                    ((ClusterService.GetResponse)systemService.clustersService().clusterService(host.cluster().id()).get().send()).cluster();
+//            DataCenter dataCenter = ovirt.dataCenter(cluster.dataCenter().id());
+            DataCenter dataCenter =
+                    ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send()).dataCenter();
             hostVo.setClusterId(host.cluster().id());
             hostVo.setClusterName(cluster.name());
             hostVo.setDatacenterId(cluster.dataCenter().id());
             hostVo.setDatacenterName(dataCenter.name());
 
-            List<Vm> vmList = ovirt.vmList();
-//            List<Vm> vmList = ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
+//            List<Vm> vmList = ovirt.vmList();
+            List<Vm> vmList = ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
             int vmsCnt = 0;
             for(Vm vm : vmList){
                 if(vm.host() != null && vm.host().id().equals(host.id())){
@@ -81,8 +80,7 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public HostVo getInfo(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         HostVo hostVo = new HostVo();
         hostVo.setId(id);
@@ -206,8 +204,7 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public List<VmVo> getVm(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<VmVo> vmVoList = new ArrayList<>();
         VmVo vmVo = null;
@@ -284,8 +281,7 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public List<NicVo> getNic(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<NicVo> nVoList = new ArrayList<>();
         NicVo nVo = null;
@@ -342,8 +338,7 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public List<HostDeviceVo> getHostDevice(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<HostDeviceVo> hostDeviceVoList = new ArrayList<>();
         HostDeviceVo hostDeviceVo = null;
@@ -372,8 +367,7 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public List<PermissionVo> getPermission(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<PermissionVo> pVoList = new ArrayList<>();
         PermissionVo pVo = null;
@@ -416,8 +410,7 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public List<AffinityLabelVo> getAffinitylabels(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<AffinityLabel> affinityLabelList =
                 ((AssignedAffinityLabelsService.ListResponse)systemService.hostsService().hostService(id).affinityLabelsService().list().send()).label();
@@ -439,8 +432,7 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public List<EventVo> getEvent(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<EventVo> eVoList = new ArrayList<>();
         EventVo eVo = null;
@@ -467,9 +459,6 @@ public class HostServiceImpl implements ItHostService {
         }
         return eVoList;
     }
-
-
-
 
 
 

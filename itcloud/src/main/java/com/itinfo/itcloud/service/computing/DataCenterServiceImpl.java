@@ -24,7 +24,7 @@ import java.util.List;
 @Service
 @Slf4j
 public class DataCenterServiceImpl implements ItDataCenterService {
-    @Autowired private AdminConnectionService adminConnectionService;
+    @Autowired private AdminConnectionService admin;
     @Autowired private OvirtService ovirt;
 
     @Override
@@ -35,12 +35,14 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     // 데이터센터 리스트 불러오기
     @Override
     public List<DataCenterVo> getList(){
+        SystemService systemService = admin.getConnection().systemService();
+
         long start = System.currentTimeMillis();
 
         List<DataCenterVo> dcVoList = new ArrayList<>();
         DataCenterVo dcVo = null;
 
-        List<DataCenter> dataCenterList = ovirt.dataCenterList();
+        List<DataCenter> dataCenterList = ((DataCentersService.ListResponse)systemService.dataCentersService().list().send()).dataCenters();
         for(DataCenter dataCenter : dataCenterList){
             dcVo = new DataCenterVo();
 
@@ -63,10 +65,12 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     // 데이터센터 - 스토리지
     @Override
     public List<StorageDomainVo> getStorage(String id) {
+        SystemService systemService = admin.getConnection().systemService();
+
         List<StorageDomainVo> sdVoList = new ArrayList<>();
         StorageDomainVo sdVo = null;
 
-        List<StorageDomain> storageDomainList = ovirt.dcDomainList(id);
+        List<StorageDomain> storageDomainList = ((AttachedStorageDomainsService.ListResponse) systemService.dataCentersService().dataCenterService(id).storageDomainsService().list().send()).storageDomains();
         for(StorageDomain storageDomain : storageDomainList) {
             sdVo = new StorageDomainVo();
 
@@ -89,10 +93,12 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     // 데이터센터 - 네트워크
     @Override
     public List<NetworkVo> getNetwork(String id) {
+        SystemService systemService = admin.getConnection().systemService();
+
         List<NetworkVo> nwVoList = new ArrayList<>();
         NetworkVo nwVo = null;
 
-        List<Network> networkList = ovirt.dcNetworkList(id);
+        List<Network> networkList = ((DataCenterNetworksService.ListResponse) systemService.dataCentersService().dataCenterService(id).networksService().list().send()).networks();
         for(Network network : networkList){
             nwVo = new NetworkVo();
 
@@ -109,10 +115,12 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     // 데이터센터 - 클러스터
     @Override
     public List<ClusterVo> getCluster(String id) {
+        SystemService systemService = admin.getConnection().systemService();
+
         List<ClusterVo> cVoList = new ArrayList<>();
         ClusterVo cVo = null;
 
-        List<Cluster> clusterList = ovirt.dcClusterList(id);
+        List<Cluster> clusterList = ((ClustersService.ListResponse) systemService.dataCentersService().dataCenterService(id).clustersService().list().send()).clusters();
         for(Cluster cluster : clusterList){
             cVo = new ClusterVo();
 
@@ -129,16 +137,13 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     // 데이터센터 - 권한
     @Override
     public List<PermissionVo> getPermission(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<PermissionVo> pVoList = new ArrayList<>();
         PermissionVo pVo = null;
 
         List<Permission> permissionList =
                 ((AssignedPermissionsService.ListResponse) systemService.dataCentersService().dataCenterService(id).permissionsService().list().send()).permissions();
-        System.out.println("permissionList");
-//        List<Permission> permissionList = ovirt.dcPermissionList(id);
         for(Permission permission : permissionList){
             pVo = new PermissionVo();
             pVo.setPermissionId(permission.id());
@@ -146,11 +151,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
             // 그룹이 있고, 유저가 없을때
             if(permission.groupPresent() && !permission.userPresent()){
                 Group group = ((GroupService.GetResponse) systemService.groupsService().groupService(permission.group().id()).get().send()).get();
-                System.out.println("goupt");
-//                Group group = ovirt.group(permission.group().id());
-//                Role role = ovirt.role(permission.role().id());
                 Role role = ((RoleService.GetResponse) systemService.rolesService().roleService(permission.role().id()).get().send()).role();
-                System.out.println("roel");
 
                 pVo.setUser(group.name());
                 pVo.setNameSpace(group.namespace());
@@ -162,11 +163,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
             // 그룹이 없고, 유저가 있을때
             if(!permission.groupPresent() && permission.userPresent()){
                 User user = ((UserService.GetResponse) systemService.usersService().userService(permission.user().id()).get().send()).user();
-                System.out.println("user");
-//                User user = ovirt.user(permission.user().id());
-//                Role role = ovirt.role(permission.role().id());
                 Role role = ((RoleService.GetResponse) systemService.rolesService().roleService(permission.role().id()).get().send()).role();
-                System.out.println("role");
 
                 pVo.setUser(user.name());
                 pVo.setProvider(user.domainPresent() ? user.domain().name() : null);
@@ -182,12 +179,14 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     // 데이터센터 - 이벤트
     @Override
     public List<EventVo> getEvent(String id) {
+        SystemService systemService = admin.getConnection().systemService();
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
         List<EventVo> eVoList = new ArrayList<>();
         EventVo eVo = null;
 
-        List<Event> eventList = ovirt.eventList();
+        List<Event> eventList = ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
         DataCenter dc = ovirt.dataCenter(id);
 
         for(Event event : eventList){

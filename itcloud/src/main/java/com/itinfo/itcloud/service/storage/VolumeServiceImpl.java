@@ -10,6 +10,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class VolumeServiceImpl implements ItVolumeService {
     @Autowired
-    private AdminConnectionService adminConnectionService;
+    private AdminConnectionService admin;
 
 }

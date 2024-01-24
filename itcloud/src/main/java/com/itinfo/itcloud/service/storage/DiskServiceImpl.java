@@ -20,20 +20,18 @@ import java.util.List;
 @Slf4j
 public class DiskServiceImpl implements ItDiskService {
     @Autowired
-    private AdminConnectionService adminConnectionService;
+    private AdminConnectionService admin;
 
     @Override
     public String getName(String id){
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         return ((DiskService.GetResponse)systemService.disksService().diskService(id).get().send()).disk().name();
     }
 
     @Override
     public List<DiskVo> getList() {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<DiskVo> dVoList = new ArrayList<>();
         DiskVo dVo = null;
@@ -62,8 +60,7 @@ public class DiskServiceImpl implements ItDiskService {
 
     @Override
     public DiskVo getInfo(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         DiskVo dVo = new DiskVo();
 
@@ -82,16 +79,14 @@ public class DiskServiceImpl implements ItDiskService {
 
     @Override
     public List<VmVo> getVm(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         return null;
     }
 
     @Override
     public List<StorageDomainVo> getStorage(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<StorageDomainVo> sdVoList = new ArrayList<>();
         StorageDomainVo sdVo = null;
@@ -123,8 +118,7 @@ public class DiskServiceImpl implements ItDiskService {
 
     @Override
     public List<PermissionVo> getPermission(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<PermissionVo> pVoList = new ArrayList<>();
         PermissionVo pVo = null;

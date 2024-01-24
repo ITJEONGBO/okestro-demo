@@ -1,6 +1,7 @@
 package com.itinfo.itcloud.service.computing;
 
 import com.itinfo.itcloud.model.computing.DashboardVo;
+import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.ovirt.ConnectionService;
 import com.itinfo.itcloud.service.ItDashboardService;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import java.util.List;
 @Slf4j
 public class DashboardServiceImpl implements ItDashboardService {
 	@Autowired private ConnectionService ovirtConnection;
+	@Autowired private AdminConnectionService admin;
 
 	private DashboardVo dbVo;
 
@@ -24,8 +26,7 @@ public class DashboardServiceImpl implements ItDashboardService {
 	// Dashboard 전체 불러오기
 	@Override
 	public DashboardVo getDashboard() {
-		Connection connection = ovirtConnection.getConnection();
-		SystemService systemService = connection.systemService();
+		SystemService systemService = admin.getConnection().systemService();
 
 		dbVo = new DashboardVo();
 

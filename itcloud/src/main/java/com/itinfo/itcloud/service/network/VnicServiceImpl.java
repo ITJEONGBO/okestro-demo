@@ -21,20 +21,18 @@ import java.util.List;
 public class VnicServiceImpl implements ItVnicService {
 
     @Autowired
-    private AdminConnectionService adminConnectionService;
+    private AdminConnectionService admin;
 
     @Override
     public String getName(String id){
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         return ((VnicProfileService.GetResponse)systemService.vnicProfilesService().profileService(id).get().send()).profile().name();
     }
 
     @Override
     public List<VnicProfileVo> getVnics() {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<VnicProfileVo> vpVoList = new ArrayList<>();
         VnicProfileVo vpVo = null;
@@ -74,8 +72,7 @@ public class VnicServiceImpl implements ItVnicService {
 
     @Override
     public List<VmVo> getVmNics(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<VmVo> vmVoList = new ArrayList<>();
         VmVo vmVo = null;
@@ -102,8 +99,7 @@ public class VnicServiceImpl implements ItVnicService {
 
     @Override
     public List<TemplateVo> getTemplates(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<TemplateVo> tVoList = new ArrayList<>();
         TemplateVo tVo = null;
@@ -127,8 +123,7 @@ public class VnicServiceImpl implements ItVnicService {
 
     @Override
     public List<PermissionVo> getPermission(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<PermissionVo> pVoList = new ArrayList<>();
         PermissionVo pVo = null;

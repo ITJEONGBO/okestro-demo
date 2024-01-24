@@ -20,20 +20,18 @@ import java.util.List;
 @Slf4j
 public class StorageDomainServiceImpl implements ItStorageDomainService {
     @Autowired
-    private AdminConnectionService adminConnectionService;
+    private AdminConnectionService admin;
 
     @Override
     public String getName(String id){
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         return ((StorageDomainService.GetResponse)systemService.storageDomainsService().storageDomainService(id).get().send()).storageDomain().name();
     }
 
     @Override
     public List<StorageDomainVo> getList() {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<StorageDomainVo> sdVoList = new ArrayList<>();
         StorageDomainVo sdVo = null;
@@ -68,8 +66,7 @@ public class StorageDomainServiceImpl implements ItStorageDomainService {
 
     @Override
     public StorageDomainVo getDomain(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         StorageDomainVo sdVo = new StorageDomainVo();
 
@@ -95,8 +92,7 @@ public class StorageDomainServiceImpl implements ItStorageDomainService {
 
     @Override
     public List<DataCenterVo> getDatacenter(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<DataCenterVo> dcVoList = new ArrayList<>();
         DataCenterVo dcVo = null;
@@ -124,27 +120,20 @@ public class StorageDomainServiceImpl implements ItStorageDomainService {
 
     @Override
     public List<VmVo> getVm(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
-
+        SystemService systemService = admin.getConnection().systemService();
 
         return null;
     }
 
     @Override
     public List<TemplateVo> getTemplate(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
-
-
+        SystemService systemService = admin.getConnection().systemService();
         return null;
     }
 
     @Override
     public List<DiskVo> getDisk(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
-
+        SystemService systemService = admin.getConnection().systemService();
         List<DiskVo> dVoList = new ArrayList<>();
 
 
@@ -154,8 +143,7 @@ public class StorageDomainServiceImpl implements ItStorageDomainService {
 
     @Override
     public List<PermissionVo> getPermission(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<PermissionVo> pVoList = new ArrayList<>();
         PermissionVo pVo = null;
@@ -196,8 +184,7 @@ public class StorageDomainServiceImpl implements ItStorageDomainService {
 
     @Override
     public List<EventVo> getEvent(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<EventVo> eVoList = new ArrayList<>();
         EventVo eVo = null;

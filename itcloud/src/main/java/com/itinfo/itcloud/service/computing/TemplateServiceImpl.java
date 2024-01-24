@@ -18,20 +18,18 @@ import java.util.List;
 @Service
 public class TemplateServiceImpl implements ItTemplateService {
     @Autowired
-    private AdminConnectionService adminConnectionService;
+    private AdminConnectionService admin;
 
     @Override
     public String getName(String id){
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         return ((TemplateService.GetResponse)systemService.templatesService().templateService(id).get().send()).template().name();
     }
 
     @Override
     public List<TemplateVo> getList() {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<TemplateVo> tVoList = new ArrayList<>();
         TemplateVo tVo = null;
@@ -60,8 +58,7 @@ public class TemplateServiceImpl implements ItTemplateService {
 
     @Override
     public TemplateVo getInfo(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         TemplateVo tVo = new TemplateVo();
 
@@ -91,8 +88,7 @@ public class TemplateServiceImpl implements ItTemplateService {
 
     @Override
     public List<VmVo> getVm(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<VmVo> vmVoList = new ArrayList<>();
         VmVo vmVo = null;
@@ -158,8 +154,7 @@ public class TemplateServiceImpl implements ItTemplateService {
 
     @Override
     public List<VmDiskVo> getDisk(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<VmDiskVo> vdVoList = new ArrayList<>();
         VmDiskVo vdVo = null;
@@ -196,8 +191,7 @@ public class TemplateServiceImpl implements ItTemplateService {
 
     @Override
     public List<StorageDomainVo> getStorage(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<StorageDomainVo> sdVoList = new ArrayList<>();
         StorageDomainVo sdVo = null;
@@ -232,8 +226,7 @@ public class TemplateServiceImpl implements ItTemplateService {
 
     @Override
     public List<PermissionVo> getPermission(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<PermissionVo> pVoList = new ArrayList<>();
         PermissionVo pVo = null;
@@ -274,8 +267,7 @@ public class TemplateServiceImpl implements ItTemplateService {
 
     @Override
     public List<EventVo> getEvent(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<EventVo> eVoList = new ArrayList<>();
         EventVo eVo = null;

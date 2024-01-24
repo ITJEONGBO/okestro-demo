@@ -25,20 +25,19 @@ import java.util.List;
 public class VmServiceImpl implements ItVmService {
 
     @Autowired
-    private AdminConnectionService adminConnectionService;
+    private AdminConnectionService admin;
 
     @Override
     public String getName(String id){
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         return ((VmService.GetResponse)systemService.vmsService().vmService(id).get().send()).vm().name();
     }
 
     @Override
     public List<VmVo> getList() {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
         List<VmVo> vmVoList = new ArrayList<>();
@@ -113,8 +112,7 @@ public class VmServiceImpl implements ItVmService {
 
     @Override
     public VmVo getInfo(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         VmVo vmVo = new VmVo();
         vmVo.setId(id);
@@ -168,8 +166,7 @@ public class VmServiceImpl implements ItVmService {
 
     @Override
     public List<NicVo> getNic(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<NicVo> nVoList = new ArrayList<>();
         NicVo nVo = null;
@@ -252,8 +249,7 @@ public class VmServiceImpl implements ItVmService {
 
     @Override
     public List<VmDiskVo> getDisk(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<VmDiskVo> vdVoList = new ArrayList<>();
         VmDiskVo vdVo = null;
@@ -289,8 +285,7 @@ public class VmServiceImpl implements ItVmService {
 //    https://192.168.0.80/ovirt-engine/api/vms/931ad1d3-0782-4727-947d-6a765cfcc401/snapshots
     @Override
     public List<SnapshotVo> getSnapshot(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<SnapshotVo> sVoList = new ArrayList<>();
         SnapshotVo sVo = null;
@@ -315,8 +310,7 @@ public class VmServiceImpl implements ItVmService {
 
     @Override
     public List<ApplicationVo> getApplication(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<ApplicationVo> appVoList = new ArrayList<>();
         ApplicationVo appVo = null;
@@ -336,8 +330,7 @@ public class VmServiceImpl implements ItVmService {
     // 문제있음
     @Override
     public List<AffinityGroupVo> getAffinitygroup(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<AffinityGroupVo> agVoList = new ArrayList<>();
         AffinityGroupVo agVo = null;
@@ -384,8 +377,7 @@ public class VmServiceImpl implements ItVmService {
 
     @Override
     public List<AffinityLabelVo> getAffinitylabel(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<AffinityLabelVo> alVoList = new ArrayList<>();
         AffinityLabelVo alVo = null;
@@ -403,8 +395,7 @@ public class VmServiceImpl implements ItVmService {
 
     @Override
     public GuestInfoVo getGuestInfo(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         Vm vm = ((VmService.GetResponse)systemService.vmsService().vmService(id).get().send()).vm();
 
@@ -423,8 +414,7 @@ public class VmServiceImpl implements ItVmService {
 
     @Override
     public List<PermissionVo> getPermission(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<PermissionVo> pVoList = new ArrayList<>();
         PermissionVo pVo = null;
@@ -466,8 +456,7 @@ public class VmServiceImpl implements ItVmService {
 
     @Override
     public List<EventVo> getEvent(String id) {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<EventVo> eVoList = new ArrayList<>();
         EventVo eVo = null;

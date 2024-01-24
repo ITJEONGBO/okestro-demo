@@ -22,7 +22,7 @@ import java.util.List;
 @Slf4j
 public class ClusterServiceImpl implements ItClusterService {
 
-    @Autowired private AdminConnectionService adminConnectionService;
+    @Autowired private AdminConnectionService admin;
     @Autowired private OvirtService ovirt;
 
     @Override
@@ -34,17 +34,12 @@ public class ClusterServiceImpl implements ItClusterService {
     // 상태, 이름, 코멘트, 호환버전, 설명, 클러스터cpu유형, 호스트수, 가상머신수, (업그레이드 상태)
     @Override
     public List<ClusterVo> getList(){
-        long start = System.currentTimeMillis();
-
-//        Connection connection = adminConnectionService.getConnection();
-//        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<ClusterVo> cVoList = new ArrayList<>();
         ClusterVo cVo = null;
 
-        List<Cluster> clusterList = ovirt.clusterList();
-//        List<Cluster> clusterList = ((ClustersService.ListResponse)systemService.clustersService().list().send()).clusters();
-
+        List<Cluster> clusterList = ((ClustersService.ListResponse)systemService.clustersService().list().send()).clusters();
         for(Cluster cluster : clusterList){
             cVo = new ClusterVo();
 
@@ -56,24 +51,20 @@ public class ClusterServiceImpl implements ItClusterService {
             cVo.setCpuType(cluster.cpuPresent() ? cluster.cpu().type() : null);
 //            clusterVO.setStatus(cluster.);        // 업그레이드 상태
 
-//            getHostCnt(systemService, cVo);
-//            getVmCnt(systemService, cVo);
-
-            getHostCnt(cVo);
-            getVmCnt(cVo);
+            getHostCnt(systemService, cVo);
+            getVmCnt(systemService, cVo);
 
             cVoList.add(cVo);
         }
-
-        long end = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
-        System.out.println("수행시간(ms): " + (end-start));
 
         return cVoList;
     }
 
     @Override
     public ClusterVo getInfo(String id){
-        Cluster cluster = ovirt.cluster(id);
+        SystemService systemService = admin.getConnection().systemService();
+
+        Cluster cluster = ((ClusterService.GetResponse) systemService.clustersService().clusterService(id).get().send()).cluster();
         ClusterVo cVo = new ClusterVo();
         cVo.setId(id);
 
@@ -97,17 +88,19 @@ public class ClusterServiceImpl implements ItClusterService {
             cVo.setRestoration("예");
         }
 
-//        getVmCnt(cVo);
+        getVmCnt(systemService, cVo);
         return cVo;
     }
 
 
     @Override
     public List<NetworkVo> getNetwork(String id) {
+        SystemService systemService = admin.getConnection().systemService();
+
         List<NetworkVo> nwVoList = new ArrayList<>();
         NetworkVo nwVo = null;
 
-        List<Network> networkList = ovirt.cNetworkList(id);
+        List<Network> networkList = ((ClusterNetworksService.ListResponse) systemService.clustersService().clusterService(id).networksService().list().send()).networks();
         if (networkList != null) {
             for (Network network : networkList) {
                 nwVo = new NetworkVo();
@@ -135,10 +128,12 @@ public class ClusterServiceImpl implements ItClusterService {
 
     @Override
     public List<HostVo> getHost(String id) {
+        SystemService systemService = admin.getConnection().systemService();
+
         List<HostVo> hVoList = new ArrayList<>();
         HostVo hVo = null;
 
-        List<Host> hostList = ovirt.hostList();
+        List<Host> hostList = ((HostsService.ListResponse)systemService.hostsService().list().send()).hosts();
         for (Host host : hostList) {
             if (host.cluster().id().equals(id)) {
                 hVo = new HostVo();
@@ -159,11 +154,13 @@ public class ClusterServiceImpl implements ItClusterService {
 
     @Override
     public List<VmVo> getVm(String id) {
+        SystemService systemService = admin.getConnection().systemService();
+
         List<VmVo> vmVoList = new ArrayList<>();
         VmVo vmVo = null;
         Date now = new Date(System.currentTimeMillis());
 
-        List<Vm> vmList = ovirt.vmList();
+        List<Vm> vmList = ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
         for (Vm vm : vmList) {
             if(vm.cluster().id().equals(id)) {
                 vmVo = new VmVo();
@@ -172,7 +169,7 @@ public class ClusterServiceImpl implements ItClusterService {
                 vmVo.setName(vm.name());
                 vmVo.setStatus(vm.status().value());        // vmstatus 많음
 
-                List<Statistic> statisticList = ovirt.vmStatisticList(vm.id());
+                List<Statistic> statisticList = ((StatisticsService.ListResponse) systemService.vmsService().vmService(vm.id()).statisticsService().list().send()).statistics();
                 for(Statistic statistic : statisticList) {
                     long hour = 0;
 
@@ -192,7 +189,7 @@ public class ClusterServiceImpl implements ItClusterService {
                 // ip 주소
                 List<Nic> nicList = ovirt.cNicList(vm.id());
                 for (Nic nic : nicList) {
-                    List<ReportedDevice> reportedDeviceList = ovirt.cReportedDeviceList(vm.id(), nic.id());
+                    List<ReportedDevice> reportedDeviceList = ((VmReportedDevicesService.ListResponse) systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).reportedDevicesService().list().send()).reportedDevice();
                     for (ReportedDevice r : reportedDeviceList) {
                         vmVo.setIpv4(!vm.status().value().equals("down") ? r.ips().get(0).address() : null);
                         vmVo.setIpv6(!vm.status().value().equals("down") ? r.ips().get(1).address() : null);
@@ -206,13 +203,12 @@ public class ClusterServiceImpl implements ItClusterService {
 
     @Override
     public List<AffinityGroupVo> getAffinitygroup(String id){
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<AffinityGroupVo> agVoList = new ArrayList<>();
         AffinityGroupVo agVo = null;
 
-        List<AffinityGroup> affinityGroupList = ovirt.cAffinityGroupList(id);
+        List<AffinityGroup> affinityGroupList = ((AffinityGroupsService.ListResponse) systemService.clustersService().clusterService(id).affinityGroupsService().list().send()).groups();
         for(AffinityGroup ag : affinityGroupList){
             agVo = new AffinityGroupVo();
 
@@ -288,13 +284,12 @@ public class ClusterServiceImpl implements ItClusterService {
     //수정
     @Override
     public List<AffinityLabelVo> getAffinitylabel() {
-        Connection connection = adminConnectionService.getConnection();
-        SystemService systemService = connection.systemService();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<AffinityLabelVo> alVoList = new ArrayList<>();
         AffinityLabelVo alVo = null;
 
-        List<AffinityLabel> affinityLabelList = ovirt.cAffinityLabelList();
+        List<AffinityLabel> affinityLabelList = ((AffinityLabelsService.ListResponse) systemService.affinityLabelsService().list().send()).labels();
         for(AffinityLabel affinityLabel : affinityLabelList){
             alVo = new AffinityLabelVo();
             alVo.setId(affinityLabel.id());
@@ -342,18 +337,19 @@ public class ClusterServiceImpl implements ItClusterService {
 
     @Override
     public List<PermissionVo> getPermission(String id) {
+        SystemService systemService = admin.getConnection().systemService();
         List<PermissionVo> pVoList = new ArrayList<>();
         PermissionVo pVo = null;
 
-        List<Permission> permissionList = ovirt.dcPermissionList(id);
+        List<Permission> permissionList = ((AssignedPermissionsService.ListResponse) systemService.clustersService().clusterService(id).permissionsService().list().send()).permissions();
         for(Permission permission : permissionList){
             pVo = new PermissionVo();
             pVo.setPermissionId(permission.id());
 
             // 그룹이 있고, 유저가 없을때
             if(permission.groupPresent() && !permission.userPresent()){
-                Group group = ovirt.group(permission.group().id());
-                Role role = ovirt.role(permission.role().id());
+                Group group = ((GroupService.GetResponse) systemService.groupsService().groupService(permission.group().id()).get().send()).get();
+                Role role = ((RoleService.GetResponse) systemService.rolesService().roleService(permission.role().id()).get().send()).role();
 
                 pVo.setUser(group.name());
                 pVo.setNameSpace(group.namespace());
@@ -364,8 +360,8 @@ public class ClusterServiceImpl implements ItClusterService {
 
             // 그룹이 없고, 유저가 있을때
             if(!permission.groupPresent() && permission.userPresent()){
-                User user = ovirt.user(permission.user().id());
-                Role role = ovirt.role(permission.role().id());
+                User user = ((UserService.GetResponse) systemService.usersService().userService(permission.user().id()).get().send()).user();
+                Role role = ((RoleService.GetResponse) systemService.rolesService().roleService(permission.role().id()).get().send()).role();
 
                 pVo.setUser(user.name());
                 pVo.setProvider(user.domainPresent() ? user.domain().name() : null);
@@ -381,12 +377,14 @@ public class ClusterServiceImpl implements ItClusterService {
 
     @Override
     public List<EventVo> getEvent(String id) {
+        SystemService systemService = admin.getConnection().systemService();
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
         List<EventVo> eVoList = new ArrayList<>();
         EventVo eVo = null;
 
-        List<Event> eventList = ovirt.eventList();
+        List<Event> eventList = ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
         Cluster c = ovirt.cluster(id);
 
         for(Event event : eventList){
@@ -432,9 +430,8 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
 
-    public void getHostCnt(ClusterVo clusterVo) {
-        List<Host> hostList = ovirt.hostList();
-//        List<Host> hostList = ((HostsService.ListResponse)systemService.hostsService().list().send()).hosts();
+    public void getHostCnt(SystemService systemService, ClusterVo clusterVo) {
+        List<Host> hostList = ((HostsService.ListResponse)systemService.hostsService().list().send()).hosts();
 
         int hostCnt = 0;
         int hostUpCnt = 0;
@@ -456,9 +453,8 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
 
-    public void getVmCnt(ClusterVo clusterVo){
-        List<Vm> vmList = ovirt.vmList();
-//        List<Vm> vmList = ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
+    public void getVmCnt(SystemService systemService, ClusterVo clusterVo){
+        List<Vm> vmList = ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
 
         int vmsCnt = 0;
         int vmsUpCnt = 0;
