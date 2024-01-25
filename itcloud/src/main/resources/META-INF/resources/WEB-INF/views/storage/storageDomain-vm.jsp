@@ -37,17 +37,33 @@
 
                         <c:if test="${empty vm}">
                             <tr>
-                                <td colspan="6">표시할 항목이 없습니다.</td>
+                                <td colspan="6" style="text-align: center">표시할 항목이 없습니다.</td>
                             </tr>
                         </c:if>
                         <c:forEach var="vm" items="${vm}" varStatus="status">
                             <tr>
+                                <td>${vm.vmName}</td>
+                                <td>${vm.diskCnt}</td>
+                                <td>${vm.templateName}</td>
+                                <td>${vm.virtualSize / (1024*1024*1024)}GB</td>
+                                <td>${vm.actualSize / (1024*1024*1024)}GB</td>
+                                <td>${vm.vmDate}</td>
+                            </tr>
+                            <tr>
+                                <td>${vm.diskName}</td>
                                 <td></td>
                                 <td></td>
+                                <td>${vm.virtualSize / (1024*1024*1024)}GB</td>
+                                <td>${vm.actualSize / (1024*1024*1024)}GB</td>
+                                <td>${vm.diskDate}</td>
+                            </tr>
+                            <tr>
+                                <td>${vm.snapName}</td>
                                 <td></td>
                                 <td></td>
-                                <td></td>
-                                <td></td>
+                                <td>${vm.virtualSize / (1024*1024*1024)}GB</td>
+                                <td>${vm.actualSize / (1024*1024*1024)}GB</td>
+                                <td>${vm.snapDate}</td>
                             </tr>
                         </c:forEach>
                     </table>

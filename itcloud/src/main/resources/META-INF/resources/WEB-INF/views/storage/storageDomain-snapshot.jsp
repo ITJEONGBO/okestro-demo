@@ -39,7 +39,7 @@
 
                     <c:if test="${empty snapshot}">
                         <tr>
-                            <td colspan="8">표시할 항목이 없습니다.</td>
+                            <td colspan="8" style="text-align: center">표시할 항목이 없습니다.</td>
                         </tr>
                     </c:if>
                     <c:forEach var="snapshot" items="${snapshot}" varStatus="status">

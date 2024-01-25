@@ -6,7 +6,7 @@ import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
-import com.itinfo.itcloud.model.storage.StorageDomainVo;
+import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.service.ItDataCenterService;
 
 import com.itinfo.itcloud.service.ItMenuService;
@@ -48,7 +48,7 @@ public class DataCenterController {
 	// 스토리지
 	@GetMapping("/computing/datacenter-storage")
 	public String storage(String id, Model model) {
-		List<StorageDomainVo> storage = itDataCenterService.getStorage(id);
+		List<DomainVo> storage = itDataCenterService.getStorage(id);
 		model.addAttribute("storage", storage);
 		model.addAttribute("id", id);
 		model.addAttribute("name", itDataCenterService.getName(id));
@@ -128,7 +128,7 @@ public class DataCenterController {
 
 	@GetMapping("/computing/datacenter/storageStatus")
 	@ResponseBody
-	public List<StorageDomainVo> storage(String id) {
+	public List<DomainVo> storage(String id) {
 		log.info("-----datacenter/storageStatus: " + id);
 		return itDataCenterService.getStorage(id);
 	}

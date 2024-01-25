@@ -2,21 +2,22 @@ package com.itinfo.itcloud.service;
 
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.storage.DiskVo;
-import com.itinfo.itcloud.model.storage.StorageDomainVo;
+import com.itinfo.itcloud.model.storage.DomainVmVo;
+import com.itinfo.itcloud.model.storage.DomainVo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public interface ItStorageDomainService {
+public interface ItDomainService {
     String getName(String id);
-    List<StorageDomainVo> getList();
-    StorageDomainVo getDomain(String id);
+    List<DomainVo> getList();
+    DomainVo getDomain(String id);
     List<DataCenterVo> getDatacenter(String id);
-    List<VmVo> getVm(String id);
+    List<DomainVmVo> getVm(String id);
     List<TemplateVo> getTemplate(String id);
     List<DiskVo> getDisk(String id);
-    // 디스크 스냅샷
+    List<SnapshotVo> getSnapshot(String id);
     List<EventVo> getEvent(String id);
     List<PermissionVo> getPermission(String id);
 }

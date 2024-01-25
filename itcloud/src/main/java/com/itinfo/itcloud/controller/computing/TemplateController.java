@@ -2,7 +2,7 @@ package com.itinfo.itcloud.controller.computing;
 
 import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.*;
-import com.itinfo.itcloud.model.storage.StorageDomainVo;
+import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.service.ItMenuService;
 import com.itinfo.itcloud.service.ItTemplateService;
 import lombok.RequiredArgsConstructor;
@@ -81,7 +81,7 @@ public class TemplateController {
 
 	@GetMapping("/computing/template-storage")
 	public String storage(String id, Model model){
-		List<StorageDomainVo> storage = itTemplateService.getStorage(id);
+		List<DomainVo> storage = itTemplateService.getStorage(id);
 		model.addAttribute("storage", storage);
 		model.addAttribute("id", id);
 		model.addAttribute("name", itTemplateService.getName(id));
@@ -147,7 +147,7 @@ public class TemplateController {
 
 	@GetMapping("/computing/template/storageStatus")
 	@ResponseBody
-	public List<StorageDomainVo> storage(String id){
+	public List<DomainVo> storage(String id){
 		return itTemplateService.getStorage(id);
 	}
 

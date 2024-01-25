@@ -4,7 +4,7 @@ import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.model.storage.DiskVo;
-import com.itinfo.itcloud.model.storage.StorageDomainVo;
+import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.model.storage.VolumeVo;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +22,7 @@ public class MenuVo {
     private List<VnicProfileVo> vnic;
     private List<NetworkVo> network;
 
-    private List<StorageDomainVo> domain;
+    private List<DomainVo> domain;
     private List<VolumeVo> volume;
     private List<DiskVo> disk;
 

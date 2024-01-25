@@ -31,7 +31,7 @@
                         사용 가능: ${domain.availableSize / (1024*1024*1024)}GB<br>
                         사용됨: ${domain.usedSize / (1024*1024*1024)}GB<br>
                         할당됨: ${domain.commitedSize / (1024*1024*1024)}GB<br>
-                        오버 할당 비율: <br>
+                        오버 할당 비율: ${domain.commitedSize / (1024*1024*1024)}%<br>
                         이미지: <br>
                         경로: ${domain.storageAddress} ${domain.storagePath}<br>
                         NFS 버전: ${domain.nfsVersion}<br>

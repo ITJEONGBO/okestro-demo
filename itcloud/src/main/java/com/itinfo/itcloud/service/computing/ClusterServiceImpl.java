@@ -385,12 +385,10 @@ public class ClusterServiceImpl implements ItClusterService {
         EventVo eVo = null;
 
         List<Event> eventList = ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
-        Cluster c = ovirt.cluster(id);
-
         for(Event event : eventList){
             eVo = new EventVo();
 
-            if(event.clusterPresent() && event.cluster().name().equals(c.name())){
+            if(event.clusterPresent() && event.cluster().name().equals(ovirt.getName("cluster", id))){
                 eVo.setSeverity(event.severity().value());
                 eVo.setTime(sdf.format(event.time()));
                 eVo.setMessage(event.description());

@@ -5,13 +5,11 @@ import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
-import com.itinfo.itcloud.model.storage.StorageDomainVo;
+import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
-import com.itinfo.itcloud.ovirt.ConnectionService;
 import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItDataCenterService;
 import lombok.extern.slf4j.Slf4j;
-import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,15 +62,15 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
     // 데이터센터 - 스토리지
     @Override
-    public List<StorageDomainVo> getStorage(String id) {
+    public List<DomainVo> getStorage(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
-        List<StorageDomainVo> sdVoList = new ArrayList<>();
-        StorageDomainVo sdVo = null;
+        List<DomainVo> sdVoList = new ArrayList<>();
+        DomainVo sdVo = null;
 
         List<StorageDomain> storageDomainList = ((AttachedStorageDomainsService.ListResponse) systemService.dataCentersService().dataCenterService(id).storageDomainsService().list().send()).storageDomains();
         for(StorageDomain storageDomain : storageDomainList) {
-            sdVo = new StorageDomainVo();
+            sdVo = new DomainVo();
 
             sdVo.setId(storageDomain.id());
             sdVo.setName(storageDomain.name());

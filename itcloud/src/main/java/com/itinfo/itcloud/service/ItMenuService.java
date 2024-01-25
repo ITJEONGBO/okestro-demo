@@ -3,9 +3,8 @@ package com.itinfo.itcloud.service;
 import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.network.NetworkVo;
-import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.model.storage.DiskVo;
-import com.itinfo.itcloud.model.storage.StorageDomainVo;
+import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.ovirt.ConnectionService;
 import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.services.*;
@@ -123,9 +122,9 @@ public class ItMenuService {
 
 
         //region: storage
-        List<StorageDomainVo> sdVoList = new ArrayList<>();
+        List<DomainVo> sdVoList = new ArrayList<>();
         for(StorageDomain storageDomain : storageDomainList) {
-            StorageDomainVo sdVo = new StorageDomainVo();
+            DomainVo sdVo = new DomainVo();
             sdVo.setId(storageDomain.id());
             sdVo.setName(storageDomain.name());
 

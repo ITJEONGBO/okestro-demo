@@ -45,7 +45,7 @@
 
                     <c:if test="${empty disks}">
                         <tr>
-                            <td colspan="14">disk 없음</td>
+                            <td colspan="14" style="text-align: center">disk 없음</td>
                         </tr>
                     </c:if>
                     <c:forEach var="disks" items="${disks}" varStatus="status">
@@ -53,14 +53,14 @@
                             <td width="120px" style="word-break:break-all"><a href="/storage/disk?id=${disks.id}" style="text-decoration-line: none">${disks.alias}</a></td>
                             <td></td>
                             <td>${disks.shareable}</td>
-                            <td>${disks.virtualSize / (1024*1024*1024)} GB</td>
-                            <td></td>
+                            <td>${disks.virtualSize / (1024*1024*1024) < 1 ? "< 1" : disks.virtualSize / (1024*1024*1024)} GB</td>
+                            <td>${disks.actualSize / (1024*1024*1024) < 1 ? "< 1" : disks.actualSize / (1024*1024*1024)} GB</td>
                             <td></td>
                             <td>${disks.storageDomainName}</td>
                             <td></td>
                             <td></td>
                             <td></td>
-                            <td></td>
+                            <td>${disks.connection}</td>
                             <td>${disks.status}</td>
                             <td>${disks.storageType}</td>
                             <td>${disks.description}</td>

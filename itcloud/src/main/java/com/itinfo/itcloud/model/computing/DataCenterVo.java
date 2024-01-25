@@ -1,11 +1,7 @@
 package com.itinfo.itcloud.model.computing;
 
-import com.itinfo.itcloud.model.network.NetworkVo;
-import com.itinfo.itcloud.model.storage.StorageDomainVo;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 @Getter @Setter
 public class DataCenterVo {

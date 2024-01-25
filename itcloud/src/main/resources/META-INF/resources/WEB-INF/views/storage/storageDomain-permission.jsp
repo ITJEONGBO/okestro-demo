@@ -38,14 +38,14 @@
 
                     <c:if test="${empty permission}">
                         <tr>
-                            <td colspan="7">표시할 항목이 없습니다.</td>
+                            <td colspan="7" style="text-align: center">표시할 항목이 없습니다</td>
                         </tr>
                     </c:if>
                     <c:forEach var="permission" items="${permission}" varStatus="status">
                         <tr>
                             <td>&nbsp;&nbsp;&nbsp;</td>
                             <td>${permission.user}</td>
-                            <td></td>
+                            <td>${permission.provider}</td>
                             <td>${permission.nameSpace}</td>
                             <td>${permission.role}</td>
                             <td></td>

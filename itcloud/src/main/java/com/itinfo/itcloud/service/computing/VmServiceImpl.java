@@ -3,6 +3,7 @@ package com.itinfo.itcloud.service.computing;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
+import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItVmService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.Connection;
@@ -24,8 +25,8 @@ import java.util.List;
 @Slf4j
 public class VmServiceImpl implements ItVmService {
 
-    @Autowired
-    private AdminConnectionService admin;
+    @Autowired private AdminConnectionService admin;
+    @Autowired private OvirtService ovirt;
 
     @Override
     public String getName(String id){
@@ -273,7 +274,7 @@ public class VmServiceImpl implements ItVmService {
             vdVo.setName(disk.name());
             vdVo.setDescription(disk.description());
             vdVo.setVirtualSize(disk.provisionedSize());
-            vdVo.setStatus(String.valueOf(disk.status()));  // 유형
+            vdVo.setStatus(disk.status().value());  // 유형
             vdVo.setType(disk.storageType().value());
             vdVo.setConnection( ((VmService.GetResponse)systemService.vmsService().vmService(id).get().send()).vm().name() );
 
@@ -344,31 +345,59 @@ public class VmServiceImpl implements ItVmService {
         for(AffinityGroup a : affGroup){
             agVo = new AffinityGroupVo();
 
-//            if(a.vmsPresent()){
-//                a.vms().get()
-//            }
-
-            System.out.println(a.name());
-
             agVo.setName(a.name());
             agVo.setDescription(a.description());
-//            agVo.setStatus(a.); //상태 수정 필요
+            agVo.setStatus(a.broken());
             agVo.setPriority(a.priority().intValue());
+
+            agVo.setPositive(a.positivePresent() && a.positive());
 
             agVo.setVmEnabled(a.vmsRule().enabled());
             agVo.setVmPositive(a.vmsRule().positive());
             agVo.setVmEnforcing(a.vmsRule().enforcing());
 
-            // 수정 필요
-//            if(a.positive() != null){
-//                affinityGroupVO.setVmPositive(a.positive());    // 애매 a.positive()와 a.vmsRule().positive()
-//            }
-//            affinityGroupVO.setVmEnforcing(a.enforcing());  // 얘도 마찬가지
-
             agVo.setHostEnabled(a.hostsRule().enabled());
             agVo.setHostPositive(a.hostsRule().positive());
             agVo.setHostEnforcing(a.hostsRule().enforcing());
 
+            // 가상머신 멤버 (수정 필요)
+            List<Vm> vmList =
+                    ((AffinityGroupVmsService.ListResponse)systemService.clustersService().clusterService(vm.cluster().id()).affinityGroupsService().groupService(a.id()).vmsService().list().send()).vms();
+            List<String> vmNames = new ArrayList<>();
+            for (Vm vms : vmList){
+                vmNames.add(vms.name());
+            }
+            agVo.setVmList(vmNames);
+
+            // 호스트 멤버 (수정 필요)
+            List<Host> hostList =
+                    ((AffinityGroupHostsService.ListResponse)systemService.clustersService().clusterService(vm.cluster().id()).affinityGroupsService().groupService(a.id()).hostsService().list().send()).hosts();
+            List<String> hostNames = new ArrayList<>();
+            for(Host host : hostList){
+                hostNames.add(host.name());
+            }
+            agVo.setHostList(hostNames);
+
+
+            // 가상머신 레이블
+            List<AffinityLabel> vmLabel = ((AffinityGroupVmLabelsService.ListResponse) systemService.clustersService().clusterService(vm.cluster().id()).affinityGroupsService().groupService(a.id()).vmLabelsService().list().send()).labels();
+            List<String> vms = new ArrayList<>();
+            for(AffinityLabel affinityLabel : vmLabel) {
+                if(affinityLabel != null){
+                    vms.add(affinityLabel.name());
+                }
+            }
+            agVo.setVmLabels(vms);
+
+            // 호스트 레이블
+            List<AffinityLabel> hostLabel = ((AffinityGroupHostLabelsService.ListResponse)systemService.clustersService().clusterService(vm.cluster().id()).affinityGroupsService().groupService(a.id()).hostLabelsService().list().send()).labels();
+            List<String> hosts = new ArrayList<>();
+            for(AffinityLabel affinityLabel : hostLabel){
+                if(affinityLabel != null){
+                    hosts.add(affinityLabel.name());
+                }
+            }
+            agVo.setHostLabels(hosts);
 
             agVoList.add(agVo);
         }
@@ -384,10 +413,26 @@ public class VmServiceImpl implements ItVmService {
 
         List<AffinityLabel> affinityLabelList =
                 ((AssignedAffinityLabelsService.ListResponse)systemService.vmsService().vmService(id).affinityLabelsService().list().send()).label();
-
-        for(AffinityLabel a : affinityLabelList) {
+        for(AffinityLabel affinityLabel : affinityLabelList){
             alVo = new AffinityLabelVo();
-            alVo.setName(a.name());
+            alVo.setId(affinityLabel.id());
+            alVo.setName(affinityLabel.name());
+
+            // 가상머신 멤버
+            List<Vm> vmList = ((AffinityLabelVmsService.ListResponse) systemService.affinityLabelsService().labelService(affinityLabel.id()).vmsService().list().send()).vms();
+            List<String> vms = new ArrayList<>();
+            for(Vm vm : vmList){
+                vms.add(ovirt.getName("vm", vm.id()));
+            }
+            alVo.setVms(vms);
+
+            List<Host> hostList = ((AffinityLabelHostsService.ListResponse)systemService.affinityLabelsService().labelService(affinityLabel.id()).hostsService().list().send()).hosts();
+            List<String> hosts = new ArrayList<>();
+            for(Host host : hostList){
+                hosts.add(ovirt.getName("host", host.id()));
+            }
+            alVo.setHosts(hosts);
+
             alVoList.add(alVo);
         }
         return alVoList;

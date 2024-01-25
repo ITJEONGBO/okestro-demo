@@ -6,7 +6,7 @@ import lombok.ToString;
 
 import java.math.BigInteger;
 @Getter @Setter @ToString
-public class StorageDomainVo {
+public class DomainVo {
     private String id;
     private String name;
     private String comment;
@@ -17,7 +17,7 @@ public class StorageDomainVo {
     private BigInteger usedSize;
     private BigInteger commitedSize;
     private BigInteger diskSize;
-    // 오버할당비율
+    private BigInteger overCommit; // 오버 활당 비율 (availableSize
     private int imageCnt;   // 이미지 디스크사이즈
 
     private String nfsVersion;
@@ -33,6 +33,7 @@ public class StorageDomainVo {
 
     private String datacenterId;
     private String datacenterName;
+
 
     // LINK: disks
     // datacenter, datacenters

@@ -9,6 +9,7 @@ import java.util.Date;
 
 @Getter @Setter @ToString
 public class SnapshotVo {
+    private String name;
     private String description;
     private String date;
     private boolean persistMemory;

@@ -1,10 +1,9 @@
 package com.itinfo.itcloud.service.computing;
 
 import com.itinfo.itcloud.model.computing.*;
-import com.itinfo.itcloud.model.storage.StorageDomainVo;
+import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItTemplateService;
-import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -159,48 +158,48 @@ public class TemplateServiceImpl implements ItTemplateService {
         List<VmDiskVo> vdVoList = new ArrayList<>();
         VmDiskVo vdVo = null;
 
-//        List<DiskAttachment> vmdiskList =
-//                ((DiskAttachmentsService.ListResponse)systemService.templatesService().templateService(id).diskAttachmentsService().list().send()).attachments();
-//        // 별칭, 가상크기, 연결대상, 인터페이스, 논리적 이름, 상태, 유형, 설명
-//
-//        for(DiskAttachment diskAttachment : vmdiskList) {
-//            if (diskAttachment.diskPresent()) {
-//                vdVo = new VmDiskVo();
-//
-//                vdVo.setId(diskAttachment.id());
-//                vdVo.setActive(diskAttachment.active());
-//                vdVo.setReadOnly(diskAttachment.readOnly());
-//                vdVo.setBootAble(diskAttachment.bootable());
-//                vdVo.setLogicalName(diskAttachment.logicalName());
-//                vdVo.setInterfaceName(diskAttachment.interface_().value());
-//
-//                Disk disk =
-//                        ((DiskService.GetResponse) systemService.disksService().diskService(diskAttachment.disk().id()).get().send()).disk();
-//                vdVo.setName(disk.name());
-//                vdVo.setDescription(disk.description());
-//                vdVo.setVirtualSize(disk.provisionedSize());
-//                vdVo.setStatus(String.valueOf(disk.status()));  // 유형
-//                vdVo.setType(disk.storageType().value());
-//                vdVo.setConnection(disk.name());
-//
-//                vdVoList.add(vdVo);
-//            }
-//        }
+        List<DiskAttachment> vmdiskList =
+                ((DiskAttachmentsService.ListResponse)systemService.templatesService().templateService(id).diskAttachmentsService().list().send()).attachments();
+        // 별칭, 가상크기, 연결대상, 인터페이스, 논리적 이름, 상태, 유형, 설명
+
+        for(DiskAttachment diskAttachment : vmdiskList) {
+            if (diskAttachment.diskPresent()) {
+                vdVo = new VmDiskVo();
+
+                vdVo.setId(diskAttachment.id());
+                vdVo.setActive(diskAttachment.active());
+                vdVo.setReadOnly(diskAttachment.readOnly());
+                vdVo.setBootAble(diskAttachment.bootable());
+                vdVo.setLogicalName(diskAttachment.logicalName());
+                vdVo.setInterfaceName(diskAttachment.interface_().value());
+
+                Disk disk =
+                        ((DiskService.GetResponse) systemService.disksService().diskService(diskAttachment.disk().id()).get().send()).disk();
+                vdVo.setName(disk.name());
+                vdVo.setDescription(disk.description());
+                vdVo.setVirtualSize(disk.provisionedSize());
+                vdVo.setStatus(String.valueOf(disk.status()));  // 유형
+                vdVo.setType(disk.storageType().value());
+                vdVo.setConnection(disk.name());
+
+                vdVoList.add(vdVo);
+            }
+        }
         return vdVoList;
     }
 
     @Override
-    public List<StorageDomainVo> getStorage(String id) {
+    public List<DomainVo> getStorage(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
-        List<StorageDomainVo> sdVoList = new ArrayList<>();
-        StorageDomainVo sdVo = null;
+        List<DomainVo> sdVoList = new ArrayList<>();
+        DomainVo sdVo = null;
 
         List<StorageDomain> storageDomainList =
                 ((StorageDomainsService.ListResponse)systemService.storageDomainsService().list().send()).storageDomains();
 
         for(StorageDomain storageDomain : storageDomainList) {
-            sdVo = new StorageDomainVo();
+            sdVo = new DomainVo();
 
             if(storageDomain.templatesPresent()) {
                 List<StorageDomain> storageDomainList2 =

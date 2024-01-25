@@ -264,69 +264,70 @@ public class NetworkServiceImpl implements ItNetworkService {
 
         List<Vm> vmList =
                 ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
-        //https://192.168.0.70/ovirt-engine/api/vms/2de1a7c7-9952-4c30-a376-353c3a30625b/nics
-        //https://192.168.0.70/ovirt-engine/api/vnicprofiles/0000000a-000a-000a-000a-000000000398
-
         for(Vm vm : vmList){
             List<Nic> nicList =
                     ((VmNicsService.ListResponse)systemService.vmsService().vmService(vm.id()).nicsService().list().send()).nics();
 
-            nVmVo = new NetworkVmVo();
-            nVmVo.setVmId(vm.id());
-            nVmVo.setStatus(vm.status().value());
-            nVmVo.setVmName(vm.name());
-            nVmVo.setFqdn(vm.fqdn());
-            nVmVo.setClusterName( ((ClusterService.GetResponse)systemService.clustersService().clusterService(vm.cluster().id()).get().send()).cluster().name() );
-            nVmVo.setDescription(vm.description());
-
             for(Nic nic : nicList){
-                nVmVo.setVnicStatus(nic.linked());
-                nVmVo.setVnicName(nic.name());
+                VnicProfile vnicProfile =
+                        ((VnicProfileService.GetResponse)systemService.vnicProfilesService().profileService(nic.vnicProfile().id()).get().send()).profile();
 
-                if(vm.status().value().equals("up")) {
-                    // nic
-                    List<ReportedDevice> reportedDeviceList =
-                            ((VmReportedDevicesService.ListResponse)systemService.vmsService().vmService(vm.id()).reportedDevicesService().list().send()).reportedDevice();
+                if(vnicProfile.network().id().equals(id)){
+                    nVmVo = new NetworkVmVo();
+                    nVmVo.setVmId(vm.id());
+                    nVmVo.setStatus(vm.statusPresent() ? vm.status().value() : null);
+                    System.out.println(vm.status().value());
+                    nVmVo.setVmName(vm.name());
+                    nVmVo.setFqdn(vm.fqdn());
+                    nVmVo.setClusterName( ((ClusterService.GetResponse)systemService.clustersService().clusterService(vm.cluster().id()).get().send()).cluster().name() );
+                    nVmVo.setDescription(vm.description());
 
-                    for(ReportedDevice rd : reportedDeviceList){
-                        if(rd.ipsPresent()){
-    //                        nVmVo.setVnicName(rd.name());
-                            String ipv6 = "";
-                            nVmVo.setIpv4(rd.ips().get(0).address());
+                    nVmVo.setVnicStatus(nic.linked());
+                    nVmVo.setVnicName(nic.name());
 
-                            for(int i=0; i < rd.ips().size(); i++){
-                                if(rd.ips().get(i).version().value().equals("v6")){
-                                    ipv6 += rd.ips().get(i).address()+" ";
+                    if(vm.status().value().equals("up")) {
+                        List<ReportedDevice> reportedDeviceList =
+                                ((VmReportedDevicesService.ListResponse)systemService.vmsService().vmService(vm.id()).reportedDevicesService().list().send()).reportedDevice();
+                        for(ReportedDevice rd : reportedDeviceList){
+                            if(rd.ipsPresent()){
+                                //                        nVmVo.setVnicName(rd.name());
+                                String ipv6 = "";
+                                nVmVo.setIpv4(rd.ips().get(0).address());
+
+                                for(int i=0; i < rd.ips().size(); i++){
+                                    if(rd.ips().get(i).version().value().equals("v6")){
+                                        ipv6 += rd.ips().get(i).address()+" ";
+                                    }
                                 }
+                                nVmVo.setIpv6(ipv6);
                             }
-                            nVmVo.setIpv6(ipv6);
                         }
-                    }
 
-                    // vm이 올라와있는 상태에서만 rx, tx 값 출력
-                    DecimalFormat df = new DecimalFormat("###,###");
-                    List<Statistic> statisticList =
-                            ((StatisticsService.ListResponse) systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).statisticsService().list().send()).statistics();
+                        // vm이 올라와있는 상태에서만 rx, tx 값 출력
+                        DecimalFormat df = new DecimalFormat("###,###");
+                        List<Statistic> statisticList =
+                                ((StatisticsService.ListResponse) systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).statisticsService().list().send()).statistics();
 
-                    for (Statistic statistic : statisticList) {
-                        String st = "";
+                        for (Statistic statistic : statisticList) {
+                            String st = "";
 
-                        if (statistic.name().equals("data.current.rx.bps")) {
-                            st = df.format((statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024 * 1024)));
-                            nVmVo.setVnicRx(st);
-                        }
-                        if (statistic.name().equals("data.current.tx.bps")) {
-                            st = df.format((statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024 * 1024)));
-                            nVmVo.setVnicTx(st);
-                        }
-                        if (statistic.name().equals("data.total.rx")) {
-                            System.out.println("asd: " + statistic.name().equals("data.total.rx"));
-                            st = df.format(statistic.valuesPresent() ? statistic.values().get(0).datum() : null);
-                            nVmVo.setRxTotalSpeed(st);
-                        }
-                        if (statistic.name().equals("data.total.tx")) {
-                            st = df.format(statistic.valuesPresent() ? statistic.values().get(0).datum() : null);
-                            nVmVo.setTxTotalSpeed(st);
+                            if (statistic.name().equals("data.current.rx.bps")) {
+                                st = df.format((statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024 * 1024)));
+                                nVmVo.setVnicRx(st);
+                            }
+                            if (statistic.name().equals("data.current.tx.bps")) {
+                                st = df.format((statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024 * 1024)));
+                                nVmVo.setVnicTx(st);
+                            }
+                            if (statistic.name().equals("data.total.rx")) {
+                                System.out.println("asd: " + statistic.name().equals("data.total.rx"));
+                                st = df.format(statistic.valuesPresent() ? statistic.values().get(0).datum() : null);
+                                nVmVo.setRxTotalSpeed(st);
+                            }
+                            if (statistic.name().equals("data.total.tx")) {
+                                st = df.format(statistic.valuesPresent() ? statistic.values().get(0).datum() : null);
+                                nVmVo.setTxTotalSpeed(st);
+                            }
                         }
                     }
                 }

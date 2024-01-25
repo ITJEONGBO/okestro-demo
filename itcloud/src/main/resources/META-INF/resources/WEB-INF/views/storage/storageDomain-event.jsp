@@ -37,7 +37,7 @@
 
                     <c:if test="${empty event}">
                         <tr>
-                            <td colspan="5">표시할 항목이 없습니다.</td>
+                            <td colspan="6" style="text-align: center">표시할 항목이 없습니다.</td>
                         </tr>
                     </c:if>
                     <c:forEach var="event" items="${event}" varStatus="status">

@@ -42,8 +42,16 @@
                         <c:forEach var="aff" items="${aff}" varStatus="status">
                         <tr>
                             <td>${aff.name}</td>
-                            <td></td>
-                            <td></td>
+                            <td>
+                                <c:forEach var="avms" items="${aff.vms}" varStatus="status">
+                                    ${avms}
+                                </c:forEach>
+                            </td>
+                            <td>
+                                <c:forEach var="ahosts" items="${aff.hosts}" varStatus="status">
+                                    ${ahosts}
+                                </c:forEach>
+                            </td>
                         </tr>
                         </c:forEach>
                     </table>

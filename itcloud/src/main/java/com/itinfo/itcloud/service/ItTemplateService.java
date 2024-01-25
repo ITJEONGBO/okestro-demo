@@ -1,8 +1,7 @@
 package com.itinfo.itcloud.service;
 
 import com.itinfo.itcloud.model.computing.*;
-import com.itinfo.itcloud.model.storage.DiskVo;
-import com.itinfo.itcloud.model.storage.StorageDomainVo;
+import com.itinfo.itcloud.model.storage.DomainVo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +14,7 @@ public interface ItTemplateService {
     List<VmVo> getVm(String id);
     List<NicVo> getNic(String id);
     List<VmDiskVo> getDisk(String id);
-    List<StorageDomainVo> getStorage(String id);
+    List<DomainVo> getStorage(String id);
     List<PermissionVo> getPermission(String id);
     List<EventVo> getEvent(String id);
 }

@@ -50,19 +50,38 @@
                         </c:if>
                         <c:forEach var="aff" items="${aff}" varStatus="status">
                         <tr>
-                            <td>${aff.status}</td>
+                            <td>${aff.status == "true" ? "" : "!"}</td>
                             <td>${aff.name}</td>
-                            <td></td>
                             <td>${aff.description}</td>
                             <td>${aff.priority}</td>
-                            <td>${aff.vmPositive}</td>
+                            <td>${aff.vmEnabled && aff.positive ? (aff.vmPositive == "true" ? "양극":"음극") : ""}</td>
                             <td>${aff.vmEnforcing ? "하드" : "소프트"}</td>
-                            <td>${aff.hostPositive}</td>
+                            <td>${aff.hostEnabled && aff.positive ? (aff.hostPositive == "true" ? "양극":"음극") : ""}</td>
                             <td>${aff.hostEnforcing ? "하드" : "소프트"}</td>
-                            <td>${aff.vmList}</td>
-                            <td>${aff.vmLabels}</td>
-                            <td>${aff.hostList}</td>
-                            <td>${aff.hostLabels}</td>
+                            <td>
+                                <c:forEach var="vmList" items="${aff.vmList}" varStatus="status">
+                                    <c:if test="${empty vmList}">멤버 없음 </c:if>
+                                    ${vmList}
+                                </c:forEach>
+                            </td>
+                            <td>
+                                <c:forEach var="vmLabels" items="${aff.vmLabels}" varStatus="status">
+                                    <c:if test="${empty vmLabels}">멤버 없음 </c:if>
+                                    ${vmLabels}
+                                </c:forEach>
+                            </td>
+                            <td>
+                                <c:forEach var="hostList" items="${aff.hostList}" varStatus="status">
+                                    <c:if test="${empty hostList}">멤버 없음 </c:if>
+                                    ${hostList}
+                                </c:forEach>
+                            </td>
+                            <td>
+                                <c:forEach var="hostLabels" items="${aff.hostLabels}" varStatus="status">
+                                    <c:if test="${empty hostLabels}">멤버 없음 </c:if>
+                                    ${hostLabels}
+                                </c:forEach>
+                            </td>
                         </tr>
                         </c:forEach>
                     </table>
