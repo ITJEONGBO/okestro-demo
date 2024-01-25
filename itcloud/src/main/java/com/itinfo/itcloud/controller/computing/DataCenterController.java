@@ -116,6 +116,20 @@ public class DataCenterController {
 	}
 
 
+	@GetMapping("/computing/datacenter-add")
+	public String add() {
+		return "computing/datacenter-add";
+	}
+
+	@GetMapping("/computing/datacenter-add2")
+	public String add2() {
+		return "computing/datacenter-add2";
+	}
+
+
+
+
+
 
 	//region: ResponseBody
 	@GetMapping("/computing/datacentersStatus")

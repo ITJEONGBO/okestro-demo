@@ -19,4 +19,11 @@ public interface ItDataCenterService {
     List<ClusterVo> getCluster(String id);
     List<PermissionVo> getPermission(String id);
     List<EventVo> getEvent(String id);
+
+
+    void addDatacenter(DataCenterVo dataCenterVo);   // 생성
+    void editDatacenter(DataCenterVo dataCenterVo);   // 수정
+    void deleteDatacenter(String id);       // 삭제
+
+
 }

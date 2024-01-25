@@ -207,5 +207,31 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         return eVoList;
     }
 
+    @Override
+    public void addDatacenter(DataCenterVo dataCenterVo) {
+        SystemService systemService = admin.getConnection().systemService();
 
+        // 제한: 영어만 가능
+
+        // 이름
+        // 설명
+        // 스토리지 유형
+        // 호환 버전
+        // 쿼터 모드
+        // 코멘트
+
+
+    }
+
+    @Override
+    public void editDatacenter(DataCenterVo dataCenterVo) {
+        SystemService systemService = admin.getConnection().systemService();
+
+    }
+
+    @Override
+    public void deleteDatacenter(String id) {
+        SystemService systemService = admin.getConnection().systemService();
+
+    }
 }

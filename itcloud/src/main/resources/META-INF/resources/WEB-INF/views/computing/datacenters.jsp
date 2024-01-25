@@ -2,7 +2,18 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 <html lang="en">
+
 <%@ include file="../base/header.jsp" %>
+
+<script type="text/javascript">
+	function openPopUp() {
+		window.open("datacenter-add", "mypopup", "width=450, height=250, top=150, left=200");
+	}
+
+	function test() {
+		alert("test");
+	}
+</script>
 
         <div id="layoutSidenav_content">
             <main>
@@ -16,6 +27,13 @@
                         </div>
                     </div>
 
+            <div>
+                <div style="display: inline-block; margin: 0 5px;  float: center;">
+                    <button type="button" class="btn btn-secondary" onclick="openPopUp()">새로 만들기</button>
+                    <button type="button" class="btn btn-secondary">편집</button>
+                    <button type="button" class="btn btn-secondary" onclick="test()">삭제</button>
+                </div>
+                    <br><br>
                 <table>
                     <tr>
                         <td></td>
@@ -46,6 +64,7 @@
                         </tr>
                     </c:forEach>
                 </table>
+            </div>
 
                 </div>
             </main>
