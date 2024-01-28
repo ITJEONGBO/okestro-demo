@@ -6,8 +6,12 @@
 <%@ include file="../base/header.jsp" %>
 
 <script type="text/javascript">
-	function openPopUp() {
-		window.open("datacenter-add", "mypopup", "width=450, height=250, top=150, left=200");
+	function openAdd() {
+		window.open("datacenter-add", "mypopup", "width=500, height=350, top=150, left=200");
+	}
+
+	function openEdit() {
+		window.open("datacenter-edit", "mypopup", "width=500, height=350, top=150, left=200");
 	}
 
 	function test() {
@@ -29,13 +33,14 @@
 
             <div>
                 <div style="display: inline-block; margin: 0 5px;  float: center;">
-                    <button type="button" class="btn btn-secondary" onclick="openPopUp()">새로 만들기</button>
-                    <button type="button" class="btn btn-secondary">편집</button>
+                    <button type="button" class="btn btn-secondary" onclick="openAdd()">새로 만들기</button>
+                    <button type="button" class="btn btn-secondary" onclick="openEdit()">편집</button>
                     <button type="button" class="btn btn-secondary" onclick="test()">삭제</button>
                 </div>
                     <br><br>
                 <table>
                     <tr>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td width="200px">이름</td>
@@ -53,6 +58,8 @@
                     </c:if>
                     <c:forEach var="datacenters" items="${datacenters}" varStatus="status">
                         <tr>
+                            <input type="hidden" id="id" name="id" value="${datacenters.id}" />
+                            <td><input type="checkbox" id="id" name="id"></td>
                             <td>${datacenters.status == "up" ? "▲" : "▽"}</td>
                             <td>&nbsp;&nbsp;&nbsp;</td>
                             <td><a href="/computing/datacenter-storage?id=${datacenters.id}" style="text-decoration-line: none">${datacenters.name}</a> </td>

@@ -20,4 +20,10 @@ public interface ItClusterService {
     List<PermissionVo> getPermission(String id);
     List<EventVo> getEvent(String id);
 
+
+
+    void addCluster(ClusterVo cVo);   // 생성
+    void editCluster(ClusterVo cVo);   // 수정
+    void deleteCluster(String id);       // 삭제
+
 }

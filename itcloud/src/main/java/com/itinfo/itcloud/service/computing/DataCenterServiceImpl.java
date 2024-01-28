@@ -10,6 +10,8 @@ import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItDataCenterService;
 import lombok.extern.slf4j.Slf4j;
+import org.ovirt.engine.sdk4.builders.DataCenterBuilder;
+import org.ovirt.engine.sdk4.builders.VersionBuilder;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -208,25 +210,60 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     }
 
     @Override
-    public void addDatacenter(DataCenterVo dataCenterVo) {
+    public void addDatacenter(DataCenterVo dcVo) {
+        // required: name && local
+        // POST /ovirt-engine/api/datacenters
         SystemService systemService = admin.getConnection().systemService();
+        DataCentersService datacentersService = systemService.dataCentersService();     // datacenters 서비스 불러오기
 
+        try {
+            log.info("addDatacenter Service try");
+
+            // DataCenter 생성
+            DataCenter dataCenter = new DataCenterBuilder()
+                    .name(dcVo.getName())       // 이름
+                    .description(dcVo.getDescription())     // 설명
+                    .local(dcVo.isStorageType())    // 스토리지 유형
+                    .version(new VersionBuilder().fullVersion(dcVo.getVersion()).build())  // 호환 버전
+                    // 버전문제있음
+                    .quotaMode(QuotaModeType.valueOf(dcVo.getQuotaMode()))      // 쿼터 모드
+                    .comment(dcVo.getComment())     // 코멘트
+                    .build();
+
+            // 데이터센터 만든거 추가
+            datacentersService.add().dataCenter(dataCenter).send();
+            log.info("------"+dcVo.getVersion());
+            log.info("--" + dataCenter.version());
+        }catch (Exception e){
+            log.error("error: "+e);
+        }
         // 제한: 영어만 가능
-
-        // 이름
-        // 설명
-        // 스토리지 유형
-        // 호환 버전
-        // 쿼터 모드
-        // 코멘트
-
-
     }
 
     @Override
-    public void editDatacenter(DataCenterVo dataCenterVo) {
+    public void editDatacenter(DataCenterVo dcVo) {
         SystemService systemService = admin.getConnection().systemService();
+        DataCenterService dataCenterService = systemService.dataCentersService().dataCenterService(dcVo.getId());
 
+        try {
+            log.info("editDatacenter Service try");
+
+            // DataCenter 생성
+            DataCenter dataCenter = new DataCenterBuilder()
+                    .name(dcVo.getName())       // 이름
+                    .description(dcVo.getDescription())     // 설명
+                    .local(dcVo.isStorageType())    // 스토리지 유형
+                    .version(new VersionBuilder().fullVersion(dcVo.getVersion()))  // 호환 버전
+                    .quotaMode(QuotaModeType.valueOf(dcVo.getQuotaMode()))      // 쿼터 모드
+                    .comment(dcVo.getComment())     // 코멘트
+                    .build();
+
+            // 데이터센터 수정
+            dataCenterService.update().dataCenter(dataCenter).send().dataCenter();
+            log.info("------"+dcVo.toString());
+        }catch (Exception e){
+            log.error("error: "+ e);
+        }
     }
 
     @Override

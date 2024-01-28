@@ -2,17 +2,17 @@ package com.itinfo.itcloud.model.computing;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
-@Getter @Setter
+@Getter @Setter @ToString
 public class DataCenterVo {
     private String id;
     private String name;
     private String comment;
     private String description;
-    private boolean local;
-    private String quotaMode;
+    private String quotaMode;      // QuotaMode: 비활성화됨, 감사, 강제적용
     private String status;
-    private boolean storageType;
+    private boolean storageType;    // local
     private String supportedVersion;
     private String version;
 

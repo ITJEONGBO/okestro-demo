@@ -8,6 +8,8 @@ import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItClusterService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.Connection;
+import org.ovirt.engine.sdk4.builders.ClusterBuilder;
+import org.ovirt.engine.sdk4.builders.CpuBuilder;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -403,6 +405,48 @@ public class ClusterServiceImpl implements ItClusterService {
 
 
 
+
+    @Override
+    public void addCluster(ClusterVo cVo) {
+//        SystemService systemService = admin.getConnection().systemService();
+//        ClustersService clustersService = systemService.clustersService();
+//
+//        try{
+//            log.info("addCluster");
+//
+//            Cluster cluster = new ClusterBuilder()
+//                    .name(cVo.getName())
+//                    .description(cVo.getDescription())
+//                    .comment(cVo.getComment())
+////                    .networks()
+//                    .cpu( new CpuBuilder().architecture(Architecture.valueOf(cVo.getBiosType())).type(cVo.getCpuType()) )
+////                    .dataCenter()
+//                    .firewallType(FirewallType.valueOf(cVo.getChipsetFirmwareType()))
+////                    .externalNetworkProviders(new Externalprovider[]())
+//                    .build();
+//
+//            clustersService.add().cluster(cluster).send();
+//
+//        }catch (Exception e){
+//            log.error("error: ", e);
+//        }
+
+    }
+
+    @Override
+    public void editCluster(ClusterVo cVo) {
+
+    }
+
+    @Override
+    public void deleteCluster(String id) {
+
+    }
+
+
+
+
+
     public int getHostVmsCnt(String hostId){
         List<Vm> vmList = ovirt.vmList();
 
@@ -472,5 +516,7 @@ public class ClusterServiceImpl implements ItClusterService {
         clusterVo.setVmUpCnt(vmsUpCnt);
         clusterVo.setVmDownCnt(vmsCnt - vmsUpCnt);
     }
+
+
 
 }

@@ -17,9 +17,8 @@
         			return;
         		}
 
-        		$("#add").submit();
+        		$("#edit").submit();
         	});
-
 
         	$("#cancel").click(function(){
         	    window.close();
@@ -35,8 +34,9 @@
     <h2>데이터센터 생성</h2>
     <div style="padding: 2rem;">
         <div>
-            <form id="add" autocomplete="off" method="get" action="datacenter-add2">
-                이름: <input type="text" id="name" name="name" size="20">   <br>
+            <form id="edit" autocomplete="off" method="get" action="datacenter-edit2">
+                <input type="hidden" id="id" name="id" value="${dc.id}" />
+                이름: <input type="text" id="name" name="name" size="20" value="${dc.name}"> <br>
                 설명: <input type="text" id="description" name="description">   <br>
                 스토리지 유형:
                 <select id="storageType" name="storageType">
@@ -45,16 +45,16 @@
                 </select><br>
                 호환 버전:
                 <select id="version" name="version" >
-                    <option value="4.7">4.7</option>
-                    <option value="4.6">4.6</option>
-                    <option value="4.5">4.5</option>
-                    <option value="4.4">4.4</option>
-                    <option value="4.3">4.3</option>
                     <option value="4.2">4.2</option>
+                    <option value="4.3">4.3</option>
+                    <option value="4.4">4.4</option>
+                    <option value="4.5">4.5</option>
+                    <option value="4.6">4.6</option>
+                    <option value="4.7" selected>4.7</option>
                 </select><br>
                 쿼터 모드:
                 <select id="quotaMode" name="quotaMode">
-                    <option value="DISABLED">비활성화됨</option>
+                    <option value="DISABLED" selected>비활성화됨</option>
                     <option value="AUDIT">감사</option>
                     <option value="ENABLED">강제 적용</option>
                 </select><br>

@@ -24,6 +24,10 @@ public class ClusterController {
 	private final ItClusterService itClusterService;
 	private final ItMenuService menu;
 
+
+
+	//region: get Cluster
+
 	@GetMapping("/computing/clusters")
 	public String clusters(Model model) {
 		long start = System.currentTimeMillis();
@@ -158,6 +162,34 @@ public class ClusterController {
 
 		return "computing/cluster-event";
 	}
+	// endregion
+
+
+
+	//region: set Cluster
+	@GetMapping("/computing/cluster-add")
+	public String add() {
+		return "computing/cluster-add";
+	}
+
+	// 데이터센터 생성
+	@GetMapping("/computing/cluster-add2")
+	public String add2(Model model, ClusterVo cVo) {
+		try {
+			itClusterService.addCluster(cVo);
+			model.addAttribute("result", "완료");
+		}catch (Exception e){
+			log.error("error: " + e);
+		}
+		return "computing/cluster-add2";
+	}
+
+
+
+
+
+
+	// endregion
 
 
 

@@ -15,8 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,6 +27,8 @@ public class DataCenterController {
 	private final ItDataCenterService itDataCenterService;
 	private final ItMenuService menu;
 
+
+	// region: get Datacenter
 	@GetMapping("/computing/datacenters")
 	public String datacenters(Model model) {
 		long start = System.currentTimeMillis();
@@ -115,23 +116,49 @@ public class DataCenterController {
 		return "computing/datacenter-event";
 	}
 
+	// endregion
 
+
+
+	// region: set Datacenter
+
+	// 데이터센터 생성 창출력
 	@GetMapping("/computing/datacenter-add")
 	public String add() {
 		return "computing/datacenter-add";
 	}
 
+	// 데이터센터 생성
 	@GetMapping("/computing/datacenter-add2")
-	public String add2() {
+	public String add2(Model model, DataCenterVo dcVo) {
+		this.itDataCenterService.addDatacenter(dcVo);
+		model.addAttribute("result", "완료");
 		return "computing/datacenter-add2";
+	}
+
+
+	// 데이터센터 수정 창출력
+	@GetMapping("/computing/datacenter-edit")
+	public String edit(Model model, DataCenterVo dcVo) {
+		model.addAttribute("dc", dcVo);
+		return "computing/datacenter-edit";
+	}
+
+	// 데이터센터 수정
+	@GetMapping("/computing/datacenter-edit2")
+	public String edit2(Model model, DataCenterVo dcVo ) {
+		this.itDataCenterService.editDatacenter(dcVo);
+		model.addAttribute("result", "완료");
+		return "computing/datacenter-edit2";
 	}
 
 
 
 
+	// endregion
 
 
-	//region: ResponseBody
+	//region: @ResponseBody
 	@GetMapping("/computing/datacentersStatus")
 	@ResponseBody
 	public List<DataCenterVo> datacenters() {

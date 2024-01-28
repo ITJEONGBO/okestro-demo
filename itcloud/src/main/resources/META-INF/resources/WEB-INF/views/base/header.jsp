@@ -5,8 +5,9 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>IT Cloud</title>
+    <title>NEW-A</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <link href="/css/styles.css" rel="stylesheet" />
 
     <style>
@@ -26,7 +27,7 @@
 
     <!-- 회사 로고와 회사명 -->
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-        <div class="sb-nav-link-icon">&nbsp;&nbsp;<a class="navbar-brand ps-3" href="/dashboard"><img src="/svg/logo.png" alt="회사로고" width="40" height="auto" /> </div>IT Cloud</a>
+        <div class="sb-nav-link-icon">&nbsp;&nbsp;<a class="navbar-brand ps-3" href="/dashboard"><img src="/svg/logo.png" alt="회사로고" width="40" height="auto" /> </div>NEW-A</a>
     </nav>
 
     <div id="layoutSidenav">
@@ -73,29 +74,30 @@
 
                 <!-- 버튼 클릭시 나오는 리스트 출력 -->
                 <div>
-
                     <!-- 컴퓨팅 -->
-                    <div class="collapse" id="collapseLayouts"  data-bs-parent="#sidenavAccordion">
+                    <div class="collapse show" id="collapseLayouts"  data-bs-parent="#sidenavAccordion"
+            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
                         <c:choose>
                             <c:when test="${not empty m.datacenter}">
 
                                 <ul id="desc">
                                     <c:forEach var="dc" items="${m.datacenter}">
                                         <li id="desc">
-                                            <a href="/computing/datacenter-storage?id=${dc.id}" style="text-decoration-line: none" >
-                                                <img src="/svg/dcc.png" alt="vm" width="20" height="auto" />
-                                            </a>
-                                            <a data-bs-toggle="collapse" href="#collapseDatacenter-${dc.id}" style="text-decoration-line: none; color: grey;">
-                                                ${dc.name}
+                                            <a href="/computing/datacenter-storage?id=${dc.id}" style="font-size: 22px; text-decoration-line: none; color: grey;" >
+                                                <img src="/svg/dcc.png" alt="dcc" width="20" height="auto" />  ${dc.name}
+                                                <a data-bs-toggle="collapse" href="#collapseDatacenter-${dc.id}" >
+                                                    <div class="sb-sidenav-collapse-arrow" style="margin-top: 8px; height: 25px; width: 30px; float:left "><i class="fas fa-angle-down"></i></div>
+                                                </a>
                                             </a>
 
-                                            <div class="collapse" id="collapseDatacenter-${dc.id}">
+
+                                            <div class="collapse show" id="collapseDatacenter-${dc.id}">
                                                 <ul id="desc">
                                                     <c:forEach var="c" items="${m.cluster}">
 
                                                         <c:if test="${dc.id eq c.datacenterId}">
                                                             <li>
-                                                                <a href="/computing/cluster?id=${c.id}" style="text-decoration-line: none">
+                                                                <a href="/computing/cluster?id=${c.id}" style="font-size: 20px; text-decoration-line: none">
                                                                     <img src="/svg/dc.png" alt="cluster" width="20" height="auto" />
                                                                 </a>
                                                                 <a data-bs-toggle="collapse" href="#collapseCluster-${c.id}" style="text-decoration-line: none; color: grey;">
@@ -108,7 +110,7 @@
 
                                                                             <c:if test="${c.id eq h.clusterId}">
                                                                                 <li>
-                                                                                    <a href="/computing/host?id=${h.id}" style="text-decoration-line: none">
+                                                                                    <a href="/computing/host?id=${h.id}" style="font-size: 18px; text-decoration-line: none">
                                                                                         <img src="/svg/h.png" alt="vm" width="20" height="auto" />
                                                                                     </a>
                                                                                     <a data-bs-toggle="collapse" href="#collapseHost-${h.id}" style="text-decoration-line: none; color: grey;">
@@ -122,7 +124,7 @@
                                                                                                 <c:if test="${h.id eq vm.hostId}">
                                                                                                     <c:if test="${vm.status eq 'up'}">
                                                                                                         <li>
-                                                                                                            <a href="/computing/vm?id=${vm.id}" style="text-decoration-line: none; color: grey;">
+                                                                                                            <a href="/computing/vm?id=${vm.id}" style="font-size: 15px; text-decoration-line: none; color: grey;">
                                                                                                                 <img src="/svg/vm.png" alt="vm" width="20" height="auto" />&nbsp;${vm.name}
                                                                                                             </a>
                                                                                                         </li>
@@ -160,6 +162,8 @@
                                 비었음
                             </c:otherwise>
                         </c:choose>
+
+            </div>
                     </div>
                     <!-- 첫번째 끝 -->
 

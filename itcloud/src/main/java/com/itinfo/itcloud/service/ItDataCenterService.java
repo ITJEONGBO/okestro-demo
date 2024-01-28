@@ -21,8 +21,8 @@ public interface ItDataCenterService {
     List<EventVo> getEvent(String id);
 
 
-    void addDatacenter(DataCenterVo dataCenterVo);   // 생성
-    void editDatacenter(DataCenterVo dataCenterVo);   // 수정
+    void addDatacenter(DataCenterVo dcVo);   // 생성
+    void editDatacenter(DataCenterVo dcVo);   // 수정
     void deleteDatacenter(String id);       // 삭제
 
 
