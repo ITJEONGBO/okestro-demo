@@ -131,8 +131,13 @@ public class DataCenterController {
 	// 데이터센터 생성
 	@GetMapping("/computing/datacenter-add2")
 	public String add2(Model model, DataCenterVo dcVo) {
-		this.itDataCenterService.addDatacenter(dcVo);
-		model.addAttribute("result", "완료");
+		try {
+			this.itDataCenterService.addDatacenter(dcVo);
+			model.addAttribute("result", "완료");
+		}catch (Exception e) {
+			model.addAttribute("result", "실패");
+			log.error("error: ", e);
+		}
 		return "computing/datacenter-add2";
 	}
 

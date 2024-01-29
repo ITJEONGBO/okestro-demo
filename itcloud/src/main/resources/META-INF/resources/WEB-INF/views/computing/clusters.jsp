@@ -4,6 +4,20 @@
 <html lang="en">
 <%@ include file="../base/header.jsp" %>
 
+<script type="text/javascript">
+	function openAdd() {
+		window.open("cluster-add", "mypopup", "width=550, height=550, top=150, left=200");
+	}
+
+	function openEdit() {
+		window.open("cluster-edit", "mypopup", "width=500, height=350, top=150, left=200");
+	}
+
+	function test() {
+		alert("test");
+	}
+</script>
+
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
@@ -15,6 +29,14 @@
                             </p>
                         </div>
                     </div>
+
+
+                    <div style="display: inline-block; margin: 0 5px;  float: center;">
+                        <button type="button" class="btn btn-secondary" onclick="openAdd()">새로 만들기</button>
+                        <button type="button" class="btn btn-secondary" onclick="openEdit()">편집</button>
+                        <button type="button" class="btn btn-secondary" onclick="test()">삭제</button>
+                    </div>
+                        <br><br>
 
                 <table>
                     <tr>

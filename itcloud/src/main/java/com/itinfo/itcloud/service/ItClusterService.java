@@ -1,6 +1,7 @@
 package com.itinfo.itcloud.service;
 
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.create.ClusterCreateVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +23,8 @@ public interface ItClusterService {
 
 
 
-    void addCluster(ClusterVo cVo);   // 생성
-    void editCluster(ClusterVo cVo);   // 수정
+    void addCluster(ClusterCreateVo cVo);   // 생성
+    void editCluster(ClusterCreateVo cVo);   // 수정
     void deleteCluster(String id);       // 삭제
 
 }

@@ -1,13 +1,13 @@
 package com.itinfo.itcloud.service.computing;
 
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.create.ClusterCreateVo;
 import com.itinfo.itcloud.model.network.NetworkUsageVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItClusterService;
 import lombok.extern.slf4j.Slf4j;
-import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.builders.ClusterBuilder;
 import org.ovirt.engine.sdk4.builders.CpuBuilder;
 import org.ovirt.engine.sdk4.services.*;
@@ -385,12 +385,13 @@ public class ClusterServiceImpl implements ItClusterService {
 
         List<EventVo> eVoList = new ArrayList<>();
         EventVo eVo = null;
+        String name = ovirt.getName("cluster", id);
 
         List<Event> eventList = ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
         for(Event event : eventList){
             eVo = new EventVo();
 
-            if(event.clusterPresent() && event.cluster().name().equals(ovirt.getName("cluster", id))){
+            if(event.clusterPresent() && event.cluster().name().equals(name)){
                 eVo.setSeverity(event.severity().value());
                 eVo.setTime(sdf.format(event.time()));
                 eVo.setMessage(event.description());
@@ -407,34 +408,36 @@ public class ClusterServiceImpl implements ItClusterService {
 
 
     @Override
-    public void addCluster(ClusterVo cVo) {
-//        SystemService systemService = admin.getConnection().systemService();
-//        ClustersService clustersService = systemService.clustersService();
-//
-//        try{
-//            log.info("addCluster");
-//
-//            Cluster cluster = new ClusterBuilder()
-//                    .name(cVo.getName())
-//                    .description(cVo.getDescription())
-//                    .comment(cVo.getComment())
-////                    .networks()
-//                    .cpu( new CpuBuilder().architecture(Architecture.valueOf(cVo.getBiosType())).type(cVo.getCpuType()) )
-////                    .dataCenter()
-//                    .firewallType(FirewallType.valueOf(cVo.getChipsetFirmwareType()))
-////                    .externalNetworkProviders(new Externalprovider[]())
-//                    .build();
-//
-//            clustersService.add().cluster(cluster).send();
-//
-//        }catch (Exception e){
-//            log.error("error: ", e);
-//        }
+    public void addCluster(ClusterCreateVo cVo) {
+        // required: name , cpu.type, data_center   (Identify the datacenter with either id or name)
+        // POST /ovirt-engine/api/clusters
+        SystemService systemService = admin.getConnection().systemService();
+        ClustersService clustersService = systemService.clustersService();
+        DataCenter dataCenter =
+                ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cVo.getDatacenterId()).get().send()).dataCenter();
+
+        try{
+            log.info("addCluster");
+
+            Cluster cluster = new ClusterBuilder()
+                    .name(cVo.getName())
+                    .description(cVo.getDescription())
+                    .comment(cVo.getComment())
+                    .cpu( new CpuBuilder().architecture(cVo.getCpuArc()).type(cVo.getCpuType()) )
+                    .dataCenter(dataCenter)
+//                    .externalNetworkProviders(new Externalprovider[]())
+                    .build();
+
+            clustersService.add().cluster(cluster).send();
+
+        }catch (Exception e){
+            log.error("error: ", e);
+        }
 
     }
 
     @Override
-    public void editCluster(ClusterVo cVo) {
+    public void editCluster(ClusterCreateVo cVo) {
 
     }
 

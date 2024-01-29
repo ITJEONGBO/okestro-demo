@@ -187,14 +187,14 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         EventVo eVo = null;
 
         List<Event> eventList = ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
-        DataCenter dc = ovirt.dataCenter(id);
+        String name = ovirt.getName("datacenter",id);
 
         for(Event event : eventList){
             // <data_center href="" id=""> <name> </data_center>
             // <data_center> <name> </data_center>
-            if( event.dataCenterPresent() && event.dataCenter().name().equals(dc.name()) ){
+            if( event.dataCenterPresent() && event.dataCenter().name().equals(name) ){
                 eVo = new EventVo();
-                eVo.setDatacenterName(dc.name());
+                eVo.setDatacenterName(name);
 
                 // 상태[LogSeverity] : alert, error, normal, warning
                 eVo.setSeverity(event.severity().value());
@@ -218,13 +218,16 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
         try {
             log.info("addDatacenter Service try");
+            String[] ver = dcVo.getVersion().split("\\.");
+            System.out.println("ver[1] "+ver[1]);
 
             // DataCenter 생성
             DataCenter dataCenter = new DataCenterBuilder()
                     .name(dcVo.getName())       // 이름
                     .description(dcVo.getDescription())     // 설명
                     .local(dcVo.isStorageType())    // 스토리지 유형
-                    .version(new VersionBuilder().fullVersion(dcVo.getVersion()).build())  // 호환 버전
+//                    .version(new VersionBuilder().major(4).minor(6).build())  // 호환 버전x
+                    .version(new VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())  // 호환 버전
                     // 버전문제있음
                     .quotaMode(QuotaModeType.valueOf(dcVo.getQuotaMode()))      // 쿼터 모드
                     .comment(dcVo.getComment())     // 코멘트
@@ -232,8 +235,8 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
             // 데이터센터 만든거 추가
             datacentersService.add().dataCenter(dataCenter).send();
+
             log.info("------"+dcVo.getVersion());
-            log.info("--" + dataCenter.version());
         }catch (Exception e){
             log.error("error: "+e);
         }

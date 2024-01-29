@@ -2,6 +2,7 @@ package com.itinfo.itcloud.controller.computing;
 
 import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.create.ClusterCreateVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.service.ItClusterService;
 
@@ -174,7 +175,7 @@ public class ClusterController {
 
 	// 데이터센터 생성
 	@GetMapping("/computing/cluster-add2")
-	public String add2(Model model, ClusterVo cVo) {
+	public String add2(Model model, ClusterCreateVo cVo) {
 		try {
 			itClusterService.addCluster(cVo);
 			model.addAttribute("result", "완료");

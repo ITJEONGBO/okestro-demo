@@ -275,6 +275,7 @@ public class TemplateServiceImpl implements ItTemplateService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
         List<Event> eventList = ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
+
         Template t = ((TemplateService.GetResponse)systemService.templatesService().templateService(id).get().send()).template();
 
         for(Event event : eventList){

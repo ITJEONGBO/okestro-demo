@@ -440,12 +440,12 @@ public class HostServiceImpl implements ItHostService {
         // 2024. 1. 4. PM 04:01:21
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
-        List<Event> eventList =
-                ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
+        List<Event> eventList = ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
 
-        Host host = ((HostService.GetResponse)systemService.hostsService().hostService(id).get().send()).host();
+        String name = ovirt.getName("host", id);
+
         for(Event event : eventList){
-            if(event.hostPresent() && event.host().name().equals(host.name())){
+            if(event.hostPresent() && event.host().name().equals(name)){
                 eVo = new EventVo();
 
                 eVo.setSeverity(event.severity().value());
