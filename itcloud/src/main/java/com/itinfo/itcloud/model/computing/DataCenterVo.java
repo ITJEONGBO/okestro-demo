@@ -3,6 +3,7 @@ package com.itinfo.itcloud.model.computing;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.ovirt.engine.sdk4.types.QuotaModeType;
 
 @Getter @Setter @ToString
 public class DataCenterVo {
@@ -10,11 +11,13 @@ public class DataCenterVo {
     private String name;
     private String comment;
     private String description;
-    private String quotaMode;      // QuotaMode: 비활성화됨, 감사, 강제적용
-    private String status;
-    private boolean storageType;    // local
-    private String supportedVersion;
+    private QuotaModeType quotaMode;     // QuotaMode: 비활성화됨, 감사, 강제적용
+    private boolean storageType;         // local
     private String version;
+
+    private String supportedVersion;
+    private String status;
+
 
 //    private List<StorageDomainVo> storageDomainVoList;
 //    private List<NetworkVo> networkVoList;

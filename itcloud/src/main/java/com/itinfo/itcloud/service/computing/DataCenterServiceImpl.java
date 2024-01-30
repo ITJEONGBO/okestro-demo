@@ -62,6 +62,26 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         return dcVoList;
     }
 
+    // 데이터센터 - edit 시 필요한 값
+    @Override
+    public DataCenterVo getDatacenter(String id){
+        SystemService systemService = admin.getConnection().systemService();
+
+        DataCenter dataCenter = ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter();
+        DataCenterVo dcVo = new DataCenterVo();
+
+        dcVo.setId(id);
+        dcVo.setName(dataCenter.name());
+        dcVo.setDescription(dataCenter.description());
+        dcVo.setStorageType(dataCenter.local());
+        dcVo.setQuotaMode(dataCenter.quotaMode());
+        dcVo.setVersion(dataCenter.version().major() + "." + dataCenter.version().minor());
+        dcVo.setComment(dataCenter.comment());
+
+        System.out.println(dcVo);
+        return dcVo;
+    }
+
     // 데이터센터 - 스토리지
     @Override
     public List<DomainVo> getStorage(String id) {
@@ -88,7 +108,6 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
         return sdVoList;
     }
-
 
     // 데이터센터 - 네트워크
     @Override
@@ -209,38 +228,40 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         return eVoList;
     }
 
+
+
+    //---------------------------------------------------------------------------------------------------
+
+
+
     @Override
-    public void addDatacenter(DataCenterVo dcVo) {
-        // required: name && local
-        // POST /ovirt-engine/api/datacenters
+    public boolean addDatacenter(DataCenterVo dcVo) {
         SystemService systemService = admin.getConnection().systemService();
         DataCentersService datacentersService = systemService.dataCentersService();     // datacenters 서비스 불러오기
+        List<DataCenter> dcList = datacentersService.list().send().dataCenters();
+
+        log.info("addDatacenter Service try");
+        String[] ver = dcVo.getVersion().split("\\.");      // 버전값 분리
 
         try {
-            log.info("addDatacenter Service try");
-            String[] ver = dcVo.getVersion().split("\\.");
-            System.out.println("ver[1] "+ver[1]);
-
+            // 데이터센터 중복 이름은 생성 불가 (try-catch ? boolean)
             // DataCenter 생성
             DataCenter dataCenter = new DataCenterBuilder()
                     .name(dcVo.getName())       // 이름
                     .description(dcVo.getDescription())     // 설명
                     .local(dcVo.isStorageType())    // 스토리지 유형
-//                    .version(new VersionBuilder().major(4).minor(6).build())  // 호환 버전x
                     .version(new VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())  // 호환 버전
-                    // 버전문제있음
-                    .quotaMode(QuotaModeType.valueOf(dcVo.getQuotaMode()))      // 쿼터 모드
+                    .quotaMode(dcVo.getQuotaMode())      // 쿼터 모드
                     .comment(dcVo.getComment())     // 코멘트
                     .build();
 
-            // 데이터센터 만든거 추가
-            datacentersService.add().dataCenter(dataCenter).send();
+            datacentersService.add().dataCenter(dataCenter).send();     // 데이터센터 만든거 추가
 
-            log.info("------"+dcVo.getVersion());
+            log.info("------"+dcVo.toString());
+            return datacentersService.list().send().dataCenters().size() == (dcList.size() + 1);    // 기존 데이터센터 개수와 추가된 데이터센터 개수를 비교
         }catch (Exception e){
-            log.error("error: "+e);
+            return false;
         }
-        // 제한: 영어만 가능
     }
 
     @Override
@@ -248,21 +269,25 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         SystemService systemService = admin.getConnection().systemService();
         DataCenterService dataCenterService = systemService.dataCentersService().dataCenterService(dcVo.getId());
 
-        try {
-            log.info("editDatacenter Service try");
+        log.info("editDatacenter Service try");
+        String[] ver = dcVo.getVersion().split("\\.");      // 버전값 분리
 
+        try {
+            System.out.println("id: "+dcVo.getId());
             // DataCenter 생성
             DataCenter dataCenter = new DataCenterBuilder()
+//                    .id(dcVo.getId())
                     .name(dcVo.getName())       // 이름
                     .description(dcVo.getDescription())     // 설명
                     .local(dcVo.isStorageType())    // 스토리지 유형
-                    .version(new VersionBuilder().fullVersion(dcVo.getVersion()))  // 호환 버전
-                    .quotaMode(QuotaModeType.valueOf(dcVo.getQuotaMode()))      // 쿼터 모드
+                    .version(new VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())  // 호환 버전
+                    .quotaMode(dcVo.getQuotaMode())      // 쿼터 모드
                     .comment(dcVo.getComment())     // 코멘트
                     .build();
 
             // 데이터센터 수정
-            dataCenterService.update().dataCenter(dataCenter).send().dataCenter();
+            dataCenterService.update().dataCenter(dataCenter).send();
+
             log.info("------"+dcVo.toString());
         }catch (Exception e){
             log.error("error: "+ e);
@@ -270,8 +295,23 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     }
 
     @Override
-    public void deleteDatacenter(String id) {
+    public boolean deleteDatacenter(String id) {
         SystemService systemService = admin.getConnection().systemService();
+        DataCentersService datacentersService = systemService.dataCentersService();     // datacenters 서비스 불러오기
+        List<DataCenter> dcList = datacentersService.list().send().dataCenters();
 
+        try {
+            System.out.println("id: "+id);
+            DataCenterService dataCenterService = systemService.dataCentersService().dataCenterService(id);
+            log.info("deleteDatacenter Service try");
+
+            dataCenterService.remove().force(true).send();
+            System.out.println(datacentersService.list().send().dataCenters().size() + "==" + (dcList.size() - 1));
+
+            return true;
+        }catch (Exception e){
+            log.error("error ", e);
+            return false;
+        }
     }
 }

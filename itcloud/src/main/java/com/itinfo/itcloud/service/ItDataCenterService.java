@@ -14,6 +14,7 @@ import java.util.List;
 public interface ItDataCenterService {
     String getName(String id);
     List<DataCenterVo> getList();
+    DataCenterVo getDatacenter(String id);
     List<DomainVo> getStorage(String id);
     List<NetworkVo> getNetwork(String id);
     List<ClusterVo> getCluster(String id);
@@ -21,9 +22,9 @@ public interface ItDataCenterService {
     List<EventVo> getEvent(String id);
 
 
-    void addDatacenter(DataCenterVo dcVo);   // 생성
+    boolean addDatacenter(DataCenterVo dcVo);   // 생성
     void editDatacenter(DataCenterVo dcVo);   // 수정
-    void deleteDatacenter(String id);       // 삭제
+    boolean deleteDatacenter(String id);       // 삭제
 
 
 }
