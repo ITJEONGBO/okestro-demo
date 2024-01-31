@@ -27,10 +27,19 @@
 	}
 
 	function openEdit() {
+	    if(dcId == ""){
+	        alert("데이터센터를 선택해주세요");
+	        return;
+        }
 		window.open("datacenter-edit?id="+ dcId, "mypopup", "width=400, height=550, top=150, left=200");
+
 	}
 
 	function openDelete() {
+        if(dcId == ""){
+            alert("데이터센터를 선택해주세요");
+            return;
+        }
 		window.open("datacenter-delete?id=" + dcId, "mypopup", "width=400, height=200, top=150, left=200");
 	}
 
@@ -84,7 +93,7 @@
                             <td><input type="checkbox" id="dcid" name="dcid" value="${datacenters.id}" onclick="checkOnlyOne(this)"/></td>
                             <td>${datacenters.status == "up" ? "▲" : "▽"}</td>
                             <td>&nbsp;&nbsp;&nbsp;</td>
-                            <td><a href="/computing/datacenter-storage?id=${datacenters.id}" style="text-decoration-line: none">${datacenters.name}</a> </td>
+                            <td>${datacenters.name}</td>
                             <td>${datacenters.comment}</td>
                             <td>${datacenters.storageType ? "로컬" : "공유됨"}</td>
                             <td>${datacenters.status}</td>

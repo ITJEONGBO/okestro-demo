@@ -15,22 +15,17 @@
         $(document).ready(function(){
 
         	$("#ok").click(function(){
-
         		if($("#name").val() == ''){
         			alert("이름를 입력해주세요");
         			$("#name").focus();
         			return;
         		}
-
         		$("#edit").submit();
         	});
-
 
         	$("#cancel").click(function(){
         	    window.close();
         	});
-
-
 
         });
 

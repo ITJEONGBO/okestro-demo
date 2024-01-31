@@ -234,11 +234,22 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
 
 
+    // 데이터센터 생성
     @Override
     public boolean addDatacenter(DataCenterVo dcVo) {
         SystemService systemService = admin.getConnection().systemService();
         DataCentersService datacentersService = systemService.dataCentersService();     // datacenters 서비스 불러오기
         List<DataCenter> dcList = datacentersService.list().send().dataCenters();
+
+        System.out.print("before dcList: ");
+        for(DataCenter dataCenter : dcList){
+            System.out.print(dataCenter.name() + ", ");
+        }
+        System.out.println();
+        System.out.print("before ds: ");
+        for(int i=0; i<datacentersService.list().send().dataCenters().size(); i++){
+            System.out.print(datacentersService.list().send().dataCenters().get(i).name() + " ");
+        }
 
         log.info("addDatacenter Service try");
         String[] ver = dcVo.getVersion().split("\\.");      // 버전값 분리
@@ -257,6 +268,18 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
             datacentersService.add().dataCenter(dataCenter).send();     // 데이터센터 만든거 추가
 
+            // dcservice vs dclist 비교
+            System.out.print("after dcList: ");
+            for(DataCenter dataCenter2 : dcList){
+                System.out.print(dataCenter2.name() + ", ");
+            }
+            System.out.println();
+            System.out.print("after ds: ");
+            for(int i=0; i<datacentersService.list().send().dataCenters().size(); i++){
+                System.out.print(datacentersService.list().send().dataCenters().get(i).name() + " ");
+            }
+            System.out.println();
+
             log.info("------"+dcVo.toString());
             return datacentersService.list().send().dataCenters().size() == (dcList.size() + 1);    // 기존 데이터센터 개수와 추가된 데이터센터 개수를 비교
         }catch (Exception e){
@@ -264,6 +287,8 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         }
     }
 
+
+    // 데이터센터 수정
     @Override
     public void editDatacenter(DataCenterVo dcVo) {
         SystemService systemService = admin.getConnection().systemService();
@@ -294,24 +319,28 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         }
     }
 
+
+    // 데이터센터 삭제
+    // 문제있음, 데이터센터 삭제를 두번 수행
+    // 데이터센터가 있는지 확인하고 삭제하고 종료
     @Override
     public boolean deleteDatacenter(String id) {
         SystemService systemService = admin.getConnection().systemService();
-        DataCentersService datacentersService = systemService.dataCentersService();     // datacenters 서비스 불러오기
+        DataCentersService datacentersService = systemService.dataCentersService();
         List<DataCenter> dcList = datacentersService.list().send().dataCenters();
 
         try {
-            System.out.println("id: "+id);
             DataCenterService dataCenterService = systemService.dataCentersService().dataCenterService(id);
-            log.info("deleteDatacenter Service try");
 
             dataCenterService.remove().force(true).send();
-            System.out.println(datacentersService.list().send().dataCenters().size() + "==" + (dcList.size() - 1));
+            System.out.println(datacentersService.list().send().dataCenters().size() == ( dcList.size()-1 ));
 
-            return true;
+            return datacentersService.list().send().dataCenters().size() == ( dcList.size()-1 );
         }catch (Exception e){
             log.error("error ", e);
             return false;
         }
     }
+
+
 }
