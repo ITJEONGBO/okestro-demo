@@ -4,6 +4,14 @@
 <html lang="en">
 <%@ include file="../base/header.jsp" %>
 
+<style>
+    table, tr, td{
+        border:none;
+    }
+
+
+</style>
+
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
@@ -26,18 +34,60 @@
                     </div>
 
                     <div>
-                        이름: ${cluster.name}<br>
-                        설명: ${cluster.description}<br>
-                        데이터센터: ${cluster.datacenterName}<br>
-                        호환버전: ${cluster.version}<br>
-                        클러스터 ID: ${cluster.id}<br><br>
+                        <table>
+                            <tr>
+                                <td>이름</td>
+                                <td>&emsp; ${cluster.name}</td>
+                            </tr>
+                            <tr>
+                                <td>설명</td>
+                                <td>&emsp; ${cluster.description}</td>
+                            </tr>
+                            <tr>
+                                <td>데이터센터</td>
+                                <td>&emsp; ${cluster.datacenterName}</td>
+                            </tr>
 
-                        클러스터 CPU 유형: ${cluster.cpuType}<br>
-                        스레드를 CPU로 사용: ${cluster.threadsAsCore ? "예":"아니요"}<br>
-                        최대 메모리 오버 커밋: ${cluster.memoryOverCommit}%<br>
-                        복구정책: ${cluster.restoration}<br>
-                        칩셋/펌웨어 유형: ${cluster.chipsetFirmwareType}<br>
-                        가상머신 수: ${cluster.vmCnt}<br>
+                            <tr>
+                                <td>호환버전</td>
+                                <td>&emsp; ${cluster.version}</td>
+                            </tr>
+                            <tr>
+                                <td>클러스터 노드 유형</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>클러스터 ID</td>
+                                <td>&emsp; ${cluster.id}</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>클러스터 CPU 유형</td>
+                                <td>&emsp; ${cluster.cpuType}</td>
+                            </tr>
+                            <tr>
+                                <td>스레드를 CPU로 사용</td>
+                                <td>&emsp; ${cluster.threadsAsCore ? "예" : "아니요"}</td>
+                            </tr>
+                            <tr>
+                                <td>최대 메모리 오버 커밋</td>
+                                <td>&emsp; ${cluster.memoryOverCommit}%</td>
+                            </tr>
+                            <tr>
+                                <td>복구정책</td>
+                                <td>&emsp; ${cluster.restoration}</td>
+                            </tr>
+                            <tr>
+                                <td>칩셋/펌웨어 유형</td>
+                                <td>&emsp; ${cluster.chipsetFirmwareType}</td>
+                            </tr>
+                            <tr>
+                                <td>가상머신 수</td>
+                                <td>&emsp; ${cluster.vmCnt}</td>
+                            </tr>
+                        </table>
 
                         <br><br><br><br>
                     </div>

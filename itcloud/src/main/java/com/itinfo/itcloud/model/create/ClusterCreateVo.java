@@ -21,7 +21,7 @@ public class ClusterCreateVo {
     private String description;
     private String comment;
 
-    // 관리 네트워크
+    private String manageNetwork;       // 관리 네트워크(데이터센터 네트워크 리스트에서 선택)
     private Architecture cpuArc;        // CPU 아키텍처
     private String cpuType;             // CPU 유형 cpu().type()
     private BiosType biosType;          // 칩셋/펌웨어 유형
@@ -40,10 +40,20 @@ public class ClusterCreateVo {
 
 
     // 마이그레이션
-    private MigrationPolicy migrationPolicy;    // 마이그레이션 정책
-    private MigrationBandwidthAssignmentMethod bandwidth;  // 대역폭
-    private MigrateOnError recoveryPolicy;      // 복구 정책
-    private InheritableBoolean encrypted;       // 추가속성- 암호화 사용
+    private MigrationPolicy migrationPolicy;                // 마이그레이션 정책
+    private MigrationBandwidthAssignmentMethod bandwidth;   // 대역폭
+    private MigrateOnError recoveryPolicy;                  // 복구 정책
+    private InheritableBoolean encrypted;                   // 추가속성- 암호화 사용
 
 
+//    <migration>
+//        <auto_converge>inherit</auto_converge>
+//        <bandwidth>
+//            <assignment_method>auto</assignment_method>
+//        </bandwidth>
+//        <compressed>inherit</compressed>
+//        <encrypted>inherit</encrypted>
+//        <parallel_migrations_policy>disabled</parallel_migrations_policy>
+//        <policy id="80554327-0569-496b-bdeb-fcbbf52b827b"/>
+//    </migration>
 }

@@ -2,22 +2,50 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 <html lang="en">
-<%@ include file="../base/header.jsp" %>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="js/scripts.js"></script>
+
+
 
 <script type="text/javascript">
+
+    var cId = "";
+
+    function checkOnlyOne(element) {
+        const checkboxes = document.getElementsByName("cid");
+        checkboxes.forEach((cb) => { cb.checked = false; })
+        element.checked = true;
+
+        cId = element.value;
+    }
+
+
 	function openAdd() {
 		window.open("cluster-add", "mypopup", "width=550, height=550, top=150, left=200");
 	}
 
 	function openEdit() {
-		window.open("cluster-edit", "mypopup", "width=500, height=350, top=150, left=200");
+	    if(cId == ""){
+            alert("클러스터를 선택해주세요");
+            return;
+        }
+		window.open("cluster-edit", "mypopup", "width=550, height=550, top=150, left=200");
 	}
 
-	function test() {
-		alert("test");
-	}
+    function openDelete() {
+        if(cId == ""){
+            alert("클러스터를 선택해주세요");
+            return;
+        }
+        window.open("cluster-delete?id=" + dcId, "mypopup", "width=400, height=200, top=150, left=200");
+    }
+
 </script>
 
+<%@ include file="../base/header.jsp" %>
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
@@ -38,19 +66,23 @@
                     </div>
                         <br><br>
 
-                <table>
-                    <tr>
-                        <td>상태</td>
-                        <td>이름</td>
-                        <td>코멘트</td>
-                        <td>호환 버전</td>
-                        <td>설명</td>
-                        <td>클러스터 CPU 유형</td>
-                        <td>호스트 수</td>
-                        <td>가상머신 수</td>
-                        <td>업그레이드 상태</td>
-                    </tr>
+                <table class="table table-bordered table-hover text-center">
+                    <thead>
+                        <tr class="table-secondary">
+                            <td></td>
+                            <td>상태</td>
+                            <td>이름</td>
+                            <td>코멘트</td>
+                            <td>호환 버전</td>
+                            <td>설명</td>
+                            <td>클러스터 CPU 유형</td>
+                            <td>호스트 수</td>
+                            <td>가상머신 수</td>
+                            <td>업그레이드 상태</td>
+                        </tr>
+                    </thead>
 
+                    <tbody>
                     <c:if test="${empty clusters}">
                         <tr>
                             <td>클러스터가 없음</td>
@@ -58,6 +90,7 @@
                     </c:if>
                     <c:forEach var="clusters" items="${clusters}" varStatus="status">
                         <tr>
+                            <td><input type="checkbox" id="cid" name="cid" value="${clusters.id}" onclick="checkOnlyOne(this)"/></td>
                             <td></td>
                             <td><a href="/computing/cluster?id=${clusters.id}">${clusters.name}</a> </td>
                             <td>${clusters.comment}</td>
@@ -69,18 +102,12 @@
                             <td></td>
                         </tr>
                     </c:forEach>
+                    </tbody>
                 </table>
 
                 </div>
             </main>
         </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="js/scripts.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-    <script src="assets/demo/chart-area-demo.js"></script>
-    <script src="assets/demo/chart-bar-demo.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
-    <script src="js/datatables-simple-demo.js"></script>
     </body>
 </html>

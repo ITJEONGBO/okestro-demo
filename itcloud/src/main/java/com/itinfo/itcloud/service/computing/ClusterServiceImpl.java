@@ -8,8 +8,7 @@ import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItClusterService;
 import lombok.extern.slf4j.Slf4j;
-import org.ovirt.engine.sdk4.builders.ClusterBuilder;
-import org.ovirt.engine.sdk4.builders.CpuBuilder;
+import org.ovirt.engine.sdk4.builders.*;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -405,39 +404,68 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
 
+    // ----------------------------------------------------------------------------------------
 
 
+    // 클러스터 생성
     @Override
-    public void addCluster(ClusterCreateVo cVo) {
+    public boolean addCluster(ClusterCreateVo cVo) {
         // required: name , cpu.type, data_center   (Identify the datacenter with either id or name)
-        // POST /ovirt-engine/api/clusters
         SystemService systemService = admin.getConnection().systemService();
         ClustersService clustersService = systemService.clustersService();
+        List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
         DataCenter dataCenter =
                 ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cVo.getDatacenterId()).get().send()).dataCenter();
+//        Network network =
+//                ((NetworkService.GetResponse)systemService.networksService().networkService(cVo.getManageNetwork()).get().send()).network();
+
+        String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
+        System.out.println(cVo.getVersion());
+        System.out.println(ver[1]);
+
+        System.out.println(clustersService.list().send().clusters().size() +"=="+ (clusterList.size()));
+
 
         try{
+            System.out.println(dataCenter.name());
             log.info("addCluster");
 
             Cluster cluster = new ClusterBuilder()
-                    .name(cVo.getName())
+                    .dataCenter(dataCenter) // 필수
+                    .name(cVo.getName())    // 필수
+                    .cpu( new CpuBuilder().architecture(cVo.getCpuArc()).type(cVo.getCpuType()) )   // 필수
                     .description(cVo.getDescription())
                     .comment(cVo.getComment())
-                    .cpu( new CpuBuilder().architecture(cVo.getCpuArc()).type(cVo.getCpuType()) )
-                    .dataCenter(dataCenter)
-//                    .externalNetworkProviders(new Externalprovider[]())
+//                    .managementNetwork(network)
+                    .biosType(cVo.getBiosType())
+                    .fipsMode(cVo.getFipsMode())
+//                    .version(new VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())  // 호환 버전
+//                    .switchType(cVo.getSwitchType())
+//                    .firewallType(cVo.getFirewallType())
+//                    .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
+//                    .virtService(cVo.isVirtService())
+//                    .glusterService(cVo.isGlusterService())
+                    // 추가 난수 생성기 소스
+//                    .migration(new MigrationOptionsBuilder()
+//                            // 마이그레이션 정책
+//                            .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))    // 대역폭
+//                            .encrypted(cVo.getEncrypted())      // 암호화
+//                    )
                     .build();
 
             clustersService.add().cluster(cluster).send();
-
+            System.out.println("after "+clustersService.list().send().clusters().size() +"=="+ (clusterList.size()));
+            return true;
         }catch (Exception e){
             log.error("error: ", e);
+            return false;
         }
 
     }
 
     @Override
     public void editCluster(ClusterCreateVo cVo) {
+
 
     }
 

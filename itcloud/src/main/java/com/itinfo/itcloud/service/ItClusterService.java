@@ -23,7 +23,7 @@ public interface ItClusterService {
 
 
 
-    void addCluster(ClusterCreateVo cVo);   // 생성
+    boolean addCluster(ClusterCreateVo cVo);   // 생성
     void editCluster(ClusterCreateVo cVo);   // 수정
     void deleteCluster(String id);       // 삭제
 

@@ -32,11 +32,10 @@
     </script>
 </head>
 <body>
-    <h2>새 클러스터</h2>
     <div style="padding: 2rem;">
         <div>
+            <h2>새 클러스터</h2>
             <form id="add" autocomplete="off" method="get" action="cluster-add2">
-
                 <h3>일반</h3>
                 <br>
 
@@ -100,12 +99,14 @@
                 </select><br>
 
                 칩셋/펌웨어 유형 &emsp;
-                <select id="chipsetFirmwareType" name="chipsetFirmwareType">
+                <select id="chipsetFirmwareType" name="chipsetFirmwareType" disabled>
                     <option value="CLUSTER_DEFAULT">자동 감지</option>
+                    <!--
                     <option value="I440FX_SEA_BIOS">I440FX_SEA_BIOS</option>
                     <option value="Q35_OVMF">Q35_OVMF</option>
                     <option value="Q35_SEA_BIOS">Q35_SEA_BIOS</option>
                     <option value="Q35_SECURE_BOOT">Q35_SECURE_BOOT</option>
+                    -->
                 </select><br><br>
 
 
@@ -140,9 +141,24 @@
                     <option value="IPTABLES">iptables</option>
                 </select><br><br>
             -->
+
+                로그의 최대 메모리 한계 &emsp;
+                <input type="text" id="logMemory" name="logMemory" size="10">
+                <select id="logMemory" name="logMemoryUnit" >
+                    <option value="percent">%</option>
+                    <option value="MB">MB</option>
+                </select><br><br>
+
+                <input type="checkbox" id="virt" name="virt" value="" checked/> Virt 서비스 활성화 <br><br>
+                <input type="checkbox" id="gluster" name="gluster" value=""/> Gluster 서비스 활성화 <br><br>
+
+                <p>추가 난수 생성기 소스 </p>
+                <input type="checkbox" id="hwrng" name="hwrng" value=""/> /dev/hwrng 소스 <br><br>
+
                 <hr><br>
 
                 <h3>마이그레이션 정책</h3>
+                <br>
 
                 마이그레이션 정책 &emsp;
                     <select id="version" name="version" >
@@ -153,13 +169,13 @@
                     </select><br>
                     <br>
 
-                최소 다운타임
+                <p>최소 다운타임</p>
                 <p>
                     일반적인 상황에서 가상머신을 마이그레이션 할 수있는 정책입니다. 가상머신에 심각한 다운타임이 발생하면 안됩니다.
                     가상머신 마이그레이션이 오랫동안 수렴되지 않으면 마이그레이션이 중단됩니다. 게스트 에이전트 후크 매커니즘을 사용할 수 있습니다.
                 </p>
 
-                대역폭<br>
+                <p>대역폭</p>
                 마이그레이션 대역폭 제한(Mbps) &emsp;
                     <select id="quotaMode" name="quotaMode">
                         <option value="DISABLED">자동</option>
@@ -167,13 +183,13 @@
                         <option value="ENABLED">사용자 정의</option>
                     </select><br><br>
 
-                복구정책 &emsp;<br>
+                <p>복구정책</p>
                     <input type='radio' name='recover' value='female' /> 가상머신을 마이그레이션 함 <br>
                     <input type='radio' name='recover' value='male' /> 고가용성 가상머신만 마이그레이션 <br>
                     <input type='radio' name='recover' value='male' /> 가상머신은 마이그레이션 하지 않음 <br>
                 <br>
 
-                추가 속성<br>
+                <p>추가 속성</p>
                 마이그레이션 암호화 사용 &emsp;
                     <select id="quotaMode" name="quotaMode">
                         <option value="DISABLED">시스템 기본값(암호화하지 마십시오)</option>

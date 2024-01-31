@@ -176,12 +176,12 @@ public class ClusterController {
 	// 데이터센터 생성
 	@GetMapping("/computing/cluster-add2")
 	public String add2(Model model, ClusterCreateVo cVo) {
-		try {
-			itClusterService.addCluster(cVo);
+		if(itClusterService.addCluster(cVo)){
 			model.addAttribute("result", "완료");
-		}catch (Exception e){
-			log.error("error: " + e);
+		}else{
+			model.addAttribute("result", "실패");
 		}
+
 		return "computing/cluster-add2";
 	}
 
