@@ -188,20 +188,22 @@ public class ClusterController {
 	}
 
 	// 클러스터 수정 창출력
-//	@GetMapping("/computing/datacenter-edit")
-//	public String edit(Model model, String id) {
-//		ClusterCreateVo cVo = itClusterService.g(id);
-//		model.addAttribute("dc", dcVo);
-//		return "computing/datacenter-edit";
-//	}
-//
-//	// 클러스터 수정
-//	@GetMapping("/computing/datacenter-edit2")
-//	public String edit2(Model model, DataCenterVo dcVo ) {
-//		itDataCenterService.editDatacenter(dcVo);
-//		model.addAttribute("result", "완료");
-//		return "computing/datacenter-edit2";
-//	}
+	@GetMapping("/computing/cluster-edit")
+	public String edit(Model model, String id) {
+		ClusterCreateVo cVo = itClusterService.getClusterCreate(id);
+		model.addAttribute("c", cVo);
+		return "computing/cluster-edit";
+	}
+
+	// 클러스터 수정
+	@GetMapping("/computing/cluster-edit2")
+	public String edit2(Model model, ClusterCreateVo cVo ) {
+		log.info("edit 시작");
+
+		itClusterService.editCluster(cVo);
+		model.addAttribute("result", "완료");
+		return "computing/cluster-edit2";
+	}
 
 
 

@@ -44,35 +44,24 @@
                 <br>
 
                 데이터 센터 &emsp;
-                <select id="datacenterId" name="datacenterId">
-                    <c:forEach var="dc" items="${dc}" varStatus="status">
-                        <option value="${dc.id}">${dc.name}</option>
-                    </c:forEach>
+                <select id="datacenterId" name="datacenterId" >
+                    <option value="${c.datacenterId}">${c.datacenterName}</option>
                 </select><br>
                 <br>
 
-                이름 &emsp; <input type="text" id="name" name="name" size="20">   <br>
-                설명 &emsp; <input type="text" id="description" name="description">   <br>
-                코멘트 &emsp; <input type="text" id="comment" name="comment"> <br>
+                이름 &emsp; <input type="text" id="name" name="name" size="20" value="${c.name}">   <br>
+                설명 &emsp; <input type="text" id="description" name="description" value="${c.description}">   <br>
+                코멘트 &emsp; <input type="text" id="comment" name="comment" value="${c.comment}"> <br>
                 <br>
 
                 관리 네트워크 &emsp;
                 <select id="networkId" name="networkId">
-                    <c:forEach var="dc" items="${dc}" varStatus="status">
-                        <c:forEach var="net" items="${dc.networkList}" varStatus="status">
-                            <c:if test="${empty net}">
-                                <option></option>
-                            </c:if>
-                            <c:if test="${dc.id eq net.datacenterId}">
-                                <option value="${net.id}">${net.name}</option>
-                            </c:if>
-                        </c:forEach>
-                    </c:forEach>
+                    <option value="${c.networkId}">${c.networkName}</option>
                 </select><br>
 
 
                 CPU 아키텍처 &emsp;
-                <select id="cpu" name="cpu" >
+                <select id="cpuArc" name="cpuArc" >
                     <option value="UNDEFINED">정의되지 않음</option>
                     <option value="X86_64">x86_64</option>
                     <option value="PPC64">ppc64</option>
@@ -115,7 +104,7 @@
                 </select><br>
 
                 칩셋/펌웨어 유형 &emsp;
-                <select id="chipsetFirmwareType" name="chipsetFirmwareType" disabled>
+                <select id="biosType" name="biosType" disabled>
                     <option value="CLUSTER_DEFAULT">자동 감지</option>
                     <!--
                     <option value="I440FX_SEA_BIOS">I440FX_SEA_BIOS</option>
@@ -127,7 +116,7 @@
 
 
                 FIPS 모드 &emsp;
-                <select id="quotaMode" name="quotaMode">
+                <select id="fipsMode" name="fipsMode">
                     <option value="UNDEFINED">자동 감지</option>
                     <option value="DISABLED">비활성화됨</option>
                     <option value="ENABLED">활성화됨</option>
@@ -139,13 +128,13 @@
                 </select><br><br>
 
                 스위치 유형 &emsp;
-                <select id="switch" name="version" >
+                <select id="switchType" name="switchType" >
                     <option value="LEGACY">Linux Bridge</option>
                     <option value="OVS">OVS(기술 프리뷰)</option>
                 </select><br><br>
 
                 방화벽 유형 &emsp;
-                <select id="firewall" name="version" >
+                <select id="firewallType" name="firewallType" >
                     <option value="FIREWALLD">firewalled</option>
                     <option value="IPTABLES">iptables</option>
                 </select><br><br>
@@ -159,14 +148,14 @@
             -->
 
                 로그의 최대 메모리 한계 &emsp;
-                <input type="text" id="logMemory" name="logMemory" size="10">
+                <input type="text" id="logMaxMemory" name="logMaxMemory" size="10">
                 <select id="logMemory" name="logMemoryUnit" >
                     <option value="percent">%</option>
                     <option value="MB">MB</option>
                 </select><br><br>
 
-                <input type="checkbox" id="virt" name="virt" value="" checked/> Virt 서비스 활성화 <br><br>
-                <input type="checkbox" id="gluster" name="gluster" value=""/> Gluster 서비스 활성화 <br><br>
+                <input type="checkbox" id="virtService" name="virtService" checked/> Virt 서비스 활성화 <br><br>
+                <input type="checkbox" id="glusterService" name="glusterService" /> Gluster 서비스 활성화 <br><br>
 
                 <p>추가 난수 생성기 소스 </p>
                 <input type="checkbox" id="hwrng" name="hwrng" value=""/> /dev/hwrng 소스 <br><br>

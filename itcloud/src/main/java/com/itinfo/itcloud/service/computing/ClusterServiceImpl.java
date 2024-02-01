@@ -451,27 +451,45 @@ public class ClusterServiceImpl implements ItClusterService {
 
 
     // edit 창
-//    public ClusterCreateVo getClusterCreate(String id){
-//        SystemService systemService = admin.getConnection().systemService();
-//
-//        Cluster cluster = ((ClusterService.GetResponse)systemService.clustersService().clusterService(id).get().send()).cluster();
-//
-//        DataCenter dataCenter =
-//                ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send()).dataCenter();
-////        Network network =
-////                ((NetworkService.GetResponse)systemService.networksService().networkService(c).get().send()).network();
-//
-//        ClusterCreateVo ccVo = new ClusterCreateVo();
-//
-//        ccVo.setId(id);
-//        ccVo.setName(cluster.name());
-//        ccVo.setDescription(cluster.description());
-//        ccVo.setComment(cluster.comment());
-////        네트워크를 어떻게 해야할 지 모르겠음
-////        ccVo.setNetworkId(cluster.networks());
-//        return ccVo;
-//
-//    }
+    @Override
+    public ClusterCreateVo getClusterCreate(String id){
+        SystemService systemService = admin.getConnection().systemService();
+
+        Cluster cluster = ((ClusterService.GetResponse)systemService.clustersService().clusterService(id).get().send()).cluster();
+
+        DataCenter dataCenter =
+                ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send()).dataCenter();
+        List<Network> networkList =
+                ((ClusterNetworksService.ListResponse)systemService.clustersService().clusterService(id).networksService().list().send()).networks();
+
+        ClusterCreateVo ccVo = new ClusterCreateVo();
+
+        ccVo.setId(id);
+        ccVo.setName(cluster.name());
+        ccVo.setDescription(cluster.description());
+        ccVo.setComment(cluster.comment());
+        ccVo.setDatacenterId(dataCenter.id());
+        ccVo.setDatacenterName(dataCenter.name());
+        ccVo.setCpuType(cluster.cpuPresent() ? cluster.cpu().type() : null);
+        ccVo.setCpuArc(cluster.cpuPresent() ? cluster.cpu().architecture() : null);
+        ccVo.setBiosType(cluster.biosType());
+        ccVo.setFipsMode(cluster.fipsMode());
+        ccVo.setVersion(cluster.version().major() + "." + cluster.version().minor());
+        ccVo.setSwitchType(cluster.switchType());
+        ccVo.setFirewallType(cluster.firewallType());
+        ccVo.setLogMaxMemory(cluster.logMaxMemoryUsedThresholdAsInteger());
+        ccVo.setVirtService(cluster.virtService());
+        ccVo.setGlusterService(cluster.glusterService());
+
+
+        // display 여부인가?
+        for(Network network : networkList){
+            ccVo.setNetworkId(network.display() ? network.id() : null );
+            ccVo.setNetworkName(network.display() ? network.name() : null);
+        }
+        System.out.println(ccVo.toString());
+        return ccVo;
+    }
 
 
 
@@ -537,10 +555,12 @@ public class ClusterServiceImpl implements ItClusterService {
                 ((NetworkService.GetResponse)systemService.networksService().networkService(cVo.getNetworkId()).get().send()).network();
 
         String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
+        System.out.println(cVo.getVersion());
+
 
         try{
             System.out.println(dataCenter.name());
-            log.info("addCluster");
+            log.info("editCluster");
 
             Cluster cluster = new ClusterBuilder()
                     .dataCenter(dataCenter) // 필수
@@ -551,7 +571,7 @@ public class ClusterServiceImpl implements ItClusterService {
                     .managementNetwork(network)
                     .biosType(cVo.getBiosType())
                     .fipsMode(cVo.getFipsMode())
-                    .version(new VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())  // 호환 버전
+                    .version(new VersionBuilder().major(Integer.parseInt(ver[0])).minor(7).build())  // 호환 버전
                     .switchType(cVo.getSwitchType())
                     .firewallType(cVo.getFirewallType())
                     .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
@@ -565,6 +585,8 @@ public class ClusterServiceImpl implements ItClusterService {
                     )
                     .build();
 
+            log.info("---" + cVo.toString());
+            clusterService.update().cluster(cluster).send();
 
         }catch (Exception e){
             log.error("error: ", e);

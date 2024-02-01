@@ -69,7 +69,7 @@
 
 
                 CPU 아키텍처 &emsp;
-                <select id="cpu" name="cpu" >
+                <select id="cpuArc" name="cpuArc" >
                     <option value="UNDEFINED">정의되지 않음</option>
                     <option value="X86_64">x86_64</option>
                     <option value="PPC64">ppc64</option>
@@ -112,7 +112,7 @@
                 </select><br>
 
                 칩셋/펌웨어 유형 &emsp;
-                <select id="chipsetFirmwareType" name="chipsetFirmwareType" disabled>
+                <select id="biosType" name="biosType" disabled>
                     <option value="CLUSTER_DEFAULT">자동 감지</option>
                     <!--
                     <option value="I440FX_SEA_BIOS">I440FX_SEA_BIOS</option>
@@ -124,7 +124,7 @@
 
 
                 FIPS 모드 &emsp;
-                <select id="quotaMode" name="quotaMode">
+                <select id="fipsMode" name="fipsMode">
                     <option value="UNDEFINED">자동 감지</option>
                     <option value="DISABLED">비활성화됨</option>
                     <option value="ENABLED">활성화됨</option>
@@ -136,13 +136,13 @@
                 </select><br><br>
 
                 스위치 유형 &emsp;
-                <select id="switch" name="version" >
+                <select id="switchType" name="switchType" >
                     <option value="LEGACY">Linux Bridge</option>
                     <option value="OVS">OVS(기술 프리뷰)</option>
                 </select><br><br>
 
                 방화벽 유형 &emsp;
-                <select id="firewall" name="version" >
+                <select id="firewallType" name="firewallType" >
                     <option value="FIREWALLD">firewalled</option>
                     <option value="IPTABLES">iptables</option>
                 </select><br><br>
@@ -156,14 +156,14 @@
             -->
 
                 로그의 최대 메모리 한계 &emsp;
-                <input type="text" id="logMemory" name="logMemory" size="10">
+                <input type="text" id="logMaxMemory" name="logMaxMemory" size="10">
                 <select id="logMemory" name="logMemoryUnit" >
                     <option value="percent">%</option>
                     <option value="MB">MB</option>
                 </select><br><br>
 
-                <input type="checkbox" id="virt" name="virt" value="" checked/> Virt 서비스 활성화 <br><br>
-                <input type="checkbox" id="gluster" name="gluster" value=""/> Gluster 서비스 활성화 <br><br>
+                <input type="checkbox" id="virtService" name="virtService" value="" checked/> Virt 서비스 활성화 <br><br>
+                <input type="checkbox" id="glusterService" name="glusterService" value=""/> Gluster 서비스 활성화 <br><br>
 
                 <p>추가 난수 생성기 소스 </p>
                 <input type="checkbox" id="hwrng" name="hwrng" value=""/> /dev/hwrng 소스 <br><br>
@@ -190,21 +190,21 @@
 
                 <p>대역폭</p>
                 마이그레이션 대역폭 제한(Mbps) &emsp;
-                    <select id="quotaMode" name="quotaMode">
+                    <select id="bandwidth" name="bandwidth">
                         <option value="DISABLED">자동</option>
                         <option value="AUDIT">하이퍼바이저 기본</option>
                         <option value="ENABLED">사용자 정의</option>
                     </select><br><br>
 
                 <p>복구정책</p>
-                    <input type='radio' name='recover' value='' checked/> 가상머신을 마이그레이션 함 <br>
-                    <input type='radio' name='recover' value='' /> 고가용성 가상머신만 마이그레이션 <br>
-                    <input type='radio' name='recover' value='' /> 가상머신은 마이그레이션 하지 않음 <br>
+                    <input type='radio' id="recoveryPolicy" name='recoveryPolicy' value='' checked/> 가상머신을 마이그레이션 함 <br>
+                    <input type='radio' id="recoveryPolicy" name='recoveryPolicy' value='' /> 고가용성 가상머신만 마이그레이션 <br>
+                    <input type='radio' id="recoveryPolicy" name='recoveryPolicy' value='' /> 가상머신은 마이그레이션 하지 않음 <br>
                 <br>
 
                 <p>추가 속성</p>
                 마이그레이션 암호화 사용 &emsp;
-                    <select id="quotaMode" name="quotaMode">
+                    <select id="encrypted" name="encrypted">
                         <option value="DISABLED">시스템 기본값(암호화하지 마십시오)</option>
                         <option value="AUDIT">암호화</option>
                         <option value="ENABLED">암호화하지 마십시오</option>
