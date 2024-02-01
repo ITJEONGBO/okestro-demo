@@ -1,9 +1,12 @@
 package com.itinfo.itcloud.model.computing;
 
+import com.itinfo.itcloud.model.network.NetworkVo;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.ovirt.engine.sdk4.types.QuotaModeType;
+
+import java.util.List;
 
 @Getter @Setter @ToString
 public class DataCenterVo {
@@ -20,7 +23,7 @@ public class DataCenterVo {
 
 
 //    private List<StorageDomainVo> storageDomainVoList;
-//    private List<NetworkVo> networkVoList;
+    private List<NetworkVo> networkList;
 //    private List<ClusterVo> clusterVoList;
 
 

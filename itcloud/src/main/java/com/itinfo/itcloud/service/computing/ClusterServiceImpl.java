@@ -406,6 +406,74 @@ public class ClusterServiceImpl implements ItClusterService {
 
     // ----------------------------------------------------------------------------------------
 
+    @Override
+    public List<DataCenterVo> getDcList(){
+        SystemService systemService = admin.getConnection().systemService();
+        List<DataCenterVo> dcVoList = new ArrayList<>();
+        DataCenterVo dcVo = null;
+
+        List<DataCenter> dataCenterList = ((DataCentersService.ListResponse)systemService.dataCentersService().list().send()).dataCenters();
+        for(DataCenter dataCenter : dataCenterList){
+            dcVo = new DataCenterVo();
+
+            dcVo.setId(dataCenter.id());
+            dcVo.setName(dataCenter.name());
+
+            dcVo.setNetworkList( getNetworkList(systemService, dataCenter.id()) );
+            dcVoList.add(dcVo);
+        }
+
+        System.out.println( "서비스 데이터센터 이름: "+dcVo.getName() );
+        System.out.println( "서비스 데이터센터 네트워므 리스트: " + dcVo.getNetworkList());
+
+        return dcVoList;
+    }
+
+
+    public List<NetworkVo> getNetworkList(SystemService sys, String dcId){
+        List<Network> networkList =
+                ((DataCenterNetworksService.ListResponse) sys.dataCentersService().dataCenterService(dcId).networksService().list().send()).networks();
+
+        List<NetworkVo> nwVoList = new ArrayList<>();
+        NetworkVo nwVo = null;
+
+        for(Network network : networkList){
+            nwVo = new NetworkVo();
+
+            nwVo.setId(network.id());
+            nwVo.setName(network.name());
+            nwVo.setDatacenterId(dcId);
+
+            nwVoList.add(nwVo);
+        }
+        return nwVoList;
+    }
+
+
+    // edit 창
+//    public ClusterCreateVo getClusterCreate(String id){
+//        SystemService systemService = admin.getConnection().systemService();
+//
+//        Cluster cluster = ((ClusterService.GetResponse)systemService.clustersService().clusterService(id).get().send()).cluster();
+//
+//        DataCenter dataCenter =
+//                ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send()).dataCenter();
+////        Network network =
+////                ((NetworkService.GetResponse)systemService.networksService().networkService(c).get().send()).network();
+//
+//        ClusterCreateVo ccVo = new ClusterCreateVo();
+//
+//        ccVo.setId(id);
+//        ccVo.setName(cluster.name());
+//        ccVo.setDescription(cluster.description());
+//        ccVo.setComment(cluster.comment());
+////        네트워크를 어떻게 해야할 지 모르겠음
+////        ccVo.setNetworkId(cluster.networks());
+//        return ccVo;
+//
+//    }
+
+
 
     // 클러스터 생성
     @Override
@@ -416,15 +484,10 @@ public class ClusterServiceImpl implements ItClusterService {
         List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
         DataCenter dataCenter =
                 ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cVo.getDatacenterId()).get().send()).dataCenter();
-//        Network network =
-//                ((NetworkService.GetResponse)systemService.networksService().networkService(cVo.getManageNetwork()).get().send()).network();
+        Network network =
+                ((NetworkService.GetResponse)systemService.networksService().networkService(cVo.getNetworkId()).get().send()).network();
 
         String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
-        System.out.println(cVo.getVersion());
-        System.out.println(ver[1]);
-
-        System.out.println(clustersService.list().send().clusters().size() +"=="+ (clusterList.size()));
-
 
         try{
             System.out.println(dataCenter.name());
@@ -436,26 +499,26 @@ public class ClusterServiceImpl implements ItClusterService {
                     .cpu( new CpuBuilder().architecture(cVo.getCpuArc()).type(cVo.getCpuType()) )   // 필수
                     .description(cVo.getDescription())
                     .comment(cVo.getComment())
-//                    .managementNetwork(network)
+                    .managementNetwork(network)
                     .biosType(cVo.getBiosType())
                     .fipsMode(cVo.getFipsMode())
-//                    .version(new VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())  // 호환 버전
-//                    .switchType(cVo.getSwitchType())
-//                    .firewallType(cVo.getFirewallType())
-//                    .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
-//                    .virtService(cVo.isVirtService())
-//                    .glusterService(cVo.isGlusterService())
-                    // 추가 난수 생성기 소스
-//                    .migration(new MigrationOptionsBuilder()
-//                            // 마이그레이션 정책
-//                            .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))    // 대역폭
-//                            .encrypted(cVo.getEncrypted())      // 암호화
-//                    )
+                    .version(new VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())  // 호환 버전
+                    .switchType(cVo.getSwitchType())
+                    .firewallType(cVo.getFirewallType())
+                    .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
+                    .virtService(cVo.isVirtService())
+                    .glusterService(cVo.isGlusterService())
+//                     추가 난수 생성기 소스
+                    .migration(new MigrationOptionsBuilder()
+                            // 마이그레이션 정책
+                            .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))    // 대역폭
+                            .encrypted(cVo.getEncrypted())      // 암호화
+                    )
                     .build();
 
             clustersService.add().cluster(cluster).send();
-            System.out.println("after "+clustersService.list().send().clusters().size() +"=="+ (clusterList.size()));
-            return true;
+
+            return clustersService.list().send().clusters().size() == (clusterList.size()+1);
         }catch (Exception e){
             log.error("error: ", e);
             return false;
@@ -465,8 +528,47 @@ public class ClusterServiceImpl implements ItClusterService {
 
     @Override
     public void editCluster(ClusterCreateVo cVo) {
+        SystemService systemService = admin.getConnection().systemService();
+        ClusterService clusterService = systemService.clustersService().clusterService(cVo.getId());
+
+        DataCenter dataCenter =
+                ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cVo.getDatacenterId()).get().send()).dataCenter();
+        Network network =
+                ((NetworkService.GetResponse)systemService.networksService().networkService(cVo.getNetworkId()).get().send()).network();
+
+        String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
+
+        try{
+            System.out.println(dataCenter.name());
+            log.info("addCluster");
+
+            Cluster cluster = new ClusterBuilder()
+                    .dataCenter(dataCenter) // 필수
+                    .name(cVo.getName())    // 필수
+                    .cpu( new CpuBuilder().architecture(cVo.getCpuArc()).type(cVo.getCpuType()) )   // 필수
+                    .description(cVo.getDescription())
+                    .comment(cVo.getComment())
+                    .managementNetwork(network)
+                    .biosType(cVo.getBiosType())
+                    .fipsMode(cVo.getFipsMode())
+                    .version(new VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())  // 호환 버전
+                    .switchType(cVo.getSwitchType())
+                    .firewallType(cVo.getFirewallType())
+                    .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
+                    .virtService(cVo.isVirtService())
+                    .glusterService(cVo.isGlusterService())
+//                     추가 난수 생성기 소스
+                    .migration(new MigrationOptionsBuilder()
+                            // 마이그레이션 정책
+                            .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))    // 대역폭
+                            .encrypted(cVo.getEncrypted())      // 암호화
+                    )
+                    .build();
 
 
+        }catch (Exception e){
+            log.error("error: ", e);
+        }
     }
 
     @Override

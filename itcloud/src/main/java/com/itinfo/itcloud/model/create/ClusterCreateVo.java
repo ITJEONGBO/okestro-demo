@@ -21,7 +21,7 @@ public class ClusterCreateVo {
     private String description;
     private String comment;
 
-    private String manageNetwork;       // 관리 네트워크(데이터센터 네트워크 리스트에서 선택)
+    private String networkId;       // 관리 네트워크 id(데이터센터 네트워크 리스트에서 선택)
     private Architecture cpuArc;        // CPU 아키텍처
     private String cpuType;             // CPU 유형 cpu().type()
     private BiosType biosType;          // 칩셋/펌웨어 유형

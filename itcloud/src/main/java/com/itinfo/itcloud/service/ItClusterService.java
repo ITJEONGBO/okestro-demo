@@ -23,6 +23,7 @@ public interface ItClusterService {
 
 
 
+    List<DataCenterVo> getDcList();
     boolean addCluster(ClusterCreateVo cVo);   // 생성
     void editCluster(ClusterCreateVo cVo);   // 수정
     void deleteCluster(String id);       // 삭제

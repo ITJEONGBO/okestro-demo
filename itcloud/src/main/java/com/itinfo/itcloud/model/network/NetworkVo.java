@@ -4,11 +4,12 @@ import com.itinfo.itcloud.model.computing.HostVo;
 import com.itinfo.itcloud.model.computing.VmVo;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigInteger;
 import java.util.List;
 
-@Getter @Setter
+@Getter @Setter @ToString
 public class NetworkVo {
     private String id;
     private String name;

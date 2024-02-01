@@ -33,10 +33,10 @@
 </head>
 <body>
 
-
     <div style="padding: 2rem;">
-        <h2>데이터센터 생성</h2>
+        <h2>데이터센터 수정</h2>
         <hr>
+
         <div>
             <form id="edit" autocomplete="off" method="get" action="datacenter-edit2">
                 <input type="hidden" id="id" name="id" value="${dc.id}" />
