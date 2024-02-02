@@ -42,22 +42,21 @@ public class ClusterServiceImpl implements ItClusterService {
 
         List<Cluster> clusterList = ((ClustersService.ListResponse)systemService.clustersService().list().send()).clusters();
         for(Cluster cluster : clusterList){
-            cVo = new ClusterVo();
+            cVo = ClusterVo.builder()
+                    .id(cluster.id())
+                    .name(cluster.name())
+                    .comment(cluster.comment())
+                    .version(cluster.version().major() + "." + cluster.version().minor())
+                    .description(cluster.description())
+                    .cpuType(cluster.cpuPresent() ? cluster.cpu().type() : null)
+                    .build();
 
-            cVo.setId(cluster.id());
-            cVo.setName(cluster.name());
-            cVo.setComment(cluster.comment());
-            cVo.setVersion(cluster.version().major() + "." + cluster.version().minor());
-            cVo.setDescription(cluster.description());
-            cVo.setCpuType(cluster.cpuPresent() ? cluster.cpu().type() : null);
 //            clusterVO.setStatus(cluster.);        // 업그레이드 상태
-
             getHostCnt(systemService, cVo);
             getVmCnt(systemService, cVo);
 
             cVoList.add(cVo);
         }
-
         return cVoList;
     }
 
@@ -66,28 +65,27 @@ public class ClusterServiceImpl implements ItClusterService {
         SystemService systemService = admin.getConnection().systemService();
 
         Cluster cluster = ((ClusterService.GetResponse) systemService.clustersService().clusterService(id).get().send()).cluster();
-        ClusterVo cVo = new ClusterVo();
-        cVo.setId(id);
+        ClusterVo cVo = ClusterVo.builder()
+                .id(id)
+                .name(cluster.name())
+                .description(cluster.description())
+                .version(cluster.version().major() + "." + cluster.version().minor())
+                .datacenterId(cluster.dataCenter().id())
+                .datacenterName(ovirt.getName("datacenter", cluster.dataCenter().id()))
+                .cpuType(cluster.cpuPresent() ? cluster.cpu().type() : null)
+                .chipsetFirmwareType(cluster.biosTypePresent() ? cluster.biosType().value() : null)
+                .threadsAsCore(cluster.threadsAsCores())
+                .memoryOverCommit(cluster.memoryPolicy().overCommit().percentAsInteger())
+                .restoration(cluster.errorHandling().onError().value())
+                .build();
 
-        cVo.setName(cluster.name());
-        cVo.setDescription(cluster.description());
-        cVo.setVersion(cluster.version().major() + "." + cluster.version().minor());
-
-        cVo.setDatacenterId(cluster.dataCenter().id());
-        cVo.setDatacenterName(ovirt.getName("datacenter", cluster.dataCenter().id()) );
-        cVo.setCpuType(cluster.cpuPresent() ? cluster.cpu().type() : null);
-        cVo.setChipsetFirmwareType(cluster.biosTypePresent() ? cluster.biosType().value() : null);
-
-        cVo.setThreadsAsCore(cluster.threadsAsCores());
-        cVo.setMemoryOverCommit(cluster.memoryPolicy().overCommit().percentAsInteger());
-
-        if(cluster.errorHandling().onError().value().equals("do_not_migrate")){
-            cVo.setRestoration("아니요");
-        }else if(cluster.errorHandling().onError().value().equals("migrate_highly_available")){
-            cVo.setRestoration("높은 우선 순위만");
-        }else{
-            cVo.setRestoration("예");
-        }
+//        if(cluster.errorHandling().onError().value().equals("do_not_migrate")){
+//            cVo.setRestoration("아니요");
+//        }else if(cluster.errorHandling().onError().value().equals("migrate_highly_available")){
+//            cVo.setRestoration("높은 우선 순위만");
+//        }else{
+//            cVo.setRestoration("예");
+//        }
 
         getVmCnt(systemService, cVo);
         return cVo;
@@ -414,17 +412,15 @@ public class ClusterServiceImpl implements ItClusterService {
 
         List<DataCenter> dataCenterList = ((DataCentersService.ListResponse)systemService.dataCentersService().list().send()).dataCenters();
         for(DataCenter dataCenter : dataCenterList){
-            dcVo = new DataCenterVo();
+            dcVo = DataCenterVo.builder()
+                    .id(dataCenter.id())
+                    .name(dataCenter.name())
+                    .networkList( getNetworkList(systemService, dataCenter.id()))
+                    .build();
 
-            dcVo.setId(dataCenter.id());
-            dcVo.setName(dataCenter.name());
-
-            dcVo.setNetworkList( getNetworkList(systemService, dataCenter.id()) );
+//            dcVo.setNetworkList( getNetworkList(systemService, dataCenter.id()) );
             dcVoList.add(dcVo);
         }
-
-        System.out.println( "서비스 데이터센터 이름: "+dcVo.getName() );
-        System.out.println( "서비스 데이터센터 네트워므 리스트: " + dcVo.getNetworkList());
 
         return dcVoList;
     }
@@ -481,7 +477,6 @@ public class ClusterServiceImpl implements ItClusterService {
         ccVo.setVirtService(cluster.virtService());
         ccVo.setGlusterService(cluster.glusterService());
 
-
         // display 여부인가?
         for(Network network : networkList){
             ccVo.setNetworkId(network.display() ? network.id() : null );
@@ -536,6 +531,7 @@ public class ClusterServiceImpl implements ItClusterService {
 
             clustersService.add().cluster(cluster).send();
 
+            System.out.println("edit Cluster" + cVo.toString());
             return clustersService.list().send().clusters().size() == (clusterList.size()+1);
         }catch (Exception e){
             log.error("error: ", e);
@@ -556,7 +552,6 @@ public class ClusterServiceImpl implements ItClusterService {
 
         String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
         System.out.println(cVo.getVersion());
-
 
         try{
             System.out.println(dataCenter.name());

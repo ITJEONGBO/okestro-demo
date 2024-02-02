@@ -1,14 +1,12 @@
 package com.itinfo.itcloud.model.computing;
 
 import com.itinfo.itcloud.model.network.NetworkVo;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.ovirt.engine.sdk4.types.QuotaModeType;
 
 import java.util.List;
 
-@Getter @Setter @ToString
+@Getter @Setter @ToString @Builder
 public class DataCenterVo {
     private String id;
     private String name;
@@ -18,14 +16,9 @@ public class DataCenterVo {
     private boolean storageType;         // local
     private String version;
 
-    private String supportedVersion;
     private String status;
 
-
-//    private List<StorageDomainVo> storageDomainVoList;
     private List<NetworkVo> networkList;
-//    private List<ClusterVo> clusterVoList;
-
 
 
     // 리스트-> 상태, 이름(id), 코멘트, 스토리지 유형, 상태, 호환버전, 설명
@@ -33,7 +26,6 @@ public class DataCenterVo {
     // 논리네트워크-> 이름(id), 설명
     // 클러스터-> 이름(id), 호환버전, 설명
     // 권한 -> 사용자, 인증 공급자, 네임스페이스, 역할, 생성일, inherited from
-
 
     // LINK: storagedomains, permissions, clusters, networks, quotas, qoss, iscsibonds
     // macpool

@@ -31,6 +31,12 @@
 
     </script>
 
+    <style>
+        table, tr, td{
+            border:none;
+        }
+    </style>
+
 </head>
 <body>
     <div style="padding: 1rem;">
@@ -40,132 +46,193 @@
                 <h3>일반</h3>
                 <br>
 
-                데이터 센터 &emsp;
-                <select id="datacenterId" name="datacenterId">
-                    <c:forEach var="dc" items="${dc}" varStatus="status">
-                        <option value="${dc.id}">${dc.name}</option>
-                    </c:forEach>
-                </select><br>
-                <br>
+                <table>
+                    <tr>
+                        <td>데이터 센터</td>
+                        <td>&emsp;
+                            <select id="datacenterId" name="datacenterId">
+                                <c:forEach var="dc" items="${dc}" varStatus="status">
+                                    <option value="${dc.id}">${dc.name}</option>
+                                </c:forEach>
+                            </select>
+                        </td>
+                    </tr>
 
-                이름 &emsp; <input type="text" id="name" name="name" size="20">   <br>
-                설명 &emsp; <input type="text" id="description" name="description">   <br>
-                코멘트 &emsp; <input type="text" id="comment" name="comment"> <br>
-                <br>
+                    <tr>
+                        <td>이름</td>
+                        <td>&emsp; <input type="text" id="name" name="name" size="20"></td>
+                    </tr>
+                    <tr>
+                        <td>설명</td>
+                        <td>&emsp; <input type="text" id="description" name="description"></td>
+                    </tr>
+                    <tr>
+                        <td>코멘트</td>
+                        <td>&emsp; <input type="text" id="comment" name="comment"></td>
+                    </tr>
 
-                관리 네트워크 &emsp;
-                <select id="networkId" name="networkId">
-                    <c:forEach var="dc" items="${dc}" varStatus="status">
-                        <c:forEach var="net" items="${dc.networkList}" varStatus="status">
-                            <c:if test="${empty net}">
-                                <option></option>
-                            </c:if>
-                            <c:if test="${dc.id eq net.datacenterId}">
-                                <option value="${net.id}">${net.name}</option>
-                            </c:if>
-                        </c:forEach>
-                    </c:forEach>
-                </select><br>
+                    <tr>
+                        <td>관리 네트워크</td>
+                        <td>&emsp;
+                            <select id="networkId" name="networkId">
+                                <c:forEach var="dc" items="${dc}" varStatus="status">
+                                    <c:forEach var="net" items="${dc.networkList}" varStatus="status">
+                                        <c:if test="${empty net}">
+                                            <option></option>
+                                        </c:if>
+                                        <c:if test="${dc.id eq net.datacenterId}">
+                                            <option value="${net.id}">${net.name}</option>
+                                        </c:if>
+                                    </c:forEach>
+                                </c:forEach>
+                            </select>
+                        </td>
+                    </tr>
 
+                    <tr>
+                        <td>CPU 아키텍처</td>
+                        <td>&emsp;
+                            <select id="cpuArc" name="cpuArc" >
+                                <option value="UNDEFINED">정의되지 않음</option>
+                                <option value="X86_64">x86_64</option>
+                                <option value="PPC64">ppc64</option>
+                                <option value="S390X">s390x</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>CPU 유형</td>
+                        <td>
+                            &emsp;<select id="cpuType" name="cpuType" >
+                                <option value="">자동 감지</option>
+                                <option value="Intel Nehalem Family">Intel Nehalem Family</option>
+                                <option value="Secure Intel Nehalem Family">Secure Intel Nehalem Family</option>
+                                <option value="Intel Westmere Family">Intel Westmere Family</option>
+                                <option value="Secure Intel Westmere Family">Secure Intel Westmere Family</option>
+                                <option value="Intel SandyBridge Family">Intel SandyBridge Family</option>
+                                <option value="Secure Intel SandyBridge Family">Secure Intel SandyBridge Family</option>
+                                <option value="Intel IvyBridge Family">Intel IvyBridge Family</option>
+                                <option value="Secure Intel IvyBridge Family">Secure Intel IvyBridge Family</option>
+                                <option value="Intel Haswell Family">Intel Haswell Family</option>
+                                <option value="Secure Intel Haswell Family">Secure Intel Haswell Family</option>
+                                <option value="Intel Broadwell Family">Intel Broadwell Family</option>
+                                <option value="Secure Intel Broadwell Family">Secure Intel Broadwell Family</option>
+                                <option value="Intel Skylake Client Family">Intel Skylake Client Family</option>
+                                <option value="Secure Intel Skylake Client Family">Secure Intel Skylake Client Family</option>
+                                <option value="Intel Skylake Server Family">Intel Skylake Server Family</option>
+                                <option value="Secure Intel Skylake Server Family">Secure Intel Skylake Server Family</option>
+                                <option value="Intel Cascadelake Server Family">Intel Cascadelake Server Family</option>
+                                <option value="Secure Intel Cascadelake Server Family">Secure Intel Cascadelake Server Family</option>
+                                <option value="Intel Icelake Server Family">Intel Icelake Server Family</option>
+                                <option value="Secure Intel Icelake Server Family">Secure Intel Icelake Server Family</option>
+                                <option value="AMD Opteron G4">AMD Opteron G4</option>
+                                <option value="AMD Opteron G5">AMD Opteron G5</option>
+                                <option value="AMD EPYC">AMD EPYC</option>
+                                <option value="Secure AMD EPYC">Secure AMD EPYC</option>
+                                <option value="IBM POWER8">IBM POWER8</option>
+                                <option value="IBM POWER9">IBM POWER9</option>
+                                <option value="IBM z114, z196">IBM z114, z196</option>
+                                <option value="IBM zBC12, zEC12">IBM zBC12, zEC12</option>
+                                <option value="IBM z13s, z13">IBM z13s, z13</option>
+                                <option value="IBM z14">IBM z14</option>
+                            </select>
+                        </td>
+                    </tr>
 
-                CPU 아키텍처 &emsp;
-                <select id="cpuArc" name="cpuArc" >
-                    <option value="UNDEFINED">정의되지 않음</option>
-                    <option value="X86_64">x86_64</option>
-                    <option value="PPC64">ppc64</option>
-                    <option value="S390X">s390x</option>
-                </select><br>
+                    <tr>
+                        <td>칩셋/펌웨어 유형</td>
+                        <td>&emsp;
+                            <select id="biosType" name="biosType" disabled>
+                                <option value="CLUSTER_DEFAULT">자동 감지</option>
+                                <!--  cpu 유형 선택에 따라 달라짐. 기본은 자동 감지   -->
+                                <option value="I440FX_SEA_BIOS">I440FX_SEA_BIOS</option>
+                                <option value="Q35_OVMF">Q35_OVMF</option>
+                                <option value="Q35_SEA_BIOS">Q35_SEA_BIOS</option>
+                                <option value="Q35_SECURE_BOOT">Q35_SECURE_BOOT</option>
+                            </select>
+                        </td>
+                    </tr>
 
-                CPU 유형 &emsp;
-                <select id="cpuType" name="cpuType" >
-                    <option value="">자동 감지</option>
-                    <option value="Intel Nehalem Family">Intel Nehalem Family</option>
-                    <option value="Secure Intel Nehalem Family">Secure Intel Nehalem Family</option>
-                    <option value="Intel Westmere Family">Intel Westmere Family</option>
-                    <option value="Secure Intel Westmere Family">Secure Intel Westmere Family</option>
-                    <option value="Intel SandyBridge Family">Intel SandyBridge Family</option>
-                    <option value="Secure Intel SandyBridge Family">Secure Intel SandyBridge Family</option>
-                    <option value="Intel IvyBridge Family">Intel IvyBridge Family</option>
-                    <option value="Secure Intel IvyBridge Family">Secure Intel IvyBridge Family</option>
-                    <option value="Intel Haswell Family">Intel Haswell Family</option>
-                    <option value="Secure Intel Haswell Family">Secure Intel Haswell Family</option>
-                    <option value="Intel Broadwell Family">Intel Broadwell Family</option>
-                    <option value="Secure Intel Broadwell Family">Secure Intel Broadwell Family</option>
-                    <option value="Intel Skylake Client Family">Intel Skylake Client Family</option>
-                    <option value="Secure Intel Skylake Client Family">Secure Intel Skylake Client Family</option>
-                    <option value="Intel Skylake Server Family">Intel Skylake Server Family</option>
-                    <option value="Secure Intel Skylake Server Family">Secure Intel Skylake Server Family</option>
-                    <option value="Intel Cascadelake Server Family">Intel Cascadelake Server Family</option>
-                    <option value="Secure Intel Cascadelake Server Family">Secure Intel Cascadelake Server Family</option>
-                    <option value="Intel Icelake Server Family">Intel Icelake Server Family</option>
-                    <option value="Secure Intel Icelake Server Family">Secure Intel Icelake Server Family</option>
-                    <option value="AMD Opteron G4">AMD Opteron G4</option>
-                    <option value="AMD Opteron G5">AMD Opteron G5</option>
-                    <option value="AMD EPYC">AMD EPYC</option>
-                    <option value="Secure AMD EPYC">Secure AMD EPYC</option>
-                    <option value="IBM POWER8">IBM POWER8</option>
-                    <option value="IBM POWER9">IBM POWER9</option>
-                    <option value="IBM z114, z196">IBM z114, z196</option>
-                    <option value="IBM zBC12, zEC12">IBM zBC12, zEC12</option>
-                    <option value="IBM z13s, z13">IBM z13s, z13</option>
-                    <option value="IBM z14">IBM z14</option>
-                </select><br>
+                    <tr>
+                        <td>FIPS 모드</td>
+                        <td>&emsp;
+                            <select id="fipsMode" name="fipsMode">
+                                <option value="UNDEFINED">자동 감지</option>
+                                <option value="DISABLED">비활성화됨</option>
+                                <option value="ENABLED">활성화됨</option>
+                            </select>
+                        </td>
+                    </tr>
 
-                칩셋/펌웨어 유형 &emsp;
-                <select id="biosType" name="biosType" disabled>
-                    <option value="CLUSTER_DEFAULT">자동 감지</option>
-                    <!--  cpu 유형 선택에 따라 달라짐. 기본은 자동 감지   -->
-                    <option value="I440FX_SEA_BIOS">I440FX_SEA_BIOS</option>
-                    <option value="Q35_OVMF">Q35_OVMF</option>
-                    <option value="Q35_SEA_BIOS">Q35_SEA_BIOS</option>
-                    <option value="Q35_SECURE_BOOT">Q35_SECURE_BOOT</option>
-                </select><br><br>
+                    <tr>
+                        <td>호환 버전</td>
+                        <td>&emsp;
+                            <select id="version" name="version" >
+                                <option value="4.7">4.7</option>
+                            </select>
+                        </td>
+                    </tr>
 
+                    <tr>
+                        <td>스위치 유형</td>
+                        <td>&emsp;
+                            <select id="switchType" name="switchType" >
+                                <option value="LEGACY">Linux Bridge</option>
+                                <option value="OVS">OVS(기술 프리뷰)</option>
+                            </select>
+                        </td>
+                    </tr>
 
-                FIPS 모드 &emsp;
-                <select id="fipsMode" name="fipsMode">
-                    <option value="UNDEFINED">자동 감지</option>
-                    <option value="DISABLED">비활성화됨</option>
-                    <option value="ENABLED">활성화됨</option>
-                </select><br>
+                    <tr>
+                        <td>방화벽 유형</td>
+                        <td>&emsp;
+                            <select id="firewallType" name="firewallType" >
+                                <option value="FIREWALLD">firewalled</option>
+                                <option value="IPTABLES">iptables</option>
+                            </select>
+                        </td>
+                    </tr>
 
-                호환 버전 &emsp;
-                <select id="version" name="version" >
-                    <option value="4.7">4.7</option>
-                </select><br><br>
+                <!--
+                    <tr>
+                        <td>기본 네트워크 공급자</td>
+                        <td>&emsp;
+                            <select id="externalProvider" name="version" >
+                                <option value="FIREWALLD">firewalled</option>
+                                <option value="IPTABLES">iptables</option>
+                            </select>
+                        </td>
+                    </tr>
+                -->
 
-                스위치 유형 &emsp;
-                <select id="switchType" name="switchType" >
-                    <option value="LEGACY">Linux Bridge</option>
-                    <option value="OVS">OVS(기술 프리뷰)</option>
-                </select><br><br>
+                    <tr>
+                        <td>로그의 최대 메모리 한계</td>
+                        <td> &emsp;<input type="text" id="logMaxMemory" name="logMaxMemory" size="10" value="95"></td>
+                        <td>
+                            <select id="logMemory" name="logMemoryUnit" >
+                                <option value="percent">%</option>
+                            <!-- <option value="MB">MB</option> -->
+                            </select>
+                        </td>
+                    </tr>
 
-                방화벽 유형 &emsp;
-                <select id="firewallType" name="firewallType" >
-                    <option value="FIREWALLD">firewalled</option>
-                    <option value="IPTABLES">iptables</option>
-                </select><br><br>
+                    <tr>
+                        <td colspan="2"><input type="checkbox" id="virtService" name="virtService" checked/>&emsp; Virt 서비스 활성화</td>
+                    </tr>
 
-            <!--
-                기본 네트워크 공급자 &emsp;
-                <select id="externalProvider" name="version" >
-                    <option value="FIREWALLD">firewalled</option>
-                    <option value="IPTABLES">iptables</option>
-                </select><br><br>
-            -->
+                    <tr>
+                        <td colspan="2"><input type="checkbox" id="glusterService" name="glusterService"/>&emsp; Gluster 서비스 활성화</td>
+                    </tr>
 
-                로그의 최대 메모리 한계 &emsp;
-                <input type="text" id="logMaxMemory" name="logMaxMemory" size="10" value="95">
-                <select id="logMemory" name="logMemoryUnit" >
-                    <option value="percent">%</option>
-                <!-- <option value="MB">MB</option> -->
-                </select><br><br>
+                    <tr>
+                        <td colspan="2"><p>추가 난수 생성기 소스 </p></td>
+                    </tr>
 
-                <input type="checkbox" id="virtService" name="virtService" checked/> Virt 서비스 활성화 <br><br>
-                <input type="checkbox" id="glusterService" name="glusterService"/> Gluster 서비스 활성화 <br><br>
+                    <tr>
+                        <td colspan="2"><input type="checkbox" id="hwrng" name="hwrng" value=""/>&emsp; /dev/hwrng 소스</td>
+                    </tr>
 
-                <p>추가 난수 생성기 소스 </p>
-                <input type="checkbox" id="hwrng" name="hwrng" value=""/> /dev/hwrng 소스 <br><br>
+                </table>
 
                 <hr><br>
 

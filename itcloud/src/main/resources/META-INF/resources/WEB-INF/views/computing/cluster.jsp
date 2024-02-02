@@ -8,8 +8,6 @@
     table, tr, td{
         border:none;
     }
-
-
 </style>
 
         <div id="layoutSidenav_content">

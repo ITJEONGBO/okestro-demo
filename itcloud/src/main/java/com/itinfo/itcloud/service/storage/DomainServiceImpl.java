@@ -108,13 +108,14 @@ public class DomainServiceImpl implements ItDomainService {
         for(StorageDomain storageDomain : storageDomainList){
             if(storageDomain.dataCentersPresent()){
                 for(int i=0; i<storageDomain.dataCenters().size(); i++) {
-                    DataCenter dc =
+                    DataCenter dataCenter =
                             ((DataCenterService.GetResponse) systemService.dataCentersService().dataCenterService(storageDomain.dataCenters().get(i).id()).get().send()).dataCenter();
-                    dcVo = new DataCenterVo();
 
-                    dcVo.setId(dc.id());
-                    dcVo.setName(dc.name());
-                    dcVo.setStatus(dc.status().value());
+                    dcVo =  DataCenterVo.builder()
+                            .id(dataCenter.id())
+                            .name(dataCenter.name())
+                            .status(dataCenter.status().value())
+                            .build();
 
                     dcVoList.add(dcVo);
                 }

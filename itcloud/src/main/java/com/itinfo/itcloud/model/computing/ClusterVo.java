@@ -1,12 +1,11 @@
 package com.itinfo.itcloud.model.computing;
 
-import com.itinfo.itcloud.model.network.NetworkVo;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
-import java.util.List;
-
-@Getter @Setter
+@Getter @Setter @ToString @Builder
 public class ClusterVo {
     private String id;
     private String name;

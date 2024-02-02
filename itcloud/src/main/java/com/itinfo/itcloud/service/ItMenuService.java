@@ -43,9 +43,10 @@ public class ItMenuService {
         // region: computing
         List<DataCenterVo> dcVoList = new ArrayList<>();
         for(DataCenter dataCenter : dataCenterList){
-            DataCenterVo dcVo = new DataCenterVo();
-            dcVo.setId(dataCenter.id());
-            dcVo.setName(dataCenter.name());
+            DataCenterVo dcVo = DataCenterVo.builder()
+                    .id(dataCenter.id())
+                    .name(dataCenter.name())
+                    .build();
             dcVoList.add(dcVo);
         }
         m.setDatacenter(dcVoList);
@@ -53,10 +54,12 @@ public class ItMenuService {
 
         List<ClusterVo> cVoList = new ArrayList<>();
         for(Cluster cluster : clusterList) {
-            ClusterVo cVo = new ClusterVo();
-            cVo.setId(cluster.id());
-            cVo.setName(cluster.name());
-            cVo.setDatacenterId(((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send()).dataCenter().id());
+            ClusterVo cVo = ClusterVo.builder()
+                    .id(cluster.id())
+                    .name(cluster.name())
+                    .datacenterId(((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send()).dataCenter().id())
+                    .build();
+
             cVoList.add(cVo);
         }
         m.setCluster(cVoList);

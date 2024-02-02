@@ -62,7 +62,7 @@
                     <option value="ENABLED" <c:if test="${dc.quotaMode eq 'ENABLED'}">selected</c:if> >강제 적용</option>
                 </select><br><br>
 
-                코멘트 &emsp; <input type="text" id="comment" name="comment">
+                코멘트 &emsp; <input type="text" id="comment" name="comment" value="${dc.comment}">
                 <br><br>
                 <hr>
 
