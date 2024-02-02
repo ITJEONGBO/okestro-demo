@@ -24,7 +24,7 @@
 
 
 	function openAdd() {
-		window.open("cluster-add", "mypopup", "width=550, height=550, top=150, left=200");
+		window.open("cluster-add", "mypopup", "width=550, height=700, top=150, left=200");
 	}
 
 	function openEdit() {
@@ -32,7 +32,7 @@
             alert("클러스터를 선택해주세요");
             return;
         }
-		window.open("cluster-edit?id=" +cId, "mypopup", "width=550, height=550, top=150, left=200");
+		window.open("cluster-edit?id=" +cId, "mypopup", "width=550, height=700, top=150, left=200");
 	}
 
     function openDelete() {

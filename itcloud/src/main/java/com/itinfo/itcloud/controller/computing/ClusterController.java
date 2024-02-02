@@ -205,6 +205,24 @@ public class ClusterController {
 		return "computing/cluster-edit2";
 	}
 
+	@GetMapping("/computing/cluster-delete")
+	public String delete(Model model, String id){
+		model.addAttribute("id", id);
+		model.addAttribute("name", itClusterService.getName(id));
+		return "computing/cluster-delete";
+	}
+
+	@GetMapping("/computing/cluster-delete2")
+	public String delete2(Model model, String id){
+		if(itClusterService.deleteCluster(id)){
+			model.addAttribute("result", "완료");
+		}else {
+			model.addAttribute("result", "실패");
+		}
+
+		return "computing/cluster-delete2";
+	}
+
 
 
 

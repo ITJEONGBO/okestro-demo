@@ -162,6 +162,7 @@
 
                 <hr><br>
 
+            <!--
                 <h3>마이그레이션 정책</h3>
                 <br>
 
@@ -182,35 +183,36 @@
 
                 <p>대역폭</p>
                 마이그레이션 대역폭 제한(Mbps) &emsp;
-                    <select id="quotaMode" name="quotaMode">
-                        <option value="DISABLED">자동</option>
-                        <option value="AUDIT">하이퍼바이저 기본</option>
-                        <option value="ENABLED">사용자 정의</option>
+                    <select id="bandwidth" name="bandwidth">
+                        <option value="auto">자동</option>
+                        <option value="hypervisor_default">하이퍼바이저 기본</option>
+                        <option value="custom">사용자 정의</option>
                     </select><br><br>
 
                 <p>복구정책</p>
-                    <input type='radio' name='recover' value='' checked/> 가상머신을 마이그레이션 함 <br>
-                    <input type='radio' name='recover' value='' /> 고가용성 가상머신만 마이그레이션 <br>
-                    <input type='radio' name='recover' value='' /> 가상머신은 마이그레이션 하지 않음 <br>
+                    <input type='radio' id="recoveryPolicy" name='recoveryPolicy' value='migrate' checked/> 가상머신을 마이그레이션 함 <br>
+                    <input type='radio' id="recoveryPolicy" name='recoveryPolicy' value='migrate_highly_available' /> 고가용성 가상머신만 마이그레이션 <br>
+                    <input type='radio' id="recoveryPolicy" name='recoveryPolicy' value='do_not_migrate' /> 가상머신은 마이그레이션 하지 않음 <br>
                 <br>
 
                 <p>추가 속성</p>
                 마이그레이션 암호화 사용 &emsp;
-                    <select id="quotaMode" name="quotaMode">
-                        <option value="DISABLED">시스템 기본값(암호화하지 마십시오)</option>
-                        <option value="AUDIT">암호화</option>
-                        <option value="ENABLED">암호화하지 마십시오</option>
+                    <select id="encrypted" name="encrypted">
+                        <option value="inherit">시스템 기본값(암호화하지 마십시오)</option>
+                        <option value="true">암호화</option>
+                        <option value="false">암호화하지 마십시오</option>
                     </select><br><br>
 
                 Parallel Migrations &emsp;
-                    <select id="quotaMode" name="quotaMode">
-                        <option value="DISABLED">Auto</option>
-                        <option value="DISABLED">Auto Parallel</option>
-                        <option value="DISABLED">Disabled</option>
-                        <option value="DISABLED">Custom</option>
+                    <select id="Parallel" name="Parallel">
+                        <option value="auto">Auto</option>
+                        <option value="auto_parallel">Auto Parallel</option>
+                        <option value="disabled">Disabled</option>
+                        <option value="custom">Custom</option>
                     </select><br><br>
 
                 Number of VM Migration Connections <br>
+                -->
 
                 <br><br><br>
 

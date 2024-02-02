@@ -21,11 +21,12 @@ public interface ItClusterService {
     List<PermissionVo> getPermission(String id);
     List<EventVo> getEvent(String id);
 
+
     ClusterCreateVo getClusterCreate(String id);
 
     List<DataCenterVo> getDcList();
     boolean addCluster(ClusterCreateVo cVo);   // 생성
     void editCluster(ClusterCreateVo cVo);   // 수정
-    void deleteCluster(String id);       // 삭제
+    boolean deleteCluster(String id);       // 삭제
 
 }

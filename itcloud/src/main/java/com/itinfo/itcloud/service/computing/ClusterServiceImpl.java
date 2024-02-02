@@ -527,11 +527,11 @@ public class ClusterServiceImpl implements ItClusterService {
                     .virtService(cVo.isVirtService())
                     .glusterService(cVo.isGlusterService())
 //                     추가 난수 생성기 소스
-                    .migration(new MigrationOptionsBuilder()
-                            // 마이그레이션 정책
-                            .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))    // 대역폭
-                            .encrypted(cVo.getEncrypted())      // 암호화
-                    )
+//                    .migration(new MigrationOptionsBuilder()
+//                            // 마이그레이션 정책
+//                            .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))    // 대역폭
+//                            .encrypted(cVo.getEncrypted())      // 암호화
+//                    )
                     .build();
 
             clustersService.add().cluster(cluster).send();
@@ -578,11 +578,11 @@ public class ClusterServiceImpl implements ItClusterService {
                     .virtService(cVo.isVirtService())
                     .glusterService(cVo.isGlusterService())
 //                     추가 난수 생성기 소스
-                    .migration(new MigrationOptionsBuilder()
-                            // 마이그레이션 정책
-                            .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))    // 대역폭
-                            .encrypted(cVo.getEncrypted())      // 암호화
-                    )
+//                    .migration(new MigrationOptionsBuilder()
+//                            // 마이그레이션 정책
+//                            .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))    // 대역폭
+//                            .encrypted(cVo.getEncrypted())      // 암호화
+//                    )
                     .build();
 
             log.info("---" + cVo.toString());
@@ -594,8 +594,21 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
     @Override
-    public void deleteCluster(String id) {
+    public boolean deleteCluster(String id) {
+        SystemService systemService = admin.getConnection().systemService();
+        ClustersService clustersService = systemService.clustersService();
+        List<Cluster> cList = clustersService.list().send().clusters();
 
+        try {
+            ClusterService clusterService = systemService.clustersService().clusterService(id);
+
+            clusterService.remove().send();
+
+            return clustersService.list().send().clusters().size() == ( cList.size()-1 );
+        }catch (Exception e){
+            log.error("error ", e);
+            return false;
+        }
     }
 
 

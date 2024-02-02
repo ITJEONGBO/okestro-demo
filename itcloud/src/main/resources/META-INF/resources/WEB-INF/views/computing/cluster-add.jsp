@@ -33,7 +33,7 @@
 
 </head>
 <body>
-    <div style="padding: 2rem;">
+    <div style="padding: 1rem;">
         <div>
             <h2>새 클러스터</h2>
             <form id="add" autocomplete="off" method="get" action="cluster-add2">
@@ -114,12 +114,11 @@
                 칩셋/펌웨어 유형 &emsp;
                 <select id="biosType" name="biosType" disabled>
                     <option value="CLUSTER_DEFAULT">자동 감지</option>
-                    <!--
+                    <!--  cpu 유형 선택에 따라 달라짐. 기본은 자동 감지   -->
                     <option value="I440FX_SEA_BIOS">I440FX_SEA_BIOS</option>
                     <option value="Q35_OVMF">Q35_OVMF</option>
                     <option value="Q35_SEA_BIOS">Q35_SEA_BIOS</option>
                     <option value="Q35_SECURE_BOOT">Q35_SECURE_BOOT</option>
-                    -->
                 </select><br><br>
 
 
@@ -156,20 +155,21 @@
             -->
 
                 로그의 최대 메모리 한계 &emsp;
-                <input type="text" id="logMaxMemory" name="logMaxMemory" size="10">
+                <input type="text" id="logMaxMemory" name="logMaxMemory" size="10" value="95">
                 <select id="logMemory" name="logMemoryUnit" >
                     <option value="percent">%</option>
-                    <option value="MB">MB</option>
+                <!-- <option value="MB">MB</option> -->
                 </select><br><br>
 
-                <input type="checkbox" id="virtService" name="virtService" value="" checked/> Virt 서비스 활성화 <br><br>
-                <input type="checkbox" id="glusterService" name="glusterService" value=""/> Gluster 서비스 활성화 <br><br>
+                <input type="checkbox" id="virtService" name="virtService" checked/> Virt 서비스 활성화 <br><br>
+                <input type="checkbox" id="glusterService" name="glusterService"/> Gluster 서비스 활성화 <br><br>
 
                 <p>추가 난수 생성기 소스 </p>
                 <input type="checkbox" id="hwrng" name="hwrng" value=""/> /dev/hwrng 소스 <br><br>
 
                 <hr><br>
 
+            <!--
                 <h3>마이그레이션 정책</h3>
                 <br>
 
@@ -191,34 +191,35 @@
                 <p>대역폭</p>
                 마이그레이션 대역폭 제한(Mbps) &emsp;
                     <select id="bandwidth" name="bandwidth">
-                        <option value="DISABLED">자동</option>
-                        <option value="AUDIT">하이퍼바이저 기본</option>
-                        <option value="ENABLED">사용자 정의</option>
+                        <option value="auto">자동</option>
+                        <option value="hypervisor_default">하이퍼바이저 기본</option>
+                        <option value="custom">사용자 정의</option>
                     </select><br><br>
 
                 <p>복구정책</p>
-                    <input type='radio' id="recoveryPolicy" name='recoveryPolicy' value='' checked/> 가상머신을 마이그레이션 함 <br>
-                    <input type='radio' id="recoveryPolicy" name='recoveryPolicy' value='' /> 고가용성 가상머신만 마이그레이션 <br>
-                    <input type='radio' id="recoveryPolicy" name='recoveryPolicy' value='' /> 가상머신은 마이그레이션 하지 않음 <br>
+                    <input type='radio' id="recoveryPolicy" name='recoveryPolicy' value='migrate' checked/> 가상머신을 마이그레이션 함 <br>
+                    <input type='radio' id="recoveryPolicy" name='recoveryPolicy' value='migrate_highly_available' /> 고가용성 가상머신만 마이그레이션 <br>
+                    <input type='radio' id="recoveryPolicy" name='recoveryPolicy' value='do_not_migrate' /> 가상머신은 마이그레이션 하지 않음 <br>
                 <br>
 
                 <p>추가 속성</p>
                 마이그레이션 암호화 사용 &emsp;
                     <select id="encrypted" name="encrypted">
-                        <option value="DISABLED">시스템 기본값(암호화하지 마십시오)</option>
-                        <option value="AUDIT">암호화</option>
-                        <option value="ENABLED">암호화하지 마십시오</option>
+                        <option value="inherit">시스템 기본값(암호화하지 마십시오)</option>
+                        <option value="true">암호화</option>
+                        <option value="false">암호화하지 마십시오</option>
                     </select><br><br>
 
                 Parallel Migrations &emsp;
-                    <select id="quotaMode" name="quotaMode">
-                        <option value="DISABLED">Auto</option>
-                        <option value="DISABLED">Auto Parallel</option>
-                        <option value="DISABLED">Disabled</option>
-                        <option value="DISABLED">Custom</option>
+                    <select id="Parallel" name="Parallel">
+                        <option value="auto">Auto</option>
+                        <option value="auto_parallel">Auto Parallel</option>
+                        <option value="disabled">Disabled</option>
+                        <option value="custom">Custom</option>
                     </select><br><br>
 
                 Number of VM Migration Connections <br>
+                -->
 
                 <br><br><br>
 
