@@ -81,7 +81,7 @@
                                             <option></option>
                                         </c:if>
                                         <c:if test="${dc.id eq net.datacenterId}">
-                                            <option value="${net.id}">${net.name}</option>
+                                            <option value="${net.id}">${net.name}, (${dc.name})</option>
                                         </c:if>
                                     </c:forEach>
                                 </c:forEach>
@@ -216,13 +216,13 @@
                         </td>
                     </tr>
 
-                    <tr>
-                        <td colspan="2"><input type="checkbox" id="virtService" name="virtService" checked/>&emsp; Virt 서비스 활성화</td>
+                   <!-- <tr>
+                        <td colspan="2"><input type="checkbox" id="virt" name="virt" checked/>&emsp; Virt 서비스 활성화</td>
                     </tr>
 
                     <tr>
-                        <td colspan="2"><input type="checkbox" id="glusterService" name="glusterService"/>&emsp; Gluster 서비스 활성화</td>
-                    </tr>
+                        <td colspan="2"><input type="checkbox" id="gluster" name="gluster"/>&emsp; Gluster 서비스 활성화</td>
+                    </tr> -->
 
                     <tr>
                         <td colspan="2"><p>추가 난수 생성기 소스 </p></td>

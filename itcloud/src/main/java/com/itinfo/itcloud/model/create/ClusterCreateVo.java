@@ -35,8 +35,8 @@ public class ClusterCreateVo {
                                                 //<link href="/ovirt-engine/api/openstacknetworkproviders/1dd7e19a-5b16-4a76-a53f-ec1f1476692f/testconnectivity" rel="testconnectivity"/>
     private Integer logMaxMemory;       // 로그의 최대 메모리 한계
 
-    private boolean virtService;        // virt 서비스 활성화
-    private boolean glusterService;     // Gluster 서비스 활성화
+    private String virtService;        // virt 서비스 활성화
+    private String glusterService;     // Gluster 서비스 활성화
     // 추가 난수 생성기 소스
 
 

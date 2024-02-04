@@ -1,6 +1,7 @@
 package com.itinfo.itcloud.service;
 
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.create.HostCreateVo;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -17,4 +18,10 @@ public interface ItHostService {
     List<PermissionVo> getPermission(String id);
     List<AffinityLabelVo> getAffinitylabels(String id);
     List<EventVo> getEvent(String id);
+
+    HostCreateVo getHostCreate(String id);
+    boolean addHost(HostCreateVo hostCreateVo);
+    void editHost(HostCreateVo hostCreateVo);
+    boolean deleteHost(String id);
+
 }

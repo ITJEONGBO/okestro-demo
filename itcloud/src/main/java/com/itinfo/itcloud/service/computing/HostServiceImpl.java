@@ -1,6 +1,7 @@
 package com.itinfo.itcloud.service.computing;
 
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.create.HostCreateVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItHostService;
@@ -445,6 +446,72 @@ public class HostServiceImpl implements ItHostService {
         }
         return eVoList;
     }
+
+
+
+    @Override
+    public HostCreateVo getHostCreate(String id) {
+        return null;
+    }
+
+    @Override
+    public boolean addHost(HostCreateVo hostCreateVo) {
+        // The host is created based on the attributes of the host parameter.
+        // The name, address, and root_password properties are required.
+        SystemService systemService = admin.getConnection().systemService();
+
+//        HostsService hostsService = systemService.hostsService();
+//        Cluster cluster = systemService.clustersService().clusterService(hostCreateVo.getClusterId()).get().send().cluster();
+//
+//        if (hostCreateVo.isHostEngine()) {
+//            host = hostsService.add().deployHostedEngine(true).host(hostBuilder).send().host();
+//        } else {
+//            host = hostsService.add().host(hostBuilder).send().host();
+//        }
+//
+//        try {
+//            Host host = null;
+//            if (hostCreateVo.isHostEngineEnabled()) {
+//                host = hostsService.add().deployHostedEngine(true).host(hostBuilder).send().host();
+//            } else {
+//                host = hostsService.add().host(hostBuilder).send().host();
+//            }
+//
+//            HostService hostService = hostsService.hostService(host.id());
+//
+//            do {
+//                Thread.sleep(2000L);
+//                host = ((HostService.GetResponse)hostService.get().send()).host();
+//            } while(host.status() != HostStatus.UP && host.status() != HostStatus.INSTALLING);
+//
+//            if (hostCreateVo.isPowerManagementEnabled() && hostCreateVo.getFenceAgent().getAddress() != null || !"".equals(hostCreateVo.getFenceAgent().getAddress())) {
+//                FenceAgentsService fenceAgentsService = hostService.fenceAgentsService();
+//                AgentBuilder agentBuilder = new AgentBuilder();
+//                agentBuilder.address(hostCreateVo.getFenceAgent().getAddress()).username(hostCreateVo.getFenceAgent().getUsername()).password(hostCreateVo.getFenceAgent().getPassword()).type(hostCreateVo.getFenceAgent().getType()).order(1).encryptOptions(false);
+//                Agent agent = ((FenceAgentsService.AddResponse)fenceAgentsService.add().agent(agentBuilder).send()).agent();
+//                hostBuilder.powerManagement((new PowerManagementBuilder()).enabled(true).kdumpDetection(true).agents(new Agent[]{agent}));
+//            }
+//
+//            return true;
+//        } catch (Exception e) {
+//            log.info("error ", e);
+//            return false;
+//        }
+        return false;
+    }
+
+    @Override
+    public void editHost(HostCreateVo hostCreateVo) {
+
+    }
+
+    @Override
+    public boolean deleteHost(String id) {
+        return false;
+    }
+
+
+
 
 
     public HostHwVo getHardWare(SystemService systemService, String id){

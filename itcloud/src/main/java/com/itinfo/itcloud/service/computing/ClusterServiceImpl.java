@@ -508,8 +508,8 @@ public class ClusterServiceImpl implements ItClusterService {
                 .switchType(cluster.switchType())
                 .firewallType(cluster.firewallType())
                 .logMaxMemory(cluster.logMaxMemoryUsedThresholdAsInteger())
-                .virtService(cluster.virtService())
-                .glusterService(cluster.glusterService())
+//                .virtService(cluster.virtService())
+//                .glusterService(cluster.glusterService())
                 .networkId(networkId)
                 .networkName(networkName)
                 .build();
@@ -549,8 +549,8 @@ public class ClusterServiceImpl implements ItClusterService {
                     .switchType(cVo.getSwitchType())
                     .firewallType(cVo.getFirewallType())
                     .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
-                    .virtService(cVo.isVirtService())
-                    .glusterService(cVo.isGlusterService())
+//                    .virtService(cVo.isVirtService())
+//                    .glusterService(cVo.isGlusterService())
 //                     추가 난수 생성기 소스
 //                    .migration(new MigrationOptionsBuilder()
 //                            // 마이그레이션 정책
@@ -597,8 +597,8 @@ public class ClusterServiceImpl implements ItClusterService {
                     .switchType(cVo.getSwitchType())
                     .firewallType(cVo.getFirewallType())
                     .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
-                    .virtService(cVo.isVirtService())
-                    .glusterService(cVo.isGlusterService())
+//                    .virtService(cVo.isVirtService())
+//                    .glusterService(cVo.isGlusterService())
 //                     추가 난수 생성기 소스
 //                    .migration(new MigrationOptionsBuilder()
 //                            // 마이그레이션 정책

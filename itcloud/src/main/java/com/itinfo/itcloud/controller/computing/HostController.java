@@ -3,6 +3,7 @@ package com.itinfo.itcloud.controller.computing;
 import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.ClusterCreateVo;
+import com.itinfo.itcloud.model.create.HostCreateVo;
 import com.itinfo.itcloud.service.ItHostService;
 
 import com.itinfo.itcloud.service.ItMenuService;
@@ -129,61 +130,58 @@ public class HostController {
 	}
 
 
-//	@GetMapping("/computing/cluster-add")
-//	public String add(Model model) {
-//		List<DataCenterVo> dcList = itClusterService.getDcList();
-//
-//		model.addAttribute("dc", dcList);
-//		return "computing/cluster-add";
-//	}
-//
-//	// 데이터센터 생성
-//	@GetMapping("/computing/cluster-add2")
-//	public String add2(Model model, ClusterCreateVo cVo) {
-//		if(itClusterService.addCluster(cVo)){
-//			model.addAttribute("result", "완료");
-//		}else{
-//			model.addAttribute("result", "실패");
-//		}
-//
-//		return "computing/cluster-add2";
-//	}
-//
-//	// 클러스터 수정 창출력
-//	@GetMapping("/computing/cluster-edit")
-//	public String edit(Model model, String id) {
-//		ClusterCreateVo cVo = itClusterService.getClusterCreate(id);
-//		model.addAttribute("c", cVo);
-//		return "computing/cluster-edit";
-//	}
-//
-//	// 클러스터 수정
-//	@GetMapping("/computing/cluster-edit2")
-//	public String edit2(Model model, ClusterCreateVo cVo ) {
-//		log.info("edit 시작");
-//
-//		itClusterService.editCluster(cVo);
-//		model.addAttribute("result", "완료");
-//		return "computing/cluster-edit2";
-//	}
-//
-//	@GetMapping("/computing/cluster-delete")
-//	public String delete(Model model, String id){
-//		model.addAttribute("id", id);
-//		model.addAttribute("name", itClusterService.getName(id));
-//		return "computing/cluster-delete";
-//	}
-//
-//	@GetMapping("/computing/cluster-delete2")
-//	public String delete2(Model model, String id){
-//		if(itClusterService.deleteCluster(id)){
-//			model.addAttribute("result", "완료");
-//		}else {
-//			model.addAttribute("result", "실패");
-//		}
-//
-//		return "computing/cluster-delete2";
-//	}
+	@GetMapping("/computing/host-add")
+	public String add(Model model) {
+		return "computing/host-add";
+	}
+
+	// host 생성
+	@GetMapping("/computing/host-add2")
+	public String add2(Model model, HostCreateVo hVo) {
+		if(itHostService.addHost(hVo)){
+			model.addAttribute("result", "완료");
+		}else{
+			model.addAttribute("result", "실패");
+		}
+
+		return "computing/host-add2";
+	}
+
+	// host 수정 창출력
+	@GetMapping("/computing/host-edit")
+	public String edit(Model model, String id) {
+		HostCreateVo hVo = itHostService.getHostCreate(id);
+		model.addAttribute("h", hVo);
+		return "computing/host-edit";
+	}
+
+	// 클러스터 수정
+	@GetMapping("/computing/host-edit2")
+	public String edit2(Model model, HostCreateVo hVo ) {
+		log.info("edit 시작");
+
+		itHostService.editHost(hVo);
+		model.addAttribute("result", "완료");
+		return "computing/host-edit2";
+	}
+
+	@GetMapping("/computing/host-delete")
+	public String delete(Model model, String id){
+		model.addAttribute("id", id);
+		model.addAttribute("name", itHostService.getName(id));
+		return "computing/host-delete";
+	}
+
+	@GetMapping("/computing/host-delete2")
+	public String delete2(Model model, String id){
+		if(itHostService.deleteHost(id)){
+			model.addAttribute("result", "완료");
+		}else {
+			model.addAttribute("result", "실패");
+		}
+
+		return "computing/host-delete2";
+	}
 
 
 
