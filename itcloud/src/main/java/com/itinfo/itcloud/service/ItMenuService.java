@@ -66,10 +66,11 @@ public class ItMenuService {
 
         List<HostVo> hVoList = new ArrayList<>();
         for(Host host : hostList) {
-            HostVo hVo = new HostVo();
-            hVo.setId(host.id());
-            hVo.setName(host.name());
-            hVo.setClusterId(host.clusterPresent() ? host.cluster().id() : null);
+            HostVo hVo = HostVo.builder()
+                    .id(host.id())
+                    .name(host.name())
+                    .clusterId(host.clusterPresent() ? host.cluster().id() : null)
+                    .build();
             hVoList.add(hVo);
         }
         m.setHost(hVoList);
@@ -114,10 +115,11 @@ public class ItMenuService {
 
         List<NetworkVo> nwVoList = new ArrayList<>();
         for(Network network : networkList) {
-            NetworkVo nwVo = new NetworkVo();
-            nwVo.setId(network.id());
-            nwVo.setName(network.name());
-            nwVo.setDatacenterId(network.dataCenter().id());
+            NetworkVo nwVo = NetworkVo.builder()
+                    .id(network.id())
+                    .name(network.name())
+                    .datacenterId(network.dataCenter().id())
+                    .build();
             nwVoList.add(nwVo);
         }
         m.setNetwork(nwVoList);

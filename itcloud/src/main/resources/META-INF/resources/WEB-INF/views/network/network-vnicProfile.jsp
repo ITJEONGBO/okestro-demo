@@ -46,7 +46,7 @@
                             <tr>
                                 <td>${vnic.name}</td>
                                 <td>${vnic.networkName}</td>
-                                <td><a href="/computing/datacenter-storage?id=${vnic.datacenterId}" style="text-decoration-line: none">${vnic.datacenterName}</a></td>
+                                <td><a href="/computing/datacenters?id=${vnic.datacenterId}" style="text-decoration-line: none">${vnic.datacenterName}</a></td>
                                 <td>${vnic.version}</td>
                                 <td>${vnic.networkFilterName}</td>
                                 <td>${vnic.portMirroring == "true" ? "활성화됨" : ""}</td>

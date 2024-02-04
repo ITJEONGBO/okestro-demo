@@ -1,12 +1,7 @@
 package com.itinfo.itcloud.controller.computing;
 
 import com.itinfo.itcloud.model.MenuVo;
-import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
-import com.itinfo.itcloud.model.computing.EventVo;
-import com.itinfo.itcloud.model.computing.PermissionVo;
-import com.itinfo.itcloud.model.network.NetworkVo;
-import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.service.ItDataCenterService;
 
 import com.itinfo.itcloud.service.ItMenuService;
@@ -17,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
@@ -173,7 +167,7 @@ public class DataCenterController {
 		if(itDataCenterService.deleteDatacenter(id)){
 			model.addAttribute("result", "완료");
 		}else {
-			model.addAttribute("result", "실패");
+			model.addAttribute("result", "삭제는 되는데 문제가 있음");
 		}
 
 		return "computing/datacenter-delete2";

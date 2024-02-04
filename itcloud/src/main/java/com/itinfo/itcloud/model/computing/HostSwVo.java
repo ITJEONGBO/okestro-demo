@@ -1,9 +1,9 @@
 package com.itinfo.itcloud.model.computing;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
-@Getter @Setter
+@Getter @Builder
 public class HostSwVo {
     private String osVersion;
     private String osInfo;

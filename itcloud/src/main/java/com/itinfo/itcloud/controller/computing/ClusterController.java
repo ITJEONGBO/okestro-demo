@@ -17,15 +17,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
-
 @Controller
 @RequiredArgsConstructor
 @Slf4j
 public class ClusterController {
 	private final ItClusterService itClusterService;
 	private final ItMenuService menu;
-
-
 
 	//region: get Cluster
 
@@ -171,11 +168,12 @@ public class ClusterController {
 	@GetMapping("/computing/cluster-add")
 	public String add(Model model) {
 		List<DataCenterVo> dcList = itClusterService.getDcList();
+
 		model.addAttribute("dc", dcList);
 		return "computing/cluster-add";
 	}
 
-	// 데이터센터 생성
+	 // 데이터센터 생성
 	@GetMapping("/computing/cluster-add2")
 	public String add2(Model model, ClusterCreateVo cVo) {
 		if(itClusterService.addCluster(cVo)){
@@ -227,7 +225,6 @@ public class ClusterController {
 
 
 	// endregion
-
 
 
 	//region: @ResponseBody

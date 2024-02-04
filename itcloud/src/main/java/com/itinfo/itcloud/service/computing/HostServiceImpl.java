@@ -5,7 +5,6 @@ import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItHostService;
 import lombok.extern.slf4j.Slf4j;
-import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,44 +33,37 @@ public class HostServiceImpl implements ItHostService {
     @Override
     public List<HostVo> getList() {
         SystemService systemService = admin.getConnection().systemService();
-//        SystemService s = ovirt.getSystemService();;
 
         List<HostVo> hostVoList = new ArrayList<>();
         HostVo hostVo = null;
 
-//        List<Host> hostList = ovirt.hostList();
         List<Host> hostList = ((HostsService.ListResponse)systemService.hostsService().list().send()).hosts();
-
         for(Host host : hostList){
-            hostVo = new HostVo();
+            Cluster cluster = systemService.clustersService().clusterService(host.cluster().id()).get().send().cluster();
+            DataCenter dataCenter = systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter();
+            List<Vm> vmList = systemService.vmsService().list().send().vms();
 
-            hostVo.setId(host.id());
-            hostVo.setName(host.name());
-            hostVo.setComment(host.comment());
-            hostVo.setAddress(host.address());
-            hostVo.setStatus(host.status().value());
-
-//            Cluster cluster = ovirt.cluster(host.cluster().id());
-            Cluster cluster =
-                    ((ClusterService.GetResponse)systemService.clustersService().clusterService(host.cluster().id()).get().send()).cluster();
-//            DataCenter dataCenter = ovirt.dataCenter(cluster.dataCenter().id());
-            DataCenter dataCenter =
-                    ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send()).dataCenter();
-            hostVo.setClusterId(host.cluster().id());
-            hostVo.setClusterName(cluster.name());
-            hostVo.setDatacenterId(cluster.dataCenter().id());
-            hostVo.setDatacenterName(dataCenter.name());
-
-//            List<Vm> vmList = ovirt.vmList();
-            List<Vm> vmList = ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
             int vmsCnt = 0;
             for(Vm vm : vmList){
                 if(vm.host() != null && vm.host().id().equals(host.id())){
                     vmsCnt++;
                 }
             }
-            hostVo.setVmCnt(vmsCnt);
-            hostVo.setSpmStatus(host.spm().status().value());
+
+            hostVo = HostVo.builder()
+                    .id(host.id())
+                    .name(host.name())
+                    .comment(host.comment())
+                    .status(host.status().value())
+                    .address(host.address())
+                    .clusterId(host.cluster().id())
+                    .clusterName(cluster.name())
+                    .datacenterId(cluster.dataCenter().id())
+                    .datacenterName(dataCenter.name())
+                    .spmStatus(host.spm().status().value())
+                    .vmCnt(vmsCnt)
+                    .build();
+
             hostVoList.add(hostVo);
         }
         return hostVoList;
@@ -82,112 +74,83 @@ public class HostServiceImpl implements ItHostService {
     public HostVo getInfo(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
-        HostVo hostVo = new HostVo();
-        hostVo.setId(id);
-
         Host host = ((HostService.GetResponse)systemService.hostsService().hostService(id).get().send()).host();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
-        hostVo.setName(host.name());
-        hostVo.setAddress(host.address()); //호스트 ip
-        hostVo.setSpmPriority(host.spm().priorityAsInteger());  // spm 우선순위
-
-        // Hosted Engine HA
-        // HostsService.AddRequest	deployHostedEngine (Boolean deployHostedEngine)
-        // hosts/5f76a068-8852-4898-af2c-07bf3f60a80c/externalnetworkproviderconfigurations
+        List<HostCpuUnit> hcuList = ((HostCpuUnitsService.ListResponse)systemService.hostsService().hostService(id).cpuUnitsService().list().send()).cpuUnits();
 
         int cpu = host.cpu().topology().coresAsInteger()
                 * host.cpu().topology().socketsAsInteger()
                 * host.cpu().topology().threadsAsInteger();
-        hostVo.setCpuCnt(cpu); // 논리 cpu 코어수
-
 
         // 온라인 논리 CPU 코어수
         // HostCpuUnit 이 없음 인식안됨
         // https://192.168.0.70/ovirt-engine/api/hosts/3bbd27b9-13d8-4fff-ad29-c0350994ca88/cpuunits
         // https://192.168.0.70/ovirt-engine/api/hosts/3bbd27b9-13d8-4fff-ad29-c0350994ca88/numanodes
-        List<HostCpuUnit> hcuList = ((HostCpuUnitsService.ListResponse)systemService.hostsService().hostService(id).cpuUnitsService().list().send()).cpuUnits();
         List<Integer> online = new ArrayList<>();
         for(HostCpuUnit hcu : hcuList) {
             online.add(hcu.cpuIdAsInteger());
-            hostVo.setCpuOnline(online);
         }
 
-        hostVo.setIscsi(host.iscsiPresent() ? host.iscsi().initiator() : null);  // iscsi 게시자 이름
-        hostVo.setKdump(host.kdumpStatus().value());  // kdump intergration status
-        hostVo.setDevicePassThrough(host.devicePassthrough().enabled());    // 장치통과
-        hostVo.setMemoryMax(host.maxSchedulingMemory());      // 최대 여유 메모리
+        BigInteger memory = BigInteger.ZERO, memoryUsed = BigInteger.ZERO, memoryFree = BigInteger.ZERO;
+        BigInteger swapTotal = BigInteger.ZERO, swapUsed = BigInteger.ZERO, swapFree = BigInteger.ZERO;
+        String bootingTime = "";
+        int hugePage2048Free = 0, hugePage2048Total = 0, hugePage1048576Free = 0, hugePage1048576Total = 0;
 
-        // 메모리 페이지 공유  비활성
-
-        // 자동으로 페이지를 크게 (확실하지 않음. 매우)
-        hostVo.setPageSize(host.transparentHugePages().enabled());
-
-        // selinux모드: disabled, enforcing, permissive
-        hostVo.setSeLinux(host.seLinux().mode().value());
-
-        // 클러스터 호환버전
-
-
-
-        List<Statistic> statisticList =
-                ((StatisticsService.ListResponse)systemService.hostsService().hostService(id).statisticsService().list().send()).statistics();
-
+        List<Statistic> statisticList = systemService.hostsService().hostService(id).statisticsService().list().send().statistics();
         for(Statistic statistic : statisticList){
             // 물리메모리
             if(statistic.name().equals("memory.total")){
-                hostVo.setMemory(statistic.values().get(0).datum().toBigInteger());
+                memory = statistic.values().get(0).datum().toBigInteger();
             }
             if(statistic.name().equals("memory.used")){
-                hostVo.setMemoryUsed(statistic.values().get(0).datum().toBigInteger());
+                memoryUsed = statistic.values().get(0).datum().toBigInteger();
             }
             if(statistic.name().equals("memory.free")){
-                hostVo.setMemoryFree(statistic.values().get(0).datum().toBigInteger());
+                memoryFree = statistic.values().get(0).datum().toBigInteger();
             }
-            // 공유메모리
-            // keep
+
+            // 공유메모리 / keep
 //            if(statistic.name().equals("memory.shared")){
-//                hostVo.setMemoryShared(statistic.values().get(0).datum().toBigInteger());
+//                memoryShared = statistic.values().get(0).datum().toBigInteger();
 //            }
 
             // swap 크기
             if(statistic.name().equals("swap.total")){
-                hostVo.setSwapTotal(statistic.values().get(0).datum().toBigInteger());
+                swapTotal = statistic.values().get(0).datum().toBigInteger();
             }
             if(statistic.name().equals("swap.used")){
-                hostVo.setSwapUsed(statistic.values().get(0).datum().toBigInteger());
+                swapUsed = statistic.values().get(0).datum().toBigInteger();
             }
             if(statistic.name().equals("swap.free")){
-                hostVo.setSwapFree(statistic.values().get(0).datum().toBigInteger());
-            }
-
-            // 부팅시간
-            if(statistic.name().equals("boot.time")){
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
-                long b = statistic.values().get(0).datum().longValue() * 1000;
-                Date now = new Date(b);
-                hostVo.setBootingTime(sdf.format(now));
+                swapFree = statistic.values().get(0).datum().toBigInteger();
             }
 
             // Huge pages(size:free/total)
             if(statistic.name().equals("hugepages.2048.free")){
-                hostVo.setHugePage2048Free(statistic.values().get(0).datum().intValue());
+                hugePage2048Free = statistic.values().get(0).datum().intValue();
             }
             if(statistic.name().equals("hugepages.2048.total")){
-                hostVo.setHugePage2048Total(statistic.values().get(0).datum().intValue());
+                hugePage2048Total = statistic.values().get(0).datum().intValue();
             }
 
             if(statistic.name().equals("hugepages.1048576.free")){
-                hostVo.setHugePage1048576Free(statistic.values().get(0).datum().intValue());
+                hugePage1048576Free = statistic.values().get(0).datum().intValue();
             }
             if(statistic.name().equals("hugepages.1048576.total")){
-                hostVo.setHugePage1048576Total(statistic.values().get(0).datum().intValue());
+                hugePage1048576Total = statistic.values().get(0).datum().intValue();
+            }
+
+            // 부팅시간
+            if(statistic.name().equals("boot.time")){
+                long b = statistic.values().get(0).datum().longValue() * 1000;
+                Date now = new Date(b);
+                bootingTime = sdf.format(now);
             }
         }
 
-
         // 가상머신 수
         List<Vm> vmList = ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
-
         int vmsUpCnt = 0;
         for(Vm vm : vmList){
             if(vm.host()!= null && vm.host().id().equals(host.id()) && vm.status().value().equals("up")){
@@ -195,11 +158,37 @@ public class HostServiceImpl implements ItHostService {
             }
         }
 
-        hostVo.setVmUpCnt(vmsUpCnt);
-        getHardWare(systemService, hostVo, id);
-        getSoftWare(systemService, hostVo, id);
-
-        return hostVo;
+        return HostVo.builder()
+                .id(id)
+                .name(host.name())
+                .address(host.address())        //호스트 ip
+                .spmPriority(host.spm().priorityAsInteger())    // spm 우선순위
+                .cpuCnt(cpu)
+                .cpuOnline(online)
+                .vmUpCnt(vmsUpCnt)
+                .iscsi(host.iscsiPresent() ? host.iscsi().initiator() : null)   // iscsi 게시자 이름
+                .kdump(host.kdumpStatus().value())      // kdump intergration status
+                .devicePassThrough(host.devicePassthrough().enabled())  // 장치통과
+                .memoryMax(host.maxSchedulingMemory())    // 최대 여유 메모리.
+                .memory(memory)
+                .memoryFree(memoryFree)
+                .memoryUsed(memoryUsed)
+                .swapTotal(swapTotal)
+                .swapFree(swapFree)
+                .swapUsed(swapUsed)
+                .hugePage2048Total(hugePage2048Total)
+                .hugePage2048Free(hugePage2048Free)
+                .hugePage1048576Total(hugePage1048576Total)
+                .hugePage1048576Free(hugePage1048576Free)
+                .bootingTime(bootingTime)
+                // Hosted Engine HA
+                // 메모리 페이지 공유  비활성
+                .pageSize(host.transparentHugePages().enabled())    // 자동으로 페이지를 크게 (확실하지 않음. 매우)
+                .seLinux(host.seLinux().mode().value())     // selinux모드: disabled, enforcing, permissive
+                // 클러스터 호환버전
+                .hostHwVo(getHardWare(systemService, id))
+                .hostSwVo(getSoftWare(systemService, id))
+                .build();
     }
 
     @Override
@@ -433,26 +422,23 @@ public class HostServiceImpl implements ItHostService {
     @Override
     public List<EventVo> getEvent(String id) {
         SystemService systemService = admin.getConnection().systemService();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");      // 2024. 1. 4. PM 04:01:21
 
+        List<Event> eventList = ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
         List<EventVo> eVoList = new ArrayList<>();
         EventVo eVo = null;
 
-        // 2024. 1. 4. PM 04:01:21
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
-
-        List<Event> eventList = ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
-
-        String name = ovirt.getName("host", id);
+        String name = getName(id);
 
         for(Event event : eventList){
             if(event.hostPresent() && event.host().name().equals(name)){
-                eVo = new EventVo();
-
-                eVo.setSeverity(event.severity().value());
-                eVo.setTime(sdf.format(event.time()));
-                eVo.setMessage(event.description());
-                eVo.setRelationId(event.correlationIdPresent() ? event.correlationId() : null);
-                eVo.setSource(event.origin());
+                eVo = EventVo.builder()
+                        .severity(event.severity().value())     // 상태[LogSeverity] : alert, error, normal, warning
+                        .time(sdf.format(event.time()))
+                        .message(event.description())
+                        .relationId(event.correlationIdPresent() ? event.correlationId() : null)
+                        .source(event.origin())
+                        .build();
 
                 eVoList.add(eVo);
             }
@@ -461,51 +447,42 @@ public class HostServiceImpl implements ItHostService {
     }
 
 
+    public HostHwVo getHardWare(SystemService systemService, String id){
+        Host host = systemService.hostsService().hostService(id).get().send().host();
 
-    public void getHardWare(SystemService systemService, HostVo hostVo, String id){
-        Host host =
-                ((HostService.GetResponse)systemService.hostsService().hostService(id).get().send()).host();
-
-        HostHwVo hostHwVo = new HostHwVo();
-
-        hostHwVo.setFamily(host.hardwareInformation().family());            // 생산자
-        hostHwVo.setManufacturer(host.hardwareInformation().manufacturer());    // 제품군
-        hostHwVo.setProductName(host.hardwareInformation().productName());      // 제품 이름
-        hostHwVo.setHwVersion(host.hardwareInformation().version());         // 버전
-        hostHwVo.setCpuName(host.cpu().name());     // cpu 모델
-        hostHwVo.setCpuType(host.cpu().type());      // cpu 유형
-        hostHwVo.setUuid(host.hardwareInformation().uuid());       // uuid
-        hostHwVo.setSerialNum(host.hardwareInformation().serialNumber());   // 일련번호
-
-        hostHwVo.setCpuSocket(host.cpu().topology().socketsAsInteger());      // cpu 소켓
-        hostHwVo.setCoreThread(host.cpu().topology().threadsAsInteger());     // 코어당 cpu 스레드
-        hostHwVo.setCoreSocket(host.cpu().topology().coresAsInteger());     // 소켓당 cpu 코어
-
-        hostVo.setHostHwVo(hostHwVo);
+        return HostHwVo.builder()
+                .family(host.hardwareInformation().family())           // 생산자
+                .manufacturer(host.hardwareInformation().manufacturer())     // 제품군
+                .productName(host.hardwareInformation().productName())      // 제품 이름
+                .hwVersion(host.hardwareInformation().version())        // 버전
+                .cpuName(host.cpu().name())          // cpu 모델
+                .cpuType(host.cpu().type())          // cpu 유형
+                .uuid(host.hardwareInformation().uuid())             // uuid
+                .serialNum(host.hardwareInformation().serialNumber())        // 일련번호
+                .cpuSocket(host.cpu().topology().socketsAsInteger())        // cpu 소켓
+                .coreThread(host.cpu().topology().threadsAsInteger())       // 코어당 cpu 스레드
+                .coreSocket(host.cpu().topology().coresAsInteger())       // 소켓당 cpu 코어
+                .build();
     }
 
 
     // 구하는 방법이 db밖에는 없는건지 확인필요
-    public void getSoftWare(SystemService systemService, HostVo hostVo, String id){
-        Host host =
-                ((HostService.GetResponse)systemService.hostsService().hostService(id).get().send()).host();
+    public HostSwVo getSoftWare(SystemService systemService, String id){
+        Host host = systemService.hostsService().hostService(id).get().send().host();
 
-        HostSwVo hostSwVo = new HostSwVo();
-
-        hostSwVo.setOsVersion(host.os().type() + " " + host.os().version().fullVersion());  // os 버전
-//        hostSwVo.setOsInfo(host.os());   // os 정보
-        hostSwVo.setKernalVersion(host.os().reportedKernelCmdline());   // 커널 버전 db 수정해야함
-        // kvm 버전 db
-        hostSwVo.setLibvirtVersion(host.libvirtVersion().fullVersion());    // LIBVIRT 버전
-        hostSwVo.setVdsmVersion(host.version().fullVersion());  // VDSM 버전 db
-        // SPICE 버전
-        // GlusterFS 버전
-        // CEPH 버전
-        // Open vSwitch 버전
-        // Nmstate 버전
-
-        hostVo.setHostSwVo(hostSwVo);
+        return HostSwVo.builder()
+                .osVersion(host.os().type() + " " + host.os().version().fullVersion())    // os 버전
+//                .osInfo(host.os())       // os 정보
+                .kernalVersion(host.os().reportedKernelCmdline())// 커널 버전 db 수정해야함
+                // kvm 버전 db
+                .libvirtVersion(host.libvirtVersion().fullVersion())// LIBVIRT 버전
+                .vdsmVersion(host.version().fullVersion())// VDSM 버전 db
+                // SPICE 버전
+                // GlusterFS 버전
+                // CEPH 버전
+                // Open vSwitch 버전
+                // Nmstate 버전
+                .build();
     }
-
 
 }

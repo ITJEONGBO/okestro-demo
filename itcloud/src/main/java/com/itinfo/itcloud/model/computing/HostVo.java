@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.model.computing;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,7 +8,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
-@Getter @Setter
+@Getter @Builder
 public class HostVo {
     private String id;
     private String name;
@@ -64,6 +65,7 @@ public class HostVo {
     private String clusterName;
     private String datacenterId;
     private String datacenterName;
+
 
     private int vmCnt;
     private int vmUpCnt;

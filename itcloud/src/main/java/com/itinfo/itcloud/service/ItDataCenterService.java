@@ -27,5 +27,4 @@ public interface ItDataCenterService {
     void editDatacenter(DataCenterVo dcVo);   // 수정
     boolean deleteDatacenter(String id);       // 삭제
 
-
 }

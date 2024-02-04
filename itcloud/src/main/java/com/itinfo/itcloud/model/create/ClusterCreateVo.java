@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.model.create;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -7,9 +8,8 @@ import org.ovirt.engine.sdk4.types.*;
 
 import java.util.List;
 
-@Getter @Setter @ToString
+@Getter @ToString @Builder
 public class ClusterCreateVo {
-
     // 일반
 
     // 전체 데이터센터중에 정하는거

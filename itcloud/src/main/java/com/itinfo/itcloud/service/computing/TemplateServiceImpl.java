@@ -280,13 +280,13 @@ public class TemplateServiceImpl implements ItTemplateService {
 
         for(Event event : eventList){
             if(event.templatePresent() && event.template().name().equals(t.name())){
-                eVo = new EventVo();
-
-                eVo.setSeverity(event.severity().value());
-                eVo.setTime(sdf.format(event.time()));
-                eVo.setMessage(event.description());
-                eVo.setRelationId(event.correlationIdPresent() ? event.correlationId() : "");
-                eVo.setSource(event.origin());
+                eVo = EventVo.builder()
+                        .severity(event.severity().value())     // 상태[LogSeverity] : alert, error, normal, warning
+                        .time(sdf.format(event.time()))
+                        .message(event.description())
+                        .relationId(event.correlationIdPresent() ? event.correlationId() : null)
+                        .source(event.origin())
+                        .build();
 
                 eVoList.add(eVo);
             }

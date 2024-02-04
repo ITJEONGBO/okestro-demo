@@ -5,15 +5,12 @@ import com.itinfo.itcloud.model.network.*;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItNetworkService;
 import lombok.extern.slf4j.Slf4j;
-import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sun.nio.ch.Net;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +19,11 @@ import java.util.List;
 @Slf4j
 public class NetworkServiceImpl implements ItNetworkService {
 
-    @Autowired
-    private AdminConnectionService admin;
+    @Autowired private AdminConnectionService admin;
 
     @Override
     public String getName(String id){
         SystemService systemService = admin.getConnection().systemService();
-
         return ((NetworkService.GetResponse)systemService.networksService().networkService(id).get().send()).network().name();
     }
 
@@ -38,49 +33,60 @@ public class NetworkServiceImpl implements ItNetworkService {
 
         List<NetworkVo> nwVoList = new ArrayList<>();
         NetworkVo nwVo = null;
+        NetworkUsageVo nuVo = null;
 
-        List<Network> networkList =
-                ((NetworksService.ListResponse)systemService.networksService().list().send()).networks();
+        List<Network> networkList = ((NetworksService.ListResponse)systemService.networksService().list().send()).networks();
 
         for(Network network : networkList){
-            nwVo = new NetworkVo();
-
-            nwVo.setId(network.id());
-            nwVo.setName(network.name());
-            nwVo.setDescription(network.description());
-            nwVo.setComment(network.comment());
-            nwVo.setMtu(network.mtuAsInteger());
-            nwVo.setVdsmName(network.vdsmName());
-            nwVo.setDatacenterId(network.dataCenter().id());
-            nwVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(network.dataCenter().id()).get().send()).dataCenter().name() );
-//            nwVo.setPortIsolation(network.portIsolation());        // 포트 분리, 버전문제
-            nwVo.setVlan(network.vlanPresent() ? network.vlan().id() : null);
-
-
             List<NetworkLabel> nlList =
                     ((NetworkLabelsService.ListResponse) systemService.networksService().networkService(network.id()).networkLabelsService().list().send()).labels();
+
+            String label = "";
             for(NetworkLabel nl : nlList) {
-                nwVo.setLabel(nl.id());
+                label = nl.id();
             }
 
-            //
+            String providerId = "";
+            String providerName = "";
             if(network.externalProviderPresent()) {
                 OpenStackNetworkProvider np =
                         ((OpenstackNetworkProviderService.GetResponse) systemService.openstackNetworkProvidersService().providerService(network.externalProvider().id()).get().send()).provider();
-                nwVo.setProviderId(np.id());
-                nwVo.setProviderName(np.name());
+                providerId = np.id();
+                providerName = np.name();
             }
 
-            // usages
-            NetworkUsageVo nuVo = new NetworkUsageVo();
-            nuVo.setVm(network.usages().contains(NetworkUsage.VM));
-            nuVo.setDisplay(network.usages().contains(NetworkUsage.DISPLAY));
-            nuVo.setMigration(network.usages().contains(NetworkUsage.MIGRATION));
-            nuVo.setManagement(network.usages().contains(NetworkUsage.MANAGEMENT));
-            nuVo.setDefaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE));
-            nuVo.setGluster(network.usages().contains(NetworkUsage.GLUSTER));
+//            nuVo = NetworkUsageVo.builder()
+//                    .vm(network.usages().contains(NetworkUsage.VM))
+//                    .display(network.usages().contains(NetworkUsage.DISPLAY))
+//                    .migration(network.usages().contains(NetworkUsage.MIGRATION))
+//                    .management(network.usages().contains(NetworkUsage.MANAGEMENT))
+//                    .defaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE))
+//                    .gluster(network.usages().contains(NetworkUsage.GLUSTER))
+//                    .build();
 
-            nwVo.setNetworkUsageVo(nuVo);
+            nwVo = NetworkVo.builder()
+                    .id(network.id())
+                    .name(network.name())
+                    .description(network.description())
+                    .comment(network.comment())
+                    .mtu(network.mtuAsInteger())
+                    .vdsmName(network.vdsmName())
+                    .datacenterId(network.dataCenter().id())
+                    .datacenterName(((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(network.dataCenter().id()).get().send()).dataCenter().name())
+                    .portIsolation(network.portIsolation())     // 포트 분리, 버전문제
+                    .vlan(network.vlanPresent() ? network.vlan().id() : null)
+                    .label(label)
+                    .providerId(providerId)
+                    .providerName(providerName)
+                    .networkUsageVo( NetworkUsageVo.builder()
+                                        .vm(network.usages().contains(NetworkUsage.VM))
+                                        .display(network.usages().contains(NetworkUsage.DISPLAY))
+                                        .migration(network.usages().contains(NetworkUsage.MIGRATION))
+                                        .management(network.usages().contains(NetworkUsage.MANAGEMENT))
+                                        .defaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE))
+                                        .gluster(network.usages().contains(NetworkUsage.GLUSTER))
+                                        .build() )
+                    .build();
 
             nwVoList.add(nwVo);
         }
@@ -90,20 +96,16 @@ public class NetworkServiceImpl implements ItNetworkService {
     @Override
     public NetworkVo getNetwork(String id) {
         SystemService systemService = admin.getConnection().systemService();
+        Network network = ((NetworkService.GetResponse)systemService.networksService().networkService(id).get().send()).network();
 
-        NetworkVo nwVo = new NetworkVo();
-
-        Network network =
-                ((NetworkService.GetResponse)systemService.networksService().networkService(id).get().send()).network();
-
-        nwVo.setId(network.id());
-        nwVo.setName(network.name());
-        nwVo.setDescription(network.description());
-        nwVo.setVdsmName(network.vdsmName());
-        nwVo.setVlan(network.vlanPresent() ? network.vlan().id() : null);   // vlan
-        nwVo.setMtu(network.mtuAsInteger());
-
-        return nwVo;
+        return NetworkVo.builder()
+                .id(network.id())
+                .name(network.name())
+                .description(network.description())
+                .vdsmName(network.vdsmName())
+                .vlan(network.vlanPresent() ? network.vlan().id() : null)
+                .mtu(network.mtuAsInteger())
+                .build();
     }
 
     @Override
@@ -115,32 +117,33 @@ public class NetworkServiceImpl implements ItNetworkService {
 
         List<VnicProfile> vnicProfileList =
                 ((AssignedVnicProfilesService.ListResponse)systemService.networksService().networkService(id).vnicProfilesService().list().send()).profiles();
+        Network network = ((NetworkService.GetResponse)systemService.networksService().networkService(id).get().send()).network();
 
         for(VnicProfile vnicProfile : vnicProfileList){
             if(id.equals(vnicProfile.network().id())){
-                Network network =
-                        ((NetworkService.GetResponse)systemService.networksService().networkService(id).get().send()).network();
-
-                vpVo = new VnicProfileVo();
-
-                vpVo.setId(vnicProfile.id());
-                vpVo.setName(vnicProfile.name());
-                vpVo.setDescription(vnicProfile.description());
-                vpVo.setNetworkName( ((NetworkService.GetResponse)systemService.networksService().networkService(id).get().send()).network().name() );
-
                 DataCenter dataCenter = ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(network.dataCenter().id()).get().send()).dataCenter();
-                vpVo.setDatacenterId(network.dataCenter().id());
-                vpVo.setDatacenterName( dataCenter.name() );
-                vpVo.setVersion(dataCenter.version().major() + "." + dataCenter.version().minor());
 
-                vpVo.setPassThrough(vnicProfile.passThrough().mode().value());
-                vpVo.setPortMirroring(vnicProfile.portMirroring());
-
+                String networkFilterId = "";
+                String networkFilterName = "";
                 if(vnicProfile.networkFilterPresent()) {
-                    NetworkFilter nf = ((NetworkFilterService.GetResponse) systemService.networkFiltersService().networkFilterService(vnicProfile.networkFilter().id()).get().send()).networkFilter();
-                    vpVo.setNetworkFilterId(vnicProfile.networkFilter().id());
-                    vpVo.setNetworkFilterName(nf.name());
+                    networkFilterId = vnicProfile.networkFilter().id();
+                    networkFilterName = systemService.networkFiltersService().networkFilterService(vnicProfile.networkFilter().id()).get().send().networkFilter().name();
                 }
+
+                vpVo = VnicProfileVo.builder()
+                        .id(vnicProfile.id())
+                        .name(vnicProfile.name())
+                        .description(vnicProfile.description())
+                        .networkName(network.name())
+                        .datacenterId(network.dataCenter().id())
+                        .datacenterName(dataCenter.name())
+                        .version(dataCenter.version().major() + "." + dataCenter.version().minor())
+                        .passThrough(vnicProfile.passThrough().mode().value())
+                        .portMirroring(vnicProfile.portMirroring())
+                        .networkFilterId(networkFilterId)
+                        .networkFilterName(networkFilterName)
+                        .build();
+
                 vpVoList.add(vpVo);
             }
         }
@@ -162,26 +165,23 @@ public class NetworkServiceImpl implements ItNetworkService {
 
             for(Network network : networkList){
                 if(network.id().equals(id)){
-                    ncVo = new NetworkClusterVo();
-
-                    ncVo.setId(cluster.id());
-                    ncVo.setName(cluster.name());
-                    ncVo.setVersion(cluster.version().major() + "." + cluster.version().minor());
-                    ncVo.setDescription(cluster.description());
-
-                    ncVo.setStatus(network.status().value());
-                    ncVo.setRequired(network.required());
-
-                    // usages
-                    NetworkUsageVo nuVo = new NetworkUsageVo();
-                    nuVo.setVm(network.usages().contains(NetworkUsage.VM));
-                    nuVo.setDisplay(network.usages().contains(NetworkUsage.DISPLAY));
-                    nuVo.setMigration(network.usages().contains(NetworkUsage.MIGRATION));
-                    nuVo.setManagement(network.usages().contains(NetworkUsage.MANAGEMENT));
-                    nuVo.setDefaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE));
-                    nuVo.setGluster(network.usages().contains(NetworkUsage.GLUSTER));
-
-                    ncVo.setNetworkUsageVo(nuVo);
+                    ncVo = NetworkClusterVo.builder()
+                            .id(cluster.id())
+                            .name(cluster.name())
+                            .version(cluster.version().major() + "." + cluster.version().minor())
+                            .description(cluster.description())
+                            .status(network.status().value())
+                            .required(network.required())
+                            .networkUsageVo( NetworkUsageVo.builder()
+                                                .vm(network.usages().contains(NetworkUsage.VM))
+                                                .display(network.usages().contains(NetworkUsage.DISPLAY))
+                                                .migration(network.usages().contains(NetworkUsage.MIGRATION))
+                                                .management(network.usages().contains(NetworkUsage.MANAGEMENT))
+                                                .defaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE))
+                                                .gluster(network.usages().contains(NetworkUsage.GLUSTER))
+                                                .build()
+                            )
+                            .build();
 
                     ncVoList.add(ncVo);
                 }

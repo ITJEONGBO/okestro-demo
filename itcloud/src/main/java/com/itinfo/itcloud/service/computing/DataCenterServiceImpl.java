@@ -25,20 +25,27 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
     @Override
     public String getName(String id){
-        return ovirt.getName("datacenter", id);
+        long start = System.currentTimeMillis();
+
+        String name =  ovirt.getName("datacenter", id);
+
+        long end = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
+        System.out.println("getName ovirt 사용 수행시간(ms): " + (end-start));
+        return name;
+
     }
+
 
     // 데이터센터 리스트 불러오기
     @Override
     public List<DataCenterVo> getList(){
-        SystemService systemService = admin.getConnection().systemService();
-
         long start = System.currentTimeMillis();
+        SystemService systemService = admin.getConnection().systemService();
 
         List<DataCenterVo> dcVoList = new ArrayList<>();
         DataCenterVo dcVo = null;
 
-        List<DataCenter> dataCenterList = ((DataCentersService.ListResponse)systemService.dataCentersService().list().send()).dataCenters();
+        List<DataCenter> dataCenterList = systemService.dataCentersService().list().send().dataCenters();
         for(DataCenter dataCenter : dataCenterList){
             dcVo = DataCenterVo.builder()
                     .id(dataCenter.id())
@@ -50,19 +57,9 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                     .version(dataCenter.version().major() + "." + dataCenter.version().minor())
                     .comment(dataCenter.comment())
                     .build();
-
-//            dcVo = new DataCenterVo();
-//
-//            dcVo.setId(dataCenter.id());
-//            dcVo.setName(dataCenter.name());
-//            dcVo.setComment(dataCenter.comment());
-//            dcVo.setStorageType(dataCenter.local());
-//            dcVo.setStatus(dataCenter.status().value());
-//            dcVo.setVersion(dataCenter.version().major() + "." + dataCenter.version().minor());
-//            dcVo.setDescription(dataCenter.description());
-
             dcVoList.add(dcVo);
         }
+
         long end = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
         System.out.println("datacenter getList 수행시간(ms): " + (end-start));
 
@@ -192,23 +189,21 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
         List<EventVo> eVoList = new ArrayList<>();
         EventVo eVo = null;
+        String name = getName(id);
 
+        // <data_center href="" id=""> <name> </data_center>
+        // <data_center> <name> </data_center>
         List<Event> eventList = ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
-        String name = ovirt.getName("datacenter",id);
-
         for(Event event : eventList){
-            // <data_center href="" id=""> <name> </data_center>
-            // <data_center> <name> </data_center>
             if( event.dataCenterPresent() && event.dataCenter().name().equals(name) ){
-                eVo = new EventVo();
-                eVo.setDatacenterName(name);
-
-                // 상태[LogSeverity] : alert, error, normal, warning
-                eVo.setSeverity(event.severity().value());
-                eVo.setTime(sdf.format(event.time()));
-                eVo.setMessage(event.description());
-                eVo.setRelationId(event.correlationIdPresent() ? event.correlationId() : null);
-                eVo.setSource(event.origin());
+                eVo = EventVo.builder()
+                        .datacenterName(name)
+                        .severity(event.severity().value())     // 상태[LogSeverity] : alert, error, normal, warning
+                        .time(sdf.format(event.time()))
+                        .message(event.description())
+                        .relationId(event.correlationIdPresent() ? event.correlationId() : null)
+                        .source(event.origin())
+                        .build();
 
                 eVoList.add(eVo);
             }
@@ -225,7 +220,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         SystemService systemService = admin.getConnection().systemService();
         DataCenter dataCenter = systemService.dataCentersService().dataCenterService(id).get().send().dataCenter();
 
-        DataCenterVo dcVo = DataCenterVo.builder()
+        return DataCenterVo.builder()
                 .id(id)
                 .name(dataCenter.name())
                 .description(dataCenter.description())
@@ -234,18 +229,6 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                 .version(dataCenter.version().major() + "." + dataCenter.version().minor())
                 .comment(dataCenter.comment())
                 .build();
-
-//        DataCenterVo dcVo = new DataCenterVo();
-//        dcVo.setId(id);
-//        dcVo.setName(dataCenter.name());
-//        dcVo.setDescription(dataCenter.description());
-//        dcVo.setStorageType(dataCenter.local());
-//        dcVo.setQuotaMode(dataCenter.quotaMode());
-//        dcVo.setVersion(dataCenter.version().major() + "." + dataCenter.version().minor());
-//        dcVo.setComment(dataCenter.comment());
-
-        System.out.println(dcVo);
-        return dcVo;
     }
 
 
@@ -322,15 +305,11 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         DataCentersService datacentersService = systemService.dataCentersService();
         List<DataCenter> dcList = datacentersService.list().send().dataCenters();
 
-        DataCenterService dataCenterService = systemService.dataCentersService().dataCenterService(id);
-
         try {
-//            DataCenter dataCenter = dataCenterService.get().send().dataCenter();
-//            System.out.println(dataCenter.namePresent() ? dataCenter.name() : "이름없음");
-
+            DataCenterService dataCenterService = systemService.dataCentersService().dataCenterService(id);
             dataCenterService.remove().send();
-            return datacentersService.list().send().dataCenters().size() == ( dcList.size()-1 );
 
+            return datacentersService.list().send().dataCenters().size() == ( dcList.size()-1 );
         }catch (Exception e){
             log.error("error ", e);
             return false;

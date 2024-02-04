@@ -234,12 +234,13 @@ public class VmServiceImpl implements ItVmService {
                 }
             }
 
-
             VnicProfile vnicProfile =
                     ((VnicProfileService.GetResponse)systemService.vnicProfilesService().profileService(nic.vnicProfile().id()).get().send()).profile();
-            VnicProfileVo vpVo = new VnicProfileVo();
-            vpVo.setName(vnicProfile.name());   // 프로파일 이름
-            vpVo.setPortMirroring(vnicProfile.portMirroring());
+            VnicProfileVo vpVo = VnicProfileVo.builder()
+                    .name(vnicProfile.name())       // 프로파일 이름
+                    .portMirroring(vnicProfile.portMirroring())
+                    .build();
+
             nVo.setNetworkName( ((NetworkService.GetResponse)systemService.networksService().networkService(vnicProfile.network().id()).get().send()).network().name() );
             nVo.setVnicProfileVo(vpVo);
 
@@ -514,13 +515,13 @@ public class VmServiceImpl implements ItVmService {
 
         for(Event event : eventList){
             if(event.vmPresent() && event.vm().name().equals(vm.name())){
-                eVo = new EventVo();
-
-                eVo.setSeverity(event.severity().value());
-                eVo.setTime(sdf.format(event.time()));
-                eVo.setMessage(event.description());
-                eVo.setRelationId(event.correlationIdPresent() ? event.correlationId() : "");
-                eVo.setSource(event.origin());
+                eVo = EventVo.builder()
+                        .severity(event.severity().value())     // 상태[LogSeverity] : alert, error, normal, warning
+                        .time(sdf.format(event.time()))
+                        .message(event.description())
+                        .relationId(event.correlationIdPresent() ? event.correlationId() : null)
+                        .source(event.origin())
+                        .build();
 
                 eVoList.add(eVo);
             }

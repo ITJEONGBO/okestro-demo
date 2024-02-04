@@ -1,15 +1,11 @@
 package com.itinfo.itcloud.model.network;
-import com.itinfo.itcloud.model.computing.ClusterVo;
-import com.itinfo.itcloud.model.computing.HostVo;
-import com.itinfo.itcloud.model.computing.VmVo;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.math.BigInteger;
-import java.util.List;
 
-@Getter @Setter @ToString
+@Getter @ToString @Builder
 public class NetworkVo {
     private String id;
     private String name;

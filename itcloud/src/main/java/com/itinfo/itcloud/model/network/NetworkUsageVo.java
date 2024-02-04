@@ -1,9 +1,9 @@
 package com.itinfo.itcloud.model.network;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
-@Getter @Setter
+@Getter @Builder
 public class NetworkUsageVo {
     private boolean vm;
     private boolean management;
