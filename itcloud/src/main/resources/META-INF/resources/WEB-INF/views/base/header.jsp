@@ -176,7 +176,7 @@
                                 <ul id="desc">
                                     <c:forEach var="dc" items="${m.datacenter}">
                                         <li id="desc">
-                                            <a href="/computing/datacenter-storage?id=${dc.id}" style="text-decoration-line: none" >
+                                            <a href="/computing/datacenters" style="text-decoration-line: none" >
                                                 <img src="/svg/dcc.png" alt="vm" width="20" height="auto" />
                                             </a>
                                             <a data-bs-toggle="collapse" href="#collapseDatacenter-${dc.id}" style="text-decoration-line: none; color: grey;">
@@ -262,7 +262,7 @@
                             <c:when test="${not empty m.datacenter}">
                                 <ul id="desc">
                                     <c:forEach var="dc" items="${m.datacenter}">
-                                        <a href="/computing/datacenter-storage?id=${dc.id}" style="text-decoration-line: none" >
+                                        <a href="/computing/datacenters" style="text-decoration-line: none" >
                                             <img src="/svg/dcc.png" alt="datacenter" width="20" height="auto" />
                                         </a>
                                         <a data-bs-toggle="collapse" href="#collapseNetworkDc-${dc.id}" style="text-decoration-line: none; color: grey;">
@@ -303,7 +303,7 @@
                             <c:when test="${not empty m.datacenter}">
                                 <ul id="desc">
                                     <c:forEach var="dc" items="${m.datacenter}">
-                                        <a href="/computing/datacenter-storage?id=${dc.id}" style="text-decoration-line: none" >
+                                        <a href="/computing/datacenters" style="text-decoration-line: none" >
                                             <img src="/svg/dcc.png" alt="datacenter" width="20" height="auto" />
                                         </a>
                                         <a data-bs-toggle="collapse" href="#collapseStorageDc-${dc.id}" style="text-decoration-line: none; color: grey;">

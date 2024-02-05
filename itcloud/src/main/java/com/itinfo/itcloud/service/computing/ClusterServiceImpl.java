@@ -103,8 +103,8 @@ public class ClusterServiceImpl implements ItClusterService {
                 .name(cluster.name())
                 .description(cluster.description())
                 .version(cluster.version().major() + "." + cluster.version().minor())
-                .datacenterId(cluster.dataCenter().id())
-                .datacenterName(ovirt.getName("datacenter", cluster.dataCenter().id()))
+                .datacenterId(cluster.dataCenterPresent() ? cluster.dataCenter().id() : "")
+                .datacenterName(cluster.dataCenterPresent() ? ovirt.getName("datacenter", cluster.dataCenter().id()) : "")
                 .cpuType(cluster.cpuPresent() ? cluster.cpu().type() : null)
                 .chipsetFirmwareType(cluster.biosTypePresent() ? cluster.biosType().value() : null)
                 .threadsAsCore(cluster.threadsAsCores())
@@ -434,6 +434,7 @@ public class ClusterServiceImpl implements ItClusterService {
 
     // ----------------------------------------------------------------------------------------
 
+    // cluster-add.jsp에서 datacenter 선택하기 위해 사용되는 dc list
     @Override
     public List<DataCenterVo> getDcList(){
         SystemService systemService = admin.getConnection().systemService();
@@ -527,6 +528,7 @@ public class ClusterServiceImpl implements ItClusterService {
         List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
         DataCenter dataCenter = systemService.dataCentersService().dataCenterService(cVo.getDatacenterId()).get().send().dataCenter();
         Network network = systemService.networksService().networkService(cVo.getNetworkId()).get().send().network();
+        OpenStackNetworkProvider networkProvider = systemService.openstackNetworkProvidersService().providerService(cVo.getNetworkProvider()).get().send().provider();
 
         String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
 
@@ -549,6 +551,7 @@ public class ClusterServiceImpl implements ItClusterService {
                     .switchType(cVo.getSwitchType())
                     .firewallType(cVo.getFirewallType())
                     .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
+                    .externalNetworkProviders( new ExternalProvider[]{networkProvider} )
 //                    .virtService(cVo.isVirtService())
 //                    .glusterService(cVo.isGlusterService())
 //                     추가 난수 생성기 소스

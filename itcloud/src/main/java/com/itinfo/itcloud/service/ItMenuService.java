@@ -27,17 +27,17 @@ public class ItMenuService {
 
         MenuVo m = new MenuVo();
 
-        List<DataCenter> dataCenterList = ((DataCentersService.ListResponse)systemService.dataCentersService().list().send()).dataCenters();
-        List<Cluster> clusterList = ((ClustersService.ListResponse) systemService.clustersService().list().send()).clusters();
-        List<Host> hostList = ((HostsService.ListResponse)systemService.hostsService().list().send()).hosts();
-        List<Vm> vmList = ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
-        List<Template> templateList = ((TemplatesService.ListResponse)systemService.templatesService().list().send()).templates();
+        List<DataCenter> dataCenterList = systemService.dataCentersService().list().send().dataCenters();
+        List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
+        List<Host> hostList = systemService.hostsService().list().send().hosts();
+        List<Vm> vmList = systemService.vmsService().list().send().vms();
+        List<Template> templateList = systemService.templatesService().list().send().templates();
 
-        List<VnicProfile> vnicProfileList = ((VnicProfilesService.ListResponse)systemService.vnicProfilesService().list().send()).profiles();
-        List<Network> networkList = ((NetworksService.ListResponse)systemService.networksService().list().send()).networks();
+        List<VnicProfile> vnicProfileList = systemService.vnicProfilesService().list().send().profiles();
+        List<Network> networkList = systemService.networksService().list().send().networks();
 
-        List<StorageDomain> storageDomainList = ((StorageDomainsService.ListResponse)systemService.storageDomainsService().list().send()).storageDomains();
-        List<Disk> diskList = ((DisksService.ListResponse)systemService.disksService().list().send()).disks();
+        List<StorageDomain> storageDomainList = systemService.storageDomainsService().list().send().storageDomains();
+        List<Disk> diskList = systemService.disksService().list().send().disks();
 
 
         // region: computing
@@ -54,13 +54,22 @@ public class ItMenuService {
 
         List<ClusterVo> cVoList = new ArrayList<>();
         for(Cluster cluster : clusterList) {
-            ClusterVo cVo = ClusterVo.builder()
-                    .id(cluster.id())
-                    .name(cluster.name())
-                    .datacenterId(((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send()).dataCenter().id())
-                    .build();
-
-            cVoList.add(cVo);
+            // ¿ 데이터센터가 삭제 된 후 연결되어 있는 클러스터는 어떻게 처리를 해야하는가
+            if(cluster.dataCenterPresent()) {
+                ClusterVo cVo = ClusterVo.builder()
+                        .id(cluster.id())
+                        .name(cluster.name())
+                        .datacenterId(cluster.dataCenter().id())
+                        .build();
+                cVoList.add(cVo);
+            }else {
+                ClusterVo cVo = ClusterVo.builder()
+                        .id(cluster.id())
+                        .name(cluster.name())
+                        .datacenterId("")
+                        .build();
+                cVoList.add(cVo);
+            }
         }
         m.setCluster(cVoList);
 

@@ -9,6 +9,84 @@
 
         $(document).ready(function(){
 
+            $("#cpuArc").change(function(){
+                var arc = $("#cpuArc option:selected").val();
+
+                $("#cpuType option").remove();
+
+                if( arc === "X86_64"){
+                    $("#cpuType").append("<option value='Intel Nehalem Family'>Intel Nehalem Family</option>");
+                    $("#cpuType").append("<option value='Secure Intel Nehalem Family'>Secure Intel Nehalem Family</option>");
+                    $("#cpuType").append("<option value='Intel Westmere Family'>Intel Westmere Family</option>");
+                    $("#cpuType").append("<option value='Secure Intel Westmere Family'>Secure Intel Westmere Family</option>");
+                    $("#cpuType").append("<option value='Intel SandyBridge Family'>Intel SandyBridge Family</option>");
+                    $("#cpuType").append("<option value='Secure Intel SandyBridge Family'>Secure Intel SandyBridge Family</option>");
+                    $("#cpuType").append("<option value='Intel IvyBridge Family'>Intel IvyBridge Family</option>");
+                    $("#cpuType").append("<option value='Secure Intel IvyBridge Family'>Secure Intel IvyBridge Family</option>");
+                    $("#cpuType").append("<option value='Intel Haswell Family'>Intel Haswell Family</option>");
+                    $("#cpuType").append("<option value='Secure Intel Haswell Family'>Secure Intel Haswell Family</option>");
+                    $("#cpuType").append("<option value='Intel Broadwell Family'>Intel Broadwell Family</option>");
+                    $("#cpuType").append("<option value='Secure Intel Broadwell Family'>Secure Intel Broadwell Family</option>");
+                    $("#cpuType").append("<option value='Intel Skylake Client Family'>Intel Skylake Client Family</option>");
+                    $("#cpuType").append("<option value='Secure Intel Skylake Client Family'>Secure Intel Skylake Client Family</option>");
+                    $("#cpuType").append("<option value='Intel Skylake Server Family'>Intel Skylake Server Family</option>");
+                    $("#cpuType").append("<option value='Secure Intel Skylake Server Family'>Secure Intel Skylake Server Family</option>");
+                    $("#cpuType").append("<option value='Intel Cascadelake Server Family'>Intel Cascadelake Server Family</option>");
+                    $("#cpuType").append("<option value='Secure Intel Cascadelake Server Family'>Secure Intel Cascadelake Server Family</option>");
+                    $("#cpuType").append("<option value='Intel Icelake Server Family'>Intel Icelake Server Family</option>");
+                    $("#cpuType").append("<option value='Secure Intel Icelake Server Family'>Secure Intel Icelake Server Family</option>");
+                    $("#cpuType").append("<option value='AMD Opteron G4'>AMD Opteron G4</option>");
+                    $("#cpuType").append("<option value='AMD Opteron G5'>AMD Opteron G5</option>");
+                    $("#cpuType").append("<option value='AMD EPYC'>AMD EPYC</option>");
+                    $("#cpuType").append("<option value='Secure AMD EPYC'>Secure AMD EPYC</option>");
+                }
+                if( arc === "PPC64"){
+                    $("#cpuType").append("<option value='IBM POWER8'>IBM POWER8</option>");
+                    $("#cpuType").append("<option value='IBM POWER9'>IBM POWER9</option>");
+                }
+                if( arc === "S390X"){
+                    $("#cpuType").append( "<option value='IBM z114, z196'>IBM z114, z196</option>");
+                    $("#cpuType").append("<option value='IBM zBC12, zEC12'>IBM zBC12, zEC12</option>");
+                    $("#cpuType").append("<option value='IBM z13s, z13'>IBM z13s, z13</option>");
+                    $("#cpuType").append("<option value='IBM z14'>IBM z14</option>");
+                }
+                if( arc === "UNDEFINED"){
+                    $("#cpuType").append("<option>자동 감지</option>");
+                    $("#cpuType").append("<option value='Intel Nehalem Family'>Intel Nehalem Family</option>");
+                    $("#cpuType").append("<option value='Secure Intel Nehalem Family'>Secure Intel Nehalem Family</option>");
+                    $("#cpuType").append("<option value='Intel Westmere Family'>Intel Westmere Family</option>");
+                    $("#cpuType").append("<option value='Secure Intel Westmere Family'>Secure Intel Westmere Family</option>");
+                    $("#cpuType").append("<option value='Intel SandyBridge Family'>Intel SandyBridge Family</option>");
+                    $("#cpuType").append("<option value='Secure Intel SandyBridge Family'>Secure Intel SandyBridge Family</option>");
+                    $("#cpuType").append("<option value='Intel IvyBridge Family'>Intel IvyBridge Family</option>");
+                    $("#cpuType").append("<option value='Secure Intel IvyBridge Family'>Secure Intel IvyBridge Family</option>");
+                    $("#cpuType").append("<option value='Intel Haswell Family'>Intel Haswell Family</option>");
+                    $("#cpuType").append("<option value='Secure Intel Haswell Family'>Secure Intel Haswell Family</option>");
+                    $("#cpuType").append("<option value='Intel Broadwell Family'>Intel Broadwell Family</option>");
+                    $("#cpuType").append("<option value='Secure Intel Broadwell Family'>Secure Intel Broadwell Family</option>");
+                    $("#cpuType").append("<option value='Intel Skylake Client Family'>Intel Skylake Client Family</option>");
+                    $("#cpuType").append("<option value='Secure Intel Skylake Client Family'>Secure Intel Skylake Client Family</option>");
+                    $("#cpuType").append("<option value='Intel Skylake Server Family'>Intel Skylake Server Family</option>");
+                    $("#cpuType").append("<option value='Secure Intel Skylake Server Family'>Secure Intel Skylake Server Family</option>");
+                    $("#cpuType").append("<option value='Intel Cascadelake Server Family'>Intel Cascadelake Server Family</option>");
+                    $("#cpuType").append("<option value='Secure Intel Cascadelake Server Family'>Secure Intel Cascadelake Server Family</option>");
+                    $("#cpuType").append("<option value='Intel Icelake Server Family'>Intel Icelake Server Family</option>");
+                    $("#cpuType").append("<option value='Secure Intel Icelake Server Family'>Secure Intel Icelake Server Family</option>");
+                    $("#cpuType").append("<option value='AMD Opteron G4'>AMD Opteron G4</option>");
+                    $("#cpuType").append("<option value='AMD Opteron G5'>AMD Opteron G5</option>");
+                    $("#cpuType").append("<option value='AMD EPYC'>AMD EPYC</option>");
+                    $("#cpuType").append("<option value='Secure AMD EPYC'>Secure AMD EPYC</option>");
+                    $("#cpuType").append("<option value='IBM POWER8'>IBM POWER8</option>");
+                    $("#cpuType").append("<option value='IBM POWER9'>IBM POWER9</option>");
+                    $("#cpuType").append( "<option value='IBM z114, z196'>IBM z114, z196</option>");
+                    $("#cpuType").append("<option value='IBM zBC12, zEC12'>IBM zBC12, zEC12</option>");
+                    $("#cpuType").append("<option value='IBM z13s, z13'>IBM z13s, z13</option>");
+                    $("#cpuType").append("<option value='IBM z14'>IBM z14</option>");
+                }
+
+            });
+
+
         	$("#ok").click(function(){
 
         		if($("#name").val() == ''){
@@ -94,7 +172,7 @@
                         <td>&emsp;
                             <select id="cpuArc" name="cpuArc" >
                                 <option value="UNDEFINED">정의되지 않음</option>
-                                <option value="X86_64">x86_64</option>
+                                <option value="X86_64" selected>x86_64</option>
                                 <option value="PPC64">ppc64</option>
                                 <option value="S390X">s390x</option>
                             </select>
@@ -103,8 +181,10 @@
                     <tr>
                         <td>CPU 유형</td>
                         <td>
-                            &emsp;<select id="cpuType" name="cpuType" >
-                                <option value="">자동 감지</option>
+                            &emsp;<select id="cpuType" name="cpuType" style="width:200px;">
+
+                                <!-- x86_64 -->
+                                <!--
                                 <option value="Intel Nehalem Family">Intel Nehalem Family</option>
                                 <option value="Secure Intel Nehalem Family">Secure Intel Nehalem Family</option>
                                 <option value="Intel Westmere Family">Intel Westmere Family</option>
@@ -129,12 +209,21 @@
                                 <option value="AMD Opteron G5">AMD Opteron G5</option>
                                 <option value="AMD EPYC">AMD EPYC</option>
                                 <option value="Secure AMD EPYC">Secure AMD EPYC</option>
+                                -->
+
+                                <!-- ppc64 -->
+                                <!--
                                 <option value="IBM POWER8">IBM POWER8</option>
                                 <option value="IBM POWER9">IBM POWER9</option>
+                                -->
+
+                                <!-- s390x -->
+                                <!--
                                 <option value="IBM z114, z196">IBM z114, z196</option>
                                 <option value="IBM zBC12, zEC12">IBM zBC12, zEC12</option>
                                 <option value="IBM z13s, z13">IBM z13s, z13</option>
                                 <option value="IBM z14">IBM z14</option>
+                                -->
                             </select>
                         </td>
                     </tr>
@@ -197,9 +286,8 @@
                     <tr>
                         <td>기본 네트워크 공급자</td>
                         <td>&emsp;
-                            <select id="externalProvider" name="version" >
-                                <option value="FIREWALLD">firewalled</option>
-                                <option value="IPTABLES">iptables</option>
+                            <select id="networkProvider" name="networkProvider" >
+                                <option value="">ovirt-provider-ovn</option>
                             </select>
                         </td>
                     </tr>

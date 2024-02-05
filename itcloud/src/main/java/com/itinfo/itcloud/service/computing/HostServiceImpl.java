@@ -6,6 +6,7 @@ import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItHostService;
 import lombok.extern.slf4j.Slf4j;
+import org.ovirt.engine.sdk4.builders.HostBuilder;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -463,18 +464,20 @@ public class HostServiceImpl implements ItHostService {
 //        HostsService hostsService = systemService.hostsService();
 //        Cluster cluster = systemService.clustersService().clusterService(hostCreateVo.getClusterId()).get().send().cluster();
 //
-//        if (hostCreateVo.isHostEngine()) {
-//            host = hostsService.add().deployHostedEngine(true).host(hostBuilder).send().host();
+//        HostBuilder hostBuilder = new HostBuilder();
+//        if (hostCreateVo.getSsh() != null && hostCreateVo.getSsh().getPort() == 22) {
+//            hostBuilder.name(hostCreateVo.getName()).comment(hostCreateVo.getComment()).description(hostCreateVo.getDescription()).address(hostCreateVo.getSsh().getAddress()).rootPassword(hostCreateVo.getSsh().getPassword()).cluster((new ClusterBuilder()).name(cluster.name()));
 //        } else {
-//            host = hostsService.add().host(hostBuilder).send().host();
+//            hostBuilder.name(hostCreateVo.getName()).comment(hostCreateVo.getComment()).description(hostCreateVo.getDescription()).address(hostCreateVo.getSsh().getAddress()).port(54321).ssh((new SshBuilder()).port(hostCreateVo.getSsh().getPort())).rootPassword(hostCreateVo.getSsh().getPassword()).cluster((new ClusterBuilder()).name(cluster.name()));
 //        }
+//
 //
 //        try {
 //            Host host = null;
 //            if (hostCreateVo.isHostEngineEnabled()) {
-//                host = hostsService.add().deployHostedEngine(true).host(hostBuilder).send().host();
+//                host = ((org.ovirt.engine.sdk4.services.HostsService.AddResponse)hostsService.add().deployHostedEngine(true).host(hostBuilder).send()).host();
 //            } else {
-//                host = hostsService.add().host(hostBuilder).send().host();
+//                host = ((org.ovirt.engine.sdk4.services.HostsService.AddResponse)hostsService.add().host(hostBuilder).send()).host();
 //            }
 //
 //            HostService hostService = hostsService.hostService(host.id());
@@ -492,10 +495,11 @@ public class HostServiceImpl implements ItHostService {
 //                hostBuilder.powerManagement((new PowerManagementBuilder()).enabled(true).kdumpDetection(true).agents(new Agent[]{agent}));
 //            }
 //
-//            return true;
-//        } catch (Exception e) {
-//            log.info("error ", e);
-//            return false;
+//            if (host.status() == HostStatus.UP) {
+//                hostService.update().host(hostBuilder).send()).host();
+//            }
+//        } catch (Exception var14) {
+//            var14.printStackTrace();
 //        }
         return false;
     }

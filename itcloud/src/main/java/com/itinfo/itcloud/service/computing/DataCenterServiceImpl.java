@@ -307,7 +307,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
         try {
             DataCenterService dataCenterService = systemService.dataCentersService().dataCenterService(id);
-            dataCenterService.remove().send();
+            dataCenterService.remove().force(true).send();
 
             return datacentersService.list().send().dataCenters().size() == ( dcList.size()-1 );
         }catch (Exception e){

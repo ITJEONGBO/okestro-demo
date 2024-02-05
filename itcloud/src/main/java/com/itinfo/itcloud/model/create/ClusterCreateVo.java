@@ -31,7 +31,7 @@ public class ClusterCreateVo {
     private String version;             // 호환 버전
     private SwitchType switchType;      // 스위치 유형
     private FirewallType firewallType;  // 방화벽 유형
-//    private ExternalProvider networkProvider;   // 기본 네트워크 공급자
+    private String networkProvider;   // 기본 네트워크 공급자
                                                 //<link href="/ovirt-engine/api/openstacknetworkproviders/1dd7e19a-5b16-4a76-a53f-ec1f1476692f/testconnectivity" rel="testconnectivity"/>
     private Integer logMaxMemory;       // 로그의 최대 메모리 한계
 
