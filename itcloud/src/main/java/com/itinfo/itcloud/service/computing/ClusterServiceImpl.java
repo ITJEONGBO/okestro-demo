@@ -446,6 +446,7 @@ public class ClusterServiceImpl implements ItClusterService {
             dcVo = DataCenterVo.builder()
                     .id(dataCenter.id())
                     .name(dataCenter.name())
+                    .storageType(dataCenter.local())
                     .networkList( getNetworkList(systemService, dataCenter.id()))
                     .build();
 
@@ -513,6 +514,9 @@ public class ClusterServiceImpl implements ItClusterService {
 //                .glusterService(cluster.glusterService())
                 .networkId(networkId)
                 .networkName(networkName)
+                // migration
+                .bandwidth(cluster.migration().bandwidth().assignmentMethod())
+                .recoveryPolicy(cluster.errorHandling().onError())
                 .build();
     }
 
@@ -528,7 +532,7 @@ public class ClusterServiceImpl implements ItClusterService {
         List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
         DataCenter dataCenter = systemService.dataCentersService().dataCenterService(cVo.getDatacenterId()).get().send().dataCenter();
         Network network = systemService.networksService().networkService(cVo.getNetworkId()).get().send().network();
-        OpenStackNetworkProvider networkProvider = systemService.openstackNetworkProvidersService().providerService(cVo.getNetworkProvider()).get().send().provider();
+//        OpenStackNetworkProvider networkProvider = systemService.openstackNetworkProvidersService().providerService(cVo.getNetworkProvider()).get().send().provider();
 
         String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
 
@@ -551,20 +555,21 @@ public class ClusterServiceImpl implements ItClusterService {
                     .switchType(cVo.getSwitchType())
                     .firewallType(cVo.getFirewallType())
                     .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
-                    .externalNetworkProviders( new ExternalProvider[]{networkProvider} )
-//                    .virtService(cVo.isVirtService())
-//                    .glusterService(cVo.isGlusterService())
+//                    .externalNetworkProviders( new ExternalProvider[]{networkProvider} )
+                    .virtService(cVo.isVirtService())
+                    .glusterService(cVo.isGlusterService())
 //                     추가 난수 생성기 소스
-//                    .migration(new MigrationOptionsBuilder()
-//                            // 마이그레이션 정책
-//                            .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))    // 대역폭
-//                            .encrypted(cVo.getEncrypted())      // 암호화
-//                    )
+                    .errorHandling( new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()) )   // 복구정책
+                    .migration(new MigrationOptionsBuilder()
+                            // 마이그레이션 정책
+                            .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))    // 대역폭
+                            .encrypted(cVo.getEncrypted())      // 암호화
+                    )
                     .build();
 
             clustersService.add().cluster(cluster).send();
 
-            System.out.println("add Cluster" + cVo.toString());
+            System.out.println("-- add Cluster: " + cVo.toString());
             return clustersService.list().send().clusters().size() == (clusterList.size()+1);
         }catch (Exception e){
             log.error("error: ", e);
@@ -600,14 +605,15 @@ public class ClusterServiceImpl implements ItClusterService {
                     .switchType(cVo.getSwitchType())
                     .firewallType(cVo.getFirewallType())
                     .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
-//                    .virtService(cVo.isVirtService())
-//                    .glusterService(cVo.isGlusterService())
+                    .virtService(cVo.isVirtService())
+                    .glusterService(cVo.isGlusterService())
 //                     추가 난수 생성기 소스
-//                    .migration(new MigrationOptionsBuilder()
-//                            // 마이그레이션 정책
-//                            .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))    // 대역폭
-//                            .encrypted(cVo.getEncrypted())      // 암호화
-//                    )
+                    .errorHandling( new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()) )
+                    .migration(new MigrationOptionsBuilder()
+                            // 마이그레이션 정책
+                            .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))    // 대역폭
+                            .encrypted(cVo.getEncrypted())      // 암호화
+                    )
                     .build();
 
             log.info("---" + cVo.toString());
@@ -628,6 +634,7 @@ public class ClusterServiceImpl implements ItClusterService {
             ClusterService clusterService = systemService.clustersService().clusterService(id);
             clusterService.remove().send();
 
+            log.info("delete cluster");
             return clustersService.list().send().clusters().size() == ( cList.size()-1 );
         }catch (Exception e){
             log.error("error ", e);

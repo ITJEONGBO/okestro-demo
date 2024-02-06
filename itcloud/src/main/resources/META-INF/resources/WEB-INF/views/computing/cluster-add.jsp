@@ -87,6 +87,36 @@
             });
 
 
+
+            $("#policy").change(function(){
+                var pol = $("#policy option:selected").val();
+                var p = $("#policyP").text();
+
+                if( pol === "downTime"){
+                    $("#policyP").text("일반적인 상황에서 가상머신을 마이그레이션 할 수있는 정책입니다. 가상머신에 심각한 다운타임이 발생하면 안됩니다. 가상머신 마이그레이션이 오랫동안 수렴되지 않으면 마이그레이션이 중단됩니다. 게스트 에이전트 후크 매커니즘을 사용할 수 있습니다.");
+                }
+                if( pol === "copyMigration"){
+                    $("#policyP").text("가상 머신에 심각한 다운타임이 발생하면 안 됩니다. 가상 머신 마이그레이션이 오랫동안 수렴되지 않으면 마이그레이션이 사후 복사 모드로 전환됩니다. 게스트 에이전트 후크 메커니즘을 사용할 수 있습니다.");
+                }
+                if( pol === "pause"){
+                    $("#policyP").text("과도한 워크로드를 실행하는 가상 머신을 포함하여 대부분의 상황에서 가상 머신을 마이그레이션할 수 있는 정책입니다. 반면에 가상 머신의 다운타임은 더 심각할 수 있습니다. 과도한 워크로드에도 마이그레이션이 중단될 수 있습니다. 게스트 에이전트 후크 메커니즘을 사용할 수 있습니다.");
+                }
+                if(pol === "verLarge"){
+                    $("#policyP").text("The VM cannot be migrated using any of the other policies, a possibly risky migration mechanism is accepted and the migration need not be encrypted. The VM may experience a significant downtime. The migration may still be aborted if it cannot converge. The guest agent hook mechanism is enabled.");
+                }
+
+            });
+
+            $( function(){
+                var virt = $("#virtService").is("on") ? true : false;
+                var gluster = $("#virtService").is("on") ? true : false;
+
+                $("#virtService").val(virt);
+                S("#glusterService").val(gluster);
+            });
+
+
+
         	$("#ok").click(function(){
 
         		if($("#name").val() == ''){
@@ -102,8 +132,6 @@
         	$("#cancel").click(function(){
         	    window.close();
         	});
-
-
 
         });
 
@@ -122,7 +150,7 @@
             <h2>새 클러스터</h2>
             <form id="add" autocomplete="off" method="get" action="cluster-add2">
                 <h3>일반</h3>
-                <br>
+                <hr><br>
 
                 <table>
                     <tr>
@@ -171,8 +199,8 @@
                         <td>CPU 아키텍처</td>
                         <td>&emsp;
                             <select id="cpuArc" name="cpuArc" >
-                                <option value="UNDEFINED">정의되지 않음</option>
-                                <option value="X86_64" selected>x86_64</option>
+                                <option value="UNDEFINED" selected>정의되지 않음</option>
+                                <option value="X86_64">x86_64</option>
                                 <option value="PPC64">ppc64</option>
                                 <option value="S390X">s390x</option>
                             </select>
@@ -181,10 +209,9 @@
                     <tr>
                         <td>CPU 유형</td>
                         <td>
-                            &emsp;<select id="cpuType" name="cpuType" style="width:200px;">
+                            <select id="cpuType" name="cpuType" style="width:200px;">
+                                <!-- cpu type: x86_64, ppc64, s390x -->
 
-                                <!-- x86_64 -->
-                                <!--
                                 <option value="Intel Nehalem Family">Intel Nehalem Family</option>
                                 <option value="Secure Intel Nehalem Family">Secure Intel Nehalem Family</option>
                                 <option value="Intel Westmere Family">Intel Westmere Family</option>
@@ -209,21 +236,15 @@
                                 <option value="AMD Opteron G5">AMD Opteron G5</option>
                                 <option value="AMD EPYC">AMD EPYC</option>
                                 <option value="Secure AMD EPYC">Secure AMD EPYC</option>
-                                -->
 
-                                <!-- ppc64 -->
-                                <!--
                                 <option value="IBM POWER8">IBM POWER8</option>
                                 <option value="IBM POWER9">IBM POWER9</option>
-                                -->
 
-                                <!-- s390x -->
-                                <!--
                                 <option value="IBM z114, z196">IBM z114, z196</option>
                                 <option value="IBM zBC12, zEC12">IBM zBC12, zEC12</option>
                                 <option value="IBM z13s, z13">IBM z13s, z13</option>
                                 <option value="IBM z14">IBM z14</option>
-                                -->
+
                             </select>
                         </td>
                     </tr>
@@ -282,7 +303,7 @@
                         </td>
                     </tr>
 
-                <!--
+                    <!--
                     <tr>
                         <td>기본 네트워크 공급자</td>
                         <td>&emsp;
@@ -291,7 +312,7 @@
                             </select>
                         </td>
                     </tr>
-                -->
+                    -->
 
                     <tr>
                         <td>로그의 최대 메모리 한계</td>
@@ -304,14 +325,19 @@
                         </td>
                     </tr>
 
-                   <!-- <tr>
-                        <td colspan="2"><input type="checkbox" id="virt" name="virt" checked/>&emsp; Virt 서비스 활성화</td>
+
+                    <tr>
+                        <td colspan="2">
+                            <input type="checkbox" id="virtService" name="virtService"/>&emsp; Virt 서비스 활성화
+                        </td>
                     </tr>
 
                     <tr>
-                        <td colspan="2"><input type="checkbox" id="gluster" name="gluster"/>&emsp; Gluster 서비스 활성화</td>
-                    </tr> -->
-
+                        <td colspan="2">
+                            <input type="checkbox" id="glusterService" name="glusterService"/>&emsp; Gluster 서비스 활성화
+                        </td>
+                    </tr>
+                <!--
                     <tr>
                         <td colspan="2"><p>추가 난수 생성기 소스 </p></td>
                     </tr>
@@ -319,63 +345,60 @@
                     <tr>
                         <td colspan="2"><input type="checkbox" id="hwrng" name="hwrng" value=""/>&emsp; /dev/hwrng 소스</td>
                     </tr>
+                -->
 
                 </table>
 
                 <hr><br>
 
-            <!--
+                <div>
                 <h3>마이그레이션 정책</h3>
                 <br>
 
                 마이그레이션 정책 &emsp;
-                    <select id="version" name="version" >
-                        <option value="">최소 다운타임</option>
-                        <option value="">사후 복사 마이그레이션</option>
-                        <option value="">필요에 따라 작업을 일시중단</option>
-                        <option value="">Very large VMs</option>
-                    </select><br>
-                    <br>
+                <select id="policy" name="policy" >
+                    <option value="downTime" selected>최소 다운타임</option>
+                    <option value="copyMigration">사후 복사 마이그레이션</option>
+                    <option value="pause">필요에 따라 작업을 일시중단</option>
+                    <option value="verLarge">Very large VMs</option>
+                </select><br>
 
-                <p>최소 다운타임</p>
-                <p>
-                    일반적인 상황에서 가상머신을 마이그레이션 할 수있는 정책입니다. 가상머신에 심각한 다운타임이 발생하면 안됩니다.
-                    가상머신 마이그레이션이 오랫동안 수렴되지 않으면 마이그레이션이 중단됩니다. 게스트 에이전트 후크 매커니즘을 사용할 수 있습니다.
-                </p>
+                <p id="policyP"></p>
 
-                <p>대역폭</p>
+                <p><b>대역폭</b></p>
                 마이그레이션 대역폭 제한(Mbps) &emsp;
-                    <select id="bandwidth" name="bandwidth">
-                        <option value="auto">자동</option>
-                        <option value="hypervisor_default">하이퍼바이저 기본</option>
-                        <option value="custom">사용자 정의</option>
-                    </select><br><br>
+                <select id="bandwidth" name="bandwidth">
+                    <option value="AUTO">자동</option>
+                    <option value="HYPERVISOR_DEFAULT">하이퍼바이저 기본</option>
+                    <option value="CUSTOM">사용자 정의</option>
+                </select><br><br>
 
-                <p>복구정책</p>
-                    <input type='radio' id="recoveryPolicy" name='recoveryPolicy' value='migrate' checked/> 가상머신을 마이그레이션 함 <br>
-                    <input type='radio' id="recoveryPolicy" name='recoveryPolicy' value='migrate_highly_available' /> 고가용성 가상머신만 마이그레이션 <br>
-                    <input type='radio' id="recoveryPolicy" name='recoveryPolicy' value='do_not_migrate' /> 가상머신은 마이그레이션 하지 않음 <br>
+                <p><b>복구정책</b></p>
+                    <input type='radio' id="recoveryPolicy" name='recoveryPolicy' value='MIGRATE' checked/> 가상머신을 마이그레이션 함 <br>
+                    <input type='radio' id="recoveryPolicy" name='recoveryPolicy' value='MIGRATE_HIGHLY_AVAILABLE' /> 고가용성 가상머신만 마이그레이션 <br>
+                    <input type='radio' id="recoveryPolicy" name='recoveryPolicy' value='DO_NOT_MIGRATE' /> 가상머신은 마이그레이션 하지 않음 <br>
                 <br>
 
                 <p>추가 속성</p>
                 마이그레이션 암호화 사용 &emsp;
                     <select id="encrypted" name="encrypted">
-                        <option value="inherit">시스템 기본값(암호화하지 마십시오)</option>
-                        <option value="true">암호화</option>
-                        <option value="false">암호화하지 마십시오</option>
+                        <option value="INHERIT">시스템 기본값(암호화하지 마십시오)</option>
+                        <option value="TRUE">암호화</option>
+                        <option value="FALSE">암호화하지 마십시오</option>
                     </select><br><br>
 
+                <!--
                 Parallel Migrations &emsp;
-                    <select id="Parallel" name="Parallel">
+                    <select id="parallel" name="parallel">
                         <option value="auto">Auto</option>
                         <option value="auto_parallel">Auto Parallel</option>
                         <option value="disabled">Disabled</option>
                         <option value="custom">Custom</option>
                     </select><br><br>
-
-                Number of VM Migration Connections <br>
                 -->
 
+                Number of VM Migration Connections <br>
+                </div>
                 <br><br><br>
 
                 <input type="submit" id="ok" value="OK">
