@@ -510,8 +510,8 @@ public class ClusterServiceImpl implements ItClusterService {
                 .switchType(cluster.switchType())
                 .firewallType(cluster.firewallType())
                 .logMaxMemory(cluster.logMaxMemoryUsedThresholdAsInteger())
-//                .virtService(cluster.virtService())
-//                .glusterService(cluster.glusterService())
+                .virtService(cluster.virtService())
+                .glusterService(cluster.glusterService())
                 .networkId(networkId)
                 .networkName(networkName)
                 // migration
@@ -533,6 +533,7 @@ public class ClusterServiceImpl implements ItClusterService {
         DataCenter dataCenter = systemService.dataCentersService().dataCenterService(cVo.getDatacenterId()).get().send().dataCenter();
         Network network = systemService.networksService().networkService(cVo.getNetworkId()).get().send().network();
 //        OpenStackNetworkProvider networkProvider = systemService.openstackNetworkProvidersService().providerService(cVo.getNetworkProvider()).get().send().provider();
+        OpenStackNetworkProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
 
         String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
 
@@ -555,9 +556,10 @@ public class ClusterServiceImpl implements ItClusterService {
                     .switchType(cVo.getSwitchType())
                     .firewallType(cVo.getFirewallType())
                     .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
-//                    .externalNetworkProviders( new ExternalProvider[]{networkProvider} )
-                    .virtService(cVo.isVirtService())
-                    .glusterService(cVo.isGlusterService())
+                    .externalNetworkProviders( openStackNetworkProvider )
+//                    /ovirt-engine/api/clusters/a66d4186-43b8-4b9c-8231-4437372b9846/externalnetworkproviders
+                    .virtService(cVo.getVirtService())
+                    .glusterService(cVo.getGlusterService())
 //                     추가 난수 생성기 소스
                     .errorHandling( new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()) )   // 복구정책
                     .migration(new MigrationOptionsBuilder()
@@ -605,8 +607,8 @@ public class ClusterServiceImpl implements ItClusterService {
                     .switchType(cVo.getSwitchType())
                     .firewallType(cVo.getFirewallType())
                     .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
-                    .virtService(cVo.isVirtService())
-                    .glusterService(cVo.isGlusterService())
+                    .virtService(cVo.getVirtService())
+                    .glusterService(cVo.getGlusterService())
 //                     추가 난수 생성기 소스
                     .errorHandling( new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()) )
                     .migration(new MigrationOptionsBuilder()

@@ -107,14 +107,6 @@
 
             });
 
-            $( function(){
-                var virt = $("#virtService").is("on") ? true : false;
-                var gluster = $("#virtService").is("on") ? true : false;
-
-                $("#virtService").val(virt);
-                S("#glusterService").val(gluster);
-            });
-
 
 
         	$("#ok").click(function(){
@@ -124,6 +116,14 @@
         			$("#name").focus();
         			return;
         		}
+
+        		var v = $("input:checkbox[id='virtService']").is(":checked") ;
+                var g = $("input:checkbox[id='glusterService']").is(":checked") ;
+
+                $("input:checkbox[id='virtService']").val(v);
+                $("input:checkbox[id='glusterService']").val(g);
+
+                alert(v + ", " + g);
 
         		$("#add").submit();
         	});
@@ -252,7 +252,7 @@
                     <tr>
                         <td>칩셋/펌웨어 유형</td>
                         <td>&emsp;
-                            <select id="biosType" name="biosType" disabled>
+                            <select id="biosType" name="biosType">
                                 <option value="CLUSTER_DEFAULT">자동 감지</option>
                                 <!--  cpu 유형 선택에 따라 달라짐. 기본은 자동 감지   -->
                                 <option value="I440FX_SEA_BIOS">I440FX_SEA_BIOS</option>
@@ -303,7 +303,7 @@
                         </td>
                     </tr>
 
-                    <!--
+                <!--
                     <tr>
                         <td>기본 네트워크 공급자</td>
                         <td>&emsp;
@@ -312,7 +312,7 @@
                             </select>
                         </td>
                     </tr>
-                    -->
+                -->
 
                     <tr>
                         <td>로그의 최대 메모리 한계</td>
@@ -343,7 +343,7 @@
                     </tr>
 
                     <tr>
-                        <td colspan="2"><input type="checkbox" id="hwrng" name="hwrng" value=""/>&emsp; /dev/hwrng 소스</td>
+                        <td colspan="2"><input type="checkbox" id="hwrng" name="hwrng"/>&emsp; /dev/hwrng 소스</td>
                     </tr>
                 -->
 
@@ -401,7 +401,7 @@
                 </div>
                 <br><br><br>
 
-                <input type="submit" id="ok" value="OK">
+                <input type="button" id="ok" value="OK">
                 <input type="reset" id="cancel" value="취소">
             </form>
         </div>

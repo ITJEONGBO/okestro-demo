@@ -66,7 +66,7 @@
                 <br><br>
                 <hr>
 
-                <input type="submit" id="ok" value="OK">
+                <input type="button" id="ok" value="OK">
                 <input type="reset" id="cancel" value="취소">
             </form>
         </div>

@@ -107,15 +107,6 @@
             });
 
 
-            $( function(){
-                var virt = $("#virtService").is("on") ? true : false;
-                var gluster = $("#virtService").is("on") ? true : false;
-
-                $("#virtService").val(virt);
-                S("#glusterService").val(gluster);
-            });
-
-
         	$("#ok").click(function(){
 
         		if($("#name").val() == ''){
@@ -123,6 +114,12 @@
         			$("#name").focus();
         			return;
         		}
+
+        		var v = $("input:checkbox[id='virtService']").is(":checked") ;
+                var g = $("input:checkbox[id='glusterService']").is(":checked") ;
+
+                $("input:checkbox[id='virtService']").val(v);
+                $("input:checkbox[id='glusterService']").val(g);
 
         		$("#add").submit();
         	});
@@ -288,14 +285,15 @@
 
                    <tr>
                         <td colspan="2">
-                            <input type="checkbox" id="virtService" name="virtService" <c:if test="${c.virtService eq true}">checked</c:if> />&emsp; Virt 서비스 활성화
+                            <input type="checkbox" id="virtService" name="virtService" <c:if test="${c.virtService eq 'true'}">checked</c:if>/>&emsp; Virt 서비스 활성화
                         </td>
                     </tr>
 
                     <tr>
                         <td colspan="2">
-                            <input type="checkbox" id="glusterService" name="glusterService" <c:if test="${c.glusterService eq true}">checked</c:if> />&emsp; Gluster 서비스 활성화
+                            <input type="checkbox" id="glusterService" name="glusterService" <c:if test="${c.glusterService eq 'true'}">checked</c:if> />&emsp; Gluster 서비스 활성화
                         </td>
+                        <td>${c.virtService} / ${c.glusterService}</td>
                     </tr>
 <!--
                     <tr>
@@ -361,7 +359,7 @@
 
                 <br><br><br>
 
-                <input type="submit" id="ok" value="OK">
+                <input type="button" id="ok" value="OK">
                 <input type="reset" id="cancel" value="취소">
             </form>
         </div>
