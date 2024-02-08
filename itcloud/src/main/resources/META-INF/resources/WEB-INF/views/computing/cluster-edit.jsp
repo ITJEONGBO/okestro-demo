@@ -121,7 +121,7 @@
                 $("input:checkbox[id='virtService']").val(v);
                 $("input:checkbox[id='glusterService']").val(g);
 
-        		$("#add").submit();
+        		$("#edit").submit();
         	});
 
 
@@ -259,17 +259,15 @@
                         </td>
                     </tr>
 
-                <!--
                     <tr>
                         <td>기본 네트워크 공급자</td>
                         <td>&emsp;
-                            <select id="externalProvider" name="version" >
-                                <option value="FIREWALLD">firewalled</option>
-                                <option value="IPTABLES">iptables</option>
+                            <select id="networkProvider" name="networkProvider" >
+                                <option value="true">ovirt-provider-ovn</option>
                             </select>
                         </td>
                     </tr>
-                -->
+
 
                     <tr>
                         <td>로그의 최대 메모리 한계</td>

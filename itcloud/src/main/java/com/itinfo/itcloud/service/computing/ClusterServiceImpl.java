@@ -532,7 +532,6 @@ public class ClusterServiceImpl implements ItClusterService {
         List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
         DataCenter dataCenter = systemService.dataCentersService().dataCenterService(cVo.getDatacenterId()).get().send().dataCenter();
         Network network = systemService.networksService().networkService(cVo.getNetworkId()).get().send().network();
-//        OpenStackNetworkProvider networkProvider = systemService.openstackNetworkProvidersService().providerService(cVo.getNetworkProvider()).get().send().provider();
         OpenStackNetworkProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
 
         String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
@@ -556,8 +555,9 @@ public class ClusterServiceImpl implements ItClusterService {
                     .switchType(cVo.getSwitchType())
                     .firewallType(cVo.getFirewallType())
                     .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
-                    .externalNetworkProviders( openStackNetworkProvider )
-//                    /ovirt-engine/api/clusters/a66d4186-43b8-4b9c-8231-4437372b9846/externalnetworkproviders
+                    // /ovirt-engine/api/clusters/a66d4186-43b8-4b9c-8231-4437372b9846/externalnetworkproviders
+                    // 일단 기본으로 들어가게는 해두긴했음, 근데 openstacknetworkprovider에 있는 기본을 get(0)으로 넣어둔거라 애매하네
+                    .externalNetworkProviders(openStackNetworkProvider)
                     .virtService(cVo.getVirtService())
                     .glusterService(cVo.getGlusterService())
 //                     추가 난수 생성기 소스
@@ -583,17 +583,18 @@ public class ClusterServiceImpl implements ItClusterService {
     @Override
     public void editCluster(ClusterCreateVo cVo) {
         SystemService systemService = admin.getConnection().systemService();
-        ClusterService clusterService = systemService.clustersService().clusterService(cVo.getId());
 
+        ClusterService clusterService = systemService.clustersService().clusterService(cVo.getId());
         DataCenter dataCenter = systemService.dataCentersService().dataCenterService(cVo.getDatacenterId()).get().send().dataCenter();
         Network network = systemService.networksService().networkService(cVo.getNetworkId()).get().send().network();
+        OpenStackNetworkProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
 
         String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
         System.out.println(cVo.getVersion());
 
-        try{
             log.info("editCluster: " + dataCenter.name());
 
+        try{
             Cluster cluster = new ClusterBuilder()
                     .dataCenter(dataCenter) // 필수
                     .name(cVo.getName())    // 필수
@@ -603,14 +604,20 @@ public class ClusterServiceImpl implements ItClusterService {
                     .managementNetwork(network)
                     .biosType(cVo.getBiosType())
                     .fipsMode(cVo.getFipsMode())
-                    .version(new VersionBuilder().major(Integer.parseInt(ver[0])).minor(7).build())  // 호환 버전
+                    .version(new VersionBuilder()
+                            .major(Integer.parseInt(ver[0]))
+                            .minor(Integer.parseInt(ver[1]))
+                            .build())  // 호환 버전
                     .switchType(cVo.getSwitchType())
                     .firewallType(cVo.getFirewallType())
                     .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
+                    // /ovirt-engine/api/clusters/a66d4186-43b8-4b9c-8231-4437372b9846/externalnetworkproviders
+                    // 일단 기본으로 들어가게는 해두긴했음, 근데 openstacknetworkprovider에 있는 기본을 get(0)으로 넣어둔거라 애매하네
+                    .externalNetworkProviders(openStackNetworkProvider)
                     .virtService(cVo.getVirtService())
                     .glusterService(cVo.getGlusterService())
 //                     추가 난수 생성기 소스
-                    .errorHandling( new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()) )
+                    .errorHandling( new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()) )   // 복구정책
                     .migration(new MigrationOptionsBuilder()
                             // 마이그레이션 정책
                             .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))    // 대역폭
@@ -634,9 +641,10 @@ public class ClusterServiceImpl implements ItClusterService {
 
         try {
             ClusterService clusterService = systemService.clustersService().clusterService(id);
+            String name = clusterService.get().send().cluster().name();
             clusterService.remove().send();
 
-            log.info("delete cluster");
+            log.info("delete cluster: {}", name);
             return clustersService.list().send().clusters().size() == ( cList.size()-1 );
         }catch (Exception e){
             log.error("error ", e);

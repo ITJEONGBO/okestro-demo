@@ -303,16 +303,17 @@
                         </td>
                     </tr>
 
-                <!--
+
                     <tr>
                         <td>기본 네트워크 공급자</td>
                         <td>&emsp;
                             <select id="networkProvider" name="networkProvider" >
-                                <option value="">ovirt-provider-ovn</option>
+                                <option value="true">ovirt-provider-ovn</option>
+                                <option value="false">기본 공급자가 없습니다.</option>
                             </select>
                         </td>
                     </tr>
-                -->
+
 
                     <tr>
                         <td>로그의 최대 메모리 한계</td>
@@ -328,7 +329,7 @@
 
                     <tr>
                         <td colspan="2">
-                            <input type="checkbox" id="virtService" name="virtService"/>&emsp; Virt 서비스 활성화
+                            <input type="checkbox" id="virtService" name="virtService" checked/>&emsp; Virt 서비스 활성화
                         </td>
                     </tr>
 
