@@ -289,7 +289,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                     .build();
 
             dataCenterService.update().dataCenter(dataCenter).send();   // 데이터센터 수정
-            log.info("------"+dcVo.toString());
+            log.info("------edit datacenter "+dcVo.toString());
         }catch (Exception e){
             log.error("error: "+ e);
         }
@@ -302,13 +302,16 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     @Override
     public boolean deleteDatacenter(String id) {
         SystemService systemService = admin.getConnection().systemService();
+
         DataCentersService datacentersService = systemService.dataCentersService();
         List<DataCenter> dcList = datacentersService.list().send().dataCenters();
+        DataCenterService dataCenterService = systemService.dataCentersService().dataCenterService(id);
+        String name = dataCenterService.get().send().dataCenter().name();
 
         try {
-            DataCenterService dataCenterService = systemService.dataCentersService().dataCenterService(id);
             dataCenterService.remove().force(true).send();
 
+            log.info("delete datacenter: {}", name);
             return datacentersService.list().send().dataCenters().size() == ( dcList.size()-1 );
         }catch (Exception e){
             log.error("error ", e);

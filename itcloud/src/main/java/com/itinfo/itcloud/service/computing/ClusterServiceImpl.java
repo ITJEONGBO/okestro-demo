@@ -571,7 +571,7 @@ public class ClusterServiceImpl implements ItClusterService {
 
             clustersService.add().cluster(cluster).send();
 
-            System.out.println("-- add Cluster: " + cVo.toString());
+            log.info("-- add Cluster: " + cVo.toString());
             return clustersService.list().send().clusters().size() == (clusterList.size()+1);
         }catch (Exception e){
             log.error("error: ", e);
@@ -592,7 +592,7 @@ public class ClusterServiceImpl implements ItClusterService {
         String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
         System.out.println(cVo.getVersion());
 
-            log.info("editCluster: " + dataCenter.name());
+        log.info("editCluster: " + dataCenter.name());
 
         try{
             Cluster cluster = new ClusterBuilder()
@@ -636,15 +636,17 @@ public class ClusterServiceImpl implements ItClusterService {
     @Override
     public boolean deleteCluster(String id) {
         SystemService systemService = admin.getConnection().systemService();
+
         ClustersService clustersService = systemService.clustersService();
         List<Cluster> cList = clustersService.list().send().clusters();
+        ClusterService clusterService = systemService.clustersService().clusterService(id);
+        String name = clusterService.get().send().cluster().name();
 
+        log.info("delete cluster: {}", name);
         try {
-            ClusterService clusterService = systemService.clustersService().clusterService(id);
-            String name = clusterService.get().send().cluster().name();
             clusterService.remove().send();
 
-            log.info("delete cluster: {}", name);
+            log.info("fin");
             return clustersService.list().send().clusters().size() == ( cList.size()-1 );
         }catch (Exception e){
             log.error("error ", e);

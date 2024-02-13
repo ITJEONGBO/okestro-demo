@@ -6,7 +6,9 @@ import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItHostService;
 import lombok.extern.slf4j.Slf4j;
+import org.ovirt.engine.sdk4.builders.AgentBuilder;
 import org.ovirt.engine.sdk4.builders.HostBuilder;
+import org.ovirt.engine.sdk4.builders.SshBuilder;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -452,68 +454,157 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public HostCreateVo getHostCreate(String id) {
-        return null;
+        SystemService systemService = admin.getConnection().systemService();
+
+        Host host = systemService.hostsService().hostService(id).get().send().host();
+        Cluster cluster = systemService.clustersService().clusterService(host.cluster().id()).get().send().cluster();
+
+        log.info("getHostsCreate");
+
+        return HostCreateVo.builder()
+                .id(id)
+                .name(host.name())
+                .comment(host.comment())
+                .hostIp(host.address())
+                .password(host.rootPassword())
+                .clusterId(host.cluster().id())
+                .build();
     }
 
     @Override
     public boolean addHost(HostCreateVo hostCreateVo) {
-        // The host is created based on the attributes of the host parameter.
         // The name, address, and root_password properties are required.
         SystemService systemService = admin.getConnection().systemService();
 
-//        HostsService hostsService = systemService.hostsService();
-//        Cluster cluster = systemService.clustersService().clusterService(hostCreateVo.getClusterId()).get().send().cluster();
+        HostsService hostsService = systemService.hostsService();
+        List<Host> hostList = systemService.hostsService().list().send().hosts();
+        Cluster cluster = systemService.clustersService().clusterService(hostCreateVo.getClusterId()).get().send().cluster();
+
+        try {
+            // 고려해야하는 것, ssh port번호, 전원관리 활성 여부(펜스 에이전트가 추가되는지가 달림)
+
+            // sshport가 22면 .ssh() 설정하지 않아도 알아서 지정됨
+            Host host = null;
+            if (hostCreateVo.getSshPort() == 22) {
+                host = new HostBuilder()
+                            .name(hostCreateVo.getName())
+                            .comment(hostCreateVo.getComment())
+                            .address(hostCreateVo.getHostIp())          // 호스트이름/IP
+                            .rootPassword(hostCreateVo.getPassword())   // 암호
+                            .cluster(cluster)
+                            .build();
+            }else {
+                host = new HostBuilder()
+                            .name(hostCreateVo.getName())
+                            .comment(hostCreateVo.getComment())
+                            .address(hostCreateVo.getHostIp())          // 호스트이름/IP
+                            .ssh(new SshBuilder().port(hostCreateVo.getSshPort()))  //..
+                            .rootPassword(hostCreateVo.getPassword())   // 암호
+                            .cluster(cluster)
+                            .build();
+            }
+
+
+            // 호스트 엔진 배치작업 선택 (없음/배포)
+            // 호스트 생성
+            if(hostCreateVo.isHostEngine()){
+                hostsService.add().deployHostedEngine(true).host(host).send().host();
+            }else {
+                hostsService.add().deployHostedEngine(false).host(host).send().host();  // false 생략가능
+            }
+
+            if(hostCreateVo.isPowerManagementActive()){
+                FenceAgentsService fenceAgentsService = hostsService.hostService(host.id()).fenceAgentsService();
+                AgentBuilder agentBuilder = new AgentBuilder()
+                                                .address(hostCreateVo.getFenceAgentVo().getAddress())
+                                                .username(hostCreateVo.getFenceAgentVo().getUserName())
+                                                .password(hostCreateVo.getFenceAgentVo().getPassword())
+                                                .type(hostCreateVo.getFenceAgentVo().getType());
+
+                Agent agent = fenceAgentsService.add().agent(agentBuilder).send().agent();
+//                hostBuilder.powerManagement((new PowerManagementBuilder()).enabled(true).kdumpDetection(true).agents(new Agent[]{agent}));
+
+            }
+
+
+            return hostsService.list().send().hosts().size() == ( hostList.size()+1 );
+        } catch (Exception e) {
+            log.info("error: ", e);
+            return false;
+        }
+    }
+
+    @Override
+    public void editHost(HostCreateVo hostCreateVo) {
+        SystemService systemService = admin.getConnection().systemService();
+
+        HostService hostService = systemService.hostsService().hostService(hostCreateVo.getId());
+
+//        HostCreateVo srcHostCreateVo = this.retrieveCreateHostInfo(hostCreateVo.getId());
 //
 //        HostBuilder hostBuilder = new HostBuilder();
-//        if (hostCreateVo.getSsh() != null && hostCreateVo.getSsh().getPort() == 22) {
-//            hostBuilder.name(hostCreateVo.getName()).comment(hostCreateVo.getComment()).description(hostCreateVo.getDescription()).address(hostCreateVo.getSsh().getAddress()).rootPassword(hostCreateVo.getSsh().getPassword()).cluster((new ClusterBuilder()).name(cluster.name()));
-//        } else {
-//            hostBuilder.name(hostCreateVo.getName()).comment(hostCreateVo.getComment()).description(hostCreateVo.getDescription()).address(hostCreateVo.getSsh().getAddress()).port(54321).ssh((new SshBuilder()).port(hostCreateVo.getSsh().getPort())).rootPassword(hostCreateVo.getSsh().getPassword()).cluster((new ClusterBuilder()).name(cluster.name()));
+//        if (hostCreateVo.getName() != null && !"".equals(hostCreateVo.getName()) && !srcHostCreateVo.getName().equals(hostCreateVo.getName())) {
+//            hostBuilder.name(hostCreateVo.getName());
 //        }
 //
+//        if (hostCreateVo.getComment() != null && !"".equals(hostCreateVo.getComment())) {
+//            hostBuilder.comment(hostCreateVo.getComment());
+//        } else {
+//            hostBuilder.comment("");
+//        }
 //
-//        try {
-//            Host host = null;
-//            if (hostCreateVo.isHostEngineEnabled()) {
-//                host = ((org.ovirt.engine.sdk4.services.HostsService.AddResponse)hostsService.add().deployHostedEngine(true).host(hostBuilder).send()).host();
+//        if (hostCreateVo.getSsh() != null && srcHostCreateVo.getSsh().getPort() != hostCreateVo.getSsh().getPort()) {
+//            hostBuilder.port(54321).ssh((new SshBuilder()).port(hostCreateVo.getSsh().getPort()));
+//        }
+//
+//        if (!srcHostCreateVo.getClusterId().equals(hostCreateVo.getClusterId())) {
+//            Cluster cluster = ((ClusterService.GetResponse)systemService.clustersService().clusterService(hostCreateVo.getClusterId()).get().send()).cluster();
+//            hostBuilder.cluster((new ClusterBuilder()).name(cluster.name()));
+//        }
+//
+//        if (hostCreateVo.getFenceAgent() != null) {
+//            if ((srcHostCreateVo.isPowerManagementEnabled() || !hostCreateVo.isPowerManagementEnabled() || hostCreateVo.getFenceAgent().getAddress() == null) && !"".equals(hostCreateVo.getFenceAgent().getAddress())) {
+//                if (srcHostCreateVo.isPowerManagementEnabled() && !hostCreateVo.isPowerManagementEnabled()) {
+//                    hostBuilder.powerManagement((new PowerManagementBuilder()).enabled(false).kdumpDetection(true));
+//                }
 //            } else {
-//                host = ((org.ovirt.engine.sdk4.services.HostsService.AddResponse)hostsService.add().host(hostBuilder).send()).host();
-//            }
-//
-//            HostService hostService = hostsService.hostService(host.id());
-//
-//            do {
-//                Thread.sleep(2000L);
-//                host = ((HostService.GetResponse)hostService.get().send()).host();
-//            } while(host.status() != HostStatus.UP && host.status() != HostStatus.INSTALLING);
-//
-//            if (hostCreateVo.isPowerManagementEnabled() && hostCreateVo.getFenceAgent().getAddress() != null || !"".equals(hostCreateVo.getFenceAgent().getAddress())) {
 //                FenceAgentsService fenceAgentsService = hostService.fenceAgentsService();
 //                AgentBuilder agentBuilder = new AgentBuilder();
 //                agentBuilder.address(hostCreateVo.getFenceAgent().getAddress()).username(hostCreateVo.getFenceAgent().getUsername()).password(hostCreateVo.getFenceAgent().getPassword()).type(hostCreateVo.getFenceAgent().getType()).order(1).encryptOptions(false);
 //                Agent agent = ((FenceAgentsService.AddResponse)fenceAgentsService.add().agent(agentBuilder).send()).agent();
 //                hostBuilder.powerManagement((new PowerManagementBuilder()).enabled(true).kdumpDetection(true).agents(new Agent[]{agent}));
 //            }
-//
-//            if (host.status() == HostStatus.UP) {
-//                hostService.update().host(hostBuilder).send()).host();
-//            }
-//        } catch (Exception var14) {
-//            var14.printStackTrace();
 //        }
-        return false;
-    }
-
-    @Override
-    public void editHost(HostCreateVo hostCreateVo) {
-
+//
+//        try {
+//            ((HostService.UpdateResponse)hostService.update().host(hostBuilder).send()).host();
+//
+//            message.setText("호스트 수정 완료(" + hostCreateVo.getName() + ")");
+//        } catch (Exception var11) {
+//            var11.printStackTrace();
+//            message.setText("호스트 수정 실패(" + hostCreateVo.getName() + ")");
+//        }
     }
 
     @Override
     public boolean deleteHost(String id) {
-        return false;
-    }
+        SystemService systemService = admin.getConnection().systemService();
 
+        HostsService hostsService = systemService.hostsService();
+        List<Host> hList = systemService.hostsService().list().send().hosts();
+        HostService hostService = systemService.hostsService().hostService(id);
+        String name = hostService.get().send().host().name();
+
+        try {
+            hostService.remove().send();
+
+            log.info("delete host: {}", name);
+            return hostsService.list().send().hosts().size() == ( hList.size() -1 );
+        }catch (Exception e){
+            log.error("error ", e);
+            return false;
+        }
+    }
 
 
 
