@@ -19,6 +19,10 @@
         		$("#add").submit();
         	});
 
+        	$("#test").click(function(){
+                alert("test");
+            });
+
 
         	$("#cancel").click(function(){
         	    window.close();
@@ -43,6 +47,7 @@
     <div style="padding: 1rem;">
         <div>
             <h2>새 호스트</h2>
+
             <form id="add" autocomplete="off" method="get" action="host-add2">
 
                 <hr>
@@ -50,13 +55,12 @@
                 <table>
                     <tr>
                         <td id="hostT">호스트 클러스터</td>
-                        <td id="hostT">&emsp;
+                        <td>
                             <select id="datacenterId" name="datacenterId">
                                 <c:forEach var="dc" items="${dc}" varStatus="status">
                                     <option value="${dc.id}">${dc.name}</option>
                                 </c:forEach>
                             </select>
-                            <br>
                         </td>
                     </tr>
 
@@ -76,48 +80,151 @@
                     <tr>
                         <td id="hostT">SSH 포트</td>
                         <td><input type="text" id="sshPort" name="sshPort" value="22"></td>
-                    </tr><br>
+                    </tr>
 
+                    </tr>
+
+                    <tr>
+                        <td><br></td>
+                    </tr>
                     <tr>
                         <td colspan="2"><input type="checkbox" id="active" name="active" checked/> 설치 후 호스트를 활성화</td>
                     </tr>
 
                     <tr>
                         <td colspan="2"><input type="checkbox" id="restart" name="restart" checked/> 설치 후 호스트를 다시 시작</td>
-                    </tr><br>
+                    </tr>
 
                     <tr>
-                        <td>인증</td>
+                        <td><br></td>
+                    </tr>
+                    <tr>
+                        <td><strong>인증</strong></td>
                     </tr>
                     <tr>
                         <td>사용자 이름</td>
-                        <td><input type="text" id="userName" name="userName" value="root" disabled></td>
+                        <td><input type="text" id="user" name="userName" value="root" disabled></td>
                     </tr>
 
                     <tr>
-                        <td> <input type='radio' id="password" name='password' checked/> 암호 </td>
-                        <td><input type="password" id="password" name="password" value="root" disabled></td>
+                        <td><br></td>
+                    </tr>
+                    <tr>
+                        <td> <input type='radio' id="passwordChk" name='passwordChk' checked/> 암호 </td>
+                        <td><input type="password" id="password" name="password" ></td>
                     </tr>
 
                     <tr>
                         <td> <input type='radio' id="sshPublicKey" name='sshPublicKey'/> SSH 공개 키 </td>
-                    </tr><br>
+                    </tr>
+                    <tr>
+                        <td><br></td>
+                    </tr>
+
+                    <tr>
+                        <td> 고급 매개 변수 </td>
+                    </tr>
                 </table>
-                <br><hr>
+                <hr>
 
                 <h3>전원 관리</h3>
                 <table>
                     <tr>
                         <td><input type="checkbox" id="powerActive" name="powerActive" checked/>&emsp; 전원 관리 활성화</td>
-                    </tr><br>
+                    </tr>
                     <tr>
-                        <td><input type="checkbox" id="kdump" name="kdump" checked disabled/>&emsp; powerActive</td>
-                    </tr><br>
+                        <td><input type="checkbox" id="kdump" name="kdump" checked disabled/>&emsp; kdump 통합</td>
+                    </tr>
                     <tr>
                         <td><input type="checkbox" id="powerPolicy" name="powerPolicy" checked disabled/>&emsp; 전원 관리 정책 제어를 비활성화</td>
-                    </tr><br>
+                    </tr>
+
+                    <tr>
+                        <td><br></td>
+                    </tr>
+                    <tr>
+                        <td><strong>순서대로 정렬된 에이전트</strong></td>
+                    </tr>
+                    <tr>
+                        <td><br></td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>펜스 에이전트 추가(편집)</strong></td>
+                    </tr>
+
+                    <tr>
+                        <td><br></td>
+                    </tr>
+                    <tr>
+                        <td>주소</td>
+                        <td><input type="text" id="fenceAddress" name="fenceAddress" size="20"></td>
+                    </tr>
+                    <tr>
+                        <td>사용자 이름</td>
+                        <td><input type="text" id="fenceUserName" name="fenceUserName" size="20"></td>
+                    </tr>
+                    <tr>
+                        <td>암호</td>
+                        <td><input type="text" id="fencePassword" name="fencePassword" size="20"></td>
+                    </tr>
+                    <tr>
+                        <td>유형</td>
+                        <td>
+                            <select id="fenceType" name="fenceType">
+                                <option value="">amt_ws</option>
+                                <option value="">apc</option>
+                                <option value="">apc_snmp</option>
+                                <option value="">bladecenter</option>
+                                <option value="">cisco_ucs</option>
+                                <option value="">drac5</option>
+                                <option value="">drac7</option>
+                                <option value="">eps</option>
+                                <option value="">hpblade</option>
+                                <option value="">ilo</option>
+                                <option value="">ilo2</option>
+                                <option value="">ilo3</option>
+                                <option value="">ilo4</option>
+                                <option value="">ilo_ssh</option>
+                                <option value="">ipmilan</option>
+                                <option value="">redfish</option>
+                                <option value="">rsa</option>
+                                <option value="">rsb</option>
+                                <option value="">wti</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>SSH 포트</td>
+                        <td><input type="text" id="fenceSsh" name="fenceSsh" size="20"></td>
+                    </tr>
+                    <tr>
+                        <td>옵션</td>
+                        <td><input type="text" id="fenceOption" name="fenceOption" size="20"></td>
+                    </tr>
+                    <tr>
+                        <td>콤마로 구분된 "key=value" 목록을 사용하십시오</td>
+                    </tr>
+                    <tr>
+                        <td><br></td>
+                    <tr>
+                        <td><input type="button" id="test" value="test"></td>
+                    </tr>
+
+
                 </table>
-                <br><hr>
+               <hr>
+
+                <h3>SPM</h3>
+                <table>
+                    <tr>
+                        <td> <input type="radio" id="spm" name="spm" value="none"/> 없음 </td>
+                        <td> <input type="radio" id="spm" name="spm" value="low"/> 낮음 </td>
+                        <td> <input type="radio" id="spm" name="spm" value="standard"/> 표준 </td>
+                        <td> <input type="radio" id="spm" name="spm" value="high"/> 높음 </td>
+                    </tr>
+                </table>
+                <hr>
 
                 <h3>호스트 엔진</h3>
                 <table>
@@ -131,7 +238,7 @@
                         </td>
                     </tr>
                 </table>
-                <br><hr>
+                <hr>
 
                 <h3>선호도</h3>
                 <table>
@@ -143,13 +250,17 @@
                                 <option value="true">배포</option>
                             </select>
                         </td>
-                    </tr<br>
-
+                    </tr>
+                    <tr>
+                        <td><br></td>
+                    </tr>
                     <tr>
                         <td>선택된 선호도 그룹</td>
                         <td></td>
-                    </tr><br>
-
+                    </tr>
+                    <tr>
+                        <td><br></td>
+                    </tr>
                     <tr>
                         <td>선호도 레이블 선택</td>
                         <td>
@@ -158,17 +269,18 @@
                                 <option value="true">배포</option>
                             </select>
                         </td>
-                    </tr><br>
-
+                    </tr>
+                    <tr>
+                        <td><br></td>
+                    </tr>
                    <tr>
                        <td>선택한 선호도 레이블</td>
                        <td> </td>
                    </tr>
                 </table>
-                <br><hr>
-                <br><br><br>
+                <hr>
 
-                <input type="submit" id="ok" value="OK">
+                <input type="button" id="ok" value="OK">
                 <input type="reset" id="cancel" value="취소">
             </form>
         </div>
