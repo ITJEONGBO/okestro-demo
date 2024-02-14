@@ -16,6 +16,18 @@
         			return;
         		}
 
+        		if($("#hostIp").val() == ''){
+        			alert("호스트이름/IP를 입력해주세요");
+        			$("#hostIp").focus();
+        			return;
+        		}
+
+        		if($("#password").val() == ''){
+        			alert("암호를 입력해주세요");
+        			$("#password").focus();
+        			return;
+        		}
+
         		$("#add").submit();
         	});
 
@@ -75,7 +87,7 @@
                     </tr>
                     <tr>
                         <td id="hostT">호스트이름/IP</td>
-                        <td><input type="text" id="hostIp" name="description"></td>
+                        <td><input type="text" id="hostIp" name="hostIp"></td>
                     </tr>
                     <tr>
                         <td id="hostT">SSH 포트</td>
@@ -105,28 +117,28 @@
                         <td>사용자 이름</td>
                         <td><input type="text" id="user" name="userName" value="root" disabled></td>
                     </tr>
-
                     <tr>
-                        <td><br></td>
-                    </tr>
-                    <tr>
-                        <td> <input type='radio' id="passwordChk" name='passwordChk' checked/> 암호 </td>
+                        <td>암호</td>
                         <td><input type="password" id="password" name="password" ></td>
                     </tr>
 
-                    <tr>
-                        <td> <input type='radio' id="sshPublicKey" name='sshPublicKey'/> SSH 공개 키 </td>
-                    </tr>
-                    <tr>
-                        <td><br></td>
-                    </tr>
+                    <!--
+                        <tr>
+                            <td> <input type='radio' id="sshPublicKey" name='sshPublicKey'/> SSH 공개 키 </td>
+                        </tr>
 
-                    <tr>
-                        <td> 고급 매개 변수 </td>
-                    </tr>
+                        <tr>
+                            <td><br></td>
+                        </tr>
+
+                        <tr>
+                            <td> 고급 매개 변수 </td>
+                        </tr>
+                    -->
                 </table>
                 <hr>
 
+                <!--
                 <h3>전원 관리</h3>
                 <table>
                     <tr>
@@ -210,17 +222,17 @@
                     <tr>
                         <td><input type="button" id="test" value="test"></td>
                     </tr>
-
-
                 </table>
-               <hr>
+                <hr>
+                -->
+
 
                 <h3>SPM</h3>
                 <table>
                     <tr>
                         <td> <input type="radio" id="spm" name="spm" value="none"/> 없음 </td>
                         <td> <input type="radio" id="spm" name="spm" value="low"/> 낮음 </td>
-                        <td> <input type="radio" id="spm" name="spm" value="standard"/> 표준 </td>
+                        <td> <input type="radio" id="spm" name="spm" value="standard" checked/> 표준 </td>
                         <td> <input type="radio" id="spm" name="spm" value="high"/> 높음 </td>
                     </tr>
                 </table>
@@ -232,8 +244,8 @@
                         <td>호스트 엔진 배치 작업 선택</td>
                         <td>
                             <select id="hostEngine" name="hostEngine">
-                                <option value="false">없음</option>
                                 <option value="true">배포</option>
+                                <option value="false">없음</option>
                             </select>
                         </td>
                     </tr>

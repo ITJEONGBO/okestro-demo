@@ -89,7 +89,7 @@
                     </c:if>
                     <c:forEach var="hosts" items="${hosts}" varStatus="status">
                         <tr>
-                            <td><input type="checkbox" id="hid" name="hid" value="${host.id}" onclick="checkOnlyOne(this)"/></td>
+                            <td><input type="checkbox" id="hid" name="hid" value="${hosts.id}" onclick="checkOnlyOne(this)"/></td>
                             <td>${hosts.status == "up" ? "▲" : "▽"}</td>
                             <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                             <td> <a href="/computing/host?id=${hosts.id}">${hosts.name}</a> </td>

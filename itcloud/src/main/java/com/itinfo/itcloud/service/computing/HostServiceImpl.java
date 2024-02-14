@@ -452,12 +452,13 @@ public class HostServiceImpl implements ItHostService {
 
 
 
+    // edit
     @Override
     public HostCreateVo getHostCreate(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
         Host host = systemService.hostsService().hostService(id).get().send().host();
-        Cluster cluster = systemService.clustersService().clusterService(host.cluster().id()).get().send().cluster();
+//        Cluster cluster = systemService.clustersService().clusterService(host.cluster().id()).get().send().cluster();
 
         log.info("getHostsCreate");
 

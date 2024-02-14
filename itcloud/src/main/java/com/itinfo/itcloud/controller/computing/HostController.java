@@ -169,6 +169,7 @@ public class HostController {
 	public String delete(Model model, String id){
 		model.addAttribute("id", id);
 		model.addAttribute("name", itHostService.getName(id));
+
 		return "computing/host-delete";
 	}
 
