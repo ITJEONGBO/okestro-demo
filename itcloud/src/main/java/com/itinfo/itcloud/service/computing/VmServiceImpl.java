@@ -412,27 +412,28 @@ public class VmServiceImpl implements ItVmService {
         List<AffinityLabelVo> alVoList = new ArrayList<>();
         AffinityLabelVo alVo = null;
 
-        List<AffinityLabel> affinityLabelList =
-                ((AssignedAffinityLabelsService.ListResponse)systemService.vmsService().vmService(id).affinityLabelsService().list().send()).label();
+        List<AffinityLabel> affinityLabelList = systemService.affinityLabelsService().list().send().labels();
         for(AffinityLabel affinityLabel : affinityLabelList){
-            alVo = new AffinityLabelVo();
-            alVo.setId(affinityLabel.id());
-            alVo.setName(affinityLabel.name());
-
-            // 가상머신 멤버
-            List<Vm> vmList = ((AffinityLabelVmsService.ListResponse) systemService.affinityLabelsService().labelService(affinityLabel.id()).vmsService().list().send()).vms();
-            List<String> vms = new ArrayList<>();
-            for(Vm vm : vmList){
-                vms.add(ovirt.getName("vm", vm.id()));
-            }
-            alVo.setVms(vms);
-
-            List<Host> hostList = ((AffinityLabelHostsService.ListResponse)systemService.affinityLabelsService().labelService(affinityLabel.id()).hostsService().list().send()).hosts();
+            // 호스트
+            List<Host> hostList = systemService.affinityLabelsService().labelService(affinityLabel.id()).hostsService().list().send().hosts();
             List<String> hosts = new ArrayList<>();
             for(Host host : hostList){
                 hosts.add(ovirt.getName("host", host.id()));
             }
-            alVo.setHosts(hosts);
+
+            // 가상머신
+            List<Vm> vmList = systemService.affinityLabelsService().labelService(affinityLabel.id()).vmsService().list().send().vms();
+            List<String> vms = new ArrayList<>();
+            for(Vm vm : vmList){
+                vms.add(ovirt.getName("vm", vm.id()));
+            }
+
+            alVo = AffinityLabelVo.builder()
+                    .id(affinityLabel.id())
+                    .name(affinityLabel.name())
+                    .hosts(hosts)
+                    .vms(vms)
+                    .build();
 
             alVoList.add(alVo);
         }

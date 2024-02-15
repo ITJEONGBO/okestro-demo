@@ -41,7 +41,7 @@ public class HostServiceImpl implements ItHostService {
         List<HostVo> hostVoList = new ArrayList<>();
         HostVo hostVo = null;
 
-        List<Host> hostList = ((HostsService.ListResponse)systemService.hostsService().list().send()).hosts();
+        List<Host> hostList = systemService.hostsService().list().send().hosts();
         for(Host host : hostList){
             Cluster cluster = systemService.clustersService().clusterService(host.cluster().id()).get().send().cluster();
             DataCenter dataCenter = systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter();
@@ -78,10 +78,10 @@ public class HostServiceImpl implements ItHostService {
     public HostVo getInfo(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
-        Host host = ((HostService.GetResponse)systemService.hostsService().hostService(id).get().send()).host();
+        Host host = systemService.hostsService().hostService(id).get().send().host();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
-        List<HostCpuUnit> hcuList = ((HostCpuUnitsService.ListResponse)systemService.hostsService().hostService(id).cpuUnitsService().list().send()).cpuUnits();
+        List<HostCpuUnit> hcuList = systemService.hostsService().hostService(id).cpuUnitsService().list().send().cpuUnits();
 
         int cpu = host.cpu().topology().coresAsInteger()
                 * host.cpu().topology().socketsAsInteger()
@@ -154,7 +154,7 @@ public class HostServiceImpl implements ItHostService {
         }
 
         // 가상머신 수
-        List<Vm> vmList = ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
+        List<Vm> vmList = systemService.vmsService().list().send().vms();
         int vmsUpCnt = 0;
         for(Vm vm : vmList){
             if(vm.host()!= null && vm.host().id().equals(host.id()) && vm.status().value().equals("up")){
@@ -203,22 +203,20 @@ public class HostServiceImpl implements ItHostService {
         VmVo vmVo = null;
         Date now = new Date(System.currentTimeMillis());
 
-        List<Vm> vmList =
-                ((VmsService.ListResponse) systemService.vmsService().list().send()).vms();
+        List<Vm> vmList = systemService.vmsService().list().send().vms();
 
         for (Vm vm : vmList) {
             if (vm.hostPresent() && vm.host().id().equals(id)) {
                 vmVo = new VmVo();
 
-                vmVo.setHostName( ((HostService.GetResponse)systemService.hostsService().hostService(vm.host().id()).get().send()).host().name() );
+                vmVo.setHostName( systemService.hostsService().hostService(vm.host().id()).get().send().host().name() );
                 vmVo.setId(vm.id());
                 vmVo.setName(vm.name());
-                vmVo.setClusterName( ((ClusterService.GetResponse)systemService.clustersService().clusterService(vm.cluster().id()).get().send()).cluster().name() );
+                vmVo.setClusterName( systemService.clustersService().clusterService(vm.cluster().id()).get().send().cluster().name() );
                 vmVo.setStatus(vm.status().value());
                 vmVo.setFqdn(vm.fqdn());
 
-                List<Statistic> statisticList =
-                        ((StatisticsService.ListResponse)systemService.vmsService().vmService(vm.id()).statisticsService().list().send()).statistics();
+                List<Statistic> statisticList = systemService.vmsService().vmService(vm.id()).statisticsService().list().send().statistics();
 
                 for(Statistic statistic : statisticList) {
                     long hour = 0;
@@ -235,18 +233,15 @@ public class HostServiceImpl implements ItHostService {
                         }
                     }
                 }
-
 //                vmVo.setStartTime(vm.startTimePresent() ? vm.startTime() : null);
-
 
                 if(!vm.status().value().equals("down")){
                     // ipv4 부분. vms-nic-reporteddevice
-                    List<Nic> nicList =
-                            ((VmNicsService.ListResponse) systemService.vmsService().vmService(vm.id()).nicsService().list().send()).nics();
+                    List<Nic> nicList = systemService.vmsService().vmService(vm.id()).nicsService().list().send().nics();
 
                     for (Nic nic : nicList){
                         List<ReportedDevice> reportedDeviceList
-                                = ((VmReportedDevicesService.ListResponse)systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).reportedDevicesService().list().send()).reportedDevice();
+                                = systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
                         for (ReportedDevice r : reportedDeviceList){
                             vmVo.setIpv4(r.ips().get(0).address());
                             vmVo.setIpv6(r.ips().get(1).address());
@@ -263,7 +258,7 @@ public class HostServiceImpl implements ItHostService {
                 vmVo.setId(vm.id());
                 vmVo.setName(vm.name());
                 vmVo.setStatus(vm.status().value());
-                vmVo.setClusterName( ((ClusterService.GetResponse)systemService.clustersService().clusterService(vm.cluster().id()).get().send()).cluster().name() );
+                vmVo.setClusterName( systemService.clustersService().clusterService(vm.cluster().id()).get().send().cluster().name() );
 
                 vmVoList.add(vmVo);
             }
@@ -278,15 +273,14 @@ public class HostServiceImpl implements ItHostService {
 
         List<NicVo> nVoList = new ArrayList<>();
         NicVo nVo = null;
-        List<HostNic> hostNicList =
-                ((HostNicsService.ListResponse)systemService.hostsService().hostService(id).nicsService().list().send()).nics();
+        List<HostNic> hostNicList = systemService.hostsService().hostService(id).nicsService().list().send().nics();
 
         for(HostNic hostNic : hostNicList){
             nVo = new NicVo();
 
             nVo.setStatus(hostNic.status().value());
             nVo.setName(hostNic.name());
-            nVo.setNetworkName( ((NetworkService.GetResponse)systemService.networksService().networkService(hostNic.network().id()).get().send()).network().name() );
+            nVo.setNetworkName( systemService.networksService().networkService(hostNic.network().id()).get().send().network().name() );
 
             nVo.setMacAddress(hostNic.mac().address());// 논리 네트워크
             nVo.setIpv4(hostNic.ip().address());
@@ -294,7 +288,7 @@ public class HostServiceImpl implements ItHostService {
 
             DecimalFormat df = new DecimalFormat("###,###");
             List<Statistic> statisticList =
-                    ((StatisticsService.ListResponse)systemService.hostsService().hostService(id).nicsService().nicService(hostNic.id()).statisticsService().list().send()).statistics();
+                    systemService.hostsService().hostService(id).nicsService().nicService(hostNic.id()).statisticsService().list().send().statistics();
 
             for(Statistic statistic : statisticList){
                 String st = "";
@@ -336,22 +330,16 @@ public class HostServiceImpl implements ItHostService {
         List<HostDeviceVo> hostDeviceVoList = new ArrayList<>();
         HostDeviceVo hostDeviceVo = null;
 
-        List<HostDevice> hostDeviceList =
-                ((HostDevicesService.ListResponse)systemService.hostsService().hostService(id).devicesService().list().send()).devices();
+        List<HostDevice> hostDeviceList = systemService.hostsService().hostService(id).devicesService().list().send().devices();
 
         for(HostDevice hostDevice : hostDeviceList){
-            hostDeviceVo = new HostDeviceVo();
-            hostDeviceVo.setName(hostDevice.name());
-            hostDeviceVo.setCapability(hostDevice.capability());
-            hostDeviceVo.setDriver(hostDevice.driverPresent() ? hostDevice.driver() : null);
-
-            if(hostDevice.vendorPresent()) {
-                hostDeviceVo.setVendorName(hostDevice.vendor().name() + " (" +hostDevice.vendor().id() + ")" );
-            }
-
-            if(hostDevice.productPresent()){
-                hostDeviceVo.setProductName(hostDevice.product().name() + " (" + hostDevice.product().id() + ")");
-            }
+            hostDeviceVo = HostDeviceVo.builder()
+                    .name(hostDevice.name())
+                    .capability(hostDevice.capability())
+                    .driver(hostDevice.driverPresent() ? hostDevice.driver() : null)
+                    .vendorName(hostDevice.vendorPresent() ? hostDevice.vendor().name() + " (" +hostDevice.vendor().id() + ")" : "")
+                    .productName(hostDevice.productPresent() ? hostDevice.product().name() + " (" + hostDevice.product().id() + ")" : "")
+                    .build();
 
             hostDeviceVoList.add(hostDeviceVo);
         }
@@ -365,32 +353,31 @@ public class HostServiceImpl implements ItHostService {
         List<PermissionVo> pVoList = new ArrayList<>();
         PermissionVo pVo = null;
 
-        List<Permission> permissionList =
-                ((AssignedPermissionsService.ListResponse)systemService.hostsService().hostService(id).permissionsService().list().send()).permissions();
+        List<Permission> permissionList = systemService.hostsService().hostService(id).permissionsService().list().send().permissions();
 
         for(Permission permission : permissionList){
             pVo = new PermissionVo();
             pVo.setPermissionId(permission.id());
 
             if(permission.groupPresent() && !permission.userPresent()){
-                Group group = ((GroupService.GetResponse)systemService.groupsService().groupService(permission.group().id()).get().send()).get();
+                Group group = systemService.groupsService().groupService(permission.group().id()).get().send().get();
                 pVo.setUser(group.name());
                 pVo.setNameSpace(group.namespace());
                 // 생성일의 경우 db에서 가져와야함
 
-                Role role = ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+                Role role = systemService.rolesService().roleService(permission.role().id()).get().send().role();
                 pVo.setRole(role.name());
 
                 pVoList.add(pVo);       // 그룹에 추가
             }
 
             if(permission.userPresent() && !permission.groupPresent()){
-                User user = ((UserService.GetResponse)systemService.usersService().userService(permission.user().id()).get().send()).user();
+                User user = systemService.usersService().userService(permission.user().id()).get().send().user();
                 pVo.setUser(user.name());
                 pVo.setNameSpace(user.namespace());
                 pVo.setProvider(user.domainPresent() ? user.domain().name() : null);
 
-                Role role = ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+                Role role = systemService.rolesService().roleService(permission.role().id()).get().send().role();
                 pVo.setRole(role.name());
 
 
@@ -405,18 +392,15 @@ public class HostServiceImpl implements ItHostService {
     public List<AffinityLabelVo> getAffinitylabels(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
-        List<AffinityLabel> affinityLabelList =
-                ((AssignedAffinityLabelsService.ListResponse)systemService.hostsService().hostService(id).affinityLabelsService().list().send()).label();
+        List<AffinityLabel> affinityLabelList = systemService.hostsService().hostService(id).affinityLabelsService().list().send().label();
         List<AffinityLabelVo> alVoList = new ArrayList<>();
         AffinityLabelVo alVo = null;
 
-
-        for(AffinityLabel a : affinityLabelList) {
-            alVo = new AffinityLabelVo();
-
-            alVo.setId(a.id());
-            alVo.setName(a.name());
-
+        for(AffinityLabel affinityLabel : affinityLabelList) {
+            alVo = AffinityLabelVo.builder()
+                    .id(affinityLabel.id())
+                    .name(affinityLabel.name())
+                    .build();
 
             alVoList.add(alVo);
         }
@@ -428,24 +412,23 @@ public class HostServiceImpl implements ItHostService {
         SystemService systemService = admin.getConnection().systemService();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");      // 2024. 1. 4. PM 04:01:21
 
-        List<Event> eventList = ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
+        String name = getName(id);
+        List<Event> eventList =  systemService.eventsService().list().search("host.name=" + name).send().events();
         List<EventVo> eVoList = new ArrayList<>();
         EventVo eVo = null;
 
-        String name = getName(id);
-
         for(Event event : eventList){
-            if(event.hostPresent() && event.host().name().equals(name)){
-                eVo = EventVo.builder()
-                        .severity(event.severity().value())     // 상태[LogSeverity] : alert, error, normal, warning
-                        .time(sdf.format(event.time()))
-                        .message(event.description())
-                        .relationId(event.correlationIdPresent() ? event.correlationId() : null)
-                        .source(event.origin())
-                        .build();
+            // 이벤트중에 뭐 안뜨는게 있엇음
+            eVo = EventVo.builder()
+                    .severity(event.severity().value())     // 상태[LogSeverity] : alert, error, normal, warning
+                    .time(sdf.format(event.time()))
+                    .message(event.description())
+                    .relationId(event.correlationIdPresent() ? event.correlationId() : null)
+                    .source(event.origin())
+                    .build();
+            System.out.println(eVo.toString());
 
-                eVoList.add(eVo);
-            }
+            eVoList.add(eVo);
         }
         return eVoList;
     }
@@ -463,12 +446,15 @@ public class HostServiceImpl implements ItHostService {
         log.info("getHostsCreate");
 
         return HostCreateVo.builder()
+                .clusterId(host.cluster().id())
                 .id(id)
                 .name(host.name())
                 .comment(host.comment())
                 .hostIp(host.address())
-                .password(host.rootPassword())
-                .clusterId(host.cluster().id())
+                .sshPort(host.portAsInteger())
+                .sshPw(host.rootPassword())
+                .spm(host.spm().priorityAsInteger())
+                .hostEngine(host.hostedEnginePresent())
                 .build();
     }
 
@@ -483,7 +469,6 @@ public class HostServiceImpl implements ItHostService {
 
         try {
             // 고려해야하는 것, ssh port번호, 전원관리 활성 여부(펜스 에이전트가 추가되는지가 달림)
-
             // sshport가 22면 .ssh() 설정하지 않아도 알아서 지정됨
             Host host = null;
             if (hostCreateVo.getSshPort() == 22) {
@@ -491,7 +476,7 @@ public class HostServiceImpl implements ItHostService {
                             .name(hostCreateVo.getName())
                             .comment(hostCreateVo.getComment())
                             .address(hostCreateVo.getHostIp())          // 호스트이름/IP
-                            .rootPassword(hostCreateVo.getPassword())   // 암호
+                            .rootPassword(hostCreateVo.getSshPw())   // 암호
                             .cluster(cluster)
                             .build();
             }else {
@@ -499,13 +484,13 @@ public class HostServiceImpl implements ItHostService {
                             .name(hostCreateVo.getName())
                             .comment(hostCreateVo.getComment())
                             .address(hostCreateVo.getHostIp())          // 호스트이름/IP
-                            .ssh(new SshBuilder().port(hostCreateVo.getSshPort()))  //..
-                            .rootPassword(hostCreateVo.getPassword())   // 암호
+                            .ssh(new SshBuilder().port(hostCreateVo.getSshPort()))  // 새로 지정할 포트번호
+                            .rootPassword(hostCreateVo.getSshPw())   // 암호
                             .cluster(cluster)
                             .build();
             }
 
-
+            log.info("----", hostCreateVo.toString());
             // 호스트 엔진 배치작업 선택 (없음/배포)
             // 호스트 생성
             if(hostCreateVo.isHostEngine()){
@@ -514,17 +499,8 @@ public class HostServiceImpl implements ItHostService {
                 hostsService.add().deployHostedEngine(false).host(host).send().host();  // false 생략가능
             }
 
-            if(hostCreateVo.isPowerManagementActive()){
-                FenceAgentsService fenceAgentsService = hostsService.hostService(host.id()).fenceAgentsService();
-                AgentBuilder agentBuilder = new AgentBuilder()
-                                                .address(hostCreateVo.getFenceAgentVo().getAddress())
-                                                .username(hostCreateVo.getFenceAgentVo().getUserName())
-                                                .password(hostCreateVo.getFenceAgentVo().getPassword())
-                                                .type(hostCreateVo.getFenceAgentVo().getType());
-
-                Agent agent = fenceAgentsService.add().agent(agentBuilder).send().agent();
-//                hostBuilder.powerManagement((new PowerManagementBuilder()).enabled(true).kdumpDetection(true).agents(new Agent[]{agent}));
-
+            if (host.status() == HostStatus.UP) {
+                log.info("호스트 추가 완료(" + hostCreateVo.getName() + ")");
             }
 
 
@@ -602,6 +578,7 @@ public class HostServiceImpl implements ItHostService {
             log.info("delete host: {}", name);
             return hostsService.list().send().hosts().size() == ( hList.size() -1 );
         }catch (Exception e){
+            // 호스트는 유지보수로 변경하고 해야한다
             log.error("error ", e);
             return false;
         }

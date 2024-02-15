@@ -319,24 +319,26 @@ public class ClusterServiceImpl implements ItClusterService {
 
         List<AffinityLabel> affinityLabelList = systemService.affinityLabelsService().list().send().labels();
         for(AffinityLabel affinityLabel : affinityLabelList){
-            alVo = new AffinityLabelVo();
-            alVo.setId(affinityLabel.id());
-            alVo.setName(affinityLabel.name());
-
-            // 가상머신 멤버
-            List<Vm> vmList = systemService.affinityLabelsService().labelService(affinityLabel.id()).vmsService().list().send().vms();
-            List<String> vms = new ArrayList<>();
-            for(Vm vm : vmList){
-                vms.add(ovirt.getName("vm", vm.id()));
-            }
-            alVo.setVms(vms);
-
+            // 호스트
             List<Host> hostList = systemService.affinityLabelsService().labelService(affinityLabel.id()).hostsService().list().send().hosts();
             List<String> hosts = new ArrayList<>();
             for(Host host : hostList){
                 hosts.add(ovirt.getName("host", host.id()));
             }
-            alVo.setHosts(hosts);
+
+            // 가상머신
+            List<Vm> vmList = systemService.affinityLabelsService().labelService(affinityLabel.id()).vmsService().list().send().vms();
+            List<String> vms = new ArrayList<>();
+            for(Vm vm : vmList){
+                vms.add(ovirt.getName("vm", vm.id()));
+            }
+
+            alVo = AffinityLabelVo.builder()
+                    .id(affinityLabel.id())
+                    .name(affinityLabel.name())
+                    .hosts(hosts)
+                    .vms(vms)
+                    .build();
 
             alVoList.add(alVo);
         }
@@ -488,9 +490,10 @@ public class ClusterServiceImpl implements ItClusterService {
         String networkName = "";
 
         for(Network network : networkList){
-            boolean display = network.display();
-            networkId = display ? network.id() : null;
-            networkName = display ? network.name() : null;
+            if(network.display()){
+                networkId = network.id();
+                networkName = network.name();
+            }
         }
 
         log.info("getClusterCreate");

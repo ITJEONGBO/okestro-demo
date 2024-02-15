@@ -4,10 +4,11 @@ import com.itinfo.itcloud.model.computing.AffinityGroupVo;
 import com.itinfo.itcloud.model.computing.AffinityLabelVo;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.List;
 
-@Getter @Builder
+@Getter @Builder @ToString
 public class HostCreateVo {
     // 일반
     private String datacenterName;
@@ -17,12 +18,12 @@ public class HostCreateVo {
     private String id;
     private String name;
     private String comment;
-
     private String hostIp;      // 호스트이름, IP
+
     private int sshPort;        // ssh 포트
-    private String userName;    // 사용자 이름
-    private String password;    // 암호
-    private boolean sshPublicKey;   // ssh 공개 키
+    private String sshName;     // 사용자 이름
+    private String sshPw;       // 암호
+//    private boolean sshPublicKey;   // ssh 공개 키
 
     private boolean active;     // 설치 후 호스트를 활성화
     private boolean restart;    // 설치 후 호스트를 다시 시작

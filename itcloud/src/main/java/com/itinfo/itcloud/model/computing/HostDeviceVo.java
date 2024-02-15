@@ -1,9 +1,9 @@
 package com.itinfo.itcloud.model.computing;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
-@Getter @Setter
+@Getter @Builder
 public class HostDeviceVo {
     private String name;
     private String capability;

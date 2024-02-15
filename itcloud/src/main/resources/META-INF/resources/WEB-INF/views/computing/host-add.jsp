@@ -230,10 +230,10 @@
                 <h3>SPM</h3>
                 <table>
                     <tr>
-                        <td> <input type="radio" id="spm" name="spm" value="none"/> 없음 </td>
-                        <td> <input type="radio" id="spm" name="spm" value="low"/> 낮음 </td>
-                        <td> <input type="radio" id="spm" name="spm" value="standard" checked/> 표준 </td>
-                        <td> <input type="radio" id="spm" name="spm" value="high"/> 높음 </td>
+                        <td> <input type="radio" id="spm" name="spm" value="-1"/> 없음 </td>
+                        <td> <input type="radio" id="spm" name="spm" value="2"/> 낮음 </td>
+                        <td> <input type="radio" id="spm" name="spm" value="5" checked/> 표준 </td>
+                        <td> <input type="radio" id="spm" name="spm" value="7"/> 높음 </td>
                     </tr>
                 </table>
                 <hr>
