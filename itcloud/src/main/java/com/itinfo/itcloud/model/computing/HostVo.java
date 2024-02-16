@@ -46,9 +46,9 @@ public class HostVo {
     private String spmStatus;   // spm 상태
     private int spmPriority;    // spm 우선순위
 
-    private String ha;      // Hosted Engine HA
-    private String pageShared;  // 메모리 페이지 공유
-    private boolean pageSize;    // 자동으로 페이지를 크게
+    private Boolean hostedEngine;   // Hosted Engine HA [ 금장, 은장, null ]
+    private boolean ksm;             // 메모리 페이지 공유
+    private boolean pageSize;       // 자동으로 페이지를 크게
 
 
     // Huge Pages (size: free/total)

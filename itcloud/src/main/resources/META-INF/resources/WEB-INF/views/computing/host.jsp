@@ -2,6 +2,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 <html lang="en">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+
+</script>
+
 <%@ include file="../base/header.jsp" %>
 
         <div id="layoutSidenav_content">
@@ -47,11 +54,12 @@
 
 
                         새로운 가상머신의 스케줄링을 위한 최대 여유 메모리: ${host.memoryMax / (1024*1024)}MB <br>
-                        메모리 페이지 공유: <br>
+                        메모리 페이지 공유: ${host.ksm ? "활성" : "비활성"}<br>
                         자동으로 페이지를 크게: ${host.pageSize ? "항상" : host.pageSize}<br>
                         Huge Pages (size: free/total) : 2048: ${host.hugePage2048Free}/${host.hugePage2048Free}, 1048576: ${host.hugePage1048576Free}/${host.hugePage1048576Free}<br>
                         SELinux 모드: ${host.seLinux} <br>
                         클러스터 호환 버전: <br>
+                        Hosted Engine HA: ${host.hostedEngine ? "활성" : "[해당없음]"}<br>
 
                     <hr>
                         <h5>하드웨어</h5>

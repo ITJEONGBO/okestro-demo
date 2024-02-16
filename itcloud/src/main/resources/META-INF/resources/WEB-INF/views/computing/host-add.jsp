@@ -68,10 +68,14 @@
                     <tr>
                         <td id="hostT">호스트 클러스터</td>
                         <td>
-                            <select id="datacenterId" name="datacenterId">
+                            <select id="clusterId" name="clusterId">
+                                <option value="1ddeba56-a517-11ee-a80e-00163e24ca5c">default</option>
+
+                                <!--
                                 <c:forEach var="dc" items="${dc}" varStatus="status">
                                     <option value="${dc.id}">${dc.name}</option>
                                 </c:forEach>
+                                -->
                             </select>
                         </td>
                     </tr>
@@ -100,11 +104,11 @@
                         <td><br></td>
                     </tr>
                     <tr>
-                        <td colspan="2"><input type="checkbox" id="active" name="active" checked/> 설치 후 호스트를 활성화</td>
+                        <td colspan="2"><input type="checkbox" id="active" name="active" value="true" checked/> 설치 후 호스트를 활성화</td>
                     </tr>
 
                     <tr>
-                        <td colspan="2"><input type="checkbox" id="restart" name="restart" checked/> 설치 후 호스트를 다시 시작</td>
+                        <td colspan="2"><input type="checkbox" id="restart" name="restart" value="true" checked/> 설치 후 호스트를 다시 시작</td>
                     </tr>
 
                     <tr>
@@ -115,11 +119,11 @@
                     </tr>
                     <tr>
                         <td>사용자 이름</td>
-                        <td><input type="text" id="user" name="userName" value="root" disabled></td>
+                        <td><input type="text" id="sshName" name="sshName" value="root" disabled></td>
                     </tr>
                     <tr>
                         <td>암호</td>
-                        <td><input type="password" id="password" name="password" ></td>
+                        <td><input type="text" id="sshPw" name="sshPw" ></td>
                     </tr>
 
                     <!--

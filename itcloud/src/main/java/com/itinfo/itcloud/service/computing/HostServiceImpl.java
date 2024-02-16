@@ -6,9 +6,7 @@ import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItHostService;
 import lombok.extern.slf4j.Slf4j;
-import org.ovirt.engine.sdk4.builders.AgentBuilder;
-import org.ovirt.engine.sdk4.builders.HostBuilder;
-import org.ovirt.engine.sdk4.builders.SshBuilder;
+import org.ovirt.engine.sdk4.builders.*;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +39,8 @@ public class HostServiceImpl implements ItHostService {
         List<HostVo> hostVoList = new ArrayList<>();
         HostVo hostVo = null;
 
-        List<Host> hostList = systemService.hostsService().list().send().hosts();
+        // allContent를 포함해야 hosted Engine의 정보가 나온다
+        List<Host> hostList = systemService.hostsService().list().allContent(true).send().hosts();
         for(Host host : hostList){
             Cluster cluster = systemService.clustersService().clusterService(host.cluster().id()).get().send().cluster();
             DataCenter dataCenter = systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter();
@@ -64,7 +63,7 @@ public class HostServiceImpl implements ItHostService {
                     .clusterName(cluster.name())
                     .datacenterId(cluster.dataCenter().id())
                     .datacenterName(dataCenter.name())
-                    .spmStatus(host.spm().status().value())
+                    .hostedEngine(host.hostedEnginePresent() ? host.hostedEngine().active() : null)
                     .vmCnt(vmsCnt)
                     .build();
 
@@ -78,11 +77,13 @@ public class HostServiceImpl implements ItHostService {
     public HostVo getInfo(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
-        Host host = systemService.hostsService().hostService(id).get().send().host();
+        // allContent를 포함해야 hosted Engine의 정보가 나온다
+        Host host = systemService.hostsService().hostService(id).get().allContent(true).send().host();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
         List<HostCpuUnit> hcuList = systemService.hostsService().hostService(id).cpuUnitsService().list().send().cpuUnits();
 
+        // cpu 있으면 출력으로 바꿔야됨
         int cpu = host.cpu().topology().coresAsInteger()
                 * host.cpu().topology().socketsAsInteger()
                 * host.cpu().topology().threadsAsInteger();
@@ -96,10 +97,17 @@ public class HostServiceImpl implements ItHostService {
             online.add(hcu.cpuIdAsInteger());
         }
 
-        BigInteger memory = BigInteger.ZERO, memoryUsed = BigInteger.ZERO, memoryFree = BigInteger.ZERO;
-        BigInteger swapTotal = BigInteger.ZERO, swapUsed = BigInteger.ZERO, swapFree = BigInteger.ZERO;
+        BigInteger memory = BigInteger.ZERO;
+        BigInteger memoryUsed = BigInteger.ZERO;
+        BigInteger memoryFree = BigInteger.ZERO;
+        BigInteger swapTotal = BigInteger.ZERO;
+        BigInteger swapUsed = BigInteger.ZERO;
+        BigInteger swapFree = BigInteger.ZERO;
         String bootingTime = "";
-        int hugePage2048Free = 0, hugePage2048Total = 0, hugePage1048576Free = 0, hugePage1048576Total = 0;
+        int hugePage2048Free = 0;
+        int hugePage2048Total = 0;
+        int hugePage1048576Free = 0;
+        int hugePage1048576Total = 0;
 
         List<Statistic> statisticList = systemService.hostsService().hostService(id).statisticsService().list().send().statistics();
         for(Statistic statistic : statisticList){
@@ -162,6 +170,7 @@ public class HostServiceImpl implements ItHostService {
             }
         }
 
+
         return HostVo.builder()
                 .id(id)
                 .name(host.name())
@@ -185,8 +194,8 @@ public class HostServiceImpl implements ItHostService {
                 .hugePage1048576Total(hugePage1048576Total)
                 .hugePage1048576Free(hugePage1048576Free)
                 .bootingTime(bootingTime)
-                // Hosted Engine HA
-                // 메모리 페이지 공유  비활성
+                .hostedEngine(host.hostedEnginePresent() && host.hostedEngine().active())       // Hosted Engine HA
+                .ksm(host.ksmPresent() && host.ksm().enabled())         // 메모리 페이지 공유  비활성
                 .pageSize(host.transparentHugePages().enabled())    // 자동으로 페이지를 크게 (확실하지 않음. 매우)
                 .seLinux(host.seLinux().mode().value())     // selinux모드: disabled, enforcing, permissive
                 // 클러스터 호환버전
@@ -477,36 +486,38 @@ public class HostServiceImpl implements ItHostService {
                             .comment(hostCreateVo.getComment())
                             .address(hostCreateVo.getHostIp())          // 호스트이름/IP
                             .rootPassword(hostCreateVo.getSshPw())   // 암호
+                            .spm(new SpmBuilder().priority(hostCreateVo.getSpm()))
+                            .hostedEngine(new HostedEngineBuilder().active(hostCreateVo.isHostEngine()))
                             .cluster(cluster)
                             .build();
-            }else {
+            } else {
                 host = new HostBuilder()
                             .name(hostCreateVo.getName())
                             .comment(hostCreateVo.getComment())
                             .address(hostCreateVo.getHostIp())          // 호스트이름/IP
                             .ssh(new SshBuilder().port(hostCreateVo.getSshPort()))  // 새로 지정할 포트번호
                             .rootPassword(hostCreateVo.getSshPw())   // 암호
+                            .spm(new SpmBuilder().priority(hostCreateVo.getSpm()))
+                            .hostedEngine(new HostedEngineBuilder().active(hostCreateVo.isHostEngine()))
                             .cluster(cluster)
                             .build();
             }
 
-            log.info("----", hostCreateVo.toString());
-            // 호스트 엔진 배치작업 선택 (없음/배포)
-            // 호스트 생성
+            log.info("---- " + hostCreateVo.toString());
+            // 호스트 엔진 배치작업 선택 (없음/배포)  -> 호스트 생성
             if(hostCreateVo.isHostEngine()){
                 hostsService.add().deployHostedEngine(true).host(host).send().host();
             }else {
                 hostsService.add().deployHostedEngine(false).host(host).send().host();  // false 생략가능
             }
 
-            if (host.status() == HostStatus.UP) {
-                log.info("호스트 추가 완료(" + hostCreateVo.getName() + ")");
-            }
-
+//            while (host.status() == HostStatus.UP) {
+//                log.info("호스트 추가 완료(" + hostCreateVo.getName() + ")");
+//            }
 
             return hostsService.list().send().hosts().size() == ( hostList.size()+1 );
         } catch (Exception e) {
-            log.info("error: ", e);
+            log.error("error: ", e);
             return false;
         }
     }
@@ -573,9 +584,9 @@ public class HostServiceImpl implements ItHostService {
         String name = hostService.get().send().host().name();
 
         try {
-            hostService.remove().send();
-
             log.info("delete host: {}", name);
+            hostService.remove().send();
+            log.info("finish");
             return hostsService.list().send().hosts().size() == ( hList.size() -1 );
         }catch (Exception e){
             // 호스트는 유지보수로 변경하고 해야한다

@@ -29,7 +29,7 @@ public class HostCreateVo {
     private boolean restart;    // 설치 후 호스트를 다시 시작
 
     // 전원 관리
-    private boolean powerManagementActive;    // 전원 관리 활성
+//    private boolean powerManagementActive;    // 전원 관리 활성
 //    private boolean kdump;              // kdump 통합
 //    private boolean powerPolicy;        // 전원 관리 정책 제어를 비활성화
 //    private FenceAgentVo fenceAgentVo;  // 펜스 에이전트 편집 ( 전원관리 활성이 되면 활성화 )
