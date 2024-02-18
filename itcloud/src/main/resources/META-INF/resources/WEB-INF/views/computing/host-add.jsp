@@ -31,10 +31,6 @@
         		$("#add").submit();
         	});
 
-        	$("#test").click(function(){
-                alert("test");
-            });
-
 
         	$("#cancel").click(function(){
         	    window.close();

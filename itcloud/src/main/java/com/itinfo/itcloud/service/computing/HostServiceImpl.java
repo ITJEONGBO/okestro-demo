@@ -479,6 +479,7 @@ public class HostServiceImpl implements ItHostService {
         try {
             // 고려해야하는 것, ssh port번호, 전원관리 활성 여부(펜스 에이전트가 추가되는지가 달림)
             // sshport가 22면 .ssh() 설정하지 않아도 알아서 지정됨
+            // sshport 변경을 ovirt에서 해보신적은 없어서 우선 보류
             Host host = null;
             if (hostCreateVo.getSshPort() == 22) {
                 host = new HostBuilder()
@@ -507,13 +508,15 @@ public class HostServiceImpl implements ItHostService {
             // 호스트 엔진 배치작업 선택 (없음/배포)  -> 호스트 생성
             if(hostCreateVo.isHostEngine()){
                 hostsService.add().deployHostedEngine(true).host(host).send().host();
+                log.info("hostEngine 추가");
             }else {
                 hostsService.add().deployHostedEngine(false).host(host).send().host();  // false 생략가능
+                log.info("! hostEngine 추가");
             }
 
-//            while (host.status() == HostStatus.UP) {
-//                log.info("호스트 추가 완료(" + hostCreateVo.getName() + ")");
-//            }
+            while (host.status() == HostStatus.UP) {
+                log.info("호스트 추가 완료(" + hostCreateVo.getName() + ")");
+            }
 
             return hostsService.list().send().hosts().size() == ( hostList.size()+1 );
         } catch (Exception e) {
@@ -527,51 +530,25 @@ public class HostServiceImpl implements ItHostService {
         SystemService systemService = admin.getConnection().systemService();
 
         HostService hostService = systemService.hostsService().hostService(hostCreateVo.getId());
+        Cluster cluster = systemService.clustersService().clusterService(hostCreateVo.getClusterId()).get().send().cluster();
 
-//        HostCreateVo srcHostCreateVo = this.retrieveCreateHostInfo(hostCreateVo.getId());
-//
-//        HostBuilder hostBuilder = new HostBuilder();
-//        if (hostCreateVo.getName() != null && !"".equals(hostCreateVo.getName()) && !srcHostCreateVo.getName().equals(hostCreateVo.getName())) {
-//            hostBuilder.name(hostCreateVo.getName());
-//        }
-//
-//        if (hostCreateVo.getComment() != null && !"".equals(hostCreateVo.getComment())) {
-//            hostBuilder.comment(hostCreateVo.getComment());
-//        } else {
-//            hostBuilder.comment("");
-//        }
-//
-//        if (hostCreateVo.getSsh() != null && srcHostCreateVo.getSsh().getPort() != hostCreateVo.getSsh().getPort()) {
-//            hostBuilder.port(54321).ssh((new SshBuilder()).port(hostCreateVo.getSsh().getPort()));
-//        }
-//
-//        if (!srcHostCreateVo.getClusterId().equals(hostCreateVo.getClusterId())) {
-//            Cluster cluster = ((ClusterService.GetResponse)systemService.clustersService().clusterService(hostCreateVo.getClusterId()).get().send()).cluster();
-//            hostBuilder.cluster((new ClusterBuilder()).name(cluster.name()));
-//        }
-//
-//        if (hostCreateVo.getFenceAgent() != null) {
-//            if ((srcHostCreateVo.isPowerManagementEnabled() || !hostCreateVo.isPowerManagementEnabled() || hostCreateVo.getFenceAgent().getAddress() == null) && !"".equals(hostCreateVo.getFenceAgent().getAddress())) {
-//                if (srcHostCreateVo.isPowerManagementEnabled() && !hostCreateVo.isPowerManagementEnabled()) {
-//                    hostBuilder.powerManagement((new PowerManagementBuilder()).enabled(false).kdumpDetection(true));
-//                }
-//            } else {
-//                FenceAgentsService fenceAgentsService = hostService.fenceAgentsService();
-//                AgentBuilder agentBuilder = new AgentBuilder();
-//                agentBuilder.address(hostCreateVo.getFenceAgent().getAddress()).username(hostCreateVo.getFenceAgent().getUsername()).password(hostCreateVo.getFenceAgent().getPassword()).type(hostCreateVo.getFenceAgent().getType()).order(1).encryptOptions(false);
-//                Agent agent = ((FenceAgentsService.AddResponse)fenceAgentsService.add().agent(agentBuilder).send()).agent();
-//                hostBuilder.powerManagement((new PowerManagementBuilder()).enabled(true).kdumpDetection(true).agents(new Agent[]{agent}));
-//            }
-//        }
-//
-//        try {
-//            ((HostService.UpdateResponse)hostService.update().host(hostBuilder).send()).host();
-//
-//            message.setText("호스트 수정 완료(" + hostCreateVo.getName() + ")");
-//        } catch (Exception var11) {
-//            var11.printStackTrace();
-//            message.setText("호스트 수정 실패(" + hostCreateVo.getName() + ")");
-//        }
+        try {
+            Host host = new HostBuilder()
+                    .name(hostCreateVo.getName())
+                    .comment(hostCreateVo.getComment())
+                    .address(hostCreateVo.getHostIp())
+                    .rootPassword(hostCreateVo.getSshPw())
+                    .spm(new SpmBuilder().priority(hostCreateVo.getSpm()))
+                    .hostedEngine(new HostedEngineBuilder().active(hostCreateVo.isHostEngine()))
+                    .cluster(cluster)
+                    .build();
+
+            hostService.update().host(host).send().host();
+
+            log.info("host 수정" + host.toString());
+        } catch (Exception e) {
+            log.error("error ", e);
+        }
     }
 
     @Override
@@ -589,10 +566,60 @@ public class HostServiceImpl implements ItHostService {
             log.info("finish");
             return hostsService.list().send().hosts().size() == ( hList.size() -1 );
         }catch (Exception e){
-            // 호스트는 유지보수로 변경하고 해야한다
             log.error("error ", e);
             return false;
         }
+    }
+
+
+
+
+
+
+    // 유지보수
+    @Override
+    public void deActive(String id) {
+        SystemService systemService = admin.getConnection().systemService();
+        HostService hostService = systemService.hostsService().hostService(id);
+
+        try {
+            Host host = hostService.get().send().host();
+            System.out.println(host.id() + ", " + host.name() + ", "+  host.status().value());
+
+            if(host.status() != HostStatus.MAINTENANCE){
+                hostService.deactivate().send();
+                log.info(host.status().value());
+            }
+
+            log.info("유지보수 정지");
+        }catch (Exception e){
+            log.error("error ", e);
+        }
+    }
+
+    // 활성
+    @Override
+    public void active(String id) {
+        SystemService systemService = admin.getConnection().systemService();
+        HostService hostService = systemService.hostsService().hostService(id);
+
+        try {
+            Host host = hostService.get().send().host();
+
+            if(host.status() != HostStatus.UP){
+                hostService.activate().send();
+                log.info(host.status().value());
+            }
+
+            log.info("활성");
+        }catch (Exception e){
+            log.error("error ", e);
+        }
+    }
+
+    @Override
+    public void refresh(String id) {
+
     }
 
 

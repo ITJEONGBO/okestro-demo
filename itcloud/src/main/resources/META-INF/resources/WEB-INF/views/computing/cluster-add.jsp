@@ -123,8 +123,6 @@
                 $("input:checkbox[id='virtService']").val(v);
                 $("input:checkbox[id='glusterService']").val(g);
 
-                alert(v + ", " + g);
-
         		$("#add").submit();
         	});
 

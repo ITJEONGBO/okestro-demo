@@ -185,6 +185,36 @@ public class HostController {
 	}
 
 
+	@GetMapping("/computing/host-deactive")
+	public String deactive(Model model, String id){
+		model.addAttribute("id", id);
+		model.addAttribute("name", itHostService.getName(id));
+
+		return "computing/host-deactive";
+	}
+
+	@GetMapping("/computing/host-deactive2")
+	@ResponseBody
+	public void deactive2(Model model, String id){
+		itHostService.deActive(id);
+	}
+
+
+	@GetMapping("/computing/host-active")
+	public String active(Model model, String id){
+		model.addAttribute("id", id);
+		model.addAttribute("name", itHostService.getName(id));
+
+		return "computing/host-active";
+	}
+
+	@GetMapping("/computing/host-active2")
+	@ResponseBody
+	public void active2(String id){
+		itHostService.active(id);
+	}
+
+
 
 
 
