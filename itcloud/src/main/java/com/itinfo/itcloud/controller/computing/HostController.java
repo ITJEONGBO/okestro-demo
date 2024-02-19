@@ -132,6 +132,10 @@ public class HostController {
 
 	@GetMapping("/computing/host-add")
 	public String add(Model model) {
+		List<ClusterVo> cList = itHostService.getClusterList();
+		model.addAttribute("c", cList);
+
+
 		return "computing/host-add";
 	}
 
@@ -151,6 +155,7 @@ public class HostController {
 	@GetMapping("/computing/host-edit")
 	public String edit(Model model, String id) {
 		HostCreateVo hVo = itHostService.getHostCreate(id);
+
 		model.addAttribute("h", hVo);
 		return "computing/host-edit";
 	}
@@ -212,6 +217,20 @@ public class HostController {
 	@ResponseBody
 	public void active2(String id){
 		itHostService.active(id);
+	}
+
+	@GetMapping("/computing/host-refresh")
+	public String refresh(Model model, String id){
+		model.addAttribute("id", id);
+		model.addAttribute("name", itHostService.getName(id));
+
+		return "computing/host-refresh";
+	}
+
+	@GetMapping("/computing/host-refresh2")
+	@ResponseBody
+	public void refresh2(String id){
+		itHostService.refresh(id);
 	}
 
 

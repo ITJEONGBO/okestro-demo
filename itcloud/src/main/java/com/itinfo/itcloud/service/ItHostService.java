@@ -20,6 +20,7 @@ public interface ItHostService {
     List<EventVo> getEvent(String id);
 
 
+    List<ClusterVo> getClusterList();      // cluster리스트 출력
     HostCreateVo getHostCreate(String id);
     boolean addHost(HostCreateVo hostCreateVo);     // 생성
     void editHost(HostCreateVo hostCreateVo);       // 수정
@@ -30,9 +31,11 @@ public interface ItHostService {
     void deActive(String id);       // 유지보수
     void active(String id);         // 활성
     void refresh(String id);        // 새로고침
+
     // 전원관리
-    // 새시작
-    // 시작
-    // 중지
+
+    void reStart(String id);        // 새시작
+    void start(String id);          // 시작
+    void stop(String id);           // 중지
 
 }

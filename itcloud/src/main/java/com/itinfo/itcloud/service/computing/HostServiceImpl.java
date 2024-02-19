@@ -443,6 +443,27 @@ public class HostServiceImpl implements ItHostService {
     }
 
 
+    // host create cluster list 출력
+    @Override
+    public List<ClusterVo> getClusterList() {
+        SystemService systemService = admin.getConnection().systemService();
+        List<ClusterVo> clusterVoList = new ArrayList<>();
+        ClusterVo cVo = null;
+
+        List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
+        for(Cluster cluster : clusterList){
+            cVo = ClusterVo.builder()
+                    .id(cluster.id())
+                    .name(cluster.name())
+//                    .datacenterId(cluster.dataCenter().id())
+                    .datacenterName(systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
+                    .build();
+
+            clusterVoList.add(cVo);
+        }
+        log.info("clusterList");
+        return clusterVoList;
+    }
 
     // edit
     @Override
@@ -450,12 +471,14 @@ public class HostServiceImpl implements ItHostService {
         SystemService systemService = admin.getConnection().systemService();
 
         Host host = systemService.hostsService().hostService(id).get().send().host();
-//        Cluster cluster = systemService.clustersService().clusterService(host.cluster().id()).get().send().cluster();
+        Cluster cluster = systemService.clustersService().clusterService(host.cluster().id()).get().send().cluster();
+        String dcName = systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name();
 
         log.info("getHostsCreate");
 
         return HostCreateVo.builder()
                 .clusterId(host.cluster().id())
+                .datacenterName(dcName)
                 .id(id)
                 .name(host.name())
                 .comment(host.comment())
@@ -543,6 +566,8 @@ public class HostServiceImpl implements ItHostService {
                     .cluster(cluster)
                     .build();
 
+            System.out.println(hostCreateVo.toString());
+
             hostService.update().host(host).send().host();
 
             log.info("host 수정" + host.toString());
@@ -570,8 +595,6 @@ public class HostServiceImpl implements ItHostService {
             return false;
         }
     }
-
-
 
 
 
@@ -617,12 +640,43 @@ public class HostServiceImpl implements ItHostService {
         }
     }
 
+    // 새로고침
     @Override
     public void refresh(String id) {
+        SystemService systemService = admin.getConnection().systemService();
+        HostService hostService = systemService.hostsService().hostService(id);
+
+        try{
+            Host host = hostService.get().send().host();
+            hostService.refresh().send();
+            log.info("refresh " + host.status().value());
+        }catch (Exception e){
+            log.error("error ", e);
+        }
+    }
+
+    // 전원관리
+
+    // 재시작
+    @Override
+    public void reStart(String id) {
+
+    }
+
+    // 시작
+    @Override
+    public void start(String id) {
+
+    }
+
+    // 중지
+    @Override
+    public void stop(String id) {
 
     }
 
 
+    
 
 
     public HostHwVo getHardWare(SystemService systemService, String id){

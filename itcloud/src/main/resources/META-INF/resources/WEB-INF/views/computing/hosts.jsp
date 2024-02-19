@@ -45,11 +45,27 @@
 	}
 
 	function openDeactivate() {
+	    if(hid == ""){
+            alert("호스트를 선택해주세요");
+            return;
+        }
 	    window.open("host-deactive?id=" + hid, "mypopup", "width=400, height=200, top=150, left=200");
     }
 
     function openActivate() {
+	    if(hid == ""){
+            alert("호스트를 선택해주세요");
+            return;
+        }
 	    window.open("host-active?id=" + hid, "mypopup", "width=400, height=200, top=150, left=200");
+    }
+
+    function openRefresh() {
+	    if(hid == ""){
+            alert("호스트를 선택해주세요");
+            return;
+        }
+	    window.open("host-refresh?id=" + hid, "mypopup", "width=400, height=200, top=150, left=200");
     }
 
 </script>
@@ -71,8 +87,14 @@
                     <button type="button" class="btn btn-secondary" onclick="openAdd()">새로 만들기</button>
                     <button type="button" class="btn btn-secondary" onclick="openEdit()">편집</button>
                     <button type="button" class="btn btn-secondary" onclick="openDelete()">삭제</button>
+                    &nbsp;&nbsp;&nbsp;
                     <button type="button" class="btn btn-secondary" onclick="openDeactivate()">유지보수</button>
                     <button type="button" class="btn btn-secondary" onclick="openActivate()">활성</button>
+                    <button type="button" class="btn btn-secondary" onclick="openRefresh()">새로고침</button>
+                    &nbsp;&nbsp;&nbsp;
+                    <button type="button" class="btn btn-secondary" onclick="openRestart()">재시작</button>
+                    <button type="button" class="btn btn-secondary" onclick="openStart()">시작</button>
+                    <button type="button" class="btn btn-secondary" onclick="openStop()">중지</button>
 
                 </div>
                 <br><br>

@@ -28,7 +28,7 @@
         			return;
         		}
 
-        		$("#add").submit();
+        		$("#edit").submit();
         	});
 
 
@@ -56,7 +56,7 @@
         <div>
             <h2>새 호스트</h2>
 
-            <form id="add" autocomplete="off" method="get" action="host-add2">
+            <form id="edit" autocomplete="off" method="get" action="host-edit2">
 
                 <hr>
                 <h3>일반</h3>
@@ -64,38 +64,37 @@
                     <tr>
                         <td id="hostT">호스트 클러스터</td>
                         <td>
-                            <select id="clusterId" name="clusterId">
-                                <c:forEach var="c" items="${c}" varStatus="status">
-                                    <option value="${c.id}">${c.name} (데이터 센터: ${c.datacenterName})</option>
-                                </c:forEach>
-3
+                            <select id="clusterId" name="clusterId" disabled>
+                                    <option value="${h.clusterId}">${h.clusterName} (데이터 센터: ${h.datacenterName})</option>
                             </select>
+                            <input type="hidden" id="clusterId" name="clusterId" value="${h.clusterId}">
                         </td>
                     </tr>
 
+                    <input type="hidden" id="id" name="id" value="${h.id}">
+
                     <tr>
                         <td id="hostT">이름</td>
-                        <td><input type="text" id="name" name="name" size="20"></td>
+                        <td><input type="text" id="name" name="name" size="20" value="${h.name}"></td>
                     </tr>
 
                     <tr>
                         <td id="hostT">코멘트</td>
-                        <td><input type="text" id="comment" name="comment"></td>
+                        <td><input type="text" id="comment" name="comment" value="${h.comment}"></td>
                     </tr>
                     <tr>
                         <td id="hostT">호스트이름/IP</td>
-                        <td><input type="text" id="hostIp" name="hostIp"></td>
+                        <td><input type="text" id="hostIp" name="hostIp" value="${h.hostIp}" disabled></td>
+                        <input type="hidden" id="hostIp" name="hostIp" value="${h.hostIp}">
                     </tr>
                     <tr>
                         <td id="hostT">SSH 포트</td>
-                        <td><input type="text" id="sshPort" name="sshPort" value="22"></td>
+                        <td><input type="text" id="sshPort" name="sshPort" value="22"  value="${h.sshPort}" disabled></td>
+                        <input type="hidden" id="sshPort" name="sshPort" value="${h.sshPort}">
                     </tr>
 
                     </tr>
 <!--
-                    <tr>
-                        <td><br></td>
-                    </tr>
                     <tr>
                         <td colspan="2"><input type="checkbox" id="active" name="active" value="true" checked/> 설치 후 호스트를 활성화</td>
                     </tr>
@@ -113,11 +112,15 @@
                     <tr>
                         <td>사용자 이름</td>
                         <td><input type="text" id="sshName" name="sshName" value="root" disabled></td>
+                        <input type="hidden" id="sshPw" name="sshPw" value="${h.sshPw}">
                     </tr>
+
+                <!--
                     <tr>
                         <td>암호</td>
                         <td><input type="text" id="sshPw" name="sshPw" ></td>
                     </tr>
+                -->
 
                     <!--
                         <tr>
@@ -227,10 +230,10 @@
                 <h3>SPM</h3>
                 <table>
                     <tr>
-                        <td> <input type="radio" id="spm" name="spm" value="-1"/> 없음 </td>
-                        <td> <input type="radio" id="spm" name="spm" value="2"/> 낮음 </td>
-                        <td> <input type="radio" id="spm" name="spm" value="5" checked/> 표준 </td>
-                        <td> <input type="radio" id="spm" name="spm" value="7"/> 높음 </td>
+                        <td> <input type="radio" id="spm" name="spm" value="-1" <c:if test="${h.spm eq '-1'}">checked</c:if>/> 없음 </td>
+                        <td> <input type="radio" id="spm" name="spm" value="2" <c:if test="${h.spm eq '2'}">checked</c:if>/> 낮음 </td>
+                        <td> <input type="radio" id="spm" name="spm" value="5" <c:if test="${h.spm eq '5'}">checked</c:if>/> 표준 </td>
+                        <td> <input type="radio" id="spm" name="spm" value="7" <c:if test="${h.spm eq '7'}">checked</c:if>/> 높음 </td>
                     </tr>
                 </table>
                 <hr>
@@ -241,8 +244,8 @@
                         <td>호스트 엔진 배치 작업 선택</td>
                         <td>
                             <select id="hostEngine" name="hostEngine">
-                                <option value="true">배포</option>
-                                <option value="false">없음</option>
+                                <option value="true" <c:if test="${h.hostEngine eq 'true'}">selected</c:if>>배포</option>
+                                <option value="false" <c:if test="${h.hostEngine eq 'false'}">selected</c:if>>없음</option>
                             </select>
                         </td>
                     </tr>
@@ -254,7 +257,7 @@
                     <tr>
                         <td>선호도 그룹을 선택하십시오</td>
                         <td>
-                            <select id="hostEngine" name="hostEngine">
+                            <select id="affinityGroup" name="affinityGroup">
                                 <option value="false">없음</option>
                                 <option value="true">배포</option>
                             </select>
@@ -273,7 +276,7 @@
                     <tr>
                         <td>선호도 레이블 선택</td>
                         <td>
-                            <select id="hostEngine" name="hostEngine">
+                            <select id="affinityLabel" name="affinityLabel">
                                 <option value="false">없음</option>
                                 <option value="true">배포</option>
                             </select>
