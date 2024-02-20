@@ -32,8 +32,7 @@ public interface ItHostService {
     void active(String id);         // 활성
     void refresh(String id);        // 새로고침
 
-    // 전원관리
-
+    // ssh 관리
     void reStart(String id);        // 새시작
     void start(String id);          // 시작
     void stop(String id);           // 중지

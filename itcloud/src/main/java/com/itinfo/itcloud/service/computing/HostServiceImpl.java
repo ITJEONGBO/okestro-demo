@@ -655,28 +655,55 @@ public class HostServiceImpl implements ItHostService {
         }
     }
 
-    // 전원관리
-
+    // ssh 관리
     // 재시작
     @Override
     public void reStart(String id) {
+        SystemService systemService = admin.getConnection().systemService();
+        HostService hostService = systemService.hostsService().hostService(id);
 
+        try {
+            Host host = hostService.get().send().host();
+
+            System.out.println(FenceType.RESTART.value());
+            hostService.fence().fenceType(FenceType.RESTART.value()).send().powerManagement();
+
+            log.info("restart");
+        }catch (Exception e){
+            log.error("error: ", e);
+        }
     }
 
     // 시작
     @Override
     public void start(String id) {
+        SystemService systemService = admin.getConnection().systemService();
+        HostService hostService = systemService.hostsService().hostService(id);
 
+        try {
+            Host host = hostService.get().send().host();
+
+            log.info("start");
+        }catch (Exception e){
+            log.error("error: ", e);
+        }
     }
 
     // 중지
     @Override
     public void stop(String id) {
+        SystemService systemService = admin.getConnection().systemService();
+        HostService hostService = systemService.hostsService().hostService(id);
 
+        try {
+            Host host = hostService.get().send().host();
+
+            log.info("stop");
+        }catch (Exception e){
+            log.error("error: ", e);
+        }
     }
 
-
-    
 
 
     public HostHwVo getHardWare(SystemService systemService, String id){

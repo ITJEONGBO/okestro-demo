@@ -513,8 +513,8 @@ public class ClusterServiceImpl implements ItClusterService {
                 .switchType(cluster.switchType())
                 .firewallType(cluster.firewallType())
                 .logMaxMemory(cluster.logMaxMemoryUsedThresholdAsInteger())
-                .virtService(cluster.virtService())
-                .glusterService(cluster.glusterService())
+//                .virtService(cluster.virtService())
+//                .glusterService(cluster.glusterService())
                 .networkId(networkId)
                 .networkName(networkName)
                 // migration
@@ -561,8 +561,7 @@ public class ClusterServiceImpl implements ItClusterService {
                     // /ovirt-engine/api/clusters/a66d4186-43b8-4b9c-8231-4437372b9846/externalnetworkproviders
                     // 일단 기본으로 들어가게는 해두긴했음, 근데 openstacknetworkprovider에 있는 기본을 get(0)으로 넣어둔거라 애매하네
                     .externalNetworkProviders(openStackNetworkProvider)
-                    .virtService(cVo.getVirtService())
-                    .glusterService(cVo.getGlusterService())
+                    .virtService(true)
 //                     추가 난수 생성기 소스
                     .errorHandling( new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()) )   // 복구정책
                     .migration(new MigrationOptionsBuilder()
@@ -570,6 +569,9 @@ public class ClusterServiceImpl implements ItClusterService {
                             .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))    // 대역폭
                             .encrypted(cVo.getEncrypted())      // 암호화
                     )
+                    .fencingPolicy(new FencingPolicyBuilder()
+                            .skipIfConnectivityBroken(new SkipIfConnectivityBrokenBuilder().enabled(true))
+                            .skipIfSdActive(new SkipIfSdActiveBuilder().enabled(true)))
                     .build();
 
             clustersService.add().cluster(cluster).send();
@@ -617,9 +619,7 @@ public class ClusterServiceImpl implements ItClusterService {
                     // /ovirt-engine/api/clusters/a66d4186-43b8-4b9c-8231-4437372b9846/externalnetworkproviders
                     // 일단 기본으로 들어가게는 해두긴했음, 근데 openstacknetworkprovider에 있는 기본을 get(0)으로 넣어둔거라 애매하네
                     .externalNetworkProviders(openStackNetworkProvider)
-                    .virtService(cVo.getVirtService())
-                    .glusterService(cVo.getGlusterService())
-//                     추가 난수 생성기 소스
+                    .virtService(true)
                     .errorHandling( new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()) )   // 복구정책
                     .migration(new MigrationOptionsBuilder()
                             // 마이그레이션 정책
@@ -627,8 +627,6 @@ public class ClusterServiceImpl implements ItClusterService {
                             .encrypted(cVo.getEncrypted())      // 암호화
                     )
                     .build();
-
-            log.info("---" + cVo.toString());
             clusterService.update().cluster(cluster).send();
 
         }catch (Exception e){
@@ -645,11 +643,9 @@ public class ClusterServiceImpl implements ItClusterService {
         ClusterService clusterService = systemService.clustersService().clusterService(id);
         String name = clusterService.get().send().cluster().name();
 
-        log.info("delete cluster: {}", name);
         try {
             clusterService.remove().send();
-
-            log.info("fin");
+            log.info("delete cluster: {}", name);
             return clustersService.list().send().clusters().size() == ( cList.size()-1 );
         }catch (Exception e){
             log.error("error ", e);

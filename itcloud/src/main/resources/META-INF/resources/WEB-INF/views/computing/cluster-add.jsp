@@ -108,7 +108,6 @@
             });
 
 
-
         	$("#ok").click(function(){
 
         		if($("#name").val() == ''){
@@ -147,9 +146,9 @@
         <div>
             <h2>새 클러스터</h2>
             <form id="add" autocomplete="off" method="get" action="cluster-add2">
-                <h3>일반</h3>
                 <hr><br>
 
+                <h3>일반</h3>
                 <table>
                     <tr>
                         <td>데이터 센터</td>
@@ -317,42 +316,18 @@
                         <td>로그의 최대 메모리 한계</td>
                         <td> &emsp;<input type="text" id="logMaxMemory" name="logMaxMemory" size="10" value="95"></td>
                         <td>
-                            <select id="logMemory" name="logMemoryUnit" >
+                            <select id="logMemoryType" name="logMemoryType" >
                                 <option value="percent">%</option>
-                            <!-- <option value="MB">MB</option> -->
+                                <option value="MB">MB</option>
                             </select>
                         </td>
                     </tr>
 
-
-                    <tr>
-                        <td colspan="2">
-                            <input type="checkbox" id="virtService" name="virtService" checked/>&emsp; Virt 서비스 활성화
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td colspan="2">
-                            <input type="checkbox" id="glusterService" name="glusterService"/>&emsp; Gluster 서비스 활성화
-                        </td>
-                    </tr>
-                <!--
-                    <tr>
-                        <td colspan="2"><p>추가 난수 생성기 소스 </p></td>
-                    </tr>
-
-                    <tr>
-                        <td colspan="2"><input type="checkbox" id="hwrng" name="hwrng"/>&emsp; /dev/hwrng 소스</td>
-                    </tr>
-                -->
-
                 </table>
-
-                <hr><br>
+                <hr>
 
                 <div>
                 <h3>마이그레이션 정책</h3>
-                <br>
 
                 마이그레이션 정책 &emsp;
                 <select id="policy" name="policy" >
@@ -397,8 +372,7 @@
                 -->
 
                 Number of VM Migration Connections <br>
-                </div>
-                <br><br><br>
+                </div><br>
 
                 <input type="button" id="ok" value="OK">
                 <input type="reset" id="cancel" value="취소">

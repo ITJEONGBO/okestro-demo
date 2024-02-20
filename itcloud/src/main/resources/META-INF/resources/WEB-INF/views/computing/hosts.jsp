@@ -68,6 +68,14 @@
 	    window.open("host-refresh?id=" + hid, "mypopup", "width=400, height=200, top=150, left=200");
     }
 
+    function openRestart() {
+        if(hid == ""){
+            alert("호스트를 선택해주세요");
+            return;
+        }
+        window.open("host-restart?id=" + hid, "mypopup", "width=400, height=200, top=150, left=200");
+    }
+
 </script>
 <%@ include file="../base/header.jsp" %>
 
@@ -92,9 +100,12 @@
                     <button type="button" class="btn btn-secondary" onclick="openActivate()">활성</button>
                     <button type="button" class="btn btn-secondary" onclick="openRefresh()">새로고침</button>
                     &nbsp;&nbsp;&nbsp;
+                    <label>ssh 관리</label>
                     <button type="button" class="btn btn-secondary" onclick="openRestart()">재시작</button>
                     <button type="button" class="btn btn-secondary" onclick="openStart()">시작</button>
                     <button type="button" class="btn btn-secondary" onclick="openStop()">중지</button>
+                    <button type="button" class="btn btn-secondary" onclick="">SPM으로 선택</button>
+                    <button type="button" class="btn btn-secondary" onclick="">로컬 스토리지 설정</button>
 
                 </div>
                 <br><br>

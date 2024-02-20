@@ -107,6 +107,10 @@
             });
 
 
+            $("#ok").click(function(){
+
+            });
+
         	$("#ok").click(function(){
 
         		if($("#name").val() == ''){
@@ -114,12 +118,6 @@
         			$("#name").focus();
         			return;
         		}
-
-        		var v = $("input:checkbox[id='virtService']").is(":checked") ;
-                var g = $("input:checkbox[id='glusterService']").is(":checked") ;
-
-                $("input:checkbox[id='virtService']").val(v);
-                $("input:checkbox[id='glusterService']").val(g);
 
         		$("#edit").submit();
         	});
@@ -146,10 +144,10 @@
     <div style="padding: 1rem;">
         <div>
             <h2>클러스터 수정</h2>
-            <form id="edit" autocomplete="off" method="get" action="cluster-edit2">
-                <h3>일반</h3>
-                <br>
 
+            <form id="edit" autocomplete="off" method="get" action="cluster-edit2">
+                <hr>
+                <h3>일반</h3>
                 <table>
                     <tr>
                         <td>데이터 센터</td>
@@ -280,29 +278,6 @@
                         </td>
                     </tr>
 
-
-                   <tr>
-                        <td colspan="2">
-                            <input type="checkbox" id="virtService" name="virtService" <c:if test="${c.virtService eq 'true'}">checked</c:if>/>&emsp; Virt 서비스 활성화
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td colspan="2">
-                            <input type="checkbox" id="glusterService" name="glusterService" <c:if test="${c.glusterService eq 'true'}">checked</c:if> />&emsp; Gluster 서비스 활성화
-                        </td>
-                        <td>${c.virtService} / ${c.glusterService}</td>
-                    </tr>
-<!--
-                    <tr>
-                        <td colspan="2"><p>추가 난수 생성기 소스 </p></td>
-                    </tr>
-
-                    <tr>
-                        <td colspan="2"><input type="checkbox" id="hwrng" name="hwrng" value=""/>&emsp; /dev/hwrng 소스</td>
-                    </tr>
-                    -->
-
                 </table>
 
                 <hr><br>
@@ -352,10 +327,8 @@
                         <option value="CUSTOM">Custom</option>
                     </select><br><br>
             -->
-
                 Number of VM Migration Connections <br>
-
-                <br><br><br>
+                <br>
 
                 <input type="button" id="ok" value="OK">
                 <input type="reset" id="cancel" value="취소">

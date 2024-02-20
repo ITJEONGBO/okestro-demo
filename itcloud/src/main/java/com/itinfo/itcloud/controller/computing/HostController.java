@@ -205,6 +205,22 @@ public class HostController {
 	}
 
 
+	@GetMapping("/computing/host-restart")
+	public String restart(Model model, String id){
+		model.addAttribute("id", id);
+		model.addAttribute("name", itHostService.getName(id));
+
+		return "computing/host-restart";
+	}
+
+	@GetMapping("/computing/host-restart2")
+	@ResponseBody
+	public void restart2(Model model, String id){
+		itHostService.reStart(id);
+	}
+
+
+
 	@GetMapping("/computing/host-active")
 	public String active(Model model, String id){
 		model.addAttribute("id", id);
