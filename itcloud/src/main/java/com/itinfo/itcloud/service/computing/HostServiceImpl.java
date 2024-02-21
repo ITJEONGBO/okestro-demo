@@ -512,6 +512,7 @@ public class HostServiceImpl implements ItHostService {
                             .rootPassword(hostCreateVo.getSshPw())   // 암호
                             .spm(new SpmBuilder().priority(hostCreateVo.getSpm()))
                             .hostedEngine(new HostedEngineBuilder().active(hostCreateVo.isHostEngine()))
+//                            .powerManagement(new PowerManagementBuilder().enabled(true))    // 전원관리
                             .cluster(cluster)
                             .build();
             } else {
@@ -655,6 +656,7 @@ public class HostServiceImpl implements ItHostService {
         }
     }
 
+
     // ssh 관리
     // 재시작
     @Override
@@ -662,10 +664,14 @@ public class HostServiceImpl implements ItHostService {
         SystemService systemService = admin.getConnection().systemService();
         HostService hostService = systemService.hostsService().hostService(id);
 
-        try {
-            Host host = hostService.get().send().host();
+        // restart 하기 전, maintenance 인지 확인
+        /*
+        ssh 관리
+            oVirt의 엔진 SDK를 통해 SSH를 통해 호스트를 재부팅하는 기능은 기본적으로 제공되지 않습니다.
+            oVirt 엔진 SDK는 호스트를 관리하기 위한 API를 제공하지만, SSH를 통한 호스트 재부팅과 같은 기능은 포함되어 있지 않습니다.
+        */
 
-            System.out.println(FenceType.RESTART.value());
+        try {
             hostService.fence().fenceType(FenceType.RESTART.value()).send().powerManagement();
 
             log.info("restart");
