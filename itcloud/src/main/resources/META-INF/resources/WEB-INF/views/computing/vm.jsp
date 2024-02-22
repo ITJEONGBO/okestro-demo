@@ -31,7 +31,7 @@
                         이름: ${vm.name} <br>
                         설명: ${vm.description} <br>
                         상태: ${vm.status} <br>
-                        업타임: <br>
+                        업타임: ${vm.upTime}<br>
                         템플릿: ${vm.templateName}<br>
                         운영 시스템: ${vm.osSystem} <br><br>
 
@@ -55,7 +55,7 @@
                         작성자: <br>
                         실행 호스트: ${vm.hostName}<br>
                         사용자 정의 속성: <br>
-                        클러스터 호환 버전: <br> 가상머신에 해당하는 클러스터버전 가져오기
+                        클러스터 호환 버전: 가상머신에 해당하는 클러스터버전 가져오기 <br>
                         가상 머신의 ID: ${vm.id} <br><br>
 
                         FQDN: ${vm.fqdn} <br>

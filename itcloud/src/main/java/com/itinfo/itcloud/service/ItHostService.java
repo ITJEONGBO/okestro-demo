@@ -22,10 +22,10 @@ public interface ItHostService {
 
     List<ClusterVo> getClusterList();      // cluster리스트 출력
     HostCreateVo getHostCreate(String id);
+
     boolean addHost(HostCreateVo hostCreateVo);     // 생성
     void editHost(HostCreateVo hostCreateVo);       // 수정
     boolean deleteHost(String id);                  // 삭제
-
 
 
     void deActive(String id);       // 유지보수

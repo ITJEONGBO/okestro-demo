@@ -93,53 +93,61 @@ public class TemplateServiceImpl implements ItTemplateService {
         VmVo vmVo = null;
         Date now = new Date(System.currentTimeMillis());
 
-        List<Vm> vmList =
-                ((VmsService.ListResponse) systemService.vmsService().list().send()).vms();
+        List<Vm> vmList = systemService.vmsService().list().send().vms();
 
         for (Vm vm : vmList) {
-            if (vm.templatePresent() && vm.template().id().equals(id)) {
-                vmVo = new VmVo();
-                vmVo.setHostName( vm.hostPresent() ? ((HostService.GetResponse)systemService.hostsService().hostService(vm.host().id()).get().send()).host().name() : null);
-                vmVo.setId(vm.id());
-                vmVo.setName(vm.name());
-                vmVo.setStatus(vm.status().value());
-                vmVo.setFqdn(vm.fqdn());
+            Host host = systemService.hostsService().hostService(vm.host().id()).get().send().host();
 
-                // uptime 계산
-//                if(vm.status().value().equals("up") && vm.startTimePresent()) {
-//                    vmVo.setUpTime( (now.getTime() - vm.startTime().getTime()) / (1000*60*60*24) );
-//                }
-//                else if(vm.status().value().equals("up") && vm.creationTimePresent()) {
-//                    vmVo.setUpTime( (now.getTime() - vm.creationTime().getTime()) / (1000*60*60*24) );
-//                }
+            if (vm.hostPresent() && vm.host().id().equals(id)) {
+                List<Statistic> statisticList = systemService.vmsService().vmService(vm.id()).statisticsService().list().send().statistics();
+                String upTime = null;
+                for(Statistic statistic : statisticList) {
+                    long hour = 0;
+                    if (statistic.name().equals("elapsed.time")) {
+                        hour = statistic.values().get(0).datum().longValue() / (60*60);      // 시간
 
-
-                if(!vm.status().value().equals("down")){
-                    // ipv4 부분. vms-nic-reporteddevice
-                    List<Nic> nicList =
-                            ((VmNicsService.ListResponse) systemService.vmsService().vmService(vm.id()).nicsService().list().send()).nics();
-
-                    for (Nic nic : nicList){
-                        List<ReportedDevice> reportedDeviceList
-                                = ((VmReportedDevicesService.ListResponse)systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).reportedDevicesService().list().send()).reportedDevice();
-                        for (ReportedDevice r : reportedDeviceList){
-                            vmVo.setIpv4(r.ips().get(0).address());
-                            vmVo.setIpv6(r.ips().get(1).address());
+                        if(hour > 24){
+                            upTime = hour/24 + "일";
+                        }else if( hour > 1 && hour < 24){
+                            upTime = hour + "시간";
+                        }else {
+                            upTime = (statistic.values().get(0).datum().longValue() / 60) + "분";
                         }
                     }
-                }else{
-                    vmVo.setIpv4("");
-                    vmVo.setIpv6("");
                 }
+
+                // ipv4, ipv6
+                List<Nic> nicList = systemService.vmsService().vmService(vm.id()).nicsService().list().send().nics();
+                String ipv4 = null;
+                String ipv6 = null;
+                for (Nic nic : nicList) {
+                    List<ReportedDevice> reportedDeviceList = systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
+                    for (ReportedDevice r : reportedDeviceList) {
+                        ipv4 = !vm.status().value().equals("down") ? r.ips().get(0).address() : null;
+                        ipv6 = !vm.status().value().equals("down") ? r.ips().get(1).address() : null;
+                    }
+                }
+
+                vmVo = VmVo.builder()
+                        .hostName(vm.hostPresent() ? host.name() : null)
+                        .id(vm.id())
+                        .name(vm.name())
+                        .status(vm.status().value())
+                        .fqdn(vm.fqdn())
+                        .upTime(upTime)
+                        .ipv4(ipv4)
+                        .ipv6(ipv6)
+                        .build();
+
                 vmVoList.add(vmVo);
             } else if(vm.placementPolicy().hostsPresent() && vm.placementPolicy().hosts().get(0).id().equals(id)){
                 // vm이 down 상태일 경우
-                vmVo = new VmVo();
-                vmVo.setId(vm.id());
-                vmVo.setName(vm.name());
-                vmVo.setStatus(vm.status().value());
-                vmVo.setClusterName( ((ClusterService.GetResponse)systemService.clustersService().clusterService(vm.cluster().id()).get().send()).cluster().name() );
-
+                vmVo = VmVo.builder()
+                        .id(vm.id())
+                        .name(vm.name())
+                        .status(vm.status().value())
+                        .clusterName(systemService.clustersService().clusterService(vm.cluster().id()).get().send().cluster().name())
+                        .build();
                 vmVoList.add(vmVo);
             }
         }

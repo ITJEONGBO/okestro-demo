@@ -1,12 +1,14 @@
 package com.itinfo.itcloud.service.computing;
 
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.create.*;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItVmService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.Connection;
+import org.ovirt.engine.sdk4.builders.*;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +34,9 @@ public class VmServiceImpl implements ItVmService {
     public String getName(String id){
         SystemService systemService = admin.getConnection().systemService();
 
-        return ((VmService.GetResponse)systemService.vmsService().vmService(id).get().send()).vm().name();
+        return systemService.vmsService().vmService(id).get().send().vm().name();
     }
+
 
     @Override
     public List<VmVo> getList() {
@@ -48,63 +51,58 @@ public class VmServiceImpl implements ItVmService {
         List<Vm> vmList = ((VmsService.ListResponse)systemService.vmsService().list().send()).vms();
 
         for(Vm vm : vmList){
-            vmVo = new VmVo();
+            Cluster cluster = systemService.clustersService().clusterService(vm.cluster().id()).get().send().cluster();
+            DataCenter dataCenter = systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter();
 
-            vmVo.setStatus(vm.status().value());
-            vmVo.setId(vm.id());
-            vmVo.setName(vm.name());
-            vmVo.setDescription(vm.description());
-
-            // host
-            if(vm.hostPresent() && vm.status().value().equals("up")) {
-                vmVo.setHostId(vm.host().id());
-                vmVo.setHostName(((HostService.GetResponse) systemService.hostsService().hostService(vm.host().id()).get().send()).host().name());
-            }
-
-            Cluster cluster =
-                    ((ClusterService.GetResponse)systemService.clustersService().clusterService(vm.cluster().id()).get().send()).cluster();
-            vmVo.setClusterId(cluster.id());
-            vmVo.setClusterName(cluster.name());
-
-            vmVo.setDatacenterId(cluster.dataCenter().id());
-            vmVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send()).dataCenter().name() );
-            vmVo.setFqdn(vm.fqdn());
-
-            // uptime 계산
-            //  (1000*60*60*24) = 일
-            //  (1000*60*60) = 시간
-            //  (1000*60) = 분
+            // uptime 계산   (1000*60*60*24) = 일  / (1000*60*60) = 시간 /  (1000*60) = 분
             // https://192.168.0.80/ovirt-engine/api/vms/c9c1c52d-d2a4-4f2a-93fe-30200f1e0bff/statistics  elapsed.time
-            List<Statistic> statisticList =
-                    ((StatisticsService.ListResponse)systemService.vmsService().vmService(vm.id()).statisticsService().list().send()).statistics();
+            List<Statistic> statisticList = systemService.vmsService().vmService(vm.id()).statisticsService().list().send().statistics();
 
+            String upTime = null;
             for(Statistic statistic : statisticList) {
                 long hour = 0;
                 if (statistic.name().equals("elapsed.time")) {
-                    hour = statistic.values().get(0).datum().longValue() / (60*60);      //시간
-                    System.out.println(vm.id() + " " +hour);
+                    hour = statistic.values().get(0).datum().longValue() / (60*60);      // 시간
 
                     if(hour > 24){
-                        vmVo.setUpTime(hour/24 + "일");
+                        upTime = hour/24 + "일";
                     }else if( hour > 1 && hour < 24){
-                        vmVo.setUpTime(hour + "시간");
+                        upTime = hour + "시간";
                     }else {
-                        vmVo.setUpTime( (statistic.values().get(0).datum().longValue() / 60) + "분");
+                        upTime = (statistic.values().get(0).datum().longValue() / 60) + "분";
                     }
                 }
             }
 
             // ipv4, ipv6
-            List<Nic> nicList =
-                    ((VmNicsService.ListResponse) systemService.vmsService().vmService(vm.id()).nicsService().list().send()).nics();
+            List<Nic> nicList = systemService.vmsService().vmService(vm.id()).nicsService().list().send().nics();
+
+            String ipv4 = null;
+            String ipv6 = null;
             for (Nic nic : nicList){
-                List<ReportedDevice> reportedDeviceList
-                        = ((VmReportedDevicesService.ListResponse)systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).reportedDevicesService().list().send()).reportedDevice();
+                List<ReportedDevice> reportedDeviceList = systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
                 for (ReportedDevice r : reportedDeviceList){
-                    vmVo.setIpv4(vm.status().value().equals("up") ? r.ips().get(0).address() : null);
-                    vmVo.setIpv6(vm.status().value().equals("up") ? r.ips().get(1).address() : null);
+                    ipv4 = vm.status().value().equals("up") ? r.ips().get(0).address() : null;
+                    ipv6 = vm.status().value().equals("up") ? r.ips().get(1).address() : null;
                 }
             }
+
+            vmVo = VmVo.builder()
+                    .status(vm.status().value())
+                    .id(vm.id())
+                    .name(vm.name())
+                    .description(vm.description())
+                    .hostId(vm.hostPresent() && vm.status().value().equals("up") ? vm.host().id() : null)
+                    .hostName(vm.hostPresent() && vm.status().value().equals("up") ? systemService.hostsService().hostService(vm.host().id()).get().send().host().name() : null)
+                    .clusterId(cluster.id())
+                    .clusterName(cluster.name())
+                    .datacenterId(cluster.dataCenterPresent() ? dataCenter.id() : null)
+                    .datacenterName(dataCenter.name())
+                    .fqdn(vm.fqdn())
+                    .upTime(upTime)
+                    .ipv4(ipv4)
+                    .ipv6(ipv6)
+                    .build();
 
             vmVoList.add(vmVo);
         }
@@ -114,55 +112,60 @@ public class VmServiceImpl implements ItVmService {
     @Override
     public VmVo getInfo(String id) {
         SystemService systemService = admin.getConnection().systemService();
+        Vm vm = systemService.vmsService().vmService(id).get().send().vm();
 
-        VmVo vmVo = new VmVo();
-        vmVo.setId(id);
-
-        Vm vm = ((VmService.GetResponse)systemService.vmsService().vmService(id).get().send()).vm();
-
-        vmVo.setStatus(vm.status().value());    // 상태는 두번표시됨. 그림과 글자로
-        vmVo.setName(vm.name());
-        vmVo.setDescription(vm.description());
-        vmVo.setTemplateName( ((TemplateService.GetResponse)systemService.templatesService().templateService(vm.template().id()).get().send()).template().name() );
+        String hostName = null;
 
         if(vm.hostPresent()){
-            vmVo.setHostName( ((HostService.GetResponse) systemService.hostsService().hostService(vm.host().id()).get().send()).host().name() );
+            hostName = systemService.hostsService().hostService(vm.host().id()).get().send().host().name();
         }else if(!vm.hostPresent() && vm.placementPolicy().hostsPresent()){
-            vmVo.setHostName(((HostService.GetResponse) systemService.hostsService().hostService(vm.placementPolicy().hosts().get(0).id()).get().send()).host().name());
+            hostName = systemService.hostsService().hostService(vm.placementPolicy().hosts().get(0).id()).get().send().host().name();
         }
 
-        vmVo.setOsSystem(vm.os().type());
-        vmVo.setChipsetFirmwareType(vm.bios().type().value());
-        vmVo.setPriority(vm.highAvailability().priorityAsInteger());  // 우선순위
-        vmVo.setOptimizeOption(vm.type().value());  // 최적화 옵션
+        List<Statistic> statisticList = systemService.vmsService().vmService(vm.id()).statisticsService().list().send().statistics();
 
-        vmVo.setMemory(vm.memory());
-        vmVo.setMemoryActual(vm.memoryPolicy().guaranteed());
+        String upTime = null;
+        for(Statistic statistic : statisticList) {
+            long hour = 0;
+            if (statistic.name().equals("elapsed.time")) {
+                hour = statistic.values().get(0).datum().longValue() / (60*60);      // 시간
 
-        // 게스트os의 여유/캐시+버퍼된 메모리
+                if(hour > 24){
+                    upTime = hour/24 + "일";
+                }else if( hour > 1 && hour < 24){
+                    upTime = hour + "시간";
+                }else {
+                    upTime = (statistic.values().get(0).datum().longValue() / 60) + "분";
+                }
+            }
+        }
 
-        vmVo.setCpuTopologyCore(vm.cpu().topology().coresAsInteger());
-        vmVo.setCpuTopologySocket(vm.cpu().topology().socketsAsInteger());
-        vmVo.setCpuTopologyThread(vm.cpu().topology().threadsAsInteger());
-        vmVo.setCpuCoreCnt(vmVo.getCpuTopologyCore()* vmVo.getCpuTopologySocket()* vmVo.getCpuTopologyThread());
-
-        // 게스트 cpu수
-        // 게스트 cpu
-        // 고가용성
-
-        vmVo.setMonitor(vm.display().monitorsAsInteger());      // 모니터 수
-        vmVo.setUsb(vm.usb().enabled());   // usb
-        // 작성자
-        // 소스
-
-        // 사용자 정의 속성
-        // 클러스터 호환 버전
-        vmVo.setFqdn(vm.fqdn());
-        vmVo.setHwTimeOffset(vm.timeZone().name());     // 하드웨어 클럭의 시간 오프셋
-
-//        vmVo.setStartTime(vm.startTimePresent() ? vm.startTime() : null);
-
-        return vmVo;
+        return VmVo.builder()
+                .id(id)
+                .name(vm.name())
+                .description(vm.description())
+                .status(vm.status().value())
+                .upTime(upTime)
+                .templateName(systemService.templatesService().templateService(vm.template().id()).get().send().template().name())
+                .hostName(hostName)
+                .osSystem(vm.os().type())
+                .chipsetFirmwareType(vm.bios().type().value())
+                .priority(vm.highAvailability().priorityAsInteger())
+                .optimizeOption(vm.type().value())
+                .memory(vm.memory())
+                .memoryActual(vm.memoryPolicy().guaranteed())
+                // 게스트os의 여유/캐시+버퍼된 메모리
+                .cpuTopologyCore(vm.cpu().topology().coresAsInteger())
+                .cpuTopologySocket(vm.cpu().topology().socketsAsInteger())
+                .cpuTopologyThread(vm.cpu().topology().threadsAsInteger())
+                .cpuCoreCnt(vm.cpu().topology().coresAsInteger() * vm.cpu().topology().socketsAsInteger() * vm.cpu().topology().threadsAsInteger())
+                // 게스트 cpu수, 게스트 cpu, 고가용성
+                .monitor(vm.display().monitorsAsInteger())
+                .usb(vm.usb().enabled())
+                // 작성자, 소스, 사용자 정의 속성, 클러스터 호환버전
+                .fqdn(vm.fqdn())
+                .hwTimeOffset(vm.timeZone().name())
+                .build();
     }
 
     @Override
@@ -371,8 +374,7 @@ public class VmServiceImpl implements ItVmService {
             agVo.setVmList(vmNames);
 
             // 호스트 멤버 (수정 필요)
-            List<Host> hostList =
-                    ((AffinityGroupHostsService.ListResponse)systemService.clustersService().clusterService(vm.cluster().id()).affinityGroupsService().groupService(a.id()).hostsService().list().send()).hosts();
+            List<Host> hostList = systemService.clustersService().clusterService(vm.cluster().id()).affinityGroupsService().groupService(a.id()).hostsService().list().send().hosts();
             List<String> hostNames = new ArrayList<>();
             for(Host host : hostList){
                 hostNames.add(host.name());
@@ -381,7 +383,7 @@ public class VmServiceImpl implements ItVmService {
 
 
             // 가상머신 레이블
-            List<AffinityLabel> vmLabel = ((AffinityGroupVmLabelsService.ListResponse) systemService.clustersService().clusterService(vm.cluster().id()).affinityGroupsService().groupService(a.id()).vmLabelsService().list().send()).labels();
+            List<AffinityLabel> vmLabel = systemService.clustersService().clusterService(vm.cluster().id()).affinityGroupsService().groupService(a.id()).vmLabelsService().list().send().labels();
             List<String> vms = new ArrayList<>();
             for(AffinityLabel affinityLabel : vmLabel) {
                 if(affinityLabel != null){
@@ -391,7 +393,7 @@ public class VmServiceImpl implements ItVmService {
             agVo.setVmLabels(vms);
 
             // 호스트 레이블
-            List<AffinityLabel> hostLabel = ((AffinityGroupHostLabelsService.ListResponse)systemService.clustersService().clusterService(vm.cluster().id()).affinityGroupsService().groupService(a.id()).hostLabelsService().list().send()).labels();
+            List<AffinityLabel> hostLabel = systemService.clustersService().clusterService(vm.cluster().id()).affinityGroupsService().groupService(a.id()).hostLabelsService().list().send().labels();
             List<String> hosts = new ArrayList<>();
             for(AffinityLabel affinityLabel : hostLabel){
                 if(affinityLabel != null){
@@ -531,4 +533,179 @@ public class VmServiceImpl implements ItVmService {
     }
 
 
+    // vm cluster list
+    @Override
+    public List<ClusterVo> getClusterList() {
+        SystemService systemService = admin.getConnection().systemService();
+
+        List<ClusterVo> clusterVoList = new ArrayList<>();
+        ClusterVo cVo = null;
+
+        List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
+        for(Cluster cluster : clusterList){
+            cVo = ClusterVo.builder()
+                    .id(cluster.id())
+                    .name(cluster.name())
+                    .datacenterName(systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
+                    .build();
+
+            clusterVoList.add(cVo);
+        }
+        log.info("clusterList");
+        return clusterVoList;
+    }
+
+    @Override
+    public VmCreateVo getVmCreate(String id) {
+        SystemService systemService = admin.getConnection().systemService();
+
+        Vm vm = systemService.vmsService().vmService(id).get().send().vm();
+        Cluster cluster = systemService.clustersService().clusterService(vm.cluster().id()).get().send().cluster();
+        String dcName = systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name();
+
+        log.info("getVmCreate");
+
+//        return VmCreateVo.builder()
+//                .clusterId(cluster.id())
+//                .clusterName(cluster.name())
+//                .datacenterName(dcName)
+//                .templateId(vm.templatePresent() ? vm.template().id() : null)
+//                .templateName(vm.templatePresent() ? systemService.templatesService().templateService(vm.template().id()).get().send().template().name() : null)
+//                .id(id)      // vm id
+//                .name(vm.name())
+//                .description(vm.description())
+//                .comment(vm.comment())
+//                .statusSave(vm.stateless()) // 상태 비저장 (확실치 않음)
+//                .startPaused(vm.startPaused())
+//                .deleteProtected(vm.deleteProtected())
+////                .vDiskVo()    // 이미지 or 직접 lun or 관리되는 블록
+////                .vnicList()   // vnic 프로파일
+//                .vmSystemVo( VmSystemVo.builder()
+//                                    .memorySize(vm.memory())
+//                                    .memoryMax(vm.memoryPolicy().max())
+//                                    .memoryActual(vm.memoryPolicy().guaranteed())
+//                                    .vCpuCnt(vm.cpu().topology().coresAsInteger() * vm.cpu().topology().socketsAsInteger() * vm.cpu().topology().threadsAsInteger())
+//                                    .vCpuSocket(vm.cpu().topology().socketsAsInteger())
+//                                    .vCpuSocketCore(vm.cpu().topology().coresAsInteger())
+//                                    .vCpuCoreThread(vm.cpu().topology().threadsAsInteger())
+//                                    .userEmulation()
+//                                    .userCpu()
+//                                    .userVersion()
+//                                    .instanceType(vm.instanceTypePresent() ? vm.instanceType().name() : null)
+//                                    .timeOffset()
+//                                    .serialNumPolicy()
+//                                    .userSerialNum()
+//                                    .build() )
+//                .vmHostVo( VmHostVo.builder()
+//                                    .hostCpuPass()
+//                                    .tsc()
+//                                    .migrationMode()
+//                                    .migrationPolicy()
+//                                    .migrationEncoding()
+//                                    .parallelMigration()
+//                                    .numOfVmMigration()
+//                                    .numaNode()
+//                                    .build() )
+//                .vmHaVo( VmHaVo.builder()
+//                                    .ha()
+//                                    .vmStorageDomain()
+//                                    .resumeOperation()
+//                                    .priority()
+//                                    .watchDogModel()
+//                                    .watchDogWork()
+//                                    .build() )
+//                .vmResourceVo( VmResourceVo.builder()
+//                                    .cpuProfile()
+//                                    .cpuShare()
+//                                    .cpuPinningPolicy()
+//                                    .cpuPinningTopology()
+//                                    .memoryBalloon()
+//                                    .tpm()
+//                                    .ioThread()
+//                                    .ioThreadCnt()
+//                                    .multiQue()
+//                                    .virtioScsi()
+//                                    .virtioScsiQueues()
+//                                    .build() )
+//                .vmBootVo( VmBootVo.builder()
+//                                    .firstDevice()
+//                                    .secondDevice()
+//                                    .cdDvdConn()
+//                                    .bootingMenu()
+//                                    .build() )
+////                .affinityGroupVoList()
+////                .affinityLabelVoList()
+//                .build();
+        return null;
+    }
+
+    @Override
+    public boolean addVm(VmCreateVo vmCreateVo) {
+        SystemService systemService = admin.getConnection().systemService();
+        VmsService vmsService = systemService.vmsService();
+        List<Vm> vmList = systemService.vmsService().list().send().vms();
+
+        try {
+            Vm vm = null;
+
+            vm = new VmBuilder()
+                    .cluster(new ClusterBuilder().id(vmCreateVo.getClusterId()))
+                    .template(new TemplateBuilder().id(vmCreateVo.getTemplateId()))
+                    .os(new OperatingSystemBuilder().type(vmCreateVo.getOs()))
+                    .bios(new BiosBuilder().type(BiosType.valueOf(vmCreateVo.getChipsetType())))
+                    .type(VmType.valueOf(vmCreateVo.getOption()))   // 최적화 옵션
+                    .name(vmCreateVo.getName())
+                    .description(vmCreateVo.getDescription())
+                    .comment(vmCreateVo.getComment())
+                    .stateless(vmCreateVo.isStatusSave())
+                    .startPaused(vmCreateVo.isStartPaused())
+                    .deleteProtected(vmCreateVo.isDeleteProtected())
+//                    .diskAttachments(vmCreateVo.getVDiskVo())
+//                    .nics(vmCreateVo.getVnicList())
+
+                    .memory(vmCreateVo.getVmSystemVo().getMemorySize())
+                    .memoryPolicy(new MemoryPolicyBuilder()
+                                        .max(vmCreateVo.getVmSystemVo().getMemoryMax())
+                                        .guaranteed(vmCreateVo.getVmSystemVo().getMemoryActual()))
+                    .cpu(new CpuBuilder()
+                                    .topology(new CpuTopologyBuilder()
+                                        .cores(vmCreateVo.getVmSystemVo().getVCpuSocketCore())
+                                            .sockets(vmCreateVo.getVmSystemVo().getVCpuSocket())
+                                            .threads(vmCreateVo.getVmSystemVo().getVCpuCoreThread())))
+                    // 사용자 정의 에뮬레이션 부분 보류
+//                    .instanceType(new InstanceTypeBuilder().type())
+                    .timeZone(new TimeZoneBuilder().name(vmCreateVo.getVmSystemVo().getTimeOffset()))
+                    // 일련 번호 정책
+                    // 사용자 정의 일련번호
+//                    .host(new HostBuilder().)  //호스트
+                    .migration(new MigrationOptionsBuilder()
+                                    .autoConverge(InheritableBoolean.valueOf(vmCreateVo.getVmHostVo().getMigrationMode()))
+                            .encrypted(InheritableBoolean.valueOf(vmCreateVo.getVmHostVo().getMigrationEncoding()))
+                    )
+//                    .migrationDowntime(vmCreateVo.getVmHostVo().getMigrationPolicy())
+                    .build();
+
+            log.info("----" + vmCreateVo.toString());
+
+
+        }catch (Exception e){
+
+        }
+
+
+        return false;
+    }
+
+    @Override
+    public void editVm(VmCreateVo vmCreateVo) {
+        SystemService systemService = admin.getConnection().systemService();
+
+    }
+
+    @Override
+    public boolean deleteVm(String id) {
+        SystemService systemService = admin.getConnection().systemService();
+
+        return false;
+    }
 }

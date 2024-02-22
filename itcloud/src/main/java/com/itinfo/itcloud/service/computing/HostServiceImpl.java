@@ -215,60 +215,59 @@ public class HostServiceImpl implements ItHostService {
         List<Vm> vmList = systemService.vmsService().list().send().vms();
 
         for (Vm vm : vmList) {
+            Cluster cluster = systemService.clustersService().clusterService(vm.cluster().id()).get().send().cluster();
+
             if (vm.hostPresent() && vm.host().id().equals(id)) {
-                vmVo = new VmVo();
-
-                vmVo.setHostName( systemService.hostsService().hostService(vm.host().id()).get().send().host().name() );
-                vmVo.setId(vm.id());
-                vmVo.setName(vm.name());
-                vmVo.setClusterName( systemService.clustersService().clusterService(vm.cluster().id()).get().send().cluster().name() );
-                vmVo.setStatus(vm.status().value());
-                vmVo.setFqdn(vm.fqdn());
-
                 List<Statistic> statisticList = systemService.vmsService().vmService(vm.id()).statisticsService().list().send().statistics();
-
+                String upTime = null;
                 for(Statistic statistic : statisticList) {
                     long hour = 0;
                     if (statistic.name().equals("elapsed.time")) {
-                        hour = statistic.values().get(0).datum().longValue() / (60*60);      //시간
-                        System.out.println(vm.id() + " " +hour);
+                        hour = statistic.values().get(0).datum().longValue() / (60*60);      // 시간
 
                         if(hour > 24){
-                            vmVo.setUpTime(hour/24 + "일");
+                            upTime = hour/24 + "일";
                         }else if( hour > 1 && hour < 24){
-                            vmVo.setUpTime(hour + "시간");
+                            upTime = hour + "시간";
                         }else {
-                            vmVo.setUpTime( (statistic.values().get(0).datum().longValue() / 60) + "분");
+                            upTime = (statistic.values().get(0).datum().longValue() / 60) + "분";
                         }
                     }
                 }
-//                vmVo.setStartTime(vm.startTimePresent() ? vm.startTime() : null);
 
-                if(!vm.status().value().equals("down")){
-                    // ipv4 부분. vms-nic-reporteddevice
-                    List<Nic> nicList = systemService.vmsService().vmService(vm.id()).nicsService().list().send().nics();
-
-                    for (Nic nic : nicList){
-                        List<ReportedDevice> reportedDeviceList
-                                = systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
-                        for (ReportedDevice r : reportedDeviceList){
-                            vmVo.setIpv4(r.ips().get(0).address());
-                            vmVo.setIpv6(r.ips().get(1).address());
-                        }
+                // ipv4, ipv6
+                List<Nic> nicList = systemService.vmsService().vmService(vm.id()).nicsService().list().send().nics();
+                String ipv4 = null;
+                String ipv6 = null;
+                for (Nic nic : nicList) {
+                    List<ReportedDevice> reportedDeviceList = systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
+                    for (ReportedDevice r : reportedDeviceList) {
+                        ipv4 = !vm.status().value().equals("down") ? r.ips().get(0).address() : null;
+                        ipv6 = !vm.status().value().equals("down") ? r.ips().get(1).address() : null;
                     }
-                }else{
-                    vmVo.setIpv4("");
-                    vmVo.setIpv6("");
                 }
+
+                vmVo = VmVo.builder()
+                        .hostName(getName(id))
+                        .id(vm.id())
+                        .name(vm.name())
+                        .clusterName(cluster.name())
+                        .status(vm.status().value())
+                        .fqdn(vm.fqdn())
+                        .upTime(upTime)
+                        .ipv4(ipv4)
+                        .ipv6(ipv6)
+                        .build();
+
                 vmVoList.add(vmVo);
             } else if(vm.placementPolicy().hostsPresent() && vm.placementPolicy().hosts().get(0).id().equals(id)){
                 // vm이 down 상태일 경우
-                vmVo = new VmVo();
-                vmVo.setId(vm.id());
-                vmVo.setName(vm.name());
-                vmVo.setStatus(vm.status().value());
-                vmVo.setClusterName( systemService.clustersService().clusterService(vm.cluster().id()).get().send().cluster().name() );
-
+                vmVo = VmVo.builder()
+                        .id(vm.id())
+                        .name(vm.name())
+                        .status(vm.status().value())
+                        .clusterName(cluster.name())
+                        .build();
                 vmVoList.add(vmVo);
             }
         }
@@ -443,6 +442,8 @@ public class HostServiceImpl implements ItHostService {
     }
 
 
+
+
     // host create cluster list 출력
     @Override
     public List<ClusterVo> getClusterList() {
@@ -512,7 +513,12 @@ public class HostServiceImpl implements ItHostService {
                             .rootPassword(hostCreateVo.getSshPw())   // 암호
                             .spm(new SpmBuilder().priority(hostCreateVo.getSpm()))
                             .hostedEngine(new HostedEngineBuilder().active(hostCreateVo.isHostEngine()))
-//                            .powerManagement(new PowerManagementBuilder().enabled(true))    // 전원관리
+//                            .powerManagement(new PowerManagementBuilder().enabled(true).agents(new AgentBuilder().host(host)))    // 전원관리
+                        /*
+                        * 호스트을/를 다시 시작할 수 없습니다. 호스트에는 전원 관리가 활성화 되어 있지만 에이전트 유형을 선택하지 않았습니다.
+                            호스트 펜싱을 실행할 수 없습니다. 호스트 펜싱이 비활성화 되어 있습니다.
+                            호스트 을/를 다시 시작 할 수 없습니다. 펜싱 작업이 실패했습니다.
+                        * */
                             .cluster(cluster)
                             .build();
             } else {
@@ -523,12 +529,12 @@ public class HostServiceImpl implements ItHostService {
                             .ssh(new SshBuilder().port(hostCreateVo.getSshPort()))  // 새로 지정할 포트번호
                             .rootPassword(hostCreateVo.getSshPw())   // 암호
                             .spm(new SpmBuilder().priority(hostCreateVo.getSpm()))
-                            .hostedEngine(new HostedEngineBuilder().active(hostCreateVo.isHostEngine()))
+//                            .hostedEngine(new HostedEngineBuilder().active(hostCreateVo.isHostEngine()))
                             .cluster(cluster)
                             .build();
             }
-
             log.info("---- " + hostCreateVo.toString());
+
             // 호스트 엔진 배치작업 선택 (없음/배포)  -> 호스트 생성
             if(hostCreateVo.isHostEngine()){
                 hostsService.add().deployHostedEngine(true).host(host).send().host();
@@ -567,8 +573,6 @@ public class HostServiceImpl implements ItHostService {
                     .cluster(cluster)
                     .build();
 
-            System.out.println(hostCreateVo.toString());
-
             hostService.update().host(host).send().host();
 
             log.info("host 수정" + host.toString());
@@ -596,7 +600,6 @@ public class HostServiceImpl implements ItHostService {
             return false;
         }
     }
-
 
 
 

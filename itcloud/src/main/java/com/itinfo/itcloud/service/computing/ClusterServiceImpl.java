@@ -193,38 +193,44 @@ public class ClusterServiceImpl implements ItClusterService {
         List<Vm> vmList = systemService.vmsService().list().send().vms();
         for (Vm vm : vmList) {
             if(vm.cluster().id().equals(id)) {
-                vmVo = new VmVo();
-
-                vmVo.setId(vm.id());
-                vmVo.setName(vm.name());
-                vmVo.setStatus(vm.status().value());        // vmstatus 많음
-
                 List<Statistic> statisticList = systemService.vmsService().vmService(vm.id()).statisticsService().list().send().statistics();
+                String upTime = null;
                 for(Statistic statistic : statisticList) {
                     long hour = 0;
-
                     if (statistic.name().equals("elapsed.time")) {
-                        hour = statistic.values().get(0).datum().longValue() / (60*60);      //시간
+                        hour = statistic.values().get(0).datum().longValue() / (60*60);      // 시간
 
                         if(hour > 24){
-                            vmVo.setUpTime(hour/24 + "일");
+                            upTime = hour/24 + "일";
                         }else if( hour > 1 && hour < 24){
-                            vmVo.setUpTime(hour + "시간");
+                            upTime = hour + "시간";
                         }else {
-                            vmVo.setUpTime( (statistic.values().get(0).datum().longValue() / 60) + "분");
+                            upTime = (statistic.values().get(0).datum().longValue() / 60) + "분";
                         }
                     }
                 }
 
-                // ip 주소
-                List<Nic> nicList = ovirt.cNicList(vm.id());
-                for (Nic nic : nicList) {
+                // ipv4, ipv6
+                List<Nic> nicList = systemService.vmsService().vmService(vm.id()).nicsService().list().send().nics();
+                String ipv4 = null;
+                String ipv6 = null;
+                for (Nic nic : nicList){
                     List<ReportedDevice> reportedDeviceList = systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
-                    for (ReportedDevice r : reportedDeviceList) {
-                        vmVo.setIpv4(!vm.status().value().equals("down") ? r.ips().get(0).address() : null);
-                        vmVo.setIpv6(!vm.status().value().equals("down") ? r.ips().get(1).address() : null);
+                    for (ReportedDevice r : reportedDeviceList){
+                        ipv4 = !vm.status().value().equals("down") ? r.ips().get(0).address() : null;
+                        ipv6 = !vm.status().value().equals("down") ? r.ips().get(1).address() : null;
                     }
                 }
+
+                vmVo = VmVo.builder()
+                        .status(vm.status().value())
+                        .id(vm.id())
+                        .name(vm.name())
+                        .upTime(upTime)
+                        .ipv4(ipv4)
+                        .ipv6(ipv6)
+                        .build();
+
                 vmVoList.add(vmVo);
             }
         }

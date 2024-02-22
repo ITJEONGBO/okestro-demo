@@ -20,10 +20,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class VmController {
-	private final ItVmService itVmService;
 	private final ItSystemPropertyService itSystemPropertyService;
+	private final ItVmService itVmService;
 	private final ItMenuService menu;
-
 
 	@GetMapping("/computing/vms")
 	public String vmList(Model model) {

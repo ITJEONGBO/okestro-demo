@@ -1,14 +1,16 @@
 package com.itinfo.itcloud.model.computing;
 
 import com.itinfo.itcloud.model.network.VnicProfileVo;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
-@Getter @Setter
+@Getter @Builder @ToString
 public class VmVo {
     private String id;
     private String name;
