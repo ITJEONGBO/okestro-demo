@@ -22,6 +22,4 @@ public class VmSystemVo {
 
     private String instanceType;    // 인스턴스 유형
     private String timeOffset;      // 하드웨어 클럭의 시간 오프셋
-    private String serialNumPolicy; // 일련번호 정책
-    private String userSerialNum;   // 사용자 정의 일련 번호
 }

@@ -250,12 +250,12 @@
                         <td>칩셋/펌웨어 유형</td>
                         <td>&emsp;
                             <select id="biosType" name="biosType">
-                                <option value="CLUSTER_DEFAULT">자동 감지</option>
+                                <option value="cluster_default">자동 감지</option>
                                 <!--  cpu 유형 선택에 따라 달라짐. 기본은 자동 감지   -->
-                                <option value="I440FX_SEA_BIOS">I440FX_SEA_BIOS</option>
-                                <option value="Q35_OVMF">Q35_OVMF</option>
-                                <option value="Q35_SEA_BIOS">Q35_SEA_BIOS</option>
-                                <option value="Q35_SECURE_BOOT">Q35_SECURE_BOOT</option>
+                                <option value="i440fx_sea_bios">BIOS의 1440FX 칩셋</option>
+                                <option value="q35_ovmf">BIOS의 Q35 칩셋</option>
+                                <option value="q35_sea_bios">UEFI의 Q35 칩셋</option>
+                                <option value="q35_secure_boot">UEFI SecureBoot의 Q35 칩셋</option>
                             </select>
                         </td>
                     </tr>

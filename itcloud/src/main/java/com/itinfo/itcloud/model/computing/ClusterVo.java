@@ -18,6 +18,8 @@ public class ClusterVo {
     private String restoration;    // 복구정책
     private String chipsetFirmwareType;
     private String version;
+    private boolean gluster;
+    private boolean virt;
 
 
     private String datacenterId;

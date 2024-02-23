@@ -166,6 +166,23 @@ public class VmController {
 	}
 
 
+	@GetMapping("/computing/vm-add")
+	public String add(Model model){
+		List<ClusterVo> clusterVoList = itVmService.getClusterList();
+		model.addAttribute("c", clusterVoList);
+		return "computing/vm-add";
+	}
+
+
+
+
+
+
+
+
+
+
+
 
 
 

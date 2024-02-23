@@ -10,5 +10,6 @@ public class VmBootVo {
     private String firstDevice;
     private String secondDevice;
     private boolean cdDvdConn;
+    private String connection;  // cd/dvd 연결되면 뜰 화면
     private boolean bootingMenu;
 }

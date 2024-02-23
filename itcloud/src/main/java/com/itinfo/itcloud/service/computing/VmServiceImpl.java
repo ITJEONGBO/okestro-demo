@@ -571,6 +571,8 @@ public class VmServiceImpl implements ItVmService {
 //                .datacenterName(dcName)
 //                .templateId(vm.templatePresent() ? vm.template().id() : null)
 //                .templateName(vm.templatePresent() ? systemService.templatesService().templateService(vm.template().id()).get().send().template().name() : null)
+//                .os(vm.os.type)
+//        https://ovirt.github.io/ovirt-engine-api-model/master/#types/os_type
 //                .id(id)      // vm id
 //                .name(vm.name())
 //                .description(vm.description())

@@ -2,6 +2,48 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 <html lang="en">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="js/scripts.js"></script>
+
+<script type="text/javascript">
+    var vid = "";
+
+    function checkOnlyOne(element) {
+        const checkboxes = document.getElementsByName("vid");
+
+        checkboxes.forEach((cb) => { cb.checked = false; })
+        element.checked = true;
+
+        vid = element.value;
+    }
+
+
+	function openAdd() {
+		window.open("vm-add", "mypopup", "width=550, height=700, top=150, left=200");
+	}
+
+	function openEdit() {
+	    if(vid == ""){
+	        alert("가상머신을 선택해주세요");
+	        return;
+        }
+		window.open("vm-edit?id="+ vid, "mypopup", "width=550, height=700, top=150, left=200");
+
+	}
+
+	function openDelete() {
+        if(vid == ""){
+            alert("가상머신을 선택해주세요");
+            return;
+        }
+		window.open("vm-delete?id=" + vid, "mypopup", "width=400, height=200, top=150, left=200");
+	}
+</script>
+
 <%@ include file="../base/header.jsp" %>
 
         <div id="layoutSidenav_content">
@@ -15,9 +57,16 @@
                             </p>
                         </div>
                     </div>
+                    <div style="display: inline-block; margin: 0 5px;  float: center;">
+                        <button type="button" class="btn btn-secondary" onclick="openAdd()">새로 만들기</button>
+                        <button type="button" class="btn btn-secondary" onclick="openEdit()">편집</button>
+                        <button type="button" class="btn btn-secondary" onclick="openDelete()">삭제</button>
+                    </div>
+                    <br><br>
 
                 <table>
                     <tr>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td>이름</td>
@@ -41,6 +90,7 @@
                     </c:if>
                     <c:forEach var="vms" items="${vms}" varStatus="status">
                         <tr>
+                            <td><input type="checkbox" id="vid" name="vid" value="${vms.id}" onclick="checkOnlyOne(this)"/></td>
                             <td>${vms.status == "up" ? "▲" : "▽"}</td>
                             <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                             <td><a href="/computing/vm?id=${vms.id}">${vms.name}</a> </td>
@@ -63,12 +113,5 @@
             </main>
         </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="js/scripts.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-    <script src="assets/demo/chart-area-demo.js"></script>
-    <script src="assets/demo/chart-bar-demo.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
-    <script src="js/datatables-simple-demo.js"></script>
     </body>
 </html>

@@ -52,7 +52,7 @@
                             </tr>
                             <tr>
                                 <td>클러스터 노드 유형</td>
-                                <td></td>
+                                <td>&emsp; ${cluster.virt ? "Virt" : ""} ${cluster.gluster ? "Gluster" : ""} </td>
                             </tr>
                             <tr>
                                 <td>클러스터 ID</td>

@@ -2,6 +2,7 @@ package com.itinfo.itcloud.service.computing;
 
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.ClusterCreateVo;
+import com.itinfo.itcloud.model.enums.ChipsetVo;
 import com.itinfo.itcloud.model.network.NetworkUsageVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
@@ -18,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -102,23 +102,17 @@ public class ClusterServiceImpl implements ItClusterService {
                 .id(id)
                 .name(cluster.name())
                 .description(cluster.description())
-                .version(cluster.version().major() + "." + cluster.version().minor())
-                .datacenterId(cluster.dataCenterPresent() ? cluster.dataCenter().id() : "")
+//                .datacenterId(cluster.dataCenterPresent() ? cluster.dataCenter().id() : "")
                 .datacenterName(cluster.dataCenterPresent() ? ovirt.getName("datacenter", cluster.dataCenter().id()) : "")
+                .version(cluster.version().major() + "." + cluster.version().minor())
+                .gluster(cluster.glusterService())
+                .virt(cluster.virtService())
                 .cpuType(cluster.cpuPresent() ? cluster.cpu().type() : null)
-                .chipsetFirmwareType(cluster.biosTypePresent() ? cluster.biosType().value() : null)
+                .chipsetFirmwareType(cluster.biosTypePresent() ? ChipsetVo.valueOf(cluster.biosType().value()).s : "자동 감지")
                 .threadsAsCore(cluster.threadsAsCores())
                 .memoryOverCommit(cluster.memoryPolicy().overCommit().percentAsInteger())
                 .restoration(cluster.errorHandling().onError().value())
                 .build();
-
-//        if(cluster.errorHandling().onError().value().equals("do_not_migrate")){
-//            cVo.setRestoration("아니요");
-//        }else if(cluster.errorHandling().onError().value().equals("migrate_highly_available")){
-//            cVo.setRestoration("높은 우선 순위만");
-//        }else{
-//            cVo.setRestoration("예");
-//        }
 
         getVmCnt(systemService, cVo);
         return cVo;
@@ -142,14 +136,14 @@ public class ClusterServiceImpl implements ItClusterService {
                         .description(network.description())
                         .networkUsageVo(
                                 NetworkUsageVo.builder()
-                                .vm(network.usages().contains(NetworkUsage.VM))
-                                .display(network.usages().contains(NetworkUsage.DISPLAY))
-                                .migration(network.usages().contains(NetworkUsage.MIGRATION))
-                                .management(network.usages().contains(NetworkUsage.MANAGEMENT))
-                                .defaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE))
-                                .gluster(network.usages().contains(NetworkUsage.GLUSTER))
-                                .build())
-                        .build();
+                                    .vm(network.usages().contains(NetworkUsage.VM))
+                                    .display(network.usages().contains(NetworkUsage.DISPLAY))
+                                    .migration(network.usages().contains(NetworkUsage.MIGRATION))
+                                    .management(network.usages().contains(NetworkUsage.MANAGEMENT))
+                                    .defaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE))
+                                    .gluster(network.usages().contains(NetworkUsage.GLUSTER))
+                                    .build())
+                            .build();
 
                 nwVoList.add(nwVo);
             }
@@ -200,13 +194,9 @@ public class ClusterServiceImpl implements ItClusterService {
                     if (statistic.name().equals("elapsed.time")) {
                         hour = statistic.values().get(0).datum().longValue() / (60*60);      // 시간
 
-                        if(hour > 24){
-                            upTime = hour/24 + "일";
-                        }else if( hour > 1 && hour < 24){
-                            upTime = hour + "시간";
-                        }else {
-                            upTime = (statistic.values().get(0).datum().longValue() / 60) + "분";
-                        }
+                        if(hour > 24){ upTime = hour/24 + "일";
+                        }else if( hour > 1 && hour < 24){ upTime = hour + "시간";
+                        }else { upTime = (statistic.values().get(0).datum().longValue() / 60) + "분";}
                     }
                 }
 

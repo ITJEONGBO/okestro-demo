@@ -740,7 +740,7 @@ public class HostServiceImpl implements ItHostService {
 
         return HostSwVo.builder()
                 .osVersion(host.os().type() + " " + host.os().version().fullVersion())    // os 버전
-//                .osInfo(host.os())       // os 정보
+//                .osInfo()       // os 정보
                 .kernalVersion(host.os().reportedKernelCmdline())// 커널 버전 db 수정해야함
                 // kvm 버전 db
                 .libvirtVersion(host.libvirtVersion().fullVersion())// LIBVIRT 버전
