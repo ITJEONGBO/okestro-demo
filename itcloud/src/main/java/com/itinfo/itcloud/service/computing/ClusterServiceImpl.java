@@ -3,6 +3,7 @@ package com.itinfo.itcloud.service.computing;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.ClusterCreateVo;
 import com.itinfo.itcloud.model.enums.ChipsetVo;
+import com.itinfo.itcloud.model.enums.MigrateOnErrorVo;
 import com.itinfo.itcloud.model.network.NetworkUsageVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
@@ -102,7 +103,6 @@ public class ClusterServiceImpl implements ItClusterService {
                 .id(id)
                 .name(cluster.name())
                 .description(cluster.description())
-//                .datacenterId(cluster.dataCenterPresent() ? cluster.dataCenter().id() : "")
                 .datacenterName(cluster.dataCenterPresent() ? ovirt.getName("datacenter", cluster.dataCenter().id()) : "")
                 .version(cluster.version().major() + "." + cluster.version().minor())
                 .gluster(cluster.glusterService())
@@ -111,7 +111,7 @@ public class ClusterServiceImpl implements ItClusterService {
                 .chipsetFirmwareType(cluster.biosTypePresent() ? ChipsetVo.valueOf(cluster.biosType().value()).s : "자동 감지")
                 .threadsAsCore(cluster.threadsAsCores())
                 .memoryOverCommit(cluster.memoryPolicy().overCommit().percentAsInteger())
-                .restoration(cluster.errorHandling().onError().value())
+                .restoration(MigrateOnErrorVo.valueOf(cluster.errorHandling().onError().value()).s)
                 .build();
 
         getVmCnt(systemService, cVo);
