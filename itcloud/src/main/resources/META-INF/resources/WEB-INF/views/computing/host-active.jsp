@@ -25,7 +25,7 @@
 </head>
 <body>
     <div style="magin: auto">
-        <form id="active" autocomplete="off" method="get" action="host-active2">
+        <form id="active" autocomplete="off" method="post" action="host-active2">
             <input type="hidden" id="id" name="id" value="${id}" />
             <h3> ${name} 를 활성 모드로 설정하시겠습니까??</h3>
 

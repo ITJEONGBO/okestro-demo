@@ -145,7 +145,7 @@
     <div style="padding: 1rem;">
         <div>
             <h2>새 클러스터</h2>
-            <form id="add" autocomplete="off" method="get" action="cluster-add2">
+            <form id="add" autocomplete="off" method="post" action="cluster-add2">
                 <hr><br>
 
                 <h3>일반</h3>
@@ -250,12 +250,11 @@
                         <td>칩셋/펌웨어 유형</td>
                         <td>&emsp;
                             <select id="biosType" name="biosType">
-                                <option value="cluster_default">자동 감지</option>
-                                <!--  cpu 유형 선택에 따라 달라짐. 기본은 자동 감지   -->
-                                <option value="i440fx_sea_bios">BIOS의 1440FX 칩셋</option>
-                                <option value="q35_ovmf">BIOS의 Q35 칩셋</option>
-                                <option value="q35_sea_bios">UEFI의 Q35 칩셋</option>
-                                <option value="q35_secure_boot">UEFI SecureBoot의 Q35 칩셋</option>
+                                <option value="CLUSTER_DEFAULT">자동 감지</option>
+                                <option value="I440FX_SEA_BIOS">BIOS의 1440FX 칩셋</option>
+                                <option value="Q35_OVMF">BIOS의 Q35 칩셋</option>
+                                <option value="Q35_SEA_BIOS">UEFI의 Q35 칩셋</option>
+                                <option value="Q35_SECURE_BOOT">UEFI SecureBoot의 Q35 칩셋</option>
                             </select>
                         </td>
                     </tr>

@@ -25,7 +25,7 @@
 </head>
 <body>
     <div style="magin: auto">
-        <form id="refresh" autocomplete="off" method="get" action="host-refresh2">
+        <form id="refresh" autocomplete="off" method="post" action="host-refresh2">
             <input type="hidden" id="id" name="id" value="${id}" />
             <h3> ${name} 를 새로고침하시겠습니까??</h3>
 

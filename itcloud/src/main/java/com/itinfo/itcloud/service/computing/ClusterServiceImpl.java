@@ -593,8 +593,6 @@ public class ClusterServiceImpl implements ItClusterService {
         String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
         System.out.println(cVo.getVersion());
 
-        log.info("editCluster: " + dataCenter.name());
-
         try{
             Cluster cluster = new ClusterBuilder()
                     .dataCenter(dataCenter) // 필수
@@ -623,6 +621,7 @@ public class ClusterServiceImpl implements ItClusterService {
                             .encrypted(cVo.getEncrypted())      // 암호화
                     )
                     .build();
+            log.info("editCluster: " + cluster.name());
             clusterService.update().cluster(cluster).send();
 
         }catch (Exception e){

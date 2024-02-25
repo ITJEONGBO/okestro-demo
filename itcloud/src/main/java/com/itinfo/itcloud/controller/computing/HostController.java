@@ -12,8 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -140,14 +139,13 @@ public class HostController {
 	}
 
 	// host 생성
-	@GetMapping("/computing/host-add2")
-	public String add2(Model model, HostCreateVo hVo) {
+	@PostMapping("/computing/host-add2")
+	public String add2(Model model, @ModelAttribute HostCreateVo hVo) {
 		if(itHostService.addHost(hVo)){
-			model.addAttribute("result", "완료");
+			model.addAttribute("result", "호스트 생성 완료");
 		}else{
-			model.addAttribute("result", "실패");
+			model.addAttribute("result", "호스트 생성 실패");
 		}
-
 		return "computing/host-add2";
 	}
 
@@ -161,12 +159,12 @@ public class HostController {
 	}
 
 	// 클러스터 수정
-	@GetMapping("/computing/host-edit2")
-	public String edit2(Model model, HostCreateVo hVo ) {
+	@PostMapping("/computing/host-edit2")
+	public String edit2(Model model, @ModelAttribute HostCreateVo hVo ) {
 		log.info("edit 시작");
 
 		itHostService.editHost(hVo);
-		model.addAttribute("result", "완료");
+		model.addAttribute("result", "호스트 수정 완료");
 		return "computing/host-edit2";
 	}
 
@@ -178,8 +176,8 @@ public class HostController {
 		return "computing/host-delete";
 	}
 
-	@GetMapping("/computing/host-delete2")
-	public String delete2(Model model, String id){
+	@PostMapping("/computing/host-delete2")
+	public String delete2(Model model, @RequestParam String id){
 		if(itHostService.deleteHost(id)){
 			model.addAttribute("result", "완료");
 		}else {
@@ -198,7 +196,7 @@ public class HostController {
 		return "computing/host-deactive";
 	}
 
-	@GetMapping("/computing/host-deactive2")
+	@PostMapping("/computing/host-deactive2")
 	@ResponseBody
 	public void deactive2(Model model, String id){
 		itHostService.deActive(id);
@@ -213,7 +211,7 @@ public class HostController {
 		return "computing/host-restart";
 	}
 
-	@GetMapping("/computing/host-restart2")
+	@PostMapping("/computing/host-restart2")
 	@ResponseBody
 	public void restart2(Model model, String id){
 		itHostService.reStart(id);
@@ -229,7 +227,7 @@ public class HostController {
 		return "computing/host-active";
 	}
 
-	@GetMapping("/computing/host-active2")
+	@PostMapping("/computing/host-active2")
 	@ResponseBody
 	public void active2(String id){
 		itHostService.active(id);
@@ -243,7 +241,7 @@ public class HostController {
 		return "computing/host-refresh";
 	}
 
-	@GetMapping("/computing/host-refresh2")
+	@PostMapping("/computing/host-refresh2")
 	@ResponseBody
 	public void refresh2(String id){
 		itHostService.refresh(id);

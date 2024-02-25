@@ -145,7 +145,7 @@
         <div>
             <h2>클러스터 수정</h2>
 
-            <form id="edit" autocomplete="off" method="get" action="cluster-edit2">
+            <form id="edit" autocomplete="off" method="post" action="cluster-edit2">
                 <hr>
                 <h3>일반</h3>
                 <table>

@@ -12,8 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -173,12 +172,12 @@ public class ClusterController {
 	}
 
 	 // 데이터센터 생성
-	@GetMapping("/computing/cluster-add2")
-	public String add(Model model, ClusterCreateVo cVo) {
+	@PostMapping("/computing/cluster-add2")
+	public String add(Model model, @ModelAttribute ClusterCreateVo cVo) {
 		if(itClusterService.addCluster(cVo)){
-			model.addAttribute("result", "완료");
+			model.addAttribute("result", "클러스터 생성 완료");
 		}else{
-			model.addAttribute("result", "실패");
+			model.addAttribute("result", "클러스터 생성 실패");
 		}
 
 		return "computing/cluster-add2";
@@ -193,8 +192,8 @@ public class ClusterController {
 	}
 
 	// 클러스터 수정
-	@GetMapping("/computing/cluster-edit2")
-	public String edit(Model model, ClusterCreateVo cVo ) {
+	@PostMapping("/computing/cluster-edit2")
+	public String edit(Model model, @ModelAttribute ClusterCreateVo cVo ) {
 		log.info("edit 시작");
 
 		itClusterService.editCluster(cVo);
@@ -209,8 +208,8 @@ public class ClusterController {
 		return "computing/cluster-delete";
 	}
 
-	@GetMapping("/computing/cluster-delete2")
-	public String delete(Model model, String id){
+	@PostMapping("/computing/cluster-delete2")
+	public String delete(Model model, @RequestParam String id){
 		if(itClusterService.deleteCluster(id)){
 			model.addAttribute("result", "완료");
 		}else {

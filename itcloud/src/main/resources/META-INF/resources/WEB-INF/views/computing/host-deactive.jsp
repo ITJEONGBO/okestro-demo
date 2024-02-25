@@ -25,7 +25,7 @@
 </head>
 <body>
     <div style="magin: auto">
-        <form id="deactive" autocomplete="off" method="get" action="host-deactive2">
+        <form id="deactive" autocomplete="off" method="post" action="host-deactive2">
             <input type="hidden" id="id" name="id" value="${id}" />
             <h3> ${name} 를 유지관리 모드로 설정하시겠습니까??</h3>
 
