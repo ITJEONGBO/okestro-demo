@@ -2,10 +2,12 @@ package com.itinfo.itcloud.service.computing;
 
 import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
+import com.itinfo.itcloud.model.create.DataCenterCreateVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItDataCenterService;
 import lombok.extern.slf4j.Slf4j;
+import org.ovirt.engine.sdk4.Error;
 import org.ovirt.engine.sdk4.builders.DataCenterBuilder;
 import org.ovirt.engine.sdk4.builders.VersionBuilder;
 import org.ovirt.engine.sdk4.services.*;
@@ -216,11 +218,11 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
     // 데이터센터 - edit 시 필요한 값
     @Override
-    public DataCenterVo getDatacenter(String id){
+    public DataCenterCreateVo getDatacenter(String id){
         SystemService systemService = admin.getConnection().systemService();
         DataCenter dataCenter = systemService.dataCentersService().dataCenterService(id).get().send().dataCenter();
 
-        return DataCenterVo.builder()
+        return DataCenterCreateVo.builder()
                 .id(id)
                 .name(dataCenter.name())
                 .description(dataCenter.description())
@@ -234,7 +236,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
     // 데이터센터 생성
     @Override
-    public boolean addDatacenter(DataCenterVo dcVo) {
+    public boolean addDatacenter(DataCenterCreateVo dcVo) {
         SystemService systemService = admin.getConnection().systemService();
         DataCentersService datacentersService = systemService.dataCentersService();     // datacenters 서비스 불러오기
         List<DataCenter> dcList = datacentersService.list().send().dataCenters();
@@ -268,7 +270,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
     // 데이터센터 수정
     @Override
-    public void editDatacenter(DataCenterVo dcVo) {
+    public void editDatacenter(DataCenterCreateVo dcVo) {
         SystemService systemService = admin.getConnection().systemService();
         DataCenterService dataCenterService = systemService.dataCentersService().dataCenterService(dcVo.getId());
 
@@ -303,16 +305,18 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     public boolean deleteDatacenter(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
-        DataCentersService datacentersService = systemService.dataCentersService();
-        List<DataCenter> dcList = datacentersService.list().send().dataCenters();
         DataCenterService dataCenterService = systemService.dataCentersService().dataCenterService(id);
-        String name = dataCenterService.get().send().dataCenter().name();
+        DataCenter dataCenter = dataCenterService.get().send().dataCenter();
 
         try {
-            dataCenterService.remove().force(true).send();
-
-            log.info("delete datacenter: {}", name);
-            return datacentersService.list().send().dataCenters().size() == ( dcList.size()-1 );
+            if(dataCenter.idPresent()) {
+                dataCenterService.remove().force(true).send();
+                log.info("datacenter {} 삭제", dataCenter.name());
+                return true;
+            }else {
+                log.error("datacenter {} 삭제 실패", dataCenter.name());
+                return false;
+            }
         }catch (Exception e){
             log.error("error ", e);
             return false;

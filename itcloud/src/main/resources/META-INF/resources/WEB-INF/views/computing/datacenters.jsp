@@ -23,7 +23,7 @@
 
 
 	function openAdd() {
-		window.open("datacenter-add", "mypopup", "width=400, height=550, top=150, left=200");
+		window.open("datacenter-add", "mypopup", "width=400, height=550, top=150, left=30");
 	}
 
 	function openEdit() {
@@ -31,7 +31,7 @@
 	        alert("데이터센터를 선택해주세요");
 	        return;
         }
-		window.open("datacenter-edit?id="+ dcId, "mypopup", "width=400, height=550, top=150, left=200");
+		window.open("datacenter-edit?id="+ dcId, "mypopup", "width=500, height=550, top=50, left=30");
 
 	}
 
@@ -40,7 +40,7 @@
             alert("데이터센터를 선택해주세요");
             return;
         }
-		window.open("datacenter-delete?id=" + dcId, "mypopup", "width=400, height=200, top=150, left=200");
+		window.open("datacenter-delete?id=" + dcId, "mypopup", "width=500, height=200, top=50, left=30");
 	}
 
 </script>

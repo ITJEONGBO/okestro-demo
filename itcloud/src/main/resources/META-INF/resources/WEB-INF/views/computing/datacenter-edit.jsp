@@ -38,7 +38,7 @@
         <hr>
 
         <div>
-            <form id="edit" autocomplete="off" method="get" action="datacenter-edit2">
+            <form id="edit" autocomplete="off" method="post" action="datacenter-edit2">
                 <input type="hidden" id="id" name="id" value="${dc.id}" />
                 이름 &emsp; <input type="text" id="name" name="name" size="20" style="width: 128px;" value="${dc.name}">  <br><br>
 

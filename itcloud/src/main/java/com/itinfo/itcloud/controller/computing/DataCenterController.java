@@ -2,6 +2,7 @@ package com.itinfo.itcloud.controller.computing;
 
 import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
+import com.itinfo.itcloud.model.create.DataCenterCreateVo;
 import com.itinfo.itcloud.service.ItDataCenterService;
 
 import com.itinfo.itcloud.service.ItMenuService;
@@ -125,8 +126,9 @@ public class DataCenterController {
 
 
 	// 데이터센터 생성
-	@GetMapping("/computing/datacenter-add2")
-	public String add2(Model model, DataCenterVo dcVo) {
+
+	@PostMapping("/computing/datacenter-add2")
+	public String add2(Model model, @ModelAttribute DataCenterCreateVo dcVo) {
 		if(itDataCenterService.addDatacenter(dcVo)){
 			model.addAttribute("result", "완료");
 		}else if(!itDataCenterService.addDatacenter(dcVo)) {
@@ -140,18 +142,19 @@ public class DataCenterController {
 	// 데이터센터 수정 창출력
 	@GetMapping("/computing/datacenter-edit")
 	public String edit(Model model, String id) {
-		DataCenterVo dcVo = itDataCenterService.getDatacenter(id);
+		DataCenterCreateVo dcVo = itDataCenterService.getDatacenter(id);
 		model.addAttribute("dc", dcVo);
 		return "computing/datacenter-edit";
 	}
 
 	// 데이터센터 수정
-	@GetMapping("/computing/datacenter-edit2")
-	public String edit2(Model model, DataCenterVo dcVo ) {
+	@PostMapping("/computing/datacenter-edit2")
+	public String edit2(Model model, @ModelAttribute DataCenterCreateVo dcVo ) {
 		itDataCenterService.editDatacenter(dcVo);
 		model.addAttribute("result", "완료");
 		return "computing/datacenter-edit2";
 	}
+
 
 	@GetMapping("/computing/datacenter-delete")
 	public String delete(Model model, String id){
@@ -160,14 +163,13 @@ public class DataCenterController {
 		return "computing/datacenter-delete";
 	}
 
-	@GetMapping("/computing/datacenter-delete2")
-	public String delete2(Model model, String id){
-		itDataCenterService.deleteDatacenter(id);
 
+	@PostMapping("/computing/datacenter-delete2")
+	public String delete2(Model model, @RequestParam String id){
 		if(itDataCenterService.deleteDatacenter(id)){
 			model.addAttribute("result", "완료");
 		}else {
-			model.addAttribute("result", "삭제는 되는데 문제가 있음");
+			model.addAttribute("result", "삭제 실패");
 		}
 
 		return "computing/datacenter-delete2";

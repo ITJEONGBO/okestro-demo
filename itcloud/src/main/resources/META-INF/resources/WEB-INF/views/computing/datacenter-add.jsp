@@ -41,7 +41,7 @@
         <hr>
         <div>
             <h2>데이터센터 생성</h2>
-            <form id="add" autocomplete="off" method="get" action="datacenter-add2">
+            <form id="add" autocomplete="off" method="post" action="datacenter-add2">
                 이름 &emsp; <input type="text" id="name" name="name" size="20" style="width: 128px;" autofocus>   <br><br>
 
                 설명 &emsp; <input type="text" id="description" name="description">   <br><br>

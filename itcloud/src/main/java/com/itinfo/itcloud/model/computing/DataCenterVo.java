@@ -6,7 +6,7 @@ import org.ovirt.engine.sdk4.types.QuotaModeType;
 
 import java.util.List;
 
-@Getter @Setter @ToString @Builder
+@Getter @ToString @Builder
 public class DataCenterVo {
     private String id;
     private String name;

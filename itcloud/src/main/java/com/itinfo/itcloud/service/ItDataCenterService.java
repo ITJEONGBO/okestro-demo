@@ -2,6 +2,7 @@ package com.itinfo.itcloud.service;
 
 import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
+import com.itinfo.itcloud.model.create.DataCenterCreateVo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,10 +18,10 @@ public interface ItDataCenterService {
     List<EventVo> getEvent(String id);
 
 
-    DataCenterVo getDatacenter(String id);
+    DataCenterCreateVo getDatacenter(String id);
 
-    boolean addDatacenter(DataCenterVo dcVo);   // 생성
-    void editDatacenter(DataCenterVo dcVo);   // 수정
+    boolean addDatacenter(DataCenterCreateVo dcVo);   // 생성
+    void editDatacenter(DataCenterCreateVo dcVo);   // 수정
     boolean deleteDatacenter(String id);       // 삭제
 
 }
