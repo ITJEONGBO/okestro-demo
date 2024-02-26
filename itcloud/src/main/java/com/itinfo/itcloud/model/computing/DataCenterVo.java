@@ -1,9 +1,9 @@
 package com.itinfo.itcloud.model.computing;
 
+import com.itinfo.itcloud.model.enums.DataCenterStatusVo;
+import com.itinfo.itcloud.model.enums.QuotaModeTypeVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import lombok.*;
-import org.ovirt.engine.sdk4.types.QuotaModeType;
-
 import java.util.List;
 
 @Getter @ToString @Builder
@@ -12,7 +12,7 @@ public class DataCenterVo {
     private String name;
     private String comment;
     private String description;
-    private QuotaModeType quotaMode;     // QuotaMode: 비활성화됨, 감사, 강제적용
+    private String quotaMode;     // QuotaMode: 비활성화됨, 감사, 강제적용
     private boolean storageType;         // local
     private String version;
 

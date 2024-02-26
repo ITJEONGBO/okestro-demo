@@ -163,6 +163,13 @@ public class ClusterController {
 
 
 	//region: set Cluster
+
+	@GetMapping("/computing/cluster-ad")
+	public String ad(Model model) {
+		return "computing/cluster-ad";
+	}
+
+	// 데이터센터 생성 창출력
 	@GetMapping("/computing/cluster-add")
 	public String addShow(Model model) {
 		List<DataCenterVo> dcList = itClusterService.getDcList();

@@ -42,9 +42,9 @@
                         </c:if>
                         <c:forEach var="network" items="${network}" varStatus="status">
                             <tr>
-                                <td>${network.status == "operational" ? "▲" : "▽"}</td>
+                                <td>${network.status == "가동 중" ? "▲" : "▽"}</td>
                                 <td><a href="/network/network?id=${network.id}" style="text-decoration-line: none">${network.name}</a></td>
-                                <td>${network.status == "operational" ? "가동 중" : "비 가동"}</td>
+                                <td>${network.status}</td>
                                 <td>
                                     ${network.networkUsageVo.vm =="true" ? "vm":""}
                                     ${network.networkUsageVo.management =="true" ? "management":""}
@@ -65,8 +65,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="js/scripts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-    <script src="assets/demo/chart-area-demo.js"></script>
-    <script src="assets/demo/chart-bar-demo.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
     <script src="js/datatables-simple-demo.js"></script>
     </body>

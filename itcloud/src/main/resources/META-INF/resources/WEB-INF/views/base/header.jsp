@@ -86,7 +86,7 @@
                                             <a href="/computing/datacenters" style="font-size: 22px; text-decoration-line: none; color: grey;" >
                                                 <img src="/svg/dcc.png" alt="dcc" width="20" height="auto" />  ${dc.name}
                                                 <a data-bs-toggle="collapse" href="#collapseDatacenter-${dc.id}" >
-                                                    <div class="sb-sidenav-collapse-arrow" style="margin-top: 8px; height: 25px; width: 30px; float:left; text-decoration-line: none; color: grey; "><i class="fas fa-angle-down"></i></div>
+                                                    <div class="sb-sidenav-collapse-arrow" style="margin-top: 8px; height: 25px; width: 15px; float:left; text-decoration-line: none; color: grey; "><i class="fas fa-angle-down"></i></div>
                                                 </a>
                                             </a>
 

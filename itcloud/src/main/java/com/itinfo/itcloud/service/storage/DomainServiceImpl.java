@@ -97,31 +97,32 @@ public class DomainServiceImpl implements ItDomainService {
 
     @Override
     public List<DataCenterVo> getDatacenter(String id) {
-        SystemService systemService = admin.getConnection().systemService();
-
-        List<DataCenterVo> dcVoList = new ArrayList<>();
-        DataCenterVo dcVo = null;
-
-        List<StorageDomain> storageDomainList =
-                ((StorageDomainsService.ListResponse)systemService.storageDomainsService().list().send()).storageDomains();
-
-        for(StorageDomain storageDomain : storageDomainList){
-            if(storageDomain.dataCentersPresent()){
-                for(int i=0; i<storageDomain.dataCenters().size(); i++) {
-                    DataCenter dataCenter =
-                            ((DataCenterService.GetResponse) systemService.dataCentersService().dataCenterService(storageDomain.dataCenters().get(i).id()).get().send()).dataCenter();
-
-                    dcVo =  DataCenterVo.builder()
-                            .id(dataCenter.id())
-                            .name(dataCenter.name())
-                            .status(dataCenter.status().value())
-                            .build();
-
-                    dcVoList.add(dcVo);
-                }
-            }
-        }
-        return dcVoList;
+//        SystemService systemService = admin.getConnection().systemService();
+//
+//        List<DataCenterVo> dcVoList = new ArrayList<>();
+//        DataCenterVo dcVo = null;
+//
+//        List<StorageDomain> storageDomainList =
+//                ((StorageDomainsService.ListResponse)systemService.storageDomainsService().list().send()).storageDomains();
+//
+//        for(StorageDomain storageDomain : storageDomainList){
+//            if(storageDomain.dataCentersPresent()){
+//                for(int i=0; i<storageDomain.dataCenters().size(); i++) {
+//                    DataCenter dataCenter =
+//                            ((DataCenterService.GetResponse) systemService.dataCentersService().dataCenterService(storageDomain.dataCenters().get(i).id()).get().send()).dataCenter();
+//
+//                    dcVo =  DataCenterVo.builder()
+//                            .id(dataCenter.id())
+//                            .name(dataCenter.name())
+//                            .status(dataCenter.status().value())
+//                            .build();
+//
+//                    dcVoList.add(dcVo);
+//                }
+//            }
+//        }
+//        return dcVoList;
+        return null;
     }
 
     @Override

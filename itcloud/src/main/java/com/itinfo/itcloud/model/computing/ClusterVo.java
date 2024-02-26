@@ -11,16 +11,14 @@ public class ClusterVo {
     private String description;
     private String comment;
     private boolean ballooningEnabled;
-    private String biosType;
     private String cpuType;     // cpu().type()
     private boolean threadsAsCore;
     private int memoryOverCommit;
     private String restoration;    // 복구정책
-    private String chipsetFirmwareType;
+    private String chipsetFirmwareType;     // biosType
     private String version;
     private boolean gluster;
     private boolean virt;
-
 
     private String datacenterId;
     private String datacenterName;

@@ -209,10 +209,10 @@
                         <td>&emsp;
                             <select id="biosType" name="biosType">
                                 <!--  cpu 유형 선택에 따라 달라짐. 기본은 자동 감지   -->
-                                <option value="I440FX_SEA_BIOS" <c:if test="${c.biosType eq 'I440FX_SEA_BIOS'}">selected</c:if>> I440FX_SEA_BIOS</option>
-                                <option value="Q35_OVMF" <c:if test="${c.biosType eq 'Q35_OVMF'}">selected</c:if>> Q35_OVMF</option>
-                                <option value="Q35_SEA_BIOS" <c:if test="${c.biosType eq 'Q35_SEA_BIOS'}">selected</c:if>> Q35_SEA_BIOS</option>
-                                <option value="Q35_SECURE_BOOT" <c:if test="${c.biosType eq 'Q35_SECURE_BOOT'}">selected</c:if>> Q35_SECURE_BOOT</option>
+                                <option value="I440FX_SEA_BIOS" <c:if test="${c.biosType eq 'I440FX_SEA_BIOS'}">selected</c:if>>BIOS의 1440FX 칩셋</option>
+                                <option value="Q35_OVMF" <c:if test="${c.biosType eq 'Q35_OVMF'}">selected</c:if>>UEFI의 Q35 칩셋</option>
+                                <option value="Q35_SEA_BIOS" <c:if test="${c.biosType eq 'Q35_SEA_BIOS'}">selected</c:if>> BIOS의 Q35 칩셋</option>
+                                <option value="Q35_SECURE_BOOT" <c:if test="${c.biosType eq 'Q35_SECURE_BOOT'}">selected</c:if>>UEFI SecureBoot의 Q35 칩셋</option>
                             </select>
                         </td>
                     </tr>

@@ -2,6 +2,7 @@ package com.itinfo.itcloud.controller.computing;
 
 import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
+import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.create.DataCenterCreateVo;
 import com.itinfo.itcloud.service.ItDataCenterService;
 
@@ -25,6 +26,7 @@ public class DataCenterController {
 
 
 	// region: get Datacenter
+
 	@GetMapping("/computing/datacenters")
 	public String datacenters(Model model) {
 		long start = System.currentTimeMillis();
@@ -97,20 +99,19 @@ public class DataCenterController {
 //
 //		return "computing/datacenter-permission";
 //	}
-//
-//
-//	@GetMapping("/computing/datacenter-event")
-//	public String event(String id, Model model) {
-//		List<EventVo> event = itDataCenterService.getEvent(id);
-//		model.addAttribute("event", event);
-//		model.addAttribute("id", id);
-//		model.addAttribute("name", itDataCenterService.getName(id));
-//
-//		MenuVo m = menu.getMenu();
-//		model.addAttribute("m", m);
-//
-//		return "computing/datacenter-event";
-//	}
+
+	@GetMapping("/computing/datacenter-event")
+	public String event(String id, Model model) {
+		List<EventVo> event = itDataCenterService.getEvent(id);
+		model.addAttribute("event", event);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itDataCenterService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
+		return "computing/datacenter-event";
+	}
 
 	// endregion
 
@@ -124,9 +125,7 @@ public class DataCenterController {
 		return "computing/datacenter-add";
 	}
 
-
 	// 데이터센터 생성
-
 	@PostMapping("/computing/datacenter-add2")
 	public String add2(Model model, @ModelAttribute DataCenterCreateVo dcVo) {
 		if(itDataCenterService.addDatacenter(dcVo)){
@@ -134,7 +133,6 @@ public class DataCenterController {
 		}else if(!itDataCenterService.addDatacenter(dcVo)) {
 			model.addAttribute("result", "실패");
 		}
-
 		return "computing/datacenter-add2";
 	}
 
@@ -156,6 +154,7 @@ public class DataCenterController {
 	}
 
 
+	// 데이터센터 삭제 창출력
 	@GetMapping("/computing/datacenter-delete")
 	public String delete(Model model, String id){
 		model.addAttribute("id", id);
@@ -163,7 +162,7 @@ public class DataCenterController {
 		return "computing/datacenter-delete";
 	}
 
-
+	// 데이터센터 삭제
 	@PostMapping("/computing/datacenter-delete2")
 	public String delete2(Model model, @RequestParam String id){
 		if(itDataCenterService.deleteDatacenter(id)){
@@ -171,14 +170,11 @@ public class DataCenterController {
 		}else {
 			model.addAttribute("result", "삭제 실패");
 		}
-
 		return "computing/datacenter-delete2";
 	}
 
-
-
-
 	// endregion
+
 
 
 	//region: @ResponseBody
@@ -220,13 +216,13 @@ public class DataCenterController {
 //		log.info("----- permission 목록 불러오기: " + id);
 //		return itDataCenterService.getPermission(id);
 //	}
-//
-//	@GetMapping("/computing/datacenter/eventStatus")
-//	@ResponseBody
-//	public List<EventVo> event(String id) {
-//		log.info("----- event 목록 불러오기: " + id);
-//		return itDataCenterService.getEvent(id);
-//	}
+
+	@GetMapping("/computing/datacenter/eventStatus")
+	@ResponseBody
+	public List<EventVo> event(String id) {
+		log.info("----- event 목록 불러오기: " + id);
+		return itDataCenterService.getEvent(id);
+	}
 	//endregion
 
 }

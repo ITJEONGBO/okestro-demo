@@ -9,12 +9,15 @@
 
         $(document).ready(function(){
 
+
             $("#cpuArc").change(function(){
                 var arc = $("#cpuArc option:selected").val();
+                var biosTypeSelect = document.getElementById("biosType");
 
                 $("#cpuType option").remove();
 
                 if( arc === "X86_64"){
+                    biosTypeSelect.disabled = false;
                     $("#cpuType").append("<option value='Intel Nehalem Family'>Intel Nehalem Family</option>");
                     $("#cpuType").append("<option value='Secure Intel Nehalem Family'>Secure Intel Nehalem Family</option>");
                     $("#cpuType").append("<option value='Intel Westmere Family'>Intel Westmere Family</option>");
@@ -41,16 +44,19 @@
                     $("#cpuType").append("<option value='Secure AMD EPYC'>Secure AMD EPYC</option>");
                 }
                 if( arc === "PPC64"){
+                    biosTypeSelect.disabled = true;
                     $("#cpuType").append("<option value='IBM POWER8'>IBM POWER8</option>");
                     $("#cpuType").append("<option value='IBM POWER9'>IBM POWER9</option>");
                 }
                 if( arc === "S390X"){
+                    biosTypeSelect.disabled = true;
                     $("#cpuType").append( "<option value='IBM z114, z196'>IBM z114, z196</option>");
                     $("#cpuType").append("<option value='IBM zBC12, zEC12'>IBM zBC12, zEC12</option>");
                     $("#cpuType").append("<option value='IBM z13s, z13'>IBM z13s, z13</option>");
                     $("#cpuType").append("<option value='IBM z14'>IBM z14</option>");
                 }
                 if( arc === "UNDEFINED"){
+                    biosTypeSelect.disabled = true;
                     $("#cpuType").append("<option>자동 감지</option>");
                     $("#cpuType").append("<option value='Intel Nehalem Family'>Intel Nehalem Family</option>");
                     $("#cpuType").append("<option value='Secure Intel Nehalem Family'>Secure Intel Nehalem Family</option>");
@@ -83,6 +89,7 @@
                     $("#cpuType").append("<option value='IBM z13s, z13'>IBM z13s, z13</option>");
                     $("#cpuType").append("<option value='IBM z14'>IBM z14</option>");
                 }
+
 
             });
 
@@ -205,10 +212,10 @@
                     </tr>
                     <tr>
                         <td>CPU 유형</td>
-                        <td>
+                        <td>&emsp;
                             <select id="cpuType" name="cpuType" style="width:200px;">
                                 <!-- cpu type: x86_64, ppc64, s390x -->
-
+                                <option value="">자동 감지</option>
                                 <option value="Intel Nehalem Family">Intel Nehalem Family</option>
                                 <option value="Secure Intel Nehalem Family">Secure Intel Nehalem Family</option>
                                 <option value="Intel Westmere Family">Intel Westmere Family</option>
@@ -241,7 +248,6 @@
                                 <option value="IBM zBC12, zEC12">IBM zBC12, zEC12</option>
                                 <option value="IBM z13s, z13">IBM z13s, z13</option>
                                 <option value="IBM z14">IBM z14</option>
-
                             </select>
                         </td>
                     </tr>
@@ -249,13 +255,14 @@
                     <tr>
                         <td>칩셋/펌웨어 유형</td>
                         <td>&emsp;
-                            <select id="biosType" name="biosType">
+                            <select id="biosType" name="biosType" disabled>
                                 <option value="CLUSTER_DEFAULT">자동 감지</option>
                                 <option value="I440FX_SEA_BIOS">BIOS의 1440FX 칩셋</option>
-                                <option value="Q35_OVMF">BIOS의 Q35 칩셋</option>
-                                <option value="Q35_SEA_BIOS">UEFI의 Q35 칩셋</option>
+                                <option value="Q35_OVMF">UEFI의 Q35 칩셋</option>
+                                <option value="Q35_SEA_BIOS">BIOS의 Q35 칩셋</option>
                                 <option value="Q35_SECURE_BOOT">UEFI SecureBoot의 Q35 칩셋</option>
                             </select>
+
                         </td>
                     </tr>
 
@@ -313,13 +320,21 @@
 
                     <tr>
                         <td>로그의 최대 메모리 한계</td>
-                        <td> &emsp;<input type="text" id="logMaxMemory" name="logMaxMemory" size="10" value="95"></td>
+                        <td> &emsp;<input type="text" id="logMaxMemory" name="logMaxMemory" size="10" value="90"/></td>
                         <td>
-                            <select id="logMemoryType" name="logMemoryType" >
-                                <option value="percent">%</option>
-                                <option value="MB">MB</option>
+                            <select id="logMaxType" name="logMemoryType" >
+                                <option value="PERCENTAGE">%</option>
+                                <option value="ABSOLUTE_VALUE_IN_MB">MB</option>
                             </select>
                         </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2"><input type="checkbox" id="virtService" name="virtService" checked/>&emsp; Virt 서비스 활성화</td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2"><input type="checkbox" id="glusterService" name="glusterService" />&emsp; Gluster 서비스 활성화</td>
                     </tr>
 
                 </table>

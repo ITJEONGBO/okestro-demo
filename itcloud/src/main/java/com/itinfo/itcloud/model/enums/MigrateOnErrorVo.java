@@ -5,8 +5,8 @@ public enum MigrateOnErrorVo {
     migrate("예"),
     migrate_highly_available("높은 우선 순위만");
 
-    public final String s;
-    MigrateOnErrorVo(String s) {
-        this.s = s;
+    public final String name;
+    MigrateOnErrorVo(String name) {
+        this.name = name;
     }
 }

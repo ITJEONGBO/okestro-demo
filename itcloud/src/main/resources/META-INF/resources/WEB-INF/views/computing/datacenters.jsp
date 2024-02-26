@@ -91,9 +91,9 @@
                     <c:forEach var="datacenters" items="${datacenters}" varStatus="status">
                         <tr>
                             <td><input type="checkbox" id="dcid" name="dcid" value="${datacenters.id}" onclick="checkOnlyOne(this)"/></td>
-                            <td>${datacenters.status == "up" ? "▲" : "▽"}</td>
+                            <td>${datacenters.status == "Up" ? "▲" : "▽"}</td>
                             <td>&nbsp;&nbsp;&nbsp;</td>
-                            <td>${datacenters.name}</td>
+                            <td><a href="/computing/datacenter-event?id=${datacenters.id}">${datacenters.name}</a></td>
                             <td>${datacenters.comment}</td>
                             <td>${datacenters.storageType ? "로컬" : "공유됨"}</td>
                             <td>${datacenters.status}</td>

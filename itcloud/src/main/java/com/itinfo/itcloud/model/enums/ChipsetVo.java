@@ -7,9 +7,9 @@ public enum ChipsetVo {
     q35_sea_bios("BIOS의 Q35 칩셋"),
     q35_secure_boot("UEFI SecureBoot의 Q35 칩셋");
 
-    public final String s;
-    ChipsetVo(String s) {
-        this.s = s;
+    public final String name;
+    ChipsetVo(String name) {
+        this.name = name;
     }
 
 }

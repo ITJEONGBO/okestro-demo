@@ -3,6 +3,9 @@ package com.itinfo.itcloud.service.computing;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.create.DataCenterCreateVo;
+import com.itinfo.itcloud.model.enums.DataCenterStatusVo;
+import com.itinfo.itcloud.model.enums.LogSeverityVo;
+import com.itinfo.itcloud.model.enums.QuotaModeTypeVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItDataCenterService;
@@ -18,6 +21,8 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -27,21 +32,13 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
     @Override
     public String getName(String id){
-        long start = System.currentTimeMillis();
-
-        String name =  ovirt.getName("datacenter", id);
-
-        long end = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
-        System.out.println("getName ovirt 사용 수행시간(ms): " + (end-start));
-        return name;
-
+        return ovirt.getName("datacenter", id);
     }
 
 
     // 데이터센터 리스트 불러오기
     @Override
     public List<DataCenterVo> getList(){
-        long start = System.currentTimeMillis();
         SystemService systemService = admin.getConnection().systemService();
 
         List<DataCenterVo> dcVoList = new ArrayList<>();
@@ -54,16 +51,13 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                     .name(dataCenter.name())
                     .description(dataCenter.description())
                     .storageType(dataCenter.local())
-                    .status(dataCenter.status().value())
-                    .quotaMode(dataCenter.quotaMode())
+                    .status(DataCenterStatusVo.valueOf(dataCenter.status().value()).name)
+                    .quotaMode(QuotaModeTypeVo.valueOf(dataCenter.quotaMode().value()).name)
                     .version(dataCenter.version().major() + "." + dataCenter.version().minor())
                     .comment(dataCenter.comment())
                     .build();
             dcVoList.add(dcVo);
         }
-
-        long end = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
-        System.out.println("datacenter getList 수행시간(ms): " + (end-start));
 
         return dcVoList;
     }
@@ -197,10 +191,10 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         // <data_center> <name> </data_center>
         List<Event> eventList = ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
         for(Event event : eventList){
-            if( event.dataCenterPresent() && event.dataCenter().name().equals(name) ){
+            if( event.dataCenterPresent() /*&& event.dataCenter().name().equals(name)*/ ){
                 eVo = EventVo.builder()
                         .datacenterName(name)
-                        .severity(event.severity().value())     // 상태[LogSeverity] : alert, error, normal, warning
+                        .severity(LogSeverityVo.valueOf(event.severity().value()).name())   //상태
                         .time(sdf.format(event.time()))
                         .message(event.description())
                         .relationId(event.correlationIdPresent() ? event.correlationId() : null)
@@ -240,28 +234,35 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         SystemService systemService = admin.getConnection().systemService();
         DataCentersService datacentersService = systemService.dataCentersService();     // datacenters 서비스 불러오기
         List<DataCenter> dcList = datacentersService.list().send().dataCenters();
+        boolean dcName = datacentersService.list().search("name="+dcVo.getName()).send().dataCenters().isEmpty();
 
         log.info("addDatacenter Service");
         String[] ver = dcVo.getVersion().split("\\.");      // 버전값 분리
 
+
         try {
-            // 데이터센터 중복 이름은 생성 불가 (try-catch ? boolean)
+            // 데이터센터 중복 이름은 생성 불가
             // DataCenter 생성
-            DataCenter dataCenter = new DataCenterBuilder()
-                    .name(dcVo.getName())       // 이름
-                    .description(dcVo.getDescription())     // 설명
-                    .local(dcVo.isStorageType())    // 스토리지 유형
-                    .version(new VersionBuilder()
+            if(dcName) {
+                DataCenter dataCenter = new DataCenterBuilder()
+                        .name(dcVo.getName())       // 이름
+                        .description(dcVo.getDescription())     // 설명
+                        .local(dcVo.isStorageType())    // 스토리지 유형
+                        .version(new VersionBuilder()
                                 .major(Integer.parseInt(ver[0]))
                                 .minor(Integer.parseInt(ver[1]))
                                 .build())  // 호환 버전
-                    .quotaMode(dcVo.getQuotaMode())      // 쿼터 모드
-                    .comment(dcVo.getComment())     // 코멘트
-                    .build();
+                        .quotaMode(dcVo.getQuotaMode())      // 쿼터 모드
+                        .comment(dcVo.getComment())     // 코멘트
+                        .build();
 
-            datacentersService.add().dataCenter(dataCenter).send();     // 데이터센터 만든거 추가
-            log.info("------"+dcVo.toString());
-            return datacentersService.list().send().dataCenters().size() == (dcList.size() + 1);    // 기존 데이터센터 개수와 추가된 데이터센터 개수를 비교
+                datacentersService.add().dataCenter(dataCenter).send();     // 데이터센터 만든거 추가
+                log.info("------" + dcVo.toString());
+                return datacentersService.list().send().dataCenters().size() == (dcList.size() + 1);    // 기존 데이터센터 개수와 추가된 데이터센터 개수를 비교
+            }else {
+                log.error("데이터센터 이름 중복 에러");
+                return false;
+            }
         }catch (Exception e){
             return false;
         }

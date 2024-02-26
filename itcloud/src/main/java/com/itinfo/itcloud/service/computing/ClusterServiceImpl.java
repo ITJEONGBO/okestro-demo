@@ -4,6 +4,7 @@ import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.ClusterCreateVo;
 import com.itinfo.itcloud.model.enums.ChipsetVo;
 import com.itinfo.itcloud.model.enums.MigrateOnErrorVo;
+import com.itinfo.itcloud.model.enums.NetworkStatusVo;
 import com.itinfo.itcloud.model.network.NetworkUsageVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
@@ -103,15 +104,15 @@ public class ClusterServiceImpl implements ItClusterService {
                 .id(id)
                 .name(cluster.name())
                 .description(cluster.description())
-                .datacenterName(cluster.dataCenterPresent() ? ovirt.getName("datacenter", cluster.dataCenter().id()) : "")
+                .datacenterName(cluster.dataCenterPresent() ? ovirt.getName("datacenter", cluster.dataCenter().id()) : null)
                 .version(cluster.version().major() + "." + cluster.version().minor())
                 .gluster(cluster.glusterService())
                 .virt(cluster.virtService())
                 .cpuType(cluster.cpuPresent() ? cluster.cpu().type() : null)
-                .chipsetFirmwareType(cluster.biosTypePresent() ? ChipsetVo.valueOf(cluster.biosType().value()).s : "자동 감지")
+                .chipsetFirmwareType(cluster.biosTypePresent() ? ChipsetVo.valueOf(cluster.biosType().value()).name : "자동 감지")
                 .threadsAsCore(cluster.threadsAsCores())
                 .memoryOverCommit(cluster.memoryPolicy().overCommit().percentAsInteger())
-                .restoration(MigrateOnErrorVo.valueOf(cluster.errorHandling().onError().value()).s)
+                .restoration(MigrateOnErrorVo.valueOf(cluster.errorHandling().onError().value()).name)
                 .build();
 
         getVmCnt(systemService, cVo);
@@ -132,7 +133,7 @@ public class ClusterServiceImpl implements ItClusterService {
                 nwVo = NetworkVo.builder()
                         .id(network.id())
                         .name(network.name())
-                        .status(network.status().value())
+                        .status(NetworkStatusVo.valueOf(network.status().value()).name)
                         .description(network.description())
                         .networkUsageVo(
                                 NetworkUsageVo.builder()
@@ -411,10 +412,9 @@ public class ClusterServiceImpl implements ItClusterService {
         List<EventVo> eVoList = new ArrayList<>();
 
         EventVo eVo = null;
-        String name = getName(id);
 
         for(Event event : eventList){
-            if(event.clusterPresent() && event.cluster().name().equals(name)){
+            if(event.clusterPresent() && event.cluster().name().equals(getName(id))){
                 eVo = EventVo.builder()
                         .severity(event.severity().value())     // 상태[LogSeverity] : alert, error, normal, warning
                         .time(sdf.format(event.time()))
@@ -449,7 +449,6 @@ public class ClusterServiceImpl implements ItClusterService {
                     .build();
 
             dcVoList.add(dcVo);
-            System.out.println(dcVo.toString());
         }
         return dcVoList;
     }
@@ -538,41 +537,40 @@ public class ClusterServiceImpl implements ItClusterService {
         try{
             log.info("addCluster: " + dataCenter.name());
 
-            Cluster cluster = new ClusterBuilder()
+            ClusterBuilder clusterBuilder = new ClusterBuilder();
+            clusterBuilder
                     .dataCenter(dataCenter) // 필수
                     .name(cVo.getName())    // 필수
-                    .cpu( new CpuBuilder().architecture(cVo.getCpuArc()).type(cVo.getCpuType()) )   // 필수
+                    .cpu(new CpuBuilder().architecture(cVo.getCpuArc()).type(cVo.getCpuType()))   // 필수
                     .description(cVo.getDescription())
                     .comment(cVo.getComment())
                     .managementNetwork(network)
                     .biosType(cVo.getBiosType())
                     .fipsMode(cVo.getFipsMode())
-                    .version(new VersionBuilder()
-                                .major(Integer.parseInt(ver[0]))
-                                .minor(Integer.parseInt(ver[1]))
-                                .build())  // 호환 버전
+                    .version(new VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())
                     .switchType(cVo.getSwitchType())
                     .firewallType(cVo.getFirewallType())
                     .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
-                    // /ovirt-engine/api/clusters/a66d4186-43b8-4b9c-8231-4437372b9846/externalnetworkproviders
-                    // 일단 기본으로 들어가게는 해두긴했음, 근데 openstacknetworkprovider에 있는 기본을 get(0)으로 넣어둔거라 애매하네
-                    .externalNetworkProviders(openStackNetworkProvider)
-                    .virtService(true)
-//                     추가 난수 생성기 소스
-                    .errorHandling( new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()) )   // 복구정책
+                    .logMaxMemoryUsedThresholdType(cVo.getLogMaxType())
+                    .virtService(cVo.isVirtService())
+                    .glusterService(false)
+                    .errorHandling(new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()))
                     .migration(new MigrationOptionsBuilder()
-                            // 마이그레이션 정책
-                            .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))    // 대역폭
-                            .encrypted(cVo.getEncrypted())      // 암호화
+                            .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))
+                            .encrypted(cVo.getEncrypted())
                     )
                     .fencingPolicy(new FencingPolicyBuilder()
                             .skipIfConnectivityBroken(new SkipIfConnectivityBrokenBuilder().enabled(true))
-                            .skipIfSdActive(new SkipIfSdActiveBuilder().enabled(true)))
-                    .build();
+                            .skipIfSdActive(new SkipIfSdActiveBuilder().enabled(true)));
+
+            if (cVo.getNetworkProvider().equals(true)) {
+                clusterBuilder.externalNetworkProviders(openStackNetworkProvider);
+            }
+            Cluster cluster = clusterBuilder.build();
 
             clustersService.add().cluster(cluster).send();
-
             log.info("-- add Cluster: " + cVo.toString());
+
             return clustersService.list().send().clusters().size() == (clusterList.size()+1);
         }catch (Exception e){
             log.error("error: ", e);
@@ -610,10 +608,12 @@ public class ClusterServiceImpl implements ItClusterService {
                     .switchType(cVo.getSwitchType())
                     .firewallType(cVo.getFirewallType())
                     .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
+                    .logMaxMemoryUsedThresholdType(cVo.getLogMaxType())
                     // /ovirt-engine/api/clusters/a66d4186-43b8-4b9c-8231-4437372b9846/externalnetworkproviders
                     // 일단 기본으로 들어가게는 해두긴했음, 근데 openstacknetworkprovider에 있는 기본을 get(0)으로 넣어둔거라 애매하네
-                    .externalNetworkProviders(openStackNetworkProvider)
-                    .virtService(true)
+//                    .externalNetworkProviders(openStackNetworkProvider)
+                    .virtService(cVo.isVirtService())
+                    .glusterService(cVo.isGlusterService())
                     .errorHandling( new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()) )   // 복구정책
                     .migration(new MigrationOptionsBuilder()
                             // 마이그레이션 정책
