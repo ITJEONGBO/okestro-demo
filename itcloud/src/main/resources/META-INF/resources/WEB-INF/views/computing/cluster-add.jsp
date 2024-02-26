@@ -6,9 +6,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script type="text/javascript">
 
-
         $(document).ready(function(){
-
 
             $("#cpuArc").change(function(){
                 var arc = $("#cpuArc option:selected").val();
@@ -124,10 +122,10 @@
         		}
 
         		var v = $("input:checkbox[id='virtService']").is(":checked") ;
-                var g = $("input:checkbox[id='glusterService']").is(":checked") ;
+                // var g = $("input:checkbox[id='glusterService']").is(":checked") ;
 
                 $("input:checkbox[id='virtService']").val(v);
-                $("input:checkbox[id='glusterService']").val(g);
+                // $("input:checkbox[id='glusterService']").val(g);
 
         		$("#add").submit();
         	});
@@ -160,7 +158,7 @@
                     <tr>
                         <td>데이터 센터</td>
                         <td>&emsp;
-                            <select id="datacenterId" name="datacenterId">
+                            <select id="datacenterId" name="datacenterId" onchange="updateDc()">
                                 <c:forEach var="dc" items="${dc}" varStatus="status">
                                     <option value="${dc.id}">${dc.name}</option>
                                 </c:forEach>
@@ -311,8 +309,8 @@
                         <td>기본 네트워크 공급자</td>
                         <td>&emsp;
                             <select id="networkProvider" name="networkProvider" >
-                                <option value="true">ovirt-provider-ovn</option>
                                 <option value="false">기본 공급자가 없습니다.</option>
+                                <option value="true">ovirt-provider-ovn</option>
                             </select>
                         </td>
                     </tr>

@@ -47,6 +47,9 @@ public class HostVo {
     private int spmPriority;    // spm 우선순위
 
     private Boolean hostedEngine;   // Hosted Engine HA [ 금장, 은장, null ]
+    private Boolean hostedActive;    // 활성여부
+    private int hostedScore;        // 점수
+
     private boolean ksm;             // 메모리 페이지 공유
     private boolean pageSize;       // 자동으로 페이지를 크게
 

@@ -59,7 +59,7 @@
                         Huge Pages (size: free/total) : 2048: ${host.hugePage2048Free}/${host.hugePage2048Free}, 1048576: ${host.hugePage1048576Free}/${host.hugePage1048576Free}<br>
                         SELinux 모드: ${host.seLinux} <br>
                         클러스터 호환 버전: <br>
-                        Hosted Engine HA: ${host.hostedEngine ? "활성" : "[해당없음]"}<br>
+                        Hosted Engine HA: ${host.hostedActive ? "활성 " : "[해당없음]" } <br>
 
                     <hr>
                         <h5>하드웨어</h5>

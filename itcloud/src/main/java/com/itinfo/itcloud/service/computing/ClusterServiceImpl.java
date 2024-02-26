@@ -508,7 +508,7 @@ public class ClusterServiceImpl implements ItClusterService {
                 .switchType(cluster.switchType())
                 .firewallType(cluster.firewallType())
                 .logMaxMemory(cluster.logMaxMemoryUsedThresholdAsInteger())
-//                .virtService(cluster.virtService())
+                .virtService(cluster.virtService())
 //                .glusterService(cluster.glusterService())
                 .networkId(networkId)
                 .networkName(networkName)
@@ -535,8 +535,6 @@ public class ClusterServiceImpl implements ItClusterService {
         String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
 
         try{
-            log.info("addCluster: " + dataCenter.name());
-
             ClusterBuilder clusterBuilder = new ClusterBuilder();
             clusterBuilder
                     .dataCenter(dataCenter) // 필수
@@ -553,7 +551,6 @@ public class ClusterServiceImpl implements ItClusterService {
                     .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
                     .logMaxMemoryUsedThresholdType(cVo.getLogMaxType())
                     .virtService(cVo.isVirtService())
-                    .glusterService(false)
                     .errorHandling(new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()))
                     .migration(new MigrationOptionsBuilder()
                             .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))
@@ -562,6 +559,8 @@ public class ClusterServiceImpl implements ItClusterService {
                     .fencingPolicy(new FencingPolicyBuilder()
                             .skipIfConnectivityBroken(new SkipIfConnectivityBrokenBuilder().enabled(true))
                             .skipIfSdActive(new SkipIfSdActiveBuilder().enabled(true)));
+
+                System.out.println(cVo.getCpuArc());
 
             if (cVo.getNetworkProvider().equals(true)) {
                 clusterBuilder.externalNetworkProviders(openStackNetworkProvider);
@@ -589,10 +588,11 @@ public class ClusterServiceImpl implements ItClusterService {
         OpenStackNetworkProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
 
         String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
-        System.out.println(cVo.getVersion());
 
         try{
-            Cluster cluster = new ClusterBuilder()
+            ClusterBuilder clusterBuilder = new ClusterBuilder();
+//            Cluster cluster = new ClusterBuilder()
+            clusterBuilder
                     .dataCenter(dataCenter) // 필수
                     .name(cVo.getName())    // 필수
                     .cpu( new CpuBuilder().architecture(cVo.getCpuArc()).type(cVo.getCpuType()) )   // 필수
@@ -605,25 +605,26 @@ public class ClusterServiceImpl implements ItClusterService {
                             .major(Integer.parseInt(ver[0]))
                             .minor(Integer.parseInt(ver[1]))
                             .build())  // 호환 버전
-                    .switchType(cVo.getSwitchType())
+//                    .switchType(cVo.getSwitchType())      // 선택불가
                     .firewallType(cVo.getFirewallType())
                     .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
                     .logMaxMemoryUsedThresholdType(cVo.getLogMaxType())
-                    // /ovirt-engine/api/clusters/a66d4186-43b8-4b9c-8231-4437372b9846/externalnetworkproviders
-                    // 일단 기본으로 들어가게는 해두긴했음, 근데 openstacknetworkprovider에 있는 기본을 get(0)으로 넣어둔거라 애매하네
-//                    .externalNetworkProviders(openStackNetworkProvider)
                     .virtService(cVo.isVirtService())
-                    .glusterService(cVo.isGlusterService())
+//                    .glusterService(cVo.isGlusterService())
                     .errorHandling( new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()) )   // 복구정책
                     .migration(new MigrationOptionsBuilder()
                             // 마이그레이션 정책
                             .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))    // 대역폭
                             .encrypted(cVo.getEncrypted())      // 암호화
-                    )
-                    .build();
+                    );
+            if (cVo.getNetworkProvider().equals(true)) {
+                clusterBuilder.externalNetworkProviders(openStackNetworkProvider);
+            }
+
+            Cluster cluster = clusterBuilder.build();
+
             log.info("editCluster: " + cluster.name());
             clusterService.update().cluster(cluster).send();
-
         }catch (Exception e){
             log.error("error: ", e);
         }

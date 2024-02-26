@@ -195,6 +195,8 @@ public class HostServiceImpl implements ItHostService {
                 .hugePage1048576Free(hugePage1048576Free)
                 .bootingTime(bootingTime)
                 .hostedEngine(host.hostedEnginePresent() && host.hostedEngine().active())       // Hosted Engine HA
+                .hostedActive(host.hostedEnginePresent() ? host.hostedEngine().active() : null)
+                .hostedScore(host.hostedEnginePresent() ? host.hostedEngine().scoreAsInteger() : 0)
                 .ksm(host.ksmPresent() && host.ksm().enabled())         // 메모리 페이지 공유  비활성
                 .pageSize(host.transparentHugePages().enabled())    // 자동으로 페이지를 크게 (확실하지 않음. 매우)
                 .seLinux(host.seLinux().mode().value())     // selinux모드: disabled, enforcing, permissive

@@ -11,10 +11,12 @@
 
             $("#cpuArc").change(function(){
                 var arc = $("#cpuArc option:selected").val();
+                var biosTypeSelect = document.getElementById("biosType");
 
                 $("#cpuType option").remove();
 
                 if( arc === "X86_64"){
+                    biosTypeSelect.disabled = false;
                     $("#cpuType").append("<option value='Intel Nehalem Family'>Intel Nehalem Family</option>");
                     $("#cpuType").append("<option value='Secure Intel Nehalem Family'>Secure Intel Nehalem Family</option>");
                     $("#cpuType").append("<option value='Intel Westmere Family'>Intel Westmere Family</option>");
@@ -41,16 +43,19 @@
                     $("#cpuType").append("<option value='Secure AMD EPYC'>Secure AMD EPYC</option>");
                 }
                 if( arc === "PPC64"){
+                    biosTypeSelect.disabled = true;
                     $("#cpuType").append("<option value='IBM POWER8'>IBM POWER8</option>");
                     $("#cpuType").append("<option value='IBM POWER9'>IBM POWER9</option>");
                 }
                 if( arc === "S390X"){
+                    biosTypeSelect.disabled = true;
                     $("#cpuType").append( "<option value='IBM z114, z196'>IBM z114, z196</option>");
                     $("#cpuType").append("<option value='IBM zBC12, zEC12'>IBM zBC12, zEC12</option>");
                     $("#cpuType").append("<option value='IBM z13s, z13'>IBM z13s, z13</option>");
                     $("#cpuType").append("<option value='IBM z14'>IBM z14</option>");
                 }
                 if( arc === "UNDEFINED"){
+                    biosTypeSelect.disabled = true;
                     $("#cpuType").append("<option>자동 감지</option>");
                     $("#cpuType").append("<option value='Intel Nehalem Family'>Intel Nehalem Family</option>");
                     $("#cpuType").append("<option value='Secure Intel Nehalem Family'>Secure Intel Nehalem Family</option>");
@@ -207,8 +212,8 @@
                     <tr>
                         <td>칩셋/펌웨어 유형</td>
                         <td>&emsp;
-                            <select id="biosType" name="biosType">
-                                <!--  cpu 유형 선택에 따라 달라짐. 기본은 자동 감지   -->
+                            <select id="biosType" name="biosType" disabled>
+                                <option value="CLUSTER_DEFAULT" <c:if test="${c.biosType eq 'CLUSTER_DEFAULT'}">selected</c:if>> 자동 감지</option>
                                 <option value="I440FX_SEA_BIOS" <c:if test="${c.biosType eq 'I440FX_SEA_BIOS'}">selected</c:if>>BIOS의 1440FX 칩셋</option>
                                 <option value="Q35_OVMF" <c:if test="${c.biosType eq 'Q35_OVMF'}">selected</c:if>>UEFI의 Q35 칩셋</option>
                                 <option value="Q35_SEA_BIOS" <c:if test="${c.biosType eq 'Q35_SEA_BIOS'}">selected</c:if>> BIOS의 Q35 칩셋</option>
@@ -261,7 +266,8 @@
                         <td>기본 네트워크 공급자</td>
                         <td>&emsp;
                             <select id="networkProvider" name="networkProvider" >
-                                <option value="true">ovirt-provider-ovn</option>
+                                <option value="false" <c:if test="${c.networkProvider eq 'false'}">selected</c:if> >기본 공급자가 없습니다.</option>
+                                <option value="true" <c:if test="${c.networkProvider eq 'true'}">selected</c:if> >ovirt-provider-ovn</option>
                             </select>
                         </td>
                     </tr>
@@ -276,6 +282,14 @@
                             <!-- <option value="MB">MB</option> -->
                             </select>
                         </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2"><input type="checkbox" id="virtService" name="virtService" <c:if test="${c.virtService eq 'true'}">checked</c:if> />&emsp; Virt 서비스 활성화</td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2"><input type="checkbox" id="glusterService" name="glusterService" />&emsp; Gluster 서비스 활성화</td>
                     </tr>
 
                 </table>
