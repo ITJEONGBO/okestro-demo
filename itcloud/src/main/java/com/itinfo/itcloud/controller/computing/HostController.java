@@ -160,12 +160,22 @@ public class HostController {
 
 	// 클러스터 수정
 	@PostMapping("/computing/host-edit2")
-	public String edit2(Model model, @ModelAttribute HostCreateVo hVo ) {
+	public String edit2(Model model, @ModelAttribute HostCreateVo hVo) {
 		log.info("edit 시작");
 
 		itHostService.editHost(hVo);
 		model.addAttribute("result", "호스트 수정 완료");
 		return "computing/host-edit2";
+	}
+
+	@PostMapping("/computing/host-reboot")
+	public String reboot(Model model, @ModelAttribute String hostId) {
+		log.info("reboot 시작");
+		Boolean rebootSuccess =
+				itHostService.rebootHost(hostId);
+		log.info("rebootSuccess: {}", rebootSuccess);
+		model.addAttribute("result", "호스트 재기동 완료");
+		return rebootSuccess.toString();
 	}
 
 	@GetMapping("/computing/host-delete")

@@ -15,6 +15,10 @@
 
     <div style="magin: auto">
     <h1>${result}</h1>
+
+        <label>Head: ${message}</label><br>
+        <label>Body: ${body}</label><br>
+
         <form>
             클러스터 설정:
             <select name="cluster" id="cluster">

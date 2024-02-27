@@ -423,7 +423,7 @@ public class HostServiceImpl implements ItHostService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");      // 2024. 1. 4. PM 04:01:21
 
         String name = getName(id);
-        List<Event> eventList =  systemService.eventsService().list().search("host.name=" + name).send().events();
+        List<Event> eventList = systemService.eventsService().list().search("host.name=" + name).send().events();
         List<EventVo> eVoList = new ArrayList<>();
         EventVo eVo = null;
 
@@ -503,56 +503,43 @@ public class HostServiceImpl implements ItHostService {
         Cluster cluster = systemService.clustersService().clusterService(hostCreateVo.getClusterId()).get().send().cluster();
 
         try {
+            HostBuilder hostBuilder = new HostBuilder();
             // 고려해야하는 것, ssh port번호, 전원관리 활성 여부(펜스 에이전트가 추가되는지가 달림)
-            // sshport가 22면 .ssh() 설정하지 않아도 알아서 지정됨
-            // sshport 변경을 ovirt에서 해보신적은 없어서 우선 보류
-            Host host = null;
-            if (hostCreateVo.getSshPort() == 22) {
-                host = new HostBuilder()
-                            .name(hostCreateVo.getName())
-                            .comment(hostCreateVo.getComment())
-                            .address(hostCreateVo.getHostIp())          // 호스트이름/IP
-                            .rootPassword(hostCreateVo.getSshPw())   // 암호
-                            .spm(new SpmBuilder().priority(hostCreateVo.getSpm()))
-                            .hostedEngine(new HostedEngineBuilder().active(hostCreateVo.isHostEngine()))
-//                            .powerManagement(new PowerManagementBuilder().enabled(true).agents(new AgentBuilder().host(host)))    // 전원관리
-                        /*
-                        * 호스트을/를 다시 시작할 수 없습니다. 호스트에는 전원 관리가 활성화 되어 있지만 에이전트 유형을 선택하지 않았습니다.
-                            호스트 펜싱을 실행할 수 없습니다. 호스트 펜싱이 비활성화 되어 있습니다.
-                            호스트 을/를 다시 시작 할 수 없습니다. 펜싱 작업이 실패했습니다.
-                        * */
-                            .cluster(cluster)
-                            .build();
-            } else {
-                host = new HostBuilder()
-                            .name(hostCreateVo.getName())
-                            .comment(hostCreateVo.getComment())
-                            .address(hostCreateVo.getHostIp())          // 호스트이름/IP
-                            .ssh(new SshBuilder().port(hostCreateVo.getSshPort()))  // 새로 지정할 포트번호
-                            .rootPassword(hostCreateVo.getSshPw())   // 암호
-                            .spm(new SpmBuilder().priority(hostCreateVo.getSpm()))
-//                            .hostedEngine(new HostedEngineBuilder().active(hostCreateVo.isHostEngine()))
-                            .cluster(cluster)
-                            .build();
+            // sshport가 22면 .ssh() 설정하지 않아도 알아서 지정됨, sshport 변경을 ovirt에서 해보신적은 없어서 우선 보류
+
+            hostBuilder
+                    .name(hostCreateVo.getName())
+                    .comment(hostCreateVo.getComment())
+                    .address(hostCreateVo.getHostIp())          // 호스트이름/IP
+                    .rootPassword(hostCreateVo.getSshPw())   // 암호
+                    .spm(new SpmBuilder().priority(hostCreateVo.getSpm()))
+                    .hostedEngine(new HostedEngineBuilder().active(hostCreateVo.isHostEngine()))
+                    .cluster(cluster);
+
+            if(hostCreateVo.getSshPort() != 22){
+                hostBuilder.ssh(new SshBuilder().port(hostCreateVo.getSshPort()));  // 새로 지정할 포트번호
             }
             log.info("---- " + hostCreateVo.toString());
 
             // 호스트 엔진 배치작업 선택 (없음/배포)  -> 호스트 생성
             if(hostCreateVo.isHostEngine()){
-                hostsService.add().deployHostedEngine(true).host(host).send().host();
+                hostsService.add().deployHostedEngine(true).host(hostBuilder).send().host();
                 log.info("hostEngine 추가");
             }else {
-                hostsService.add().deployHostedEngine(false).host(host).send().host();  // false 생략가능
+                hostsService.add().deployHostedEngine(false).host(hostBuilder).send().host();  // false 생략가능
                 log.info("! hostEngine 추가");
             }
 
-            while (host.status() == HostStatus.UP) {
+
+            Host host = hostBuilder.build();
+
+            while (host.status().value().equals(HostStatus.UP)) {
                 log.info("호스트 추가 완료(" + hostCreateVo.getName() + ")");
             }
 
             return hostsService.list().send().hosts().size() == ( hostList.size()+1 );
         } catch (Exception e) {
-            log.error("error: ", e);
+            log.error("error: {}", e);
             return false;
         }
     }
@@ -584,19 +571,55 @@ public class HostServiceImpl implements ItHostService {
     }
 
     @Override
+    public boolean rebootHost(String hostId) {
+        log.debug("rebootHost ... hostId: {}", hostId);
+        SystemService systemService = admin.getConnection().systemService();
+        HostService hostService = systemService.hostsService().hostService(hostId);
+        /*
+        Host hostFound = hostService.get().send().host();
+        if (hostFound == null) {
+            log.error("rebootHost FAILED ...");
+            return false;
+        }
+        log.debug("hostFound: {}", hostFound);
+        log.debug("hostFound.status(): {}", hostFound.status().value());
+        */
+        try {
+            Host hostAfter = hostService.updateUsingSsh().async(true).host(
+                    new HostBuilder()
+                            .id(hostId)
+                            // TODO: .status 메소드로 상태변경방법 조사 필요
+                            .status(HostStatus.REBOOT)
+                            .build()
+            ).send().host();
+            log.info("hostAfter: {}", hostAfter.status().value());
+            log.info("hostAfter.status(): {}", hostAfter.status().value());
+            return true;
+        } catch (Exception e) {
+            log.error("error {}", e.getLocalizedMessage());
+            return false;
+        }
+    }
+
+    @Override
     public boolean deleteHost(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
         HostsService hostsService = systemService.hostsService();
         List<Host> hList = systemService.hostsService().list().send().hosts();
         HostService hostService = systemService.hostsService().hostService(id);
+        Host host = hostService.get().send().host();
         String name = hostService.get().send().host().name();
 
         try {
-            log.info("delete host: {}", name);
-            hostService.remove().send();
-            log.info("finish");
-            return hostsService.list().send().hosts().size() == ( hList.size() -1 );
+            if(host.status().equals(HostStatus.MAINTENANCE)) {
+                hostService.remove().send();
+                log.info("delete host: {}", name);
+                return hostsService.list().send().hosts().size() == (hList.size() - 1);
+            }else{
+                log.error("유지 보수 후 삭제 해야함");
+            }
+            return false;
         }catch (Exception e){
             log.error("error ", e);
             return false;

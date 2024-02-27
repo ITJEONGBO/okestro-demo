@@ -1,5 +1,8 @@
 package com.itinfo.itcloud.controller.computing;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.itinfo.itcloud.model.CommonVo;
 import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.ClusterCreateVo;
@@ -177,12 +180,17 @@ public class ClusterController {
 	 // 데이터센터 생성
 	@PostMapping("/computing/cluster-add2")
 	public String add(Model model, @ModelAttribute ClusterCreateVo cVo) {
-		if(itClusterService.addCluster(cVo)){
+		CommonVo<Boolean> res = itClusterService.addCluster(cVo);
+
+		if(res.getBody().getContent().equals(true)){
+//		if(res.body.getContent().equals(true)){
 			model.addAttribute("result", "클러스터 생성 완료");
 		}else{
 			model.addAttribute("result", "클러스터 생성 실패");
 		}
-
+		model.addAttribute("message", res.getHead().getMessage());
+		model.addAttribute("body", res.getBody().getContent());
+//		log.debug("res: {}", res.toJson());
 		return "computing/cluster-add2";
 	}
 

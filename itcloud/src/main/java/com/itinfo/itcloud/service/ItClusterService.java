@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.service;
 
+import com.itinfo.itcloud.model.CommonVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.ClusterCreateVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
@@ -25,7 +26,7 @@ public interface ItClusterService {
     ClusterCreateVo getClusterCreate(String id);
 
     List<DataCenterVo> getDcList();
-    boolean addCluster(ClusterCreateVo cVo);   // 생성
+    CommonVo<Boolean> addCluster(ClusterCreateVo cVo);   // 생성
     void editCluster(ClusterCreateVo cVo);   // 수정
     boolean deleteCluster(String id);       // 삭제
 

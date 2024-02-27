@@ -274,6 +274,7 @@ fun Host.toItInfoNetworkHostVo(c: Connection, networkId: String): ItInfoNetworkH
 //		}
 //	})
 
+	val a:String = if (nicStatus.isNotEmpty()) nicStatus else ""
 	return ItInfoNetworkHostVo(
 		if (statusPresent()) status().value() else "",
 		if (namePresent()) name() else "",

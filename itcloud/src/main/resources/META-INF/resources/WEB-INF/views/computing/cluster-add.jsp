@@ -318,9 +318,9 @@
 
                     <tr>
                         <td>로그의 최대 메모리 한계</td>
-                        <td> &emsp;<input type="text" id="logMaxMemory" name="logMaxMemory" size="10" value="90"/></td>
+                        <td> &emsp;<input type="text" id="logMaxMemory" name="logMaxMemory" size="10" value="95"/></td>
                         <td>
-                            <select id="logMaxType" name="logMemoryType" >
+                            <select id="logMaxType" name="logMaxType" >
                                 <option value="PERCENTAGE">%</option>
                                 <option value="ABSOLUTE_VALUE_IN_MB">MB</option>
                             </select>

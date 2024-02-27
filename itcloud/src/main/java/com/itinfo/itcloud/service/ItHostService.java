@@ -24,7 +24,10 @@ public interface ItHostService {
     HostCreateVo getHostCreate(String id);
 
     boolean addHost(HostCreateVo hostCreateVo);     // 생성
+
     void editHost(HostCreateVo hostCreateVo);       // 수정
+    boolean rebootHost(String hostId);              // 재기동
+
     boolean deleteHost(String id);                  // 삭제
 
 

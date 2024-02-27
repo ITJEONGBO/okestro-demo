@@ -69,10 +69,11 @@
     }
 
     function openRestart() {
-        if(hid == ""){
+        if (hid == "") {
             alert("호스트를 선택해주세요");
             return;
         }
+
         window.open("host-restart?id=" + hid, "mypopup", "width=400, height=200, top=150, left=200");
     }
 

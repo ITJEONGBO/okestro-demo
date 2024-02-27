@@ -1,8 +1,13 @@
 package com.itinfo.itcloud.service.computing;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.itinfo.itcloud.model.Body;
+import com.itinfo.itcloud.model.CommonVo;
+import com.itinfo.itcloud.model.Head;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.ClusterCreateVo;
-import com.itinfo.itcloud.model.enums.ChipsetVo;
+import com.itinfo.itcloud.model.enums.BiosTypeExtKt;
 import com.itinfo.itcloud.model.enums.MigrateOnErrorVo;
 import com.itinfo.itcloud.model.enums.NetworkStatusVo;
 import com.itinfo.itcloud.model.network.NetworkUsageVo;
@@ -28,6 +33,10 @@ public class ClusterServiceImpl implements ItClusterService {
 
     @Autowired private AdminConnectionService admin;
     @Autowired private OvirtService ovirt;
+
+    private Gson getGson() {
+        return new GsonBuilder().setPrettyPrinting().create();
+    }
 
     @Override
     public String getName(String id){
@@ -109,7 +118,10 @@ public class ClusterServiceImpl implements ItClusterService {
                 .gluster(cluster.glusterService())
                 .virt(cluster.virtService())
                 .cpuType(cluster.cpuPresent() ? cluster.cpu().type() : null)
-                .chipsetFirmwareType(cluster.biosTypePresent() ? ChipsetVo.valueOf(cluster.biosType().value()).name : "자동 감지")
+                .chipsetFirmwareType(cluster.biosTypePresent()
+                        ? BiosTypeExtKt.findKRName(cluster.biosType())
+                        : "자동 감지"
+                )
                 .threadsAsCore(cluster.threadsAsCores())
                 .memoryOverCommit(cluster.memoryPolicy().overCommit().percentAsInteger())
                 .restoration(MigrateOnErrorVo.valueOf(cluster.errorHandling().onError().value()).name)
@@ -186,7 +198,15 @@ public class ClusterServiceImpl implements ItClusterService {
         VmVo vmVo = null;
 
         List<Vm> vmList = systemService.vmsService().list().send().vms();
+
         for (Vm vm : vmList) {
+
+            // 시도중
+            if(vm.cluster().id().equals(id)){
+                Vm vms = systemService.vmsService().vmService(vm.id()).get().follow("statistics,nics").allContent(true).send().vm();
+
+            }
+
             if(vm.cluster().id().equals(id)) {
                 List<Statistic> statisticList = systemService.vmsService().vmService(vm.id()).statisticsService().list().send().statistics();
                 String upTime = null;
@@ -508,6 +528,7 @@ public class ClusterServiceImpl implements ItClusterService {
                 .switchType(cluster.switchType())
                 .firewallType(cluster.firewallType())
                 .logMaxMemory(cluster.logMaxMemoryUsedThresholdAsInteger())
+                .logMaxType(cluster.logMaxMemoryUsedThresholdType())
                 .virtService(cluster.virtService())
 //                .glusterService(cluster.glusterService())
                 .networkId(networkId)
@@ -522,7 +543,7 @@ public class ClusterServiceImpl implements ItClusterService {
 
     // 클러스터 생성
     @Override
-    public boolean addCluster(ClusterCreateVo cVo) {
+    public CommonVo<Boolean> addCluster(ClusterCreateVo cVo) {
         // required: name , cpu.type, data_center   (Identify the datacenter with either id or name)
         SystemService systemService = admin.getConnection().systemService();
 
@@ -530,9 +551,10 @@ public class ClusterServiceImpl implements ItClusterService {
         List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
         DataCenter dataCenter = systemService.dataCentersService().dataCenterService(cVo.getDatacenterId()).get().send().dataCenter();
         Network network = systemService.networksService().networkService(cVo.getNetworkId()).get().send().network();
-        OpenStackNetworkProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
+        ExternalProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
 
         String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
+//        List<MigrationPolicy> mgPolicies = systemService.clustersService()
 
         try{
             ClusterBuilder clusterBuilder = new ClusterBuilder();
@@ -550,9 +572,13 @@ public class ClusterServiceImpl implements ItClusterService {
                     .firewallType(cVo.getFirewallType())
                     .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
                     .logMaxMemoryUsedThresholdType(cVo.getLogMaxType())
+//                    .logMaxMemoryUsedThresholdType(LogMaxMemoryUsedThresholdType.PERCENTAGE)
                     .virtService(cVo.isVirtService())
                     .errorHandling(new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()))
                     .migration(new MigrationOptionsBuilder()
+                                // TODO: 마이그레이션 정책 관련 설정 값 조회 기능 존재여부 확인필요
+//                            .policy(new MigrationPolicyBuilder()
+//                                    .build())
                             .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))
                             .encrypted(cVo.getEncrypted())
                     )
@@ -560,7 +586,7 @@ public class ClusterServiceImpl implements ItClusterService {
                             .skipIfConnectivityBroken(new SkipIfConnectivityBrokenBuilder().enabled(true))
                             .skipIfSdActive(new SkipIfSdActiveBuilder().enabled(true)));
 
-                System.out.println(cVo.getCpuArc());
+            System.out.println("---------"+cVo.getLogMaxMemory());
 
             if (cVo.getNetworkProvider().equals(true)) {
                 clusterBuilder.externalNetworkProviders(openStackNetworkProvider);
@@ -568,14 +594,14 @@ public class ClusterServiceImpl implements ItClusterService {
             Cluster cluster = clusterBuilder.build();
 
             clustersService.add().cluster(cluster).send();
-            log.info("-- add Cluster: " + cVo.toString());
+            log.info("-- add Cluster: " + getGson().toJson(clusterBuilder.build()));
 
-            return clustersService.list().send().clusters().size() == (clusterList.size()+1);
+            return CommonVo.successResponse();
         }catch (Exception e){
-            log.error("error: ", e);
-            return false;
+            log.error("addClsuter error");
+            e.printStackTrace();
+            return CommonVo.failResponse(e.getMessage());
         }
-
     }
 
     @Override
@@ -608,7 +634,7 @@ public class ClusterServiceImpl implements ItClusterService {
 //                    .switchType(cVo.getSwitchType())      // 선택불가
                     .firewallType(cVo.getFirewallType())
                     .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
-                    .logMaxMemoryUsedThresholdType(cVo.getLogMaxType())
+                    .logMaxMemoryUsedThresholdType(LogMaxMemoryUsedThresholdType.PERCENTAGE)
                     .virtService(cVo.isVirtService())
 //                    .glusterService(cVo.isGlusterService())
                     .errorHandling( new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()) )   // 복구정책

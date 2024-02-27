@@ -275,11 +275,11 @@
 
                     <tr>
                         <td>로그의 최대 메모리 한계</td>
-                        <td> &emsp;<input type="text" id="logMaxMemory" name="logMaxMemory" size="10" value="95"></td>
+                        <td> &emsp;<input type="text" id="logMaxMemory" name="logMaxMemory" size="10" value="${c.logMaxMemory}"></td>
                         <td>
-                            <select id="logMemory" name="logMemoryUnit" >
-                                <option value="percent">%</option>
-                            <!-- <option value="MB">MB</option> -->
+                            <select id="logMaxType" name="logMaxType" >
+                                <option value="PERCENTAGE" <c:if test="${c.logMaxType eq 'PERCENTAGE'}">selected</c:if>>%</option>
+                                <option value="ABSOLUTE_VALUE_IN_MB" <c:if test="${c.logMaxType eq 'ABSOLUTE_VALUE_IN_MB'}">selected</c:if>>MB</option>
                             </select>
                         </td>
                     </tr>
