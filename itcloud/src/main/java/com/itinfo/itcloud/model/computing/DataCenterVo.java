@@ -1,7 +1,5 @@
 package com.itinfo.itcloud.model.computing;
 
-import com.itinfo.itcloud.model.enums.DataCenterStatusVo;
-import com.itinfo.itcloud.model.enums.QuotaModeTypeVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import lombok.*;
 import java.util.List;

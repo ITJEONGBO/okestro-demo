@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.model;
+package com.itinfo.itcloud.model.error;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

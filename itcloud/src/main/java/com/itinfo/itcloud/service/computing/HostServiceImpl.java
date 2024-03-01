@@ -36,11 +36,11 @@ public class HostServiceImpl implements ItHostService {
     public List<HostVo> getList() {
         SystemService systemService = admin.getConnection().systemService();
 
+        // allContent를 포함해야 hosted Engine의 정보가 나온다
+        List<Host> hostList = systemService.hostsService().list().allContent(true).send().hosts();
         List<HostVo> hostVoList = new ArrayList<>();
         HostVo hostVo = null;
 
-        // allContent를 포함해야 hosted Engine의 정보가 나온다
-        List<Host> hostList = systemService.hostsService().list().allContent(true).send().hosts();
         for(Host host : hostList){
             Cluster cluster = systemService.clustersService().clusterService(host.cluster().id()).get().send().cluster();
             DataCenter dataCenter = systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter();
@@ -82,7 +82,6 @@ public class HostServiceImpl implements ItHostService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
         List<HostCpuUnit> hcuList = systemService.hostsService().hostService(id).cpuUnitsService().list().send().cpuUnits();
-
         // cpu 있으면 출력으로 바꿔야됨
         int cpu = host.cpu().topology().coresAsInteger()
                 * host.cpu().topology().socketsAsInteger()
@@ -210,11 +209,11 @@ public class HostServiceImpl implements ItHostService {
     public List<VmVo> getVm(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
+        List<Vm> vmList = systemService.vmsService().list().send().vms();
         List<VmVo> vmVoList = new ArrayList<>();
         VmVo vmVo = null;
-        Date now = new Date(System.currentTimeMillis());
 
-        List<Vm> vmList = systemService.vmsService().list().send().vms();
+        Date now = new Date(System.currentTimeMillis());
 
         for (Vm vm : vmList) {
             Cluster cluster = systemService.clustersService().clusterService(vm.cluster().id()).get().send().cluster();
@@ -281,9 +280,9 @@ public class HostServiceImpl implements ItHostService {
     public List<NicVo> getNic(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
+        List<HostNic> hostNicList = systemService.hostsService().hostService(id).nicsService().list().send().nics();
         List<NicVo> nVoList = new ArrayList<>();
         NicVo nVo = null;
-        List<HostNic> hostNicList = systemService.hostsService().hostService(id).nicsService().list().send().nics();
 
         for(HostNic hostNic : hostNicList){
             nVo = new NicVo();
@@ -450,15 +449,15 @@ public class HostServiceImpl implements ItHostService {
     @Override
     public List<ClusterVo> getClusterList() {
         SystemService systemService = admin.getConnection().systemService();
+
+        List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
         List<ClusterVo> clusterVoList = new ArrayList<>();
         ClusterVo cVo = null;
 
-        List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
         for(Cluster cluster : clusterList){
             cVo = ClusterVo.builder()
                     .id(cluster.id())
                     .name(cluster.name())
-//                    .datacenterId(cluster.dataCenter().id())
                     .datacenterName(systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
                     .build();
 
@@ -529,7 +528,6 @@ public class HostServiceImpl implements ItHostService {
                 hostsService.add().deployHostedEngine(false).host(hostBuilder).send().host();  // false 생략가능
                 log.info("! hostEngine 추가");
             }
-
 
             Host host = hostBuilder.build();
 

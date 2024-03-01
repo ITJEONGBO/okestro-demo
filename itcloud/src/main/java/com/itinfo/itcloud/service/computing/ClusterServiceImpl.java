@@ -2,14 +2,10 @@ package com.itinfo.itcloud.service.computing;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.itinfo.itcloud.model.Body;
-import com.itinfo.itcloud.model.CommonVo;
-import com.itinfo.itcloud.model.Head;
+import com.itinfo.itcloud.model.error.CommonVo;
+import com.itinfo.itcloud.model.TypeExtKt;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.ClusterCreateVo;
-import com.itinfo.itcloud.model.enums.BiosTypeExtKt;
-import com.itinfo.itcloud.model.enums.MigrateOnErrorVo;
-import com.itinfo.itcloud.model.enums.NetworkStatusVo;
 import com.itinfo.itcloud.model.network.NetworkUsageVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
@@ -47,13 +43,12 @@ public class ClusterServiceImpl implements ItClusterService {
     // 상태, 이름, 코멘트, 호환버전, 설명, 클러스터cpu유형, 호스트수, 가상머신수, (업그레이드 상태)
     @Override
     public List<ClusterVo> getList(){
-        long start = System.currentTimeMillis();
         SystemService systemService = admin.getConnection().systemService();
 
+        List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
         List<ClusterVo> cVoList = new ArrayList<>();
         ClusterVo cVo = null;
 
-        List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
         for(Cluster cluster : clusterList){
             cVo = ClusterVo.builder()
                     .id(cluster.id())
@@ -64,16 +59,11 @@ public class ClusterServiceImpl implements ItClusterService {
                     .cpuType(cluster.cpuPresent() ? cluster.cpu().type() : null)
                     .build();
 
-//            clusterVO.setStatus(cluster.);        // 업그레이드 상태
             getHostCnt(systemService, cVo);
             getVmCnt(systemService, cVo);
 
             cVoList.add(cVo);
         }
-
-        long end = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
-        System.out.println("cluster getList 수행시간(ms): " + (end-start));
-
         return cVoList;
     }
 
@@ -118,13 +108,10 @@ public class ClusterServiceImpl implements ItClusterService {
                 .gluster(cluster.glusterService())
                 .virt(cluster.virtService())
                 .cpuType(cluster.cpuPresent() ? cluster.cpu().type() : null)
-                .chipsetFirmwareType(cluster.biosTypePresent()
-                        ? BiosTypeExtKt.findKRName(cluster.biosType())
-                        : "자동 감지"
-                )
+                .chipsetFirmwareType(cluster.biosTypePresent() ? TypeExtKt.findBios(cluster.biosType()) : "자동 감지")
                 .threadsAsCore(cluster.threadsAsCores())
                 .memoryOverCommit(cluster.memoryPolicy().overCommit().percentAsInteger())
-                .restoration(MigrateOnErrorVo.valueOf(cluster.errorHandling().onError().value()).name)
+                .restoration(TypeExtKt.findMigrateErr(cluster.errorHandling().onError()))
                 .build();
 
         getVmCnt(systemService, cVo);
@@ -136,16 +123,16 @@ public class ClusterServiceImpl implements ItClusterService {
     public List<NetworkVo> getNetwork(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
+        List<Network> networkList = systemService.clustersService().clusterService(id).networksService().list().send().networks();
         List<NetworkVo> nwVoList = new ArrayList<>();
         NetworkVo nwVo = null;
 
-        List<Network> networkList = systemService.clustersService().clusterService(id).networksService().list().send().networks();
         if (networkList != null) {
             for (Network network : networkList) {
                 nwVo = NetworkVo.builder()
                         .id(network.id())
                         .name(network.name())
-                        .status(NetworkStatusVo.valueOf(network.status().value()).name)
+                        .status(TypeExtKt.findNetworkStatus(network.status()))
                         .description(network.description())
                         .networkUsageVo(
                                 NetworkUsageVo.builder()
@@ -168,10 +155,10 @@ public class ClusterServiceImpl implements ItClusterService {
     public List<HostVo> getHost(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
+        List<Host> hostList = systemService.hostsService().list().send().hosts();
         List<HostVo> hVoList = new ArrayList<>();
         HostVo hostVo = null;
 
-        List<Host> hostList = systemService.hostsService().list().send().hosts();
         for (Host host : hostList) {
             if (host.cluster().id().equals(id)) {
                 hostVo = HostVo.builder()
@@ -192,20 +179,18 @@ public class ClusterServiceImpl implements ItClusterService {
     @Override
     public List<VmVo> getVm(String id) {
         SystemService systemService = admin.getConnection().systemService();
-        Date now = new Date(System.currentTimeMillis());
 
+        List<Vm> vmList = systemService.vmsService().list().send().vms();
         List<VmVo> vmVoList = new ArrayList<>();
         VmVo vmVo = null;
 
-        List<Vm> vmList = systemService.vmsService().list().send().vms();
+        Date now = new Date(System.currentTimeMillis());
 
         for (Vm vm : vmList) {
-
-            // 시도중
-            if(vm.cluster().id().equals(id)){
-                Vm vms = systemService.vmsService().vmService(vm.id()).get().follow("statistics,nics").allContent(true).send().vm();
-
-            }
+            // TODO: follow=statistics,nics 해보기
+//            if(vm.cluster().id().equals(id)){
+//                Vm vms = systemService.vmsService().vmService(vm.id()).get().follow("statistics,nics").allContent(true).send().vm();
+//            }
 
             if(vm.cluster().id().equals(id)) {
                 List<Statistic> statisticList = systemService.vmsService().vmService(vm.id()).statisticsService().list().send().statistics();
@@ -548,116 +533,127 @@ public class ClusterServiceImpl implements ItClusterService {
         SystemService systemService = admin.getConnection().systemService();
 
         ClustersService clustersService = systemService.clustersService();
-        List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
+//        List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
         DataCenter dataCenter = systemService.dataCentersService().dataCenterService(cVo.getDatacenterId()).get().send().dataCenter();
         Network network = systemService.networksService().networkService(cVo.getNetworkId()).get().send().network();
         ExternalProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
 
+        boolean cName = clustersService.list().search("name="+cVo.getName()).send().clusters().isEmpty();
         String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
-//        List<MigrationPolicy> mgPolicies = systemService.clustersService()
 
         try{
-            ClusterBuilder clusterBuilder = new ClusterBuilder();
-            clusterBuilder
-                    .dataCenter(dataCenter) // 필수
-                    .name(cVo.getName())    // 필수
-                    .cpu(new CpuBuilder().architecture(cVo.getCpuArc()).type(cVo.getCpuType()))   // 필수
-                    .description(cVo.getDescription())
-                    .comment(cVo.getComment())
-                    .managementNetwork(network)
-                    .biosType(cVo.getBiosType())
-                    .fipsMode(cVo.getFipsMode())
-                    .version(new VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())
-                    .switchType(cVo.getSwitchType())
-                    .firewallType(cVo.getFirewallType())
-                    .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
-                    .logMaxMemoryUsedThresholdType(cVo.getLogMaxType())
-//                    .logMaxMemoryUsedThresholdType(LogMaxMemoryUsedThresholdType.PERCENTAGE)
-                    .virtService(cVo.isVirtService())
-                    .errorHandling(new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()))
-                    .migration(new MigrationOptionsBuilder()
-                                // TODO: 마이그레이션 정책 관련 설정 값 조회 기능 존재여부 확인필요
+            if(cName) {
+                ClusterBuilder clusterBuilder = new ClusterBuilder();
+                clusterBuilder
+                        .dataCenter(dataCenter) // 필수
+                        .name(cVo.getName())    // 필수
+                        .cpu(new CpuBuilder().architecture(cVo.getCpuArc()).type(cVo.getCpuType()))   // 필수
+                        .description(cVo.getDescription())
+                        .comment(cVo.getComment())
+                        .managementNetwork(network)
+                        .biosType(cVo.getBiosType())
+                        .fipsMode(cVo.getFipsMode())
+                        .version(new VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())
+                        .switchType(cVo.getSwitchType())
+                        .firewallType(cVo.getFirewallType())
+                        .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
+                        .logMaxMemoryUsedThresholdType(cVo.getLogMaxType())
+                        .virtService(cVo.isVirtService())
+                        .errorHandling(new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()))
+                        .migration(new MigrationOptionsBuilder()
+                                        // TODO: 마이그레이션 정책 관련 설정 값 조회 기능 존재여부 확인필요
 //                            .policy(new MigrationPolicyBuilder()
 //                                    .build())
-                            .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))
-                            .encrypted(cVo.getEncrypted())
-                    )
-                    .fencingPolicy(new FencingPolicyBuilder()
-                            .skipIfConnectivityBroken(new SkipIfConnectivityBrokenBuilder().enabled(true))
-                            .skipIfSdActive(new SkipIfSdActiveBuilder().enabled(true)));
+                                        .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))
+                                        .encrypted(cVo.getEncrypted())
+                        )
+                        .fencingPolicy(new FencingPolicyBuilder()
+                                .skipIfConnectivityBroken(new SkipIfConnectivityBrokenBuilder().enabled(true))
+                                .skipIfSdActive(new SkipIfSdActiveBuilder().enabled(true)));
 
-            System.out.println("---------"+cVo.getLogMaxMemory());
+                if (cVo.getNetworkProvider().equals(true)) {
+                    clusterBuilder.externalNetworkProviders(openStackNetworkProvider);
+                }
 
-            if (cVo.getNetworkProvider().equals(true)) {
-                clusterBuilder.externalNetworkProviders(openStackNetworkProvider);
+                Cluster cluster = clusterBuilder.build();
+
+                clustersService.add().cluster(cluster).send();
+                log.info("-- add Cluster: " + getGson().toJson(clusterBuilder.build()));
+
+                return CommonVo.successResponse();
+            }else {
+                log.error("클러스터 이름 중복 에러");
+                return CommonVo.failResponse("클러스터 이름 중복 에러");
             }
-            Cluster cluster = clusterBuilder.build();
-
-            clustersService.add().cluster(cluster).send();
-            log.info("-- add Cluster: " + getGson().toJson(clusterBuilder.build()));
-
-            return CommonVo.successResponse();
         }catch (Exception e){
             log.error("addClsuter error");
-            e.printStackTrace();
             return CommonVo.failResponse(e.getMessage());
         }
     }
 
     @Override
-    public void editCluster(ClusterCreateVo cVo) {
+    public CommonVo<Boolean> editCluster(ClusterCreateVo cVo) {
         SystemService systemService = admin.getConnection().systemService();
 
+        ClustersService clustersService = systemService.clustersService();
         ClusterService clusterService = systemService.clustersService().clusterService(cVo.getId());
         DataCenter dataCenter = systemService.dataCentersService().dataCenterService(cVo.getDatacenterId()).get().send().dataCenter();
         Network network = systemService.networksService().networkService(cVo.getNetworkId()).get().send().network();
         OpenStackNetworkProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
 
+        boolean cName = clustersService.list().search("name="+cVo.getName()).send().clusters().isEmpty();
         String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
 
         try{
-            ClusterBuilder clusterBuilder = new ClusterBuilder();
-//            Cluster cluster = new ClusterBuilder()
-            clusterBuilder
-                    .dataCenter(dataCenter) // 필수
-                    .name(cVo.getName())    // 필수
-                    .cpu( new CpuBuilder().architecture(cVo.getCpuArc()).type(cVo.getCpuType()) )   // 필수
-                    .description(cVo.getDescription())
-                    .comment(cVo.getComment())
-                    .managementNetwork(network)
-                    .biosType(cVo.getBiosType())
-                    .fipsMode(cVo.getFipsMode())
-                    .version(new VersionBuilder()
-                            .major(Integer.parseInt(ver[0]))
-                            .minor(Integer.parseInt(ver[1]))
-                            .build())  // 호환 버전
+            if(cName) {
+                ClusterBuilder clusterBuilder = new ClusterBuilder();
+                clusterBuilder
+                        .dataCenter(dataCenter) // 필수
+                        .name(cVo.getName())    // 필수
+                        .cpu(new CpuBuilder().architecture(cVo.getCpuArc()).type(cVo.getCpuType()))   // 필수
+                        .description(cVo.getDescription())
+                        .comment(cVo.getComment())
+                        .managementNetwork(network)
+                        .biosType(cVo.getBiosType())
+                        .fipsMode(cVo.getFipsMode())
+                        .version(new VersionBuilder()
+                                .major(Integer.parseInt(ver[0]))
+                                .minor(Integer.parseInt(ver[1]))
+                                .build())  // 호환 버전
 //                    .switchType(cVo.getSwitchType())      // 선택불가
-                    .firewallType(cVo.getFirewallType())
-                    .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
-                    .logMaxMemoryUsedThresholdType(LogMaxMemoryUsedThresholdType.PERCENTAGE)
-                    .virtService(cVo.isVirtService())
+                        .firewallType(cVo.getFirewallType())
+                        .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
+                        .logMaxMemoryUsedThresholdType(LogMaxMemoryUsedThresholdType.PERCENTAGE)
+                        .virtService(cVo.isVirtService())
 //                    .glusterService(cVo.isGlusterService())
-                    .errorHandling( new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()) )   // 복구정책
-                    .migration(new MigrationOptionsBuilder()
-                            // 마이그레이션 정책
-                            .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))    // 대역폭
-                            .encrypted(cVo.getEncrypted())      // 암호화
-                    );
-            if (cVo.getNetworkProvider().equals(true)) {
-                clusterBuilder.externalNetworkProviders(openStackNetworkProvider);
+                        .errorHandling(new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()))   // 복구정책
+                        .migration(new MigrationOptionsBuilder()
+                                // 마이그레이션 정책
+                                .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))    // 대역폭
+                                .encrypted(cVo.getEncrypted())      // 암호화
+                        );
+                if (cVo.getNetworkProvider().equals(true)) {
+                    clusterBuilder.externalNetworkProviders(openStackNetworkProvider);
+                }
+
+                Cluster cluster = clusterBuilder.build();
+
+                log.info("editCluster: " + cluster.name());
+                clusterService.update().cluster(cluster).send();
+
+                return CommonVo.successResponse();
+            }else {
+                log.error("클러스터 이름 중복 에러");
+                return CommonVo.failResponse("클러스터 이름 중복 에러");
             }
-
-            Cluster cluster = clusterBuilder.build();
-
-            log.info("editCluster: " + cluster.name());
-            clusterService.update().cluster(cluster).send();
         }catch (Exception e){
             log.error("error: ", e);
+            return CommonVo.failResponse(e.getMessage());
         }
     }
 
     @Override
-    public boolean deleteCluster(String id) {
+    public CommonVo<Boolean> deleteCluster(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
         ClustersService clustersService = systemService.clustersService();
@@ -668,10 +664,10 @@ public class ClusterServiceImpl implements ItClusterService {
         try {
             clusterService.remove().send();
             log.info("delete cluster: {}", name);
-            return clustersService.list().send().clusters().size() == ( cList.size()-1 );
+            return CommonVo.successResponse();
         }catch (Exception e){
             log.error("error ", e);
-            return false;
+            return CommonVo.failResponse(e.getMessage());
         }
     }
 
@@ -713,7 +709,7 @@ public class ClusterServiceImpl implements ItClusterService {
                         .filter(hostcnt -> hostcnt.status().value().equals("up"))
                         .count();
             }else{
-                hostCnt =0;
+                hostCnt = 0;
                 break;
             }
             hostCnt++;

@@ -1,16 +1,14 @@
 package com.itinfo.itcloud.service.computing;
 
+import com.itinfo.itcloud.model.TypeExtKt;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.create.DataCenterCreateVo;
-import com.itinfo.itcloud.model.enums.DataCenterStatusVo;
-import com.itinfo.itcloud.model.enums.LogSeverityVo;
-import com.itinfo.itcloud.model.enums.QuotaModeTypeVo;
+import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItDataCenterService;
 import lombok.extern.slf4j.Slf4j;
-import org.ovirt.engine.sdk4.Error;
 import org.ovirt.engine.sdk4.builders.DataCenterBuilder;
 import org.ovirt.engine.sdk4.builders.VersionBuilder;
 import org.ovirt.engine.sdk4.services.*;
@@ -21,8 +19,6 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -41,18 +37,18 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     public List<DataCenterVo> getList(){
         SystemService systemService = admin.getConnection().systemService();
 
+        List<DataCenter> dataCenterList = systemService.dataCentersService().list().send().dataCenters();
         List<DataCenterVo> dcVoList = new ArrayList<>();
         DataCenterVo dcVo = null;
 
-        List<DataCenter> dataCenterList = systemService.dataCentersService().list().send().dataCenters();
         for(DataCenter dataCenter : dataCenterList){
             dcVo = DataCenterVo.builder()
                     .id(dataCenter.id())
                     .name(dataCenter.name())
                     .description(dataCenter.description())
                     .storageType(dataCenter.local())
-                    .status(DataCenterStatusVo.valueOf(dataCenter.status().value()).name)
-                    .quotaMode(QuotaModeTypeVo.valueOf(dataCenter.quotaMode().value()).name)
+                    .status(TypeExtKt.findDCStatus(dataCenter.status()))
+                    .quotaMode(TypeExtKt.findQuota(dataCenter.quotaMode()))
                     .version(dataCenter.version().major() + "." + dataCenter.version().minor())
                     .comment(dataCenter.comment())
                     .build();
@@ -183,18 +179,18 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         SystemService systemService = admin.getConnection().systemService();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
+        List<Event> eventList = systemService.eventsService().list().send().events();
         List<EventVo> eVoList = new ArrayList<>();
         EventVo eVo = null;
         String name = getName(id);
 
         // <data_center href="" id=""> <name> </data_center>
         // <data_center> <name> </data_center>
-        List<Event> eventList = ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
         for(Event event : eventList){
             if( event.dataCenterPresent() /*&& event.dataCenter().name().equals(name)*/ ){
                 eVo = EventVo.builder()
                         .datacenterName(name)
-                        .severity(LogSeverityVo.valueOf(event.severity().value()).name())   //상태
+                        .severity(TypeExtKt.findLogSeverity(event.severity()))   //상태
                         .time(sdf.format(event.time()))
                         .message(event.description())
                         .relationId(event.correlationIdPresent() ? event.correlationId() : null)
@@ -214,8 +210,8 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     @Override
     public DataCenterCreateVo getDatacenter(String id){
         SystemService systemService = admin.getConnection().systemService();
-        DataCenter dataCenter = systemService.dataCentersService().dataCenterService(id).get().send().dataCenter();
 
+        DataCenter dataCenter = systemService.dataCentersService().dataCenterService(id).get().send().dataCenter();
         return DataCenterCreateVo.builder()
                 .id(id)
                 .name(dataCenter.name())
@@ -230,21 +226,21 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
     // 데이터센터 생성
     @Override
-    public boolean addDatacenter(DataCenterCreateVo dcVo) {
+    public CommonVo<Boolean> addDatacenter(DataCenterCreateVo dcVo) {
         SystemService systemService = admin.getConnection().systemService();
+
         DataCentersService datacentersService = systemService.dataCentersService();     // datacenters 서비스 불러오기
         List<DataCenter> dcList = datacentersService.list().send().dataCenters();
+        DataCenter dataCenter = null;
+
+        // 같은 이름이 있는지 확인하는 코드
         boolean dcName = datacentersService.list().search("name="+dcVo.getName()).send().dataCenters().isEmpty();
-
-        log.info("addDatacenter Service");
         String[] ver = dcVo.getVersion().split("\\.");      // 버전값 분리
-
 
         try {
             // 데이터센터 중복 이름은 생성 불가
-            // DataCenter 생성
             if(dcName) {
-                DataCenter dataCenter = new DataCenterBuilder()
+                dataCenter = new DataCenterBuilder()
                         .name(dcVo.getName())       // 이름
                         .description(dcVo.getDescription())     // 설명
                         .local(dcVo.isStorageType())    // 스토리지 유형
@@ -257,44 +253,54 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                         .build();
 
                 datacentersService.add().dataCenter(dataCenter).send();     // 데이터센터 만든거 추가
-                log.info("------" + dcVo.toString());
-                return datacentersService.list().send().dataCenters().size() == (dcList.size() + 1);    // 기존 데이터센터 개수와 추가된 데이터센터 개수를 비교
+                log.info("------addDatacenter " + dcVo.toString());
+                return CommonVo.successResponse();
             }else {
                 log.error("데이터센터 이름 중복 에러");
-                return false;
+                return CommonVo.failResponse("데이터센터 이름 중복 에러");
             }
         }catch (Exception e){
-            return false;
+            return CommonVo.failResponse(e.getMessage());
         }
     }
 
 
     // 데이터센터 수정
     @Override
-    public void editDatacenter(DataCenterCreateVo dcVo) {
+    public CommonVo<Boolean> editDatacenter(DataCenterCreateVo dcVo) {
         SystemService systemService = admin.getConnection().systemService();
-        DataCenterService dataCenterService = systemService.dataCentersService().dataCenterService(dcVo.getId());
 
-        log.info("editDatacenter Service");
+        DataCentersService datacentersService = systemService.dataCentersService();
+        DataCenterService dataCenterService = systemService.dataCentersService().dataCenterService(dcVo.getId());
+        DataCenter dataCenter = null;
+
+        boolean dcName = datacentersService.list().search("name="+dcVo.getName()).send().dataCenters().isEmpty();
         String[] ver = dcVo.getVersion().split("\\.");      // 버전값 분리
 
         try {
-            DataCenter dataCenter = new DataCenterBuilder()
-                    .name(dcVo.getName())       // 이름
-                    .description(dcVo.getDescription())     // 설명
-                    .local(dcVo.isStorageType())    // 스토리지 유형
-                    .version(new VersionBuilder()
+            if (dcName) {
+                dataCenter = new DataCenterBuilder()
+                        .name(dcVo.getName())       // 이름
+                        .description(dcVo.getDescription())     // 설명
+                        .local(dcVo.isStorageType())    // 스토리지 유형
+                        .version(new VersionBuilder()
                                 .major(Integer.parseInt(ver[0]))
                                 .minor(Integer.parseInt(ver[1]))
                                 .build())  // 호환 버전
-                    .quotaMode(dcVo.getQuotaMode())      // 쿼터 모드
-                    .comment(dcVo.getComment())     // 코멘트
-                    .build();
+                        .quotaMode(dcVo.getQuotaMode())      // 쿼터 모드
+                        .comment(dcVo.getComment())     // 코멘트
+                        .build();
 
-            dataCenterService.update().dataCenter(dataCenter).send();   // 데이터센터 수정
-            log.info("------edit datacenter "+dcVo.toString());
+                dataCenterService.update().dataCenter(dataCenter).send();   // 데이터센터 수정
+                log.info("------edit datacenter "+dcVo.toString());
+                return CommonVo.successResponse();
+            }else {
+                log.error("데이터센터 이름 중복 에러");
+                return CommonVo.failResponse("데이터센터 이름 중복 에러");
+            }
         }catch (Exception e){
             log.error("error: "+ e);
+            return CommonVo.failResponse(e.getMessage());
         }
     }
 
@@ -303,7 +309,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     // 문제있음, 데이터센터 삭제를 두번 수행
     // 데이터센터가 있는지 확인하고 삭제하고 종료
     @Override
-    public boolean deleteDatacenter(String id) {
+    public CommonVo<Boolean> deleteDatacenter(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
         DataCenterService dataCenterService = systemService.dataCentersService().dataCenterService(id);
@@ -313,14 +319,14 @@ public class DataCenterServiceImpl implements ItDataCenterService {
             if(dataCenter.idPresent()) {
                 dataCenterService.remove().force(true).send();
                 log.info("datacenter {} 삭제", dataCenter.name());
-                return true;
+                return CommonVo.successResponse();
             }else {
-                log.error("datacenter {} 삭제 실패", dataCenter.name());
-                return false;
+                log.error("datacenter {} 삭제 실패");
+                return CommonVo.failResponse("삭제할 Datacenter가 없습니다.");
             }
         }catch (Exception e){
-            log.error("error ", e);
-            return false;
+            log.error("datacenter error");
+            return CommonVo.failResponse(e.getMessage());
         }
     }
 

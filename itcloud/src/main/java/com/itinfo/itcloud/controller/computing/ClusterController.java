@@ -1,8 +1,6 @@
 package com.itinfo.itcloud.controller.computing;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.itinfo.itcloud.model.CommonVo;
+import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.ClusterCreateVo;
@@ -183,14 +181,13 @@ public class ClusterController {
 		CommonVo<Boolean> res = itClusterService.addCluster(cVo);
 
 		if(res.getBody().getContent().equals(true)){
-//		if(res.body.getContent().equals(true)){
 			model.addAttribute("result", "클러스터 생성 완료");
 		}else{
 			model.addAttribute("result", "클러스터 생성 실패");
 		}
 		model.addAttribute("message", res.getHead().getMessage());
 		model.addAttribute("body", res.getBody().getContent());
-//		log.debug("res: {}", res.toJson());
+
 		return "computing/cluster-add2";
 	}
 
@@ -207,8 +204,16 @@ public class ClusterController {
 	public String edit(Model model, @ModelAttribute ClusterCreateVo cVo ) {
 		log.info("edit 시작");
 
-		itClusterService.editCluster(cVo);
-		model.addAttribute("result", "완료");
+		CommonVo<Boolean> res = itClusterService.editCluster(cVo);
+
+		if(res.getBody().getContent().equals(true)){
+			model.addAttribute("result", "클러스터 수정 완료");
+		}else{
+			model.addAttribute("result", "클러스터 수정 실패");
+		}
+		model.addAttribute("message", res.getHead().getMessage());
+		model.addAttribute("body", res.getBody().getContent());
+
 		return "computing/cluster-edit2";
 	}
 
@@ -221,11 +226,15 @@ public class ClusterController {
 
 	@PostMapping("/computing/cluster-delete2")
 	public String delete(Model model, @RequestParam String id){
-		if(itClusterService.deleteCluster(id)){
-			model.addAttribute("result", "완료");
-		}else {
-			model.addAttribute("result", "실패");
+		CommonVo<Boolean> res = itClusterService.deleteCluster(id);
+
+		if(res.getBody().getContent().equals(true)){
+			model.addAttribute("result", "클러스터 삭제 완료");
+		}else{
+			model.addAttribute("result", "클러스터 삭제 실패");
 		}
+		model.addAttribute("message", res.getHead().getMessage());
+		model.addAttribute("body", res.getBody().getContent());
 
 		return "computing/cluster-delete2";
 	}

@@ -4,6 +4,7 @@ import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.create.DataCenterCreateVo;
+import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.service.ItDataCenterService;
 
 import com.itinfo.itcloud.service.ItMenuService;
@@ -128,11 +129,16 @@ public class DataCenterController {
 	// 데이터센터 생성
 	@PostMapping("/computing/datacenter-add2")
 	public String add2(Model model, @ModelAttribute DataCenterCreateVo dcVo) {
-		if(itDataCenterService.addDatacenter(dcVo)){
-			model.addAttribute("result", "완료");
-		}else if(!itDataCenterService.addDatacenter(dcVo)) {
-			model.addAttribute("result", "실패");
+		CommonVo<Boolean> result = itDataCenterService.addDatacenter(dcVo);
+
+		if(result.getBody().getContent().equals(true)){
+			model.addAttribute("result", "Datacenter 생성 완료");
+		}else {
+			model.addAttribute("result", "Datacenter 생성 실패");
 		}
+		model.addAttribute("message", result.getHead().getMessage());
+		model.addAttribute("body", result.getBody().getContent());
+
 		return "computing/datacenter-add2";
 	}
 
@@ -148,8 +154,16 @@ public class DataCenterController {
 	// 데이터센터 수정
 	@PostMapping("/computing/datacenter-edit2")
 	public String edit2(Model model, @ModelAttribute DataCenterCreateVo dcVo ) {
-		itDataCenterService.editDatacenter(dcVo);
-		model.addAttribute("result", "완료");
+		CommonVo<Boolean> result = itDataCenterService.editDatacenter(dcVo);
+
+		if(result.getBody().getContent().equals(true)){
+			model.addAttribute("result", "Datacenter 수정 완료");
+		}else {
+			model.addAttribute("result", "Datacenter 수정 실패");
+		}
+		model.addAttribute("message", result.getHead().getMessage());
+		model.addAttribute("body", result.getBody().getContent());
+
 		return "computing/datacenter-edit2";
 	}
 
@@ -165,11 +179,16 @@ public class DataCenterController {
 	// 데이터센터 삭제
 	@PostMapping("/computing/datacenter-delete2")
 	public String delete2(Model model, @RequestParam String id){
-		if(itDataCenterService.deleteDatacenter(id)){
-			model.addAttribute("result", "완료");
+		CommonVo<Boolean> result = itDataCenterService.deleteDatacenter(id);
+
+		if(result.getBody().getContent().equals(true)){
+			model.addAttribute("result", "Datacenter 생성 완료");
 		}else {
-			model.addAttribute("result", "삭제 실패");
+			model.addAttribute("result", "Datacenter 생성 실패");
 		}
+		model.addAttribute("message", result.getHead().getMessage());
+		model.addAttribute("body", result.getBody().getContent());
+
 		return "computing/datacenter-delete2";
 	}
 
