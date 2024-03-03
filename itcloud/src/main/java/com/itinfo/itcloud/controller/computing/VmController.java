@@ -12,19 +12,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
 @Controller
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
+@RequestMapping("/computing")
 public class VmController {
 	private final ItSystemPropertyService itSystemPropertyService;
 	private final ItVmService itVmService;
 	private final ItMenuService menu;
 
-	@GetMapping("/computing/vms")
+	@GetMapping("/vms")
 	public String vmList(Model model) {
 		List<VmVo> vms = itVmService.getList();
 		model.addAttribute("vms", vms);
@@ -34,7 +36,7 @@ public class VmController {
 		return "computing/vms";
 	}
 
-	@GetMapping("/computing/vm")
+	@GetMapping("/vm")
 	public String vm(String id, Model model) {
 		VmVo vm = itVmService.getInfo(id);
 		model.addAttribute("vm", vm);
@@ -47,7 +49,7 @@ public class VmController {
 		return "computing/vm";
 	}
 
-	@GetMapping("/computing/vm-nic")
+	@GetMapping("/vm-nic")
 	public String nic(String id, Model model) {
 		List<NicVo> nic = itVmService.getNic(id);
 		model.addAttribute("nic", nic);
@@ -60,7 +62,7 @@ public class VmController {
 		return "computing/vm-nic";
 	}
 
-	@GetMapping("/computing/vm-disk")
+	@GetMapping("/vm-disk")
 	public String disk(String id, Model model) {
 		List<VmDiskVo> disk = itVmService.getDisk(id);
 		model.addAttribute("disk", disk);
@@ -73,7 +75,7 @@ public class VmController {
 		return "computing/vm-disk";
 	}
 
-	@GetMapping("/computing/vm-snapshot")
+	@GetMapping("/vm-snapshot")
 	public String snapshot(String id, Model model) {
 		log.info("---snapshot");
 		List<SnapshotVo> snapshot = itVmService.getSnapshot(id);
@@ -87,7 +89,7 @@ public class VmController {
 		return "computing/vm-snapshot";
 	}
 
-	@GetMapping("/computing/vm-application")
+	@GetMapping("/vm-application")
 	public String application(String id, Model model) {
 		List<ApplicationVo> app = itVmService.getApplication(id);
 		model.addAttribute("app", app);
@@ -100,7 +102,7 @@ public class VmController {
 		return "computing/vm-application";
 	}
 
-	@GetMapping("/computing/vm-affGroup")
+	@GetMapping("/vm-affGroup")
 	public String affGroup(String id, Model model) {
 		List<AffinityGroupVo> aff = itVmService.getAffinitygroup(id);
 		model.addAttribute("aff", aff);
@@ -113,7 +115,7 @@ public class VmController {
 		return "computing/vm-affGroup";
 	}
 
-	@GetMapping("/computing/vm-affLabel")
+	@GetMapping("/vm-affLabel")
 	public String affLabel(String id, Model model) {
 		List<AffinityLabelVo> aff = itVmService.getAffinitylabel(id);
 		model.addAttribute("aff", aff);
@@ -126,7 +128,7 @@ public class VmController {
 		return "computing/vm-affLabel";
 	}
 
-	@GetMapping("/computing/vm-guest")
+	@GetMapping("/vm-guest")
 	public String guest(String id, Model model) {
 		GuestInfoVo guest = itVmService.getGuestInfo(id);
 		model.addAttribute("guest", guest);
@@ -139,7 +141,7 @@ public class VmController {
 		return "computing/vm-guest";
 	}
 
-	@GetMapping("/computing/vm-permission")
+	@GetMapping("/vm-permission")
 	public String permission(String id, Model model) {
 		List<PermissionVo> permission = itVmService.getPermission(id);
 		model.addAttribute("permission", permission);
@@ -152,7 +154,7 @@ public class VmController {
 		return "computing/vm-permission";
 	}
 
-	@GetMapping("/computing/vm-event")
+	@GetMapping("/vm-event")
 	public String event(String id, Model model) {
 		List<EventVo> event = itVmService.getEvent(id);
 		model.addAttribute("event", event);
@@ -166,7 +168,7 @@ public class VmController {
 	}
 
 
-	@GetMapping("/computing/vm-add")
+	@GetMapping("/vm-add")
 	public String add(Model model){
 		List<ClusterVo> clusterVoList = itVmService.getClusterList();
 		model.addAttribute("c", clusterVoList);
@@ -201,69 +203,69 @@ public class VmController {
 		return vmsList;
 	}
 
-	@GetMapping("/computing/vm/status")
+	@GetMapping("/vm/status")
 	@ResponseBody
 	public VmVo vm(String id) {
 		return itVmService.getInfo(id);
 	}
 
-	@GetMapping("/computing/vm/nicstatus")
+	@GetMapping("/vm/nicstatus")
 	@ResponseBody
 	public List<NicVo> nic(String id) {
 		log.info("----- vm nic 일반 불러오기: " + id);
 		return itVmService.getNic(id);
 	}
 
-	@GetMapping("/computing/vm/diskstatus")
+	@GetMapping("/vm/diskstatus")
 	@ResponseBody
 	public List<VmDiskVo> disk(String id) {
 		log.info("----- vm disk 일반 불러오기: " + id);
 		return itVmService.getDisk(id);
 	}
 
-	@GetMapping("/computing/vm/snapshotstatus")
+	@GetMapping("/vm/snapshotstatus")
 	@ResponseBody
 	public List<SnapshotVo> snapshot(String id) {
 		log.info("----- vm snapshot 불러오기: " + id);
 		return itVmService.getSnapshot(id);
 	}
 
-	@GetMapping("/computing/vm/applicationstatus")
+	@GetMapping("/vm/applicationstatus")
 	@ResponseBody
 	public List<ApplicationVo> app(String id) {
 		log.info("----- vm app 불러오기: " + id);
 		return itVmService.getApplication(id);
 	}
 
-	@GetMapping("/computing/vm/affGroupstatus")
+	@GetMapping("/vm/affGroupstatus")
 	@ResponseBody
 	public List<AffinityGroupVo> affGroup(String id) {
 		log.info("----- vm affGroup 불러오기: " + id);
 		return itVmService.getAffinitygroup(id);
 	}
 
-	@GetMapping("/computing/vm/affLabelstatus")
+	@GetMapping("/vm/affLabelstatus")
 	@ResponseBody
 	public List<AffinityLabelVo> affLabel(String id) {
 		log.info("----- vm affLabel 불러오기: " + id);
 		return itVmService.getAffinitylabel(id);
 	}
 
-	@GetMapping("/computing/vm/gueststatus")
+	@GetMapping("/vm/gueststatus")
 	@ResponseBody
 	public GuestInfoVo guest(String id) {
 		log.info("----- vm disk 일반 불러오기: " + id);
 		return itVmService.getGuestInfo(id);
 	}
 
-	@GetMapping("/computing/vm/permissionstatus")
+	@GetMapping("/vm/permissionstatus")
 	@ResponseBody
 	public List<PermissionVo> permission(String id) {
 		log.info("----- vm event 일반 불러오기: " + id);
 		return itVmService.getPermission(id);
 	}
 
-	@GetMapping("/computing/vm/eventstatus")
+	@GetMapping("/vm/eventstatus")
 	@ResponseBody
 	public List<EventVo> event(String id) {
 		log.info("----- vm event 일반 불러오기: " + id);

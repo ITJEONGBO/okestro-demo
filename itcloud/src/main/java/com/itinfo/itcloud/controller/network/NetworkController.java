@@ -2,6 +2,9 @@ package com.itinfo.itcloud.controller.network;
 
 import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.create.ClusterCreateVo;
+import com.itinfo.itcloud.model.create.NetworkCreateVo;
+import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.*;
 import com.itinfo.itcloud.service.ItMenuService;
 import com.itinfo.itcloud.service.ItNetworkService;
@@ -9,20 +12,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Controller
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/network")
 public class NetworkController {
 	private final ItNetworkService itNetworkService;
 	private final ItMenuService menu;
 
 
-	@GetMapping("/network/networks")
+	@GetMapping("/networks")
 	public String networks(Model model){
 		List<NetworkVo> networks = itNetworkService.getList();
 		model.addAttribute("networks", networks);
@@ -32,7 +35,7 @@ public class NetworkController {
 		return "/network/networks";
 	}
 
-	@GetMapping("/network/network")
+	@GetMapping("/network")
 	public String network(String id, Model model){
 		NetworkVo network = itNetworkService.getNetwork(id);
 		model.addAttribute("network", network);
@@ -43,7 +46,7 @@ public class NetworkController {
 		model.addAttribute("m", m);
 		return "/network/network";
 	}
-	@GetMapping("/network/network-vnicProfile")
+	@GetMapping("/network-vnicProfile")
 	public String vnicProfile(String id, Model model){
 		List<VnicProfileVo> vnic = itNetworkService.getVnic(id);
 		model.addAttribute("vnic", vnic);
@@ -56,7 +59,7 @@ public class NetworkController {
 		return "/network/network-vnicProfile";
 	}
 
-	@GetMapping("/network/network-cluster")
+	@GetMapping("/network-cluster")
 	public String cluster(String id, Model model){
 		List<NetworkClusterVo> cluster = itNetworkService.getCluster(id);
 		model.addAttribute("cluster", cluster);
@@ -70,7 +73,7 @@ public class NetworkController {
 	}
 
 
-	@GetMapping("/network/network-host")
+	@GetMapping("/network-host")
 	public String host(String id, Model model){
 		List<NetworkHostVo> host = itNetworkService.getHost(id);
 		model.addAttribute("host", host);
@@ -84,7 +87,7 @@ public class NetworkController {
 	}
 
 
-	@GetMapping("/network/network-vm")
+	@GetMapping("/network-vm")
 	public String vm(String id, Model model){
 		List<NetworkVmVo> vm = itNetworkService.getVm(id);
 		model.addAttribute("vm", vm);
@@ -97,7 +100,7 @@ public class NetworkController {
 		return "/network/network-vm";
 	}
 
-	@GetMapping("/network/network-template")
+	@GetMapping("/network-template")
 	public String template(String id, Model model){
 		List<TemplateVo> template = itNetworkService.getTemplate(id);
 		model.addAttribute("template", template);
@@ -110,7 +113,7 @@ public class NetworkController {
 		return "/network/network-template";
 	}
 
-	@GetMapping("/network/network-permission")
+	@GetMapping("/network-permission")
 	public String permission(String id, Model model){
 		List<PermissionVo> permission = itNetworkService.getPermission(id);
 		model.addAttribute("permission", permission);
@@ -122,6 +125,48 @@ public class NetworkController {
 
 		return "/network/network-permission";
 	}
+
+
+	//region: set Network
+
+
+	@GetMapping("/network-add")
+	public String add(Model model){
+		return "/network/network-add";
+	}
+
+	@PostMapping("/network-add2")
+	public String add2(Model model, @ModelAttribute NetworkCreateVo nVo){
+		CommonVo<Boolean> addNw = itNetworkService.addNetwork(nVo);
+
+		if(addNw.getBody().getContent().equals(true)){
+			model.addAttribute("result", "네트워크 생성 완료");
+		}else{
+			model.addAttribute("result", "네트워크 생성 실패");
+		}
+		model.addAttribute("message", addNw.getHead().getMessage());
+		model.addAttribute("body", addNw.getBody().getContent());
+
+		return "/network/network-add2";
+	}
+
+	@PostMapping("/network-add")
+	public CommonVo<Boolean> addNw(@ModelAttribute NetworkCreateVo nVo){
+
+        return itNetworkService.addNetwork(nVo);
+	}
+
+
+
+
+	// end region
+
+
+
+
+
+
+
 
 
 

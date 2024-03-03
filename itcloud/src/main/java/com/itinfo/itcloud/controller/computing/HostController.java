@@ -17,13 +17,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
+@RequestMapping("/computing")
 public class HostController {
 	private final ItHostService itHostService;
 	private final ItMenuService menu;
 
-	@GetMapping("/computing/hosts")
+	@GetMapping("/hosts")
 	public String hosts(Model model) {
 		List<HostVo> hosts = itHostService.getList();
 		model.addAttribute("hosts", hosts);
@@ -35,7 +36,7 @@ public class HostController {
 		return "computing/hosts";
 	}
 
-	@GetMapping("/computing/host")
+	@GetMapping("/host")
 	public String host(String id, Model model) {
 		HostVo host = itHostService.getInfo(id);
 		model.addAttribute("host", host);
@@ -48,7 +49,7 @@ public class HostController {
 		return "computing/host";
 	}
 
-	@GetMapping("/computing/host-vm")
+	@GetMapping("/host-vm")
 	public String vm(String id, Model model) {
 		List<VmVo> vm = itHostService.getVm(id);
 		model.addAttribute("vm", vm);
@@ -61,7 +62,7 @@ public class HostController {
 		return "computing/host-vm";
 	}
 
-	@GetMapping("/computing/host-nic")
+	@GetMapping("/host-nic")
 	public String nic(String id, Model model) {
 		List<NicVo> nic = itHostService.getNic(id);
 		model.addAttribute("nic", nic);
@@ -74,7 +75,7 @@ public class HostController {
 		return "computing/host-nic";
 	}
 
-	@GetMapping("/computing/host-device")
+	@GetMapping("/host-device")
 	public String device(String id, Model model) {
 		List<HostDeviceVo> device = itHostService.getHostDevice(id);
 		model.addAttribute("device", device);
@@ -87,7 +88,7 @@ public class HostController {
 		return "computing/host-device";
 	}
 
-	@GetMapping("/computing/host-permission")
+	@GetMapping("/host-permission")
 	public String permission(String id, Model model) {
 		List<PermissionVo> permission = itHostService.getPermission(id);
 		model.addAttribute("permission", permission);
@@ -102,7 +103,7 @@ public class HostController {
 
 
 
-	@GetMapping("/computing/host-aff")
+	@GetMapping("/host-aff")
 	public String aff(String id, Model model) {
 		List<AffinityLabelVo> aff = itHostService.getAffinitylabels(id);
 		model.addAttribute("aff", aff);
@@ -115,7 +116,7 @@ public class HostController {
 		return "computing/host-aff";
 	}
 
-	@GetMapping("/computing/host-event")
+	@GetMapping("/host-event")
 	public String event(String id, Model model) {
 		List<EventVo> event = itHostService.getEvent(id);
 		model.addAttribute("event", event);
@@ -129,7 +130,7 @@ public class HostController {
 	}
 
 
-	@GetMapping("/computing/host-add")
+	@GetMapping("/host-add")
 	public String add(Model model) {
 		List<ClusterVo> cList = itHostService.getClusterList();
 		model.addAttribute("c", cList);
@@ -139,7 +140,7 @@ public class HostController {
 	}
 
 	// host 생성
-	@PostMapping("/computing/host-add2")
+	@PostMapping("/host-add2")
 	public String add2(Model model, @ModelAttribute HostCreateVo hVo) {
 		if(itHostService.addHost(hVo)){
 			model.addAttribute("result", "호스트 생성 완료");
@@ -150,7 +151,7 @@ public class HostController {
 	}
 
 	// host 수정 창출력
-	@GetMapping("/computing/host-edit")
+	@GetMapping("/host-edit")
 	public String edit(Model model, String id) {
 		HostCreateVo hVo = itHostService.getHostCreate(id);
 
@@ -159,7 +160,7 @@ public class HostController {
 	}
 
 	// 클러스터 수정
-	@PostMapping("/computing/host-edit2")
+	@PostMapping("/host-edit2")
 	public String edit2(Model model, @ModelAttribute HostCreateVo hVo) {
 		log.info("edit 시작");
 
@@ -168,7 +169,7 @@ public class HostController {
 		return "computing/host-edit2";
 	}
 
-	@PostMapping("/computing/host-reboot")
+	@PostMapping("/host-reboot")
 	public String reboot(Model model, @ModelAttribute String hostId) {
 		log.info("reboot 시작");
 		Boolean rebootSuccess =
@@ -178,7 +179,7 @@ public class HostController {
 		return rebootSuccess.toString();
 	}
 
-	@GetMapping("/computing/host-delete")
+	@GetMapping("/host-delete")
 	public String delete(Model model, String id){
 		model.addAttribute("id", id);
 		model.addAttribute("name", itHostService.getName(id));
@@ -186,7 +187,7 @@ public class HostController {
 		return "computing/host-delete";
 	}
 
-	@PostMapping("/computing/host-delete2")
+	@PostMapping("/host-delete2")
 	public String delete2(Model model, @RequestParam String id){
 		if(itHostService.deleteHost(id)){
 			model.addAttribute("result", "완료");
@@ -198,7 +199,7 @@ public class HostController {
 	}
 
 
-	@GetMapping("/computing/host-deactive")
+	@GetMapping("/host-deactive")
 	public String deactive(Model model, String id){
 		model.addAttribute("id", id);
 		model.addAttribute("name", itHostService.getName(id));
@@ -206,14 +207,14 @@ public class HostController {
 		return "computing/host-deactive";
 	}
 
-	@PostMapping("/computing/host-deactive2")
+	@PostMapping("/host-deactive2")
 	@ResponseBody
 	public void deactive2(Model model, String id){
 		itHostService.deActive(id);
 	}
 
 
-	@GetMapping("/computing/host-restart")
+	@GetMapping("/host-restart")
 	public String restart(Model model, String id){
 		model.addAttribute("id", id);
 		model.addAttribute("name", itHostService.getName(id));
@@ -221,7 +222,7 @@ public class HostController {
 		return "computing/host-restart";
 	}
 
-	@PostMapping("/computing/host-restart2")
+	@PostMapping("/host-restart2")
 	@ResponseBody
 	public void restart2(Model model, String id){
 		itHostService.reStart(id);
@@ -229,7 +230,7 @@ public class HostController {
 
 
 
-	@GetMapping("/computing/host-active")
+	@GetMapping("/host-active")
 	public String active(Model model, String id){
 		model.addAttribute("id", id);
 		model.addAttribute("name", itHostService.getName(id));
@@ -237,13 +238,13 @@ public class HostController {
 		return "computing/host-active";
 	}
 
-	@PostMapping("/computing/host-active2")
+	@PostMapping("/host-active2")
 	@ResponseBody
 	public void active2(String id){
 		itHostService.active(id);
 	}
 
-	@GetMapping("/computing/host-refresh")
+	@GetMapping("/host-refresh")
 	public String refresh(Model model, String id){
 		model.addAttribute("id", id);
 		model.addAttribute("name", itHostService.getName(id));
@@ -251,7 +252,7 @@ public class HostController {
 		return "computing/host-refresh";
 	}
 
-	@PostMapping("/computing/host-refresh2")
+	@PostMapping("/host-refresh2")
 	@ResponseBody
 	public void refresh2(String id){
 		itHostService.refresh(id);
@@ -263,56 +264,56 @@ public class HostController {
 
 
 	//region: ResponseBody
-	@GetMapping("/computing/hosts/status")
+	@GetMapping("/hosts/status")
 	@ResponseBody
 	public List<HostVo> hosts() {
 		log.info("----- Host 목록 불러오기");
 		return itHostService.getList();
 	}
 
-	@GetMapping("/computing/host/status")
+	@GetMapping("/host/status")
 	@ResponseBody
 	public HostVo host(String id) {
 		log.info("----- host id 일반 불러오기: " + id);
 		return itHostService.getInfo(id);
 	}
 
-	@GetMapping("/computing/host/vmstatus")
+	@GetMapping("/host/vmstatus")
 	@ResponseBody
 	public List<VmVo> vm(String id) {
 		log.info("----- host vm 일반 불러오기: " + id);
 		return itHostService.getVm(id);
 	}
 
-	@GetMapping("/computing/host/nicstatus")
+	@GetMapping("/host/nicstatus")
 	@ResponseBody
 	public List<NicVo> nic(String id) {
 		log.info("----- host nic 일반 불러오기: " + id);
 		return itHostService.getNic(id);
 	}
 
-	@GetMapping("/computing/host/devicestatus")
+	@GetMapping("/host/devicestatus")
 	@ResponseBody
 	public List<HostDeviceVo> device(String id) {
 		log.info("----- host device 일반 불러오기: " + id);
 		return itHostService.getHostDevice(id);
 	}
 
-	@GetMapping("/computing/host/permissionStatus")
+	@GetMapping("/host/permissionStatus")
 	@ResponseBody
 	public List<PermissionVo> permission(String id) {
 		log.info("----- host permission 불러오기: " + id);
 		return itHostService.getPermission(id);
 	}
 
-	@GetMapping("/computing/host/affstatus")
+	@GetMapping("/host/affstatus")
 	@ResponseBody
 	public List<AffinityLabelVo> aff(String id) {
 		log.info("----- host aff 일반 불러오기: " + id);
 		return itHostService.getAffinitylabels(id);
 	}
 
-	@GetMapping("/computing/host/eventStatus")
+	@GetMapping("/host/eventStatus")
 	@ResponseBody
 	public List<EventVo> event(String id) {
 		log.info("----- event 목록 불러오기: " + id);

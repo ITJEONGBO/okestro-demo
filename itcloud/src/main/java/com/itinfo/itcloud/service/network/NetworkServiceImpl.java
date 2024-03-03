@@ -8,7 +8,7 @@ import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItNetworkService;
 import lombok.extern.slf4j.Slf4j;
-import org.ovirt.engine.sdk4.builders.NetworkBuilder;
+import org.ovirt.engine.sdk4.builders.*;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -391,23 +391,42 @@ public class NetworkServiceImpl implements ItNetworkService {
         SystemService systemService = admin.getConnection().systemService();
 
         NetworksService networksService = systemService.networksService();
-
+        ClustersService clustersService = systemService.clustersService();
+        DataCenter dataCenter = systemService.dataCentersService().dataCenterService(ncVo.getDatacenterId()).get().send().dataCenter();
 
         try {
             NetworkBuilder networkBuilder = new NetworkBuilder();
             networkBuilder
                     .name(ncVo.getName())
+                    .description(ncVo.getDescription())
                     .comment(ncVo.getComment())
-                    .description(ncVo.getDescription());
+                    .portIsolation(ncVo.isPortIsolation())
+                    .usages(ncVo.isUsageVm() ? NetworkUsage.VM : NetworkUsage.DEFAULT_ROUTE)
+                    .mtu(ncVo.getMtu())
+//                    .stp(ncVo.isStp())
+                    .dataCenter(dataCenter);
 
-            Network network = networkBuilder.build();
+            if(ncVo.getVlan() != null){
+                networkBuilder.vlan(new VlanBuilder().id(ncVo.getVlan()));
+            }
 
-            networksService.add().network(network).send().network();
+            ClusterBuilder clusterBuilder = new ClusterBuilder();
+            Network network = networksService.add().network(networkBuilder).send().network();
 
-            log.info("success");
+            try {
+                if (ncVo.getLabel() != null) {
+                    NetworkLabelsService nlsService = systemService.networksService().networkService(network.id()).networkLabelsService();
+                    nlsService.add().label(new NetworkLabelBuilder().id(ncVo.getLabel())).send();
+                }
+
+                log.info("label add");
+            }catch (Exception e){
+                log.error("error: label 추가 에러");
+            }
+
             return CommonVo.successResponse();
         }catch (Exception e){
-            log.error("error");
+            log.error("error, ", e);
             return CommonVo.failResponse(e.getMessage());
         }
 

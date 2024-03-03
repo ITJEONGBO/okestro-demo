@@ -18,8 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
+@RequestMapping("/computing")
 public class DataCenterController {
 
 	private final ItDataCenterService itDataCenterService;
@@ -28,7 +29,7 @@ public class DataCenterController {
 
 	// region: get Datacenter
 
-	@GetMapping("/computing/datacenters")
+	@GetMapping("/datacenters")
 	public String datacenters(Model model) {
 		long start = System.currentTimeMillis();
 
@@ -46,7 +47,7 @@ public class DataCenterController {
 	}
 
 	// 스토리지
-//	@GetMapping("/computing/datacenter-storage")
+//	@GetMapping("/datacenter-storage")
 //	public String storage(String id, Model model) {
 //		List<DomainVo> storage = itDataCenterService.getStorage(id);
 //		model.addAttribute("storage", storage);
@@ -61,7 +62,7 @@ public class DataCenterController {
 //	}
 //
 //	// 네트워크
-//	@GetMapping("/computing/datacenter-network")
+//	@GetMapping("/datacenter-network")
 //	public String network(String id, Model model) {
 //		List<NetworkVo> network = itDataCenterService.getNetwork(id);
 //		model.addAttribute("network", network);
@@ -74,7 +75,7 @@ public class DataCenterController {
 //		return "computing/datacenter-network";
 //	}
 //	// 네트워크
-//	@GetMapping("/computing/datacenter-cluster")
+//	@GetMapping("/datacenter-cluster")
 //	public String cluster(String id, Model model) {
 //		List<ClusterVo> cluster = itDataCenterService.getCluster(id);
 //		model.addAttribute("cluster", cluster);
@@ -87,7 +88,7 @@ public class DataCenterController {
 //		return "computing/datacenter-cluster";
 //	}
 //
-//	@GetMapping("/computing/datacenter-permission")
+//	@GetMapping("/datacenter-permission")
 //	public String permission(String id, Model model) {
 //		List<PermissionVo> permission = itDataCenterService.getPermission(id);
 //		model.addAttribute("permission", permission);
@@ -101,7 +102,7 @@ public class DataCenterController {
 //		return "computing/datacenter-permission";
 //	}
 
-	@GetMapping("/computing/datacenter-event")
+	@GetMapping("/datacenter-event")
 	public String event(String id, Model model) {
 		List<EventVo> event = itDataCenterService.getEvent(id);
 		model.addAttribute("event", event);
@@ -121,13 +122,13 @@ public class DataCenterController {
 	// region: set Datacenter
 
 	// 데이터센터 생성 창출력
-	@GetMapping("/computing/datacenter-add")
+	@GetMapping("/datacenter-add")
 	public String add() {
 		return "computing/datacenter-add";
 	}
 
 	// 데이터센터 생성
-	@PostMapping("/computing/datacenter-add2")
+	@PostMapping("/datacenter-add2")
 	public String add2(Model model, @ModelAttribute DataCenterCreateVo dcVo) {
 		CommonVo<Boolean> result = itDataCenterService.addDatacenter(dcVo);
 
@@ -144,7 +145,7 @@ public class DataCenterController {
 
 
 	// 데이터센터 수정 창출력
-	@GetMapping("/computing/datacenter-edit")
+	@GetMapping("/datacenter-edit")
 	public String edit(Model model, String id) {
 		DataCenterCreateVo dcVo = itDataCenterService.getDatacenter(id);
 		model.addAttribute("dc", dcVo);
@@ -152,7 +153,7 @@ public class DataCenterController {
 	}
 
 	// 데이터센터 수정
-	@PostMapping("/computing/datacenter-edit2")
+	@PostMapping("/datacenter-edit2")
 	public String edit2(Model model, @ModelAttribute DataCenterCreateVo dcVo ) {
 		CommonVo<Boolean> result = itDataCenterService.editDatacenter(dcVo);
 
@@ -169,7 +170,7 @@ public class DataCenterController {
 
 
 	// 데이터센터 삭제 창출력
-	@GetMapping("/computing/datacenter-delete")
+	@GetMapping("/datacenter-delete")
 	public String delete(Model model, String id){
 		model.addAttribute("id", id);
 		model.addAttribute("name", itDataCenterService.getName(id));
@@ -177,7 +178,7 @@ public class DataCenterController {
 	}
 
 	// 데이터센터 삭제
-	@PostMapping("/computing/datacenter-delete2")
+	@PostMapping("/datacenter-delete2")
 	public String delete2(Model model, @RequestParam String id){
 		CommonVo<Boolean> result = itDataCenterService.deleteDatacenter(id);
 
@@ -197,7 +198,7 @@ public class DataCenterController {
 
 
 	//region: @ResponseBody
-	@GetMapping("/computing/datacentersStatus")
+	@GetMapping("/datacentersStatus")
 	@ResponseBody
 	public List<DataCenterVo> datacenters() {
 		log.info("-----datacentersStatus");
@@ -205,7 +206,7 @@ public class DataCenterController {
 	}
 
 
-//	@GetMapping("/computing/datacenter/storageStatus")
+//	@GetMapping("/datacenter/storageStatus")
 //	@ResponseBody
 //	public List<DomainVo> storage(String id) {
 //		log.info("-----datacenter/storageStatus: " + id);
@@ -213,7 +214,7 @@ public class DataCenterController {
 //	}
 //
 //
-//	@GetMapping("/computing/datacenter/networkStatus")
+//	@GetMapping("/datacenter/networkStatus")
 //	@ResponseBody
 //	public List<NetworkVo> network(String id) {
 //		log.info("----- 데이터센터 network 목록 불러오기: " + id);
@@ -221,7 +222,7 @@ public class DataCenterController {
 //	}
 //
 //
-//	@GetMapping("/computing/datacenter/clusterStatus")
+//	@GetMapping("/datacenter/clusterStatus")
 //	@ResponseBody
 //	public List<ClusterVo> cluster(String id) {
 //		log.info("----- 데이터센터 cluster 목록 불러오기: " + id);
@@ -229,14 +230,14 @@ public class DataCenterController {
 //	}
 //
 //
-//	@GetMapping("/computing/datacenter/permissionStatus")
+//	@GetMapping("/datacenter/permissionStatus")
 //	@ResponseBody
 //	public List<PermissionVo> permission(String id) {
 //		log.info("----- permission 목록 불러오기: " + id);
 //		return itDataCenterService.getPermission(id);
 //	}
 
-	@GetMapping("/computing/datacenter/eventStatus")
+	@GetMapping("/datacenter/eventStatus")
 	@ResponseBody
 	public List<EventVo> event(String id) {
 		log.info("----- event 목록 불러오기: " + id);

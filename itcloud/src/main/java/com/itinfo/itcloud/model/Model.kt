@@ -1,9 +1,5 @@
 //package com.itinfo.itcloud.model
 //
-//import com.itinfo.itcloud.model.computing.ApplicationVo
-//import com.itinfo.itcloud.model.network.NetworkUsageVo
-//import com.itinfo.itcloud.model.setting.GroupVo
-//import com.itinfo.itcloud.model.storage.DiskVo
 //import java.math.BigDecimal
 //import java.math.BigInteger
 //import java.util.*
@@ -445,7 +441,7 @@
 //	var persistMemory: Boolean = false,
 //	var status: String = "",
 //	var type: String = "",
-//	var diskVo: DiskVo? = null,
+////	var diskVo: DiskVo? = null,
 //	var nicVo: NicVo? = null,
 //	var applicationVo: ApplicationVo? = null
 //)
@@ -494,7 +490,7 @@
 //	var provider: String = "",
 //	var inheritedFrom: String = "",
 //
-//	var groupVoList: List<GroupVo>? = null,
+////	var groupVoList: List<GroupVo>? = null,
 ////	var userVoList: List<UserVo>? = null,
 //)
 //
