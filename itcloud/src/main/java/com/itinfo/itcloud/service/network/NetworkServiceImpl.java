@@ -439,20 +439,20 @@ public class NetworkServiceImpl implements ItNetworkService {
                     .externalProvider(ncVo.getExternalProvider() ? openStackNetworkProvider : null)
                     .dataCenter(dataCenter);
 
-            // 클러스터 모두연결이 선택되어야지만 모두 필요가 선택됨
-            // 모두 필요는 단독 선택 안됨
-//            ClusterNetworksService clusterNetworksService = systemService.clustersService().clusterService(ncVo.getClusterVoList().get(0).getId()).networksService();
-            System.out.println(ncVo.getClusterVoList().stream().filter(NetworkClusterVo::isRequired).map(NetworkClusterVo::getId).collect(Collectors.toList()));
-
-//            for(NetworkClusterVo networkClusterVo : ncVo.getClusterVoList()){
-//                ClusterNetworksService clusterNetworksService = systemService.clustersService().clusterService(networkClusterVo.getId()).networksService();
-//
-//                if (networkClusterVo.isConnected()) {
-//                    clusterNetworksService.add().network(new NetworkBuilder().id(networkClusterVo.getId()).required(networkClusterVo.isRequired())).send().network();
-//                }
-//            }
-
             Network network = networksService.add().network(networkBuilder).send().network();
+
+            // 클러스터 모두연결이 선택되어야지만 모두 필요가 선택됨
+            try {
+                for (NetworkClusterVo networkClusterVo : ncVo.getClusterVoList()) {
+                    ClusterNetworksService clusterNetworksService = systemService.clustersService().clusterService(networkClusterVo.getId()).networksService();
+
+                    if (networkClusterVo.isConnected()) {
+                        clusterNetworksService.add().network(new NetworkBuilder().id(network.id()).required(networkClusterVo.isRequired())).send().network();
+                    }
+                }
+            }catch (Exception e){
+                log.error("cluster network error: ", e);
+            }
 
             try {
                 // 외부 공급자 처리시 레이블 생성 안됨
@@ -460,7 +460,7 @@ public class NetworkServiceImpl implements ItNetworkService {
                     NetworkLabelsService nlsService = systemService.networksService().networkService(network.id()).networkLabelsService();
                     nlsService.add().label(new NetworkLabelBuilder().id(ncVo.getLabel())).send();
                 }
-                log.info("label");
+                log.info("label add");
             }catch (Exception e){
                 log.error("error: label 추가 에러");
             }
@@ -475,16 +475,66 @@ public class NetworkServiceImpl implements ItNetworkService {
 
     @Override
     public CommonVo<Boolean> editNetwork(NetworkCreateVo ncVo) {
-        return null;
+        SystemService systemService = admin.getConnection().systemService();
+
+        NetworksService networksService = systemService.networksService();
+        DataCenter dataCenter = systemService.dataCentersService().dataCenterService(ncVo.getDatacenterId()).get().send().dataCenter();
+        OpenStackNetworkProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
+
+        try {
+            NetworkBuilder networkBuilder = new NetworkBuilder();
+            networkBuilder
+                    .id(ncVo.getId())
+                    .name(ncVo.getName())
+                    .description(ncVo.getDescription())
+                    .comment(ncVo.getComment())
+//                    .portIsolation(ncVo.getPortIsolation())       // 선택불가
+                    .usages(ncVo.getUsageVm() ? NetworkUsage.VM : NetworkUsage.DEFAULT_ROUTE)
+                    .mtu(ncVo.getMtu())
+                    .stp(ncVo.getStp())
+                    .vlan(ncVo.getVlan() != null ? new VlanBuilder().id(ncVo.getVlan()) : null)
+//                    .externalProvider(ncVo.getExternalProvider() ? openStackNetworkProvider : null);  // 수정불가
+                    .dataCenter(dataCenter);
+
+            Network network = networksService.networkService(ncVo.getId()).update().network(networkBuilder).send().network();
+
+            try {
+                // 외부 공급자 처리시 레이블 생성 안됨
+                if (ncVo.getLabel() != null && !ncVo.getLabel().isEmpty()) {
+                    NetworkLabelsService nlsService = systemService.networksService().networkService(network.id()).networkLabelsService();
+                    nlsService.labelService(nlsService.list().send().labels().get(0).id()).remove().send();
+
+                    nlsService.add().label(new NetworkLabelBuilder().id(ncVo.getLabel())).send();// 그리고 다시 생성
+                }
+                log.info("label edit");
+            }catch (Exception e){
+                log.error("error: label 수정 에러");
+            }
+
+            return CommonVo.successResponse();
+        }catch (Exception e){
+            log.error("error, ", e);
+            return CommonVo.failResponse(e.getMessage());
+        }
     }
 
     @Override
     public CommonVo<Boolean> deleteNetwork(String id) {
-        return null;
+        SystemService systemService = admin.getConnection().systemService();
+        NetworksService networksService = systemService.networksService();
+        NetworkService networkService = systemService.networksService().networkService(id);
+//        Network network = systemService.networksService().networkService(id).get().send().network();
+
+        try {
+            networkService.remove().send();
+            log.info("지워지긴했는데 약간 애매");
+
+            return CommonVo.successResponse();
+        }catch (Exception e){
+            log.error("error, ", e);
+            return CommonVo.failResponse(e.getMessage());
+        }
     }
-
-
-
 
 
 

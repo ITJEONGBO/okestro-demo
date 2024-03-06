@@ -159,9 +159,16 @@ public class NetworkController {
 //	}
 
 	@PostMapping("/network-add")
-	public CommonVo<Boolean> addNw(/*@ModelAttribute*/@RequestBody NetworkCreateVo nVo){
-
+	public CommonVo<Boolean> addNw(@RequestBody NetworkCreateVo nVo){
         return itNetworkService.addNetwork(nVo);
+	}
+	@PostMapping("/network-edit")
+	public CommonVo<Boolean> editNw(@RequestBody NetworkCreateVo nVo){
+        return itNetworkService.editNetwork(nVo);
+	}
+	@PostMapping("/network-delete")
+	public CommonVo<Boolean> deleteNw(@RequestParam String id){
+        return itNetworkService.deleteNetwork(id);
 	}
 
 
