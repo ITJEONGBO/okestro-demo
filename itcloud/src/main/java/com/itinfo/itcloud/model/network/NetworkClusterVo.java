@@ -14,8 +14,8 @@ public class NetworkClusterVo {
 
     // network
     private boolean connected;
-    private String status;
     private boolean required;
+    private String status;
 
     private NetworkUsageVo networkUsageVo;
 }

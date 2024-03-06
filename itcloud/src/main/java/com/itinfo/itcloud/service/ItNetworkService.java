@@ -21,6 +21,8 @@ public interface ItNetworkService {
     List<PermissionVo> getPermission(String id);
 
 
+    List<NetworkDcClusterVo> getDcCluster();
+
     CommonVo<Boolean> addNetwork(NetworkCreateVo ncVo);
     CommonVo<Boolean> editNetwork(NetworkCreateVo ncVo);
     CommonVo<Boolean> deleteNetwork(String id);

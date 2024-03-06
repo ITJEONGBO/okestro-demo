@@ -5,7 +5,6 @@ import com.itinfo.itcloud.model.create.NetworkCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.*;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
-import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItNetworkService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
@@ -18,6 +17,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -54,15 +54,6 @@ public class NetworkServiceImpl implements ItNetworkService {
                 providerId = np.id();
                 providerName = np.name();
             }
-
-//            nuVo = NetworkUsageVo.builder()
-//                    .vm(network.usages().contains(NetworkUsage.VM))
-//                    .display(network.usages().contains(NetworkUsage.DISPLAY))
-//                    .migration(network.usages().contains(NetworkUsage.MIGRATION))
-//                    .management(network.usages().contains(NetworkUsage.MANAGEMENT))
-//                    .defaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE))
-//                    .gluster(network.usages().contains(NetworkUsage.GLUSTER))
-//                    .build();
 
             nwVo = NetworkVo.builder()
                     .id(network.id())
@@ -387,12 +378,52 @@ public class NetworkServiceImpl implements ItNetworkService {
 
 
     @Override
+    public List<NetworkDcClusterVo> getDcCluster() {
+        SystemService systemService = admin.getConnection().systemService();
+
+        List<DataCenter> dataCenterList = systemService.dataCentersService().list().send().dataCenters();
+
+
+        List<NetworkDcClusterVo> dcClusterVoList = new ArrayList<>();
+        NetworkDcClusterVo dcvo = null;
+
+        for(DataCenter dataCenter : dataCenterList){
+            List<Cluster> clusterList = systemService.dataCentersService().dataCenterService(dataCenter.id()).clustersService().list().send().clusters();
+            List<ClusterVo> clusterVoList = new ArrayList<>();
+
+            System.out.println(clusterList.stream().filter(Identified::idPresent).map(Cluster::name).collect(Collectors.toList()));
+
+            for (Cluster cluster : clusterList) {
+                clusterVoList.add(
+                        ClusterVo.builder()
+                                .id(cluster.id())
+                                .name(cluster.name())
+                                .build()
+                );
+            }
+
+            dcvo = NetworkDcClusterVo.builder()
+                    .dataCenterVo(
+                            DataCenterVo.builder()
+                            .id(dataCenter.id())
+                            .name(dataCenter.name())
+                            .build()
+                    )
+                    .clusterVoList(clusterVoList)
+                    .build();
+
+            dcClusterVoList.add(dcvo);
+        }
+        return dcClusterVoList;
+    }
+
+    @Override
     public CommonVo<Boolean> addNetwork(NetworkCreateVo ncVo) {
         SystemService systemService = admin.getConnection().systemService();
 
         NetworksService networksService = systemService.networksService();
-        ClustersService clustersService = systemService.clustersService();
         DataCenter dataCenter = systemService.dataCentersService().dataCenterService(ncVo.getDatacenterId()).get().send().dataCenter();
+        OpenStackNetworkProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
 
         try {
             NetworkBuilder networkBuilder = new NetworkBuilder();
@@ -400,26 +431,36 @@ public class NetworkServiceImpl implements ItNetworkService {
                     .name(ncVo.getName())
                     .description(ncVo.getDescription())
                     .comment(ncVo.getComment())
-                    .portIsolation(ncVo.isPortIsolation())
-                    .usages(ncVo.isUsageVm() ? NetworkUsage.VM : NetworkUsage.DEFAULT_ROUTE)
+                    .portIsolation(ncVo.getPortIsolation())
+                    .usages(ncVo.getUsageVm() ? NetworkUsage.VM : NetworkUsage.DEFAULT_ROUTE)
                     .mtu(ncVo.getMtu())
-//                    .stp(ncVo.isStp())
+                    .stp(ncVo.getStp())
+                    .vlan(ncVo.getVlan() != null ? new VlanBuilder().id(ncVo.getVlan()) : null)
+                    .externalProvider(ncVo.getExternalProvider() ? openStackNetworkProvider : null)
                     .dataCenter(dataCenter);
 
-            if(ncVo.getVlan() != null){
-                networkBuilder.vlan(new VlanBuilder().id(ncVo.getVlan()));
-            }
+            // 클러스터 모두연결이 선택되어야지만 모두 필요가 선택됨
+            // 모두 필요는 단독 선택 안됨
+//            ClusterNetworksService clusterNetworksService = systemService.clustersService().clusterService(ncVo.getClusterVoList().get(0).getId()).networksService();
+            System.out.println(ncVo.getClusterVoList().stream().filter(NetworkClusterVo::isRequired).map(NetworkClusterVo::getId).collect(Collectors.toList()));
 
-            ClusterBuilder clusterBuilder = new ClusterBuilder();
+//            for(NetworkClusterVo networkClusterVo : ncVo.getClusterVoList()){
+//                ClusterNetworksService clusterNetworksService = systemService.clustersService().clusterService(networkClusterVo.getId()).networksService();
+//
+//                if (networkClusterVo.isConnected()) {
+//                    clusterNetworksService.add().network(new NetworkBuilder().id(networkClusterVo.getId()).required(networkClusterVo.isRequired())).send().network();
+//                }
+//            }
+
             Network network = networksService.add().network(networkBuilder).send().network();
 
             try {
-                if (ncVo.getLabel() != null) {
+                // 외부 공급자 처리시 레이블 생성 안됨
+                if (ncVo.getLabel() != null && !ncVo.getLabel().isEmpty()) {
                     NetworkLabelsService nlsService = systemService.networksService().networkService(network.id()).networkLabelsService();
                     nlsService.add().label(new NetworkLabelBuilder().id(ncVo.getLabel())).send();
                 }
-
-                log.info("label add");
+                log.info("label");
             }catch (Exception e){
                 log.error("error: label 추가 에러");
             }
