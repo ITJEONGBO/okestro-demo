@@ -521,21 +521,25 @@ public class NetworkServiceImpl implements ItNetworkService {
     @Override
     public CommonVo<Boolean> deleteNetwork(String id) {
         SystemService systemService = admin.getConnection().systemService();
-        NetworksService networksService = systemService.networksService();
+
         NetworkService networkService = systemService.networksService().networkService(id);
-//        Network network = systemService.networksService().networkService(id).get().send().network();
+        List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
 
-        try {
-            networkService.remove().send();
-            log.info("지워지긴했는데 약간 애매");
 
-            return CommonVo.successResponse();
-        }catch (Exception e){
-            log.error("error, ", e);
-            return CommonVo.failResponse(e.getMessage());
+        for(Cluster cluster : clusterList) {
+            List<Network> clusterNetworkList = systemService.clustersService().clusterService(cluster.id()).networksService().list().send().networks();
+            for (Network network : clusterNetworkList) {
+                System.out.println(cluster.name() + ": " + network.name() + ", " + network.status());
+                // 클러스터에서 돌아가는 네트워크가 비가동중인 상태여야지만 지울 수 있음
+                if (!network.status().equals(NetworkStatus.OPERATIONAL)) {
+                    networkService.remove().send();
+                    log.info("network 삭제");
+                    return CommonVo.successResponse();
+                }
+            }
         }
+        log.error("network 삭제 실패");
+        return CommonVo.failResponse("오류");
     }
-
-
 
 }
