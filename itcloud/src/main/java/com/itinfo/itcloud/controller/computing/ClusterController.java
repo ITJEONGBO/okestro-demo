@@ -115,7 +115,7 @@ public class ClusterController {
 
 	@GetMapping("/cluster-affLabel")
 	public String affLabel(String id, Model model) {
-		List<AffinityLabelVo> aff = itClusterService.getAffinitylabel();
+		List<AffinityLabelVo> aff = itClusterService.getAffinitylabel(id);
 		model.addAttribute("aff", aff);
 		model.addAttribute("id", id);
 		model.addAttribute("name", itClusterService.getName(id));
@@ -293,7 +293,7 @@ public class ClusterController {
 	@ResponseBody
 	public List<AffinityLabelVo> affLabel(String id) {
 		log.info("----- 클러스터 선호도 목록 불러오기: " + id);
-		return itClusterService.getAffinitylabel();
+		return itClusterService.getAffinitylabel(id);
 	}
 
 //	@GetMapping("/cluster/cpuStatus")

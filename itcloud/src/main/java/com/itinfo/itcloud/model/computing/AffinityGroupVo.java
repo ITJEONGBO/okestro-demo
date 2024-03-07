@@ -1,11 +1,12 @@
 package com.itinfo.itcloud.model.computing;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
 
-@Getter @Setter
+@Getter @Builder
 public class AffinityGroupVo {
     // 선호도 그룹
     private String id;

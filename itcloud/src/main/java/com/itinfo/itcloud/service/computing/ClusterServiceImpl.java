@@ -18,10 +18,13 @@ import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.Package;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -30,13 +33,10 @@ public class ClusterServiceImpl implements ItClusterService {
     @Autowired private AdminConnectionService admin;
     @Autowired private OvirtService ovirt;
 
-    private Gson getGson() {
-        return new GsonBuilder().setPrettyPrinting().create();
-    }
 
     @Override
     public String getName(String id){
-        return ovirt.getName("cluster", id);
+        return admin.getConnection().systemService().clustersService().clusterService(id).get().send().cluster().name();
     }
 
     // 컴퓨팅-클러스터 목록
@@ -46,64 +46,41 @@ public class ClusterServiceImpl implements ItClusterService {
         SystemService systemService = admin.getConnection().systemService();
 
         List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
-        List<ClusterVo> cVoList = new ArrayList<>();
-        ClusterVo cVo = null;
+        List<Host> hostList = systemService.hostsService().list().send().hosts();
+        List<Vm> vmList = systemService.vmsService().list().send().vms();
 
-        for(Cluster cluster : clusterList){
-            cVo = ClusterVo.builder()
-                    .id(cluster.id())
-                    .name(cluster.name())
-                    .comment(cluster.comment())
-                    .version(cluster.version().major() + "." + cluster.version().minor())
-                    .description(cluster.description())
-                    .cpuType(cluster.cpuPresent() ? cluster.cpu().type() : null)
-                    .build();
-
-            getHostCnt(systemService, cVo);
-            getVmCnt(systemService, cVo);
-
-            cVoList.add(cVo);
-        }
-        return cVoList;
+        return clusterList.stream()
+                .map(cluster -> ClusterVo.builder()
+                        .id(cluster.id())
+                        .name(cluster.name())
+                        .comment(cluster.comment())
+                        .version(cluster.version().major()+"."+cluster.version().minor())
+                        .description(cluster.description())
+                        .cpuType(cluster.cpuPresent() ? cluster.cpu().type() : null)
+                        .hostCnt(getHostCnt(hostList, cluster.id()))
+                        .hostUpCnt(getHostUpCnt(hostList, cluster.id()))
+                        .hostDownCnt(getHostDownCnt(hostList, cluster.id()))
+                        .vmCnt(getVmCnt(vmList, cluster.id()))
+                        .vmUpCnt(getVmUpCnt(vmList, cluster.id()))
+                        .vmDownCnt(getVmDownCnt(vmList, cluster.id()))
+                        .build()
+                )
+                .collect(Collectors.toList());
     }
-
-//    public List<ClusterVo> getList() {
-//        long start = System.currentTimeMillis();
-//        SystemService systemService = admin.getConnection().systemService();
-//
-//        return systemService.clustersService().list().send().clusters().parallelStream()
-//                .map(cluster -> {
-//                    ClusterVo cVo = ClusterVo.builder()
-//                            .id(cluster.id())
-//                            .name(cluster.name())
-//                            .comment(cluster.comment())
-//                            .version(cluster.version().major() + "." + cluster.version().minor())
-//                            .description(cluster.description())
-//                            .cpuType(cluster.cpuPresent() ? cluster.cpu().type() : null)
-//                            .build();
-//
-//                    getHostCnt(systemService, cVo);
-//                    getVmCnt(systemService, cVo);
-//
-//                    long end = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
-//                    System.out.println("cluster getList 수행시간(ms): " + (end-start));
-//
-//                    return cVo;
-//                })
-//                .collect(Collectors.toList());
-//
-//    }
 
     @Override
     public ClusterVo getInfo(String id){
         SystemService systemService = admin.getConnection().systemService();
-        Cluster cluster = systemService.clustersService().clusterService(id).get().send().cluster();
 
-        ClusterVo cVo = ClusterVo.builder()
+        Cluster cluster = systemService.clustersService().clusterService(id).get().send().cluster();
+        List<Vm> vmList = systemService.vmsService().list().send().vms();
+        String dcName = systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name();
+
+        return ClusterVo.builder()
                 .id(id)
                 .name(cluster.name())
                 .description(cluster.description())
-                .datacenterName(cluster.dataCenterPresent() ? ovirt.getName("datacenter", cluster.dataCenter().id()) : null)
+                .datacenterName(cluster.dataCenterPresent() ? dcName : null)
                 .version(cluster.version().major() + "." + cluster.version().minor())
                 .gluster(cluster.glusterService())
                 .virt(cluster.virtService())
@@ -112,43 +89,35 @@ public class ClusterServiceImpl implements ItClusterService {
                 .threadsAsCore(cluster.threadsAsCores())
                 .memoryOverCommit(cluster.memoryPolicy().overCommit().percentAsInteger())
                 .restoration(TypeExtKt.findMigrateErr(cluster.errorHandling().onError()))
+                .vmCnt(getVmCnt(vmList, id))
                 .build();
-
-        getVmCnt(systemService, cVo);
-        return cVo;
     }
-
 
     @Override
     public List<NetworkVo> getNetwork(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
         List<Network> networkList = systemService.clustersService().clusterService(id).networksService().list().send().networks();
-        List<NetworkVo> nwVoList = new ArrayList<>();
-        NetworkVo nwVo = null;
 
-        if (networkList != null) {
-            for (Network network : networkList) {
-                nwVo = NetworkVo.builder()
+        return networkList.stream()
+                .filter(network -> !networkList.isEmpty())
+                .map(network -> NetworkVo.builder()
                         .id(network.id())
                         .name(network.name())
                         .status(TypeExtKt.findNetworkStatus(network.status()))
                         .description(network.description())
                         .networkUsageVo(
                                 NetworkUsageVo.builder()
-                                    .vm(network.usages().contains(NetworkUsage.VM))
-                                    .display(network.usages().contains(NetworkUsage.DISPLAY))
-                                    .migration(network.usages().contains(NetworkUsage.MIGRATION))
-                                    .management(network.usages().contains(NetworkUsage.MANAGEMENT))
-                                    .defaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE))
-                                    .gluster(network.usages().contains(NetworkUsage.GLUSTER))
-                                    .build())
-                            .build();
-
-                nwVoList.add(nwVo);
-            }
-        }
-        return nwVoList;
+                                        .vm(network.usages().contains(NetworkUsage.VM))
+                                        .display(network.usages().contains(NetworkUsage.DISPLAY))
+                                        .migration(network.usages().contains(NetworkUsage.MIGRATION))
+                                        .management(network.usages().contains(NetworkUsage.MANAGEMENT))
+                                        .defaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE))
+                                        .gluster(network.usages().contains(NetworkUsage.GLUSTER))
+                                        .build())
+                        .build()
+                )
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -156,23 +125,23 @@ public class ClusterServiceImpl implements ItClusterService {
         SystemService systemService = admin.getConnection().systemService();
 
         List<Host> hostList = systemService.hostsService().list().send().hosts();
-        List<HostVo> hVoList = new ArrayList<>();
-        HostVo hostVo = null;
+        List<Vm> vmList = systemService.vmsService().list().send().vms();
 
-        for (Host host : hostList) {
-            if (host.cluster().id().equals(id)) {
-                hostVo = HostVo.builder()
-                        .id(host.id())
-                        .name(host.name())
-                        .status(host.status().value())
-                        .address(host.address())
-                        .vmUpCnt(getHostVmsCnt(systemService, host.id()))
-                        .build();
-
-                hVoList.add(hostVo);
-            }
-        }
-        return hVoList;
+        return hostList.stream()
+                .filter(host -> host.cluster().id().equals(id))
+                .map(host -> HostVo.builder()
+                                .id(host.id())
+                                .name(host.name())
+                                .status(host.status().value())
+                                .address(host.address())
+                                .vmUpCnt(
+                                        (int) vmList.stream()
+                                                .filter(vm -> vm.hostPresent() && vm.host().id().equals(host.id()) && vm.status().value().equals("up"))
+                                                .count()
+                                )
+                                .build()
+                )
+                .collect(Collectors.toList());
     }
 
 
@@ -181,170 +150,65 @@ public class ClusterServiceImpl implements ItClusterService {
         SystemService systemService = admin.getConnection().systemService();
 
         List<Vm> vmList = systemService.vmsService().list().send().vms();
-        List<VmVo> vmVoList = new ArrayList<>();
-        VmVo vmVo = null;
 
-        Date now = new Date(System.currentTimeMillis());
-
-        for (Vm vm : vmList) {
-            // TODO: follow=statistics,nics 해보기
-//            if(vm.cluster().id().equals(id)){
-//                Vm vms = systemService.vmsService().vmService(vm.id()).get().follow("statistics,nics").allContent(true).send().vm();
-//            }
-
-            if(vm.cluster().id().equals(id)) {
-                List<Statistic> statisticList = systemService.vmsService().vmService(vm.id()).statisticsService().list().send().statistics();
-                String upTime = null;
-                for(Statistic statistic : statisticList) {
-                    long hour = 0;
-                    if (statistic.name().equals("elapsed.time")) {
-                        hour = statistic.values().get(0).datum().longValue() / (60*60);      // 시간
-
-                        if(hour > 24){ upTime = hour/24 + "일";
-                        }else if( hour > 1 && hour < 24){ upTime = hour + "시간";
-                        }else { upTime = (statistic.values().get(0).datum().longValue() / 60) + "분";}
-                    }
-                }
-
-                // ipv4, ipv6
-                List<Nic> nicList = systemService.vmsService().vmService(vm.id()).nicsService().list().send().nics();
-                String ipv4 = null;
-                String ipv6 = null;
-                for (Nic nic : nicList){
-                    List<ReportedDevice> reportedDeviceList = systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
-                    for (ReportedDevice r : reportedDeviceList){
-                        ipv4 = !vm.status().value().equals("down") ? r.ips().get(0).address() : null;
-                        ipv6 = !vm.status().value().equals("down") ? r.ips().get(1).address() : null;
-                    }
-                }
-
-                vmVo = VmVo.builder()
+        return vmList.stream()
+                .filter(vm -> vm.cluster().id().equals(id))
+                .map(vm -> VmVo.builder()
                         .status(vm.status().value())
                         .id(vm.id())
                         .name(vm.name())
-                        .upTime(upTime)
-                        .ipv4(ipv4)
-                        .ipv6(ipv6)
-                        .build();
-
-                vmVoList.add(vmVo);
-            }
-        }
-        return vmVoList;
+                        .upTime(getStatistic(systemService, vm.id()))
+                        .ipv4(getIp(systemService, vm.id(), "v4"))
+                        .ipv6(getIp(systemService, vm.id(), "v6"))
+                        .build()
+                )
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<AffinityGroupVo> getAffinitygroup(String id){
         SystemService systemService = admin.getConnection().systemService();
 
-        List<AffinityGroupVo> agVoList = new ArrayList<>();
-        AffinityGroupVo agVo = null;
-
         List<AffinityGroup> affinityGroupList = systemService.clustersService().clusterService(id).affinityGroupsService().list().send().groups();
-        for(AffinityGroup ag : affinityGroupList){
-            agVo = new AffinityGroupVo();
 
-            agVo.setName(ag.name());
-            agVo.setDescription(ag.description());
-            agVo.setStatus(ag.broken());
-            agVo.setPriority(ag.priority().intValue());      //  우선순위
-
-
-            // vmsRule
-            // 가상머신 측 극성 (비활성화) = enabled, positive
-            // 가상머신 측 극성 (양극, 음극)
-            agVo.setPositive(ag.positivePresent() && ag.positive());
-
-            agVo.setVmEnabled(ag.vmsRule().enabled());
-            agVo.setVmPositive(ag.vmsRule().positive());
-            agVo.setVmEnforcing(ag.vmsRule().enforcing());
-
-            // hostRule
-            // 호스트 측 극성 = enabled, positive
-            // 호스트 측 극성 (양극, 음극)
-            agVo.setHostEnabled(ag.hostsRule().enabled());
-            agVo.setHostPositive(ag.hostsRule().positive());
-            agVo.setHostEnforcing(ag.hostsRule().enforcing());
-
-
-            // 가상머신 멤버 (수정 필요)
-            List<Vm> vmList = systemService.clustersService().clusterService(id).affinityGroupsService().groupService(ag.id()).vmsService().list().send().vms();
-            List<String> vmNames = new ArrayList<>();
-            for (Vm vm : vmList){
-                vmNames.add(vm.name());
-            }
-            agVo.setVmList(vmNames);
-
-            // 호스트 멤버 (수정 필요)
-            List<Host> hostList = systemService.clustersService().clusterService(id).affinityGroupsService().groupService(ag.id()).hostsService().list().send().hosts();
-            List<String> hostNames = new ArrayList<>();
-            for(Host host : hostList){
-                hostNames.add(host.name());
-            }
-            agVo.setHostList(hostNames);
-
-
-            // 가상머신 레이블
-            List<AffinityLabel> vmLabel = systemService.clustersService().clusterService(id).affinityGroupsService().groupService(ag.id()).vmLabelsService().list().send().labels();
-            List<String> vms = new ArrayList<>();
-            for(AffinityLabel affinityLabel : vmLabel) {
-                if(affinityLabel != null){
-                    vms.add(affinityLabel.name());
-                }
-            }
-            agVo.setVmLabels(vms);
-
-                // 호스트 레이블
-            List<AffinityLabel> hostLabel = systemService.clustersService().clusterService(id).affinityGroupsService().groupService(ag.id()).hostLabelsService().list().send().labels();
-            List<String> hosts = new ArrayList<>();
-            for(AffinityLabel affinityLabel : hostLabel){
-                if(affinityLabel != null){
-                    hosts.add(affinityLabel.name());
-                }
-            }
-            agVo.setHostLabels(hosts);
-
-
-            agVoList.add(agVo);
-        }
-        return agVoList;
+        return affinityGroupList.stream()
+                .map(ag -> AffinityGroupVo.builder()
+                        .name(ag.name())
+                        .description(ag.description())
+                        .status(ag.broken())
+                        .priority(ag.priority().intValue())  // 우선순위
+                        .positive(ag.positivePresent() && ag.positive())
+                        .vmEnabled(ag.vmsRule().enabled())
+                        .vmPositive(ag.vmsRule().positive())
+                        .vmEnforcing(ag.vmsRule().enforcing())
+                        .hostEnabled(ag.hostsRule().enabled())
+                        .hostPositive(ag.hostsRule().positive())
+                        .hostEnforcing(ag.hostsRule().enforcing())
+                        .hostList(getMember(systemService, id, ag.id(), "host"))
+                        .vmList(getMember(systemService, id, ag.id(), "vm"))
+                        .hostLabels(getLabel(systemService, id, ag.id(), "host"))
+                        .vmLabels(getLabel(systemService, id, ag.id(), "vm"))
+                        .build())
+                .collect(Collectors.toList());
     }
-
-
     //수정
     @Override
-    public List<AffinityLabelVo> getAffinitylabel() {
+    //TODO: 해야됨
+    public List<AffinityLabelVo> getAffinitylabel(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
-        List<AffinityLabelVo> alVoList = new ArrayList<>();
-        AffinityLabelVo alVo = null;
-
         List<AffinityLabel> affinityLabelList = systemService.affinityLabelsService().list().send().labels();
-        for(AffinityLabel affinityLabel : affinityLabelList){
-            // 호스트
-            List<Host> hostList = systemService.affinityLabelsService().labelService(affinityLabel.id()).hostsService().list().send().hosts();
-            List<String> hosts = new ArrayList<>();
-            for(Host host : hostList){
-                hosts.add(ovirt.getName("host", host.id()));
-            }
 
-            // 가상머신
-            List<Vm> vmList = systemService.affinityLabelsService().labelService(affinityLabel.id()).vmsService().list().send().vms();
-            List<String> vms = new ArrayList<>();
-            for(Vm vm : vmList){
-                vms.add(ovirt.getName("vm", vm.id()));
-            }
+        return affinityLabelList.stream()
+                .map(al -> AffinityLabelVo.builder()
+                        .id(al.id())
+                        .name(al.name())
+                        .hosts(getLabel(systemService, id, al.id(), "host"))
+                        .vms(getLabel(systemService, id, al.id(), "vm"))
+                        .build()
+                )
+                .collect(Collectors.toList());
 
-            alVo = AffinityLabelVo.builder()
-                    .id(affinityLabel.id())
-                    .name(affinityLabel.name())
-                    .hosts(hosts)
-                    .vms(vms)
-                    .build();
-
-            alVoList.add(alVo);
-        }
-        return alVoList;
     }
 
 //    필요없을 거 같음
@@ -370,10 +234,21 @@ public class ClusterServiceImpl implements ItClusterService {
     @Override
     public List<PermissionVo> getPermission(String id) {
         SystemService systemService = admin.getConnection().systemService();
+
+        List<Permission> permissionList = systemService.clustersService().clusterService(id).permissionsService().list().send().permissions();
+
+//        return permissionList.stream()
+//                .map(p -> PermissionVo.builder()
+//                        .permissionId(p.id())
+//                        .user()
+//                        .build()
+//                )
+//                .collect(Collectors.toList());
+//
+
         List<PermissionVo> pVoList = new ArrayList<>();
         PermissionVo pVo = null;
 
-        List<Permission> permissionList = systemService.clustersService().clusterService(id).permissionsService().list().send().permissions();
         for(Permission permission : permissionList){
             pVo = new PermissionVo();
             pVo.setPermissionId(permission.id());
@@ -408,30 +283,24 @@ public class ClusterServiceImpl implements ItClusterService {
 
 
     @Override
+    // TODO 이벤트 검색 자체 오류
     public List<EventVo> getEvent(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
+        List<Event> eventList = systemService.eventsService().list().max(10).send().events();
 
-        List<Event> eventList = systemService.eventsService().list().send().events();
-        List<EventVo> eVoList = new ArrayList<>();
-
-        EventVo eVo = null;
-
-        for(Event event : eventList){
-            if(event.clusterPresent() && event.cluster().name().equals(getName(id))){
-                eVo = EventVo.builder()
+        return eventList.stream()
+                .filter(Event::clusterPresent /*&& event.cluster().name().equals(getName(id))*/)
+                .map(event -> EventVo.builder()
                         .severity(event.severity().value())     // 상태[LogSeverity] : alert, error, normal, warning
                         .time(sdf.format(event.time()))
                         .message(event.description())
                         .relationId(event.correlationIdPresent() ? event.correlationId() : null)
                         .source(event.origin())
-                        .build();
-
-                eVoList.add(eVo);
-            }
-        }
-        return eVoList;
+                        .build()
+                )
+                .collect(Collectors.toList());
     }
 
 
@@ -441,39 +310,31 @@ public class ClusterServiceImpl implements ItClusterService {
     @Override
     public List<DataCenterVo> getDcList(){
         SystemService systemService = admin.getConnection().systemService();
-        List<DataCenterVo> dcVoList = new ArrayList<>();
-        DataCenterVo dcVo = null;
 
         List<DataCenter> dataCenterList = systemService.dataCentersService().list().send().dataCenters();
-        for(DataCenter dataCenter : dataCenterList){
-            dcVo = DataCenterVo.builder()
-                    .id(dataCenter.id())
-                    .name(dataCenter.name())
-                    .storageType(dataCenter.local())
-                    .networkList( getNetworkList(systemService, dataCenter.id()))
-                    .build();
 
-            dcVoList.add(dcVo);
-        }
-        return dcVoList;
+        return dataCenterList.stream()
+                .map(dataCenter -> DataCenterVo.builder()
+                        .id(dataCenter.id())
+                        .name(dataCenter.name())
+                        .storageType(dataCenter.local())
+                        .networkList( getNetworkList(systemService, dataCenter.id()))
+                        .build()
+                )
+                .collect(Collectors.toList());
     }
 
 
     public List<NetworkVo> getNetworkList(SystemService sys, String dcId){
-        List<NetworkVo> nwVoList = new ArrayList<>();
-        NetworkVo nwVo = null;
-
         List<Network> networkList = sys.dataCentersService().dataCenterService(dcId).networksService().list().send().networks();
-        for(Network network : networkList){
-            nwVo = NetworkVo.builder()
-                    .id(network.id())
-                    .name(network.name())
-                    .datacenterId(dcId)
-                    .build();
 
-            nwVoList.add(nwVo);
-        }
-        return nwVoList;
+        return networkList.stream()
+                .map(network -> NetworkVo.builder()
+                        .id(network.id())
+                        .name(network.name())
+                        .datacenterId(dcId)
+                        .build())
+                .collect(Collectors.toList());
     }
 
 
@@ -525,7 +386,6 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
 
-
     // 클러스터 생성
     @Override
     public CommonVo<Boolean> addCluster(ClusterCreateVo cVo) {
@@ -533,7 +393,6 @@ public class ClusterServiceImpl implements ItClusterService {
         SystemService systemService = admin.getConnection().systemService();
 
         ClustersService clustersService = systemService.clustersService();
-//        List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
         DataCenter dataCenter = systemService.dataCentersService().dataCenterService(cVo.getDatacenterId()).get().send().dataCenter();
         Network network = systemService.networksService().networkService(cVo.getNetworkId()).get().send().network();
         ExternalProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
@@ -578,7 +437,6 @@ public class ClusterServiceImpl implements ItClusterService {
                 Cluster cluster = clusterBuilder.build();
 
                 clustersService.add().cluster(cluster).send();
-                log.info("-- add Cluster: " + getGson().toJson(clusterBuilder.build()));
 
                 return CommonVo.successResponse();
             }else {
@@ -656,8 +514,6 @@ public class ClusterServiceImpl implements ItClusterService {
     public CommonVo<Boolean> deleteCluster(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
-        ClustersService clustersService = systemService.clustersService();
-        List<Cluster> cList = clustersService.list().send().clusters();
         ClusterService clusterService = systemService.clustersService().clusterService(id);
         String name = clusterService.get().send().cluster().name();
 
@@ -672,76 +528,126 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
 
-    public int getHostVmsCnt(SystemService systemService, String hostId){
-        List<Vm> vmList = systemService.vmsService().list().send().vms();
 
-        int vmsUpCnt = 0;
 
-        for (Vm vm : vmList) {
-//            System.out.println("hostVO.getHostId(): " + hostId);
-//            // vm down 상태일때는 placement만 뜨는가
-//            if(!vm.placementPolicy().hosts().isEmpty() && vm.placementPolicy().hosts().get(0).id().equals(hostId)){
-//                vmsCnt++;
-//                System.out.println("vmsCnt: " + vmsCnt);
-//            }
 
-            // vm up 상태
-            if (vm.host() != null && vm.host().id().equals(hostId)) {
-                if (vm.status().value().equals("up")) {
-                    vmsUpCnt++;
-                }
+
+
+    public String getStatistic(SystemService systemService, String id){
+        List<Statistic> statisticList = systemService.vmsService().vmService(id).statisticsService().list().send().statistics();
+
+        String upTime = null;
+        for(Statistic statistic : statisticList) {
+            long hour = 0;
+            if (statistic.name().equals("elapsed.time")) {
+                hour = statistic.values().get(0).datum().longValue() / (60*60);      // 시간
+
+                if(hour > 24){ upTime = hour/24 + "일";
+                }else if( hour > 1 && hour < 24){ upTime = hour + "시간";
+                }else { upTime = (statistic.values().get(0).datum().longValue() / 60) + "분";}
             }
-
         }
-        return vmsUpCnt;
+
+//        return statisticList.stream()
+//                .filter(statistic -> statistic.name().equals("elapsed.time"))
+//                .map(statistic -> statistic.values().get(0).datum().longValue() / (60*60))
+//                .collect();
+        return upTime;
+    }
+
+    public String getIp(SystemService systemService, String id, String version){
+        List<Nic> nicList = systemService.vmsService().vmService(id).nicsService().list().send().nics();
+        Vm vm = systemService.vmsService().vmService(id).get().send().vm();
+
+        String ipv4 = null;
+        String ipv6 = null;
+        for (Nic nic : nicList){
+            List<ReportedDevice> reportedDeviceList = systemService.vmsService().vmService(id).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
+            for (ReportedDevice r : reportedDeviceList){
+                ipv4 = !vm.status().value().equals("down") ? r.ips().get(0).address() : null;
+                ipv6 = !vm.status().value().equals("down") ? r.ips().get(1).address() : null;
+            }
+        }
+
+        if(version.equals("v4")){ return ipv4; }
+        else { return ipv6; }
     }
 
 
-    public void getHostCnt(SystemService systemService, ClusterVo clusterVo) {
-        List<Host> hostList = systemService.hostsService().list().send().hosts();
 
-        int hostCnt = 0;
-        int hostUpCnt = 0;
-        
-        for (Host host : hostList) {
-            if (host.cluster().id().equals(clusterVo.getId())) {
-                hostUpCnt = (int) hostList.stream()
-                        .filter(hostcnt -> hostcnt.status().value().equals("up"))
-                        .count();
-            }else{
-                hostCnt = 0;
-                break;
-            }
-            hostCnt++;
+
+    // 선호도 그룹 멤버
+    public List<String> getMember(SystemService systemService, String id, String agId, String ele){
+        List<Vm> vmList = systemService.clustersService().clusterService(id).affinityGroupsService().groupService(agId).vmsService().list().send().vms();
+        List<Host> hostList = systemService.clustersService().clusterService(id).affinityGroupsService().groupService(agId).hostsService().list().send().hosts();
+
+        if(ele.equals("vm")){
+            return vmList.stream()
+                    .map(Identified::name)
+                    .collect(Collectors.toList());
+        }else{
+            return hostList.stream()
+                    .map(Identified::name)
+                    .collect(Collectors.toList());
         }
-        clusterVo.hostCnt(hostCnt);
-        clusterVo.hostUpCnt(hostUpCnt);
-        clusterVo.hostDownCnt(hostCnt - hostUpCnt);
+    }
+
+    // 선호도 그룹 레이블
+    public List<String> getLabel(SystemService systemService, String id, String alId, String ele){
+        List<AffinityLabel> vmLabel = systemService.clustersService().clusterService(id).affinityGroupsService().groupService(alId).vmLabelsService().list().send().labels();
+        List<AffinityLabel> hostLabel = systemService.clustersService().clusterService(id).affinityGroupsService().groupService(alId).hostLabelsService().list().send().labels();
+
+        if(ele.equals("vm")) {
+            return vmLabel.stream()
+                    .filter(Objects::nonNull)
+                    .map(Identified::name)
+                    .collect(Collectors.toList());
+        } else if (ele.equals("host")) {
+            return hostLabel.stream()
+                    .filter(Objects::nonNull)
+                    .map(Identified::name)
+                    .collect(Collectors.toList());
+        } else {
+            return null;
+        }
     }
 
 
-    public void getVmCnt(SystemService systemService, ClusterVo clusterVo){
-        List<Vm> vmList = systemService.vmsService().list().send().vms();
 
-        int vmCnt = 0;
-        int vmUpCnt = 0;
 
-        for (Vm vm : vmList) {
-            if (vm.cluster().id().equals(clusterVo.getId())) {
-                vmUpCnt = (int) vmList.stream()
-                        .filter(vmcnt -> vmcnt.status().value().equals("up"))
-                        .count();
-            }else{
-                vmCnt = 0;
-                break;
-            }
-            vmCnt++;
-        }
-        clusterVo.vmCnt(vmCnt);
-        clusterVo.vmUpCnt(vmUpCnt);
-        clusterVo.vmDownCnt(vmCnt - vmUpCnt);
+    public int getHostCnt(List<Host> hostList, String id){
+        return (int) hostList.stream()
+                .filter(host -> host.cluster().id().equals(id))
+                .count();
     }
 
+    public int getHostUpCnt(List<Host> hostList, String id){
+        return (int) hostList.stream()
+                .filter(host -> host.cluster().id().equals(id) && host.status().value().equals("up"))
+                .count();
+    }
+
+    public int getHostDownCnt(List<Host> hostList, String id){
+        return (int) hostList.stream()
+                .filter(host -> host.cluster().id().equals(id) && !host.status().value().equals("up"))
+                .count();
+    }
+
+    public int getVmCnt(List<Vm> vmList, String id){
+        return (int) vmList.stream()
+                .filter(vm -> vm.cluster().id().equals(id))
+                .count();
+    }
+    public int getVmUpCnt(List<Vm> vmList, String id){
+        return (int) vmList.stream()
+                .filter(vm -> vm.cluster().id().equals(id) && vm.status().value().equals("up"))
+                .count();
+    }
+    public int getVmDownCnt(List<Vm> vmList, String id){
+        return (int) vmList.stream()
+                .filter(vm -> vm.cluster().id().equals(id) && vm.status().value().equals("up"))
+                .count();
+    }
 
 
 }

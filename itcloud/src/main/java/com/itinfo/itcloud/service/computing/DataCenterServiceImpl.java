@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -38,24 +40,20 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         SystemService systemService = admin.getConnection().systemService();
 
         List<DataCenter> dataCenterList = systemService.dataCentersService().list().send().dataCenters();
-        List<DataCenterVo> dcVoList = new ArrayList<>();
-        DataCenterVo dcVo = null;
 
-        for(DataCenter dataCenter : dataCenterList){
-            dcVo = DataCenterVo.builder()
-                    .id(dataCenter.id())
-                    .name(dataCenter.name())
-                    .description(dataCenter.description())
-                    .storageType(dataCenter.local())
-                    .status(TypeExtKt.findDCStatus(dataCenter.status()))
-                    .quotaMode(TypeExtKt.findQuota(dataCenter.quotaMode()))
-                    .version(dataCenter.version().major() + "." + dataCenter.version().minor())
-                    .comment(dataCenter.comment())
-                    .build();
-            dcVoList.add(dcVo);
-        }
-
-        return dcVoList;
+        return dataCenterList.stream()
+                .map(dataCenter -> DataCenterVo.builder()
+                        .id(dataCenter.id())
+                        .name(dataCenter.name())
+                        .description(dataCenter.description())
+                        .storageType(dataCenter.local())
+                        .status(TypeExtKt.findDCStatus(dataCenter.status()))
+                        .quotaMode(TypeExtKt.findQuota(dataCenter.quotaMode()))
+                        .version(dataCenter.version().major() + "." + dataCenter.version().minor())
+                        .comment(dataCenter.comment())
+                        .build()
+                )
+                .collect(Collectors.toList());
     }
 
 
@@ -321,7 +319,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                 log.info("datacenter {} 삭제", dataCenter.name());
                 return CommonVo.successResponse();
             }else {
-                log.error("datacenter {} 삭제 실패");
+                log.error("datacenter {} 삭제 실패", dataCenter.name());
                 return CommonVo.failResponse("삭제할 Datacenter가 없습니다.");
             }
         }catch (Exception e){
