@@ -425,6 +425,28 @@ public class NetworkServiceImpl implements ItNetworkService {
         DataCenter dataCenter = systemService.dataCentersService().dataCenterService(ncVo.getDatacenterId()).get().send().dataCenter();
         OpenStackNetworkProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
 
+        // TODO 애매
+        List<String> dnsList = ncVo.getDns().stream()
+                .distinct()
+                .map(NetworkDnsVo::getDnsIp)
+                .collect(Collectors.toList());
+
+//        List<String> vnicsd = ncVo.getVnics().stream()
+//                .distinct()
+//                .map(VnicProfileVo::getName)
+//                .collect(Collectors.toList());
+
+        for(String a:dnsList){
+            System.out.println(a);
+        }
+//        for(String a:vnicsd){
+//            System.out.println(a);
+//        }
+
+        List<VnicProfile> vnicList = ncVo.getVnics().stream()
+                                        .map(vnics -> new VnicProfileBuilder().name(vnics.getName()).build())
+                                        .collect(Collectors.toList());
+
         try {
             NetworkBuilder networkBuilder = new NetworkBuilder();
             networkBuilder
@@ -434,9 +456,17 @@ public class NetworkServiceImpl implements ItNetworkService {
                     .portIsolation(ncVo.getPortIsolation())
                     .usages(ncVo.getUsageVm() ? NetworkUsage.VM : NetworkUsage.DEFAULT_ROUTE)
                     .mtu(ncVo.getMtu())
+                    // TODO DNS 안딤 이거 찾아야됨
+//                    .dnsResolverConfiguration(
+//                            ncVo.getDns() != null ?
+//                                    new DnsResolverConfigurationBuilder().nameServers(dnsList) : null
+//                    )
                     .stp(ncVo.getStp())
                     .vlan(ncVo.getVlan() != null ? new VlanBuilder().id(ncVo.getVlan()) : null)
                     .externalProvider(ncVo.getExternalProvider() ? openStackNetworkProvider : null)
+                    // TODO: 이거도 문제 있음
+                    // 기본생성되는데 해당 네트워크의 이름이랑 같음
+                    .vnicProfiles(vnicList)
                     .dataCenter(dataCenter);
 
             Network network = networksService.add().network(networkBuilder).send().network();
@@ -542,4 +572,29 @@ public class NetworkServiceImpl implements ItNetworkService {
         return CommonVo.failResponse("오류");
     }
 
+
+
+    @Override
+    public CommonVo<Boolean> addVnic(VnicProfileVo vpVo) {
+        SystemService systemService = admin.getConnection().systemService();
+
+        DataCenter dataCenter = systemService.dataCentersService().dataCenterService(vpVo.getDatacenterId()).get().send().dataCenter();
+        NetworkService networkService = systemService.networksService().networkService(vpVo.getNetworkId());
+
+        return null;
+    }
+
+    @Override
+    public CommonVo<Boolean> editVnic(VnicProfileVo vpVo) {
+        SystemService systemService = admin.getConnection().systemService();
+
+        return null;
+    }
+
+    @Override
+    public CommonVo<Boolean> deleteVnic(VnicProfileVo vpVo) {
+        SystemService systemService = admin.getConnection().systemService();
+
+        return null;
+    }
 }

@@ -1,6 +1,8 @@
 package com.itinfo.itcloud.model.create;
 
 import com.itinfo.itcloud.model.network.NetworkClusterVo;
+import com.itinfo.itcloud.model.network.NetworkDnsVo;
+import com.itinfo.itcloud.model.network.VnicProfileVo;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -30,5 +32,7 @@ public class NetworkCreateVo {
 
     private Boolean externalProvider;
 
+    private List<NetworkDnsVo> dns;
+    private List<VnicProfileVo> vnics;
 
 }
