@@ -425,7 +425,7 @@ public class NetworkServiceImpl implements ItNetworkService {
         DataCenter dataCenter = systemService.dataCentersService().dataCenterService(ncVo.getDatacenterId()).get().send().dataCenter();
         OpenStackNetworkProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
 
-        // TODO 애매
+        // TODO
         List<String> dnsList = ncVo.getDns().stream()
                 .distinct()
                 .map(NetworkDnsVo::getDnsIp)
@@ -456,7 +456,7 @@ public class NetworkServiceImpl implements ItNetworkService {
                     .portIsolation(ncVo.getPortIsolation())
                     .usages(ncVo.getUsageVm() ? NetworkUsage.VM : NetworkUsage.DEFAULT_ROUTE)
                     .mtu(ncVo.getMtu())
-                    // TODO DNS 안딤 이거 찾아야됨
+                    // TODO DNS 생성 오류, 이슈남기기
 //                    .dnsResolverConfiguration(
 //                            ncVo.getDns() != null ?
 //                                    new DnsResolverConfigurationBuilder().nameServers(dnsList) : null
