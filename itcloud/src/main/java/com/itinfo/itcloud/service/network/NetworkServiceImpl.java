@@ -417,6 +417,7 @@ public class NetworkServiceImpl implements ItNetworkService {
         return dcClusterVoList;
     }
 
+    // 새 논리 네트워크 추가
     @Override
     public CommonVo<Boolean> addNetwork(NetworkCreateVo ncVo) {
         SystemService systemService = admin.getConnection().systemService();
@@ -425,27 +426,16 @@ public class NetworkServiceImpl implements ItNetworkService {
         DataCenter dataCenter = systemService.dataCentersService().dataCenterService(ncVo.getDatacenterId()).get().send().dataCenter();
         OpenStackNetworkProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
 
-        // TODO
         List<String> dnsList = ncVo.getDns().stream()
                 .distinct()
                 .map(NetworkDnsVo::getDnsIp)
                 .collect(Collectors.toList());
 
-//        List<String> vnicsd = ncVo.getVnics().stream()
-//                .distinct()
-//                .map(VnicProfileVo::getName)
-//                .collect(Collectors.toList());
-
-        for(String a:dnsList){
-            System.out.println(a);
+        if(!dnsList.isEmpty()){
+            dnsList.stream()
+                    .distinct()
+                    .forEach(System.out::println);
         }
-//        for(String a:vnicsd){
-//            System.out.println(a);
-//        }
-
-        List<VnicProfile> vnicList = ncVo.getVnics().stream()
-                                        .map(vnics -> new VnicProfileBuilder().name(vnics.getName()).build())
-                                        .collect(Collectors.toList());
 
         try {
             NetworkBuilder networkBuilder = new NetworkBuilder();
@@ -457,59 +447,74 @@ public class NetworkServiceImpl implements ItNetworkService {
                     .usages(ncVo.getUsageVm() ? NetworkUsage.VM : NetworkUsage.DEFAULT_ROUTE)
                     .mtu(ncVo.getMtu())
                     // TODO DNS 생성 오류, 이슈남기기
-//                    .dnsResolverConfiguration(
-//                            ncVo.getDns() != null ?
-//                                    new DnsResolverConfigurationBuilder().nameServers(dnsList) : null
-//                    )
+                    .dnsResolverConfiguration(
+                            ncVo.getDns() != null ?
+                                    new DnsResolverConfigurationBuilder().nameServers(dnsList) : null
+                    )
                     .stp(ncVo.getStp())
                     .vlan(ncVo.getVlan() != null ? new VlanBuilder().id(ncVo.getVlan()) : null)
+                    // TODO 외부 공급자 설정할 때 물리적 네트워크에 연결하는 거 필요, 외부 공급자 설정 시 클러스터에서 모두 필요 항목은 사라져야됨 (프론트에서 아예 설정이 안되게?)
                     .externalProvider(ncVo.getExternalProvider() ? openStackNetworkProvider : null)
-                    // TODO: 이거도 문제 있음
-                    // 기본생성되는데 해당 네트워크의 이름이랑 같음
-                    .vnicProfiles(vnicList)
                     .dataCenter(dataCenter);
 
             Network network = networksService.add().network(networkBuilder).send().network();
 
+            // TODO: vnicprofile도 문제 있음, 기본생성이 사라지지 않음
+            ncVo.getVnics()
+                    .forEach(vnicProfileVo -> {
+                        AssignedVnicProfilesService aVnicsService = systemService.networksService().networkService(network.id()).vnicProfilesService();
+                        aVnicsService.add().profile(new VnicProfileBuilder().name(vnicProfileVo.getName()).build()).send().profile();
+                    });
+
+//            List<VnicProfileVo> vnicVoList = ncVo.getVnics();
+//            for(VnicProfileVo vnicProfileVo : vnicVoList){
+//                AssignedVnicProfilesService aVnicsService = systemService.networksService().networkService(network.id()).vnicProfilesService();
+//                aVnicsService.add().profile(new VnicProfileBuilder().name(vnicProfileVo.getName()).build()).send().profile();
+//            }
+//            List<VnicProfile> vnicList = systemService.networksService().networkService(network.id()).vnicProfilesService().list().send().profiles();
+//            AssignedVnicProfileService aVnicService = systemService.networksService().networkService(network.id()).vnicProfilesService().profileService(vnicList.get(0).id());
+//            aVnicService.remove();
+
             // 클러스터 모두연결이 선택되어야지만 모두 필요가 선택됨
-            try {
-                for (NetworkClusterVo networkClusterVo : ncVo.getClusterVoList()) {
-                    ClusterNetworksService clusterNetworksService = systemService.clustersService().clusterService(networkClusterVo.getId()).networksService();
+            ncVo.getClusterVoList().stream()
+                    .filter(NetworkClusterVo::isConnected) // 연결된 경우만 필터링
+                    .forEach(networkClusterVo -> {
+                        ClusterNetworksService clusterNetworksService = systemService.clustersService().clusterService(networkClusterVo.getId()).networksService();
+                        clusterNetworksService.add()
+                                .network(new NetworkBuilder().id(network.id()).required(networkClusterVo.isRequired()))
+                                .send().network();
+                    });
 
-                    if (networkClusterVo.isConnected()) {
-                        clusterNetworksService.add().network(new NetworkBuilder().id(network.id()).required(networkClusterVo.isRequired())).send().network();
-                    }
-                }
-            }catch (Exception e){
-                log.error("cluster network error: ", e);
+//            for (NetworkClusterVo networkClusterVo : ncVo.getClusterVoList()) {
+//                ClusterNetworksService clusterNetworksService = systemService.clustersService().clusterService(networkClusterVo.getId()).networksService();
+//
+//                if (networkClusterVo.isConnected()) {
+//                    clusterNetworksService.add().network(new NetworkBuilder().id(network.id()).required(networkClusterVo.isRequired())).send().network();
+//                }
+//            }
+
+            // 외부 공급자 처리시 레이블 생성 안됨
+            if (ncVo.getLabel() != null && !ncVo.getLabel().isEmpty()) {
+                NetworkLabelsService nlsService = systemService.networksService().networkService(network.id()).networkLabelsService();
+                nlsService.add().label(new NetworkLabelBuilder().id(ncVo.getLabel())).send();
             }
-
-            try {
-                // 외부 공급자 처리시 레이블 생성 안됨
-                if (ncVo.getLabel() != null && !ncVo.getLabel().isEmpty()) {
-                    NetworkLabelsService nlsService = systemService.networksService().networkService(network.id()).networkLabelsService();
-                    nlsService.add().label(new NetworkLabelBuilder().id(ncVo.getLabel())).send();
-                }
-                log.info("label add");
-            }catch (Exception e){
-                log.error("error: label 추가 에러");
-            }
-
+            log.info("network {} 추가 성공", network.name());
             return CommonVo.successResponse();
         }catch (Exception e){
             log.error("error, ", e);
+            e.printStackTrace();
             return CommonVo.failResponse(e.getMessage());
         }
-
     }
 
+    // 네트워크 수정
     @Override
     public CommonVo<Boolean> editNetwork(NetworkCreateVo ncVo) {
         SystemService systemService = admin.getConnection().systemService();
 
         NetworksService networksService = systemService.networksService();
         DataCenter dataCenter = systemService.dataCentersService().dataCenterService(ncVo.getDatacenterId()).get().send().dataCenter();
-        OpenStackNetworkProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
+//        OpenStackNetworkProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
 
         try {
             NetworkBuilder networkBuilder = new NetworkBuilder();
@@ -520,25 +525,22 @@ public class NetworkServiceImpl implements ItNetworkService {
                     .comment(ncVo.getComment())
 //                    .portIsolation(ncVo.getPortIsolation())       // 선택불가
                     .usages(ncVo.getUsageVm() ? NetworkUsage.VM : NetworkUsage.DEFAULT_ROUTE)
+                    // TODO DNS 구현안됨
+//                    .dnsResolverConfiguration()
                     .mtu(ncVo.getMtu())
                     .stp(ncVo.getStp())
                     .vlan(ncVo.getVlan() != null ? new VlanBuilder().id(ncVo.getVlan()) : null)
 //                    .externalProvider(ncVo.getExternalProvider() ? openStackNetworkProvider : null);  // 수정불가
                     .dataCenter(dataCenter);
 
-            Network network = networksService.networkService(ncVo.getId()).update().network(networkBuilder).send().network();
+            // 외부 공급자 처리시 레이블 생성 안됨
+            if (ncVo.getLabel() != null && !ncVo.getLabel().isEmpty()) {
+                NetworkLabelsService nlsService = systemService.networksService().networkService(ncVo.getId()).networkLabelsService();
 
-            try {
-                // 외부 공급자 처리시 레이블 생성 안됨
-                if (ncVo.getLabel() != null && !ncVo.getLabel().isEmpty()) {
-                    NetworkLabelsService nlsService = systemService.networksService().networkService(network.id()).networkLabelsService();
+                if( nlsService.list().send().labels().get(0).idPresent() ) {
                     nlsService.labelService(nlsService.list().send().labels().get(0).id()).remove().send();
-
-                    nlsService.add().label(new NetworkLabelBuilder().id(ncVo.getLabel())).send();// 그리고 다시 생성
                 }
-                log.info("label edit");
-            }catch (Exception e){
-                log.error("error: label 수정 에러");
+                nlsService.add().label(new NetworkLabelBuilder().id(ncVo.getLabel())).send();// 그리고 다시 생성
             }
 
             return CommonVo.successResponse();
@@ -548,13 +550,13 @@ public class NetworkServiceImpl implements ItNetworkService {
         }
     }
 
+    // 네트워크 삭제
     @Override
     public CommonVo<Boolean> deleteNetwork(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
         NetworkService networkService = systemService.networksService().networkService(id);
         List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
-
 
         for(Cluster cluster : clusterList) {
             List<Network> clusterNetworkList = systemService.clustersService().clusterService(cluster.id()).networksService().list().send().networks();
