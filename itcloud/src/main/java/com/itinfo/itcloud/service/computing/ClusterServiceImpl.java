@@ -50,7 +50,8 @@ public class ClusterServiceImpl implements ItClusterService {
         List<Vm> vmList = systemService.vmsService().list().send().vms();
 
         return clusterList.stream()
-                .map(cluster -> ClusterVo.builder()
+                .map(cluster ->
+                    ClusterVo.builder()
                         .id(cluster.id())
                         .name(cluster.name())
                         .comment(cluster.comment())
@@ -129,17 +130,18 @@ public class ClusterServiceImpl implements ItClusterService {
 
         return hostList.stream()
                 .filter(host -> host.cluster().id().equals(id))
-                .map(host -> HostVo.builder()
-                                .id(host.id())
-                                .name(host.name())
-                                .status(host.status().value())
-                                .address(host.address())
-                                .vmUpCnt(
-                                        (int) vmList.stream()
-                                                .filter(vm -> vm.hostPresent() && vm.host().id().equals(host.id()) && vm.status().value().equals("up"))
-                                                .count()
-                                )
-                                .build()
+                .map(host ->
+                        HostVo.builder()
+                            .id(host.id())
+                            .name(host.name())
+                            .status(host.status().value())
+                            .address(host.address())
+                            .vmUpCnt(
+                                    (int) vmList.stream()
+                                            .filter(vm -> vm.hostPresent() && vm.host().id().equals(host.id()) && vm.status().value().equals("up"))
+                                            .count()
+                            )
+                            .build()
                 )
                 .collect(Collectors.toList());
     }
@@ -153,7 +155,8 @@ public class ClusterServiceImpl implements ItClusterService {
 
         return vmList.stream()
                 .filter(vm -> vm.cluster().id().equals(id))
-                .map(vm -> VmVo.builder()
+                .map(vm ->
+                    VmVo.builder()
                         .status(vm.status().value())
                         .id(vm.id())
                         .name(vm.name())
@@ -172,7 +175,8 @@ public class ClusterServiceImpl implements ItClusterService {
         List<AffinityGroup> affinityGroupList = systemService.clustersService().clusterService(id).affinityGroupsService().list().send().groups();
 
         return affinityGroupList.stream()
-                .map(ag -> AffinityGroupVo.builder()
+                .map(ag ->
+                    AffinityGroupVo.builder()
                         .name(ag.name())
                         .description(ag.description())
                         .status(ag.broken())

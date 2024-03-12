@@ -6,6 +6,7 @@ import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.*;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItNetworkService;
+import jdk.internal.misc.VM;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
 import org.ovirt.engine.sdk4.services.*;
@@ -459,6 +460,7 @@ public class NetworkServiceImpl implements ItNetworkService {
 
             Network network = networksService.add().network(networkBuilder).send().network();
 
+
             // TODO: vnicprofile도 문제 있음, 기본생성이 사라지지 않음
             ncVo.getVnics()
                     .forEach(vnicProfileVo -> {
@@ -466,14 +468,6 @@ public class NetworkServiceImpl implements ItNetworkService {
                         aVnicsService.add().profile(new VnicProfileBuilder().name(vnicProfileVo.getName()).build()).send().profile();
                     });
 
-//            List<VnicProfileVo> vnicVoList = ncVo.getVnics();
-//            for(VnicProfileVo vnicProfileVo : vnicVoList){
-//                AssignedVnicProfilesService aVnicsService = systemService.networksService().networkService(network.id()).vnicProfilesService();
-//                aVnicsService.add().profile(new VnicProfileBuilder().name(vnicProfileVo.getName()).build()).send().profile();
-//            }
-//            List<VnicProfile> vnicList = systemService.networksService().networkService(network.id()).vnicProfilesService().list().send().profiles();
-//            AssignedVnicProfileService aVnicService = systemService.networksService().networkService(network.id()).vnicProfilesService().profileService(vnicList.get(0).id());
-//            aVnicService.remove();
 
             // 클러스터 모두연결이 선택되어야지만 모두 필요가 선택됨
             ncVo.getClusterVoList().stream()
@@ -485,20 +479,14 @@ public class NetworkServiceImpl implements ItNetworkService {
                                 .send().network();
                     });
 
-//            for (NetworkClusterVo networkClusterVo : ncVo.getClusterVoList()) {
-//                ClusterNetworksService clusterNetworksService = systemService.clustersService().clusterService(networkClusterVo.getId()).networksService();
-//
-//                if (networkClusterVo.isConnected()) {
-//                    clusterNetworksService.add().network(new NetworkBuilder().id(network.id()).required(networkClusterVo.isRequired())).send().network();
-//                }
-//            }
-
             // 외부 공급자 처리시 레이블 생성 안됨
             if (ncVo.getLabel() != null && !ncVo.getLabel().isEmpty()) {
                 NetworkLabelsService nlsService = systemService.networksService().networkService(network.id()).networkLabelsService();
                 nlsService.add().label(new NetworkLabelBuilder().id(ncVo.getLabel())).send();
             }
+
             log.info("network {} 추가 성공", network.name());
+            
             return CommonVo.successResponse();
         }catch (Exception e){
             log.error("error, ", e);

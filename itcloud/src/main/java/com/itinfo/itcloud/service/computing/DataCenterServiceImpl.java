@@ -228,7 +228,6 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         SystemService systemService = admin.getConnection().systemService();
 
         DataCentersService datacentersService = systemService.dataCentersService();     // datacenters 서비스 불러오기
-        List<DataCenter> dcList = datacentersService.list().send().dataCenters();
         DataCenter dataCenter = null;
 
         // 같은 이름이 있는지 확인하는 코드
