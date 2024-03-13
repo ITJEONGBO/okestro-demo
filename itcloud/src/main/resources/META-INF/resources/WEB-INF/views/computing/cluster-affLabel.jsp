@@ -43,12 +43,12 @@
                             <td>${aff.name}</td>
                             <td>
                                 <c:forEach var="avms" items="${aff.vms}" varStatus="status">
-                                    ${avms}
+                                    ${avms.name}
                                 </c:forEach>
                             </td>
                             <td>
                                 <c:forEach var="ahosts" items="${aff.hosts}" varStatus="status">
-                                    ${ahosts}
+                                    ${ahosts.name}
                                 </c:forEach>
                             </td>
                         </tr>

@@ -434,8 +434,8 @@ public class VmServiceImpl implements ItVmService {
             alVo = AffinityLabelVo.builder()
                     .id(affinityLabel.id())
                     .name(affinityLabel.name())
-                    .hosts(hosts)
-                    .vms(vms)
+//                    .hosts(hosts)
+//                    .vms(vms)
                     .build();
 
             alVoList.add(alVo);

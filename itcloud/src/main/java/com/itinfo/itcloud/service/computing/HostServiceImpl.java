@@ -537,7 +537,7 @@ public class HostServiceImpl implements ItHostService {
 
             return hostsService.list().send().hosts().size() == ( hostList.size()+1 );
         } catch (Exception e) {
-            log.error("error: {}", e);
+            log.error("error: ", e);
             return false;
         }
     }

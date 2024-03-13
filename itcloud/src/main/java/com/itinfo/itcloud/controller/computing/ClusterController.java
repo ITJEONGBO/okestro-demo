@@ -115,7 +115,7 @@ public class ClusterController {
 
 	@GetMapping("/cluster-affLabel")
 	public String affLabel(String id, Model model) {
-		List<AffinityLabelVo> aff = itClusterService.getAffinitylabel(id);
+		List<AffinityLabelVo> aff = itClusterService.getAffinitylabelList(id);
 		model.addAttribute("aff", aff);
 		model.addAttribute("id", id);
 		model.addAttribute("name", itClusterService.getName(id));
@@ -125,6 +125,12 @@ public class ClusterController {
 
 		return "computing/cluster-affLabel";
 	}
+
+//	@GetMapping("/af")
+//	@ResponseBody
+//	public List<String> getLabel(){
+//		return itClusterService.getLabel();
+//	}
 
 //	@GetMapping("/cluster-cpu")
 //	public String cpu(String id, Model model) {
@@ -293,8 +299,30 @@ public class ClusterController {
 	@ResponseBody
 	public List<AffinityLabelVo> affLabel(String id) {
 		log.info("----- 클러스터 선호도 목록 불러오기: " + id);
-		return itClusterService.getAffinitylabel(id);
+		return itClusterService.getAffinitylabelList(id);
 	}
+
+	@GetMapping("/cluster/affLabels")
+	@ResponseBody
+	public List<AffinityLabelVo> affLabels(String clusterId) {
+		return itClusterService.getAffinitylabelList(clusterId);
+	}
+
+	@GetMapping("/cluster/hostme")
+	@ResponseBody
+	public List<HostVo> getHostMember(String clusterId) {
+		return itClusterService.getHostMember(clusterId);
+	}
+
+	@GetMapping("/cluster/vmme")
+	@ResponseBody
+	public List<VmVo> getVmMember(String clusterId) {
+		return itClusterService.getVmMember(clusterId);
+	}
+
+
+
+
 
 //	@GetMapping("/cluster/cpuStatus")
 //	@ResponseBody
