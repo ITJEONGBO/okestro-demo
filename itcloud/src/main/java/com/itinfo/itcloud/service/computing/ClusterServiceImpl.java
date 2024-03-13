@@ -278,28 +278,45 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
     @Override
-    public CommonVo<Boolean> addAffinitylabel(String id, AffinityLabelCreateVo alVo) {
+    public CommonVo<Boolean> addAffinitylabel(AffinityLabelCreateVo alVo) {
         SystemService systemService = admin.getConnection().systemService();
 
         AffinityLabelsService alServices = systemService.affinityLabelsService();
-        Cluster cluster = systemService.clustersService().clusterService(id).get().send().cluster();
+//        Cluster cluster = systemService.clustersService().clusterService(id).get().send().cluster();
+
+        List<AffinityLabel> alList = systemService.affinityLabelsService().list().send().labels();
+
+        boolean duplicateName = alList.stream().noneMatch(al -> al.name().equals(alVo.getName()));
 
         try {
-            AffinityLabelBuilder alBuilder = new AffinityLabelBuilder();
-            alBuilder
-                    .name(alVo.getName())
-//                    .vms() // List<vm>
-//                    .hosts()
-                    .build();
+            if(duplicateName) {
+                AffinityLabelBuilder alBuilder = new AffinityLabelBuilder();
+                alBuilder
+                        .name(alVo.getName())
+                        .vms(alVo.getVmList().stream()
+                                .map(vmId -> new VmBuilder().id(vmId).build())
+                                .collect(Collectors.toList())
+                        ) // List<vm>
+                        .hosts(alVo.getHostList().stream()
+                                .map(hostId -> new HostBuilder().id(hostId).build())
+                                .collect(Collectors.toList())
+                        )
+                        .build();
 
-            alServices.add().send().label();
+                alServices.add().label(alBuilder).send().label();
+                return CommonVo.successResponse();
+            }else {
+                return CommonVo.failResponse("이름 중복");
+            }
 
-            return CommonVo.successResponse();
         } catch (Exception e) {
             log.error("add affinitylabel error");
+            e.printStackTrace();
             return CommonVo.failResponse(e.getMessage());
         }
     }
+
+    // 선호도 레이블 삭제하려면 해당 레이블에 있는 가상머신&호스트 멤버 전부 내리고 해야함
 
 
     //    필요없을 거 같음

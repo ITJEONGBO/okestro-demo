@@ -1,5 +1,7 @@
 package com.itinfo.itcloud.controller.computing;
 
+import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
+import com.itinfo.itcloud.model.create.NetworkCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.*;
@@ -124,6 +126,19 @@ public class ClusterController {
 		model.addAttribute("m", m);
 
 		return "computing/cluster-affLabel";
+	}
+
+	@PostMapping("/cluster-affLabel-add")
+	public CommonVo<Boolean> affadd(@RequestBody AffinityLabelCreateVo alVo) {
+		CommonVo<Boolean> res = itClusterService.addAffinitylabel(alVo);
+
+		if(res.getBody().getContent().equals(true)){
+			log.info("affinity label 생성 성공");
+		}else{
+			log.error("affinity label 생성 실패");
+		}
+
+		return itClusterService.addAffinitylabel(alVo);
 	}
 
 //	@GetMapping("/af")
