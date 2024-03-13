@@ -129,16 +129,18 @@ public class ClusterController {
 	}
 
 	@PostMapping("/cluster-affLabel-add")
-	public CommonVo<Boolean> affadd(@RequestBody AffinityLabelCreateVo alVo) {
-		CommonVo<Boolean> res = itClusterService.addAffinitylabel(alVo);
-
-		if(res.getBody().getContent().equals(true)){
-			log.info("affinity label 생성 성공");
-		}else{
-			log.error("affinity label 생성 실패");
-		}
-
+	public CommonVo<Boolean> addAff(@RequestBody AffinityLabelCreateVo alVo) {
 		return itClusterService.addAffinitylabel(alVo);
+	}
+
+	@PostMapping("/cluster-affLabel-edit")
+	public CommonVo<Boolean> editAff(@RequestBody AffinityLabelCreateVo alVo) {
+		return itClusterService.editAffinitylabel(alVo);
+	}
+
+	@PostMapping("/cluster-affLabel-delete")
+	public CommonVo<Boolean> deleteAff(String id) {
+		return itClusterService.deleteAffinitylabel(id);
 	}
 
 //	@GetMapping("/af")

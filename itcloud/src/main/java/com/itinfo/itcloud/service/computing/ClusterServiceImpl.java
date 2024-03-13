@@ -282,10 +282,9 @@ public class ClusterServiceImpl implements ItClusterService {
         SystemService systemService = admin.getConnection().systemService();
 
         AffinityLabelsService alServices = systemService.affinityLabelsService();
-//        Cluster cluster = systemService.clustersService().clusterService(id).get().send().cluster();
-
         List<AffinityLabel> alList = systemService.affinityLabelsService().list().send().labels();
 
+        // 중복이름
         boolean duplicateName = alList.stream().noneMatch(al -> al.name().equals(alVo.getName()));
 
         try {
@@ -304,8 +303,10 @@ public class ClusterServiceImpl implements ItClusterService {
                         .build();
 
                 alServices.add().label(alBuilder).send().label();
+                log.info("성공: cluster-affinityLabel");
                 return CommonVo.successResponse();
             }else {
+                log.error("실패: cluster-affinityLabel 이름중복");
                 return CommonVo.failResponse("이름 중복");
             }
 
@@ -316,7 +317,73 @@ public class ClusterServiceImpl implements ItClusterService {
         }
     }
 
+    // 선호도 레이블 - 편집
+    // 이름만 바뀌는거 같음
+    // 호스트하고 vm은 걍 삭제하는 방식으로
+    @Override
+    public CommonVo<Boolean> editAffinitylabel(AffinityLabelCreateVo alVo) {
+        SystemService systemService = admin.getConnection().systemService();
+
+        AffinityLabelService alService = systemService.affinityLabelsService().labelService(alVo.getId());
+        List<AffinityLabel> alList = systemService.affinityLabelsService().list().send().labels();
+
+        // 중복이름
+        boolean duplicateName = alList.stream().noneMatch(al -> al.name().equals(alVo.getName()));
+
+        try {
+            AffinityLabelBuilder alBuilder = new AffinityLabelBuilder();
+            alBuilder
+                    .id(alVo.getId())
+                    .name(alVo.getName())
+                    .vms(alVo.getVmList().stream()
+                            .map(vmId -> new VmBuilder().id(vmId).build())
+                            .collect(Collectors.toList())
+                    ) // List<vm>
+                    .hosts(alVo.getHostList().stream()
+                            .map(hostId -> new HostBuilder().id(hostId).build())
+                            .collect(Collectors.toList())
+                    )
+                    .build();
+
+            alVo.getVmList().stream().distinct().forEach(System.out::println);
+
+            alService.update().label(alBuilder).send().label();
+            log.info("성공: cluster-affinityLabel");
+            return CommonVo.successResponse();
+        } catch (Exception e) {
+            log.error("edit affinitylabel error");
+            e.printStackTrace();
+            return CommonVo.failResponse(e.getMessage());
+        }
+    }
+
+
     // 선호도 레이블 삭제하려면 해당 레이블에 있는 가상머신&호스트 멤버 전부 내리고 해야함
+    @Override
+    public CommonVo<Boolean> deleteAffinitylabel(String id) {
+        SystemService systemService = admin.getConnection().systemService();
+
+        AffinityLabelService alService = systemService.affinityLabelsService().labelService(id);
+        AffinityLabel affinityLabel = systemService.affinityLabelsService().labelService(id).get().send().label();
+
+        try {
+            if(!affinityLabel.hostsPresent() && !affinityLabel.vmsPresent()) {
+                alService.remove().send();
+                log.info("성공: cluster-affinityLabel 삭제");
+                return CommonVo.successResponse();
+            }else if(affinityLabel.hostsPresent()){    // host가 없고, vm이 있을때
+                return CommonVo.failResponse("호스트 멤버가 있음");
+            }else if(affinityLabel.vmsPresent()){    // host가 없고, vm이 있을때
+                return CommonVo.failResponse("가상머신 멤버가 있음");
+            }else{
+                return CommonVo.failResponse("tlqkf");
+            }
+        } catch (Exception e) {
+            log.error("delete affinitylabel error");
+            e.printStackTrace();
+            return CommonVo.failResponse(e.getMessage());
+        }
+    }
 
 
     //    필요없을 거 같음
