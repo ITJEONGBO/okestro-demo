@@ -325,6 +325,14 @@ public class ClusterController {
 		return itClusterService.getAffinitylabelList(clusterId);
 	}
 
+	@GetMapping("/cluster/affLabel")
+	@ResponseBody
+	public AffinityLabelCreateVo getAffinityLabel(String id) {
+		return itClusterService.getAffinityLabel(id);
+	}
+
+
+
 	@GetMapping("/cluster/hostme")
 	@ResponseBody
 	public List<HostVo> getHostMember(String clusterId) {

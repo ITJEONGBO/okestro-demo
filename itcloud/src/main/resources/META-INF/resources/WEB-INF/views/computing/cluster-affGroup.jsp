@@ -59,25 +59,25 @@
                             <td>
                                 <c:forEach var="vmList" items="${aff.vmList}" varStatus="status">
                                     <c:if test="${empty vmList}">멤버 없음 </c:if>
-                                    ${vmList}
+                                    ${vmList.name}
                                 </c:forEach>
                             </td>
                             <td>
                                 <c:forEach var="vmLabels" items="${aff.vmLabels}" varStatus="status">
                                     <c:if test="${empty vmLabels}">멤버 없음 </c:if>
-                                    ${vmLabels}
+                                    ${vmLabels.name}
                                 </c:forEach>
                             </td>
                             <td>
                                 <c:forEach var="hostList" items="${aff.hostList}" varStatus="status">
                                     <c:if test="${empty hostList}">멤버 없음 </c:if>
-                                    ${hostList}
+                                    ${hostList.name}
                                 </c:forEach>
                             </td>
                             <td>
                                 <c:forEach var="hostLabels" items="${aff.hostLabels}" varStatus="status">
                                     <c:if test="${empty hostLabels}">멤버 없음 </c:if>
-                                    ${hostLabels}
+                                    ${hostLabels.name}
                                 </c:forEach>
                             </td>
                         </tr>

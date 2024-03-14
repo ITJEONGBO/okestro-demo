@@ -28,18 +28,11 @@ public class AffinityGroupVo {
     private boolean hostPositive;   // 호스트 측 극성 (양극, 음극)
     private boolean hostEnforcing;  // 호스트 강제적용
 
+    private List<AffinityLabelVo> vmLabels;     // 가상머신 레이블
+    private List<AffinityLabelVo> hostLabels;   // 호스트 레이블
 
-    private List<String> vmLabels;        // 가상머신 레이블
-    private List<String> hostLabels;      // 호스트 레이블
-//    private List<AffinityLabelVo> vmLabels;
-//    private List<AffinityLabelVo> hostLabels;
-
-
-    private List<String> vmList;
-    private List<String> hostList;
-//    private List<VmVo> vmList;      // 가상머신 멤버
-//    private List<VmVo> hostList;    // 호스트 멤버
-
+    private List<VmVo> vmList;      // 가상머신 멤버
+    private List<HostVo> hostList;    // 호스트 멤버
 
     // LINK: vms, vmlabels, hosts, hostlabels
     // cluster, hosts, vms
