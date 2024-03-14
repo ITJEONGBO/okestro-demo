@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.service;
 
+import com.itinfo.itcloud.model.create.AffinityGroupCreateVo;
 import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.computing.*;
@@ -20,7 +21,7 @@ public interface ItClusterService {
     List<VmVo> getVm(String id);
 
     List<AffinityGroupVo> getAffinitygroup(String id);
-    CommonVo<Boolean> addAffinitygroup(String clusterId, AffinityGroupVo agVo);
+    CommonVo<Boolean> addAffinitygroup(AffinityGroupCreateVo agVo);
 
 
     List<AffinityLabelVo> getAffinitylabelList(String id);  // 전체 출력 목록

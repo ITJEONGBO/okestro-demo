@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.controller.computing;
 
+import com.itinfo.itcloud.model.create.AffinityGroupCreateVo;
 import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
 import com.itinfo.itcloud.model.create.NetworkCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
@@ -113,6 +114,11 @@ public class ClusterController {
 		MenuVo m = menu.getMenu();
 		model.addAttribute("m", m);
 		return "computing/cluster-affGroup";
+	}
+
+	@PostMapping("/cluster-affGroup-add")
+	public CommonVo<Boolean> addAffinitygroup(@RequestBody AffinityGroupCreateVo agVo){
+		return itClusterService.addAffinitygroup(agVo);
 	}
 
 	@GetMapping("/cluster-affLabel")
@@ -311,6 +317,8 @@ public class ClusterController {
 		log.info("----- 클러스터 선호도 목록 불러오기: " + id);
 		return itClusterService.getAffinitygroup(id);
 	}
+
+
 
 	@GetMapping("/cluster/affLabelStatus")
 	@ResponseBody

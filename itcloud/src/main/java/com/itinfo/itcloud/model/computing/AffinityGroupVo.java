@@ -34,6 +34,4 @@ public class AffinityGroupVo {
     private List<VmVo> vmList;      // 가상머신 멤버
     private List<HostVo> hostList;    // 호스트 멤버
 
-    // LINK: vms, vmlabels, hosts, hostlabels
-    // cluster, hosts, vms
 }
