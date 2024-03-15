@@ -1,7 +1,5 @@
 package com.itinfo.itcloud.service.computing;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.itinfo.itcloud.model.create.AffinityGroupCreateVo;
 import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
@@ -11,7 +9,6 @@ import com.itinfo.itcloud.model.create.ClusterCreateVo;
 import com.itinfo.itcloud.model.network.NetworkUsageVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
-import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItClusterService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
@@ -20,12 +17,9 @@ import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.Package;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,8 +27,6 @@ import java.util.stream.Collectors;
 public class ClusterServiceImpl implements ItClusterService {
 
     @Autowired private AdminConnectionService admin;
-    @Autowired private OvirtService ovirt;
-
 
     @Override
     public String getName(String id){
@@ -223,29 +215,37 @@ public class ClusterServiceImpl implements ItClusterService {
                         .cluster(cluster)
                         .priority(agVo.getPriority())
                         .vmsRule(new AffinityRuleBuilder()
-                                .enabled(agVo.isVmEnabled())
-                                .positive(agVo.isVmEnabled())
-                                .enforcing(agVo.isVmEnforcing())
+                                .enabled(agVo.isVmEnabled())    // 비활성화
+                                .positive(agVo.isVmPositive())  // 양극 음극
+                                .enforcing(agVo.isVmEnforcing()) // 강제 적용
                         )
                         .hostsRule(new AffinityRuleBuilder()
                                 .enabled(agVo.isHostEnabled())
-                                .positive(agVo.isHostEnabled())
+                                .positive(agVo.isHostPositive())
                                 .enforcing(agVo.isHostEnforcing())
                         )
                         .hostLabels(agVo.getHostLabels().stream()
-                                .map(al -> new AffinityLabelBuilder().id(al.getId()).build())
+                                .map(al -> new AffinityLabelBuilder()
+                                        .id(al.getId())
+                                        .build())
                                 .collect(Collectors.toList())
                         )
                         .vmLabels(agVo.getVmLabels().stream()
-                                .map(al -> new AffinityLabelBuilder().id(al.getId()).build())
+                                .map(al -> new AffinityLabelBuilder()
+                                        .id(al.getId())
+                                        .build())
                                 .collect(Collectors.toList())
                         )
                         .hosts(agVo.getHostList().stream()
-                                .map(host -> new HostBuilder().id(host.getId()).build())
+                                .map(host -> new HostBuilder()
+                                        .id(host.getId())
+                                        .build())
                                 .collect(Collectors.toList())
                         )
                         .vms(agVo.getVmList().stream()
-                                .map(vm -> new VmBuilder().id(vm.getId()).build())
+                                .map(vm -> new VmBuilder()
+                                        .id(vm.getId())
+                                        .build())
                                 .collect(Collectors.toList())
                         )
                         .build();
@@ -259,6 +259,88 @@ public class ClusterServiceImpl implements ItClusterService {
             }
         } catch (Exception e) {
             log.error("add affinitygroup error");
+            return CommonVo.failResponse(e.getMessage());
+        }
+    }
+
+    @Override
+    public CommonVo<Boolean> editAffinitygroup(AffinityGroupCreateVo agVo) {
+        SystemService systemService = admin.getConnection().systemService();
+
+        AffinityGroupService agService = systemService.clustersService().clusterService(agVo.getClusterId()).affinityGroupsService().groupService(agVo.getId());
+        List<AffinityGroup> agList = systemService.clustersService().clusterService(agVo.getClusterId()).affinityGroupsService().list().send().groups();
+        Cluster cluster = systemService.clustersService().clusterService(agVo.getClusterId()).get().send().cluster();
+
+        boolean duplicateName = agList.stream().noneMatch(ag -> ag.name().equals(agVo.getName()));
+
+        try {
+            AffinityGroupBuilder agBuilder = new AffinityGroupBuilder();
+            agBuilder
+                    .id(agVo.getId())
+                    .name(agVo.getName())
+                    .description(agVo.getDescription())
+                    .cluster(cluster)
+                    .priority(agVo.getPriority())
+                    .vmsRule(new AffinityRuleBuilder()
+                            .enabled(agVo.isVmEnabled())    // 비활성화
+                            .positive(agVo.isVmPositive())  // 양극 음극
+                            .enforcing(agVo.isVmEnforcing()) // 강제 적용
+                    )
+                    .hostsRule(new AffinityRuleBuilder()
+                            .enabled(agVo.isHostEnabled())
+                            .positive(agVo.isHostPositive())
+                            .enforcing(agVo.isHostEnforcing())
+                    )
+                    .hostLabels(agVo.getHostLabels().stream()
+                            .map(al -> new AffinityLabelBuilder()
+                                    .id(al.getId())
+                                    .build())
+                            .collect(Collectors.toList())
+                    )
+                    .vmLabels(agVo.getVmLabels().stream()
+                            .map(al -> new AffinityLabelBuilder()
+                                    .id(al.getId())
+                                    .build())
+                            .collect(Collectors.toList())
+                    )
+                    .hosts(agVo.getHostList().stream()
+                            .map(host -> new HostBuilder()
+                                    .id(host.getId())
+                                    .build())
+                            .collect(Collectors.toList())
+                    )
+                    .vms(agVo.getVmList().stream()
+                            .map(vm -> new VmBuilder()
+                                    .id(vm.getId())
+                                    .build())
+                            .collect(Collectors.toList())
+                    )
+                    .build();
+
+            agService.update().send().group();
+            log.info("성공: afiinityGroup edit");
+            return CommonVo.successResponse();
+        } catch (Exception e) {
+            log.error("edit affinitygroup error");
+            e.printStackTrace();
+            return CommonVo.failResponse(e.getMessage());
+        }
+    }
+
+    @Override
+    public CommonVo<Boolean> deleteAffinitygroup(String clusterId, String id) {
+        SystemService systemService = admin.getConnection().systemService();
+
+        AffinityGroupService agService = systemService.clustersService().clusterService(clusterId).affinityGroupsService().groupService(id);
+        AffinityGroup ag = systemService.clustersService().clusterService(clusterId).affinityGroupsService().groupService(id).get().send().group();
+
+        try {
+            agService.remove().send();
+            log.info("성공: cluster-affinityGroup 삭제");
+            return CommonVo.successResponse();
+        } catch (Exception e) {
+            log.error("실패: cluster-affinityGroup 삭제");
+            e.printStackTrace();
             return CommonVo.failResponse(e.getMessage());
         }
     }
@@ -316,6 +398,21 @@ public class ClusterServiceImpl implements ItClusterService {
 
 
     @Override
+    public AffinityLabelCreateVo getAffinityLabel(String id){   // id는 alid
+        SystemService systemService = admin.getConnection().systemService();
+
+        AffinityLabel al = systemService.affinityLabelsService().labelService(id).get().follow("hosts,vms").send().label();
+
+        return AffinityLabelCreateVo.builder()
+                .id(id)
+                .name(al.name())
+                .hostList(al.hostsPresent() ? getHostLabelMember(systemService, id):null )
+                .vmList(al.vmsPresent() ? getVmLabelMember(systemService, id) : null)
+                .build();
+    }
+
+
+    @Override
     public CommonVo<Boolean> addAffinitylabel(AffinityLabelCreateVo alVo) {
         SystemService systemService = admin.getConnection().systemService();
 
@@ -355,20 +452,9 @@ public class ClusterServiceImpl implements ItClusterService {
         }
     }
 
-    @Override
-    public AffinityLabelCreateVo getAffinityLabel(String id){   // id는 alid
-        SystemService systemService = admin.getConnection().systemService();
+    public void deleteHostMember(String id){
 
-        AffinityLabel al = systemService.affinityLabelsService().labelService(id).get().follow("hosts,vms").send().label();
-
-        return AffinityLabelCreateVo.builder()
-                .id(id)
-                .name(al.name())
-                .hostList(al.hostsPresent() ? getHostLabelMember(systemService, id):null )
-                .vmList(al.vmsPresent() ? getVmLabelMember(systemService, id) : null)
-                .build();
     }
-
 
 
     // 선호도 레이블 - 편집
@@ -382,7 +468,6 @@ public class ClusterServiceImpl implements ItClusterService {
         List<AffinityLabel> alList = systemService.affinityLabelsService().list().send().labels();
 //        AffinityLabelHostsService alHostsService = systemService.affinityLabelsService().labelService(alVo.getId()).hostsService();
 //        AffinityLabelVmsService alVmsService = systemService.affinityLabelsService().labelService(alVo.getId()).vmsService();
-
 
         // 중복이름
         boolean duplicateName = alList.stream().noneMatch(al -> al.name().equals(alVo.getName()));

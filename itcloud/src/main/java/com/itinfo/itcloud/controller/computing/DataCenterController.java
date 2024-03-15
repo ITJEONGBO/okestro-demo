@@ -26,7 +26,6 @@ public class DataCenterController {
 	private final ItDataCenterService itDataCenterService;
 	private final ItMenuService menu;
 
-
 	// region: get Datacenter
 
 	@GetMapping("/datacenters")
@@ -45,62 +44,6 @@ public class DataCenterController {
 		log.info("datacenterList");
 		return "computing/datacenters";
 	}
-
-	// 스토리지
-//	@GetMapping("/datacenter-storage")
-//	public String storage(String id, Model model) {
-//		List<DomainVo> storage = itDataCenterService.getStorage(id);
-//		model.addAttribute("storage", storage);
-//		model.addAttribute("id", id);
-//		model.addAttribute("name", itDataCenterService.getName(id));
-//
-//		MenuVo m = menu.getMenu();
-//		model.addAttribute("m", m);
-//		log.info("---datacenter-storage");
-//
-//		return "computing/datacenter-storage";
-//	}
-//
-//	// 네트워크
-//	@GetMapping("/datacenter-network")
-//	public String network(String id, Model model) {
-//		List<NetworkVo> network = itDataCenterService.getNetwork(id);
-//		model.addAttribute("network", network);
-//		model.addAttribute("id", id);
-//		model.addAttribute("name", itDataCenterService.getName(id));
-//
-//		MenuVo m = menu.getMenu();
-//		model.addAttribute("m", m);
-//
-//		return "computing/datacenter-network";
-//	}
-//	// 네트워크
-//	@GetMapping("/datacenter-cluster")
-//	public String cluster(String id, Model model) {
-//		List<ClusterVo> cluster = itDataCenterService.getCluster(id);
-//		model.addAttribute("cluster", cluster);
-//		model.addAttribute("id", id);
-//		model.addAttribute("name", itDataCenterService.getName(id));
-//
-//		MenuVo m = menu.getMenu();
-//		model.addAttribute("m", m);
-//
-//		return "computing/datacenter-cluster";
-//	}
-//
-//	@GetMapping("/datacenter-permission")
-//	public String permission(String id, Model model) {
-//		List<PermissionVo> permission = itDataCenterService.getPermission(id);
-//		model.addAttribute("permission", permission);
-//		model.addAttribute("id", id);
-//		model.addAttribute("name", itDataCenterService.getName(id));
-//		System.out.println("name");
-//
-//		MenuVo m = menu.getMenu();
-//		model.addAttribute("m", m);
-//
-//		return "computing/datacenter-permission";
-//	}
 
 	@GetMapping("/datacenter-event")
 	public String event(String id, Model model) {
@@ -206,6 +149,80 @@ public class DataCenterController {
 	}
 
 
+	@GetMapping("/datacenter/eventStatus")
+	@ResponseBody
+	public List<EventVo> event(String id) {
+		log.info("----- event 목록 불러오기: " + id);
+		return itDataCenterService.getEvent(id);
+	}
+	//endregion
+
+
+
+
+
+	// region: 안쓸것 같음
+
+	// 스토리지
+//	@GetMapping("/datacenter-storage")
+//	public String storage(String id, Model model) {
+//		List<DomainVo> storage = itDataCenterService.getStorage(id);
+//		model.addAttribute("storage", storage);
+//		model.addAttribute("id", id);
+//		model.addAttribute("name", itDataCenterService.getName(id));
+//
+//		MenuVo m = menu.getMenu();
+//		model.addAttribute("m", m);
+//		log.info("---datacenter-storage");
+//
+//		return "computing/datacenter-storage";
+//	}
+//
+//	// 네트워크
+//	@GetMapping("/datacenter-network")
+//	public String network(String id, Model model) {
+//		List<NetworkVo> network = itDataCenterService.getNetwork(id);
+//		model.addAttribute("network", network);
+//		model.addAttribute("id", id);
+//		model.addAttribute("name", itDataCenterService.getName(id));
+//
+//		MenuVo m = menu.getMenu();
+//		model.addAttribute("m", m);
+//
+//		return "computing/datacenter-network";
+//	}
+//	// 네트워크
+//	@GetMapping("/datacenter-cluster")
+//	public String cluster(String id, Model model) {
+//		List<ClusterVo> cluster = itDataCenterService.getCluster(id);
+//		model.addAttribute("cluster", cluster);
+//		model.addAttribute("id", id);
+//		model.addAttribute("name", itDataCenterService.getName(id));
+//
+//		MenuVo m = menu.getMenu();
+//		model.addAttribute("m", m);
+//
+//		return "computing/datacenter-cluster";
+//	}
+//
+//	@GetMapping("/datacenter-permission")
+//	public String permission(String id, Model model) {
+//		List<PermissionVo> permission = itDataCenterService.getPermission(id);
+//		model.addAttribute("permission", permission);
+//		model.addAttribute("id", id);
+//		model.addAttribute("name", itDataCenterService.getName(id));
+//		System.out.println("name");
+//
+//		MenuVo m = menu.getMenu();
+//		model.addAttribute("m", m);
+//
+//		return "computing/datacenter-permission";
+//	}
+
+
+
+
+
 //	@GetMapping("/datacenter/storageStatus")
 //	@ResponseBody
 //	public List<DomainVo> storage(String id) {
@@ -237,12 +254,7 @@ public class DataCenterController {
 //		return itDataCenterService.getPermission(id);
 //	}
 
-	@GetMapping("/datacenter/eventStatus")
-	@ResponseBody
-	public List<EventVo> event(String id) {
-		log.info("----- event 목록 불러오기: " + id);
-		return itDataCenterService.getEvent(id);
-	}
-	//endregion
+
+	// endregion
 
 }

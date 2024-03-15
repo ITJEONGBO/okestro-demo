@@ -3,7 +3,6 @@ package com.itinfo.itcloud.service.computing;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.HostCreateVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
-import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItHostService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
@@ -25,11 +24,10 @@ import java.util.List;
 public class HostServiceImpl implements ItHostService {
 
     @Autowired private AdminConnectionService admin;
-    @Autowired private OvirtService ovirt;
 
     @Override
     public String getName(String id){
-        return ovirt.getName("host", id);
+        return admin.getConnection().systemService().hostsService().hostService(id).get().send().host().name();
     }
 
     @Override

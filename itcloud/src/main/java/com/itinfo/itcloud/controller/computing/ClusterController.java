@@ -121,6 +121,16 @@ public class ClusterController {
 		return itClusterService.addAffinitygroup(agVo);
 	}
 
+	@PostMapping("/cluster-affGroup-edit")
+	public CommonVo<Boolean> editAffinitygroup(@RequestBody AffinityGroupCreateVo agVo){
+		return itClusterService.editAffinitygroup(agVo);
+	}
+
+	@PostMapping("/cluster-affGroup-delete")
+	public CommonVo<Boolean> deleteAffinitygroup(@RequestParam String clusterId, @RequestParam String id){
+		return itClusterService.deleteAffinitygroup(clusterId, id);
+	}
+
 	@GetMapping("/cluster-affLabel")
 	public String affLabel(String id, Model model) {
 		List<AffinityLabelVo> aff = itClusterService.getAffinitylabelList(id);
@@ -325,12 +335,6 @@ public class ClusterController {
 	public List<AffinityLabelVo> affLabel(String id) {
 		log.info("----- 클러스터 선호도 목록 불러오기: " + id);
 		return itClusterService.getAffinitylabelList(id);
-	}
-
-	@GetMapping("/cluster/affLabels")
-	@ResponseBody
-	public List<AffinityLabelVo> affLabels(String clusterId) {
-		return itClusterService.getAffinitylabelList(clusterId);
 	}
 
 	@GetMapping("/cluster/affLabel")

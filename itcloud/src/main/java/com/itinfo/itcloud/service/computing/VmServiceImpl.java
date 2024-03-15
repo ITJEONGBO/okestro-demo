@@ -4,10 +4,8 @@ import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.*;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
-import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItVmService;
 import lombok.extern.slf4j.Slf4j;
-import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.builders.*;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
@@ -28,13 +26,10 @@ import java.util.List;
 public class VmServiceImpl implements ItVmService {
 
     @Autowired private AdminConnectionService admin;
-    @Autowired private OvirtService ovirt;
 
     @Override
     public String getName(String id){
-        SystemService systemService = admin.getConnection().systemService();
-
-        return systemService.vmsService().vmService(id).get().send().vm().name();
+        return admin.getConnection().systemService().vmsService().vmService(id).get().send().vm().name();
     }
 
 
@@ -421,14 +416,14 @@ public class VmServiceImpl implements ItVmService {
             List<Host> hostList = systemService.affinityLabelsService().labelService(affinityLabel.id()).hostsService().list().send().hosts();
             List<String> hosts = new ArrayList<>();
             for(Host host : hostList){
-                hosts.add(ovirt.getName("host", host.id()));
+                hosts.add(getName(host.id()));
             }
 
             // 가상머신
             List<Vm> vmList = systemService.affinityLabelsService().labelService(affinityLabel.id()).vmsService().list().send().vms();
             List<String> vms = new ArrayList<>();
             for(Vm vm : vmList){
-                vms.add(ovirt.getName("vm", vm.id()));
+                vms.add(getName(vm.id()));
             }
 
             alVo = AffinityLabelVo.builder()

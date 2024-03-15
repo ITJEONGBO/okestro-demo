@@ -5,7 +5,6 @@ import com.itinfo.itcloud.model.storage.DiskVo;
 import com.itinfo.itcloud.model.storage.DomainVmVo;
 import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
-import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItDomainService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.services.*;
@@ -21,13 +20,10 @@ import java.util.List;
 @Slf4j
 public class DomainServiceImpl implements ItDomainService {
     @Autowired private AdminConnectionService admin;
-    @Autowired private OvirtService ovirt;
 
     @Override
     public String getName(String id){
-        SystemService systemService = admin.getConnection().systemService();
-
-        return ((StorageDomainService.GetResponse)systemService.storageDomainsService().storageDomainService(id).get().send()).storageDomain().name();
+        return admin.getConnection().systemService().storageDomainsService().storageDomainService(id).get().send().storageDomain().name();
     }
 
     @Override
@@ -141,7 +137,7 @@ public class DomainServiceImpl implements ItDomainService {
                 domainVmVo = new DomainVmVo();
 
                 domainVmVo.setVmName(vm.name());
-                domainVmVo.setTemplateName(ovirt.getName("template", vm.template().id()));
+                domainVmVo.setTemplateName(getName(vm.template().id()));
                 domainVmVo.setVmDate(sdf.format(vm.creationTime()));
 
 
@@ -205,7 +201,7 @@ public class DomainServiceImpl implements ItDomainService {
             // 공유가능
             // 할당정책
             // 스토리지 도메인
-            diskVo.setStorageDomainName(disk.storageDomainPresent() ? ovirt.getName("domain", disk.storageDomain().id()) : null);
+            diskVo.setStorageDomainName(disk.storageDomainPresent() ? getName(disk.storageDomain().id()) : null);
             // 생성 일자
             // 최근 업데이트
             // 가상머신

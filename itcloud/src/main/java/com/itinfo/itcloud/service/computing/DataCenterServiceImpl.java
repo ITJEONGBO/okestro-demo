@@ -6,7 +6,6 @@ import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.create.DataCenterCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
-import com.itinfo.itcloud.ovirt.OvirtService;
 import com.itinfo.itcloud.service.ItDataCenterService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.DataCenterBuilder;
@@ -19,20 +18,17 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class DataCenterServiceImpl implements ItDataCenterService {
     @Autowired private AdminConnectionService admin;
-    @Autowired private OvirtService ovirt;
 
     @Override
     public String getName(String id){
-        return ovirt.getName("datacenter", id);
+        return admin.getConnection().systemService().dataCentersService().dataCenterService(id).get().send().dataCenter().name();
     }
-
 
     // 데이터센터 리스트 불러오기
     @Override
