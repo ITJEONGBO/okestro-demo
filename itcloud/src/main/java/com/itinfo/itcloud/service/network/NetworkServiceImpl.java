@@ -378,12 +378,12 @@ public class NetworkServiceImpl implements ItNetworkService {
     }
 
 
+    // network 생성 시 필요한 dc와 클러스터 정보 가져오기
     @Override
     public List<NetworkDcClusterVo> getDcCluster() {
         SystemService systemService = admin.getConnection().systemService();
 
         List<DataCenter> dataCenterList = systemService.dataCentersService().list().send().dataCenters();
-
 
         List<NetworkDcClusterVo> dcClusterVoList = new ArrayList<>();
         NetworkDcClusterVo dcvo = null;
@@ -391,8 +391,6 @@ public class NetworkServiceImpl implements ItNetworkService {
         for(DataCenter dataCenter : dataCenterList){
             List<Cluster> clusterList = systemService.dataCentersService().dataCenterService(dataCenter.id()).clustersService().list().send().clusters();
             List<ClusterVo> clusterVoList = new ArrayList<>();
-
-            System.out.println(clusterList.stream().filter(Identified::idPresent).map(Cluster::name).collect(Collectors.toList()));
 
             for (Cluster cluster : clusterList) {
                 clusterVoList.add(
@@ -426,17 +424,12 @@ public class NetworkServiceImpl implements ItNetworkService {
         NetworksService networksService = systemService.networksService();
         DataCenter dataCenter = systemService.dataCentersService().dataCenterService(ncVo.getDatacenterId()).get().send().dataCenter();
         OpenStackNetworkProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
+        List<Cluster> clusterList = systemService.dataCentersService().dataCenterService(ncVo.getDatacenterId()).clustersService().list().send().clusters();
 
         List<String> dnsList = ncVo.getDns().stream()
                 .distinct()
                 .map(NetworkDnsVo::getDnsIp)
                 .collect(Collectors.toList());
-
-        if(!dnsList.isEmpty()){
-            dnsList.stream()
-                    .distinct()
-                    .forEach(System.out::println);
-        }
 
         try {
             NetworkBuilder networkBuilder = new NetworkBuilder();
@@ -447,37 +440,34 @@ public class NetworkServiceImpl implements ItNetworkService {
                     .portIsolation(ncVo.getPortIsolation())
                     .usages(ncVo.getUsageVm() ? NetworkUsage.VM : NetworkUsage.DEFAULT_ROUTE)
                     .mtu(ncVo.getMtu())
-                    // TODO DNS 생성 오류, 이슈남기기
-                    .dnsResolverConfiguration(
-                            ncVo.getDns() != null ?
-                                    new DnsResolverConfigurationBuilder().nameServers(dnsList) : null
+                    .dnsResolverConfiguration(      // TODO DNS 생성 오류, 이슈남기기
+                            ncVo.getDns() != null ?new DnsResolverConfigurationBuilder().nameServers(dnsList) : null
                     )
                     .stp(ncVo.getStp())
                     .vlan(ncVo.getVlan() != null ? new VlanBuilder().id(ncVo.getVlan()) : null)
                     // TODO 외부 공급자 설정할 때 물리적 네트워크에 연결하는 거 필요, 외부 공급자 설정 시 클러스터에서 모두 필요 항목은 사라져야됨 (프론트에서 아예 설정이 안되게?)
                     .externalProvider(ncVo.getExternalProvider() ? openStackNetworkProvider : null)
                     .dataCenter(dataCenter);
+//                    .build();
 
             Network network = networksService.add().network(networkBuilder).send().network();
 
 
-            // TODO: vnicprofile도 문제 있음, 기본생성이 사라지지 않음
-            ncVo.getVnics()
-                    .forEach(vnicProfileVo -> {
-                        AssignedVnicProfilesService aVnicsService = systemService.networksService().networkService(network.id()).vnicProfilesService();
-                        aVnicsService.add().profile(new VnicProfileBuilder().name(vnicProfileVo.getName()).build()).send().profile();
-                    });
-
+            // TODO: vnicprofile도 문제 있음, 되기는 한데 기본생성이 사라지지 않음
+            ncVo.getVnics().forEach(vnicProfileVo -> {
+                AssignedVnicProfilesService aVnicsService = systemService.networksService().networkService(network.id()).vnicProfilesService();
+                aVnicsService.add().profile(new VnicProfileBuilder().name(vnicProfileVo.getName()).build()).send().profile();
+                });
 
             // 클러스터 모두연결이 선택되어야지만 모두 필요가 선택됨
             ncVo.getClusterVoList().stream()
-                    .filter(NetworkClusterVo::isConnected) // 연결된 경우만 필터링
-                    .forEach(networkClusterVo -> {
-                        ClusterNetworksService clusterNetworksService = systemService.clustersService().clusterService(networkClusterVo.getId()).networksService();
-                        clusterNetworksService.add()
-                                .network(new NetworkBuilder().id(network.id()).required(networkClusterVo.isRequired()))
-                                .send().network();
-                    });
+                .filter(NetworkClusterVo::isConnected) // 연결된 경우만 필터링
+                .forEach(networkClusterVo -> {
+                    ClusterNetworksService clusterNetworksService = systemService.clustersService().clusterService(networkClusterVo.getId()).networksService();
+                    clusterNetworksService.add()
+                            .network(new NetworkBuilder().id(network.id()).required(networkClusterVo.isRequired()))
+                            .send().network();
+                });
 
             // 외부 공급자 처리시 레이블 생성 안됨
             if (ncVo.getLabel() != null && !ncVo.getLabel().isEmpty()) {
@@ -490,7 +480,6 @@ public class NetworkServiceImpl implements ItNetworkService {
             return CommonVo.successResponse();
         }catch (Exception e){
             log.error("error, ", e);
-            e.printStackTrace();
             return CommonVo.failResponse(e.getMessage());
         }
     }
@@ -563,6 +552,53 @@ public class NetworkServiceImpl implements ItNetworkService {
     }
 
 
+    // 가져오기 출력 창
+    @Override
+    public NetworkImportVo viewImportNetwork() {
+        SystemService systemService = admin.getConnection().systemService();
+
+        // 그냥 있는거 가져오기
+        OpenStackNetworkProvider osProvider = systemService.openstackNetworkProvidersService().list().follow("networks").send().providers().get(0);
+
+        List<Network> ntList = systemService.networksService().list().send().networks();
+        List<DataCenter> dcList = systemService.dataCentersService().list().send().dataCenters();
+//        DataCenter dc = systemService.dataCentersService().dataCenterService(id).get().send().dataCenter();
+
+        List<OpenstackVo> osVoList = osProvider.networks().stream()
+                .map(os -> OpenstackVo.builder()
+                        .id(os.id())
+                        .name(os.name())
+//                        .dcId()
+                        .build()
+                )
+                .collect(Collectors.toList());
+
+        List<DataCenterVo> dcVoList = dcList.stream()
+                .map(dc -> DataCenterVo.builder()
+                        .id(dc.id())
+                        .name(dc.name())
+                        .build()
+                )
+                .collect(Collectors.toList());
+
+        return NetworkImportVo.builder()
+                .id(osProvider.id())
+                .name(osProvider.name())
+                .osVoList(osVoList)
+                .dcVoList(dcVoList)
+                .build();
+    }
+
+    // 네트워크 - 가져오기 출력창 (openStack)
+    @Override
+    public CommonVo<Boolean> importNetwork() {
+        SystemService systemService = admin.getConnection().systemService();
+
+        // 그냥 있는거 가져오기
+        OpenStackNetworkProvider osProvider = systemService.openstackNetworkProvidersService().list().follow("networks").send().providers().get(0);
+
+        return null;
+    }
 
     @Override
     public CommonVo<Boolean> addVnic(VnicProfileVo vpVo) {
@@ -570,6 +606,8 @@ public class NetworkServiceImpl implements ItNetworkService {
 
         DataCenter dataCenter = systemService.dataCentersService().dataCenterService(vpVo.getDatacenterId()).get().send().dataCenter();
         NetworkService networkService = systemService.networksService().networkService(vpVo.getNetworkId());
+
+
 
         return null;
     }

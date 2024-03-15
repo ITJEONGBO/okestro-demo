@@ -27,6 +27,10 @@ public interface ItNetworkService {
     CommonVo<Boolean> editNetwork(NetworkCreateVo ncVo);
     CommonVo<Boolean> deleteNetwork(String id);
 
+    NetworkImportVo viewImportNetwork();
+    CommonVo<Boolean> importNetwork();
+
+
     // vnic profile
     CommonVo<Boolean> addVnic(VnicProfileVo vpVo);
     CommonVo<Boolean> editVnic(VnicProfileVo vpVo);

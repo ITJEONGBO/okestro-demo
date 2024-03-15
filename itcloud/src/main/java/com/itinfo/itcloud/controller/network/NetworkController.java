@@ -142,21 +142,7 @@ public class NetworkController {
 		model.addAttribute("dc", ndcList);
 		return "/network/network-add";
 	}
-//
-//	@PostMapping("/network-add2")
-//	public String add2(Model model, @ModelAttribute NetworkCreateVo nVo){
-//		CommonVo<Boolean> addNw = itNetworkService.addNetwork(nVo);
-//
-//		if(addNw.getBody().getContent().equals(true)){
-//			model.addAttribute("result", "네트워크 생성 완료");
-//		}else{
-//			model.addAttribute("result", "네트워크 생성 실패");
-//		}
-//		model.addAttribute("message", addNw.getHead().getMessage());
-//		model.addAttribute("body", addNw.getBody().getContent());
-//
-//		return "/network/network-add2";
-//	}
+
 
 	@PostMapping("/network-add")
 	public CommonVo<Boolean> addNw(@RequestBody NetworkCreateVo nVo){
@@ -172,6 +158,17 @@ public class NetworkController {
 	}
 
 
+
+	@GetMapping("/network-importView")
+	@ResponseBody
+	public NetworkImportVo viewImportNetwork(){
+		return itNetworkService.viewImportNetwork();
+	}
+
+	@PostMapping("/network-import")
+	public CommonVo<Boolean> importNw(){
+		return itNetworkService.importNetwork();
+	}
 
 
 	// end region
