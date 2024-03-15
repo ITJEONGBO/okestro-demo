@@ -30,18 +30,12 @@ public class DataCenterController {
 
 	@GetMapping("/datacenters")
 	public String datacenters(Model model) {
-		long start = System.currentTimeMillis();
-
 		List<DataCenterVo> dataCenterVOList = itDataCenterService.getList();
 		model.addAttribute("datacenters", dataCenterVOList);
 
 		MenuVo m = menu.getMenu();
 		model.addAttribute("m", m);
 
-		long end = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
-		System.out.println("datacenters controller 수행시간(ms): " + (end-start));
-
-		log.info("datacenterList");
 		return "computing/datacenters";
 	}
 
@@ -61,10 +55,7 @@ public class DataCenterController {
 	// endregion
 
 
-
-	// region: set Datacenter
-
-	// 데이터센터 생성 창출력
+	// 데이터센터 생성 출력
 	@GetMapping("/datacenter-add")
 	public String add() {
 		return "computing/datacenter-add";
@@ -87,7 +78,7 @@ public class DataCenterController {
 	}
 
 
-	// 데이터센터 수정 창출력
+	// 데이터센터 수정 출력
 	@GetMapping("/datacenter-edit")
 	public String edit(Model model, String id) {
 		DataCenterCreateVo dcVo = itDataCenterService.getDatacenter(id);
@@ -136,11 +127,10 @@ public class DataCenterController {
 		return "computing/datacenter-delete2";
 	}
 
-	// endregion
-
 
 
 	//region: @ResponseBody
+
 	@GetMapping("/datacentersStatus")
 	@ResponseBody
 	public List<DataCenterVo> datacenters() {
@@ -148,13 +138,13 @@ public class DataCenterController {
 		return itDataCenterService.getList();
 	}
 
-
 	@GetMapping("/datacenter/eventStatus")
 	@ResponseBody
 	public List<EventVo> event(String id) {
 		log.info("----- event 목록 불러오기: " + id);
 		return itDataCenterService.getEvent(id);
 	}
+
 	//endregion
 
 
