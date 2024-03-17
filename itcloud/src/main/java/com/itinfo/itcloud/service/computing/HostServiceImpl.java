@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -30,44 +31,40 @@ public class HostServiceImpl implements ItHostService {
         return admin.getConnection().systemService().hostsService().hostService(id).get().send().host().name();
     }
 
+
+    // 호스트 목록
     @Override
     public List<HostVo> getList() {
         SystemService systemService = admin.getConnection().systemService();
 
         // allContent를 포함해야 hosted Engine의 정보가 나온다
         List<Host> hostList = systemService.hostsService().list().allContent(true).send().hosts();
-        List<HostVo> hostVoList = new ArrayList<>();
-        HostVo hostVo = null;
+        List<Vm> vmList = systemService.vmsService().list().send().vms();
 
-        for(Host host : hostList){
-            Cluster cluster = systemService.clustersService().clusterService(host.cluster().id()).get().send().cluster();
-            DataCenter dataCenter = systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter();
-            List<Vm> vmList = systemService.vmsService().list().send().vms();
+        return hostList.stream()
+                .map(host -> {
+                        Cluster cluster = systemService.clustersService().clusterService(host.cluster().id()).get().send().cluster();
+                        DataCenter dataCenter = systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter();
 
-            int vmsCnt = 0;
-            for(Vm vm : vmList){
-                if(vm.host() != null && vm.host().id().equals(host.id())){
-                    vmsCnt++;
-                }
-            }
-
-            hostVo = HostVo.builder()
-                    .id(host.id())
-                    .name(host.name())
-                    .comment(host.comment())
-                    .status(host.status().value())
-                    .address(host.address())
-                    .clusterId(host.cluster().id())
-                    .clusterName(cluster.name())
-                    .datacenterId(cluster.dataCenter().id())
-                    .datacenterName(dataCenter.name())
-                    .hostedEngine(host.hostedEnginePresent() ? host.hostedEngine().active() : null)
-                    .vmCnt(vmsCnt)
-                    .build();
-
-            hostVoList.add(hostVo);
-        }
-        return hostVoList;
+                        return HostVo.builder()
+                                    .id(host.id())
+                                    .name(host.name())
+                                    .comment(host.comment())
+                                    .status(host.status().value())
+                                    .address(host.address())
+                                    .clusterId(host.cluster().id())
+                                    .clusterName(cluster.name())
+                                    .datacenterId(cluster.dataCenter().id())
+                                    .datacenterName(dataCenter.name())
+                                    .hostedEngine(host.hostedEnginePresent() ? host.hostedEngine().active() : null)
+                                    .vmCnt(
+                                            (int) vmList.stream()
+                                            .filter(vm -> vm.host() != null && vm.host().id().equals(host.id()))
+                                            .count()
+                                    )
+                                .build();
+                })
+                .collect(Collectors.toList());
     }
 
 
@@ -75,122 +72,58 @@ public class HostServiceImpl implements ItHostService {
     public HostVo getInfo(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
-        // allContent를 포함해야 hosted Engine의 정보가 나온다
         Host host = systemService.hostsService().hostService(id).get().allContent(true).send().host();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
+        // 온라인 논리 CPU 코어수 - HostCpuUnit 이 없음 인식안됨
+        // https://192.168.0.70/ovirt-engine/api/hosts/3bbd27b9-13d8-4fff-ad29-c0350994ca88/cpuunits,numanodes
         List<HostCpuUnit> hcuList = systemService.hostsService().hostService(id).cpuUnitsService().list().send().cpuUnits();
-        // cpu 있으면 출력으로 바꿔야됨
-        int cpu = host.cpu().topology().coresAsInteger()
-                * host.cpu().topology().socketsAsInteger()
-                * host.cpu().topology().threadsAsInteger();
-
-        // 온라인 논리 CPU 코어수
-        // HostCpuUnit 이 없음 인식안됨
-        // https://192.168.0.70/ovirt-engine/api/hosts/3bbd27b9-13d8-4fff-ad29-c0350994ca88/cpuunits
-        // https://192.168.0.70/ovirt-engine/api/hosts/3bbd27b9-13d8-4fff-ad29-c0350994ca88/numanodes
-        List<Integer> online = new ArrayList<>();
-        for(HostCpuUnit hcu : hcuList) {
-            online.add(hcu.cpuIdAsInteger());
-        }
-
-        BigInteger memory = BigInteger.ZERO;
-        BigInteger memoryUsed = BigInteger.ZERO;
-        BigInteger memoryFree = BigInteger.ZERO;
-        BigInteger swapTotal = BigInteger.ZERO;
-        BigInteger swapUsed = BigInteger.ZERO;
-        BigInteger swapFree = BigInteger.ZERO;
-        String bootingTime = "";
-        int hugePage2048Free = 0;
-        int hugePage2048Total = 0;
-        int hugePage1048576Free = 0;
-        int hugePage1048576Total = 0;
-
         List<Statistic> statisticList = systemService.hostsService().hostService(id).statisticsService().list().send().statistics();
-        for(Statistic statistic : statisticList){
-            // 물리메모리
-            if(statistic.name().equals("memory.total")){
-                memory = statistic.values().get(0).datum().toBigInteger();
-            }
-            if(statistic.name().equals("memory.used")){
-                memoryUsed = statistic.values().get(0).datum().toBigInteger();
-            }
-            if(statistic.name().equals("memory.free")){
-                memoryFree = statistic.values().get(0).datum().toBigInteger();
-            }
-
-            // 공유메모리 / keep
-//            if(statistic.name().equals("memory.shared")){
-//                memoryShared = statistic.values().get(0).datum().toBigInteger();
-//            }
-
-            // swap 크기
-            if(statistic.name().equals("swap.total")){
-                swapTotal = statistic.values().get(0).datum().toBigInteger();
-            }
-            if(statistic.name().equals("swap.used")){
-                swapUsed = statistic.values().get(0).datum().toBigInteger();
-            }
-            if(statistic.name().equals("swap.free")){
-                swapFree = statistic.values().get(0).datum().toBigInteger();
-            }
-
-            // Huge pages(size:free/total)
-            if(statistic.name().equals("hugepages.2048.free")){
-                hugePage2048Free = statistic.values().get(0).datum().intValue();
-            }
-            if(statistic.name().equals("hugepages.2048.total")){
-                hugePage2048Total = statistic.values().get(0).datum().intValue();
-            }
-
-            if(statistic.name().equals("hugepages.1048576.free")){
-                hugePage1048576Free = statistic.values().get(0).datum().intValue();
-            }
-            if(statistic.name().equals("hugepages.1048576.total")){
-                hugePage1048576Total = statistic.values().get(0).datum().intValue();
-            }
-
-            // 부팅시간
-            if(statistic.name().equals("boot.time")){
-                long b = statistic.values().get(0).datum().longValue() * 1000;
-                Date now = new Date(b);
-                bootingTime = sdf.format(now);
-            }
-        }
-
-        // 가상머신 수
         List<Vm> vmList = systemService.vmsService().list().send().vms();
-        int vmsUpCnt = 0;
-        for(Vm vm : vmList){
-            if(vm.host()!= null && vm.host().id().equals(host.id()) && vm.status().value().equals("up")){
-                vmsUpCnt++;
-            }
-        }
 
+        long bootTime = statisticList.stream()
+                                .filter(statistic -> statistic.name().equals("boot.time"))
+                                .map(statistic -> statistic.values().get(0).datum().longValue() * 1000)
+                                .findAny()
+                                .orElse(0L);
 
         return HostVo.builder()
                 .id(id)
                 .name(host.name())
                 .address(host.address())        //호스트 ip
                 .spmPriority(host.spm().priorityAsInteger())    // spm 우선순위
-                .cpuCnt(cpu)
-                .cpuOnline(online)
-                .vmUpCnt(vmsUpCnt)
+                // cpu 있으면 출력으로 바꿔야됨
+                .cpuCnt(
+                        host.cpu().topology().coresAsInteger()
+                                * host.cpu().topology().socketsAsInteger()
+                                * host.cpu().topology().threadsAsInteger()
+                )
+                .cpuOnline(
+                        hcuList.stream()
+                                .map(HostCpuUnit::cpuIdAsInteger)
+                                .collect(Collectors.toList())
+                )
+                .vmUpCnt(
+                        (int) vmList.stream()
+                                .filter(vm -> vm.host()!= null && vm.host().id().equals(host.id()) && vm.status().value().equals("up"))
+                                .count()
+                )
                 .iscsi(host.iscsiPresent() ? host.iscsi().initiator() : null)   // iscsi 게시자 이름
                 .kdump(host.kdumpStatus().value())      // kdump intergration status
                 .devicePassThrough(host.devicePassthrough().enabled())  // 장치통과
                 .memoryMax(host.maxSchedulingMemory())    // 최대 여유 메모리.
-                .memory(memory)
-                .memoryFree(memoryFree)
-                .memoryUsed(memoryUsed)
-                .swapTotal(swapTotal)
-                .swapFree(swapFree)
-                .swapUsed(swapUsed)
-                .hugePage2048Total(hugePage2048Total)
-                .hugePage2048Free(hugePage2048Free)
-                .hugePage1048576Total(hugePage1048576Total)
-                .hugePage1048576Free(hugePage1048576Free)
-                .bootingTime(bootingTime)
+                .memory(getStatistic(statisticList, "memory.total"))
+                .memoryFree(getStatistic(statisticList, "memory.free"))
+                .memoryUsed(getStatistic(statisticList, "memory.used"))
+                .memoryShared(getStatistic(statisticList, "memory.shared")) // 문제잇음
+                .swapTotal(getStatistic(statisticList, "swap.total"))
+                .swapFree(getStatistic(statisticList, "swap.free"))
+                .swapUsed(getStatistic(statisticList, "swap.used"))
+                .hugePage2048Total(getPage(statisticList, "hugepages.2048.total"))
+                .hugePage2048Free(getPage(statisticList, "hugepages.2048.free"))
+                .hugePage1048576Total(getPage(statisticList, "hugepages.1048576.total"))
+                .hugePage1048576Free(getPage(statisticList, "hugepages.1048576.free"))
+                .bootingTime(sdf.format(new Date(bootTime)))
                 .hostedEngine(host.hostedEnginePresent() && host.hostedEngine().active())       // Hosted Engine HA
                 .hostedActive(host.hostedEnginePresent() ? host.hostedEngine().active() : null)
                 .hostedScore(host.hostedEnginePresent() ? host.hostedEngine().scoreAsInteger() : 0)
@@ -200,77 +133,90 @@ public class HostServiceImpl implements ItHostService {
                 // 클러스터 호환버전
                 .hostHwVo(getHardWare(systemService, id))
                 .hostSwVo(getSoftWare(systemService, id))
-                .build();
+            .build();
     }
+
 
     @Override
     public List<VmVo> getVm(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
         List<Vm> vmList = systemService.vmsService().list().send().vms();
-        List<VmVo> vmVoList = new ArrayList<>();
-        VmVo vmVo = null;
 
-        Date now = new Date(System.currentTimeMillis());
-
-        for (Vm vm : vmList) {
-            Cluster cluster = systemService.clustersService().clusterService(vm.cluster().id()).get().send().cluster();
-
-            if (vm.hostPresent() && vm.host().id().equals(id)) {
-                List<Statistic> statisticList = systemService.vmsService().vmService(vm.id()).statisticsService().list().send().statistics();
-                String upTime = null;
-                for(Statistic statistic : statisticList) {
-                    long hour = 0;
-                    if (statistic.name().equals("elapsed.time")) {
-                        hour = statistic.values().get(0).datum().longValue() / (60*60);      // 시간
-
-                        if(hour > 24){
-                            upTime = hour/24 + "일";
-                        }else if( hour > 1 && hour < 24){
-                            upTime = hour + "시간";
-                        }else {
-                            upTime = (statistic.values().get(0).datum().longValue() / 60) + "분";
-                        }
+        return vmList.stream()
+                .map(vm -> {
+                    Cluster cluster = systemService.clustersService().clusterService(vm.cluster().id()).get().send().cluster();
+                    VmVo vmVo = null;
+                    if (vm.hostPresent() && vm.host().id().equals(id)) {
+                        vmVo = VmVo.builder()
+                                .hostName(getName(id))
+                                .id(vm.id())
+                                .name(vm.name())
+                                .clusterName(cluster.name())
+                                .status(vm.statusPresent() ? vm.status().value() : null)
+                                .fqdn(vm.fqdn())
+                                .upTime(getUptime(systemService, vm.id()))
+                                .ipv4(getIp(systemService, vm.id(), "v4"))
+                                .ipv6(getIp(systemService, vm.id(), "v6"))
+                                .build();
+                    }else if(vm.placementPolicy().hostsPresent() && vm.placementPolicy().hosts().get(0).id().equals(id)){
+                        vmVo = VmVo.builder()
+                                .id(vm.id())
+                                .name(vm.name())
+                                .status(vm.statusPresent() ? vm.status().value() : null)
+                                .clusterName(cluster.name())
+                                .build();
                     }
-                }
+                    return vmVo;
+                })
+                .collect(Collectors.toList());
+    }
 
-                // ipv4, ipv6
-                List<Nic> nicList = systemService.vmsService().vmService(vm.id()).nicsService().list().send().nics();
-                String ipv4 = null;
-                String ipv6 = null;
-                for (Nic nic : nicList) {
-                    List<ReportedDevice> reportedDeviceList = systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
-                    for (ReportedDevice r : reportedDeviceList) {
-                        ipv4 = !vm.status().value().equals("down") ? r.ips().get(0).address() : null;
-                        ipv6 = !vm.status().value().equals("down") ? r.ips().get(1).address() : null;
-                    }
-                }
+    private String getUptime(SystemService systemService, String id){
+        List<Statistic> statisticList = systemService.vmsService().vmService(id).statisticsService().list().send().statistics();
 
-                vmVo = VmVo.builder()
-                        .hostName(getName(id))
-                        .id(vm.id())
-                        .name(vm.name())
-                        .clusterName(cluster.name())
-                        .status(vm.status().value())
-                        .fqdn(vm.fqdn())
-                        .upTime(upTime)
-                        .ipv4(ipv4)
-                        .ipv6(ipv6)
-                        .build();
+        long hour = statisticList.stream()
+                .filter(statistic -> statistic.name().equals("elapsed.time"))
+                .mapToLong(statistic -> statistic.values().get(0).datum().longValue() / (60 * 60))
+                .findFirst()
+                .orElse(0);
 
-                vmVoList.add(vmVo);
-            } else if(vm.placementPolicy().hostsPresent() && vm.placementPolicy().hosts().get(0).id().equals(id)){
-                // vm이 down 상태일 경우
-                vmVo = VmVo.builder()
-                        .id(vm.id())
-                        .name(vm.name())
-                        .status(vm.status().value())
-                        .clusterName(cluster.name())
-                        .build();
-                vmVoList.add(vmVo);
+        String upTime;
+        if (hour > 24) {
+            upTime = hour / 24 + "일";
+        } else if (hour > 1 && hour < 24) {
+            upTime = hour + "시간";
+        } else {
+            upTime = (hour / 60) + "분";
+        }
+
+        return upTime;
+    }
+    // ip 주소
+    private String getIp(SystemService systemService, String id, String version){
+        List<Nic> nicList = systemService.vmsService().vmService(id).nicsService().list().send().nics();
+        Vm vm = systemService.vmsService().vmService(id).get().send().vm();
+
+        String ip = null;
+
+        for (Nic nic : nicList){
+            List<ReportedDevice> reportedDeviceList = systemService.vmsService().vmService(id).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
+
+            if("v4".equals(version)) {
+                ip = reportedDeviceList.stream()
+                        .filter(r -> !vm.status().value().equals("down"))
+                        .map(r -> r.ips().get(0).address())
+                        .findFirst()
+                        .orElse(null);
+            }else {
+                ip = reportedDeviceList.stream()
+                        .filter(r -> !vm.status().value().equals("down"))
+                        .map(r -> r.ips().get(1).address())
+                        .findFirst()
+                        .orElse(null);
             }
         }
-        return vmVoList;
+        return ip;
     }
 
 
@@ -773,5 +719,25 @@ public class HostServiceImpl implements ItHostService {
                 // Nmstate 버전
                 .build();
     }
+
+
+    // static의 메모리와 swap을 알아낸다
+    private BigInteger getStatistic(List<Statistic> statisticList, String q){
+        return statisticList.stream()
+                .filter(statistic -> statistic.name().equals(q))
+                .map(statistic -> statistic.values().get(0).datum().toBigInteger())
+                .findAny()
+                .orElse(BigInteger.ZERO);
+    }
+
+    // hugepage
+    private int getPage(List<Statistic> statisticList, String q) {
+        return statisticList.stream()
+                .filter(statistic -> statistic.name().equals(q))
+                .map(statistic -> statistic.values().get(0).datum().intValue())
+                .findAny()
+                .orElse(0);
+    }
+
 
 }

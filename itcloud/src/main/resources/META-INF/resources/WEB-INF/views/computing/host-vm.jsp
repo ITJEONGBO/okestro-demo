@@ -46,7 +46,7 @@
                         </c:if>
                         <c:forEach var="vm" items="${vm}" varStatus="status">
                             <tr>
-                                <td>${vm.status == "up" ? "▲" : "▽"}</td>
+                                <td>${vm.status}</td>
                                 <td><a href="/computing/vm?id=${vm.id}" style="text-decoration-line: none">${vm.name}</a></td>
                                 <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                 <td>${vm.clusterName}</td>

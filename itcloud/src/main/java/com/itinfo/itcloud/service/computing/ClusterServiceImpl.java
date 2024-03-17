@@ -166,7 +166,7 @@ public class ClusterServiceImpl implements ItClusterService {
                         .status(vm.status().value())
                         .id(vm.id())
                         .name(vm.name())
-                        .upTime(getStatistic(systemService, vm.id()))
+                        .upTime(getUptime(systemService, vm.id()))
                         .ipv4(getIp(systemService, vm.id(), "v4"))
                         .ipv6(getIp(systemService, vm.id(), "v6"))
                     .build()
@@ -842,7 +842,7 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
     // 가동시간, 업타임
-    private String getStatistic(SystemService systemService, String id){
+    private String getUptime(SystemService systemService, String id){
         List<Statistic> statisticList = systemService.vmsService().vmService(id).statisticsService().list().send().statistics();
 
         long hour = statisticList.stream()
