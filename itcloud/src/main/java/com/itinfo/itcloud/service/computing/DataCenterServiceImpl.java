@@ -30,16 +30,18 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         return admin.getConnection().systemService().dataCentersService().dataCenterService(id).get().send().dataCenter().name();
     }
 
-    // region: 단순 출력
 
     // 데이터센터 리스트 불러오기
     @Override
     public List<DataCenterVo> getList(){
         SystemService systemService = admin.getConnection().systemService();
+
         List<DataCenter> dataCenterList = systemService.dataCentersService().list().send().dataCenters();
 
+        log.info("데이터 센터 리스트 출력");
         return dataCenterList.stream()
-                .map(dataCenter -> DataCenterVo.builder()
+                .map(dataCenter ->
+                    DataCenterVo.builder()
                         .id(dataCenter.id())
                         .name(dataCenter.name())
                         .description(dataCenter.description())
@@ -48,7 +50,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                         .quotaMode(TypeExtKt.findQuota(dataCenter.quotaMode()))
                         .version(dataCenter.version().major() + "." + dataCenter.version().minor())
                         .comment(dataCenter.comment())
-                        .build()
+                    .build()
                 )
                 .collect(Collectors.toList());
     }
@@ -57,13 +59,15 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     @Override
     public List<EventVo> getEvent(String id) {
         SystemService systemService = admin.getConnection().systemService();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
         List<Event> eventList = systemService.eventsService().list().send().events();
 
+        log.info("데이터센터 {} 이벤트 출력", getName(id));
         return eventList.stream()
                 .filter(Event::dataCenterPresent)
-                .map(event -> EventVo.builder()
+                .map(event ->
+                    EventVo.builder()
                         .datacenterName(getName(id))
                         .severity(TypeExtKt.findLogSeverity(event.severity()))   //상태
                         .time(sdf.format(event.time()))
@@ -83,24 +87,19 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
         // 데이터센터 현재 설정되어있는 값 출력
         DataCenter dataCenter = systemService.dataCentersService().dataCenterService(id).get().send().dataCenter();
+
+        log.info("데이터센터 {} 편집창 출력", getName(id));
         return DataCenterCreateVo.builder()
-                .id(id)
-                .name(dataCenter.name())
-                .description(dataCenter.description())
-                .storageType(dataCenter.local())
-                .quotaMode(dataCenter.quotaMode())
-                .version(dataCenter.version().major() + "." + dataCenter.version().minor())
-                .comment(dataCenter.comment())
+                    .id(id)
+                    .name(dataCenter.name())
+                    .description(dataCenter.description())
+                    .storageType(dataCenter.local())
+                    .quotaMode(dataCenter.quotaMode())
+                    .version(dataCenter.version().major() + "." + dataCenter.version().minor())
+                    .comment(dataCenter.comment())
                 .build();
     }
 
-
-    // endregion
-
-
-
-
-    // region: 기능
 
     // 데이터센터 생성
     @Override
@@ -109,12 +108,12 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
         DataCentersService datacentersService = systemService.dataCentersService();     // datacenters 서비스 불러오기
 
-        // 같은 이름이 있는지 확인하는 코드
+        // 중복 확인 코드
         boolean dcName = datacentersService.list().search("name="+dcVo.getName()).send().dataCenters().isEmpty();
         String[] ver = dcVo.getVersion().split("\\.");      // 버전값 분리
 
         try {
-            if(dcName) {    // 데이터센터 중복 이름은 생성 불가
+            if(dcName) {
                 DataCenter dataCenter = new DataCenterBuilder()
                         .name(dcVo.getName())       // 이름
                         .description(dcVo.getDescription())     // 설명
@@ -129,13 +128,14 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
                 datacentersService.add().dataCenter(dataCenter).send();     // 데이터센터 만든거 추가
 
-                log.info("성공: 데이터센터 생성");
+                log.info("성공: 데이터센터 생성 {}", getName(dataCenter.id()));
                 return CommonVo.successResponse();
             }else {
-                log.error("데이터센터 이름 중복 에러");
-                return CommonVo.failResponse("데이터센터 이름 중복 에러");
+                log.error("실패: 데이터센터 생성 이름 중복");
+                return CommonVo.failResponse("실패: 데이터센터 이름 중복");
             }
         }catch (Exception e){
+            log.error("실패: 데이터센터 생성 ", e);
             return CommonVo.failResponse(e.getMessage());
         }
     }
@@ -146,9 +146,8 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     public CommonVo<Boolean> editDatacenter(DataCenterCreateVo dcVo) {
         SystemService systemService = admin.getConnection().systemService();
 
-        DataCentersService datacentersService = systemService.dataCentersService();
+//        DataCentersService datacentersService = systemService.dataCentersService();
         DataCenterService dataCenterService = systemService.dataCentersService().dataCenterService(dcVo.getId());
-        DataCenter dataCenter = null;
 
         // 중복이름인데 기존에 존재하는게 내꺼일 경우에는 문제가 생길 수 잇음
 //        boolean dcName = datacentersService.list().search("name="+dcVo.getName()).send().dataCenters().isEmpty();
@@ -156,17 +155,17 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
         try {
 //            if (dcName) {
-                dataCenter = new DataCenterBuilder()
-                        .name(dcVo.getName())       // 이름
-                        .description(dcVo.getDescription())     // 설명
-                        .local(dcVo.isStorageType())    // 스토리지 유형
-                        .version(new VersionBuilder()
-                                .major(Integer.parseInt(ver[0]))
-                                .minor(Integer.parseInt(ver[1]))
-                            .build())  // 호환 버전
-                        .quotaMode(dcVo.getQuotaMode())      // 쿼터 모드
-                        .comment(dcVo.getComment())     // 코멘트
-                        .build();
+            DataCenter dataCenter = new DataCenterBuilder()
+                    .name(dcVo.getName())       // 이름
+                    .description(dcVo.getDescription())     // 설명
+                    .local(dcVo.isStorageType())    // 스토리지 유형
+                    .version(new VersionBuilder()
+                            .major(Integer.parseInt(ver[0]))
+                            .minor(Integer.parseInt(ver[1]))
+                        .build())  // 호환 버전
+                    .quotaMode(dcVo.getQuotaMode())      // 쿼터 모드
+                    .comment(dcVo.getComment())     // 코멘트
+                .build();
 
                 dataCenterService.update().dataCenter(dataCenter).send();   // 데이터센터 수정
 
@@ -193,16 +192,13 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         try {
             dataCenterService.remove().force(true).send();
 
-            log.info("datacenter {} 삭제", systemService.dataCentersService().dataCenterService(id).get().send().dataCenter().name());
+            log.info("성공: 데이터센터 {} 삭제", getName(id));
             return CommonVo.successResponse();
         }catch (Exception e){
-            log.error("datacenter error");
+            log.error("실패: 데이터센터 삭제 ", e);
             return CommonVo.failResponse(e.getMessage());
         }
     }
-
-    // endregion
-
 
 
 

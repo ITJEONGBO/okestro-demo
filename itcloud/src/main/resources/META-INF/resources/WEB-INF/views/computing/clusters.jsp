@@ -22,7 +22,7 @@
 
 
 	function openAdd() {
-		window.open("cluster-add", "mypopup", "width=550, height=700, top=150, left=50");
+		window.open("cluster/add", "mypopup", "width=550, height=700, top=150, left=50");
 	}
 
 	function openEdit() {
@@ -30,7 +30,7 @@
             alert("클러스터를 선택해주세요");
             return;
         }
-		window.open("cluster-edit?id=" +cId, "mypopup", "width=550, height=700, top=150, left=50");
+		window.open("cluster/edit?id=" +cId, "mypopup", "width=550, height=700, top=150, left=50");
 	}
 
     function openDelete() {
@@ -38,7 +38,7 @@
             alert("클러스터를 선택해주세요");
             return;
         }
-        window.open("cluster-delete?id=" + cId, "mypopup", "width=450, height=200, top=150, left=50");
+        window.open("cluster/delete?id=" + cId, "mypopup", "width=450, height=200, top=150, left=50");
     }
 
 </script>

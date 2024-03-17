@@ -22,12 +22,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/computing")
 public class DataCenterController {
-
 	private final ItDataCenterService itDataCenterService;
 	private final ItMenuService menu;
 
-	// region: get Datacenter
 
+	// 데이터 센터 목록 출력
 	@GetMapping("/datacenters")
 	public String datacenters(Model model) {
 		List<DataCenterVo> dataCenterVOList = itDataCenterService.getList();
@@ -39,7 +38,8 @@ public class DataCenterController {
 		return "computing/datacenters";
 	}
 
-	@GetMapping("/datacenter-event")
+	// 데이터 센터 이벤트 출력
+	@GetMapping("/datacenter/event")
 	public String event(String id, Model model) {
 		List<EventVo> event = itDataCenterService.getEvent(id);
 		model.addAttribute("event", event);
@@ -52,17 +52,15 @@ public class DataCenterController {
 		return "computing/datacenter-event";
 	}
 
-	// endregion
-
 
 	// 데이터센터 생성 출력
-	@GetMapping("/datacenter-add")
+	@GetMapping("/datacenter/add")
 	public String add() {
 		return "computing/datacenter-add";
 	}
 
 	// 데이터센터 생성
-	@PostMapping("/datacenter-add2")
+	@PostMapping("/datacenter/add2")
 	public String add2(Model model, @ModelAttribute DataCenterCreateVo dcVo) {
 		CommonVo<Boolean> result = itDataCenterService.addDatacenter(dcVo);
 
@@ -79,7 +77,7 @@ public class DataCenterController {
 
 
 	// 데이터센터 수정 출력
-	@GetMapping("/datacenter-edit")
+	@GetMapping("/datacenter/edit")
 	public String edit(Model model, String id) {
 		DataCenterCreateVo dcVo = itDataCenterService.getDatacenter(id);
 		model.addAttribute("dc", dcVo);
@@ -87,7 +85,7 @@ public class DataCenterController {
 	}
 
 	// 데이터센터 수정
-	@PostMapping("/datacenter-edit2")
+	@PostMapping("/datacenter/edit2")
 	public String edit2(Model model, @ModelAttribute DataCenterCreateVo dcVo ) {
 		CommonVo<Boolean> result = itDataCenterService.editDatacenter(dcVo);
 
@@ -104,7 +102,7 @@ public class DataCenterController {
 
 
 	// 데이터센터 삭제 창출력
-	@GetMapping("/datacenter-delete")
+	@GetMapping("/datacenter/delete")
 	public String delete(Model model, String id){
 		model.addAttribute("id", id);
 		model.addAttribute("name", itDataCenterService.getName(id));
@@ -112,7 +110,7 @@ public class DataCenterController {
 	}
 
 	// 데이터센터 삭제
-	@PostMapping("/datacenter-delete2")
+	@PostMapping("/datacenter/delete2")
 	public String delete2(Model model, @RequestParam String id){
 		CommonVo<Boolean> result = itDataCenterService.deleteDatacenter(id);
 
@@ -134,14 +132,14 @@ public class DataCenterController {
 	@GetMapping("/datacentersStatus")
 	@ResponseBody
 	public List<DataCenterVo> datacenters() {
-		log.info("-----datacentersStatus");
+		log.info("----- 데이터센터 목록");
 		return itDataCenterService.getList();
 	}
 
-	@GetMapping("/datacenter/eventStatus")
+	@GetMapping("/datacenter-eventStatus")
 	@ResponseBody
 	public List<EventVo> event(String id) {
-		log.info("----- event 목록 불러오기: " + id);
+		log.info("----- 데이터센터 이벤트 : " + id);
 		return itDataCenterService.getEvent(id);
 	}
 

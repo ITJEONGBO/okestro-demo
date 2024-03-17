@@ -150,7 +150,7 @@
     <div style="padding: 1rem;">
         <div>
             <h2>새 클러스터</h2>
-            <form id="add" autocomplete="off" method="post" action="cluster-add2">
+            <form id="add" autocomplete="off" method="post" action="add2">
                 <hr><br>
 
                 <h3>일반</h3>
@@ -309,7 +309,7 @@
                         <td>기본 네트워크 공급자</td>
                         <td>&emsp;
                             <select id="networkProvider" name="networkProvider" >
-                                <option value="false">기본 공급자가 없습니다.</option>
+                                <option value="false" selected>기본 공급자가 없습니다.</option>
                                 <option value="true">ovirt-provider-ovn</option>
                             </select>
                         </td>
