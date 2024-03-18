@@ -75,6 +75,11 @@ public class DataCenterController {
 		return "computing/datacenter-add2";
 	}
 
+	@PostMapping("/datacenter/addDc")
+	public CommonVo<Boolean> addDatacenter(@RequestBody DataCenterCreateVo dcVo){
+		return itDataCenterService.addDatacenter(dcVo);
+	}
+
 
 	// 데이터센터 수정 출력
 	@GetMapping("/datacenter/edit")
@@ -125,7 +130,11 @@ public class DataCenterController {
 		return "computing/datacenter-delete2";
 	}
 
-
+	@GetMapping("/hello")
+	@ResponseBody
+	public String hello(){
+		return "hello";
+	}
 
 	//region: @ResponseBody
 

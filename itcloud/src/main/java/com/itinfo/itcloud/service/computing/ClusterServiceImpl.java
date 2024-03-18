@@ -365,7 +365,7 @@ public class ClusterServiceImpl implements ItClusterService {
 
         List<AffinityLabel> affinityLabelList = systemService.affinityLabelsService().list().send().labels();
 
-        log.info("클러스터 선호도레이블 {}", getName(id));
+        log.info("클러스터 {} 선호도 레이블", getName(id));
         return affinityLabelList.stream()
                 .map(al ->
                     AffinityLabelVo.builder()
@@ -385,7 +385,7 @@ public class ClusterServiceImpl implements ItClusterService {
 
         List<Host> hostList = systemService.hostsService().list().send().hosts();
 
-        log.info("클러스터 선호도레이블 생성시 필요한 호스트 리스트");
+        log.info("클러스터 선호도 레이블 생성시 필요한 호스트 리스트");
         return hostList.stream()
                 .filter(host -> host.clusterPresent() && host.cluster().id().equals(clusterId))
                 .map(host ->
@@ -421,7 +421,7 @@ public class ClusterServiceImpl implements ItClusterService {
 
         AffinityLabel al = systemService.affinityLabelsService().labelService(id).get().follow("hosts,vms").send().label();
 
-        log.info("성공: 클러스터 {} 선호도그룹", getName(id));
+        log.info("성공: 클러스터 {} 선호도 레이블", getName(id));
         return AffinityLabelCreateVo.builder()
                 .id(id)
                 .name(al.name())
@@ -892,7 +892,7 @@ public class ClusterServiceImpl implements ItClusterService {
 
 
 
-    // 선호도 그룹 - 레이블 아이디와 이름 얻기
+    // 선호도  - 레이블 아이디와 이름 얻기
     private List<AffinityLabelVo> getLabelName(SystemService systemService,String alId){
         List<AffinityLabel> alList = systemService.affinityLabelsService().list().send().labels();
 
@@ -906,7 +906,7 @@ public class ClusterServiceImpl implements ItClusterService {
                 .collect(Collectors.toList());
     }
 
-    // 선호도 그룹 목록 - 호스트 리스트 출력
+    // 선호도  - 호스트 리스트 출력
     private List<HostVo> getHostList(SystemService systemService, String clusterId, String agId){
         List<Host> hostList = systemService.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId).hostsService().list().send().hosts();
 
@@ -962,6 +962,8 @@ public class ClusterServiceImpl implements ItClusterService {
         List<String> idList = vmList.stream()
                 .map(Vm::id)
                 .collect(Collectors.toList());
+
+        idList.stream().forEach(System.out::println);
 
         return idList.stream()
                 .map(vmId -> {

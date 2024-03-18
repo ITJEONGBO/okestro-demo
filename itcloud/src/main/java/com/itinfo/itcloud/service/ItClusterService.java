@@ -35,7 +35,6 @@ public interface ItClusterService {
     CommonVo<Boolean> editAffinitylabel(AffinityLabelCreateVo alVo);     // 선호도 레이블 편집
     CommonVo<Boolean> deleteAffinitylabel(String id);                     // 선호도 레이블 삭제
 
-
     List<PermissionVo> getPermission(String id);
     List<EventVo> getEvent(String id);
 

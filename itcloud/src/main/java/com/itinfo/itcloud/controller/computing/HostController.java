@@ -2,8 +2,10 @@ package com.itinfo.itcloud.controller.computing;
 
 import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
 import com.itinfo.itcloud.model.create.ClusterCreateVo;
 import com.itinfo.itcloud.model.create.HostCreateVo;
+import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.service.ItHostService;
 
 import com.itinfo.itcloud.service.ItMenuService;
@@ -49,7 +51,7 @@ public class HostController {
 		return "computing/host";
 	}
 
-	@GetMapping("/host-vm")
+	@GetMapping("/host/vm")
 	public String vm(String id, Model model) {
 		List<VmVo> vm = itHostService.getVm(id);
 		model.addAttribute("vm", vm);
@@ -62,7 +64,7 @@ public class HostController {
 		return "computing/host-vm";
 	}
 
-	@GetMapping("/host-nic")
+	@GetMapping("/host/nic")
 	public String nic(String id, Model model) {
 		List<NicVo> nic = itHostService.getNic(id);
 		model.addAttribute("nic", nic);
@@ -75,7 +77,7 @@ public class HostController {
 		return "computing/host-nic";
 	}
 
-	@GetMapping("/host-device")
+	@GetMapping("/host/device")
 	public String device(String id, Model model) {
 		List<HostDeviceVo> device = itHostService.getHostDevice(id);
 		model.addAttribute("device", device);
@@ -88,7 +90,67 @@ public class HostController {
 		return "computing/host-device";
 	}
 
-	@GetMapping("/host-permission")
+
+	@GetMapping("/host/affinityLabel")
+	public String aff(String id, Model model) {
+		List<AffinityLabelVo> aff = itHostService.getAffinitylabels(id);
+		model.addAttribute("aff", aff);
+		model.addAttribute("id", id);
+		model.addAttribute("name", itHostService.getName(id));
+
+		MenuVo m = menu.getMenu();
+		model.addAttribute("m", m);
+
+		return "computing/host-aff";
+	}
+
+	@GetMapping("/host/affinityLabels")
+	@ResponseBody
+	public List<AffinityLabelVo> getAffinitylabels(String id){
+		return itHostService.getAffinitylabels(id);
+	}
+
+	// 해당 cluster가 가지고 있는 host, 레이블 생성시 필요
+	@GetMapping("/host/hostme")
+	@ResponseBody
+	public List<HostVo> getHostMember(String clusterId) {
+		log.info("-----클러스터 호스트목록");
+		return itHostService.getHostMember(clusterId);
+	}
+
+	// 해당 cluster가 가지고 있는 vm, 레이블 생성시 필요
+	@GetMapping("/host/vmme")
+	@ResponseBody
+	public List<VmVo> getVmMember(String clusterId) {
+		log.info("-----클러스터 가상머신목록");
+		return itHostService.getVmMember(clusterId);
+	}
+
+
+	// 클러스터 선호도 레이블 생성
+	@PostMapping("/host/affinityLabel/add")
+	public CommonVo<Boolean> addAff(@RequestBody AffinityLabelCreateVo alVo) {
+		log.info("--- 선호도 레이블 생성");
+		return itHostService.addAffinitylabel(alVo);
+	}
+
+	// 클러스터 선호도 레이블 편집
+	@PostMapping("/host/affinityLabel/edit")
+	public CommonVo<Boolean> editAff(@RequestBody AffinityLabelCreateVo alVo) {
+		log.info("--- 선호도 레이블 편집");
+		return itHostService.editAffinitylabel(alVo);
+	}
+
+	// 클러스터 선호도 레이블 삭제
+	@PostMapping("/host/affinityLabel/delete")
+	public CommonVo<Boolean> deleteAff(String id) {
+		log.info("--- 선호도 레이블 삭제");
+		return itHostService.deleteAffinitylabel(id);
+	}
+
+
+
+	@GetMapping("/host/permission")
 	public String permission(String id, Model model) {
 		List<PermissionVo> permission = itHostService.getPermission(id);
 		model.addAttribute("permission", permission);
@@ -102,21 +164,7 @@ public class HostController {
 	}
 
 
-
-	@GetMapping("/host-aff")
-	public String aff(String id, Model model) {
-		List<AffinityLabelVo> aff = itHostService.getAffinitylabels(id);
-		model.addAttribute("aff", aff);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itHostService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/host-aff";
-	}
-
-	@GetMapping("/host-event")
+	@GetMapping("/host/event")
 	public String event(String id, Model model) {
 		List<EventVo> event = itHostService.getEvent(id);
 		model.addAttribute("event", event);
@@ -130,7 +178,7 @@ public class HostController {
 	}
 
 
-	@GetMapping("/host-add")
+	@GetMapping("/host/add")
 	public String add(Model model) {
 		List<ClusterVo> cList = itHostService.getClusterList();
 		model.addAttribute("c", cList);
@@ -140,7 +188,7 @@ public class HostController {
 	}
 
 	// host 생성
-	@PostMapping("/host-add2")
+	@PostMapping("/host/add2")
 	public String add2(Model model, @ModelAttribute HostCreateVo hVo) {
 		if(itHostService.addHost(hVo)){
 			model.addAttribute("result", "호스트 생성 완료");
@@ -151,7 +199,7 @@ public class HostController {
 	}
 
 	// host 수정 창출력
-	@GetMapping("/host-edit")
+	@GetMapping("/host/edit")
 	public String edit(Model model, String id) {
 		HostCreateVo hVo = itHostService.getHostCreate(id);
 
@@ -160,7 +208,7 @@ public class HostController {
 	}
 
 	// 클러스터 수정
-	@PostMapping("/host-edit2")
+	@PostMapping("/host/edit2")
 	public String edit2(Model model, @ModelAttribute HostCreateVo hVo) {
 		log.info("edit 시작");
 
@@ -169,17 +217,7 @@ public class HostController {
 		return "computing/host-edit2";
 	}
 
-	@PostMapping("/host-reboot")
-	public String reboot(Model model, @ModelAttribute String hostId) {
-		log.info("reboot 시작");
-		Boolean rebootSuccess =
-				itHostService.rebootHost(hostId);
-		log.info("rebootSuccess: {}", rebootSuccess);
-		model.addAttribute("result", "호스트 재기동 완료");
-		return rebootSuccess.toString();
-	}
-
-	@GetMapping("/host-delete")
+	@GetMapping("/host/delete")
 	public String delete(Model model, String id){
 		model.addAttribute("id", id);
 		model.addAttribute("name", itHostService.getName(id));
@@ -187,7 +225,7 @@ public class HostController {
 		return "computing/host-delete";
 	}
 
-	@PostMapping("/host-delete2")
+	@PostMapping("/host/delete2")
 	public String delete2(Model model, @RequestParam String id){
 		if(itHostService.deleteHost(id)){
 			model.addAttribute("result", "완료");
@@ -199,38 +237,17 @@ public class HostController {
 	}
 
 
-	@GetMapping("/host-deactive")
-	public String deactive(Model model, String id){
-		model.addAttribute("id", id);
-		model.addAttribute("name", itHostService.getName(id));
-
-		return "computing/host-deactive";
+	@PostMapping("/host/reboot")
+	public String reboot(Model model, @ModelAttribute String hostId) {
+		log.info("reboot 시작");
+		Boolean rebootSuccess =
+				itHostService.rebootHost(hostId);
+		log.info("rebootSuccess: {}", rebootSuccess);
+		model.addAttribute("result", "호스트 재기동 완료");
+		return rebootSuccess.toString();
 	}
 
-	@PostMapping("/host-deactive2")
-	@ResponseBody
-	public void deactive2(Model model, String id){
-		itHostService.deActive(id);
-	}
-
-
-	@GetMapping("/host-restart")
-	public String restart(Model model, String id){
-		model.addAttribute("id", id);
-		model.addAttribute("name", itHostService.getName(id));
-
-		return "computing/host-restart";
-	}
-
-	@PostMapping("/host-restart2")
-	@ResponseBody
-	public void restart2(Model model, String id){
-		itHostService.reStart(id);
-	}
-
-
-
-	@GetMapping("/host-active")
+	@GetMapping("/host/active")
 	public String active(Model model, String id){
 		model.addAttribute("id", id);
 		model.addAttribute("name", itHostService.getName(id));
@@ -238,13 +255,44 @@ public class HostController {
 		return "computing/host-active";
 	}
 
-	@PostMapping("/host-active2")
+	@PostMapping("/host/active2")
 	@ResponseBody
 	public void active2(String id){
 		itHostService.active(id);
 	}
 
-	@GetMapping("/host-refresh")
+	@GetMapping("/host-deActive")
+	public String deactive(Model model, String id){
+		model.addAttribute("id", id);
+		model.addAttribute("name", itHostService.getName(id));
+
+		return "computing/host-deactive";
+	}
+
+	@PostMapping("/host-deActive2")
+	@ResponseBody
+	public void deactive2(Model model, String id){
+		itHostService.deActive(id);
+	}
+
+
+	@GetMapping("/host/restart")
+	public String restart(Model model, String id){
+		model.addAttribute("id", id);
+		model.addAttribute("name", itHostService.getName(id));
+
+		return "computing/host-restart";
+	}
+
+	@PostMapping("/host/restart2")
+	@ResponseBody
+	public void restart2(Model model, String id){
+		itHostService.reStart(id);
+	}
+
+
+
+	@GetMapping("/host/refresh")
 	public String refresh(Model model, String id){
 		model.addAttribute("id", id);
 		model.addAttribute("name", itHostService.getName(id));
@@ -252,7 +300,7 @@ public class HostController {
 		return "computing/host-refresh";
 	}
 
-	@PostMapping("/host-refresh2")
+	@PostMapping("/host/refresh2")
 	@ResponseBody
 	public void refresh2(String id){
 		itHostService.refresh(id);

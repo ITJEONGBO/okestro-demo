@@ -1,8 +1,8 @@
-package com.itinfo.itcloud.service;
+package com.itinfo.itcloud.model;
 
 import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
-import org.assertj.core.api.Assertions;
+import com.itinfo.itcloud.service.ItDataCenterService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.ovirt.engine.sdk4.builders.DataCenterBuilder;
@@ -15,13 +15,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-public class ItDatacenterServiceTest {
-
-    @Autowired private ItDataCenterService dcService;
-    @Autowired private AdminConnectionService admin;
-
+public class DatacenterVoTest {
     @Test
-    @DisplayName("데이터 센터 객체 생성 모델 테스트")
+    @DisplayName("데이터 센터 객체 모델 테스트")
     void createDatacenter(){
         DataCenterVo dcVo = DataCenterVo.builder()
                 .name("test")
@@ -36,10 +32,11 @@ public class ItDatacenterServiceTest {
                 .name(dcVo.getName())
                 .description(dcVo.getDescription())
                 .local(dcVo.isStorageType())
-                .version(new VersionBuilder()
+                .version(
+                    new VersionBuilder()
                         .major(4)
                         .minor(2)
-                        .build()
+                    .build()
                 )
                 .quotaMode(QuotaModeType.AUDIT)
                 .comment("testComment")

@@ -56,7 +56,7 @@
         <div>
             <h2>새 호스트</h2>
 
-            <form id="add" autocomplete="off" method="post" action="host-add2">
+            <form id="add" autocomplete="off" method="post" action="host/add2">
 
                 <hr>
                 <h3>일반</h3>

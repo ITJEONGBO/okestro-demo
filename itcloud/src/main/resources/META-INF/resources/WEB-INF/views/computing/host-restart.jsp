@@ -23,7 +23,7 @@
 <body>
     <div style="magin: auto">
         <h2>호스트 재시작</h2>
-        <form id="restart" autocomplete="off" method="post" action="host-restart2">
+        <form id="restart" autocomplete="off" method="post" action="host/restart2">
             <input type="hidden" id="id" name="id" value="${id}" />
             <h3> ${name} 를 재시작 하시겠습니까??</h3>
 

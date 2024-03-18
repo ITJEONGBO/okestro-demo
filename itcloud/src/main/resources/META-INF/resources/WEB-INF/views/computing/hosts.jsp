@@ -24,7 +24,7 @@
 
 
 	function openAdd() {
-		window.open("host-add", "mypopup", "width=550, height=700, top=150, left=200");
+		window.open("host/add", "mypopup", "width=550, height=700, top=150, left=200");
 	}
 
 	function openEdit() {
@@ -32,7 +32,7 @@
 	        alert("호스트를 선택해주세요");
 	        return;
         }
-		window.open("host-edit?id="+ hid, "mypopup", "width=550, height=700, top=150, left=200");
+		window.open("host/edit?id="+ hid, "mypopup", "width=550, height=700, top=150, left=200");
 
 	}
 
@@ -41,7 +41,7 @@
             alert("호스트를 선택해주세요");
             return;
         }
-		window.open("host-delete?id=" + hid, "mypopup", "width=400, height=200, top=150, left=200");
+		window.open("host/delete?id=" + hid, "mypopup", "width=400, height=200, top=150, left=200");
 	}
 
 	function openDeactivate() {
@@ -49,7 +49,7 @@
             alert("호스트를 선택해주세요");
             return;
         }
-	    window.open("host-deactive?id=" + hid, "mypopup", "width=400, height=200, top=150, left=200");
+	    window.open("host/deactive?id=" + hid, "mypopup", "width=400, height=200, top=150, left=200");
     }
 
     function openActivate() {
@@ -57,7 +57,7 @@
             alert("호스트를 선택해주세요");
             return;
         }
-	    window.open("host-active?id=" + hid, "mypopup", "width=400, height=200, top=150, left=200");
+	    window.open("host/active?id=" + hid, "mypopup", "width=400, height=200, top=150, left=200");
     }
 
     function openRefresh() {
@@ -65,7 +65,7 @@
             alert("호스트를 선택해주세요");
             return;
         }
-	    window.open("host-refresh?id=" + hid, "mypopup", "width=400, height=200, top=150, left=200");
+	    window.open("host/refresh?id=" + hid, "mypopup", "width=400, height=200, top=150, left=200");
     }
 
     function openRestart() {
@@ -74,7 +74,7 @@
             return;
         }
 
-        window.open("host-restart?id=" + hid, "mypopup", "width=400, height=200, top=150, left=200");
+        window.open("host/restart?id=" + hid, "mypopup", "width=400, height=200, top=150, left=200");
     }
 
 </script>

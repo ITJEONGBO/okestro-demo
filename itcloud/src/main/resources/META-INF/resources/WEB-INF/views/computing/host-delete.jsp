@@ -23,7 +23,7 @@
 <body>
     <div style="magin: auto">
         <h2>호스트 삭제</h2>
-        <form id="delete" autocomplete="off" method="post" action="host-delete2">
+        <form id="delete" autocomplete="off" method="post" action="host/delete2">
             <input type="hidden" id="id" name="id" value="${id}" />
             <h3> ${name} 를 삭제하시겠습니까??</h3>
 

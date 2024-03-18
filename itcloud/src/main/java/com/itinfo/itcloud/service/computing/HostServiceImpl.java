@@ -1,7 +1,9 @@
 package com.itinfo.itcloud.service.computing;
 
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
 import com.itinfo.itcloud.model.create.HostCreateVo;
+import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItHostService;
 import lombok.extern.slf4j.Slf4j;
@@ -137,6 +139,8 @@ public class HostServiceImpl implements ItHostService {
     }
 
 
+    // 호스트 가상머신 목록
+    // TODO: 고쳐야됨
     @Override
     public List<VmVo> getVm(String id) {
         SystemService systemService = admin.getConnection().systemService();
@@ -153,70 +157,29 @@ public class HostServiceImpl implements ItHostService {
                                 .id(vm.id())
                                 .name(vm.name())
                                 .clusterName(cluster.name())
-                                .status(vm.statusPresent() ? vm.status().value() : null)
+                                .status(vm.statusPresent() ? vm.status().value() : "")
                                 .fqdn(vm.fqdn())
                                 .upTime(getUptime(systemService, vm.id()))
                                 .ipv4(getIp(systemService, vm.id(), "v4"))
                                 .ipv6(getIp(systemService, vm.id(), "v6"))
                                 .build();
-                    }else if(vm.placementPolicy().hostsPresent() && vm.placementPolicy().hosts().get(0).id().equals(id)){
+                    }else if(!vm.hostPresent()){
                         vmVo = VmVo.builder()
                                 .id(vm.id())
                                 .name(vm.name())
-                                .status(vm.statusPresent() ? vm.status().value() : null)
+                                .clusterName(cluster.name())
+                                .build();
+                    }else if(vm.placementPolicy().hostsPresent() && vm.placementPolicy().hosts().get(0).id().equals(id)) {
+                        vmVo = VmVo.builder()
+                                .id(vm.id())
+                                .name(vm.name())
+                                .status(vm.statusPresent() ? vm.status().value() : "")
                                 .clusterName(cluster.name())
                                 .build();
                     }
                     return vmVo;
                 })
                 .collect(Collectors.toList());
-    }
-
-    private String getUptime(SystemService systemService, String id){
-        List<Statistic> statisticList = systemService.vmsService().vmService(id).statisticsService().list().send().statistics();
-
-        long hour = statisticList.stream()
-                .filter(statistic -> statistic.name().equals("elapsed.time"))
-                .mapToLong(statistic -> statistic.values().get(0).datum().longValue() / (60 * 60))
-                .findFirst()
-                .orElse(0);
-
-        String upTime;
-        if (hour > 24) {
-            upTime = hour / 24 + "일";
-        } else if (hour > 1 && hour < 24) {
-            upTime = hour + "시간";
-        } else {
-            upTime = (hour / 60) + "분";
-        }
-
-        return upTime;
-    }
-    // ip 주소
-    private String getIp(SystemService systemService, String id, String version){
-        List<Nic> nicList = systemService.vmsService().vmService(id).nicsService().list().send().nics();
-        Vm vm = systemService.vmsService().vmService(id).get().send().vm();
-
-        String ip = null;
-
-        for (Nic nic : nicList){
-            List<ReportedDevice> reportedDeviceList = systemService.vmsService().vmService(id).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
-
-            if("v4".equals(version)) {
-                ip = reportedDeviceList.stream()
-                        .filter(r -> !vm.status().value().equals("down"))
-                        .map(r -> r.ips().get(0).address())
-                        .findFirst()
-                        .orElse(null);
-            }else {
-                ip = reportedDeviceList.stream()
-                        .filter(r -> !vm.status().value().equals("down"))
-                        .map(r -> r.ips().get(1).address())
-                        .findFirst()
-                        .orElse(null);
-            }
-        }
-        return ip;
     }
 
 
@@ -341,23 +304,163 @@ public class HostServiceImpl implements ItHostService {
     }
 
 
+    // 호스트 선호도 레이블 목록
     @Override
     public List<AffinityLabelVo> getAffinitylabels(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
-        List<AffinityLabel> affinityLabelList = systemService.hostsService().hostService(id).affinityLabelsService().list().send().label();
-        List<AffinityLabelVo> alVoList = new ArrayList<>();
-        AffinityLabelVo alVo = null;
+        List<AffinityLabel> affinityLabelList = systemService.hostsService().hostService(id).affinityLabelsService().list().follow("hosts").send().label();
 
-        for(AffinityLabel affinityLabel : affinityLabelList) {
-            alVo = AffinityLabelVo.builder()
-                    .id(affinityLabel.id())
-                    .name(affinityLabel.name())
-                    .build();
 
-            alVoList.add(alVo);
+        log.info("호스트 {} 선호도 레이블", getName(id));
+        return affinityLabelList.stream()
+                .map(al ->
+                        AffinityLabelVo.builder()
+                            .id(al.id())
+                            .name(al.name())
+                            .hosts(getHostLabelMember(systemService, al.id()))
+                            .vms(getVmLabelMember(systemService, al.id()))
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    //
+    @Override
+    public List<HostVo> getHostMember(String clusterId) {
+        SystemService systemService = admin.getConnection().systemService();
+
+        List<Host> hostList = systemService.hostsService().list().send().hosts();
+
+        log.info("호스트 선호도레이블 생성시 필요한 호스트 리스트");
+        return hostList.stream()
+                // 해당 클러스터 내부에 같이 들어있어야 선호도 레이블로 묶을 수 있음
+                .filter(host -> host.clusterPresent() && host.cluster().id().equals(clusterId))
+                .map(host ->
+                        HostVo.builder()
+                                .id(host.id())
+                                .name(host.name())
+                                .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<VmVo> getVmMember(String clusterId) {
+        SystemService systemService = admin.getConnection().systemService();
+
+        List<Vm> vmList = systemService.vmsService().list().send().vms();
+
+        log.info("클러스터 선호도레이블 생성시 필요한 가상머신 리스트");
+        return vmList.stream()
+                .filter(vm -> vm.clusterPresent() && vm.cluster().id().equals(clusterId))
+                .map(vm ->
+                        VmVo.builder()
+                                .id(vm.id())
+                                .name(vm.name())
+                                .build())
+                .collect(Collectors.toList());
+    }
+    // 선호도 레이블에 있는 호스트 출력
+    private List<HostVo> getHostLabelMember(SystemService systemService, String alid){
+        List<Host> hostList = systemService.affinityLabelsService().labelService(alid).hostsService().list().send().hosts();
+
+        List<String> idList = hostList.stream()
+                .map(Host::id)
+                .collect(Collectors.toList());
+
+        return idList.stream()
+                .map(hostId -> {
+                    Host host = systemService.hostsService().hostService(hostId).get().send().host();
+                    return HostVo.builder()
+                            .id(host.id())
+                            .name(host.name())
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    // 선호도 레이블 - vm
+    private List<VmVo> getVmLabelMember(SystemService systemService, String alid){
+        List<Vm> vmList = systemService.affinityLabelsService().labelService(alid).vmsService().list().send().vms();
+
+        // id만 출력
+        List<String> idList = vmList.stream()
+                .map(Vm::id)
+                .collect(Collectors.toList());
+
+        return idList.stream()
+                .map(vmId -> {
+                    Vm vm = systemService.vmsService().vmService(vmId).get().send().vm();
+                    return VmVo.builder()
+                            .id(vm.id())
+                            .name(vm.name())
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public AffinityLabelCreateVo getAffinityLabel(String id) {
+        SystemService systemService = admin.getConnection().systemService();
+
+        AffinityLabel al = systemService.affinityLabelsService().labelService(id).get().follow("hosts,vms").send().label();
+
+        log.info("성공: 클러스터 {} 선호도그룹", getName(id));
+        return AffinityLabelCreateVo.builder()
+                .id(id)
+                .name(al.name())
+                .hostList(al.hostsPresent() ? getHostLabelMember(systemService, id) : null )
+                .vmList(al.vmsPresent() ? getVmLabelMember(systemService, id) : null)
+                .build();
+    }
+
+    @Override
+    public CommonVo<Boolean> addAffinitylabel(AffinityLabelCreateVo alVo) {
+        SystemService systemService = admin.getConnection().systemService();
+
+        AffinityLabelsService alServices = systemService.affinityLabelsService();
+        List<AffinityLabel> alList = systemService.affinityLabelsService().list().send().labels();
+
+        // 중복이름
+        boolean duplicateName = alList.stream().noneMatch(al -> al.name().equals(alVo.getName()));
+
+        try {
+            if(duplicateName) {
+                AffinityLabelBuilder alBuilder = new AffinityLabelBuilder();
+                alBuilder
+                        .name(alVo.getName())
+                        .hosts(alVo.getHostList().stream()
+                                .map(host -> new HostBuilder().id(host.getId()).build())
+                                .collect(Collectors.toList())
+                        )
+                        .vms(alVo.getVmList().stream()
+                                .map(vm -> new VmBuilder().id(vm.getId()).build())
+                                .collect(Collectors.toList())
+                        )
+                        .build();
+
+                alServices.add().label(alBuilder).send().label();
+                log.info("성공: 호스트 {} 선호도레이블", alVo.getName());
+                return CommonVo.successResponse();
+            }else {
+                log.error("실패: 호스트 선호도레이블 이름 중복");
+                return CommonVo.failResponse("이름 중복");
+            }
+
+        } catch (Exception e) {
+            log.error("실패: 호스트 선호도 레이블");
+            e.printStackTrace();
+            return CommonVo.failResponse(e.getMessage());
         }
-        return alVoList;
+    }
+
+    @Override
+    public CommonVo<Boolean> editAffinitylabel(AffinityLabelCreateVo alVo) {
+        return null;
+    }
+
+    @Override
+    public CommonVo<Boolean> deleteAffinitylabel(String id) {
+        return null;
     }
 
     @Override
@@ -737,6 +840,56 @@ public class HostServiceImpl implements ItHostService {
                 .map(statistic -> statistic.values().get(0).datum().intValue())
                 .findAny()
                 .orElse(0);
+    }
+
+
+
+    // vm uptime에서 사용
+    private String getUptime(SystemService systemService, String id){
+        List<Statistic> statisticList = systemService.vmsService().vmService(id).statisticsService().list().send().statistics();
+
+        long hour = statisticList.stream()
+                .filter(statistic -> statistic.name().equals("elapsed.time"))
+                .mapToLong(statistic -> statistic.values().get(0).datum().longValue() / (60 * 60))
+                .findFirst()
+                .orElse(0);
+
+        String upTime;
+        if (hour > 24) {
+            upTime = hour / 24 + "일";
+        } else if (hour > 1 && hour < 24) {
+            upTime = hour + "시간";
+        } else {
+            upTime = (hour / 60) + "분";
+        }
+
+        return upTime;
+    }
+    // vm ip 주소
+    private String getIp(SystemService systemService, String id, String version){
+        List<Nic> nicList = systemService.vmsService().vmService(id).nicsService().list().send().nics();
+        Vm vm = systemService.vmsService().vmService(id).get().send().vm();
+
+        String ip = null;
+
+        for (Nic nic : nicList){
+            List<ReportedDevice> reportedDeviceList = systemService.vmsService().vmService(id).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
+
+            if("v4".equals(version)) {
+                ip = reportedDeviceList.stream()
+                        .filter(r -> !vm.status().value().equals("down"))
+                        .map(r -> r.ips().get(0).address())
+                        .findFirst()
+                        .orElse(null);
+            }else {
+                ip = reportedDeviceList.stream()
+                        .filter(r -> !vm.status().value().equals("down"))
+                        .map(r -> r.ips().get(1).address())
+                        .findFirst()
+                        .orElse(null);
+            }
+        }
+        return ip;
     }
 
 
