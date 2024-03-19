@@ -6,16 +6,28 @@ import com.itinfo.itcloud.controller.computing.DataCenterController;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.create.DataCenterCreateVo;
 import com.itinfo.itcloud.service.ItDataCenterService;
+import com.itinfo.itcloud.service.ItMenuService;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.ovirt.engine.sdk4.types.QuotaModeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,23 +35,35 @@ import java.util.List;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
-@WebMvcTest(DataCenterController.class)
+// @RunWith(SpringRunner.class)  // junit4
+@ExtendWith(MockitoExtension.class)
+// @WebMvcTest(DataCenterController.class)
 public class DatacenterControllerTest {
-    @Autowired private MockMvc mvc;
 
-    @MockBean ItDataCenterService dcService;
+    @InjectMocks
+    private DataCenterController controller;
+    @Mock
+    private ItDataCenterService dcService;
+    @Mock
+    private ItMenuService itMenuService;
 
+    private MockMvc mvc;
+
+    @BeforeEach
+    public void init() {
+        mvc = MockMvcBuilders.standaloneSetup(controller).build();
+    }
 
     @DisplayName("hello")
     @Test
-    public void hello() throws Exception{
+    public void hello() throws Exception {
         mvc.perform(get("/computing/hello"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("hello"));
@@ -63,13 +87,16 @@ public class DatacenterControllerTest {
         given(dcService.getList()).willReturn(dcList);
 
         mvc.perform(get("/computing/datacentersStatus"))
+                .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("test")));
+
+        verify(dcService, times(1)).getList();
     }
 
     @DisplayName("데이터센터 추가")
     @Test
-    public void addDc() throws Exception{
+    public void addDc() throws Exception {
         DataCenterCreateVo dc = DataCenterCreateVo.builder()
                 .name("s")
                 .description("f")
@@ -83,8 +110,8 @@ public class DatacenterControllerTest {
         String content = gson.toJson(dc);
 
         mvc.perform(post("/computing/datacenter/addDc")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(content))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content))
                 .andExpect(status().isOk());
 
 //        verify(dcService).addDatacenter(dc);
@@ -93,6 +120,10 @@ public class DatacenterControllerTest {
     }
 
 
+    @DisplayName("데이터센터 편집")
+    @Test
+    public void editDc() throws Exception {
 
+    }
 
 }

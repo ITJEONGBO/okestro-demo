@@ -128,7 +128,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
                 datacentersService.add().dataCenter(dataCenter).send();     // 데이터센터 만든거 추가
 
-                log.info("성공: 데이터센터 생성 {}", getName(dataCenter.id()));
+                // log.info("성공: 데이터센터 생성 {}", getName(dataCenter.id()));
                 return CommonVo.successResponse();
             }else {
                 log.error("실패: 데이터센터 생성 이름 중복");
@@ -192,7 +192,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         try {
             dataCenterService.remove().force(true).send();
 
-            log.info("성공: 데이터센터 {} 삭제", getName(id));
+            // log.info("성공: 데이터센터 {} 삭제", getName(id));
             return CommonVo.successResponse();
         }catch (Exception e){
             log.error("실패: 데이터센터 삭제 ", e);

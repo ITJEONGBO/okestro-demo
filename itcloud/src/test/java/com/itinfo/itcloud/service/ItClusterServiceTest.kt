@@ -6,6 +6,10 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.not
 import org.hamcrest.Matchers.nullValue
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.InjectMocks
+import org.mockito.Mock
+import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
@@ -16,10 +20,10 @@ import org.springframework.boot.test.context.SpringBootTest
  * @author chanhi2000
  * @since 2024.03.05
  */
-@SpringBootTest
-class ItClusterServiceTest {
+@ExtendWith(MockitoExtension::class)
+internal class ItClusterServiceTest {
 
-	@Autowired
+	@Mock
 	private lateinit var service: ItClusterService
 
 	/**
@@ -29,7 +33,7 @@ class ItClusterServiceTest {
 	 * @see ItClusterService.getName
 	 **/
 	@Test
-	fun should_getName() {
+	internal fun should_getName() {
 		log.debug("should_getName ... ")
 		assertThat(service, `is`(not(nullValue())))
 		val _id = ""

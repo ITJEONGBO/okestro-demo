@@ -1,6 +1,8 @@
 package com.itinfo.itcloud.service;
 
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.create.TemplateCreateVo;
+import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.storage.DomainVo;
 import org.springframework.stereotype.Service;
 
@@ -17,4 +19,10 @@ public interface ItTemplateService {
     List<DomainVo> getStorage(String id);
     List<PermissionVo> getPermission(String id);
     List<EventVo> getEvent(String id);
+
+
+    CommonVo<Boolean> addTemplate(TemplateCreateVo tVo);
+
+
+
 }

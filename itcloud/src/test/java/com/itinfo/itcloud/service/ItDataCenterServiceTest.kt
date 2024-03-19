@@ -1,11 +1,13 @@
 package com.itinfo.itcloud.service
 
 import com.itinfo.common.LoggerDelegate
-import org.junit.jupiter.api.Test
+import com.itinfo.itcloud.model.computing.DataCenterVo
+import com.itinfo.itcloud.model.create.DataCenterCreateVo
+import com.itinfo.itcloud.model.error.CommonVo
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.`is`
-import org.hamcrest.Matchers.not
-import org.hamcrest.Matchers.nullValue
+import org.hamcrest.Matchers.*
+import org.junit.jupiter.api.Test
+import org.ovirt.engine.sdk4.types.QuotaModeType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
@@ -14,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest
  * [ItDataCenterService]에 대한 단위테스트
  *
  * @author chanhi2000
+ * @author deh22
  * @since 2024.03.05
  */
 @SpringBootTest
@@ -74,16 +77,54 @@ class ItDataCenterServiceTest {
 	}
 
 	/**
-	 * [should_addDatacenter]
-	 * [ItDataCenterService.addDatacenter]에 대한 단위테스트
+	 * [should_add_and_delete_datacenter]
+	 * [ItDataCenterService.addDatacenter], [ItDataCenterService.deleteDatacenter]에 대한 단위테스트
 	 * 
 	 * @see ItDataCenterService.addDatacenter
+	 * @see ItDataCenterService.deleteDatacenter
 	 **/
 	@Test
-	fun should_addDatacenter() {
-		log.debug("should_addDatacenter ... ")
+	fun should_add_and_delete_datacenter() {
+		log.debug("should_add_and_delete_datacenter ... ")
 		assertThat(service, `is`(not(nullValue())))
-		// TODO: 메소드의 결과값에 대한 검증처리
+
+		val dc2Add: DataCenterCreateVo = DataCenterCreateVo.builder()
+			.name("test")
+			.description("testDescription")
+			.storageType(false)
+			.version("4.2")
+			.quotaMode(QuotaModeType.DISABLED)
+			.comment("testComment")
+			.build()
+
+		val result: CommonVo<Boolean> =
+			service.addDatacenter(dc2Add)
+		// Boolean 값으로는 검증이 어려워 보임
+		// 사유: dataCenterId
+
+		assertThat(result, `is`(notNullValue()))
+		assertThat(result.body, `is`(notNullValue()))
+		assertThat(result.body.content, `is`(notNullValue()))
+		assertThat(result.body.content, `is`(true))
+
+		val dcAdded: DataCenterVo? =
+			service.getList().firstOrNull { it.name == dc2Add.name }
+
+		assertThat(dcAdded, `is`(notNullValue()))
+		assertThat(dcAdded?.name, `is`(dc2Add.name))
+		assertThat(dcAdded?.description, `is`(dc2Add.description))
+		assertThat(dcAdded?.isStorageType, `is`(dc2Add.isStorageType))
+		assertThat(dcAdded?.version, `is`(dc2Add.version))
+		// assertThat(dcAdded?.quotaMode, `is`(dc2Add.quotaMode))
+		// TODO: 메시지 출력임으로 extension함수 생성 필요
+
+		val deleteRes: CommonVo<Boolean> =
+			service.deleteDatacenter(dcAdded?.id)
+		assertThat(deleteRes, `is`(notNullValue()))
+		assertThat(deleteRes.body, `is`(notNullValue()))
+		assertThat(deleteRes.body.content, `is`(notNullValue()))
+		assertThat(deleteRes.body.content, `is`(true))
+
 	}
 
 	/**
@@ -95,19 +136,6 @@ class ItDataCenterServiceTest {
 	@Test
 	fun should_editDatacenter() {
 		log.debug("should_editDatacenter ... ")
-		assertThat(service, `is`(not(nullValue())))
-		// TODO: 메소드의 결과값에 대한 검증처리
-	}
-
-	/**
-	 * [should_deleteDatacenter]
-	 * [ItDataCenterService.deleteDatacenter]에 대한 단위테스트
-	 * 
-	 * @see ItDataCenterService.deleteDatacenter
-	 **/
-	@Test
-	fun should_deleteDatacenter() {
-		log.debug("should_deleteDatacenter ... ")
 		assertThat(service, `is`(not(nullValue())))
 		// TODO: 메소드의 결과값에 대한 검증처리
 	}

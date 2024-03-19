@@ -1,6 +1,8 @@
 package com.itinfo.itcloud.service.computing;
 
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.create.TemplateCreateVo;
+import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItTemplateService;
@@ -300,5 +302,10 @@ public class TemplateServiceImpl implements ItTemplateService {
             }
         }
         return eVoList;
+    }
+
+    @Override
+    public CommonVo<Boolean> addTemplate(TemplateCreateVo tVo) {
+        return null;
     }
 }
