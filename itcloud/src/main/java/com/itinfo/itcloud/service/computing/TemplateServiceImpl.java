@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TemplateServiceImpl implements ItTemplateService {
@@ -23,68 +23,61 @@ public class TemplateServiceImpl implements ItTemplateService {
 
     @Override
     public String getName(String id){
-        SystemService systemService = admin.getConnection().systemService();
-
-        return ((TemplateService.GetResponse)systemService.templatesService().templateService(id).get().send()).template().name();
+        return admin.getConnection().systemService().templatesService().templateService(id).get().send().template().name();
     }
 
     @Override
     public List<TemplateVo> getList() {
         SystemService systemService = admin.getConnection().systemService();
 
-        List<TemplateVo> tVoList = new ArrayList<>();
-        TemplateVo tVo = null;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
-        List<Template> templateList =
-                ((TemplatesService.ListResponse)systemService.templatesService().list().send()).templates();
+        List<Template> templateList = systemService.templatesService().list().send().templates();
 
-        for(Template template : templateList){
-            tVo = new TemplateVo();
-
-            tVo.setId(template.id());
-            tVo.setName(template.name());
-            tVo.setVersion(template.versionPresent() ? template.version().versionName() : null);
-            tVo.setCreateDate(sdf.format(template.creationTime().getTime()));
-            tVo.setStatus(template.status().value());
-            // 보관
-            // 클러스터
-            // 데이터 센터
-            tVo.setDescription(template.description());
-
-            tVoList.add(tVo);
-        }
-        return tVoList;
+        return templateList.stream()
+                .map(template ->
+                    TemplateVo.builder()
+                            .id(template.id())
+                            .name(template.name())
+                            .version(template.versionPresent() ? template.version().versionName() : "")
+                            .createDate(sdf.format(template.creationTime().getTime()))
+                            .status(template.status().value())
+                            // 보관, 클러스터, 데이터센터
+                            .description(template.description())
+                    .build()
+                )
+                .collect(Collectors.toList());
     }
 
     @Override
     public TemplateVo getInfo(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
-        TemplateVo tVo = new TemplateVo();
-
-        Template template =
-                ((TemplateService.GetResponse)systemService.templatesService().templateService(id).get().send()).template();
-
-        tVo.setId(template.id());
-        tVo.setName(template.name());
-        tVo.setDescription(template.description());
-        tVo.setOsType(template.osPresent() ? template.os().boot().devices().get(0).value() : null);
-        tVo.setChipsetFirmwareType(template.bios().typePresent() ? template.bios().type().value() : null);
-        tVo.setOptimizeOption(template.type().value());
-        tVo.setMemory(template.memoryPolicy().guaranteed());
-        tVo.setCpuCoreCnt(template.cpu().topology().coresAsInteger());
-        tVo.setCpuSocketCnt(template.cpu().topology().socketsAsInteger());
-        tVo.setCpuThreadCnt(template.cpu().topology().threadsAsInteger());
-        tVo.setCpuCnt(tVo.getCpuCoreCnt() * tVo.getCpuSocketCnt() * tVo.getCpuThreadCnt());
-        tVo.setMonitor(template.display().monitorsAsInteger());
-        tVo.setHa(template.highAvailability().enabled());       // 고가용성
-        tVo.setPriority(template.highAvailability().priorityAsInteger()); // 우선순위
-        tVo.setUsb(template.usb().enabled());
-        tVo.setOrigin(template.origin());
+        Template template = systemService.templatesService().templateService(id).get().send().template();
 
         // 상태 비저장
-        return tVo;
+        return TemplateVo.builder()
+                .id(template.id())
+                .name(template.name())
+                .description(template.description())
+                .osType(template.osPresent() ? template.os().boot().devices().get(0).value() : null)
+                .chipsetFirmwareType(template.bios().typePresent() ? template.bios().type().value() : null)
+                .optimizeOption(template.type().value())
+                .memory(template.memoryPolicy().guaranteed())
+                .cpuCoreCnt(template.cpu().topology().coresAsInteger())
+                .cpuSocketCnt(template.cpu().topology().socketsAsInteger())
+                .cpuThreadCnt(template.cpu().topology().threadsAsInteger())
+                .cpuCnt(
+                        template.cpu().topology().coresAsInteger()
+                        * template.cpu().topology().socketsAsInteger()
+                        * template.cpu().topology().threadsAsInteger()
+                )
+                .monitor(template.display().monitorsAsInteger())
+                .ha(template.highAvailability().enabled())
+                .priority(template.highAvailability().priorityAsInteger())
+                .usb(template.usb().enabled())
+                .origin(template.origin())
+            .build();
     }
 
     @Override
@@ -93,7 +86,6 @@ public class TemplateServiceImpl implements ItTemplateService {
 
         List<VmVo> vmVoList = new ArrayList<>();
         VmVo vmVo = null;
-        Date now = new Date(System.currentTimeMillis());
 
         List<Vm> vmList = systemService.vmsService().list().send().vms();
 
@@ -168,9 +160,9 @@ public class TemplateServiceImpl implements ItTemplateService {
         List<VmDiskVo> vdVoList = new ArrayList<>();
         VmDiskVo vdVo = null;
 
-        List<DiskAttachment> vmdiskList =
-                ((DiskAttachmentsService.ListResponse)systemService.templatesService().templateService(id).diskAttachmentsService().list().send()).attachments();
+        List<DiskAttachment> vmdiskList = systemService.templatesService().templateService(id).diskAttachmentsService().list().send().attachments();
         // 별칭, 가상크기, 연결대상, 인터페이스, 논리적 이름, 상태, 유형, 설명
+
 
         for(DiskAttachment diskAttachment : vmdiskList) {
             if (diskAttachment.diskPresent()) {
@@ -183,8 +175,7 @@ public class TemplateServiceImpl implements ItTemplateService {
                 vdVo.setLogicalName(diskAttachment.logicalName());
                 vdVo.setInterfaceName(diskAttachment.interface_().value());
 
-                Disk disk =
-                        ((DiskService.GetResponse) systemService.disksService().diskService(diskAttachment.disk().id()).get().send()).disk();
+                Disk disk = systemService.disksService().diskService(diskAttachment.disk().id()).get().send().disk();
                 vdVo.setName(disk.name());
                 vdVo.setDescription(disk.description());
                 vdVo.setVirtualSize(disk.provisionedSize());
@@ -205,8 +196,7 @@ public class TemplateServiceImpl implements ItTemplateService {
         List<DomainVo> sdVoList = new ArrayList<>();
         DomainVo sdVo = null;
 
-        List<StorageDomain> storageDomainList =
-                ((StorageDomainsService.ListResponse)systemService.storageDomainsService().list().send()).storageDomains();
+        List<StorageDomain> storageDomainList = systemService.storageDomainsService().list().send().storageDomains();
 
         for(StorageDomain storageDomain : storageDomainList) {
             sdVo = new DomainVo();
@@ -223,7 +213,7 @@ public class TemplateServiceImpl implements ItTemplateService {
                 sdVo.setUsedSize(storageDomain.used()); // 사용된 공간
                 sdVo.setDiskSize(storageDomain.available().add(storageDomain.used()));
                 sdVo.setDescription(storageDomain.description());
-                sdVo.setDatacenterName(((DataCenterService.GetResponse) systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name());
+                sdVo.setDatacenterName(systemService.dataCentersService().dataCenterService(id).get().send().dataCenter().name());
 
                 sdVoList.add(sdVo);
             }else{
@@ -240,31 +230,30 @@ public class TemplateServiceImpl implements ItTemplateService {
         List<PermissionVo> pVoList = new ArrayList<>();
         PermissionVo pVo = null;
 
-        List<Permission> permissionList =
-                ((AssignedPermissionsService.ListResponse)systemService.templatesService().templateService(id).permissionsService().list().send()).permissions();
+        List<Permission> permissionList = systemService.templatesService().templateService(id).permissionsService().list().send().permissions();
 
         for(Permission permission : permissionList){
             pVo = new PermissionVo();
             pVo.setPermissionId(permission.id());
 
             if(permission.groupPresent() && !permission.userPresent()){
-                Group group = ((GroupService.GetResponse)systemService.groupsService().groupService(permission.group().id()).get().send()).get();
+                Group group = systemService.groupsService().groupService(permission.group().id()).get().send().get();
                 pVo.setUser(group.name());
                 pVo.setNameSpace(group.namespace());
                 // 생성일의 경우 db에서 가져와야함?
 
-                Role role = ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+                Role role = systemService.rolesService().roleService(permission.role().id()).get().send().role();
                 pVo.setRole(role.name());
 
                 pVoList.add(pVo);       // 그룹에 추가
             }
 
             if(permission.userPresent() && !permission.groupPresent()){
-                User user = ((UserService.GetResponse)systemService.usersService().userService(permission.user().id()).get().send()).user();
+                User user = systemService.usersService().userService(permission.user().id()).get().send().user();
                 pVo.setUser(user.name());
                 pVo.setNameSpace(user.namespace());
 
-                Role role = ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+                Role role = systemService.rolesService().roleService(permission.role().id()).get().send().role();
                 pVo.setRole(role.name());
 
                 pVoList.add(pVo);
@@ -278,15 +267,12 @@ public class TemplateServiceImpl implements ItTemplateService {
     public List<EventVo> getEvent(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
         List<EventVo> eVoList = new ArrayList<>();
         EventVo eVo = null;
 
-        // 2024. 1. 4. PM 04:01:21
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
-
-        List<Event> eventList = ((EventsService.ListResponse)systemService.eventsService().list().send()).events();
-
-        Template t = ((TemplateService.GetResponse)systemService.templatesService().templateService(id).get().send()).template();
+        List<Event> eventList = systemService.eventsService().list().send().events();
+        Template t = systemService.templatesService().templateService(id).get().send().template();
 
         for(Event event : eventList){
             if(event.templatePresent() && event.template().name().equals(t.name())){
@@ -306,6 +292,16 @@ public class TemplateServiceImpl implements ItTemplateService {
 
     @Override
     public CommonVo<Boolean> addTemplate(TemplateCreateVo tVo) {
+        return null;
+    }
+
+    @Override
+    public CommonVo<Boolean> editTemplate(TemplateCreateVo tVo) {
+        return null;
+    }
+
+    @Override
+    public CommonVo<Boolean> deleteTemplate(String id) {
         return null;
     }
 }

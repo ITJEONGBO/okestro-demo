@@ -104,14 +104,7 @@ public class ItMenuService {
         }
         m.setVm(vmVoList);
 
-        List<TemplateVo> tVoList = new ArrayList<>();
-        for(Template template : templateList) {
-            TemplateVo tVo = new TemplateVo();
-            tVo.setId(template.id());
-            tVo.setName(template.name());
-            tVoList.add(tVo);
-        }
-        m.setTm(tVoList);
+
         // endregion
 
 

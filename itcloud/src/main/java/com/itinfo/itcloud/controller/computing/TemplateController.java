@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
@@ -17,11 +18,12 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/computing")
 public class TemplateController {
 	private final ItTemplateService itTemplateService;
 	private final ItMenuService menu;
 
-	@GetMapping("/computing/templates")
+	@GetMapping("/templates")
 	public String templates(Model model){
 		List<TemplateVo> templates = itTemplateService.getList();
 		model.addAttribute("templates", templates);
@@ -31,7 +33,7 @@ public class TemplateController {
 		return "computing/templates";
 	}
 
-	@GetMapping("/computing/template")
+	@GetMapping("/template")
 	public String template(String id, Model model){
 		TemplateVo template = itTemplateService.getInfo(id);
 		model.addAttribute("template", template);
@@ -43,7 +45,7 @@ public class TemplateController {
 		return "computing/template";
 	}
 
-	@GetMapping("/computing/template-vm")
+	@GetMapping("/template-vm")
 	public String vm(String id, Model model){
 		List<VmVo> vm = itTemplateService.getVm(id);
 		model.addAttribute("vm", vm);
@@ -55,7 +57,7 @@ public class TemplateController {
 		return "computing/template-vm";
 	}
 
-	@GetMapping("/computing/template-nic")
+	@GetMapping("/template-nic")
 	public String nic(String id, Model model){
 		List<NicVo> nic = itTemplateService.getNic(id);
 		model.addAttribute("nic", nic);
@@ -67,7 +69,7 @@ public class TemplateController {
 		return "computing/template-nic";
 	}
 
-	@GetMapping("/computing/template-disk")
+	@GetMapping("/template-disk")
 	public String disk(String id, Model model){
 		List<VmDiskVo> disk = itTemplateService.getDisk(id);
 		model.addAttribute("disk", disk);
@@ -79,7 +81,7 @@ public class TemplateController {
 		return "computing/template-disk";
 	}
 
-	@GetMapping("/computing/template-storage")
+	@GetMapping("/template-storage")
 	public String storage(String id, Model model){
 		List<DomainVo> storage = itTemplateService.getStorage(id);
 		model.addAttribute("storage", storage);
@@ -91,7 +93,7 @@ public class TemplateController {
 		return "computing/template-storage";
 	}
 
-	@GetMapping("/computing/template-permission")
+	@GetMapping("/template-permission")
 	public String permission(String id, Model model){
 		List<PermissionVo> permission = itTemplateService.getPermission(id);
 		model.addAttribute("permission", permission);
@@ -103,7 +105,7 @@ public class TemplateController {
 		return "computing/template-permission";
 	}
 
-	@GetMapping("/computing/template-event")
+	@GetMapping("/template-event")
 	public String event(String id, Model model){
 		List<EventVo> event = itTemplateService.getEvent(id);
 		model.addAttribute("event", event);
@@ -115,8 +117,10 @@ public class TemplateController {
 		return "computing/template-event";
 	}
 
+
+
 	//region: ResponseBody
-	@GetMapping("/computing/templatesStatus")
+	@GetMapping("/templatesStatus")
 	@ResponseBody
 	public List<TemplateVo> temps(){
 		return itTemplateService.getList();
@@ -128,36 +132,36 @@ public class TemplateController {
 		return itTemplateService.getInfo(id);
 	}
 
-	@GetMapping("/computing/template/vmStatus")
+	@GetMapping("/template-vmStatus")
 	@ResponseBody
 	public List<VmVo> vm(String id){
 		return itTemplateService.getVm(id);
 	}
-	@GetMapping("/computing/template/nicStatus")
+	@GetMapping("/template-nicStatus")
 	@ResponseBody
 	public List<NicVo> nic(String id){
 		return itTemplateService.getNic(id);
 	}
 
-	@GetMapping("/computing/template/diskStatus")
+	@GetMapping("/template-diskStatus")
 	@ResponseBody
 	public List<VmDiskVo> disk(String id){
 		return itTemplateService.getDisk(id);
 	}
 
-	@GetMapping("/computing/template/storageStatus")
+	@GetMapping("/template-storageStatus")
 	@ResponseBody
 	public List<DomainVo> storage(String id){
 		return itTemplateService.getStorage(id);
 	}
 
-	@GetMapping("/computing/template/permissionStatus")
+	@GetMapping("/template-permissionStatus")
 	@ResponseBody
 	public List<PermissionVo> permission(String id){
 		return itTemplateService.getPermission(id);
 	}
 
-	@GetMapping("/computing/template/eventStatus")
+	@GetMapping("/template-eventStatus")
 	@ResponseBody
 	public List<EventVo> event(String id){
 		return itTemplateService.getEvent(id);

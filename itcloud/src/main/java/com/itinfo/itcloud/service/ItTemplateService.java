@@ -22,6 +22,8 @@ public interface ItTemplateService {
 
 
     CommonVo<Boolean> addTemplate(TemplateCreateVo tVo);
+    CommonVo<Boolean> editTemplate(TemplateCreateVo tVo);
+    CommonVo<Boolean> deleteTemplate(String id);
 
 
 

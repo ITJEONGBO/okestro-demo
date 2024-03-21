@@ -1,12 +1,14 @@
 package com.itinfo.itcloud.service.network;
 
-import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.computing.ClusterVo;
+import com.itinfo.itcloud.model.computing.DataCenterVo;
+import com.itinfo.itcloud.model.computing.PermissionVo;
+import com.itinfo.itcloud.model.computing.TemplateVo;
 import com.itinfo.itcloud.model.create.NetworkCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.*;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItNetworkService;
-import jdk.internal.misc.VM;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
 import org.ovirt.engine.sdk4.services.*;
@@ -318,22 +320,22 @@ public class NetworkServiceImpl implements ItNetworkService {
 
     @Override
     public List<TemplateVo> getTemplate(String id) {
-        SystemService systemService = admin.getConnection().systemService();
-
-        List<Template> templateList = systemService.templatesService().list().send().templates();
+//        SystemService systemService = admin.getConnection().systemService();
+//
+//        List<Template> templateList = systemService.templatesService().list().send().templates();
         List<TemplateVo> tVoList = new ArrayList<>();
-        TemplateVo tVo = null;
-
-        for(Template template : templateList){
-            if(template.nicsPresent()){
-                tVo = new TemplateVo();
-
-                tVo.setId(template.id());
-                tVo.setName(template.name());
-
-                tVoList.add(tVo);
-            }
-        }
+//        TemplateVo tVo = null;
+//
+//        for(Template template : templateList){
+//            if(template.nicsPresent()){
+//                tVo = new TemplateVo();
+//
+//                tVo.setId(template.id());
+//                tVo.setName(template.name());
+//
+//                tVoList.add(tVo);
+//            }
+//        }
 
         return tVoList;
     }

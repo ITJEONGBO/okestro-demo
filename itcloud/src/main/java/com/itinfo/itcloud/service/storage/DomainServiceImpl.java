@@ -163,19 +163,19 @@ public class DomainServiceImpl implements ItDomainService {
     // 미완
     @Override
     public List<TemplateVo> getTemplate(String id) {
-        SystemService systemService = admin.getConnection().systemService();
-
+//        SystemService systemService = admin.getConnection().systemService();
+//
         List<TemplateVo> templateVoList = new ArrayList<>();
-        TemplateVo tVo = null;
-
-        List<Template> templateList =
-                ((StorageDomainTemplatesService.ListResponse)systemService.storageDomainsService().storageDomainService(id).templatesService().list().send()).templates();
-        for(Template template : templateList){
-            tVo = new TemplateVo();
-            tVo.setName(template.name());
-
-            templateVoList.add(tVo);
-        }
+//        TemplateVo tVo = null;
+//
+//        List<Template> templateList =
+//                ((StorageDomainTemplatesService.ListResponse)systemService.storageDomainsService().storageDomainService(id).templatesService().list().send()).templates();
+//        for(Template template : templateList){
+//            tVo = new TemplateVo();
+//            tVo.setName(template.name());
+//
+//            templateVoList.add(tVo);
+//        }
         return templateVoList;
     }
 
