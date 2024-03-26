@@ -18,8 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class TemplateServiceImpl implements ItTemplateService {
-    @Autowired
-    private AdminConnectionService admin;
+    @Autowired private AdminConnectionService admin;
 
     @Override
     public String getName(String id){
@@ -29,22 +28,28 @@ public class TemplateServiceImpl implements ItTemplateService {
     @Override
     public List<TemplateVo> getList() {
         SystemService systemService = admin.getConnection().systemService();
-
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
         List<Template> templateList = systemService.templatesService().list().send().templates();
 
         return templateList.stream()
                 .map(template ->
-                    TemplateVo.builder()
+                     TemplateVo.builder()
                             .id(template.id())
                             .name(template.name())
                             .version(template.versionPresent() ? template.version().versionName() : "")
                             .createDate(sdf.format(template.creationTime().getTime()))
                             .status(template.status().value())
-                            // 보관, 클러스터, 데이터센터
+                            .clusterId(template.clusterPresent() ? template.cluster().id() : null)
+                            .clusterName(template.clusterPresent() ?
+                                    systemService.clustersService().clusterService(template.cluster().id()).get().send().cluster().name() : null)
+                            .datacenterId(template.clusterPresent() ?
+                                    systemService.clustersService().clusterService(template.cluster().id()).get().send().cluster().dataCenter().id() : null)
+                            .datacenterName(template.clusterPresent() ?
+                                    systemService.dataCentersService().dataCenterService(systemService.clustersService().clusterService(template.cluster().id()).get().send().cluster().dataCenter().id()).get().send().dataCenter().name() : null)
+                            // 보관
                             .description(template.description())
-                    .build()
+                            .build()
                 )
                 .collect(Collectors.toList());
     }
