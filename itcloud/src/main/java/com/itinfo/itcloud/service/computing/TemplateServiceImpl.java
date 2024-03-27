@@ -5,7 +5,7 @@ import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.computing.TemplateVo;
 import com.itinfo.itcloud.model.create.TemplateCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
-import com.itinfo.itcloud.model.storage.DomainVo;
+import com.itinfo.itcloud.model.storage.StorageDomainVo;
 import com.itinfo.itcloud.model.storage.TemDiskVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItTemplateService;
@@ -103,7 +103,6 @@ public class TemplateServiceImpl implements ItTemplateService {
                 .filter(DiskAttachment::diskPresent)
                 .map(diskAttachment -> {
                     Disk disk = systemService.disksService().diskService(diskAttachment.disk().id()).get().send().disk();
-//                    Disk disk = systemService.disksService().diskService(diskAttachment.disk().id()).get().follow("statistics").send().disk();
 
                     return TemDiskVo.builder()
                             .name(disk.name())
@@ -143,16 +142,16 @@ public class TemplateServiceImpl implements ItTemplateService {
     }
 
     @Override
-    public List<DomainVo> getStorage(String id) {
+    public List<StorageDomainVo> getStorage(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
-        List<DomainVo> sdVoList = new ArrayList<>();
-        DomainVo sdVo = null;
+        List<StorageDomainVo> sdVoList = new ArrayList<>();
+        StorageDomainVo sdVo = null;
 
         List<StorageDomain> storageDomainList = systemService.storageDomainsService().list().send().storageDomains();
 
         for(StorageDomain storageDomain : storageDomainList) {
-            sdVo = new DomainVo();
+            sdVo = new StorageDomainVo();
 
             if(storageDomain.templatesPresent()) {
                 List<StorageDomain> storageDomainList2 =

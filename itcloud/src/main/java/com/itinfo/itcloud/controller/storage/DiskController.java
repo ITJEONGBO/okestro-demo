@@ -4,7 +4,7 @@ import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.computing.VmVo;
 import com.itinfo.itcloud.model.storage.DiskVo;
-import com.itinfo.itcloud.model.storage.DomainVo;
+import com.itinfo.itcloud.model.storage.StorageDomainVo;
 import com.itinfo.itcloud.service.ItDiskService;
 
 import com.itinfo.itcloud.service.ItMenuService;
@@ -61,7 +61,7 @@ public class DiskController {
 
 	@GetMapping("/storage/disk-storage")
 	public String storage(String id, Model model){
-		List<DomainVo> storage = itDiskService.getStorage(id);
+		List<StorageDomainVo> storage = itDiskService.getStorage(id);
 		model.addAttribute("storage", storage);
 		model.addAttribute("id", id);
 		model.addAttribute("name", itDiskService.getName(id));
@@ -105,7 +105,7 @@ public class DiskController {
 
 	@GetMapping("/storage/disk/storageStatus")
 	@ResponseBody
-	public List<DomainVo> storage(String id){
+	public List<StorageDomainVo> storage(String id){
 		return itDiskService.getStorage(id);
 	}
 

@@ -3,7 +3,7 @@ package com.itinfo.itcloud.service.storage;
 import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.computing.VmVo;
 import com.itinfo.itcloud.model.storage.DiskVo;
-import com.itinfo.itcloud.model.storage.DomainVo;
+import com.itinfo.itcloud.model.storage.StorageDomainVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItDiskService;
 import lombok.extern.slf4j.Slf4j;
@@ -48,8 +48,8 @@ public class DiskServiceImpl implements ItDiskService {
 //            dVo.setConnection();
 //            dVo.setStorageDomainName(disk.storageDomain().name());
             dVo.setShareable(disk.shareable());
-            dVo.setStatus(disk.status().value());
-            dVo.setStorageType(disk.storageType().value());
+            dVo.setStatus(disk.status());
+            dVo.setStorageType(disk.storageType());
             dVo.setVirtualSize(disk.provisionedSize());
 
             dVoList.add(dVo);
@@ -84,11 +84,11 @@ public class DiskServiceImpl implements ItDiskService {
     }
 
     @Override
-    public List<DomainVo> getStorage(String id) {
+    public List<StorageDomainVo> getStorage(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
-        List<DomainVo> sdVoList = new ArrayList<>();
-        DomainVo sdVo = null;
+        List<StorageDomainVo> sdVoList = new ArrayList<>();
+        StorageDomainVo sdVo = null;
 
         List<StorageDomain> storageDomainList =
                 ((StorageDomainsService.ListResponse)systemService.storageDomainsService().list().send()).storageDomains();
@@ -97,7 +97,7 @@ public class DiskServiceImpl implements ItDiskService {
 
 
 
-            sdVo = new DomainVo();
+            sdVo = new StorageDomainVo();
 
 
             sdVo.setId(storageDomain.id());

@@ -5,7 +5,7 @@ import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.computing.TemplateVo;
 import com.itinfo.itcloud.model.create.TemplateCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
-import com.itinfo.itcloud.model.storage.DomainVo;
+import com.itinfo.itcloud.model.storage.StorageDomainVo;
 import com.itinfo.itcloud.model.storage.TemDiskVo;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +17,7 @@ public interface ItTemplateService {
     List<TemplateVo> getList();
     TemplateVo getInfo(String id);
     List<TemDiskVo> getDisk(String id);
-    List<DomainVo> getStorage(String id);
+    List<StorageDomainVo> getStorage(String id);
     List<PermissionVo> getPermission(String id);
     List<EventVo> getEvent(String id);
 

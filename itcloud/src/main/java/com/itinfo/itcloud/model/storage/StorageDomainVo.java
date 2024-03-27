@@ -3,15 +3,17 @@ package com.itinfo.itcloud.model.storage;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.ovirt.engine.sdk4.types.StorageDomainStatus;
+import org.ovirt.engine.sdk4.types.StorageDomainType;
 
 import java.math.BigInteger;
 @Getter @Setter @ToString
-public class DomainVo {
+public class StorageDomainVo {
     private String id;
     private String name;
     private String comment;
     private String description;
-    private String status;
+    private StorageDomainStatus status;
 
     private BigInteger availableSize;
     private BigInteger usedSize;
@@ -26,7 +28,7 @@ public class DomainVo {
     private String storageAddress;  // 경로
     private int blockSize;      // 디스크공간 동작차단
 
-    private String domainType;       // 도메인 유형
+    private StorageDomainType domainType;       // 도메인 유형
     private String domainFormat;
     private String storageType;
     private boolean backup;

@@ -4,7 +4,7 @@ import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.storage.DiskVo;
 import com.itinfo.itcloud.model.storage.DomainVmVo;
-import com.itinfo.itcloud.model.storage.DomainVo;
+import com.itinfo.itcloud.model.storage.StorageDomainVo;
 import com.itinfo.itcloud.service.ItMenuService;
 import com.itinfo.itcloud.service.ItDomainService;
 
@@ -27,7 +27,7 @@ public class DomainController {
 
 	@GetMapping("/storage/storageDomains")
 	public String domains(Model model){
-		List<DomainVo> domains = itDomainService.getList();
+		List<StorageDomainVo> domains = itDomainService.getList();
 		model.addAttribute("domains", domains);
 
 		MenuVo m = menu.getMenu();
@@ -37,7 +37,7 @@ public class DomainController {
 
 	@GetMapping("/storage/storageDomain")
 	public String domain(String id, Model model){
-		DomainVo domain = itDomainService.getDomain(id);
+		StorageDomainVo domain = itDomainService.getDomain(id);
 		model.addAttribute("domain", domain);
 		model.addAttribute("id", id);
 		model.addAttribute("name", itDomainService.getName(id));
@@ -132,13 +132,13 @@ public class DomainController {
 	//region: ResponseBody
 	@GetMapping("/domainsStatus")
 	@ResponseBody
-	public List<DomainVo> domains(){
+	public List<StorageDomainVo> domains(){
 		return itDomainService.getList();
 	}
 
 	@GetMapping("/storage/storageDomain/domainStatus")
 	@ResponseBody
-	public DomainVo domain(String id){
+	public StorageDomainVo domain(String id){
 		return itDomainService.getDomain(id);
 	}
 

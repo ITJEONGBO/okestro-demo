@@ -4,7 +4,7 @@ import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.computing.TemplateVo;
-import com.itinfo.itcloud.model.storage.DomainVo;
+import com.itinfo.itcloud.model.storage.StorageDomainVo;
 import com.itinfo.itcloud.model.storage.TemDiskVo;
 import com.itinfo.itcloud.service.ItMenuService;
 import com.itinfo.itcloud.service.ItTemplateService;
@@ -63,7 +63,7 @@ public class TemplateController {
 
 	@GetMapping("/template-storage")
 	public String storage(String id, Model model){
-		List<DomainVo> storage = itTemplateService.getStorage(id);
+		List<StorageDomainVo> storage = itTemplateService.getStorage(id);
 		model.addAttribute("storage", storage);
 		model.addAttribute("id", id);
 		model.addAttribute("name", itTemplateService.getName(id));
@@ -121,7 +121,7 @@ public class TemplateController {
 
 	@GetMapping("/template-storageStatus")
 	@ResponseBody
-	public List<DomainVo> storage(String id){
+	public List<StorageDomainVo> storage(String id){
 		return itTemplateService.getStorage(id);
 	}
 
