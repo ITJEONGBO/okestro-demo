@@ -1,8 +1,11 @@
 package com.itinfo.itcloud.controller.computing;
 
 import com.itinfo.itcloud.model.MenuVo;
-import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.computing.EventVo;
+import com.itinfo.itcloud.model.computing.PermissionVo;
+import com.itinfo.itcloud.model.computing.TemplateVo;
 import com.itinfo.itcloud.model.storage.DomainVo;
+import com.itinfo.itcloud.model.storage.TemDiskVo;
 import com.itinfo.itcloud.service.ItMenuService;
 import com.itinfo.itcloud.service.ItTemplateService;
 import lombok.RequiredArgsConstructor;
@@ -45,41 +48,18 @@ public class TemplateController {
 		return "computing/template";
 	}
 
-	@GetMapping("/template-vm")
-	public String vm(String id, Model model){
-		List<VmVo> vm = itTemplateService.getVm(id);
-		model.addAttribute("vm", vm);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itTemplateService.getName(id));
 
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-		return "computing/template-vm";
-	}
-
-	@GetMapping("/template-nic")
-	public String nic(String id, Model model){
-		List<NicVo> nic = itTemplateService.getNic(id);
-		model.addAttribute("nic", nic);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itTemplateService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-		return "computing/template-nic";
-	}
-
-	@GetMapping("/template-disk")
-	public String disk(String id, Model model){
-		List<VmDiskVo> disk = itTemplateService.getDisk(id);
-		model.addAttribute("disk", disk);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itTemplateService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-		return "computing/template-disk";
-	}
+//	@GetMapping("/template-disk")
+//	public String disk(String id, Model model){
+//		List<VmDiskVo> disk = itTemplateService.getDisk(id);
+//		model.addAttribute("disk", disk);
+//		model.addAttribute("id", id);
+//		model.addAttribute("name", itTemplateService.getName(id));
+//
+//		MenuVo m = menu.getMenu();
+//		model.addAttribute("m", m);
+//		return "computing/template-disk";
+//	}
 
 	@GetMapping("/template-storage")
 	public String storage(String id, Model model){
@@ -132,20 +112,10 @@ public class TemplateController {
 		return itTemplateService.getInfo(id);
 	}
 
-	@GetMapping("/template-vmStatus")
-	@ResponseBody
-	public List<VmVo> vm(String id){
-		return itTemplateService.getVm(id);
-	}
-	@GetMapping("/template-nicStatus")
-	@ResponseBody
-	public List<NicVo> nic(String id){
-		return itTemplateService.getNic(id);
-	}
 
 	@GetMapping("/template-diskStatus")
 	@ResponseBody
-	public List<VmDiskVo> disk(String id){
+	public List<TemDiskVo> disk(String id){
 		return itTemplateService.getDisk(id);
 	}
 
@@ -168,4 +138,22 @@ public class TemplateController {
 	}
 
 	//endregion
+
+
+
+
+
+
+	// region : 안쓸거 같음
+	//	@GetMapping("/template-vmStatus")
+//	@ResponseBody
+//	public List<VmVo> vm(String id){
+//		return itTemplateService.getVm(id);
+//	}
+//	@GetMapping("/template-nicStatus")
+//	@ResponseBody
+//	public List<NicVo> nic(String id){
+//		return itTemplateService.getNic(id);
+//	}
+	// endregion
 }

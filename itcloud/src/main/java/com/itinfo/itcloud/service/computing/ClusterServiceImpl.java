@@ -1,11 +1,11 @@
 package com.itinfo.itcloud.service.computing;
 
-import com.itinfo.itcloud.model.create.AffinityGroupCreateVo;
-import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
-import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.TypeExtKt;
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.create.AffinityGroupCreateVo;
+import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
 import com.itinfo.itcloud.model.create.ClusterCreateVo;
+import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkUsageVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -856,7 +855,9 @@ public class ClusterServiceImpl implements ItClusterService {
             upTime = hour / 24 + "일";
         } else if (hour > 1 && hour < 24) {
             upTime = hour + "시간";
-        } else {
+        } else if(hour == 0){
+            upTime = null;
+        }else {
             upTime = (hour / 60) + "분";
         }
 

@@ -1,12 +1,17 @@
 package com.itinfo.itcloud.service.computing;
 
-import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.computing.EventVo;
+import com.itinfo.itcloud.model.computing.PermissionVo;
+import com.itinfo.itcloud.model.computing.TemplateVo;
 import com.itinfo.itcloud.model.create.TemplateCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.storage.DomainVo;
+import com.itinfo.itcloud.model.storage.TemDiskVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItTemplateService;
-import org.ovirt.engine.sdk4.services.*;
+import lombok.extern.slf4j.Slf4j;
+import org.ovirt.engine.sdk4.services.StorageDomainsService;
+import org.ovirt.engine.sdk4.services.SystemService;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@Service @Slf4j
 public class TemplateServiceImpl implements ItTemplateService {
     @Autowired private AdminConnectionService admin;
 
@@ -85,113 +90,56 @@ public class TemplateServiceImpl implements ItTemplateService {
             .build();
     }
 
+
+
     @Override
-    public List<VmVo> getVm(String id) {
+    public List<TemDiskVo> getDisk(String id) {
         SystemService systemService = admin.getConnection().systemService();
-
-        List<VmVo> vmVoList = new ArrayList<>();
-        VmVo vmVo = null;
-
-        List<Vm> vmList = systemService.vmsService().list().send().vms();
-
-        for (Vm vm : vmList) {
-            Host host = systemService.hostsService().hostService(vm.host().id()).get().send().host();
-
-            if (vm.hostPresent() && vm.host().id().equals(id)) {
-                List<Statistic> statisticList = systemService.vmsService().vmService(vm.id()).statisticsService().list().send().statistics();
-                String upTime = null;
-                for(Statistic statistic : statisticList) {
-                    long hour = 0;
-                    if (statistic.name().equals("elapsed.time")) {
-                        hour = statistic.values().get(0).datum().longValue() / (60*60);      // 시간
-
-                        if(hour > 24){
-                            upTime = hour/24 + "일";
-                        }else if( hour > 1 && hour < 24){
-                            upTime = hour + "시간";
-                        }else {
-                            upTime = (statistic.values().get(0).datum().longValue() / 60) + "분";
-                        }
-                    }
-                }
-
-                // ipv4, ipv6
-                List<Nic> nicList = systemService.vmsService().vmService(vm.id()).nicsService().list().send().nics();
-                String ipv4 = null;
-                String ipv6 = null;
-                for (Nic nic : nicList) {
-                    List<ReportedDevice> reportedDeviceList = systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
-                    for (ReportedDevice r : reportedDeviceList) {
-                        ipv4 = !vm.status().value().equals("down") ? r.ips().get(0).address() : null;
-                        ipv6 = !vm.status().value().equals("down") ? r.ips().get(1).address() : null;
-                    }
-                }
-
-                vmVo = VmVo.builder()
-                        .hostName(vm.hostPresent() ? host.name() : null)
-                        .id(vm.id())
-                        .name(vm.name())
-                        .status(vm.status().value())
-                        .fqdn(vm.fqdn())
-                        .upTime(upTime)
-                        .ipv4(ipv4)
-                        .ipv6(ipv6)
-                        .build();
-
-                vmVoList.add(vmVo);
-            } else if(vm.placementPolicy().hostsPresent() && vm.placementPolicy().hosts().get(0).id().equals(id)){
-                // vm이 down 상태일 경우
-                vmVo = VmVo.builder()
-                        .id(vm.id())
-                        .name(vm.name())
-                        .status(vm.status().value())
-                        .clusterName(systemService.clustersService().clusterService(vm.cluster().id()).get().send().cluster().name())
-                        .build();
-                vmVoList.add(vmVo);
-            }
-        }
-        return vmVoList;
-    }
-
-    @Override
-    public List<NicVo> getNic(String id) {
-        return null;
-    }
-
-    @Override
-    public List<VmDiskVo> getDisk(String id) {
-        SystemService systemService = admin.getConnection().systemService();
-
-        List<VmDiskVo> vdVoList = new ArrayList<>();
-        VmDiskVo vdVo = null;
 
         List<DiskAttachment> vmdiskList = systemService.templatesService().templateService(id).diskAttachmentsService().list().send().attachments();
         // 별칭, 가상크기, 연결대상, 인터페이스, 논리적 이름, 상태, 유형, 설명
 
+        return vmdiskList.stream()
+                .filter(DiskAttachment::diskPresent)
+                .map(diskAttachment -> {
+                    Disk disk = systemService.disksService().diskService(diskAttachment.disk().id()).get().send().disk();
+//                    Disk disk = systemService.disksService().diskService(diskAttachment.disk().id()).get().follow("statistics").send().disk();
 
-        for(DiskAttachment diskAttachment : vmdiskList) {
-            if (diskAttachment.diskPresent()) {
-                vdVo = new VmDiskVo();
+                    return TemDiskVo.builder()
+                            .name(disk.name())
+                            .status(disk.status())
+                            .sparse(disk.sparse())
+                            .diskInterface(disk.interface_())
+                            .virtualSize(disk.provisionedSize())
+                            .type(disk.storageType())
 
-                vdVo.setId(diskAttachment.id());
-                vdVo.setActive(diskAttachment.active());
-                vdVo.setReadOnly(diskAttachment.readOnly());
-                vdVo.setBootAble(diskAttachment.bootable());
-                vdVo.setLogicalName(diskAttachment.logicalName());
-                vdVo.setInterfaceName(diskAttachment.interface_().value());
+                        .build();
+                })
+                .collect(Collectors.toList());
 
-                Disk disk = systemService.disksService().diskService(diskAttachment.disk().id()).get().send().disk();
-                vdVo.setName(disk.name());
-                vdVo.setDescription(disk.description());
-                vdVo.setVirtualSize(disk.provisionedSize());
-                vdVo.setStatus(String.valueOf(disk.status()));  // 유형
-                vdVo.setType(disk.storageType().value());
-                vdVo.setConnection(disk.name());
-
-                vdVoList.add(vdVo);
-            }
-        }
-        return vdVoList;
+//        for(DiskAttachment diskAttachment : vmdiskList) {
+//            if (diskAttachment.diskPresent()) {
+//                vdVo = new VmDiskVo();
+//
+//                vdVo.setId(diskAttachment.id());
+//                vdVo.setActive(diskAttachment.active());
+//                vdVo.setReadOnly(diskAttachment.readOnly());
+//                vdVo.setBootAble(diskAttachment.bootable());
+//                vdVo.setLogicalName(diskAttachment.logicalName());
+//                vdVo.setInterfaceName(diskAttachment.interface_().value());
+//
+//                Disk disk = systemService.disksService().diskService(diskAttachment.disk().id()).get().send().disk();
+//                vdVo.setName(disk.name());
+//                vdVo.setDescription(disk.description());
+//                vdVo.setVirtualSize(disk.provisionedSize());
+//                vdVo.setStatus(String.valueOf(disk.status()));  // 유형
+//                vdVo.setType(disk.storageType().value());
+//                vdVo.setConnection(disk.name());
+//
+//                vdVoList.add(vdVo);
+//            }
+//        }
+//        return vdVoList;
     }
 
     @Override
@@ -309,4 +257,92 @@ public class TemplateServiceImpl implements ItTemplateService {
     public CommonVo<Boolean> deleteTemplate(String id) {
         return null;
     }
+
+
+
+
+
+
+    // 가동시간, 업타임
+    private String getUptime(SystemService systemService, String vmId){
+        List<Statistic> statisticList = systemService.vmsService().vmService(vmId).statisticsService().list().send().statistics();
+
+        long hour = statisticList.stream()
+                .filter(statistic -> statistic.name().equals("elapsed.time"))
+                .mapToLong(statistic -> statistic.values().get(0).datum().longValue() / (60 * 60))
+                .findFirst()
+                .orElse(0);
+
+        String upTime;
+        if (hour > 24) {
+            upTime = hour / 24 + "일";
+        } else if (hour > 1 && hour < 24) {
+            upTime = hour + "시간";
+        } else if (hour == 0) {
+            upTime = null;
+        } else {
+            upTime = (hour / 60) + "분";
+        }
+
+        return upTime;
+    }
+
+    // ip 주소
+    private String getIp(SystemService systemService, String vmId, String version){
+        List<Nic> nicList = systemService.vmsService().vmService(vmId).nicsService().list().send().nics();
+        Vm vm = systemService.vmsService().vmService(vmId).get().send().vm();
+
+        String ip = null;
+
+        for (Nic nic : nicList){
+            List<ReportedDevice> reportedDeviceList = systemService.vmsService().vmService(vmId).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
+
+            if("v4".equals(version)) {
+                ip = reportedDeviceList.stream()
+                        .filter(r -> !vm.status().value().equals("down"))
+                        .map(r -> r.ips().get(0).address())
+                        .findFirst()
+                        .orElse(null);
+            }else {
+                ip = reportedDeviceList.stream()
+                        .filter(r -> !vm.status().value().equals("down"))
+                        .map(r -> r.ips().get(1).address())
+                        .findFirst()
+                        .orElse(null);
+            }
+        }
+        return ip;
+    }
+
+
+
+
+
+
+
+
+    // region: 필요없을듯
+//    @Override
+//    public List<VmVo> getVm(String tId) {
+//        SystemService systemService = admin.getConnection().systemService();
+//
+//        List<Vm> vmList = systemService.vmsService().list().send().vms();
+//
+//        log.info("템플릿 {} 가상머신 목록", getName(tId));
+//        return vmList.stream()
+//                .filter(vm -> vm.templatePresent() && vm.template().id().equals(tId))
+//                .map(vm ->
+//                    VmVo.builder()
+//                            .status(vm.status().value())
+//                            .id(vm.id())
+//                            .name(vm.name())
+//                            .upTime(getUptime(systemService, vm.id()))
+//                            .ipv4(getIp(systemService, vm.id(), "v4"))
+//                            .ipv6(getIp(systemService, vm.id(), "v6"))
+//                            .build()
+//                )
+//                .collect(Collectors.toList());
+//    }
+    // endregion
+
 }

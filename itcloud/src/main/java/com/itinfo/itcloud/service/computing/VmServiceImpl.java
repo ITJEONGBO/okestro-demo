@@ -3,6 +3,7 @@ package com.itinfo.itcloud.service.computing;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.*;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
+import com.itinfo.itcloud.model.storage.VmDiskVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItVmService;
 import lombok.extern.slf4j.Slf4j;
@@ -258,27 +259,27 @@ public class VmServiceImpl implements ItVmService {
                 ((DiskAttachmentsService.ListResponse)systemService.vmsService().vmService(id).diskAttachmentsService().list().send()).attachments();
         // 별칭, 가상크기, 연결대상, 인터페이스, 논리적 이름, 상태, 유형, 설명
 
-        for(DiskAttachment diskAttachment : vmdiskList){
-            vdVo = new VmDiskVo();
-
-            vdVo.setId(diskAttachment.id());
-            vdVo.setActive(diskAttachment.active());
-            vdVo.setReadOnly(diskAttachment.readOnly());
-            vdVo.setBootAble(diskAttachment.bootable());
-            vdVo.setLogicalName(diskAttachment.logicalName());
-            vdVo.setInterfaceName(diskAttachment.interface_().value());
-
-            Disk disk =
-                    ((DiskService.GetResponse)systemService.disksService().diskService(diskAttachment.disk().id()).get().send()).disk();
-            vdVo.setName(disk.name());
-            vdVo.setDescription(disk.description());
-            vdVo.setVirtualSize(disk.provisionedSize());
-            vdVo.setStatus(disk.status().value());  // 유형
-            vdVo.setType(disk.storageType().value());
-            vdVo.setConnection( ((VmService.GetResponse)systemService.vmsService().vmService(id).get().send()).vm().name() );
-
-            vdVoList.add(vdVo);
-        }
+//        for(DiskAttachment diskAttachment : vmdiskList){
+//            vdVo = new VmDiskVo();
+//
+//            vdVo.setId(diskAttachment.id());
+//            vdVo.setActive(diskAttachment.active());
+//            vdVo.setReadOnly(diskAttachment.readOnly());
+//            vdVo.setBootAble(diskAttachment.bootable());
+//            vdVo.setLogicalName(diskAttachment.logicalName());
+//            vdVo.setInterfaceName(diskAttachment.interface_().value());
+//
+//            Disk disk =
+//                    ((DiskService.GetResponse)systemService.disksService().diskService(diskAttachment.disk().id()).get().send()).disk();
+//            vdVo.setName(disk.name());
+//            vdVo.setDescription(disk.description());
+//            vdVo.setVirtualSize(disk.provisionedSize());
+//            vdVo.setStatus(disk.status().value());  // 유형
+//            vdVo.setType(disk.storageType().value());
+//            vdVo.setConnection( ((VmService.GetResponse)systemService.vmsService().vmService(id).get().send()).vm().name() );
+//
+//            vdVoList.add(vdVo);
+//        }
         return vdVoList;
     }
 

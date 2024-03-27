@@ -2,6 +2,7 @@ package com.itinfo.itcloud.controller.computing;
 
 import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.storage.VmDiskVo;
 import com.itinfo.itcloud.service.ItMenuService;
 import com.itinfo.itcloud.service.ItVmService;
 import com.itinfo.itcloud.service.ItSystemPropertyService;

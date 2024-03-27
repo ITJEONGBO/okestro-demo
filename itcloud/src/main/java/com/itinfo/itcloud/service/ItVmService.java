@@ -2,6 +2,7 @@ package com.itinfo.itcloud.service;
 
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.VmCreateVo;
+import com.itinfo.itcloud.model.storage.VmDiskVo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

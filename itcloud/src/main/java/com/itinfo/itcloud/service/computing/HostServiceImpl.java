@@ -859,6 +859,8 @@ public class HostServiceImpl implements ItHostService {
             upTime = hour / 24 + "일";
         } else if (hour > 1 && hour < 24) {
             upTime = hour + "시간";
+        } else if (hour == 0) {
+            upTime = null;
         } else {
             upTime = (hour / 60) + "분";
         }
