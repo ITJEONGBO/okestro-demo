@@ -3,7 +3,7 @@ package com.itinfo.itcloud.service.storage;
 import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.computing.VmVo;
 import com.itinfo.itcloud.model.storage.DiskVo;
-import com.itinfo.itcloud.model.storage.StorageDomainVo;
+import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItDiskService;
 import lombok.extern.slf4j.Slf4j;
@@ -84,11 +84,11 @@ public class DiskServiceImpl implements ItDiskService {
     }
 
     @Override
-    public List<StorageDomainVo> getStorage(String id) {
+    public List<DomainVo> getStorage(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
-        List<StorageDomainVo> sdVoList = new ArrayList<>();
-        StorageDomainVo sdVo = null;
+        List<DomainVo> sdVoList = new ArrayList<>();
+        DomainVo sdVo = null;
 
         List<StorageDomain> storageDomainList =
                 ((StorageDomainsService.ListResponse)systemService.storageDomainsService().list().send()).storageDomains();

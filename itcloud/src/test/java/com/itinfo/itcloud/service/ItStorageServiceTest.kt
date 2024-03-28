@@ -10,22 +10,22 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
 /**
- * [ItDomainServiceTest]
- * [ItDomainService]에 대한 단위테스트
+ * [ItStorageServiceTest]
+ * [ItStorageService]에 대한 단위테스트
  *
  * @author chanhi2000
  * @since 2024.03.05
  */
 @SpringBootTest
-class ItDomainServiceTest {
+class ItStorageServiceTest {
 	@Autowired
-	private lateinit var service: ItDomainService
+	private lateinit var service: ItStorageService
 
 	/**
 	 * [should_getName]
-	 * [ItDomainService.getName]에 대한 단위테스트
+	 * [ItStorageService.getName]에 대한 단위테스트
 	 * 
-	 * @see [ItDomainService.getName]
+	 * @see [ItStorageService.getName]
 	 */
 	@Test
 	fun should_getName() {
@@ -36,9 +36,9 @@ class ItDomainServiceTest {
 
 	/**
 	 * [should_getList]
-	 * [ItDomainService.getList]에 대한 단위테스트
+	 * [ItStorageService.getList]에 대한 단위테스트
 	 * 
-	 * @see [ItDomainService.getList]
+	 * @see [ItStorageService.getList]
 	 */
 	@Test
 	fun should_getList() {
@@ -49,9 +49,9 @@ class ItDomainServiceTest {
 
 	/**
 	 * [should_getDomain]
-	 * [ItDomainService.getDomain]에 대한 단위테스트
+	 * [ItStorageService.getDomain]에 대한 단위테스트
 	 * 
-	 * @see ItDomainService.getDomain
+	 * @see ItStorageService.getDomain
 	 */
 	@Test
 	fun should_getDomain() {
@@ -62,9 +62,9 @@ class ItDomainServiceTest {
 
 	/**
 	 * [should_getDatacenter]
-	 * [ItDomainService.getDatacenter]에 대한 단위테스트
+	 * [ItStorageService.getDatacenter]에 대한 단위테스트
 	 * 
-	 * @see ItDomainService.getDatacenter
+	 * @see ItStorageService.getDatacenter
 	 */
 	@Test
 	fun should_getDatacenter() {
@@ -75,9 +75,9 @@ class ItDomainServiceTest {
 
 	/**
 	 * [should_getVm]
-	 * [ItDomainService.getVm]에 대한 단위테스트
+	 * [ItStorageService.getVm]에 대한 단위테스트
 	 * 
-	 * @see ItDomainService.getVm
+	 * @see ItStorageService.getVm
 	 */
 	@Test
 	fun should_getVm() {
@@ -88,9 +88,9 @@ class ItDomainServiceTest {
 
 	/**
 	 * [should_getTemplate]
-	 * [ItDomainService.getTemplate]에 대한 단위테스트
+	 * [ItStorageService.getTemplate]에 대한 단위테스트
 	 * 
-	 * @see ItDomainService.getTemplate
+	 * @see ItStorageService.getTemplate
 	 */
 	@Test
 	fun should_getTemplate() {
@@ -101,9 +101,9 @@ class ItDomainServiceTest {
 
 	/**
 	 * [should_getDisk]
-	 * [ItDomainService.getDisk]에 대한 단위테스트
+	 * [ItStorageService.getDisk]에 대한 단위테스트
 	 * 
-	 * @see [ItDomainService.getDisk]
+	 * @see [ItStorageService.getDisk]
 	 */
 	@Test
 	fun should_getDisk() {
@@ -114,9 +114,9 @@ class ItDomainServiceTest {
 
 	/**
 	 * [should_getSnapshot]
-	 * [ItDomainService.getSnapshot]에 대한 단위테스트
+	 * [ItStorageService.getSnapshot]에 대한 단위테스트
 	 * 
-	 * @see [ItDomainService.getSnapshot]
+	 * @see [ItStorageService.getSnapshot]
 	 */
 	@Test
 	fun should_getSnapshot() {
@@ -127,9 +127,9 @@ class ItDomainServiceTest {
 
 	/**
 	 * [should_getEvent]
-	 * [ItDomainService.getEvent]에 대한 단위테스트
+	 * [ItStorageService.getEvent]에 대한 단위테스트
 	 * 
-	 * @see [ItDomainService.getEvent]
+	 * @see [ItStorageService.getEvent]
 	 */
 	@Test
 	fun should_getEvent() {
@@ -140,9 +140,9 @@ class ItDomainServiceTest {
 
 	/**
 	 * [should_getPermission]
-	 * [ItDomainService.getPermission]에 대한 단위테스트
+	 * [ItStorageService.getPermission]에 대한 단위테스트
 	 * 
-	 * @see [ItDomainService.getPermission]
+	 * @see [ItStorageService.getPermission]
 	 */
 	@Test
 	fun should_getPermission() {

@@ -6,10 +6,12 @@ import lombok.Setter;
 import lombok.ToString;
 import org.ovirt.engine.sdk4.types.StorageDomainStatus;
 import org.ovirt.engine.sdk4.types.StorageDomainType;
+import org.ovirt.engine.sdk4.types.StorageFormat;
+import org.ovirt.engine.sdk4.types.StorageType;
 
 import java.math.BigInteger;
 @Getter @Setter @ToString @Builder
-public class StorageDomainVo {
+public class DomainVo {
     private String id;
     private String name;
     private String comment;
@@ -17,6 +19,7 @@ public class StorageDomainVo {
 
     private StorageDomainStatus status;
     private StorageDomainType domainType;       // 도메인 유형
+    private Boolean domainTypeMaster;
 
     private BigInteger availableSize; // 여유공간
     private BigInteger usedSize; // 사용된 공간
@@ -31,8 +34,8 @@ public class StorageDomainVo {
     private String storageAddress;  // 경로
     private int blockSize;      // 디스크공간 동작차단
 
-    private String domainFormat;
-    private String storageType;
+    private StorageFormat format;
+    private StorageType storageType;
     private boolean backup;
 
     private String datacenterId;
