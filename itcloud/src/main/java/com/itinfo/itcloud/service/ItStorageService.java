@@ -3,6 +3,7 @@ package com.itinfo.itcloud.service;
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
+import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.storage.DiskVo;
 import com.itinfo.itcloud.model.storage.DomainVo;
@@ -17,7 +18,12 @@ public interface ItStorageService {
 
 
     List<DiskVo> getDiskVoList(String dcId);    // 디스크 리스트
-    // 디스크 새로만들기
+
+    CommonVo<Boolean> addDiskImage();     // 디스크 새로만들기 - 이미지
+    CommonVo<Boolean> addDiskLun();     // 디스크 새로만들기 - lun
+    CommonVo<Boolean> addDiskBlock();     // 디스크 새로만들기 - block
+
+
     // 디스크 수정
     // 디스크 삭제
     // 디스크 이동

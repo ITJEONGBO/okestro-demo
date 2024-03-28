@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.service.storage;
 
+import com.itinfo.itcloud.model.TypeExtKt;
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
@@ -18,6 +19,7 @@ import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,9 +34,32 @@ public class StorageServiceImpl implements ItStorageService {
         return admin.getConnection().systemService().storageDomainsService().storageDomainService(id).get().send().storageDomain().name();
     }
 
+    // de에 있는 디스크로 바꿔야하긴한데
     @Override
     public List<DiskVo> getDiskVoList(String dcId) {
-        return null;
+        SystemService systemService = admin.getConnection().systemService();
+
+        List<StorageDomain> sdList = systemService.storageDomainsService().list().send().storageDomains();
+//        List<Disk> diskList = systemService.storageDomainsService().storageDomainService(sdId).disksService().list().send().disks();
+
+        List<Disk> diskList = systemService.disksService().list().send().disks();
+
+        return diskList.stream()
+                .map(disk ->
+                        DiskVo.builder()
+                                .id(disk.id())
+                                .name(disk.name())
+                                .alias(disk.alias())
+                                .description(disk.description())
+    //                           .connection()
+                                .storageDomainName(getName(disk.storageDomains().get(0).id()))
+                                .shareable(disk.shareable())
+                                .status(disk.status())
+                                .storageType(disk.storageType())
+                                .virtualSize(disk.provisionedSize())
+                        .build()
+                )
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -175,7 +200,25 @@ public class StorageServiceImpl implements ItStorageService {
 
     @Override
     public List<EventVo> getEvent(String id) {
-        return null;
+        SystemService systemService = admin.getConnection().systemService();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
+        List<Event> eventList = systemService.eventsService().list().send().events();
+
+        log.info("데이터센터 {} 이벤트 출력", getName(id));
+        return eventList.stream()
+                .filter(Event::dataCenterPresent)
+                .map(event ->
+                        EventVo.builder()
+                                .datacenterName(getName(id))
+                                .severity(TypeExtKt.findLogSeverity(event.severity()))   //상태
+                                .time(sdf.format(event.time()))
+                                .message(event.description())
+                                .relationId(event.correlationIdPresent() ? event.correlationId() : null)
+                                .source(event.origin())
+                                .build()
+                )
+                .collect(Collectors.toList());
     }
 
 }
