@@ -4,17 +4,13 @@ import com.itinfo.itcloud.model.TypeExtKt;
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
+import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
-import com.itinfo.itcloud.model.storage.DiskVo;
-import com.itinfo.itcloud.model.storage.DomainVo;
-import com.itinfo.itcloud.model.storage.VolumeVo;
+import com.itinfo.itcloud.model.storage.*;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItStorageService;
 import lombok.extern.slf4j.Slf4j;
-import org.ovirt.engine.sdk4.services.GroupService;
-import org.ovirt.engine.sdk4.services.RoleService;
-import org.ovirt.engine.sdk4.services.SystemService;
-import org.ovirt.engine.sdk4.services.UserService;
+import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,6 +56,35 @@ public class StorageServiceImpl implements ItStorageService {
                         .build()
                 )
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ImageVo setAddDisk() {
+        return null;
+    }
+
+    @Override
+    public CommonVo<Boolean> addDiskImage(ImageVo imageVo) {
+        SystemService systemService = admin.getConnection().systemService();
+
+        DisksService disksService = systemService.disksService();
+
+        //
+
+
+        return null;
+    }
+
+    @Override
+    public CommonVo<Boolean> addDiskLun(LunVo lunVo) {
+        SystemService systemService = admin.getConnection().systemService();
+        return null;
+    }
+
+    @Override
+    public CommonVo<Boolean> addDiskBlock(BlockVo blockVo) {
+        SystemService systemService = admin.getConnection().systemService();
+        return null;
     }
 
     @Override
@@ -171,8 +196,8 @@ public class StorageServiceImpl implements ItStorageService {
 
             // 그룹이 있고, 유저가 없을때
             if(permission.groupPresent() && !permission.userPresent()){
-                Group group = ((GroupService.GetResponse) systemService.groupsService().groupService(permission.group().id()).get().send()).get();
-                Role role = ((RoleService.GetResponse) systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+                Group group = systemService.groupsService().groupService(permission.group().id()).get().send().get();
+                Role role = systemService.rolesService().roleService(permission.role().id()).get().send().role();
 
                 pVo.setUser(group.name());
                 pVo.setNameSpace(group.namespace());
@@ -183,8 +208,8 @@ public class StorageServiceImpl implements ItStorageService {
 
             // 그룹이 없고, 유저가 있을때
             if(!permission.groupPresent() && permission.userPresent()){
-                User user = ((UserService.GetResponse) systemService.usersService().userService(permission.user().id()).get().send()).user();
-                Role role = ((RoleService.GetResponse) systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+                User user = systemService.usersService().userService(permission.user().id()).get().send().user();
+                Role role = systemService.rolesService().roleService(permission.role().id()).get().send().role();
 
                 pVo.setUser(user.name());
                 pVo.setProvider(user.domainPresent() ? user.domain().name() : null);
