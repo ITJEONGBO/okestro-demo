@@ -4,8 +4,7 @@ import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.computing.TemplateVo;
-import com.itinfo.itcloud.model.storage.StorageDomainVo;
-import com.itinfo.itcloud.model.storage.TemDiskVo;
+import com.itinfo.itcloud.model.storage.TempStorageVo;
 import com.itinfo.itcloud.service.ItMenuService;
 import com.itinfo.itcloud.service.ItTemplateService;
 import lombok.RequiredArgsConstructor;
@@ -61,17 +60,17 @@ public class TemplateController {
 //		return "computing/template-disk";
 //	}
 
-	@GetMapping("/template-storage")
-	public String storage(String id, Model model){
-		List<StorageDomainVo> storage = itTemplateService.getStorage(id);
-		model.addAttribute("storage", storage);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itTemplateService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-		return "computing/template-storage";
-	}
+//	@GetMapping("/template-storage")
+//	public String storage(String id, Model model){
+//		List<StorageDomainVo> storage = itTemplateService.getStorage(id);
+//		model.addAttribute("storage", storage);
+//		model.addAttribute("id", id);
+//		model.addAttribute("name", itTemplateService.getName(id));
+//
+//		MenuVo m = menu.getMenu();
+//		model.addAttribute("m", m);
+//		return "computing/template-storage";
+//	}
 
 	@GetMapping("/template-permission")
 	public String permission(String id, Model model){
@@ -113,15 +112,10 @@ public class TemplateController {
 	}
 
 
-	@GetMapping("/template-diskStatus")
-	@ResponseBody
-	public List<TemDiskVo> disk(String id){
-		return itTemplateService.getDisk(id);
-	}
 
 	@GetMapping("/template-storageStatus")
 	@ResponseBody
-	public List<StorageDomainVo> storage(String id){
+	public TempStorageVo storage(String id){
 		return itTemplateService.getStorage(id);
 	}
 
@@ -154,6 +148,12 @@ public class TemplateController {
 //	@ResponseBody
 //	public List<NicVo> nic(String id){
 //		return itTemplateService.getNic(id);
+//	}
+
+//	@GetMapping("/template-diskStatus")
+//	@ResponseBody
+//	public List<TemDiskVo> disk(String id){
+//		return itTemplateService.getDisk(id);
 //	}
 	// endregion
 }

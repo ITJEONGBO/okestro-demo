@@ -93,25 +93,25 @@ public class DiskServiceImpl implements ItDiskService {
         List<StorageDomain> storageDomainList =
                 ((StorageDomainsService.ListResponse)systemService.storageDomainsService().list().send()).storageDomains();
 
-        for(StorageDomain storageDomain : storageDomainList) {
-
-
-
-            sdVo = new StorageDomainVo();
-
-
-            sdVo.setId(storageDomain.id());
-            sdVo.setName(storageDomain.name());
-            sdVo.setDomainType(storageDomain.type().value() + (storageDomain.master() ? "(master)" : ""));
-            sdVo.setStatus(storageDomain.statusPresent() ? storageDomain.status().value() : null);     // storageDomainStatus 10개
-            sdVo.setAvailableSize(storageDomain.available()); // 여유공간
-            sdVo.setUsedSize(storageDomain.used()); // 사용된 공간
-//            sdVo.setDiskSize(storageDomain.available().add(storageDomain.used()));
-            sdVo.setDescription(storageDomain.description());
-//            sdVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name() );
-
-            sdVoList.add(sdVo);
-        }
+//        for(StorageDomain storageDomain : storageDomainList) {
+//
+//
+//
+//            sdVo = new StorageDomainVo();
+//
+//
+//            sdVo.setId(storageDomain.id());
+//            sdVo.setName(storageDomain.name());
+//            sdVo.setDomainType(storageDomain.type().value() + (storageDomain.master() ? "(master)" : ""));
+//            sdVo.setStatus(storageDomain.statusPresent() ? storageDomain.status().value() : null);     // storageDomainStatus 10개
+//            sdVo.setAvailableSize(storageDomain.available()); // 여유공간
+//            sdVo.setUsedSize(storageDomain.used()); // 사용된 공간
+////            sdVo.setDiskSize(storageDomain.available().add(storageDomain.used()));
+//            sdVo.setDescription(storageDomain.description());
+////            sdVo.setDatacenterName( ((DataCenterService.GetResponse)systemService.dataCentersService().dataCenterService(id).get().send()).dataCenter().name() );
+//
+//            sdVoList.add(sdVo);
+//        }
         return sdVoList;
     }
 

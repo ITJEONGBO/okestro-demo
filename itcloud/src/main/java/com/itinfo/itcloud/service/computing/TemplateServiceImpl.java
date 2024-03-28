@@ -5,12 +5,10 @@ import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.computing.TemplateVo;
 import com.itinfo.itcloud.model.create.TemplateCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
-import com.itinfo.itcloud.model.storage.StorageDomainVo;
-import com.itinfo.itcloud.model.storage.TemDiskVo;
+import com.itinfo.itcloud.model.storage.TempStorageVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItTemplateService;
 import lombok.extern.slf4j.Slf4j;
-import org.ovirt.engine.sdk4.services.StorageDomainsService;
 import org.ovirt.engine.sdk4.services.SystemService;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,88 +89,30 @@ public class TemplateServiceImpl implements ItTemplateService {
     }
 
 
-
     @Override
-    public List<TemDiskVo> getDisk(String id) {
+    public TempStorageVo getStorage(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
-        List<DiskAttachment> vmdiskList = systemService.templatesService().templateService(id).diskAttachmentsService().list().send().attachments();
-        // 별칭, 가상크기, 연결대상, 인터페이스, 논리적 이름, 상태, 유형, 설명
+        DiskAttachment diskAtt = systemService.templatesService().templateService(id).diskAttachmentsService().list().follow("disk").send().attachments().get(0);
+        Disk disk = systemService.disksService().diskService(diskAtt.id()).get().send().disk();
+        StorageDomain domain = systemService.storageDomainsService().storageDomainService(disk.storageDomains().get(0).id()).get().send().storageDomain();
 
-        return vmdiskList.stream()
-                .filter(DiskAttachment::diskPresent)
-                .map(diskAttachment -> {
-                    Disk disk = systemService.disksService().diskService(diskAttachment.disk().id()).get().send().disk();
+        return TempStorageVo.builder()
+                .domainName(domain.name())
+                .domainType(domain.type())
+                .domainStatus(diskAtt.active())
+                .availableSize(domain.available())
+                .usedSize(domain.used())
+                .totalSize(domain.used().add(domain.available()))
 
-                    return TemDiskVo.builder()
-                            .name(disk.name())
-                            .status(disk.status())
-                            .sparse(disk.sparse())
-                            .diskInterface(disk.interface_())
-                            .virtualSize(disk.provisionedSize())
-                            .type(disk.storageType())
-
-                        .build();
-                })
-                .collect(Collectors.toList());
-
-//        for(DiskAttachment diskAttachment : vmdiskList) {
-//            if (diskAttachment.diskPresent()) {
-//                vdVo = new VmDiskVo();
-//
-//                vdVo.setId(diskAttachment.id());
-//                vdVo.setActive(diskAttachment.active());
-//                vdVo.setReadOnly(diskAttachment.readOnly());
-//                vdVo.setBootAble(diskAttachment.bootable());
-//                vdVo.setLogicalName(diskAttachment.logicalName());
-//                vdVo.setInterfaceName(diskAttachment.interface_().value());
-//
-//                Disk disk = systemService.disksService().diskService(diskAttachment.disk().id()).get().send().disk();
-//                vdVo.setName(disk.name());
-//                vdVo.setDescription(disk.description());
-//                vdVo.setVirtualSize(disk.provisionedSize());
-//                vdVo.setStatus(String.valueOf(disk.status()));  // 유형
-//                vdVo.setType(disk.storageType().value());
-//                vdVo.setConnection(disk.name());
-//
-//                vdVoList.add(vdVo);
-//            }
-//        }
-//        return vdVoList;
-    }
-
-    @Override
-    public List<StorageDomainVo> getStorage(String id) {
-        SystemService systemService = admin.getConnection().systemService();
-
-        List<StorageDomainVo> sdVoList = new ArrayList<>();
-        StorageDomainVo sdVo = null;
-
-        List<StorageDomain> storageDomainList = systemService.storageDomainsService().list().send().storageDomains();
-
-        for(StorageDomain storageDomain : storageDomainList) {
-            sdVo = new StorageDomainVo();
-
-            if(storageDomain.templatesPresent()) {
-                List<StorageDomain> storageDomainList2 =
-                    ((StorageDomainsService.ListResponse)systemService.storageDomainsService().storageDomainService(storageDomain.id()).templatesService().list().send()).storageDomains();
-
-                sdVo.setId(storageDomain.id());
-                sdVo.setName(storageDomain.name());
-                sdVo.setDomainType(storageDomain.type().value() + (storageDomain.master() ? "(master)" : ""));
-                sdVo.setStatus(storageDomain.status().value());     // storageDomainStatus 10개
-                sdVo.setAvailableSize(storageDomain.available()); // 여유공간
-                sdVo.setUsedSize(storageDomain.used()); // 사용된 공간
-                sdVo.setDiskSize(storageDomain.available().add(storageDomain.used()));
-                sdVo.setDescription(storageDomain.description());
-                sdVo.setDatacenterName(systemService.dataCentersService().dataCenterService(id).get().send().dataCenter().name());
-
-                sdVoList.add(sdVo);
-            }else{
-                System.out.println("storage 없음");
-            }
-        }
-        return sdVoList;
+                .diskName(disk.alias())
+                .virtualSize(disk.provisionedSize())
+                .diskStatus(disk.status())
+                .diskSparse(disk.sparse())  // 할당정책
+                .diskInterface(diskAtt.interface_())
+                .diskType(disk.storageType())
+                // 날짜
+                .build();
     }
 
     @Override
@@ -220,26 +160,22 @@ public class TemplateServiceImpl implements ItTemplateService {
         SystemService systemService = admin.getConnection().systemService();
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
-        List<EventVo> eVoList = new ArrayList<>();
-        EventVo eVo = null;
 
         List<Event> eventList = systemService.eventsService().list().send().events();
         Template t = systemService.templatesService().templateService(id).get().send().template();
 
-        for(Event event : eventList){
-            if(event.templatePresent() && event.template().name().equals(t.name())){
-                eVo = EventVo.builder()
-                        .severity(event.severity().value())     // 상태[LogSeverity] : alert, error, normal, warning
-                        .time(sdf.format(event.time()))
-                        .message(event.description())
-                        .relationId(event.correlationIdPresent() ? event.correlationId() : null)
-                        .source(event.origin())
-                        .build();
-
-                eVoList.add(eVo);
-            }
-        }
-        return eVoList;
+        return eventList.stream()
+                .filter(event -> event.templatePresent() && event.template().name().equals(t.name()))
+                .map(event ->
+                        EventVo.builder()
+                            .severity(event.severity().value())     // 상태[LogSeverity] : alert, error, normal, warning
+                            .time(sdf.format(event.time()))
+                            .message(event.description())
+                            .relationId(event.correlationIdPresent() ? event.correlationId() : null)
+                            .source(event.origin())
+                        .build()
+                )
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -340,6 +276,49 @@ public class TemplateServiceImpl implements ItTemplateService {
 //                            .ipv6(getIp(systemService, vm.id(), "v6"))
 //                            .build()
 //                )
+//                .collect(Collectors.toList());
+//    }
+
+
+//    @Override
+//    public List<TemDiskVo> getDisk(String id) {
+//        SystemService systemService = admin.getConnection().systemService();
+//
+//        List<DiskAttachment> vmdiskList = systemService.templatesService().templateService(id).diskAttachmentsService().list().send().attachments();
+//        // 별칭, 가상크기, 연결대상, 인터페이스, 논리적 이름, 상태, 유형, 설명
+//
+//        return vmdiskList.stream()
+//                .filter(DiskAttachment::diskPresent)
+//                .map(diskAttachment -> {
+//                    Disk disk = systemService.disksService().diskService(diskAttachment.disk().id()).get().send().disk();
+//                    System.out.println("interface: "+disk.interface_());
+//                    return TemDiskVo.builder()
+//                            .name(disk.name())
+//                            .status(disk.status())
+//                            .sparse(disk.sparse())
+////                            .diskInterface(disk.interface_()) // 인터페이스 안나옴
+//                            .virtualSize(disk.provisionedSize())
+//                            .actualSize(disk.actualSize())  // 1보다 작은거 처리는 front에서
+//                            .type(disk.storageType())
+//                            // 생성날짜
+//                            .storageDomainVo(
+//                                    disk.storageDomains().stream()
+//                                            .map(storageDomain -> {
+//                                                StorageDomain sd = systemService.storageDomainsService().storageDomainService(storageDomain.id()).get().send().storageDomain();
+//
+//                                                return StorageDomainVo.builder()
+//                                                        .name(sd.name())
+//                                                        .domainType(sd.type()) // 마스터
+//                                                        // 상태
+//                                                        .usedSize(sd.used())
+//                                                        .availableSize(sd.available())
+//                                                        .diskSize( sd.used().add(sd.available()) )
+//                                                        .build();
+//                                            })
+//                                            .collect(Collectors.toList())
+//                            )
+//                            .build();
+//                })
 //                .collect(Collectors.toList());
 //    }
     // endregion

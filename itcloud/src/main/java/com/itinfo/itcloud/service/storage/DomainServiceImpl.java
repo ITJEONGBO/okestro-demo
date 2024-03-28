@@ -36,31 +36,31 @@ public class DomainServiceImpl implements ItDomainService {
         List<StorageDomain> storageDomainList =
                 ((StorageDomainsService.ListResponse)systemService.storageDomainsService().list().send()).storageDomains();
 
-        for(StorageDomain storageDomain : storageDomainList){
-            sdVo = new StorageDomainVo();
-
-            sdVo.setId(storageDomain.id());
-            sdVo.setName(storageDomain.name());
-            sdVo.setDomainType(storageDomain.type().value() + (storageDomain.master() ? "(master)" : ""));
-            sdVo.setStorageType(storageDomain.storage().type().value());
-            sdVo.setDomainFormat(storageDomain.storageFormat().value());
-
-            sdVo.setAvailableSize(storageDomain.availablePresent() ? storageDomain.available() : null); // 여유공간
-            sdVo.setUsedSize(storageDomain.usedPresent() ? storageDomain.used() : null); // 사용된 공간
-            sdVo.setDiskSize( (storageDomain.availablePresent() && storageDomain.usedPresent()) ? storageDomain.available().add(storageDomain.used()) : null);
-
-            sdVo.setDescription(storageDomain.description());
-
-
-
-            if(storageDomain.statusPresent()){
-                sdVo.setStatus(storageDomain.status().value());
-            }else if(storageDomain.externalStatusPresent()){
-                sdVo.setStatus(storageDomain.externalStatus().value());
-            }
-
-            sdVoList.add(sdVo);
-        }
+//        for(StorageDomain storageDomain : storageDomainList){
+//            sdVo = new StorageDomainVo();
+//
+//            sdVo.setId(storageDomain.id());
+//            sdVo.setName(storageDomain.name());
+//            sdVo.setDomainType(storageDomain.type().value() + (storageDomain.master() ? "(master)" : ""));
+//            sdVo.setStorageType(storageDomain.storage().type().value());
+//            sdVo.setDomainFormat(storageDomain.storageFormat().value());
+//
+//            sdVo.setAvailableSize(storageDomain.availablePresent() ? storageDomain.available() : null); // 여유공간
+//            sdVo.setUsedSize(storageDomain.usedPresent() ? storageDomain.used() : null); // 사용된 공간
+//            sdVo.setDiskSize( (storageDomain.availablePresent() && storageDomain.usedPresent()) ? storageDomain.available().add(storageDomain.used()) : null);
+//
+//            sdVo.setDescription(storageDomain.description());
+//
+//
+//
+//            if(storageDomain.statusPresent()){
+//                sdVo.setStatus(storageDomain.status().value());
+//            }else if(storageDomain.externalStatusPresent()){
+//                sdVo.setStatus(storageDomain.externalStatus().value());
+//            }
+//
+//            sdVoList.add(sdVo);
+//        }
         return sdVoList;
     }
 
@@ -68,28 +68,30 @@ public class DomainServiceImpl implements ItDomainService {
     public StorageDomainVo getDomain(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
-        StorageDomainVo sdVo = new StorageDomainVo();
+//        StorageDomainVo sdVo = new StorageDomainVo();
+//
+//        StorageDomain storageDomain =
+//                ((StorageDomainService.GetResponse)systemService.storageDomainsService().storageDomainService(id).get().send()).storageDomain();
+//
+//        sdVo.setId(storageDomain.id());
+//        sdVo.setName(storageDomain.name());
+//
+//        sdVo.setAvailableSize(storageDomain.available());
+//        sdVo.setUsedSize(storageDomain.used());
+//        sdVo.setCommitedSize(storageDomain.committed());
+//        sdVo.setDiskSize(storageDomain.availablePresent() ? storageDomain.available().add(storageDomain.used()) : null);
+////        sdVo.setOverCommit( storageDomain.committedPresent() ? sdVo.getCommitedSize().divide(sdVo.getAvailableSize()) : null);
+//
+//        sdVo.setStorageAddress(storageDomain.storagePresent() ? storageDomain.storage().address() : null);
+//        sdVo.setStoragePath(storageDomain.storage().path());
+//        sdVo.setNfsVersion(storageDomain.storage().nfsVersionPresent() ? storageDomain.storage().nfsVersion().value() : null);
+//        sdVo.setWarning(storageDomain.warningLowSpaceIndicatorAsInteger());
+//        sdVo.setBlockSize(storageDomain.criticalSpaceActionBlockerAsInteger());
 
-        StorageDomain storageDomain =
-                ((StorageDomainService.GetResponse)systemService.storageDomainsService().storageDomainService(id).get().send()).storageDomain();
-
-        sdVo.setId(storageDomain.id());
-        sdVo.setName(storageDomain.name());
-
-        sdVo.setAvailableSize(storageDomain.available());
-        sdVo.setUsedSize(storageDomain.used());
-        sdVo.setCommitedSize(storageDomain.committed());
-        sdVo.setDiskSize(storageDomain.availablePresent() ? storageDomain.available().add(storageDomain.used()) : null);
-//        sdVo.setOverCommit( storageDomain.committedPresent() ? sdVo.getCommitedSize().divide(sdVo.getAvailableSize()) : null);
-
-        sdVo.setStorageAddress(storageDomain.storagePresent() ? storageDomain.storage().address() : null);
-        sdVo.setStoragePath(storageDomain.storage().path());
-        sdVo.setNfsVersion(storageDomain.storage().nfsVersionPresent() ? storageDomain.storage().nfsVersion().value() : null);
-        sdVo.setWarning(storageDomain.warningLowSpaceIndicatorAsInteger());
-        sdVo.setBlockSize(storageDomain.criticalSpaceActionBlockerAsInteger());
-
-        return sdVo;
+//        return sdVo;
+        return null;
     }
+
 
     @Override
     public List<DataCenterVo> getDatacenter(String id) {
@@ -206,8 +208,8 @@ public class DomainServiceImpl implements ItDomainService {
             // 최근 업데이트
             // 가상머신
 
-            diskVo.setStatus(disk.status().value());
-            diskVo.setStorageType(disk.storageType().value());
+            diskVo.setStatus(disk.status());
+            diskVo.setStorageType(disk.storageType());
             diskVo.setDescription(disk.description());
 
             dVoList.add(diskVo);

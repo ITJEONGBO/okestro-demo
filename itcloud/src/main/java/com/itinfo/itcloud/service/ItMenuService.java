@@ -1,13 +1,15 @@
 package com.itinfo.itcloud.service;
 
 import com.itinfo.itcloud.model.MenuVo;
-import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.computing.ClusterVo;
+import com.itinfo.itcloud.model.computing.DataCenterVo;
+import com.itinfo.itcloud.model.computing.HostVo;
+import com.itinfo.itcloud.model.computing.VmVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.storage.DiskVo;
-import com.itinfo.itcloud.model.storage.StorageDomainVo;
 import com.itinfo.itcloud.ovirt.ConnectionService;
 import org.ovirt.engine.sdk4.Connection;
-import org.ovirt.engine.sdk4.services.*;
+import org.ovirt.engine.sdk4.services.SystemService;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -132,22 +134,22 @@ public class ItMenuService {
 
 
         //region: storage
-        List<StorageDomainVo> sdVoList = new ArrayList<>();
-        for(StorageDomain storageDomain : storageDomainList) {
-            StorageDomainVo sdVo = new StorageDomainVo();
-            sdVo.setId(storageDomain.id());
-            sdVo.setName(storageDomain.name());
-
-            if(storageDomain.dataCentersPresent()) {
-                for (int i = 0; i < storageDomain.dataCenters().size(); i++) {
-                    DataCenter dc = ((DataCenterService.GetResponse) systemService.dataCentersService().dataCenterService(storageDomain.dataCenters().get(i).id()).get().send()).dataCenter();
-                    sdVo.setDatacenterId(dc.id());
-                    sdVo.setDatacenterName(dc.name());
-                }
-            }
-            sdVoList.add(sdVo);
-        }
-        m.setDomain(sdVoList);
+//        List<StorageDomainVo> sdVoList = new ArrayList<>();
+//        for(StorageDomain storageDomain : storageDomainList) {
+//            StorageDomainVo sdVo = new StorageDomainVo();
+//            sdVo.setId(storageDomain.id());
+//            sdVo.setName(storageDomain.name());
+//
+//            if(storageDomain.dataCentersPresent()) {
+//                for (int i = 0; i < storageDomain.dataCenters().size(); i++) {
+//                    DataCenter dc = ((DataCenterService.GetResponse) systemService.dataCentersService().dataCenterService(storageDomain.dataCenters().get(i).id()).get().send()).dataCenter();
+//                    sdVo.setDatacenterId(dc.id());
+//                    sdVo.setDatacenterName(dc.name());
+//                }
+//            }
+//            sdVoList.add(sdVo);
+//        }
+//        m.setDomain(sdVoList);
 
         // 볼륨 미완
 

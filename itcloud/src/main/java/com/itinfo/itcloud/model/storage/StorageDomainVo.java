@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.model.storage;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -7,18 +8,20 @@ import org.ovirt.engine.sdk4.types.StorageDomainStatus;
 import org.ovirt.engine.sdk4.types.StorageDomainType;
 
 import java.math.BigInteger;
-@Getter @Setter @ToString
+@Getter @Setter @ToString @Builder
 public class StorageDomainVo {
     private String id;
     private String name;
     private String comment;
     private String description;
-    private StorageDomainStatus status;
 
-    private BigInteger availableSize;
-    private BigInteger usedSize;
+    private StorageDomainStatus status;
+    private StorageDomainType domainType;       // 도메인 유형
+
+    private BigInteger availableSize; // 여유공간
+    private BigInteger usedSize; // 사용된 공간
     private BigInteger commitedSize;
-    private BigInteger diskSize;
+    private BigInteger diskSize; // 전체공간
     private BigInteger overCommit; // 오버 활당 비율 (availableSize
     private int imageCnt;   // 이미지 디스크사이즈
 
@@ -28,7 +31,6 @@ public class StorageDomainVo {
     private String storageAddress;  // 경로
     private int blockSize;      // 디스크공간 동작차단
 
-    private StorageDomainType domainType;       // 도메인 유형
     private String domainFormat;
     private String storageType;
     private boolean backup;
