@@ -1,19 +1,14 @@
 package com.itinfo.itcloud.controller.computing;
 
+import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.AffinityGroupCreateVo;
 import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
-import com.itinfo.itcloud.model.error.CommonVo;
-import com.itinfo.itcloud.model.MenuVo;
-import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.ClusterCreateVo;
+import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.service.ItClusterService;
-
-import com.itinfo.itcloud.service.ItMenuService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.ovirt.engine.sdk4.services.SystemService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -26,90 +21,6 @@ import java.util.List;
 @RequestMapping("/computing")
 public class ClusterController {
 	private final ItClusterService itClusterService;
-	private final ItMenuService menu;
-
-
-	// 클러스터 목록
-	@GetMapping("/clusters")
-	public String clusters(Model model) {
-		List<ClusterVo> clusterVOList = itClusterService.getList();
-		model.addAttribute("clusters", clusterVOList);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/clusters";
-	}
-
-	// 클러스터 일반 출력
-	@GetMapping("/cluster")
-	public String cluster(String id, Model model) {
-		ClusterVo cluster = itClusterService.getInfo(id);
-		model.addAttribute("cluster", cluster);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itClusterService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/cluster";
-	}
-
-	// 클러스터 네트워크 출력
-	@GetMapping("/cluster/network")
-	public String network(String id, Model model) {
-		List<NetworkVo> network = itClusterService.getNetwork(id);
-		model.addAttribute("network", network);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itClusterService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/cluster-network";
-	}
-
-	// 클러스터 호스트 출력
-	@GetMapping("/cluster/host")
-	public String hosts(String id, Model model) {
-		List<HostVo> hosts = itClusterService.getHost(id);
-		model.addAttribute("hosts", hosts);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itClusterService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/cluster-host";
-	}
-
-	// 클러스터 가상머신 출력
-	@GetMapping("/cluster/vm")
-	public String vm(String id, Model model) {
-		List<VmVo> vms = itClusterService.getVm(id);
-		model.addAttribute("vms", vms);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itClusterService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/cluster-vm";
-	}
-
-
-	// 클러스터 선호도 그룹 출력
-	@GetMapping("/cluster/affinityGroup")
-	public String aff(String id, Model model) {
-		List<AffinityGroupVo> aff = itClusterService.getAffinitygroup(id);
-		model.addAttribute("aff", aff);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itClusterService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-		return "computing/cluster-affGroup";
-	}
 
 	// 클러스터 선호도 그룹 생성
 	@PostMapping("/cluster/affinityGroup/add")
@@ -127,21 +38,6 @@ public class ClusterController {
 	@PostMapping("/cluster/affinityGroup/delete")
 	public CommonVo<Boolean> deleteAffinitygroup(@RequestParam String clusterId, @RequestParam String id){
 		return itClusterService.deleteAffinitygroup(clusterId, id);
-	}
-
-
-	// 클러스터 선호도 레이블 출력
-	@GetMapping("/cluster/affinityLabel")
-	public String affLabel(String id, Model model) {
-		List<AffinityLabelVo> aff = itClusterService.getAffinitylabelList(id);
-		model.addAttribute("aff", aff);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itClusterService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/cluster-affLabel";
 	}
 
 
@@ -184,35 +80,6 @@ public class ClusterController {
 	}
 
 
-
-	// 클러스터 권한 출력
-	@GetMapping("/cluster/permission")
-	public String permission(String id, Model model) {
-		List<PermissionVo> permission = itClusterService.getPermission(id);
-		model.addAttribute("permission", permission);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itClusterService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/cluster-permission";
-	}
-
-	// 클러스터 이벤트 출력
-	@GetMapping("/cluster/event")
-	public String event(String id, Model model) {
-		List<EventVo> event = itClusterService.getEvent(id);
-		model.addAttribute("event", event);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itClusterService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/cluster-event";
-	}
-
 	
 
 
@@ -223,6 +90,7 @@ public class ClusterController {
 		model.addAttribute("dc", dcList);
 		return "computing/cluster-add";
 	}
+
 
 	@PostMapping("/cluster/add")
 	public CommonVo<Boolean> addCluster(@RequestBody ClusterCreateVo cVo){

@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.model.storage;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.ovirt.engine.sdk4.types.DiskInterface;
@@ -8,7 +9,7 @@ import org.ovirt.engine.sdk4.types.DiskStorageType;
 
 import java.math.BigInteger;
 
-@Getter @Setter
+@Getter @Setter @Builder
 public class DiskVo {
     private String id;
     private String name;

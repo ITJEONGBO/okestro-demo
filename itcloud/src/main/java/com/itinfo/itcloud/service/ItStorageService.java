@@ -15,7 +15,17 @@ import java.util.List;
 public interface ItStorageService {
     String getName(String id);
 
+
     List<DiskVo> getDiskVoList(String dcId);    // 디스크 리스트
+    // 디스크 새로만들기
+    // 디스크 수정
+    // 디스크 삭제
+    // 디스크 이동
+    // 디스크 복사
+    // 디스크 업로드
+    // 디스크 다운로드
+
+
     List<DomainVo> getDomainList();    // 도메인 리스트
     List<VolumeVo> getVolumeVoList(String dcId);   // 나중에
     List<DomainVo> getStorageList(String dcId);    // 스토리지 리스트(이게 dc있는거)

@@ -1,17 +1,12 @@
 package com.itinfo.itcloud.controller.computing;
 
-import com.itinfo.itcloud.model.MenuVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.storage.VmDiskVo;
-import com.itinfo.itcloud.service.ItMenuService;
-import com.itinfo.itcloud.service.ItVmService;
 import com.itinfo.itcloud.service.ItSystemPropertyService;
-
+import com.itinfo.itcloud.service.ItVmService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,169 +20,6 @@ import java.util.List;
 public class VmController {
 	private final ItSystemPropertyService itSystemPropertyService;
 	private final ItVmService itVmService;
-	private final ItMenuService menu;
-
-	@GetMapping("/vms")
-	public String vmList(Model model) {
-		List<VmVo> vms = itVmService.getList();
-		model.addAttribute("vms", vms);
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-		return "computing/vms";
-	}
-
-	@GetMapping("/vm")
-	public String vm(String id, Model model) {
-		VmVo vm = itVmService.getInfo(id);
-		model.addAttribute("vm", vm);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itVmService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/vm";
-	}
-
-	@GetMapping("/vm-nic")
-	public String nic(String id, Model model) {
-		List<NicVo> nic = itVmService.getNic(id);
-		model.addAttribute("nic", nic);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itVmService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/vm-nic";
-	}
-
-	@GetMapping("/vm-disk")
-	public String disk(String id, Model model) {
-		List<VmDiskVo> disk = itVmService.getDisk(id);
-		model.addAttribute("disk", disk);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itVmService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/vm-disk";
-	}
-
-	@GetMapping("/vm-snapshot")
-	public String snapshot(String id, Model model) {
-		log.info("---snapshot");
-		List<SnapshotVo> snapshot = itVmService.getSnapshot(id);
-		model.addAttribute("snapshot", snapshot);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itVmService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/vm-snapshot";
-	}
-
-	@GetMapping("/vm-application")
-	public String application(String id, Model model) {
-		List<ApplicationVo> app = itVmService.getApplication(id);
-		model.addAttribute("app", app);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itVmService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/vm-application";
-	}
-
-	@GetMapping("/vm-affGroup")
-	public String affGroup(String id, Model model) {
-		List<AffinityGroupVo> aff = itVmService.getAffinitygroup(id);
-		model.addAttribute("aff", aff);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itVmService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/vm-affGroup";
-	}
-
-	@GetMapping("/vm-affLabel")
-	public String affLabel(String id, Model model) {
-		List<AffinityLabelVo> aff = itVmService.getAffinitylabel(id);
-		model.addAttribute("aff", aff);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itVmService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/vm-affLabel";
-	}
-
-	@GetMapping("/vm-guest")
-	public String guest(String id, Model model) {
-		GuestInfoVo guest = itVmService.getGuestInfo(id);
-		model.addAttribute("guest", guest);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itVmService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/vm-guest";
-	}
-
-	@GetMapping("/vm-permission")
-	public String permission(String id, Model model) {
-		List<PermissionVo> permission = itVmService.getPermission(id);
-		model.addAttribute("permission", permission);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itVmService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/vm-permission";
-	}
-
-	@GetMapping("/vm-event")
-	public String event(String id, Model model) {
-		List<EventVo> event = itVmService.getEvent(id);
-		model.addAttribute("event", event);
-		model.addAttribute("id", id);
-		model.addAttribute("name", itVmService.getName(id));
-
-		MenuVo m = menu.getMenu();
-		model.addAttribute("m", m);
-
-		return "computing/vm-event";
-	}
-
-
-	@GetMapping("/vm-add")
-	public String add(Model model){
-		List<ClusterVo> clusterVoList = itVmService.getClusterList();
-		model.addAttribute("c", clusterVoList);
-		return "computing/vm-add";
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	//region: ResponseBody
 
