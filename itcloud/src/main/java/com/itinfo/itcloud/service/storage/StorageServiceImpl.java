@@ -10,7 +10,9 @@ import com.itinfo.itcloud.model.storage.*;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItStorageService;
 import lombok.extern.slf4j.Slf4j;
-import org.ovirt.engine.sdk4.services.*;
+import org.ovirt.engine.sdk4.builders.DiskBuilder;
+import org.ovirt.engine.sdk4.services.DisksService;
+import org.ovirt.engine.sdk4.services.SystemService;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,12 +35,12 @@ public class StorageServiceImpl implements ItStorageService {
     // de에 있는 디스크로 바꿔야하긴한데
     @Override
     public List<DiskVo> getDiskVoList(String dcId) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<StorageDomain> sdList = systemService.storageDomainsService().list().send().storageDomains();
-//        List<Disk> diskList = systemService.storageDomainsService().storageDomainService(sdId).disksService().list().send().disks();
+        List<StorageDomain> sdList = system.storageDomainsService().list().send().storageDomains();
+//        List<Disk> diskList = system.storageDomainsService().storageDomainService(sdId).disksService().list().send().disks();
 
-        List<Disk> diskList = systemService.disksService().list().send().disks();
+        List<Disk> diskList = system.disksService().list().send().disks();
 
         return diskList.stream()
                 .map(disk ->
@@ -58,40 +60,103 @@ public class StorageServiceImpl implements ItStorageService {
                 .collect(Collectors.toList());
     }
 
+    // 디스크 - 새로만들기 - 이미지(데이터센터, 스토리지 도메인) 목록 보여지게
     @Override
-    public ImageVo setAddDisk() {
-        return null;
+    public DiskDcVo setAddDisk(String dcId) {
+        SystemService system = admin.getConnection().systemService();
+
+        DataCenter dataCenter = system.dataCentersService().dataCenterService(dcId).get().send().dataCenter();
+        List<StorageDomain> sdList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().list().send().storageDomains();
+        List<StorageDomain> domainList = system.storageDomainsService().list().send().storageDomains();
+
+        // storagedomain id  /한개로 가정
+        String sdId = domainList.stream()
+                .filter(storageDomain ->
+                        storageDomain.dataCentersPresent() && storageDomain.dataCenters().stream().anyMatch(dataCenter1 -> dataCenter1.id().equals(dcId))
+                )
+                .map(StorageDomain::id)
+                .findAny()
+                .orElse(null);
+
+        List<DiskProfile> dpList = system.storageDomainsService().storageDomainService(sdId).diskProfilesService().list().send().profiles();
+
+        return DiskDcVo.builder()
+                .dcId(dcId)
+                .dcName(dataCenter.name())
+                .domainVoList(
+                    sdList.stream()
+                        .map(storageDomain ->
+                            DomainVo.builder()
+                                .id(storageDomain.id())
+                                .name(storageDomain.name())
+                                .diskSize(storageDomain.available().add(storageDomain.used()))
+                                .availableSize(storageDomain.available())
+                            .build()
+                        )
+                        .collect(Collectors.toList())
+                )
+//                .dpVoList(
+//                    dpList.stream()
+//                        .map(diskProfile ->
+//                            DiskProfileVo.builder()
+//                                .id(diskProfile.id())
+//                                .name(diskProfile.name())
+//                            .build()
+//                        )
+//                        .collect(Collectors.toList())
+//                )
+            .build();
     }
 
     @Override
-    public CommonVo<Boolean> addDiskImage(ImageVo imageVo) {
-        SystemService systemService = admin.getConnection().systemService();
+    public CommonVo<Boolean> addDiskImage(ImageCreateVo image) {
+        // required: storage_domain, provisioned_size, format
+        SystemService system = admin.getConnection().systemService();
+        StorageDomain sd = system.storageDomainsService().storageDomainService(image.getDomainId()).get().send().storageDomain();
 
-        DisksService disksService = systemService.disksService();
+        // 디스크는 중복이름이 가능한가봄
+        DisksService disksService = system.disksService();
 
-        //
+        try{
+            DiskBuilder diskBuilder = new DiskBuilder();
+            diskBuilder
+                .name(image.getName())
+                .description(image.getDescription())
+                .provisionedSize(image.getSize())
+                .storageDomain(sd)
+                .format(DiskFormat.COW) // 기본 값
+                .sparse(image.isSparse());
+//                .diskProfile(new DiskProfileBuilder().id(image.getProfileId()).build())
 
+            System.out.println(image.getSize());
+//            disksService.add().disk(diskBuilder).send().disk();    // 디스크 생성
 
-        return null;
+            log.info("성공: 호스트 {} 선호도레이블", image.getName());
+            return CommonVo.successResponse();
+        }catch (Exception e){
+            log.error("실패: 새 가상 디스크 (이미지) 생성");
+            e.printStackTrace();
+            return CommonVo.failResponse(e.getMessage());
+        }
     }
 
     @Override
     public CommonVo<Boolean> addDiskLun(LunVo lunVo) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
         return null;
     }
 
     @Override
     public CommonVo<Boolean> addDiskBlock(BlockVo blockVo) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
         return null;
     }
 
     @Override
     public List<DomainVo> getDomainList() {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<StorageDomain> storageDomainList = systemService.storageDomainsService().list().send().storageDomains();
+        List<StorageDomain> storageDomainList = system.storageDomainsService().list().send().storageDomains();
 
         return storageDomainList.stream()
                 .map(storageDomain ->
@@ -123,9 +188,9 @@ public class StorageServiceImpl implements ItStorageService {
     // dc에 잇는 스토리지 도메인
     @Override
     public List<DomainVo> getStorageList(String dcId) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<StorageDomain> storageDomainList = systemService.dataCentersService().dataCenterService(dcId).storageDomainsService().list().send().storageDomains();
+        List<StorageDomain> storageDomainList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().list().send().storageDomains();
 
         return storageDomainList.stream()
                 .map(storageDomain ->
@@ -145,9 +210,9 @@ public class StorageServiceImpl implements ItStorageService {
 
     @Override
     public List<NetworkVo> getNetworkVoList(String dcId) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<Network> networkList = systemService.dataCentersService().dataCenterService(dcId).networksService().list().send().networks();
+        List<Network> networkList = system.dataCentersService().dataCenterService(dcId).networksService().list().send().networks();
 
         return networkList.stream()
                 .map(network ->
@@ -162,9 +227,9 @@ public class StorageServiceImpl implements ItStorageService {
 
     @Override
     public List<ClusterVo> getClusterVoList(String dcId) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<Cluster> clusterList = systemService.dataCentersService().dataCenterService(dcId).clustersService().list().send().clusters();
+        List<Cluster> clusterList = system.dataCentersService().dataCenterService(dcId).clustersService().list().send().clusters();
 
         return clusterList.stream()
                 .map(cluster ->
@@ -182,12 +247,12 @@ public class StorageServiceImpl implements ItStorageService {
     //데이터센터 - 권한
     @Override
     public List<PermissionVo> getPermission(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
         List<PermissionVo> pVoList = new ArrayList<>();
         PermissionVo pVo = null;
 
-        List<Permission> permissionList = systemService.dataCentersService().dataCenterService(id).permissionsService().list().send().permissions();
+        List<Permission> permissionList = system.dataCentersService().dataCenterService(id).permissionsService().list().send().permissions();
 
 
         for(Permission permission : permissionList){
@@ -196,8 +261,8 @@ public class StorageServiceImpl implements ItStorageService {
 
             // 그룹이 있고, 유저가 없을때
             if(permission.groupPresent() && !permission.userPresent()){
-                Group group = systemService.groupsService().groupService(permission.group().id()).get().send().get();
-                Role role = systemService.rolesService().roleService(permission.role().id()).get().send().role();
+                Group group = system.groupsService().groupService(permission.group().id()).get().send().get();
+                Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
 
                 pVo.setUser(group.name());
                 pVo.setNameSpace(group.namespace());
@@ -208,8 +273,8 @@ public class StorageServiceImpl implements ItStorageService {
 
             // 그룹이 없고, 유저가 있을때
             if(!permission.groupPresent() && permission.userPresent()){
-                User user = systemService.usersService().userService(permission.user().id()).get().send().user();
-                Role role = systemService.rolesService().roleService(permission.role().id()).get().send().role();
+                User user = system.usersService().userService(permission.user().id()).get().send().user();
+                Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
 
                 pVo.setUser(user.name());
                 pVo.setProvider(user.domainPresent() ? user.domain().name() : null);
@@ -225,10 +290,10 @@ public class StorageServiceImpl implements ItStorageService {
 
     @Override
     public List<EventVo> getEvent(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
-        List<Event> eventList = systemService.eventsService().list().send().events();
+        List<Event> eventList = system.eventsService().list().send().events();
 
         log.info("데이터센터 {} 이벤트 출력", getName(id));
         return eventList.stream()

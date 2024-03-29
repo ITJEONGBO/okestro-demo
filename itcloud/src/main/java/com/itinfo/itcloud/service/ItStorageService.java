@@ -17,9 +17,9 @@ public interface ItStorageService {
 
     List<DiskVo> getDiskVoList(String dcId);    // 디스크 리스트
 
-    ImageVo setAddDisk();
+    DiskDcVo setAddDisk(String dcId);
 
-    CommonVo<Boolean> addDiskImage(ImageVo imageVo);     // 디스크 새로만들기 - 이미지
+    CommonVo<Boolean> addDiskImage(ImageCreateVo imageCreateVo);     // 디스크 새로만들기 - 이미지
     CommonVo<Boolean> addDiskLun(LunVo lunVo);     // 디스크 새로만들기 - lun
     CommonVo<Boolean> addDiskBlock(BlockVo blockVo);     // 디스크 새로만들기 - block
 

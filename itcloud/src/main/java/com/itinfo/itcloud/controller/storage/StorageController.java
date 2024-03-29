@@ -3,17 +3,14 @@ package com.itinfo.itcloud.controller.storage;
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
+import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
-import com.itinfo.itcloud.model.storage.DiskVo;
-import com.itinfo.itcloud.model.storage.DomainVo;
-import com.itinfo.itcloud.model.storage.VolumeVo;
+import com.itinfo.itcloud.model.storage.*;
 import com.itinfo.itcloud.service.ItStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,6 +26,20 @@ public class StorageController {
 	public List<DiskVo> disks(String id){
 		return itStorageService.getDiskVoList(id);
 	}
+
+
+	@GetMapping("/diskShow")
+	@ResponseBody
+	public DiskDcVo setAddDisk(String id){
+		return itStorageService.setAddDisk(id);
+	}
+
+	@PostMapping("/disk/add/image")
+	public CommonVo<Boolean> addDiskImage(@RequestBody ImageCreateVo image){
+		log.info("새가상 디스크 - 이미지 생성");
+		return itStorageService.addDiskImage(image);
+	}
+
 
 	@GetMapping("/domains")
 	@ResponseBody
