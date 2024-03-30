@@ -34,7 +34,7 @@ public class StorageController {
 		return itStorageService.setAddDisk(id);
 	}
 
-	@PostMapping("/disk/add/image")
+	@PostMapping("/disk-image/add")
 	public CommonVo<Boolean> addDiskImage(@RequestBody ImageCreateVo image){
 		log.info("새가상 디스크 - 이미지 생성");
 		return itStorageService.addDiskImage(image);

@@ -11,16 +11,22 @@ import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItStorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.DiskBuilder;
+import org.ovirt.engine.sdk4.builders.DiskProfileBuilder;
+import org.ovirt.engine.sdk4.builders.StorageDomainBuilder;
 import org.ovirt.engine.sdk4.services.DisksService;
 import org.ovirt.engine.sdk4.services.SystemService;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static org.ovirt.engine.sdk4.builders.Builders.diskProfile;
 
 @Service
 @Slf4j
@@ -110,32 +116,31 @@ public class StorageServiceImpl implements ItStorageService {
 
     @Override
     public CommonVo<Boolean> addDiskImage(ImageCreateVo image) {
-        // required: storage_domain, provisioned_size, format
         SystemService system = admin.getConnection().systemService();
-        StorageDomain sd = system.storageDomainsService().storageDomainService(image.getDomainId()).get().send().storageDomain();
 
-        // 디스크는 중복이름이 가능한가봄
         DisksService disksService = system.disksService();
 
         try{
             DiskBuilder diskBuilder = new DiskBuilder();
             diskBuilder
-                .name(image.getName())
-                .description(image.getDescription())
-                .provisionedSize(image.getSize())
-                .storageDomain(sd)
-                .format(DiskFormat.COW) // 기본 값
-                .sparse(image.isSparse());
-//                .diskProfile(new DiskProfileBuilder().id(image.getProfileId()).build())
+                    .name(image.getName())
+                    .format(DiskFormat.COW)
+                    .description(image.getDescription())
+					.wipeAfterDelete(image.isWipeAfterDelete())
+					.provisionedSize(image.getSize().multiply(BigInteger.valueOf(2L).pow(30)))
+					.storageDomains(new StorageDomain[]{ new StorageDomainBuilder().id(image.getDomain()).build()})
+                    .build();
 
-            System.out.println(image.getSize());
-//            disksService.add().disk(diskBuilder).send().disk();    // 디스크 생성
+            Disk disk = disksService.add().disk(diskBuilder).send().disk();
 
-            log.info("성공: 호스트 {} 선호도레이블", image.getName());
+            do{
+                log.info("ok");
+            }while (disk.status().equals(DiskStatus.OK));
+
+            log.info("성공: 디스크 이미지 {} 생성", image.getName());
             return CommonVo.successResponse();
         }catch (Exception e){
             log.error("실패: 새 가상 디스크 (이미지) 생성");
-            e.printStackTrace();
             return CommonVo.failResponse(e.getMessage());
         }
     }
@@ -143,6 +148,8 @@ public class StorageServiceImpl implements ItStorageService {
     @Override
     public CommonVo<Boolean> addDiskLun(LunVo lunVo) {
         SystemService system = admin.getConnection().systemService();
+
+
         return null;
     }
 
