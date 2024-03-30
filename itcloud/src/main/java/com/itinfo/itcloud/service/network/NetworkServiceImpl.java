@@ -35,62 +35,57 @@ public class NetworkServiceImpl implements ItNetworkService {
 
     @Override
     public List<NetworkVo> getList() {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<Network> networkList = systemService.networksService().list().send().networks();
-        List<NetworkVo> nwVoList = new ArrayList<>();
-        NetworkVo nwVo = null;
-        NetworkUsageVo nuVo = null;
+        List<Network> networkList = system.networksService().list().send().networks();
 
-        for(Network network : networkList){
-            List<NetworkLabel> nlList = systemService.networksService().networkService(network.id()).networkLabelsService().list().send().labels();
+        return networkList.stream()
+                .map(network -> {
+                    List<NetworkLabel> nlList = system.networksService().networkService(network.id()).networkLabelsService().list().send().labels();
+                    String label = nlList.stream()
+                            .map(NetworkLabel::id)
+                            .findFirst()
+                            .orElse(null);
 
-            String label = "";
-            for(NetworkLabel nl : nlList) {
-                label = nl.id();
-            }
+                    String providerId = "";
+                    String providerName = "";
+                    if (network.externalProviderPresent()) {
+                        OpenStackNetworkProvider np = system.openstackNetworkProvidersService().providerService(network.externalProvider().id()).get().send().provider();
+                        providerId = np.id();
+                        providerName = np.name();
+                    }
 
-            String providerId = "";
-            String providerName = "";
-            if(network.externalProviderPresent()) {
-                OpenStackNetworkProvider np = systemService.openstackNetworkProvidersService().providerService(network.externalProvider().id()).get().send().provider();
-                providerId = np.id();
-                providerName = np.name();
-            }
-
-            nwVo = NetworkVo.builder()
-                    .id(network.id())
-                    .name(network.name())
-                    .description(network.description())
-                    .comment(network.comment())
-                    .mtu(network.mtuAsInteger())
-                    .vdsmName(network.vdsmName())
-                    .datacenterId(network.dataCenter().id())
-                    .datacenterName(systemService.dataCentersService().dataCenterService(network.dataCenter().id()).get().send().dataCenter().name())
-                    .portIsolation(network.portIsolation())     // 포트 분리, 버전문제
-                    .vlan(network.vlanPresent() ? network.vlan().id() : null)
-                    .label(label)
-                    .providerId(providerId)
-                    .providerName(providerName)
-                    .networkUsageVo( NetworkUsageVo.builder()
-                                        .vm(network.usages().contains(NetworkUsage.VM))
-                                        .display(network.usages().contains(NetworkUsage.DISPLAY))
-                                        .migration(network.usages().contains(NetworkUsage.MIGRATION))
-                                        .management(network.usages().contains(NetworkUsage.MANAGEMENT))
-                                        .defaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE))
-                                        .gluster(network.usages().contains(NetworkUsage.GLUSTER))
-                                        .build() )
-                    .build();
-
-            nwVoList.add(nwVo);
-        }
-        return nwVoList;
+                    return NetworkVo.builder()
+                            .id(network.id())
+                            .name(network.name())
+                            .description(network.description())
+                            .comment(network.comment())
+                            .mtu(network.mtuAsInteger())
+                            .vdsmName(network.vdsmName())
+                            .datacenterId(network.dataCenter().id())
+                            .datacenterName(system.dataCentersService().dataCenterService(network.dataCenter().id()).get().send().dataCenter().name())
+                            .portIsolation(network.portIsolation())
+                            .vlan(network.vlanPresent() ? network.vlan().id() : null)
+                            .label(label)
+                            .providerId(providerId)
+                            .providerName(providerName)
+                            .networkUsageVo(NetworkUsageVo.builder()
+                                    .vm(network.usages().contains(NetworkUsage.VM))
+                                    .display(network.usages().contains(NetworkUsage.DISPLAY))
+                                    .migration(network.usages().contains(NetworkUsage.MIGRATION))
+                                    .management(network.usages().contains(NetworkUsage.MANAGEMENT))
+                                    .defaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE))
+                                    .gluster(network.usages().contains(NetworkUsage.GLUSTER))
+                                    .build())
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
     public NetworkVo getNetwork(String id) {
-        SystemService systemService = admin.getConnection().systemService();
-        Network network = systemService.networksService().networkService(id).get().send().network();
+        SystemService system = admin.getConnection().systemService();
+        Network network = system.networksService().networkService(id).get().send().network();
 
         return NetworkVo.builder()
                 .id(network.id())
@@ -104,22 +99,23 @@ public class NetworkServiceImpl implements ItNetworkService {
 
     @Override
     public List<VnicProfileVo> getVnic(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<VnicProfile> vnicProfileList = systemService.networksService().networkService(id).vnicProfilesService().list().send().profiles();
+        List<VnicProfile> vnicProfileList = system.networksService().networkService(id).vnicProfilesService().list().send().profiles();
+
         List<VnicProfileVo> vpVoList = new ArrayList<>();
         VnicProfileVo vpVo = null;
-        Network network = systemService.networksService().networkService(id).get().send().network();
+        Network network = system.networksService().networkService(id).get().send().network();
 
         for(VnicProfile vnicProfile : vnicProfileList){
             if(id.equals(vnicProfile.network().id())){
-                DataCenter dataCenter = systemService.dataCentersService().dataCenterService(network.dataCenter().id()).get().send().dataCenter();
+                DataCenter dataCenter = system.dataCentersService().dataCenterService(network.dataCenter().id()).get().send().dataCenter();
 
                 String networkFilterId = "";
                 String networkFilterName = "";
                 if(vnicProfile.networkFilterPresent()) {
                     networkFilterId = vnicProfile.networkFilter().id();
-                    networkFilterName = systemService.networkFiltersService().networkFilterService(vnicProfile.networkFilter().id()).get().send().networkFilter().name();
+                    networkFilterName = system.networkFiltersService().networkFilterService(vnicProfile.networkFilter().id()).get().send().networkFilter().name();
                 }
 
                 vpVo = VnicProfileVo.builder()
@@ -144,14 +140,14 @@ public class NetworkServiceImpl implements ItNetworkService {
 
     @Override
     public List<NetworkClusterVo> getCluster(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
+        List<Cluster> clusterList = system.clustersService().list().send().clusters();
         List<NetworkClusterVo> ncVoList = new ArrayList<>();
         NetworkClusterVo ncVo = null;
 
         for(Cluster cluster : clusterList){
-            List<Network> networkList = systemService.clustersService().clusterService(cluster.id()).networksService().list().send().networks();
+            List<Network> networkList = system.clustersService().clusterService(cluster.id()).networksService().list().send().networks();
 
             for(Network network : networkList){
                 if(network.id().equals(id)){
@@ -182,15 +178,15 @@ public class NetworkServiceImpl implements ItNetworkService {
 
     @Override
     public List<NetworkHostVo> getHost(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<Host> hostList = systemService.hostsService().list().send().hosts();
+        List<Host> hostList = system.hostsService().list().send().hosts();
         List<NetworkHostVo> nhVoList = new ArrayList<>();
         NetworkHostVo nhVo = null;
         DecimalFormat df = new DecimalFormat("###,###");
 
         for(Host host : hostList) {
-            List<NetworkAttachment> naList = systemService.hostsService().hostService(host.id()).networkAttachmentsService().list().send().attachments();
+            List<NetworkAttachment> naList = system.hostsService().hostService(host.id()).networkAttachmentsService().list().send().attachments();
 
             for (NetworkAttachment na : naList) {
                 if (na.networkPresent() && na.network().id().equals(id)) {
@@ -200,17 +196,17 @@ public class NetworkServiceImpl implements ItNetworkService {
                     nhVo.setHostName(host.name());
                     nhVo.setHostStatus(host.status().value());
 
-                    Cluster c = systemService.clustersService().clusterService(host.cluster().id()).get().send().cluster();
+                    Cluster c = system.clustersService().clusterService(host.cluster().id()).get().send().cluster();
                     nhVo.setClusterName(c.name());
-                    nhVo.setDatacenterName(systemService.dataCentersService().dataCenterService(c.dataCenter().id()).get().send().dataCenter().name());
+                    nhVo.setDatacenterName(system.dataCentersService().dataCenterService(c.dataCenter().id()).get().send().dataCenter().name());
 
-                    List<HostNic> nicList = systemService.hostsService().hostService(host.id()).nicsService().list().send().nics();
+                    List<HostNic> nicList = system.hostsService().hostService(host.id()).nicsService().list().send().nics();
                     for (HostNic hostNic : nicList) {
                         nhVo.setNetworkStatus(hostNic.status().value());
 //                nhVo.setAsynchronism(hostNic.a);
                         nhVo.setNetworkDevice(hostNic.name());
 
-                        List<Statistic> statisticList = systemService.hostsService().hostService(host.id()).nicsService().nicService(hostNic.id()).statisticsService().list().send().statistics();
+                        List<Statistic> statisticList = system.hostsService().hostService(host.id()).nicsService().nicService(hostNic.id()).statisticsService().list().send().statistics();
                         for (Statistic statistic : statisticList) {
                             String st = "";
 
@@ -242,17 +238,17 @@ public class NetworkServiceImpl implements ItNetworkService {
 
     @Override
     public List<NetworkVmVo> getVm(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<Vm> vmList = systemService.vmsService().list().send().vms();
+        List<Vm> vmList = system.vmsService().list().send().vms();
         List<NetworkVmVo> nVmVoList = new ArrayList<>();
         NetworkVmVo nVmVo = null;
 
         for(Vm vm : vmList){
-            List<Nic> nicList = systemService.vmsService().vmService(vm.id()).nicsService().list().send().nics();
+            List<Nic> nicList = system.vmsService().vmService(vm.id()).nicsService().list().send().nics();
 
             for(Nic nic : nicList){
-                VnicProfile vnicProfile = systemService.vnicProfilesService().profileService(nic.vnicProfile().id()).get().send().profile();
+                VnicProfile vnicProfile = system.vnicProfilesService().profileService(nic.vnicProfile().id()).get().send().profile();
 
                 if(vnicProfile.network().id().equals(id)){
                     nVmVo = new NetworkVmVo();
@@ -261,14 +257,14 @@ public class NetworkServiceImpl implements ItNetworkService {
                     System.out.println(vm.status().value());
                     nVmVo.setVmName(vm.name());
                     nVmVo.setFqdn(vm.fqdn());
-                    nVmVo.setClusterName(systemService.clustersService().clusterService(vm.cluster().id()).get().send().cluster().name() );
+                    nVmVo.setClusterName(system.clustersService().clusterService(vm.cluster().id()).get().send().cluster().name() );
                     nVmVo.setDescription(vm.description());
 
                     nVmVo.setVnicStatus(nic.linked());
                     nVmVo.setVnicName(nic.name());
 
                     if(vm.status().value().equals("up")) {
-                        List<ReportedDevice> reportedDeviceList = systemService.vmsService().vmService(vm.id()).reportedDevicesService().list().send().reportedDevice();
+                        List<ReportedDevice> reportedDeviceList = system.vmsService().vmService(vm.id()).reportedDevicesService().list().send().reportedDevice();
                         for(ReportedDevice rd : reportedDeviceList){
                             if(rd.ipsPresent()){
                                 //                        nVmVo.setVnicName(rd.name());
@@ -286,7 +282,7 @@ public class NetworkServiceImpl implements ItNetworkService {
 
                         // vm이 올라와있는 상태에서만 rx, tx 값 출력
                         DecimalFormat df = new DecimalFormat("###,###");
-                        List<Statistic> statisticList = systemService.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).statisticsService().list().send().statistics();
+                        List<Statistic> statisticList = system.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).statisticsService().list().send().statistics();
 
                         for (Statistic statistic : statisticList) {
                             String st = "";
@@ -342,9 +338,9 @@ public class NetworkServiceImpl implements ItNetworkService {
 
     @Override
     public List<PermissionVo> getPermission(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<Permission> permissionList = systemService.networksService().networkService(id).permissionsService().list().send().permissions();
+        List<Permission> permissionList = system.networksService().networkService(id).permissionsService().list().send().permissions();
         List<PermissionVo> pVoList = new ArrayList<>();
         PermissionVo pVo = null;
 
@@ -353,24 +349,24 @@ public class NetworkServiceImpl implements ItNetworkService {
             pVo.setPermissionId(permission.id());
 
             if(permission.groupPresent() && !permission.userPresent()){
-                Group group = systemService.groupsService().groupService(permission.group().id()).get().send().get();
+                Group group = system.groupsService().groupService(permission.group().id()).get().send().get();
                 pVo.setUser(group.name());
                 pVo.setNameSpace(group.namespace());
                 // 생성일의 경우 db에서 가져와야함?
 
-                Role role = systemService.rolesService().roleService(permission.role().id()).get().send().role();
+                Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
                 pVo.setRole(role.name());
 
                 pVoList.add(pVo);       // 그룹에 추가
             }
 
             if(permission.userPresent() && !permission.groupPresent()){
-                User user = systemService.usersService().userService(permission.user().id()).get().send().user();
+                User user = system.usersService().userService(permission.user().id()).get().send().user();
                 pVo.setUser(user.name());
                 pVo.setNameSpace(user.namespace());
                 pVo.setProvider(user.domainPresent() ? user.domain().name() : null);
 
-                Role role = systemService.rolesService().roleService(permission.role().id()).get().send().role();
+                Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
                 pVo.setRole(role.name());
 
                 pVoList.add(pVo);
@@ -383,15 +379,15 @@ public class NetworkServiceImpl implements ItNetworkService {
     // network 생성 시 필요한 dc와 클러스터 정보 가져오기
     @Override
     public List<NetworkDcClusterVo> getDcCluster() {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<DataCenter> dataCenterList = systemService.dataCentersService().list().send().dataCenters();
+        List<DataCenter> dataCenterList = system.dataCentersService().list().send().dataCenters();
 
         List<NetworkDcClusterVo> dcClusterVoList = new ArrayList<>();
         NetworkDcClusterVo dcvo = null;
 
         for(DataCenter dataCenter : dataCenterList){
-            List<Cluster> clusterList = systemService.dataCentersService().dataCenterService(dataCenter.id()).clustersService().list().send().clusters();
+            List<Cluster> clusterList = system.dataCentersService().dataCenterService(dataCenter.id()).clustersService().list().send().clusters();
             List<ClusterVo> clusterVoList = new ArrayList<>();
 
             for (Cluster cluster : clusterList) {
@@ -421,12 +417,12 @@ public class NetworkServiceImpl implements ItNetworkService {
     // 새 논리 네트워크 추가
     @Override
     public CommonVo<Boolean> addNetwork(NetworkCreateVo ncVo) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        NetworksService networksService = systemService.networksService();
-        DataCenter dataCenter = systemService.dataCentersService().dataCenterService(ncVo.getDatacenterId()).get().send().dataCenter();
-        OpenStackNetworkProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
-        List<Cluster> clusterList = systemService.dataCentersService().dataCenterService(ncVo.getDatacenterId()).clustersService().list().send().clusters();
+        NetworksService networksService = system.networksService();
+        DataCenter dataCenter = system.dataCentersService().dataCenterService(ncVo.getDatacenterId()).get().send().dataCenter();
+        OpenStackNetworkProvider openStackNetworkProvider = system.openstackNetworkProvidersService().list().send().providers().get(0);
+        List<Cluster> clusterList = system.dataCentersService().dataCenterService(ncVo.getDatacenterId()).clustersService().list().send().clusters();
 
         List<String> dnsList = ncVo.getDns().stream()
                 .distinct()
@@ -457,7 +453,7 @@ public class NetworkServiceImpl implements ItNetworkService {
 
             // TODO: vnicprofile도 문제 있음, 되기는 한데 기본생성이 사라지지 않음
             ncVo.getVnics().forEach(vnicProfileVo -> {
-                AssignedVnicProfilesService aVnicsService = systemService.networksService().networkService(network.id()).vnicProfilesService();
+                AssignedVnicProfilesService aVnicsService = system.networksService().networkService(network.id()).vnicProfilesService();
                 aVnicsService.add().profile(new VnicProfileBuilder().name(vnicProfileVo.getName()).build()).send().profile();
                 });
 
@@ -465,7 +461,7 @@ public class NetworkServiceImpl implements ItNetworkService {
             ncVo.getClusterVoList().stream()
                 .filter(NetworkClusterVo::isConnected) // 연결된 경우만 필터링
                 .forEach(networkClusterVo -> {
-                    ClusterNetworksService clusterNetworksService = systemService.clustersService().clusterService(networkClusterVo.getId()).networksService();
+                    ClusterNetworksService clusterNetworksService = system.clustersService().clusterService(networkClusterVo.getId()).networksService();
                     clusterNetworksService.add()
                             .network(new NetworkBuilder().id(network.id()).required(networkClusterVo.isRequired()))
                             .send().network();
@@ -473,7 +469,7 @@ public class NetworkServiceImpl implements ItNetworkService {
 
             // 외부 공급자 처리시 레이블 생성 안됨
             if (ncVo.getLabel() != null && !ncVo.getLabel().isEmpty()) {
-                NetworkLabelsService nlsService = systemService.networksService().networkService(network.id()).networkLabelsService();
+                NetworkLabelsService nlsService = system.networksService().networkService(network.id()).networkLabelsService();
                 nlsService.add().label(new NetworkLabelBuilder().id(ncVo.getLabel())).send();
             }
 
@@ -489,10 +485,10 @@ public class NetworkServiceImpl implements ItNetworkService {
     // 네트워크 수정
     @Override
     public CommonVo<Boolean> editNetwork(NetworkCreateVo ncVo) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        NetworksService networksService = systemService.networksService();
-        DataCenter dataCenter = systemService.dataCentersService().dataCenterService(ncVo.getDatacenterId()).get().send().dataCenter();
+        NetworksService networksService = system.networksService();
+        DataCenter dataCenter = system.dataCentersService().dataCenterService(ncVo.getDatacenterId()).get().send().dataCenter();
 //        OpenStackNetworkProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
 
         try {
@@ -514,7 +510,7 @@ public class NetworkServiceImpl implements ItNetworkService {
 
             // 외부 공급자 처리시 레이블 생성 안됨
             if (ncVo.getLabel() != null && !ncVo.getLabel().isEmpty()) {
-                NetworkLabelsService nlsService = systemService.networksService().networkService(ncVo.getId()).networkLabelsService();
+                NetworkLabelsService nlsService = system.networksService().networkService(ncVo.getId()).networkLabelsService();
 
                 if( nlsService.list().send().labels().get(0).idPresent() ) {
                     nlsService.labelService(nlsService.list().send().labels().get(0).id()).remove().send();
@@ -532,13 +528,13 @@ public class NetworkServiceImpl implements ItNetworkService {
     // 네트워크 삭제
     @Override
     public CommonVo<Boolean> deleteNetwork(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        NetworkService networkService = systemService.networksService().networkService(id);
-        List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
+        NetworkService networkService = system.networksService().networkService(id);
+        List<Cluster> clusterList = system.clustersService().list().send().clusters();
 
         for(Cluster cluster : clusterList) {
-            List<Network> clusterNetworkList = systemService.clustersService().clusterService(cluster.id()).networksService().list().send().networks();
+            List<Network> clusterNetworkList = system.clustersService().clusterService(cluster.id()).networksService().list().send().networks();
             for (Network network : clusterNetworkList) {
                 System.out.println(cluster.name() + ": " + network.name() + ", " + network.status());
                 // 클러스터에서 돌아가는 네트워크가 비가동중인 상태여야지만 지울 수 있음
@@ -557,13 +553,13 @@ public class NetworkServiceImpl implements ItNetworkService {
     // 가져오기 출력 창
     @Override
     public NetworkImportVo viewImportNetwork() {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
         // 그냥 있는거 가져오기
-        OpenStackNetworkProvider osProvider = systemService.openstackNetworkProvidersService().list().follow("networks").send().providers().get(0);
+        OpenStackNetworkProvider osProvider = system.openstackNetworkProvidersService().list().follow("networks").send().providers().get(0);
 
-        List<Network> ntList = systemService.networksService().list().send().networks();
-        List<DataCenter> dcList = systemService.dataCentersService().list().send().dataCenters();
+        List<Network> ntList = system.networksService().list().send().networks();
+        List<DataCenter> dcList = system.dataCentersService().list().send().dataCenters();
 //        DataCenter dc = systemService.dataCentersService().dataCenterService(id).get().send().dataCenter();
 
         List<OpenstackVo> osVoList = osProvider.networks().stream()
@@ -594,20 +590,20 @@ public class NetworkServiceImpl implements ItNetworkService {
     // 네트워크 - 가져오기 출력창 (openStack)
     @Override
     public CommonVo<Boolean> importNetwork() {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
         // 그냥 있는거 가져오기
-        OpenStackNetworkProvider osProvider = systemService.openstackNetworkProvidersService().list().follow("networks").send().providers().get(0);
+        OpenStackNetworkProvider osProvider = system.openstackNetworkProvidersService().list().follow("networks").send().providers().get(0);
 
         return null;
     }
 
     @Override
     public CommonVo<Boolean> addVnic(VnicProfileVo vpVo) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        DataCenter dataCenter = systemService.dataCentersService().dataCenterService(vpVo.getDatacenterId()).get().send().dataCenter();
-        NetworkService networkService = systemService.networksService().networkService(vpVo.getNetworkId());
+        DataCenter dataCenter = system.dataCentersService().dataCenterService(vpVo.getDatacenterId()).get().send().dataCenter();
+        NetworkService networkService = system.networksService().networkService(vpVo.getNetworkId());
 
 
 
@@ -616,14 +612,14 @@ public class NetworkServiceImpl implements ItNetworkService {
 
     @Override
     public CommonVo<Boolean> editVnic(VnicProfileVo vpVo) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
         return null;
     }
 
     @Override
     public CommonVo<Boolean> deleteVnic(VnicProfileVo vpVo) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
         return null;
     }

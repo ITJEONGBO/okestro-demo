@@ -30,10 +30,10 @@ public class TemplateServiceImpl implements ItTemplateService {
 
     @Override
     public List<TemplateVo> getList() {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
-        List<Template> templateList = systemService.templatesService().list().send().templates();
+        List<Template> templateList = system.templatesService().list().send().templates();
 
         return templateList.stream()
                 .map(template ->
@@ -45,11 +45,11 @@ public class TemplateServiceImpl implements ItTemplateService {
                             .status(template.status().value())
                             .clusterId(template.clusterPresent() ? template.cluster().id() : null)
                             .clusterName(template.clusterPresent() ?
-                                    systemService.clustersService().clusterService(template.cluster().id()).get().send().cluster().name() : null)
+                                    system.clustersService().clusterService(template.cluster().id()).get().send().cluster().name() : null)
                             .datacenterId(template.clusterPresent() ?
-                                    systemService.clustersService().clusterService(template.cluster().id()).get().send().cluster().dataCenter().id() : null)
+                                    system.clustersService().clusterService(template.cluster().id()).get().send().cluster().dataCenter().id() : null)
                             .datacenterName(template.clusterPresent() ?
-                                    systemService.dataCentersService().dataCenterService(systemService.clustersService().clusterService(template.cluster().id()).get().send().cluster().dataCenter().id()).get().send().dataCenter().name() : null)
+                                    system.dataCentersService().dataCenterService(system.clustersService().clusterService(template.cluster().id()).get().send().cluster().dataCenter().id()).get().send().dataCenter().name() : null)
                             // 보관
                             .description(template.description())
                             .build()
@@ -59,9 +59,9 @@ public class TemplateServiceImpl implements ItTemplateService {
 
     @Override
     public TemplateVo getInfo(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        Template template = systemService.templatesService().templateService(id).get().send().template();
+        Template template = system.templatesService().templateService(id).get().send().template();
 
         // 상태 비저장
         return TemplateVo.builder()
@@ -91,11 +91,11 @@ public class TemplateServiceImpl implements ItTemplateService {
 
     @Override
     public TempStorageVo getStorage(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        DiskAttachment diskAtt = systemService.templatesService().templateService(id).diskAttachmentsService().list().follow("disk").send().attachments().get(0);
-        Disk disk = systemService.disksService().diskService(diskAtt.id()).get().send().disk();
-        StorageDomain domain = systemService.storageDomainsService().storageDomainService(disk.storageDomains().get(0).id()).get().send().storageDomain();
+        DiskAttachment diskAtt = system.templatesService().templateService(id).diskAttachmentsService().list().follow("disk").send().attachments().get(0);
+        Disk disk = system.disksService().diskService(diskAtt.id()).get().send().disk();
+        StorageDomain domain = system.storageDomainsService().storageDomainService(disk.storageDomains().get(0).id()).get().send().storageDomain();
 
         return TempStorageVo.builder()
                 .domainName(domain.name())
@@ -117,35 +117,35 @@ public class TemplateServiceImpl implements ItTemplateService {
 
     @Override
     public List<PermissionVo> getPermission(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
         List<PermissionVo> pVoList = new ArrayList<>();
         PermissionVo pVo = null;
 
-        List<Permission> permissionList = systemService.templatesService().templateService(id).permissionsService().list().send().permissions();
+        List<Permission> permissionList = system.templatesService().templateService(id).permissionsService().list().send().permissions();
 
         for(Permission permission : permissionList){
             pVo = new PermissionVo();
             pVo.setPermissionId(permission.id());
 
             if(permission.groupPresent() && !permission.userPresent()){
-                Group group = systemService.groupsService().groupService(permission.group().id()).get().send().get();
+                Group group = system.groupsService().groupService(permission.group().id()).get().send().get();
                 pVo.setUser(group.name());
                 pVo.setNameSpace(group.namespace());
                 // 생성일의 경우 db에서 가져와야함?
 
-                Role role = systemService.rolesService().roleService(permission.role().id()).get().send().role();
+                Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
                 pVo.setRole(role.name());
 
                 pVoList.add(pVo);       // 그룹에 추가
             }
 
             if(permission.userPresent() && !permission.groupPresent()){
-                User user = systemService.usersService().userService(permission.user().id()).get().send().user();
+                User user = system.usersService().userService(permission.user().id()).get().send().user();
                 pVo.setUser(user.name());
                 pVo.setNameSpace(user.namespace());
 
-                Role role = systemService.rolesService().roleService(permission.role().id()).get().send().role();
+                Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
                 pVo.setRole(role.name());
 
                 pVoList.add(pVo);
@@ -157,12 +157,12 @@ public class TemplateServiceImpl implements ItTemplateService {
 
     @Override
     public List<EventVo> getEvent(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
-        List<Event> eventList = systemService.eventsService().list().send().events();
-        Template t = systemService.templatesService().templateService(id).get().send().template();
+        List<Event> eventList = system.eventsService().list().send().events();
+        Template t = system.templatesService().templateService(id).get().send().template();
 
         return eventList.stream()
                 .filter(event -> event.templatePresent() && event.template().name().equals(t.name()))
@@ -199,8 +199,8 @@ public class TemplateServiceImpl implements ItTemplateService {
 
 
     // 가동시간, 업타임
-    private String getUptime(SystemService systemService, String vmId){
-        List<Statistic> statisticList = systemService.vmsService().vmService(vmId).statisticsService().list().send().statistics();
+    private String getUptime(SystemService system, String vmId){
+        List<Statistic> statisticList = system.vmsService().vmService(vmId).statisticsService().list().send().statistics();
 
         long hour = statisticList.stream()
                 .filter(statistic -> statistic.name().equals("elapsed.time"))
@@ -223,14 +223,14 @@ public class TemplateServiceImpl implements ItTemplateService {
     }
 
     // ip 주소
-    private String getIp(SystemService systemService, String vmId, String version){
-        List<Nic> nicList = systemService.vmsService().vmService(vmId).nicsService().list().send().nics();
-        Vm vm = systemService.vmsService().vmService(vmId).get().send().vm();
+    private String getIp(SystemService system, String vmId, String version){
+        List<Nic> nicList = system.vmsService().vmService(vmId).nicsService().list().send().nics();
+        Vm vm = system.vmsService().vmService(vmId).get().send().vm();
 
         String ip = null;
 
         for (Nic nic : nicList){
-            List<ReportedDevice> reportedDeviceList = systemService.vmsService().vmService(vmId).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
+            List<ReportedDevice> reportedDeviceList = system.vmsService().vmService(vmId).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
 
             if("v4".equals(version)) {
                 ip = reportedDeviceList.stream()

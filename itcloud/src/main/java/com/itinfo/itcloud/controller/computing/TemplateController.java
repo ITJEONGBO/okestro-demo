@@ -19,19 +19,19 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/computing")
 public class TemplateController {
-	private final ItTemplateService itTemplateService;
+	private final ItTemplateService tService;
 
 	//region: ResponseBody
 	@GetMapping("/templatesStatus")
 	@ResponseBody
 	public List<TemplateVo> temps(){
-		return itTemplateService.getList();
+		return tService.getList();
 	}
 
 	@GetMapping("/templateStatus")
 	@ResponseBody
 	public TemplateVo temp(String id){
-		return itTemplateService.getInfo(id);
+		return tService.getInfo(id);
 	}
 
 
@@ -39,19 +39,19 @@ public class TemplateController {
 	@GetMapping("/template-storageStatus")
 	@ResponseBody
 	public TempStorageVo storage(String id){
-		return itTemplateService.getStorage(id);
+		return tService.getStorage(id);
 	}
 
 	@GetMapping("/template-permissionStatus")
 	@ResponseBody
 	public List<PermissionVo> permission(String id){
-		return itTemplateService.getPermission(id);
+		return tService.getPermission(id);
 	}
 
 	@GetMapping("/template-eventStatus")
 	@ResponseBody
 	public List<EventVo> event(String id){
-		return itTemplateService.getEvent(id);
+		return tService.getEvent(id);
 	}
 
 	//endregion
@@ -65,18 +65,18 @@ public class TemplateController {
 	//	@GetMapping("/template-vmStatus")
 //	@ResponseBody
 //	public List<VmVo> vm(String id){
-//		return itTemplateService.getVm(id);
+//		return tService.getVm(id);
 //	}
 //	@GetMapping("/template-nicStatus")
 //	@ResponseBody
 //	public List<NicVo> nic(String id){
-//		return itTemplateService.getNic(id);
+//		return tService.getNic(id);
 //	}
 
 //	@GetMapping("/template-diskStatus")
 //	@ResponseBody
 //	public List<TemDiskVo> disk(String id){
-//		return itTemplateService.getDisk(id);
+//		return tService.getDisk(id);
 //	}
 	// endregion
 }

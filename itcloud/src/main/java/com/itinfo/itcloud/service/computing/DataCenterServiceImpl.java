@@ -34,9 +34,9 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     // 데이터센터 리스트 불러오기
     @Override
     public List<DataCenterVo> getList(){
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<DataCenter> dataCenterList = systemService.dataCentersService().list().send().dataCenters();
+        List<DataCenter> dataCenterList = system.dataCentersService().list().send().dataCenters();
 
         log.info("데이터 센터 리스트 출력");
         return dataCenterList.stream()
@@ -58,10 +58,10 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     // 데이터센터 이벤트 출력
     @Override
     public List<EventVo> getEvent(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
-        List<Event> eventList = systemService.eventsService().list().send().events();
+        List<Event> eventList = system.eventsService().list().send().events();
 
         log.info("데이터센터 {} 이벤트 출력", getName(id));
         return eventList.stream()
@@ -83,10 +83,10 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     // 데이터센터 - edit 시 필요한 값
     @Override
     public DataCenterCreateVo getDatacenter(String id){
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
         // 데이터센터 현재 설정되어있는 값 출력
-        DataCenter dataCenter = systemService.dataCentersService().dataCenterService(id).get().send().dataCenter();
+        DataCenter dataCenter = system.dataCentersService().dataCenterService(id).get().send().dataCenter();
 
         log.info("데이터센터 {} 편집창 출력", getName(id));
         return DataCenterCreateVo.builder()
@@ -104,9 +104,9 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     // 데이터센터 생성
     @Override
     public CommonVo<Boolean> addDatacenter(DataCenterCreateVo dcVo) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        DataCentersService datacentersService = systemService.dataCentersService();     // datacenters 서비스 불러오기
+        DataCentersService datacentersService = system.dataCentersService();     // datacenters 서비스 불러오기
 
         // 중복 확인 코드
         boolean dcName = datacentersService.list().search("name="+dcVo.getName()).send().dataCenters().isEmpty();
@@ -144,10 +144,9 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     // 데이터센터 수정
     @Override
     public CommonVo<Boolean> editDatacenter(DataCenterCreateVo dcVo) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-//        DataCentersService datacentersService = systemService.dataCentersService();
-        DataCenterService dataCenterService = systemService.dataCentersService().dataCenterService(dcVo.getId());
+        DataCenterService dataCenterService = system.dataCentersService().dataCenterService(dcVo.getId());
 
         // 중복이름인데 기존에 존재하는게 내꺼일 경우에는 문제가 생길 수 잇음
 //        boolean dcName = datacentersService.list().search("name="+dcVo.getName()).send().dataCenters().isEmpty();
@@ -185,9 +184,9 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     // 데이터센터 삭제
     @Override
     public CommonVo<Boolean> deleteDatacenter(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        DataCenterService dataCenterService = systemService.dataCentersService().dataCenterService(id);
+        DataCenterService dataCenterService = system.dataCentersService().dataCenterService(id);
 
         try {
             dataCenterService.remove().force(true).send();

@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/computing")
 public class VmController {
 	private final ItSystemPropertyService itSystemPropertyService;
-	private final ItVmService itVmService;
+	private final ItVmService vmService;
 
 	//region: ResponseBody
 
@@ -28,7 +28,7 @@ public class VmController {
 	public List<VmVo> vms() {
 		long start = System.currentTimeMillis();
 
-		List<VmVo> vmsList = itVmService.getList();
+		List<VmVo> vmsList = vmService.getList();
 
 		long end = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
 		log.debug("수행시간(ms): {}", end - start);
@@ -39,70 +39,70 @@ public class VmController {
 	@GetMapping("/vm/status")
 	@ResponseBody
 	public VmVo vm(String id) {
-		return itVmService.getInfo(id);
+		return vmService.getInfo(id);
 	}
 
 	@GetMapping("/vm/nicstatus")
 	@ResponseBody
 	public List<NicVo> nic(String id) {
 		log.info("----- vm nic 일반 불러오기: " + id);
-		return itVmService.getNic(id);
+		return vmService.getNic(id);
 	}
 
 	@GetMapping("/vm/diskstatus")
 	@ResponseBody
 	public List<VmDiskVo> disk(String id) {
 		log.info("----- vm disk 일반 불러오기: " + id);
-		return itVmService.getDisk(id);
+		return vmService.getDisk(id);
 	}
 
 	@GetMapping("/vm/snapshotstatus")
 	@ResponseBody
 	public List<SnapshotVo> snapshot(String id) {
 		log.info("----- vm snapshot 불러오기: " + id);
-		return itVmService.getSnapshot(id);
+		return vmService.getSnapshot(id);
 	}
 
 	@GetMapping("/vm/applicationstatus")
 	@ResponseBody
 	public List<ApplicationVo> app(String id) {
 		log.info("----- vm app 불러오기: " + id);
-		return itVmService.getApplication(id);
+		return vmService.getApplication(id);
 	}
 
 	@GetMapping("/vm/affGroupstatus")
 	@ResponseBody
 	public List<AffinityGroupVo> affGroup(String id) {
 		log.info("----- vm affGroup 불러오기: " + id);
-		return itVmService.getAffinitygroup(id);
+		return vmService.getAffinitygroup(id);
 	}
 
 	@GetMapping("/vm/affLabelstatus")
 	@ResponseBody
 	public List<AffinityLabelVo> affLabel(String id) {
 		log.info("----- vm affLabel 불러오기: " + id);
-		return itVmService.getAffinitylabel(id);
+		return vmService.getAffinitylabel(id);
 	}
 
 	@GetMapping("/vm/gueststatus")
 	@ResponseBody
 	public GuestInfoVo guest(String id) {
 		log.info("----- vm disk 일반 불러오기: " + id);
-		return itVmService.getGuestInfo(id);
+		return vmService.getGuestInfo(id);
 	}
 
 	@GetMapping("/vm/permissionstatus")
 	@ResponseBody
 	public List<PermissionVo> permission(String id) {
 		log.info("----- vm event 일반 불러오기: " + id);
-		return itVmService.getPermission(id);
+		return vmService.getPermission(id);
 	}
 
 	@GetMapping("/vm/eventstatus")
 	@ResponseBody
 	public List<EventVo> event(String id) {
 		log.info("----- vm event 일반 불러오기: " + id);
-		return itVmService.getEvent(id);
+		return vmService.getEvent(id);
 	}
 	//endregion
 

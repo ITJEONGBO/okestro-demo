@@ -26,26 +26,26 @@ public class DashboardServiceImpl implements ItDashboardService {
 	// Dashboard 전체 불러오기
 	@Override
 	public DashboardVo getDashboard() {
-		SystemService systemService = admin.getConnection().systemService();
+		SystemService system = admin.getConnection().systemService();
 
 		dbVo = new DashboardVo();
 
-		getDatacenter(systemService);
-		getCluster(systemService);
-		getHost(systemService);
-		getVm(systemService);
+		getDatacenter(system);
+		getCluster(system);
+		getHost(system);
+		getVm(system);
 
-		getCpu(systemService);
-		getMemory(systemService);
-		getStorage(systemService);
+		getCpu(system);
+		getMemory(system);
+		getStorage(system);
 
 		log.info("------getDashboard");
 		return dbVo;
 	}
 
 	// 데이터센터 수
-	private void getDatacenter(SystemService systemService) {
-		List<DataCenter> dataCenterList = systemService.dataCentersService().list().send().dataCenters();
+	private void getDatacenter(SystemService system) {
+		List<DataCenter> dataCenterList = system.dataCentersService().list().send().dataCenters();
 
 		// DataCenter status=up 개수
 		int datacenterCnt = (int) dataCenterList.stream()
@@ -58,14 +58,13 @@ public class DashboardServiceImpl implements ItDashboardService {
 	}
 
 	// 클러스터 수
-	private void getCluster(SystemService systemService) {
-
-		dbVo.setClusterCnt(systemService.clustersService().list().send().clusters().size() );
+	private void getCluster(SystemService system) {
+		dbVo.setClusterCnt(system.clustersService().list().send().clusters().size() );
 	}
 
 	// 호스트 수
-	private void getHost(SystemService systemService) {
-		List<Host> hostList = systemService.hostsService().list().send().hosts();
+	private void getHost(SystemService system) {
+		List<Host> hostList = system.hostsService().list().send().hosts();
 
 		// Host status=up 개수
 		int hostUpCnt = (int) hostList.stream()
@@ -78,8 +77,8 @@ public class DashboardServiceImpl implements ItDashboardService {
 	}
 
 	// 가상머신 수
-	private void getVm(SystemService systemService) {
-		List<Vm> vmList = systemService.vmsService().list().send().vms();
+	private void getVm(SystemService system) {
+		List<Vm> vmList = system.vmsService().list().send().vms();
 
 		// Host status=up 개수
 		int vmUpCnt = (int) vmList.stream()
@@ -93,13 +92,13 @@ public class DashboardServiceImpl implements ItDashboardService {
 
 
 	// 전체사용량: cpu
-	public void getCpu(SystemService systemService) {
+	public void getCpu(SystemService system) {
 		int cpuTotal = 0;
 //		int cpuCommit = 0;
 		int cpuAssigned = 0;
 
-		List<Host> hostList = systemService.hostsService().list().send().hosts();
-		List<Vm> vmList = systemService.vmsService().list().send().vms();
+		List<Host> hostList = system.hostsService().list().send().hosts();
+		List<Vm> vmList = system.vmsService().list().send().vms();
 
 		// 호스트에 있는 cpu
 		for (Host host : hostList) {
@@ -121,12 +120,12 @@ public class DashboardServiceImpl implements ItDashboardService {
 
 
 	// memory
-	public void getMemory(SystemService systemService) {
-		List<Host> hostList = systemService.hostsService().list().send().hosts();
+	public void getMemory(SystemService system) {
+		List<Host> hostList = system.hostsService().list().send().hosts();
 
 		// host id
 		for (Host host : hostList) {
-			List<Statistic> statisticList = systemService.hostsService().hostService(host.id()).statisticsService().list().send().statistics();
+			List<Statistic> statisticList = system.hostsService().hostService(host.id()).statisticsService().list().send().statistics();
 
 			// memory
 			for (Statistic statistic : statisticList) {
@@ -149,8 +148,8 @@ public class DashboardServiceImpl implements ItDashboardService {
 
 
 	// storage
-	public void getStorage(SystemService systemService) {
-		List<StorageDomain> storageDomainList = systemService.storageDomainsService().list().send().storageDomains();
+	public void getStorage(SystemService system) {
+		List<StorageDomain> storageDomainList = system.storageDomainsService().list().send().storageDomains();
 
 		// storage datacenter 붙어있는지
 		int storageActive = (int) storageDomainList.stream()

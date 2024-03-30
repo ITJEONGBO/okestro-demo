@@ -37,16 +37,16 @@ public class HostServiceImpl implements ItHostService {
     // 호스트 목록
     @Override
     public List<HostVo> getList() {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
         // allContent를 포함해야 hosted Engine의 정보가 나온다
-        List<Host> hostList = systemService.hostsService().list().allContent(true).send().hosts();
-        List<Vm> vmList = systemService.vmsService().list().send().vms();
+        List<Host> hostList = system.hostsService().list().allContent(true).send().hosts();
+        List<Vm> vmList = system.vmsService().list().send().vms();
 
         return hostList.stream()
                 .map(host -> {
-                        Cluster cluster = systemService.clustersService().clusterService(host.cluster().id()).get().send().cluster();
-                        DataCenter dataCenter = systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter();
+                        Cluster cluster = system.clustersService().clusterService(host.cluster().id()).get().send().cluster();
+                        DataCenter dataCenter = system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter();
 
                         return HostVo.builder()
                                     .id(host.id())
@@ -72,16 +72,16 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public HostVo getInfo(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        Host host = systemService.hostsService().hostService(id).get().allContent(true).send().host();
+        Host host = system.hostsService().hostService(id).get().allContent(true).send().host();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
         // 온라인 논리 CPU 코어수 - HostCpuUnit 이 없음 인식안됨
         // https://192.168.0.70/ovirt-engine/api/hosts/3bbd27b9-13d8-4fff-ad29-c0350994ca88/cpuunits,numanodes
-        List<HostCpuUnit> hcuList = systemService.hostsService().hostService(id).cpuUnitsService().list().send().cpuUnits();
-        List<Statistic> statisticList = systemService.hostsService().hostService(id).statisticsService().list().send().statistics();
-        List<Vm> vmList = systemService.vmsService().list().send().vms();
+        List<HostCpuUnit> hcuList = system.hostsService().hostService(id).cpuUnitsService().list().send().cpuUnits();
+        List<Statistic> statisticList = system.hostsService().hostService(id).statisticsService().list().send().statistics();
+        List<Vm> vmList = system.vmsService().list().send().vms();
 
         long bootTime = statisticList.stream()
                                 .filter(statistic -> statistic.name().equals("boot.time"))
@@ -133,8 +133,8 @@ public class HostServiceImpl implements ItHostService {
                 .pageSize(host.transparentHugePages().enabled())    // 자동으로 페이지를 크게 (확실하지 않음. 매우)
                 .seLinux(host.seLinux().mode().value())     // selinux모드: disabled, enforcing, permissive
                 // 클러스터 호환버전
-                .hostHwVo(getHardWare(systemService, id))
-                .hostSwVo(getSoftWare(systemService, id))
+                .hostHwVo(getHardWare(system, id))
+                .hostSwVo(getSoftWare(system, id))
             .build();
     }
 
@@ -143,13 +143,13 @@ public class HostServiceImpl implements ItHostService {
     // TODO: 고쳐야됨
     @Override
     public List<VmVo> getVm(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<Vm> vmList = systemService.vmsService().list().send().vms();
+        List<Vm> vmList = system.vmsService().list().send().vms();
 
         return vmList.stream()
                 .map(vm -> {
-                    Cluster cluster = systemService.clustersService().clusterService(vm.cluster().id()).get().send().cluster();
+                    Cluster cluster = system.clustersService().clusterService(vm.cluster().id()).get().send().cluster();
                     VmVo vmVo = null;
                     if (vm.hostPresent() && vm.host().id().equals(id)) {
                         vmVo = VmVo.builder()
@@ -159,9 +159,9 @@ public class HostServiceImpl implements ItHostService {
                                 .clusterName(cluster.name())
                                 .status(vm.statusPresent() ? vm.status().value() : "")
                                 .fqdn(vm.fqdn())
-                                .upTime(getUptime(systemService, vm.id()))
-                                .ipv4(getIp(systemService, vm.id(), "v4"))
-                                .ipv6(getIp(systemService, vm.id(), "v6"))
+                                .upTime(getUptime(system, vm.id()))
+                                .ipv4(getIp(system, vm.id(), "v4"))
+                                .ipv6(getIp(system, vm.id(), "v6"))
                                 .build();
                     }else if(!vm.hostPresent()){
                         vmVo = VmVo.builder()
@@ -185,9 +185,9 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public List<NicVo> getNic(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<HostNic> hostNicList = systemService.hostsService().hostService(id).nicsService().list().send().nics();
+        List<HostNic> hostNicList = system.hostsService().hostService(id).nicsService().list().send().nics();
         List<NicVo> nVoList = new ArrayList<>();
         NicVo nVo = null;
 
@@ -196,7 +196,7 @@ public class HostServiceImpl implements ItHostService {
 
             nVo.setStatus(hostNic.status().value());
             nVo.setName(hostNic.name());
-            nVo.setNetworkName( systemService.networksService().networkService(hostNic.network().id()).get().send().network().name() );
+            nVo.setNetworkName( system.networksService().networkService(hostNic.network().id()).get().send().network().name() );
 
             nVo.setMacAddress(hostNic.mac().address());// 논리 네트워크
             nVo.setIpv4(hostNic.ip().address());
@@ -204,7 +204,7 @@ public class HostServiceImpl implements ItHostService {
 
             DecimalFormat df = new DecimalFormat("###,###");
             List<Statistic> statisticList =
-                    systemService.hostsService().hostService(id).nicsService().nicService(hostNic.id()).statisticsService().list().send().statistics();
+                    system.hostsService().hostService(id).nicsService().nicService(hostNic.id()).statisticsService().list().send().statistics();
 
             for(Statistic statistic : statisticList){
                 String st = "";
@@ -241,12 +241,12 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public List<HostDeviceVo> getHostDevice(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
         List<HostDeviceVo> hostDeviceVoList = new ArrayList<>();
         HostDeviceVo hostDeviceVo = null;
 
-        List<HostDevice> hostDeviceList = systemService.hostsService().hostService(id).devicesService().list().send().devices();
+        List<HostDevice> hostDeviceList = system.hostsService().hostService(id).devicesService().list().send().devices();
 
         for(HostDevice hostDevice : hostDeviceList){
             hostDeviceVo = HostDeviceVo.builder()
@@ -264,36 +264,36 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public List<PermissionVo> getPermission(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
         List<PermissionVo> pVoList = new ArrayList<>();
         PermissionVo pVo = null;
 
-        List<Permission> permissionList = systemService.hostsService().hostService(id).permissionsService().list().send().permissions();
+        List<Permission> permissionList = system.hostsService().hostService(id).permissionsService().list().send().permissions();
 
         for(Permission permission : permissionList){
             pVo = new PermissionVo();
             pVo.setPermissionId(permission.id());
 
             if(permission.groupPresent() && !permission.userPresent()){
-                Group group = systemService.groupsService().groupService(permission.group().id()).get().send().get();
+                Group group = system.groupsService().groupService(permission.group().id()).get().send().get();
                 pVo.setUser(group.name());
                 pVo.setNameSpace(group.namespace());
                 // 생성일의 경우 db에서 가져와야함
 
-                Role role = systemService.rolesService().roleService(permission.role().id()).get().send().role();
+                Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
                 pVo.setRole(role.name());
 
                 pVoList.add(pVo);       // 그룹에 추가
             }
 
             if(permission.userPresent() && !permission.groupPresent()){
-                User user = systemService.usersService().userService(permission.user().id()).get().send().user();
+                User user = system.usersService().userService(permission.user().id()).get().send().user();
                 pVo.setUser(user.name());
                 pVo.setNameSpace(user.namespace());
                 pVo.setProvider(user.domainPresent() ? user.domain().name() : null);
 
-                Role role = systemService.rolesService().roleService(permission.role().id()).get().send().role();
+                Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
                 pVo.setRole(role.name());
 
 
@@ -307,9 +307,9 @@ public class HostServiceImpl implements ItHostService {
     // 호스트 선호도 레이블 목록
     @Override
     public List<AffinityLabelVo> getAffinitylabels(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<AffinityLabel> affinityLabelList = systemService.hostsService().hostService(id).affinityLabelsService().list().follow("hosts").send().label();
+        List<AffinityLabel> affinityLabelList = system.hostsService().hostService(id).affinityLabelsService().list().follow("hosts").send().label();
 
 
         log.info("호스트 {} 선호도 레이블", getName(id));
@@ -318,8 +318,8 @@ public class HostServiceImpl implements ItHostService {
                         AffinityLabelVo.builder()
                             .id(al.id())
                             .name(al.name())
-                            .hosts(getHostLabelMember(systemService, al.id()))
-                            .vms(getVmLabelMember(systemService, al.id()))
+                            .hosts(getHostLabelMember(system, al.id()))
+                            .vms(getVmLabelMember(system, al.id()))
                         .build())
                 .collect(Collectors.toList());
     }
@@ -327,9 +327,9 @@ public class HostServiceImpl implements ItHostService {
     //
     @Override
     public List<HostVo> getHostMember(String clusterId) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<Host> hostList = systemService.hostsService().list().send().hosts();
+        List<Host> hostList = system.hostsService().list().send().hosts();
 
         log.info("호스트 선호도레이블 생성시 필요한 호스트 리스트");
         return hostList.stream()
@@ -345,9 +345,9 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public List<VmVo> getVmMember(String clusterId) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<Vm> vmList = systemService.vmsService().list().send().vms();
+        List<Vm> vmList = system.vmsService().list().send().vms();
 
         log.info("클러스터 선호도레이블 생성시 필요한 가상머신 리스트");
         return vmList.stream()
@@ -360,8 +360,8 @@ public class HostServiceImpl implements ItHostService {
                 .collect(Collectors.toList());
     }
     // 선호도 레이블에 있는 호스트 출력
-    private List<HostVo> getHostLabelMember(SystemService systemService, String alid){
-        List<Host> hostList = systemService.affinityLabelsService().labelService(alid).hostsService().list().send().hosts();
+    private List<HostVo> getHostLabelMember(SystemService system, String alid){
+        List<Host> hostList = system.affinityLabelsService().labelService(alid).hostsService().list().send().hosts();
 
         List<String> idList = hostList.stream()
                 .map(Host::id)
@@ -369,7 +369,7 @@ public class HostServiceImpl implements ItHostService {
 
         return idList.stream()
                 .map(hostId -> {
-                    Host host = systemService.hostsService().hostService(hostId).get().send().host();
+                    Host host = system.hostsService().hostService(hostId).get().send().host();
                     return HostVo.builder()
                             .id(host.id())
                             .name(host.name())
@@ -379,8 +379,8 @@ public class HostServiceImpl implements ItHostService {
     }
 
     // 선호도 레이블 - vm
-    private List<VmVo> getVmLabelMember(SystemService systemService, String alid){
-        List<Vm> vmList = systemService.affinityLabelsService().labelService(alid).vmsService().list().send().vms();
+    private List<VmVo> getVmLabelMember(SystemService system, String alid){
+        List<Vm> vmList = system.affinityLabelsService().labelService(alid).vmsService().list().send().vms();
 
         // id만 출력
         List<String> idList = vmList.stream()
@@ -389,7 +389,7 @@ public class HostServiceImpl implements ItHostService {
 
         return idList.stream()
                 .map(vmId -> {
-                    Vm vm = systemService.vmsService().vmService(vmId).get().send().vm();
+                    Vm vm = system.vmsService().vmService(vmId).get().send().vm();
                     return VmVo.builder()
                             .id(vm.id())
                             .name(vm.name())
@@ -400,25 +400,25 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public AffinityLabelCreateVo getAffinityLabel(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        AffinityLabel al = systemService.affinityLabelsService().labelService(id).get().follow("hosts,vms").send().label();
+        AffinityLabel al = system.affinityLabelsService().labelService(id).get().follow("hosts,vms").send().label();
 
         log.info("성공: 클러스터 {} 선호도그룹", getName(id));
         return AffinityLabelCreateVo.builder()
                 .id(id)
                 .name(al.name())
-                .hostList(al.hostsPresent() ? getHostLabelMember(systemService, id) : null )
-                .vmList(al.vmsPresent() ? getVmLabelMember(systemService, id) : null)
+                .hostList(al.hostsPresent() ? getHostLabelMember(system, id) : null )
+                .vmList(al.vmsPresent() ? getVmLabelMember(system, id) : null)
                 .build();
     }
 
     @Override
     public CommonVo<Boolean> addAffinitylabel(AffinityLabelCreateVo alVo) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        AffinityLabelsService alServices = systemService.affinityLabelsService();
-        List<AffinityLabel> alList = systemService.affinityLabelsService().list().send().labels();
+        AffinityLabelsService alServices = system.affinityLabelsService();
+        List<AffinityLabel> alList = system.affinityLabelsService().list().send().labels();
 
         // 중복이름
         boolean duplicateName = alList.stream().noneMatch(al -> al.name().equals(alVo.getName()));
@@ -465,11 +465,11 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public List<EventVo> getEvent(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");      // 2024. 1. 4. PM 04:01:21
 
         String name = getName(id);
-        List<Event> eventList = systemService.eventsService().list().search("host.name=" + name).send().events();
+        List<Event> eventList = system.eventsService().list().search("host.name=" + name).send().events();
         List<EventVo> eVoList = new ArrayList<>();
         EventVo eVo = null;
 
@@ -495,9 +495,9 @@ public class HostServiceImpl implements ItHostService {
     // host create cluster list 출력
     @Override
     public List<ClusterVo> getClusterList() {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
+        List<Cluster> clusterList = system.clustersService().list().send().clusters();
         List<ClusterVo> clusterVoList = new ArrayList<>();
         ClusterVo cVo = null;
 
@@ -505,7 +505,7 @@ public class HostServiceImpl implements ItHostService {
             cVo = ClusterVo.builder()
                     .id(cluster.id())
                     .name(cluster.name())
-                    .datacenterName(systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
+                    .datacenterName(system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
                     .build();
 
             clusterVoList.add(cVo);
@@ -517,11 +517,11 @@ public class HostServiceImpl implements ItHostService {
     // edit
     @Override
     public HostCreateVo getHostCreate(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        Host host = systemService.hostsService().hostService(id).get().send().host();
-        Cluster cluster = systemService.clustersService().clusterService(host.cluster().id()).get().send().cluster();
-        String dcName = systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name();
+        Host host = system.hostsService().hostService(id).get().send().host();
+        Cluster cluster = system.clustersService().clusterService(host.cluster().id()).get().send().cluster();
+        String dcName = system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name();
 
         log.info("getHostsCreate");
 
@@ -542,11 +542,11 @@ public class HostServiceImpl implements ItHostService {
     @Override
     public boolean addHost(HostCreateVo hostCreateVo) {
         // The name, address, and root_password properties are required.
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        HostsService hostsService = systemService.hostsService();
-        List<Host> hostList = systemService.hostsService().list().send().hosts();
-        Cluster cluster = systemService.clustersService().clusterService(hostCreateVo.getClusterId()).get().send().cluster();
+        HostsService hostsService = system.hostsService();
+        List<Host> hostList = system.hostsService().list().send().hosts();
+        Cluster cluster = system.clustersService().clusterService(hostCreateVo.getClusterId()).get().send().cluster();
 
         try {
             HostBuilder hostBuilder = new HostBuilder();
@@ -591,10 +591,10 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public void editHost(HostCreateVo hostCreateVo) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        HostService hostService = systemService.hostsService().hostService(hostCreateVo.getId());
-        Cluster cluster = systemService.clustersService().clusterService(hostCreateVo.getClusterId()).get().send().cluster();
+        HostService hostService = system.hostsService().hostService(hostCreateVo.getId());
+        Cluster cluster = system.clustersService().clusterService(hostCreateVo.getClusterId()).get().send().cluster();
 
         try {
             Host host = new HostBuilder()
@@ -618,8 +618,8 @@ public class HostServiceImpl implements ItHostService {
     @Override
     public boolean rebootHost(String hostId) {
         log.debug("rebootHost ... hostId: {}", hostId);
-        SystemService systemService = admin.getConnection().systemService();
-        HostService hostService = systemService.hostsService().hostService(hostId);
+        SystemService system = admin.getConnection().systemService();
+        HostService hostService = system.hostsService().hostService(hostId);
         /*
         Host hostFound = hostService.get().send().host();
         if (hostFound == null) {
@@ -648,11 +648,12 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public boolean deleteHost(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        HostsService hostsService = systemService.hostsService();
-        List<Host> hList = systemService.hostsService().list().send().hosts();
-        HostService hostService = systemService.hostsService().hostService(id);
+        List<Host> hList = system.hostsService().list().send().hosts();
+        HostsService hostsService = system.hostsService();
+        HostService hostService = system.hostsService().hostService(id);
+
         Host host = hostService.get().send().host();
         String name = hostService.get().send().host().name();
 
@@ -676,8 +677,8 @@ public class HostServiceImpl implements ItHostService {
     // 유지보수
     @Override
     public void deActive(String id) {
-        SystemService systemService = admin.getConnection().systemService();
-        HostService hostService = systemService.hostsService().hostService(id);
+        SystemService system = admin.getConnection().systemService();
+        HostService hostService = system.hostsService().hostService(id);
 
         try {
             Host host = hostService.get().send().host();
@@ -697,8 +698,8 @@ public class HostServiceImpl implements ItHostService {
     // 활성
     @Override
     public void active(String id) {
-        SystemService systemService = admin.getConnection().systemService();
-        HostService hostService = systemService.hostsService().hostService(id);
+        SystemService system = admin.getConnection().systemService();
+        HostService hostService = system.hostsService().hostService(id);
 
         try {
             Host host = hostService.get().send().host();
@@ -717,8 +718,8 @@ public class HostServiceImpl implements ItHostService {
     // 새로고침
     @Override
     public void refresh(String id) {
-        SystemService systemService = admin.getConnection().systemService();
-        HostService hostService = systemService.hostsService().hostService(id);
+        SystemService system = admin.getConnection().systemService();
+        HostService hostService = system.hostsService().hostService(id);
 
         try{
             Host host = hostService.get().send().host();
@@ -734,8 +735,8 @@ public class HostServiceImpl implements ItHostService {
     // 재시작
     @Override
     public void reStart(String id) {
-        SystemService systemService = admin.getConnection().systemService();
-        HostService hostService = systemService.hostsService().hostService(id);
+        SystemService system = admin.getConnection().systemService();
+        HostService hostService = system.hostsService().hostService(id);
 
         // restart 하기 전, maintenance 인지 확인
         /*
@@ -756,8 +757,8 @@ public class HostServiceImpl implements ItHostService {
     // 시작
     @Override
     public void start(String id) {
-        SystemService systemService = admin.getConnection().systemService();
-        HostService hostService = systemService.hostsService().hostService(id);
+        SystemService system = admin.getConnection().systemService();
+        HostService hostService = system.hostsService().hostService(id);
 
         try {
             Host host = hostService.get().send().host();
@@ -771,8 +772,8 @@ public class HostServiceImpl implements ItHostService {
     // 중지
     @Override
     public void stop(String id) {
-        SystemService systemService = admin.getConnection().systemService();
-        HostService hostService = systemService.hostsService().hostService(id);
+        SystemService system = admin.getConnection().systemService();
+        HostService hostService = system.hostsService().hostService(id);
 
         try {
             Host host = hostService.get().send().host();
@@ -785,8 +786,8 @@ public class HostServiceImpl implements ItHostService {
 
 
 
-    public HostHwVo getHardWare(SystemService systemService, String id){
-        Host host = systemService.hostsService().hostService(id).get().send().host();
+    public HostHwVo getHardWare(SystemService system, String id){
+        Host host = system.hostsService().hostService(id).get().send().host();
 
         return HostHwVo.builder()
                 .family(host.hardwareInformation().family())           // 생산자
@@ -805,8 +806,8 @@ public class HostServiceImpl implements ItHostService {
 
 
     // 구하는 방법이 db밖에는 없는건지 확인필요
-    public HostSwVo getSoftWare(SystemService systemService, String id){
-        Host host = systemService.hostsService().hostService(id).get().send().host();
+    public HostSwVo getSoftWare(SystemService system, String id){
+        Host host = system.hostsService().hostService(id).get().send().host();
 
         return HostSwVo.builder()
                 .osVersion(host.os().type() + " " + host.os().version().fullVersion())    // os 버전
@@ -845,8 +846,8 @@ public class HostServiceImpl implements ItHostService {
 
 
     // vm uptime에서 사용
-    private String getUptime(SystemService systemService, String id){
-        List<Statistic> statisticList = systemService.vmsService().vmService(id).statisticsService().list().send().statistics();
+    private String getUptime(SystemService system, String id){
+        List<Statistic> statisticList = system.vmsService().vmService(id).statisticsService().list().send().statistics();
 
         long hour = statisticList.stream()
                 .filter(statistic -> statistic.name().equals("elapsed.time"))
@@ -868,14 +869,14 @@ public class HostServiceImpl implements ItHostService {
         return upTime;
     }
     // vm ip 주소
-    private String getIp(SystemService systemService, String id, String version){
-        List<Nic> nicList = systemService.vmsService().vmService(id).nicsService().list().send().nics();
-        Vm vm = systemService.vmsService().vmService(id).get().send().vm();
+    private String getIp(SystemService system, String id, String version){
+        List<Nic> nicList = system.vmsService().vmService(id).nicsService().list().send().nics();
+        Vm vm = system.vmsService().vmService(id).get().send().vm();
 
         String ip = null;
 
         for (Nic nic : nicList){
-            List<ReportedDevice> reportedDeviceList = systemService.vmsService().vmService(id).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
+            List<ReportedDevice> reportedDeviceList = system.vmsService().vmService(id).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
 
             if("v4".equals(version)) {
                 ip = reportedDeviceList.stream()

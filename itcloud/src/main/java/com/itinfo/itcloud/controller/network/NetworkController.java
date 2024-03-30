@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/network")
 public class NetworkController {
-	private final ItNetworkService itNetworkService;
+	private final ItNetworkService networkService;
 
 
 	//region: set Network
@@ -27,29 +27,20 @@ public class NetworkController {
 	@GetMapping("/networkdc")
 	@ResponseBody
 	public List<NetworkDcClusterVo> getDcCluster(){
-		return itNetworkService.getDcCluster();
+		return networkService.getDcCluster();
 	}
-
-	@GetMapping("/network-add")
-	public String add(Model model){
-		List<NetworkDcClusterVo> ndcList = itNetworkService.getDcCluster();
-
-		model.addAttribute("dc", ndcList);
-		return "/network/network-add";
-	}
-
 
 	@PostMapping("/network-add")
 	public CommonVo<Boolean> addNw(@RequestBody NetworkCreateVo nVo){
-        return itNetworkService.addNetwork(nVo);
+        return networkService.addNetwork(nVo);
 	}
 	@PostMapping("/network-edit")
 	public CommonVo<Boolean> editNw(@RequestBody NetworkCreateVo nVo){
-        return itNetworkService.editNetwork(nVo);
+        return networkService.editNetwork(nVo);
 	}
 	@PostMapping("/network-delete")
 	public CommonVo<Boolean> deleteNw(@RequestParam String id){
-        return itNetworkService.deleteNetwork(id);
+        return networkService.deleteNetwork(id);
 	}
 
 
@@ -57,12 +48,12 @@ public class NetworkController {
 	@GetMapping("/network-importView")
 	@ResponseBody
 	public NetworkImportVo viewImportNetwork(){
-		return itNetworkService.viewImportNetwork();
+		return networkService.viewImportNetwork();
 	}
 
 	@PostMapping("/network-import")
 	public CommonVo<Boolean> importNw(){
-		return itNetworkService.importNetwork();
+		return networkService.importNetwork();
 	}
 
 
@@ -81,49 +72,49 @@ public class NetworkController {
 	@GetMapping("/networksStatus")
 	@ResponseBody
 	public List<NetworkVo> networks(){
-		return itNetworkService.getList();
+		return networkService.getList();
 	}
 
 	@GetMapping("/networkStatus")
 	@ResponseBody
 	public NetworkVo network(String id){
-		return itNetworkService.getNetwork(id);
+		return networkService.getNetwork(id);
 	}
 
 	@GetMapping("/network/vnicProfileStatus")
 	@ResponseBody
 	public List<VnicProfileVo> vnic(String id){
-		return itNetworkService.getVnic(id);
+		return networkService.getVnic(id);
 	}
 
 	@GetMapping("/network/clusterStatus")
 	@ResponseBody
 	public List<NetworkClusterVo> cluster(String id){
-		return itNetworkService.getCluster(id);
+		return networkService.getCluster(id);
 	}
 
 	@GetMapping("/network/hostStatus")
 	@ResponseBody
 	public List<NetworkHostVo> host(String id){
-		return itNetworkService.getHost(id);
+		return networkService.getHost(id);
 	}
 
 	@GetMapping("/network/vmStatus")
 	@ResponseBody
 	public List<NetworkVmVo> vm(String id){
-		return itNetworkService.getVm(id);
+		return networkService.getVm(id);
 	}
 
 	@GetMapping("/network/templateStatus")
 	@ResponseBody
 	public List<TemplateVo> template(String id){
-		return itNetworkService.getTemplate(id);
+		return networkService.getTemplate(id);
 	}
 
 	@GetMapping("/network/permissionStatus")
 	@ResponseBody
 	public List<PermissionVo> permission(String id){
-		return itNetworkService.getPermission(id);
+		return networkService.getPermission(id);
 	}
 
 	//endregion

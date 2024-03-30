@@ -20,24 +20,24 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/computing")
 public class ClusterController {
-	private final ItClusterService itClusterService;
+	private final ItClusterService clusterService;
 
 	// 클러스터 선호도 그룹 생성
 	@PostMapping("/cluster/affinityGroup/add")
 	public CommonVo<Boolean> addAffinitygroup(@RequestBody AffinityGroupCreateVo agVo){
-		return itClusterService.addAffinitygroup(agVo);
+		return clusterService.addAffinitygroup(agVo);
 	}
 
 	// 클러스터 선호도 그룹 편집
 	@PostMapping("/cluster/affinityGroup/edit")
 	public CommonVo<Boolean> editAffinitygroup(@RequestBody AffinityGroupCreateVo agVo){
-		return itClusterService.editAffinitygroup(agVo);
+		return clusterService.editAffinitygroup(agVo);
 	}
 
 	// 클러스터 선호도 그룹 삭제
 	@PostMapping("/cluster/affinityGroup/delete")
 	public CommonVo<Boolean> deleteAffinitygroup(@RequestParam String clusterId, @RequestParam String id){
-		return itClusterService.deleteAffinitygroup(clusterId, id);
+		return clusterService.deleteAffinitygroup(clusterId, id);
 	}
 
 
@@ -46,7 +46,7 @@ public class ClusterController {
 	@ResponseBody
 	public List<HostVo> getHostMember(String clusterId) {
 		log.info("-----클러스터 호스트목록");
-		return itClusterService.getHostMember(clusterId);
+		return clusterService.getHostMember(clusterId);
 	}
 
 	// 해당 cluster가 가지고 있는 vm, 레이블 생성시 필요
@@ -54,7 +54,7 @@ public class ClusterController {
 	@ResponseBody
 	public List<VmVo> getVmMember(String clusterId) {
 		log.info("-----클러스터 가상머신목록");
-		return itClusterService.getVmMember(clusterId);
+		return clusterService.getVmMember(clusterId);
 	}
 
 
@@ -62,21 +62,21 @@ public class ClusterController {
 	@PostMapping("/cluster/affinityLabel/add")
 	public CommonVo<Boolean> addAff(@RequestBody AffinityLabelCreateVo alVo) {
 		log.info("--- 선호도 레이블 생성");
-		return itClusterService.addAffinitylabel(alVo);
+		return clusterService.addAffinitylabel(alVo);
 	}
 
 	// 클러스터 선호도 레이블 편집
 	@PostMapping("/cluster/affinityLabel/edit")
 	public CommonVo<Boolean> editAff(@RequestBody AffinityLabelCreateVo alVo) {
 		log.info("--- 선호도 레이블 편집");
-		return itClusterService.editAffinitylabel(alVo);
+		return clusterService.editAffinitylabel(alVo);
 	}
 
 	// 클러스터 선호도 레이블 삭제
 	@PostMapping("/cluster/affinityLabel/delete")
 	public CommonVo<Boolean> deleteAff(String id) {
 		log.info("--- 선호도 레이블 삭제");
-		return itClusterService.deleteAffinitylabel(id);
+		return clusterService.deleteAffinitylabel(id);
 	}
 
 
@@ -86,7 +86,7 @@ public class ClusterController {
 	// 데이터센터 생성 출력
 	@GetMapping("/cluster/add")
 	public String addShow(Model model) {
-		List<DataCenterVo> dcList = itClusterService.getDcList();
+		List<DataCenterVo> dcList = clusterService.getDcList();
 		model.addAttribute("dc", dcList);
 		return "computing/cluster-add";
 	}
@@ -95,13 +95,13 @@ public class ClusterController {
 	@PostMapping("/cluster/add")
 	public CommonVo<Boolean> addCluster(@RequestBody ClusterCreateVo cVo){
 		log.info("클러스터 추가");
-		return itClusterService.addCluster(cVo);
+		return clusterService.addCluster(cVo);
 	}
 
 	 // 데이터센터 생성
 	@PostMapping("/cluster/add2")
 	public String add(Model model, @ModelAttribute ClusterCreateVo cVo) {
-		CommonVo<Boolean> res = itClusterService.addCluster(cVo);
+		CommonVo<Boolean> res = clusterService.addCluster(cVo);
 
 		if(res.getBody().getContent().equals(true)){
 			model.addAttribute("result", "클러스터 생성 완료");
@@ -117,7 +117,7 @@ public class ClusterController {
 	// 클러스터 수정 출력
 	@GetMapping("/cluster/edit")
 	public String editShow(Model model, String id) {
-		ClusterCreateVo cVo = itClusterService.getClusterCreate(id);
+		ClusterCreateVo cVo = clusterService.getClusterCreate(id);
 		model.addAttribute("c", cVo);
 		return "computing/cluster-edit";
 	}
@@ -125,7 +125,7 @@ public class ClusterController {
 	// 클러스터 수정
 	@PostMapping("/cluster/edit2")
 	public String edit(Model model, @ModelAttribute ClusterCreateVo cVo ) {
-		CommonVo<Boolean> res = itClusterService.editCluster(cVo);
+		CommonVo<Boolean> res = clusterService.editCluster(cVo);
 
 		if(res.getBody().getContent().equals(true)){
 			model.addAttribute("result", "클러스터 수정 완료");
@@ -141,14 +141,14 @@ public class ClusterController {
 	// 클러스터 삭제 출력
 	@GetMapping("/cluster/delete")
 	public String deleteShow(Model model, String id){
-		model.addAttribute("name", itClusterService.getName(id));
+		model.addAttribute("name", clusterService.getName(id));
 		return "computing/cluster-delete";
 	}
 
 	// 클러스터 삭제
 	@PostMapping("/cluster/delete2")
 	public String delete(Model model, @RequestParam String id){
-		CommonVo<Boolean> res = itClusterService.deleteCluster(id);
+		CommonVo<Boolean> res = clusterService.deleteCluster(id);
 
 		if(res.getBody().getContent().equals(true)){
 			model.addAttribute("result", "클러스터 삭제 완료");
@@ -170,42 +170,42 @@ public class ClusterController {
 	@ResponseBody
 	public List<ClusterVo> clusters() {
 		log.info("-----클러스터 목록");
-		return itClusterService.getList();
+		return clusterService.getList();
 	}
 
 	@GetMapping("/clusterStatus")
 	@ResponseBody
 	public ClusterVo cluster(String id) {
 		log.info("-----클러스터 일반: " + id);
-		return itClusterService.getInfo(id);
+		return clusterService.getInfo(id);
 	}
 
 	@GetMapping("/cluster/networkStatus")
 	@ResponseBody
 	public List<NetworkVo> network(String id) {
 		log.info("-----클러스터 네트워크: " + id);
-		return itClusterService.getNetwork(id);
+		return clusterService.getNetwork(id);
 	}
 
 	@GetMapping("/cluster/hostStatus")
 	@ResponseBody
 	public List<HostVo> host(String id) {
 		log.info("----- 클러스터 호스트: " + id);
-		return itClusterService.getHost(id);
+		return clusterService.getHost(id);
 	}
 
 	@GetMapping("/cluster/vmStatus")
 	@ResponseBody
 	public List<VmVo> vm(String id) {
 		log.info("----- 클러스터 가상머신: " + id);
-		return itClusterService.getVm(id);
+		return clusterService.getVm(id);
 	}
 
 	@GetMapping("/cluster/affGroupStatus")
 	@ResponseBody
 	public List<AffinityGroupVo> affGroup(String id) {
 		log.info("----- 클러스터 선호도 목록: " + id);
-		return itClusterService.getAffinitygroup(id);
+		return clusterService.getAffinitygroup(id);
 	}
 
 
@@ -213,28 +213,28 @@ public class ClusterController {
 	@ResponseBody
 	public List<AffinityLabelVo> affLabel(String id) {
 		log.info("----- 클러스터 레이블 목록 불러오기: " + id);
-		return itClusterService.getAffinitylabelList(id);
+		return clusterService.getAffinitylabelList(id);
 	}
 
 	@GetMapping("/cluster/affLabel")
 	@ResponseBody
 	public AffinityLabelCreateVo getAffinityLabel(String id) {
 		log.info("----- 클러스터 선호도 레이블 생성 출력: " + id);
-		return itClusterService.getAffinityLabel(id);
+		return clusterService.getAffinityLabel(id);
 	}
 
 	@GetMapping("/cluster/permissionStatus")
 	@ResponseBody
 	public List<PermissionVo> permission(String id) {
 		log.info("----- 클러스터 권한: " + id);
-		return itClusterService.getPermission(id);
+		return clusterService.getPermission(id);
 	}
 
 	@GetMapping("/cluster/eventStatus")
 	@ResponseBody
 	public List<EventVo> event(String id) {
 		log.info("----- 클러스터 이벤트: " + id);
-		return itClusterService.getEvent(id);
+		return clusterService.getEvent(id);
 	}
 
 
@@ -248,7 +248,7 @@ public class ClusterController {
 
 //	@GetMapping("/cluster-cpu")
 //	public String cpu(String id, Model model) {
-//		List<CpuProfileVo> cpu = itClusterService.getCpuProfile(id);
+//		List<CpuProfileVo> cpu = clusterService.getCpuProfile(id);
 //		model.addAttribute("cpu", cpu);
 //		model.addAttribute("id", id);
 //
@@ -259,7 +259,7 @@ public class ClusterController {
 //	@ResponseBody
 //	public List<CpuProfileVo> cpu(String id) {
 //		log.info("----- 클러스터 cpu 목록 불러오기: " + id);
-//		return itClusterService.getCpuProfile(id);
+//		return clusterService.getCpuProfile(id);
 //	}
 	
 	// endregion

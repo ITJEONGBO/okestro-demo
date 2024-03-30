@@ -37,11 +37,11 @@ public class ClusterServiceImpl implements ItClusterService {
     // 상태, 이름, 코멘트, 호환버전, 설명, 클러스터cpu유형, 호스트수, 가상머신수, (업그레이드 상태)
     @Override
     public List<ClusterVo> getList(){
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
-        List<Host> hostList = systemService.hostsService().list().send().hosts();
-        List<Vm> vmList = systemService.vmsService().list().send().vms();
+        List<Cluster> clusterList = system.clustersService().list().send().clusters();
+        List<Host> hostList = system.hostsService().list().send().hosts();
+        List<Vm> vmList = system.vmsService().list().send().vms();
 
         log.info("클러스터 리스트");
         return clusterList.stream()
@@ -67,11 +67,11 @@ public class ClusterServiceImpl implements ItClusterService {
     // 일반
     @Override
     public ClusterVo getInfo(String id){
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        Cluster cluster = systemService.clustersService().clusterService(id).get().send().cluster();
-        List<Vm> vmList = systemService.vmsService().list().send().vms();
-        String dcName = systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name();
+        Cluster cluster = system.clustersService().clusterService(id).get().send().cluster();
+        List<Vm> vmList = system.vmsService().list().send().vms();
+        String dcName = system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name();
 
         log.info("클러스터 {} 출력", getName(id));
         return ClusterVo.builder()
@@ -94,9 +94,9 @@ public class ClusterServiceImpl implements ItClusterService {
     // 네트워크 목록
     @Override
     public List<NetworkVo> getNetwork(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<Network> networkList = systemService.clustersService().clusterService(id).networksService().list().send().networks();
+        List<Network> networkList = system.clustersService().clusterService(id).networksService().list().send().networks();
 
         log.info("클러스터 {} 네트워크 목록", getName(id));
         return networkList.stream()
@@ -125,10 +125,10 @@ public class ClusterServiceImpl implements ItClusterService {
     // 호스트 목록
     @Override
     public List<HostVo> getHost(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<Host> hostList = systemService.hostsService().list().send().hosts();
-        List<Vm> vmList = systemService.vmsService().list().send().vms();
+        List<Host> hostList = system.hostsService().list().send().hosts();
+        List<Vm> vmList = system.vmsService().list().send().vms();
 
         log.info("클러스터 {} 호스트 목록", getName(id));
         return hostList.stream()
@@ -153,9 +153,9 @@ public class ClusterServiceImpl implements ItClusterService {
     // 가상머신 목록
     @Override
     public List<VmVo> getVm(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<Vm> vmList = systemService.vmsService().list().send().vms();
+        List<Vm> vmList = system.vmsService().list().send().vms();
 
         log.info("클러스터 {} 가상머신 목록", getName(id));
         return vmList.stream()
@@ -165,9 +165,9 @@ public class ClusterServiceImpl implements ItClusterService {
                         .status(vm.status().value())
                         .id(vm.id())
                         .name(vm.name())
-                        .upTime(getUptime(systemService, vm.id()))
-                        .ipv4(getIp(systemService, vm.id(), "v4"))
-                        .ipv6(getIp(systemService, vm.id(), "v6"))
+                        .upTime(getUptime(system, vm.id()))
+                        .ipv4(getIp(system, vm.id(), "v4"))
+                        .ipv6(getIp(system, vm.id(), "v6"))
                     .build()
                 )
                 .collect(Collectors.toList());
@@ -176,9 +176,9 @@ public class ClusterServiceImpl implements ItClusterService {
     // 선호도 그룹 목록 - 클러스터 id를 받아와서 처리
     @Override
     public List<AffinityGroupVo> getAffinitygroup(String id){
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<AffinityGroup> affinityGroupList = systemService.clustersService().clusterService(id).affinityGroupsService().list().send().groups();
+        List<AffinityGroup> affinityGroupList = system.clustersService().clusterService(id).affinityGroupsService().list().send().groups();
 
         log.info("클러스터 {} 선호도그룹 목록", getName(id));
         return affinityGroupList.stream()
@@ -196,10 +196,10 @@ public class ClusterServiceImpl implements ItClusterService {
                         .hostEnabled(ag.hostsRule().enabled())
                         .hostPositive(ag.hostsRule().positive())
                         .hostEnforcing(ag.hostsRule().enforcing())
-                        .hostList(ag.hostsPresent() ? getHostList(systemService, id, ag.id()) : null)
-                        .vmList(ag.vmsPresent() ? getVmList(systemService, id, ag.id()) : null)
-                        .hostLabels(ag.hostLabelsPresent() ? getLabelName(systemService, ag.hostLabels().get(0).id()) : null)
-                        .vmLabels(ag.vmLabelsPresent() ? getLabelName(systemService, ag.vmLabels().get(0).id()) : null)
+                        .hostList(ag.hostsPresent() ? getHostList(system, id, ag.id()) : null)
+                        .vmList(ag.vmsPresent() ? getVmList(system, id, ag.id()) : null)
+                        .hostLabels(ag.hostLabelsPresent() ? getLabelName(system, ag.hostLabels().get(0).id()) : null)
+                        .vmLabels(ag.vmLabelsPresent() ? getLabelName(system, ag.vmLabels().get(0).id()) : null)
                     .build())
                 .collect(Collectors.toList());
     }
@@ -208,10 +208,10 @@ public class ClusterServiceImpl implements ItClusterService {
     // 선호도 그룹 추가 - 클러스터 아이디를 받아와서 처리
     @Override
     public CommonVo<Boolean> addAffinitygroup(AffinityGroupCreateVo agVo) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        AffinityGroupsService agServices = systemService.clustersService().clusterService(agVo.getClusterId()).affinityGroupsService();
-        List<AffinityGroup> agList = systemService.clustersService().clusterService(agVo.getClusterId()).affinityGroupsService().list().send().groups();
+        AffinityGroupsService agServices = system.clustersService().clusterService(agVo.getClusterId()).affinityGroupsService();
+        List<AffinityGroup> agList = system.clustersService().clusterService(agVo.getClusterId()).affinityGroupsService().list().send().groups();
 
         // 선호도 그룹 이름 중복검사
         boolean duplicateName = agList.stream().noneMatch(ag -> ag.name().equals(agVo.getName()));
@@ -276,12 +276,12 @@ public class ClusterServiceImpl implements ItClusterService {
     // 선호도 그룹 편집
     @Override
     public CommonVo<Boolean> editAffinitygroup(AffinityGroupCreateVo agVo) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        AffinityGroupService agService = systemService.clustersService().clusterService(agVo.getClusterId()).affinityGroupsService().groupService(agVo.getId());
-        List<AffinityGroup> agList = systemService.clustersService().clusterService(agVo.getClusterId()).affinityGroupsService().list().send().groups();
+        AffinityGroupService agService = system.clustersService().clusterService(agVo.getClusterId()).affinityGroupsService().groupService(agVo.getId());
+        List<AffinityGroup> agList = system.clustersService().clusterService(agVo.getClusterId()).affinityGroupsService().list().send().groups();
 
-        boolean duplicateName = agList.stream().noneMatch(ag -> ag.name().equals(agVo.getName()));
+//        boolean duplicateName = agList.stream().noneMatch(ag -> ag.name().equals(agVo.getName()));
 
         try {
             AffinityGroupBuilder agBuilder = new AffinityGroupBuilder();
@@ -341,9 +341,9 @@ public class ClusterServiceImpl implements ItClusterService {
     // 선호도 그룹 삭제 - clusterId와 id를 가져와서 삭제
     @Override
     public CommonVo<Boolean> deleteAffinitygroup(String clusterId, String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        AffinityGroupService agService = systemService.clustersService().clusterService(clusterId).affinityGroupsService().groupService(id);
+        AffinityGroupService agService = system.clustersService().clusterService(clusterId).affinityGroupsService().groupService(id);
 
         try {
             agService.remove().send();
@@ -360,9 +360,9 @@ public class ClusterServiceImpl implements ItClusterService {
     // 선호도 레이블 목록 출력
     @Override
     public List<AffinityLabelVo> getAffinitylabelList(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<AffinityLabel> affinityLabelList = systemService.affinityLabelsService().list().send().labels();
+        List<AffinityLabel> affinityLabelList = system.affinityLabelsService().list().send().labels();
 
         log.info("클러스터 {} 선호도 레이블", getName(id));
         return affinityLabelList.stream()
@@ -370,8 +370,8 @@ public class ClusterServiceImpl implements ItClusterService {
                     AffinityLabelVo.builder()
                         .id(al.id())
                         .name(al.name())
-                        .hosts(getHostLabelMember(systemService, al.id()))
-                        .vms(getVmLabelMember(systemService, al.id()))
+                        .hosts(getHostLabelMember(system, al.id()))
+                        .vms(getVmLabelMember(system, al.id()))
                     .build()
                 )
                 .collect(Collectors.toList());
@@ -380,9 +380,9 @@ public class ClusterServiceImpl implements ItClusterService {
     // 레이블 생성시 필요 - 해당 cluster 가지고 있는 host
     @Override
     public List<HostVo> getHostMember(String clusterId){
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<Host> hostList = systemService.hostsService().list().send().hosts();
+        List<Host> hostList = system.hostsService().list().send().hosts();
 
         log.info("클러스터 선호도 레이블 생성시 필요한 호스트 리스트");
         return hostList.stream()
@@ -398,9 +398,9 @@ public class ClusterServiceImpl implements ItClusterService {
     // 레이블 생성시 필요 - 해당 cluster 가지고 있는 vm
     @Override
     public List<VmVo> getVmMember(String clusterId){
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<Vm> vmList = systemService.vmsService().list().send().vms();
+        List<Vm> vmList = system.vmsService().list().send().vms();
 
         log.info("클러스터 선호도레이블 생성시 필요한 가상머신 리스트");
         return vmList.stream()
@@ -416,26 +416,26 @@ public class ClusterServiceImpl implements ItClusterService {
     // 선호도 레이블 생성 시 출력창
     @Override
     public AffinityLabelCreateVo getAffinityLabel(String id){   // id는 alid
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        AffinityLabel al = systemService.affinityLabelsService().labelService(id).get().follow("hosts,vms").send().label();
+        AffinityLabel al = system.affinityLabelsService().labelService(id).get().follow("hosts,vms").send().label();
 
         log.info("성공: 클러스터 {} 선호도 레이블", getName(id));
         return AffinityLabelCreateVo.builder()
                 .id(id)
                 .name(al.name())
-                .hostList(al.hostsPresent() ? getHostLabelMember(systemService, id) : null )
-                .vmList(al.vmsPresent() ? getVmLabelMember(systemService, id) : null)
+                .hostList(al.hostsPresent() ? getHostLabelMember(system, id) : null )
+                .vmList(al.vmsPresent() ? getVmLabelMember(system, id) : null)
                 .build();
     }
 
     // 선호도 레이블 생성
     @Override
     public CommonVo<Boolean> addAffinitylabel(AffinityLabelCreateVo alVo) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        AffinityLabelsService alServices = systemService.affinityLabelsService();
-        List<AffinityLabel> alList = systemService.affinityLabelsService().list().send().labels();
+        AffinityLabelsService alServices = system.affinityLabelsService();
+        List<AffinityLabel> alList = system.affinityLabelsService().list().send().labels();
 
         // 중복이름
         boolean duplicateName = alList.stream().noneMatch(al -> al.name().equals(alVo.getName()));
@@ -480,12 +480,12 @@ public class ClusterServiceImpl implements ItClusterService {
     // 이름만 바뀌는거 같음, 호스트하고 vm은 걍 삭제하는 방식으로
     @Override
     public CommonVo<Boolean> editAffinitylabel(AffinityLabelCreateVo alVo) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        AffinityLabelService alService = systemService.affinityLabelsService().labelService(alVo.getId());
-        List<AffinityLabel> alList = systemService.affinityLabelsService().list().send().labels();
-//        AffinityLabelHostsService alHostsService = systemService.affinityLabelsService().labelService(alVo.getId()).hostsService();
-//        AffinityLabelVmsService alVmsService = systemService.affinityLabelsService().labelService(alVo.getId()).vmsService();
+        AffinityLabelService alService = system.affinityLabelsService().labelService(alVo.getId());
+        List<AffinityLabel> alList = system.affinityLabelsService().list().send().labels();
+//        AffinityLabelHostsService alHostsService = system.affinityLabelsService().labelService(alVo.getId()).hostsService();
+//        AffinityLabelVmsService alVmsService = system.affinityLabelsService().labelService(alVo.getId()).vmsService();
 
         // 중복이름
         boolean duplicateName = alList.stream().noneMatch(al -> al.name().equals(alVo.getName()));
@@ -521,10 +521,10 @@ public class ClusterServiceImpl implements ItClusterService {
     // 선호도 레이블 - 삭제하려면 해당 레이블에 있는 가상머신&호스트 멤버 전부 내리고 해야함
     @Override
     public CommonVo<Boolean> deleteAffinitylabel(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        AffinityLabelService alService = systemService.affinityLabelsService().labelService(id);
-        AffinityLabel affinityLabel = systemService.affinityLabelsService().labelService(id).get().follow("hosts,vms").send().label();
+        AffinityLabelService alService = system.affinityLabelsService().labelService(id);
+        AffinityLabel affinityLabel = system.affinityLabelsService().labelService(id).get().follow("hosts,vms").send().label();
 
         try {
             if(!affinityLabel.hostsPresent() && !affinityLabel.vmsPresent()) {
@@ -545,9 +545,9 @@ public class ClusterServiceImpl implements ItClusterService {
     // 클러스터 권한 출력
     @Override
     public List<PermissionVo> getPermission(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<Permission> permissionList = systemService.clustersService().clusterService(id).permissionsService().list().send().permissions();
+        List<Permission> permissionList = system.clustersService().clusterService(id).permissionsService().list().send().permissions();
 
         List<PermissionVo> pVoList = new ArrayList<>();
         PermissionVo pVo = null;
@@ -558,8 +558,8 @@ public class ClusterServiceImpl implements ItClusterService {
 
             // 그룹이 있고, 유저가 없을때
             if(permission.groupPresent() && !permission.userPresent()){
-                Group group = systemService.groupsService().groupService(permission.group().id()).get().send().get();
-                Role role = systemService.rolesService().roleService(permission.role().id()).get().send().role();
+                Group group = system.groupsService().groupService(permission.group().id()).get().send().get();
+                Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
 
                 pVo.setUser(group.name());
                 pVo.setNameSpace(group.namespace());
@@ -570,8 +570,8 @@ public class ClusterServiceImpl implements ItClusterService {
 
             // 그룹이 없고, 유저가 있을때
             if(!permission.groupPresent() && permission.userPresent()){
-                User user = systemService.usersService().userService(permission.user().id()).get().send().user();
-                Role role = systemService.rolesService().roleService(permission.role().id()).get().send().role();
+                User user = system.usersService().userService(permission.user().id()).get().send().user();
+                Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
 
                 pVo.setUser(user.name());
                 pVo.setProvider(user.domainPresent() ? user.domain().name() : null);
@@ -589,10 +589,10 @@ public class ClusterServiceImpl implements ItClusterService {
     // TODO 이벤트 검색 자체 오류
     @Override
     public List<EventVo> getEvent(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
-        List<Event> eventList = systemService.eventsService().list().max(10).send().events();
+        List<Event> eventList = system.eventsService().list().max(10).send().events();
 
         log.info("클러스터 이벤트 출력");
         return eventList.stream()
@@ -615,9 +615,9 @@ public class ClusterServiceImpl implements ItClusterService {
     // cluster-add.jsp에서 datacenter 선택하기 위해 사용되는 dc list
     @Override
     public List<DataCenterVo> getDcList(){
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        List<DataCenter> dataCenterList = systemService.dataCentersService().list().send().dataCenters();
+        List<DataCenter> dataCenterList = system.dataCentersService().list().send().dataCenters();
 
         log.info("클러스터 생성 위해 필요한 데이터센터 리스트");
         return dataCenterList.stream()
@@ -626,7 +626,7 @@ public class ClusterServiceImpl implements ItClusterService {
                         .id(dataCenter.id())
                         .name(dataCenter.name())
                         .storageType(dataCenter.local())
-                        .networkList( getNetworkList(systemService, dataCenter.id()))
+                        .networkList( getNetworkList(system, dataCenter.id()))
                     .build()
                 )
                 .collect(Collectors.toList());
@@ -635,11 +635,11 @@ public class ClusterServiceImpl implements ItClusterService {
     // edit 창
     @Override
     public ClusterCreateVo getClusterCreate(String id){
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        Cluster cluster = systemService.clustersService().clusterService(id).get().send().cluster();
-        DataCenter dataCenter = systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter();
-        List<Network> networkList = systemService.clustersService().clusterService(id).networksService().list().send().networks();
+        Cluster cluster = system.clustersService().clusterService(id).get().send().cluster();
+        DataCenter dataCenter = system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter();
+        List<Network> networkList = system.clustersService().clusterService(id).networksService().list().send().networks();
 
         String networkId = networkList.stream()
                 .filter(Network::display)
@@ -687,10 +687,10 @@ public class ClusterServiceImpl implements ItClusterService {
     // required: name , cpu.type, data_center   (Identify the datacenter with either id or name)
     @Override
     public CommonVo<Boolean> addCluster(ClusterCreateVo cVo) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        ClustersService clustersService = systemService.clustersService();
-        ExternalProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
+        ClustersService clustersService = system.clustersService();
+        ExternalProvider openStackNetworkProvider = system.openstackNetworkProvidersService().list().send().providers().get(0);
 
         boolean duplicateName = clustersService.list().search("name=" + cVo.getName()).send().clusters().isEmpty();
         String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
@@ -745,12 +745,12 @@ public class ClusterServiceImpl implements ItClusterService {
     // 클러스터 편집
     @Override
     public CommonVo<Boolean> editCluster(ClusterCreateVo cVo) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        ClustersService clustersService = systemService.clustersService();
-        ClusterService clusterService = systemService.clustersService().clusterService(cVo.getId());
-//        Network network = systemService.networksService().networkService(cVo.getNetworkId()).get().send().network();
-        OpenStackNetworkProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
+        ClustersService clustersService = system.clustersService();
+        ClusterService clusterService = system.clustersService().clusterService(cVo.getId());
+//        Network network = system.networksService().networkService(cVo.getNetworkId()).get().send().network();
+        OpenStackNetworkProvider openStackNetworkProvider = system.openstackNetworkProvidersService().list().send().providers().get(0);
 
         boolean cName = clustersService.list().search("name="+cVo.getName()).send().clusters().isEmpty();
         String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
@@ -802,9 +802,9 @@ public class ClusterServiceImpl implements ItClusterService {
     // 클러스터 삭제 (클러스터 아이디 입력시)
     @Override
     public CommonVo<Boolean> deleteCluster(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
 
-        ClusterService clusterService = systemService.clustersService().clusterService(id);
+        ClusterService clusterService = system.clustersService().clusterService(id);
 
         try {
             clusterService.remove().send();
@@ -826,8 +826,8 @@ public class ClusterServiceImpl implements ItClusterService {
     
 
     // 클러스터 생성 - 데이터센터, 네트워크 리스트 출력
-    private List<NetworkVo> getNetworkList(SystemService sys, String dcId){
-        List<Network> networkList = sys.dataCentersService().dataCenterService(dcId).networksService().list().send().networks();
+    private List<NetworkVo> getNetworkList(SystemService system, String dcId){
+        List<Network> networkList = system.dataCentersService().dataCenterService(dcId).networksService().list().send().networks();
 
         log.info("클러스터 생성 네트워크 리스트 ");
         return networkList.stream()
@@ -841,8 +841,8 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
     // 가동시간, 업타임
-    private String getUptime(SystemService systemService, String id){
-        List<Statistic> statisticList = systemService.vmsService().vmService(id).statisticsService().list().send().statistics();
+    private String getUptime(SystemService system, String id){
+        List<Statistic> statisticList = system.vmsService().vmService(id).statisticsService().list().send().statistics();
 
         long hour = statisticList.stream()
                 .filter(statistic -> statistic.name().equals("elapsed.time"))
@@ -865,14 +865,14 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
     // ip 주소 
-    private String getIp(SystemService systemService, String id, String version){
-        List<Nic> nicList = systemService.vmsService().vmService(id).nicsService().list().send().nics();
-        Vm vm = systemService.vmsService().vmService(id).get().send().vm();
+    private String getIp(SystemService system, String id, String version){
+        List<Nic> nicList = system.vmsService().vmService(id).nicsService().list().send().nics();
+        Vm vm = system.vmsService().vmService(id).get().send().vm();
 
         String ip = null;
 
         for (Nic nic : nicList){
-            List<ReportedDevice> reportedDeviceList = systemService.vmsService().vmService(id).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
+            List<ReportedDevice> reportedDeviceList = system.vmsService().vmService(id).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
             
             if("v4".equals(version)) {
                 ip = reportedDeviceList.stream()
@@ -894,8 +894,8 @@ public class ClusterServiceImpl implements ItClusterService {
 
 
     // 선호도  - 레이블 아이디와 이름 얻기
-    private List<AffinityLabelVo> getLabelName(SystemService systemService,String alId){
-        List<AffinityLabel> alList = systemService.affinityLabelsService().list().send().labels();
+    private List<AffinityLabelVo> getLabelName(SystemService system,String alId){
+        List<AffinityLabel> alList = system.affinityLabelsService().list().send().labels();
 
         return alList.stream()
                 .filter(al -> al.id().equals(alId))
@@ -908,8 +908,8 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
     // 선호도  - 호스트 리스트 출력
-    private List<HostVo> getHostList(SystemService systemService, String clusterId, String agId){
-        List<Host> hostList = systemService.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId).hostsService().list().send().hosts();
+    private List<HostVo> getHostList(SystemService system, String clusterId, String agId){
+        List<Host> hostList = system.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId).hostsService().list().send().hosts();
 
         return hostList.stream()
                 .map(host ->
@@ -921,8 +921,8 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
     // 선호도 그룹 목록 - 가상머신 리스트 출력
-    private List<VmVo> getVmList(SystemService systemService, String clusterId, String agId){
-        List<Vm> vmList = systemService.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId).vmsService().list().send().vms();
+    private List<VmVo> getVmList(SystemService system, String clusterId, String agId){
+        List<Vm> vmList = system.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId).vmsService().list().send().vms();
 
         return vmList.stream()
                 .map(vm ->
@@ -936,8 +936,8 @@ public class ClusterServiceImpl implements ItClusterService {
 
 
     // 선호도 레이블에 있는 호스트 출력
-    private List<HostVo> getHostLabelMember(SystemService systemService, String alid){
-        List<Host> hostList = systemService.affinityLabelsService().labelService(alid).hostsService().list().send().hosts();
+    private List<HostVo> getHostLabelMember(SystemService system, String alid){
+        List<Host> hostList = system.affinityLabelsService().labelService(alid).hostsService().list().send().hosts();
 
         List<String> idList = hostList.stream()
                 .map(Host::id)
@@ -945,7 +945,7 @@ public class ClusterServiceImpl implements ItClusterService {
 
         return idList.stream()
                 .map(hostId -> {
-                    Host host = systemService.hostsService().hostService(hostId).get().send().host();
+                    Host host = system.hostsService().hostService(hostId).get().send().host();
                     return HostVo.builder()
                             .id(host.id())
                             .name(host.name())
@@ -956,8 +956,8 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
     // 선호도 레이블 - vm
-    private List<VmVo> getVmLabelMember(SystemService systemService, String alid){
-        List<Vm> vmList = systemService.affinityLabelsService().labelService(alid).vmsService().list().send().vms();
+    private List<VmVo> getVmLabelMember(SystemService system, String alid){
+        List<Vm> vmList = system.affinityLabelsService().labelService(alid).vmsService().list().send().vms();
 
         // id만 출력
         List<String> idList = vmList.stream()
@@ -968,7 +968,7 @@ public class ClusterServiceImpl implements ItClusterService {
 
         return idList.stream()
                 .map(vmId -> {
-                    Vm vm = systemService.vmsService().vmService(vmId).get().send().vm();
+                    Vm vm = system.vmsService().vmService(vmId).get().send().vm();
                     return VmVo.builder()
                             .id(vm.id())
                             .name(vm.name())

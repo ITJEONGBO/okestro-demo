@@ -19,68 +19,68 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/storage")
 public class StorageController {
-	private final ItStorageService itStorageService;
+	private final ItStorageService storageService;
 
 	@GetMapping("/disks")
 	@ResponseBody
 	public List<DiskVo> disks(String id){
-		return itStorageService.getDiskVoList(id);
+		return storageService.getDiskVoList(id);
 	}
 
 
 	@GetMapping("/diskShow")
 	@ResponseBody
 	public DiskDcVo setAddDisk(String id){
-		return itStorageService.setAddDisk(id);
+		return storageService.setAddDisk(id);
 	}
 
 	@PostMapping("/disk-image/add")
 	public CommonVo<Boolean> addDiskImage(@RequestBody ImageCreateVo image){
 		log.info("새가상 디스크 - 이미지 생성");
-		return itStorageService.addDiskImage(image);
+		return storageService.addDiskImage(image);
 	}
 
 
 	@GetMapping("/domains")
 	@ResponseBody
 	public List<DomainVo> domains(){
-		return itStorageService.getDomainList();
+		return storageService.getDomainList();
 	}
 
 	@GetMapping("/volumes")
 	@ResponseBody
 	public List<VolumeVo> volumes(String id){
-		return itStorageService.getVolumeVoList(id);
+		return storageService.getVolumeVoList(id);
 	}
 
 	@GetMapping("/storages")
 	@ResponseBody
 	public List<DomainVo> storages(String id){
-		return itStorageService.getStorageList(id);
+		return storageService.getStorageList(id);
 	}
 
 	@GetMapping("/networks")
 	@ResponseBody
 	public List<NetworkVo> networks(String id){
-		return itStorageService.getNetworkVoList(id);
+		return storageService.getNetworkVoList(id);
 	}
 
 	@GetMapping("/clusters")
 	@ResponseBody
 	public List<ClusterVo> clusters(String id){
-		return itStorageService.getClusterVoList(id);
+		return storageService.getClusterVoList(id);
 	}
 
 	@GetMapping("/events")
 	@ResponseBody
 	public List<EventVo> events(String id){
-		return itStorageService.getEvent(id);
+		return storageService.getEvent(id);
 	}
 
 	@GetMapping("/permissions")
 	@ResponseBody
 	public List<PermissionVo> permissions(String id){
-		return itStorageService.getPermission(id);
+		return storageService.getPermission(id);
 	}
 
 

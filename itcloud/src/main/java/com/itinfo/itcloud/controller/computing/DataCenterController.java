@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/computing")
 public class DataCenterController {
-	private final ItDataCenterService itDataCenterService;
+	private final ItDataCenterService dcService;
 
 
 	@GetMapping("/hello")
@@ -32,14 +32,14 @@ public class DataCenterController {
 	@ResponseBody
 	public List<DataCenterVo> datacenters() {
 		log.info("----- 데이터센터 목록");
-		return itDataCenterService.getList();
+		return dcService.getList();
 	}
 
 	@GetMapping("/datacenter-eventStatus")
 	@ResponseBody
 	public List<EventVo> event(String id) {
 		log.info("----- 데이터센터 이벤트 : " + id);
-		return itDataCenterService.getEvent(id);
+		return dcService.getEvent(id);
 	}
 
 	//endregion
