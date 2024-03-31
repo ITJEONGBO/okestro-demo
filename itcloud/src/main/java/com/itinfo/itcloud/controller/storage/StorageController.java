@@ -31,13 +31,25 @@ public class StorageController {
 	@GetMapping("/diskShow")
 	@ResponseBody
 	public DiskDcVo setAddDisk(String id){
-		return storageService.setAddDisk(id);
+		return storageService.setDiskImage(id);
 	}
 
 	@PostMapping("/disk-image/add")
 	public CommonVo<Boolean> addDiskImage(@RequestBody ImageCreateVo image){
 		log.info("새가상 디스크 - 이미지 생성");
 		return storageService.addDiskImage(image);
+	}
+
+	@PostMapping("/disk-image/edit")
+	public CommonVo<Boolean> editDiskImage(@RequestBody ImageCreateVo image){
+		log.info("새가상 디스크 - 이미지 수정");
+		return storageService.editDiskImage(image);
+	}
+
+	@PostMapping("/disk-image/delete")
+	public CommonVo<Boolean> deleteDiskImage(@RequestParam String id){
+		log.info("새가상 디스크 - 이미지 삭제");
+		return storageService.deleteDiskImage(id);
 	}
 
 

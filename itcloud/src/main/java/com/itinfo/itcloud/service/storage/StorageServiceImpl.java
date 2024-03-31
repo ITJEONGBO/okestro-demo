@@ -10,9 +10,8 @@ import com.itinfo.itcloud.model.storage.*;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItStorageService;
 import lombok.extern.slf4j.Slf4j;
-import org.ovirt.engine.sdk4.builders.DiskBuilder;
-import org.ovirt.engine.sdk4.builders.DiskProfileBuilder;
-import org.ovirt.engine.sdk4.builders.StorageDomainBuilder;
+import org.ovirt.engine.sdk4.builders.*;
+import org.ovirt.engine.sdk4.services.DiskService;
 import org.ovirt.engine.sdk4.services.DisksService;
 import org.ovirt.engine.sdk4.services.SystemService;
 import org.ovirt.engine.sdk4.types.*;
@@ -23,10 +22,7 @@ import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
-
-import static org.ovirt.engine.sdk4.builders.Builders.diskProfile;
 
 @Service
 @Slf4j
@@ -67,8 +63,9 @@ public class StorageServiceImpl implements ItStorageService {
     }
 
     // 디스크 - 새로만들기 - 이미지(데이터센터, 스토리지 도메인) 목록 보여지게
+    // TODO
     @Override
-    public DiskDcVo setAddDisk(String dcId) {
+    public DiskDcVo setDiskImage(String dcId) {
         SystemService system = admin.getConnection().systemService();
 
         DataCenter dataCenter = system.dataCentersService().dataCenterService(dcId).get().send().dataCenter();
@@ -114,6 +111,7 @@ public class StorageServiceImpl implements ItStorageService {
             .build();
     }
 
+    // 스토리지 > 디스크 > 새로만들기 - 이미지
     @Override
     public CommonVo<Boolean> addDiskImage(ImageCreateVo image) {
         SystemService system = admin.getConnection().systemService();
@@ -124,12 +122,13 @@ public class StorageServiceImpl implements ItStorageService {
             DiskBuilder diskBuilder = new DiskBuilder();
             diskBuilder
                     .name(image.getName())
-                    .format(DiskFormat.COW)
+                    .format(DiskFormat.COW) // share 상태에 따라 변하는가
                     .description(image.getDescription())
 					.wipeAfterDelete(image.isWipeAfterDelete())
 					.provisionedSize(image.getSize().multiply(BigInteger.valueOf(2L).pow(30)))
-					.storageDomains(new StorageDomain[]{ new StorageDomainBuilder().id(image.getDomain()).build()})
-                    .build();
+					.storageDomains(new StorageDomain[]{ new StorageDomainBuilder().id(image.getDomainId()).build()})
+//                    .diskProfile()
+            .build();
 
             Disk disk = disksService.add().disk(diskBuilder).send().disk();
 
@@ -146,10 +145,119 @@ public class StorageServiceImpl implements ItStorageService {
     }
 
     @Override
-    public CommonVo<Boolean> addDiskLun(LunVo lunVo) {
+    public CommonVo<Boolean> editDiskImage(ImageCreateVo image) {
         SystemService system = admin.getConnection().systemService();
 
+        DiskService diskService = system.disksService().diskService(image.getId());
 
+        System.out.println(image.getSize() + "/ " + image.getAppendSize());
+
+        try{
+            DiskBuilder diskBuilder = new DiskBuilder();
+            diskBuilder
+                    .id(image.getId())
+                    .provisionedSize((image.getSize().add(image.getAppendSize())).multiply(BigInteger.valueOf(2L).pow(30))) //확장 +
+                    .name(image.getName())
+                    .description(image.getDescription())
+                    .format(DiskFormat.COW)
+                    .wipeAfterDelete(image.isWipeAfterDelete())
+                    .storageDomains(new StorageDomain[]{ new StorageDomainBuilder().id(image.getDomainId()).build()})
+//                    .diskProfile()
+            .build();
+
+            diskService.update().disk(diskBuilder).send().disk();
+
+            log.info("성공: 디스크 이미지 {} 수정", image.getName());
+            return CommonVo.successResponse();
+        }catch (Exception e){
+            log.error("실패: 새 가상 디스크 (이미지) 수정");
+            e.printStackTrace();
+            return CommonVo.failResponse(e.getMessage());
+        }
+    }
+
+    @Override
+    public CommonVo<Boolean> deleteDiskImage(String imageId) {
+        SystemService system = admin.getConnection().systemService();
+
+        DiskService diskService = system.disksService().diskService(imageId);
+
+        try{
+            diskService.remove().send();
+
+            log.info("성공: 디스크 이미지 {} 삭제", imageId);
+            return CommonVo.successResponse();
+        }catch (Exception e){
+            log.error("실패: 새 가상 디스크 (이미지) 수정");
+            e.printStackTrace();
+            return CommonVo.failResponse(e.getMessage());
+        }
+    }
+
+    @Override
+    public LunCreateVo setDiskLun(String dcId) {
+        SystemService system = admin.getConnection().systemService();
+        return null;
+    }
+
+    // 스토리지 > 디스크 > 새로만들기 - 직접 LUN
+    @Override
+    public CommonVo<Boolean> addDiskLun(LunCreateVo lun) {
+        SystemService system = admin.getConnection().systemService();
+
+        DisksService disksService = system.disksService();
+//        Host host = system.hostsService().hostService(lunVo.getHostId()).get().send().host();
+        // host 사용하지 않고 직접 lun디스크 생성시 호스트 요소 제거
+
+        try{
+            DiskBuilder diskBuilder = new DiskBuilder();
+            diskBuilder
+                    .alias(lun.getAlias())
+                    .description(lun.getDescription())
+                    .lunStorage(
+                        new HostStorageBuilder()
+                            .host(new HostBuilder().id(lun.getHostId()).build())
+                            .type(lun.getStorageType())
+                            .logicalUnits(
+                                new LogicalUnitBuilder()
+                                    .address(lun.getAddress())
+                                    .port(lun.getPort())
+                                    .target(lun.getTarget())
+                                .build()
+                            )
+                        .build()
+                    )
+            .build();
+
+            Disk disk = disksService.add().disk(diskBuilder).send().disk();
+
+            do{
+                log.info("ok");
+            }while (disk.status().equals(DiskStatus.OK));
+
+            log.info("성공: 새 가상 디스크 (lun) {} 생성", lun.getAlias());
+            return CommonVo.successResponse();
+        }catch (Exception e){
+            log.error("실패: 새 가상 디스크 (lun) 생성");
+            return CommonVo.failResponse(e.getMessage());
+        }
+    }
+
+    @Override
+    public CommonVo<Boolean> editDiskLun(LunCreateVo lunCreateVo) {
+        SystemService system = admin.getConnection().systemService();
+        return null;
+    }
+
+    @Override
+    public CommonVo<Boolean> deleteDiskLun(String lunId) {
+        SystemService system = admin.getConnection().systemService();
+        return null;
+    }
+
+    @Override
+    public BlockVo setDiskBlock(String dcId) {
+        SystemService system = admin.getConnection().systemService();
         return null;
     }
 
@@ -159,6 +267,36 @@ public class StorageServiceImpl implements ItStorageService {
         return null;
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     @Override
     public List<DomainVo> getDomainList() {
         SystemService system = admin.getConnection().systemService();
@@ -167,21 +305,21 @@ public class StorageServiceImpl implements ItStorageService {
 
         return storageDomainList.stream()
                 .map(storageDomain ->
-                        DomainVo.builder()
-                                .status(storageDomain.status())
-                                .id(storageDomain.id())
-                                .name(storageDomain.name())
-                                .comment(storageDomain.comment())
-                                .domainType(storageDomain.type())   //storageDomain.type().value() + (storageDomain.master() ? "(마스터)" : "")
-                                .domainTypeMaster(storageDomain.master())
-                                .storageType(storageDomain.storage().type())
-                                .format(storageDomain.storageFormat())
-                                // 데이터 센터간 상태
-                                .diskSize(storageDomain.usedPresent() ? storageDomain.used().add(storageDomain.available()) : null)  // 전체공간
-                                .availableSize(storageDomain.available())
-                                // 확보된 여유공간
-                                .description(storageDomain.description())
-                            .build()
+                    DomainVo.builder()
+                        .status(storageDomain.status())
+                        .id(storageDomain.id())
+                        .name(storageDomain.name())
+                        .comment(storageDomain.comment())
+                        .domainType(storageDomain.type())   //storageDomain.type().value() + (storageDomain.master() ? "(마스터)" : "")
+                        .domainTypeMaster(storageDomain.master())
+                        .storageType(storageDomain.storage().type())
+                        .format(storageDomain.storageFormat())
+                        // 데이터 센터간 상태
+                        .diskSize(storageDomain.usedPresent() ? storageDomain.used().add(storageDomain.available()) : null)  // 전체공간
+                        .availableSize(storageDomain.available())
+                        // 확보된 여유공간
+                        .description(storageDomain.description())
+                    .build()
                 )
                 .collect(Collectors.toList());
     }
@@ -202,14 +340,14 @@ public class StorageServiceImpl implements ItStorageService {
         return storageDomainList.stream()
                 .map(storageDomain ->
                         DomainVo.builder()
-                                .id(storageDomain.id())
-                                .name(storageDomain.name())
-                                .description(storageDomain.description())
-                                .domainType(storageDomain.type())   //storageDomain.type().value() + (storageDomain.master() ? "(마스터)" : "")
-                                .status(storageDomain.status())
-                                .availableSize(storageDomain.available())
-                                .usedSize(storageDomain.used())
-                                .diskSize(storageDomain.used().add(storageDomain.available()))
+                            .id(storageDomain.id())
+                            .name(storageDomain.name())
+                            .description(storageDomain.description())
+                            .domainType(storageDomain.type())   //storageDomain.type().value() + (storageDomain.master() ? "(마스터)" : "")
+                            .status(storageDomain.status())
+                            .availableSize(storageDomain.available())
+                            .usedSize(storageDomain.used())
+                            .diskSize(storageDomain.used().add(storageDomain.available()))
                         .build()
                 )
                 .collect(Collectors.toList());
