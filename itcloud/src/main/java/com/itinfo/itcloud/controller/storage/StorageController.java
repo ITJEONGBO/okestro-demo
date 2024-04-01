@@ -24,7 +24,7 @@ public class StorageController {
 	@GetMapping("/disks")
 	@ResponseBody
 	public List<DiskVo> disks(String id){
-		return storageService.getDiskVoList(id);
+		return storageService.getDiskList(id);
 	}
 
 
@@ -49,7 +49,7 @@ public class StorageController {
 	@PostMapping("/disk-image/delete")
 	public CommonVo<Boolean> deleteDiskImage(@RequestParam String id){
 		log.info("새가상 디스크 - 이미지 삭제");
-		return storageService.deleteDiskImage(id);
+		return storageService.deleteDisk(id);
 	}
 
 

@@ -14,30 +14,27 @@ import java.util.List;
 public interface ItStorageService {
     String getName(String id);
 
-    List<DiskVo> getDiskVoList(String dcId);    // 디스크 리스트
+    List<DiskVo> getDiskList(String dcId);    // 디스크 리스트
 
 
     DiskDcVo setDiskImage(String dcId); // 화면에 보여지기 위한건 String type을 쓰든 어떻게 해보기
-    CommonVo<Boolean> addDiskImage(ImageCreateVo imageCreateVo);    // 디스크-이미지: 생성
-    CommonVo<Boolean> editDiskImage(ImageCreateVo imageCreateVo);   // 디스크-이미지: 수정
-    CommonVo<Boolean> deleteDiskImage(String imageId);              // 디스크-이미지: 삭제
+    CommonVo<Boolean> addDiskImage(ImageCreateVo image);    // 디스크-이미지: 생성
+    CommonVo<Boolean> editDiskImage(ImageCreateVo image);   // 디스크-이미지: 수정
 
 
     LunCreateVo setDiskLun(String dcId);
     CommonVo<Boolean> addDiskLun(LunCreateVo lunCreateVo);      // 디스크-lun: 생성
     CommonVo<Boolean> editDiskLun(LunCreateVo lunCreateVo);     // 디스크-lun: 수정
-    CommonVo<Boolean> deleteDiskLun(String lunId);              // 디스크-lun: 삭제
 
 
-    BlockVo setDiskBlock(String dcId);
-    CommonVo<Boolean> addDiskBlock(BlockVo blockVo);      // 디스크-block: 생성
 
+    CommonVo<Boolean> deleteDisk(String diskId);              // 디스크: 삭제
 
-    CommonVo<Boolean> moveDisk();       // 디스크 이동
+    CommonVo<Boolean> moveDisk(DiskVo disk);       // 디스크 이동
 
-    CommonVo<Boolean> copyDisk();       // 디스크 복사
+    CommonVo<Boolean> copyDisk(DiskVo disk);       // 디스크 복사
     
-    CommonVo<Boolean> uploadDisk();     // 디스크 업로드
+    CommonVo<Boolean> uploadDisk(ImageCreateVo image);     // 디스크 업로드
 
     // 디스크 다운로드
 

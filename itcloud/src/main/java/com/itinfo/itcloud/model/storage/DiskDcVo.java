@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.model.storage;
 
+import com.itinfo.itcloud.model.computing.HostVo;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,5 +13,5 @@ public class DiskDcVo {
     private String dcName;
 
     private List<DomainVo> domainVoList;
-    private List<DiskProfileVo> dpVoList;
+    private List<HostVo> hostVoList;
 }

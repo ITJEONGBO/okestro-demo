@@ -10,6 +10,8 @@ import org.ovirt.engine.sdk4.types.StorageFormat;
 import org.ovirt.engine.sdk4.types.StorageType;
 
 import java.math.BigInteger;
+import java.util.List;
+
 @Getter @Setter @ToString @Builder
 public class DomainVo {
     private String id;
@@ -41,8 +43,7 @@ public class DomainVo {
     private String datacenterId;
     private String datacenterName;
 
+    private List<DiskProfileVo> profileVoList;
 
-    // LINK: disks
-    // datacenter, datacenters
 
 }
