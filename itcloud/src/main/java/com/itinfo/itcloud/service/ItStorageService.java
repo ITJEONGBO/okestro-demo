@@ -34,7 +34,7 @@ public interface ItStorageService {
 
     CommonVo<Boolean> copyDisk(DiskVo disk);       // 디스크 복사
     
-    CommonVo<Boolean> uploadDisk(ImageCreateVo image);     // 디스크 업로드
+    CommonVo<Boolean> uploadDisk(byte[] bytes, ImageCreateVo image);     // 디스크 업로드
 
     // 디스크 다운로드
 

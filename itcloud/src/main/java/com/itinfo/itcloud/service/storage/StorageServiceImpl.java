@@ -19,11 +19,12 @@ import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.net.ssl.SSLContext;
+import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.math.BigInteger;
-import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -309,7 +310,7 @@ public class StorageServiceImpl implements ItStorageService {
     }
 
     @Override
-    public CommonVo<Boolean> uploadDisk(ImageCreateVo image) {
+    public CommonVo<Boolean> uploadDisk(byte[] bytes, ImageCreateVo image) {
         // provisioned_size, alias, description, wipe_after_delete, shareable, backup and disk_profile.
         SystemService system = admin.getConnection().systemService();
 
@@ -362,39 +363,73 @@ public class StorageServiceImpl implements ItStorageService {
         }
     }
 
-    private String connection(URL url, byte[] bytes) throws IOException {
-        HttpURLConnection httpConn = null;
-        InputStream input = null;
+    private String requestConnection(URL url, byte[] bytes) throws InterruptedException, IOException {
+        HttpsURLConnection conn = null;
         OutputStream output = null;
-        BufferedReader bufferedReader = null;
-        SSLContext ssl = null;
+        InputStream input = null;
+        BufferedReader reader = null;
+        String resultString = null;
 
-        httpConn = (HttpURLConnection) url.openConnection();
-        httpConn.setDoInput(true);
-        httpConn.setDoOutput(true);
-        httpConn.setRequestMethod("PUT");
-//        httpConn.setConnectTimeout(2000);
+        try {
+            conn = (HttpsURLConnection)url.openConnection();
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+            conn.setRequestMethod("PUT");
+            conn.setConnectTimeout(2000);   // 2초
 
-        output = httpConn.getOutputStream();
-        output.write(bytes[0]);
-        output.flush();
-        output.close();
+            output = conn.getOutputStream();
+            output.write(bytes[0]);
+            output.flush();
+            output.close();
 
-        input = httpConn.getInputStream();
-        bufferedReader = new BufferedReader(new InputStreamReader(input, "UTF-8"));
+            input = conn.getInputStream();
 
-        String buffer;
-        String resultBuffer;
+            reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8));
+            new String();
 
-        for(resultBuffer = new String(); (buffer = bufferedReader.readLine()) != null; resultBuffer = resultBuffer+buffer){ }
+            String buf;
+            String resultBuf;
+            for(resultBuf = new String(); (buf = reader.readLine()) != null; resultBuf = resultBuf + buf) {  }
 
-        bufferedReader.close();
+            resultString = resultBuf;
 
-        return resultBuffer;
+            System.out.println("res chk     :" + resultBuf);
+            reader.close();
+        } catch (MalformedURLException m) {
+            m.printStackTrace();
+        } catch (IOException i) {
+            i.printStackTrace();
+        } finally {
+                if (reader != null) {  reader.close(); }
+                if (input != null) { input.close(); }
+                if (output != null) { output.close(); }
+                if (conn != null) { conn.disconnect(); }
+        }
+
+        return resultString;
     }
 
-
-
+// SSL 연결을 위한 TrustStore를 설정하는 메서드
+    private void setTrustStore() throws Exception {
+//        String path = System.getProperty("user.dir");
+//        System.out.println("path는:" + path);
+//        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("X509");
+//        KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+//        InputStream is = new FileInputStream("../webapps/ROOT/WEB-INF/cert.pem");
+//
+//        MessageVo message = new MessageVo();
+//        message.setTitle("cert.pem");
+//        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+//        X509Certificate caCert = (X509Certificate)cf.generateCertificate(is);
+//        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+//        KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+//        ks.load((KeyStore.LoadStoreParameter)null);
+//        ks.setCertificateEntry("caCert", caCert);
+//        tmf.init(ks);
+//        SSLContext sslContext = SSLContext.getInstance("TLS");
+//        sslContext.init((KeyManager[])null, tmf.getTrustManagers(), (SecureRandom)null);
+//        SSLContext.setDefault(sslContext);
+    }
 
 
 

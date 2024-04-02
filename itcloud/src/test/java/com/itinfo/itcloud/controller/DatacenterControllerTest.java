@@ -41,8 +41,6 @@ public class DatacenterControllerTest {
     private DataCenterController controller;
     @Mock
     private ItDataCenterService dcService;
-    @Mock
-    private ItMenuService itMenuService;
 
     private MockMvc mvc;
 

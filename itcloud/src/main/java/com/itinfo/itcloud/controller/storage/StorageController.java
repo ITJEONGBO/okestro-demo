@@ -11,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -51,6 +53,26 @@ public class StorageController {
 		log.info("새가상 디스크 - 이미지 삭제");
 		return storageService.deleteDisk(id);
 	}
+
+	@PostMapping("/disk/move")
+	public CommonVo<Boolean> moveDisk(@RequestBody DiskVo disk){
+		log.info("디스크 - 이동");
+		return storageService.moveDisk(disk);
+	}
+
+
+	@PostMapping("/disk/copy")
+	public CommonVo<Boolean> copyDisk(@RequestBody DiskVo disk){
+		log.info("디스크 - 복사");
+		return storageService.copyDisk(disk);
+	}
+
+	@PostMapping("/disk/upload")
+	public CommonVo<Boolean> uploadDisk(@RequestParam MultipartFile file, ImageCreateVo image) throws IOException {
+		return storageService.uploadDisk(file.getBytes(), image);
+	}
+
+
 
 
 	@GetMapping("/domains")

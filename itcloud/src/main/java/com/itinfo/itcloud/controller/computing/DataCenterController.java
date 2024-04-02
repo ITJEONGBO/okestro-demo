@@ -2,13 +2,13 @@ package com.itinfo.itcloud.controller.computing;
 
 import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
+import com.itinfo.itcloud.model.create.DataCenterCreateVo;
+import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.service.ItDataCenterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -45,6 +45,23 @@ public class DataCenterController {
 	//endregion
 
 
+	@PostMapping("/datacenter/add")
+	public CommonVo<Boolean> addDatacenter(@RequestBody DataCenterCreateVo dcVo){
+		log.info("----- 데이터센터 추가 : " + dcVo.getName());
+		return dcService.addDatacenter(dcVo);
+	}
+
+	@PostMapping("/datacenter/edit")
+	public CommonVo<Boolean> editDatacenter(@RequestBody DataCenterCreateVo dcVo){
+		log.info("----- 데이터센터 편집 : " + dcVo.getName());
+		return dcService.editDatacenter(dcVo);
+	}
+
+	@PostMapping("/datacenter/delete")
+	public CommonVo<Boolean> deleteDatacenter(@RequestParam String id){
+		log.info("----- 데이터센터 삭제");
+		return dcService.deleteDatacenter(id);
+	}
 
 
 
