@@ -13,12 +13,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
 @Controller
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 @RequestMapping("/storage")
 public class StorageController {
 	private final ItStorageService storageService;
@@ -68,9 +68,38 @@ public class StorageController {
 	}
 
 	@PostMapping("/disk/upload")
-	public CommonVo<Boolean> uploadDisk(@RequestParam MultipartFile file, ImageCreateVo image) throws IOException {
-		return storageService.uploadDisk(file.getBytes(), image);
+	public CommonVo<Boolean> uploadDisk(@RequestPart MultipartFile file,
+										@RequestPart ImageCreateVo image) throws IOException {
+		return storageService.uploadDisk(file, image);
 	}
+
+
+	@PostMapping("/upload")
+	public String handleFileUpload(@RequestParam("file") MultipartFile file) {
+		if (!file.isEmpty()) {
+			try {
+				InputStream inputStream = file.getInputStream();
+				OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(new File("uploaded-file.txt")));
+
+				byte[] buffer = new byte[1024];
+				int bytesRead;
+				while ((bytesRead = inputStream.read(buffer)) != -1) {
+					outputStream.write(buffer, 0, bytesRead);
+				}
+
+				outputStream.close();
+				inputStream.close();
+
+				return "File uploaded successfully";
+			} catch (IOException e) {
+				e.printStackTrace();
+				return "Failed to upload file";
+			}
+		} else {
+			return "No file uploaded";
+		}
+	}
+
 
 
 
