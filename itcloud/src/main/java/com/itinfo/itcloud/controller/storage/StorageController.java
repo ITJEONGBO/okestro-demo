@@ -74,34 +74,6 @@ public class StorageController {
 	}
 
 
-	@PostMapping("/upload")
-	public String handleFileUpload(@RequestParam("file") MultipartFile file) {
-		if (!file.isEmpty()) {
-			try {
-				InputStream inputStream = file.getInputStream();
-				OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(new File("uploaded-file.txt")));
-
-				byte[] buffer = new byte[1024];
-				int bytesRead;
-				while ((bytesRead = inputStream.read(buffer)) != -1) {
-					outputStream.write(buffer, 0, bytesRead);
-				}
-
-				outputStream.close();
-				inputStream.close();
-
-				return "File uploaded successfully";
-			} catch (IOException e) {
-				e.printStackTrace();
-				return "Failed to upload file";
-			}
-		} else {
-			return "No file uploaded";
-		}
-	}
-
-
-
 
 
 	@GetMapping("/domains")

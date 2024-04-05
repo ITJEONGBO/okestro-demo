@@ -11,20 +11,21 @@ import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItStorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
-import org.ovirt.engine.sdk4.services.*;
+import org.ovirt.engine.sdk4.services.DiskService;
+import org.ovirt.engine.sdk4.services.DisksService;
+import org.ovirt.engine.sdk4.services.SystemService;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.net.ssl.HttpsURLConnection;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -309,153 +310,213 @@ public class StorageServiceImpl implements ItStorageService {
         }
     }
 
+
+
     @Override
-    public CommonVo<Boolean> uploadDisk(MultipartFile file, ImageCreateVo image) throws IOException {
-        // provisioned_size, alias, description, wipe_after_delete, shareable, backup and disk_profile.
-        SystemService system = admin.getConnection().systemService();
-
-        StorageDomain sd = system.storageDomainsService().storageDomainService(image.getDomainId()).get().send().storageDomain();
-        DisksService disksService = system.disksService();
-
-        InputStream input = file.getInputStream();
-        OutputStream output = null;
-
-        // 파일 선택시 파일에 있는 포맷, 컨텐츠(파일 확장자로 칭하는건지), 크기 출력
-        //           파일 크기가 자동으로 디스크 옵션에 추가
-        //          파일 명칭이 파일의 이름으로 지정됨 (+설명)
-        // 연결테스트
-
-        try{
-            // 디스크 기본 정보 입력
-            DiskBuilder diskBuilder = new DiskBuilder();
-            diskBuilder
-//                    .provisionedSize(image.getSize())
-                    .name(image.getName())
-                    .description(image.getDescription())
-                    .storageDomains(new StorageDomain[]{ new StorageDomainBuilder().id(image.getDomainId()).build()})
-                    .diskProfile(new DiskProfileBuilder().id(image.getProfileId()).build())
-                    .lunStorage(new HostStorageBuilder().id(image.getHostId()).build())
-                    .format(image.isShare() ? DiskFormat.RAW : DiskFormat.COW)
-            .build();
-
-            Disk disk = disksService.add().disk(diskBuilder).send().disk(); // 디스크 정보 추가
-
-            // 이미지 추가를 위한 서비스
-            ImageTransfersService imageTransService = system.imageTransfersService();
-
-            ImageTransferBuilder imageTransferBuilder = new ImageTransferBuilder();
-            imageTransferBuilder
-                .disk(disk)
-                .direction(ImageTransferDirection.UPLOAD)
-            .build();
-
-            // 이미지 트랜스퍼 추가
-            ImageTransfer imageTransfer = imageTransService.add().imageTransfer(imageTransferBuilder).send().imageTransfer();
-
-            // transferUrl(): 사용자가 직접 입력하거나 출력할 수 있는 데몬 서버의 URL
-            if (imageTransfer.transferUrl() != null){
-                URL url = new URL(imageTransfer.transferUrl());
-
-//                imageConnect(file, url);
-
-                HttpURLConnection http = (HttpURLConnection)url.openConnection();
-                http.setRequestProperty("PUT", url.getPath());
-                http.setRequestProperty("Content-Length", String.valueOf(file.getSize()));
-                http.setRequestMethod("PUT");
-                http.setFixedLengthStreamingMode(file.getSize());
-                http.setDoOutput(true);
-                http.connect();
-
-                output = http.getOutputStream();
-                byte[] buf = new byte[131072];
-                long read = 0L;
-
-                int responseCode = input.read(buf);
-                output.write(buf, 0, responseCode);
-                output.flush();
-
-
-                responseCode = http.getResponseCode();
-                System.out.println("responseCode: " + responseCode);
-
-                input.close();
-                output.close();
-                ImageTransferService transferService = system.imageTransfersService().imageTransferService(imageTransfer.id());
-                transferService.finalize_().send();
-                http.disconnect();
-            }
-
-            return CommonVo.successResponse();
-        }catch (Exception e){
-            log.error("에러");
-            e.printStackTrace();
-            return CommonVo.failResponse(e.getMessage());
-        }
-    }
-
-
-    // 주어진 URL로 byte[]을 PUT 요청&전송하고, 응답을 문자열로 반환하는 메서드
-    private String imageConnect(MultipartFile file, URL url) throws IOException {
-//        HttpsURLConnection conn = null;
-        HttpURLConnection conn = null;
+    public boolean uploadImage(MultipartFile file, URL url) {
+        HttpURLConnection http = null;
         OutputStream output = null;
         InputStream input = null;
         BufferedReader reader = null;
-        String result = null;
 
-        byte[] bytes = file.getBytes();
 
-        try {
-            // URLConnection 인스턴스 얻기
-            conn = (HttpsURLConnection)url.openConnection();
-            conn.setDoInput(true);  // URLConnection을 서버에서 콘텐츠를 읽는 데 사용할 수 있는지 여부를 설정
-            conn.setDoOutput(true); // URLConnection이 서버에 데이터를 보내는 데 사용할 수 있는지 여부를 설정
-            conn.setRequestMethod("PUT");   // URL 요청에 대한 메소드를 설정
-            conn.setConnectTimeout(2000);   // 연결 타임아웃을 설정
-
-            // 서버로 데이터를 보내기 위한 출력 스트림을 가져올 수 있다
-            // outputStream을 사용하여 데이터를 서버로 전송할 수 있다
-            output = conn.getOutputStream();
-            output.write(bytes[0]); // 버퍼의 내용을 출력한다. 바이트 배열의 첫 번째 요소를 서버로 보내는 작업
-            output.flush(); // 버퍼에 남아있는 출력 스트림을 출력
-            output.close();
-
-            // 서버로부터 응답 데이터를 읽어오는 입력 스트림을 얻는 메서드
-            // 서버로부터의 응답 데이터를 읽을 수 있습니다.
-            // 일반적으로는 BufferedReader와 같은 더 편리한 방법을 사용하여 응답 데이터를 읽는다.
-            input = conn.getInputStream();
-            reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8));
-
-            String buf;
-            String resultBuf;
-            for(resultBuf = new String(); (buf = reader.readLine()) != null; resultBuf = resultBuf + buf) {
-            }
-
-            result = resultBuf;
-
-            System.out.println("res chk :" + resultBuf);
-            reader.close();
-        } catch (IOException var27) {
-            var27.printStackTrace();
-        } finally {
-            if (reader != null) { reader.close();}
-            if (input != null) { input.close();}
-            if (output != null) { output.close();}
-            if (conn != null) { conn.disconnect();}
-        }
-        return result;
+        return true;
     }
 
-// SSL 연결을 위한 TrustStore를 설정하는 메서드
-    private void setTrustStore() throws Exception {
+
+    // 파일 선택시 파일에 있는 포맷, 컨텐츠(파일 확장자로 칭하는건지), 크기 출력
+    //           파일 크기가 자동으로 디스크 옵션에 추가
+    //          파일 명칭이 파일의 이름으로 지정됨 (+설명)
+    // 연결테스트
+    // provisioned_size, alias, description, wipe_after_delete, shareable, backup and disk_profile.
+    @Override
+    public CommonVo<Boolean> uploadDisk(MultipartFile file, ImageCreateVo image) throws IOException {
+        SystemService systemService = admin.getConnection().systemService();
+
+//        StorageDomain storageDomain = systemService.storageDomainsService().storageDomainService(image.getDomainId()).get().send().storageDomain();
+//        DisksService disksService = systemService.disksService();
+//
+//        InputStream is = file.getInputStream();
+//
+//        try {
+//            DiskBuilder diskBuilder = new DiskBuilder();
+//            diskBuilder
+//                    .name(image.getName())
+//                    .description(image.getDescription())
+//                    .wipeAfterDelete(image.isWipeAfterDelete())
+//                    .shareable(image.isShare())
+//                    .format(image.isShare() ? DiskFormat.RAW : DiskFormat.COW)
+//                    .provisionedSize((int) Math.ceil(file.getSize() / (Double)Math.pow(1024, 3)))
+//                    .storageDomains(new StorageDomain[]{storageDomain});
+//
+//            Disk disk = disksService.add().disk(diskBuilder).send().disk();
+//
+//            do {
+//                Thread.sleep(3000L);
+//            } while(disksService.diskService(disk.id()).get().send().disk().status() != DiskStatus.OK);
+//
+//
+//            ImageTransfersService transfersService = systemService.imageTransfersService();
+//
+//            ImageTransferContainer transfer2 = new ImageTransferContainer();
+//            transfer2.id();
+//            ImageContainer image1 = new ImageContainer();
+//            image1.id(disk.id());
+//
+//            transfer2.image(image1);
+//
+//            ImageTransfer transfer = transfersService.add().imageTransfer(transfer2).send().imageTransfer();
+//
+//            do {
+//                Thread.sleep(1000L);
+//            } while(transfer.phase() == ImageTransferPhase.INITIALIZING);
+//
+//            transfersService.imageTransferService(transfer.id()).get();
+//
+//            if (transfer.transferUrl() != null) {
+//                URL url = new URL(transfer.transferUrl());
+//
+//                requestVfrontConnection(url, file.getBytes());
+//                setTrustStore();
+//
+//                System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
+//                HttpsURLConnection https = (HttpsURLConnection)url.openConnection();
+//                https.setRequestProperty("PUT", url.getPath());
+//
+//                https.setRequestProperty("Content-Length", String.valueOf(file.getSize()));
+//                https.setRequestMethod("PUT");
+//                https.setFixedLengthStreamingMode(file.getSize());
+//                https.setDoOutput(true);
+//                https.connect();
+//
+//                Thread.sleep(2000L);
+//
+//                OutputStream os = https.getOutputStream();
+//                byte[] buf = new byte[131072];
+//                long read = 0L;
+//                DecimalFormat form = new DecimalFormat("#.#");
+//
+//                int responseCode = is.read(buf);
+//                os.write(buf, 0, responseCode);
+//                os.flush();
+//                read += (long)responseCode;
+//
+//
+//                responseCode = https.getResponseCode();
+//                if (responseCode == 200) {
+//                    System.out.println("200");
+//                }
+//
+//                is.close();
+//                os.close();
+//
+//                ImageTransferService transferService = systemService.imageTransfersService().imageTransferService(transfer.id());
+//                transferService.finalize_().send();
+//                https.disconnect();
+//            }
+//            return CommonVo.successResponse();
+//        } catch (Exception var28) {
+//            var28.printStackTrace();
+//            return CommonVo.failResponse(var28.getMessage());
+//        }
+        return CommonVo.successResponse();
+    }
+
+//    public static String requestVfrontConnection(URL url, byte[] bytes) throws InterruptedException, IOException {
+//        HttpsURLConnection conn = null;
+//        OutputStream outputStream = null;
+//        InputStream inputStream = null;
+//        BufferedReader bufferedReader = null;
+//        String resultString = null;
+//        SSLContext sslContext = null;
+//
+//        label218: {
+//            String var9;
+//            try {
+//                HostnameVerifier hostnameVerifier = new HostnameVerifier() {
+//                    public boolean verify(String arg0, SSLSession arg1) {
+//                        return true;
+//                    }
+//                };
+//                TrustManager[] trustManager = new TrustManager[]{new X509TrustManager() {
+//                    public X509Certificate[] getAcceptedIssuers() {
+//                        return null;
+//                    }
+//
+//                    public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+//                    }
+//
+//                    public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+//                    }
+//                }};
+//
+//                sslContext = SSLContext.getInstance("TLS");
+//                sslContext.init((KeyManager[])null, trustManager, new SecureRandom());
+//                HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
+//                HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+//
+//                conn = (HttpsURLConnection)url.openConnection();
+//                conn.setDoInput(true);
+//                conn.setDoOutput(true);
+//                conn.setRequestMethod("PUT");
+//                conn.setConnectTimeout(2000);
+//
+//                outputStream = conn.getOutputStream();
+//                outputStream.write(bytes[0]);
+//                outputStream.flush();
+//                outputStream.close();
+//
+//                inputStream = conn.getInputStream();
+//                bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+//                new String();
+//
+//                String buf;
+//                String resultBuf;
+//                for(resultBuf = new String(); (buf = bufferedReader.readLine()) != null; resultBuf = resultBuf + buf) {	}
+//
+//                resultString = resultBuf;
+//                System.out.println("##################################");
+//                System.out.println("res chk     :" + resultBuf);
+//                bufferedReader.close();
+//                break label218;
+//            } catch (MalformedURLException var26) {
+//                var26.printStackTrace();
+//                break label218;
+//            } catch (IOException var27) {
+//                var27.printStackTrace();
+//                var9 = "timeout";
+//            } catch (NoSuchAlgorithmException var28) {
+//                var28.printStackTrace();
+//                break label218;
+//            } catch (KeyManagementException var29) {
+//                var29.printStackTrace();
+//                break label218;
+//            } finally {
+//                if (bufferedReader != null) {
+//                    bufferedReader.close();
+//                }
+//                if (inputStream != null) {
+//                    inputStream.close();
+//                }
+//                if (outputStream != null) {
+//                    outputStream.close();
+//                }
+//                if (conn != null) {
+//                    conn.disconnect();
+//                }
+//            }
+//            return var9;
+//        }
+//        return resultString;
+//    }
+//
+//
+//    public static void setTrustStore() throws Exception {
 //        String path = System.getProperty("user.dir");
 //        System.out.println("path는:" + path);
 //        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("X509");
 //        KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
 //        InputStream is = new FileInputStream("../webapps/ROOT/WEB-INF/cert.pem");
-//
-//        MessageVo message = new MessageVo();
-//        message.setTitle("cert.pem");
 //        CertificateFactory cf = CertificateFactory.getInstance("X.509");
 //        X509Certificate caCert = (X509Certificate)cf.generateCertificate(is);
 //        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
@@ -466,19 +527,7 @@ public class StorageServiceImpl implements ItStorageService {
 //        SSLContext sslContext = SSLContext.getInstance("TLS");
 //        sslContext.init((KeyManager[])null, tmf.getTrustManagers(), (SecureRandom)null);
 //        SSLContext.setDefault(sslContext);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
+//    }
 
 
 

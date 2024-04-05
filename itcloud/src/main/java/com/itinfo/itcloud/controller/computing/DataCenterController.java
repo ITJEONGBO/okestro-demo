@@ -28,14 +28,14 @@ public class DataCenterController {
 
 	//region: @ResponseBody
 
-	@GetMapping("/datacentersStatus")
+	@GetMapping("/datacenters")
 	@ResponseBody
 	public List<DataCenterVo> datacenters() {
 		log.info("----- 데이터센터 목록");
 		return dcService.getList();
 	}
 
-	@GetMapping("/datacenter-eventStatus")
+	@GetMapping("/datacenter-event")
 	@ResponseBody
 	public List<EventVo> event(String id) {
 		log.info("----- 데이터센터 이벤트 : " + id);

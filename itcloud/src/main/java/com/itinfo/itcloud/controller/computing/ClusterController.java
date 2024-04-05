@@ -166,7 +166,7 @@ public class ClusterController {
 
 
 	//region: @ResponseBody
-	@GetMapping("/clustersStatus")
+	@GetMapping("/clusters")
 	@ResponseBody
 	public List<ClusterVo> clusters() {
 		log.info("-----클러스터 목록");

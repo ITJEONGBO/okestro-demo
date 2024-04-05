@@ -3,11 +3,12 @@ package com.itinfo.itcloud.model.storage;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.ovirt.engine.sdk4.types.DiskBackup;
 
 import java.math.BigInteger;
 
-@Getter @Setter @Builder
+@Getter @Setter @Builder @ToString
 public class ImageCreateVo {
     private String id;
     private BigInteger size;   // 크기(Gib)
