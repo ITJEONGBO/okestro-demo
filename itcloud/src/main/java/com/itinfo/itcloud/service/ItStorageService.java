@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 
 @Service
@@ -31,16 +30,12 @@ public interface ItStorageService {
 
 
 
-    CommonVo<Boolean> deleteDisk(String diskId);              // 디스크: 삭제
-
+    CommonVo<Boolean> deleteDisk(String diskId);   // 디스크: 삭제
     CommonVo<Boolean> moveDisk(DiskVo disk);       // 디스크 이동
-
     CommonVo<Boolean> copyDisk(DiskVo disk);       // 디스크 복사
+    CommonVo<Boolean> uploadDisk(MultipartFile file, ImageCreateVo image) throws IOException;     // 디스크 업로드
+    CommonVo<Boolean> downloadDisk();               // 디스크 다운로드
 
-    boolean uploadImage(MultipartFile file, URL url);  // 이미지 upload
-    CommonVo<Boolean> uploadDisk(MultipartFile file, ImageCreateVo image) throws IOException;     // 디스크 옵션
-
-    // 디스크 다운로드
 
 
     List<DomainVo> getDomainList();    // 도메인 리스트

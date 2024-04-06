@@ -44,6 +44,4 @@ public class DomainVo {
     private String datacenterName;
 
     private List<DiskProfileVo> profileVoList;
-
-
 }

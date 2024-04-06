@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -40,6 +39,8 @@ public class StorageServiceImpl implements ItStorageService {
     public String getName(String id){
         return admin.getConnection().systemService().storageDomainsService().storageDomainService(id).get().send().storageDomain().name();
     }
+
+    // region: disk
 
     // de에 있는 디스크로 바꿔야하긴한데
     @Override
@@ -312,18 +313,6 @@ public class StorageServiceImpl implements ItStorageService {
 
 
 
-    @Override
-    public boolean uploadImage(MultipartFile file, URL url) {
-        HttpURLConnection http = null;
-        OutputStream output = null;
-        InputStream input = null;
-        BufferedReader reader = null;
-
-
-        return true;
-    }
-
-
     // 파일 선택시 파일에 있는 포맷, 컨텐츠(파일 확장자로 칭하는건지), 크기 출력
     //           파일 크기가 자동으로 디스크 옵션에 추가
     //          파일 명칭이 파일의 이름으로 지정됨 (+설명)
@@ -426,14 +415,31 @@ public class StorageServiceImpl implements ItStorageService {
         }
     }
 
+    @Override
+    public CommonVo<Boolean> downloadDisk() {
+        return null;
+    }
+
+    // endregion
 
 
+    // region: domain
 
     @Override
     public List<DomainVo> getDomainList() {
         SystemService system = admin.getConnection().systemService();
 
+//        List<DataCenter> dataCenterList = system.dataCentersService().list().send().dataCenters();
+//
+//        for(String id : dataCenterList.stream().map(Identified::id).collect(Collectors.toList())){
+//            List<StorageDomain> storageDomainList = system.dataCentersService().dataCenterService(id).storageDomainsService().list().send().storageDomains();
+//
+//
+//            System.out.println(id);
+//        }
+
         List<StorageDomain> storageDomainList = system.storageDomainsService().list().send().storageDomains();
+
 
         return storageDomainList.stream()
                 .map(storageDomain ->
@@ -442,7 +448,7 @@ public class StorageServiceImpl implements ItStorageService {
                         .id(storageDomain.id())
                         .name(storageDomain.name())
                         .comment(storageDomain.comment())
-                        .domainType(storageDomain.type())   //storageDomain.type().value() + (storageDomain.master() ? "(마스터)" : "")
+                        .domainType(storageDomain.type())
                         .domainTypeMaster(storageDomain.master())
                         .storageType(storageDomain.storage().type())
                         .format(storageDomain.storageFormat())
@@ -456,11 +462,26 @@ public class StorageServiceImpl implements ItStorageService {
                 .collect(Collectors.toList());
     }
 
+
+
+
+
+
+
+    // endregion
+
+    // region: volume
+
     // 데이터가 많이 없음 생성요청
     @Override
     public List<VolumeVo> getVolumeVoList(String dcId) {
         return null;
     }
+
+    // endregion
+
+
+    // region: storage
 
     // dc에 잇는 스토리지 도메인
     @Override
@@ -485,6 +506,10 @@ public class StorageServiceImpl implements ItStorageService {
                 .collect(Collectors.toList());
     }
 
+    // endregion
+
+
+    // region : network
     @Override
     public List<NetworkVo> getNetworkVoList(String dcId) {
         SystemService system = admin.getConnection().systemService();
@@ -502,6 +527,10 @@ public class StorageServiceImpl implements ItStorageService {
                 .collect(Collectors.toList());
     }
 
+    // endregion
+
+
+    // region: cluster
     @Override
     public List<ClusterVo> getClusterVoList(String dcId) {
         SystemService system = admin.getConnection().systemService();
@@ -520,6 +549,10 @@ public class StorageServiceImpl implements ItStorageService {
                 .collect(Collectors.toList());
     }
 
+    // endregion
+
+
+    // region: permisson
 
     //데이터센터 - 권한
     @Override
@@ -564,6 +597,10 @@ public class StorageServiceImpl implements ItStorageService {
         return pVoList;
     }
 
+    // endregion
+
+
+    // region : event
 
     @Override
     public List<EventVo> getEvent(String id) {
@@ -587,5 +624,7 @@ public class StorageServiceImpl implements ItStorageService {
                 )
                 .collect(Collectors.toList());
     }
+
+    // endregion
 
 }
