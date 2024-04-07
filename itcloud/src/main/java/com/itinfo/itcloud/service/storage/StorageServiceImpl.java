@@ -416,6 +416,36 @@ public class StorageServiceImpl implements ItStorageService {
     }
 
     @Override
+    public CommonVo<Boolean> cancelUpload(String diskId) {
+        SystemService system = admin.getConnection().systemService();
+
+        ImageTransferService imageTranService = system.imageTransfersService().imageTransferService(diskId); // 이미지 추가를 위한 서비스
+        imageTranService.cancel().send();
+
+        return CommonVo.successResponse();
+    }
+
+    @Override
+    public CommonVo<Boolean> pauseUpload(String diskId) {
+        SystemService system = admin.getConnection().systemService();
+
+        ImageTransferService imageTranService = system.imageTransfersService().imageTransferService(diskId); // 이미지 추가를 위한 서비스
+        imageTranService.pause().send();
+
+        return CommonVo.successResponse();
+    }
+
+    @Override
+    public CommonVo<Boolean> resumeUpload(String diskId) {
+        SystemService system = admin.getConnection().systemService();
+
+        ImageTransferService imageTranService = system.imageTransfersService().imageTransferService(diskId); // 이미지 추가를 위한 서비스
+        imageTranService.resume().send();
+
+        return CommonVo.successResponse();
+    }
+
+    @Override
     public CommonVo<Boolean> downloadDisk() {
         return null;
     }
@@ -426,49 +456,158 @@ public class StorageServiceImpl implements ItStorageService {
     // region: domain
 
     @Override
-    public List<DomainVo> getDomainList() {
+    public List<DcDomainVo> getDomainList() {
         SystemService system = admin.getConnection().systemService();
 
-//        List<DataCenter> dataCenterList = system.dataCentersService().list().send().dataCenters();
-//
-//        for(String id : dataCenterList.stream().map(Identified::id).collect(Collectors.toList())){
-//            List<StorageDomain> storageDomainList = system.dataCentersService().dataCenterService(id).storageDomainsService().list().send().storageDomains();
-//
-//
-//            System.out.println(id);
-//        }
+        List<DataCenter> dataCenterList = system.dataCentersService().list().send().dataCenters();
 
-        List<StorageDomain> storageDomainList = system.storageDomainsService().list().send().storageDomains();
+        return dataCenterList.stream()
+            .map(dataCenter -> {
+                String datacenterId = dataCenter.id();
+                String datacenterName = system.dataCentersService().dataCenterService(datacenterId).get().send().dataCenter().name();
 
+                List<StorageDomain> storageDomainList = system.dataCentersService().dataCenterService(datacenterId).storageDomainsService().list().send().storageDomains();
 
-        return storageDomainList.stream()
-                .map(storageDomain ->
-                    DomainVo.builder()
-                        .status(storageDomain.status())
-                        .id(storageDomain.id())
-                        .name(storageDomain.name())
-                        .comment(storageDomain.comment())
-                        .domainType(storageDomain.type())
-                        .domainTypeMaster(storageDomain.master())
-                        .storageType(storageDomain.storage().type())
-                        .format(storageDomain.storageFormat())
-                        // 데이터 센터간 상태
-                        .diskSize(storageDomain.usedPresent() ? storageDomain.used().add(storageDomain.available()) : null)  // 전체공간
-                        .availableSize(storageDomain.available())
-                        // 확보된 여유공간
-                        .description(storageDomain.description())
-                    .build()
-                )
-                .collect(Collectors.toList());
+                List<DomainVo> domainVoList = storageDomainList.stream()
+                    .map(storageDomain ->
+                        DomainVo.builder()
+                            .status(storageDomain.status())
+                            .id(storageDomain.id())
+                            .name(storageDomain.name())
+                            .comment(storageDomain.comment())
+                            .domainType(storageDomain.type())
+                            .domainTypeMaster(storageDomain.master())
+                            .storageType(storageDomain.storage().type())
+                            .format(storageDomain.storageFormat())
+                            .diskSize(storageDomain.usedPresent() ? storageDomain.used().add(storageDomain.available()) : null)
+                            .availableSize(storageDomain.available())
+                            .description(storageDomain.description())
+                        .build()
+                    )
+                    .collect(Collectors.toList());
+
+                return DcDomainVo.builder()
+                        .datacenterId(datacenterId)
+                        .datacenterName(datacenterName)
+                        .domainList(domainVoList)
+                    .build();
+            })
+            .collect(Collectors.toList());
     }
 
+    // requires: name, type, host, and storage attributes. Identify the host attribute with the id or name attributes.
+    // To add a new storage domain with specified name, type, storage.type, storage.address, and storage.path,
+    // and using a host with an id 123, send a request like this
+    @Override
+    public CommonVo<Boolean> addDomain(DomainCreateVo dcVo) {
+        SystemService system = admin.getConnection().systemService();
+
+        StorageDomainsService storageDomainsService = system.storageDomainsService();
+//        DataCenter dataCenter = system.dataCentersService().dataCenterService(dcVo.getDatacenterId()).get().send().dataCenter();
+        DataCenterService dataCenterService = system.dataCentersService().dataCenterService(dcVo.getDatacenterId());
+
+        try{
+            StorageDomainBuilder storageDomainBuilder = new StorageDomainBuilder();
+
+            // 스토리지 유형이 iscsi 일 경우
+            if(dcVo.getStorageType().equals(StorageType.ISCSI)){
+                storageDomainBuilder
+                    .dataCenter(new DataCenterBuilder().id(dcVo.getDatacenterId()).build())
+                    .name(dcVo.getName())
+                    .type(dcVo.getDomainType()) // domaintype
+                    .storage(
+                        new HostStorageBuilder()
+                            .type(StorageType.ISCSI)
+                            .logicalUnits(new LogicalUnitBuilder().id(dcVo.getLogicalUnitId()).build()) // TODO
+                        .build()
+                    )
+                    .host(new HostBuilder().name(dcVo.getHostName()).build())
+//                        .discardAfterDelete()
+//                        .supportsDiscard()
+//                        .backup()
+//                        .wipeAfterDelete()
+                .build();
+            }else { // 그외 다른 유형
+                // 경로  예: myserver.mydomain.com:/my/local/path
+                // paths[0] = address, paths[1] = path
+                String[] paths = dcVo.getPath().split(":", 2);
+                if(paths.length != 2){
+                    return CommonVo.failResponse("콜론 error");
+                }
+
+                storageDomainBuilder
+                    .name(dcVo.getName())
+                    .type(dcVo.getDomainType())
+                    .storage(
+                        new HostStorageBuilder()
+                            .type(dcVo.getStorageType())
+                            .address(paths[0].trim())
+                            .path(paths[1].trim())
+                        .build()
+                    )
+                    .host(new HostBuilder().name(dcVo.getHostName()).build())
+                .build();
+            }
+
+            StorageDomain storageDomain = storageDomainsService.add().storageDomain(storageDomainBuilder).send().storageDomain();
+
+            StorageDomainService storageDomainService = storageDomainsService.storageDomainService(storageDomain.id());
+
+            do {
+                Thread.sleep(2000L);
+                storageDomain = storageDomainService.get().send().storageDomain();
+            } while(storageDomain.status() != StorageDomainStatus.UNATTACHED);
 
 
+            AttachedStorageDomainsService asdsService = dataCenterService.storageDomainsService();
+            AttachedStorageDomainService asdService = asdsService.storageDomainService(storageDomain.id());
+            try {
+                asdsService.add().storageDomain(new StorageDomainBuilder().id(storageDomain.id())).send();
+//                        .dataCenter(new DataCenterBuilder().id(dcVo.getDatacenterId()).build())
+            } catch (Exception var18) {
+                var18.printStackTrace();
+            }
 
+            do {
+                Thread.sleep(2000L);
 
+                storageDomain = asdService.get().send().storageDomain();
+            } while(storageDomain.status() != StorageDomainStatus.ACTIVE);
 
+            return CommonVo.successResponse();
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return CommonVo.failResponse(e.getMessage());
+        }
+    }
+
+    @Override
+    public CommonVo<Boolean> deleteDomain(String domainId) {
+        SystemService system = admin.getConnection().systemService();
+
+        StorageDomainService storageDomainService = system.storageDomainsService().storageDomainService(domainId);
+        StorageDomain storageDomain = storageDomainService.get().send().storageDomain();
+        AttachedStorageDomainService asdService = system.dataCentersService().dataCenterService(storageDomain.dataCenters().get(0).id()).storageDomainsService().storageDomainService(domainId);
+
+        try{
+            asdService.remove().async(true).send();
+
+            do{
+                System.out.println("떨어짐");
+            }while (storageDomain.status() != StorageDomainStatus.UNATTACHED);
+
+            storageDomainService.remove().destroy(true).send();
+
+            return CommonVo.successResponse();
+        }catch (Exception e){
+            e.printStackTrace();
+            return CommonVo.failResponse(e.getMessage());
+        }
+    }
 
     // endregion
+
 
     // region: volume
 

@@ -37,11 +37,14 @@ public class DomainVo {
     private int blockSize;      // 디스크공간 동작차단
 
     private StorageFormat format;
-    private StorageType storageType;
+    private StorageType storageType;    // 스토리지 유형
     private boolean backup;
 
     private String datacenterId;
     private String datacenterName;
+
+//    private String hostId;
+//    private String hostName;
 
     private List<DiskProfileVo> profileVoList;
 }

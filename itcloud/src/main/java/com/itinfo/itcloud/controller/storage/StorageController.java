@@ -78,7 +78,7 @@ public class StorageController {
 
 	@GetMapping("/domains")
 	@ResponseBody
-	public List<DomainVo> domains(){
+	public List<DcDomainVo> domains(){
 		return storageService.getDomainList();
 	}
 
