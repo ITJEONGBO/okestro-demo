@@ -421,8 +421,7 @@ public class ClusterServiceImpl implements ItClusterService {
     @Override
     public ClusterAffGroupHostVm setAffinitygroupDefaultInfo(String clusterId) {
         SystemService system = admin.getConnection().systemService();
-
-        System.out.println(clusterId);
+        List<AffinityLabel> affinityLabelList = system.affinityLabelsService().list().send().labels();
 
         return ClusterAffGroupHostVm.builder()
                 .clusterId(clusterId)
@@ -509,6 +508,67 @@ public class ClusterServiceImpl implements ItClusterService {
             log.error("실패: 클러스터 선호도그룹 생성");
             return CommonVo.failResponse(e.getMessage());
         }
+    }
+
+    @Override
+    public AffinityGroupCreateVo setEditAffinitygroup(String clusterId, String agId) {
+        SystemService system = admin.getConnection().systemService();
+
+        AffinityGroup affinityGroup = system.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId).get().follow("vmlabels,hostlabels,vms,hosts").send().group();
+
+        return AffinityGroupCreateVo.builder()
+                .clusterId(clusterId)
+                .id(agId)
+                .name(affinityGroup.name())
+                .description(affinityGroup.description())
+                .priority(affinityGroup.priority().intValue())
+                .vmEnabled(affinityGroup.vmsRule().enabled())// 비활성화
+                .vmPositive(affinityGroup.vmsRule().positive()) // 양극 음극
+                .vmEnforcing(affinityGroup.vmsRule().enforcing()) // 강제 적용
+                .hostEnabled(affinityGroup.hostsRule().enabled())
+                .hostPositive(affinityGroup.hostsRule().positive())
+                .hostEnforcing(affinityGroup.hostsRule().enforcing())
+                .hostLabels(
+                        affinityGroup.hostLabels().stream()
+                            .map(affinityLabel ->
+                                    AffinityLabelVo.builder()
+                                        .id(affinityLabel.id())
+                                        .name(affinityLabel.name())
+                                    .build()
+                            )
+                            .collect(Collectors.toList())
+                )
+                .vmLabels(
+                        affinityGroup.hostLabels().stream()
+                            .map(affinityLabel ->
+                                    AffinityLabelVo.builder()
+                                        .id(affinityLabel.id())
+                                        .name(affinityLabel.name())
+                                    .build()
+                            )
+                            .collect(Collectors.toList())
+                )
+                .hostList(
+                        affinityGroup.hosts().stream()
+                            .map(host ->
+                                    HostVo.builder()
+                                        .id(host.id())
+                                        .name(host.name())
+                                    .build()
+                            )
+                            .collect(Collectors.toList())
+                )
+                .vmList(
+                        affinityGroup.vms().stream()
+                            .map(vm ->
+                                    VmVo.builder()
+                                        .id(vm.id())
+                                        .name(vm.name())
+                                    .build()
+                            )
+                            .collect(Collectors.toList())
+                )
+                .build();
     }
 
     // 선호도 그룹 편집

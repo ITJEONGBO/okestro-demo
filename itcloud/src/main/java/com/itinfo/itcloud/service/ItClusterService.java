@@ -35,6 +35,7 @@ public interface ItClusterService {
     List<AffinityGroupVo> getAffinitygroup(String clusterId);  // 선호도 그룹 목록
     ClusterAffGroupHostVm setAffinitygroupDefaultInfo(String clusterId);   // 선호도 그룹 생성 위한 host&vm
     CommonVo<Boolean> addAffinitygroup(AffinityGroupCreateVo agVo); // 선호도 그룹 생성
+    AffinityGroupCreateVo setEditAffinitygroup(String clusterId, String agId);    // 선호도 그룹 편집 위한 값 세팅
     CommonVo<Boolean> editAffinitygroup(AffinityGroupCreateVo agVo); // 선호도 그룹 편집
     CommonVo<Boolean> deleteAffinitygroup(String clusterId, String id); // 선호도 그룹 삭제
 

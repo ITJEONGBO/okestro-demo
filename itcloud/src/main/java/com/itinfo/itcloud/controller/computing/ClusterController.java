@@ -125,11 +125,11 @@ public class ClusterController {
 	}
 
 	// 클러스터 선호도 그룹 편집 창
-//	@GetMapping("/cluster/{id}/affinitygroup/edit/{agId}")
-//	@ResponseBody
-//	public CommonVo<Boolean> setEditAffinitygroup(@PathVariable String id, @PathVariable String agId){
-//		return clusterService.e(agVo);
-//	}
+	@GetMapping("/cluster/{id}/affinitygroup/edit/{agId}")
+	@ResponseBody
+	public AffinityGroupCreateVo setEditAffinitygroup(@PathVariable String id, @PathVariable String agId){
+		return clusterService.setEditAffinitygroup(id, agId);
+	}
 
 	// 클러스터 선호도 그룹 편집
 	@PostMapping("/cluster/{id}/affinitygroup/edit")
