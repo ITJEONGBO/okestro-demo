@@ -10,7 +10,6 @@ import java.util.List;
 
 @Service
 public interface ItDataCenterService {
-    String getName(String id);
     List<DataCenterVo> getList();
     List<EventVo> getEvent(String id);
 

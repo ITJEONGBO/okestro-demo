@@ -26,7 +26,6 @@ public class DataCenterController {
 		return "hello";
 	}
 
-	//region: @ResponseBody
 
 	@GetMapping("/datacenters")
 	@ResponseBody
@@ -35,14 +34,18 @@ public class DataCenterController {
 		return dcService.getList();
 	}
 
-	@GetMapping("/datacenter-event")
+	@GetMapping("/datacenter/event")
 	@ResponseBody
-	public List<EventVo> event(String id) {
+	public List<EventVo> event(@RequestParam String id) {
 		log.info("----- 데이터센터 이벤트 : " + id);
 		return dcService.getEvent(id);
 	}
 
-	//endregion
+	@GetMapping("/datacenter")
+	@ResponseBody
+	public DataCenterCreateVo getDatacenter(@RequestParam String id){
+		return dcService.getDatacenter(id);
+	}
 
 
 	@PostMapping("/datacenter/add")
