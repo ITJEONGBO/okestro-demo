@@ -1,30 +1,42 @@
 package com.itinfo.itcloud.service;
 
+import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.AffinityGroupCreateVo;
 import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
-import com.itinfo.itcloud.model.error.CommonVo;
-import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.ClusterCreateVo;
+import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
-import org.ovirt.engine.sdk4.services.SystemService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public interface ItClusterService {
-    String getName(String id);
     List<ClusterVo> getList();
-    ClusterVo getInfo(String id);
-    List<NetworkVo> getNetwork(String id);
-    List<HostVo> getHost(String id);
-    List<VmVo> getVm(String id);
+
+    // 클러스터
+    List<DataCenterVo> setClusterDefaultInfo(); // 생성 위한 dc&network 목록
+    CommonVo<Boolean> addCluster(ClusterCreateVo cVo);   // 생성
+    ClusterCreateVo setEditCluster(String id);      // 수정 창
+    CommonVo<Boolean> editCluster(ClusterCreateVo cVo);   // 수정
+    CommonVo<Boolean> deleteCluster(String id);       // 삭제
+
+    ClusterVo getInfo(String id);   // 일반
+
+    // 네트워크
+    List<NetworkVo> getNetwork(String id);  // 네트워크 목록
+    // 네트워크 추가
+    // 네트워크 관리
+
+    List<HostVo> getHost(String id);    // 호스트 목록
+    List<VmVo> getVm(String id);        // 가상머신 목록
 
     // 선호도 그룹
-    List<AffinityGroupVo> getAffinitygroup(String id);
-    CommonVo<Boolean> addAffinitygroup(AffinityGroupCreateVo agVo);
-    CommonVo<Boolean> editAffinitygroup(AffinityGroupCreateVo agVo);
-    CommonVo<Boolean> deleteAffinitygroup(String clusterId, String id);
+    List<AffinityGroupVo> getAffinitygroup(String clusterId);  // 선호도 그룹 목록
+    ClusterAffGroupHostVm setAffinitygroupDefaultInfo(String clusterId);   // 선호도 그룹 생성 위한 host&vm
+    CommonVo<Boolean> addAffinitygroup(AffinityGroupCreateVo agVo); // 선호도 그룹 생성
+    CommonVo<Boolean> editAffinitygroup(AffinityGroupCreateVo agVo); // 선호도 그룹 편집
+    CommonVo<Boolean> deleteAffinitygroup(String clusterId, String id); // 선호도 그룹 삭제
 
     // 선호도 레이블
     List<AffinityLabelVo> getAffinitylabelList(String id);  // 전체 출력 목록
@@ -39,11 +51,6 @@ public interface ItClusterService {
     List<EventVo> getEvent(String id);
 
 
-    List<DataCenterVo> getDcList();
-    ClusterCreateVo getClusterCreate(String id);
-    CommonVo<Boolean> addCluster(ClusterCreateVo cVo);   // 생성
-    CommonVo<Boolean> editCluster(ClusterCreateVo cVo);   // 수정
-    CommonVo<Boolean> deleteCluster(String id);       // 삭제
 
     // 안쓸듯
 //    List<CpuProfileVo> getCpuProfile(String id);

@@ -34,33 +34,36 @@ public class DataCenterController {
 		return dcService.getList();
 	}
 
-	@GetMapping("/datacenter/event")
+	@GetMapping("/datacenter/{id}/events")
 	@ResponseBody
-	public List<EventVo> event(@RequestParam String id) {
+	public List<EventVo> event(@PathVariable String id) {
 		log.info("----- 데이터센터 이벤트 : " + id);
 		return dcService.getEvent(id);
 	}
 
-	@GetMapping("/datacenter")
+	@GetMapping("/datacenter/{id}")
 	@ResponseBody
-	public DataCenterCreateVo getDatacenter(@RequestParam String id){
+	public DataCenterCreateVo getDatacenter(@PathVariable String id){
 		return dcService.getDatacenter(id);
 	}
 
 
 	@PostMapping("/datacenter/add")
+	@ResponseBody
 	public CommonVo<Boolean> addDatacenter(@RequestBody DataCenterCreateVo dcVo){
 		log.info("----- 데이터센터 추가 : " + dcVo.getName());
 		return dcService.addDatacenter(dcVo);
 	}
 
 	@PostMapping("/datacenter/edit")
+	@ResponseBody
 	public CommonVo<Boolean> editDatacenter(@RequestBody DataCenterCreateVo dcVo){
 		log.info("----- 데이터센터 편집 : " + dcVo.getName());
 		return dcService.editDatacenter(dcVo);
 	}
 
 	@PostMapping("/datacenter/delete")
+	@ResponseBody
 	public CommonVo<Boolean> deleteDatacenter(@RequestParam String id){
 		log.info("----- 데이터센터 삭제");
 		return dcService.deleteDatacenter(id);

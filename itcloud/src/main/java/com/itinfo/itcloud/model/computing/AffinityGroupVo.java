@@ -2,7 +2,6 @@ package com.itinfo.itcloud.model.computing;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class AffinityGroupVo {
     private List<AffinityLabelVo> vmLabels;     // 가상머신 레이블
     private List<AffinityLabelVo> hostLabels;   // 호스트 레이블
 
-    private List<VmVo> vmList;      // 가상머신 멤버
-    private List<HostVo> hostList;    // 호스트 멤버
+    private List<VmVo> vmMembers;      // 가상머신 멤버
+    private List<HostVo> hostMembers;    // 호스트 멤버
 
 }

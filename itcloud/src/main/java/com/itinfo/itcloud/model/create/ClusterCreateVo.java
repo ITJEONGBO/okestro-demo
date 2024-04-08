@@ -2,11 +2,8 @@ package com.itinfo.itcloud.model.create;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import org.ovirt.engine.sdk4.types.*;
-
-import java.util.List;
 
 @Getter @ToString @Builder
 public class ClusterCreateVo {
@@ -38,7 +35,7 @@ public class ClusterCreateVo {
     private LogMaxMemoryUsedThresholdType logMaxType;       // ABSOLUTE_VALUE_IN_MB, PERCENTAGE
 
     private boolean virtService;        // virt 서비스 활성화
-//    private boolean glusterService;     // Gluster 서비스 활성화
+    private boolean glusterService;     // Gluster 서비스 활성화
     // 추가 난수 생성기 소스
 
 
