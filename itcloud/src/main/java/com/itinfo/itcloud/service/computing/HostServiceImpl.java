@@ -330,20 +330,6 @@ public class HostServiceImpl implements ItHostService {
         }
     }
 
-    // 시작
-    @Override
-    public void start(String id) {
-        SystemService system = admin.getConnection().systemService();
-        HostService hostService = system.hostsService().hostService(id);
-
-        try {
-            Host host = hostService.get().send().host();
-
-            log.info("start");
-        }catch (Exception e){
-            log.error("error: ", e);
-        }
-    }
 
     // 중지
     @Override
@@ -352,7 +338,7 @@ public class HostServiceImpl implements ItHostService {
         HostService hostService = system.hostsService().hostService(id);
 
         try {
-            Host host = hostService.get().send().host();
+            /*Host host = */hostService.get().send().host();
 
             log.info("stop");
         }catch (Exception e){
@@ -361,7 +347,7 @@ public class HostServiceImpl implements ItHostService {
     }
 
 
-
+    // 일반
     @Override
     public HostVo getInfo(String id) {
         SystemService system = admin.getConnection().systemService();
@@ -615,7 +601,7 @@ public class HostServiceImpl implements ItHostService {
 
 
     @Override
-    public CommonVo<Boolean> addAffinitylabel(AffinityLabelCreateVo alVo) {
+    public CommonVo<Boolean> addAffinitylabel(String id, AffinityLabelCreateVo alVo) {
         SystemService system = admin.getConnection().systemService();
 
         AffinityLabelsService alServices = system.affinityLabelsService();
@@ -656,12 +642,12 @@ public class HostServiceImpl implements ItHostService {
     }
 
     @Override
-    public CommonVo<Boolean> editAffinitylabel(AffinityLabelCreateVo alVo) {
+    public CommonVo<Boolean> editAffinitylabel(String id, String alId, AffinityLabelCreateVo alVo) {
         return null;
     }
 
     @Override
-    public CommonVo<Boolean> deleteAffinitylabel(String id) {
+    public CommonVo<Boolean> deleteAffinitylabel(String id, String alId) {
         return null;
     }
 
@@ -866,6 +852,24 @@ public class HostServiceImpl implements ItHostService {
 
 
 
+    // region: 안쓸거 같음
+
+    // 시작
+//    @Override
+//    public void start(String id) {
+//        SystemService system = admin.getConnection().systemService();
+//        HostService hostService = system.hostsService().hostService(id);
+//
+//        try {
+//            Host host = hostService.get().send().host();
+//
+//            log.info("start");
+//        }catch (Exception e){
+//            log.error("error: ", e);
+//        }
+//    }
+
+    // endregion
 
 
 }

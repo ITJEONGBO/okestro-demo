@@ -116,8 +116,7 @@ public class ClusterController {
 	@GetMapping("/cluster/{id}/affinitygroup/settings")
 	@ResponseBody
 	public AffinityHostVm setAffinitygroup(@PathVariable String id){
-		String type = "group";
-		return clusterService.setAffinityDefaultInfo(id, type);
+		return clusterService.setAffinityDefaultInfo(id, "group");
 	}
 
 	// 클러스터 선호도 그룹 생성
@@ -131,7 +130,8 @@ public class ClusterController {
 	// 클러스터 선호도 그룹 편집 창
 	@GetMapping("/cluster/{id}/affinitygroup/{agId}/settings")
 	@ResponseBody
-	public AffinityGroupCreateVo setEditAffinitygroup(@PathVariable String id, @PathVariable String agId){
+	public AffinityGroupCreateVo setEditAffinitygroup(@PathVariable String id,
+													  @PathVariable String agId){
 		return clusterService.setEditAffinitygroup(id, agId);
 	}
 
@@ -147,7 +147,8 @@ public class ClusterController {
 	// 클러스터 선호도 그룹 삭제
 	@DeleteMapping("/cluster/{id}/affinitygroup/{agId}")
 	@ResponseBody
-	public CommonVo<Boolean> deleteAffinitygroup(@PathVariable String id, @PathVariable String agId){
+	public CommonVo<Boolean> deleteAffinitygroup(@PathVariable String id,
+												 @PathVariable String agId){
 		return clusterService.deleteAffinitygroup(id, agId);
 	}
 
@@ -173,7 +174,8 @@ public class ClusterController {
 	// 클러스터 선호도 레이블 생성
 	@PostMapping("/cluster/{id}/affinitylabel")
 	@ResponseBody
-	public CommonVo<Boolean> addAff(@PathVariable String id, @RequestBody AffinityLabelCreateVo alVo) {
+	public CommonVo<Boolean> addAff(@PathVariable String id,
+									@RequestBody AffinityLabelCreateVo alVo) {
 		log.info("--- 선호도 레이블 생성");
 		return clusterService.addAffinitylabel(alVo);
 	}
@@ -191,7 +193,8 @@ public class ClusterController {
 	// 클러스터 선호도 레이블 삭제
 	@PostMapping("/cluster/{id}/affinitylabel/{alId}")
 	@ResponseBody
-	public CommonVo<Boolean> deleteAff(@PathVariable String id, @PathVariable String alId) {
+	public CommonVo<Boolean> deleteAff(@PathVariable String id,
+									   @PathVariable String alId) {
 		log.info("--- 선호도 레이블 삭제");
 		return clusterService.deleteAffinitylabel(id);
 	}

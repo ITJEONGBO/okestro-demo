@@ -26,7 +26,7 @@ public interface ItHostService {
 
     // ssh 관리
     void reStart(String id);        // 재시작
-    void start(String id);          // 시작
+//    void start(String id);          // 시작
     void stop(String id);           // 중지
 
 
@@ -36,17 +36,16 @@ public interface ItHostService {
     List<NicVo> getNic(String id);  // 네트워크 인터페이스
 
     List<HostDeviceVo> getHostDevice(String id);    // 호스트 장치
+    List<PermissionVo> getPermission(String id);    // 권한
+
 
     // 선호도 레이블
     List<AffinityLabelVo> getAffinitylabels(String id);     // 선호도 레이블 목록
     AffinityHostVm setAffinityDefaultInfo(String id, String type);     // 편집창 출력
-    CommonVo<Boolean> addAffinitylabel(AffinityLabelCreateVo alVo);     // 선호도 레이블 생성
-    CommonVo<Boolean> editAffinitylabel(AffinityLabelCreateVo alVo);     // 선호도 레이블 편집
-    CommonVo<Boolean> deleteAffinitylabel(String id);
+    CommonVo<Boolean> addAffinitylabel(String id, AffinityLabelCreateVo alVo);     // 선호도 레이블 생성
+    CommonVo<Boolean> editAffinitylabel(String id, String alId, AffinityLabelCreateVo alVo);     // 선호도 레이블 편집
+    CommonVo<Boolean> deleteAffinitylabel(String id, String alId);           // 선호도 레이블 삭제
 
 
-    List<PermissionVo> getPermission(String id);
     List<EventVo> getEvent(String id);
-
-
 }
