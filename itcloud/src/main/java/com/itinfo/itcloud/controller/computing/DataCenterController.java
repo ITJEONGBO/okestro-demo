@@ -41,30 +41,37 @@ public class DataCenterController {
 		return dcService.getEvent(id);
 	}
 
-	@GetMapping("/datacenter/{id}")
-	@ResponseBody
-	public DataCenterCreateVo getDatacenter(@PathVariable String id){
-		return dcService.getDatacenter(id);
-	}
 
 
-	@PostMapping("/datacenter/add")
+	// 데이터센터 생성
+	@PostMapping("/datacenter")
 	@ResponseBody
 	public CommonVo<Boolean> addDatacenter(@RequestBody DataCenterCreateVo dcVo){
 		log.info("----- 데이터센터 추가 : " + dcVo.getName());
 		return dcService.addDatacenter(dcVo);
 	}
 
-	@PostMapping("/datacenter/edit")
-	@ResponseBody
-	public CommonVo<Boolean> editDatacenter(@RequestBody DataCenterCreateVo dcVo){
-		log.info("----- 데이터센터 편집 : " + dcVo.getName());
-		return dcService.editDatacenter(dcVo);
+	// 데이터센터 수정 창
+	@GetMapping("/datacenter/{id}/settings")
+	@ResponseBody()
+	public DataCenterCreateVo getDatacenter(@PathVariable String id){
+		log.info("-- 데이터 센터 편집 창");
+		return dcService.getDatacenter(id);
 	}
 
-	@PostMapping("/datacenter/delete")
+	// 데이터센터 수정
+	@PutMapping("/datacenter/{id}")
 	@ResponseBody
-	public CommonVo<Boolean> deleteDatacenter(@RequestParam String id){
+	public CommonVo<Boolean> editDatacenter(@PathVariable String id,
+											@RequestBody DataCenterCreateVo dcVo){
+		log.info("----- 데이터센터 편집 : " + dcVo.getName());
+		return dcService.editDatacenter(id, dcVo);
+	}
+
+	// 데이터센터 삭제
+	@DeleteMapping("/datacenter/{id}")
+	@ResponseBody
+	public CommonVo<Boolean> deleteDatacenter(@PathVariable String id){
 		log.info("----- 데이터센터 삭제");
 		return dcService.deleteDatacenter(id);
 	}

@@ -59,6 +59,7 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
     // 클러스터 생성 위해 필요한 데이터센터 리스트
+    // 모든 데이터센터 리스트를 보여준다
     @Override
     public List<DataCenterVo> setClusterDefaultInfo(){
         SystemService system = admin.getConnection().systemService();
@@ -202,11 +203,11 @@ public class ClusterServiceImpl implements ItClusterService {
 
     // 클러스터 편집
     @Override
-    public CommonVo<Boolean> editCluster(ClusterCreateVo cVo) {
+    public CommonVo<Boolean> editCluster(String id, ClusterCreateVo cVo) {
         SystemService system = admin.getConnection().systemService();
 
         ClustersService clustersService = system.clustersService();
-        ClusterService clusterService = system.clustersService().clusterService(cVo.getId());
+        ClusterService clusterService = system.clustersService().clusterService(id);
 //        Network network = system.networksService().networkService(cVo.getNetworkId()).get().send().network();
         OpenStackNetworkProvider openStackNetworkProvider = system.openstackNetworkProvidersService().list().send().providers().get(0);
 
@@ -452,11 +453,11 @@ public class ClusterServiceImpl implements ItClusterService {
 
     // 선호도 그룹 추가 - 클러스터 아이디를 받아와서 처리
     @Override
-    public CommonVo<Boolean> addAffinitygroup(AffinityGroupCreateVo agVo) {
+    public CommonVo<Boolean> addAffinitygroup(String id, AffinityGroupCreateVo agVo) {
         SystemService system = admin.getConnection().systemService();
 
-        AffinityGroupsService agServices = system.clustersService().clusterService(agVo.getClusterId()).affinityGroupsService();
-        List<AffinityGroup> agList = system.clustersService().clusterService(agVo.getClusterId()).affinityGroupsService().list().send().groups();
+        AffinityGroupsService agServices = system.clustersService().clusterService(id).affinityGroupsService();
+        List<AffinityGroup> agList = system.clustersService().clusterService(id).affinityGroupsService().list().send().groups();
 
         // 선호도 그룹 이름 중복검사
         boolean duplicateName = agList.stream().noneMatch(ag -> ag.name().equals(agVo.getName()));
@@ -466,7 +467,7 @@ public class ClusterServiceImpl implements ItClusterService {
                 AffinityGroup ag = new AffinityGroupBuilder()
                         .name(agVo.getName())
                         .description(agVo.getDescription())
-                        .cluster(new ClusterBuilder().id(agVo.getClusterId()).build())
+                        .cluster(new ClusterBuilder().id(id).build())
                         .priority(agVo.getPriority())
                         .vmsRule(new AffinityRuleBuilder()
                                 .enabled(agVo.isVmEnabled())    // 비활성화
@@ -573,21 +574,21 @@ public class ClusterServiceImpl implements ItClusterService {
 
     // 선호도 그룹 편집
     @Override
-    public CommonVo<Boolean> editAffinitygroup(AffinityGroupCreateVo agVo) {
+    public CommonVo<Boolean> editAffinitygroup(String id, String agId, AffinityGroupCreateVo agVo) {
         SystemService system = admin.getConnection().systemService();
 
-        AffinityGroupService agService = system.clustersService().clusterService(agVo.getClusterId()).affinityGroupsService().groupService(agVo.getId());
-        List<AffinityGroup> agList = system.clustersService().clusterService(agVo.getClusterId()).affinityGroupsService().list().send().groups();
+        AffinityGroupService agService = system.clustersService().clusterService(id).affinityGroupsService().groupService(agId);
+        List<AffinityGroup> agList = system.clustersService().clusterService(id).affinityGroupsService().list().send().groups();
 
 //        boolean duplicateName = agList.stream().noneMatch(ag -> ag.name().equals(agVo.getName()));
 
         try {
             AffinityGroupBuilder agBuilder = new AffinityGroupBuilder();
             agBuilder
-                    .id(agVo.getId())
+                    .id(agId)
                     .name(agVo.getName())
                     .description(agVo.getDescription())
-                    .cluster(new ClusterBuilder().id(agVo.getClusterId()).build())
+                    .cluster(new ClusterBuilder().id(id).build())
                     .priority(agVo.getPriority())
                     .vmsRule(
                         new AffinityRuleBuilder()
@@ -630,12 +631,12 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
 
-    // 선호도 그룹 삭제 - clusterId와 id를 가져와서 삭제
+    // 선호도 그룹 삭제 - clusterId와 agid를 가져와서 삭제
     @Override
-    public CommonVo<Boolean> deleteAffinitygroup(String clusterId, String id) {
+    public CommonVo<Boolean> deleteAffinitygroup(String id, String agId) {
         SystemService system = admin.getConnection().systemService();
 
-        AffinityGroupService agService = system.clustersService().clusterService(clusterId).affinityGroupsService().groupService(id);
+        AffinityGroupService agService = system.clustersService().clusterService(id).affinityGroupsService().groupService(agId);
 
         try {
             agService.remove().send();
@@ -878,17 +879,16 @@ public class ClusterServiceImpl implements ItClusterService {
 
 
     // 클러스터 이벤트 출력
-    // TODO 이벤트 검색 자체 오류
     @Override
     public List<EventVo> getEvent(String id) {
         SystemService system = admin.getConnection().systemService();
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
-        List<Event> eventList = system.eventsService().list().max(10).send().events();
+        List<Event> eventList = system.eventsService().list().send().events();
 
         log.info("클러스터 이벤트 출력");
         return eventList.stream()
-                .filter(Event::clusterPresent /*&& event.cluster().name().equals(getName(id))*/)
+                .filter(event -> event.clusterPresent() && event.cluster().idPresent() && event.cluster().id().equals(id))
                 .map(event ->
                     EventVo.builder()
                         .severity(event.severity().value())     // 상태[LogSeverity] : alert, error, normal, warning
@@ -902,13 +902,13 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
 
+
+
+
     // ----------------------------------------------------------------------------------------
 
 
 
-
-
-    //----------------------------------------------------------------------------------------
 
     // vm 가동시간
     private String getUptime(SystemService system, String id){

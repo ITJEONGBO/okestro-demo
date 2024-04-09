@@ -29,7 +29,8 @@ public class ClusterController {
 		return clusterService.getList();
 	}
 
-	@GetMapping("/cluster/set")
+	// 클러스터 생성 위해 필요한 데이터센터 리스트 출력
+	@GetMapping("/cluster/settings")
 	@ResponseBody
 	public List<DataCenterVo> setClusterDefaultInfo(){
 		log.info("---클러스터 생성 위해 필요한 데이터센터 리스트");
@@ -37,7 +38,7 @@ public class ClusterController {
 	}
 
 	// 클러스터 생성
-	@PostMapping("/cluster/add")
+	@PostMapping("/cluster")
 	@ResponseBody
 	public CommonVo<Boolean> addCluster(@RequestBody ClusterCreateVo cVo){
 		log.info("클러스터 생성");
@@ -45,7 +46,7 @@ public class ClusterController {
 	}
 
 	// 클러스터 수정 창
-	@GetMapping("/cluster/edit/{id}")
+	@GetMapping("/cluster/{id}/settings")
 	@ResponseBody
 	public ClusterCreateVo setEditCluster(@PathVariable String id){
 		log.info("클러스터 수정창");
@@ -53,15 +54,15 @@ public class ClusterController {
 	}
 	
 	// 클러스터 수정
-	@PostMapping("/cluster/edit")
+	@PutMapping("/cluster/{id}")
 	@ResponseBody
-	public CommonVo<Boolean> editCluster(@RequestBody ClusterCreateVo cVo){
+	public CommonVo<Boolean> editCluster(@PathVariable String id, @RequestBody ClusterCreateVo cVo){
 		log.info("클러스터 수정");
-		return clusterService.editCluster(cVo);
+		return clusterService.editCluster(id, cVo);
 	}
 
 	// 클러스터 삭제
-	@PostMapping("/cluster/delete/{id}")
+	@DeleteMapping("/cluster/{id}")
 	@ResponseBody
 	public CommonVo<Boolean> deleteCluster(@PathVariable String id){
 		log.info("클러스터 삭제");
@@ -111,38 +112,41 @@ public class ClusterController {
 	}
 
 	// TODO: 클러스터 선호도 그룹 생성위한 목록
-	@GetMapping("/cluster/{clusterId}/affinitygroup/add")
+	@GetMapping("/cluster/{id}/affinitygroup/settings")
 	@ResponseBody
-	public ClusterAffGroupHostVm setAffinitygroupDefaultInfo(@PathVariable String clusterId){
-		return clusterService.setAffinitygroupDefaultInfo(clusterId);
+	public ClusterAffGroupHostVm setAffinitygroupDefaultInfo(@PathVariable String id){
+		return clusterService.setAffinitygroupDefaultInfo(id);
 	}
 
 	// 클러스터 선호도 그룹 생성
-	@PostMapping("/cluster/{id}/affinitygroup/add")
+	@PostMapping("/cluster/{id}/affinitygroup")
 	@ResponseBody
-	public CommonVo<Boolean> addAffinitygroup(@PathVariable String id, @RequestBody AffinityGroupCreateVo agVo){
-		return clusterService.addAffinitygroup(agVo);
+	public CommonVo<Boolean> addAffinitygroup(@PathVariable String id,
+											  @RequestBody AffinityGroupCreateVo agVo){
+		return clusterService.addAffinitygroup(id, agVo);
 	}
 
 	// 클러스터 선호도 그룹 편집 창
-	@GetMapping("/cluster/{id}/affinitygroup/edit/{agId}")
+	@GetMapping("/cluster/{id}/affinitygroup/{agId}/settings")
 	@ResponseBody
 	public AffinityGroupCreateVo setEditAffinitygroup(@PathVariable String id, @PathVariable String agId){
 		return clusterService.setEditAffinitygroup(id, agId);
 	}
 
 	// 클러스터 선호도 그룹 편집
-	@PostMapping("/cluster/{id}/affinitygroup/edit")
+	@PutMapping("/cluster/{id}/affinitygroup/{agId}")
 	@ResponseBody
-	public CommonVo<Boolean> editAffinitygroup(@RequestBody AffinityGroupCreateVo agVo){
-		return clusterService.editAffinitygroup(agVo);
+	public CommonVo<Boolean> editAffinitygroup(@PathVariable String id,
+											   @PathVariable String agId,
+											   @RequestBody AffinityGroupCreateVo agVo){
+		return clusterService.editAffinitygroup(id, agId,agVo);
 	}
 
 	// 클러스터 선호도 그룹 삭제
-	@PostMapping("/cluster/{id}/affinitygroup/delete")
+	@DeleteMapping("/cluster/{id}/affinitygroup/{agId}")
 	@ResponseBody
-	public CommonVo<Boolean> deleteAffinitygroup(@RequestParam String clusterId, @RequestParam String id){
-		return clusterService.deleteAffinitygroup(clusterId, id);
+	public CommonVo<Boolean> deleteAffinitygroup(@PathVariable String id, @PathVariable String agId){
+		return clusterService.deleteAffinitygroup(id, agId);
 	}
 
 
@@ -156,7 +160,7 @@ public class ClusterController {
 
 	// TODO: 클러스트 선호도 레이블 생성위한 목록
 	// 문제있음요
-	@GetMapping("/cluster/{id}/affinitylabel")
+	@GetMapping("/cluster/{id}/affinitylabel/settings")
 	@ResponseBody
 	public AffinityLabelCreateVo getAffinityLabel(@PathVariable String id) {
 		log.info("----- 클러스터 선호도 레이블 생성 출력");
@@ -164,25 +168,27 @@ public class ClusterController {
 	}
 
 	// 클러스터 선호도 레이블 생성
-	@PostMapping("/cluster/affinitylabel/add")
+	@PostMapping("/cluster/{id}/affinitylabel")
 	@ResponseBody
-	public CommonVo<Boolean> addAff(@RequestBody AffinityLabelCreateVo alVo) {
+	public CommonVo<Boolean> addAff(@PathVariable String id, @RequestBody AffinityLabelCreateVo alVo) {
 		log.info("--- 선호도 레이블 생성");
 		return clusterService.addAffinitylabel(alVo);
 	}
 
 	// 클러스터 선호도 레이블 편집
-	@PostMapping("/cluster/affinitylabel/edit")
+	@PutMapping("/cluster/{id}/affinitylabel/{alId}")
 	@ResponseBody
-	public CommonVo<Boolean> editAff(@RequestBody AffinityLabelCreateVo alVo) {
+	public CommonVo<Boolean> editAff(@PathVariable String id,
+									 @PathVariable String alId,
+									 @RequestBody AffinityLabelCreateVo alVo) {
 		log.info("--- 선호도 레이블 편집");
 		return clusterService.editAffinitylabel(alVo);
 	}
 
 	// 클러스터 선호도 레이블 삭제
-	@PostMapping("/cluster/affinitylabel/delete")
+	@PostMapping("/cluster/{id}/affinitylabel/{alId}")
 	@ResponseBody
-	public CommonVo<Boolean> deleteAff(@RequestParam String id) {
+	public CommonVo<Boolean> deleteAff(@PathVariable String id, @PathVariable String alId) {
 		log.info("--- 선호도 레이블 삭제");
 		return clusterService.deleteAffinitylabel(id);
 	}

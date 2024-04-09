@@ -14,10 +14,10 @@ public interface ItDataCenterService {
     List<EventVo> getEvent(String id);
 
 
-    DataCenterCreateVo getDatacenter(String id);
-
     CommonVo<Boolean> addDatacenter(DataCenterCreateVo dcVo);   // 생성
-    CommonVo<Boolean> editDatacenter(DataCenterCreateVo dcVo);   // 수정
+
+    DataCenterCreateVo getDatacenter(String id);
+    CommonVo<Boolean> editDatacenter(String id, DataCenterCreateVo dcVo);   // 수정
     CommonVo<Boolean> deleteDatacenter(String id);       // 삭제
 
     // region: 안쓸 것 같음

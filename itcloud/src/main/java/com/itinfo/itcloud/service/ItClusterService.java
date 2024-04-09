@@ -18,7 +18,7 @@ public interface ItClusterService {
     List<DataCenterVo> setClusterDefaultInfo(); // 생성 위한 dc&network 목록
     CommonVo<Boolean> addCluster(ClusterCreateVo cVo);   // 생성
     ClusterCreateVo setEditCluster(String id);      // 수정 창
-    CommonVo<Boolean> editCluster(ClusterCreateVo cVo);   // 수정
+    CommonVo<Boolean> editCluster(String id, ClusterCreateVo cVo);   // 수정
     CommonVo<Boolean> deleteCluster(String id);       // 삭제
 
     ClusterVo getInfo(String id);   // 일반
@@ -32,12 +32,12 @@ public interface ItClusterService {
     List<VmVo> getVm(String id);        // 가상머신 목록
 
     // 선호도 그룹
-    List<AffinityGroupVo> getAffinitygroup(String clusterId);  // 선호도 그룹 목록
-    ClusterAffGroupHostVm setAffinitygroupDefaultInfo(String clusterId);   // 선호도 그룹 생성 위한 host&vm
-    CommonVo<Boolean> addAffinitygroup(AffinityGroupCreateVo agVo); // 선호도 그룹 생성
-    AffinityGroupCreateVo setEditAffinitygroup(String clusterId, String agId);    // 선호도 그룹 편집 위한 값 세팅
-    CommonVo<Boolean> editAffinitygroup(AffinityGroupCreateVo agVo); // 선호도 그룹 편집
-    CommonVo<Boolean> deleteAffinitygroup(String clusterId, String id); // 선호도 그룹 삭제
+    List<AffinityGroupVo> getAffinitygroup(String id);  // 선호도 그룹 목록
+    ClusterAffGroupHostVm setAffinitygroupDefaultInfo(String id);   // 선호도 그룹 생성 위한 host&vm
+    CommonVo<Boolean> addAffinitygroup(String id, AffinityGroupCreateVo agVo); // 선호도 그룹 생성
+    AffinityGroupCreateVo setEditAffinitygroup(String id, String agId);    // 선호도 그룹 편집 위한 값 세팅
+    CommonVo<Boolean> editAffinitygroup(String id, String agId, AffinityGroupCreateVo agVo); // 선호도 그룹 편집
+    CommonVo<Boolean> deleteAffinitygroup(String id, String agId); // 선호도 그룹 삭제
 
     // 선호도 레이블
     List<AffinityLabelVo> getAffinitylabelList(String id);  // 전체 출력 목록
