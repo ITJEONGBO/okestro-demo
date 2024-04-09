@@ -387,6 +387,76 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
 
+
+    // 선호도 그룹&레이블 생성 위한 기본 설정
+    @Override
+    public AffinityHostVm setAffinityDefaultInfo(String id, String type) {
+        SystemService system = admin.getConnection().systemService();
+
+        List<AffinityLabel> affinityLabelList = system.affinityLabelsService().list().send().labels();
+        List<AffinityGroup> affinityGroupList = system.clustersService().clusterService(id).affinityGroupsService().list().send().groups();
+
+        List<Host> hostList = system.hostsService().list().send().hosts();
+        List<Vm> vmList = system.vmsService().list().send().vms();
+
+        // host vm lavel 메소드 분리?
+        if(type.equals("label")){
+            return AffinityHostVm.builder()
+                    .clusterId(id)
+                    .hostList(
+                            hostList.stream()
+                                    .filter(host -> host.cluster().id().equals(id))
+                                    .map(host ->
+                                            HostVo.builder()
+                                                    .id(host.id())
+                                                    .name(host.name())
+                                                    .build()
+                                    )
+                                    .collect(Collectors.toList())
+                    )
+                    .vmList(
+                            vmList.stream()
+                                    .filter(vm -> vm.cluster().id().equals(id))
+                                    .map(vm ->
+                                            VmVo.builder()
+                                                    .id(vm.id())
+                                                    .name(vm.name())
+                                                    .build()
+                                    )
+                                    .collect(Collectors.toList())
+                    )
+                    .build();
+        }else{ //group
+            // TODO 레이블 추가해야함
+            return AffinityHostVm.builder()
+                    .clusterId(id)
+                    .hostList(
+                            hostList.stream()
+                                    .filter(host -> host.cluster().id().equals(id))
+                                    .map(host ->
+                                            HostVo.builder()
+                                                    .id(host.id())
+                                                    .name(host.name())
+                                                    .build()
+                                    )
+                                    .collect(Collectors.toList())
+                    )
+                    .vmList(
+                            vmList.stream()
+                                    .filter(vm -> vm.cluster().id().equals(id))
+                                    .map(vm ->
+                                            VmVo.builder()
+                                                    .id(vm.id())
+                                                    .name(vm.name())
+                                                    .build()
+                                    )
+                                    .collect(Collectors.toList())
+                    )
+                    .build();
+        }
+    }
+
+
     // 선호도 그룹 목록 - 클러스터 id를 받아와서 처리
     @Override
     public List<AffinityGroupVo> getAffinitygroup(String id){
@@ -418,38 +488,7 @@ public class ClusterServiceImpl implements ItClusterService {
                 .collect(Collectors.toList());
     }
 
-    // 선호도 그룹 생성 위한 기본 설정
-    @Override
-    public ClusterAffGroupHostVm setAffinitygroupDefaultInfo(String clusterId) {
-        SystemService system = admin.getConnection().systemService();
-        List<AffinityLabel> affinityLabelList = system.affinityLabelsService().list().send().labels();
 
-        return ClusterAffGroupHostVm.builder()
-                .clusterId(clusterId)
-                .hostList(
-                    system.hostsService().list().send().hosts().stream()
-                        .filter(host -> host.cluster().id().equals(clusterId))
-                        .map(host ->
-                                HostVo.builder()
-                                    .id(host.id())
-                                    .name(host.name())
-                                .build()
-                        )
-                        .collect(Collectors.toList())
-                )
-                .vmList(
-                    system.vmsService().list().send().vms().stream()
-                        .filter(vm -> vm.cluster().id().equals(clusterId))
-                        .map(vm ->
-                                VmVo.builder()
-                                    .id(vm.id())
-                                    .name(vm.name())
-                                .build()
-                        )
-                        .collect(Collectors.toList())
-                )
-                .build();
-    }
 
     // 선호도 그룹 추가 - 클러스터 아이디를 받아와서 처리
     @Override

@@ -31,9 +31,13 @@ public interface ItClusterService {
     List<HostVo> getHost(String id);    // 호스트 목록
     List<VmVo> getVm(String id);        // 가상머신 목록
 
+
+    // 선호도 그룹&레이블  생성 위한 host&vm (dc 밑에 붙어있어야함)
+    // type(group, label)에 따라 달라짐
+    AffinityHostVm setAffinityDefaultInfo(String id, String type);
+
     // 선호도 그룹
     List<AffinityGroupVo> getAffinitygroup(String id);  // 선호도 그룹 목록
-    ClusterAffGroupHostVm setAffinitygroupDefaultInfo(String id);   // 선호도 그룹 생성 위한 host&vm
     CommonVo<Boolean> addAffinitygroup(String id, AffinityGroupCreateVo agVo); // 선호도 그룹 생성
     AffinityGroupCreateVo setEditAffinitygroup(String id, String agId);    // 선호도 그룹 편집 위한 값 세팅
     CommonVo<Boolean> editAffinitygroup(String id, String agId, AffinityGroupCreateVo agVo); // 선호도 그룹 편집
@@ -41,8 +45,8 @@ public interface ItClusterService {
 
     // 선호도 레이블
     List<AffinityLabelVo> getAffinitylabelList(String id);  // 전체 출력 목록
-    List<HostVo> getHostMember(String clusterId);       // 생성 시 필요한 host
-    List<VmVo> getVmMember(String clusterId);       // 생성 시 필요한 vms 목록
+    List<HostVo> getHostMember(String id);       // 생성 시 필요한 host
+    List<VmVo> getVmMember(String id);       // 생성 시 필요한 vms 목록
     AffinityLabelCreateVo getAffinityLabel(String id);      // 편집창 출력
     CommonVo<Boolean> addAffinitylabel(AffinityLabelCreateVo alVo);     // 선호도 레이블 생성
     CommonVo<Boolean> editAffinitylabel(AffinityLabelCreateVo alVo);     // 선호도 레이블 편집

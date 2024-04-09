@@ -7,7 +7,7 @@ import lombok.Setter;
 import java.util.List;
 
 @Getter @Setter @Builder
-public class ClusterAffGroupHostVm {
+public class AffinityHostVm {
     private String clusterId;
     private List<HostVo> hostList;
     private List<VmVo> vmList;

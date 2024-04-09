@@ -111,11 +111,12 @@ public class ClusterController {
 		return clusterService.getAffinitygroup(id);
 	}
 
-	// TODO: 클러스터 선호도 그룹 생성위한 목록
+	// 클러스터 선호도 그룹 생성위한 목록
 	@GetMapping("/cluster/{id}/affinitygroup/settings")
 	@ResponseBody
-	public ClusterAffGroupHostVm setAffinitygroupDefaultInfo(@PathVariable String id){
-		return clusterService.setAffinitygroupDefaultInfo(id);
+	public AffinityHostVm setAffinitygroup(@PathVariable String id){
+		String type = "group";
+		return clusterService.setAffinityDefaultInfo(id, type);
 	}
 
 	// 클러스터 선호도 그룹 생성
@@ -158,14 +159,15 @@ public class ClusterController {
 		return clusterService.getAffinitylabelList(id);
 	}
 
-	// TODO: 클러스트 선호도 레이블 생성위한 목록
+	// 클러스트 선호도 레이블 생성위한 목록
 	// 문제있음요
 	@GetMapping("/cluster/{id}/affinitylabel/settings")
 	@ResponseBody
-	public AffinityLabelCreateVo getAffinityLabel(@PathVariable String id) {
-		log.info("----- 클러스터 선호도 레이블 생성 출력");
-		return clusterService.getAffinityLabel(id);
+	public AffinityHostVm setAffinitylabel(@PathVariable String id){
+		String type = "label";
+		return clusterService.setAffinityDefaultInfo(id, type);
 	}
+
 
 	// 클러스터 선호도 레이블 생성
 	@PostMapping("/cluster/{id}/affinitylabel")
