@@ -396,62 +396,19 @@ public class ClusterServiceImpl implements ItClusterService {
         List<AffinityLabel> affinityLabelList = system.affinityLabelsService().list().send().labels();
         List<AffinityGroup> affinityGroupList = system.clustersService().clusterService(id).affinityGroupsService().list().send().groups();
 
-        List<Host> hostList = system.hostsService().list().send().hosts();
-        List<Vm> vmList = system.vmsService().list().send().vms();
-
         // host vm lavel 메소드 분리?
         if(type.equals("label")){
             return AffinityHostVm.builder()
                     .clusterId(id)
-                    .hostList(
-                            hostList.stream()
-                                    .filter(host -> host.cluster().id().equals(id))
-                                    .map(host ->
-                                            HostVo.builder()
-                                                    .id(host.id())
-                                                    .name(host.name())
-                                                    .build()
-                                    )
-                                    .collect(Collectors.toList())
-                    )
-                    .vmList(
-                            vmList.stream()
-                                    .filter(vm -> vm.cluster().id().equals(id))
-                                    .map(vm ->
-                                            VmVo.builder()
-                                                    .id(vm.id())
-                                                    .name(vm.name())
-                                                    .build()
-                                    )
-                                    .collect(Collectors.toList())
-                    )
+                    .hostList(getHostVoList(system, id))
+                    .vmList(getVmVoList(system, id))
                     .build();
         }else{ //group
             // TODO 레이블 추가해야함
             return AffinityHostVm.builder()
                     .clusterId(id)
-                    .hostList(
-                            hostList.stream()
-                                    .filter(host -> host.cluster().id().equals(id))
-                                    .map(host ->
-                                            HostVo.builder()
-                                                    .id(host.id())
-                                                    .name(host.name())
-                                                    .build()
-                                    )
-                                    .collect(Collectors.toList())
-                    )
-                    .vmList(
-                            vmList.stream()
-                                    .filter(vm -> vm.cluster().id().equals(id))
-                                    .map(vm ->
-                                            VmVo.builder()
-                                                    .id(vm.id())
-                                                    .name(vm.name())
-                                                    .build()
-                                    )
-                                    .collect(Collectors.toList())
-                    )
+                    .hostList(getHostVoList(system, id))
+                    .vmList(getVmVoList(system, id))
                     .build();
         }
     }
@@ -777,11 +734,13 @@ public class ClusterServiceImpl implements ItClusterService {
                 AffinityLabelBuilder alBuilder = new AffinityLabelBuilder();
                 alBuilder
                         .name(alVo.getName())
-                        .hosts(alVo.getHostList().stream()
+                        .hosts(
+                            alVo.getHostList().stream()
                                 .map(host -> new HostBuilder().id(host.getId()).build())
                                 .collect(Collectors.toList())
                         )
-                        .vms(alVo.getVmList().stream()
+                        .vms(
+                            alVo.getVmList().stream()
                                 .map(vm -> new VmBuilder().id(vm.getId()).build())
                                 .collect(Collectors.toList())
                         )
@@ -800,11 +759,6 @@ public class ClusterServiceImpl implements ItClusterService {
             e.printStackTrace();
             return CommonVo.failResponse(e.getMessage());
         }
-    }
-
-    // 이게 레이블에서 항목삭제 할때 필요할 것 같음
-    public void deleteHostMember(String id){
-
     }
 
 
@@ -1018,7 +972,35 @@ public class ClusterServiceImpl implements ItClusterService {
 //        return ip;
     }
 
+    // affinity 전체 호스트 출력용
+    private List<HostVo> getHostVoList(SystemService system, String id){
+        List<Host> hostList = system.hostsService().list().send().hosts();
 
+        return hostList.stream()
+                .filter(host -> host.cluster().id().equals(id))
+                .map(host ->
+                        HostVo.builder()
+                                .id(host.id())
+                                .name(host.name())
+                                .build()
+                )
+                .collect(Collectors.toList());
+    }
+
+    // affinity 전체 가상머신 출력용
+    private List<VmVo> getVmVoList(SystemService system, String id){
+        List<Vm> vmList = system.vmsService().list().send().vms();
+
+        return vmList.stream()
+                .filter(vm -> vm.cluster().id().equals(id))
+                .map(vm ->
+                        VmVo.builder()
+                                .id(vm.id())
+                                .name(vm.name())
+                                .build()
+                )
+                .collect(Collectors.toList());
+    }
 
     // 선호도  - 레이블 아이디와 이름 얻기
     private List<AffinityLabelVo> getLabelName(SystemService system,String alId){
@@ -1090,8 +1072,6 @@ public class ClusterServiceImpl implements ItClusterService {
         List<String> idList = vmList.stream()
                 .map(Vm::id)
                 .collect(Collectors.toList());
-
-        idList.stream().forEach(System.out::println);
 
         return idList.stream()
                 .map(vmId -> {

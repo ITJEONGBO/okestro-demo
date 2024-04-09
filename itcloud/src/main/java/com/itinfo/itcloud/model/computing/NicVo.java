@@ -1,18 +1,19 @@
 package com.itinfo.itcloud.model.computing;
 
 import com.itinfo.itcloud.model.network.VnicProfileVo;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.ovirt.engine.sdk4.types.NicStatus;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
-@Getter @Setter
+@Getter @Setter @Builder
 public class NicVo {
     private String id;
     private String name;
     private String macAddress;
-    private String status;
+    private NicStatus status;
 
     private String rxSpeed;        // mbps
     private String txSpeed;        // mbps
@@ -36,8 +37,4 @@ public class NicVo {
 
     // 프로파일, pass_throught, protmirroring
     private VnicProfileVo vnicProfileVo;
-
-
-    // 논리 네트워크: 관리되지 않음, VLAN, 네트워크명, ipv4주소, ipv6주소
-    // 슬레이브: 이름, MAC, 속도, rx속도, tx속도, 총rx, 총tx, 중단
 }

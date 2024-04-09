@@ -56,7 +56,8 @@ public class ClusterController {
 	// 클러스터 수정
 	@PutMapping("/cluster/{id}")
 	@ResponseBody
-	public CommonVo<Boolean> editCluster(@PathVariable String id, @RequestBody ClusterCreateVo cVo){
+	public CommonVo<Boolean> editCluster(@PathVariable String id,
+										 @RequestBody ClusterCreateVo cVo){
 		log.info("클러스터 수정");
 		return clusterService.editCluster(id, cVo);
 	}

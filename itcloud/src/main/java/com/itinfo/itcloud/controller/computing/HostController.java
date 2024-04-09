@@ -2,6 +2,7 @@ package com.itinfo.itcloud.controller.computing;
 
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
+import com.itinfo.itcloud.model.create.HostCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.service.ItHostService;
 import lombok.RequiredArgsConstructor;
@@ -19,108 +20,147 @@ public class HostController {
 	private final ItHostService hostService;
 
 
-	@GetMapping("/host/affinityLabels")
-	@ResponseBody
-	public List<AffinityLabelVo> getAffinitylabels(String id){
-		return hostService.getAffinitylabels(id);
-	}
-
-	// 해당 cluster가 가지고 있는 host, 레이블 생성시 필요
-	@GetMapping("/host/hostme")
-	@ResponseBody
-	public List<HostVo> getHostMember(String clusterId) {
-		log.info("-----클러스터 호스트목록");
-		return hostService.getHostMember(clusterId);
-	}
-
-	// 해당 cluster가 가지고 있는 vm, 레이블 생성시 필요
-	@GetMapping("/host/vmme")
-	@ResponseBody
-	public List<VmVo> getVmMember(String clusterId) {
-		log.info("-----클러스터 가상머신목록");
-		return hostService.getVmMember(clusterId);
-	}
-
-
-	// 클러스터 선호도 레이블 생성
-	@PostMapping("/host/affinityLabel/add")
-	public CommonVo<Boolean> addAff(@RequestBody AffinityLabelCreateVo alVo) {
-		log.info("--- 선호도 레이블 생성");
-		return hostService.addAffinitylabel(alVo);
-	}
-
-	// 클러스터 선호도 레이블 편집
-	@PostMapping("/host/affinityLabel/edit")
-	public CommonVo<Boolean> editAff(@RequestBody AffinityLabelCreateVo alVo) {
-		log.info("--- 선호도 레이블 편집");
-		return hostService.editAffinitylabel(alVo);
-	}
-
-	// 클러스터 선호도 레이블 삭제
-	@PostMapping("/host/affinityLabel/delete")
-	public CommonVo<Boolean> deleteAff(String id) {
-		log.info("--- 선호도 레이블 삭제");
-		return hostService.deleteAffinitylabel(id);
-	}
-
-
-	//region: ResponseBody
-	@GetMapping("/hosts/status")
+	// 호스트 목록
+	@GetMapping("/hosts")
 	@ResponseBody
 	public List<HostVo> hosts() {
 		log.info("----- Host 목록 불러오기");
 		return hostService.getList();
 	}
 
-	@GetMapping("/host/status")
+	// 호스트 생성 기본 창
+	@GetMapping("/host/settings")
 	@ResponseBody
-	public HostVo host(String id) {
+	public List<ClusterVo> setHostDefaultInfo(){
+		log.info("----- Host 생성시 필요한 cluster List 불러오기");
+		return hostService.setHostDefaultInfo();
+	}
+
+	// 호스트 생성
+	@PostMapping("/host")
+	@ResponseBody
+	public CommonVo<Boolean> addHost(@RequestBody HostCreateVo hVo){
+		log.info("호스트 생성");
+		return hostService.addHost(hVo);
+	}
+
+	// 호스트 수정 창
+	@GetMapping("/host/{id}/settings")
+	@ResponseBody
+	public HostCreateVo getHostCreate(@PathVariable String id){
+		log.info("호스트 수정창");
+		return hostService.getHostCreate(id);
+	}
+
+	// 호스트 수정
+	@PutMapping("/host/{id}")
+	@ResponseBody
+	public CommonVo<Boolean> editHost(@PathVariable String id,
+									  @RequestBody HostCreateVo hVo){
+		log.info("호스트 수정");
+		return hostService.editHost(id, hVo);
+	}
+
+	// 호스트 삭제
+	@DeleteMapping("/host/{id}")
+	@ResponseBody
+	public CommonVo<Boolean> deleteHost(@PathVariable String id){
+		log.info("호스트 삭제");
+		return hostService.deleteHost(id);
+	}
+
+	
+
+
+	// 호스트 일반 출력
+	@GetMapping("/host/{id}")
+	@ResponseBody
+	public HostVo host(@PathVariable String id) {
 		log.info("----- host id 일반 불러오기: " + id);
 		return hostService.getInfo(id);
 	}
 
-	@GetMapping("/host/vmstatus")
+	@GetMapping("/host/{id}/vms")
 	@ResponseBody
-	public List<VmVo> vm(String id) {
+	public List<VmVo> vm(@PathVariable String id) {
 		log.info("----- host vm 일반 불러오기: " + id);
 		return hostService.getVm(id);
 	}
 
-	@GetMapping("/host/nicstatus")
+	@GetMapping("/host/{id}/nics")
 	@ResponseBody
-	public List<NicVo> nic(String id) {
+	public List<NicVo> nic(@PathVariable String id) {
 		log.info("----- host nic 일반 불러오기: " + id);
 		return hostService.getNic(id);
 	}
 
-	@GetMapping("/host/devicestatus")
+	@GetMapping("/host/{id}/devices")
 	@ResponseBody
-	public List<HostDeviceVo> device(String id) {
+	public List<HostDeviceVo> device(@PathVariable String id) {
 		log.info("----- host device 일반 불러오기: " + id);
 		return hostService.getHostDevice(id);
 	}
 
-	@GetMapping("/host/permissionStatus")
+	@GetMapping("/host/{id}/permissions")
 	@ResponseBody
-	public List<PermissionVo> permission(String id) {
+	public List<PermissionVo> permission(@PathVariable String id) {
 		log.info("----- host permission 불러오기: " + id);
 		return hostService.getPermission(id);
 	}
 
-	@GetMapping("/host/affstatus")
+	@GetMapping("/host/{id}/affinitylabels")
 	@ResponseBody
-	public List<AffinityLabelVo> aff(String id) {
+	public List<AffinityLabelVo> getAffinitylabels(@PathVariable String id) {
 		log.info("----- host aff 일반 불러오기: " + id);
 		return hostService.getAffinitylabels(id);
 	}
 
-	@GetMapping("/host/eventStatus")
+	// TODO cluster
+	// 해당 cluster가 가지고 있는 host, 레이블 생성시 필요
+	// 해당 cluster가 가지고 있는 vm, 레이블 생성시 필요
+	// 클러스터 선호도 그룹 생성위한 목록
+//	@GetMapping("/cluster/{id}/affinitygroup/settings")
+//	@ResponseBody
+//	public AffinityHostVm setAffinitygroup(@PathVariable String id){
+//		String type = "group";
+//		return clusterService.setAffinityDefaultInfo(id, type);
+//	}
+
+
+	// 클러스터 선호도 레이블 생성
+	@PostMapping("/host/{id}/affinitylabel")
+	public CommonVo<Boolean> addAff(@PathVariable String id,
+									@RequestBody AffinityLabelCreateVo alVo) {
+		log.info("--- 선호도 레이블 생성");
+		return hostService.addAffinitylabel(alVo);
+	}
+
+	// 클러스터 선호도 레이블 편집
+	@PutMapping("/host/{id}/affinitylabel/{alId}")
+	public CommonVo<Boolean> editAff(@PathVariable String id,
+									 @PathVariable String alId,
+									 @RequestBody AffinityLabelCreateVo alVo) {
+		log.info("--- 선호도 레이블 편집");
+		return hostService.editAffinitylabel(alVo);
+	}
+
+	// 클러스터 선호도 레이블 삭제
+	@DeleteMapping("/host/{id}/affinitylabel/{alId}")
+	public CommonVo<Boolean> deleteAff(@PathVariable String id,
+									   @PathVariable String alId) {
+		log.info("--- 선호도 레이블 삭제");
+		return hostService.deleteAffinitylabel(id);
+	}
+
+	@GetMapping("/host/{id}/events")
 	@ResponseBody
-	public List<EventVo> event(String id) {
+	public List<EventVo> event(@PathVariable String id) {
 		log.info("----- event 목록 불러오기: " + id);
 		return hostService.getEvent(id);
 	}
 
-	//endregion
+
+
+
 
 }

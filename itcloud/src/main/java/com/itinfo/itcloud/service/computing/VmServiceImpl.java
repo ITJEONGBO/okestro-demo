@@ -1,8 +1,7 @@
 package com.itinfo.itcloud.service.computing;
 
 import com.itinfo.itcloud.model.computing.*;
-import com.itinfo.itcloud.model.create.*;
-import com.itinfo.itcloud.model.network.VnicProfileVo;
+import com.itinfo.itcloud.model.create.VmCreateVo;
 import com.itinfo.itcloud.model.storage.VmDiskVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItVmService;
@@ -13,8 +12,6 @@ import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -168,84 +165,85 @@ public class VmServiceImpl implements ItVmService {
     public List<NicVo> getNic(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
-        List<NicVo> nVoList = new ArrayList<>();
-        NicVo nVo = null;
-
-        List<Nic> nicList =
-                ((VmNicsService.ListResponse)systemService.vmsService().vmService(id).nicsService().list().send()).nics();
-
-        for(Nic nic : nicList){
-            nVo = new NicVo();
-
-            nVo.setId(nic.id());
-            nVo.setPlugged(nic.plugged());    // 연결상태
-            nVo.setName(nic.name());
-            nVo.setLinkStatus(nic.linked());
-            nVo.setType(nic.interface_().value());
-            nVo.setMacAddress(nic.macPresent() ? nic.mac().address() : null);
-
-            List<ReportedDevice> reportedDeviceList =
-                    ((VmReportedDevicesService.ListResponse)systemService.vmsService().vmService(id).reportedDevicesService().list().send()).reportedDevice();
-
-            for(ReportedDevice rd : reportedDeviceList){
-                nVo.setGuestInterface(rd.name());       // etho0
-
-                if(rd.ipsPresent()){
-                    String ipv6 = "";
-                    nVo.setIpv4(rd.ips().get(0).address());
-
-                    for(int i=0; i < rd.ips().size(); i++){
-                        if(rd.ips().get(i).version().value().equals("v6")){
-                            ipv6 += rd.ips().get(i).address()+" ";
-                        }
-                    }
-                    nVo.setIpv6(ipv6);
-                }
-            }
-
-            DecimalFormat df = new DecimalFormat("###,###");
-            List<Statistic> statisticList =
-                    ((StatisticsService.ListResponse)systemService.vmsService().vmService(id).nicsService().nicService(nic.id()).statisticsService().list().send()).statistics();
-
-            for(Statistic statistic : statisticList){
-                String st = "";
-
-                if(statistic.name().equals("data.current.rx.bps")){
-                    st = df.format( (statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024*1024)) );
-                    nVo.setRxSpeed( st );
-                }
-                if(statistic.name().equals("data.current.tx.bps")){
-                    st = df.format( (statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024*1024)) );
-                    nVo.setTxSpeed( st );
-                }
-                if(statistic.name().equals("data.total.rx")){
-                    st = df.format(statistic.values().get(0).datum());
-                    nVo.setRxTotalSpeed( st );
-                }
-                if(statistic.name().equals("data.total.tx")){
-                    st = df.format(statistic.values().get(0).datum());
-                    nVo.setTxTotalSpeed( st );
-                }
-
-                if(statistic.name().equals("errors.total.rx")){
-                    st = df.format(statistic.values().get(0).datum());
-                    nVo.setStop( st );
-                }
-            }
-
-            VnicProfile vnicProfile =
-                    ((VnicProfileService.GetResponse)systemService.vnicProfilesService().profileService(nic.vnicProfile().id()).get().send()).profile();
-            VnicProfileVo vpVo = VnicProfileVo.builder()
-                    .name(vnicProfile.name())       // 프로파일 이름
-                    .portMirroring(vnicProfile.portMirroring())
-                    .build();
-
-            nVo.setNetworkName( ((NetworkService.GetResponse)systemService.networksService().networkService(vnicProfile.network().id()).get().send()).network().name() );
-            nVo.setVnicProfileVo(vpVo);
-
-            nVoList.add(nVo);
-        }
-        return nVoList;
+//        List<NicVo> nVoList = new ArrayList<>();
+//        NicVo nVo = null;
+//
+//        List<Nic> nicList =
+//                ((VmNicsService.ListResponse)systemService.vmsService().vmService(id).nicsService().list().send()).nics();
+//
+//        for(Nic nic : nicList){
+//            nVo = new NicVo();
+//
+//            nVo.setId(nic.id());
+//            nVo.setPlugged(nic.plugged());    // 연결상태
+//            nVo.setName(nic.name());
+//            nVo.setLinkStatus(nic.linked());
+//            nVo.setType(nic.interface_().value());
+//            nVo.setMacAddress(nic.macPresent() ? nic.mac().address() : null);
+//
+//            List<ReportedDevice> reportedDeviceList =
+//                    ((VmReportedDevicesService.ListResponse)systemService.vmsService().vmService(id).reportedDevicesService().list().send()).reportedDevice();
+//
+//            for(ReportedDevice rd : reportedDeviceList){
+//                nVo.setGuestInterface(rd.name());       // etho0
+//
+//                if(rd.ipsPresent()){
+//                    String ipv6 = "";
+//                    nVo.setIpv4(rd.ips().get(0).address());
+//
+//                    for(int i=0; i < rd.ips().size(); i++){
+//                        if(rd.ips().get(i).version().value().equals("v6")){
+//                            ipv6 += rd.ips().get(i).address()+" ";
+//                        }
+//                    }
+//                    nVo.setIpv6(ipv6);
+//                }
+//            }
+//
+//            DecimalFormat df = new DecimalFormat("###,###");
+//            List<Statistic> statisticList =
+//                    ((StatisticsService.ListResponse)systemService.vmsService().vmService(id).nicsService().nicService(nic.id()).statisticsService().list().send()).statistics();
+//
+//            for(Statistic statistic : statisticList){
+//                String st = "";
+//
+//                if(statistic.name().equals("data.current.rx.bps")){
+//                    st = df.format( (statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024*1024)) );
+//                    nVo.setRxSpeed( st );
+//                }
+//                if(statistic.name().equals("data.current.tx.bps")){
+//                    st = df.format( (statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024*1024)) );
+//                    nVo.setTxSpeed( st );
+//                }
+//                if(statistic.name().equals("data.total.rx")){
+//                    st = df.format(statistic.values().get(0).datum());
+//                    nVo.setRxTotalSpeed( st );
+//                }
+//                if(statistic.name().equals("data.total.tx")){
+//                    st = df.format(statistic.values().get(0).datum());
+//                    nVo.setTxTotalSpeed( st );
+//                }
+//
+//                if(statistic.name().equals("errors.total.rx")){
+//                    st = df.format(statistic.values().get(0).datum());
+//                    nVo.setStop( st );
+//                }
+//            }
+//
+//            VnicProfile vnicProfile =
+//                    ((VnicProfileService.GetResponse)systemService.vnicProfilesService().profileService(nic.vnicProfile().id()).get().send()).profile();
+//            VnicProfileVo vpVo = VnicProfileVo.builder()
+//                    .name(vnicProfile.name())       // 프로파일 이름
+//                    .portMirroring(vnicProfile.portMirroring())
+//                    .build();
+//
+//            nVo.setNetworkName( ((NetworkService.GetResponse)systemService.networksService().networkService(vnicProfile.network().id()).get().send()).network().name() );
+//            nVo.setVnicProfileVo(vpVo);
+//
+//            nVoList.add(nVo);
+//        }
+//        return nVoList;
+        return null;
     }
 
     @Override
