@@ -175,15 +175,14 @@ public class HostController {
 	// 해당 cluster가 가지고 있는 host, 레이블 생성시 필요
 	// 해당 cluster가 가지고 있는 vm, 레이블 생성시 필요
 	// 클러스터 선호도 그룹 생성위한 목록
-//	@GetMapping("/cluster/{id}/affinitygroup/settings")
-//	@ResponseBody
-//	public AffinityHostVm setAffinitygroup(@PathVariable String id){
-//		String type = "group";
-//		return clusterService.setAffinityDefaultInfo(id, type);
-//	}
+	@GetMapping("/host/{id}/affinitylabel/settings")
+	@ResponseBody
+	public AffinityHostVm setAffinitygroup(@PathVariable String id){
+		return hostService.setAffinityDefaultInfo(id, "label");
+	}
 
 
-	// 클러스터 선호도 레이블 생성
+	// 선호도 레이블 생성
 	@PostMapping("/host/{id}/affinitylabel")
 	@ResponseBody
 	public CommonVo<Boolean> addAff(@PathVariable String id,
@@ -192,6 +191,7 @@ public class HostController {
 		return hostService.addAffinitylabel(id, alVo);
 	}
 
+	// 선호도 레이블 편집 창
 	@GetMapping("/host/{id}/affinitylabel/{alId}/settings")
 	@ResponseBody
 	public AffinityHostVm setAffinityDefaultInfo(@PathVariable String id,
@@ -200,7 +200,7 @@ public class HostController {
 	}
 
 
-	// 클러스터 선호도 레이블 편집
+	// 선호도 레이블 편집
 	@PutMapping("/host/{id}/affinitylabel/{alId}")
 	@ResponseBody
 	public CommonVo<Boolean> editAff(@PathVariable String id,

@@ -393,8 +393,8 @@ public class ClusterServiceImpl implements ItClusterService {
     public AffinityHostVm setAffinityDefaultInfo(String id, String type) {
         SystemService system = admin.getConnection().systemService();
 
-        List<AffinityLabel> affinityLabelList = system.affinityLabelsService().list().send().labels();
-        List<AffinityGroup> affinityGroupList = system.clustersService().clusterService(id).affinityGroupsService().list().send().groups();
+//        List<AffinityLabel> affinityLabelList = system.affinityLabelsService().list().send().labels();
+//        List<AffinityGroup> affinityGroupList = system.clustersService().clusterService(id).affinityGroupsService().list().send().groups();
 
         // host vm lavel 메소드 분리?
         if(type.equals("label")){
@@ -668,55 +668,39 @@ public class ClusterServiceImpl implements ItClusterService {
 
     // 레이블 생성시 필요 - 해당 cluster 가지고 있는 host
     @Override
-    public List<HostVo> getHostMember(String clusterId){
-        SystemService system = admin.getConnection().systemService();
-
-        List<Host> hostList = system.hostsService().list().send().hosts();
-
-        log.info("클러스터 선호도 레이블 생성시 필요한 호스트 리스트");
-        return hostList.stream()
-                .filter(host -> host.clusterPresent() && host.cluster().id().equals(clusterId))
-                .map(host ->
-                    HostVo.builder()
-                        .id(host.id())
-                        .name(host.name())
-                    .build())
-                .collect(Collectors.toList());
-    }
-
-    // 레이블 생성시 필요 - 해당 cluster 가지고 있는 vm
-    @Override
-    public List<VmVo> getVmMember(String clusterId){
-        SystemService system = admin.getConnection().systemService();
-
-        List<Vm> vmList = system.vmsService().list().send().vms();
-
-        log.info("클러스터 선호도레이블 생성시 필요한 가상머신 리스트");
-        return vmList.stream()
-                .filter(vm -> vm.clusterPresent() && vm.cluster().id().equals(clusterId))
-                .map(vm ->
-                    VmVo.builder()
-                        .id(vm.id())
-                        .name(vm.name())
-                    .build())
-                .collect(Collectors.toList());
-    }
-
-    // 선호도 레이블 생성 시 출력창
-    @Override
-    public AffinityLabelCreateVo getAffinityLabel(String id){   // id는 alid
-        SystemService system = admin.getConnection().systemService();
-
-        AffinityLabel al = system.affinityLabelsService().labelService(id).get().follow("hosts,vms").send().label();
-
-        log.info("성공: 클러스터 {} 선호도 레이블", system.clustersService().clusterService(id).get().send().cluster().name());
-        return AffinityLabelCreateVo.builder()
-                .id(id)
-                .name(al.name())
-                .hostList(al.hostsPresent() ? getHostLabelMember(system, id) : null )
-                .vmList(al.vmsPresent() ? getVmLabelMember(system, id) : null)
-                .build();
-    }
+//    public List<HostVo> getHostMember(String clusterId){
+//        SystemService system = admin.getConnection().systemService();
+//
+//        List<Host> hostList = system.hostsService().list().send().hosts();
+//
+//        log.info("클러스터 선호도 레이블 생성시 필요한 호스트 리스트");
+//        return hostList.stream()
+//                .filter(host -> host.clusterPresent() && host.cluster().id().equals(clusterId))
+//                .map(host ->
+//                    HostVo.builder()
+//                        .id(host.id())
+//                        .name(host.name())
+//                    .build())
+//                .collect(Collectors.toList());
+//    }
+//
+//    // 레이블 생성시 필요 - 해당 cluster 가지고 있는 vm
+//    @Override
+//    public List<VmVo> getVmMember(String clusterId){
+//        SystemService system = admin.getConnection().systemService();
+//
+//        List<Vm> vmList = system.vmsService().list().send().vms();
+//
+//        log.info("클러스터 선호도레이블 생성시 필요한 가상머신 리스트");
+//        return vmList.stream()
+//                .filter(vm -> vm.clusterPresent() && vm.cluster().id().equals(clusterId))
+//                .map(vm ->
+//                    VmVo.builder()
+//                        .id(vm.id())
+//                        .name(vm.name())
+//                    .build())
+//                .collect(Collectors.toList());
+//    }
 
     // 선호도 레이블 생성
     @Override
@@ -761,6 +745,22 @@ public class ClusterServiceImpl implements ItClusterService {
         }
     }
 
+
+    // 선호도 레이블 편집 시 출력창
+    @Override
+    public AffinityLabelCreateVo getAffinityLabel(String id, String alId){   // id는 alid
+        SystemService system = admin.getConnection().systemService();
+
+        AffinityLabel al = system.affinityLabelsService().labelService(id).get().follow("hosts,vms").send().label();
+
+        log.info("성공: 클러스터 {} 선호도 레이블 편집창", system.clustersService().clusterService(id).get().send().cluster().name());
+        return AffinityLabelCreateVo.builder()
+                .id(id)
+                .name(al.name())
+                .hostList(al.hostsPresent() ? getHostLabelMember(system, id) : null )
+                .vmList(al.vmsPresent() ? getVmLabelMember(system, id) : null)
+                .build();
+    }
 
     // 선호도 레이블 - 편집
     // 이름만 바뀌는거 같음, 호스트하고 vm은 걍 삭제하는 방식으로

@@ -579,8 +579,8 @@ public class HostServiceImpl implements ItHostService {
     public AffinityHostVm setAffinityDefaultInfo(String id, String type) {
         SystemService system = admin.getConnection().systemService();
 
-        List<AffinityLabel> affinityLabelList = system.affinityLabelsService().list().send().labels();
-        List<AffinityGroup> affinityGroupList = system.clustersService().clusterService(id).affinityGroupsService().list().send().groups();
+//        List<AffinityLabel> affinityLabelList = system.affinityLabelsService().list().send().labels();
+//        List<AffinityGroup> affinityGroupList = system.clustersService().clusterService(id).affinityGroupsService().list().send().groups();
 
         // host vm lavel 메소드 분리?
         if(type.equals("label")){
@@ -642,6 +642,21 @@ public class HostServiceImpl implements ItHostService {
     }
 
     @Override
+    public AffinityLabelCreateVo getAffinityLabel(String alId) {
+        SystemService system = admin.getConnection().systemService();
+
+        AffinityLabel al = system.affinityLabelsService().labelService(alId).get().follow("hosts,vms").send().label();
+
+        log.info("성공: 클러스터 {} 선호도 레이블 편집창", system.clustersService().clusterService(id).get().send().cluster().name());
+        return AffinityLabelCreateVo.builder()
+                .id(alId)
+                .name(al.name())
+                .hostList(al.hostsPresent() ? getHostLabelMember(system, alId) : null )
+                .vmList(al.vmsPresent() ? getVmLabelMember(system, alId) : null)
+                .build();
+    }
+
+    @Override
     public CommonVo<Boolean> editAffinitylabel(String id, String alId, AffinityLabelCreateVo alVo) {
         return null;
     }
@@ -672,6 +687,9 @@ public class HostServiceImpl implements ItHostService {
     }
 
 
+
+
+    //-------------------------------------------------------------------------------------------
 
 
     private HostHwVo getHardWare(SystemService system, String id){
@@ -756,6 +774,7 @@ public class HostServiceImpl implements ItHostService {
 
         return upTime;
     }
+
     // vm ip 주소
     private String getIp(SystemService system, String id, String version){
         List<Nic> nicList = system.vmsService().vmService(id).nicsService().list().send().nics();
@@ -784,11 +803,14 @@ public class HostServiceImpl implements ItHostService {
     }
 
 
+    // 선호도 레이블 생성 창 - 호스트 리스트
+    // 클러스터가 가지고 잇는 호스트들을 전부 출력해야함
     private List<HostVo> getHostVoList(SystemService system, String id){
         List<Host> hostList = system.hostsService().list().send().hosts();
+        String clusterId = system.hostsService().hostService(id).get().send().host().cluster().id();
 
         return hostList.stream()
-                .filter(host -> host.cluster().id().equals(id))
+                .filter(host -> host.cluster().id().equals(clusterId))
                 .map(host ->
                         HostVo.builder()
                                 .id(host.id())
@@ -798,11 +820,14 @@ public class HostServiceImpl implements ItHostService {
                 .collect(Collectors.toList());
     }
 
+    // 선호도 레이블 생성 창 - 가상머신 리스트
+    // 클러스터가 가지고 잇는 가상머신들을 전부 출력해야함
     private List<VmVo> getVmVoList(SystemService system, String id){
         List<Vm> vmList = system.vmsService().list().send().vms();
+        String clusterId = system.hostsService().hostService(id).get().send().host().cluster().id();
 
         return vmList.stream()
-                .filter(vm -> vm.cluster().id().equals(id))
+                .filter(vm -> vm.cluster().id().equals(clusterId))
                 .map(vm ->
                         VmVo.builder()
                                 .id(vm.id())
@@ -811,6 +836,7 @@ public class HostServiceImpl implements ItHostService {
                 )
                 .collect(Collectors.toList());
     }
+
     // 선호도 레이블에 있는 호스트 출력
     private List<HostVo> getHostLabelMember(SystemService system, String alid){
         List<Host> hostList = system.affinityLabelsService().labelService(alid).hostsService().list().send().hosts();

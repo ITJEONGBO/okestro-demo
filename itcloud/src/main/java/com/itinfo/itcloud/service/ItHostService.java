@@ -39,10 +39,13 @@ public interface ItHostService {
     List<PermissionVo> getPermission(String id);    // 권한
 
 
+    // 선호도 그룹&레이블  생성 위한 host&vm (dc 밑에 붙어있어야함)
+    AffinityHostVm setAffinityDefaultInfo(String id, String type);  // 선호도 레이블 생성창
+
     // 선호도 레이블
     List<AffinityLabelVo> getAffinitylabels(String id);     // 선호도 레이블 목록
-    AffinityHostVm setAffinityDefaultInfo(String id, String type);     // 편집창 출력
     CommonVo<Boolean> addAffinitylabel(String id, AffinityLabelCreateVo alVo);     // 선호도 레이블 생성
+    AffinityLabelCreateVo getAffinityLabel(String id);   // id는 alid
     CommonVo<Boolean> editAffinitylabel(String id, String alId, AffinityLabelCreateVo alVo);     // 선호도 레이블 편집
     CommonVo<Boolean> deleteAffinitylabel(String id, String alId);           // 선호도 레이블 삭제
 
