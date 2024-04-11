@@ -45,20 +45,20 @@ public class ClusterController {
 		return clusterService.addCluster(cVo);
 	}
 
-	// 클러스터 수정 창
+	// 클러스터 편집 창
 	@GetMapping("/cluster/{id}/settings")
 	@ResponseBody
 	public ClusterCreateVo setEditCluster(@PathVariable String id){
-		log.info("--- Cluster 수정창");
+		log.info("--- Cluster 편집 창");
 		return clusterService.setEditCluster(id);
 	}
 	
-	// 클러스터 수정
+	// 클러스터 편집
 	@PutMapping("/cluster/{id}")
 	@ResponseBody
 	public CommonVo<Boolean> editCluster(@PathVariable String id,
 										 @RequestBody ClusterCreateVo cVo){
-		log.info("--- Cluster 수정");
+		log.info("--- Cluster 편집");
 		return clusterService.editCluster(id, cVo);
 	}
 

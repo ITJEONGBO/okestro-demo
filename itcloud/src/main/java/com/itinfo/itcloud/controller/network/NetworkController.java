@@ -9,7 +9,6 @@ import com.itinfo.itcloud.service.ItNetworkService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,106 +16,133 @@ import java.util.List;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/network")
 public class NetworkController {
 	private final ItNetworkService networkService;
 
 
-	//region: set Network
-
-	@GetMapping("/networkdc")
+	// 네트워크 목록
+	@GetMapping("/networks")
 	@ResponseBody
-	public List<NetworkDcClusterVo> getDcCluster(){
-		return networkService.getDcCluster();
+	public List<NetworkVo> networks(){
+		log.info("--- Network 목록");
+		return networkService.getList();
 	}
 
-	@PostMapping("/network-add")
-	public CommonVo<Boolean> addNw(@RequestBody NetworkCreateVo nVo){
+	// 네트워크 생성 창
+	@GetMapping("/network/settings")
+	@ResponseBody
+	public List<NetworkDcClusterVo> setDcCluster(){
+		log.info("--- Network 생성 창");
+		return networkService.setDcCluster();
+	}
+
+	// 네트워크 생성
+	@PostMapping("/network")
+	@ResponseBody
+	public CommonVo<Boolean> addNetwork(@RequestBody NetworkCreateVo nVo){
+		log.info("--- Network 생성");
         return networkService.addNetwork(nVo);
 	}
-	@PostMapping("/network-edit")
-	public CommonVo<Boolean> editNw(@RequestBody NetworkCreateVo nVo){
+	
+	// 네트워크 편집 창
+	@GetMapping("/network/{id}/settings")
+	@ResponseBody
+	public NetworkCreateVo setEditNetwork(@PathVariable String id){
+		log.info("--- Network 편집 창");
+		return networkService.setEditNetwork(id);
+	}
+
+	// 네트워크 편집
+	@PutMapping("/network/{id}")
+	@ResponseBody
+	public CommonVo<Boolean> editNetwork(@PathVariable String id,
+										 @RequestBody NetworkCreateVo nVo){
+		log.info("--- Network 편집");
         return networkService.editNetwork(nVo);
 	}
-	@PostMapping("/network-delete")
-	public CommonVo<Boolean> deleteNw(@RequestParam String id){
+
+	// 네트워크 삭제
+	@DeleteMapping("/network/{id}")
+	@ResponseBody
+	public CommonVo<Boolean> deleteNetwork(@PathVariable String id){
+		log.info("--- Network 삭제");
         return networkService.deleteNetwork(id);
 	}
 
 
 
-	@GetMapping("/network-importView")
+	// 네트워크 가져오기 창
+	@GetMapping("/network/import/settings")
 	@ResponseBody
-	public NetworkImportVo viewImportNetwork(){
-		return networkService.viewImportNetwork();
+	public NetworkImportVo setImportNetwork(){
+		log.info("--- Network 가져오기 창");
+		return networkService.setImportNetwork();
 	}
 
-	@PostMapping("/network-import")
+	// 네트워크 가져오기
+	@PostMapping("/network/import")
 	public CommonVo<Boolean> importNw(){
+		log.info("--- Network 가져오기");
 		return networkService.importNetwork();
 	}
 
 
-	// end region
 
-
-
-
-
-
-
-
-
-
-	//region: ResponseBody
-	@GetMapping("/networksStatus")
+	// 일반
+	@GetMapping("/network/{id}")
 	@ResponseBody
-	public List<NetworkVo> networks(){
-		return networkService.getList();
-	}
-
-	@GetMapping("/networkStatus")
-	@ResponseBody
-	public NetworkVo network(String id){
+	public NetworkVo network(@PathVariable String id){
+		log.info("--- Network 일반");
 		return networkService.getNetwork(id);
 	}
 
-	@GetMapping("/network/vnicProfileStatus")
+	// vnic 목록
+	@GetMapping("/network/{id}/vnic")
 	@ResponseBody
-	public List<VnicProfileVo> vnic(String id){
+	public List<VnicProfileVo> vnic(@PathVariable String id){
+		log.info("--- Network vnic프로파일");
 		return networkService.getVnic(id);
 	}
 
-	@GetMapping("/network/clusterStatus")
+	// 클러스터 목록
+	@GetMapping("/network/{id}/cluster")
 	@ResponseBody
-	public List<NetworkClusterVo> cluster(String id){
+	public List<NetworkClusterVo> cluster(@PathVariable String id){
+		log.info("--- Network 클러스터");
 		return networkService.getCluster(id);
 	}
 
-	@GetMapping("/network/hostStatus")
+	// 호스트 목록
+	@GetMapping("/network/{id}/host")
 	@ResponseBody
-	public List<NetworkHostVo> host(String id){
+	public List<NetworkHostVo> host(@PathVariable String id){
+		log.info("--- Network 호스트");
 		return networkService.getHost(id);
 	}
 
-	@GetMapping("/network/vmStatus")
+	// 가상머신 목록
+	@GetMapping("/network/{id}/vm")
 	@ResponseBody
-	public List<NetworkVmVo> vm(String id){
+	public List<NetworkVmVo> vm(@PathVariable String id){
+		log.info("--- Network 가상머신");
 		return networkService.getVm(id);
 	}
 
-	@GetMapping("/network/templateStatus")
+	// 템플릿 목록
+	@GetMapping("/network/{id}/template")
 	@ResponseBody
-	public List<TemplateVo> template(String id){
+	public List<TemplateVo> template(@PathVariable String id){
+		log.info("--- Network 템플릿");
 		return networkService.getTemplate(id);
 	}
 
-	@GetMapping("/network/permissionStatus")
+	// 권한 목록
+	@GetMapping("/network/{id}/permission")
 	@ResponseBody
-	public List<PermissionVo> permission(String id){
+	public List<PermissionVo> permission(@PathVariable String id){
+		log.info("--- Network 권한");
 		return networkService.getPermission(id);
 	}
 
-	//endregion
 
 }

@@ -1,6 +1,7 @@
 package com.itinfo.itcloud.service;
 
-import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.computing.PermissionVo;
+import com.itinfo.itcloud.model.computing.TemplateVo;
 import com.itinfo.itcloud.model.create.NetworkCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.*;
@@ -10,8 +11,20 @@ import java.util.List;
 
 @Service
 public interface ItNetworkService {
-    String getName(String id);
     List<NetworkVo> getList();
+
+
+    List<NetworkDcClusterVo> setDcCluster();    // 네트워크 생성 창
+
+    CommonVo<Boolean> addNetwork(NetworkCreateVo ncVo); // 네트워크 생성
+    NetworkCreateVo setEditNetwork(String id);   // 네트워크 편집 창
+    CommonVo<Boolean> editNetwork(NetworkCreateVo ncVo);  // 네트워크 편집
+    CommonVo<Boolean> deleteNetwork(String id); // 네트워크 삭제
+
+    NetworkImportVo setImportNetwork();    // 네트워크 가져오기 생성창
+    CommonVo<Boolean> importNetwork();  // 네트워크 가져오기
+
+
     NetworkVo getNetwork(String id);
     List<VnicProfileVo> getVnic(String id);
     List<NetworkClusterVo> getCluster(String id);
@@ -21,14 +34,6 @@ public interface ItNetworkService {
     List<PermissionVo> getPermission(String id);
 
 
-    List<NetworkDcClusterVo> getDcCluster();
-
-    CommonVo<Boolean> addNetwork(NetworkCreateVo ncVo);
-    CommonVo<Boolean> editNetwork(NetworkCreateVo ncVo);
-    CommonVo<Boolean> deleteNetwork(String id);
-
-    NetworkImportVo viewImportNetwork();
-    CommonVo<Boolean> importNetwork();
 
 
     // vnic profile
