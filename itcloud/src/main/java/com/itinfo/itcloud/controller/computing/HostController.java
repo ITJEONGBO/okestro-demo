@@ -24,15 +24,15 @@ public class HostController {
 	@GetMapping("/hosts")
 	@ResponseBody
 	public List<HostVo> hosts() {
-		log.info("----- Host 목록 불러오기");
+		log.info("--- Host 목록");
 		return hostService.getList();
 	}
 
-	// 호스트 생성 기본 창
+	// 호스트 생성 창
 	@GetMapping("/host/settings")
 	@ResponseBody
 	public List<ClusterVo> setHostDefaultInfo(){
-		log.info("----- Host 생성시 필요한 cluster List 불러오기");
+		log.info("--- Host 생성창");
 		return hostService.setHostDefaultInfo();
 	}
 
@@ -40,7 +40,7 @@ public class HostController {
 	@PostMapping("/host")
 	@ResponseBody
 	public CommonVo<Boolean> addHost(@RequestBody HostCreateVo hVo){
-		log.info("호스트 생성");
+		log.info("--- Host 생성");
 		return hostService.addHost(hVo);
 	}
 
@@ -48,7 +48,7 @@ public class HostController {
 	@GetMapping("/host/{id}/settings")
 	@ResponseBody
 	public HostCreateVo getHostCreate(@PathVariable String id){
-		log.info("호스트 수정창");
+		log.info("--- Host 수정창");
 		return hostService.getHostCreate(id);
 	}
 
@@ -57,7 +57,7 @@ public class HostController {
 	@ResponseBody
 	public CommonVo<Boolean> editHost(@PathVariable String id,
 									  @RequestBody HostCreateVo hVo){
-		log.info("호스트 수정");
+		log.info("--- Host 수정");
 		return hostService.editHost(id, hVo);
 	}
 
@@ -65,51 +65,51 @@ public class HostController {
 	@DeleteMapping("/host/{id}")
 	@ResponseBody
 	public CommonVo<Boolean> deleteHost(@PathVariable String id){
-		log.info("호스트 삭제");
+		log.info("--- Host 삭제");
 		return hostService.deleteHost(id);
 	}
 
 	
 	// 호스트 유지보수
-	@GetMapping("/host/{id}/deactivate")
+	@PostMapping("/host/{id}/deactivate")
 	@ResponseBody
 	public void deActive(@PathVariable String id) {
-		log.info("----- 호스트 유지보수");
+		log.info("--- Host 유지보수");
 		hostService.deActive(id);
 	}
 
 	// 호스트 활성
-	@GetMapping("/host/{id}/activate")
+	@PostMapping("/host/{id}/activate")
 	@ResponseBody
 	public void active(@PathVariable String id) {
-		log.info("----- 호스트 활성");
+		log.info("--- Host 활성");
 		hostService.active(id);
 	}
 
 	// 호스트 새로고침
-	@GetMapping("/host/{id}/refresh")
+	@PostMapping("/host/{id}/refresh")
 	@ResponseBody
 	public void refresh(@PathVariable String id) {
-		log.info("----- 호스트 새로고침");
+		log.info("--- Host 새로고침");
 		hostService.refresh(id);
 	}
 
 	
 	
 	// 호스트 ssh 재시작
-	@GetMapping("/host/{id}/reStart")
+	@PostMapping("/host/{id}/restart")
 	@ResponseBody
 	public void reStart(@PathVariable String id) {
-		log.info("----- 호스트 재시작");
+		log.info("--- Host 재시작");
 		hostService.reStart(id);
 	}
 
 
 	// 호스트 ssh 중지
-	@GetMapping("/host/{id}/stop")
+	@PostMapping("/host/{id}/stop")
 	@ResponseBody
 	public void stop(@PathVariable String id) {
-		log.info("----- 호스트 재시작");
+		log.info("--- Host 정지");
 		hostService.stop(id);
 	}
 
@@ -123,11 +123,11 @@ public class HostController {
 	
 
 
-	// 호스트 일반 출력
+	// 일반
 	@GetMapping("/host/{id}")
 	@ResponseBody
 	public HostVo host(@PathVariable String id) {
-		log.info("----- host id 일반 불러오기: " + id);
+		log.info("--- Host 일반");
 		return hostService.getInfo(id);
 	}
 
@@ -135,7 +135,7 @@ public class HostController {
 	@GetMapping("/host/{id}/vms")
 	@ResponseBody
 	public List<VmVo> vm(@PathVariable String id) {
-		log.info("----- host vm 일반 불러오기: " + id);
+		log.info("--- Host vm");
 		return hostService.getVm(id);
 	}
 
@@ -143,7 +143,7 @@ public class HostController {
 	@GetMapping("/host/{id}/nics")
 	@ResponseBody
 	public List<NicVo> nic(@PathVariable String id) {
-		log.info("----- host nic 일반 불러오기: " + id);
+		log.info("--- Host nic");
 		return hostService.getNic(id);
 	}
 
@@ -151,7 +151,7 @@ public class HostController {
 	@GetMapping("/host/{id}/devices")
 	@ResponseBody
 	public List<HostDeviceVo> device(@PathVariable String id) {
-		log.info("----- host device 일반 불러오기: " + id);
+		log.info("--- Host 장치");
 		return hostService.getHostDevice(id);
 	}
 
@@ -159,7 +159,7 @@ public class HostController {
 	@GetMapping("/host/{id}/permissions")
 	@ResponseBody
 	public List<PermissionVo> permission(@PathVariable String id) {
-		log.info("----- host permission 불러오기: " + id);
+		log.info("--- Host 권한");
 		return hostService.getPermission(id);
 	}
 
@@ -167,17 +167,17 @@ public class HostController {
 	@GetMapping("/host/{id}/affinitylabels")
 	@ResponseBody
 	public List<AffinityLabelVo> getAffinitylabels(@PathVariable String id) {
-		log.info("----- host aff 일반 불러오기: " + id);
+		log.info("--- Host 선호도 레이블");
 		return hostService.getAffinitylabels(id);
 	}
 
-	// TODO cluster
-	// 해당 cluster가 가지고 있는 host, 레이블 생성시 필요
-	// 해당 cluster가 가지고 있는 vm, 레이블 생성시 필요
-	// 클러스터 선호도 그룹 생성위한 목록
+	// TODO
+	// 호스트 선호도 그룹 생성위한 목록
+	// 해당 host가 가지고 있는 cluster가 가지고 있는 host, vm, 레이블 생성시 필요
 	@GetMapping("/host/{id}/affinitylabel/settings")
 	@ResponseBody
 	public AffinityHostVm setAffinitygroup(@PathVariable String id){
+		log.info("--- Host 선호도 레이블 생성 창");
 		return hostService.setAffinityDefaultInfo(id, "label");
 	}
 
@@ -187,7 +187,7 @@ public class HostController {
 	@ResponseBody
 	public CommonVo<Boolean> addAff(@PathVariable String id,
 									@RequestBody AffinityLabelCreateVo alVo) {
-		log.info("--- 선호도 레이블 생성");
+		log.info("--- Host 선호도 레이블 생성");
 		return hostService.addAffinitylabel(id, alVo);
 	}
 
@@ -196,6 +196,7 @@ public class HostController {
 	@ResponseBody
 	public AffinityHostVm setAffinityDefaultInfo(@PathVariable String id,
 												 @PathVariable String type){
+		log.info("--- Host 선호도 레이블 편집 창");
 		return hostService.setAffinityDefaultInfo(id, "label");
 	}
 
@@ -206,29 +207,27 @@ public class HostController {
 	public CommonVo<Boolean> editAff(@PathVariable String id,
 									 @PathVariable String alId,
 									 @RequestBody AffinityLabelCreateVo alVo) {
-		log.info("--- 선호도 레이블 편집");
+		log.info("--- Host 선호도 레이블 편집");
 		return hostService.editAffinitylabel(id, alId, alVo);
 	}
 
-	// 클러스터 선호도 레이블 삭제
+	// 선호도 레이블 삭제
 	@DeleteMapping("/host/{id}/affinitylabel/{alId}")
 	@ResponseBody
 	public CommonVo<Boolean> deleteAff(@PathVariable String id,
 									   @PathVariable String alId) {
-		log.info("--- 선호도 레이블 삭제");
+		log.info("--- Host 선호도 레이블 삭제");
 		return hostService.deleteAffinitylabel(id, alId);
 	}
 
 
+	// 이벤트
 	@GetMapping("/host/{id}/events")
 	@ResponseBody
 	public List<EventVo> event(@PathVariable String id) {
-		log.info("----- event 목록 불러오기: " + id);
+		log.info("--- Host 이벤트");
 		return hostService.getEvent(id);
 	}
-
-
-
 
 
 }

@@ -39,7 +39,7 @@ public interface ItClusterService {
     // 선호도 그룹
     List<AffinityGroupVo> getAffinitygroup(String id);  // 선호도 그룹 목록
     CommonVo<Boolean> addAffinitygroup(String id, AffinityGroupCreateVo agVo); // 선호도 그룹 생성
-    AffinityGroupCreateVo setEditAffinitygroup(String id, String agId);    // 선호도 그룹 편집 위한 값 세팅
+    AffinityGroupCreateVo setEditAffinitygroup(String id, String agId);    // 선호도 그룹 편집창
     CommonVo<Boolean> editAffinitygroup(String id, String agId, AffinityGroupCreateVo agVo); // 선호도 그룹 편집
     CommonVo<Boolean> deleteAffinitygroup(String id, String agId); // 선호도 그룹 삭제
 

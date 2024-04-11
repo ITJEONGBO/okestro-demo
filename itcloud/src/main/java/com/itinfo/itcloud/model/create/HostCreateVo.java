@@ -25,9 +25,6 @@ public class HostCreateVo {
     private String sshPw;       // 암호
 //    private boolean sshPublicKey;   // ssh 공개 키
 
-//    private boolean active;     // 설치 후 호스트를 활성화
-//    private boolean restart;    // 설치 후 호스트를 다시 시작
-
     // 전원 관리
 //    private boolean powerManagementActive;    // 전원 관리 활성
 //    private boolean kdump;              // kdump 통합

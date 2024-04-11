@@ -15,12 +15,12 @@ public class NicVo {
     private String macAddress;
     private NicStatus status;
 
-    private String rxSpeed;        // mbps
-    private String txSpeed;        // mbps
-    private String rxTotalSpeed;   // byte
-    private String txTotalSpeed;   // byte
-    private String speed;    // mbps
-    private String stop;
+    private BigInteger rxSpeed;        // mbps
+    private BigInteger txSpeed;        // mbps
+    private BigInteger rxTotalSpeed;   // byte
+    private BigInteger txTotalSpeed;   // byte
+    private BigInteger speed;    // mbps
+    private BigInteger stop;
 
     // 가상머신 nic
     private String networkName;

@@ -45,7 +45,7 @@ public interface ItHostService {
     // 선호도 레이블
     List<AffinityLabelVo> getAffinitylabels(String id);     // 선호도 레이블 목록
     CommonVo<Boolean> addAffinitylabel(String id, AffinityLabelCreateVo alVo);     // 선호도 레이블 생성
-    AffinityLabelCreateVo getAffinityLabel(String id);   // id는 alid
+    AffinityLabelCreateVo getAffinityLabel(String alid);   // id는 alid
     CommonVo<Boolean> editAffinitylabel(String id, String alId, AffinityLabelCreateVo alVo);     // 선호도 레이블 편집
     CommonVo<Boolean> deleteAffinitylabel(String id, String alId);           // 선호도 레이블 삭제
 
