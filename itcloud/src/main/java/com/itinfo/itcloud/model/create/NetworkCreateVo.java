@@ -6,7 +6,6 @@ import com.itinfo.itcloud.model.network.VnicProfileVo;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-import org.ovirt.engine.sdk4.types.NetworkUsage;
 
 import java.util.List;
 

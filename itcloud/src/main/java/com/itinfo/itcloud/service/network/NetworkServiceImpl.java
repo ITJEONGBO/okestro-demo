@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.service.network;
 
+import com.google.gson.Gson;
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
@@ -16,7 +17,7 @@ import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,18 +38,7 @@ public class NetworkServiceImpl implements ItNetworkService {
         return networkList.stream()
                 .map(network -> {
                     List<NetworkLabel> nlList = system.networksService().networkService(network.id()).networkLabelsService().list().send().labels();
-                    String label = nlList.stream()
-                            .map(NetworkLabel::id)
-                            .findFirst()
-                            .orElse(null);
-
-                    String providerId = "";
-                    String providerName = "";
-                    if (network.externalProviderPresent()) {
-                        OpenStackNetworkProvider np = system.openstackNetworkProvidersService().providerService(network.externalProvider().id()).get().send().provider();
-                        providerId = np.id();
-                        providerName = np.name();
-                    }
+                    OpenStackNetworkProvider np = system.openstackNetworkProvidersService().providerService(network.externalProvider().id()).get().send().provider();
 
                     return NetworkVo.builder()
                             .id(network.id())
@@ -61,9 +51,14 @@ public class NetworkServiceImpl implements ItNetworkService {
                             .datacenterName(system.dataCentersService().dataCenterService(network.dataCenter().id()).get().send().dataCenter().name())
                             .portIsolation(network.portIsolation())
                             .vlan(network.vlanPresent() ? network.vlan().id() : null)
-                            .label(label)
-                            .providerId(providerId)
-                            .providerName(providerName)
+                            .label(
+                                    nlList.stream()
+                                    .map(NetworkLabel::id)
+                                    .findFirst()
+                                    .orElse(null)
+                            )
+                            .providerId(network.externalProviderPresent() ? np.id() : null)
+                            .providerName(network.externalProviderPresent() ? np.name() : null)
                             .networkUsageVo(NetworkUsageVo.builder()
                                     .vm(network.usages().contains(NetworkUsage.VM))
                                     .display(network.usages().contains(NetworkUsage.DISPLAY))
@@ -106,47 +101,53 @@ public class NetworkServiceImpl implements ItNetworkService {
                                     .collect(Collectors.toList())
                             )
                             .build();
-
                 })
                 .collect(Collectors.toList());
     }
 
     // 새 논리 네트워크 추가
+    // 필요 name, datacenter_id
     @Override
     public CommonVo<Boolean> addNetwork(NetworkCreateVo ncVo) {
         SystemService system = admin.getConnection().systemService();
-
         NetworksService networksService = system.networksService();
-        DataCenter dataCenter = system.dataCentersService().dataCenterService(ncVo.getDatacenterId()).get().send().dataCenter();
         OpenStackNetworkProvider openStackNetworkProvider = system.openstackNetworkProvidersService().list().send().providers().get(0);
-//        List<Cluster> clusterList = system.dataCentersService().dataCenterService(ncVo.getDatacenterId()).clustersService().list().send().clusters();
 
-        List<String> dnsList = ncVo.getDns().stream()
-                .distinct()
-                .map(NetworkDnsVo::getDnsIp)
-                .collect(Collectors.toList());
+        Gson gson = new Gson();
+
+        // TODO
+        //  외부 공급자 설정할 때 물리적 네트워크에 연결하는 거 구현해야함,
+        //  외부 공급자 설정 시 클러스터에서 모두 필요 항목은 사라져야됨 (프론트에서 아예 설정이 안되게?)
 
         try {
             NetworkBuilder networkBuilder = new NetworkBuilder();
+
+            DnsResolverConfiguration dns = new DnsResolverConfigurationBuilder().nameServers().nameServers("128.0.0.2").build();
+
             networkBuilder
+                    .dataCenter(new DataCenterBuilder().id(ncVo.getDatacenterId()).build())
                     .name(ncVo.getName())
                     .description(ncVo.getDescription())
                     .comment(ncVo.getComment())
                     .portIsolation(ncVo.getPortIsolation())
                     .usages(ncVo.getUsageVm() ? NetworkUsage.VM : NetworkUsage.DEFAULT_ROUTE)
                     .mtu(ncVo.getMtu())
-                    .dnsResolverConfiguration(      // TODO DNS 생성 오류, 이슈남기기
-                            ncVo.getDns() != null ? new DnsResolverConfigurationBuilder().nameServers(dnsList) : null
-                    )
                     .stp(ncVo.getStp())
                     .vlan(ncVo.getVlan() != null ? new VlanBuilder().id(ncVo.getVlan()) : null)
-                    // TODO 외부 공급자 설정할 때 물리적 네트워크에 연결하는 거 필요, 외부 공급자 설정 시 클러스터에서 모두 필요 항목은 사라져야됨 (프론트에서 아예 설정이 안되게?)
-                    .externalProvider(ncVo.getExternalProvider() ? openStackNetworkProvider : null)
-                    .dataCenter(dataCenter);
-//                    .build();
+//                    .dnsResolverConfiguration(dns)
+                    .externalProvider(ncVo.getExternalProvider() ?  openStackNetworkProvider : null);
+
+            System.out.println(gson.toJson(networkBuilder));
 
             Network network = networksService.add().network(networkBuilder).send().network();
-
+//            NetworkAttachmentsService na = system.hostsService().hostService("1c8ed321-28e5-4f83-9e34-e13f9125f253").networkAttachmentsService();
+//            NetworkAttachmentBuilder nabuilder = new NetworkAttachmentBuilder();
+//            nabuilder
+//                    .network(network)
+//                    .dnsResolverConfiguration(dns)
+//                    .build();
+//
+//            na.add().attachment(nabuilder).send();
 
             // TODO: vnicprofile도 문제 있음, 되기는 한데 기본생성이 사라지지 않음
             ncVo.getVnics().forEach(vnicProfileVo -> {
@@ -159,9 +160,11 @@ public class NetworkServiceImpl implements ItNetworkService {
                     .filter(NetworkClusterVo::isConnected) // 연결된 경우만 필터링
                     .forEach(networkClusterVo -> {
                         ClusterNetworksService clusterNetworksService = system.clustersService().clusterService(networkClusterVo.getId()).networksService();
-                        clusterNetworksService.add()
-                                .network(new NetworkBuilder().id(network.id()).required(networkClusterVo.isRequired()))
-                                .send().network();
+                        clusterNetworksService.add().network(
+                                new NetworkBuilder()
+                                        .id(network.id())
+                                        .required(networkClusterVo.isRequired())
+                        ).send().network();
                     });
 
             // 외부 공급자 처리시 레이블 생성 안됨
@@ -175,6 +178,7 @@ public class NetworkServiceImpl implements ItNetworkService {
             return CommonVo.successResponse();
         }catch (Exception e){
             log.error("error, ", e);
+            e.printStackTrace();
             return CommonVo.failResponse(e.getMessage());
         }
     }
@@ -335,10 +339,6 @@ public class NetworkServiceImpl implements ItNetworkService {
 
 
 
-
-
-
-
     @Override
     public NetworkVo getNetwork(String id) {
         SystemService system = admin.getConnection().systemService();
@@ -385,230 +385,133 @@ public class NetworkServiceImpl implements ItNetworkService {
     @Override
     public List<NetworkClusterVo> getCluster(String id) {
         SystemService system = admin.getConnection().systemService();
-
         List<Cluster> clusterList = system.clustersService().list().send().clusters();
-        List<NetworkClusterVo> ncVoList = new ArrayList<>();
-        NetworkClusterVo ncVo = null;
 
-//        return clusterList.stream()
-//                .map(cluster -> {
-//                    List<Network> networkList = system.clustersService().clusterService(cluster.id()).networksService().list().send().networks();
-//
-//                    return networkList.stream()
-//                            .filter(network -> network.id().equals(id))
-//                            .map(network ->
-//                                NetworkClusterVo.builder()
-//                                    .id(cluster.id())
-//                                    .name(cluster.name())
-//                                    .version(cluster.version().major() + "." + cluster.version().minor())
-//                                    .description(cluster.description())
-//                                    .status(network.status().value())
-//                                    .required(network.required())
-//                                    .networkUsageVo(
-//                                        NetworkUsageVo.builder()
-//                                            .vm(network.usages().contains(NetworkUsage.VM))
-//                                            .display(network.usages().contains(NetworkUsage.DISPLAY))
-//                                            .migration(network.usages().contains(NetworkUsage.MIGRATION))
-//                                            .management(network.usages().contains(NetworkUsage.MANAGEMENT))
-//                                            .defaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE))
-//                                            .gluster(network.usages().contains(NetworkUsage.GLUSTER))
-//                                            .build()
-//                                    )
-//                                .build()
-//                            )
-//                            .collect(Collectors.toList());
-//                })
-//                .collect(Collectors.toList());
+        return clusterList.stream()
+                .flatMap(cluster -> {
+                    List<Network> networkList = system.clustersService().clusterService(cluster.id()).networksService().list().send().networks();
 
-//        for(Cluster cluster : clusterList){
-//            List<Network> networkList = system.clustersService().clusterService(cluster.id()).networksService().list().send().networks();
-//
-//            for(Network network : networkList){
-//                if(network.id().equals(id)){
-//                    ncVo = NetworkClusterVo.builder()
-//                            .id(cluster.id())
-//                            .name(cluster.name())
-//                            .version(cluster.version().major() + "." + cluster.version().minor())
-//                            .description(cluster.description())
-//                            .status(network.status().value())
-//                            .required(network.required())
-//                            .networkUsageVo( NetworkUsageVo.builder()
-//                                                .vm(network.usages().contains(NetworkUsage.VM))
-//                                                .display(network.usages().contains(NetworkUsage.DISPLAY))
-//                                                .migration(network.usages().contains(NetworkUsage.MIGRATION))
-//                                                .management(network.usages().contains(NetworkUsage.MANAGEMENT))
-//                                                .defaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE))
-//                                                .gluster(network.usages().contains(NetworkUsage.GLUSTER))
-//                                                .build()
-//                            )
-//                            .build();
-//
-//                    ncVoList.add(ncVo);
-//                }
-//            }
-//        }
-//        return ncVoList;
-        return null;
+                    return networkList.stream()
+                            .filter(network -> network.id().equals(id))
+                            .map(network ->
+                                    NetworkClusterVo.builder()
+                                        .id(cluster.id())
+                                        .name(cluster.name())
+                                        .version(cluster.version().major() + "." + cluster.version().minor())
+                                        .description(cluster.description())
+                                        .status(network.status().value())
+                                        .required(network.required())
+                                        .networkUsageVo(
+                                            NetworkUsageVo.builder()
+                                                .vm(network.usages().contains(NetworkUsage.VM))
+                                                .display(network.usages().contains(NetworkUsage.DISPLAY))
+                                                .migration(network.usages().contains(NetworkUsage.MIGRATION))
+                                                .management(network.usages().contains(NetworkUsage.MANAGEMENT))
+                                                .defaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE))
+                                                .gluster(network.usages().contains(NetworkUsage.GLUSTER))
+                                                .build()
+                                        )
+                                        .build()
+                            );
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<NetworkHostVo> getHost(String id) {
+    public List<NetworkHostVo> getHost(String id) { //id가 network id
         SystemService system = admin.getConnection().systemService();
-
         List<Host> hostList = system.hostsService().list().send().hosts();
-        List<NetworkHostVo> nhVoList = new ArrayList<>();
-        NetworkHostVo nhVo = null;
         DecimalFormat df = new DecimalFormat("###,###");
 
-        for(Host host : hostList) {
-            List<NetworkAttachment> naList = system.hostsService().hostService(host.id()).networkAttachmentsService().list().send().attachments();
-
-            for (NetworkAttachment na : naList) {
-                if (na.networkPresent() && na.network().id().equals(id)) {
-                    nhVo = new NetworkHostVo();
-
-                    nhVo.setHostId(host.id());
-                    nhVo.setHostName(host.name());
-                    nhVo.setHostStatus(host.status().value());
-
+        return hostList.stream()
+                .flatMap(host -> {
+                    List<NetworkAttachment> naList = system.hostsService().hostService(host.id()).networkAttachmentsService().list().send().attachments();
                     Cluster c = system.clustersService().clusterService(host.cluster().id()).get().send().cluster();
-                    nhVo.setClusterName(c.name());
-                    nhVo.setDatacenterName(system.dataCentersService().dataCenterService(c.dataCenter().id()).get().send().dataCenter().name());
-
                     List<HostNic> nicList = system.hostsService().hostService(host.id()).nicsService().list().send().nics();
-                    for (HostNic hostNic : nicList) {
-                        nhVo.setNetworkStatus(hostNic.status().value());
-//                nhVo.setAsynchronism(hostNic.a);
-                        nhVo.setNetworkDevice(hostNic.name());
 
-                        List<Statistic> statisticList = system.hostsService().hostService(host.id()).nicsService().nicService(hostNic.id()).statisticsService().list().send().statistics();
-                        for (Statistic statistic : statisticList) {
-                            String st = "";
+                    return naList.stream()
+                            .filter(na -> na.networkPresent() && na.network().id().equals(id))
+                            .map(na -> {
+                                NetworkHostVo.NetworkHostVoBuilder builder = NetworkHostVo.builder();
+                                builder.hostId(host.id())
+                                    .hostName(host.name())
+                                    .hostStatus(host.status())
+                                    .clusterName(c.name())
+                                    .datacenterName(system.dataCentersService().dataCenterService(c.dataCenter().id()).get().send().dataCenter().name());
 
-                            if (statistic.name().equals("data.current.rx.bps")) {
-                                st = df.format((statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024 * 1024)));
-                                nhVo.setRxSpeed(st);
-                            }
-                            if (statistic.name().equals("data.current.tx.bps")) {
-                                st = df.format((statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024 * 1024)));
-                                nhVo.setTxSpeed(st);
-                            }
-                            if (statistic.name().equals("data.total.rx")) {
-                                st = df.format(statistic.values().get(0).datum());
-                                nhVo.setRxTotalSpeed(st);
-                            }
-                            if (statistic.name().equals("data.total.tx")) {
-                                st = df.format(statistic.values().get(0).datum());
-                                nhVo.setTxTotalSpeed(st);
-                            }
-                        }
-                        nhVo.setSpeed(hostNic.speed());
-                    }
-                    nhVoList.add(nhVo);
-                }
-            }
-        }
-        return nhVoList;
+                                for (HostNic hostNic : nicList) {
+                                    List<Statistic> statisticList = system.hostsService().hostService(host.id()).nicsService().nicService(hostNic.id()).statisticsService().list().send().statistics();
+                                    builder.networkStatus(hostNic.status())
+                                        .networkDevice(hostNic.name())
+                                        .speed(hostNic.speed())
+                                        .rxSpeed(getStatistics(statisticList, "data.current.rx.bps"))
+                                        .txSpeed(getStatistics(statisticList, "data.current.tx.bps"))
+                                        .rxTotalSpeed(getStatistics(statisticList, "data.total.rx"))
+                                        .txTotalSpeed(getStatistics(statisticList, "data.total.tx"));
+                                }
+                                return builder.build();
+                            });
+                })
+                .collect(Collectors.toList());
     }
+
 
     @Override
     public List<NetworkVmVo> getVm(String id) {
         SystemService system = admin.getConnection().systemService();
-
         List<Vm> vmList = system.vmsService().list().send().vms();
         List<NetworkVmVo> nVmVoList = new ArrayList<>();
-        NetworkVmVo nVmVo = null;
 
         for(Vm vm : vmList){
             List<Nic> nicList = system.vmsService().vmService(vm.id()).nicsService().list().send().nics();
+            List<ReportedDevice> rdList = system.vmsService().vmService(vm.id()).reportedDevicesService().list().send().reportedDevice();
 
-            for(Nic nic : nicList){
+            for(Nic nic : nicList) {
                 VnicProfile vnicProfile = system.vnicProfilesService().profileService(nic.vnicProfile().id()).get().send().profile();
+                List<Statistic> statisticList = system.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).statisticsService().list().send().statistics();
 
-                if(vnicProfile.network().id().equals(id)){
-                    nVmVo = new NetworkVmVo();
-                    nVmVo.setVmId(vm.id());
-                    nVmVo.setStatus(vm.statusPresent() ? vm.status().value() : null);
-                    System.out.println(vm.status().value());
-                    nVmVo.setVmName(vm.name());
-                    nVmVo.setFqdn(vm.fqdn());
-                    nVmVo.setClusterName(system.clustersService().clusterService(vm.cluster().id()).get().send().cluster().name() );
-                    nVmVo.setDescription(vm.description());
+                if (vnicProfile.network().id().equals(id)) {
+                    NetworkVmVo.NetworkVmVoBuilder builder = NetworkVmVo.builder();
+                    builder
+                            .vmId(vm.id())
+                            .vmName(vm.name())
+                            .status(vm.statusPresent() ? vm.status() : null)
+                            .fqdn(vm.fqdn())
+                            .clusterName(system.clustersService().clusterService(vm.cluster().id()).get().send().cluster().name())
+                            .description(vm.description())
+                            .vnicStatus(nic.linked())
+                            .vnicName(nic.name())
+                            .vnicRx(vm.status() == VmStatus.UP ? getStatistics(statisticList, "data.current.rx.bps") : null)
+                            .vnicTx(vm.status() == VmStatus.UP ? getStatistics(statisticList, "data.current.tx.bps") : null)
+                            .rxTotalSpeed(vm.status() == VmStatus.UP ? getStatistics(statisticList, "data.total.rx") : null)
+                            .txTotalSpeed(vm.status() == VmStatus.UP ? getStatistics(statisticList, "data.total.tx") : null);
 
-                    nVmVo.setVnicStatus(nic.linked());
-                    nVmVo.setVnicName(nic.name());
-
-                    if(vm.status().value().equals("up")) {
-                        List<ReportedDevice> reportedDeviceList = system.vmsService().vmService(vm.id()).reportedDevicesService().list().send().reportedDevice();
-                        for(ReportedDevice rd : reportedDeviceList){
-                            if(rd.ipsPresent()){
-                                //                        nVmVo.setVnicName(rd.name());
-                                String ipv6 = "";
-                                nVmVo.setIpv4(rd.ips().get(0).address());
-
-                                for(int i=0; i < rd.ips().size(); i++){
-                                    if(rd.ips().get(i).version().value().equals("v6")){
-                                        ipv6 += rd.ips().get(i).address()+" ";
-                                    }
-                                }
-                                nVmVo.setIpv6(ipv6);
-                            }
-                        }
-
-                        // vm이 올라와있는 상태에서만 rx, tx 값 출력
-                        DecimalFormat df = new DecimalFormat("###,###");
-                        List<Statistic> statisticList = system.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).statisticsService().list().send().statistics();
-
-                        for (Statistic statistic : statisticList) {
-                            String st = "";
-
-                            if (statistic.name().equals("data.current.rx.bps")) {
-                                st = df.format((statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024 * 1024)));
-                                nVmVo.setVnicRx(st);
-                            }
-                            if (statistic.name().equals("data.current.tx.bps")) {
-                                st = df.format((statistic.values().get(0).datum()).divide(BigDecimal.valueOf(1024 * 1024)));
-                                nVmVo.setVnicTx(st);
-                            }
-                            if (statistic.name().equals("data.total.rx")) {
-                                System.out.println("asd: " + statistic.name().equals("data.total.rx"));
-                                st = df.format(statistic.valuesPresent() ? statistic.values().get(0).datum() : null);
-                                nVmVo.setRxTotalSpeed(st);
-                            }
-                            if (statistic.name().equals("data.total.tx")) {
-                                st = df.format(statistic.valuesPresent() ? statistic.values().get(0).datum() : null);
-                                nVmVo.setTxTotalSpeed(st);
+                    if (vm.status().value().equals("up")) {
+                        for (ReportedDevice rd : rdList) {
+                            if (vm.status() == VmStatus.UP && rd.ipsPresent()) {
+                                builder
+                                        .ipv4(rd.ips().get(0).address())
+                                        .ipv6(rd.ips().get(1).address());
                             }
                         }
                     }
+                    nVmVoList.add(builder.build());
                 }
             }
-
-            nVmVoList.add(nVmVo);
         }
         return nVmVoList;
     }
 
+
+
+
     @Override
     public List<TemplateVo> getTemplate(String id) {
-//        SystemService systemService = admin.getConnection().systemService();
-//
-//        List<Template> templateList = systemService.templatesService().list().send().templates();
-        List<TemplateVo> tVoList = new ArrayList<>();
-//        TemplateVo tVo = null;
-//
-//        for(Template template : templateList){
-//            if(template.nicsPresent()){
-//                tVo = new TemplateVo();
-//
-//                tVo.setId(template.id());
-//                tVo.setName(template.name());
-//
-//                tVoList.add(tVo);
-//            }
-//        }
+        SystemService system = admin.getConnection().systemService();
+        List<Template> templateList = system.templatesService().list().send().templates();
 
-        return tVoList;
+
+        return null;
     }
 
     @Override
@@ -675,4 +578,15 @@ public class NetworkServiceImpl implements ItNetworkService {
 
         return null;
     }
+
+
+
+    private BigInteger getStatistics(List<Statistic> statisticList, String q){
+        return statisticList.stream()
+                .filter(statistic -> statistic.name().equals(q))
+                .map(statistic -> statistic.values().get(0).datum().toBigInteger())
+                .findAny()
+                .orElse(BigInteger.ZERO);
+    }
+
 }
