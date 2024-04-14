@@ -12,6 +12,7 @@ import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItNetworkService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
+import org.ovirt.engine.sdk4.internal.containers.DnsResolverConfigurationContainer;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,6 @@ public class NetworkServiceImpl implements ItNetworkService {
         return networkList.stream()
                 .map(network -> {
                     List<NetworkLabel> nlList = system.networksService().networkService(network.id()).networkLabelsService().list().send().labels();
-                    OpenStackNetworkProvider np = system.openstackNetworkProvidersService().providerService(network.externalProvider().id()).get().send().provider();
 
                     return NetworkVo.builder()
                             .id(network.id())
@@ -57,8 +57,12 @@ public class NetworkServiceImpl implements ItNetworkService {
                                     .findFirst()
                                     .orElse(null)
                             )
-                            .providerId(network.externalProviderPresent() ? np.id() : null)
-                            .providerName(network.externalProviderPresent() ? np.name() : null)
+                            .providerId(network.externalProviderPresent() ?
+                                    system.openstackNetworkProvidersService().providerService(network.externalProvider().id()).get().send().provider().id()
+                                    : null)
+                            .providerName(network.externalProviderPresent() ?
+                                    system.openstackNetworkProvidersService().providerService(network.externalProvider().id()).get().send().provider().name()
+                                    : null)
                             .networkUsageVo(NetworkUsageVo.builder()
                                     .vm(network.usages().contains(NetworkUsage.VM))
                                     .display(network.usages().contains(NetworkUsage.DISPLAY))
@@ -115,41 +119,34 @@ public class NetworkServiceImpl implements ItNetworkService {
 
         Gson gson = new Gson();
 
+        DnsResolverConfiguration dns = new DnsResolverConfigurationBuilder().nameServers().nameServers("128.0.0.2").build();
+
         // TODO
         //  외부 공급자 설정할 때 물리적 네트워크에 연결하는 거 구현해야함,
         //  외부 공급자 설정 시 클러스터에서 모두 필요 항목은 사라져야됨 (프론트에서 아예 설정이 안되게?)
-
+        //  qos는 뭔지 모르겟음
         try {
             NetworkBuilder networkBuilder = new NetworkBuilder();
-
-            DnsResolverConfiguration dns = new DnsResolverConfigurationBuilder().nameServers().nameServers("128.0.0.2").build();
-
             networkBuilder
                     .dataCenter(new DataCenterBuilder().id(ncVo.getDatacenterId()).build())
                     .name(ncVo.getName())
                     .description(ncVo.getDescription())
                     .comment(ncVo.getComment())
-                    .portIsolation(ncVo.getPortIsolation())
-                    .usages(ncVo.getUsageVm() ? NetworkUsage.VM : NetworkUsage.DEFAULT_ROUTE)
-                    .mtu(ncVo.getMtu())
-                    .stp(ncVo.getStp())
                     .vlan(ncVo.getVlan() != null ? new VlanBuilder().id(ncVo.getVlan()) : null)
-//                    .dnsResolverConfiguration(dns)
+                    .usages(ncVo.getUsageVm() ? NetworkUsage.VM : NetworkUsage.DEFAULT_ROUTE)
+                    .portIsolation(ncVo.getPortIsolation())
+                    .mtu(ncVo.getMtu())
+                    .stp(ncVo.getStp()) // ?
                     .externalProvider(ncVo.getExternalProvider() ?  openStackNetworkProvider : null);
 
             System.out.println(gson.toJson(networkBuilder));
 
             Network network = networksService.add().network(networkBuilder).send().network();
-//            NetworkAttachmentsService na = system.hostsService().hostService("1c8ed321-28e5-4f83-9e34-e13f9125f253").networkAttachmentsService();
-//            NetworkAttachmentBuilder nabuilder = new NetworkAttachmentBuilder();
-//            nabuilder
-//                    .network(network)
-//                    .dnsResolverConfiguration(dns)
-//                    .build();
-//
-//            na.add().attachment(nabuilder).send();
 
-            // TODO: vnicprofile도 문제 있음, 되기는 한데 기본생성이 사라지지 않음
+//            DnsResolverConfigurationContainer dnsContainer = new DnsResolverConfigurationContainer();
+
+
+            // TODO: vnic 기본생성 가능. 기본생성명 수정시 기본생성과 수정명 2개가 생김
             ncVo.getVnics().forEach(vnicProfileVo -> {
                 AssignedVnicProfilesService aVnicsService = system.networksService().networkService(network.id()).vnicProfilesService();
                 aVnicsService.add().profile(new VnicProfileBuilder().name(vnicProfileVo.getName()).build()).send().profile();
@@ -174,7 +171,6 @@ public class NetworkServiceImpl implements ItNetworkService {
             }
 
             log.info("network {} 추가 성공", network.name());
-
             return CommonVo.successResponse();
         }catch (Exception e){
             log.error("error, ", e);
@@ -188,17 +184,22 @@ public class NetworkServiceImpl implements ItNetworkService {
     @Override
     public NetworkCreateVo setEditNetwork(String id) {
         SystemService system = admin.getConnection().systemService();
-        Network network = system.networksService().networkService(id).get().send().network();
+        Network network = system.networksService().networkService(id).get().follow("networklabels").send().network();
 
         return NetworkCreateVo.builder()
+                .datacenterId(network.dataCenter().id())
+                .datacenterName(system.dataCentersService().dataCenterService(network.dataCenter().id()).get().send().dataCenter().name())
                 .name(network.name())
                 .description(network.description())
                 .comment(network.comment())
-//                .label()
+                .label(network.networkLabels().get(0).id())
                 .vlan(network.vlan().idAsInteger())
                 .usageVm(network.usages().contains(NetworkUsage.VM))
+                .portIsolation(network.portIsolation())
+                .dnsList(network.dnsResolverConfigurationPresent() ? network.dnsResolverConfiguration().nameServers() : null)
                 .mtu(network.mtu().intValue())
-
+                .externalProvider(network.externalProviderPresent())
+//                .physicalNw()     //물리적 네트워크
                 .build();
     }
 
@@ -206,7 +207,6 @@ public class NetworkServiceImpl implements ItNetworkService {
     @Override
     public CommonVo<Boolean> editNetwork(NetworkCreateVo ncVo) {
         SystemService system = admin.getConnection().systemService();
-
         NetworksService networksService = system.networksService();
         DataCenter dataCenter = system.dataCentersService().dataCenterService(ncVo.getDatacenterId()).get().send().dataCenter();
 //        OpenStackNetworkProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);

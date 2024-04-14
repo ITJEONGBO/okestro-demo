@@ -30,8 +30,10 @@ public class NetworkCreateVo {
     private Boolean stp;
 
     private Boolean externalProvider;
+    private Boolean physicalNw;
+//    private String externalName;
 
-    private List<NetworkDnsVo> dns;
+    private List<String> dnsList;
     private List<VnicProfileVo> vnics;
 
 }

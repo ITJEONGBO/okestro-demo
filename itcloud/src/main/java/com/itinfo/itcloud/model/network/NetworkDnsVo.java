@@ -4,5 +4,5 @@ import lombok.Getter;
 
 @Getter
 public class NetworkDnsVo {
-    private String dnsIp;
+    private String ip;
 }
