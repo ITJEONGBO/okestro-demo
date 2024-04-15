@@ -1,18 +1,6 @@
 package com.itinfo.itcloud.model
 
-import org.ovirt.engine.sdk4.types.BiosType
-import org.ovirt.engine.sdk4.types.DataCenterStatus
-import org.ovirt.engine.sdk4.types.FipsMode
-import org.ovirt.engine.sdk4.types.Host
-import org.ovirt.engine.sdk4.types.HostStatus
-import org.ovirt.engine.sdk4.types.LogMaxMemoryUsedThresholdType
-import org.ovirt.engine.sdk4.types.LogSeverity
-import org.ovirt.engine.sdk4.types.MigrateOnError
-import org.ovirt.engine.sdk4.types.NetworkStatus
-import org.ovirt.engine.sdk4.types.NetworkUsage
-import org.ovirt.engine.sdk4.types.QuotaModeType
-import org.ovirt.engine.sdk4.types.SwitchType
-import org.ovirt.engine.sdk4.types.VmStatus
+import org.ovirt.engine.sdk4.types.*
 
 
 // datacenter
@@ -146,6 +134,14 @@ fun VmStatus.findVmStatus() : String{
 		VmStatus.UNASSIGNED -> ""
 		VmStatus.UNKNOWN -> ""
 		VmStatus.WAIT_FOR_LAUNCH -> ""
+	}
+}
+
+
+fun VnicPassThroughMode.findVnicPass() : String{
+	return when(this){
+		VnicPassThroughMode.ENABLED -> "예"
+		VnicPassThroughMode.DISABLED -> "아니요"
 	}
 }
 

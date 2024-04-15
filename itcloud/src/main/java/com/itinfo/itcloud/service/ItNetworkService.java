@@ -26,19 +26,26 @@ public interface ItNetworkService {
 
 
     NetworkVo getNetwork(String id);
+
     List<VnicProfileVo> getVnic(String id);
+    VnicCreateVo setVnic(String id);
+    CommonVo<Boolean> addVnic(String id, VnicCreateVo vcVo);
+    VnicCreateVo setEditVnic(String id, String vcId);
+    CommonVo<Boolean> editVnic(String id, String vcId, VnicCreateVo vcVo);
+    CommonVo<Boolean> deleteVnic(String id, String vcId);
+    
+
     List<NetworkClusterVo> getCluster(String id);
+
     List<NetworkHostVo> getHost(String id);
+
     List<NetworkVmVo> getVm(String id);
+
     List<TemplateVo> getTemplate(String id);
+
     List<PermissionVo> getPermission(String id);
 
 
 
-
-    // vnic profile
-    CommonVo<Boolean> addVnic(VnicProfileVo vpVo);
-    CommonVo<Boolean> editVnic(VnicProfileVo vpVo);
-    CommonVo<Boolean> deleteVnic(VnicProfileVo vpVo);
 
 }

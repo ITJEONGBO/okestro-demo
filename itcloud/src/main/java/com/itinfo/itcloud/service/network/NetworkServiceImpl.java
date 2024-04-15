@@ -1,6 +1,7 @@
 package com.itinfo.itcloud.service.network;
 
 import com.google.gson.Gson;
+import com.itinfo.itcloud.model.TypeExtKt;
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
@@ -12,7 +13,6 @@ import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItNetworkService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
-import org.ovirt.engine.sdk4.internal.containers.DnsResolverConfigurationContainer;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -292,35 +292,42 @@ public class NetworkServiceImpl implements ItNetworkService {
     public NetworkImportVo setImportNetwork() {
         SystemService system = admin.getConnection().systemService();
 
-        // 그냥 있는거 가져오기
         OpenStackNetworkProvider osProvider = system.openstackNetworkProvidersService().list().follow("networks").send().providers().get(0);
-
-        List<Network> ntList = system.networksService().list().send().networks();
         List<DataCenter> dcList = system.dataCentersService().list().send().dataCenters();
-//        DataCenter dc = systemService.dataCentersService().dataCenterService(id).get().send().dataCenter();
+        List<Network> nwList = system.networksService().list().send().networks();
 
-        List<OpenstackVo> osVoList = osProvider.networks().stream()
-                .map(os -> OpenstackVo.builder()
-                                .id(os.id())
-                                .name(os.name())
-//                        .dcId()
-                                .build()
-                )
-                .collect(Collectors.toList());
-
-        List<DataCenterVo> dcVoList = dcList.stream()
-                .map(dc -> DataCenterVo.builder()
-                        .id(dc.id())
-                        .name(dc.name())
-                        .build()
-                )
-                .collect(Collectors.toList());
+        nwList.stream()
+                .filter(network -> network.externalProviderPresent() && network.externalProvider().id().equals(osProvider.id()) && network.externalProviderPhysicalNetworkPresent())
+                .map(Identified::name)
+                .forEach(System.out::println);
 
         return NetworkImportVo.builder()
                 .id(osProvider.id())
                 .name(osProvider.name())
-                .osVoList(osVoList)
-                .dcVoList(dcVoList)
+                .osVoList(
+                    osProvider.networks().stream()
+                            .map(os -> {
+
+
+                                return OpenstackVo.builder()
+                                        .id(os.id())
+                                        .name(os.name())
+//                                        .dcId()
+//                                        .dcName()
+                                        .dcVoList(
+                                                dcList.stream()
+                                                        .map(dc -> DataCenterVo.builder()
+                                                                .id(dc.id())
+                                                                .name(dc.name())
+                                                                .build()
+                                                        )
+                                                        .collect(Collectors.toList())
+                                        )
+                                        .permission(true)   // 기본값을 허용으로 설정
+                                        .build();
+                            })
+                            .collect(Collectors.toList())
+                )
                 .build();
     }
 
@@ -339,6 +346,7 @@ public class NetworkServiceImpl implements ItNetworkService {
 
 
 
+    // 일반
     @Override
     public NetworkVo getNetwork(String id) {
         SystemService system = admin.getConnection().systemService();
@@ -370,18 +378,145 @@ public class NetworkServiceImpl implements ItNetworkService {
                             .name(vnicProfile.name())
                             .description(vnicProfile.description())
                             .networkName(network.name())
-                            .datacenterId(network.dataCenter().id())
-                            .datacenterName(dataCenter.name())
+                            .dcId(network.dataCenter().id())
+                            .dcName(dataCenter.name())
                             .version(dataCenter.version().major() + "." + dataCenter.version().minor())
-                            .passThrough(vnicProfile.passThrough().mode().value())
+                            .passThrough(TypeExtKt.findVnicPass(vnicProfile.passThrough().mode()))
                             .portMirroring(vnicProfile.portMirroring())
-                            .networkFilterId(vnicProfile.networkFilterPresent() ? vnicProfile.networkFilter().id() : null)
                             .networkFilterName(vnicProfile.networkFilterPresent() ? system.networkFiltersService().networkFilterService(vnicProfile.networkFilter().id()).get().send().networkFilter().name() : null)
                             .build();
                 })
                 .collect(Collectors.toList());
     }
 
+    // vnic 생성 창
+    // TODO qos는 제외항목, 네트워크필터도 vdsm으로 고정
+    //  통과 기능 활성화시 네트워크필터 기능 삭제, 마이그레이션 버튼 활성화, 페일오버 활성화, 포트미러링 비활성화
+    //  사용자정의 속성 애매
+    @Override
+    public VnicCreateVo setVnic(String id) {
+        SystemService system = admin.getConnection().systemService();
+        Network network = system.networksService().networkService(id).get().send().network();
+
+        return VnicCreateVo.builder()
+                .dcId(network.dataCenter().id())
+                .dcName(system.dataCentersService().dataCenterService(network.dataCenter().id()).get().send().dataCenter().name())
+                .networkId(network.id())
+                .networkName(network.name())
+//                .nfVo(NetworkFilterVo.builder().build())
+                // 프론트에서 네트워크 기본값 지정
+                .migration(true)    // TODO 기본값?
+                .build();
+    }
+
+
+    // vnic 생성
+    @Override
+    public CommonVo<Boolean> addVnic(String id, VnicCreateVo vcVo) {
+        SystemService system = admin.getConnection().systemService();
+        AssignedVnicProfilesService aVnicsService = system.networksService().networkService(id).vnicProfilesService();
+        List<VnicProfile> vpList = system.networksService().networkService(id).vnicProfilesService().list().send().profiles();
+
+        boolean duplicateName = vpList.stream().anyMatch(vnicProfile -> vnicProfile.name().equals(vcVo.getName()));
+
+        try{
+            // 같은 network내 vnic이름 중복 x, 다르면 중복 o
+            if(!duplicateName) {
+                VnicProfileBuilder vnicBuilder = new VnicProfileBuilder();
+                vnicBuilder
+                        .network(new NetworkBuilder().id(id).build())
+                        .name(vcVo.getName())
+                        .description(vcVo.getDescription())
+                        // 네트워크 필터 기본생성됨
+                        .passThrough(new VnicPassThroughBuilder().mode(vcVo.getPassThrough()).build())
+                        .migratable(vcVo.isMigration())
+                        .build();
+
+                aVnicsService.add().profile(vnicBuilder).send().profile();
+
+                log.info("네트워크 vnic 생성");
+                return CommonVo.successResponse();
+            }else {
+                log.error("vnic 이름 중복");
+                return CommonVo.failResponse("vnic 이름 중복");
+            }
+        }catch (Exception e){
+            log.error("error");
+            e.printStackTrace();
+            return CommonVo.failResponse(e.getMessage());
+        }
+    }
+
+    // vnic 편집창
+    @Override
+    public VnicCreateVo setEditVnic(String id, String vcId) {
+        SystemService system = admin.getConnection().systemService();
+        DataCenter dataCenter = system.networksService().networkService(id).get().send().network().dataCenter();
+        VnicProfile vnicProfile = system.networksService().networkService(id).vnicProfilesService().profileService(vcId).get().send().profile();
+
+        log.info("vnic 프로파일 편집");
+        return VnicCreateVo.builder()
+                .dcId(dataCenter.id())
+                .dcName(dataCenter.name())
+                .networkId(vnicProfile.network().id())
+                .networkName(system.networksService().networkService(vnicProfile.network().id()).get().send().network().name())
+                .id(vcId)
+                .name(vnicProfile.name())
+                .description(vnicProfile.description())
+                .passThrough(vnicProfile.passThrough().mode())
+                .migration(!vnicProfile.migratablePresent() || vnicProfile.migratable())
+                .portMirror(vnicProfile.portMirroring())
+                .nfName(system.networkFiltersService().networkFilterService(vnicProfile.networkFilter().id()).get().send().networkFilter().name())
+                .build();
+    }
+
+    // vnic 편집
+    @Override
+    public CommonVo<Boolean> editVnic(String id, String vcId, VnicCreateVo vcVo) {
+        SystemService system = admin.getConnection().systemService();
+        VnicProfileService vnicService = system.vnicProfilesService().profileService(vcId);
+
+        try{
+            VnicProfileBuilder vnicBuilder = new VnicProfileBuilder();
+            vnicBuilder
+                    .name(vcVo.getName())
+                    .description(vcVo.getDescription())
+                    .passThrough(new VnicPassThroughBuilder().mode(vcVo.getPassThrough()).build())
+                    .migratable(vcVo.isMigration())
+                    .portMirroring(vcVo.isPortMirror())
+                    .build();
+
+            vnicService.update().profile(vnicBuilder).send().profile();
+
+            log.info("네트워크 Vnic 편집성공");
+            return CommonVo.successResponse();
+        }catch (Exception e){
+            log.error("error");
+            e.printStackTrace();
+            return CommonVo.failResponse(e.getMessage());
+        }
+    }
+    
+    // vnic 삭제
+    @Override
+    public CommonVo<Boolean> deleteVnic(String id, String vcId) {
+        SystemService system = admin.getConnection().systemService();
+        VnicProfileService vnicService = system.vnicProfilesService().profileService(vcId);
+
+        try {
+            vnicService.remove().send();
+            log.info("네트워크 Vnic 삭제 성공");
+            return CommonVo.successResponse();
+        }catch (Exception e){
+            log.error("error");
+            e.printStackTrace();
+            return CommonVo.failResponse(e.getMessage());
+        }
+    }
+
+
+
+    // 클러스터 목록
     @Override
     public List<NetworkClusterVo> getCluster(String id) {
         SystemService system = admin.getConnection().systemService();
@@ -552,33 +687,6 @@ public class NetworkServiceImpl implements ItNetworkService {
         }
         return pVoList;
     }
-
-    @Override
-    public CommonVo<Boolean> addVnic(VnicProfileVo vpVo) {
-        SystemService system = admin.getConnection().systemService();
-
-        DataCenter dataCenter = system.dataCentersService().dataCenterService(vpVo.getDatacenterId()).get().send().dataCenter();
-        NetworkService networkService = system.networksService().networkService(vpVo.getNetworkId());
-
-
-
-        return null;
-    }
-
-    @Override
-    public CommonVo<Boolean> editVnic(VnicProfileVo vpVo) {
-        SystemService system = admin.getConnection().systemService();
-
-        return null;
-    }
-
-    @Override
-    public CommonVo<Boolean> deleteVnic(VnicProfileVo vpVo) {
-        SystemService system = admin.getConnection().systemService();
-
-        return null;
-    }
-
 
 
     private BigInteger getStatistics(List<Statistic> statisticList, String q){

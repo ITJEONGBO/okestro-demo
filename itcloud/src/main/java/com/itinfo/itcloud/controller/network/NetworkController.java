@@ -96,13 +96,62 @@ public class NetworkController {
 		return networkService.getNetwork(id);
 	}
 
+
 	// vnic 목록
 	@GetMapping("/network/{id}/vnic")
 	@ResponseBody
 	public List<VnicProfileVo> vnic(@PathVariable String id){
-		log.info("--- Network vnic프로파일");
+		log.info("--- Network vnic 프로파일");
 		return networkService.getVnic(id);
 	}
+
+	// vnic 생성 창
+	@GetMapping("/network/{id}/vnic/settings")
+	@ResponseBody
+	public VnicCreateVo setVnic(@PathVariable String id){
+		log.info("--- Network vnic 프로파일 생성창");
+		return networkService.setVnic(id);
+	}
+
+	// vnic 생성
+	@PostMapping("/network/{id}/vnic")
+	@ResponseBody
+	public CommonVo<Boolean> addVnic(@PathVariable String id,
+									 @RequestBody VnicCreateVo vcVo){
+		log.info("--- Network vnic 프로파일 생성");
+		return networkService.addVnic(id, vcVo);
+	}
+
+	// vnic 편집 창
+	@GetMapping("/network/{id}/vnic/{vcId}/settings")
+	@ResponseBody
+	public VnicCreateVo setEditVnic(@PathVariable String id,
+								 @PathVariable String vcId){
+		log.info("--- Network vnic프로파일 편집창");
+		return networkService.setEditVnic(id, vcId);
+	}
+
+	// vnic 편집
+	@PutMapping("/network/{id}/vnic/{vcId}")
+	@ResponseBody
+	public CommonVo<Boolean> editVnic(@PathVariable String id,
+									  @PathVariable String vcId,
+									  @RequestBody VnicCreateVo vcVo){
+		log.info("--- Network vnic프로파일 편집");
+		return networkService.editVnic(id, vcId, vcVo);
+	}
+
+	// vnic 삭제
+	@DeleteMapping("/network/{id}/vnic/{vcId}")
+	@ResponseBody
+	public CommonVo<Boolean> deleteVnic(@PathVariable String id,
+										@PathVariable String vcId){
+		log.info("--- Network vnic프로파일 삭제");
+		return networkService.deleteVnic(id, vcId);
+	}
+
+
+
 
 	// 클러스터 목록
 	@GetMapping("/network/{id}/cluster")
