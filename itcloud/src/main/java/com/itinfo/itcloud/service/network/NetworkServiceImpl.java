@@ -552,8 +552,35 @@ public class NetworkServiceImpl implements ItNetworkService {
                 .collect(Collectors.toList());
     }
 
+    // 클러스터 네트워크 관리 창
     @Override
-    public List<NetworkHostVo> getHost(String id) { //id가 network id
+    public NetworkUsageVo getUsage(String id, String cId) {
+        SystemService system = admin.getConnection().systemService();
+        Network network = system.clustersService().clusterService(cId).networksService().networkService(id).get().send().network();
+
+        // 모두 할당? 모두 필요?
+        return NetworkUsageVo.builder()
+                .vm(network.usages().contains(NetworkUsage.VM))
+                .display(network.usages().contains(NetworkUsage.DISPLAY))
+                .migration(network.usages().contains(NetworkUsage.MIGRATION))
+                .management(network.usages().contains(NetworkUsage.MANAGEMENT))
+                .defaultRoute(network.usages().contains(NetworkUsage.DEFAULT_ROUTE))
+                .gluster(network.usages().contains(NetworkUsage.GLUSTER))
+                .build();
+    }
+
+    // 네트워크 관리
+    // 모두 할당, 모두 필요 / 관리 기능 활성화시 추가만 가능한거 같음 / 나머지는 선택가능
+    @Override
+    public CommonVo<Boolean> editUsage(String id, String cId, NetworkUsageVo nuVo) {
+        SystemService system = admin.getConnection().systemService();
+
+        return null;
+    }
+
+    // 호스트 목록
+    @Override
+    public List<NetworkHostVo> getHost(String id) {
         SystemService system = admin.getConnection().systemService();
         List<Host> hostList = system.hostsService().list().send().hosts();
         DecimalFormat df = new DecimalFormat("###,###");
@@ -591,50 +618,51 @@ public class NetworkServiceImpl implements ItNetworkService {
     }
 
 
+    // 가상머신 목록
     @Override
     public List<NetworkVmVo> getVm(String id) {
         SystemService system = admin.getConnection().systemService();
         List<Vm> vmList = system.vmsService().list().send().vms();
-        List<NetworkVmVo> nVmVoList = new ArrayList<>();
 
-        for(Vm vm : vmList){
-            List<Nic> nicList = system.vmsService().vmService(vm.id()).nicsService().list().send().nics();
-            List<ReportedDevice> rdList = system.vmsService().vmService(vm.id()).reportedDevicesService().list().send().reportedDevice();
+        return vmList.stream()
+                .flatMap(vm -> {
+                    List<Nic> nicList = system.vmsService().vmService(vm.id()).nicsService().list().send().nics();
+                    List<ReportedDevice> rdList = system.vmsService().vmService(vm.id()).reportedDevicesService().list().send().reportedDevice();
 
-            for(Nic nic : nicList) {
-                VnicProfile vnicProfile = system.vnicProfilesService().profileService(nic.vnicProfile().id()).get().send().profile();
-                List<Statistic> statisticList = system.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).statisticsService().list().send().statistics();
+                    return nicList.stream()
+                            .filter(nic -> {
+                                VnicProfile vnicProfile = system.vnicProfilesService().profileService(nic.vnicProfile().id()).get().send().profile();
+                                return vnicProfile.network().id().equals(id);
+                            })
+                            .map(nic -> {
+                                List<Statistic> statisticList = system.vmsService().vmService(vm.id()).nicsService().nicService(nic.id()).statisticsService().list().send().statistics();
 
-                if (vnicProfile.network().id().equals(id)) {
-                    NetworkVmVo.NetworkVmVoBuilder builder = NetworkVmVo.builder();
-                    builder
-                            .vmId(vm.id())
-                            .vmName(vm.name())
-                            .status(vm.statusPresent() ? vm.status() : null)
-                            .fqdn(vm.fqdn())
-                            .clusterName(system.clustersService().clusterService(vm.cluster().id()).get().send().cluster().name())
-                            .description(vm.description())
-                            .vnicStatus(nic.linked())
-                            .vnicName(nic.name())
-                            .vnicRx(vm.status() == VmStatus.UP ? getStatistics(statisticList, "data.current.rx.bps") : null)
-                            .vnicTx(vm.status() == VmStatus.UP ? getStatistics(statisticList, "data.current.tx.bps") : null)
-                            .rxTotalSpeed(vm.status() == VmStatus.UP ? getStatistics(statisticList, "data.total.rx") : null)
-                            .txTotalSpeed(vm.status() == VmStatus.UP ? getStatistics(statisticList, "data.total.tx") : null);
+                                NetworkVmVo.NetworkVmVoBuilder builder = NetworkVmVo.builder()
+                                        .vmId(vm.id())
+                                        .vmName(vm.name())
+                                        .status(vm.statusPresent() ? vm.status() : null)
+                                        .fqdn(vm.fqdn())
+                                        .clusterName(system.clustersService().clusterService(vm.cluster().id()).get().send().cluster().name())
+                                        .description(vm.description())
+                                        .vnicStatus(nic.linked())
+                                        .vnicName(nic.name())
+                                        .vnicRx(vm.status() == VmStatus.UP ? getStatistics(statisticList, "data.current.rx.bps") : null)
+                                        .vnicTx(vm.status() == VmStatus.UP ? getStatistics(statisticList, "data.current.tx.bps") : null)
+                                        .rxTotalSpeed(vm.status() == VmStatus.UP ? getStatistics(statisticList, "data.total.rx") : null)
+                                        .txTotalSpeed(vm.status() == VmStatus.UP ? getStatistics(statisticList, "data.total.tx") : null);
 
-                    if (vm.status().value().equals("up")) {
-                        for (ReportedDevice rd : rdList) {
-                            if (vm.status() == VmStatus.UP && rd.ipsPresent()) {
-                                builder
-                                        .ipv4(rd.ips().get(0).address())
-                                        .ipv6(rd.ips().get(1).address());
-                            }
-                        }
-                    }
-                    nVmVoList.add(builder.build());
-                }
-            }
-        }
-        return nVmVoList;
+                                if (vm.status() == VmStatus.UP) {
+                                    rdList.stream()
+                                        .filter(ReportedDevice::ipsPresent)
+                                        .forEach(rd -> builder
+                                            .ipv4(rd.ips().get(0).address())
+                                            .ipv6(rd.ips().get(1).address())
+                                        );
+                                }
+                                return builder.build();
+                            });
+                })
+                .collect(Collectors.toList());
     }
 
 
@@ -644,6 +672,8 @@ public class NetworkServiceImpl implements ItNetworkService {
     public List<TemplateVo> getTemplate(String id) {
         SystemService system = admin.getConnection().systemService();
         List<Template> templateList = system.templatesService().list().send().templates();
+
+
 
 
         return null;

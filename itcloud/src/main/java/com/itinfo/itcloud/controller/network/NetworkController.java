@@ -152,7 +152,6 @@ public class NetworkController {
 
 
 
-
 	// 클러스터 목록
 	@GetMapping("/network/{id}/cluster")
 	@ResponseBody
@@ -160,6 +159,18 @@ public class NetworkController {
 		log.info("--- Network 클러스터");
 		return networkService.getCluster(id);
 	}
+	
+	// 클러스터 네트워크 관리창
+	@GetMapping("/network/{id}/cluster/{cId}/settings")
+	@ResponseBody
+	public NetworkUsageVo getUsage(@PathVariable String id, 
+								   @PathVariable String cId){
+		log.info("--- Network 클러스터 네트워크 관리 창");
+		return networkService.getUsage(id, cId);
+	}
+	
+	
+	
 
 	// 호스트 목록
 	@GetMapping("/network/{id}/host")

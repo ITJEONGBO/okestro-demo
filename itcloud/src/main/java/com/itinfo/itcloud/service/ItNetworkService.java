@@ -33,9 +33,11 @@ public interface ItNetworkService {
     VnicCreateVo setEditVnic(String id, String vcId);
     CommonVo<Boolean> editVnic(String id, String vcId, VnicCreateVo vcVo);
     CommonVo<Boolean> deleteVnic(String id, String vcId);
-    
+
 
     List<NetworkClusterVo> getCluster(String id);
+    NetworkUsageVo getUsage(String id, String cId);
+    CommonVo<Boolean> editUsage(String id, String cId, NetworkUsageVo nuVo);
 
     List<NetworkHostVo> getHost(String id);
 
