@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 public class ClusterServiceImpl implements ItClusterService {
 
     @Autowired private AdminConnectionService admin;
+    private final CommonService commonService = new CommonService();
 
     // 클러스터 목록
     // 상태, 이름, 코멘트, 호환버전, 설명, 클러스터cpu유형, 호스트수, 가상머신수, (업그레이드 상태)
@@ -367,13 +368,13 @@ public class ClusterServiceImpl implements ItClusterService {
                 .filter(vm -> vm.cluster().id().equals(id))
                 .map(vm ->
                     VmVo.builder()
-                        .status(vm.status().value())
-                        .id(vm.id())
-                        .name(vm.name())
-                        .upTime(getUptime(system, vm.id()))
-                        .ipv4(getIp(system, vm.id(), "v4"))
-                        .ipv6(getIp(system, vm.id(), "v6"))
-                    .build()
+                            .status(vm.status().value())
+                            .id(vm.id())
+                            .name(vm.name())
+                            .upTime(commonService.getVmUptime(system, vm.id()))
+                            .ipv4(commonService.getVmIp(system, vm.id(), "v4"))
+                            .ipv6(commonService.getVmIp(system, vm.id(), "v6"))
+                            .build()
                 )
                 .collect(Collectors.toList());
     }
@@ -528,7 +529,7 @@ public class ClusterServiceImpl implements ItClusterService {
                             .collect(Collectors.toList())
                 )
                 .vmLabels(
-                        affinityGroup.hostLabels().stream()
+                        affinityGroup.vmLabels().stream()
                             .map(affinityLabel ->
                                     AffinityLabelVo.builder()
                                         .id(affinityLabel.id())
@@ -853,74 +854,6 @@ public class ClusterServiceImpl implements ItClusterService {
 
     // ----------------------------------------------------------------------------------------
 
-
-    // vm 가동시간
-    private String getUptime(SystemService system, String id){
-        List<Statistic> statisticList = system.vmsService().vmService(id).statisticsService().list().send().statistics();
-
-        long hour = statisticList.stream()
-                .filter(statistic -> statistic.name().equals("elapsed.time"))
-                .mapToLong(statistic -> statistic.values().get(0).datum().longValue() / (60 * 60))
-                .findFirst()
-                .orElse(0);
-
-        String upTime;
-        if (hour > 24) {
-            upTime = hour / 24 + "일";
-        } else if (hour > 1 && hour < 24) {
-            upTime = hour + "시간";
-        } else if(hour == 0){
-            upTime = null;
-        }else {
-            upTime = (hour / 60) + "분";
-        }
-        return upTime;
-    }
-
-    // vm ip 주소
-    private String getIp(SystemService system, String id, String version){
-        Vm vm = system.vmsService().vmService(id).get().send().vm();
-
-        return system.vmsService().vmService(id).nicsService().list().send().nics().stream()
-                .flatMap(nic -> {
-                    List<ReportedDevice> reportedDeviceList = system.vmsService().vmService(id).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice().stream()
-                            .filter(r -> !vm.status().value().equals("down"))
-                            .collect(Collectors.toList());
-                    return reportedDeviceList.stream();
-                })
-                .findFirst()
-                .map(r -> {
-                    if ("v4".equals(version)) {
-                        return r.ips().get(0).address();
-                    } else {
-                        return r.ips().get(1).address();
-                    }
-                })
-                .orElse(null);
-//        List<Nic> nicList = system.vmsService().vmService(id).nicsService().list().send().nics();
-//        Vm vm = system.vmsService().vmService(id).get().send().vm();
-//
-//        String ip = null;
-//
-//        for (Nic nic : nicList){
-//            List<ReportedDevice> reportedDeviceList = system.vmsService().vmService(id).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
-//
-//            if("v4".equals(version)) {
-//                ip = reportedDeviceList.stream()
-//                        .filter(r -> !vm.status().value().equals("down"))
-//                        .map(r -> r.ips().get(0).address())
-//                        .findFirst()
-//                        .orElse(null);
-//            }else {
-//                ip = reportedDeviceList.stream()
-//                        .filter(r -> !vm.status().value().equals("down"))
-//                        .map(r -> r.ips().get(1).address())
-//                        .findFirst()
-//                        .orElse(null);
-//            }
-//        }
-//        return ip;
-    }
 
     // affinity 전체 호스트 출력용
     private List<HostVo> getHostVoList(SystemService system, String id){

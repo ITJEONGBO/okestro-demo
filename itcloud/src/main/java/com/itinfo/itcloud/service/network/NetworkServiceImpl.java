@@ -11,6 +11,7 @@ import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.*;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItNetworkService;
+import com.itinfo.itcloud.service.computing.CommonService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
 import org.ovirt.engine.sdk4.services.*;
@@ -18,7 +19,6 @@ import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,17 +28,19 @@ import java.util.stream.Collectors;
 @Slf4j
 public class NetworkServiceImpl implements ItNetworkService {
     @Autowired private AdminConnectionService admin;
+    private final CommonService commonService = new CommonService();
 
     // 네트워크 목록
     @Override
     public List<NetworkVo> getList() {
         SystemService system = admin.getConnection().systemService();
-
         List<Network> networkList = system.networksService().list().send().networks();
+
 
         return networkList.stream()
                 .map(network -> {
                     List<NetworkLabel> nlList = system.networksService().networkService(network.id()).networkLabelsService().list().send().labels();
+                    OpenStackNetworkProvider provider = system.openstackNetworkProvidersService().providerService(network.externalProvider().id()).get().send().provider();
 
                     return NetworkVo.builder()
                             .id(network.id())
@@ -57,12 +59,8 @@ public class NetworkServiceImpl implements ItNetworkService {
                                     .findFirst()
                                     .orElse(null)
                             )
-                            .providerId(network.externalProviderPresent() ?
-                                    system.openstackNetworkProvidersService().providerService(network.externalProvider().id()).get().send().provider().id()
-                                    : null)
-                            .providerName(network.externalProviderPresent() ?
-                                    system.openstackNetworkProvidersService().providerService(network.externalProvider().id()).get().send().provider().name()
-                                    : null)
+                            .providerId(network.externalProviderPresent() ? provider.id() : null)
+                            .providerName(network.externalProviderPresent() ? provider.name() : null)
                             .networkUsageVo(NetworkUsageVo.builder()
                                     .vm(network.usages().contains(NetworkUsage.VM))
                                     .display(network.usages().contains(NetworkUsage.DISPLAY))
@@ -207,7 +205,6 @@ public class NetworkServiceImpl implements ItNetworkService {
     @Override
     public CommonVo<Boolean> editNetwork(NetworkCreateVo ncVo) {
         SystemService system = admin.getConnection().systemService();
-        NetworksService networksService = system.networksService();
         DataCenter dataCenter = system.dataCentersService().dataCenterService(ncVo.getDatacenterId()).get().send().dataCenter();
 //        OpenStackNetworkProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
 
@@ -218,7 +215,6 @@ public class NetworkServiceImpl implements ItNetworkService {
                     .name(ncVo.getName())
                     .description(ncVo.getDescription())
                     .comment(ncVo.getComment())
-//                    .portIsolation(ncVo.getPortIsolation())       // 선택불가
                     .usages(ncVo.getUsageVm() ? NetworkUsage.VM : NetworkUsage.DEFAULT_ROUTE)
                     // TODO DNS 구현안됨
 //                    .dnsResolverConfiguration()
@@ -252,14 +248,14 @@ public class NetworkServiceImpl implements ItNetworkService {
         NetworkService networkService = system.networksService().networkService(id);
         List<Cluster> clusterList = system.clustersService().list().send().clusters();
 
-        // 클러스터 목록을 스트림으로 변환하고 네트워크가 비가동 중인지 확인합니다
-        boolean canDelete = clusterList.stream()
-                .flatMap(cluster -> system.clustersService().clusterService(cluster.id()).networksService().list().send().networks().stream())
-                .filter(network -> network.id().equals(id))
-                .noneMatch(network -> network.status().equals(NetworkStatus.OPERATIONAL));
+        // 네트워크가 비가동 중인지 확인
+        boolean cDelete = clusterList.stream()
+                            .flatMap(cluster -> system.clustersService().clusterService(cluster.id()).networksService().list().send().networks().stream())
+                            .filter(network -> network.id().equals(id))
+                            .noneMatch(network -> network.status().equals(NetworkStatus.OPERATIONAL));
 
         // 삭제 가능한 경우 네트워크를 삭제하고 성공 응답을 반환합니다
-        if (canDelete) {
+        if (cDelete) {
             networkService.remove().send();
             log.info("network 삭제");
             return CommonVo.successResponse();
@@ -267,23 +263,6 @@ public class NetworkServiceImpl implements ItNetworkService {
             log.error("network 삭제 실패");
             return CommonVo.failResponse("오류");
         }
-
-//        for(Cluster cluster : clusterList) {
-//            List<Network> clusterNetworkList = system.clustersService().clusterService(cluster.id()).networksService().list().send().networks();
-//
-//            for (Network network : clusterNetworkList) {
-//                System.out.println(cluster.name() + ": " + network.name() + ", " + network.status());
-//
-//                // 클러스터에서 돌아가는 네트워크가 비가동중인 상태여야지만 지울 수 있음
-//                if (!network.status().equals(NetworkStatus.OPERATIONAL)) {
-//                    networkService.remove().send();
-//                    log.info("network 삭제");
-//                    return CommonVo.successResponse();
-//                }
-//            }
-//        }
-//        log.error("network 삭제 실패");
-//        return CommonVo.failResponse("오류");
     }
 
 
@@ -575,6 +554,21 @@ public class NetworkServiceImpl implements ItNetworkService {
     public CommonVo<Boolean> editUsage(String id, String cId, NetworkUsageVo nuVo) {
         SystemService system = admin.getConnection().systemService();
 
+
+
+        // 클러스터 모두연결이 선택되어야지만 모두 필요가 선택됨
+//        ncVo.getClusterVoList().stream()
+//                .filter(NetworkClusterVo::isConnected) // 연결된 경우만 필터링
+//                .forEach(networkClusterVo -> {
+//                    ClusterNetworksService clusterNetworksService = system.clustersService().clusterService(networkClusterVo.getId()).networksService();
+//                    clusterNetworksService.add().network(
+//                            new NetworkBuilder()
+//                                    .id(network.id())
+//                                    .required(networkClusterVo.isRequired())
+//                    ).send().network();
+//                });
+
+
         return null;
     }
 
@@ -606,10 +600,10 @@ public class NetworkServiceImpl implements ItNetworkService {
                                     builder.networkStatus(hostNic.status())
                                         .networkDevice(hostNic.name())
                                         .speed(hostNic.speed())
-                                        .rxSpeed(getStatistics(statisticList, "data.current.rx.bps"))
-                                        .txSpeed(getStatistics(statisticList, "data.current.tx.bps"))
-                                        .rxTotalSpeed(getStatistics(statisticList, "data.total.rx"))
-                                        .txTotalSpeed(getStatistics(statisticList, "data.total.tx"));
+                                        .rxSpeed(commonService.getSpeed(statisticList, "data.current.rx.bps"))
+                                        .txSpeed(commonService.getSpeed(statisticList, "data.current.tx.bps"))
+                                        .rxTotalSpeed(commonService.getSpeed(statisticList, "data.total.rx"))
+                                        .txTotalSpeed(commonService.getSpeed(statisticList, "data.total.tx"));
                                 }
                                 return builder.build();
                             });
@@ -646,10 +640,10 @@ public class NetworkServiceImpl implements ItNetworkService {
                                         .description(vm.description())
                                         .vnicStatus(nic.linked())
                                         .vnicName(nic.name())
-                                        .vnicRx(vm.status() == VmStatus.UP ? getStatistics(statisticList, "data.current.rx.bps") : null)
-                                        .vnicTx(vm.status() == VmStatus.UP ? getStatistics(statisticList, "data.current.tx.bps") : null)
-                                        .rxTotalSpeed(vm.status() == VmStatus.UP ? getStatistics(statisticList, "data.total.rx") : null)
-                                        .txTotalSpeed(vm.status() == VmStatus.UP ? getStatistics(statisticList, "data.total.tx") : null);
+                                        .vnicRx(vm.status() == VmStatus.UP ? commonService.getSpeed(statisticList, "data.current.rx.bps") : null)
+                                        .vnicTx(vm.status() == VmStatus.UP ? commonService.getSpeed(statisticList, "data.current.tx.bps") : null)
+                                        .rxTotalSpeed(vm.status() == VmStatus.UP ? commonService.getSpeed(statisticList, "data.total.rx") : null)
+                                        .txTotalSpeed(vm.status() == VmStatus.UP ? commonService.getSpeed(statisticList, "data.total.tx") : null);
 
                                 if (vm.status() == VmStatus.UP) {
                                     rdList.stream()
@@ -719,12 +713,7 @@ public class NetworkServiceImpl implements ItNetworkService {
     }
 
 
-    private BigInteger getStatistics(List<Statistic> statisticList, String q){
-        return statisticList.stream()
-                .filter(statistic -> statistic.name().equals(q))
-                .map(statistic -> statistic.values().get(0).datum().toBigInteger())
-                .findAny()
-                .orElse(BigInteger.ZERO);
-    }
+
+
 
 }

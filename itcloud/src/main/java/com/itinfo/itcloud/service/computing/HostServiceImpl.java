@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 public class HostServiceImpl implements ItHostService {
 
     @Autowired private AdminConnectionService admin;
+    private final CommonService commonService = new CommonService();
 
     // 호스트 목록
     @Override
@@ -341,17 +342,17 @@ public class HostServiceImpl implements ItHostService {
                 .kdump(host.kdumpStatus().value())      // kdump intergration status
                 .devicePassThrough(host.devicePassthrough().enabled())  // 장치통과
                 .memoryMax(host.maxSchedulingMemory())    // 최대 여유 메모리.
-                .memory(getStatistic(statisticList, "memory.total"))
-                .memoryFree(getStatistic(statisticList, "memory.free"))
-                .memoryUsed(getStatistic(statisticList, "memory.used"))
-                .memoryShared(getStatistic(statisticList, "memory.shared")) // 문제잇음
-                .swapTotal(getStatistic(statisticList, "swap.total"))
-                .swapFree(getStatistic(statisticList, "swap.free"))
-                .swapUsed(getStatistic(statisticList, "swap.used"))
-                .hugePage2048Total(getPage(statisticList, "hugepages.2048.total"))
-                .hugePage2048Free(getPage(statisticList, "hugepages.2048.free"))
-                .hugePage1048576Total(getPage(statisticList, "hugepages.1048576.total"))
-                .hugePage1048576Free(getPage(statisticList, "hugepages.1048576.free"))
+                .memory(commonService.getSpeed(statisticList, "memory.total"))
+                .memoryFree(commonService.getSpeed(statisticList, "memory.free"))
+                .memoryUsed(commonService.getSpeed(statisticList, "memory.used"))
+                .memoryShared(commonService.getSpeed(statisticList, "memory.shared")) // 문제잇음
+                .swapTotal(commonService.getSpeed(statisticList, "swap.total"))
+                .swapFree(commonService.getSpeed(statisticList, "swap.free"))
+                .swapUsed(commonService.getSpeed(statisticList, "swap.used"))
+                .hugePage2048Total(commonService.getPage(statisticList, "hugepages.2048.total"))
+                .hugePage2048Free(commonService.getPage(statisticList, "hugepages.2048.free"))
+                .hugePage1048576Total(commonService.getPage(statisticList, "hugepages.1048576.total"))
+                .hugePage1048576Free(commonService.getPage(statisticList, "hugepages.1048576.free"))
                 .bootingTime(sdf.format(new Date(bootTime)))
                 .hostedEngine(host.hostedEnginePresent() && host.hostedEngine().active())       // Hosted Engine HA
                 .hostedActive(host.hostedEnginePresent() ? host.hostedEngine().active() : null)
@@ -384,9 +385,9 @@ public class HostServiceImpl implements ItHostService {
                             .clusterName(system.clustersService().clusterService(vm.cluster().id()).get().send().cluster().name())
                             .status(vm.statusPresent() ? vm.status().value() : "")
                             .fqdn(vm.fqdn())
-                            .upTime(getUptime(system, vm.id()))
-                            .ipv4(getIp(system, vm.id(), "v4"))
-                            .ipv6(getIp(system, vm.id(), "v6"))
+                            .upTime(commonService.getVmUptime(system, vm.id()))
+                            .ipv4(commonService.getVmIp(system, vm.id(), "v4"))
+                            .ipv6(commonService.getVmIp(system, vm.id(), "v6"))
                         .build()
                 )
                 .collect(Collectors.toList());
@@ -412,11 +413,11 @@ public class HostServiceImpl implements ItHostService {
                             .ipv4(hostNic.ip().address())
                             .ipv6(hostNic.ipv6().addressPresent() ? hostNic.ipv6().address() : null)
                             .speed(hostNic.speed().divide(BigInteger.valueOf(1024 * 1024)))
-                            .rxSpeed(getStatistic(statisticList, "data.current.rx.bps").divide(BigInteger.valueOf(1024 * 1024)))
-                            .txSpeed(getStatistic(statisticList, "data.current.tx.bps").divide(BigInteger.valueOf(1024 * 1024)))
-                            .rxTotalSpeed(getStatistic(statisticList, "data.total.rx"))
-                            .txTotalSpeed(getStatistic(statisticList, "data.total.tx"))
-                            .stop(getStatistic(statisticList, "errors.total.rx").divide(BigInteger.valueOf(1024 * 1024)))
+                            .rxSpeed(commonService.getSpeed(statisticList, "data.current.rx.bps").divide(BigInteger.valueOf(1024 * 1024)))
+                            .txSpeed(commonService.getSpeed(statisticList, "data.current.tx.bps").divide(BigInteger.valueOf(1024 * 1024)))
+                            .rxTotalSpeed(commonService.getSpeed(statisticList, "data.total.rx"))
+                            .txTotalSpeed(commonService.getSpeed(statisticList, "data.total.tx"))
+                            .stop(commonService.getSpeed(statisticList, "errors.total.rx").divide(BigInteger.valueOf(1024 * 1024)))
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -650,69 +651,6 @@ public class HostServiceImpl implements ItHostService {
     }
 
 
-
-    // static의 메모리, swap, speed
-    private BigInteger getStatistic(List<Statistic> statisticList, String q){
-        return statisticList.stream()
-                .filter(statistic -> statistic.name().equals(q))
-                .map(statistic -> statistic.values().get(0).datum().toBigInteger())
-                .findAny()
-                .orElse(BigInteger.ZERO);
-    }
-
-    // hugepage
-    private int getPage(List<Statistic> statisticList, String q) {
-        return statisticList.stream()
-                .filter(statistic -> statistic.name().equals(q))
-                .map(statistic -> statistic.values().get(0).datum().intValue())
-                .findAny()
-                .orElse(0);
-    }
-
-
-    // vm uptime에서 사용
-    private String getUptime(SystemService system, String id){
-        List<Statistic> statisticList = system.vmsService().vmService(id).statisticsService().list().send().statistics();
-
-        long hour = statisticList.stream()
-                .filter(statistic -> statistic.name().equals("elapsed.time"))
-                .mapToLong(statistic -> statistic.values().get(0).datum().longValue() / (60 * 60))
-                .findFirst()
-                .orElse(0);
-
-        String upTime;
-        if (hour > 24) {
-            upTime = hour / 24 + "일";
-        } else if (hour > 1 && hour < 24) {
-            upTime = hour + "시간";
-        } else if (hour == 0) {
-            upTime = null;
-        } else {
-            upTime = (hour / 60) + "분";
-        }
-
-        return upTime;
-    }
-
-    // vm ip 주소
-    private String getIp(SystemService system, String id, String version){
-        List<Nic> nicList = system.vmsService().vmService(id).nicsService().list().send().nics();
-        Vm vm = system.vmsService().vmService(id).get().send().vm();
-
-        String ip = null;
-        for (Nic nic : nicList){
-            List<ReportedDevice> reportedDeviceList = system.vmsService().vmService(id).nicsService().nicService(nic.id()).reportedDevicesService().list().send().reportedDevice();
-
-            ip = reportedDeviceList.stream()
-                    .filter(r -> !vm.status().value().equals("down"))
-                    .map(r ->
-                            "v4".equals(version) ? r.ips().get(0).address() : r.ips().get(1).address()
-                    )
-                    .findFirst()
-                    .orElse(null);
-        }
-        return ip;
-    }
 
 
     // 선호도 레이블 생성 창 - 호스트 리스트
