@@ -5,7 +5,6 @@ import com.itinfo.itcloud.model.TypeExtKt;
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
-import com.itinfo.itcloud.model.computing.TemplateVo;
 import com.itinfo.itcloud.model.create.NetworkCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.*;
@@ -638,6 +637,7 @@ public class NetworkServiceImpl implements ItNetworkService {
                                         .clusterName(system.clustersService().clusterService(vm.cluster().id()).get().send().cluster().name())
                                         .description(vm.description())
                                         .vnicStatus(nic.linked())
+                                        .vnicId(nic.id())
                                         .vnicName(nic.name())
                                         .vnicRx(vm.status() == VmStatus.UP ? commonService.getSpeed(statisticList, "data.current.rx.bps") : null)
                                         .vnicTx(vm.status() == VmStatus.UP ? commonService.getSpeed(statisticList, "data.current.tx.bps") : null)
@@ -658,24 +658,73 @@ public class NetworkServiceImpl implements ItNetworkService {
                 .collect(Collectors.toList());
     }
 
-
-
-
+    // 가상머신 nic 제거
     @Override
-    public List<TemplateVo> getTemplate(String id) {
+    public CommonVo<Boolean> deleteVmNic(String id, String vmId, String nicId) {
+        // DELETE /ovirt-engine/api/vms/123/nics/456
+        SystemService system = admin.getConnection().systemService();
+        VmNicService vmNicService = system.vmsService().vmService(vmId).nicsService().nicService(nicId);
+
+        try{
+            vmNicService.remove().send();
+            return CommonVo.successResponse();
+
+        }catch (Exception e){
+            log.error("error");
+            e.printStackTrace();
+            return CommonVo.failResponse(e.getMessage());
+        }
+    }
+
+    // 템플릿 목록
+    @Override
+    public List<NetworkTemplateVo> getTemplate(String id) {
         SystemService system = admin.getConnection().systemService();
         List<Template> templateList = system.templatesService().list().send().templates();
 
+        return templateList.stream()
+                .flatMap(template -> {
+                    List<Nic> nicList = system.templatesService().templateService(template.id()).nicsService().list().send().nics();
+
+                    return nicList.stream()
+                            .filter(nic -> {
+                                VnicProfile vp = system.vnicProfilesService().profileService(nic.vnicProfile().id()).get().send().profile();
+                                return vp.networkPresent() && vp.network().id().equals(id);
+                            })
+                            .map(nic -> 
+                                    NetworkTemplateVo.builder()
+                                        .name(template.name())
+                                        .status(template.status())
+                                        .clusterName(system.clustersService().clusterService(template.cluster().id()).get().send().cluster().name())
+                                        .nicId(nic.id())
+                                        .nicName(nic.name())
+                                        .build()
+                            );
+                })
+                .collect(Collectors.toList());
+    }
 
 
+    // 템플릿 nic 제거
+    @Override
+    public CommonVo<Boolean> deleteTempNic(String id, String tempId, String nicId) {
+        SystemService system = admin.getConnection().systemService();
+        TemplateNicService tnService = system.templatesService().templateService(tempId).nicsService().nicService(nicId);
 
-        return null;
+        try {
+            tnService.remove().send();
+            log.info("템플릿 nic 제거");
+            return CommonVo.successResponse();
+        }catch (Exception e){
+            log.error("error");
+            e.printStackTrace();
+            return CommonVo.failResponse(e.getMessage());
+        }
     }
 
     @Override
     public List<PermissionVo> getPermission(String id) {
         SystemService system = admin.getConnection().systemService();
-
         List<Permission> permissionList = system.networksService().networkService(id).permissionsService().list().send().permissions();
         List<PermissionVo> pVoList = new ArrayList<>();
         PermissionVo pVo = null;

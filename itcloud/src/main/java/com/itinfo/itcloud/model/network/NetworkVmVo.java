@@ -20,6 +20,7 @@ public class NetworkVmVo {
 
     // vnic
     private boolean vnicStatus;
+    private String vnicId;
     private String vnicName;
     private BigInteger vnicRx;
     private BigInteger vnicTx;

@@ -1,7 +1,6 @@
 package com.itinfo.itcloud.controller;
 
 import com.itinfo.itcloud.model.computing.PermissionVo;
-import com.itinfo.itcloud.model.computing.TemplateVo;
 import com.itinfo.itcloud.model.create.NetworkCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.*;
@@ -16,12 +15,13 @@ import java.util.List;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/networks")
 public class NetworkController {
 	private final ItNetworkService networkService;
 
 
 	// 네트워크 목록
-	@GetMapping("/networks")
+	@GetMapping("")
 	@ResponseBody
 	public List<NetworkVo> networks(){
 		log.info("--- Network 목록");
@@ -29,7 +29,7 @@ public class NetworkController {
 	}
 
 	// 네트워크 생성 창
-	@GetMapping("/network/settings")
+	@GetMapping("/settings")
 	@ResponseBody
 	public List<NetworkDcClusterVo> setDcCluster(){
 		log.info("--- Network 생성 창");
@@ -45,7 +45,7 @@ public class NetworkController {
 	}
 	
 	// 네트워크 편집 창
-	@GetMapping("/network/{id}/settings")
+	@GetMapping("/{id}/settings")
 	@ResponseBody
 	public NetworkCreateVo setEditNetwork(@PathVariable String id){
 		log.info("--- Network 편집 창");
@@ -53,7 +53,7 @@ public class NetworkController {
 	}
 
 	// 네트워크 편집
-	@PutMapping("/network/{id}")
+	@PutMapping("/{id}")
 	@ResponseBody
 	public CommonVo<Boolean> editNetwork(@PathVariable String id,
 										 @RequestBody NetworkCreateVo nVo){
@@ -62,7 +62,7 @@ public class NetworkController {
 	}
 
 	// 네트워크 삭제
-	@DeleteMapping("/network/{id}")
+	@DeleteMapping("/{id}")
 	@ResponseBody
 	public CommonVo<Boolean> deleteNetwork(@PathVariable String id){
 		log.info("--- Network 삭제");
@@ -72,7 +72,7 @@ public class NetworkController {
 
 
 	// 네트워크 가져오기 창
-	@GetMapping("/network/import/settings")
+	@GetMapping("/import/settings")
 	@ResponseBody
 	public NetworkImportVo setImportNetwork(){
 		log.info("--- Network 가져오기 창");
@@ -80,7 +80,7 @@ public class NetworkController {
 	}
 
 	// 네트워크 가져오기
-	@PostMapping("/network/import")
+	@PostMapping("/import")
 	public CommonVo<Boolean> importNw(){
 		log.info("--- Network 가져오기");
 		return networkService.importNetwork();
@@ -89,7 +89,7 @@ public class NetworkController {
 
 
 	// 일반
-	@GetMapping("/network/{id}")
+	@GetMapping("/{id}")
 	@ResponseBody
 	public NetworkVo network(@PathVariable String id){
 		log.info("--- Network 일반");
@@ -98,7 +98,7 @@ public class NetworkController {
 
 
 	// vnic 목록
-	@GetMapping("/network/{id}/vnic")
+	@GetMapping("/{id}/vnics")
 	@ResponseBody
 	public List<VnicProfileVo> vnic(@PathVariable String id){
 		log.info("--- Network vnic 프로파일");
@@ -106,7 +106,7 @@ public class NetworkController {
 	}
 
 	// vnic 생성 창
-	@GetMapping("/network/{id}/vnic/settings")
+	@GetMapping("/{id}/vnics/settings")
 	@ResponseBody
 	public VnicCreateVo setVnic(@PathVariable String id){
 		log.info("--- Network vnic 프로파일 생성창");
@@ -114,7 +114,7 @@ public class NetworkController {
 	}
 
 	// vnic 생성
-	@PostMapping("/network/{id}/vnic")
+	@PostMapping("/{id}/vnic")
 	@ResponseBody
 	public CommonVo<Boolean> addVnic(@PathVariable String id,
 									 @RequestBody VnicCreateVo vcVo){
@@ -123,7 +123,7 @@ public class NetworkController {
 	}
 
 	// vnic 편집 창
-	@GetMapping("/network/{id}/vnic/{vcId}/settings")
+	@GetMapping("/{id}/vnics/{vcId}/settings")
 	@ResponseBody
 	public VnicCreateVo setEditVnic(@PathVariable String id,
 								 @PathVariable String vcId){
@@ -132,7 +132,7 @@ public class NetworkController {
 	}
 
 	// vnic 편집
-	@PutMapping("/network/{id}/vnic/{vcId}")
+	@PutMapping("/{id}/vnics/{vcId}")
 	@ResponseBody
 	public CommonVo<Boolean> editVnic(@PathVariable String id,
 									  @PathVariable String vcId,
@@ -142,7 +142,7 @@ public class NetworkController {
 	}
 
 	// vnic 삭제
-	@DeleteMapping("/network/{id}/vnic/{vcId}")
+	@DeleteMapping("/{id}/vnics/{vcId}")
 	@ResponseBody
 	public CommonVo<Boolean> deleteVnic(@PathVariable String id,
 										@PathVariable String vcId){
@@ -153,7 +153,7 @@ public class NetworkController {
 
 
 	// 클러스터 목록
-	@GetMapping("/network/{id}/cluster")
+	@GetMapping("/{id}/clusters")
 	@ResponseBody
 	public List<NetworkClusterVo> cluster(@PathVariable String id){
 		log.info("--- Network 클러스터");
@@ -161,7 +161,7 @@ public class NetworkController {
 	}
 	
 	// 클러스터 네트워크 관리창
-	@GetMapping("/network/{id}/cluster/{cId}/settings")
+	@GetMapping("/{id}/clusters/{cId}/settings")
 	@ResponseBody
 	public NetworkUsageVo getUsage(@PathVariable String id, 
 								   @PathVariable String cId){
@@ -173,7 +173,7 @@ public class NetworkController {
 	
 
 	// 호스트 목록
-	@GetMapping("/network/{id}/host")
+	@GetMapping("/{id}/hosts")
 	@ResponseBody
 	public List<NetworkHostVo> host(@PathVariable String id){
 		log.info("--- Network 호스트");
@@ -181,23 +181,44 @@ public class NetworkController {
 	}
 
 	// 가상머신 목록
-	@GetMapping("/network/{id}/vm")
+	@GetMapping("/{id}/vms")
 	@ResponseBody
 	public List<NetworkVmVo> vm(@PathVariable String id){
 		log.info("--- Network 가상머신");
 		return networkService.getVm(id);
 	}
 
-	// 템플릿 목록
-	@GetMapping("/network/{id}/template")
+	// 가상머신 nic 제거
+	@DeleteMapping("/{id}/vms/{vmId}/{nicId}")
 	@ResponseBody
-	public List<TemplateVo> template(@PathVariable String id){
+	public CommonVo<Boolean> deleteVmNic(@PathVariable String id,
+										 @PathVariable String vmId,
+										 @PathVariable String nicId){
+		log.info("--- Network 가상머신 nic 제거");
+		return networkService.deleteVmNic(id, vmId, nicId);
+	}
+
+	// 템플릿 목록
+	@GetMapping("/{id}/templates")
+	@ResponseBody
+	public List<NetworkTemplateVo> template(@PathVariable String id){
 		log.info("--- Network 템플릿");
 		return networkService.getTemplate(id);
 	}
 
+	// 템플릿 제거
+	@DeleteMapping("/{id}/templates/{tempId}/{nicId}")
+	@ResponseBody
+	public CommonVo<Boolean> deleteTempNic(@PathVariable String id,
+										   @PathVariable String tempId,
+										   @PathVariable String nicId){
+		log.info("--- Network 템플릿 nic 제거");
+		return networkService.deleteTempNic(id, tempId, nicId);
+	}
+
+
 	// 권한 목록
-	@GetMapping("/network/{id}/permission")
+	@GetMapping("/{id}/permissions")
 	@ResponseBody
 	public List<PermissionVo> permission(@PathVariable String id){
 		log.info("--- Network 권한");

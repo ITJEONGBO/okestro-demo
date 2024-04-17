@@ -1,7 +1,6 @@
 package com.itinfo.itcloud.service;
 
 import com.itinfo.itcloud.model.computing.PermissionVo;
-import com.itinfo.itcloud.model.computing.TemplateVo;
 import com.itinfo.itcloud.model.create.NetworkCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.*;
@@ -42,8 +41,10 @@ public interface ItNetworkService {
     List<NetworkHostVo> getHost(String id);
 
     List<NetworkVmVo> getVm(String id);
+    CommonVo<Boolean> deleteVmNic(String id, String vmId, String nicId);  // 가상머신의 nics 제거
 
-    List<TemplateVo> getTemplate(String id);
+    List<NetworkTemplateVo> getTemplate(String id);
+    CommonVo<Boolean> deleteTempNic(String id, String tempId, String nicId);  // 템플릿 nics 제거
 
     List<PermissionVo> getPermission(String id);
 
