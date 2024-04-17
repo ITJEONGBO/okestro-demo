@@ -1,8 +1,6 @@
 package com.itinfo.itcloud.service.impl;
 
-import com.itinfo.itcloud.model.computing.EventVo;
-import com.itinfo.itcloud.model.computing.PermissionVo;
-import com.itinfo.itcloud.model.computing.TemplateVo;
+import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.TemplateCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.storage.TempStorageVo;
@@ -22,11 +20,6 @@ import java.util.stream.Collectors;
 @Service @Slf4j
 public class TemplateServiceImpl implements ItTemplateService {
     @Autowired private AdminConnectionService admin;
-
-    @Override
-    public String getName(String id){
-        return admin.getConnection().systemService().templatesService().templateService(id).get().send().template().name();
-    }
 
     @Override
     public List<TemplateVo> getList() {
@@ -251,33 +244,32 @@ public class TemplateServiceImpl implements ItTemplateService {
 
 
 
+    @Override
+    public List<VmVo> getVm(String tId) {
+        SystemService systemService = admin.getConnection().systemService();
 
+        List<Vm> vmList = systemService.vmsService().list().send().vms();
 
+        log.info("템플릿 가상머신 목록");
+        return vmList.stream()
+                .filter(vm -> vm.templatePresent() && vm.template().id().equals(tId))
+                .map(vm ->
+                    VmVo.builder()
+                            .status(vm.status().value())
+                            .id(vm.id())
+                            .name(vm.name())
+                            .upTime(getUptime(systemService, vm.id()))
+                            .ipv4(getIp(systemService, vm.id(), "v4"))
+                            .ipv6(getIp(systemService, vm.id(), "v6"))
+                            .build()
+                )
+                .collect(Collectors.toList());
+    }
 
-
-
-    // region: 필요없을듯
-//    @Override
-//    public List<VmVo> getVm(String tId) {
-//        SystemService systemService = admin.getConnection().systemService();
-//
-//        List<Vm> vmList = systemService.vmsService().list().send().vms();
-//
-//        log.info("템플릿 {} 가상머신 목록", getName(tId));
-//        return vmList.stream()
-//                .filter(vm -> vm.templatePresent() && vm.template().id().equals(tId))
-//                .map(vm ->
-//                    VmVo.builder()
-//                            .status(vm.status().value())
-//                            .id(vm.id())
-//                            .name(vm.name())
-//                            .upTime(getUptime(systemService, vm.id()))
-//                            .ipv4(getIp(systemService, vm.id(), "v4"))
-//                            .ipv6(getIp(systemService, vm.id(), "v6"))
-//                            .build()
-//                )
-//                .collect(Collectors.toList());
-//    }
+    @Override
+    public List<NicVo> getNic(String id) {
+        return null;
+    }
 
 
 //    @Override
@@ -321,6 +313,6 @@ public class TemplateServiceImpl implements ItTemplateService {
 //                })
 //                .collect(Collectors.toList());
 //    }
-    // endregion
+
 
 }
