@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.controller.storage;
+package com.itinfo.itcloud.controller;
 
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.EventVo;

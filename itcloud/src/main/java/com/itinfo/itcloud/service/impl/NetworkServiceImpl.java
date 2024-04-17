@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.service.network;
+package com.itinfo.itcloud.service.impl;
 
 import com.google.gson.Gson;
 import com.itinfo.itcloud.model.TypeExtKt;
@@ -11,7 +11,6 @@ import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.*;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItNetworkService;
-import com.itinfo.itcloud.service.computing.CommonService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
 import org.ovirt.engine.sdk4.services.*;

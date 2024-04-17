@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.service.computing;
+package com.itinfo.itcloud.service.impl;
 
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
@@ -310,7 +310,7 @@ public class HostServiceImpl implements ItHostService {
         // https://192.168.0.70/ovirt-engine/api/hosts/3bbd27b9-13d8-4fff-ad29-c0350994ca88/cpuunits,numanodes
         List<Statistic> statisticList = system.hostsService().hostService(id).statisticsService().list().send().statistics();
 
-        long bootTime = statisticList.stream()
+        long bootTime = system.hostsService().hostService(id).statisticsService().list().send().statistics().stream()
                                 .filter(statistic -> statistic.name().equals("boot.time"))
                                 .map(statistic -> statistic.values().get(0).datum().longValue() * 1000)
                                 .findAny()
@@ -361,8 +361,8 @@ public class HostServiceImpl implements ItHostService {
                 .pageSize(host.transparentHugePages().enabled())    // 자동으로 페이지를 크게 (확실하지 않음. 매우)
                 .seLinux(host.seLinux().mode().value())     // selinux모드: disabled, enforcing, permissive
                 // 클러스터 호환버전
-                .hostHwVo(getHardWare(system, id))
-                .hostSwVo(getSoftWare(system, id))
+                .hostHwVo(getHardWare(system, host))
+                .hostSwVo(getSoftWare(system, host))
             .build();
     }
 
@@ -499,8 +499,8 @@ public class HostServiceImpl implements ItHostService {
                         AffinityLabelVo.builder()
                             .id(al.id())
                             .name(al.name())
-                            .hosts(getHostLabelMember(system, al.id()))
-                            .vms(getVmLabelMember(system, al.id()))
+                            .hosts(commonService.getHostLabelMember(system, al.id()))
+                            .vms(commonService.getVmLabelMember(system, al.id()))
                         .build())
                 .collect(Collectors.toList());
     }
@@ -509,12 +509,15 @@ public class HostServiceImpl implements ItHostService {
     @Override
     public AffinityHostVm setAffinityDefaultInfo(String id, String type) {
         SystemService system = admin.getConnection().systemService();
+        List<Host> hostList = system.hostsService().list().send().hosts();
+        List<Vm> vmList = system.vmsService().list().send().vms();
+        String clusterId = system.hostsService().hostService(id).get().send().host().cluster().id();
 
         log.info("Host 선호도 레이블 생성 창");
         return AffinityHostVm.builder()
                 .clusterId(id)
-                .hostList(getHostVoList(system, id))
-                .vmList(getVmVoList(system, id))
+                .hostList(commonService.setHostList(hostList, clusterId))
+                .vmList(commonService.setVmList(vmList, clusterId))
                 .build();
     }
 
@@ -568,8 +571,8 @@ public class HostServiceImpl implements ItHostService {
         return AffinityLabelCreateVo.builder()
                 .id(alId)
                 .name(al.name())
-                .hostList(al.hostsPresent() ? getHostLabelMember(system, alId) : null )
-                .vmList(al.vmsPresent() ? getVmLabelMember(system, alId) : null)
+                .hostList(al.hostsPresent() ? commonService.getHostLabelMember(system, alId) : null )
+                .vmList(al.vmsPresent() ? commonService.getVmLabelMember(system, alId) : null)
                 .build();
     }
 
@@ -612,9 +615,7 @@ public class HostServiceImpl implements ItHostService {
     //-------------------------------------------------------------------------------------------
 
 
-    private HostHwVo getHardWare(SystemService system, String id){
-        Host host = system.hostsService().hostService(id).get().send().host();
-
+    private HostHwVo getHardWare(SystemService system, Host host){
         return HostHwVo.builder()
                 .family(host.hardwareInformation().family())           // 생산자
                 .manufacturer(host.hardwareInformation().manufacturer())     // 제품군
@@ -632,9 +633,7 @@ public class HostServiceImpl implements ItHostService {
 
 
     // 구하는 방법이 db밖에는 없는건지 확인필요
-    private HostSwVo getSoftWare(SystemService system, String id){
-        Host host = system.hostsService().hostService(id).get().send().host();
-
+    private HostSwVo getSoftWare(SystemService system, Host host){
         return HostSwVo.builder()
                 .osVersion(host.os().type() + " " + host.os().version().fullVersion())    // os 버전
 //                .osInfo()       // os 정보
@@ -651,82 +650,6 @@ public class HostServiceImpl implements ItHostService {
     }
 
 
-
-
-    // 선호도 레이블 생성 창 - 호스트 리스트
-    // setAffinityDefaultInfo
-    // 클러스터가 가지고 잇는 호스트들을 전부 출력해야함
-    private List<HostVo> getHostVoList(SystemService system, String id){
-        List<Host> hostList = system.hostsService().list().send().hosts();
-        String clusterId = system.hostsService().hostService(id).get().send().host().cluster().id();
-
-        return hostList.stream()
-                .filter(host -> host.cluster().id().equals(clusterId))
-                .map(host ->
-                        HostVo.builder()
-                                .id(host.id())
-                                .name(host.name())
-                                .build()
-                )
-                .collect(Collectors.toList());
-    }
-
-    // 선호도 레이블 생성 창 - 가상머신 리스트
-    // setAffinityDefaultInfo
-    // 클러스터가 가지고 잇는 가상머신들을 전부 출력해야함
-    private List<VmVo> getVmVoList(SystemService system, String id){
-        List<Vm> vmList = system.vmsService().list().send().vms();
-        String clusterId = system.hostsService().hostService(id).get().send().host().cluster().id();
-
-        return vmList.stream()
-                .filter(vm -> vm.cluster().id().equals(clusterId))
-                .map(vm ->
-                        VmVo.builder()
-                                .id(vm.id())
-                                .name(vm.name())
-                                .build()
-                )
-                .collect(Collectors.toList());
-    }
-
-    // 선호도 레이블에 있는 호스트 출력
-    private List<HostVo> getHostLabelMember(SystemService system, String alid){
-        List<Host> hostList = system.affinityLabelsService().labelService(alid).hostsService().list().send().hosts();
-
-        List<String> idList = hostList.stream()
-                .map(Host::id)
-                .collect(Collectors.toList());
-
-        return idList.stream()
-                .map(hostId -> {
-                    Host host = system.hostsService().hostService(hostId).get().send().host();
-                    return HostVo.builder()
-                            .id(host.id())
-                            .name(host.name())
-                            .build();
-                })
-                .collect(Collectors.toList());
-    }
-
-    // 선호도 레이블 - vm
-    private List<VmVo> getVmLabelMember(SystemService system, String alid){
-        List<Vm> vmList = system.affinityLabelsService().labelService(alid).vmsService().list().send().vms();
-
-        // id만 출력
-        List<String> idList = vmList.stream()
-                .map(Vm::id)
-                .collect(Collectors.toList());
-
-        return idList.stream()
-                .map(vmId -> {
-                    Vm vm = system.vmsService().vmService(vmId).get().send().vm();
-                    return VmVo.builder()
-                            .id(vm.id())
-                            .name(vm.name())
-                            .build();
-                })
-                .collect(Collectors.toList());
-    }
 
 
 

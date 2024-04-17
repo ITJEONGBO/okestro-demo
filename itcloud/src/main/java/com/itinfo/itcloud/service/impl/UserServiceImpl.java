@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.service.setting;
+package com.itinfo.itcloud.service.impl;
 
 import com.itinfo.itcloud.dao.UserDao;
 import com.itinfo.itcloud.service.ItUserService;

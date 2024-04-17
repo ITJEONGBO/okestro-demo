@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.controller.network;
+package com.itinfo.itcloud.controller;
 
 import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.computing.TemplateVo;

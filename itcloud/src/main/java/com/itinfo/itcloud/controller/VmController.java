@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.controller.computing;
+package com.itinfo.itcloud.controller;
 
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.storage.VmDiskVo;

@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.service.setting;
+package com.itinfo.itcloud.service.impl;
 
 import com.itinfo.util.BasicConfiguration;
 import com.itinfo.util.model.SystemPropertiesVo;

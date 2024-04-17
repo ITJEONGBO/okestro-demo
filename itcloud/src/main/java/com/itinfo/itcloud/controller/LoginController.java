@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.controller.setting;
+package com.itinfo.itcloud.controller;
 
 import com.itinfo.itcloud.service.ItSystemPropertyService;
 import com.itinfo.itcloud.service.ItUserService;

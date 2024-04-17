@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.service.computing;
+package com.itinfo.itcloud.service.impl;
 
 import com.itinfo.itcloud.model.TypeExtKt;
 import com.itinfo.itcloud.model.computing.*;
@@ -48,12 +48,8 @@ public class ClusterServiceImpl implements ItClusterService {
                         .version(cluster.version().major() + "." + cluster.version().minor())
                         .description(cluster.description())
                         .cpuType(cluster.cpuPresent() ? cluster.cpu().type() : null)
-                        .hostCnt(getHostCnt(hostList, cluster.id(), ""))
-//                        .hostUpCnt(getHostCnt(hostList, cluster.id(), "up"))
-//                        .hostDownCnt(getHostCnt(hostList, cluster.id(), "down"))
-                        .vmCnt(getVmCnt(vmList, cluster.id(), ""))
-//                        .vmUpCnt(getVmCnt(vmList, cluster.id(), "up"))
-//                        .vmDownCnt(getVmCnt(vmList, cluster.id(), "down"))
+                        .hostCnt(commonService.getHostCnt(hostList, cluster.id(), ""))
+                        .vmCnt(commonService.getVmCnt(vmList, cluster.id(), ""))
                     .build()
                 )
                 .collect(Collectors.toList());
@@ -297,7 +293,7 @@ public class ClusterServiceImpl implements ItClusterService {
                     .threadsAsCore(cluster.threadsAsCores())
                     .memoryOverCommit(cluster.memoryPolicy().overCommit().percentAsInteger())
                     .restoration(TypeExtKt.findMigrateErr(cluster.errorHandling().onError()))
-                    .vmCnt(getVmCnt(vmList, id, ""))
+                    .vmCnt(commonService.getVmCnt(vmList, id, ""))
                 .build();
     }
 
@@ -385,24 +381,23 @@ public class ClusterServiceImpl implements ItClusterService {
     @Override
     public AffinityHostVm setAffinityDefaultInfo(String id, String type) {
         SystemService system = admin.getConnection().systemService();
-
-//        List<AffinityLabel> affinityLabelList = system.affinityLabelsService().list().send().labels();
-//        List<AffinityGroup> affinityGroupList = system.clustersService().clusterService(id).affinityGroupsService().list().send().groups();
+        List<Host> hostList = system.hostsService().list().send().hosts();
+        List<Vm> vmList = system.vmsService().list().send().vms();
 
         log.info("Cluster 선호도");
         // host vm lavel 메소드 분리?
         if(type.equals("label")){
             return AffinityHostVm.builder()
                     .clusterId(id)
-                    .hostList(getHostVoList(system, id))
-                    .vmList(getVmVoList(system, id))
+                    .hostList(commonService.setHostList(hostList, id))
+                    .vmList(commonService.setVmList(vmList, id))
                     .build();
-        }else{ //group
+        }else{  // group
             // TODO 레이블 추가해야함
             return AffinityHostVm.builder()
                     .clusterId(id)
-                    .hostList(getHostVoList(system, id))
-                    .vmList(getVmVoList(system, id))
+                    .hostList(commonService.setHostList(hostList, id))
+                    .vmList(commonService.setVmList(vmList, id))
                     .build();
         }
     }
@@ -430,10 +425,10 @@ public class ClusterServiceImpl implements ItClusterService {
                         .hostEnabled(ag.hostsRule().enabled())
                         .hostPositive(ag.hostsRule().positive())
                         .hostEnforcing(ag.hostsRule().enforcing())
-                        .hostMembers(ag.hostsPresent() ? getHostList(system, id, ag.id()) : null)
-                        .vmMembers(ag.vmsPresent() ? getVmList(system, id, ag.id()) : null)
-                        .hostLabels(ag.hostLabelsPresent() ? getLabelName(system, ag.hostLabels().get(0).id()) : null)
-                        .vmLabels(ag.vmLabelsPresent() ? getLabelName(system, ag.vmLabels().get(0).id()) : null)
+                        .hostMembers(ag.hostsPresent() ? commonService.getAgHostList(system, id, ag.id()) : null)
+                        .vmMembers(ag.vmsPresent() ? commonService.getAgVmList(system, id, ag.id()) : null)
+                        .hostLabels(ag.hostLabelsPresent() ? commonService.getLabelName(system, ag.hostLabels().get(0).id()) : null)
+                        .vmLabels(ag.vmLabelsPresent() ? commonService.getLabelName(system, ag.vmLabels().get(0).id()) : null)
                     .build())
                 .collect(Collectors.toList());
     }
@@ -649,13 +644,12 @@ public class ClusterServiceImpl implements ItClusterService {
 
         log.info("Cluster 선호도 레이블");
         return affinityLabelList.stream()
-                .map(al ->
-                    AffinityLabelVo.builder()
-                        .id(al.id())
-                        .name(al.name())
-                        .hosts(getHostLabelMember(system, al.id()))
-                        .vms(getVmLabelMember(system, al.id()))
-                    .build()
+                .map(al -> AffinityLabelVo.builder()
+                            .id(al.id())
+                            .name(al.name())
+                            .hosts(commonService.getHostLabelMember(system, al.id()))
+                            .vms(commonService.getVmLabelMember(system, al.id()))
+                            .build()
                 )
                 .collect(Collectors.toList());
     }
@@ -708,14 +702,14 @@ public class ClusterServiceImpl implements ItClusterService {
     @Override
     public AffinityLabelCreateVo getAffinityLabel(String id, String alId){   // id는 alid
         SystemService system = admin.getConnection().systemService();
-        AffinityLabel al = system.affinityLabelsService().labelService(id).get().follow("hosts,vms").send().label();
+        AffinityLabel al = system.affinityLabelsService().labelService(alId).get().follow("hosts,vms").send().label();
 
         log.info("Cluster 선호도 레이블 편집창");
         return AffinityLabelCreateVo.builder()
                 .id(id)
                 .name(al.name())
-                .hostList(al.hostsPresent() ? getHostLabelMember(system, id) : null )
-                .vmList(al.vmsPresent() ? getVmLabelMember(system, id) : null)
+                .hostList(al.hostsPresent() ? commonService.getHostLabelMember(system, alId) : null )
+                .vmList(al.vmsPresent() ? commonService.getVmLabelMember(system, alId) : null)
                 .build();
     }
 
@@ -726,8 +720,6 @@ public class ClusterServiceImpl implements ItClusterService {
         SystemService system = admin.getConnection().systemService();
         AffinityLabelService alService = system.affinityLabelsService().labelService(alVo.getId());
         List<AffinityLabel> alList = system.affinityLabelsService().list().send().labels();
-//        AffinityLabelHostsService alHostsService = system.affinityLabelsService().labelService(alVo.getId()).hostsService();
-//        AffinityLabelVmsService alVmsService = system.affinityLabelsService().labelService(alVo.getId()).vmsService();
 
         // 중복이름
         boolean duplicateName = alList.stream().noneMatch(al -> al.name().equals(alVo.getName()));
@@ -739,13 +731,21 @@ public class ClusterServiceImpl implements ItClusterService {
                     .name(alVo.getName())
                     .hosts(
                         alVo.getHostList().stream()
-                        .map(host -> new HostBuilder().id(host.getId()).build())
-                        .collect(Collectors.toList())
+                            .map(host ->
+                                    new HostBuilder()
+                                            .id(host.getId())
+                                            .build()
+                            )
+                            .collect(Collectors.toList())
                     )
                     .vms(
                         alVo.getVmList().stream()
-                        .map(vm -> new VmBuilder().id(vm.getId()).build())
-                        .collect(Collectors.toList())
+                            .map(vm ->
+                                    new VmBuilder()
+                                            .id(vm.getId())
+                                            .build()
+                            )
+                            .collect(Collectors.toList())
                     )
                     .build();
 
@@ -854,154 +854,6 @@ public class ClusterServiceImpl implements ItClusterService {
 
     // ----------------------------------------------------------------------------------------
 
-
-    // affinity 전체 호스트 출력용
-    private List<HostVo> getHostVoList(SystemService system, String id){
-        List<Host> hostList = system.hostsService().list().send().hosts();
-
-        return hostList.stream()
-                .filter(host -> host.cluster().id().equals(id))
-                .map(host ->
-                        HostVo.builder()
-                                .id(host.id())
-                                .name(host.name())
-                                .build()
-                )
-                .collect(Collectors.toList());
-    }
-
-    // affinity 전체 가상머신 출력용
-    private List<VmVo> getVmVoList(SystemService system, String id){
-        List<Vm> vmList = system.vmsService().list().send().vms();
-
-        return vmList.stream()
-                .filter(vm -> vm.cluster().id().equals(id))
-                .map(vm ->
-                        VmVo.builder()
-                            .id(vm.id())
-                            .name(vm.name())
-                        .build()
-                )
-                .collect(Collectors.toList());
-    }
-
-    // 선호도  - 레이블 아이디와 이름 얻기
-    private List<AffinityLabelVo> getLabelName(SystemService system,String alId){
-        List<AffinityLabel> alList = system.affinityLabelsService().list().send().labels();
-
-        return alList.stream()
-                .filter(al -> al.id().equals(alId))
-                .map(al -> 
-                    AffinityLabelVo.builder()
-                        .id(al.id())
-                        .name(al.name())
-                    .build())
-                .collect(Collectors.toList());
-    }
-
-    // 선호도  - 호스트 리스트 출력
-    private List<HostVo> getHostList(SystemService system, String clusterId, String agId){
-        List<Host> hostList = system.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId).hostsService().list().send().hosts();
-
-        return hostList.stream()
-                .map(host ->
-                    HostVo.builder()
-                        .id(host.id())
-                        .name(host.name())
-                    .build())
-                .collect(Collectors.toList());
-    }
-
-    // 선호도 그룹 목록 - 가상머신 리스트 출력
-    private List<VmVo> getVmList(SystemService system, String clusterId, String agId){
-        List<Vm> vmList = system.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId).vmsService().list().send().vms();
-
-        return vmList.stream()
-                .map(vm ->
-                    VmVo.builder()
-                        .id(vm.id())
-                        .name(vm.name())
-                    .build())
-                .collect(Collectors.toList());
-    }
-
-
-
-    // 선호도 레이블에 있는 호스트 출력
-    private List<HostVo> getHostLabelMember(SystemService system, String alid){
-        List<Host> hostList = system.affinityLabelsService().labelService(alid).hostsService().list().send().hosts();
-
-        List<String> idList = hostList.stream()
-                .map(Host::id)
-                .collect(Collectors.toList());
-
-        return idList.stream()
-                .map(hostId -> {
-                    Host host = system.hostsService().hostService(hostId).get().send().host();
-                    return HostVo.builder()
-                            .id(host.id())
-                            .name(host.name())
-                            .build();
-                })
-                .collect(Collectors.toList());
-
-    }
-
-    // 선호도 레이블 - vm
-    private List<VmVo> getVmLabelMember(SystemService system, String alid){
-        List<Vm> vmList = system.affinityLabelsService().labelService(alid).vmsService().list().send().vms();
-
-        // id만 출력
-        List<String> idList = vmList.stream()
-                .map(Vm::id)
-                .collect(Collectors.toList());
-
-        return idList.stream()
-                .map(vmId -> {
-                    Vm vm = system.vmsService().vmService(vmId).get().send().vm();
-                    return VmVo.builder()
-                            .id(vm.id())
-                            .name(vm.name())
-                            .build();
-                })
-                .collect(Collectors.toList());
-    }
-
-    // 클러스터 목록
-    // 호스트 개수 파악
-    private int getHostCnt(List<Host> hostList, String id, String ele){
-        if("up".equals(ele)){
-            return (int) hostList.stream()
-                    .filter(host -> host.cluster().id().equals(id) && host.status().value().equals("up"))
-                    .count();
-        }else if("down".equals(ele)){
-            return (int) hostList.stream()
-                    .filter(host -> host.cluster().id().equals(id) && !host.status().value().equals("up"))
-                    .count();
-        }else {
-            return (int) hostList.stream()
-                    .filter(host -> host.cluster().id().equals(id))
-                    .count();
-        }
-    }
-
-    // 클러스터 목록
-    // 가상머신 개수 파악
-    private int getVmCnt(List<Vm> vmList, String id, String ele){
-        if("up".equals(ele)) {
-            return (int) vmList.stream()
-                    .filter(vm -> vm.cluster().id().equals(id) && vm.status().value().equals("up"))
-                    .count();
-        }else if("down".equals(ele)) {
-            return (int) vmList.stream()
-                    .filter(vm -> vm.cluster().id().equals(id) && !vm.status().value().equals("up"))
-                    .count();
-        }else{
-            return (int) vmList.stream()
-                    .filter(vm -> vm.cluster().id().equals(id))
-                    .count();
-        }
-    }
 
 
     // region :필요없을 거 같음

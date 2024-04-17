@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.controller.computing;
+package com.itinfo.itcloud.controller;
 
 import com.itinfo.itcloud.model.computing.DashboardVo;
 import com.itinfo.itcloud.service.ItDashboardService;

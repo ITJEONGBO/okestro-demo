@@ -1,11 +1,10 @@
-package com.itinfo.itcloud.service.computing;
+package com.itinfo.itcloud.service.impl;
 
 import com.itinfo.itcloud.model.computing.DashboardVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.ovirt.ConnectionService;
 import com.itinfo.itcloud.service.ItDashboardService;
 import lombok.extern.slf4j.Slf4j;
-import org.ovirt.engine.sdk4.Connection;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;

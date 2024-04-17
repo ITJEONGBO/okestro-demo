@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.service.computing;
+package com.itinfo.itcloud.service.impl;
 
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.VmCreateVo;

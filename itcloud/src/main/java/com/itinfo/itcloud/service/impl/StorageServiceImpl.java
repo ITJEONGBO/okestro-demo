@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.service.storage;
+package com.itinfo.itcloud.service.impl;
 
 import com.itinfo.itcloud.model.TypeExtKt;
 import com.itinfo.itcloud.model.computing.ClusterVo;
