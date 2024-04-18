@@ -26,7 +26,7 @@ public class TempStorageVo {
     private String diskName;
     private DiskStatus diskStatus;
     private DiskInterface diskInterface;   // 인터페이스
-    private DiskStorageType diskType;    // 유형
+    private String diskType;    // 유형
 
     private boolean diskSparse;// 할당정책  씬true, 사전할당false
     private String date;

@@ -296,6 +296,4 @@ public class CommonService {
                     .count();
         }
     }
-
-
 }

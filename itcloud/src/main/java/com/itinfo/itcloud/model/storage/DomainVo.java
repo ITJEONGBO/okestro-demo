@@ -21,7 +21,7 @@ public class DomainVo {
 
     private StorageDomainStatus status;
     private StorageDomainType domainType;       // 도메인 유형
-    private Boolean domainTypeMaster;
+    private boolean domainTypeMaster;
 
     private BigInteger availableSize; // 여유공간
     private BigInteger usedSize; // 사용된 공간

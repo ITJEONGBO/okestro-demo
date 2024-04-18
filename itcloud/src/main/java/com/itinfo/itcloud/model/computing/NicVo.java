@@ -31,7 +31,7 @@ public class NicVo {
     // 일반
     private boolean plugged;
     private boolean linkStatus;
-    private String type;
+    private String type;  // 유형
     private BigInteger speed2;
     private String guestInterface;
 

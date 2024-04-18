@@ -1,7 +1,9 @@
 package com.itinfo.itcloud.controller;
 
-import com.itinfo.itcloud.model.computing.*;
-import com.itinfo.itcloud.model.storage.TempStorageVo;
+import com.itinfo.itcloud.model.computing.EventVo;
+import com.itinfo.itcloud.model.computing.PermissionVo;
+import com.itinfo.itcloud.model.computing.TemplateVo;
+import com.itinfo.itcloud.model.storage.TempDiskVo;
 import com.itinfo.itcloud.service.ItTemplateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,48 +31,52 @@ public class TemplateController {
 
 	@GetMapping("/templates/{id}")
 	@ResponseBody
-	public TemplateVo temp(@PathVariable String id){
+	public TemplateVo template(@PathVariable String id){
 		log.info("--- template 일반");
 		return tService.getInfo(id);
 	}
 
-	@GetMapping("/templates/{id}/vms")
-	@ResponseBody
-	public List<VmVo> vm(String id){
-		return tService.getVm(id);
-	}
 
-	@GetMapping("/templates/{id}/nics")
+	@GetMapping("/templates/{id}/disks")
 	@ResponseBody
-	public List<NicVo> nic(String id){
-		return tService.getNic(id);
-	}
-
-	@GetMapping("/templates/{id}/storages")
-	@ResponseBody
-	public TempStorageVo storage(@PathVariable String id){
-		return tService.getStorage(id);
+	public List<TempDiskVo> getDisk(@PathVariable String id){
+		log.info("--- template 디스크");
+		return tService.getDisk(id);
 	}
 
 	@GetMapping("/templates/{id}/permissions")
 	@ResponseBody
-	public List<PermissionVo> permission(String id){
+	public List<PermissionVo> permissions(@PathVariable String id){
+		log.info("--- template 권한");
 		return tService.getPermission(id);
 	}
 
 	@GetMapping("/templates/{id}/events")
 	@ResponseBody
-	public List<EventVo> event(String id){
+	public List<EventVo> events(@PathVariable String id){
+		log.info("--- template 이벤트");
 		return tService.getEvent(id);
 	}
 
-	
 
 
-//	@GetMapping("/templates/{id}/disks")
+
+
+//	@GetMapping("/templates/{id}/vms")
 //	@ResponseBody
-//	public List<TemDiskVo> disk(String id){
-//		return tService.getDisk(id);
+//	public List<VmVo> vms(@PathVariable String id){
+//		log.info("--- template 일반");
+//		return tService.getVm(id);
 //	}
-	
+
+//	@GetMapping("/templates/{id}/nics")
+//	@ResponseBody
+//	public List<NicVo> nics(@PathVariable String id){
+//		log.info("--- template 일반");
+//		return tService.getNic(id);
+//	}
+
+
+
+
 }

@@ -145,6 +145,27 @@ fun VnicPassThroughMode.findVnicPass() : String{
 	}
 }
 
+fun VmType.findVmType(): String{
+	return when(this){
+		VmType.SERVER -> "서버"
+		VmType.DESKTOP -> "데스크톱"
+		VmType.HIGH_PERFORMANCE -> "고성능"
+	}
+}
+
+
+fun DiskStorageType.findStorageType() : String{
+	return when(this){
+		DiskStorageType.MANAGED_BLOCK_STORAGE -> "Managed Block Storage"
+		DiskStorageType.CINDER -> "Cinder"
+		DiskStorageType.LUN -> "Lun"
+		DiskStorageType.IMAGE -> "이미지"
+	}
+}
+
+
+
+
 
 
 
