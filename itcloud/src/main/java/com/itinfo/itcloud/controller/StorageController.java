@@ -19,42 +19,44 @@ import java.util.List;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/storage")
+@RequestMapping("/storages")
 public class StorageController {
 	private final ItStorageService storageService;
 
-	@GetMapping("/disks")
+	@GetMapping("/{id}/disks")
 	@ResponseBody
-	public List<DiskVo> disks(String id){
+	public List<DiskVo> disks(@PathVariable String id){	// id=dcId
+		// 데이터센터 밑에 붙어있는 디스크
+		log.info("--- Disk 목록");
 		return storageService.getDiskList(id);
 	}
 
 
-	@GetMapping("/diskShow")
+	@GetMapping("/{id}/disks/settings")
 	@ResponseBody
 	public DiskDcVo setAddDisk(String id){
 		return storageService.setDiskImage(id);
 	}
 
-	@PostMapping("/disk-image/add")
+	@PostMapping("/{id}/disks/image")
 	public CommonVo<Boolean> addDiskImage(@RequestBody ImageCreateVo image){
 		log.info("새가상 디스크 - 이미지 생성");
 		return storageService.addDiskImage(image);
 	}
 
-	@PostMapping("/disk-image/edit")
+	@PutMapping("/{id}/disks/image")
 	public CommonVo<Boolean> editDiskImage(@RequestBody ImageCreateVo image){
 		log.info("새가상 디스크 - 이미지 수정");
 		return storageService.editDiskImage(image);
 	}
 
-	@PostMapping("/disk-image/delete")
+	@DeleteMapping("/{id}/disks/image")
 	public CommonVo<Boolean> deleteDiskImage(@RequestParam String id){
 		log.info("새가상 디스크 - 이미지 삭제");
 		return storageService.deleteDisk(id);
 	}
 
-	@PostMapping("/disk/move")
+	@PostMapping("/{id}/disks/move")
 	public CommonVo<Boolean> moveDisk(@RequestBody DiskVo disk){
 		log.info("디스크 - 이동");
 		return storageService.moveDisk(disk);

@@ -14,19 +14,21 @@ import java.util.List;
 
 @Service
 public interface ItStorageService {
-    String getName(String id);
 
     // region: disk
     List<DiskVo> getDiskList(String dcId);    // 디스크 리스트
 
-    DiskDcVo setDiskImage(String dcId); // 화면에 보여지기 위한건 String type을 쓰든 어떻게 해보기
+    // 가상 디스크 생성
+    DiskDcVo setDiskImage(String dcId); // 디스크-이미지: 생성창 / 화면에 보여지기 위한건 String type을 쓰든 어떻게 해보기
     CommonVo<Boolean> addDiskImage(ImageCreateVo image);    // 디스크-이미지: 생성
     CommonVo<Boolean> editDiskImage(ImageCreateVo image);   // 디스크-이미지: 수정
 
-    LunCreateVo setDiskLun(String dcId);
-    CommonVo<Boolean> addDiskLun(LunCreateVo lunCreateVo);      // 디스크-lun: 생성
-    CommonVo<Boolean> editDiskLun(LunCreateVo lunCreateVo);     // 디스크-lun: 수정
+    LunCreateVo setDiskLun(String dcId);     // 디스크-lun: 생성 창
+    CommonVo<Boolean> addDiskLun(LunCreateVo lun);      // 디스크-lun: 생성
+    CommonVo<Boolean> editDiskLun(LunCreateVo lun);     // 디스크-lun: 수정
 
+    // 가상 디스크 생성 - 관리되는 블록은 제외
+    
     CommonVo<Boolean> deleteDisk(String diskId);   // 디스크: 삭제
     CommonVo<Boolean> moveDisk(DiskVo disk);       // 디스크 이동
     CommonVo<Boolean> copyDisk(DiskVo disk);       // 디스크 복사

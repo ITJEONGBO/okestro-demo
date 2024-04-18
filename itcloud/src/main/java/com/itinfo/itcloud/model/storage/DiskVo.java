@@ -8,6 +8,7 @@ import org.ovirt.engine.sdk4.types.DiskStatus;
 import org.ovirt.engine.sdk4.types.DiskStorageType;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Getter @Setter @Builder
 public class DiskVo {
@@ -32,6 +33,5 @@ public class DiskVo {
     private String diskProfileId;
     private String diskProfileName;
 
-    private String storageDomainId;
-    private String storageDomainName;
+    private List<DomainVo> domainVoList;
 }

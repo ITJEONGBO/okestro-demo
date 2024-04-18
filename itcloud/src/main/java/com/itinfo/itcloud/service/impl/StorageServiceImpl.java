@@ -35,10 +35,6 @@ import java.util.stream.Collectors;
 public class StorageServiceImpl implements ItStorageService {
     @Autowired private AdminConnectionService admin;
 
-    @Override
-    public String getName(String id){
-        return admin.getConnection().systemService().storageDomainsService().storageDomainService(id).get().send().storageDomain().name();
-    }
 
     // region: disk
 
@@ -46,29 +42,27 @@ public class StorageServiceImpl implements ItStorageService {
     @Override
     public List<DiskVo> getDiskList(String dcId) {
         SystemService system = admin.getConnection().systemService();
+        List<StorageDomain> sdList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().list().send().storageDomains();
 
-        List<StorageDomain> sdList = system.storageDomainsService().list().send().storageDomains();
-//        List<Disk> diskList = system.storageDomainsService().storageDomainService(sdId).disksService().list().send().disks();
-
-        List<Disk> diskList = system.disksService().list().send().disks();
-
-//        System.out.println(BigInteger.valueOf(2).multiply(BigInteger.valueOf(1024).pow(3)));
-
-        return diskList.stream()
-                .map(disk ->
-                        DiskVo.builder()
-                                .id(disk.id())
-                                .name(disk.name())
-                                .alias(disk.alias())
-                                .description(disk.description())
-    //                           .connection()
-                                .storageDomainName(getName(disk.storageDomains().get(0).id()))
-                                .shareable(disk.shareable())
-                                .status(disk.status())
-                                .storageType(disk.storageType())
-                                .virtualSize(disk.provisionedSize())
-                        .build()
-                )
+        return sdList.stream()
+                .flatMap(storageDomain -> {
+                    List<Disk> diskList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().storageDomainService(storageDomain.id()).disksService().list().send().disks();
+                    return diskList.stream()
+                            .map(disk ->
+                                    DiskVo.builder()
+                                        .id(disk.id())
+                                        .name(disk.name())
+                                        .alias(disk.alias())
+                                        .description(disk.description())
+            //                           .connection() //diskprofile
+//                                        .domainVoList()
+                                        .shareable(disk.shareable())
+                                        .status(disk.status())
+                                        .storageType(disk.storageType())
+                                        .virtualSize(disk.provisionedSize())
+                                        .build()
+                            );
+                })
                 .collect(Collectors.toList());
     }
 
@@ -276,11 +270,11 @@ public class StorageServiceImpl implements ItStorageService {
     public CommonVo<Boolean> moveDisk(DiskVo disk) {
         SystemService system = admin.getConnection().systemService();
 
-        DiskService diskService = system.disksService().diskService(disk.getId());
-        StorageDomain sd = system.storageDomainsService().storageDomainService(disk.getStorageDomainId()).get().send().storageDomain();
+//        DiskService diskService = system.disksService().diskService(disk.getId());
+//        StorageDomain sd = system.storageDomainsService().storageDomainService(disk.getStorageDomainId()).get().send().storageDomain();
 
         try {
-            diskService.move().storageDomain(sd).send();
+//            diskService.move().storageDomain(sd).send();
 
             log.info("성공: 디스크 이동");
             return CommonVo.successResponse();
@@ -297,10 +291,10 @@ public class StorageServiceImpl implements ItStorageService {
         SystemService system = admin.getConnection().systemService();
 
         DiskService diskService = system.disksService().diskService(disk.getId());
-        StorageDomain sd = system.storageDomainsService().storageDomainService(disk.getStorageDomainId()).get().send().storageDomain();
+//        StorageDomain sd = system.storageDomainsService().storageDomainService(disk.getStorageDomainId()).get().send().storageDomain();
 
         try {
-            diskService.copy().disk((new DiskBuilder()).name(disk.getName()).build()).storageDomain(sd).send();
+//            diskService.copy().disk((new DiskBuilder()).name(disk.getName()).build()).storageDomain(sd).send();
 
             log.info("성공: 디스크 복사");
             return CommonVo.successResponse();
@@ -748,12 +742,11 @@ public class StorageServiceImpl implements ItStorageService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
         List<Event> eventList = system.eventsService().list().send().events();
 
-        log.info("데이터센터 {} 이벤트 출력", getName(id));
         return eventList.stream()
                 .filter(Event::dataCenterPresent)
                 .map(event ->
                         EventVo.builder()
-                                .datacenterName(getName(id))
+                                .datacenterName(system.dataCentersService().dataCenterService(id).get().send().dataCenter().name())
                                 .severity(TypeExtKt.findLogSeverity(event.severity()))   //상태
                                 .time(sdf.format(event.time()))
                                 .message(event.description())
