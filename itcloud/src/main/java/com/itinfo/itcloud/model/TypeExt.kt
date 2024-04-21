@@ -163,7 +163,7 @@ fun DiskStorageType.findStorageType() : String{
 	}
 }
 
-
+// /ovirt-engine/api/operatingsystems
 
 
 

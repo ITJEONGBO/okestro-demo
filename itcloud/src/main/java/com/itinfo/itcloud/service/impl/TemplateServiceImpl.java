@@ -4,6 +4,8 @@ import com.itinfo.itcloud.model.TypeExtKt;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.computing.TemplateVo;
+import com.itinfo.itcloud.model.create.TemplateCreateVo;
+import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.model.storage.TempDiskVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
@@ -53,6 +55,27 @@ public class TemplateServiceImpl implements ItTemplateService {
 
 
     @Override
+    public TemplateCreateVo setEditTemplate(String id) {
+        SystemService system = admin.getConnection().systemService();
+        Template template = system.templatesService().templateService(id).get().send().template();
+
+
+        return null;
+    }
+
+    @Override
+    public CommonVo<Boolean> editTemplate(TemplateCreateVo tVo) {
+        return null;
+    }
+
+    @Override
+    public CommonVo<Boolean> deleteTemplate(String id) {
+        return null;
+    }
+
+
+
+    @Override
     public TemplateVo getInfo(String id) {
         SystemService system = admin.getConnection().systemService();
         Template template = system.templatesService().templateService(id).get().send().template();
@@ -89,10 +112,10 @@ public class TemplateServiceImpl implements ItTemplateService {
     @Override
     public List<TempDiskVo> getDisk(String id) {
         SystemService system = admin.getConnection().systemService();
-        List<DiskAttachment> vmdiskList = system.templatesService().templateService(id).diskAttachmentsService().list().send().attachments();
+        List<DiskAttachment> diskList = system.templatesService().templateService(id).diskAttachmentsService().list().send().attachments();
         // 별칭, 가상크기, 연결대상, 인터페이스, 논리적 이름, 상태, 유형, 설명
 
-        return vmdiskList.stream()
+        return diskList.stream()
                 .filter(DiskAttachment::diskPresent)
                 .map(diskAttachment -> {
                     Disk disk = system.disksService().diskService(diskAttachment.disk().id()).get().send().disk();
@@ -105,6 +128,7 @@ public class TemplateServiceImpl implements ItTemplateService {
                             .sparse(disk.sparse() ? "씬 프로비저닝" : "사전 할당")
                             .diskInterface(diskAttachment.interface_())
                             .storageType(TypeExtKt.findStorageType(disk.storageType()))
+//                            .createDate(disk.)
                             // TODO 생성날짜
                             .domainVoList(
                                 disk.storageDomains().stream()
@@ -114,7 +138,7 @@ public class TemplateServiceImpl implements ItTemplateService {
                                                     .name(sd.name())
                                                     .domainType(sd.type()) // 마스터
                                                     .domainTypeMaster(sd.master() /*? "마스터" : ""*/)
-                                                    // 상태
+//                                                    .status(sd.status())   // 상태: 활성화 (뭔지모르겠음)
                                                     .usedSize(sd.used())
                                                     .availableSize(sd.available())
                                                     .diskSize(sd.used().add(sd.available()))
@@ -125,42 +149,12 @@ public class TemplateServiceImpl implements ItTemplateService {
                             .build();
                 })
                 .collect(Collectors.toList());
-
-//        return vmdiskList.stream()
-//                .filter(DiskAttachment::diskPresent)
-//                .map(diskAttachment -> {
-//                    Disk disk = system.disksService().diskService(diskAttachment.disk().id()).get().send().disk();
-//                    System.out.println("interface: "+disk.interface_());
-//                    return TempDiskVo.builder()
-//                            .name(disk.name())
-//                            .status(disk.status())
-//                            .sparse(disk.sparse())
-////                            .diskInterface(disk.interface_()) // 인터페이스 안나옴
-//                            .virtualSize(disk.provisionedSize())
-//                            .actualSize(disk.actualSize())  // 1보다 작은거 처리는 front에서
-//                            .storageType(TypeExtKt.findStorageType(disk.storageType()))
-//                            // 생성날짜
-//                            .domainVoList(
-//                                    disk.storageDomains().stream()
-//                                            .map(storageDomain -> {
-//                                                StorageDomain sd = system.storageDomainsService().storageDomainService(storageDomain.id()).get().send().storageDomain();
-//                                                return DomainVo.builder()
-//                                                        .name(sd.name())
-//                                                        .domainType(sd.type()) // 마스터
-//                                                        // 상태
-//                                                        .usedSize(sd.used())
-//                                                        .availableSize(sd.available())
-//                                                        .diskSize( sd.used().add(sd.available()) )
-//                                                        .build();
-//                                            })
-//                                            .collect(Collectors.toList())
-//                            )
-//                            .build();
-//                })
-//                .collect(Collectors.toList());
     }
 
-
+    @Override
+    public CommonVo<Boolean> copyDisk(String id) {
+        return null;
+    }
 
     @Override
     public List<PermissionVo> getPermission(String id) {

@@ -1,13 +1,22 @@
 package com.itinfo.itcloud.model.create;
 
 import com.itinfo.itcloud.model.computing.ClusterVo;
+import com.itinfo.itcloud.model.computing.CpuProfileVo;
+import com.itinfo.itcloud.model.storage.DiskVo;
+
+import java.util.List;
 
 public class TemplateCreateVo {
+    // 템플릿 생성을 가상머신에서 함
     private String id;
     private String name;
     private String comment;
 
-    private String clusterId;
-    private String clusterName;
-    private ClusterVo cVo;
+    private String dcId;
+    private String dcName;
+
+    private List<ClusterVo> clusterVoList;
+    private List<CpuProfileVo> cpuProfileVoList;
+
+    private DiskVo diskVo; // 디스크 할당
 }

@@ -32,15 +32,6 @@ internal class ItClusterServiceTest {
 	 * 
 	 * @see ItClusterService.getName
 	 **/
-	@Test
-	internal fun should_getName() {
-		log.debug("should_getName ... ")
-		assertThat(service, `is`(not(nullValue())))
-		val _id = ""
-		val output: String? =
-			service.getName(_id)
-		// TODO: 메소드의 결과값에 대한 검증처리
-	}
 
 	/**
 	 * [should_getList]
