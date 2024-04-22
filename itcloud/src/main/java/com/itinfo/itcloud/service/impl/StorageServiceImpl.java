@@ -48,8 +48,9 @@ public class StorageServiceImpl implements ItStorageService {
                 .flatMap(storageDomain -> {
                     List<Disk> diskList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().storageDomainService(storageDomain.id()).disksService().list().send().disks();
                     return diskList.stream()
-                            .map(disk ->
-                                    DiskVo.builder()
+                            .map(disk -> {
+                                Disk disk1 = system.disksService().diskService(disk.id()).get().send().disk();
+                                return DiskVo.builder()
                                         .id(disk.id())
                                         .name(disk.name())
                                         .alias(disk.alias())
@@ -59,14 +60,18 @@ public class StorageServiceImpl implements ItStorageService {
                                         .storageType(disk.storageType())
                                         .virtualSize(disk.provisionedSize())
 //                                        .connection(disk.diskProfile().id()) // 가상머신
-                                        .domainVo(
-                                                DomainVo.builder()
-                                                        .id(disk.storageDomain().id())
-                                                        .name(system.storageDomainsService().storageDomainService(disk.storageDomain().id()).get().send().storageDomain().name())
-                                                        .build()
+                                        .domainVoList(
+                                            disk1.storageDomains().stream()
+                                                    .map(storageDomain1 ->
+                                                            DomainVo.builder()
+                                                                    .id(storageDomain.id())
+                                                                    .name(storageDomain.name())
+                                                                    .build()
+                                                    )
+                                                    .collect(Collectors.toList())
                                         )
-                                        .build()
-                            );
+                                        .build();
+                            });
                 })
                 .collect(Collectors.toList());
     }
@@ -109,9 +114,9 @@ public class StorageServiceImpl implements ItStorageService {
     }
 
     // 스토리지 > 디스크 > 새로만들기 - 이미지
+    // storage_domain, provisioned_size and format
     @Override
     public CommonVo<Boolean> addDiskImage(ImageCreateVo image) {
-        // storage_domain, provisioned_size and format
         SystemService system = admin.getConnection().systemService();
         DisksService disksService = system.disksService();
 
@@ -124,7 +129,7 @@ public class StorageServiceImpl implements ItStorageService {
 					.storageDomains(new StorageDomain[]{ new StorageDomainBuilder().id(image.getDomainId()).build()})
 					.wipeAfterDelete(image.isWipeAfterDelete())
                     .shareable(image.isShare())     // shareable
-                    .backup(image.getBackup())
+                    .backup(image.isBackup() ? DiskBackup.INCREMENTAL : DiskBackup.NONE)
                     .format(image.isShare() ? DiskFormat.RAW : DiskFormat.COW)
                     .diskProfile(new DiskProfileBuilder().id(image.getProfileId()).build())
             .build();
@@ -146,7 +151,6 @@ public class StorageServiceImpl implements ItStorageService {
     @Override
     public CommonVo<Boolean> editDiskImage(ImageCreateVo image) {
         SystemService system = admin.getConnection().systemService();
-
         DiskService diskService = system.disksService().diskService(image.getId());
 
         try{
@@ -156,7 +160,7 @@ public class StorageServiceImpl implements ItStorageService {
                     .provisionedSize( (image.getSize().add(image.getAppendSize())).multiply(BigInteger.valueOf(1024).pow(3)) ) //확장 +
                     .name(image.getName())
                     .description(image.getDescription())
-                    .storageDomains(new StorageDomain[]{ new StorageDomainBuilder().id(image.getDomainId()).build()})
+//                    .storageDomains(new StorageDomain[]{ new StorageDomainBuilder().id(image.getDomainId()).build()})
                     .wipeAfterDelete(image.isWipeAfterDelete())
                     .shareable(image.isShare())
                     .format(image.isShare() ? DiskFormat.RAW : DiskFormat.COW)
@@ -326,7 +330,7 @@ public class StorageServiceImpl implements ItStorageService {
                     .storageDomains(new StorageDomain[]{ new StorageDomainBuilder().id(image.getDomainId()).build()})
                     .wipeAfterDelete(image.isWipeAfterDelete())
                     .shareable(image.isShare())     // shareable
-                    .backup(image.getBackup())
+                    .backup(image.isBackup() ? DiskBackup.INCREMENTAL : DiskBackup.NONE)
                     .format(image.isShare() ? DiskFormat.RAW : DiskFormat.COW)
                     .diskProfile(new DiskProfileBuilder().id(image.getProfileId()).build())
 //                    .lunStorage(new HostStorageBuilder().id(image.getHostId()).build())

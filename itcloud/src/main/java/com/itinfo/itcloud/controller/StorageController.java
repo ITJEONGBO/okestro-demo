@@ -23,6 +23,7 @@ import java.util.List;
 public class StorageController {
 	private final ItStorageService storageService;
 
+
 	@GetMapping("/{id}/disks")
 	@ResponseBody
 	public List<DiskVo> disks(@PathVariable String id){	// id=dcId
@@ -31,45 +32,55 @@ public class StorageController {
 		return storageService.getDiskList(id);
 	}
 
-
 	@GetMapping("/{id}/disks/settings")
 	@ResponseBody
 	public DiskDcVo setAddDisk(@PathVariable String id){
+		log.info("--- 디스크 이미지 생성창");
 		return storageService.setDiskImage(id);
 	}
 
 	@PostMapping("/{id}/disks/image")
-	public CommonVo<Boolean> addDiskImage(@PathVariable String id, @RequestBody ImageCreateVo image){
-		log.info("새가상 디스크 - 이미지 생성");
+	@ResponseBody
+	public CommonVo<Boolean> addDiskImage(@PathVariable String id,
+										  @RequestBody ImageCreateVo image){
+		log.info("--- 새가상 디스크 - 이미지 생성");
 		return storageService.addDiskImage(image);
 	}
 
 	@PutMapping("/{id}/disks/image")
-	public CommonVo<Boolean> editDiskImage(@PathVariable String id, @RequestBody ImageCreateVo image){
-		log.info("새가상 디스크 - 이미지 수정");
+	@ResponseBody
+	public CommonVo<Boolean> editDiskImage(@PathVariable String id,
+										   @RequestBody ImageCreateVo image){
+		log.info("--- 새가상 디스크 - 이미지 수정");
 		return storageService.editDiskImage(image);
 	}
 
 	@DeleteMapping("/{id}/disks/image")
+	@ResponseBody
 	public CommonVo<Boolean> deleteDiskImage(@PathVariable String id){
-		log.info("새가상 디스크 - 이미지 삭제");
+		log.info("--- 새가상 디스크 - 이미지 삭제");
 		return storageService.deleteDisk(id);
 	}
 
 	@PostMapping("/{id}/disks/move")
-	public CommonVo<Boolean> moveDisk(@PathVariable String id, @RequestBody DiskVo disk){
-		log.info("디스크 - 이동");
+	@ResponseBody
+	public CommonVo<Boolean> moveDisk(@PathVariable String id,
+									  @RequestBody DiskVo disk){
+		log.info("--- 디스크 - 이동");
 		return storageService.moveDisk(disk);
 	}
 
 
-	@PostMapping("/disk/copy")
-	public CommonVo<Boolean> copyDisk(@PathVariable String id, @RequestBody DiskVo disk){
-		log.info("디스크 - 복사");
+	@PostMapping("/{id}/disk/copy")
+	@ResponseBody
+	public CommonVo<Boolean> copyDisk(@PathVariable String id,
+									  @RequestBody DiskVo disk){
+		log.info("--- 디스크 - 복사");
 		return storageService.copyDisk(disk);
 	}
 
-	@PostMapping("/disk/upload")
+	@PostMapping("/{id}/disk/upload")
+	@ResponseBody
 	public CommonVo<Boolean> uploadDisk(@RequestPart MultipartFile file,
 										@RequestPart ImageCreateVo image) throws IOException {
 		return storageService.uploadDisk(file, image);

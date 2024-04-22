@@ -8,11 +8,11 @@ import org.ovirt.engine.sdk4.types.DiskBackup;
 
 import java.math.BigInteger;
 
-@Getter @Setter @Builder @ToString
+@Getter @Builder @ToString
 public class ImageCreateVo {
     private String id;
     private BigInteger size;   // 크기(Gib)
-    private BigInteger appendSize;  // 확장크기
+    private BigInteger appendSize;  // 확장 크기
     private String name;
     private String description;
     private boolean sparse;     // 할당 정책 (씬, )
@@ -21,7 +21,7 @@ public class ImageCreateVo {
 
     private boolean wipeAfterDelete; // 삭제 후 초기화
     private boolean share;  // 공유가능
-    private DiskBackup backup;  // 증분 백업 사용
+    private boolean backup;  // 증분 백업 사용
 
     private String hostId;
 }
