@@ -54,12 +54,17 @@ public class StorageServiceImpl implements ItStorageService {
                                         .name(disk.name())
                                         .alias(disk.alias())
                                         .description(disk.description())
-            //                           .connection() //diskprofile
-//                                        .domainVoList()
                                         .shareable(disk.shareable())
                                         .status(disk.status())
                                         .storageType(disk.storageType())
                                         .virtualSize(disk.provisionedSize())
+//                                        .connection(disk.diskProfile().id()) // 가상머신
+                                        .domainVo(
+                                                DomainVo.builder()
+                                                        .id(disk.storageDomain().id())
+                                                        .name(system.storageDomainsService().storageDomainService(disk.storageDomain().id()).get().send().storageDomain().name())
+                                                        .build()
+                                        )
                                         .build()
                             );
                 })
@@ -70,13 +75,8 @@ public class StorageServiceImpl implements ItStorageService {
     @Override
     public DiskDcVo setDiskImage(String dcId) {
         SystemService system = admin.getConnection().systemService();
-
         DataCenter dataCenter = system.dataCentersService().dataCenterService(dcId).get().follow("clusters").send().dataCenter();
         List<StorageDomain> sdList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().list().send().storageDomains();
-        List<Host> hostList = system.hostsService().list().send().hosts();
-
-        List<String> clusterId = dataCenter.clusters().stream().map(Identified::id).collect(Collectors.toList());
-        clusterId.forEach(System.out::println);
 
         return DiskDcVo.builder()
                 .dcId(dcId)
@@ -105,17 +105,6 @@ public class StorageServiceImpl implements ItStorageService {
                         })
                         .collect(Collectors.toList())
                 )
-//                .hostVoList(
-//                    hostList.stream()
-//                        .filter(host -> host.clusterPresent() && host.cluster().id().equals())
-//                        .map(host ->
-//                            HostVo.builder()
-//                                .id(host.id())
-//                                .name(host.name())
-//                            .build()
-//                        )
-//                        .collect(Collectors.toList())
-//                )
                 .build();
     }
 
@@ -124,7 +113,6 @@ public class StorageServiceImpl implements ItStorageService {
     public CommonVo<Boolean> addDiskImage(ImageCreateVo image) {
         // storage_domain, provisioned_size and format
         SystemService system = admin.getConnection().systemService();
-
         DisksService disksService = system.disksService();
 
         try{
@@ -450,42 +438,26 @@ public class StorageServiceImpl implements ItStorageService {
     // region: domain
 
     @Override
-    public List<DcDomainVo> getDomainList() {
+    public List<DomainVo> getDomainList(String dcId) {
         SystemService system = admin.getConnection().systemService();
+        List<StorageDomain> storageDomainList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().list().send().storageDomains();
 
-        List<DataCenter> dataCenterList = system.dataCentersService().list().send().dataCenters();
-
-        return dataCenterList.stream()
-            .map(dataCenter -> {
-                String datacenterId = dataCenter.id();
-                String datacenterName = system.dataCentersService().dataCenterService(datacenterId).get().send().dataCenter().name();
-
-                List<StorageDomain> storageDomainList = system.dataCentersService().dataCenterService(datacenterId).storageDomainsService().list().send().storageDomains();
-
-                List<DomainVo> domainVoList = storageDomainList.stream()
-                    .map(storageDomain ->
-                        DomainVo.builder()
-                            .status(storageDomain.status())
-                            .id(storageDomain.id())
-                            .name(storageDomain.name())
-                            .comment(storageDomain.comment())
-                            .domainType(storageDomain.type())
-                            .domainTypeMaster(storageDomain.master())
-                            .storageType(storageDomain.storage().type())
-                            .format(storageDomain.storageFormat())
-                            .diskSize(storageDomain.usedPresent() ? storageDomain.used().add(storageDomain.available()) : null)
-                            .availableSize(storageDomain.available())
-                            .description(storageDomain.description())
-                        .build()
-                    )
-                    .collect(Collectors.toList());
-
-                return DcDomainVo.builder()
-                        .datacenterId(datacenterId)
-                        .datacenterName(datacenterName)
-                        .domainList(domainVoList)
-                    .build();
-            })
+        return storageDomainList.stream()
+            .map(storageDomain ->
+                    DomainVo.builder()
+                        .status(storageDomain.status())
+                        .id(storageDomain.id())
+                        .name(storageDomain.name())
+                        .comment(storageDomain.comment())
+                        .domainType(storageDomain.type())
+                        .domainTypeMaster(storageDomain.master())
+                        .storageType(storageDomain.storage().type())
+                        .format(storageDomain.storageFormat())
+                        .diskSize(storageDomain.usedPresent() ? storageDomain.used().add(storageDomain.available()) : null)
+                        .availableSize(storageDomain.available())
+                        .description(storageDomain.description())
+                    .build()
+            )
             .collect(Collectors.toList());
     }
 
@@ -579,7 +551,6 @@ public class StorageServiceImpl implements ItStorageService {
     @Override
     public CommonVo<Boolean> deleteDomain(String domainId) {
         SystemService system = admin.getConnection().systemService();
-
         StorageDomainService storageDomainService = system.storageDomainsService().storageDomainService(domainId);
         StorageDomain storageDomain = storageDomainService.get().send().storageDomain();
         AttachedStorageDomainService asdService = system.dataCentersService().dataCenterService(storageDomain.dataCenters().get(0).id()).storageDomainsService().storageDomainService(domainId);
@@ -608,6 +579,9 @@ public class StorageServiceImpl implements ItStorageService {
     // 데이터가 많이 없음 생성요청
     @Override
     public List<VolumeVo> getVolumeVoList(String dcId) {
+        SystemService system = admin.getConnection().systemService();
+
+
         return null;
     }
 
@@ -620,7 +594,6 @@ public class StorageServiceImpl implements ItStorageService {
     @Override
     public List<DomainVo> getStorageList(String dcId) {
         SystemService system = admin.getConnection().systemService();
-
         List<StorageDomain> storageDomainList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().list().send().storageDomains();
 
         return storageDomainList.stream()

@@ -45,7 +45,7 @@ public interface ItStorageService {
 
     // region: domain
 
-    List<DcDomainVo> getDomainList();    // 도메인 리스트
+    List<DomainVo> getDomainList(String dcId);    // 도메인 리스트
 
     CommonVo<Boolean> addDomain(DomainCreateVo dcVo);      // 도메인 생성
 //    CommonVo<Boolean> manageDomain();   // 관리

@@ -34,37 +34,37 @@ public class StorageController {
 
 	@GetMapping("/{id}/disks/settings")
 	@ResponseBody
-	public DiskDcVo setAddDisk(String id){
+	public DiskDcVo setAddDisk(@PathVariable String id){
 		return storageService.setDiskImage(id);
 	}
 
 	@PostMapping("/{id}/disks/image")
-	public CommonVo<Boolean> addDiskImage(@RequestBody ImageCreateVo image){
+	public CommonVo<Boolean> addDiskImage(@PathVariable String id, @RequestBody ImageCreateVo image){
 		log.info("새가상 디스크 - 이미지 생성");
 		return storageService.addDiskImage(image);
 	}
 
 	@PutMapping("/{id}/disks/image")
-	public CommonVo<Boolean> editDiskImage(@RequestBody ImageCreateVo image){
+	public CommonVo<Boolean> editDiskImage(@PathVariable String id, @RequestBody ImageCreateVo image){
 		log.info("새가상 디스크 - 이미지 수정");
 		return storageService.editDiskImage(image);
 	}
 
 	@DeleteMapping("/{id}/disks/image")
-	public CommonVo<Boolean> deleteDiskImage(@RequestParam String id){
+	public CommonVo<Boolean> deleteDiskImage(@PathVariable String id){
 		log.info("새가상 디스크 - 이미지 삭제");
 		return storageService.deleteDisk(id);
 	}
 
 	@PostMapping("/{id}/disks/move")
-	public CommonVo<Boolean> moveDisk(@RequestBody DiskVo disk){
+	public CommonVo<Boolean> moveDisk(@PathVariable String id, @RequestBody DiskVo disk){
 		log.info("디스크 - 이동");
 		return storageService.moveDisk(disk);
 	}
 
 
 	@PostMapping("/disk/copy")
-	public CommonVo<Boolean> copyDisk(@RequestBody DiskVo disk){
+	public CommonVo<Boolean> copyDisk(@PathVariable String id, @RequestBody DiskVo disk){
 		log.info("디스크 - 복사");
 		return storageService.copyDisk(disk);
 	}
@@ -78,15 +78,21 @@ public class StorageController {
 
 
 
-	@GetMapping("/domains")
+
+
+
+	// 데이터센터 {id}/domains
+	@GetMapping("/{id}/domains")
 	@ResponseBody
-	public List<DcDomainVo> domains(){
-		return storageService.getDomainList();
+	public List<DomainVo> domains(@PathVariable String id){
+		return storageService.getDomainList(id);
 	}
 
-	@GetMapping("/volumes")
+
+	// 데이터센터 {id}/volumes
+	@GetMapping("/{id}/volumes")
 	@ResponseBody
-	public List<VolumeVo> volumes(String id){
+	public List<VolumeVo> volumes(@PathVariable String id){
 		return storageService.getVolumeVoList(id);
 	}
 
