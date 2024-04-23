@@ -2,9 +2,7 @@ package com.itinfo.itcloud.model.storage;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
-import org.ovirt.engine.sdk4.types.DiskBackup;
 
 import java.math.BigInteger;
 
@@ -15,7 +13,7 @@ public class ImageCreateVo {
     private BigInteger appendSize;  // 확장 크기
     private String name;
     private String description;
-    private boolean sparse;     // 할당 정책 (씬, )
+    private boolean sparse;     // 할당 정책 (씬 true, 사전할당 false)
     private String domainId;    // 스토리지 도메인 아이디값
     private String profileId;   // 디스크 프로파일 아이디값
 

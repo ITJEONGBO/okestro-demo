@@ -33,6 +33,8 @@ public class DiskVo {
     private String diskProfileId;
     private String diskProfileName;
 
-//    private DomainVo domainVo;
-    private List<DomainVo> domainVoList;
+    private DomainVo domainVo;
+
+    private List<DomainVo> domainVoList;    // 필요한 경우는 오직 템플릿을 위해
+    private List<DiskProfileVo> dpVoList;   // 디스크 프로파일 리스트
 }

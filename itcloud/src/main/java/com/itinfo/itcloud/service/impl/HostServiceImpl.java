@@ -430,8 +430,7 @@ public class HostServiceImpl implements ItHostService {
 
         log.info("Host 호스트 장치");
         return hostDeviceList.stream()
-                .map(
-                    hostDevice ->
+                .map(hostDevice ->
                         HostDeviceVo.builder()
                             .name(hostDevice.name())
                             .capability(hostDevice.capability())

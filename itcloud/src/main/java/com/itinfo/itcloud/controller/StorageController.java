@@ -23,119 +23,155 @@ import java.util.List;
 public class StorageController {
 	private final ItStorageService storageService;
 
-
-	@GetMapping("/{id}/disks")
+	@GetMapping("/{dcId}/disks")
 	@ResponseBody
-	public List<DiskVo> disks(@PathVariable String id){	// id=dcId
+	public List<DiskVo> disks(@PathVariable("dcId") String dcId){	// id=dcId
 		// 데이터센터 밑에 붙어있는 디스크
 		log.info("--- Disk 목록");
-		return storageService.getDiskList(id);
+		return storageService.getDiskList(dcId);
 	}
 
-	@GetMapping("/{id}/disks/settings")
+	@GetMapping("/{dcId}/disks/settings")
 	@ResponseBody
-	public DiskDcVo setAddDisk(@PathVariable String id){
+	public DiskDcVo setAddDisk(@PathVariable("dcId") String dcId){
 		log.info("--- 디스크 이미지 생성창");
-		return storageService.setDiskImage(id);
+		return storageService.setDiskImage(dcId);
 	}
 
-	@PostMapping("/{id}/disks/image")
+	@PostMapping("/{dcId}/disks/image")
 	@ResponseBody
-	public CommonVo<Boolean> addDiskImage(@PathVariable String id,
+	public CommonVo<Boolean> addDiskImage(@PathVariable("dcId") String dcId,
 										  @RequestBody ImageCreateVo image){
 		log.info("--- 새가상 디스크 - 이미지 생성");
 		return storageService.addDiskImage(image);
 	}
 
-	@PutMapping("/{id}/disks/image")
+	@PutMapping("/{dcId}/disks/image/{id}")
 	@ResponseBody
-	public CommonVo<Boolean> editDiskImage(@PathVariable String id,
+	public CommonVo<Boolean> editDiskImage(@PathVariable("dcId") String dcId,
+										   @PathVariable("id") String id,
 										   @RequestBody ImageCreateVo image){
 		log.info("--- 새가상 디스크 - 이미지 수정");
 		return storageService.editDiskImage(image);
 	}
 
-	@DeleteMapping("/{id}/disks/image")
+	@DeleteMapping("/{dcId}/disks/image/{id}")
 	@ResponseBody
-	public CommonVo<Boolean> deleteDiskImage(@PathVariable String id){
+	public CommonVo<Boolean> deleteDiskImage(@PathVariable("dcId") String dcId,
+											 @PathVariable("id") String id){
 		log.info("--- 새가상 디스크 - 이미지 삭제");
 		return storageService.deleteDisk(id);
 	}
 
-	@PostMapping("/{id}/disks/move")
+
+	@GetMapping("/{dcId}/disks/{id}/move")
 	@ResponseBody
-	public CommonVo<Boolean> moveDisk(@PathVariable String id,
-									  @RequestBody DiskVo disk){
+	public DiskVo setDiskMove(@PathVariable("dcId") String dcId,
+							  @PathVariable("id") String id){
+		log.info("--- 디스크 - 이동창");
+		return storageService.setDiskMove(dcId, id);
+	}
+
+	@PostMapping("disks/{id}/move")
+	@ResponseBody
+	public CommonVo<Boolean> moveDisk(@PathVariable("id") String id,
+									  @RequestBody DiskMoveCopyVo diskMoveCopyVo){
 		log.info("--- 디스크 - 이동");
-		return storageService.moveDisk(disk);
+		return storageService.moveDisk(id, diskMoveCopyVo);
+	}
+
+	@GetMapping("/{dcId}/disks/{id}/copy")
+	@ResponseBody
+	public DiskVo setDiskCopy(@PathVariable("dcId") String dcId,
+							  @PathVariable("id") String id){
+		log.info("--- 디스크 - 복사창");
+		return storageService.setDiskCopy(dcId, id);
 	}
 
 
-	@PostMapping("/{id}/disk/copy")
+	@PostMapping("disks/{id}/copy")
 	@ResponseBody
 	public CommonVo<Boolean> copyDisk(@PathVariable String id,
-									  @RequestBody DiskVo disk){
+									  @RequestBody DiskMoveCopyVo disk){
 		log.info("--- 디스크 - 복사");
-		return storageService.copyDisk(disk);
+		return storageService.copyDisk(id, disk);
 	}
 
-	@PostMapping("/{id}/disk/upload")
+	@PostMapping("/{dcId}/disk/upload")
 	@ResponseBody
 	public CommonVo<Boolean> uploadDisk(@RequestPart MultipartFile file,
 										@RequestPart ImageCreateVo image) throws IOException {
 		return storageService.uploadDisk(file, image);
 	}
 
-
+	@GetMapping("/{dcId}/disks/{id}")
+	@ResponseBody
+	public List<DiskVo> disks(@PathVariable("dcId") String dcId,
+							  @PathVariable("id") String id){
+		// 데이터센터 밑에 붙어있는 디스크
+		log.info("--- Disk 목록");
+		return storageService.getDiskList(id);
+	}
 
 
 
 
 
 	// 데이터센터 {id}/domains
-	@GetMapping("/{id}/domains")
+	@GetMapping("/{dcId}/domains")
 	@ResponseBody
-	public List<DomainVo> domains(@PathVariable String id){
-		return storageService.getDomainList(id);
+	public List<DomainVo> domains(@PathVariable("dcId") String dcId){
+		log.info("--- Domain 목록");
+		return storageService.getDomainList(dcId);
 	}
+
+
 
 
 	// 데이터센터 {id}/volumes
-	@GetMapping("/{id}/volumes")
+	@GetMapping("/{dcId}/volumes")
 	@ResponseBody
-	public List<VolumeVo> volumes(@PathVariable String id){
-		return storageService.getVolumeVoList(id);
+	public List<VolumeVo> volumes(@PathVariable("dcId") String dcId){
+		log.info("--- Domain 목록");
+		return storageService.getVolumeVoList(dcId);
 	}
 
-	@GetMapping("/storages")
+	@GetMapping("/{dcId}/storages")
 	@ResponseBody
-	public List<DomainVo> storages(String id){
-		return storageService.getStorageList(id);
+	public List<DomainVo> storages(@PathVariable("dcId") String dcId){
+		log.info("--- networks");
+		return storageService.getStorageList(dcId);
 	}
 
-	@GetMapping("/networks")
+	@GetMapping("/{dcId}/networks")
 	@ResponseBody
-	public List<NetworkVo> networks(String id){
-		return storageService.getNetworkVoList(id);
+	public List<NetworkVo> networks(@PathVariable("dcId") String dcId){
+		log.info("--- networks");
+		return storageService.getNetworkVoList(dcId);
 	}
 
-	@GetMapping("/clusters")
+	@GetMapping("/{dcId}/clusters")
 	@ResponseBody
-	public List<ClusterVo> clusters(String id){
-		return storageService.getClusterVoList(id);
+	public List<ClusterVo> clusters(@PathVariable("dcId") String dcId){
+		log.info("--- clusters");
+		return storageService.getClusterVoList(dcId);
 	}
 
-	@GetMapping("/events")
+
+	@GetMapping("/{dcId}/permissions")
 	@ResponseBody
-	public List<EventVo> events(String id){
-		return storageService.getEvent(id);
+	public List<PermissionVo> permissions(@PathVariable("dcId") String dcId){
+		log.info("--- permissions");
+		return storageService.getPermission(dcId);
 	}
 
-	@GetMapping("/permissions")
+	@GetMapping("/{dcId}/events")
 	@ResponseBody
-	public List<PermissionVo> permissions(String id){
-		return storageService.getPermission(id);
+	public List<EventVo> events(@PathVariable("dcId") String dcId){
+		log.info("--- events");
+		return storageService.getEvent(dcId);
 	}
+
 
 
 }

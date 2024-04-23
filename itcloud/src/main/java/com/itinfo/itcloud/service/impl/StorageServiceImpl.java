@@ -4,6 +4,7 @@ import com.itinfo.itcloud.model.TypeExtKt;
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
+import com.itinfo.itcloud.model.create.DomainSetVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.storage.*;
@@ -36,8 +37,8 @@ public class StorageServiceImpl implements ItStorageService {
     @Autowired private AdminConnectionService admin;
 
 
-    // region: disk
 
+    // region: disk
     // de에 있는 디스크로 바꿔야하긴한데
     @Override
     public List<DiskVo> getDiskList(String dcId) {
@@ -114,6 +115,7 @@ public class StorageServiceImpl implements ItStorageService {
     }
 
     // 스토리지 > 디스크 > 새로만들기 - 이미지
+    // ovirt에서 dc정보는 스토리지 도메인을 파악하기 위해있음
     // storage_domain, provisioned_size and format
     @Override
     public CommonVo<Boolean> addDiskImage(ImageCreateVo image) {
@@ -127,11 +129,12 @@ public class StorageServiceImpl implements ItStorageService {
                     .name(image.getName())
                     .description(image.getDescription())
 					.storageDomains(new StorageDomain[]{ new StorageDomainBuilder().id(image.getDomainId()).build()})
-					.wipeAfterDelete(image.isWipeAfterDelete())
-                    .shareable(image.isShare())     // shareable
-                    .backup(image.isBackup() ? DiskBackup.INCREMENTAL : DiskBackup.NONE)
-                    .format(image.isShare() ? DiskFormat.RAW : DiskFormat.COW)
+                    .sparse(image.isSparse()) // 할당정책: 씬 true
                     .diskProfile(new DiskProfileBuilder().id(image.getProfileId()).build())
+					.wipeAfterDelete(image.isWipeAfterDelete()) // 삭제후 초기화
+                    .shareable(image.isShare())     // 공유 가능
+                    .backup(image.isBackup() ? DiskBackup.INCREMENTAL : DiskBackup.NONE)    // 증분 백업 사용(기본이 true)
+                    .format(image.isBackup() ? DiskFormat.COW : DiskFormat.RAW) // 백업 안하면 RAW
             .build();
 
             Disk disk = disksService.add().disk(diskBuilder).send().disk();
@@ -148,6 +151,8 @@ public class StorageServiceImpl implements ItStorageService {
         }
     }
 
+    // 디스트 수정
+    // 수정시 나오는 화면은 다 같은거 같아서
     @Override
     public CommonVo<Boolean> editDiskImage(ImageCreateVo image) {
         SystemService system = admin.getConnection().systemService();
@@ -157,14 +162,13 @@ public class StorageServiceImpl implements ItStorageService {
             DiskBuilder diskBuilder = new DiskBuilder();
             diskBuilder
                     .id(image.getId())
-                    .provisionedSize( (image.getSize().add(image.getAppendSize())).multiply(BigInteger.valueOf(1024).pow(3)) ) //확장 +
+                    .provisionedSize( (image.getSize().add(image.getAppendSize())).multiply(BigInteger.valueOf(1024).pow(3)) ) // 값 받은 것을 byte로 변환하여 준다
                     .name(image.getName())
                     .description(image.getDescription())
-//                    .storageDomains(new StorageDomain[]{ new StorageDomainBuilder().id(image.getDomainId()).build()})
-                    .wipeAfterDelete(image.isWipeAfterDelete())
-                    .shareable(image.isShare())
-                    .format(image.isShare() ? DiskFormat.RAW : DiskFormat.COW)
-                    .diskProfile(new DiskProfileBuilder().id(image.getProfileId()).build())
+                    .wipeAfterDelete(image.isWipeAfterDelete()) // 삭제후 초기화
+                    .shareable(image.isShare())     // 공유 가능
+                    .backup(image.isBackup() ? DiskBackup.INCREMENTAL : DiskBackup.NONE)    // 증분 백업 사용(기본이 true)
+                    .format(image.isBackup() ? DiskFormat.COW : DiskFormat.RAW) // 백업 안하면 RAW
             .build();
 
             diskService.update().disk(diskBuilder).send().disk();
@@ -190,10 +194,11 @@ public class StorageServiceImpl implements ItStorageService {
     @Override
     public CommonVo<Boolean> addDiskLun(LunCreateVo lun) {
         SystemService system = admin.getConnection().systemService();
-
         DisksService disksService = system.disksService();
 //        Host host = system.hostsService().hostService(lunVo.getHostId()).get().send().host();
-        // host 사용하지 않고 직접 lun디스크 생성시 호스트 요소 제거
+
+        // host 사용 -> 호스트는 상태 확인(예: LUN 표시) 및 LUN에 대한 기본 정보(예: 크기 및 일련 번호) 검색에 사용
+        // host 사용X ->  데이터베이스 전용 작업. 스토리지에 액세스되지 않습니다.
 
         try{
             DiskBuilder diskBuilder = new DiskBuilder();
@@ -215,13 +220,14 @@ public class StorageServiceImpl implements ItStorageService {
                     )
             .build();
 
-            Disk disk = disksService.add().disk(diskBuilder).send().disk();
+//            Disk disk = disksService.add().disk(diskBuilder).send().disk();
+            Disk disk = disksService.addLun().disk(diskBuilder).send().disk();
 
             do{
                 log.info("ok");
             }while (disk.status().equals(DiskStatus.OK));
 
-            log.info("성공: 새 가상 디스크 (lun) {} 생성", lun.getAlias());
+            log.info("성공: 새 가상 디스크 (lun) 생성");
             return CommonVo.successResponse();
         }catch (Exception e){
             log.error("실패: 새 가상 디스크 (lun) 생성");
@@ -241,13 +247,17 @@ public class StorageServiceImpl implements ItStorageService {
     @Override
     public CommonVo<Boolean> deleteDisk(String diskId) {
         SystemService system = admin.getConnection().systemService();
-
         DiskService diskService = system.disksService().diskService(diskId);
+        Disk disk = system.disksService().diskService(diskId).get().send().disk();
 
         try{
             diskService.remove().send();
 
-            log.info("성공: 디스크 {} 삭제", diskId);
+            do{
+                log.info("디스크 완전 삭제");
+            }while (!disk.idPresent());
+
+            log.info("성공: 디스크 삭제");
             return CommonVo.successResponse();
         }catch (Exception e){
             log.error("실패: 새 가상 디스크 (이미지) 수정");
@@ -257,16 +267,56 @@ public class StorageServiceImpl implements ItStorageService {
     }
 
 
+    // 디스크 이동 창
+    // profile은 필요없음
+    @Override
+    public DiskVo setDiskMove(String dcId, String id) {
+        SystemService system = admin.getConnection().systemService();
+        Disk disk = system.disksService().diskService(id).get().send().disk();
+        List<StorageDomain> storageDomainList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().list().send().storageDomains();
+
+        return DiskVo.builder()
+                .id(disk.id())
+                .alias(disk.alias())
+                .virtualSize(disk.provisionedSize().divide(BigInteger.valueOf(1024).pow(3)))
+                .domainVoList(
+                    storageDomainList.stream()
+                            .filter(storageDomain -> !storageDomain.id().equals(disk.storageDomains().get(0).id()))
+                            .map(storageDomain ->
+                                DomainVo.builder()
+                                        .id(storageDomain.id())
+                                        .name(storageDomain.name())
+                                        .build()
+                            )
+                            .collect(Collectors.toList())
+                )
+//                .dpVoList(
+//                    storageDomainList.stream()
+//                            .filter(storageDomain -> !storageDomain.id().equals(disk.storageDomains().get(0).id()))
+//                            .flatMap(storageDomain -> {
+//                                List<DiskProfile> diskProfileList = system.storageDomainsService().storageDomainService(storageDomain.id()).diskProfilesService().list().send().profiles();
+//                                return diskProfileList.stream()
+//                                        .map(diskProfile ->
+//                                                DiskProfileVo.builder()
+//                                                        .id(diskProfile.id())
+//                                                        .name(diskProfile.name())
+//                                                        .build()
+//                                        );
+//                            })
+//                            .collect(Collectors.toList())
+//                )
+                .build();
+    }
+
     // 디스크 이동
     @Override
-    public CommonVo<Boolean> moveDisk(DiskVo disk) {
+    public CommonVo<Boolean> moveDisk(String id, DiskMoveCopyVo diskMoveCopyVo) {
         SystemService system = admin.getConnection().systemService();
-
-//        DiskService diskService = system.disksService().diskService(disk.getId());
-//        StorageDomain sd = system.storageDomainsService().storageDomainService(disk.getStorageDomainId()).get().send().storageDomain();
+        DiskService diskService = system.disksService().diskService(id);
+        StorageDomain sd = system.storageDomainsService().storageDomainService(diskMoveCopyVo.getDomainId()).get().send().storageDomain();
 
         try {
-//            diskService.move().storageDomain(sd).send();
+            diskService.move().storageDomain(sd).send();
 
             log.info("성공: 디스크 이동");
             return CommonVo.successResponse();
@@ -278,15 +328,66 @@ public class StorageServiceImpl implements ItStorageService {
     }
 
     @Override
-    public CommonVo<Boolean> copyDisk(DiskVo disk) {
-        // diskId, storageDomainId, disk-name
+    public DiskVo setDiskCopy(String dcId, String id) {
         SystemService system = admin.getConnection().systemService();
+        Disk disk = system.disksService().diskService(id).get().send().disk();
+        List<StorageDomain> storageDomainList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().list().send().storageDomains();
 
-        DiskService diskService = system.disksService().diskService(disk.getId());
-//        StorageDomain sd = system.storageDomainsService().storageDomainService(disk.getStorageDomainId()).get().send().storageDomain();
+        return DiskVo.builder()
+                .id(disk.id())
+                .alias(disk.alias())
+                .virtualSize(disk.provisionedSize().divide(BigInteger.valueOf(1024).pow(3)))
+                .domainVo(
+                        storageDomainList.stream()
+                                .filter(storageDomain -> storageDomain.id().equals(disk.storageDomains().get(0).id()))
+                                .map(storageDomain ->
+                                        DomainVo.builder()
+                                                .id(storageDomain.id())
+                                                .name(storageDomain.name())
+                                                .build()
+                                )
+                                .findAny()
+                                .orElse(null)
+                )
+                .domainVoList(
+                        storageDomainList.stream()
+                                .map(storageDomain ->
+                                        DomainVo.builder()
+                                                .id(storageDomain.id())
+                                                .name(storageDomain.name())
+                                                .build()
+                                )
+                                .collect(Collectors.toList())
+                )
+                .dpVoList(
+                        storageDomainList.stream()
+                                .filter(storageDomain -> !storageDomain.id().equals(disk.storageDomains().get(0).id()))
+                                .flatMap(storageDomain -> {
+                                    List<DiskProfile> diskProfileList = system.storageDomainsService().storageDomainService(storageDomain.id()).diskProfilesService().list().send().profiles();
+                                    return diskProfileList.stream()
+                                            .map(diskProfile ->
+                                                    DiskProfileVo.builder()
+                                                            .id(diskProfile.id())
+                                                            .name(diskProfile.name())
+                                                            .build()
+                                            );
+                                })
+                                .collect(Collectors.toList())
+                )
+                .build();
+    }
+
+    @Override
+    public CommonVo<Boolean> copyDisk(String id, DiskMoveCopyVo diskMoveCopyVo) {
+        SystemService system = admin.getConnection().systemService();
+        DiskService diskService = system.disksService().diskService(id);
+        StorageDomain sd = system.storageDomainsService().storageDomainService(diskMoveCopyVo.getDomainId()).get().send().storageDomain();
 
         try {
-//            diskService.copy().disk((new DiskBuilder()).name(disk.getName()).build()).storageDomain(sd).send();
+            DiskBuilder diskBuilder = new DiskBuilder();
+            diskBuilder.alias(diskMoveCopyVo.getAlias()).build();
+
+            diskService.copy().disk(diskBuilder).storageDomain(sd).send();
 
             log.info("성공: 디스크 복사");
             return CommonVo.successResponse();
@@ -435,7 +536,6 @@ public class StorageServiceImpl implements ItStorageService {
     public CommonVo<Boolean> downloadDisk() {
         return null;
     }
-
     // endregion
 
 
@@ -444,25 +544,34 @@ public class StorageServiceImpl implements ItStorageService {
     @Override
     public List<DomainVo> getDomainList(String dcId) {
         SystemService system = admin.getConnection().systemService();
-        List<StorageDomain> storageDomainList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().list().send().storageDomains();
+        List<StorageDomain> storageDomainList = system.storageDomainsService().list().send().storageDomains();
 
         return storageDomainList.stream()
-            .map(storageDomain ->
+                .filter(storageDomain -> !storageDomain.dataCentersPresent() || storageDomain.dataCenters().get(0).id().equals(dcId))
+                .map(storageDomain ->
                     DomainVo.builder()
-                        .status(storageDomain.status())
-                        .id(storageDomain.id())
-                        .name(storageDomain.name())
-                        .comment(storageDomain.comment())
-                        .domainType(storageDomain.type())
-                        .domainTypeMaster(storageDomain.master())
-                        .storageType(storageDomain.storage().type())
-                        .format(storageDomain.storageFormat())
-                        .diskSize(storageDomain.usedPresent() ? storageDomain.used().add(storageDomain.available()) : null)
-                        .availableSize(storageDomain.available())
-                        .description(storageDomain.description())
-                    .build()
-            )
-            .collect(Collectors.toList());
+                            .status(storageDomain.status())
+                            .id(storageDomain.id())
+                            .name(storageDomain.name())
+                            .comment(storageDomain.comment())
+                            .domainType(storageDomain.type())
+                            .domainTypeMaster(storageDomain.master())
+                            .storageType(storageDomain.storage().type())
+                            .format(storageDomain.storageFormat())
+                            .diskSize(storageDomain.usedPresent() ? storageDomain.used().add(storageDomain.available()) : null)
+                            .availableSize(storageDomain.available())
+                            .description(storageDomain.description())
+                            .build()
+                )
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DomainSetVo> setDomain() {
+        SystemService system = admin.getConnection().systemService();
+        List<DataCenter> dataCenterList = system.dataCentersService().list().send().dataCenters();
+
+        return null;
     }
 
     // requires: name, type, host, and storage attributes. Identify the host attribute with the id or name attributes.
@@ -471,9 +580,7 @@ public class StorageServiceImpl implements ItStorageService {
     @Override
     public CommonVo<Boolean> addDomain(DomainCreateVo dcVo) {
         SystemService system = admin.getConnection().systemService();
-
         StorageDomainsService storageDomainsService = system.storageDomainsService();
-//        DataCenter dataCenter = system.dataCentersService().dataCenterService(dcVo.getDatacenterId()).get().send().dataCenter();
         DataCenterService dataCenterService = system.dataCentersService().dataCenterService(dcVo.getDatacenterId());
 
         try{
@@ -578,7 +685,6 @@ public class StorageServiceImpl implements ItStorageService {
     // endregion
 
 
-    // region: volume
 
     // 데이터가 많이 없음 생성요청
     @Override
@@ -589,10 +695,7 @@ public class StorageServiceImpl implements ItStorageService {
         return null;
     }
 
-    // endregion
 
-
-    // region: storage
 
     // dc에 잇는 스토리지 도메인
     @Override
@@ -616,10 +719,8 @@ public class StorageServiceImpl implements ItStorageService {
                 .collect(Collectors.toList());
     }
 
-    // endregion
 
 
-    // region : network
     @Override
     public List<NetworkVo> getNetworkVoList(String dcId) {
         SystemService system = admin.getConnection().systemService();
@@ -637,10 +738,7 @@ public class StorageServiceImpl implements ItStorageService {
                 .collect(Collectors.toList());
     }
 
-    // endregion
 
-
-    // region: cluster
     @Override
     public List<ClusterVo> getClusterVoList(String dcId) {
         SystemService system = admin.getConnection().systemService();
@@ -659,10 +757,6 @@ public class StorageServiceImpl implements ItStorageService {
                 .collect(Collectors.toList());
     }
 
-    // endregion
-
-
-    // region: permisson
 
     //데이터센터 - 권한
     @Override
@@ -707,17 +801,11 @@ public class StorageServiceImpl implements ItStorageService {
         return pVoList;
     }
 
-    // endregion
-
-
-    // region : event
-
     @Override
     public List<EventVo> getEvent(String id) {
         SystemService system = admin.getConnection().systemService();
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
         List<Event> eventList = system.eventsService().list().send().events();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
         return eventList.stream()
                 .filter(Event::dataCenterPresent)
@@ -734,6 +822,5 @@ public class StorageServiceImpl implements ItStorageService {
                 .collect(Collectors.toList());
     }
 
-    // endregion
-
 }
+

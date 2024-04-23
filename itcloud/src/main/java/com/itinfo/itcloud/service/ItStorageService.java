@@ -3,6 +3,7 @@ package com.itinfo.itcloud.service;
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
+import com.itinfo.itcloud.model.create.DomainSetVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.storage.*;
@@ -27,11 +28,14 @@ public interface ItStorageService {
     CommonVo<Boolean> addDiskLun(LunCreateVo lun);      // 디스크-lun: 생성
     CommonVo<Boolean> editDiskLun(LunCreateVo lun);     // 디스크-lun: 수정
 
-    // 가상 디스크 생성 - 관리되는 블록은 제외
-    
+    // 가상 디스크 생성 - 관리되는 블록 제외
     CommonVo<Boolean> deleteDisk(String diskId);   // 디스크: 삭제
-    CommonVo<Boolean> moveDisk(DiskVo disk);       // 디스크 이동
-    CommonVo<Boolean> copyDisk(DiskVo disk);       // 디스크 복사
+
+    DiskVo setDiskMove(String dcId, String id);  // 디스크 이동 창
+    CommonVo<Boolean> moveDisk(String id, DiskMoveCopyVo diskMoveCopyVo);       // 디스크 이동
+    DiskVo setDiskCopy(String dcId, String id);  // 디스크 복사 창
+    CommonVo<Boolean> copyDisk(String id, DiskMoveCopyVo diskMoveCopyVo);       // 디스크 복사
+
 
     CommonVo<Boolean> uploadDisk(MultipartFile file, ImageCreateVo image) throws IOException;     // 디스크 업로드 시작
     CommonVo<Boolean> cancelUpload(String diskId); // 업로드 취소
@@ -47,6 +51,7 @@ public interface ItStorageService {
 
     List<DomainVo> getDomainList(String dcId);    // 도메인 리스트
 
+    List<DomainSetVo> setDomain();  // 도메인 생성창
     CommonVo<Boolean> addDomain(DomainCreateVo dcVo);      // 도메인 생성
 //    CommonVo<Boolean> manageDomain();   // 관리
     CommonVo<Boolean> deleteDomain(String domainId);   // 삭제
