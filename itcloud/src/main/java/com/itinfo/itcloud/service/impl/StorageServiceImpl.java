@@ -3,6 +3,7 @@ package com.itinfo.itcloud.service.impl;
 import com.itinfo.itcloud.model.TypeExtKt;
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
+import com.itinfo.itcloud.model.computing.HostVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.create.DomainSetVo;
 import com.itinfo.itcloud.model.error.CommonVo;
@@ -60,7 +61,7 @@ public class StorageServiceImpl implements ItStorageService {
                                         .status(disk.status())
                                         .storageType(disk.storageType())
                                         .virtualSize(disk.provisionedSize())
-//                                        .connection(disk.diskProfile().id()) // 가상머신
+//                                        .connection(disk.diskProfile().id()) // 가상머신 연결
                                         .domainVoList(
                                             disk1.storageDomains().stream()
                                                     .map(storageDomain1 ->
@@ -130,9 +131,9 @@ public class StorageServiceImpl implements ItStorageService {
                     .description(image.getDescription())
 					.storageDomains(new StorageDomain[]{ new StorageDomainBuilder().id(image.getDomainId()).build()})
                     .sparse(image.isSparse()) // 할당정책: 씬 true
-                    .diskProfile(new DiskProfileBuilder().id(image.getProfileId()).build())
+                    .diskProfile(new DiskProfileBuilder().id(image.getProfileId()).build()) // 없어도 상관없음
 					.wipeAfterDelete(image.isWipeAfterDelete()) // 삭제후 초기화
-                    .shareable(image.isShare())     // 공유 가능
+                    .shareable(image.isShare())     // 공유 가능 (공유가능 o 이라면 증분백업 안됨 FRONT에서 막기?)
                     .backup(image.isBackup() ? DiskBackup.INCREMENTAL : DiskBackup.NONE)    // 증분 백업 사용(기본이 true)
                     .format(image.isBackup() ? DiskFormat.COW : DiskFormat.RAW) // 백업 안하면 RAW
             .build();
@@ -141,7 +142,7 @@ public class StorageServiceImpl implements ItStorageService {
 
             do{
                 log.info("ok");
-            }while (disk.status().equals(DiskStatus.OK));
+            }while (disk.status() == DiskStatus.OK);
 
             log.info("성공: 디스크 이미지 {} 생성", image.getName());
             return CommonVo.successResponse();
@@ -153,6 +154,7 @@ public class StorageServiceImpl implements ItStorageService {
 
     // 디스트 수정
     // 수정시 나오는 화면은 다 같은거 같아서
+    // 디스크 프로파일은 막아야할 거 같음
     @Override
     public CommonVo<Boolean> editDiskImage(ImageCreateVo image) {
         SystemService system = admin.getConnection().systemService();
@@ -167,7 +169,9 @@ public class StorageServiceImpl implements ItStorageService {
                     .description(image.getDescription())
                     .wipeAfterDelete(image.isWipeAfterDelete()) // 삭제후 초기화
                     .shareable(image.isShare())     // 공유 가능
-                    .backup(image.isBackup() ? DiskBackup.INCREMENTAL : DiskBackup.NONE)    // 증분 백업 사용(기본이 true)
+                    // 증분 백업 사용(기본이 true)
+                    // 백업 수정시 false면 front에서 막아야됨
+                    .backup(image.isBackup() ? DiskBackup.INCREMENTAL : DiskBackup.NONE)    
                     .format(image.isBackup() ? DiskFormat.COW : DiskFormat.RAW) // 백업 안하면 RAW
             .build();
 
@@ -186,11 +190,23 @@ public class StorageServiceImpl implements ItStorageService {
     @Override
     public LunCreateVo setDiskLun(String dcId) {
         SystemService system = admin.getConnection().systemService();
+        DataCenter dataCenter = system.dataCentersService().dataCenterService(dcId).get().follow("clusters").send().dataCenter();
+        List<Host> hostList = system.hostsService().list().send().hosts();
+        hostList.stream()
+                .filter(Host::clusterPresent)
+                .map(host ->
+                        HostVo.builder()
+                                .id(host.id())
+                                .name(host.name())
+                        .build()
+                )
+                .collect(Collectors.toList());
 
         return null;
     }
 
     // 스토리지 > 디스크 > 새로만들기 - 직접 LUN
+    // 오케는 lun생성 없음(코드는 있음)
     @Override
     public CommonVo<Boolean> addDiskLun(LunCreateVo lun) {
         SystemService system = admin.getConnection().systemService();

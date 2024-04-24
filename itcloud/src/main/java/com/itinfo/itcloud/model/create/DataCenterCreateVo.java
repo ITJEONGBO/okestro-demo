@@ -1,12 +1,9 @@
 package com.itinfo.itcloud.model.create;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.ovirt.engine.sdk4.types.QuotaModeType;
 
-@Getter @Setter @ToString @Builder
+@Getter @Setter @ToString @Builder @EqualsAndHashCode
 public class DataCenterCreateVo {
     private String id;
     private String name;
