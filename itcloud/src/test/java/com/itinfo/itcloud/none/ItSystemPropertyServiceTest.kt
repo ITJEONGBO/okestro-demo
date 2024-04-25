@@ -1,11 +1,7 @@
-package com.itinfo.itcloud.service
+package com.itinfo.itcloud.none
 
 import com.itinfo.common.LoggerDelegate
-import org.junit.jupiter.api.Test
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.`is`
-import org.hamcrest.Matchers.not
-import org.hamcrest.Matchers.nullValue
+import com.itinfo.itcloud.service.ItSystemPropertyService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 

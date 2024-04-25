@@ -1,4 +1,4 @@
-//package com.itinfo.itcloud.service
+package com.itinfo.itcloud.none//package com.itinfo.itcloud.service
 //
 //import com.itinfo.common.LoggerDelegate
 //import org.junit.jupiter.api.Test

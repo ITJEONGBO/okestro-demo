@@ -51,29 +51,6 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                 .collect(Collectors.toList());
     }
 
-    // 데이터센터 이벤트 출력
-    @Override
-    public List<EventVo> getEvent(String id) {
-        SystemService system = admin.getConnection().systemService();
-        List<Event> eventList = system.eventsService().list().send().events();
-        String dcName = system.dataCentersService().dataCenterService(id).get().send().dataCenter().name();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
-
-        log.info("데이터센터 {} 이벤트 출력", dcName);
-        return eventList.stream()
-                .filter(event -> event.dataCenterPresent() && event.dataCenter().idPresent() && event.dataCenter().id().equals(id))
-                .map(event ->
-                    EventVo.builder()
-                        .datacenterName(dcName)
-                        .severity(TypeExtKt.findLogSeverity(event.severity()))   //상태
-                        .time(sdf.format(event.time()))
-                        .message(event.description())
-                        .relationId(event.correlationIdPresent() ? event.correlationId() : null)
-                        .source(event.origin())
-                    .build()
-                )
-                .collect(Collectors.toList());
-    }
 
     // 데이터센터 생성
     @Override
@@ -102,7 +79,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
                 datacentersService.add().dataCenter(dataCenter).send();     // 데이터센터 만든거 추가
 
-                 log.info("성공: 데이터센터 생성 {}", dataCenter.name());
+                log.info("성공: 데이터센터 생성 {}", dataCenter.name());
                 return CommonVo.successResponse();
             }else {
                 log.error("실패: 데이터센터 생성 이름 중복");
@@ -141,7 +118,6 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     @Override
     public CommonVo<Boolean> editDatacenter(String id, DataCenterCreateVo dcVo) {
         SystemService system = admin.getConnection().systemService();
-
         DataCenterService dataCenterService = system.dataCentersService().dataCenterService(id);
         String dcName = system.dataCentersService().dataCenterService(id).get().send().dataCenter().name();
 
@@ -193,6 +169,33 @@ public class DataCenterServiceImpl implements ItDataCenterService {
             return CommonVo.failResponse(e.getMessage());
         }
     }
+
+
+    // 데이터센터 이벤트 출력
+    @Override
+    public List<EventVo> getEvent(String id) {
+        SystemService system = admin.getConnection().systemService();
+        List<Event> eventList = system.eventsService().list().send().events();
+        String dcName = system.dataCentersService().dataCenterService(id).get().send().dataCenter().name();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
+
+        log.info("데이터센터 {} 이벤트 출력", dcName);
+        return eventList.stream()
+                .filter(event -> event.dataCenterPresent() && event.dataCenter().idPresent() && event.dataCenter().id().equals(id) /*|| event.dataCenter().name().equals(dcName)*/)
+                .map(event ->
+                        EventVo.builder()
+                                .datacenterName(dcName)
+                                .severity(TypeExtKt.findLogSeverity(event.severity()))   //상태
+                                .time(sdf.format(event.time()))
+                                .message(event.description())
+                                .relationId(event.correlationIdPresent() ? event.correlationId() : null)
+                                .source(event.origin())
+                                .build()
+                )
+                .collect(Collectors.toList());
+    }
+
+
 
 
 

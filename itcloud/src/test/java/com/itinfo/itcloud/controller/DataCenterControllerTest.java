@@ -1,6 +1,7 @@
 package com.itinfo.itcloud.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.create.DataCenterCreateVo;
 import com.itinfo.itcloud.service.ItDataCenterService;
 import org.junit.jupiter.api.DisplayName;
@@ -12,16 +13,24 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(DataCenterController.class)
 class DataCenterControllerTest {
-
-    @Autowired MockMvc mvc;
+    // https://frozenpond.tistory.com/82
     @MockBean ItDataCenterService dcService;
-    ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired MockMvc mvc;
+    @Autowired private Gson gson;
+//    ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     @DisplayName("hello Test")
@@ -33,29 +42,25 @@ class DataCenterControllerTest {
     @Test
     @DisplayName("데이터센터 리스트 출력")
     void datacenters() throws Exception {
+        List<DataCenterVo> dataCenterList = new ArrayList<>();
+        dataCenterList.add(DataCenterVo.builder().id("asdf").name("asdf").build());
+        dataCenterList.add(DataCenterVo.builder().id("asdf").name("asdf").build());
+
+        given(dcService.getList()).willReturn(dataCenterList);
+
         mvc.perform(get("/computing/datacenters"))
-                .andExpect(status().isOk());
+                .andExpect(content().string(containsString("asdf")))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
 
         verify(dcService).getList();
     }
 
     @Test
-    @DisplayName("데이터센터 이벤트 출력")
-    void event() throws Exception {
-        String id = "9c72ff12-a5f3-11ee-941d-00163e39cb43";
-
-        mvc.perform(
-                get("/computing/datacenter/" + id + "/events"))
-                .andExpect(status().isOk());
-
-        verify(dcService).getEvent(id);
-    }
-
-    @Test
     @DisplayName("데이터센터 생성")
     void addDatacenter() throws Exception {
-        DataCenterCreateVo dc =
-                DataCenterCreateVo.builder()
+        DataCenterCreateVo dc = DataCenterCreateVo.builder()
                         .name("test21")
                         .comment("testComment")
                         .description("testDescription")
@@ -64,11 +69,12 @@ class DataCenterControllerTest {
                         .quotaMode(QuotaModeType.AUDIT)
                         .build();
 
-        mvc.perform(
-                post("/computing/datacenter")
+        mvc.perform(post("/computing/datacenter")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dc)))
-                .andExpect(status().isOk());
+                .content(gson.toJson(dc)))
+                .andExpect(status().isCreated())
+                .andDo(print())
+                .andReturn();
 
         verify(dcService).addDatacenter(dc);
     }
@@ -78,9 +84,10 @@ class DataCenterControllerTest {
     void getDatacenter() throws Exception {
         String id = "9c72ff12-a5f3-11ee-941d-00163e39cb43";
         
-        mvc.perform(
-                get("/computing/datacenter/" + id + "/settings"))
-                .andExpect(status().isOk());
+        mvc.perform(get("/computing/datacenter/" + id + "/settings"))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
 
         verify(dcService).getDatacenter(id);
     }
@@ -101,11 +108,12 @@ class DataCenterControllerTest {
                         .quotaMode(QuotaModeType.AUDIT)
                         .build();
 
-        mvc.perform(
-                        put("/computing/datacenter/" + id)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(dc)))
-                .andExpect(status().isOk());
+        mvc.perform(put("/computing/datacenter/" + id)
+                                .content(gson.toJson(dc))
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andDo(print())
+                .andReturn();
 
         verify(dcService).editDatacenter(id, dc);
 
@@ -116,10 +124,26 @@ class DataCenterControllerTest {
     void deleteDatacenter() throws Exception {
         String id = "b6d4202f-85e8-4786-b350-17195078f100";
 
-        mvc.perform(
-                delete("/computing/datacenter/" + id))
-                .andExpect(status().isOk());
+        mvc.perform(delete("/computing/datacenter/" + id))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
 
         verify(dcService).deleteDatacenter(id);
+    }
+
+
+
+    @Test
+    @DisplayName("데이터센터 이벤트 출력")
+    void event() throws Exception {
+        String id = "9c72ff12-a5f3-11ee-941d-00163e39cb43";
+
+        mvc.perform(get("/computing/datacenter/" + id + "/events"))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        verify(dcService).getEvent(id);
     }
 }

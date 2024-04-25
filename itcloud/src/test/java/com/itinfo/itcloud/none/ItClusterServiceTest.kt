@@ -1,17 +1,15 @@
-package com.itinfo.itcloud.service
+package com.itinfo.itcloud.none
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.service.ItClusterService
 import org.junit.jupiter.api.Test
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.not
 import org.hamcrest.Matchers.nullValue
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 
 /**
  * [ItClusterServiceTest]

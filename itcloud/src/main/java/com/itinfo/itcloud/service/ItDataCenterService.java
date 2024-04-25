@@ -11,14 +11,14 @@ import java.util.List;
 @Service
 public interface ItDataCenterService {
     List<DataCenterVo> getList();
-    List<EventVo> getEvent(String id);
-
 
     CommonVo<Boolean> addDatacenter(DataCenterCreateVo dcVo);   // 생성
-
     DataCenterCreateVo getDatacenter(String id);
     CommonVo<Boolean> editDatacenter(String id, DataCenterCreateVo dcVo);   // 수정
     CommonVo<Boolean> deleteDatacenter(String id);       // 삭제
+
+    List<EventVo> getEvent(String id);
+
 
     // region: 안쓸 것 같음
 //    List<DomainVo> getStorage(String id);

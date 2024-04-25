@@ -7,6 +7,7 @@ import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.service.ItDataCenterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,9 +20,9 @@ import java.util.List;
 public class DataCenterController {
 	private final ItDataCenterService dcService;
 
-
 	@GetMapping("/hello")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
 	public String hello(){
 		return "hello";
 	}
@@ -29,6 +30,7 @@ public class DataCenterController {
 
 	@GetMapping("/datacenters")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
 	public List<DataCenterVo> datacenters() {
 		log.info("----- 데이터센터 목록");
 		return dcService.getList();
@@ -36,6 +38,7 @@ public class DataCenterController {
 
 	@GetMapping("/datacenter/{id}/events")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
 	public List<EventVo> event(@PathVariable String id) {
 		log.info("----- 데이터센터 이벤트 : " + id);
 		return dcService.getEvent(id);
@@ -44,8 +47,24 @@ public class DataCenterController {
 
 
 	// 데이터센터 생성
+//	@ResponseStatus(HttpStatus.CREATED)
+//	@ApiResponses({
+//			@ApiResponse(code = 201, message = "CREATED"),
+//			@ApiResponse(code = 400, message = "BAD REQUEST")
+//	})
+
+	// ResponseEntity<?> 사용
+//	@PostMapping("/datacenter")
+//	@ResponseBody
+//	public ResponseEntity<?> addDatacenter(@RequestBody DataCenterCreateVo dcVo){
+//		log.info("----- 데이터센터 추가 : " + dcVo.getName());
+//		return new ResponseEntity<>(dcService.addDatacenter(dcVo),HttpStatus.CREATED);
+//	}
+
+
 	@PostMapping("/datacenter")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> addDatacenter(@RequestBody DataCenterCreateVo dcVo){
 		log.info("----- 데이터센터 추가 : " + dcVo.getName());
 		return dcService.addDatacenter(dcVo);
@@ -54,6 +73,7 @@ public class DataCenterController {
 	// 데이터센터 수정 창
 	@GetMapping("/datacenter/{id}/settings")
 	@ResponseBody()
+	@ResponseStatus(HttpStatus.OK)
 	public DataCenterCreateVo getDatacenter(@PathVariable String id){
 		log.info("-- 데이터 센터 편집 창");
 		return dcService.getDatacenter(id);
@@ -62,6 +82,7 @@ public class DataCenterController {
 	// 데이터센터 수정
 	@PutMapping("/datacenter/{id}")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> editDatacenter(@PathVariable String id,
 											@RequestBody DataCenterCreateVo dcVo){
 		log.info("----- 데이터센터 편집 : " + dcVo.getName());
@@ -71,6 +92,7 @@ public class DataCenterController {
 	// 데이터센터 삭제
 	@DeleteMapping("/datacenter/{id}")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
 	public CommonVo<Boolean> deleteDatacenter(@PathVariable String id){
 		log.info("----- 데이터센터 삭제");
 		return dcService.deleteDatacenter(id);
