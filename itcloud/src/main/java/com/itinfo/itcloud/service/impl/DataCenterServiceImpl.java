@@ -181,16 +181,18 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
         log.info("데이터센터 {} 이벤트 출력", dcName);
         return eventList.stream()
-                .filter(event -> event.dataCenterPresent() && event.dataCenter().idPresent() && event.dataCenter().id().equals(id) /*|| event.dataCenter().name().equals(dcName)*/)
+                .filter(event -> event.dataCenterPresent()
+                        && (event.dataCenter().idPresent() && event.dataCenter().id().equals(id) || (event.dataCenter().namePresent() && event.dataCenter().name().equals(dcName)) )
+                )
                 .map(event ->
                         EventVo.builder()
-                                .datacenterName(dcName)
-                                .severity(TypeExtKt.findLogSeverity(event.severity()))   //상태
-                                .time(sdf.format(event.time()))
-                                .message(event.description())
-                                .relationId(event.correlationIdPresent() ? event.correlationId() : null)
-                                .source(event.origin())
-                                .build()
+                            .datacenterName(dcName)
+                            .severity(TypeExtKt.findLogSeverity(event.severity()))   //상태
+                            .time(sdf.format(event.time()))
+                            .message(event.description())
+                            .relationId(event.correlationIdPresent() ? event.correlationId() : null)
+                            .source(event.origin())
+                            .build()
                 )
                 .collect(Collectors.toList());
     }

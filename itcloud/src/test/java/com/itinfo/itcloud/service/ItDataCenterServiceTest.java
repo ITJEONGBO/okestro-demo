@@ -109,7 +109,7 @@ class ItDataCenterServiceTest {
     @DisplayName("데이터센터 삭제 테스트")
     @Order(6)
     void deleteDatacenter() {
-        String id = "90fc30fb-7f77-48b4-9897-df7baf1dd6fa";
+        String id = "7d736eda-a541-4fc9-95a2-03b0d4617b31";
 
         CommonVo<Boolean> result = dcService.deleteDatacenter(id);
 
@@ -119,7 +119,7 @@ class ItDataCenterServiceTest {
     @Test
     @DisplayName("데이터센터 이벤트 목록")
     void getEvent() {
-        String id = "7d736eda-a541-4fc9-95a2-03b0d4617b31";
+        String id = "ea9ced37-0df4-40c5-8dcc-5bb5183236da";
 
         List<EventVo> result = dcService.getEvent(id);
         System.out.println(dcService.getEvent(id).size());
