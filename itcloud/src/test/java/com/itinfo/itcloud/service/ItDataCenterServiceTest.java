@@ -6,35 +6,26 @@ import com.itinfo.itcloud.model.error.CommonVo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.ovirt.engine.sdk4.types.QuotaModeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
 class ItDataCenterServiceTest {
-//    @Autowired DataCenterServiceImpl dcService;
     @Autowired ItDataCenterService dcService;
 
-    @Test
-    @DisplayName("test 출력")
-    @Order(1)
-    void test(){
-        String a = "test";
-        assertThat(a).isEqualTo("test");
-        System.out.println(a);
-    }
     @Test
     @DisplayName("데이터센터 리스트 출력")
     @Order(2)
     void getList() {
-        assertThat(3).isEqualTo(dcService.getList().size());
+//        AdminConnectionService admin = new AdminConnectionService();
+//        SystemService system = admin.getConnection().systemService();
+//        System.out.println(system.dataCentersService().list().send().dataCenters().size());
+        assertThat(4).isEqualTo(dcService.getList().size());
     }
 
     @Test

@@ -24,9 +24,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+// https://frozenpond.tistory.com/82
 @WebMvcTest(DataCenterController.class)
 class DataCenterControllerTest {
-    // https://frozenpond.tistory.com/82
     @MockBean ItDataCenterService dcService;
     @Autowired MockMvc mvc;
     @Autowired private Gson gson;
