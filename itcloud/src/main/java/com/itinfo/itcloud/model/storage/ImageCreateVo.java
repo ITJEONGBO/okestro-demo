@@ -9,7 +9,8 @@ import java.math.BigInteger;
 @Getter @Builder @ToString
 public class ImageCreateVo {
     private String id;
-    private BigInteger size;   // 크기(Gib)
+    private int size;   // 크기(Gib)
+//    private BigInteger size;   // 크기(Gib)
     private BigInteger appendSize;  // 확장 크기
     private String name;
     private String description;

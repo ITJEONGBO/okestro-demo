@@ -99,42 +99,4 @@ public class DataCenterController {
 	}
 
 
-
-	// region: 안쓸것 같음
-
-
-//	@GetMapping("/datacenter/storageStatus")
-//	@ResponseBody
-//	public List<DomainVo> storage(String id) {
-//		log.info("-----datacenter/storageStatus: " + id);
-//		return itDataCenterService.getStorage(id);
-//	}
-//
-//
-//	@GetMapping("/datacenter/networkStatus")
-//	@ResponseBody
-//	public List<NetworkVo> network(String id) {
-//		log.info("----- 데이터센터 network 목록 불러오기: " + id);
-//		return itDataCenterService.getNetwork(id);
-//	}
-//
-//
-//	@GetMapping("/datacenter/clusterStatus")
-//	@ResponseBody
-//	public List<ClusterVo> cluster(String id) {
-//		log.info("----- 데이터센터 cluster 목록 불러오기: " + id);
-//		return itDataCenterService.getCluster(id);
-//	}
-//
-//
-//	@GetMapping("/datacenter/permissionStatus")
-//	@ResponseBody
-//	public List<PermissionVo> permission(String id) {
-//		log.info("----- permission 목록 불러오기: " + id);
-//		return itDataCenterService.getPermission(id);
-//	}
-
-
-	// endregion
-
 }

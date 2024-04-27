@@ -12,6 +12,7 @@ import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItNetworkService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
+import org.ovirt.engine.sdk4.internal.containers.DnsResolverConfigurationContainer;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +35,9 @@ public class NetworkServiceImpl implements ItNetworkService {
         SystemService system = admin.getConnection().systemService();
         List<Network> networkList = system.networksService().list().send().networks();
 
-
         return networkList.stream()
                 .map(network -> {
                     List<NetworkLabel> nlList = system.networksService().networkService(network.id()).networkLabelsService().list().send().labels();
-                    OpenStackNetworkProvider provider = system.openstackNetworkProvidersService().providerService(network.externalProvider().id()).get().send().provider();
 
                     return NetworkVo.builder()
                             .id(network.id())
@@ -57,8 +56,8 @@ public class NetworkServiceImpl implements ItNetworkService {
                                     .findFirst()
                                     .orElse(null)
                             )
-                            .providerId(network.externalProviderPresent() ? provider.id() : null)
-                            .providerName(network.externalProviderPresent() ? provider.name() : null)
+                            .providerId(network.externalProviderPresent() ? system.openstackNetworkProvidersService().providerService(network.externalProvider().id()).get().send().provider().id() : null)
+                            .providerName(network.externalProviderPresent() ? system.openstackNetworkProvidersService().providerService(network.externalProvider().id()).get().send().provider().name() : null)
                             .networkUsageVo(NetworkUsageVo.builder()
                                     .vm(network.usages().contains(NetworkUsage.VM))
                                     .display(network.usages().contains(NetworkUsage.DISPLAY))
@@ -139,14 +138,16 @@ public class NetworkServiceImpl implements ItNetworkService {
 
             Network network = networksService.add().network(networkBuilder).send().network();
 
-//            DnsResolverConfigurationContainer dnsContainer = new DnsResolverConfigurationContainer();
+            DnsResolverConfigurationContainer dnsContainer = new DnsResolverConfigurationContainer();
+            // TODO: DNS 정보 기입 시, 어떤 값을 넣어야 유효한지 확인 필요
+            // dnsContainer.nameServers().add()
 
 
             // TODO: vnic 기본생성 가능. 기본생성명 수정시 기본생성과 수정명 2개가 생김
-            ncVo.getVnics().forEach(vnicProfileVo -> {
-                AssignedVnicProfilesService aVnicsService = system.networksService().networkService(network.id()).vnicProfilesService();
-                aVnicsService.add().profile(new VnicProfileBuilder().name(vnicProfileVo.getName()).build()).send().profile();
-            });
+//            ncVo.getVnics().forEach(vnicProfileVo -> {
+//                AssignedVnicProfilesService aVnicsService = system.networksService().networkService(network.id()).vnicProfilesService();
+//                aVnicsService.add().profile(new VnicProfileBuilder().name(vnicProfileVo.getName()).build()).send().profile();
+//            });
 
             // 클러스터 모두연결이 선택되어야지만 모두 필요가 선택됨
             ncVo.getClusterVoList().stream()

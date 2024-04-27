@@ -41,7 +41,8 @@ class ItDataCenterServiceTest {
     @DisplayName("데이터센터 생성 테스트")
     @Order(3)
     void addDatacenter() {
-        DataCenterCreateVo dc = DataCenterCreateVo.builder()
+        DataCenterCreateVo dc =
+                DataCenterCreateVo.builder()
                 .name("dfdf")
                 .comment("testComment")
                 .description("testDescription")

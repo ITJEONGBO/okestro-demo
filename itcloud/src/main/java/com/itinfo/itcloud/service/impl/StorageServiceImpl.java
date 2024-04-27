@@ -46,12 +46,15 @@ public class StorageServiceImpl implements ItStorageService {
         SystemService system = admin.getConnection().systemService();
         List<StorageDomain> sdList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().list().send().storageDomains();
 
+        // TODO
         return sdList.stream()
                 .flatMap(storageDomain -> {
                     List<Disk> diskList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().storageDomainService(storageDomain.id()).disksService().list().send().disks();
+                    System.out.println(diskList.size());
                     return diskList.stream()
                             .map(disk -> {
                                 Disk disk1 = system.disksService().diskService(disk.id()).get().send().disk();
+                                System.out.println(disk.name());
                                 return DiskVo.builder()
                                         .id(disk.id())
                                         .name(disk.name())
@@ -126,7 +129,7 @@ public class StorageServiceImpl implements ItStorageService {
         try{
             DiskBuilder diskBuilder = new DiskBuilder();
             diskBuilder
-					.provisionedSize(image.getSize().multiply(BigInteger.valueOf(1024).pow(3))) // 값 받은 것을 byte로 변환하여 준다
+					.provisionedSize(BigInteger.valueOf(image.getSize()).multiply(BigInteger.valueOf(1024).pow(3))) // 값 받은 것을 byte로 변환하여 준다
                     .name(image.getName())
                     .description(image.getDescription())
 					.storageDomains(new StorageDomain[]{ new StorageDomainBuilder().id(image.getDomainId()).build()})
@@ -145,7 +148,7 @@ public class StorageServiceImpl implements ItStorageService {
             }while (disk.status() == DiskStatus.OK);
 
             log.info("성공: 디스크 이미지 {} 생성", image.getName());
-            return CommonVo.successResponse();
+            return CommonVo.createResponse();
         }catch (Exception e){
             log.error("실패: 새 가상 디스크 (이미지) 생성");
             return CommonVo.failResponse(e.getMessage());
@@ -164,7 +167,7 @@ public class StorageServiceImpl implements ItStorageService {
             DiskBuilder diskBuilder = new DiskBuilder();
             diskBuilder
                     .id(image.getId())
-                    .provisionedSize( (image.getSize().add(image.getAppendSize())).multiply(BigInteger.valueOf(1024).pow(3)) ) // 값 받은 것을 byte로 변환하여 준다
+                    .provisionedSize( (BigInteger.valueOf(image.getSize()).add(image.getAppendSize())).multiply(BigInteger.valueOf(1024).pow(3)) ) // 값 받은 것을 byte로 변환하여 준다
                     .name(image.getName())
                     .description(image.getDescription())
                     .wipeAfterDelete(image.isWipeAfterDelete()) // 삭제후 초기화
@@ -178,7 +181,8 @@ public class StorageServiceImpl implements ItStorageService {
             diskService.update().disk(diskBuilder).send().disk();
 
             log.info("성공: 디스크 이미지 {} 수정", image.getName());
-            return CommonVo.successResponse();
+            return CommonVo.createResponse();
+//            return CommonVo.successResponse();
         }catch (Exception e){
             log.error("실패: 새 가상 디스크 (이미지) 수정");
             e.printStackTrace();
@@ -257,6 +261,7 @@ public class StorageServiceImpl implements ItStorageService {
 
         return null;
     }
+
 
 
 
@@ -416,6 +421,26 @@ public class StorageServiceImpl implements ItStorageService {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // 파일 선택시 파일에 있는 포맷, 컨텐츠(파일 확장자로 칭하는건지), 크기 출력
     //           파일 크기가 자동으로 디스크 옵션에 추가
     //          파일 명칭이 파일의 이름으로 지정됨 (+설명)
@@ -424,7 +449,6 @@ public class StorageServiceImpl implements ItStorageService {
     @Override
     public CommonVo<Boolean> uploadDisk(MultipartFile file, ImageCreateVo image) throws IOException {
         SystemService system = admin.getConnection().systemService();
-
         DisksService disksService = system.disksService();
         ImageTransfersService imageTransService = system.imageTransfersService(); // 이미지 추가를 위한 서비스
 
@@ -433,7 +457,7 @@ public class StorageServiceImpl implements ItStorageService {
 
         System.out.println("파일: " + file.getSize() +", "+ file.getContentType() +", "+ file.getOriginalFilename());
         System.out.println(Math.ceil(file.getSize() / (Double)Math.pow(1024, 3)));
-//        BigInteger.valueOf(file.getSize()).divide(BigInteger.valueOf(1024).pow(3))
+
 
         try{
             input = file.getInputStream();
@@ -452,10 +476,24 @@ public class StorageServiceImpl implements ItStorageService {
                     .diskProfile(new DiskProfileBuilder().id(image.getProfileId()).build())
 //                    .lunStorage(new HostStorageBuilder().id(image.getHostId()).build())
                     .build();
-
             Disk disk = disksService.add().disk(diskBuilder).send().disk();
-            System.out.println(disk.name() +": " + disk.provisionedSize()); // try1 : 1
 
+            // 목표: 디스크의 상태가 LOCK임으로, OK가 될 때까지 상태확인
+            int retry = 0;
+            Disk dTmp = disksService.diskService(disk.id()).get().send().disk();
+            while(dTmp.statusPresent() && dTmp.status() == DiskStatus.LOCKED && retry <= 20) {
+                Thread.sleep(1000L);
+                log.debug("retry: {}, disk: {}, {}", retry, dTmp.name(), dTmp.status());
+                dTmp = disksService.diskService(disk.id()).get().send().disk();
+                retry += 1;
+            }
+            retry = 0;
+
+            // 20번 (i.e. 20초) 조회 했는데 안된다... 그러면 예외처리
+            if (dTmp.status() != DiskStatus.OK) {
+                // 예외처리!
+                return CommonVo.failResponse("disk가 잠겨있음");
+            }
 
             ImageContainer imageContainer = new ImageContainer();
             imageContainer.id(disk.id());
@@ -643,14 +681,12 @@ public class StorageServiceImpl implements ItStorageService {
             }
 
             StorageDomain storageDomain = storageDomainsService.add().storageDomain(storageDomainBuilder).send().storageDomain();
-
             StorageDomainService storageDomainService = storageDomainsService.storageDomainService(storageDomain.id());
 
             do {
                 Thread.sleep(2000L);
                 storageDomain = storageDomainService.get().send().storageDomain();
             } while(storageDomain.status() != StorageDomainStatus.UNATTACHED);
-
 
             AttachedStorageDomainsService asdsService = dataCenterService.storageDomainsService();
             AttachedStorageDomainService asdService = asdsService.storageDomainService(storageDomain.id());
@@ -708,6 +744,7 @@ public class StorageServiceImpl implements ItStorageService {
         SystemService system = admin.getConnection().systemService();
 
 
+
         return null;
     }
 
@@ -740,7 +777,6 @@ public class StorageServiceImpl implements ItStorageService {
     @Override
     public List<NetworkVo> getNetworkVoList(String dcId) {
         SystemService system = admin.getConnection().systemService();
-
         List<Network> networkList = system.dataCentersService().dataCenterService(dcId).networksService().list().send().networks();
 
         return networkList.stream()
@@ -758,7 +794,6 @@ public class StorageServiceImpl implements ItStorageService {
     @Override
     public List<ClusterVo> getClusterVoList(String dcId) {
         SystemService system = admin.getConnection().systemService();
-
         List<Cluster> clusterList = system.dataCentersService().dataCenterService(dcId).clustersService().list().send().clusters();
 
         return clusterList.stream()

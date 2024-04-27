@@ -28,6 +28,7 @@ public interface ItStorageService {
     CommonVo<Boolean> addDiskLun(LunCreateVo lun);      // 디스크-lun: 생성
     CommonVo<Boolean> editDiskLun(LunCreateVo lun);     // 디스크-lun: 수정
 
+
     // 가상 디스크 생성 - 관리되는 블록 제외
     CommonVo<Boolean> deleteDisk(String diskId);   // 디스크: 삭제
 
