@@ -71,6 +71,7 @@ public class ClusterServiceImpl implements ItClusterService {
                         .storageType(dataCenter.local())
                         .networkList(
                             system.dataCentersService().dataCenterService(dataCenter.id()).networksService().list().send().networks().stream()
+                                .filter(network -> !network.externalProviderPresent())
                                 .map(network ->
                                     NetworkVo.builder()
                                         .id(network.id())
@@ -135,7 +136,8 @@ public class ClusterServiceImpl implements ItClusterService {
                 clustersService.add().cluster(clusterBuilder.build()).send();
 
                 log.info("Cluster 생성");
-                return CommonVo.successResponse();
+//                return CommonVo.successResponse();
+                return CommonVo.createResponse();
             }else {
                 log.error("실패: Cluster 이름 중복 에러");
                 return CommonVo.failResponse("클러스터 이름 중복 에러");
@@ -199,19 +201,21 @@ public class ClusterServiceImpl implements ItClusterService {
     @Override
     public CommonVo<Boolean> editCluster(String id, ClusterCreateVo cVo) {
         SystemService system = admin.getConnection().systemService();
-
         ClustersService clustersService = system.clustersService();
         ClusterService clusterService = system.clustersService().clusterService(id);
         OpenStackNetworkProvider openStackNetworkProvider = system.openstackNetworkProvidersService().list().send().providers().get(0);
-//        Network network = system.networksService().networkService(cVo.getNetworkId()).get().send().network();
 
+        // 중복이름
+        // 만약 아이디가 같으면 이름이 같아도 편집 성공
+        // 아이디가 다르고 이른이 같으면 편집 실패
         boolean cName = clustersService.list().search("name="+cVo.getName()).send().clusters().isEmpty();
         String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
 
         try{
-            if(cName) {
+            if(clusterService.get().send().cluster().id().equals(id)) {
                 ClusterBuilder clusterBuilder = new ClusterBuilder();
                 clusterBuilder
+                        .id(id)
                         .dataCenter(new DataCenterBuilder().id(cVo.getDatacenterId()).build()) // 필수
                         .name(cVo.getName())    // 필수
                         .cpu(new CpuBuilder().architecture(cVo.getCpuArc()).type(cVo.getCpuType()))   // 필수
@@ -240,10 +244,12 @@ public class ClusterServiceImpl implements ItClusterService {
                 clusterService.update().cluster(clusterBuilder.build()).send();
 
                 log.info("Cluster 편집");
-                return CommonVo.successResponse();
-            }else {
-                log.error("실패: Cluster 이름 중복 에러");
+                return CommonVo.createResponse();
+            }else if(cName){
                 return CommonVo.failResponse("클러스터 이름 중복 에러");
+            }else {
+                log.error("실패: Cluster 에러");
+                return CommonVo.failResponse("fail");
             }
         }catch (Exception e){
             log.error("실패: Cluster 편집", e);
@@ -462,13 +468,15 @@ public class ClusterServiceImpl implements ItClusterService {
                                 .positive(agVo.isHostPositive())
                                 .enforcing(agVo.isHostEnforcing())
                         )
-                        .hostLabels(agVo.getHostLabels().stream()
+                        .hostLabels(!agVo.getHostLabels().isEmpty() ?
+                                agVo.getHostLabels().stream()
                                 .map(al -> new AffinityLabelBuilder().id(al.getId()).build())
-                                .collect(Collectors.toList())
+                                .collect(Collectors.toList()) : null
                         )
-                        .vmLabels(agVo.getVmLabels().stream()
+                        .vmLabels(!agVo.getVmLabels().isEmpty() ?
+                                agVo.getVmLabels().stream()
                                 .map(al -> new AffinityLabelBuilder().id(al.getId()).build())
-                                .collect(Collectors.toList())
+                                .collect(Collectors.toList()) : null
                         )
                         .hosts(agVo.getHostList().stream()
                                 .map(host -> new HostBuilder().id(host.getId()).build())
@@ -483,13 +491,14 @@ public class ClusterServiceImpl implements ItClusterService {
                 agServices.add().group(ag).send().group();
 
                 log.info("Cluster 선호도그룹 생성 ");
-                return CommonVo.successResponse();
+                return CommonVo.createResponse();
             }else {
                 log.error("실패: Cluster 선호도그룹 이름 중복");
                 return CommonVo.failResponse("error");
             }
         } catch (Exception e) {
             log.error("실패: Cluster 선호도그룹 생성");
+            e.printStackTrace();
             return CommonVo.failResponse(e.getMessage());
         }
     }
@@ -610,7 +619,7 @@ public class ClusterServiceImpl implements ItClusterService {
             agService.update().send().group();
 
             log.info("Cluster 선호도그룹 편집");
-            return CommonVo.successResponse();
+            return CommonVo.createResponse();
         } catch (Exception e) {
             log.error("실패: Cluster 선호도그룹 편집");
             return CommonVo.failResponse(e.getMessage());
@@ -685,7 +694,7 @@ public class ClusterServiceImpl implements ItClusterService {
                 alServices.add().label(alBuilder).send().label();
 
                 log.info("Cluster 선호도레이블 생성");
-                return CommonVo.successResponse();
+                return CommonVo.createResponse();
             }else {
                 log.error("실패: Cluster 선호도레이블 이름 중복");
                 return CommonVo.failResponse("이름 중복");
@@ -753,7 +762,7 @@ public class ClusterServiceImpl implements ItClusterService {
 
             alService.update().label(alBuilder).send().label();
             log.info("Cluster 선호도레이블 편집");
-            return CommonVo.successResponse();
+            return CommonVo.createResponse();
         } catch (Exception e) {
             log.error("실패: Cluster 선호도레이블 편집");
             e.printStackTrace();
@@ -766,8 +775,8 @@ public class ClusterServiceImpl implements ItClusterService {
     @Override
     public CommonVo<Boolean> deleteAffinitylabel(String id, String alId) {
         SystemService system = admin.getConnection().systemService();
-        AffinityLabelService alService = system.affinityLabelsService().labelService(id);
-        AffinityLabel affinityLabel = system.affinityLabelsService().labelService(id).get().follow("hosts,vms").send().label();
+        AffinityLabelService alService = system.affinityLabelsService().labelService(alId);
+        AffinityLabel affinityLabel = system.affinityLabelsService().labelService(alId).get().follow("hosts,vms").send().label();
 
         try {
             if(!affinityLabel.hostsPresent() && !affinityLabel.vmsPresent()) {

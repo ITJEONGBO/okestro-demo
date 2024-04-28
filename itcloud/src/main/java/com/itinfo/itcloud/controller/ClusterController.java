@@ -9,6 +9,7 @@ import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.service.ItClusterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +25,7 @@ public class ClusterController {
 	// 목록
 	@GetMapping("/clusters")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
 	public List<ClusterVo> clusters() {
 		log.info("--- Cluster 목록");
 		return clusterService.getList();
@@ -32,6 +34,7 @@ public class ClusterController {
 	// 클러스터 생성 창
 	@GetMapping("/cluster/settings")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
 	public List<DataCenterVo> setClusterDefaultInfo(){
 		log.info("--- Cluster 생성 창");
 		return clusterService.setClusterDefaultInfo();
@@ -40,6 +43,7 @@ public class ClusterController {
 	// 클러스터 생성
 	@PostMapping("/cluster")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> addCluster(@RequestBody ClusterCreateVo cVo){
 		log.info("--- Cluster 생성");
 		return clusterService.addCluster(cVo);
@@ -48,6 +52,7 @@ public class ClusterController {
 	// 클러스터 편집 창
 	@GetMapping("/cluster/{id}/settings")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
 	public ClusterCreateVo setEditCluster(@PathVariable String id){
 		log.info("--- Cluster 편집 창");
 		return clusterService.setEditCluster(id);
@@ -123,6 +128,7 @@ public class ClusterController {
 	// 선호도 그룹 생성
 	@PostMapping("/cluster/{id}/affinitygroup")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> addAffinitygroup(@PathVariable String id,
 											  @RequestBody AffinityGroupCreateVo agVo){
 		log.info("--- Cluster 선호도 그룹 생성");
@@ -141,6 +147,7 @@ public class ClusterController {
 	// 선호도 그룹 편집
 	@PutMapping("/cluster/{id}/affinitygroup/{agId}")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> editAffinitygroup(@PathVariable String id,
 											   @PathVariable String agId,
 											   @RequestBody AffinityGroupCreateVo agVo){
@@ -178,6 +185,7 @@ public class ClusterController {
 	// 선호도 레이블 생성
 	@PostMapping("/cluster/{id}/affinitylabel")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> addAff(@PathVariable String id,
 									@RequestBody AffinityLabelCreateVo alVo) {
 		log.info("--- Cluster 선호도 레이블 생성");
@@ -197,6 +205,7 @@ public class ClusterController {
 	// 선호도 레이블 편집
 	@PutMapping("/cluster/{id}/affinitylabel/{alId}")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> editAff(@PathVariable String id,
 									 @PathVariable String alId,
 									 @RequestBody AffinityLabelCreateVo alVo) {

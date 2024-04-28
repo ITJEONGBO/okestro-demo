@@ -7,6 +7,8 @@ import com.itinfo.itcloud.model.create.DataCenterCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItDataCenterService;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.DataCenterBuilder;
 import org.ovirt.engine.sdk4.builders.VersionBuilder;
@@ -56,7 +58,6 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     @Override
     public CommonVo<Boolean> addDatacenter(DataCenterCreateVo dcVo) {
         SystemService system = admin.getConnection().systemService();
-
         DataCentersService datacentersService = system.dataCentersService();     // datacenters 서비스 불러오기
 
         // 중복 확인 코드
@@ -69,10 +70,12 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                         .name(dcVo.getName())       // 이름
                         .description(dcVo.getDescription())     // 설명
                         .local(dcVo.isStorageType())    // 스토리지 유형
-                        .version(new VersionBuilder()
+                        .version(
+                            new VersionBuilder()
                                 .major(Integer.parseInt(ver[0]))
                                 .minor(Integer.parseInt(ver[1]))
-                            .build())  // 호환 버전
+                            .build()
+                        )  // 호환 버전
                         .quotaMode(dcVo.getQuotaMode())      // 쿼터 모드
                         .comment(dcVo.getComment())     // 코멘트
                     .build();
@@ -80,9 +83,9 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                 datacentersService.add().dataCenter(dataCenter).send();     // 데이터센터 만든거 추가
 
                 log.info("성공: 데이터센터 생성 {}", dataCenter.name());
-                return CommonVo.successResponse();
+                return CommonVo.createResponse();
             }else {
-                log.error("실패: 데이터센터 생성 이름 중복");
+                log.error("실패: 데이터센터 이름 중복");
                 return CommonVo.failResponse("실패: 데이터센터 이름 중복");
             }
         }catch (Exception e){
@@ -98,9 +101,8 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     public DataCenterCreateVo getDatacenter(String id){
         SystemService system = admin.getConnection().systemService();
         DataCenter dataCenter = system.dataCentersService().dataCenterService(id).get().send().dataCenter();
-        String dcName = system.dataCentersService().dataCenterService(id).get().send().dataCenter().name();
 
-        log.info("데이터센터 {} 현재값 출력", dcName);
+        log.info("데이터센터 {} 현재값 출력", dataCenter.name());
         return DataCenterCreateVo.builder()
                 .id(id)
                 .name(dataCenter.name())
@@ -113,37 +115,45 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     }
 
 
-
     // 데이터센터 수정
     @Override
     public CommonVo<Boolean> editDatacenter(String id, DataCenterCreateVo dcVo) {
         SystemService system = admin.getConnection().systemService();
         DataCenterService dataCenterService = system.dataCentersService().dataCenterService(id);
-        String dcName = system.dataCentersService().dataCenterService(id).get().send().dataCenter().name();
 
-        // 중복된 이름이 있는지 확인
+        // 중복 이름 확인
+        boolean nameDuplicate = system.dataCentersService().list().send().dataCenters().stream()
+                        .filter(dataCenter -> !dataCenter.id().equals(id))
+                        .anyMatch(dataCenter -> dataCenter.name().equals(dcVo.getName()));
+
         String[] ver = dcVo.getVersion().split("\\.");      // 버전값 분리
 
         try {
-            DataCenter dataCenter = new DataCenterBuilder()
-                .id(id)
-                .name(dcVo.getName())       // 이름
-                .description(dcVo.getDescription())     // 설명
-                .local(dcVo.isStorageType())    // 스토리지 유형
-                .version(
-                    new VersionBuilder()
-                        .major(Integer.parseInt(ver[0]))
-                        .minor(Integer.parseInt(ver[1]))
-                    .build()
-                )  // 호환 버전
-                .quotaMode(dcVo.getQuotaMode())      // 쿼터 모드
-                .comment(dcVo.getComment())     // 코멘트
-            .build();
+            if (!nameDuplicate) {
+                DataCenter dataCenter =
+                        new DataCenterBuilder()
+                                .id(id)
+                                .name(dcVo.getName())       // 이름
+                                .description(dcVo.getDescription())     // 설명
+                                .local(dcVo.isStorageType())    // 스토리지 유형
+                                .version(
+                                        new VersionBuilder()
+                                                .major(Integer.parseInt(ver[0]))
+                                                .minor(Integer.parseInt(ver[1]))
+                                                .build()
+                                )  // 호환 버전
+                                .quotaMode(dcVo.getQuotaMode())      // 쿼터 모드
+                                .comment(dcVo.getComment())     // 코멘트
+                                .build();
 
-            dataCenterService.update().dataCenter(dataCenter).send();   // 데이터센터 수정
+                dataCenterService.update().dataCenter(dataCenter).send();   // 데이터센터 수정
 
-            log.info("성공: 데이터센터 편집 {}", dcName);
-            return CommonVo.successResponse();
+                log.info("성공: 데이터센터 편집");
+                return CommonVo.createResponse();
+            }else {
+                log.error("실패: 데이터센터 이름 중복");
+                return CommonVo.failResponse("데이터센터 이름 중복");
+            }
         }catch (Exception e) {
             log.error("실패: 데이터센터 편집 {}", e.getMessage());
             return CommonVo.failResponse(e.getMessage());
@@ -155,7 +165,6 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     @Override
     public CommonVo<Boolean> deleteDatacenter(String id) {
         SystemService system = admin.getConnection().systemService();
-
         DataCenterService dataCenterService = system.dataCentersService().dataCenterService(id);
         String name = dataCenterService.get().send().dataCenter().name();
 

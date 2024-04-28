@@ -18,19 +18,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ItDataCenterServiceTest {
     @Autowired ItDataCenterService dcService;
 
+    String defaultDcId = "9c72ff12-a5f3-11ee-941d-00163e39cb43";
+
     @Test
-    @DisplayName("데이터센터 리스트 출력")
-    @Order(2)
+    @DisplayName("데이터센터 리스트")
     void getList() {
-//        AdminConnectionService admin = new AdminConnectionService();
-//        SystemService system = admin.getConnection().systemService();
-//        System.out.println(system.dataCentersService().list().send().dataCenters().size());
         assertThat(4).isEqualTo(dcService.getList().size());
     }
 
     @Test
-    @DisplayName("데이터센터 생성 테스트")
-    @Order(3)
+    @DisplayName("데이터센터 생성")
     void addDatacenter() {
         DataCenterCreateVo dc =
                 DataCenterCreateVo.builder()
@@ -54,15 +51,31 @@ class ItDataCenterServiceTest {
     }
 
     @Test
-    @DisplayName("데이터센터 수정창 테스트")
-    @Order(4)
-    void getDatacenter() {
-        String id = "90fc30fb-7f77-48b4-9897-df7baf1dd6fa";
+    @DisplayName("데이터센터 생성 - 이름 중복")
+    void addDatacenter2() {
+        DataCenterCreateVo dc =
+                DataCenterCreateVo.builder()
+                        .name("dfdf")
+                        .comment("testComment")
+                        .description("testDescription")
+                        .version("4.7")
+                        .storageType(false)
+                        .quotaMode(QuotaModeType.AUDIT)
+                        .build();
 
-        DataCenterCreateVo result =  dcService.getDatacenter(id);
+        CommonVo<Boolean> result =  dcService.addDatacenter(dc);
+        assertThat(result.getHead().getCode()).isEqualTo(404);
+    }
+
+    @Test
+    @DisplayName("데이터센터 수정 창")
+    void getDatacenter() {
+        String id = "ea9ced37-0df4-40c5-8dcc-5bb5183236da";
+
+        DataCenterCreateVo result =  dcService.getDatacenter(defaultDcId);
 
         DataCenterCreateVo dc = DataCenterCreateVo.builder()
-                .id(id)
+                .id(defaultDcId)
                 .name(result.getName())
                 .comment(result.getComment())
                 .description(result.getDescription())
@@ -71,20 +84,38 @@ class ItDataCenterServiceTest {
                 .quotaMode(result.getQuotaMode())
                 .build();
 
-        assertThat(id).isEqualTo(result.getId());
+        assertThat(defaultDcId).isEqualTo(result.getId());
         assertThat(dc.getName()).isEqualTo(result.getName());
         assertThat(result).isEqualTo(dc);
     }
 
     @Test
-    @DisplayName("데이터센터 수정 테스트")
-    @Order(5)
+    @DisplayName("데이터센터 수정")
     void editDatacenter() {
-        String id = "90fc30fb-7f77-48b4-9897-df7baf1dd6fa";
+        String id = "ea9ced37-0df4-40c5-8dcc-5bb5183236da";
 
         DataCenterCreateVo dc = DataCenterCreateVo.builder()
                 .id(id)
                 .name("tsfe")
+                .comment("testComment")
+                .description("asd")
+                .version("4.7")
+                .storageType(false)
+                .quotaMode(QuotaModeType.AUDIT)
+                .build();
+
+        CommonVo<Boolean> result = dcService.editDatacenter(id, dc);
+        assertThat(result.getHead().getCode()).isEqualTo(201);
+    }
+
+    @Test
+    @DisplayName("데이터센터 수정 - 이름 중복")
+    void editDatacenter2() {
+        String id = "ea9ced37-0df4-40c5-8dcc-5bb5183236da";
+
+        DataCenterCreateVo dc = DataCenterCreateVo.builder()
+                .id(id)
+                .name("e")
                 .comment("testComment")
                 .description("testDescription")
                 .version("4.7")
@@ -93,28 +124,23 @@ class ItDataCenterServiceTest {
                 .build();
 
         CommonVo<Boolean> result = dcService.editDatacenter(id, dc);
-        assertThat(result.getHead().getCode()).isEqualTo(200);
+        assertThat(result.getHead().getCode()).isEqualTo(404);
     }
 
 
     @Test
-    @DisplayName("데이터센터 삭제 테스트")
-    @Order(6)
+    @DisplayName("데이터센터 삭제")
     void deleteDatacenter() {
         String id = "7d736eda-a541-4fc9-95a2-03b0d4617b31";
 
         CommonVo<Boolean> result = dcService.deleteDatacenter(id);
-
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
     @Test
     @DisplayName("데이터센터 이벤트 목록")
     void getEvent() {
-        String id = "ea9ced37-0df4-40c5-8dcc-5bb5183236da";
-
-        List<EventVo> result = dcService.getEvent(id);
-        System.out.println(dcService.getEvent(id).size());
-        assertThat(result.size()).isEqualTo(1);
+        List<EventVo> result = dcService.getEvent(defaultDcId);
+        assertThat(result.size()).isEqualTo(12);
     }
 }
