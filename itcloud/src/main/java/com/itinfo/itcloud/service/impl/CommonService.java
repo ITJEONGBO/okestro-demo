@@ -5,11 +5,13 @@ import com.itinfo.itcloud.model.computing.HostVo;
 import com.itinfo.itcloud.model.computing.VmVo;
 import org.ovirt.engine.sdk4.services.SystemService;
 import org.ovirt.engine.sdk4.types.*;
+import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class CommonService {
 
     

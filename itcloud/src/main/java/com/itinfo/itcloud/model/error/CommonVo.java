@@ -27,6 +27,21 @@ public class CommonVo<T> {
         return res;
     }
 
+    public static CommonVo<Boolean> duplicateResponse(){
+        CommonVo<Boolean> res = new CommonVo<>();
+
+        Head head = new Head();
+        head.setCode(404);
+        head.setMessage("중복된 이름입니다.");
+
+        Body<Boolean> body = new Body<>();
+        body.setContent(false);
+        res.setBody(body);
+        res.setHead(head);
+
+        return res;
+    }
+
     public static CommonVo<Boolean> createResponse() {
         CommonVo<Boolean> res = new CommonVo<>();
 

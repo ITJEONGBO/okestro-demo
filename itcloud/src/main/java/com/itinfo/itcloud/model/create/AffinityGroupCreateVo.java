@@ -5,10 +5,11 @@ import com.itinfo.itcloud.model.computing.HostVo;
 import com.itinfo.itcloud.model.computing.VmVo;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.List;
 
-@Getter @Builder
+@Getter @Builder @ToString
 public class AffinityGroupCreateVo {
     private String id;
     private String name;

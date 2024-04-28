@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class ClusterServiceImpl implements ItClusterService {
 
     @Autowired private AdminConnectionService admin;
-    private final CommonService commonService = new CommonService();
+    @Autowired private CommonService commonService;
 
     // 클러스터 목록
     // 상태, 이름, 코멘트, 호환버전, 설명, 클러스터cpu유형, 호스트수, 가상머신수, (업그레이드 상태)
@@ -56,7 +56,6 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
     // 클러스터 생성 위해 필요한 데이터센터 리스트
-    // 모든 데이터센터 리스트를 보여준다
     @Override
     public List<DataCenterVo> setClusterDefaultInfo(){
         SystemService system = admin.getConnection().systemService();
@@ -87,7 +86,7 @@ public class ClusterServiceImpl implements ItClusterService {
 
 
     // 클러스터 생성
-    // required: name , cpu.type, data_center   (Identify the datacenter with either id or name)
+    // required: name, cpu.type, data_center (Identify the datacenter with either id or name)
     @Override
     public CommonVo<Boolean> addCluster(ClusterCreateVo cVo) {
         SystemService system = admin.getConnection().systemService();
@@ -135,12 +134,11 @@ public class ClusterServiceImpl implements ItClusterService {
 
                 clustersService.add().cluster(clusterBuilder.build()).send();
 
-                log.info("Cluster 생성");
-//                return CommonVo.successResponse();
+                log.info("성공: 클러스터 생성");
                 return CommonVo.createResponse();
             }else {
-                log.error("실패: Cluster 이름 중복 에러");
-                return CommonVo.failResponse("클러스터 이름 중복 에러");
+                log.error("실패: 클러스터 이름 중복 에러");
+                return CommonVo.duplicateResponse();
             }
         }catch (Exception e){
             log.error("실패: 클러스터 생성 실패", e);
@@ -152,7 +150,6 @@ public class ClusterServiceImpl implements ItClusterService {
     @Override
     public ClusterCreateVo setEditCluster(String id){
         SystemService system = admin.getConnection().systemService();
-
         Cluster cluster = system.clustersService().clusterService(id).get().send().cluster();
         DataCenter dataCenter = system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter();
         List<Network> networkList = system.clustersService().clusterService(id).networksService().list().send().networks();
@@ -187,7 +184,7 @@ public class ClusterServiceImpl implements ItClusterService {
                 .logMaxMemory(cluster.logMaxMemoryUsedThresholdAsInteger())
                 .logMaxType(cluster.logMaxMemoryUsedThresholdType())
                 .virtService(cluster.virtService())
-//                .glusterService(cluster.glusterService())
+                .glusterService(cluster.glusterService())
                 .networkId(networkId)
                 .networkName(networkName)
                 // migration
@@ -201,18 +198,18 @@ public class ClusterServiceImpl implements ItClusterService {
     @Override
     public CommonVo<Boolean> editCluster(String id, ClusterCreateVo cVo) {
         SystemService system = admin.getConnection().systemService();
-        ClustersService clustersService = system.clustersService();
         ClusterService clusterService = system.clustersService().clusterService(id);
         OpenStackNetworkProvider openStackNetworkProvider = system.openstackNetworkProvidersService().list().send().providers().get(0);
 
         // 중복이름
-        // 만약 아이디가 같으면 이름이 같아도 편집 성공
-        // 아이디가 다르고 이른이 같으면 편집 실패
-        boolean cName = clustersService.list().search("name="+cVo.getName()).send().clusters().isEmpty();
+        boolean nameDuplicate = system.clustersService().list().send().clusters().stream()
+                .filter(cluster -> !cluster.id().equals(id))
+                .anyMatch(cluster -> cluster.name().equals(cVo.getName()));
+
         String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
 
         try{
-            if(clusterService.get().send().cluster().id().equals(id)) {
+            if(!nameDuplicate) {
                 ClusterBuilder clusterBuilder = new ClusterBuilder();
                 clusterBuilder
                         .id(id)
@@ -243,16 +240,14 @@ public class ClusterServiceImpl implements ItClusterService {
 
                 clusterService.update().cluster(clusterBuilder.build()).send();
 
-                log.info("Cluster 편집");
+                log.info("성공: 클러스터 편집");
                 return CommonVo.createResponse();
-            }else if(cName){
-                return CommonVo.failResponse("클러스터 이름 중복 에러");
             }else {
-                log.error("실패: Cluster 에러");
-                return CommonVo.failResponse("fail");
+                log.error("실패: 클러스터 중복 이름 에러");
+                return CommonVo.duplicateResponse();
             }
         }catch (Exception e){
-            log.error("실패: Cluster 편집", e);
+            log.error("실패: 클러스터 편집", e);
             return CommonVo.failResponse(e.getMessage());
         }
     }
@@ -453,7 +448,7 @@ public class ClusterServiceImpl implements ItClusterService {
 
         try {
             if(duplicateName) {
-                AffinityGroup ag = new AffinityGroupBuilder()
+                AffinityGroupBuilder ag = new AffinityGroupBuilder()
                         .name(agVo.getName())
                         .description(agVo.getDescription())
                         .cluster(new ClusterBuilder().id(id).build())
@@ -467,34 +462,43 @@ public class ClusterServiceImpl implements ItClusterService {
                                 .enabled(agVo.isHostEnabled())
                                 .positive(agVo.isHostPositive())
                                 .enforcing(agVo.isHostEnforcing())
-                        )
-                        .hostLabels(!agVo.getHostLabels().isEmpty() ?
-                                agVo.getHostLabels().stream()
-                                .map(al -> new AffinityLabelBuilder().id(al.getId()).build())
-                                .collect(Collectors.toList()) : null
-                        )
-                        .vmLabels(!agVo.getVmLabels().isEmpty() ?
-                                agVo.getVmLabels().stream()
-                                .map(al -> new AffinityLabelBuilder().id(al.getId()).build())
-                                .collect(Collectors.toList()) : null
-                        )
-                        .hosts(agVo.getHostList().stream()
-                                .map(host -> new HostBuilder().id(host.getId()).build())
-                                .collect(Collectors.toList())
-                        )
-                        .vms(agVo.getVmList().stream()
-                                .map(vm -> new VmBuilder().id(vm.getId()).build())
-                                .collect(Collectors.toList())
-                        )
-                    .build();
+                        );
 
-                agServices.add().group(ag).send().group();
+                        if(!(agVo.getHostLabels() == null)){
+                            ag.hostLabels(
+                                    agVo.getHostLabels().stream()
+                                    .map(al -> new AffinityLabelBuilder().id(al.getId()).build())
+                                    .collect(Collectors.toList())
+                            );
+                        }
+                        if(!(agVo.getVmLabels() == null)){
+                            ag.vmLabels(
+                                    agVo.getVmLabels().stream()
+                                            .map(al -> new AffinityLabelBuilder().id(al.getId()).build())
+                                            .collect(Collectors.toList())
+                            );
+                        }
+
+                        if(!(agVo.getHostList() == null)){
+                            ag.hosts(agVo.getHostList().stream()
+                                    .map(host -> new HostBuilder().id(host.getId()).build())
+                                    .collect(Collectors.toList())
+                            );
+                        }
+                        if(!(agVo.getVmList() == null)) {
+                            ag.vms(agVo.getVmList().stream()
+                                    .map(vm -> new VmBuilder().id(vm.getId()).build())
+                                    .collect(Collectors.toList())
+                            );
+                        }
+
+                agServices.add().group(ag.build()).send().group();
 
                 log.info("Cluster 선호도그룹 생성 ");
                 return CommonVo.createResponse();
             }else {
                 log.error("실패: Cluster 선호도그룹 이름 중복");
-                return CommonVo.failResponse("error");
+                return CommonVo.duplicateResponse();
             }
         } catch (Exception e) {
             log.error("실패: Cluster 선호도그룹 생성");
@@ -508,6 +512,9 @@ public class ClusterServiceImpl implements ItClusterService {
     public AffinityGroupCreateVo setEditAffinitygroup(String clusterId, String agId) {
         SystemService system = admin.getConnection().systemService();
         AffinityGroup affinityGroup = system.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId).get().follow("vmlabels,hostlabels,vms,hosts").send().group();
+
+        AffinityGroupHostsService h = system.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId).hostsService();
+        h.list().send().hosts().stream().map(Host::name).forEach(System.out::println);
 
         log.info("Cluster 선호도 그룹 편집창");
         return AffinityGroupCreateVo.builder()
@@ -572,54 +579,74 @@ public class ClusterServiceImpl implements ItClusterService {
         AffinityGroupService agService = system.clustersService().clusterService(id).affinityGroupsService().groupService(agId);
         List<AffinityGroup> agList = system.clustersService().clusterService(id).affinityGroupsService().list().send().groups();
 
-//        boolean duplicateName = agList.stream().noneMatch(ag -> ag.name().equals(agVo.getName()));
+        AffinityGroupHostsService agHosts = system.clustersService().clusterService(id).affinityGroupsService().groupService(agId).hostsService();
+        agHosts.list().send().hosts().stream().map(Host::name).forEach(System.out::println);
+
+//        System.out.println(agVo.getHostList().get(0).getId());
+//        AffinityGroupHostService aghost = system.clustersService().clusterService(id).affinityGroupsService().groupService(agId).hostsService().hostService(agVo.getHostList().get(0).getId());
+//        aghost.remove();
+
+        boolean duplicateName = agList.stream().filter(ag -> !ag.id().equals(agId)).anyMatch(ag -> ag.name().equals(agVo.getName()));
 
         try {
-            AffinityGroupBuilder agBuilder = new AffinityGroupBuilder();
-            agBuilder
+            if(!duplicateName) {
+                AffinityGroupBuilder ag = new AffinityGroupBuilder()
                     .id(agId)
                     .name(agVo.getName())
                     .description(agVo.getDescription())
                     .cluster(new ClusterBuilder().id(id).build())
                     .priority(agVo.getPriority())
                     .vmsRule(
-                        new AffinityRuleBuilder()
-                            .enabled(agVo.isVmEnabled())    // 비활성화
-                            .positive(agVo.isVmPositive())  // 양극 음극
-                            .enforcing(agVo.isVmEnforcing()) // 강제 적용
+                            new AffinityRuleBuilder()
+                                    .enabled(agVo.isVmEnabled())    // 비활성화
+                                    .positive(agVo.isVmPositive())  // 양극 음극
+                                    .enforcing(agVo.isVmEnforcing()) // 강제 적용
                     )
                     .hostsRule(
-                        new AffinityRuleBuilder()
-                            .enabled(agVo.isHostEnabled())
-                            .positive(agVo.isHostPositive())
-                            .enforcing(agVo.isHostEnforcing())
-                    )
-                    .hostLabels(
-                        agVo.getHostLabels().stream()
-                        .map(al -> new AffinityLabelBuilder().id(al.getId()).build())
-                        .collect(Collectors.toList())
-                    )
-                    .vmLabels(
-                        agVo.getVmLabels().stream()
-                        .map(al -> new AffinityLabelBuilder().id(al.getId()).build())
-                        .collect(Collectors.toList())
-                    )
-                    .hosts(
-                        agVo.getHostList().stream()
-                        .map(host -> new HostBuilder().id(host.getId()).build())
-                        .collect(Collectors.toList())
-                    )
-                    .vms(
-                        agVo.getVmList().stream()
-                        .map(vm -> new VmBuilder().id(vm.getId()).build())
-                        .collect(Collectors.toList())
-                    )
-                .build();
+                            new AffinityRuleBuilder()
+                                    .enabled(agVo.isHostEnabled())
+                                    .positive(agVo.isHostPositive())
+                                    .enforcing(agVo.isHostEnforcing())
+                    );
 
-            agService.update().send().group();
+                // 만약 받아온 hosts의 값중에 없는 id가 있다면 그 호스트를 affintiygrouphost에 id를 넣어서 삭제하는 작업을 하고 업데이트하자
 
-            log.info("Cluster 선호도그룹 편집");
-            return CommonVo.createResponse();
+                if(!(agVo.getHostLabels() == null)){
+                    ag.hostLabels(
+                            agVo.getHostLabels().stream()
+                                    .map(al -> new AffinityLabelBuilder().id(al.getId()).build())
+                                    .collect(Collectors.toList())
+                    );
+                }
+                if(!(agVo.getVmLabels() == null)){
+                    ag.vmLabels(
+                            agVo.getVmLabels().stream()
+                                    .map(al -> new AffinityLabelBuilder().id(al.getId()).build())
+                                    .collect(Collectors.toList())
+                    );
+                }
+                if(!(agVo.getHostList() == null)){
+                    ag.hosts(agVo.getHostList().stream()
+                            .map(host -> new HostBuilder().id(host.getId()).build())
+                            .collect(Collectors.toList())
+                    );
+                }
+                if(!(agVo.getVmList() == null)) {
+                    ag.vms(agVo.getVmList().stream()
+                            .map(vm -> new VmBuilder().id(vm.getId()).build())
+                            .collect(Collectors.toList())
+                    );
+                }
+
+                agService.update().group(ag.build()).send().group();
+//                agService.update().send().group();
+
+                log.info("Cluster 선호도그룹 편집");
+                return CommonVo.createResponse();
+            }else {
+                log.error("실패: 클러스터 선호도 그룹 이름 중복");
+                return CommonVo.duplicateResponse();
+            }
         } catch (Exception e) {
             log.error("실패: Cluster 선호도그룹 편집");
             return CommonVo.failResponse(e.getMessage());
@@ -628,6 +655,7 @@ public class ClusterServiceImpl implements ItClusterService {
 
 
     // 선호도 그룹 삭제 - clusterId와 agid를 가져와서 삭제
+    // 선호도 그룹 내에 항목들이 아예 없어야함
     @Override
     public CommonVo<Boolean> deleteAffinitygroup(String id, String agId) {
         SystemService system = admin.getConnection().systemService();
