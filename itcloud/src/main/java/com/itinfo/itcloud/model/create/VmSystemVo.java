@@ -12,6 +12,8 @@ public class VmSystemVo {
     private BigInteger memorySize;         // 메모리 크기
     private BigInteger memoryMax;          // 최대 메모리
     private BigInteger memoryActual;       // 할당할 실제 메모리
+
+    // 고급 매개변수
     private int vCpuCnt;            // 총 가상 CPU
     private int vCpuSocket;         // 가상 소켓
     private int vCpuSocketCore;     // 가상 소켓 당 코어
@@ -21,5 +23,5 @@ public class VmSystemVo {
     private String userVersion;     // 사용자 정의 호환 버전
 
     private String instanceType;    // 인스턴스 유형
-    private String timeOffset;      // 하드웨어 클럭의 시간 오프셋
+    private String timeOffset;      // 하드웨어 클럭의 시간 오프셋 기본값으로 하면됨 greenwich standard time, kst
 }

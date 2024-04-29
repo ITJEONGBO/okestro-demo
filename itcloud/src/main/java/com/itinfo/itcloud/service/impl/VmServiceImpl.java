@@ -9,13 +9,13 @@ import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItVmService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
-import org.ovirt.engine.sdk4.services.*;
+import org.ovirt.engine.sdk4.services.SystemService;
+import org.ovirt.engine.sdk4.services.VmsService;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,15 +33,12 @@ public class VmServiceImpl implements ItVmService {
     public List<VmVo> getList() {
         SystemService system = admin.getConnection().systemService();
         List<Vm> vmList = system.vmsService().list().send().vms();
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
-//        Date now = new Date(System.currentTimeMillis());
 
         log.info("가상머신 리스트");
         return vmList.stream()
                 .map(vm -> {
                     Cluster cluster = system.clustersService().clusterService(vm.cluster().id()).get().send().cluster();
                     DataCenter dataCenter = system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter();
-                    List<Nic> nicList = system.vmsService().vmService(vm.id()).nicsService().list().send().nics();
 
                     return VmVo.builder()
                             .status(TypeExtKt.findVmStatus(vm.status()))
@@ -66,37 +63,33 @@ public class VmServiceImpl implements ItVmService {
 
 
     // 가상머신 생성 창
+    // 클러스터가 나오는 기준을 모르겠음
     @Override
     public List<ClusterVo> getClusterList() {
         SystemService systemService = admin.getConnection().systemService();
-
-        List<ClusterVo> clusterVoList = new ArrayList<>();
-        ClusterVo cVo = null;
-
         List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
-        for(Cluster cluster : clusterList){
-            cVo = ClusterVo.builder()
-                    .id(cluster.id())
-                    .name(cluster.name())
-                    .datacenterName(systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
-                    .build();
 
-            clusterVoList.add(cVo);
-        }
         log.info("clusterList");
-        return clusterVoList;
+        return clusterList.stream()
+                .map(cluster -> ClusterVo.builder()
+                        .id(cluster.id())
+                        .name(cluster.name())
+                        .datacenterName(systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
+                        .build())
+                .collect(Collectors.toList());
     }
+
 
     // 가상머신 생성창 ?
     @Override
     public VmCreateVo getVmCreate(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
+        Vm vm = system.vmsService().vmService(id).get().send().vm();
+        Cluster cluster = system.clustersService().clusterService(vm.cluster().id()).get().send().cluster();
+        String dcName = system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name();
+        List<OperatingSystemInfo> osList = system.operatingSystemsService().list().send().operatingSystem();
 
-        Vm vm = systemService.vmsService().vmService(id).get().send().vm();
-        Cluster cluster = systemService.clustersService().clusterService(vm.cluster().id()).get().send().cluster();
-        String dcName = systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name();
-
-        log.info("getVmCreate");
+        log.info("가상머신 생성 창");
 
 //        return VmCreateVo.builder()
 //                .clusterId(cluster.id())
@@ -175,11 +168,12 @@ public class VmServiceImpl implements ItVmService {
     }
 
     // 가상머신 생성
+    // https://ovirt.github.io/ovirt-engine-api-model/master/#services/vms/methods/add
     @Override
     public boolean addVm(VmCreateVo vmCreateVo) {
         SystemService systemService = admin.getConnection().systemService();
         VmsService vmsService = systemService.vmsService();
-        List<Vm> vmList = systemService.vmsService().list().send().vms();
+//        List<Vm> vmList = systemService.vmsService().list().send().vms();
 
         try {
             Vm vm = null;
@@ -193,7 +187,7 @@ public class VmServiceImpl implements ItVmService {
                     .name(vmCreateVo.getName())
                     .description(vmCreateVo.getDescription())
                     .comment(vmCreateVo.getComment())
-                    .stateless(vmCreateVo.isStatusSave())
+                    .stateless(vmCreateVo.isStateless())
                     .startPaused(vmCreateVo.isStartPaused())
                     .deleteProtected(vmCreateVo.isDeleteProtected())
 //                    .diskAttachments(vmCreateVo.getVDiskVo())
@@ -357,7 +351,6 @@ public class VmServiceImpl implements ItVmService {
                 .collect(Collectors.toList());
     }
 
-//    https://192.168.0.80/ovirt-engine/api/vms/931ad1d3-0782-4727-947d-6a765cfcc401/snapshots
     // TODO
     // 스냅샷
     @Override

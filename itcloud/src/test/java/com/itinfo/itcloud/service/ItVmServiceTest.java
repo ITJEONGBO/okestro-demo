@@ -31,6 +31,7 @@ class ItVmServiceTest {
 
     @Test
     void getVmCreate() {
+        vmService.getVmCreate(defaultId);
     }
 
     @Test
