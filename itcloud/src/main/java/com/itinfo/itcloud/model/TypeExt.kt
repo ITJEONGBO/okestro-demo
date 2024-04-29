@@ -163,8 +163,13 @@ fun DiskStorageType.findStorageType() : String{
 	}
 }
 
-// /ovirt-engine/api/operatingsystems
+// /ovirt-engine/api/operatingsystems OperatingSystemInfo
 
+//fun OperatingSystemInfo.findOs() : String{
+//	return when(this){
+//
+//	}
+//}
 
 
 

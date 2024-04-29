@@ -9,8 +9,16 @@ import java.util.List;
 
 @Service
 public interface ItVmService {
-    String getName(String id);
     List<VmVo> getList();
+
+    List<ClusterVo> getClusterList();
+    VmCreateVo getVmCreate(String id);
+
+    boolean addVm(VmCreateVo vmCreateVo);   // 생성
+    void editVm(VmCreateVo vmCreateVo);     // 수정
+    boolean deleteVm(String id);            // 삭제
+
+
     VmVo getInfo(String id);
     List<NicVo> getNic(String id);
     List<VmDiskVo> getDisk(String id);
@@ -21,14 +29,6 @@ public interface ItVmService {
     GuestInfoVo getGuestInfo(String id);
     List<PermissionVo> getPermission(String id);
     List<EventVo> getEvent(String id);
-
-
-    List<ClusterVo> getClusterList();
-    VmCreateVo getVmCreate(String id);
-
-    boolean addVm(VmCreateVo vmCreateVo);   // 생성
-    void editVm(VmCreateVo vmCreateVo);     // 수정
-    boolean deleteVm(String id);            // 삭제
 
 
 

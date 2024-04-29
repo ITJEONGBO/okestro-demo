@@ -717,34 +717,9 @@ public class NetworkServiceImpl implements ItNetworkService {
     @Override
     public List<PermissionVo> getPermission(String id) {
         SystemService system = admin.getConnection().systemService();
-        List<Permission> permissionList = system.clustersService().clusterService(id).permissionsService().list().send().permissions();
+        List<Permission> permissionList = system.networksService().networkService(id).permissionsService().list().send().permissions();
 
-        return permissionList.stream()
-                .map(permission -> {
-                    Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
-
-                    if(permission.groupPresent() && !permission.userPresent()){
-                        Group group = system.groupsService().groupService(permission.group().id()).get().send().get();
-                        return PermissionVo.builder()
-                                .permissionId(permission.id())
-                                .user(group.name())
-                                .nameSpace(group.namespace())
-                                .role(role.name())
-                                .build();
-                    }
-
-                    if(!permission.groupPresent() && permission.userPresent()){
-                        User user = system.usersService().userService(permission.user().id()).get().send().user();
-                        return PermissionVo.builder()
-                                .user(user.name())
-                                .provider(user.domainPresent() ? user.domain().name() : null)
-                                .nameSpace(user.namespace())
-                                .role(role.name())
-                                .build();
-                    }
-                    return null;
-                })
-                .collect(Collectors.toList());
+        return commonService.getPermission(system, permissionList);
     }
 
 

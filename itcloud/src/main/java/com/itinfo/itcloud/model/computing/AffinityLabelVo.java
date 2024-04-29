@@ -2,11 +2,11 @@ package com.itinfo.itcloud.model.computing;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
-@Getter @Builder
+@Getter @Builder @ToString
 public class AffinityLabelVo {
     private String id;
     private String name;

@@ -1,9 +1,10 @@
 package com.itinfo.itcloud.model.computing;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.ToString;
 
-@Getter @Setter
+@Getter @Builder @ToString
 public class GuestInfoVo {
     // vm에 속해있는 속성들
     private String type;      //유형 family

@@ -2,6 +2,7 @@ package com.itinfo.itcloud.service.impl;
 
 import com.itinfo.itcloud.model.computing.AffinityLabelVo;
 import com.itinfo.itcloud.model.computing.HostVo;
+import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.computing.VmVo;
 import org.ovirt.engine.sdk4.services.SystemService;
 import org.ovirt.engine.sdk4.types.*;
@@ -298,4 +299,38 @@ public class CommonService {
                     .count();
         }
     }
+
+    // 권한
+    public List<PermissionVo> getPermission(SystemService system, List<Permission> permissionList) {
+        return permissionList.stream()
+                .map(permission -> {
+                    Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
+
+                    if(permission.groupPresent() && !permission.userPresent()){
+                        Group group = system.groupsService().groupService(permission.group().id()).get().send().get();
+                        return PermissionVo.builder()
+                                .permissionId(permission.id())
+                                .user(group.name())
+                                .nameSpace(group.namespace())
+                                .role(role.name())
+                                .build();
+                    }
+
+                    if(!permission.groupPresent() && permission.userPresent()){
+                        User user = system.usersService().userService(permission.user().id()).get().send().user();
+                        return PermissionVo.builder()
+                                .user(user.name())
+                                .provider(user.domainPresent() ? user.domain().name() : null)
+                                .nameSpace(user.namespace())
+                                .role(role.name())
+                                .build();
+                    }
+                    return null;
+                })
+                .collect(Collectors.toList());
+    }
+
+
+
+
 }

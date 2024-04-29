@@ -3,10 +3,11 @@ package com.itinfo.itcloud.model.storage;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigInteger;
 
-@Getter @Setter @Builder
+@Getter @Setter @Builder @ToString
 public class VmDiskVo {
     // vms-disk_attachments
     private String id;

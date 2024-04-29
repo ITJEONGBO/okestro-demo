@@ -1,9 +1,10 @@
 package com.itinfo.itcloud.model.computing;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.ToString;
 
-@Getter @Setter
+@Getter @Builder @ToString
 public class ApplicationVo {
     private String id;
     private String name;

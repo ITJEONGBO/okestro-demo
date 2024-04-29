@@ -2,12 +2,12 @@ package com.itinfo.itcloud.controller;
 
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.storage.VmDiskVo;
-import com.itinfo.itcloud.service.ItSystemPropertyService;
 import com.itinfo.itcloud.service.ItVmService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -18,92 +18,82 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/computing")
 public class VmController {
-	private final ItSystemPropertyService itSystemPropertyService;
 	private final ItVmService vmService;
 
-	//region: ResponseBody
-
-	@GetMapping("/vmsList")
+	@GetMapping("/vms")
 	@ResponseBody
 	public List<VmVo> vms() {
-		long start = System.currentTimeMillis();
-
-		List<VmVo> vmsList = vmService.getList();
-
-		long end = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
-		log.debug("수행시간(ms): {}", end - start);
-
-		return vmsList;
+		log.info("--- 가상머신 리스트");
+		return vmService.getList();
 	}
 
-	@GetMapping("/vm/status")
+	@GetMapping("/vm/{id}")
 	@ResponseBody
-	public VmVo vm(String id) {
+	public VmVo vm(@PathVariable String id) {
 		return vmService.getInfo(id);
 	}
 
-	@GetMapping("/vm/nicstatus")
+	@GetMapping("/vm/{id}/nics")
 	@ResponseBody
-	public List<NicVo> nic(String id) {
+	public List<NicVo> nic(@PathVariable String id) {
 		log.info("----- vm nic 일반 불러오기: " + id);
 		return vmService.getNic(id);
 	}
 
-	@GetMapping("/vm/diskstatus")
+	@GetMapping("/vm/{id}/disks")
 	@ResponseBody
-	public List<VmDiskVo> disk(String id) {
+	public List<VmDiskVo> disk(@PathVariable String id) {
 		log.info("----- vm disk 일반 불러오기: " + id);
 		return vmService.getDisk(id);
 	}
 
-	@GetMapping("/vm/snapshotstatus")
+	@GetMapping("/vm/{id}/snapshots")
 	@ResponseBody
-	public List<SnapshotVo> snapshot(String id) {
+	public List<SnapshotVo> snapshot(@PathVariable String id) {
 		log.info("----- vm snapshot 불러오기: " + id);
 		return vmService.getSnapshot(id);
 	}
 
-	@GetMapping("/vm/applicationstatus")
+	@GetMapping("/vm/{id}/applications")
 	@ResponseBody
-	public List<ApplicationVo> app(String id) {
+	public List<ApplicationVo> app(@PathVariable String id) {
 		log.info("----- vm app 불러오기: " + id);
 		return vmService.getApplication(id);
 	}
 
-	@GetMapping("/vm/affGroupstatus")
+	@GetMapping("/vm/{id}/affinitygroups")
 	@ResponseBody
-	public List<AffinityGroupVo> affGroup(String id) {
+	public List<AffinityGroupVo> affGroup(@PathVariable String id) {
 		log.info("----- vm affGroup 불러오기: " + id);
 		return vmService.getAffinitygroup(id);
 	}
 
-	@GetMapping("/vm/affLabelstatus")
+	@GetMapping("/vm/{id}/affinitylabels")
 	@ResponseBody
-	public List<AffinityLabelVo> affLabel(String id) {
+	public List<AffinityLabelVo> affLabel(@PathVariable String id) {
 		log.info("----- vm affLabel 불러오기: " + id);
 		return vmService.getAffinitylabel(id);
 	}
 
-	@GetMapping("/vm/gueststatus")
+	@GetMapping("/vm/{id}/guests")
 	@ResponseBody
-	public GuestInfoVo guest(String id) {
+	public GuestInfoVo guest(@PathVariable String id) {
 		log.info("----- vm disk 일반 불러오기: " + id);
 		return vmService.getGuestInfo(id);
 	}
 
-	@GetMapping("/vm/permissionstatus")
+	@GetMapping("/vm/{id}/permissions")
 	@ResponseBody
-	public List<PermissionVo> permission(String id) {
+	public List<PermissionVo> permission(@PathVariable String id) {
 		log.info("----- vm event 일반 불러오기: " + id);
 		return vmService.getPermission(id);
 	}
 
-	@GetMapping("/vm/eventstatus")
+	@GetMapping("/vm/{id}/events")
 	@ResponseBody
-	public List<EventVo> event(String id) {
+	public List<EventVo> event(@PathVariable String id) {
 		log.info("----- vm event 일반 불러오기: " + id);
 		return vmService.getEvent(id);
 	}
-	//endregion
 
 }

@@ -2,9 +2,7 @@ package com.itinfo.itcloud.model.computing;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -77,6 +75,6 @@ public class HostVo {
 
     private NicVo nicVo;
 
-    private String crown;   // hosted engine 여부
+    private boolean crown;   // hosted engine 여부
 
 }
