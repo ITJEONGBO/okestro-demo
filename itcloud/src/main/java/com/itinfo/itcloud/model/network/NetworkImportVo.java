@@ -2,10 +2,11 @@ package com.itinfo.itcloud.model.network;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.List;
 
-@Getter @Builder
+@Getter @Builder @ToString
 public class NetworkImportVo {
     // 공급자는 무조건 한개 ovirt-provider-ovn
     private String id;      // 공급자 id

@@ -1,8 +1,13 @@
 package com.itinfo.itcloud.service;
 
+import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.create.NetworkCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkClusterVo;
+import com.itinfo.itcloud.model.network.NetworkImportVo;
+import com.itinfo.itcloud.model.network.NetworkVo;
+import com.itinfo.itcloud.model.network.OpenstackVo;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,13 +23,20 @@ class ItNetworkServiceTest {
 
     @Autowired ItNetworkService networkService;
 
+    String id = "00ff47bb-5bd1-4af0-a080-0df002a94ee3";
+
     @Test
+    @DisplayName("네트워크 리스트")
     void getList() {
-        assertThat(10).isEqualTo(networkService.getList().size());
+        List<NetworkVo> result = networkService.getList();
+
+        assertThat(13).isEqualTo(result.size());
+        assertThat(true).isEqualTo(result.stream().anyMatch(networkVo -> networkVo.getName().equals("ovirtmgmt")));
     }
 
     @Test
     void setDcCluster() {
+
     }
 
     @Test
@@ -63,6 +75,9 @@ class ItNetworkServiceTest {
 
     @Test
     void setImportNetwork() {
+        NetworkImportVo result = networkService.setImportNetwork();
+
+        result.getOsVoList().stream().map(OpenstackVo::getName).forEach(System.out::println);
     }
 
     @Test
@@ -131,5 +146,9 @@ class ItNetworkServiceTest {
 
     @Test
     void getPermission() {
+        List<PermissionVo> result = networkService.getPermission(id);
+
+        assertThat(4).isEqualTo(result.size());
+        result.stream().map(PermissionVo::getUser).forEach(System.out::println);
     }
 }

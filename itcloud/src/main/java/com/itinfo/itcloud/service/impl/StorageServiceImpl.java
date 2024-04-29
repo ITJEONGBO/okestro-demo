@@ -28,7 +28,6 @@ import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -813,56 +812,51 @@ public class StorageServiceImpl implements ItStorageService {
     @Override
     public List<PermissionVo> getPermission(String id) {
         SystemService system = admin.getConnection().systemService();
+        List<Permission> permissionList = system.clustersService().clusterService(id).permissionsService().list().send().permissions();
 
-        List<PermissionVo> pVoList = new ArrayList<>();
-        PermissionVo pVo = null;
+        return permissionList.stream()
+                .map(permission -> {
+                    Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
 
-        List<Permission> permissionList = system.dataCentersService().dataCenterService(id).permissionsService().list().send().permissions();
+                    if(permission.groupPresent() && !permission.userPresent()){
+                        Group group = system.groupsService().groupService(permission.group().id()).get().send().get();
+                        return PermissionVo.builder()
+                                .permissionId(permission.id())
+                                .user(group.name())
+                                .nameSpace(group.namespace())
+                                .role(role.name())
+                                .build();
+                    }
 
-
-        for(Permission permission : permissionList){
-            pVo = new PermissionVo();
-            pVo.setPermissionId(permission.id());
-
-            // 그룹이 있고, 유저가 없을때
-            if(permission.groupPresent() && !permission.userPresent()){
-                Group group = system.groupsService().groupService(permission.group().id()).get().send().get();
-                Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
-
-                pVo.setUser(group.name());
-                pVo.setNameSpace(group.namespace());
-                pVo.setRole(role.name());
-
-                pVoList.add(pVo);       // 그룹에 추가
-            }
-
-            // 그룹이 없고, 유저가 있을때
-            if(!permission.groupPresent() && permission.userPresent()){
-                User user = system.usersService().userService(permission.user().id()).get().send().user();
-                Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
-
-                pVo.setUser(user.name());
-                pVo.setProvider(user.domainPresent() ? user.domain().name() : null);
-                pVo.setNameSpace(user.namespace());
-                pVo.setRole(role.name());
-
-                pVoList.add(pVo);
-            }
-        }
-        return pVoList;
+                    if(!permission.groupPresent() && permission.userPresent()){
+                        User user = system.usersService().userService(permission.user().id()).get().send().user();
+                        return PermissionVo.builder()
+                                .user(user.name())
+                                .provider(user.domainPresent() ? user.domain().name() : null)
+                                .nameSpace(user.namespace())
+                                .role(role.name())
+                                .build();
+                    }
+                    return null;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<EventVo> getEvent(String id) {
         SystemService system = admin.getConnection().systemService();
         List<Event> eventList = system.eventsService().list().send().events();
+        String dcName = system.dataCentersService().dataCenterService(id).get().send().dataCenter().name();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
+        log.info("데이터센터 {} 이벤트 출력", dcName);
         return eventList.stream()
-                .filter(Event::dataCenterPresent)
+                .filter(event -> event.dataCenterPresent()
+                        && (event.dataCenter().idPresent() && event.dataCenter().id().equals(id) || (event.dataCenter().namePresent() && event.dataCenter().name().equals(dcName)) )
+                )
                 .map(event ->
                         EventVo.builder()
-                                .datacenterName(system.dataCentersService().dataCenterService(id).get().send().dataCenter().name())
+                                .datacenterName(dcName)
                                 .severity(TypeExtKt.findLogSeverity(event.severity()))   //상태
                                 .time(sdf.format(event.time()))
                                 .message(event.description())

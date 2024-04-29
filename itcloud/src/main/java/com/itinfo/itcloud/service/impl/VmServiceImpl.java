@@ -460,41 +460,42 @@ public class VmServiceImpl implements ItVmService {
     public List<PermissionVo> getPermission(String id) {
         SystemService systemService = admin.getConnection().systemService();
 
-        List<PermissionVo> pVoList = new ArrayList<>();
-        PermissionVo pVo = null;
-
-        List<Permission> permissionList =
-                ((AssignedPermissionsService.ListResponse)systemService.vmsService().vmService(id).permissionsService().list().send()).permissions();
-
-        for(Permission permission : permissionList){
-            pVo = new PermissionVo();
-            pVo.setPermissionId(permission.id());
-
-            if(permission.groupPresent() && !permission.userPresent()){
-                Group group = ((GroupService.GetResponse)systemService.groupsService().groupService(permission.group().id()).get().send()).get();
-                pVo.setUser(group.name());
-                pVo.setNameSpace(group.namespace());
-                // 생성일의 경우 db에서 가져와야함?
-
-                Role role = ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
-                pVo.setRole(role.name());
-
-                pVoList.add(pVo);       // 그룹에 추가
-            }
-
-            if(permission.userPresent() && !permission.groupPresent()){
-                User user = ((UserService.GetResponse)systemService.usersService().userService(permission.user().id()).get().send()).user();
-                pVo.setUser(user.name());
-                pVo.setNameSpace(user.namespace());
-                pVo.setProvider(user.domainPresent() ? user.domain().name() : null);
-
-                Role role = ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
-                pVo.setRole(role.name());
-
-                pVoList.add(pVo);
-            }
-        }
-        return pVoList;
+//        List<PermissionVo> pVoList = new ArrayList<>();
+//        PermissionVo pVo = null;
+//
+//        List<Permission> permissionList =
+//                ((AssignedPermissionsService.ListResponse)systemService.vmsService().vmService(id).permissionsService().list().send()).permissions();
+//
+//        for(Permission permission : permissionList){
+//            pVo = new PermissionVo();
+//            pVo.setPermissionId(permission.id());
+//
+//            if(permission.groupPresent() && !permission.userPresent()){
+//                Group group = ((GroupService.GetResponse)systemService.groupsService().groupService(permission.group().id()).get().send()).get();
+//                pVo.setUser(group.name());
+//                pVo.setNameSpace(group.namespace());
+//                // 생성일의 경우 db에서 가져와야함?
+//
+//                Role role = ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+//                pVo.setRole(role.name());
+//
+//                pVoList.add(pVo);       // 그룹에 추가
+//            }
+//
+//            if(permission.userPresent() && !permission.groupPresent()){
+//                User user = ((UserService.GetResponse)systemService.usersService().userService(permission.user().id()).get().send()).user();
+//                pVo.setUser(user.name());
+//                pVo.setNameSpace(user.namespace());
+//                pVo.setProvider(user.domainPresent() ? user.domain().name() : null);
+//
+//                Role role = ((RoleService.GetResponse)systemService.rolesService().roleService(permission.role().id()).get().send()).role();
+//                pVo.setRole(role.name());
+//
+//                pVoList.add(pVo);
+//            }
+//        }
+//        return pVoList;
+        return null;
     }
 
 

@@ -1,17 +1,12 @@
 package com.itinfo.itcloud.model.computing;
 
-import com.itinfo.itcloud.model.setting.GroupVo;
-import com.itinfo.itcloud.model.setting.RoleVo;
-import com.itinfo.itcloud.model.setting.UserVo;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Date;
-import java.util.List;
 
-@Getter @Setter @ToString
+@Getter @ToString @Builder
 public class PermissionVo {
     private String permissionId;      // permission
     private String datacenterName;

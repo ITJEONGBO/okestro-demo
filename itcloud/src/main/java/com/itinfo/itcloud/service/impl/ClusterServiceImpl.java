@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -828,39 +827,31 @@ public class ClusterServiceImpl implements ItClusterService {
         SystemService system = admin.getConnection().systemService();
         List<Permission> permissionList = system.clustersService().clusterService(id).permissionsService().list().send().permissions();
 
-        List<PermissionVo> pVoList = new ArrayList<>();
-        PermissionVo pVo = null;
+        return permissionList.stream()
+                .map(permission -> {
+                    Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
 
-        for(Permission permission : permissionList){
-            pVo = new PermissionVo();
-            pVo.setPermissionId(permission.id());
-
-            // 그룹이 있고, 유저가 없을때
-            if(permission.groupPresent() && !permission.userPresent()){
-                Group group = system.groupsService().groupService(permission.group().id()).get().send().get();
-                Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
-
-                pVo.setUser(group.name());
-                pVo.setNameSpace(group.namespace());
-                pVo.setRole(role.name());
-
-                pVoList.add(pVo);       // 그룹에 추가
-            }
-
-            // 그룹이 없고, 유저가 있을때
-            if(!permission.groupPresent() && permission.userPresent()){
-                User user = system.usersService().userService(permission.user().id()).get().send().user();
-                Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
-
-                pVo.setUser(user.name());
-                pVo.setProvider(user.domainPresent() ? user.domain().name() : null);
-                pVo.setNameSpace(user.namespace());
-                pVo.setRole(role.name());
-
-                pVoList.add(pVo);
-            }
-        }
-        return pVoList;
+                    if(permission.groupPresent() && !permission.userPresent()){
+                        Group group = system.groupsService().groupService(permission.group().id()).get().send().get();
+                        return PermissionVo.builder()
+                                .permissionId(permission.id())
+                                .user(group.name())
+                                .nameSpace(group.namespace())
+                                .role(role.name())
+                                .build();
+                    }
+                    if(!permission.groupPresent() && permission.userPresent()){
+                        User user = system.usersService().userService(permission.user().id()).get().send().user();
+                        return PermissionVo.builder()
+                                .user(user.name())
+                                .provider(user.domainPresent() ? user.domain().name() : null)
+                                .nameSpace(user.namespace())
+                                .role(role.name())
+                                .build();
+                    }
+                    return null;
+                })
+                .collect(Collectors.toList());
     }
 
 

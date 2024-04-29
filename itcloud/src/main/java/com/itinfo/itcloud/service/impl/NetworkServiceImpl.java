@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -114,8 +113,6 @@ public class NetworkServiceImpl implements ItNetworkService {
 
         Gson gson = new Gson();
 
-        DnsResolverConfiguration dns = new DnsResolverConfigurationBuilder().nameServers().nameServers("128.0.0.2").build();
-
         // TODO
         //  외부 공급자 설정할 때 물리적 네트워크에 연결하는 거 구현해야함,
         //  외부 공급자 설정 시 클러스터에서 모두 필요 항목은 사라져야됨 (프론트에서 아예 설정이 안되게?)
@@ -138,6 +135,7 @@ public class NetworkServiceImpl implements ItNetworkService {
 
             Network network = networksService.add().network(networkBuilder).send().network();
 
+            DnsResolverConfiguration dns = new DnsResolverConfigurationBuilder().nameServers().nameServers("128.0.0.2").build();
             DnsResolverConfigurationContainer dnsContainer = new DnsResolverConfigurationContainer();
             // TODO: DNS 정보 기입 시, 어떤 값을 넣어야 유효한지 확인 필요
             // dnsContainer.nameServers().add()
@@ -262,6 +260,7 @@ public class NetworkServiceImpl implements ItNetworkService {
             log.error("network 삭제 실패");
             return CommonVo.failResponse("오류");
         }
+
     }
 
 
@@ -269,29 +268,21 @@ public class NetworkServiceImpl implements ItNetworkService {
     @Override
     public NetworkImportVo setImportNetwork() {
         SystemService system = admin.getConnection().systemService();
-
         OpenStackNetworkProvider osProvider = system.openstackNetworkProvidersService().list().follow("networks").send().providers().get(0);
         List<DataCenter> dcList = system.dataCentersService().list().send().dataCenters();
-        List<Network> nwList = system.networksService().list().send().networks();
+        List<Network> nwList = system.networksService().list().send().networks().stream().filter(Network::externalProviderPresent).collect(Collectors.toList());
 
-        nwList.stream()
-                .filter(network -> network.externalProviderPresent() && network.externalProvider().id().equals(osProvider.id()) && network.externalProviderPhysicalNetworkPresent())
-                .map(Identified::name)
-                .forEach(System.out::println);
+        nwList.stream().map(Network::name).forEach(System.out::println);
+        System.out.println("---");
 
         return NetworkImportVo.builder()
                 .id(osProvider.id())
                 .name(osProvider.name())
                 .osVoList(
                     osProvider.networks().stream()
-                            .map(os -> {
-
-
-                                return OpenstackVo.builder()
+                            .map(os -> OpenstackVo.builder()
                                         .id(os.id())
                                         .name(os.name())
-//                                        .dcId()
-//                                        .dcName()
                                         .dcVoList(
                                                 dcList.stream()
                                                         .map(dc -> DataCenterVo.builder()
@@ -302,8 +293,8 @@ public class NetworkServiceImpl implements ItNetworkService {
                                                         .collect(Collectors.toList())
                                         )
                                         .permission(true)   // 기본값을 허용으로 설정
-                                        .build();
-                            })
+                                        .build()
+                            )
                             .collect(Collectors.toList())
                 )
                 .build();
@@ -726,39 +717,34 @@ public class NetworkServiceImpl implements ItNetworkService {
     @Override
     public List<PermissionVo> getPermission(String id) {
         SystemService system = admin.getConnection().systemService();
-        List<Permission> permissionList = system.networksService().networkService(id).permissionsService().list().send().permissions();
-        List<PermissionVo> pVoList = new ArrayList<>();
-        PermissionVo pVo = null;
+        List<Permission> permissionList = system.clustersService().clusterService(id).permissionsService().list().send().permissions();
 
-        for(Permission permission : permissionList){
-            pVo = new PermissionVo();
-            pVo.setPermissionId(permission.id());
+        return permissionList.stream()
+                .map(permission -> {
+                    Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
 
-            if(permission.groupPresent() && !permission.userPresent()){
-                Group group = system.groupsService().groupService(permission.group().id()).get().send().get();
-                pVo.setUser(group.name());
-                pVo.setNameSpace(group.namespace());
-                // 생성일의 경우 db에서 가져와야함?
+                    if(permission.groupPresent() && !permission.userPresent()){
+                        Group group = system.groupsService().groupService(permission.group().id()).get().send().get();
+                        return PermissionVo.builder()
+                                .permissionId(permission.id())
+                                .user(group.name())
+                                .nameSpace(group.namespace())
+                                .role(role.name())
+                                .build();
+                    }
 
-                Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
-                pVo.setRole(role.name());
-
-                pVoList.add(pVo);       // 그룹에 추가
-            }
-
-            if(permission.userPresent() && !permission.groupPresent()){
-                User user = system.usersService().userService(permission.user().id()).get().send().user();
-                pVo.setUser(user.name());
-                pVo.setNameSpace(user.namespace());
-                pVo.setProvider(user.domainPresent() ? user.domain().name() : null);
-
-                Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
-                pVo.setRole(role.name());
-
-                pVoList.add(pVo);
-            }
-        }
-        return pVoList;
+                    if(!permission.groupPresent() && permission.userPresent()){
+                        User user = system.usersService().userService(permission.user().id()).get().send().user();
+                        return PermissionVo.builder()
+                                .user(user.name())
+                                .provider(user.domainPresent() ? user.domain().name() : null)
+                                .nameSpace(user.namespace())
+                                .role(role.name())
+                                .build();
+                    }
+                    return null;
+                })
+                .collect(Collectors.toList());
     }
 
 

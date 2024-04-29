@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -445,43 +444,33 @@ public class HostServiceImpl implements ItHostService {
     @Override
     public List<PermissionVo> getPermission(String id) {
         SystemService system = admin.getConnection().systemService();
+        List<Permission> permissionList = system.clustersService().clusterService(id).permissionsService().list().send().permissions();
 
-        List<PermissionVo> pVoList = new ArrayList<>();
-        PermissionVo pVo = null;
+        return permissionList.stream()
+                .map(permission -> {
+                    Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
 
-        List<Permission> permissionList = system.hostsService().hostService(id).permissionsService().list().send().permissions();
-
-        for(Permission permission : permissionList){
-            pVo = new PermissionVo();
-            pVo.setPermissionId(permission.id());
-
-            if(permission.groupPresent() && !permission.userPresent()){
-                Group group = system.groupsService().groupService(permission.group().id()).get().send().get();
-                pVo.setUser(group.name());
-                pVo.setNameSpace(group.namespace());
-                // 생성일의 경우 db에서 가져와야함
-
-                Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
-                pVo.setRole(role.name());
-
-                pVoList.add(pVo);       // 그룹에 추가
-            }
-
-            if(permission.userPresent() && !permission.groupPresent()){
-                User user = system.usersService().userService(permission.user().id()).get().send().user();
-                pVo.setUser(user.name());
-                pVo.setNameSpace(user.namespace());
-                pVo.setProvider(user.domainPresent() ? user.domain().name() : null);
-
-                Role role = system.rolesService().roleService(permission.role().id()).get().send().role();
-                pVo.setRole(role.name());
-
-
-                pVoList.add(pVo);
-            }
-        }
-        log.info("Host 권한");
-        return pVoList;
+                    if(permission.groupPresent() && !permission.userPresent()){
+                        Group group = system.groupsService().groupService(permission.group().id()).get().send().get();
+                        return PermissionVo.builder()
+                                .permissionId(permission.id())
+                                .user(group.name())
+                                .nameSpace(group.namespace())
+                                .role(role.name())
+                                .build();
+                    }
+                    if(!permission.groupPresent() && permission.userPresent()){
+                        User user = system.usersService().userService(permission.user().id()).get().send().user();
+                        return PermissionVo.builder()
+                                .user(user.name())
+                                .provider(user.domainPresent() ? user.domain().name() : null)
+                                .nameSpace(user.namespace())
+                                .role(role.name())
+                                .build();
+                    }
+                    return null;
+                })
+                .collect(Collectors.toList());
     }
 
 

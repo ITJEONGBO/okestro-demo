@@ -6,7 +6,6 @@ import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
 import com.itinfo.itcloud.model.create.ClusterCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.ovirt.engine.sdk4.types.*;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class ItClusterServiceTest {
@@ -417,7 +415,10 @@ class ItClusterServiceTest {
 
     @Test
     void getPermission() {
-        assertThat(3).isEqualTo(cService.getPermission(id).size());
+        List<PermissionVo> result = cService.getPermission(id);
+
+        assertThat(3).isEqualTo(result.size());
+        result.stream().map(PermissionVo::getUser).forEach(System.out::println);
     }
 
     @Test
