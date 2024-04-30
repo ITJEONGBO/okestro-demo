@@ -11,7 +11,8 @@ import java.util.List;
 public interface ItVmService {
     List<VmVo> getList();
 
-    List<ClusterVo> getClusterList();
+
+    List<VmSetVo> setVmSet();
     VmCreateVo getVmCreate(String id);
 
     boolean addVm(VmCreateVo vmCreateVo);   // 생성
@@ -29,7 +30,5 @@ public interface ItVmService {
     GuestInfoVo getGuestInfo(String id);
     List<PermissionVo> getPermission(String id);
     List<EventVo> getEvent(String id);
-
-
 
 }

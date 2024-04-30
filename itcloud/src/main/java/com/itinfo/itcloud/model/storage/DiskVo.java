@@ -3,6 +3,7 @@ package com.itinfo.itcloud.model.storage;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.ovirt.engine.sdk4.types.DiskInterface;
 import org.ovirt.engine.sdk4.types.DiskStatus;
 import org.ovirt.engine.sdk4.types.DiskStorageType;
@@ -10,7 +11,7 @@ import org.ovirt.engine.sdk4.types.DiskStorageType;
 import java.math.BigInteger;
 import java.util.List;
 
-@Getter @Setter @Builder
+@Getter @Setter @Builder @ToString
 public class DiskVo {
     private String id;
     private String name;

@@ -1,21 +1,25 @@
 package com.itinfo.itcloud.model.computing;
 
-import com.itinfo.itcloud.model.storage.DiskVo;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.math.BigInteger;
+import java.util.List;
+
 @Getter @Setter @ToString @Builder
 public class SnapshotVo {
-    private String name;  // 이름이 description
+    private String id;
+    private String description;
     private String date;
-    private boolean persistMemory;
+    private boolean persistMemorystate; // 메모리 f/t
     private String status;
-//    private String type;
+    private BigInteger setMemory;   // 설정된 메모리
+    private BigInteger guaranteedMemory;    // 할당할 실제 메모리
+    private int cpuCore;
 
-    private DiskVo diskVo;
-    private NicVo nicVo;
-    private ApplicationVo applicationVo;
-
+    private List<SnapshotDiskVo> sDiskList;
+    private List<NicVo> nicVoList;
+    private List<ApplicationVo> appVoList;
 }

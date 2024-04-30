@@ -2,11 +2,12 @@ package com.itinfo.itcloud.model.computing;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.math.BigInteger;
 import java.util.List;
 
-@Getter @Builder
+@Getter @Builder @ToString
 public class HostVo {
     private String id;
     private String name;

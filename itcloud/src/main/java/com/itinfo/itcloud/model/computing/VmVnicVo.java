@@ -5,9 +5,9 @@ import lombok.Getter;
 import lombok.ToString;
 
 @Getter @Builder @ToString
-public class CpuProfileVo {
+public class VmVnicVo {
     private String id;
     private String name;
-    private String description;
-    private String qosName;
+    private String networkName;
+    private boolean externalNetwork;
 }

@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.service.impl;
 
+import com.itinfo.itcloud.model.DefaultSetVo;
 import com.itinfo.itcloud.model.TypeExtKt;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.VmCreateVo;
@@ -61,23 +62,156 @@ public class VmServiceImpl implements ItVmService {
                 .collect(Collectors.toList());
     }
 
-
-    // 가상머신 생성 창
-    // 클러스터가 나오는 기준을 모르겠음
     @Override
-    public List<ClusterVo> getClusterList() {
-        SystemService systemService = admin.getConnection().systemService();
-        List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
+    public List<VmSetVo> setVmSet() {
+        SystemService system = admin.getConnection().systemService();
+        List<Cluster> clusterList = system.clustersService().list().send().clusters();
+        List<Host> hostList = system.hostsService().list().send().hosts();
 
-        log.info("clusterList");
         return clusterList.stream()
-                .map(cluster -> ClusterVo.builder()
-                        .id(cluster.id())
-                        .name(cluster.name())
-                        .datacenterName(systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
-                        .build())
+                .filter(cluster -> cluster.dataCenterPresent() && cluster.cpuPresent())
+                .map(cluster -> {
+                    List<Network> networkList = system.clustersService().clusterService(cluster.id()).networksService().list().send().networks();
+                    List<CpuProfile> profileList = system.clustersService().clusterService(cluster.id()).cpuProfilesService().list().send().profiles();
+                    List<AffinityGroup> affinityGroupList = system.clustersService().clusterService(cluster.id()).affinityGroupsService().list().send().groups();
+                    List<AffinityLabel> affinityLabelList = system.affinityLabelsService().list().send().labels();
+
+                    return VmSetVo.builder()
+                            .clusterId(cluster.id())
+                            .clusterName(cluster.name())
+                            .dcName(system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
+                            .vnicList(
+                                    networkList.stream()
+                                            .flatMap(network -> {
+                                                List<VnicProfile> vnicProfileList = system.networksService().networkService(network.id()).vnicProfilesService().list().send().profiles();
+                                                return vnicProfileList.stream()
+                                                        .map(vnicProfile ->
+                                                                VmVnicVo.builder()
+                                                                    .id(vnicProfile.id())
+                                                                    .name(vnicProfile.name())
+                                                                    .networkName(network.name())
+                                                                    .externalNetwork(network.externalProviderPresent())
+                                                                    .build()
+                                                        );
+                                            })
+                                            .collect(Collectors.toList())
+                            )
+                            .profileVoList(
+                                    profileList.stream()
+                                            .map(cpuProfile ->
+                                                    DefaultSetVo.builder()
+                                                            .id(cpuProfile.id())
+                                                            .name(cpuProfile.name())
+                                                            .build()
+                                            )
+                                            .collect(Collectors.toList())
+//                                profileList.stream()
+//                                    .map(cpuProfile ->
+//                                        CpuProfileVo.builder()
+//                                                .id(cpuProfile.id())
+//                                                .name(cpuProfile.name())
+//                                                .build()
+//                                    )
+//                                    .collect(Collectors.toList())
+                            )
+                            .hostVoList(
+                                    hostList.stream()
+                                            .filter(host -> host.cluster().id().equals(cluster.id()))
+                                            .map(host ->
+                                                DefaultSetVo.builder()
+                                                        .id(host.id())
+                                                        .name(host.name())
+                                                        .build()
+                                            )
+                                            .collect(Collectors.toList())
+//                                hostList.stream()
+//                                    .filter(host -> host.cluster().id().equals(cluster.id()))
+//                                    .map(host ->
+//                                            HostVo.builder()
+//                                                .id(host.id())
+//                                                .name(host.name())
+//                                                .build()
+//                                    )
+//                                    .collect(Collectors.toList())
+                            )
+                            .agVoList(
+                                    affinityGroupList.stream()
+                                            .map(affinityGroup ->
+                                                    DefaultSetVo.builder()
+                                                            .id(affinityGroup.id())
+                                                            .name(affinityGroup.name())
+                                                            .build()
+                                            )
+                                            .collect(Collectors.toList())
+//                                affinityGroupList.stream()
+//                                    .map(ag ->
+//                                            AffinityGroupVo.builder()
+//                                                .id(ag.id())
+//                                                .name(ag.name())
+//                                                .build()
+//                                    )
+//                                    .collect(Collectors.toList())
+                            )
+                            .alVoList(
+                                    affinityLabelList.stream()
+                                            .map(affinityLabel ->
+                                                    DefaultSetVo.builder()
+                                                            .id(affinityLabel.id())
+                                                            .name(affinityLabel.name())
+                                                            .build()
+                                            )
+                                            .collect(Collectors.toList())
+//                                affinityLabelList.stream()
+//                                    .map(al ->
+//                                            AffinityLabelVo.builder()
+//                                                .id(al.id())
+//                                                .name(al.name())
+//                                                .build()
+//                                    )
+//                                    .collect(Collectors.toList())
+                            )
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
+
+
+
+    // 가상머신 생성 창
+    // nic
+//    @Override
+//    public List<ClusterVo> getClusterList() {
+//        SystemService systemService = admin.getConnection().systemService();
+//        List<Cluster> clusterList = systemService.clustersService().list().send().clusters();
+//
+//        log.info("clusterList");
+//        return clusterList.stream()
+//                .filter(cluster -> cluster.dataCenterPresent() && cluster.cpuPresent())
+//                .map(cluster -> {
+//                    return ClusterVo.builder()
+//                            .id(cluster.id())
+//                            .name(cluster.name())
+//                            .datacenterName(systemService.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
+//                            .build();
+//                })
+//                .collect(Collectors.toList());
+//    }
+
+//    public List<NetworkVo> getNetworkList(){
+//        SystemService system = admin.getConnection().systemService();
+//        List<Network> networkList = system.clustersService().clusterService(id).networksService().list().send().networks();
+//
+//        log.info("Cluster 네트워크");
+//        return networkList.stream()
+//                .filter(network -> !networkList.isEmpty())
+//                .map(network ->
+//                        NetworkVo.builder()
+//                                .id(network.id())
+//                                .name(network.name())
+//                                .build()
+//                )
+//                .collect(Collectors.toList());
+//    }
 
 
     // 가상머신 생성창 ?
@@ -356,19 +490,91 @@ public class VmServiceImpl implements ItVmService {
     @Override
     public List<SnapshotVo> getSnapshot(String id) {
         SystemService system = admin.getConnection().systemService();
+        Vm vm = system.vmsService().vmService(id).get().send().vm();
         List<Snapshot> snapList = system.vmsService().vmService(id).snapshotsService().list().send().snapshots();
-        List<DiskAttachment> diskList = system.vmsService().vmService(id).diskAttachmentsService().list().send().attachments();
+        List<DiskAttachment> daList = system.vmsService().vmService(id).diskAttachmentsService().list().send().attachments();
+
+        daList.stream().map(diskAttachment -> diskAttachment.disk().id()).forEach(System.out::println);
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
         return snapList.stream()
                 .map(snapshot -> {
+                    if(snapshot.vmPresent()) {  // 스냅샷 생성
+                        List<Disk> diskList = system.vmsService().vmService(id).snapshotsService().snapshotService(snapshot.id()).disksService().list().send().disks();
+                        List<Nic> nicList = system.vmsService().vmService(id).snapshotsService().snapshotService(snapshot.id()).nicsService().list().send().nics();
 
-                    return SnapshotVo.builder()
-                            .name(snapshot.description())
-                            .date(sdf.format(snapshot.date().getTime()))  //뭐가 안맞음
-                            .status(snapshot.snapshotStatus().value())
-                            .persistMemory(snapshot.persistMemorystate())
-                            .build();
+                        return SnapshotVo.builder()
+                                .id(snapshot.id())
+                                .description(snapshot.description())
+                                .date(sdf.format(snapshot.date().getTime()))
+                                .status(snapshot.snapshotStatus().value())
+                                .persistMemorystate(snapshot.persistMemorystate())
+                                .setMemory(snapshot.vm().memory())
+                                .guaranteedMemory(snapshot.vm().memoryPolicy().guaranteed())
+                                .cpuCore(vm.cpu().topology().coresAsInteger() * vm.cpu().topology().socketsAsInteger() * vm.cpu().topology().threadsAsInteger())
+                                .sDiskList(
+                                        diskList.stream()
+                                                .map(disk -> {
+                                                    return SnapshotDiskVo.builder()
+                                                            .status(disk.status())
+                                                            .id(disk.id())
+                                                            .alias(disk.alias())
+                                                            .virtualSize(disk.provisionedSize())
+                                                            .actualSize(disk.actualSize())
+                                                            .sparse(disk.sparse() ? "sparse" : "?")
+//                                                                    .diskInterface(diskAttachment.interface_())
+//                                                        .date()
+//                                                        .diskSnapId()
+                                                            .description(disk.description())
+                                                            .storageType(disk.storageType())
+                                                            .build();
+                                                })
+                                        .collect(Collectors.toList())
+                                )
+//                                .nicVoList(
+//                                        nicList.stream()
+//                                                .map(nic ->
+//                                                        NicVo.builder()
+//                                                                .build()
+//                                                )
+//                                                .collect(Collectors.toList())
+//                                )
+                                .build();
+                    }else {  // 스냅샷 기본
+
+                        List<Nic> nicList = system.vmsService().vmService(id).nicsService().list().send().nics();
+
+                        return SnapshotVo.builder()
+                                .id(snapshot.id())
+                                .description(snapshot.description())
+                                .date(sdf.format(snapshot.date().getTime()))  //뭐가 안맞음
+                                .status(snapshot.snapshotStatus().value())
+                                .persistMemorystate(snapshot.persistMemorystate())
+                                .setMemory(vm.memory())
+                                .guaranteedMemory(vm.memoryPolicy().guaranteed())
+                                .cpuCore(vm.cpu().topology().coresAsInteger() * vm.cpu().topology().socketsAsInteger() * vm.cpu().topology().threadsAsInteger())
+                                .sDiskList(
+                                    daList.stream()
+                                            .map(diskAttachment -> {
+                                                String diskId = system.vmsService().vmService(id).diskAttachmentsService().attachmentService(diskAttachment.id()).get().send().attachment().disk().id();
+                                                Disk disk = system.disksService().diskService(diskId).get().send().disk();
+                                                return SnapshotDiskVo.builder()
+                                                        .status(disk.status())  // ok면 up상태인거 같음
+                                                        .alias(disk.name())
+                                                        .virtualSize(disk.provisionedSize())
+                                                        .actualSize(disk.actualSize())
+                                                        .sparse(disk.sparse() ? "sparse" : "?")
+                                                        .diskInterface(diskAttachment.interface_())
+//                                                        .date()
+//                                                        .diskSnapId()
+                                                        .description(disk.description())
+                                                        .storageType(disk.storageType())
+                                                        .build();
+                                            }).collect(Collectors.toList())
+                                )
+                                .build();
+                    }
                 })
                 .collect(Collectors.toList());
     }

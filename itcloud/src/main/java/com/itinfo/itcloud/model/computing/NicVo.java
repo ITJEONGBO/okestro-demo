@@ -4,11 +4,12 @@ import com.itinfo.itcloud.model.network.VnicProfileVo;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.ovirt.engine.sdk4.types.NicStatus;
 
 import java.math.BigInteger;
 
-@Getter @Setter @Builder
+@Getter @Setter @Builder @ToString
 public class NicVo {
     private String id;
     private String name;

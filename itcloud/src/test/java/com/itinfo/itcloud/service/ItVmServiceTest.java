@@ -26,7 +26,14 @@ class ItVmServiceTest {
     }
 
     @Test
-    void getClusterList() {
+    void setVmSet() {
+        List<VmSetVo> result = vmService.setVmSet();
+
+        assertThat(2).isEqualTo(result.size());
+        assertThat(14).isEqualTo(result.get(0).getVnicList().size());
+        assertThat(6).isEqualTo(result.get(1).getVnicList().size());
+
+        System.out.println(result.toString());
     }
 
     @Test
@@ -76,9 +83,10 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 스냅샷")
     void getSnapshot() {
-        List<SnapshotVo> result = vmService.getSnapshot(defaultId);
+        String id = "eec63849-5026-482c-8f05-1d8e419ef548";
+        List<SnapshotVo> result = vmService.getSnapshot(id);
 
-        System.out.println(result.get(0).toString());
+//        result.forEach(System.out::println);
     }
 
     @Test
