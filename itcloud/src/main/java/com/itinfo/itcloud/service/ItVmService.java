@@ -2,6 +2,7 @@ package com.itinfo.itcloud.service;
 
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.VmCreateVo;
+import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.storage.VmDiskVo;
 import org.springframework.stereotype.Service;
 
@@ -12,12 +13,11 @@ public interface ItVmService {
     List<VmVo> getList();
 
 
-    List<VmSetVo> setVmSet();
-    VmCreateVo getVmCreate(String id);
-
-    boolean addVm(VmCreateVo vmCreateVo);   // 생성
-    void editVm(VmCreateVo vmCreateVo);     // 수정
-    boolean deleteVm(String id);            // 삭제
+    List<VmSetVo> setVmSet();               // 생성 창
+    CommonVo<Boolean> addVm(VmCreateVo vmCreateVo);   // 생성
+    CommonVo<Boolean> editVm(VmCreateVo vmCreateVo);     // 편집
+    VmCreateVo getVmCreate(String id);      // 편집 창
+    CommonVo<Boolean> deleteVm(String id);            // 삭제
 
 
     VmVo getInfo(String id);

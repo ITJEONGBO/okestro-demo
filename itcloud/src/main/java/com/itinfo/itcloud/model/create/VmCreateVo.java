@@ -11,9 +11,11 @@ import java.util.List;
 
 @Getter @Builder @ToString
 public class VmCreateVo {
-//    https://ovirt.github.io/ovirt-engine-api-model/master/#types/vm
     // 일반
-//    private String datacenterName;    // 따지고보면 생성창에서 보여주는 역할만 하는거 같음
+    private String id;
+    private String name;
+
+//    private String dcName;    // 따지고보면 생성창에서 보여주는 역할만 하는거 같음
     private String clusterId;
     private String clusterName;
     private String templateId;      // 템플릿
@@ -22,8 +24,6 @@ public class VmCreateVo {
     private String chipsetType;     // 칩셋/펌웨어 유형
     private String option;          // 최적화 옵션
 
-    private String id;
-    private String name;
     private String description;     // 설명
     private String comment;
 
@@ -32,7 +32,7 @@ public class VmCreateVo {
     private boolean deleteProtected;    // 삭제 방지
     // 보관
 
-    private VDiskVo vDiskVo;        // 인스턴스 이미지
+    private List<VDiskVo> vDiskList;        // 인스턴스 이미지
     private List<NicVo> vnicList;   // vnic 프로파일
 
     // 시스템

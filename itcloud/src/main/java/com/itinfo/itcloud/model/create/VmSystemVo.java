@@ -4,14 +4,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.math.BigInteger;
-
 @Getter @Builder @ToString
 public class VmSystemVo {
     // 시스템
-    private BigInteger memorySize;         // 메모리 크기
-    private BigInteger memoryMax;          // 최대 메모리
-    private BigInteger memoryActual;       // 할당할 실제 메모리
+    private int memorySize;         // 메모리 크기
+    private int memoryMax;          // 최대 메모리
+    private int memoryActual;       // 할당할 실제 메모리
 
     // 고급 매개변수
     private int vCpuCnt;            // 총 가상 CPU

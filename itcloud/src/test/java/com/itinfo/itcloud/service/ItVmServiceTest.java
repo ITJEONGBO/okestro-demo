@@ -1,9 +1,15 @@
 package com.itinfo.itcloud.service;
 
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.create.VmCreateVo;
+import com.itinfo.itcloud.model.create.VmHostVo;
+import com.itinfo.itcloud.model.create.VmSystemVo;
+import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.storage.VmDiskVo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.ovirt.engine.sdk4.types.BiosType;
+import org.ovirt.engine.sdk4.types.VmType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -37,12 +43,38 @@ class ItVmServiceTest {
     }
 
     @Test
-    void getVmCreate() {
-        vmService.getVmCreate(defaultId);
+    void addVm() {
+        VmCreateVo vm =
+            VmCreateVo.builder()
+                    .clusterId("5a25c18a-b584-4a1a-bcf8-9f5368ee5e41")
+                    .templateId("00000000-0000-0000-0000-000000000000")
+                    .os("rhel_8x64")
+                    .chipsetType(String.valueOf(BiosType.Q35_SEA_BIOS))
+                    .option(String.valueOf(VmType.SERVER))
+                    .vmSystemVo(
+                            VmSystemVo.builder()
+                                    .memorySize(1024)
+                                    .memoryMax(2048)
+                                    .memoryActual(1024)
+                                    .build()
+                    )
+                    .vmHostVo(
+                            VmHostVo.builder()
+                                    .hostId("1c8ed321-28e5-4f83-9e34-e13f9125f253")
+                                    .build()
+                    )
+                    .name("testV")
+                    .description("test")
+                .build();
+
+        CommonVo<Boolean> result = vmService.addVm(vm);
+        assertThat(result.getHead().getCode()).isEqualTo(201);
     }
 
     @Test
-    void addVm() {
+    void getVmCreate() {
+        VmCreateVo result = vmService.getVmCreate(defaultId);
+        System.out.println(result);
     }
 
     @Test
