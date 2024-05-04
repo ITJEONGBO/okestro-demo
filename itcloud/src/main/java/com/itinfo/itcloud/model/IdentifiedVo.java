@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 @Getter @Builder @ToString
-public class DefaultSetVo {
+public class IdentifiedVo {
     private String id;
     private String name;
 }

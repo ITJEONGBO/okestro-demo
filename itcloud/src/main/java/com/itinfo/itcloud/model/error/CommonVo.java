@@ -72,6 +72,7 @@ public class CommonVo<T> {
         return res;
     }
 
+
 //    public String toJson() {
 //        return gson.toJson(this);
 //    }

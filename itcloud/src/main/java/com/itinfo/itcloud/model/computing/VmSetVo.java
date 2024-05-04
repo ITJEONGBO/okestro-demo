@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.model.computing;
 
-import com.itinfo.itcloud.model.DefaultSetVo;
+import com.itinfo.itcloud.model.IdentifiedVo;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -17,11 +17,11 @@ public class VmSetVo {
     // 인스턴스 이미지 연결, 생성
 
     private List<VmVnicVo> vnicList;
-    private List<DefaultSetVo> hostVoList;
-    private List<DefaultSetVo> profileVoList;
+    private List<IdentifiedVo> hostVoList;
+    private List<IdentifiedVo> profileVoList;
 
-    private List<DefaultSetVo> agVoList;
-    private List<DefaultSetVo> alVoList;
+    private List<IdentifiedVo> agVoList;
+    private List<IdentifiedVo> alVoList;
 
 
 //    private List<NicVo> nicVoList;

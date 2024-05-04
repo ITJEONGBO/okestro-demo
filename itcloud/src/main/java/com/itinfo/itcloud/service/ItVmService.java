@@ -15,8 +15,8 @@ public interface ItVmService {
 
     List<VmSetVo> setVmSet();               // 생성 창
     CommonVo<Boolean> addVm(VmCreateVo vmCreateVo);   // 생성
-    CommonVo<Boolean> editVm(VmCreateVo vmCreateVo);     // 편집
-    VmCreateVo getVmCreate(String id);      // 편집 창
+    VmCreateVo setEditVm(String id);      // 편집 창
+    CommonVo<Boolean> editVm(String id, VmCreateVo vmCreateVo);     // 편집
     CommonVo<Boolean> deleteVm(String id);            // 삭제
 
 

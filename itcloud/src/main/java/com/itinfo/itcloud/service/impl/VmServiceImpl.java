@@ -1,14 +1,12 @@
 package com.itinfo.itcloud.service.impl;
 
-import com.google.gson.Gson;
-import com.itinfo.itcloud.model.DefaultSetVo;
+import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.OsVo;
 import com.itinfo.itcloud.model.TypeExtKt;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.*;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
-import com.itinfo.itcloud.model.storage.DiskVo;
 import com.itinfo.itcloud.model.storage.VmDiskVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItVmService;
@@ -21,8 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -105,7 +101,7 @@ public class VmServiceImpl implements ItVmService {
                             .profileVoList(
                                     profileList.stream()
                                             .map(cpuProfile ->
-                                                    DefaultSetVo.builder()
+                                                    IdentifiedVo.builder()
                                                             .id(cpuProfile.id())
                                                             .name(cpuProfile.name())
                                                             .build()
@@ -116,7 +112,7 @@ public class VmServiceImpl implements ItVmService {
                                     hostList.stream()
                                             .filter(host -> host.cluster().id().equals(cluster.id()))
                                             .map(host ->
-                                                DefaultSetVo.builder()
+                                                IdentifiedVo.builder()
                                                         .id(host.id())
                                                         .name(host.name())
                                                         .build()
@@ -126,7 +122,7 @@ public class VmServiceImpl implements ItVmService {
                             .agVoList(
                                     affinityGroupList.stream()
                                             .map(affinityGroup ->
-                                                    DefaultSetVo.builder()
+                                                    IdentifiedVo.builder()
                                                             .id(affinityGroup.id())
                                                             .name(affinityGroup.name())
                                                             .build()
@@ -136,7 +132,7 @@ public class VmServiceImpl implements ItVmService {
                             .alVoList(
                                     affinityLabelList.stream()
                                             .map(affinityLabel ->
-                                                    DefaultSetVo.builder()
+                                                    IdentifiedVo.builder()
                                                             .id(affinityLabel.id())
                                                             .name(affinityLabel.name())
                                                             .build()
@@ -185,14 +181,17 @@ public class VmServiceImpl implements ItVmService {
     // 가상머신 생성
     @Override
     public CommonVo<Boolean> addVm(VmCreateVo vmCreateVo) {
-        SystemService systemService = admin.getConnection().systemService();
-        VmsService vmsService = systemService.vmsService();
+        SystemService system = admin.getConnection().systemService();
+        VmsService vmsService = system.vmsService();
+        BigInteger convertMb = BigInteger.valueOf(1024).pow(2);
+
+        System.out.println(BigInteger.valueOf(2048).multiply(convertMb));
 
         try {
             VmBuilder vmBuilder = new VmBuilder();
             vmBuilder
-                    .cluster(new ClusterBuilder().id(vmCreateVo.getClusterId()).build())
-                    .template(new TemplateBuilder().id(vmCreateVo.getTemplateId()).build())
+                    .cluster(new ClusterBuilder().id(vmCreateVo.getClusterId()))
+                    .template(new TemplateBuilder().id(vmCreateVo.getTemplateId()))
                     .os(new OperatingSystemBuilder().type(vmCreateVo.getOs()).build())
                     .bios(new BiosBuilder().type(BiosType.valueOf(vmCreateVo.getChipsetType())).build())
                     .type(VmType.valueOf(vmCreateVo.getOption()))   // 최적화 옵션
@@ -203,15 +202,14 @@ public class VmServiceImpl implements ItVmService {
                     .stateless(vmCreateVo.isStateless())
                     .startPaused(vmCreateVo.isStartPaused())
                     .deleteProtected(vmCreateVo.isDeleteProtected())
-//                    .diskAttachments(vmCreateVo.getVDiskVo())
-//                    .nics(vmCreateVo.getVnicList())
+//                    .diskAttachments(vmCreateVo.getVDiskVo()) // 인스턴스 이미지
+//                    .nics(vmCreateVo.getVnicList())           // vnic profile
 
-                    .memory(BigInteger.valueOf(vmCreateVo.getVmSystemVo().getMemorySize()).multiply(BigInteger.valueOf(1024).pow(3)))
+                    .memory(BigInteger.valueOf(vmCreateVo.getVmSystemVo().getMemorySize()).multiply(convertMb))
                     .memoryPolicy(
                             new MemoryPolicyBuilder()
-                                .max(BigInteger.valueOf(vmCreateVo.getVmSystemVo().getMemoryMax()).multiply(BigInteger.valueOf(1024).pow(3)))
-                                .guaranteed(BigInteger.valueOf(vmCreateVo.getVmSystemVo().getMemoryActual()).multiply(BigInteger.valueOf(1024).pow(3)))
-                            .build()
+                                .max(BigInteger.valueOf(vmCreateVo.getVmSystemVo().getMemoryMax()).multiply(convertMb))
+                                .guaranteed(BigInteger.valueOf(vmCreateVo.getVmSystemVo().getMemoryActual()).multiply(convertMb))
                     )
                     .cpu(
                             new CpuBuilder()
@@ -221,20 +219,24 @@ public class VmServiceImpl implements ItVmService {
                                                 .sockets(vmCreateVo.getVmSystemVo().getVCpuSocket())
                                                 .threads(vmCreateVo.getVmSystemVo().getVCpuCoreThread())
                                     )
-                            .build()
                     )
-                    // 사용자 정의 에뮬레이션 부분 보류
 //                    .instanceType(new InstanceTypeBuilder().type())
-                    .timeZone(new TimeZoneBuilder().name(vmCreateVo.getVmSystemVo().getTimeOffset()).build())
+//                    .os(
+//                            new OperatingSystemBuilder()
+//                                    .boot(new BootBuilder().devices(BootDevice.valueOf("hd")).build())
+//                    )
+                    // 사용자 정의 에뮬레이션 부분 보류
+                    .timeZone(new TimeZoneBuilder().name(vmCreateVo.getVmSystemVo().getTimeOffset()))
                     // 일련 번호 정책
                     // 사용자 정의 일련번호
-                    .host(new HostBuilder().id(vmCreateVo.getVmHostVo().getHostId()).build())  //호스트
+//                    .host(system.hostsService().hostService(vmCreateVo.getVmHostVo().getHostId()).get().send().host())  //호스트
 //                    .migration(new MigrationOptionsBuilder()
 //                            .autoConverge(InheritableBoolean.valueOf(vmCreateVo.getVmHostVo().getMigrationMode()))
 //                            .encrypted(InheritableBoolean.valueOf(vmCreateVo.getVmHostVo().getMigrationEncoding()))
 //                    )
 //                    .migrationDowntime(vmCreateVo.getVmHostVo().getMigrationPolicy())
                     .build();
+
 
             Vm vm1 = vmsService.add().vm(vmBuilder).send().vm();
 //            System.out.println(vm1.status());
@@ -249,21 +251,21 @@ public class VmServiceImpl implements ItVmService {
     }
 
 
-    // 가상머신 생성창 ?
+    // 가상머신 편집 창
     @Override
-    public VmCreateVo getVmCreate(String id) {
+    public VmCreateVo setEditVm(String id) {
         SystemService system = admin.getConnection().systemService();
         Vm vm = system.vmsService().vmService(id).get().send().vm();
         Cluster cluster = system.clustersService().clusterService(vm.cluster().id()).get().send().cluster();
         List<OperatingSystemInfo> osList = system.operatingSystemsService().list().send().operatingSystem();
         List<DiskAttachment> daList = system.vmsService().vmService(id).diskAttachmentsService().list().send().attachments();
 
-        log.info("가상머신 생성 창");
+        BigInteger convertMb = BigInteger.valueOf(1024).pow(2);
+
+        log.info("가상머신 편집 창");
 
         return VmCreateVo.builder()
-                .id(id)      // vm id
-                .name(vm.name())
-//                .dcName(system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
+                .dcName(system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
                 .clusterId(cluster.id())
                 .clusterName(cluster.name())
                 .templateId(vm.template().id()) // 출력만 가능
@@ -271,7 +273,9 @@ public class VmServiceImpl implements ItVmService {
                 .os(TypeExtKt.findOs(OsVo.valueOf(vm.os().type())))
                 .chipsetType(TypeExtKt.findBios(vm.bios().type()))
                 .option(TypeExtKt.findVmType(vm.type()))
-
+                
+                .id(id)      // vm id
+                .name(vm.name())
                 .description(vm.description())
                 .comment(vm.comment())
                 .stateless(vm.stateless()) // 상태 비저장 (확실치 않음)
@@ -288,21 +292,22 @@ public class VmServiceImpl implements ItVmService {
 //                .vnicList()   // vnic 프로파일 vm.memory()
                 .vmSystemVo(
                         VmSystemVo.builder()
-                                .memorySize((vm.memory().divide(BigInteger.valueOf(1024).pow(3))).intValue())
-//                                .memoryMax(vm.memoryPolicy().max())
-//                                .memoryActual(vm.memoryPolicy().guaranteedAsInteger())
-                                .vCpuCnt(vm.cpu().topology().coresAsInteger() * vm.cpu().topology().socketsAsInteger() * vm.cpu().topology().threadsAsInteger())
+                                .memorySize(vm.memory().divide(convertMb).longValue())
+                                .memoryMax(vm.memoryPolicy().max().divide(convertMb).longValue())
+                                .memoryActual(vm.memoryPolicy().guaranteed().divide(convertMb).longValue())
                                 .vCpuSocket(vm.cpu().topology().socketsAsInteger())
                                 .vCpuSocketCore(vm.cpu().topology().coresAsInteger())
                                 .vCpuCoreThread(vm.cpu().topology().threadsAsInteger())
+                                .vCpuCnt(vm.cpu().topology().coresAsInteger() * vm.cpu().topology().socketsAsInteger() * vm.cpu().topology().threadsAsInteger())
 //                                    .userEmulation()
 //                                    .userCpu()
 //                                    .userVersion()
-//                                    .instanceType(vm.instanceTypePresent() ? vm.instanceType().name() : null)
-//                                    .timeOffset()
+                                    .instanceType(vm.instanceTypePresent() ? vm.instanceType().name() : null)
+                                    .timeOffset(vm.timeZone().utcOffset()) // ?
 //                                    .serialNumPolicy()
 //                                    .userSerialNum()
-                                .build() )
+                                .build()
+                )
                 .vmHostVo(
                         VmHostVo.builder()
 //                                    .hostCpuPass()
@@ -313,7 +318,8 @@ public class VmServiceImpl implements ItVmService {
 //                                    .parallelMigration()
 //                                    .numOfVmMigration()
 //                                    .numaNode()
-                                .build() )
+                                .build()
+                )
                 .vmHaVo(
                         VmHaVo.builder()
 //                                    .ha()
@@ -322,7 +328,8 @@ public class VmServiceImpl implements ItVmService {
 //                                    .priority()
 //                                    .watchDogModel()
 //                                    .watchDogWork()
-                                .build() )
+                                .build()
+                )
                 .vmResourceVo(
                         VmResourceVo.builder()
 //                                    .cpuProfile()
@@ -336,14 +343,16 @@ public class VmServiceImpl implements ItVmService {
 //                                    .multiQue()
 //                                    .virtioScsi()
 //                                    .virtioScsiQueues()
-                                .build() )
+                                .build()
+                )
                 .vmBootVo(
                         VmBootVo.builder()
 //                                    .firstDevice()
 //                                    .secondDevice()
 //                                    .cdDvdConn()
 //                                    .bootingMenu()
-                                .build() )
+                                .build()
+                )
 //                .affinityGroupVoList()
 //                .affinityLabelVoList()
                 .build();
@@ -352,18 +361,35 @@ public class VmServiceImpl implements ItVmService {
 
     // 가상머신 편집
     @Override
-    public CommonVo<Boolean> editVm(VmCreateVo vmCreateVo) {
-        SystemService systemService = admin.getConnection().systemService();
-        
+    public CommonVo<Boolean> editVm(String id, VmCreateVo vmCreateVo) {
+        SystemService system = admin.getConnection().systemService();
+
+
+
         return null;
     }
 
     // 가상머신 삭제
     @Override
     public CommonVo<Boolean> deleteVm(String id) {
-        SystemService systemService = admin.getConnection().systemService();
+        SystemService system = admin.getConnection().systemService();
+        VmService vmService = system.vmsService().vmService(id);
+        boolean delete = system.vmsService().vmService(id).get().send().vm().deleteProtected();
 
-        return null;
+        try {
+            if(!delete){
+                vmService.remove().detachOnly(true /*여기에 디스크 삭제여부*/).send();
+                log.info("가상머신 삭제 성공");
+                return CommonVo.successResponse();
+            }else {
+                log.error("삭제방지 모드를 해제하세요");
+                return CommonVo.failResponse("삭제방지 모드를 해제");
+            }
+        }catch (Exception e){
+            log.error(e.getMessage());
+            e.printStackTrace();
+            return CommonVo.failResponse("가상머신 삭제 실패");
+        }
     }
 
 

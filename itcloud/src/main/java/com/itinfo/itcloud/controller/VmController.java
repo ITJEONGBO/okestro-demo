@@ -1,15 +1,15 @@
 package com.itinfo.itcloud.controller;
 
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.create.VmCreateVo;
+import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.storage.VmDiskVo;
 import com.itinfo.itcloud.service.ItVmService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,14 +22,62 @@ public class VmController {
 
 	@GetMapping("/vms")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
 	public List<VmVo> vms() {
 		log.info("--- 가상머신 리스트");
 		return vmService.getList();
 	}
 
+	@GetMapping("/vm/settings")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	public List<VmSetVo> setVmSet() {
+		log.info("--- 가상머신 생성 창");
+		return vmService.setVmSet();
+	}
+
+	@PostMapping("/vm")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	public CommonVo<Boolean> addVm(@RequestBody VmCreateVo vm) {
+		log.info("--- 가상머신 생성");
+		return vmService.addVm(vm);
+	}
+
+	@PostMapping("/vm/{id}/setting")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	public VmCreateVo getVmCreate(@PathVariable String id) {
+		log.info("--- 가상머신 편집 창");
+		return vmService.setEditVm(id);
+	}
+
+	@PutMapping("/vm/{id}")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	public CommonVo<Boolean> editVm(@PathVariable String id,
+									@RequestBody VmCreateVo vm) {
+		log.info("--- 가상머신 편집");
+		return vmService.editVm(id, vm);
+	}
+
+	@DeleteMapping("/vm/{id}")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	public CommonVo<Boolean> deleteVm(@PathVariable String id) {
+		log.info("--- 가상머신 삭제");
+		return vmService.deleteVm(id);
+	}
+
+
+
+
+
 	@GetMapping("/vm/{id}")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
 	public VmVo vm(@PathVariable String id) {
+		log.info("--- 가상머신 일반");
 		return vmService.getInfo(id);
 	}
 

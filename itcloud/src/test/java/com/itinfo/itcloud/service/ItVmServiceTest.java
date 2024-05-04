@@ -32,6 +32,7 @@ class ItVmServiceTest {
     }
 
     @Test
+    @DisplayName("가상머신 생성 창")
     void setVmSet() {
         List<VmSetVo> result = vmService.setVmSet();
 
@@ -43,28 +44,40 @@ class ItVmServiceTest {
     }
 
     @Test
+    @DisplayName("가상머신 생성")
     void addVm() {
         VmCreateVo vm =
             VmCreateVo.builder()
-                    .clusterId("5a25c18a-b584-4a1a-bcf8-9f5368ee5e41")
+                    .clusterId("9c7452ea-a5f3-11ee-93d2-00163e39cb43")
                     .templateId("00000000-0000-0000-0000-000000000000")
                     .os("rhel_8x64")
-                    .chipsetType(String.valueOf(BiosType.Q35_SEA_BIOS))
+                    .chipsetType(String.valueOf(BiosType.Q35_OVMF))
                     .option(String.valueOf(VmType.SERVER))
+
+                    .name("testV3")
+                    .description("기본생성, 메모리")
+                    .comment("testVm")
+                    .stateless(false)
+                    .startPaused(false)
+                    .deleteProtected(false)
+//                    .vDiskList()
+//                    .vnicList()
                     .vmSystemVo(
                             VmSystemVo.builder()
-                                    .memorySize(1024)
+                                    .memorySize(2048)
                                     .memoryMax(2048)
-                                    .memoryActual(1024)
+                                    .memoryActual(2048)
+//                                    .instanceType("none")
+                                    .vCpuSocket(1)
+                                    .vCpuSocketCore(2)
+                                    .vCpuCoreThread(1)
                                     .build()
                     )
-                    .vmHostVo(
-                            VmHostVo.builder()
-                                    .hostId("1c8ed321-28e5-4f83-9e34-e13f9125f253")
-                                    .build()
-                    )
-                    .name("testV")
-                    .description("test")
+//                    .vmHostVo(
+//                            VmHostVo.builder()
+//                                    .hostId("1c8ed321-28e5-4f83-9e34-e13f9125f253")
+//                                    .build()
+//                    )
                 .build();
 
         CommonVo<Boolean> result = vmService.addVm(vm);
@@ -72,18 +85,35 @@ class ItVmServiceTest {
     }
 
     @Test
+    @DisplayName("가상머신 편집 창")
     void getVmCreate() {
-        VmCreateVo result = vmService.getVmCreate(defaultId);
+        String id = "5693929a-f045-400f-a791-86fde1706ec4";
+        VmCreateVo result = vmService.setEditVm(id);
         System.out.println(result);
     }
 
     @Test
+    @DisplayName("가상머신 편집")
     void editVm() {
+        String id = "";
+        VmCreateVo vm = VmCreateVo.builder().build();
+        CommonVo<Boolean> result = vmService.editVm(id, vm);
+
+        assertThat(result.getHead().getCode()).isEqualTo(201);
     }
 
     @Test
+    @DisplayName("가상머신 삭제")
     void deleteVm() {
+        String id = "9391b3a0-2adf-4a4c-8d5c-7b4a1352bfc9";
+        CommonVo<Boolean> result = vmService.deleteVm(id);
+
+        assertThat(result.getHead().getCode()).isEqualTo(200);
     }
+
+
+
+
 
     @Test
     @DisplayName("가상머신 일반")

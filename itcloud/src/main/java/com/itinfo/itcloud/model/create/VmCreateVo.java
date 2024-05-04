@@ -15,7 +15,7 @@ public class VmCreateVo {
     private String id;
     private String name;
 
-//    private String dcName;    // 따지고보면 생성창에서 보여주는 역할만 하는거 같음
+    private String dcName;    // 따지고보면 생성창에서 보여주는 역할만 하는거 같음
     private String clusterId;
     private String clusterName;
     private String templateId;      // 템플릿
