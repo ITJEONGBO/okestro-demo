@@ -54,9 +54,9 @@ class ItVmServiceTest {
                     .chipsetType(String.valueOf(BiosType.Q35_OVMF))
                     .option(String.valueOf(VmType.SERVER))
 
-                    .name("testV3")
+                    .name("f")
                     .description("기본생성, 메모리")
-                    .comment("testVm")
+                    .comment("dSA")
                     .stateless(false)
                     .startPaused(false)
                     .deleteProtected(false)
@@ -64,20 +64,20 @@ class ItVmServiceTest {
 //                    .vnicList()
                     .vmSystemVo(
                             VmSystemVo.builder()
+                                    .instanceType("large") //tiny 안됨
                                     .memorySize(2048)
                                     .memoryMax(2048)
                                     .memoryActual(2048)
-//                                    .instanceType("none")
                                     .vCpuSocket(1)
                                     .vCpuSocketCore(2)
                                     .vCpuCoreThread(1)
                                     .build()
                     )
-//                    .vmHostVo(
-//                            VmHostVo.builder()
-//                                    .hostId("1c8ed321-28e5-4f83-9e34-e13f9125f253")
-//                                    .build()
-//                    )
+//                    .vmInitVo()
+                    .vmHostVo(
+                            VmHostVo.builder()
+                                    .build()
+                    )
                 .build();
 
         CommonVo<Boolean> result = vmService.addVm(vm);
@@ -86,8 +86,8 @@ class ItVmServiceTest {
 
     @Test
     @DisplayName("가상머신 편집 창")
-    void getVmCreate() {
-        String id = "5693929a-f045-400f-a791-86fde1706ec4";
+    void setEditVm() {
+        String id = "701c0c48-51c0-4bd1-930a-81184e0062d7";
         VmCreateVo result = vmService.setEditVm(id);
         System.out.println(result);
     }

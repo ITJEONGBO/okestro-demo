@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -180,69 +181,159 @@ public class VmServiceImpl implements ItVmService {
 
     // 가상머신 생성
     @Override
-    public CommonVo<Boolean> addVm(VmCreateVo vmCreateVo) {
+    public CommonVo<Boolean> addVm(VmCreateVo vmVo) {
         SystemService system = admin.getConnection().systemService();
         VmsService vmsService = system.vmsService();
-        BigInteger convertMb = BigInteger.valueOf(1024).pow(2);
+        List<Host> hostList = system.hostsService().list().send().hosts();
 
-        System.out.println(BigInteger.valueOf(2048).multiply(convertMb));
+        BigInteger convertMb = BigInteger.valueOf(1024).pow(2);
+        boolean duplicateName = vmsService.list().search("name=" + vmVo.getName()).send().vms().isEmpty();
 
         try {
-            VmBuilder vmBuilder = new VmBuilder();
-            vmBuilder
-                    .cluster(new ClusterBuilder().id(vmCreateVo.getClusterId()))
-                    .template(new TemplateBuilder().id(vmCreateVo.getTemplateId()))
-                    .os(new OperatingSystemBuilder().type(vmCreateVo.getOs()).build())
-                    .bios(new BiosBuilder().type(BiosType.valueOf(vmCreateVo.getChipsetType())).build())
-                    .type(VmType.valueOf(vmCreateVo.getOption()))   // 최적화 옵션
+            if(!duplicateName) { // 이름 중복 검사
+                VmBuilder vmBuilder = new VmBuilder();
+                vmBuilder
+                        .cluster(new ClusterBuilder().id(vmVo.getClusterId()))
+                        .template(new TemplateBuilder().id(vmVo.getTemplateId()))
+                        .os(new OperatingSystemBuilder().type(vmVo.getOs()).build())  // 운영시스템
+                        .bios(new BiosBuilder().type(BiosType.valueOf(vmVo.getChipsetType())).build()) // 칩셋
+                        .type(VmType.valueOf(vmVo.getOption()))   // 최적화 옵션
 
-                    .name(vmCreateVo.getName())
-                    .description(vmCreateVo.getDescription())
-                    .comment(vmCreateVo.getComment())
-                    .stateless(vmCreateVo.isStateless())
-                    .startPaused(vmCreateVo.isStartPaused())
-                    .deleteProtected(vmCreateVo.isDeleteProtected())
+                        .name(vmVo.getName())
+                        .description(vmVo.getDescription())
+                        .comment(vmVo.getComment())
+                        .stateless(vmVo.isStateless())      // 상태 비저장
+                        .startPaused(vmVo.isStartPaused())  // 일시정지
+                        .deleteProtected(vmVo.isDeleteProtected()); // 삭제 방지
+
 //                    .diskAttachments(vmCreateVo.getVDiskVo()) // 인스턴스 이미지
 //                    .nics(vmCreateVo.getVnicList())           // vnic profile
 
-                    .memory(BigInteger.valueOf(vmCreateVo.getVmSystemVo().getMemorySize()).multiply(convertMb))
-                    .memoryPolicy(
-                            new MemoryPolicyBuilder()
-                                .max(BigInteger.valueOf(vmCreateVo.getVmSystemVo().getMemoryMax()).multiply(convertMb))
-                                .guaranteed(BigInteger.valueOf(vmCreateVo.getVmSystemVo().getMemoryActual()).multiply(convertMb))
-                    )
-                    .cpu(
-                            new CpuBuilder()
-                                    .topology(
-                                            new CpuTopologyBuilder()
-                                                .cores(vmCreateVo.getVmSystemVo().getVCpuSocketCore())
-                                                .sockets(vmCreateVo.getVmSystemVo().getVCpuSocket())
-                                                .threads(vmCreateVo.getVmSystemVo().getVCpuCoreThread())
-                                    )
-                    )
-//                    .instanceType(new InstanceTypeBuilder().type())
-//                    .os(
-//                            new OperatingSystemBuilder()
-//                                    .boot(new BootBuilder().devices(BootDevice.valueOf("hd")).build())
-//                    )
-                    // 사용자 정의 에뮬레이션 부분 보류
-                    .timeZone(new TimeZoneBuilder().name(vmCreateVo.getVmSystemVo().getTimeOffset()))
-                    // 일련 번호 정책
-                    // 사용자 정의 일련번호
-//                    .host(system.hostsService().hostService(vmCreateVo.getVmHostVo().getHostId()).get().send().host())  //호스트
+
+                // 시스템
+                // 인스턴스 유형에 따라 메모리와 가상 cpu값이 바뀐다
+                // 빈값이 아니면 인스턴스 유형 값을 대입
+                if (!"".equals(vmVo.getVmSystemVo().getInstanceType())) {
+                    InstanceType it = system.instanceTypesService().list().search("name=" + vmVo.getVmSystemVo().getInstanceType()).send().instanceType().get(0);
+
+                    vmBuilder
+                            .memory(it.memory())
+                            .memoryPolicy(
+                                    new MemoryPolicyBuilder()
+                                            .max(it.memoryPolicy().max())
+                                            .guaranteed(it.memoryPolicy().guaranteed())
+                            )
+                            .cpu(
+                                    new CpuBuilder()
+                                            .topology(
+                                                    new CpuTopologyBuilder()
+                                                            .cores(it.cpu().topology().coresAsInteger())
+                                                            .sockets(it.cpu().topology().socketsAsInteger())
+                                                            .threads(it.cpu().topology().threadsAsInteger())
+                                            )
+                            )
+                            .instanceType(it);
+                } else {    // 사용자 정의 값
+                    vmBuilder
+                            .memory(BigInteger.valueOf(vmVo.getVmSystemVo().getMemorySize()).multiply(convertMb))
+                            .memoryPolicy(
+                                    new MemoryPolicyBuilder()
+                                            .max(BigInteger.valueOf(vmVo.getVmSystemVo().getMemoryMax()).multiply(convertMb))
+                                            .guaranteed(BigInteger.valueOf(vmVo.getVmSystemVo().getMemoryActual()).multiply(convertMb))
+                            )
+                            .cpu(
+                                    new CpuBuilder()
+                                            .topology(
+                                                    new CpuTopologyBuilder()
+                                                            .cores(vmVo.getVmSystemVo().getVCpuSocketCore())
+                                                            .sockets(vmVo.getVmSystemVo().getVCpuSocket())
+                                                            .threads(vmVo.getVmSystemVo().getVCpuCoreThread())
+                                            )
+                            );
+                }
+
+                // 초기 실행
+                // ???
+                if (vmVo.getVmInitVo().isCloudInit()) {
+                    vmBuilder
+                            .initialization(
+                                    new InitializationBuilder()
+                                            .hostName(vmVo.getVmInitVo().getHostName())
+                                            .timezone(vmVo.getVmInitVo().getTimeStandard())
+                            );
+                }
+
+                // 호스트 (실행 호스트)
+                // 마이그레이션 여부 중요
+//                VmPlacementPolicyBuilder vmPlacementBuilder = new VmPlacementPolicyBuilder();
+//                vmPlacementBuilder
+//                        .affinity(vmVo.getVmHostVo().isClusterHost() ? VmAffinity.PINNED : VmAffinity.MIGRATABLE)
+//                        .hosts(vmVo.getVmHostVo().isClusterHost() ? null : new HostBuilder().id(vmVo.getVmHostVo().getSelectHostId()));
+//                vmBuilder.placementPolicy(vmPlacementBuilder);
+
+                // 호스트 선택
+
+                vmBuilder.migration(
+                        new MigrationOptionsBuilder()
+                                // 마이그레이션 모드
+                                .autoConverge(InheritableBoolean.valueOf(vmVo.getVmHostVo().getMigrationMode()))
+                                // 암호화 사용은 알아서 지정됨 (기본값 자체가 암호화하지 않는것)
+                                //
+                                .compressed()
+                );
+
+                vmBuilder.placementPolicy(
+                        new VmPlacementPolicyBuilder()
+                                .affinity(vmVo.getVmHostVo().isClusterHost() ? VmAffinity.PINNED : VmAffinity.MIGRATABLE)
+                                .hosts(vmVo.getVmHostVo().isClusterHost() ? null : new HostBuilder().id(vmVo.getVmHostVo().getSelectHostId()))
+                );
+
+                // 클러스터내 호스트로 선택한 경우
+//                if(vmVo.getVmHostVo().isClusterHost()){
+//                    vmPlacementBuilder
+//                            .affinity(VmAffinity.PINNED);
+//                }else{  // 특정 호스트 선택한 경우
+//                    vmPlacementBuilder
+//                            .affinity(VmAffinity.MIGRATABLE)
+//                            .hosts(new HostBuilder().id(vmVo.getVmHostVo().getSelectHostId()));
+//                }
+
+
+
+
+//            vmBuilder
+//                .os(
+//                        new OperatingSystemBuilder()
+//                                .boot(new BootBuilder().devices(BootDevice.valueOf("hd")))
+//                );
+
+
+                // 사용자 정의 에뮬레이션 부분 보류
+                // 하드웨어 클럭의 시간 오프셋
+                vmBuilder
+                        .timeZone(
+                                new TimeZoneBuilder().name(vmVo.getVmSystemVo().getTimeOffset())
+                        );
+                // 일련 번호 정책
+                // 사용자 정의 일련번호                
+
+
 //                    .migration(new MigrationOptionsBuilder()
 //                            .autoConverge(InheritableBoolean.valueOf(vmCreateVo.getVmHostVo().getMigrationMode()))
 //                            .encrypted(InheritableBoolean.valueOf(vmCreateVo.getVmHostVo().getMigrationEncoding()))
 //                    )
 //                    .migrationDowntime(vmCreateVo.getVmHostVo().getMigrationPolicy())
-                    .build();
 
 
-            Vm vm1 = vmsService.add().vm(vmBuilder).send().vm();
+                Vm vm1 = vmsService.add().vm(vmBuilder.build()).send().vm();
 //            System.out.println(vm1.status());
 
-            log.info("----" + vmCreateVo.toString());
-            return CommonVo.createResponse();
+                log.info("----" + vmVo.toString());
+                return CommonVo.createResponse();
+            }else{
+                log.error("가상머신 이름 중복");
+                return CommonVo.duplicateResponse();    
+            }
         }catch (Exception e){
             e.printStackTrace();
             log.error("가상머신 생성실패");
@@ -251,13 +342,14 @@ public class VmServiceImpl implements ItVmService {
     }
 
 
+
     // 가상머신 편집 창
     @Override
     public VmCreateVo setEditVm(String id) {
         SystemService system = admin.getConnection().systemService();
         Vm vm = system.vmsService().vmService(id).get().send().vm();
         Cluster cluster = system.clustersService().clusterService(vm.cluster().id()).get().send().cluster();
-        List<OperatingSystemInfo> osList = system.operatingSystemsService().list().send().operatingSystem();
+//        List<OperatingSystemInfo> osList = system.operatingSystemsService().list().send().operatingSystem();
         List<DiskAttachment> daList = system.vmsService().vmService(id).diskAttachmentsService().list().send().attachments();
 
         BigInteger convertMb = BigInteger.valueOf(1024).pow(2);
@@ -299,13 +391,13 @@ public class VmServiceImpl implements ItVmService {
                                 .vCpuSocketCore(vm.cpu().topology().coresAsInteger())
                                 .vCpuCoreThread(vm.cpu().topology().threadsAsInteger())
                                 .vCpuCnt(vm.cpu().topology().coresAsInteger() * vm.cpu().topology().socketsAsInteger() * vm.cpu().topology().threadsAsInteger())
-//                                    .userEmulation()
-//                                    .userCpu()
-//                                    .userVersion()
-                                    .instanceType(vm.instanceTypePresent() ? vm.instanceType().name() : null)
-                                    .timeOffset(vm.timeZone().utcOffset()) // ?
-//                                    .serialNumPolicy()
-//                                    .userSerialNum()
+                                .instanceType(vm.instanceTypePresent() ? system.instanceTypesService().instanceTypeService(vm.instanceType().id()).get().send().instanceType().name() : null)
+                                .timeOffset(vm.timeZone().utcOffset()) // 선택: gmtz, kst
+//                                    .userEmulation()  // 사용자 정의 에뮬레이션 시스템
+//                                    .userCpu()        // 사용자 정의 cpu
+//                                    .userVersion()    // 사용자 정의 호환버전
+//                                    .serialNumPolicy()// 일련번호 정책 (기본: 클러스터 기본값(HostId))
+//                                    .userSerialNum()  // 사용자 정의 일련 번호
                                 .build()
                 )
                 .vmHostVo(

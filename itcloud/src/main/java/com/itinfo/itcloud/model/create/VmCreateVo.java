@@ -38,6 +38,9 @@ public class VmCreateVo {
     // 시스템
     private VmSystemVo vmSystemVo;
 
+    // 초기실행
+    private VmInitVo vmInitVo;
+
     // 콘솔제외
 
     // 호스트
