@@ -279,7 +279,7 @@ public class VmServiceImpl implements ItVmService {
                                 .autoConverge(InheritableBoolean.valueOf(vmVo.getVmHostVo().getMigrationMode()))
                                 // 암호화 사용은 알아서 지정됨 (기본값 자체가 암호화하지 않는것)
                                 //
-                                .compressed()
+//                                .compressed()
                 );
 
                 vmBuilder.placementPolicy(
