@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.service.impl;
 
+import com.google.gson.Gson;
 import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.OsVo;
 import com.itinfo.itcloud.model.TypeExtKt;
@@ -12,14 +13,15 @@ import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItVmService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
-import org.ovirt.engine.sdk4.services.*;
+import org.ovirt.engine.sdk4.services.SystemService;
+import org.ovirt.engine.sdk4.services.VmService;
+import org.ovirt.engine.sdk4.services.VmsService;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
 public class VmServiceImpl implements ItVmService {
     @Autowired private AdminConnectionService admin;
     @Autowired private CommonService commonService;
+
 
 
     // 가상머신 목록
@@ -189,8 +192,10 @@ public class VmServiceImpl implements ItVmService {
         BigInteger convertMb = BigInteger.valueOf(1024).pow(2);
         boolean duplicateName = vmsService.list().search("name=" + vmVo.getName()).send().vms().isEmpty();
 
+        Gson gson = new Gson();
+
         try {
-            if(!duplicateName) { // 이름 중복 검사
+            if(duplicateName) { // 이름 중복 검사
                 VmBuilder vmBuilder = new VmBuilder();
                 vmBuilder
                         .cluster(new ClusterBuilder().id(vmVo.getClusterId()))
@@ -221,6 +226,7 @@ public class VmServiceImpl implements ItVmService {
                             .memoryPolicy(
                                     new MemoryPolicyBuilder()
                                             .max(it.memoryPolicy().max())
+                                            .ballooning(true)   // 리소스할당- 메모리 balloon 활성화
                                             .guaranteed(it.memoryPolicy().guaranteed())
                             )
                             .cpu(
@@ -239,6 +245,7 @@ public class VmServiceImpl implements ItVmService {
                             .memoryPolicy(
                                     new MemoryPolicyBuilder()
                                             .max(BigInteger.valueOf(vmVo.getVmSystemVo().getMemoryMax()).multiply(convertMb))
+                                            .ballooning(vmVo.getVmResourceVo().isMemoryBalloon())   // 리소스할당- 메모리 balloon 활성화
                                             .guaranteed(BigInteger.valueOf(vmVo.getVmSystemVo().getMemoryActual()).multiply(convertMb))
                             )
                             .cpu(
@@ -254,49 +261,81 @@ public class VmServiceImpl implements ItVmService {
 
                 // 초기 실행
                 // ???
-                if (vmVo.getVmInitVo().isCloudInit()) {
-                    vmBuilder
-                            .initialization(
-                                    new InitializationBuilder()
-                                            .hostName(vmVo.getVmInitVo().getHostName())
-                                            .timezone(vmVo.getVmInitVo().getTimeStandard())
-                            );
+//                if (vmVo.getVmInitVo().isCloudInit()) {
+//                    vmBuilder
+//                            .initialization(
+//                                    new InitializationBuilder()
+//                                            .hostName(vmVo.getVmInitVo().getHostName())
+//                                            .timezone(vmVo.getVmInitVo().getTimeStandard())
+//                            );
+//                }
+
+
+                // 호스트
+                // 마이그레이션은 건들 필요 없는데 parallel
+                // TODO 마이그레이션, numa 여쭤보기
+                VmPlacementPolicyBuilder placementBuilder = new VmPlacementPolicyBuilder();
+                if(!vmVo.getVmHostVo().isClusterHost()){
+                    placementBuilder.hosts(new HostBuilder().id(vmVo.getVmHostVo().getSelectHostId()));
+                }
+                vmBuilder.placementPolicy(
+                        placementBuilder
+                                .affinity("".equals(vmVo.getVmSystemVo().getInstanceType()) ?
+                                        VmAffinity.valueOf(vmVo.getVmHostVo().getMigrationMode())
+                                        : VmAffinity.MIGRATABLE
+                                )
+                );
+
+//                vmBuilder.migration(
+//                        new MigrationOptionsBuilder().build()
+//                );
+
+
+                // 고가용성
+                vmBuilder.highAvailability(
+                        new HighAvailabilityBuilder()
+                                .enabled(vmVo.getVmHaVo().isHa()) // 고가용성 여부
+                                .priority(vmVo.getVmHaVo().getPriority())
+                                // 재개동작 모르겠음
+                );
+
+                if(vmVo.getVmHaVo().isHa()) {       // 스토리지 도메인 지정
+                    vmBuilder.lease(
+                            new StorageDomainLeaseBuilder()
+                                    .storageDomain(
+                                            new StorageDomainBuilder().id(vmVo.getVmHaVo().getVmStorageDomainId())
+                                    )
+                    );
                 }
 
-                // 호스트 (실행 호스트)
-                // 마이그레이션 여부 중요
-//                VmPlacementPolicyBuilder vmPlacementBuilder = new VmPlacementPolicyBuilder();
-//                vmPlacementBuilder
-//                        .affinity(vmVo.getVmHostVo().isClusterHost() ? VmAffinity.PINNED : VmAffinity.MIGRATABLE)
-//                        .hosts(vmVo.getVmHostVo().isClusterHost() ? null : new HostBuilder().id(vmVo.getVmHostVo().getSelectHostId()));
-//                vmBuilder.placementPolicy(vmPlacementBuilder);
-
-                // 호스트 선택
-
-                vmBuilder.migration(
-                        new MigrationOptionsBuilder()
-                                // 마이그레이션 모드
-                                .autoConverge(InheritableBoolean.valueOf(vmVo.getVmHostVo().getMigrationMode()))
-                                // 암호화 사용은 알아서 지정됨 (기본값 자체가 암호화하지 않는것)
-                                //
-//                                .compressed()
-                );
-
-                vmBuilder.placementPolicy(
-                        new VmPlacementPolicyBuilder()
-                                .affinity(vmVo.getVmHostVo().isClusterHost() ? VmAffinity.PINNED : VmAffinity.MIGRATABLE)
-                                .hosts(vmVo.getVmHostVo().isClusterHost() ? null : new HostBuilder().id(vmVo.getVmHostVo().getSelectHostId()))
-                );
-
-                // 클러스터내 호스트로 선택한 경우
-//                if(vmVo.getVmHostVo().isClusterHost()){
-//                    vmPlacementBuilder
-//                            .affinity(VmAffinity.PINNED);
-//                }else{  // 특정 호스트 선택한 경우
-//                    vmPlacementBuilder
-//                            .affinity(VmAffinity.MIGRATABLE)
-//                            .hosts(new HostBuilder().id(vmVo.getVmHostVo().getSelectHostId()));
+//                if(!"".equals(vmVo.getVmHaVo().getWatchDogModel())){  // 워치독 필요한가?
+//                    System.out.println("watchdog");
+//                    vmBuilder.watchdogs(
+//                            new WatchdogBuilder()
+                                    // 만들어질 vm의 id값을 넣어야됨
+//                                    .vm(new VmBuilder().id())
+//                                    .model(WatchdogModel.valueOf(vmVo.getVmHaVo().getWatchDogModel()))  // I6300ESB
+//                                    .action(WatchdogAction.valueOf(vmVo.getVmHaVo().getWatchDogAction()))
+//                    );
 //                }
+
+
+
+
+                // 리소스 할당
+                // CPU 할당
+                // ovirt 생성하고 내꺼 생성하고 템플릿 때문에 리소스할당에 ㄸ느느 스토리지할당 메뉴가 다름
+//                vmBuilder
+//                        .autoPinningPolicy("RESIZE_AND_PIN_NUMA".equals(vmVo.getVmResourceVo().getCpuPinningPolicy()) ? AutoPinningPolicy.ADJUST : AutoPinningPolicy.DISABLED)
+//                        .cpuPinningPolicy(CpuPinningPolicy.valueOf(vmVo.getVmResourceVo().getCpuPinningPolicy()))
+//                        .cpuShares(vmVo.getVmResourceVo().getCpuShare());
+//
+//                vmBuilder
+//                        .virtioScsiMultiQueuesEnabled(vmVo.getVmResourceVo().isMultiQue());
+
+
+
+
 
 
 
@@ -315,20 +354,15 @@ public class VmServiceImpl implements ItVmService {
                                 new TimeZoneBuilder().name(vmVo.getVmSystemVo().getTimeOffset())
                         );
                 // 일련 번호 정책
-                // 사용자 정의 일련번호                
+                // 사용자 정의 일련번호
 
 
-//                    .migration(new MigrationOptionsBuilder()
-//                            .autoConverge(InheritableBoolean.valueOf(vmCreateVo.getVmHostVo().getMigrationMode()))
-//                            .encrypted(InheritableBoolean.valueOf(vmCreateVo.getVmHostVo().getMigrationEncoding()))
-//                    )
-//                    .migrationDowntime(vmCreateVo.getVmHostVo().getMigrationPolicy())
-
+                System.out.println(gson.toJson(vmBuilder));
+                System.out.println(vmVo.toString());
 
                 Vm vm1 = vmsService.add().vm(vmBuilder.build()).send().vm();
-//            System.out.println(vm1.status());
 
-                log.info("----" + vmVo.toString());
+                log.info("가상머신 생성 완료");
                 return CommonVo.createResponse();
             }else{
                 log.error("가상머신 이름 중복");

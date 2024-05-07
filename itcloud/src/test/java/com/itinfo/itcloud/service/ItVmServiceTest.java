@@ -1,15 +1,12 @@
 package com.itinfo.itcloud.service;
 
 import com.itinfo.itcloud.model.computing.*;
-import com.itinfo.itcloud.model.create.VmCreateVo;
-import com.itinfo.itcloud.model.create.VmHostVo;
-import com.itinfo.itcloud.model.create.VmSystemVo;
+import com.itinfo.itcloud.model.create.*;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.storage.VmDiskVo;
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.ovirt.engine.sdk4.types.BiosType;
-import org.ovirt.engine.sdk4.types.VmType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -43,28 +40,32 @@ class ItVmServiceTest {
         System.out.println(result.toString());
     }
 
+
     @Test
     @DisplayName("가상머신 생성")
     void addVm() {
+        String randomName = RandomStringUtils.randomAlphabetic(2);
+
         VmCreateVo vm =
             VmCreateVo.builder()
                     .clusterId("9c7452ea-a5f3-11ee-93d2-00163e39cb43")
                     .templateId("00000000-0000-0000-0000-000000000000")
                     .os("rhel_8x64")
-                    .chipsetType(String.valueOf(BiosType.Q35_OVMF))
-                    .option(String.valueOf(VmType.SERVER))
+                    .chipsetType("Q35_OVMF")  // String.valueOf(BiosType.Q35_OVMF)
+                    .option("SERVER")  // String.valueOf(VmType.SERVER)
 
-                    .name("f")
+                    .name(randomName)
                     .description("기본생성, 메모리")
-                    .comment("dSA")
+                    .comment("cc")
                     .stateless(false)
                     .startPaused(false)
                     .deleteProtected(false)
 //                    .vDiskList()
 //                    .vnicList()
+
                     .vmSystemVo(
                             VmSystemVo.builder()
-                                    .instanceType("large") //tiny 안됨
+                                    .instanceType("") //tiny 안됨
                                     .memorySize(2048)
                                     .memoryMax(2048)
                                     .memoryActual(2048)
@@ -73,9 +74,31 @@ class ItVmServiceTest {
                                     .vCpuCoreThread(1)
                                     .build()
                     )
-//                    .vmInitVo()
+//                    .vmInitVo(
+//                            VmInitVo.builder()
+//                                    .cloudInit(true)   // 일단 안됨
+//                                    .build()
+//                    )
                     .vmHostVo(
                             VmHostVo.builder()
+                                    .clusterHost(true)  // 클러스터 내 호스트
+//                                    .clusterHost(false)  // 특정 호스트
+//                                    .selectHostId("1c8ed321-28e5-4f83-9e34-e13f9125f253")
+                                    .migrationMode("USER_MIGRATABLE")  // 수동 마이그레이션 허용
+                                    .build()
+                    )
+                    .vmHaVo(
+                            VmHaVo.builder()
+                                    .ha(true) // 기본 false
+                                    .priority(1)  // 기본 1
+                                    .vmStorageDomainId("06faa572-f1ac-4874-adcc-9d26bb74a54d") // 스토리지 도메인
+//                                    .watchDogModel("I6300ESB")
+//                                    .watchDogAction("POWEROFF")
+                                    .build()
+                    )
+                    .vmResourceVo(
+                            VmResourceVo.builder()
+                                    .memoryBalloon(true)
                                     .build()
                     )
                 .build();
@@ -105,7 +128,7 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 삭제")
     void deleteVm() {
-        String id = "9391b3a0-2adf-4a4c-8d5c-7b4a1352bfc9";
+        String id = "5cf6c1a3-bc04-46b3-ae83-42f3431cf1d2";
         CommonVo<Boolean> result = vmService.deleteVm(id);
 
         assertThat(result.getHead().getCode()).isEqualTo(200);
