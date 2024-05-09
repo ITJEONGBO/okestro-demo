@@ -12,4 +12,6 @@ public class VmBootVo {
     private boolean cdDvdConn;
     private String connection;  // cd/dvd 연결되면 뜰 화면
     private boolean bootingMenu;
+
+//    CDROM("cdrom"), HD("hd"), NETWORK("network");
 }

@@ -12,6 +12,7 @@ import java.math.BigInteger;
 @Getter @Builder @ToString
 public class SnapshotDiskVo {
     private String id;
+    private String daId;    // disk_attachments Id
     private String name;
     private String alias;   // 별칭
     private DiskStatus status;  // 상태

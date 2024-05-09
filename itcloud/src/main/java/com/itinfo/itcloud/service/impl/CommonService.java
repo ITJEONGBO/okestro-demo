@@ -58,24 +58,26 @@ public class CommonService {
     public String getVmUptime(SystemService system, String vmId){
         List<Statistic> statisticList = system.vmsService().vmService(vmId).statisticsService().list().send().statistics();
 
-        long hour = statisticList.stream()
+        long time = statisticList.stream()
                 .filter(statistic -> statistic.name().equals("elapsed.time"))
-                .mapToLong(statistic -> statistic.values().get(0).datum().longValue() / (60 * 60))
+                .mapToLong(statistic -> statistic.values().get(0).datum().longValue())
                 .findFirst()
                 .orElse(0);
 
-        String upTime;
-        if (hour > 24) {
-            upTime = hour / 24 + "일";
-        } else if (hour > 1 && hour < 24) {
-            upTime = hour + "시간";
-        } else if (hour == 0) {
-            upTime = null;
-        } else {
-            upTime = (hour / 60) + "분";
-        }
+        long days = time / (60 * 60 * 24);
+        long hours = (time % (60 * 60 * 24)) / (60 * 60);
+        long minutes = ((time % (60 * 60 * 24)) % (60 * 60)) / 60;
 
-        return upTime;
+        if (days > 0) {
+            return days + "일";
+        }
+        else if (hours > 0) {
+            return hours + "시간";
+        }else if(minutes > 0){
+            return minutes + "분";
+        }else{
+            return null;
+        }
     }
 
 

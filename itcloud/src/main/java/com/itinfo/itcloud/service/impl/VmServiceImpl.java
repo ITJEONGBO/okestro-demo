@@ -13,15 +13,14 @@ import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItVmService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
-import org.ovirt.engine.sdk4.services.SystemService;
-import org.ovirt.engine.sdk4.services.VmService;
-import org.ovirt.engine.sdk4.services.VmsService;
+import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +31,6 @@ import java.util.stream.Collectors;
 public class VmServiceImpl implements ItVmService {
     @Autowired private AdminConnectionService admin;
     @Autowired private CommonService commonService;
-
 
 
     // 가상머신 목록
@@ -182,12 +180,28 @@ public class VmServiceImpl implements ItVmService {
 //                                    .collect(Collectors.toList())
     }
 
+    // 생성창에서 리소스 cpuProfile 리스트 출력
+    @Override
+    public List<IdentifiedVo> getCpuProfileList(String clusterId){
+        SystemService system = admin.getConnection().systemService();
+        List<CpuProfile> cpuProfileList = system.cpuProfilesService().list().send().profile();
+
+        return cpuProfileList.stream()
+                .filter(cpuProfile -> cpuProfile.cluster().id().equals(clusterId))
+                .map(cpuProfile -> 
+                        IdentifiedVo.builder()
+                                .id(cpuProfile.id())
+                                .name(cpuProfile.name())
+                                .build()
+                )
+                .collect(Collectors.toList());
+    }
+
     // 가상머신 생성
     @Override
     public CommonVo<Boolean> addVm(VmCreateVo vmVo) {
         SystemService system = admin.getConnection().systemService();
         VmsService vmsService = system.vmsService();
-        List<Host> hostList = system.hostsService().list().send().hosts();
 
         BigInteger convertMb = BigInteger.valueOf(1024).pow(2);
         boolean duplicateName = vmsService.list().search("name=" + vmVo.getName()).send().vms().isEmpty();
@@ -200,8 +214,14 @@ public class VmServiceImpl implements ItVmService {
                 vmBuilder
                         .cluster(new ClusterBuilder().id(vmVo.getClusterId()))
                         .template(new TemplateBuilder().id(vmVo.getTemplateId()))
-                        .os(new OperatingSystemBuilder().type(vmVo.getOs()).build())  // 운영시스템
-                        .bios(new BiosBuilder().type(BiosType.valueOf(vmVo.getChipsetType())).build()) // 칩셋
+                        .os(new OperatingSystemBuilder().type(vmVo.getOs()))  // 운영시스템
+                        .bios(
+                                new BiosBuilder()
+                                        .type(BiosType.valueOf(vmVo.getChipsetType()))  // 칩셋
+                                        .bootMenu(vmVo.getVmBootVo().isBootingMenu() ?
+                                                new BootMenuBuilder().enabled(true)
+                                                : new BootMenuBuilder().enabled(false)) // 부팅 메뉴를 활성화
+                        )
                         .type(VmType.valueOf(vmVo.getOption()))   // 최적화 옵션
 
                         .name(vmVo.getName())
@@ -209,7 +229,10 @@ public class VmServiceImpl implements ItVmService {
                         .comment(vmVo.getComment())
                         .stateless(vmVo.isStateless())      // 상태 비저장
                         .startPaused(vmVo.isStartPaused())  // 일시정지
-                        .deleteProtected(vmVo.isDeleteProtected()); // 삭제 방지
+                        .deleteProtected(vmVo.isDeleteProtected()) // 삭제 방지
+                        // 일련 번호 정책
+                        // 사용자 정의 일련번호
+                        .timeZone(new TimeZoneBuilder().name(vmVo.getVmSystemVo().getTimeOffset())); // 하드웨어 클럭의 시간 오프셋
 
 //                    .diskAttachments(vmCreateVo.getVDiskVo()) // 인스턴스 이미지
 //                    .nics(vmCreateVo.getVnicList())           // vnic profile
@@ -285,7 +308,6 @@ public class VmServiceImpl implements ItVmService {
                                         : VmAffinity.MIGRATABLE
                                 )
                 );
-
 //                vmBuilder.migration(
 //                        new MigrationOptionsBuilder().build()
 //                );
@@ -300,6 +322,7 @@ public class VmServiceImpl implements ItVmService {
                 );
 
                 if(vmVo.getVmHaVo().isHa()) {       // 스토리지 도메인 지정
+                    // 선택안햇을경우
                     vmBuilder.lease(
                             new StorageDomainLeaseBuilder()
                                     .storageDomain(
@@ -320,41 +343,35 @@ public class VmServiceImpl implements ItVmService {
 //                }
 
 
-
-
                 // 리소스 할당
                 // CPU 할당
-                // ovirt 생성하고 내꺼 생성하고 템플릿 때문에 리소스할당에 ㄸ느느 스토리지할당 메뉴가 다름
-//                vmBuilder
-//                        .autoPinningPolicy("RESIZE_AND_PIN_NUMA".equals(vmVo.getVmResourceVo().getCpuPinningPolicy()) ? AutoPinningPolicy.ADJUST : AutoPinningPolicy.DISABLED)
-//                        .cpuPinningPolicy(CpuPinningPolicy.valueOf(vmVo.getVmResourceVo().getCpuPinningPolicy()))
-//                        .cpuShares(vmVo.getVmResourceVo().getCpuShare());
-//
-//                vmBuilder
-//                        .virtioScsiMultiQueuesEnabled(vmVo.getVmResourceVo().isMultiQue());
-
-
-
-
-
-
-
-
-//            vmBuilder
-//                .os(
-//                        new OperatingSystemBuilder()
-//                                .boot(new BootBuilder().devices(BootDevice.valueOf("hd")))
-//                );
-
-
-                // 사용자 정의 에뮬레이션 부분 보류
-                // 하드웨어 클럭의 시간 오프셋
                 vmBuilder
-                        .timeZone(
-                                new TimeZoneBuilder().name(vmVo.getVmSystemVo().getTimeOffset())
-                        );
-                // 일련 번호 정책
-                // 사용자 정의 일련번호
+                        .cpuProfile(new CpuProfileBuilder().id(vmVo.getVmResourceVo().getCpuProfileId()))
+                        .cpuShares(vmVo.getVmResourceVo().getCpuShare())
+                        .autoPinningPolicy("RESIZE_AND_PIN_NUMA".equals(vmVo.getVmResourceVo().getCpuPinningPolicy()) ? AutoPinningPolicy.ADJUST : AutoPinningPolicy.DISABLED)
+                        .cpuPinningPolicy(CpuPinningPolicy.valueOf(vmVo.getVmResourceVo().getCpuPinningPolicy()))
+                        .virtioScsiMultiQueuesEnabled(vmVo.getVmResourceVo().isMultiQue()); // VirtIO-SCSI 활성화
+
+                
+                // 부트 옵션
+                List<BootDevice> bootDeviceList = new ArrayList<>();
+
+                OperatingSystemBuilder osBuilder = new OperatingSystemBuilder();
+                bootDeviceList.add(BootDevice.valueOf(vmVo.getVmBootVo().getFirstDevice()));
+
+                if(vmVo.getVmBootVo().getSecondDevice() != null){
+                    bootDeviceList.add(BootDevice.valueOf(vmVo.getVmBootVo().getSecondDevice()));
+                }
+                osBuilder.boot(new BootBuilder().devices(bootDeviceList));
+                vmBuilder.os(osBuilder);
+
+                // 이것도 vm이 만드러이족 id가 있어야 생성가능
+//                if (vmVo.getVmBootVo().isCdDvdConn()) {
+//                    vmBuilder.cdroms(
+//                            new CdromBuilder().file()
+//                    )
+//                }
+
 
 
                 System.out.println(gson.toJson(vmBuilder));
@@ -519,9 +536,207 @@ public class VmServiceImpl implements ItVmService {
     }
 
 
+    @Override
+    public VmStatus getStatus(String id) {
+        SystemService system = admin.getConnection().systemService();
+        Vm vm = system.vmsService().vmService(id).get().send().vm();
+
+        return vm.status();
+    }
+
+    // 가상머신 실행
+    @Override
+    public CommonVo<Boolean> startVm(String id) {
+        SystemService system = admin.getConnection().systemService();
+        VmService vmService = system.vmsService().vmService(id);
+        Vm vm = system.vmsService().vmService(id).get().send().vm();
+
+        try{
+            // cloudinit 초기실행 여부에 따라 다름
+            if(vm.initializationPresent()){
+                vmService.start().useCloudInit(true).send();
+                log.info("가상머신 cloudinit 시작");
+                return CommonVo.successResponse();
+            }else {
+                vmService.start().send();
+                log.info("가상머신 시작");
+                return CommonVo.successResponse();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error("가상머신 시작 실패 : {}", e.getMessage());
+            return CommonVo.failResponse("");
+        }
+    }
+
+    // 가상머신 일시정지
+    @Override
+    public CommonVo<Boolean> pauseVm(String id) {
+        SystemService system = admin.getConnection().systemService();
+        VmService vmService = system.vmsService().vmService(id);
+
+        try{
+            vmService.suspend().send();
+            return CommonVo.successResponse();
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return CommonVo.failResponse("");
+        }
+    }
+
+    // 가상머신 전원끔
+    @Override
+    public CommonVo<Boolean> stopVm(String id) {
+        SystemService system = admin.getConnection().systemService();
+        VmService vmService = system.vmsService().vmService(id);
+
+        try{
+            vmService.stop().send();
+            return CommonVo.successResponse();
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return CommonVo.failResponse("");
+        }
+    }
 
 
-    // 일반09
+    // 가상머신 종료
+    @Override
+    public CommonVo<Boolean> shutdownVm(String id) {
+        SystemService system = admin.getConnection().systemService();
+        VmService vmService = system.vmsService().vmService(id);
+
+        try{
+            vmService.shutdown().send();
+            return CommonVo.successResponse();
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return CommonVo.failResponse("");
+        }
+    }
+
+
+    // 가상머신 재부팅
+    @Override
+    public CommonVo<Boolean> rebootVm(String id) {
+        SystemService system = admin.getConnection().systemService();
+        VmService vmService = system.vmsService().vmService(id);
+
+        try{
+            vmService.reboot().send();
+            return CommonVo.successResponse();
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return CommonVo.failResponse("");
+        }
+    }
+
+    // 가상머신 재설정
+    @Override
+    public CommonVo<Boolean> resetVm(String id) {
+        SystemService system = admin.getConnection().systemService();
+        VmService vmService = system.vmsService().vmService(id);
+
+        try{
+            vmService.reset().send();
+            return CommonVo.successResponse();
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return CommonVo.failResponse("");
+        }
+    }
+
+
+    @Override
+    public List<SnapshotDiskVo> setSnapshot(String id) {
+        SystemService system = admin.getConnection().systemService();
+        List<DiskAttachment> diskAttachmentList = system.vmsService().vmService(id).diskAttachmentsService().list().send().attachments();
+
+        log.info("스냅샷 디스크 목록");
+        return diskAttachmentList.stream()
+                .map(diskAttachment -> {
+                    String diskId = system.vmsService().vmService(id).diskAttachmentsService().attachmentService(diskAttachment.id()).get().send().attachment().disk().id();
+                    Disk disk = system.disksService().diskService(diskId).get().send().disk();
+                    return SnapshotDiskVo.builder()
+                            .daId(diskAttachment.id())
+                            .alias(disk.alias())
+                            .description(disk.description())
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    // 스냅샵 생성
+    @Override
+    public CommonVo<Boolean> addSnapshot(SnapshotVo snapshotVo) {
+        SystemService system = admin.getConnection().systemService();
+//        List<DiskAttachment> diskAttachmentList = system.vmsService().vmService(snapshotVo.getVmId()).diskAttachmentsService().list().send().attachments();
+//        SnapshotsService snapshotsService = system.vmsService().vmService(snapshotVo.getVmId()).snapshotsService();
+
+        try{
+            // 디스크 선택된것만 들어가야됨
+            List<String> s = snapshotVo.getSDiskList().stream()
+                    .map(snapshotDiskVo -> snapshotDiskVo.getDaId())
+                    .collect(Collectors.toList());
+
+            s.forEach(System.out::println);
+
+//            List<DiskAttachment> da =
+//                    diskAttachmentList.stream()
+//                                    .map(diskAttachment -> {
+//                                        String diskId = system.vmsService().vmService(snapshotVo.getVmId()).diskAttachmentsService().attachmentService(diskAttachment.id()).get().send().attachment().disk().id();
+//                                        Disk disk = system.disksService().diskService(diskId).get().send().disk();
+//
+//
+//                                    })
+//                                    .collect(Collectors.toList());
+//
+//            snapshotsService.add().snapshot(new SnapshotBuilder().description(snapshotVo.getDescription()).diskAttachments().build()).send();
+
+            log.info("스냅샷 생성 성공");
+            return CommonVo.createResponse();
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error("스냅샷 생성 실패");
+            return CommonVo.failResponse(e.getMessage());
+        }
+
+    }
+
+
+
+    // 마이그레이션
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // 일반
     @Override
     public VmVo getInfo(String id) {
         SystemService system = admin.getConnection().systemService();

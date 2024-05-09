@@ -73,6 +73,8 @@ public class VmController {
 
 
 
+
+
 	@GetMapping("/vm/{id}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)

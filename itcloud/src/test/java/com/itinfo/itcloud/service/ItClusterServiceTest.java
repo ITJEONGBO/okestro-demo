@@ -260,6 +260,8 @@ class ItClusterServiceTest {
     void getVm() {
         List<VmVo> result = cService.getVm(defaultId);
 
+        System.out.println(result);
+
         assertThat(10).isEqualTo(result.size());
         assertThat(true).isEqualTo(result.stream().anyMatch(vmVo -> vmVo.getName().equals("HostedEngine")));
     }

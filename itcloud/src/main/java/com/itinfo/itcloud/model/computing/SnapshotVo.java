@@ -11,6 +11,7 @@ import java.util.List;
 @Getter @Setter @ToString @Builder
 public class SnapshotVo {
     private String id;
+    private String vmId;
     private String description;
     private String date;
     private boolean persistMemorystate; // 메모리 f/t
@@ -18,6 +19,8 @@ public class SnapshotVo {
     private BigInteger setMemory;   // 설정된 메모리
     private BigInteger guaranteedMemory;    // 할당할 실제 메모리
     private int cpuCore;
+
+    private boolean saveMemory; // 스냅샷 생성창에서 필요
 
     private List<SnapshotDiskVo> sDiskList;
     private List<NicVo> nicVoList;
