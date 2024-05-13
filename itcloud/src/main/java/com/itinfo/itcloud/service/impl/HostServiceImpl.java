@@ -180,10 +180,6 @@ public class HostServiceImpl implements ItHostService {
     @Override
     public CommonVo<Boolean> deleteHost(String id) {
         SystemService system = admin.getConnection().systemService();
-
-//        List<Host> hList = system.hostsService().list().send().hosts();
-//        HostsService hostsService = system.hostsService();
-//                return hostsService.list().send().hosts().size() == (hList.size() - 1);
         HostService hostService = system.hostsService().hostService(id);
         Host host = hostService.get().send().host();
         String name = hostService.get().send().host().name();
@@ -397,6 +393,7 @@ public class HostServiceImpl implements ItHostService {
         SystemService system = admin.getConnection().systemService();
         List<HostNic> hostNicList = system.hostsService().hostService(id).nicsService().list().send().nics();
         DecimalFormat df = new DecimalFormat("###,###");
+        BigInteger bps = BigInteger.valueOf(1024 * 1024);
 
         log.info("Host 네트워크 인터페이스");
         return hostNicList.stream()
@@ -411,11 +408,11 @@ public class HostServiceImpl implements ItHostService {
                             .ipv4(hostNic.ip().address())
                             .ipv6(hostNic.ipv6().addressPresent() ? hostNic.ipv6().address() : null)
                             .speed(hostNic.speed().divide(BigInteger.valueOf(1024 * 1024)))
-                            .rxSpeed(commonService.getSpeed(statisticList, "data.current.rx.bps").divide(BigInteger.valueOf(1024 * 1024)))
-                            .txSpeed(commonService.getSpeed(statisticList, "data.current.tx.bps").divide(BigInteger.valueOf(1024 * 1024)))
+                            .rxSpeed(commonService.getSpeed(statisticList, "data.current.rx.bps").divide(bps))
+                            .txSpeed(commonService.getSpeed(statisticList, "data.current.tx.bps").divide(bps))
                             .rxTotalSpeed(commonService.getSpeed(statisticList, "data.total.rx"))
                             .txTotalSpeed(commonService.getSpeed(statisticList, "data.total.tx"))
-                            .stop(commonService.getSpeed(statisticList, "errors.total.rx").divide(BigInteger.valueOf(1024 * 1024)))
+                            .stop(commonService.getSpeed(statisticList, "errors.total.rx").divide(bps))
                             .build();
                 })
                 .collect(Collectors.toList());

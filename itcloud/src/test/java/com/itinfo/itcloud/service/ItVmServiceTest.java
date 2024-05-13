@@ -6,7 +6,6 @@ import com.itinfo.itcloud.model.create.*;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.storage.VmDiskVo;
 import org.apache.commons.lang.RandomStringUtils;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +56,10 @@ class ItVmServiceTest {
     void addVm() {
         String randomName = RandomStringUtils.randomAlphabetic(2);
 
+        List<String> a = new ArrayList<>();
+        a.add("1c8ed321-28e5-4f83-9e34-e13f9125f253");
+        a.add("f08baae8-2137-490c-bec2-fd00f67a37b9");
+
         VmCreateVo vm =
             VmCreateVo.builder()
                     .clusterId("9c7452ea-a5f3-11ee-93d2-00163e39cb43")
@@ -70,34 +73,38 @@ class ItVmServiceTest {
                     .comment("cc")
                     .stateless(false)
                     .startPaused(false)
-                    .deleteProtected(true)      // 삭제방지
-//                    .deleteProtected(false)
+//                    .deleteProtected(true)      // 삭제방지
+                    .deleteProtected(false)
 //                    .vDiskList()
 //                    .vnicList()
 
                     .vmSystemVo(
                             VmSystemVo.builder()
-                                    .instanceType("small") //tiny 안됨
+//                                    .instanceType("xlarge") //tiny 안됨
+                                    .instanceType("") //tiny 안됨
                                     .memorySize(2048)
                                     .memoryMax(2048)
                                     .memoryActual(2048)
                                     .vCpuSocket(1)
-                                    .vCpuSocketCore(2)
+                                    .vCpuSocketCore(1)
                                     .vCpuCoreThread(1)
+                                    .timeOffset("Asia/Seoul")  // Asia/Seoul , Etc/GMT
                                     .build()
                     )
-//                    .vmInitVo(
-//                            VmInitVo.builder()
-//                                    .cloudInit(true)   // 일단 안됨
-//                                    .build()
-//                    )
+                    .vmInitVo(
+                            VmInitVo.builder()
+                                    .cloudInit(true)   // 일단 안됨
+                                    .hostName("host02.ititinfo.com")
+                                    .timeStandard("Etc/GMT")
+                                    .build()
+                    )
                     .vmHostVo(
                             VmHostVo.builder()
 //                                    .clusterHost(true)  // 클러스터 내 호스트
                                     .clusterHost(false)  // 특정 호스트
-                                    .selectHostId("1c8ed321-28e5-4f83-9e34-e13f9125f253")
+                                    .selectHostId(a)
                                     .migrationMode("PINNED")  // 마이그레이션 안함
-//                                    .migrationMode("USER_MIGRATABLE")  // 수동 마이그레이션 허용
+                                    .migrationMode("none")  // 수동 마이그레이션 허용
                                     .build()
                     )
                     .vmHaVo(
@@ -123,8 +130,7 @@ class ItVmServiceTest {
                     )
                     .vmBootVo(
                             VmBootVo.builder()
-                                    .firstDevice("HD")
-                                    .secondDevice("CDROM")
+                                    .firstDevice("CDROM")
                                     .build()
                     )
                 .build();
@@ -133,19 +139,116 @@ class ItVmServiceTest {
         assertThat(result.getHead().getCode()).isEqualTo(201);
     }
 
+
+
+    @Test
+    @DisplayName("가상머신 생성(os 두개)")
+    void addVm2() {
+        String randomName = RandomStringUtils.randomAlphabetic(2);
+
+        VmCreateVo vm =
+                VmCreateVo.builder()
+                        .clusterId("9c7452ea-a5f3-11ee-93d2-00163e39cb43")
+                        .templateId("00000000-0000-0000-0000-000000000000")
+                        .os("rhel_6")
+                        .chipsetType("Q35_OVMF")  // String.valueOf(BiosType.Q35_OVMF)
+                        .option("SERVER")  // String.valueOf(VmType.SERVER)
+
+                        .name(randomName)
+                        .description("")
+                        .comment("cc")
+                        .stateless(false)
+                        .startPaused(false)
+                        .deleteProtected(false)      // 삭제방지
+//                    .deleteProtected(false)
+//                    .vDiskList()
+//                    .vnicList()
+
+                        .vmSystemVo(
+                                VmSystemVo.builder()
+                                        .instanceType("small") //tiny 안됨
+                                        .memorySize(2048)
+                                        .memoryMax(2048)
+                                        .memoryActual(2048)
+                                        .vCpuSocket(1)
+                                        .vCpuSocketCore(2)
+                                        .vCpuCoreThread(1)
+//                                        .timeOffset()
+                                        .build()
+                        )
+//                    .vmInitVo(
+//                            VmInitVo.builder()
+//                                    .cloudInit(true)   // 일단 안됨
+//                                    .build()
+//                    )
+                        .vmHostVo(
+                                VmHostVo.builder()
+//                                    .clusterHost(true)  // 클러스터 내 호스트
+                                        .clusterHost(true)  // 특정 호스트
+//                                        .selectHostId("1c8ed321-28e5-4f83-9e34-e13f9125f253")
+                                        .migrationMode("PINNED")  // 마이그레이션 안함
+//                                    .migrationMode("USER_MIGRATABLE")  // 수동 마이그레이션 허용
+                                        .build()
+                        )
+                        .vmHaVo(
+                                VmHaVo.builder()
+                                        .ha(false) // 기본 false
+//                                    .vmStorageDomainId("06faa572-f1ac-4874-adcc-9d26bb74a54d") // 스토리지 도메인
+                                        // 재개동작?
+                                        .priority(1)  // 우선순위: 기본 1(낮음)
+//                                    .watchDogModel("I6300ESB")
+//                                    .watchDogAction("POWEROFF")
+                                        .build()
+                        )
+                        .vmResourceVo(
+                                VmResourceVo.builder()
+                                        .cpuProfileId("25e675a8-0690-4dee-908e-1b3c3bd120fc")
+                                        .cpuShare(512)
+                                        .cpuPinningPolicy("DEDICATED")
+                                        .memoryBalloon(true)    // 시스템에서
+
+                                        .multiQue(true)
+//                                    .virtSCSIEnable(true)
+                                        .build()
+                        )
+                        .vmBootVo(
+                                VmBootVo.builder()
+                                        .firstDevice("HD")
+                                        .secondDevice("CDROM")
+                                        .build()
+                        )
+                        .build();
+
+        CommonVo<Boolean> result = vmService.addVm(vm);
+        assertThat(result.getHead().getCode()).isEqualTo(201);
+    }
+
+
+
+
+
+
     @Test
     @DisplayName("가상머신 편집 창")
     void setEditVm() {
-        String id = "701c0c48-51c0-4bd1-930a-81184e0062d7";
+        String id = "364dfe92-fb24-4e97-8a7b-1e9de59f6be6";
         VmCreateVo result = vmService.setEditVm(id);
+
         System.out.println(result);
     }
 
     @Test
     @DisplayName("가상머신 편집")
     void editVm() {
-        String id = "";
-        VmCreateVo vm = VmCreateVo.builder().build();
+        String id = "364dfe92-fb24-4e97-8a7b-1e9de59f6be6";
+
+        VmCreateVo vm =
+                VmCreateVo.builder()
+                        .id(id)
+                        .os("rhel_3")
+                        .chipsetType("i440fx_sea_bios")
+                        .build();
+
         CommonVo<Boolean> result = vmService.editVm(id, vm);
 
         assertThat(result.getHead().getCode()).isEqualTo(201);
@@ -154,11 +257,12 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 삭제")
     void deleteVm() {
+        // 삭제방지 모드 해제 란을 생성해야할듯
         String id = "21a4369f-c828-47d7-afcb-1248f7c2a787";
         CommonVo<Boolean> result = vmService.deleteVm(id);
 
-        assertThat(result.getHead().getCode()).isEqualTo(404); // 삭제방지모드
-//        assertThat(result.getHead().getCode()).isEqualTo(200);
+//        assertThat(result.getHead().getCode()).isEqualTo(404); // 삭제방지모드
+        assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
 

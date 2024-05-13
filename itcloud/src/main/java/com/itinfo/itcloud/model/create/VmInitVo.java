@@ -8,7 +8,6 @@ import lombok.ToString;
 public class VmInitVo {
     private boolean cloudInit;
     private String hostName;
-    private boolean timeSet;
     private String timeStandard;
 
     // 인증

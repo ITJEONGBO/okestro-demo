@@ -31,7 +31,7 @@ fun BiosType.findBios(): String {
 		BiosType.Q35_OVMF -> "UEFI의 Q35 칩셋"
 		BiosType.Q35_SEA_BIOS -> "BIOS의 Q35 칩셋"
 		BiosType.Q35_SECURE_BOOT -> "UEFI SecureBoot의 Q35 칩셋"
-		else -> "자동 감지"
+		BiosType.CLUSTER_DEFAULT -> "자동 감지"
 	}
 }
 
