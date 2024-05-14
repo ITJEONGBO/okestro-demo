@@ -45,16 +45,33 @@ public class StorageServiceImpl implements ItStorageService {
         SystemService system = admin.getConnection().systemService();
         List<StorageDomain> sdList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().list().send().storageDomains();
 
+        List<Vm> vmList = system.vmsService().list().send().vms();
+
         // TODO
         return sdList.stream()
                 .flatMap(storageDomain -> {
                     List<Disk> diskList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().storageDomainService(storageDomain.id()).disksService().list().send().disks();
-                    System.out.println(diskList.size());
                     return diskList.stream()
                             .map(disk -> {
                                 Disk disk1 = system.disksService().diskService(disk.id()).get().send().disk();
-                                System.out.println(disk.name());
-                                return DiskVo.builder()
+
+//                                vmList.stream()
+//                                        .flatMap(vm -> {
+//                                            List<DiskAttachment> daList = system.vmsService().vmService(vm.id()).diskAttachmentsService().list().send().attachments();
+//
+//                                            return daList.stream()
+//                                                    .map(diskAttachment -> {
+//                                                        if(diskAttachment.vm().id().equals(vm.id())){
+//                                                            return system.vmsService().vmService(vm.id()).get().send().vm().name();
+//                                                        }
+//                                                    })
+//                                                    .findAny();
+//
+//                                        })
+                                // 그러니까 vm의 diskattachment에 disk id가 같은지 비교
+                                // 근데 전체 vms를 다 뒤져야함 => 복잡
+
+                            return DiskVo.builder()
                                         .id(disk.id())
                                         .name(disk.name())
                                         .alias(disk.alias())
@@ -63,7 +80,7 @@ public class StorageServiceImpl implements ItStorageService {
                                         .status(disk.status())
                                         .storageType(disk.storageType())
                                         .virtualSize(disk.provisionedSize())
-//                                        .connection(disk.diskProfile().id()) // 가상머신 연결
+//                                        .connection()
                                         .domainVoList(
                                             disk1.storageDomains().stream()
                                                     .map(storageDomain1 ->
@@ -271,6 +288,8 @@ public class StorageServiceImpl implements ItStorageService {
         Disk disk = system.disksService().diskService(diskId).get().send().disk();
 
         try{
+            // 가상머신이 연결되어잇는지, down 상태인지
+
             diskService.remove().send();
 
             do{

@@ -12,5 +12,6 @@ public class VmInitVo {
 
     // 인증
     // 네트워크
-    // 사용자 지정 스크립트
+    private String script;  // 사용자 지정 스크립트
+
 }

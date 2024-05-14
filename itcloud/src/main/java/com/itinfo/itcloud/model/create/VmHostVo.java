@@ -3,6 +3,7 @@ package com.itinfo.itcloud.model.create;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
+import org.ovirt.engine.sdk4.types.InheritableBoolean;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ public class VmHostVo {
 
     private String migrationMode;   // 마이그레이션 모드 VmAffinity (MIGRATABLE, USER_MIGRATABLE, PINNED)
     private String migrationPolicy; // 마이그레이션 정책  migration_downtime
-//    private String migrationEncoding;   // 마이그레이션 암호화 사용
+    private InheritableBoolean migrationEncrypt;   // 마이그레이션 암호화 사용
     private String parallelMigration;   // Parallel Migrations
     private String numOfVmMigration;    // Number of VM Migration Connections
 }

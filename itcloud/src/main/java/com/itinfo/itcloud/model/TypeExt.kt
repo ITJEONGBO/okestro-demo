@@ -125,7 +125,7 @@ fun VmStatus.findVmStatus() : String{
 		VmStatus.MIGRATING -> "마이그레이션"
 		VmStatus.NOT_RESPONDING -> "NOT_RESPONDING"
 		VmStatus.PAUSED -> "PAUSED"
-		VmStatus.POWERING_DOWN -> "POWERING_DOWN"
+		VmStatus.POWERING_DOWN -> "전원을 끄는 중"
 		VmStatus.POWERING_UP -> "POWERING_UP"
 		VmStatus.REBOOT_IN_PROGRESS -> "REBOOT_IN_PROGRESS"
 		VmStatus.RESTORING_STATE -> "RESTORING_STATE"

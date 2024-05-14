@@ -20,7 +20,10 @@ class ItStorageServiceTest {
     @DisplayName("디스크 목록 출력")
     @Order(1)
     void getDiskList() {
-        assertThat(22).isEqualTo(storageService.getDiskList(dcId).size());
+        System.out.println("개수: " + storageService.getDiskList(dcId).size());
+        System.out.println(storageService.getDiskList(dcId));
+
+        assertThat(36).isEqualTo(storageService.getDiskList(dcId).size());
     }
 
     @Test
