@@ -6,7 +6,9 @@ import com.itinfo.itcloud.model.TypeExtKt;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.VmCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
+import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
+import com.itinfo.itcloud.model.storage.DiskVo;
 import com.itinfo.itcloud.model.storage.VmDiskVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItVmService;
@@ -27,8 +29,10 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class VmServiceImpl implements ItVmService {
-    @Autowired private AdminConnectionService admin;
-    @Autowired private CommonService commonService;
+    @Autowired
+    private AdminConnectionService admin;
+    @Autowired
+    private CommonService commonService;
 
 
     // 가상머신 목록
@@ -82,6 +86,7 @@ public class VmServiceImpl implements ItVmService {
                     return VmSetVo.builder()
                             .clusterId(cluster.id())
                             .clusterName(cluster.name())
+                            .dcName(cluster.dataCenter().id())
                             .dcName(system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
                             .vnicList(
                                     networkList.stream()
@@ -90,11 +95,11 @@ public class VmServiceImpl implements ItVmService {
                                                 return vnicProfileList.stream()
                                                         .map(vnicProfile ->
                                                                 VmVnicVo.builder()
-                                                                    .id(vnicProfile.id())
-                                                                    .name(vnicProfile.name())
-                                                                    .networkName(network.name())
-                                                                    .externalNetwork(network.externalProviderPresent())
-                                                                    .build()
+                                                                        .id(vnicProfile.id())
+                                                                        .name(vnicProfile.name())
+                                                                        .networkName(network.name())
+                                                                        .externalNetwork(network.externalProviderPresent())
+                                                                        .build()
                                                         );
                                             })
                                             .collect(Collectors.toList())
@@ -113,10 +118,10 @@ public class VmServiceImpl implements ItVmService {
                                     hostList.stream()
                                             .filter(host -> host.cluster().id().equals(cluster.id()))
                                             .map(host ->
-                                                IdentifiedVo.builder()
-                                                        .id(host.id())
-                                                        .name(host.name())
-                                                        .build()
+                                                    IdentifiedVo.builder()
+                                                            .id(host.id())
+                                                            .name(host.name())
+                                                            .build()
                                             )
                                             .collect(Collectors.toList())
                             )
@@ -147,13 +152,13 @@ public class VmServiceImpl implements ItVmService {
 
     // 생성창에서 리소스 cpuProfile 리스트 출력
     @Override
-    public List<IdentifiedVo> getCpuProfileList(String clusterId){
+    public List<IdentifiedVo> getCpuProfileList(String clusterId) {
         SystemService system = admin.getConnection().systemService();
         List<CpuProfile> cpuProfileList = system.cpuProfilesService().list().send().profile();
 
         return cpuProfileList.stream()
                 .filter(cpuProfile -> cpuProfile.cluster().id().equals(clusterId))
-                .map(cpuProfile -> 
+                .map(cpuProfile ->
                         IdentifiedVo.builder()
                                 .id(cpuProfile.id())
                                 .name(cpuProfile.name())
@@ -165,9 +170,6 @@ public class VmServiceImpl implements ItVmService {
 //    public List<> addDiskImage
 
 
-
-
-
     // 가상머신 생성
     @Override
     public CommonVo<Boolean> addVm(VmCreateVo vmVo) {
@@ -177,7 +179,7 @@ public class VmServiceImpl implements ItVmService {
         boolean duplicateName = vmsService.list().search("name=" + vmVo.getName()).send().vms().isEmpty();
 
         try {
-            if(duplicateName) { // 이름 중복 검사
+            if (duplicateName) { // 이름 중복 검사
                 VmBuilder vmBuilder = new VmBuilder();
                 vmBuilder
                         .cluster(new ClusterBuilder().id(vmVo.getClusterId())) //  클러스터
@@ -198,8 +200,8 @@ public class VmServiceImpl implements ItVmService {
                         // 보관?
 
                         .timeZone(new TimeZoneBuilder().name(vmVo.getVmSystemVo().getTimeOffset())); // 시스템-일반 하드웨어 클럭의 시간 오프셋
-                        // 시스템 - 일련 번호 정책
-                        // 시스템 - 사용자 정의 일련번호
+                // 시스템 - 일련 번호 정책
+                // 시스템 - 사용자 정의 일련번호
 
 
                 // 시스템
@@ -240,7 +242,7 @@ public class VmServiceImpl implements ItVmService {
                 // 호스트
                 // 실행 호스트
                 VmPlacementPolicyBuilder placementBuilder = new VmPlacementPolicyBuilder();
-                if(!vmVo.getVmHostVo().isClusterHost()){  // 특정 호스트를 선택한다면 무조건 한개는 존재
+                if (!vmVo.getVmHostVo().isClusterHost()) {  // 특정 호스트를 선택한다면 무조건 한개는 존재
                     placementBuilder.hosts(
                             // 선택된 호스트 전부 넣기
                             vmVo.getVmHostVo().getSelectHostId().stream()
@@ -253,30 +255,32 @@ public class VmServiceImpl implements ItVmService {
                 // 사용자 정의 일때만 마이그레이션 모드 설정가능
                 vmBuilder
                         .placementPolicy(
-                            placementBuilder.affinity("none".equals(vmVo.getVmSystemVo().getInstanceType()) ?
+                                placementBuilder
+                                        .affinity("none".equals(vmVo.getVmSystemVo().getInstanceType()) ?
                                                 VmAffinity.valueOf(vmVo.getVmHostVo().getMigrationMode()) : VmAffinity.MIGRATABLE
-                            )
+                                        )
                         )
                         .migration(
                                 // 정책은 찾을 수가 없음
                                 // parallel Migrations 안보임
-                            new MigrationOptionsBuilder()
-                                .encrypted(vmVo.getVmHostVo().getMigrationEncrypt()) // 암호화
-                                .build()
+                                new MigrationOptionsBuilder()
+                                        .encrypted(vmVo.getVmHostVo().getMigrationEncrypt()) // 암호화
+                                        .build()
                         )
 //                        .numaNodes(new NumaNodeBuilder().build()) // numa
-                        .highAvailability( // 고가용성
+                        // 고가용성
+                        .highAvailability(
                                 new HighAvailabilityBuilder()
-                                    .enabled(vmVo.getVmHaVo().isHa()) // 고가용성 여부
-                                    .priority(vmVo.getVmHaVo().getPriority())
+                                        .enabled(vmVo.getVmHaVo().isHa()) // 고가용성 여부
+                                        .priority(vmVo.getVmHaVo().getPriority())
                                 // 재개동작 모르겠음
                         );
 
-                if(vmVo.getVmHaVo().isHa()) {       // 스토리지 도메인 지정
+                if (vmVo.getVmHaVo().isHa()) {       // 스토리지 도메인 지정
                     // 선택안햇을경우
                     vmBuilder.lease(
-                        new StorageDomainLeaseBuilder()
-                                .storageDomain(new StorageDomainBuilder().id(vmVo.getVmHaVo().getVmStorageDomainId()))
+                            new StorageDomainLeaseBuilder()
+                                    .storageDomain(new StorageDomainBuilder().id(vmVo.getVmHaVo().getVmStorageDomainId()))
                     );
                 }
 
@@ -292,7 +296,7 @@ public class VmServiceImpl implements ItVmService {
                         .cpuPinningPolicy(CpuPinningPolicy.valueOf(vmVo.getVmResourceVo().getCpuPinningPolicy()))
                         .virtioScsiMultiQueuesEnabled(vmVo.getVmResourceVo().isMultiQue()); // VirtIO-SCSI 활성화
 
-                
+
                 // 부트 옵션
                 vmBuilder.os(
                         new OperatingSystemBuilder()
@@ -300,27 +304,26 @@ public class VmServiceImpl implements ItVmService {
                                 .boot(
                                         new BootBuilder().devices(
                                                 vmVo.getVmBootVo().getDeviceList().stream()
-                                                    .map(BootDevice::valueOf)
-                                                    .collect(Collectors.toList())
+                                                        .map(BootDevice::valueOf)
+                                                        .collect(Collectors.toList())
                                         )
                                 )
                 );
-
 
                 System.out.println(vmVo.toString());
 
                 Vm vm = vmsService.add().vm(vmBuilder.build()).send().vm();
 
                 // nic
-                if(vmVo.getVnicList() != null) {
+                if (vmVo.getVnicList() != null) {
                     addVmNic(system, vm, vmVo); // nic 붙이기
                 }
 
                 // disk
-                if(vmVo.getVDiskList() != null) {
+                // 가상머신 만들고 nic 붙이고 disk 붙이는 식
+                if (vmVo.getVDiskList() != null) {
                     addVmDisk(system, vm, vmVo);
                 }
-
 
 
                 // 이것도 vm id가 있어야 생성가능
@@ -329,7 +332,6 @@ public class VmServiceImpl implements ItVmService {
 //                            new CdromBuilder().file()
 //                    )
 //                }
-
 
 //                do{
 //                    Thread.sleep(3000);
@@ -340,25 +342,29 @@ public class VmServiceImpl implements ItVmService {
 
                 log.info("가상머신 생성 완료");
                 return CommonVo.createResponse();
-            }else{
+            } else {
                 log.error("가상머신 이름 중복");
-                return CommonVo.duplicateResponse();    
+                return CommonVo.duplicateResponse();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             log.error("가상머신 생성실패");
             return CommonVo.failResponse("가상머신 생성 실패");
         }
     }
 
-    private CommonVo<Boolean> addVmNic(SystemService system, Vm vm, VmCreateVo vmVo){
+
+    // vm 생성 - vnic
+    private CommonVo<Boolean> addVmNic(SystemService system, Vm vm, VmCreateVo vmVo) {
         try {
             VmNicsService vmNicsService = system.vmsService().vmService(vm.id()).nicsService();
-            List<NicBuilder> nicBuilders = vmVo.getVnicList().stream()
-                    .map(identifiedVo -> new NicBuilder()
-                            .name("nic" + (vmVo.getVnicList().indexOf(identifiedVo) + 1))
-                            .vnicProfile(new VnicProfileBuilder().id(identifiedVo.getId()).build()))
-                    .collect(Collectors.toList());
+
+            List<NicBuilder> nicBuilders =
+                    vmVo.getVnicList().stream()
+                            .map(identifiedVo -> new NicBuilder()
+                                    .name("nic" + (vmVo.getVnicList().indexOf(identifiedVo) + 1))
+                                    .vnicProfile(new VnicProfileBuilder().id(identifiedVo.getId()).build()))
+                            .collect(Collectors.toList());
 
             for (NicBuilder nicBuilder : nicBuilders) {
                 vmNicsService.add().nic(nicBuilder).send();
@@ -366,29 +372,69 @@ public class VmServiceImpl implements ItVmService {
 
             log.info(vm.name() + " vnic 생성 성공");
             return CommonVo.createResponse();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            log.error("error");
+            log.error("vnic 생성 실패, {}", e.getMessage());
             return CommonVo.failResponse(vm.name() + " vnic 생성 실패");
         }
     }
 
-    // vm 생성 - 가상디스크 연결
-    private CommonVo<Boolean> addVmDisk(SystemService system, Vm vm, VmCreateVo vmVo){
-        DiskAttachmentsService dasService = system.vmsService().vmService(vm.id()).diskAttachmentsService();
+    @Override
+    public List<NetworkVo> setVnic(String dcId) {
+        SystemService system = admin.getConnection().systemService();
+        List<Network> networkList = system.networksService().list().send().networks();
 
-        try{
+        return networkList.stream()
+                .filter(network -> network.dataCenter().id().equals(dcId))
+                .map(network ->
+                    NetworkVo.builder()
+                            .id(network.id())
+                            .name(network.name())
+                            .provider(network.externalProviderPresent())
+                            .build()
+                )
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public List<DiskVo> setDiskConn(String id){
+//        List<DiskVo>
+
+        return null;
+    }
+
+
+
+
+
+
+    // vm 생성 - 인스턴스 이미지 [ 연결 / 생성 ]
+    // 근데 디스크 여러개 붙일수 있음
+    private CommonVo<Boolean> addVmDisk(SystemService system, Vm vm, VmCreateVo vmVo) {
+        try {
+            DiskAttachmentsService dasService = system.vmsService().vmService(vm.id()).diskAttachmentsService();
+
+            // 생성
+
+            // 연결
+
+
+            DiskAttachment da = dasService.add()
+                    .attachment(
+                            new DiskAttachmentBuilder()
+//                                .disk()
+//                                .interface_()
+                    ).send().attachment();
+
             log.info(vm.name() + " disk 생성 성공");
             return CommonVo.createResponse();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             log.error("error");
             return CommonVo.failResponse(vm.name() + " disk 생성 실패");
         }
     }
-
-
-
 
 
     // 가상머신 편집 창
@@ -413,7 +459,7 @@ public class VmServiceImpl implements ItVmService {
                 .os(TypeExtKt.findOs(OsVo.valueOf(vm.os().type())))
                 .chipsetType(TypeExtKt.findBios(vm.bios().type()))
                 .option(TypeExtKt.findVmType(vm.type()))
-                
+
                 .id(id)      // vm id
                 .name(vm.name())
                 .description(vm.description())
@@ -431,7 +477,6 @@ public class VmServiceImpl implements ItVmService {
         SystemService system = admin.getConnection().systemService();
 
 
-
         return null;
     }
 
@@ -443,15 +488,15 @@ public class VmServiceImpl implements ItVmService {
         boolean delete = system.vmsService().vmService(id).get().send().vm().deleteProtected();
 
         try {
-            if(!delete){
+            if (!delete) {
                 vmService.remove().detachOnly(true /*여기에 디스크 삭제여부*/).send();
                 log.info("가상머신 삭제 성공");
                 return CommonVo.successResponse();
-            }else {
+            } else {
                 log.error("삭제방지 모드를 해제하세요");
                 return CommonVo.failResponse("삭제방지 모드를 해제");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
             e.printStackTrace();
             return CommonVo.failResponse("가상머신 삭제 실패");
@@ -474,18 +519,18 @@ public class VmServiceImpl implements ItVmService {
         VmService vmService = system.vmsService().vmService(id);
         Vm vm = system.vmsService().vmService(id).get().send().vm();
 
-        try{
+        try {
             // cloudinit 초기실행 여부에 따라 다름
-            if(vm.initializationPresent()){
+            if (vm.initializationPresent()) {
                 vmService.start().useCloudInit(true).send();
                 log.info("가상머신 cloudinit 시작");
                 return CommonVo.successResponse();
-            }else {
+            } else {
                 vmService.start().send();
                 log.info("가상머신 시작");
                 return CommonVo.successResponse();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             log.error("가상머신 시작 실패 : {}", e.getMessage());
             return CommonVo.failResponse("");
@@ -498,10 +543,10 @@ public class VmServiceImpl implements ItVmService {
         SystemService system = admin.getConnection().systemService();
         VmService vmService = system.vmsService().vmService(id);
 
-        try{
+        try {
             vmService.suspend().send();
             return CommonVo.successResponse();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             log.error(e.getMessage());
             return CommonVo.failResponse("");
@@ -514,10 +559,10 @@ public class VmServiceImpl implements ItVmService {
         SystemService system = admin.getConnection().systemService();
         VmService vmService = system.vmsService().vmService(id);
 
-        try{
+        try {
             vmService.stop().send();
             return CommonVo.successResponse();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             log.error(e.getMessage());
             return CommonVo.failResponse("");
@@ -531,10 +576,10 @@ public class VmServiceImpl implements ItVmService {
         SystemService system = admin.getConnection().systemService();
         VmService vmService = system.vmsService().vmService(id);
 
-        try{
+        try {
             vmService.shutdown().send();
             return CommonVo.successResponse();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             log.error(e.getMessage());
             return CommonVo.failResponse("");
@@ -548,10 +593,10 @@ public class VmServiceImpl implements ItVmService {
         SystemService system = admin.getConnection().systemService();
         VmService vmService = system.vmsService().vmService(id);
 
-        try{
+        try {
             vmService.reboot().send();
             return CommonVo.successResponse();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             log.error(e.getMessage());
             return CommonVo.failResponse("");
@@ -564,10 +609,10 @@ public class VmServiceImpl implements ItVmService {
         SystemService system = admin.getConnection().systemService();
         VmService vmService = system.vmsService().vmService(id);
 
-        try{
+        try {
             vmService.reset().send();
             return CommonVo.successResponse();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             log.error(e.getMessage());
             return CommonVo.failResponse("");
@@ -601,7 +646,7 @@ public class VmServiceImpl implements ItVmService {
 //        List<DiskAttachment> diskAttachmentList = system.vmsService().vmService(snapshotVo.getVmId()).diskAttachmentsService().list().send().attachments();
 //        SnapshotsService snapshotsService = system.vmsService().vmService(snapshotVo.getVmId()).snapshotsService();
 
-        try{
+        try {
             // 디스크 선택된것만 들어가야됨
             List<String> s = snapshotVo.getSDiskList().stream()
                     .map(snapshotDiskVo -> snapshotDiskVo.getDaId())
@@ -623,40 +668,13 @@ public class VmServiceImpl implements ItVmService {
 
             log.info("스냅샷 생성 성공");
             return CommonVo.createResponse();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             log.error("스냅샷 생성 실패");
             return CommonVo.failResponse(e.getMessage());
         }
 
     }
-
-
-
-    // 마이그레이션
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     // 일반
@@ -666,9 +684,9 @@ public class VmServiceImpl implements ItVmService {
         Vm vm = system.vmsService().vmService(id).get().send().vm();
 
         String hostName = null;
-        if(vm.hostPresent()){
+        if (vm.hostPresent()) {
             hostName = system.hostsService().hostService(vm.host().id()).get().send().host().name();
-        }else if(!vm.hostPresent() && vm.placementPolicy().hostsPresent()){
+        } else if (!vm.hostPresent() && vm.placementPolicy().hostsPresent()) {
             hostName = system.hostsService().hostService(vm.placementPolicy().hosts().get(0).id()).get().send().host().name();
         }
 
@@ -717,10 +735,10 @@ public class VmServiceImpl implements ItVmService {
                             .plugged(nic.plugged())  // 연결상태
                             .networkName(system.networksService().networkService(vnicProfile.network().id()).get().send().network().name())
                             .vnicProfileVo(
-                                VnicProfileVo.builder()
-                                    .name(vnicProfile.name())       // 프로파일 이름
-                                    .portMirroring(vnicProfile.portMirroring())
-                                .build()
+                                    VnicProfileVo.builder()
+                                            .name(vnicProfile.name())       // 프로파일 이름
+                                            .portMirroring(vnicProfile.portMirroring())
+                                            .build()
                             )
                             .name(nic.name())
                             .linkStatus(nic.linked())
@@ -781,7 +799,7 @@ public class VmServiceImpl implements ItVmService {
 
         return snapList.stream()
                 .map(snapshot -> {
-                    if(snapshot.vmPresent()) {  // 스냅샷 생성
+                    if (snapshot.vmPresent()) {  // 스냅샷 생성
                         List<Disk> diskList = system.vmsService().vmService(id).snapshotsService().snapshotService(snapshot.id()).disksService().list().send().disks();
                         List<Nic> nicList = system.vmsService().vmService(id).snapshotsService().snapshotService(snapshot.id()).nicsService().list().send().nics();
 
@@ -811,7 +829,7 @@ public class VmServiceImpl implements ItVmService {
                                                             .storageType(disk.storageType())
                                                             .build();
                                                 })
-                                        .collect(Collectors.toList())
+                                                .collect(Collectors.toList())
                                 )
 //                                .nicVoList(
 //                                        nicList.stream()
@@ -822,7 +840,7 @@ public class VmServiceImpl implements ItVmService {
 //                                                .collect(Collectors.toList())
 //                                )
                                 .build();
-                    }else {  // 스냅샷 기본
+                    } else {  // 스냅샷 기본
 
                         List<Nic> nicList = system.vmsService().vmService(id).nicsService().list().send().nics();
 
@@ -836,23 +854,23 @@ public class VmServiceImpl implements ItVmService {
                                 .guaranteedMemory(vm.memoryPolicy().guaranteed())
                                 .cpuCore(vm.cpu().topology().coresAsInteger() * vm.cpu().topology().socketsAsInteger() * vm.cpu().topology().threadsAsInteger())
                                 .sDiskList(
-                                    daList.stream()
-                                            .map(diskAttachment -> {
-                                                String diskId = system.vmsService().vmService(id).diskAttachmentsService().attachmentService(diskAttachment.id()).get().send().attachment().disk().id();
-                                                Disk disk = system.disksService().diskService(diskId).get().send().disk();
-                                                return SnapshotDiskVo.builder()
-                                                        .status(disk.status())  // ok면 up상태인거 같음
-                                                        .alias(disk.name())
-                                                        .virtualSize(disk.provisionedSize())
-                                                        .actualSize(disk.actualSize())
-                                                        .sparse(disk.sparse() ? "sparse" : "?")
-                                                        .diskInterface(diskAttachment.interface_())
+                                        daList.stream()
+                                                .map(diskAttachment -> {
+                                                    String diskId = system.vmsService().vmService(id).diskAttachmentsService().attachmentService(diskAttachment.id()).get().send().attachment().disk().id();
+                                                    Disk disk = system.disksService().diskService(diskId).get().send().disk();
+                                                    return SnapshotDiskVo.builder()
+                                                            .status(disk.status())  // ok면 up상태인거 같음
+                                                            .alias(disk.name())
+                                                            .virtualSize(disk.provisionedSize())
+                                                            .actualSize(disk.actualSize())
+                                                            .sparse(disk.sparse() ? "sparse" : "?")
+                                                            .diskInterface(diskAttachment.interface_())
 //                                                        .date()
 //                                                        .diskSnapId()
-                                                        .description(disk.description())
-                                                        .storageType(disk.storageType())
-                                                        .build();
-                                            }).collect(Collectors.toList())
+                                                            .description(disk.description())
+                                                            .storageType(disk.storageType())
+                                                            .build();
+                                                }).collect(Collectors.toList())
                                 )
                                 .build();
                     }
@@ -868,9 +886,9 @@ public class VmServiceImpl implements ItVmService {
 
         return appList.stream()
                 .map(application ->
-                    ApplicationVo.builder()
-                            .name(application.name())
-                            .build()
+                        ApplicationVo.builder()
+                                .name(application.name())
+                                .build()
                 )
                 .collect(Collectors.toList());
     }
@@ -932,13 +950,13 @@ public class VmServiceImpl implements ItVmService {
         Vm vm = system.vmsService().vmService(id).get().send().vm();
 
         GuestInfoVo gif = null;
-        if(vm.guestOperatingSystemPresent()){
+        if (vm.guestOperatingSystemPresent()) {
             gif = GuestInfoVo.builder()
-                        .architecture(vm.guestOperatingSystem().architecture())
-                        .type(vm.guestOperatingSystem().family())
-                        .kernalVersion(vm.guestOperatingSystem().kernel().version().fullVersion())
-                        .os(vm.guestOperatingSystem().distribution()+" "+vm.guestOperatingSystem().version().major())
-                        .guestTime(vm.guestTimeZone().name()+vm.guestTimeZone().utcOffset())
+                    .architecture(vm.guestOperatingSystem().architecture())
+                    .type(vm.guestOperatingSystem().family())
+                    .kernalVersion(vm.guestOperatingSystem().kernel().version().fullVersion())
+                    .os(vm.guestOperatingSystem().distribution() + " " + vm.guestOperatingSystem().version().major())
+                    .guestTime(vm.guestTimeZone().name() + vm.guestTimeZone().utcOffset())
                     .build();
         }
         log.info("가상머신 게스트 정보");
@@ -950,7 +968,7 @@ public class VmServiceImpl implements ItVmService {
     public List<PermissionVo> getPermission(String id) {
         SystemService system = admin.getConnection().systemService();
         List<Permission> permissionList = system.vmsService().vmService(id).permissionsService().list().send().permissions();
-        
+
         return commonService.getPermission(system, permissionList);
     }
 

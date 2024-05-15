@@ -296,12 +296,12 @@ class ItVmServiceTest {
     }
 
 
-
-
-
-
-
-
+    @Test
+    void setVnic() {
+        String dcId = "9c72ff12-a5f3-11ee-941d-00163e39cb43";
+        List<IdentifiedVo> network = vmService.setVnic(dcId);
+        System.out.println(network);
+    }
 
     @Test
     @DisplayName("가상머신 일반")
