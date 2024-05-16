@@ -4,8 +4,9 @@ import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.VmCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
-import com.itinfo.itcloud.model.network.NetworkVo;
+import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.model.storage.DiskVo;
+import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.model.storage.VmDiskVo;
 import org.ovirt.engine.sdk4.types.VmStatus;
 import org.springframework.stereotype.Service;
@@ -24,8 +25,11 @@ public interface ItVmService {
     CommonVo<Boolean> editVm(String id, VmCreateVo vmCreateVo);     // 편집
     CommonVo<Boolean> deleteVm(String id);            // 삭제
 
-    List<NetworkVo> setVnic(String dcId);  // nic 연결시 필요한 리스트
-    List<DiskVo> setDiskConn(String id);    // 생성시 필요한 디스크 정보
+
+    List<VnicProfileVo> setVnic();  // nic 연결시 필요한 리스트
+    List<DiskVo> setDiskConn();    // 인스턴스 이미지 연결
+    List<DomainVo> setDiskAttach(String clusterId); // 이미지 생성시 필요한 스토리지도메인
+
 
     // 마우스 오른쪽버튼
     VmStatus getStatus(String id);   // 마우스 오른쪽버튼?

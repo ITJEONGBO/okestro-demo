@@ -4,6 +4,9 @@ import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.*;
 import com.itinfo.itcloud.model.error.CommonVo;
+import com.itinfo.itcloud.model.network.VnicProfileVo;
+import com.itinfo.itcloud.model.storage.DiskVo;
+import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.model.storage.VmDiskVo;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -298,10 +301,23 @@ class ItVmServiceTest {
 
     @Test
     void setVnic() {
-        String dcId = "9c72ff12-a5f3-11ee-941d-00163e39cb43";
-        List<IdentifiedVo> network = vmService.setVnic(dcId);
-        System.out.println(network);
+        List<VnicProfileVo> vnic = vmService.setVnic();
+        System.out.println(vnic);
     }
+
+    @Test
+    void setDisk() {
+        List<DiskVo> con = vmService.setDiskConn();
+        System.out.println(con);
+    }
+
+    @Test
+    void setDomains(){
+        String clusterId = "9c7452ea-a5f3-11ee-93d2-00163e39cb43";
+        List<DomainVo> set = vmService.setDiskAttach(clusterId);
+        System.out.println(set);
+    }
+
 
     @Test
     @DisplayName("가상머신 일반")

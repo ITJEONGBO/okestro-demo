@@ -18,7 +18,6 @@ public class NetworkVo {
     private BigInteger vlan;        // vLan
     private boolean required;       // 필수 네트워크
     private String label;           // 레이블
-    private boolean provider;
     private String providerId;        // 공급자 id
     private String providerName;        // 공급자 이름
 

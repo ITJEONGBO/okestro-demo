@@ -18,4 +18,6 @@ public class VnicProfileVo {
     private String networkId;
     private String networkName;
     private String networkFilterName;
+
+    private boolean provider;
 }

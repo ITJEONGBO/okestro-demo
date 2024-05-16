@@ -160,7 +160,7 @@ public class StorageServiceImpl implements ItStorageService {
             Disk disk = disksService.add().disk(diskBuilder).send().disk();
 
             do{
-                log.info("ok");
+                log.info("not ok");
             }while (disk.status() == DiskStatus.OK);
 
             log.info("성공: 디스크 이미지 {} 생성", image.getName());

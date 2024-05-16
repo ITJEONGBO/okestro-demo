@@ -42,7 +42,7 @@ public class VmCreateVo {
     // 초기실행
     private VmInitVo vmInitVo;
 
-    // 콘솔제외
+    // 콘솔
 
     // 호스트
     private VmHostVo vmHostVo;

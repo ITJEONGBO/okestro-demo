@@ -4,11 +4,13 @@ import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.OsVo;
 import com.itinfo.itcloud.model.TypeExtKt;
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.create.VDiskVo;
 import com.itinfo.itcloud.model.create.VmCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
-import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
+import com.itinfo.itcloud.model.storage.DiskProfileVo;
 import com.itinfo.itcloud.model.storage.DiskVo;
+import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.model.storage.VmDiskVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItVmService;
@@ -322,7 +324,8 @@ public class VmServiceImpl implements ItVmService {
                 // disk
                 // 가상머신 만들고 nic 붙이고 disk 붙이는 식
                 if (vmVo.getVDiskList() != null) {
-                    addVmDisk(system, vm, vmVo);
+                    // 연결하는게 있고, 생성하는게 있는데
+                    addVmDisk(system, vm, vmVo.getVDiskList());
                 }
 
 
@@ -354,6 +357,28 @@ public class VmServiceImpl implements ItVmService {
     }
 
 
+
+    // nic 목록 출력
+    @Override
+    public List<VnicProfileVo> setVnic() {
+        SystemService system = admin.getConnection().systemService();
+        List<VnicProfile> vnicProfileList = system.vnicProfilesService().list().send().profiles();
+
+        return vnicProfileList.stream()
+                .map(vNic -> {
+                    Network network = system.networksService().networkService(vNic.network().id()).get().send().network();
+
+                    return VnicProfileVo.builder()
+                            .id(vNic.id())
+                            .name(vNic.name())
+                            .networkName(network.name())
+                            .provider(network.externalProviderPresent())
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+
     // vm 생성 - vnic
     private CommonVo<Boolean> addVmNic(SystemService system, Vm vm, VmCreateVo vmVo) {
         try {
@@ -361,9 +386,15 @@ public class VmServiceImpl implements ItVmService {
 
             List<NicBuilder> nicBuilders =
                     vmVo.getVnicList().stream()
-                            .map(identifiedVo -> new NicBuilder()
+                            .map(identifiedVo -> 
+                                    new NicBuilder()
                                     .name("nic" + (vmVo.getVnicList().indexOf(identifiedVo) + 1))
-                                    .vnicProfile(new VnicProfileBuilder().id(identifiedVo.getId()).build()))
+                                    .vnicProfile(
+                                            new VnicProfileBuilder()
+                                                    .id(identifiedVo.getId())
+                                                    .build()
+                                    )
+                            )
                             .collect(Collectors.toList());
 
             for (NicBuilder nicBuilder : nicBuilders) {
@@ -379,53 +410,128 @@ public class VmServiceImpl implements ItVmService {
         }
     }
 
-    @Override
-    public List<NetworkVo> setVnic(String dcId) {
-        SystemService system = admin.getConnection().systemService();
-        List<Network> networkList = system.networksService().list().send().networks();
 
-        return networkList.stream()
-                .filter(network -> network.dataCenter().id().equals(dcId))
-                .map(network ->
-                    NetworkVo.builder()
-                            .id(network.id())
-                            .name(network.name())
-                            .provider(network.externalProviderPresent())
-                            .build()
-                )
+    // 가상머신 생성 - 인스턴스 이미지 연결 목록
+    // TODO
+    @Override
+    public List<DiskVo> setDiskConn(){
+        SystemService system = admin.getConnection().systemService();
+        List<Disk> diskList = system.disksService().list().send().disks();
+        List<Vm> vmList = system.vmsService().list().send().vms();
+
+        return diskList.stream()
+//                .filter(disk -> {
+//                    boolean das = vmList.stream()
+//                            .allMatch(vm -> {
+//                                List<DiskAttachment> daList = system.vmsService().vmService(vm.id()).diskAttachmentsService().list().send().attachments();
+//                                return daList.stream().noneMatch(da -> da.disk().id().equals(disk.id()));
+//                            });
+//                    System.out.println("* "+das);
+//
+//                    return !das && disk.status() == DiskStatus.OK;
+//                })
+                .map(disk -> {
+                    StorageDomain storageDomain = system.storageDomainsService().storageDomainService(disk.storageDomains().get(0).id()).get().send().storageDomain();
+
+                    return DiskVo.builder()
+                            .id(disk.id())
+                            .alias(disk.alias())
+                            .description(disk.description())
+                            .virtualSize(disk.provisionedSize())
+                            .actualSize(disk.actualSize())
+                            .domainVo(
+                                    DomainVo.builder()
+                                            .id(storageDomain.id())
+                                            .name(storageDomain.name())
+                                            .build()
+                            )
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
-
+    // 인스턴스 이미지 생성 시 필요한 스토리지 도메인 목록
     @Override
-    public List<DiskVo> setDiskConn(String id){
-//        List<DiskVo>
+    public List<DomainVo> setDiskAttach(String clusterId) {
+        SystemService system = admin.getConnection().systemService();
+        Cluster cluster = system.clustersService().clusterService(clusterId).get().send().cluster();
+        List<StorageDomain> sdList = system.dataCentersService().dataCenterService(cluster.dataCenter().id()).storageDomainsService().list().send().storageDomains();
 
-        return null;
+        return sdList.stream()
+                .map(storageDomain -> {
+                    List<DiskProfile> dpList = system.storageDomainsService().storageDomainService(storageDomain.id()).diskProfilesService().list().send().profiles();
+
+                    return DomainVo.builder()
+                            .id(storageDomain.id())
+                            .name(storageDomain.name())
+                            .diskSize(storageDomain.available().add(storageDomain.used()))
+                            .availableSize(storageDomain.available())
+                            .profileVoList(
+                                    dpList.stream()
+                                            .map(diskProfile ->
+                                                    DiskProfileVo.builder()
+                                                            .id(diskProfile.id())
+                                                            .name(diskProfile.name())
+                                                            .build()
+                                            )
+                                            .collect(Collectors.toList())
+                            )
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
-
-
-
 
 
 
     // vm 생성 - 인스턴스 이미지 [ 연결 / 생성 ]
     // 근데 디스크 여러개 붙일수 있음
-    private CommonVo<Boolean> addVmDisk(SystemService system, Vm vm, VmCreateVo vmVo) {
+    private CommonVo<Boolean> addVmDisk(SystemService system, Vm vm, List<VDiskVo> vDiskVoList) {
         try {
             DiskAttachmentsService dasService = system.vmsService().vmService(vm.id()).diskAttachmentsService();
+            DisksService disksService = system.disksService();
 
-            // 생성
+            // 디스크 이미지 생성
+            List<DiskBuilder> diskBuilders =
+                    vDiskVoList.stream()
+                            .map(vDiskVo -> {
+                                // image
+                                return new DiskBuilder()
+                                        .provisionedSize(BigInteger.valueOf(vDiskVo.getVDiskImageVo().getSize()).multiply(BigInteger.valueOf(1024).pow(3))) // 값 받은 것을 byte로 변환하여 준다
+                                        .alias(vDiskVo.getVDiskImageVo().getAlias())
+                                        .description(vDiskVo.getVDiskImageVo().getDescription())
+                                        .storageDomains(new StorageDomain[]{ new StorageDomainBuilder().id(vDiskVo.getVDiskImageVo().getStorageDomainId()).build() })
+                                        .sparse(vDiskVo.getVDiskImageVo().isAllocationPolicy()) // 할당정책: 씬 true
+                                        .diskProfile(new DiskProfileBuilder().id(vDiskVo.getVDiskImageVo().getDiskProfile()).build()) // 없어도 상관없음
+
+                                        .wipeAfterDelete(vDiskVo.getVDiskImageVo().isWipeAfterDelete()) // 삭제후 초기화
+                                        .shareable(vDiskVo.getVDiskImageVo().isShareable())     // 공유 가능 (공유가능 o 이라면 증분백업 안됨 FRONT에서 막기?)
+                                        .backup(vDiskVo.getVDiskImageVo().isBackup() ? DiskBackup.INCREMENTAL : DiskBackup.NONE)    // 증분 백업 사용(기본이 true)
+                                        .format(vDiskVo.getVDiskImageVo().isBackup() ? DiskFormat.COW : DiskFormat.RAW); // 백업 안하면 RAW
+
+                                // diskAttachment
+//                                        .interface_(vDiskVo.getVDiskImageVo().getInterfaces()) // virtio-scsi, da부분인거 같은데
+//                                        .bootable(vDiskVo.getVDiskImageVo().isBootable())   // 부팅 가능
+//                                        .readOnly(vDiskVo.getVDiskImageVo().isReadOnly())   // 읽기 전용
+                                // lun
+                            })
+                            .collect(Collectors.toList());
+
+            // 디스크 추가하는 작업
+            for (DiskBuilder diskBuilder : diskBuilders) {
+                Disk disk = disksService.add().disk(diskBuilder).send().disk();
+
+                // 추가된 디스크를 vm에 붙여야됨
+                dasService.add()
+                        .attachment(
+                        new DiskAttachmentBuilder()
+                                .disk(disk)
+//                                .interface_() // virtio-scsi
+                        )
+                        .send().attachment();
+            }
+
 
             // 연결
-
-
-            DiskAttachment da = dasService.add()
-                    .attachment(
-                            new DiskAttachmentBuilder()
-//                                .disk()
-//                                .interface_()
-                    ).send().attachment();
 
             log.info(vm.name() + " disk 생성 성공");
             return CommonVo.createResponse();

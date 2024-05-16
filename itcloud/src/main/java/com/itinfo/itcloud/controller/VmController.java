@@ -3,6 +3,7 @@ package com.itinfo.itcloud.controller;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.VmCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
+import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.model.storage.VmDiskVo;
 import com.itinfo.itcloud.service.ItVmService;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,17 @@ public class VmController {
 		log.info("--- 가상머신 생성 창");
 		return vmService.setVmSet();
 	}
+
+
+	@GetMapping("/vm/settings/vnic")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	public List<VnicProfileVo> setVnic() {
+		log.info("--- 가상머신 생성 창 - vnic");
+		return vmService.setVnic();
+	}
+
+
 
 	@PostMapping("/vm")
 	@ResponseBody
