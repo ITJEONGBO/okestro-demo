@@ -26,7 +26,7 @@ public interface ItVmService {
     CommonVo<Boolean> deleteVm(String id);            // 삭제
 
 
-    List<VnicProfileVo> setVnic();  // nic 연결시 필요한 리스트
+    List<VnicProfileVo> setVnic(String clusterId);  // nic 연결시 필요한 리스트
     List<DiskVo> setDiskConn();    // 인스턴스 이미지 연결
     List<DomainVo> setDiskAttach(String clusterId); // 이미지 생성시 필요한 스토리지도메인
 
@@ -45,15 +45,22 @@ public interface ItVmService {
 
 
 
-    VmVo getInfo(String id);
-    List<NicVo> getNic(String id);
-    List<VmDiskVo> getDisk(String id);
-    List<SnapshotVo> getSnapshot(String id);
-    List<ApplicationVo> getApplication(String id);
-    List<AffinityGroupVo> getAffinitygroup(String id);
-    List<AffinityLabelVo> getAffinitylabel(String id);
-    GuestInfoVo getGuestInfo(String id);
-    List<PermissionVo> getPermission(String id);
-    List<EventVo> getEvent(String id);
+    VmVo getInfo(String id);        // 일반
+
+    List<NicVo> getNic(String id);  // 네트워크 인터페이스
+    CommonVo<Boolean> addNic(String id);    // nic 추가
+    CommonVo<Boolean> editNic(String id);    // nic 수정
+    CommonVo<Boolean> deleteNic(String id);    // nic 삭제
+
+
+
+    List<VmDiskVo> getDisk(String id);  // 디스크
+    List<SnapshotVo> getSnapshot(String id);    // 스냅샷
+    List<ApplicationVo> getApplication(String id);  // 어플리케이션
+    List<AffinityGroupVo> getAffinitygroup(String id);  // 선호도 그룹
+    List<AffinityLabelVo> getAffinitylabel(String id);  // 선호도 레이블
+    GuestInfoVo getGuestInfo(String id);    // 게스트 정보
+    List<PermissionVo> getPermission(String id);    // 권한
+    List<EventVo> getEvent(String id);      // 이벤트
 
 }

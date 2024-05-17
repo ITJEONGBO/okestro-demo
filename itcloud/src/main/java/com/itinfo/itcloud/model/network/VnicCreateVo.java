@@ -7,6 +7,7 @@ import org.ovirt.engine.sdk4.types.VnicPassThroughMode;
 
 @Getter @Setter @Builder
 public class VnicCreateVo {
+    // 네트워크-vnicprofile, 새로만들기
     private String id;
     private String name;
     private String description;

@@ -11,6 +11,7 @@ import com.itinfo.itcloud.model.storage.VmDiskVo;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.ovirt.engine.sdk4.types.DiskInterface;
 import org.ovirt.engine.sdk4.types.InheritableBoolean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,6 +35,7 @@ class ItVmServiceTest {
         assertThat(9).isEqualTo(result.size());
         result.stream().map(VmVo::getUpTime).forEach(System.out::println);
     }
+
 
     @Test
     @DisplayName("가상머신 생성 창")
@@ -60,6 +62,7 @@ class ItVmServiceTest {
     @DisplayName("가상머신 생성")
     void addVm() {
         String randomName = RandomStringUtils.randomAlphabetic(2);
+        String randomDiskName = RandomStringUtils.randomAlphabetic(3);
 
         VmCreateVo vm =
             VmCreateVo.builder()
@@ -82,10 +85,52 @@ class ItVmServiceTest {
                             Arrays.asList(
                                     IdentifiedVo.builder()
                                             .id("0000000a-000a-000a-000a-000000000398")
-                                            .build(),
+                                            .build()
+                            )
+                    )
+                    // 디스크
+                    .vDiskList(
+                            Arrays.asList(
+                                    VDiskVo.builder()
+                                            .vDiskImageVo(
+                                                    VDiskImageVo.builder()
+                                                            .size(2)
+                                                            .alias(randomDiskName)
+                                                            .description("test")
+                                                            .storageDomainId("06faa572-f1ac-4874-adcc-9d26bb74a54d")
+                                                            .allocationPolicy(true) // 할당정책: 씬
+                                                            .diskProfile("73247789-5b48-4684-bbd9-60f244de73d9")
+                                                            .wipeAfterDelete(false)
+                                                            .shareable(false)
+                                                            .backup(true) // 증분백업 기본값 t
+                                                            // 취소 활성화
 
-                                    IdentifiedVo.builder()
-                                            .id("7c38b012-2d50-44ba-83fd-03904002b4e5")
+                                                            .interfaces(DiskInterface.valueOf("VIRTIO_SCSI"))
+                                                            .bootable(true) // 기본값:t
+                                                            .readOnly(false)
+                                                            .build()
+                                            )
+                                            .build()
+                                    ,
+                                    VDiskVo.builder()
+                                            .vDiskImageVo(
+                                                    VDiskImageVo.builder()
+                                                            .size(2)
+                                                            .alias(randomDiskName+"2")
+                                                            .description("testsf")
+                                                            .storageDomainId("e6611ac1-35b0-42b9-b339-681a6d6cb538")
+                                                            .allocationPolicy(true) // 할당정책: 씬
+                                                            .diskProfile("b5cbcbc2-43c0-45d4-8016-0c524dc7ccd4")
+                                                            .wipeAfterDelete(false)
+                                                            .shareable(false)
+                                                            .backup(true) // 증분백업 기본값 t
+                                                            // 취소 활성화
+
+                                                            .interfaces(DiskInterface.valueOf("VIRTIO_SCSI"))
+                                                            .bootable(false) // 기본값:t
+                                                            .readOnly(false)
+                                                            .build()
+                                            )
                                             .build()
                             )
                     )
@@ -182,7 +227,7 @@ class ItVmServiceTest {
     @DisplayName("가상머신 삭제")
     void deleteVm() {
         // 삭제방지 모드 해제 란을 생성해야할듯
-        String id = "21a4369f-c828-47d7-afcb-1248f7c2a787";
+        String id = "ce196547-342c-4622-b099-2677e2b80597";
         CommonVo<Boolean> result = vmService.deleteVm(id);
 
 //        assertThat(result.getHead().getCode()).isEqualTo(404); // 삭제방지모드
@@ -217,7 +262,7 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 전원끔")
     void stopVm() {
-        String id = "6b2cf6fb-bc4f-444d-9a19-7b3766cf1dd9";
+        String id = "";
         CommonVo<Boolean> result = vmService.stopVm(id);
 
         assertThat(result.getHead().getCode()).isEqualTo(200);
@@ -300,10 +345,15 @@ class ItVmServiceTest {
 
 
     @Test
+    @DisplayName("가상머신 생성/ 새 네트워크 인터페이스 프로파일 목록 출력")
     void setVnic() {
-        List<VnicProfileVo> vnic = vmService.setVnic();
-        System.out.println(vnic);
+        String clusterId = "9c7452ea-a5f3-11ee-93d2-00163e39cb43";
+        List<VnicProfileVo> vnic = vmService.setVnic(clusterId);
+
+        System.out.println(vnic.size());
+        vnic.forEach(System.out::println);
     }
+
 
     @Test
     void setDisk() {
@@ -336,6 +386,7 @@ class ItVmServiceTest {
 
         assertThat("192.168.0.80").isEqualTo(result.get(0).getIpv4());
         assertThat(true).isEqualTo(result.stream().anyMatch(nicVo -> nicVo.getName().equals("vnet0")));
+
     }
 
     @Test

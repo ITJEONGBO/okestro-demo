@@ -25,10 +25,15 @@ public class CommonService {
      */
     public BigInteger getSpeed(List<Statistic> statisticList, String query){
         return statisticList.stream()
-                .filter(statistic -> statistic.name().equals(query))
+                .filter(statistic -> statistic.name().equals(query) && statistic.valuesPresent()) // valuepresent가 애매함
                 .map(statistic -> statistic.values().get(0).datum().toBigInteger())
                 .findAny()
                 .orElse(BigInteger.ZERO);
+        // value가 없는 경우도 있음
+//        <statistic href="/ovirt-engine/api/vms/e929923d-8710-47ef-bfbd-e281434eb8ee/nics/98273d10-a01f-44b4-809a-c27b9a3504f3/statistics/50b8f057-7795-30bd-825a-1acadd37a9d7" id="50b8f057-7795-30bd-825a-1acadd37a9d7">
+//            <name>errors.total.rx</name>
+//            <values/>
+//        </statistic>
     }
     
 

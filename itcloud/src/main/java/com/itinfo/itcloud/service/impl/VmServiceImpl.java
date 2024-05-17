@@ -358,16 +358,21 @@ public class VmServiceImpl implements ItVmService {
 
 
 
-    // nic 목록 출력
+    // nic 목록 출력 (가상머신 생성, 네트워크 인터페이스 생성)
     @Override
-    public List<VnicProfileVo> setVnic() {
+    public List<VnicProfileVo> setVnic(String clusterId) {
+        // 데이터 센터가 같아야함
         SystemService system = admin.getConnection().systemService();
         List<VnicProfile> vnicProfileList = system.vnicProfilesService().list().send().profiles();
+        String dcId = system.clustersService().clusterService(clusterId).get().send().cluster().dataCenter().id();
 
         return vnicProfileList.stream()
+                .filter(vNic -> {
+                    Network network = system.networksService().networkService(vNic.network().id()).get().send().network();
+                    return network.dataCenter().id().equals(dcId);
+                })
                 .map(vNic -> {
                     Network network = system.networksService().networkService(vNic.network().id()).get().send().network();
-
                     return VnicProfileVo.builder()
                             .id(vNic.id())
                             .name(vNic.name())
@@ -490,6 +495,9 @@ public class VmServiceImpl implements ItVmService {
             DiskAttachmentsService dasService = system.vmsService().vmService(vm.id()).diskAttachmentsService();
             DisksService disksService = system.disksService();
 
+            // 이미 부팅 가능한 디스크가 있는지 확인
+            boolean bootableDiskExists = dasService.list().send().attachments().stream().anyMatch(DiskAttachment::bootable);
+
             // 디스크 이미지 생성
             List<DiskBuilder> diskBuilders =
                     vDiskVoList.stream()
@@ -507,37 +515,61 @@ public class VmServiceImpl implements ItVmService {
                                         .shareable(vDiskVo.getVDiskImageVo().isShareable())     // 공유 가능 (공유가능 o 이라면 증분백업 안됨 FRONT에서 막기?)
                                         .backup(vDiskVo.getVDiskImageVo().isBackup() ? DiskBackup.INCREMENTAL : DiskBackup.NONE)    // 증분 백업 사용(기본이 true)
                                         .format(vDiskVo.getVDiskImageVo().isBackup() ? DiskFormat.COW : DiskFormat.RAW); // 백업 안하면 RAW
-
-                                // diskAttachment
-//                                        .interface_(vDiskVo.getVDiskImageVo().getInterfaces()) // virtio-scsi, da부분인거 같은데
-//                                        .bootable(vDiskVo.getVDiskImageVo().isBootable())   // 부팅 가능
-//                                        .readOnly(vDiskVo.getVDiskImageVo().isReadOnly())   // 읽기 전용
                                 // lun
                             })
                             .collect(Collectors.toList());
 
             // 디스크 추가하는 작업
-            for (DiskBuilder diskBuilder : diskBuilders) {
+            for (int i = 0; i < diskBuilders.size(); i++) {
+                DiskBuilder diskBuilder = diskBuilders.get(i);
+                VDiskVo vDiskVo = vDiskVoList.get(i);
                 Disk disk = disksService.add().disk(diskBuilder).send().disk();
 
-                // 추가된 디스크를 vm에 붙여야됨
-                dasService.add()
-                        .attachment(
-                        new DiskAttachmentBuilder()
-                                .disk(disk)
-//                                .interface_() // virtio-scsi
-                        )
-                        .send().attachment();
-            }
+//                boolean bootable = vDiskVo.getVDiskImageVo().isBootable();
+//                if (bootableDiskExists && bootable) {// 이미 부팅 가능한 디스크가 있는 경우, 추가하려는 디스크의 부팅 가능 속성을 false로 설정
+//                    bootable = false;
+//                    return CommonVo.failResponse("부팅가능한 디스크가 존재");
+//                } else if (bootable) { // 부팅 가능한 디스크가 없는 경우, 추가하려는 디스크를 부팅 가능으로 설정하고 플래그를 true로 변경
+//                    bootableDiskExists = true;
+//                }
 
+                // 목표: disk 상태가 LOCK임으로, OK가 될 때까지 상태확인
+                int retry = 0;
+                Disk dTmp = disksService.diskService(disk.id()).get().send().disk();
+                while(dTmp.statusPresent() && dTmp.status() == DiskStatus.LOCKED && retry <= 20) {
+                    Thread.sleep(1000L);
+                    log.debug("retry: {}, disk: {}, {}", retry, dTmp.name(), dTmp.status());
+                    dTmp = disksService.diskService(disk.id()).get().send().disk();
+                    retry += 1;
+                }
+                retry = 0;
+
+                // 20번 (i.e. 20초) 조회 했는데 안된다... 그러면 예외처리
+                if (dTmp.status() != DiskStatus.OK) {
+                    // 예외처리!
+                    return CommonVo.failResponse("disk가 잠겨있음");
+                }
+
+                DiskAttachmentBuilder daBuilder =
+                        new DiskAttachmentBuilder()
+                            .disk(disk)
+                            .interface_(vDiskVo.getVDiskImageVo().getInterfaces())
+                            .bootable(vDiskVo.getVDiskImageVo().isBootable()/*bootable*/)
+                            .readOnly(vDiskVo.getVDiskImageVo().isReadOnly());
+
+                // 추가된 디스크를 vm에 붙임
+                dasService.add().attachment(daBuilder).send().attachment();
+
+                log.info(vm.name() + " disk 생성 성공");
+            }
 
             // 연결
 
-            log.info(vm.name() + " disk 생성 성공");
+            log.info("disk 생성 성공");
             return CommonVo.createResponse();
         } catch (Exception e) {
             e.printStackTrace();
-            log.error("error");
+            log.error("disk 생성 실패");
             return CommonVo.failResponse(vm.name() + " disk 생성 실패");
         }
     }
@@ -595,7 +627,12 @@ public class VmServiceImpl implements ItVmService {
 
         try {
             if (!delete) {
-                vmService.remove().detachOnly(true /*여기에 디스크 삭제여부*/).send();
+                // 가상머신 삭제방지 여부
+
+                // 디스크 삭제 여부
+
+
+                vmService.remove().detachOnly(true ).send();
                 log.info("가상머신 삭제 성공");
                 return CommonVo.successResponse();
             } else {
@@ -633,6 +670,7 @@ public class VmServiceImpl implements ItVmService {
                 return CommonVo.successResponse();
             } else {
                 vmService.start().send();
+                
                 log.info("가상머신 시작");
                 return CommonVo.successResponse();
             }
@@ -651,6 +689,8 @@ public class VmServiceImpl implements ItVmService {
 
         try {
             vmService.suspend().send();
+            
+            log.info("가상머신 일시정지");
             return CommonVo.successResponse();
         } catch (Exception e) {
             e.printStackTrace();
@@ -667,6 +707,8 @@ public class VmServiceImpl implements ItVmService {
 
         try {
             vmService.stop().send();
+            
+            log.info("가상머신 전원끄기");
             return CommonVo.successResponse();
         } catch (Exception e) {
             e.printStackTrace();
@@ -684,6 +726,8 @@ public class VmServiceImpl implements ItVmService {
 
         try {
             vmService.shutdown().send();
+            
+            log.info("가상머신 종료");
             return CommonVo.successResponse();
         } catch (Exception e) {
             e.printStackTrace();
@@ -701,6 +745,8 @@ public class VmServiceImpl implements ItVmService {
 
         try {
             vmService.reboot().send();
+
+            log.info("가상머신 재부팅");
             return CommonVo.successResponse();
         } catch (Exception e) {
             e.printStackTrace();
@@ -717,6 +763,8 @@ public class VmServiceImpl implements ItVmService {
 
         try {
             vmService.reset().send();
+
+            log.info("가상머신 재설정");
             return CommonVo.successResponse();
         } catch (Exception e) {
             e.printStackTrace();
@@ -838,20 +886,21 @@ public class VmServiceImpl implements ItVmService {
 
                     return NicVo.builder()
                             .id(nic.id())
-                            .plugged(nic.plugged())  // 연결상태
+                            .plugged(nic.plugged())  // 연결상태 (연결됨 t, 분리 f)
                             .networkName(system.networksService().networkService(vnicProfile.network().id()).get().send().network().name())
                             .vnicProfileVo(
                                     VnicProfileVo.builder()
                                             .name(vnicProfile.name())       // 프로파일 이름
-                                            .portMirroring(vnicProfile.portMirroring())
+                                            .portMirroring(vnicProfile.portMirroring()) // 포트미러링
                                             .build()
                             )
                             .name(nic.name())
-                            .linkStatus(nic.linked())
+                            .linkStatus(nic.linked()) // 링크상태 t/f(정지)
                             .type(nic.interface_().value())
                             .macAddress(nic.macPresent() ? nic.mac().address() : null)
                             .ipv4(commonService.getVmIp(system, id, "v4"))
                             .ipv6(commonService.getVmIp(system, id, "v6"))
+//                            .speed()
                             .rxSpeed(commonService.getSpeed(statisticList, "data.current.rx.bps"))
                             .txSpeed(commonService.getSpeed(statisticList, "data.current.tx.bps"))
                             .rxTotalSpeed(commonService.getSpeed(statisticList, "data.total.rx"))
@@ -861,6 +910,29 @@ public class VmServiceImpl implements ItVmService {
                 })
                 .collect(Collectors.toList());
     }
+
+
+    @Override
+    public CommonVo<Boolean> addNic(String id) {
+        SystemService system = admin.getConnection().systemService();
+
+
+        return null;
+    }
+
+    @Override
+    public CommonVo<Boolean> editNic(String id) {
+
+        return null;
+    }
+
+    @Override
+    public CommonVo<Boolean> deleteNic(String id) {
+
+        return null;
+    }
+
+
 
     // 디스크
     // 별칭, 가상크기, 연결대상, 인터페이스, 논리적 이름, 상태, 유형, 설명

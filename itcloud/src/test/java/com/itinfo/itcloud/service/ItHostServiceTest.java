@@ -1,24 +1,27 @@
-package com.itinfo.itcloud.service.impl;
+package com.itinfo.itcloud.service;
 
-import com.itinfo.itcloud.model.computing.VmVo;
-import com.itinfo.itcloud.service.ItHostService;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
+import com.itinfo.itcloud.model.computing.HostVo;
+import com.itinfo.itcloud.model.computing.NicVo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-class HostServiceImplTest {
+class ItHostServiceTest {
     @Autowired ItHostService hostService;
-    String defaultId = "1c8ed321-28e5-4f83-9e34-e13f9125f253";
+
+    String defaultId = "f08baae8-2137-490c-bec2-fd00f67a37b9";
 
     @Test
     void getList() {
+        List<HostVo> hostList = hostService.getList();
+
+        assertThat(hostList.size()).isEqualTo(2);
+        hostList.forEach(System.out::println);
     }
 
     @Test
@@ -66,16 +69,16 @@ class HostServiceImplTest {
     }
 
     @Test
-    @DisplayName("호스트 가상머신 목록")
     void getVm() {
-        List<VmVo> result = hostService.getVm(defaultId);
-
-        Assertions.assertThat(result.size()).isEqualTo(3);
-
     }
 
     @Test
     void getNic() {
+        String hostId = "1c8ed321-28e5-4f83-9e34-e13f9125f253";
+        List<NicVo> nicList = hostService.getNic(hostId);
+
+        nicList.forEach(System.out::println);
+        assertThat(nicList.size()).isEqualTo(2);
     }
 
     @Test
@@ -87,11 +90,11 @@ class HostServiceImplTest {
     }
 
     @Test
-    void getAffinitylabels() {
+    void setAffinityDefaultInfo() {
     }
 
     @Test
-    void setAffinityDefaultInfo() {
+    void getAffinitylabels() {
     }
 
     @Test

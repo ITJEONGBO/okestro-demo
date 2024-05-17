@@ -404,7 +404,7 @@ public class HostServiceImpl implements ItHostService {
                             .status(hostNic.status())
                             .name(hostNic.name())
                             .networkName(system.networksService().networkService(hostNic.network().id()).get().send().network().name())
-                            .macAddress(hostNic.mac().address())
+                            .macAddress(hostNic.macPresent() ? hostNic.mac().address() : "")
                             .ipv4(hostNic.ip().address())
                             .ipv6(hostNic.ipv6().addressPresent() ? hostNic.ipv6().address() : null)
                             .speed(hostNic.speed().divide(BigInteger.valueOf(1024 * 1024)))

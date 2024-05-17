@@ -43,7 +43,8 @@ public class VmController {
 	@ResponseStatus(HttpStatus.OK)
 	public List<VnicProfileVo> setVnic() {
 		log.info("--- 가상머신 생성 창 - vnic");
-		return vmService.setVnic();
+//		return vmService.setVnic();
+		return null;
 	}
 
 
