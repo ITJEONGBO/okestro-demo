@@ -6,7 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Getter @Setter @Builder @ToString
-public class NetworkFilterVo {
+public class NetworkFilterParameterVo {
     private String id;
     private String name;
     private String value; // 값

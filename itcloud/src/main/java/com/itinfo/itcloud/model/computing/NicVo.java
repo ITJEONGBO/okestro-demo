@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.model.computing;
 
-import com.itinfo.itcloud.model.network.NetworkFilterVo;
+import com.itinfo.itcloud.model.network.NetworkFilterParameterVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,5 +42,5 @@ public class NicVo {
     // 프로파일, pass_throught, protmirroring
     private VnicProfileVo vnicProfileVo;
 
-    private List<NetworkFilterVo> nfVoList;
+    private List<NetworkFilterParameterVo> nfVoList;
 }

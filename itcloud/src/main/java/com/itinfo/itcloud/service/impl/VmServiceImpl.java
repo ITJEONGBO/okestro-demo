@@ -7,6 +7,7 @@ import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.VDiskVo;
 import com.itinfo.itcloud.model.create.VmCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
+import com.itinfo.itcloud.model.network.NetworkFilterParameterVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.model.storage.DiskProfileVo;
 import com.itinfo.itcloud.model.storage.DiskVo;
@@ -921,6 +922,8 @@ public class VmServiceImpl implements ItVmService {
         VmNicsService vmNicsService = system.vmsService().vmService(id).nicsService();
         List<Nic> nicList = system.vmsService().vmService(id).nicsService().list().send().nics();
 
+        // TODO 이름 중복
+
 //        boolean macExist = ;
 
         try{
@@ -947,18 +950,19 @@ public class VmServiceImpl implements ItVmService {
             if(nicVo.getNfVoList() != null){
                 NicNetworkFilterParametersService nfpsService = system.vmsService().vmService(id).nicsService().nicService(nic.id()).networkFilterParametersService();
 
-                List<NetworkFilterParameterBuilder> npList =
+                List<NetworkFilterParameter> npList =
                         nicVo.getNfVoList().stream()
                                 .map(nFVo ->
                                         new NetworkFilterParameterBuilder()
                                                 .name(nFVo.getName())
                                                 .value(nFVo.getValue())
                                                 .nic(nic)
+                                                .build()
                                 )
                                 .collect(Collectors.toList());
 
-                for(NetworkFilterParameterBuilder npBuilder : npList){
-                    nfpsService.add().parameter(npBuilder).send();
+                for(NetworkFilterParameter np : npList){
+                    nfpsService.add().parameter(np).send();
                 }
                 log.info("네트워크 필터 생성 완료");
             }
@@ -972,14 +976,55 @@ public class VmServiceImpl implements ItVmService {
         }
     }
 
+
+    @Override
+    public NicVo setEditNic(String id, String nicId) {
+        SystemService system = admin.getConnection().systemService();
+        Nic nic = system.vmsService().vmService(id).nicsService().nicService(nicId).get().send().nic();
+
+//        if(nic.vnicProfilePresent()) {
+            VnicProfile vnicProfile = system.vnicProfilesService().profileService(nic.vnicProfile().id()).get().send().profile();
+            List<NetworkFilterParameter> nfpList = system.vmsService().vmService(id).nicsService().nicService(nicId).networkFilterParametersService().list().send().parameters();
+
+            return NicVo.builder()
+                    .id(nicId)
+                    .name(nic.name())
+                    .vnicProfileVo(
+                            VnicProfileVo.builder()
+                                    .name(vnicProfile.name())
+                                    .networkName(system.networksService().networkService(vnicProfile.network().id()).get().send().network().name())
+                                    .build()
+                    )
+                    .interfaces(nic.interface_().value())
+                    .macAddress(nic.mac().address())
+                    .linkStatus(nic.linked())
+                    .plugged(nic.plugged())
+                    .nfVoList(
+                            nfpList.stream()
+                                    .map(nfp ->
+                                            NetworkFilterParameterVo.builder()
+                                                    .id(nfp.id())
+                                                    .name(nfp.name())
+                                                    .value(nfp.value())
+                                                    .build()
+                                    )
+                                    .collect(Collectors.toList())
+                    )
+                .build();
+    }
+
     @Override
     public CommonVo<Boolean> editNic(String id) {
+
 
         return null;
     }
 
     @Override
-    public CommonVo<Boolean> deleteNic(String id) {
+    public CommonVo<Boolean> deleteNic(String id, String nicId) {
+        SystemService system = admin.getConnection().systemService();
+        VmNicService vmNicService = system.vmsService().vmService(id).nicsService().nicService(nicId);
+
 
         return null;
     }

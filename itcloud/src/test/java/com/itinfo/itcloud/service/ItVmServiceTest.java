@@ -4,7 +4,7 @@ import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.*;
 import com.itinfo.itcloud.model.error.CommonVo;
-import com.itinfo.itcloud.model.network.NetworkFilterVo;
+import com.itinfo.itcloud.model.network.NetworkFilterParameterVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.model.storage.DiskVo;
 import com.itinfo.itcloud.model.storage.DomainVo;
@@ -410,12 +410,12 @@ class ItVmServiceTest {
 //                        .macAddress("00:14:4a:23:67:56")
                         .nfVoList(
                                 Arrays.asList(
-                                        NetworkFilterVo.builder()
+                                        NetworkFilterParameterVo.builder()
                                                 .name("s")
                                                 .value("20")
                                                 .build()
                                         ,
-                                        NetworkFilterVo.builder()
+                                        NetworkFilterParameterVo.builder()
                                                 .name("s2")
                                                 .value("21")
                                                 .build()
@@ -426,7 +426,15 @@ class ItVmServiceTest {
         CommonVo<Boolean> addNic = vmService.addNic(id, nicVo);
 
         assertThat(addNic.getHead().getCode()).isEqualTo(201);
+    }
 
+    @Test
+    void setEditNic() {
+        String id = "e929923d-8710-47ef-bfbd-e281434eb8ee";
+        String nicId = "53658aa8-5d6d-4875-822c-c7ec61eb9ba5";
+        NicVo nicVo = vmService.setEditNic(id,nicId);
+
+        System.out.println(nicVo);
     }
 
     @Test
