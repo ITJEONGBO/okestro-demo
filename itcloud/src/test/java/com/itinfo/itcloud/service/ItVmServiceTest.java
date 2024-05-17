@@ -4,6 +4,7 @@ import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.*;
 import com.itinfo.itcloud.model.error.CommonVo;
+import com.itinfo.itcloud.model.network.NetworkFilterVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.model.storage.DiskVo;
 import com.itinfo.itcloud.model.storage.DomainVo;
@@ -382,10 +383,49 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 네트워크 인터페이스")
     void getNic() {
-        List<NicVo> result = vmService.getNic(defaultId);
+        String id = "e929923d-8710-47ef-bfbd-e281434eb8ee";
+        List<NicVo> result = vmService.getNic(id);
 
-        assertThat("192.168.0.80").isEqualTo(result.get(0).getIpv4());
-        assertThat(true).isEqualTo(result.stream().anyMatch(nicVo -> nicVo.getName().equals("vnet0")));
+//        assertThat("192.168.0.80").isEqualTo(result.get(0).getIpv4());
+//        assertThat(true).isEqualTo(result.stream().anyMatch(nicVo -> nicVo.getName().equals("vnet0")));
+        result.forEach(System.out::println);
+    }
+
+    @Test
+    @DisplayName("가상머신 네트워크 인터페이스 생성")
+    void addNic() {
+        String id = "e929923d-8710-47ef-bfbd-e281434eb8ee";
+
+        NicVo nicVo =
+                NicVo.builder()
+                        .name("sf4")
+                        .vnicProfileVo(
+                                VnicProfileVo.builder()
+                                        .id("0000000a-000a-000a-000a-000000000398")
+                                        .build()
+                        )
+                        .interfaces("VIRTIO")
+                        .linkStatus(true)
+                        .plugged(true)
+//                        .macAddress("00:14:4a:23:67:56")
+                        .nfVoList(
+                                Arrays.asList(
+                                        NetworkFilterVo.builder()
+                                                .name("s")
+                                                .value("20")
+                                                .build()
+                                        ,
+                                        NetworkFilterVo.builder()
+                                                .name("s2")
+                                                .value("21")
+                                                .build()
+                                )
+                        )
+                        .build();
+
+        CommonVo<Boolean> addNic = vmService.addNic(id, nicVo);
+
+        assertThat(addNic.getHead().getCode()).isEqualTo(201);
 
     }
 

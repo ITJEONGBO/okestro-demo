@@ -895,8 +895,9 @@ public class VmServiceImpl implements ItVmService {
                                             .build()
                             )
                             .name(nic.name())
+                            .synced(nic.synced())
                             .linkStatus(nic.linked()) // 링크상태 t/f(정지)
-                            .type(nic.interface_().value())
+                            .interfaces(nic.interface_().value())
                             .macAddress(nic.macPresent() ? nic.mac().address() : null)
                             .ipv4(commonService.getVmIp(system, id, "v4"))
                             .ipv6(commonService.getVmIp(system, id, "v6"))
@@ -910,14 +911,65 @@ public class VmServiceImpl implements ItVmService {
                 })
                 .collect(Collectors.toList());
     }
-
-
+    
+    // 가상머신 - 새 네트워크 인터페이스
+    // 생성창은 필요없음, 왜냐면 프로파일 리스트만 가지고 오면됨
+    // public List<VnicProfileVo> setVnic(String clusterId) {} 사용하면 됨
     @Override
-    public CommonVo<Boolean> addNic(String id) {
+    public CommonVo<Boolean> addNic(String id, NicVo nicVo) {
         SystemService system = admin.getConnection().systemService();
+        VmNicsService vmNicsService = system.vmsService().vmService(id).nicsService();
+        List<Nic> nicList = system.vmsService().vmService(id).nicsService().list().send().nics();
+
+//        boolean macExist = ;
+
+        try{
+            NicBuilder nicBuilder = new NicBuilder();
+            nicBuilder
+                    .name(nicVo.getName())
+                    .vnicProfile(new VnicProfileBuilder().id(nicVo.getVnicProfileVo().getId()))
+                    .interface_(NicInterface.valueOf(nicVo.getInterfaces()))
+                    .linked(nicVo.isLinkStatus())
+                    .plugged(nicVo.isPlugged());
+
+            if(nicVo.getMacAddress() != null){ // mac 주소
+                if(nicList.stream().anyMatch(nic -> nic.mac().address().equals(nicVo.getMacAddress()))){
+                    log.error("중복되는 mac주소");
+                    return CommonVo.failResponse("중복되는 mac주소");
+                }else{
+                    nicBuilder.mac(new MacBuilder().address(nicVo.getMacAddress()));
+                }
+            }
 
 
-        return null;
+            Nic nic = vmNicsService.add().nic(nicBuilder).send().nic();
+
+            if(nicVo.getNfVoList() != null){
+                NicNetworkFilterParametersService nfpsService = system.vmsService().vmService(id).nicsService().nicService(nic.id()).networkFilterParametersService();
+
+                List<NetworkFilterParameterBuilder> npList =
+                        nicVo.getNfVoList().stream()
+                                .map(nFVo ->
+                                        new NetworkFilterParameterBuilder()
+                                                .name(nFVo.getName())
+                                                .value(nFVo.getValue())
+                                                .nic(nic)
+                                )
+                                .collect(Collectors.toList());
+
+                for(NetworkFilterParameterBuilder npBuilder : npList){
+                    nfpsService.add().parameter(npBuilder).send();
+                }
+                log.info("네트워크 필터 생성 완료");
+            }
+
+            log.info("가상머신 nic 생성 성공");
+            return CommonVo.createResponse();
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return CommonVo.failResponse("가상머신 nic 생성 실패");
+        }
     }
 
     @Override

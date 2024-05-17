@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.model.computing;
 
+import com.itinfo.itcloud.model.network.NetworkFilterVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.ToString;
 import org.ovirt.engine.sdk4.types.NicStatus;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Getter @Setter @Builder @ToString
 public class NicVo {
@@ -30,12 +32,15 @@ public class NicVo {
     private String vLan;
 
     // 일반
-    private boolean plugged;
-    private boolean linkStatus;
-    private String type;  // 유형
+    private boolean plugged;    // 연결됨 t(up)/f(down)
+    private boolean linkStatus; // 링크상태
+    private boolean synced; // 동기화
+    private String interfaces;  // 유형  NicInterface
     private BigInteger speed2;
     private String guestInterface;
 
     // 프로파일, pass_throught, protmirroring
     private VnicProfileVo vnicProfileVo;
+
+    private List<NetworkFilterVo> nfVoList;
 }

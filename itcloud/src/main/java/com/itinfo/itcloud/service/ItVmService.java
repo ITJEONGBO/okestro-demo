@@ -48,7 +48,7 @@ public interface ItVmService {
     VmVo getInfo(String id);        // 일반
 
     List<NicVo> getNic(String id);  // 네트워크 인터페이스
-    CommonVo<Boolean> addNic(String id);    // nic 추가
+    CommonVo<Boolean> addNic(String id, NicVo nicVo);    // id=vmid, nic 추가
     CommonVo<Boolean> editNic(String id);    // nic 수정
     CommonVo<Boolean> deleteNic(String id);    // nic 삭제
 
