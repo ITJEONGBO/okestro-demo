@@ -429,12 +429,22 @@ class ItVmServiceTest {
     }
 
     @Test
+    @DisplayName("가상머신 nic 수정창")
     void setEditNic() {
         String id = "e929923d-8710-47ef-bfbd-e281434eb8ee";
         String nicId = "53658aa8-5d6d-4875-822c-c7ec61eb9ba5";
         NicVo nicVo = vmService.setEditNic(id,nicId);
 
         System.out.println(nicVo);
+    }
+
+    @Test
+    @DisplayName("가상머신 nic 삭제")
+    void deleteNic() {
+        String id = "e929923d-8710-47ef-bfbd-e281434eb8ee";
+        String nicId = "5699ab9d-7a49-49d1-9657-abbb561855e6";
+
+        CommonVo<Boolean> delete = vmService.deleteNic(id, nicId);
     }
 
     @Test

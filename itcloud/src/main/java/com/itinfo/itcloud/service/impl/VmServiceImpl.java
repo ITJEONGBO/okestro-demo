@@ -921,54 +921,55 @@ public class VmServiceImpl implements ItVmService {
         SystemService system = admin.getConnection().systemService();
         VmNicsService vmNicsService = system.vmsService().vmService(id).nicsService();
         List<Nic> nicList = system.vmsService().vmService(id).nicsService().list().send().nics();
-
-        // TODO 이름 중복
-
-//        boolean macExist = ;
+        boolean duplicateName = nicList.stream().anyMatch(nic -> nic.name().equals(nicVo.getName()));  // nic 이름 중복 검사
 
         try{
-            NicBuilder nicBuilder = new NicBuilder();
-            nicBuilder
-                    .name(nicVo.getName())
-                    .vnicProfile(new VnicProfileBuilder().id(nicVo.getVnicProfileVo().getId()))
-                    .interface_(NicInterface.valueOf(nicVo.getInterfaces()))
-                    .linked(nicVo.isLinkStatus())
-                    .plugged(nicVo.isPlugged());
+            if(!duplicateName) {
+                NicBuilder nicBuilder = new NicBuilder();
+                nicBuilder
+                        .name(nicVo.getName())
+                        .vnicProfile(new VnicProfileBuilder().id(nicVo.getVnicProfileVo().getId()))
+                        .interface_(NicInterface.valueOf(nicVo.getInterfaces()))
+                        .linked(nicVo.isLinkStatus())
+                        .plugged(nicVo.isPlugged());
 
-            if(nicVo.getMacAddress() != null){ // mac 주소
-                if(nicList.stream().anyMatch(nic -> nic.mac().address().equals(nicVo.getMacAddress()))){
-                    log.error("중복되는 mac주소");
-                    return CommonVo.failResponse("중복되는 mac주소");
-                }else{
-                    nicBuilder.mac(new MacBuilder().address(nicVo.getMacAddress()));
+                if (nicVo.getMacAddress() != null) { // mac 주소 중복
+                    if (nicList.stream().anyMatch(nic -> nic.mac().address().equals(nicVo.getMacAddress()))) {
+                        log.error("중복되는 mac주소");
+                        return CommonVo.failResponse("중복되는 mac주소");
+                    } else {
+                        nicBuilder.mac(new MacBuilder().address(nicVo.getMacAddress()));
+                    }
                 }
-            }
 
+                Nic nic = vmNicsService.add().nic(nicBuilder).send().nic();
 
-            Nic nic = vmNicsService.add().nic(nicBuilder).send().nic();
+                if (nicVo.getNfVoList() != null) {
+                    NicNetworkFilterParametersService nfpsService = system.vmsService().vmService(id).nicsService().nicService(nic.id()).networkFilterParametersService();
 
-            if(nicVo.getNfVoList() != null){
-                NicNetworkFilterParametersService nfpsService = system.vmsService().vmService(id).nicsService().nicService(nic.id()).networkFilterParametersService();
+                    List<NetworkFilterParameter> npList =
+                            nicVo.getNfVoList().stream()
+                                    .map(nFVo ->
+                                            new NetworkFilterParameterBuilder()
+                                                    .name(nFVo.getName())
+                                                    .value(nFVo.getValue())
+                                                    .nic(nic)
+                                                    .build()
+                                    )
+                                    .collect(Collectors.toList());
 
-                List<NetworkFilterParameter> npList =
-                        nicVo.getNfVoList().stream()
-                                .map(nFVo ->
-                                        new NetworkFilterParameterBuilder()
-                                                .name(nFVo.getName())
-                                                .value(nFVo.getValue())
-                                                .nic(nic)
-                                                .build()
-                                )
-                                .collect(Collectors.toList());
-
-                for(NetworkFilterParameter np : npList){
-                    nfpsService.add().parameter(np).send();
+                    for (NetworkFilterParameter np : npList) {
+                        nfpsService.add().parameter(np).send();
+                    }
+                    log.info("네트워크 필터 생성 완료");
                 }
-                log.info("네트워크 필터 생성 완료");
-            }
 
-            log.info("가상머신 nic 생성 성공");
-            return CommonVo.createResponse();
+                log.info("가상머신 nic 생성 성공");
+                return CommonVo.createResponse();
+            }else{
+                log.error("nic 이름 중복");
+                return CommonVo.failResponse("가상머신 nic 생성 실패");    
+            }
         }catch (Exception e){
             e.printStackTrace();
             log.error(e.getMessage());
@@ -981,52 +982,126 @@ public class VmServiceImpl implements ItVmService {
     public NicVo setEditNic(String id, String nicId) {
         SystemService system = admin.getConnection().systemService();
         Nic nic = system.vmsService().vmService(id).nicsService().nicService(nicId).get().send().nic();
+        List<NetworkFilterParameter> nfpList = system.vmsService().vmService(id).nicsService().nicService(nicId).networkFilterParametersService().list().send().parameters();
 
-//        if(nic.vnicProfilePresent()) {
+        NicVo.NicVoBuilder nicVo = NicVo.builder()
+                .id(nicId)
+                .name(nic.name())
+                .interfaces(nic.interface_().value()) // 유형
+                .macAddress(nic.mac().address())  // mac 주소
+                .linkStatus(nic.linked())
+                .plugged(nic.plugged())
+                .nfVoList(
+                        nfpList.stream()
+                                .map(nfp ->
+                                        NetworkFilterParameterVo.builder()
+                                                .id(nfp.id())
+                                                .name(nfp.name())
+                                                .value(nfp.value())
+                                                .build()
+                                )
+                                .collect(Collectors.toList())
+                );
+        
+        // vnicProfile이 있으면 표시
+        if(nic.vnicProfilePresent()) {
             VnicProfile vnicProfile = system.vnicProfilesService().profileService(nic.vnicProfile().id()).get().send().profile();
-            List<NetworkFilterParameter> nfpList = system.vmsService().vmService(id).nicsService().nicService(nicId).networkFilterParametersService().list().send().parameters();
-
-            return NicVo.builder()
-                    .id(nicId)
-                    .name(nic.name())
-                    .vnicProfileVo(
-                            VnicProfileVo.builder()
-                                    .name(vnicProfile.name())
-                                    .networkName(system.networksService().networkService(vnicProfile.network().id()).get().send().network().name())
-                                    .build()
-                    )
-                    .interfaces(nic.interface_().value())
-                    .macAddress(nic.mac().address())
-                    .linkStatus(nic.linked())
-                    .plugged(nic.plugged())
-                    .nfVoList(
-                            nfpList.stream()
-                                    .map(nfp ->
-                                            NetworkFilterParameterVo.builder()
-                                                    .id(nfp.id())
-                                                    .name(nfp.name())
-                                                    .value(nfp.value())
-                                                    .build()
-                                    )
-                                    .collect(Collectors.toList())
-                    )
-                .build();
+            nicVo.vnicProfileVo(
+                    VnicProfileVo.builder()
+                            .name(vnicProfile.name())
+                            .networkName(system.networksService().networkService(vnicProfile.network().id()).get().send().network().name())
+                            .build()
+            );
+        }
+        
+        return nicVo.build();
     }
 
+
+    // 가상머신 nic 수정
     @Override
-    public CommonVo<Boolean> editNic(String id) {
+    public CommonVo<Boolean> editNic(String id, NicVo nicVo) {
+        SystemService system = admin.getConnection().systemService();
+        VmNicService vmNicService = system.vmsService().vmService(id).nicsService().nicService(nicVo.getId());
+        List<Nic> nicList = system.vmsService().vmService(id).nicsService().list().send().nics();
+
+        // 이름 중복
+        boolean duplicateName =
+                system.vmsService().vmService(id).nicsService().list().send().nics().stream()
+                .filter(nic -> !nic.id().equals(id))
+                .anyMatch(nic -> nic.name().equals(nicVo.getName()));
+
+        try {
+            if(!duplicateName) {
+
+                NicBuilder nicBuilder = new NicBuilder();
+                nicBuilder
+                        .name(nicVo.getName())
+                        .vnicProfile(new VnicProfileBuilder().id(nicVo.getVnicProfileVo().getId()))
+//                        .interface_(NicInterface.valueOf(nicVo.getInterfaces()))
+                        .linked(nicVo.isLinkStatus())
+                        .plugged(nicVo.isPlugged());
+
+                Nic nic = vmNicService.update().nic(nicBuilder).send().nic();
+
+                // TODO:HELP
+                // 수정창에 nf List가 뜰 예정(id)
+                // 추가되면 추가해야하고 삭제되면 삭제해야함
+                if (nicVo.getNfVoList() != null) {
+                    NicNetworkFilterParametersService nfpsService = system.vmsService().vmService(id).nicsService().nicService(nic.id()).networkFilterParametersService();
+
+                    List<NetworkFilterParameter> npList =
+                            nicVo.getNfVoList().stream()
+                                    .map(nFVo ->
+                                            new NetworkFilterParameterBuilder()
+                                                    .name(nFVo.getName())
+                                                    .value(nFVo.getValue())
+                                                    .nic(nic)
+                                                    .build()
+                                    )
+                                    .collect(Collectors.toList());
+
+                    for (NetworkFilterParameter np : npList) {
+                        nfpsService.add().parameter(np).send();
+                    }
+                    log.info("네트워크 필터 수정 완료");
+                }
 
 
-        return null;
+                log.info("nic 수정 성공");
+                return CommonVo.successResponse();
+            }else{
+                log.error("nic 이름중복");
+                return CommonVo.failResponse("nic 이름 중복");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return CommonVo.failResponse(e.getMessage());
+        }
+
     }
 
     @Override
     public CommonVo<Boolean> deleteNic(String id, String nicId) {
         SystemService system = admin.getConnection().systemService();
         VmNicService vmNicService = system.vmsService().vmService(id).nicsService().nicService(nicId);
+        Nic nic = system.vmsService().vmService(id).nicsService().nicService(nicId).get().send().nic();
 
+        try{
+            if(!nic.plugged()) {
+                vmNicService.remove().send();
 
-        return null;
+                log.info("nic 삭제 성공");
+                return CommonVo.successResponse();
+            }else{
+                log.error("nic가 plug된 상태");
+                return CommonVo.failResponse("nic가 plug된 상태");
+            }
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return CommonVo.failResponse(e.getMessage());
+        }
     }
 
 
