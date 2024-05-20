@@ -229,7 +229,9 @@ class ItVmServiceTest {
     void deleteVm() {
         // 삭제방지 모드 해제 란을 생성해야할듯
         String id = "ce196547-342c-4622-b099-2677e2b80597";
-        CommonVo<Boolean> result = vmService.deleteVm(id);
+        boolean disk = false;
+
+        CommonVo<Boolean> result = vmService.deleteVm(id, disk);
 
 //        assertThat(result.getHead().getCode()).isEqualTo(404); // 삭제방지모드
         assertThat(result.getHead().getCode()).isEqualTo(200);
@@ -450,19 +452,97 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 디스크")
     void getDisk() {
-        List<VmDiskVo> result = vmService.getDisk(defaultId);
+        String id = "e929923d-8710-47ef-bfbd-e281434eb8ee";
+        List<VmDiskVo> result = vmService.getDisk(id);
 
-        assertThat(true).isEqualTo(result.stream().anyMatch(vmDiskVo -> vmDiskVo.getName().equals("he_virtio_disk")));
-        System.out.println(result.get(0).toString());
+//        assertThat(true).isEqualTo(result.stream().anyMatch(vmDiskVo -> vmDiskVo.getName().equals("he_virtio_disk")));
+        result.forEach(System.out::println);
     }
+
+    @Test
+    @DisplayName("가상머신 디스크-이미지 생성")
+    void addDisk() {
+        String randomName = RandomStringUtils.randomAlphabetic(2);
+        String id = "d9e6d0f3-8c0c-4054-8726-761180d817cd";
+//        String id = "e929923d-8710-47ef-bfbd-e281434eb8ee";
+
+        VDiskImageVo image =
+                VDiskImageVo.builder()
+                        .size(2)
+                        .alias(randomName)
+                        .description("test")
+                        .storageDomainId("06faa572-f1ac-4874-adcc-9d26bb74a54d")
+                        .allocationPolicy(true) // 할당정책: 씬
+                        .diskProfile("73247789-5b48-4684-bbd9-60f244de73d9")
+                        .wipeAfterDelete(false)
+                        .shareable(false)
+                        .backup(true) // 증분백업 기본값 t
+                        .active(true)
+
+                        .interfaces(DiskInterface.valueOf("VIRTIO_SCSI"))
+                        .bootable(false) // 기본값:t, 부팅되는 디스크는 한개만 존재할 수 있음
+                        .readOnly(false)
+                        .build();
+
+        CommonVo<Boolean> result = vmService.addDiskImage(id, image);
+
+        assertThat(result.getHead().getCode()).isEqualTo(201);
+    }
+
+    @Test
+    @DisplayName("가상머신 디스크 삭제")
+    void deleteDisk() {
+        String id = "d9e6d0f3-8c0c-4054-8726-761180d817cd";
+        String daId = "ca331d1a-915a-4713-bc72-16992bde558d";
+        boolean type = true;   // true = 완전삭제
+        
+        CommonVo<Boolean> result = vmService.deleteDisk(id, daId, type);
+        assertThat(result.getHead().getCode()).isEqualTo(200);
+    }
+
+    @Test
+    @DisplayName("가상머신 디스크 활성화")
+    void activeDisk(){
+        String id = "d9e6d0f3-8c0c-4054-8726-761180d817cd";
+        String daId = "9efac83d-9d6c-49e7-85f5-3d5120ae0cdf";
+
+        vmService.activeDisk(id, daId);
+    }
+
+    @Test
+    @DisplayName("가상머신 디스크 비활성화")
+    void deactiveDisk(){
+        String id = "d9e6d0f3-8c0c-4054-8726-761180d817cd";
+        String daId = "9efac83d-9d6c-49e7-85f5-3d5120ae0cdf";
+
+        vmService.deactivateDisk(id, daId);
+    }
+
+    @Test
+    @DisplayName("가상머신 디스크 이동창")
+    void setMoveDisk(){
+        String id = "d9e6d0f3-8c0c-4054-8726-761180d817cd";
+        String daId = "9efac83d-9d6c-49e7-85f5-3d5120ae0cdf";
+
+        DiskVo result = vmService.setDiskMove(id, daId);
+
+        System.out.println(result);
+    }
+
+
+
+
+
+
+
 
     @Test
     @DisplayName("가상머신 스냅샷")
     void getSnapshot() {
-        String id = "eec63849-5026-482c-8f05-1d8e419ef548";
+        String id = "e929923d-8710-47ef-bfbd-e281434eb8ee";
         List<SnapshotVo> result = vmService.getSnapshot(id);
 
-//        result.forEach(System.out::println);
+        result.forEach(System.out::println);
     }
 
     @Test

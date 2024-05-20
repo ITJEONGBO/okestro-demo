@@ -2,6 +2,8 @@ package com.itinfo.itcloud.service;
 
 import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.create.VDiskImageVo;
+import com.itinfo.itcloud.model.create.VDiskLunVo;
 import com.itinfo.itcloud.model.create.VmCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
@@ -23,7 +25,7 @@ public interface ItVmService {
     CommonVo<Boolean> addVm(VmCreateVo vmCreateVo);   // 생성
     VmCreateVo setEditVm(String id);      // 편집 창
     CommonVo<Boolean> editVm(String id, VmCreateVo vmCreateVo);     // 편집
-    CommonVo<Boolean> deleteVm(String id);            // 삭제
+    CommonVo<Boolean> deleteVm(String id, boolean disk);            // 삭제
 
 
     List<VnicProfileVo> setVnic(String clusterId);  // nic 연결시 필요한 리스트
@@ -56,6 +58,20 @@ public interface ItVmService {
 
 
     List<VmDiskVo> getDisk(String id);  // 디스크
+    CommonVo<Boolean> addDiskImage(String id, VDiskImageVo image); // 이미지 생성, id=vmId
+    CommonVo<Boolean> editDiskImage(String id, VDiskImageVo image); // lun 수정
+    CommonVo<Boolean> addDiskLun(String id, VDiskLunVo lun); // lun 생성, id=vmId
+//    CommonVo<Boolean> connectDisk(String id);     // 디스크 연결
+    CommonVo<Boolean> editDiskLun(String id, VDiskLunVo lun);       // lun 수정
+    CommonVo<Boolean> deleteDisk(String id, String daId, boolean type); // 디스크 삭제
+
+    CommonVo<Boolean> activeDisk(String id, String daId);        // 디스크 활성화
+    CommonVo<Boolean> deactivateDisk(String id, String daId);     // 디스크 비활성화
+    DiskVo setDiskMove(String id, String daId);             // 디스크 이동창
+    CommonVo<Boolean> moveDisk(String id, String daId);     // 디스크 스토리지 이동
+
+
+
     List<SnapshotVo> getSnapshot(String id);    // 스냅샷
     List<ApplicationVo> getApplication(String id);  // 어플리케이션
     List<AffinityGroupVo> getAffinitygroup(String id);  // 선호도 그룹

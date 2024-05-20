@@ -22,5 +22,7 @@ public class ImageCreateVo {
     private boolean share;  // 공유가능
     private boolean backup;  // 증분 백업 사용
 
+    private boolean active; // vm 디스크 활성화
+
     private String hostId;
 }

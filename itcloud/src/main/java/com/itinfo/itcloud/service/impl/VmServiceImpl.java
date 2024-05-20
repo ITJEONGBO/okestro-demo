@@ -4,15 +4,14 @@ import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.OsVo;
 import com.itinfo.itcloud.model.TypeExtKt;
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.create.VDiskImageVo;
+import com.itinfo.itcloud.model.create.VDiskLunVo;
 import com.itinfo.itcloud.model.create.VDiskVo;
 import com.itinfo.itcloud.model.create.VmCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkFilterParameterVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
-import com.itinfo.itcloud.model.storage.DiskProfileVo;
-import com.itinfo.itcloud.model.storage.DiskVo;
-import com.itinfo.itcloud.model.storage.DomainVo;
-import com.itinfo.itcloud.model.storage.VmDiskVo;
+import com.itinfo.itcloud.model.storage.*;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItVmService;
 import lombok.extern.slf4j.Slf4j;
@@ -488,7 +487,7 @@ public class VmServiceImpl implements ItVmService {
     }
 
 
-
+    // TODO:HELP -> 가상머신-생성-디스크생성 / 가상머신-디스크-생성
     // vm 생성 - 인스턴스 이미지 [ 연결 / 생성 ]
     // 근데 디스크 여러개 붙일수 있음
     private CommonVo<Boolean> addVmDisk(SystemService system, Vm vm, List<VDiskVo> vDiskVoList) {
@@ -621,18 +620,28 @@ public class VmServiceImpl implements ItVmService {
 
     // 가상머신 삭제
     @Override
-    public CommonVo<Boolean> deleteVm(String id) {
+    public CommonVo<Boolean> deleteVm(String id, boolean disk) {
         SystemService system = admin.getConnection().systemService();
         VmService vmService = system.vmsService().vmService(id);
+        List<DiskAttachment> daList = system.vmsService().vmService(id).diskAttachmentsService().list().send().attachments();
+
         boolean delete = system.vmsService().vmService(id).get().send().vm().deleteProtected();
 
         try {
+            // 가상머신 삭제방지 여부
             if (!delete) {
-                // 가상머신 삭제방지 여부
-
-                // 디스크 삭제 여부
-
-
+//                if(disk){   // 디스크 삭제 여부
+//
+//                    daList.stream()
+//                            .map(da -> da.id())
+//                            .collect(Collectors.toList());
+//
+//                }else {
+//
+//                }
+                // 가상머신 삭제
+                // vm 삭제 -> 디스크 삭제
+                // 디스크 삭제 -> 가상머신 삭제
                 vmService.remove().detachOnly(true ).send();
                 log.info("가상머신 삭제 성공");
                 return CommonVo.successResponse();
@@ -641,8 +650,8 @@ public class VmServiceImpl implements ItVmService {
                 return CommonVo.failResponse("삭제방지 모드를 해제");
             }
         } catch (Exception e) {
-            log.error(e.getMessage());
             e.printStackTrace();
+            log.error("가상머신 삭제 실패 {}", e.getMessage());
             return CommonVo.failResponse("가상머신 삭제 실패");
         }
     }
@@ -656,6 +665,10 @@ public class VmServiceImpl implements ItVmService {
         return vm.status();
     }
 
+
+
+    // region: Action
+
     // 가상머신 실행
     @Override
     public CommonVo<Boolean> startVm(String id) {
@@ -665,6 +678,7 @@ public class VmServiceImpl implements ItVmService {
 
         try {
             // cloudinit 초기실행 여부에 따라 다름
+            // TODO:HELP  https://ovirt.github.io/ovirt-engine-api-model/master/#searching
             if (vm.initializationPresent()) {
                 vmService.start().useCloudInit(true).send();
                 log.info("가상머신 cloudinit 시작");
@@ -687,8 +701,10 @@ public class VmServiceImpl implements ItVmService {
     public CommonVo<Boolean> pauseVm(String id) {
         SystemService system = admin.getConnection().systemService();
         VmService vmService = system.vmsService().vmService(id);
+        Vm vm = system.vmsService().vmService(id).get().send().vm();
 
         try {
+
             vmService.suspend().send();
             
             log.info("가상머신 일시정지");
@@ -773,6 +789,10 @@ public class VmServiceImpl implements ItVmService {
             return CommonVo.failResponse("");
         }
     }
+
+
+    // endregion
+
 
 
     @Override
@@ -1134,6 +1154,245 @@ public class VmServiceImpl implements ItVmService {
                 .collect(Collectors.toList());
     }
 
+    // 디스크 생성
+    @Override
+    public CommonVo<Boolean> addDiskImage(String id, VDiskImageVo image) {
+        SystemService system = admin.getConnection().systemService();
+        DisksService disksService = system.disksService();
+        DiskAttachmentsService dasService = system.vmsService().vmService(id).diskAttachmentsService();
+
+        // 이미 부팅 가능한 디스크가 있는지 확인
+        boolean bootableDiskExists = dasService.list().send().attachments().stream().anyMatch(DiskAttachment::bootable);
+
+        try{
+//            if(!bootableDiskExists && image.isBootable()) {
+                Disk disk = disksService.add()
+                        .disk(
+                                new DiskBuilder()
+                                        .provisionedSize(BigInteger.valueOf(image.getSize()).multiply(BigInteger.valueOf(1024).pow(3))) // 값 받은 것을 byte로 변환하여 준다
+                                        .alias(image.getAlias())
+                                        .description(image.getDescription())
+                                        .storageDomains(new StorageDomain[]{new StorageDomainBuilder().id(image.getStorageDomainId()).build()})
+                                        .sparse(image.isAllocationPolicy()) // 할당정책: 씬 true
+                                        .diskProfile(new DiskProfileBuilder().id(image.getDiskProfile()).build()) // 없어도 상관없음
+                                        .wipeAfterDelete(image.isWipeAfterDelete()) // 삭제후 초기화
+                                        .shareable(image.isShareable())     // 공유 가능 (공유가능 o 이라면 증분백업 안됨 FRONT에서 막기?)
+                                        .backup(image.isBackup() ? DiskBackup.INCREMENTAL : DiskBackup.NONE)    // 증분 백업 사용(기본이 true)
+                                        .format(image.isBackup() ? DiskFormat.COW : DiskFormat.RAW) // 백업 안하면 RAW
+                                        .build()
+                        )
+                        .send().disk();
+
+                // 목표: disk 상태가 LOCK임으로, OK가 될 때까지 상태확인
+                int retry = 0;
+                Disk dTmp = disksService.diskService(disk.id()).get().send().disk();
+                while (dTmp.statusPresent() && dTmp.status() == DiskStatus.LOCKED && retry <= 20) {
+                    Thread.sleep(1000L);
+                    log.debug("retry: {}, disk: {}, {}", retry, dTmp.name(), dTmp.status());
+                    dTmp = disksService.diskService(disk.id()).get().send().disk();
+                    retry += 1;
+                }
+
+                if (dTmp.status() != DiskStatus.OK) {
+                    return CommonVo.failResponse("disk가 잠겨있음");
+                }
+
+                // 추가된 디스크를 vm에 붙임
+                dasService.add()
+                        .attachment(
+                                new DiskAttachmentBuilder()
+                                        .disk(disk)
+                                        .interface_(image.getInterfaces())
+                                        .bootable(image.isBootable()/*bootable*/)
+                                        .active(image.isActive())
+                                        .readOnly(image.isReadOnly())
+                        )
+                        .send().attachment();
+
+                log.info("성공: 디스크 이미지 {} 생성", image.getAlias());
+                return CommonVo.createResponse();
+//            }else{
+//                log.error("실패: 부팅가능한 디스크가 이미 존재");
+//                return CommonVo.failResponse("부팅가능한 디스크가 이미 존재");
+//            }
+        }catch (Exception e){
+            log.error("실패: 새 가상 디스크 (이미지) 생성");
+            return CommonVo.failResponse(e.getMessage());
+        }
+    }
+
+    @Override
+    public CommonVo<Boolean> editDiskImage(String id, VDiskImageVo image) {
+
+        return null;
+    }
+
+    @Override
+    public CommonVo<Boolean> addDiskLun(String id, VDiskLunVo lun) {
+        return null;
+    }
+
+    @Override
+    public CommonVo<Boolean> editDiskLun(String id, VDiskLunVo lun) {
+        return null;
+    }
+
+    @Override
+    public CommonVo<Boolean> deleteDisk(String id, String daId, boolean type) {
+        SystemService system = admin.getConnection().systemService();
+        DiskAttachment da = system.vmsService().vmService(id).diskAttachmentsService().attachmentService(daId).get().send().attachment();
+        Vm vm = system.vmsService().vmService(id).get().send().vm();
+
+        try{
+            // 가상머신이 연결되어잇는지, down 상태인지
+            if(vm.status() == VmStatus.DOWN) {
+                if(type) {   // 완전삭제
+                    DiskService diskService = system.disksService().diskService(da.disk().id());
+                    Disk disk = system.disksService().diskService(da.disk().id()).get().send().disk();
+                    diskService.remove().send();
+
+                    do {
+                        log.info("디스크 완전 삭제");
+                    } while (!disk.idPresent());
+
+                    log.info("성공: 디스크 삭제");
+                    return CommonVo.successResponse();
+                }else {
+                    DiskAttachmentService daService = system.vmsService().vmService(id).diskAttachmentsService().attachmentService(daId);
+                    daService.remove().send();
+
+                    do {
+                        log.info("디스크 삭제");
+                    } while (da.disk().id().isEmpty());
+
+                    log.info("디스크 삭제");
+                    return CommonVo.successResponse();
+                }
+            }else{
+                log.error("실패: 가상머신이 Down이 아님");
+                return CommonVo.failResponse("가상머신이 Down이 아님");
+            }
+        }catch (Exception e){
+            log.error("실패: 새 가상 디스크 (이미지) 수정");
+            e.printStackTrace();
+            return CommonVo.failResponse(e.getMessage());
+        }
+    }
+
+
+    // 가상머신 - 디스크 활성화
+    @Override
+    public CommonVo<Boolean> activeDisk(String id, String daId) {
+        SystemService system = admin.getConnection().systemService();
+        DiskAttachmentService daService = system.vmsService().vmService(id).diskAttachmentsService().attachmentService(daId);
+        DiskAttachment da = system.vmsService().vmService(id).diskAttachmentsService().attachmentService(daId).get().send().attachment();
+
+        try {
+            if (!da.active()) {
+                daService.update().diskAttachment(new DiskAttachmentBuilder().active(true)).send();
+
+                return CommonVo.successResponse();
+            } else {
+                // TODO:HELP boolean type으로 활성화/비활성화?
+                return CommonVo.failResponse("이미 활성화가 되어있음");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error("실패: 디스크 활성화");
+            return CommonVo.failResponse(e.getMessage());
+        }
+    }
+
+    @Override
+    public CommonVo<Boolean> deactivateDisk(String id, String daId) {
+        SystemService system = admin.getConnection().systemService();
+        DiskAttachmentService daService = system.vmsService().vmService(id).diskAttachmentsService().attachmentService(daId);
+        DiskAttachment da = system.vmsService().vmService(id).diskAttachmentsService().attachmentService(daId).get().send().attachment();
+
+        try {
+            if (da.active()) {
+                daService.update().diskAttachment(new DiskAttachmentBuilder().active(false)).send();
+
+                return CommonVo.successResponse();
+            } else {
+                // TODO:HELP boolean type으로 활성화/비활성화?
+                return CommonVo.failResponse("이미 비활성화가 되어있음");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error("실패: 디스크 비활성화");
+            return CommonVo.failResponse(e.getMessage());
+        }
+    }
+
+    // 가상머신 - 디스크 이동창
+    @Override
+    public DiskVo setDiskMove(String id, String daId) {
+        SystemService system = admin.getConnection().systemService();
+        String dcId = system.clustersService().clusterService(system.vmsService().vmService(id).get().send().vm().cluster().id()).get().send().cluster().dataCenter().id();
+        String diskId = system.vmsService().vmService(id).diskAttachmentsService().attachmentService(daId).get().send().attachment().disk().id();
+        List<StorageDomain> storageDomainList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().list().send().storageDomains();
+        Disk disk = system.disksService().diskService(diskId).get().send().disk();
+
+        return DiskVo.builder()
+                .id(disk.id())
+                .alias(disk.alias())
+                .virtualSize(disk.provisionedSize().divide(BigInteger.valueOf(1024).pow(3)))
+                .domainVoList(
+                        storageDomainList.stream()
+                                .filter(storageDomain -> !storageDomain.id().equals(disk.storageDomains().get(0).id())) // 자신의 도메인이 아닐경우
+                                .map(storageDomain ->
+                                        DomainVo.builder()
+                                                .id(storageDomain.id())
+                                                .name(storageDomain.name())
+                                                .build()
+                                )
+                                .collect(Collectors.toList())
+                )
+                .build();
+    }
+
+    @Override
+    public CommonVo<Boolean> moveDisk(String id, String daId){
+        SystemService system = admin.getConnection().systemService();
+        DiskAttachment da = system.vmsService().vmService(id).diskAttachmentsService().attachmentService(daId).get().send().attachment();
+        DiskService diskService = system.disksService().diskService(da.disk().id());
+//        List<StorageDomain> storageDomainList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().list().send().storageDomains();
+
+
+        try{
+            diskService.move()
+//                    .storageDomain()
+//                    .diskProfile()
+                    .send();
+
+            return CommonVo.successResponse();
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error("실패: 디스크 이동");
+            return CommonVo.failResponse(e.getMessage());
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // TODO
     // 스냅샷
     @Override
@@ -1142,8 +1401,6 @@ public class VmServiceImpl implements ItVmService {
         Vm vm = system.vmsService().vmService(id).get().send().vm();
         List<Snapshot> snapList = system.vmsService().vmService(id).snapshotsService().list().send().snapshots();
         List<DiskAttachment> daList = system.vmsService().vmService(id).diskAttachmentsService().list().send().attachments();
-
-        daList.stream().map(diskAttachment -> diskAttachment.disk().id()).forEach(System.out::println);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
@@ -1158,7 +1415,7 @@ public class VmServiceImpl implements ItVmService {
                                 .description(snapshot.description())
                                 .date(sdf.format(snapshot.date().getTime()))
                                 .status(snapshot.snapshotStatus().value())
-                                .persistMemorystate(snapshot.persistMemorystate())
+                                .persistMemorystate(snapshot.persistMemorystate()) // 스냅샷에 메모리가 포함되어있다
                                 .setMemory(snapshot.vm().memory())
                                 .guaranteedMemory(snapshot.vm().memoryPolicy().guaranteed())
                                 .cpuCore(vm.cpu().topology().coresAsInteger() * vm.cpu().topology().socketsAsInteger() * vm.cpu().topology().threadsAsInteger())
@@ -1191,7 +1448,6 @@ public class VmServiceImpl implements ItVmService {
 //                                )
                                 .build();
                     } else {  // 스냅샷 기본
-
                         List<Nic> nicList = system.vmsService().vmService(id).nicsService().list().send().nics();
 
                         return SnapshotVo.builder()

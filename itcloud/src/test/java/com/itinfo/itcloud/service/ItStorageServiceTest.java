@@ -1,12 +1,15 @@
 package com.itinfo.itcloud.service;
 
 import com.itinfo.itcloud.model.error.CommonVo;
+import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.model.storage.ImageCreateVo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -142,6 +145,9 @@ class ItStorageServiceTest {
 
     @Test
     void getDomainList() {
+        String dcId = "9c72ff12-a5f3-11ee-941d-00163e39cb43";
+        List<DomainVo> result = storageService.getDomainList(dcId);
+        result.forEach(System.out::println);
     }
 
     @Test

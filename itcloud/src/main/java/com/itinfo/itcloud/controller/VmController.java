@@ -78,8 +78,10 @@ public class VmController {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public CommonVo<Boolean> deleteVm(@PathVariable String id) {
+		boolean type = false;
 		log.info("--- 가상머신 삭제");
-		return vmService.deleteVm(id);
+
+		return vmService.deleteVm(id, type);
 	}
 
 

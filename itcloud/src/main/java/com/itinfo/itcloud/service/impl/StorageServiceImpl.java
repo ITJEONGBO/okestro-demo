@@ -311,8 +311,8 @@ public class StorageServiceImpl implements ItStorageService {
     @Override
     public DiskVo setDiskMove(String dcId, String id) {
         SystemService system = admin.getConnection().systemService();
-        Disk disk = system.disksService().diskService(id).get().send().disk();
         List<StorageDomain> storageDomainList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().list().send().storageDomains();
+        Disk disk = system.disksService().diskService(id).get().send().disk();
 
         return DiskVo.builder()
                 .id(disk.id())

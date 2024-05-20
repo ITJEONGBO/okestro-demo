@@ -19,8 +19,10 @@ public class VDiskImageVo {
     private boolean shareable;          // 공유가능 disk
     private boolean backup;             // 증분 백업 사용 disk
 
+
     // DiskAttachment
     private DiskInterface interfaces;   // 인터페이스
+    private boolean active;             // 활성화
     private boolean bootable;           // 부팅가능
     private boolean readOnly;           // 읽기전용
     private boolean passDiscard;        // 취소 활성화
