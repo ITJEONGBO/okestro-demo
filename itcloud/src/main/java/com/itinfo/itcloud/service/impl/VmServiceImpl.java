@@ -613,6 +613,8 @@ public class VmServiceImpl implements ItVmService {
     @Override
     public CommonVo<Boolean> editVm(String id, VmCreateVo vmCreateVo) {
         SystemService system = admin.getConnection().systemService();
+        VmService vmService = system.vmsService().vmService(id);
+
 
 
         return null;
@@ -630,20 +632,32 @@ public class VmServiceImpl implements ItVmService {
         try {
             // 가상머신 삭제방지 여부
             if (!delete) {
-//                if(disk){   // 디스크 삭제 여부
+                if(disk){   // 디스크 삭제 여부
+                    List<Disk> diskList = daList.stream().map(DiskAttachment::disk).collect(Collectors.toList());
+
+                    for (Disk disk1 : diskList) {
+                        DiskService diskService = system.disksService().diskService(disk1.id());
+                        diskService.remove().send();
+
+//                        int retry = 0;
+//                        Disk dTmp = diskService.get().send().disk();
+//                        while(dTmp.statusPresent() && retry <= 20) {
+//                            Thread.sleep(1000L);
+//                            log.debug("retry: {}  disk: {}, {}", retry, dTmp.name(), dTmp.status());
+//                            retry++;
+//                        }
 //
-//                    daList.stream()
-//                            .map(da -> da.id())
-//                            .collect(Collectors.toList());
-//
-//                }else {
-//
-//                }
-                // 가상머신 삭제
-                // vm 삭제 -> 디스크 삭제
-                // 디스크 삭제 -> 가상머신 삭제
-                vmService.remove().detachOnly(true ).send();
-                log.info("가상머신 삭제 성공");
+//                        if (dTmp.statusPresent()) {
+//                            return CommonVo.failResponse("디스크가 있다면");
+//                        }
+                    }
+
+                    vmService.remove().detachOnly(true ).send();
+                    log.info("가상머신&디스크 삭제 성공");
+                }else {
+                    vmService.remove().detachOnly(true ).send();
+                    log.info("가상머신 삭제 성공");
+                }
                 return CommonVo.successResponse();
             } else {
                 log.error("삭제방지 모드를 해제하세요");

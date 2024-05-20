@@ -228,8 +228,8 @@ class ItVmServiceTest {
     @DisplayName("가상머신 삭제")
     void deleteVm() {
         // 삭제방지 모드 해제 란을 생성해야할듯
-        String id = "ce196547-342c-4622-b099-2677e2b80597";
-        boolean disk = false;
+        String id = "e34b7ada-8d03-48f8-b123-3d2872addff8";
+        boolean disk = true;
 
         CommonVo<Boolean> result = vmService.deleteVm(id, disk);
 

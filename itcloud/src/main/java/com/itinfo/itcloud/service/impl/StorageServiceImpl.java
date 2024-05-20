@@ -289,7 +289,6 @@ public class StorageServiceImpl implements ItStorageService {
 
         try{
             // 가상머신이 연결되어잇는지, down 상태인지
-
             diskService.remove().send();
 
             do{
@@ -299,8 +298,8 @@ public class StorageServiceImpl implements ItStorageService {
             log.info("성공: 디스크 삭제");
             return CommonVo.successResponse();
         }catch (Exception e){
-            log.error("실패: 새 가상 디스크 (이미지) 수정");
             e.printStackTrace();
+            log.error("실패: 가상 디스크 삭제");
             return CommonVo.failResponse(e.getMessage());
         }
     }
