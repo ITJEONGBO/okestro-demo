@@ -108,11 +108,63 @@ class ItHostServiceTest {
     }
 
     @Test
+    @DisplayName("호스트 가상머신 목록")
     void getVm() {
         List<VmVo> vmVoList = hostService.getVm(defaultId);
 
         vmVoList.forEach(System.out::println);
     }
+
+    @Test
+    @DisplayName("호스트 가상머신 실행")
+    void startVm() {
+        String vmId = "eec63849-5026-482c-8f05-1d8e419ef548";
+        CommonVo<Boolean> result = hostService.startVm(vmId);
+
+        assertThat(result.getHead().getCode()).isEqualTo(200);
+    }
+
+    @Test
+    @DisplayName("호스트 가상머신 일시정지")
+    void pauseVm() {
+        String vmId = "eec63849-5026-482c-8f05-1d8e419ef548";
+        CommonVo<Boolean> result = hostService.pauseVm(vmId);
+
+        assertThat(result.getHead().getCode()).isEqualTo(200);
+    }
+
+    @Test
+    @DisplayName("호스트 가상머신 종료")
+    void shutdownVm() {
+        String vmId = "eec63849-5026-482c-8f05-1d8e419ef548";
+        CommonVo<Boolean> result = hostService.stopVm(vmId);
+
+        assertThat(result.getHead().getCode()).isEqualTo(200);
+    }
+
+    @Test
+    @DisplayName("호스트 가상머신 전원끔")
+    void stopVm() {
+        String vmId = "eec63849-5026-482c-8f05-1d8e419ef548";
+        CommonVo<Boolean> result = hostService.shutdownVm(vmId);
+
+        assertThat(result.getHead().getCode()).isEqualTo(200);
+    }
+
+    @Test
+    @DisplayName("호스트 가상머신 마이그레이션")
+    void migrationVm() {
+
+    }
+
+    @Test
+    @DisplayName("호스트 가상머신 마이그레이션 취소")
+    void migrationCancelVm() {
+
+    }
+
+
+
 
     @Test
     void getNic() {

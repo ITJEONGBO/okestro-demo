@@ -33,7 +33,12 @@ public interface ItHostService {
     HostVo getInfo(String id);  // 일반
 
     List<VmVo> getVm(String id);    // 가상머신
-
+    CommonVo<Boolean> startVm(String vmId);     // 실행
+    CommonVo<Boolean> pauseVm(String vmId);     // 일시중지
+    CommonVo<Boolean> stopVm(String vmId);      // 종료
+    CommonVo<Boolean> shutdownVm(String vmId);  // 전원끔
+    CommonVo<Boolean> migrationVm(String vmId);     // 마이그레이션
+    CommonVo<Boolean> migrationCancelVm(String vmId);     // 마이그레이션 취소
 
 
     List<NicVo> getNic(String id);  // 네트워크 인터페이스

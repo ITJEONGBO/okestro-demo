@@ -8,10 +8,7 @@ import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItHostService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
-import org.ovirt.engine.sdk4.services.AffinityLabelsService;
-import org.ovirt.engine.sdk4.services.HostService;
-import org.ovirt.engine.sdk4.services.HostsService;
-import org.ovirt.engine.sdk4.services.SystemService;
+import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -412,10 +409,98 @@ public class HostServiceImpl implements ItHostService {
                             .upTime(commonService.getVmUptime(system, vm.id()))
                             .ipv4(commonService.getVmIp(system, vm.id(), "v4"))
                             .ipv6(commonService.getVmIp(system, vm.id(), "v6"))
+//                            .placement(vm.placementPolicy().hostsPresent()) // 호스트 고정여부
+                                // vm.placementPolicy().hosts() // 고정된 호스트 id가 나옴
                         .build()
                 )
                 .collect(Collectors.toList());
     }
+
+    // 가상머신 실행
+    @Override
+    public CommonVo<Boolean> startVm(String id) {
+        SystemService system = admin.getConnection().systemService();
+        VmService vmService = system.vmsService().vmService(id);
+        Vm vm = system.vmsService().vmService(id).get().send().vm();
+
+        try {
+            vmService.start().useCloudInit(vm.initializationPresent()).send();
+
+            log.info(vm.initializationPresent() ? "가상머신 cloudinit 시작" : "가상머신 시작");
+            return CommonVo.successResponse();
+        } catch (Exception e) {
+            log.error("가상머신 시작 실패 : {}", e.getMessage());
+            return CommonVo.failResponse("");
+        }
+    }
+
+    // 가상머신 일시정지
+    @Override
+    public CommonVo<Boolean> pauseVm(String id) {
+        SystemService system = admin.getConnection().systemService();
+
+        try {
+            system.vmsService().vmService(id).suspend().send();
+
+            log.info("가상머신 일시정지");
+            return CommonVo.successResponse();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return CommonVo.failResponse("");
+        }
+    }
+
+    // 가상머신 전원끔
+    @Override
+    public CommonVo<Boolean> stopVm(String id) {
+        SystemService system = admin.getConnection().systemService();
+
+        try {
+            system.vmsService().vmService(id).stop().send();
+
+            log.info("가상머신 전원끄기");
+            return CommonVo.successResponse();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return CommonVo.failResponse("");
+        }
+    }
+
+
+    // 가상머신 종료
+    @Override
+    public CommonVo<Boolean> shutdownVm(String id) {
+        SystemService system = admin.getConnection().systemService();
+
+        try {
+            system.vmsService().vmService(id).shutdown().send();
+
+            log.info("가상머신 종료");
+            return CommonVo.successResponse();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return CommonVo.failResponse("");
+        }
+    }
+
+    // 가상머신 마이그레이션
+    @Override
+    public CommonVo<Boolean> migrationVm(String vmId) {
+        return null;
+    }
+
+
+    // 가상머신 마이그레이션 취소
+    @Override
+    public CommonVo<Boolean> migrationCancelVm(String vmId) {
+        return null;
+    }
+
+
+
+
+
 
 
     @Override

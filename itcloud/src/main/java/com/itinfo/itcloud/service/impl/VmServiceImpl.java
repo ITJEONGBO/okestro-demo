@@ -169,8 +169,6 @@ public class VmServiceImpl implements ItVmService {
                 .collect(Collectors.toList());
     }
 
-//    public List<> addDiskImage
-
 
     // 가상머신 생성
     @Override
@@ -662,20 +660,11 @@ public class VmServiceImpl implements ItVmService {
         Vm vm = system.vmsService().vmService(id).get().send().vm();
 
         try {
-            // cloudinit 초기실행 여부에 따라 다름
-            // TODO:HELP  https://ovirt.github.io/ovirt-engine-api-model/master/#searching
-            if (vm.initializationPresent()) {
-                vmService.start().useCloudInit(true).send();
-                log.info("가상머신 cloudinit 시작");
-                return CommonVo.successResponse();
-            } else {
-                vmService.start().send();
-                
-                log.info("가상머신 시작");
-                return CommonVo.successResponse();
-            }
+            vmService.start().useCloudInit(vm.initializationPresent()).send();
+
+            log.info(vm.initializationPresent() ? "가상머신 cloudinit 시작" : "가상머신 시작");
+            return CommonVo.successResponse();
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("가상머신 시작 실패 : {}", e.getMessage());
             return CommonVo.failResponse("");
         }
@@ -685,17 +674,13 @@ public class VmServiceImpl implements ItVmService {
     @Override
     public CommonVo<Boolean> pauseVm(String id) {
         SystemService system = admin.getConnection().systemService();
-        VmService vmService = system.vmsService().vmService(id);
-        Vm vm = system.vmsService().vmService(id).get().send().vm();
 
         try {
+            system.vmsService().vmService(id).suspend().send();
 
-            vmService.suspend().send();
-            
             log.info("가상머신 일시정지");
             return CommonVo.successResponse();
         } catch (Exception e) {
-            e.printStackTrace();
             log.error(e.getMessage());
             return CommonVo.failResponse("");
         }
@@ -705,15 +690,13 @@ public class VmServiceImpl implements ItVmService {
     @Override
     public CommonVo<Boolean> stopVm(String id) {
         SystemService system = admin.getConnection().systemService();
-        VmService vmService = system.vmsService().vmService(id);
 
         try {
-            vmService.stop().send();
+            system.vmsService().vmService(id).stop().send();
             
             log.info("가상머신 전원끄기");
             return CommonVo.successResponse();
         } catch (Exception e) {
-            e.printStackTrace();
             log.error(e.getMessage());
             return CommonVo.failResponse("");
         }
@@ -724,10 +707,9 @@ public class VmServiceImpl implements ItVmService {
     @Override
     public CommonVo<Boolean> shutdownVm(String id) {
         SystemService system = admin.getConnection().systemService();
-        VmService vmService = system.vmsService().vmService(id);
 
         try {
-            vmService.shutdown().send();
+            system.vmsService().vmService(id).shutdown().send();
             
             log.info("가상머신 종료");
             return CommonVo.successResponse();
@@ -743,10 +725,9 @@ public class VmServiceImpl implements ItVmService {
     @Override
     public CommonVo<Boolean> rebootVm(String id) {
         SystemService system = admin.getConnection().systemService();
-        VmService vmService = system.vmsService().vmService(id);
 
         try {
-            vmService.reboot().send();
+            system.vmsService().vmService(id).reboot().send();
 
             log.info("가상머신 재부팅");
             return CommonVo.successResponse();
@@ -761,12 +742,47 @@ public class VmServiceImpl implements ItVmService {
     @Override
     public CommonVo<Boolean> resetVm(String id) {
         SystemService system = admin.getConnection().systemService();
-        VmService vmService = system.vmsService().vmService(id);
 
         try {
-            vmService.reset().send();
+            system.vmsService().vmService(id).reset().send();
 
             log.info("가상머신 재설정");
+            return CommonVo.successResponse();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return CommonVo.failResponse("");
+        }
+    }
+
+    // 가상머신 마이그레이션
+    @Override
+    public CommonVo<Boolean> migrateVm(String id, String hostId) {
+        SystemService system = admin.getConnection().systemService();
+
+        try {
+            system.vmsService().vmService(id)
+                    .migrate().host(new HostBuilder().id(hostId)) // TODO
+                    .send();
+
+            log.info("가상머신 마이그레이션");
+            return CommonVo.successResponse();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return CommonVo.failResponse("");
+        }
+    }
+
+    // 가상머신 마이그레이션 취소
+    @Override
+    public CommonVo<Boolean> migrateCancelVm(String id) {
+        SystemService system = admin.getConnection().systemService();
+
+        try {
+            system.vmsService().vmService(id).cancelMigration().send();
+
+            log.info("가상머신 마이그레이션 취소");
             return CommonVo.successResponse();
         } catch (Exception e) {
             e.printStackTrace();

@@ -26,6 +26,8 @@ public interface ItVmService {
     VmCreateVo setEditVm(String id);      // 편집 창
     CommonVo<Boolean> editVm(String id, VmCreateVo vmCreateVo);     // 편집
     CommonVo<Boolean> deleteVm(String id, boolean disk);            // 삭제
+    CommonVo<Boolean> migrateVm(String id, String hostId);         // 마이그레이션
+    CommonVo<Boolean> migrateCancelVm(String id);   // 마이그레이션 취소
 
 
     List<VnicProfileVo> setVnic(String clusterId);  // nic 연결시 필요한 리스트
