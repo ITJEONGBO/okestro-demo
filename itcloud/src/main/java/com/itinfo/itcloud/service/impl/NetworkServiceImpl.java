@@ -1,6 +1,5 @@
 package com.itinfo.itcloud.service.impl;
 
-import com.google.gson.Gson;
 import com.itinfo.itcloud.model.TypeExtKt;
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
@@ -12,7 +11,6 @@ import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItNetworkService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
-import org.ovirt.engine.sdk4.internal.containers.DnsResolverConfigurationContainer;
 import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,35 +109,25 @@ public class NetworkServiceImpl implements ItNetworkService {
         NetworksService networksService = system.networksService();
         OpenStackNetworkProvider openStackNetworkProvider = system.openstackNetworkProvidersService().list().send().providers().get(0);
 
-        Gson gson = new Gson();
-
         // TODO
-        //  외부 공급자 설정할 때 물리적 네트워크에 연결하는 거 구현해야함,
-        //  외부 공급자 설정 시 클러스터에서 모두 필요 항목은 사라져야됨 (프론트에서 아예 설정이 안되게?)
-        //  qos는 뭔지 모르겟음
+        //  외부 공급자 설정할 때 물리적 네트워크에 연결하는 거 구현해야함, & 외부 공급자 설정 시 클러스터에서 모두필요 항목은 사라져야됨 (프론트)
         try {
-            NetworkBuilder networkBuilder = new NetworkBuilder();
-            networkBuilder
-                    .dataCenter(new DataCenterBuilder().id(ncVo.getDatacenterId()).build())
-                    .name(ncVo.getName())
-                    .description(ncVo.getDescription())
-                    .comment(ncVo.getComment())
-                    .vlan(ncVo.getVlan() != null ? new VlanBuilder().id(ncVo.getVlan()) : null)
-                    .usages(ncVo.getUsageVm() ? NetworkUsage.VM : NetworkUsage.DEFAULT_ROUTE)
-                    .portIsolation(ncVo.getPortIsolation())
-                    .mtu(ncVo.getMtu())
-                    .stp(ncVo.getStp()) // ?
-                    .externalProvider(ncVo.getExternalProvider() ?  openStackNetworkProvider : null);
-
-            System.out.println(gson.toJson(networkBuilder));
-
-            Network network = networksService.add().network(networkBuilder).send().network();
-
-            DnsResolverConfiguration dns = new DnsResolverConfigurationBuilder().nameServers().nameServers("128.0.0.2").build();
-            DnsResolverConfigurationContainer dnsContainer = new DnsResolverConfigurationContainer();
-            // TODO: DNS 정보 기입 시, 어떤 값을 넣어야 유효한지 확인 필요
-            // dnsContainer.nameServers().add()
-
+            Network network =
+                    networksService.add()
+                            .network(
+                                    new NetworkBuilder()
+                                            .dataCenter(new DataCenterBuilder().id(ncVo.getDatacenterId()).build())
+                                            .name(ncVo.getName())
+                                            .description(ncVo.getDescription())
+                                            .comment(ncVo.getComment())
+                                            .vlan(ncVo.getVlan() != null ? new VlanBuilder().id(ncVo.getVlan()) : null)
+                                            .usages(ncVo.getUsageVm() ? NetworkUsage.VM : NetworkUsage.DEFAULT_ROUTE)
+                                            .portIsolation(ncVo.getPortIsolation())
+                                            .mtu(ncVo.getMtu())
+                                            .stp(ncVo.getStp()) // ?
+                                            .externalProvider(ncVo.getExternalProvider() ?  openStackNetworkProvider : null)
+                            )
+                            .send().network();
 
             // TODO: vnic 기본생성 가능. 기본생성명 수정시 기본생성과 수정명 2개가 생김
 //            ncVo.getVnics().forEach(vnicProfileVo -> {
@@ -166,10 +154,10 @@ public class NetworkServiceImpl implements ItNetworkService {
             }
 
             log.info("network {} 추가 성공", network.name());
-            return CommonVo.successResponse();
+            return CommonVo.createResponse();
         }catch (Exception e){
-            log.error("error, ", e);
             e.printStackTrace();
+            log.error("error, ", e);
             return CommonVo.failResponse(e.getMessage());
         }
     }

@@ -2,9 +2,9 @@ package com.itinfo.itcloud.model.network;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.ToString;
 
-@Getter @Builder
+@Getter @Builder @ToString
 public class NetworkClusterVo {
     // cluster
     private String id;

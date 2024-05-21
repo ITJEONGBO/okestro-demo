@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,9 +41,6 @@ class ItNetworkServiceTest {
 
     @Test
     void addNetwork() {
-        List<NetworkClusterVo> networkClusterVoList = new ArrayList<>();
-        networkClusterVoList.add(NetworkClusterVo.builder().id("9c7452ea-a5f3-11ee-93d2-00163e39cb43").connected(true).required(true).build());
-
         NetworkCreateVo create =
                 NetworkCreateVo.builder()
                         .datacenterId("9c72ff12-a5f3-11ee-941d-00163e39cb43")
@@ -52,12 +49,20 @@ class ItNetworkServiceTest {
                         .comment("test")
                         .usageVm(true)
                         .externalProvider(false)
-                        .clusterVoList(networkClusterVoList)
+                        .clusterVoList(
+                                Arrays.asList(
+                                        NetworkClusterVo.builder()
+                                                .id("9c7452ea-a5f3-11ee-93d2-00163e39cb43")
+                                                .connected(true)
+                                                .required(true)
+                                                .build()
+                                )
+                        )
                         .build();
 
         CommonVo<Boolean> result = networkService.addNetwork(create);
 
-        assertThat(result.getHead().getCode()).isEqualTo(200);
+        assertThat(result.getHead().getCode()).isEqualTo(201);
 
     }
 

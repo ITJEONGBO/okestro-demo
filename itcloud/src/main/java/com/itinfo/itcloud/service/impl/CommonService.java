@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.service.impl;
 
+import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.computing.AffinityLabelVo;
 import com.itinfo.itcloud.model.computing.HostVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
@@ -124,11 +125,23 @@ public class CommonService {
      * @param clusterId 클러스터 아이디 비교
      * @return 호스트 리스트
      */
-    public List<HostVo> setHostList(List<Host> hostList, String clusterId){
+//    public List<HostVo> setHostList(List<Host> hostList, String clusterId){
+//        return hostList.stream()
+//                .filter(host -> host.cluster().id().equals(clusterId))
+//                .map(host ->
+//                        HostVo.builder()
+//                                .id(host.id())
+//                                .name(host.name())
+//                                .build()
+//                )
+//                .collect(Collectors.toList());
+//    }
+
+    public List<IdentifiedVo> setHostList(List<Host> hostList, String clusterId){
         return hostList.stream()
                 .filter(host -> host.cluster().id().equals(clusterId))
                 .map(host ->
-                        HostVo.builder()
+                        IdentifiedVo.builder()
                                 .id(host.id())
                                 .name(host.name())
                                 .build()
@@ -144,17 +157,45 @@ public class CommonService {
      * @param clusterId
      * @return 가상머신 리스트
      */
-    public List<VmVo> setVmList(List<Vm> vmList, String clusterId){
+//    public List<VmVo> setVmList(List<Vm> vmList, String clusterId){
+//        return vmList.stream()
+//                .filter(vm -> vm.cluster().id().equals(clusterId))
+//                .map(vm ->
+//                        VmVo.builder()
+//                                .id(vm.id())
+//                                .name(vm.name())
+//                                .build()
+//                )
+//                .collect(Collectors.toList());
+//    }
+
+    public List<IdentifiedVo> setVmList(List<Vm> vmList, String clusterId){
         return vmList.stream()
                 .filter(vm -> vm.cluster().id().equals(clusterId))
                 .map(vm ->
-                        VmVo.builder()
+                        IdentifiedVo.builder()
                                 .id(vm.id())
                                 .name(vm.name())
                                 .build()
                 )
                 .collect(Collectors.toList());
     }
+
+    public List<IdentifiedVo> setLabel(SystemService system) {
+        List<AffinityLabel> alList = system.affinityLabelsService().list().send().labels();
+
+        return alList.stream()
+                .map(affinityLabel ->
+                        IdentifiedVo.builder()
+                            .id(affinityLabel.id())
+                            .name(affinityLabel.name())
+                            .build()
+                )
+                .collect(Collectors.toList());
+    }
+
+
+
 
 
     /**

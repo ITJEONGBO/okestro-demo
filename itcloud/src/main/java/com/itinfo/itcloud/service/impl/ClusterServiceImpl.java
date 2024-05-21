@@ -5,7 +5,9 @@ import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.AffinityGroupCreateVo;
 import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
 import com.itinfo.itcloud.model.create.ClusterCreateVo;
+import com.itinfo.itcloud.model.create.NetworkCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
+import com.itinfo.itcloud.model.network.NetworkClusterVo;
 import com.itinfo.itcloud.model.network.NetworkUsageVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
@@ -327,6 +329,104 @@ public class ClusterServiceImpl implements ItClusterService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public CommonVo<Boolean> addNetwork(String id, NetworkCreateVo ncVo) {
+        SystemService system = admin.getConnection().systemService();
+        NetworksService networksService = system.networksService();
+        OpenStackNetworkProvider openStackNetworkProvider = system.openstackNetworkProvidersService().list().send().providers().get(0);
+        String dcId = system.clustersService().clusterService(id).get().send().cluster().dataCenter().id();
+
+        // TODO
+        //  외부 공급자 설정할 때 물리적 네트워크에 연결하는 거 구현해야함, & 외부 공급자 설정 시 클러스터에서 모두필요 항목은 사라져야됨 (프론트)
+        try {
+            Network network =
+                    networksService.add()
+                            .network(
+                                    new NetworkBuilder()
+                                            .dataCenter(new DataCenterBuilder().id(dcId).build())
+                                            .name(ncVo.getName())
+                                            .description(ncVo.getDescription())
+                                            .comment(ncVo.getComment())
+                                            .vlan(ncVo.getVlan() != null ? new VlanBuilder().id(ncVo.getVlan()) : null)
+                                            .usages(ncVo.getUsageVm() ? NetworkUsage.VM : NetworkUsage.DEFAULT_ROUTE)
+                                            .portIsolation(ncVo.getPortIsolation())
+                                            .mtu(ncVo.getMtu())
+                                            .stp(ncVo.getStp()) // ?
+                                            .externalProvider(ncVo.getExternalProvider() ?  openStackNetworkProvider : null)
+                            )
+                            .send().network();
+
+            // TODO: vnic 기본생성 가능. 기본생성명 수정시 기본생성과 수정명 2개가 생김
+//            ncVo.getVnics().forEach(vnicProfileVo -> {
+//                AssignedVnicProfilesService aVnicsService = system.networksService().networkService(network.id()).vnicProfilesService();
+//                aVnicsService.add().profile(new VnicProfileBuilder().name(vnicProfileVo.getName()).build()).send().profile();
+//            });
+
+            // 클러스터 모두연결이 선택되어야지만 모두 필요가 선택됨
+            ncVo.getClusterVoList().stream()
+                    .filter(NetworkClusterVo::isConnected) // 연결된 경우만 필터링
+                    .forEach(networkClusterVo -> {
+                        ClusterNetworksService clusterNetworksService = system.clustersService().clusterService(networkClusterVo.getId()).networksService();
+                        clusterNetworksService.add().network(
+                                new NetworkBuilder()
+                                        .id(network.id())
+                                        .required(networkClusterVo.isRequired())
+                        ).send().network();
+                    });
+
+            // 외부 공급자 처리시 레이블 생성 안됨
+            if (ncVo.getLabel() != null && !ncVo.getLabel().isEmpty()) {
+                NetworkLabelsService nlsService = system.networksService().networkService(network.id()).networkLabelsService();
+                nlsService.add().label(new NetworkLabelBuilder().id(ncVo.getLabel())).send();
+            }
+
+            log.info("network {} 추가 성공", network.name());
+            return CommonVo.createResponse();
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error("error, ", e);
+            return CommonVo.failResponse(e.getMessage());
+        }
+    }
+
+    // 네트워크 관리 창
+    @Override
+    public List<NetworkClusterVo> setManageNetwork(String id) {
+        SystemService system = admin.getConnection().systemService();
+        List<Network> networkList = system.clustersService().clusterService(id).networksService().list().send().networks();
+
+        return networkList.stream()
+                .map(network ->
+                    NetworkClusterVo.builder()
+                            .id(network.id())
+                            .name(network.name())
+                            .connected(network.clusterPresent()) // 할당: 클러스터에 떠있어야만 이게 보임, 할당을 해제하면 cluster에서 삭제
+                            .required(network.required())
+                            .networkUsageVo(
+                                    NetworkUsageVo.builder()
+                                            .vm(network.usages().stream().anyMatch(networkUsage -> networkUsage.value().equals("vm")))
+                                            .display(network.usages().stream().anyMatch(networkUsage -> networkUsage.value().equals("display")))
+                                            .migration(network.usages().stream().anyMatch(networkUsage -> networkUsage.value().equals("migration")))
+                                            .management(network.usages().stream().anyMatch(networkUsage -> networkUsage.value().equals("management")))
+                                            .defaultRoute(network.usages().stream().anyMatch(networkUsage -> networkUsage.value().equals("default_route")))
+                                            .gluster(network.usages().stream().anyMatch(networkUsage -> networkUsage.value().equals("gluster")))
+                                            .build()
+                            )
+                            .build()
+                )
+                .collect(Collectors.toList());
+    }
+
+    // TODO:HELP
+    @Override
+    public CommonVo<Boolean> manageNetwork(String id, List<NetworkClusterVo> ncVoList) {
+        SystemService system = admin.getConnection().systemService();
+        List<Network> networkList = system.clustersService().clusterService(id).networksService().list().send().networks();
+
+
+        return null;
+    }
+
     // 호스트 목록
     @Override
     public List<HostVo> getHost(String id) {
@@ -386,20 +486,14 @@ public class ClusterServiceImpl implements ItClusterService {
 
         log.info("Cluster 선호도");
         // host vm lavel 메소드 분리?
-        if(type.equals("label")){
-            return AffinityHostVm.builder()
-                    .clusterId(id)
-                    .hostList(commonService.setHostList(hostList, id))
-                    .vmList(commonService.setVmList(vmList, id))
-                    .build();
-        }else{  // group
-            // TODO 레이블 추가해야함
-            return AffinityHostVm.builder()
-                    .clusterId(id)
-                    .hostList(commonService.setHostList(hostList, id))
-                    .vmList(commonService.setVmList(vmList, id))
-                    .build();
-        }
+
+        return AffinityHostVm.builder()
+                .clusterId(id)
+                .hostList(commonService.setHostList(hostList, id))
+                .vmList(commonService.setVmList(vmList, id))
+                .hostLabel(commonService.setLabel(system))
+                .vmLabel(commonService.setLabel(system))
+                .build();
     }
 
 

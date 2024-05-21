@@ -4,7 +4,9 @@ import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.AffinityGroupCreateVo;
 import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
 import com.itinfo.itcloud.model.create.ClusterCreateVo;
+import com.itinfo.itcloud.model.create.NetworkCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
+import com.itinfo.itcloud.model.network.NetworkClusterVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +27,9 @@ public interface ItClusterService {
 
     // 네트워크
     List<NetworkVo> getNetwork(String id);  // 네트워크 목록
-    // 네트워크 추가
-    // 네트워크 관리
+    CommonVo<Boolean> addNetwork(String id, NetworkCreateVo ncVo);// 네트워크 추가
+    List<NetworkClusterVo> setManageNetwork(String id); // 네트워크 관리창
+    CommonVo<Boolean> manageNetwork(String id, List<NetworkClusterVo> ncVoList);// 네트워크 관리
 
     List<HostVo> getHost(String id);    // 호스트 목록
     List<VmVo> getVm(String id);        // 가상머신 목록

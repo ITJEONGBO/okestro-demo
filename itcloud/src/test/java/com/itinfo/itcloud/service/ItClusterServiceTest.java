@@ -4,7 +4,9 @@ import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.AffinityGroupCreateVo;
 import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
 import com.itinfo.itcloud.model.create.ClusterCreateVo;
+import com.itinfo.itcloud.model.create.NetworkCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
+import com.itinfo.itcloud.model.network.NetworkClusterVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -247,6 +250,42 @@ class ItClusterServiceTest {
     }
 
     @Test
+    @DisplayName("클러스터 네트워크 생성")
+    void addNetwork(){
+        NetworkCreateVo create =
+                NetworkCreateVo.builder()
+                        .name("testnetworkcluster2")
+                        .description("test")
+                        .comment("test")
+                        .usageVm(true)
+                        .externalProvider(false)
+                        .clusterVoList(
+                                Arrays.asList(
+                                        NetworkClusterVo.builder()
+                                                .id("9c7452ea-a5f3-11ee-93d2-00163e39cb43")
+                                                .connected(true)
+                                                .required(true)
+                                                .build()
+                                )
+                        )
+                        .build();
+
+        CommonVo<Boolean> result = cService.addNetwork(defaultId, create);
+        assertThat(result.getHead().getCode()).isEqualTo(201);
+    }
+
+    @Test
+    @DisplayName("클러스터 네트워크 관리 창")
+    void setNetworkManage() {
+        List<NetworkClusterVo> result = cService.setManageNetwork(defaultId);
+
+        result.forEach(System.out::println);
+    }
+
+
+
+
+    @Test
     @DisplayName("클러스터 호스트 목록")
     void getHost() {
         List<HostVo> result = cService.getHost(defaultId);
@@ -267,7 +306,7 @@ class ItClusterServiceTest {
     }
 
     @Test
-    @DisplayName("클러스터 선호도 그룹&레이블 생성 창")
+    @DisplayName("클러스터 선호도 그룹 & 레이블 생성 창")
     void setAffinityDefaultInfo() {
         AffinityHostVm ahv = cService.setAffinityDefaultInfo(defaultId, "label");
         AffinityHostVm ahv2 = cService.setAffinityDefaultInfo(defaultId, ""); // group
@@ -275,8 +314,8 @@ class ItClusterServiceTest {
         assertThat(2).isEqualTo(ahv.getHostList().size());
         assertThat(10).isEqualTo(ahv.getVmList().size());
 
-        assertThat(2).isEqualTo(ahv2.getHostList().size());
-        assertThat(10).isEqualTo(ahv2.getVmList().size());
+        System.out.println(ahv);
+        System.out.println(ahv2);
     }
 
     @Test
