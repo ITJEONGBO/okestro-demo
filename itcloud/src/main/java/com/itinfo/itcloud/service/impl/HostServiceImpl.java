@@ -34,14 +34,12 @@ public class HostServiceImpl implements ItHostService {
     @Override
     public List<HostVo> getList() {
         SystemService system = admin.getConnection().systemService();
-        // allContent를 포함해야 hosted Engine의 정보가 나온다
-        List<Host> hostList = system.hostsService().list().allContent(true).send().hosts();
+        List<Host> hostList = system.hostsService().list().allContent(true).send().hosts(); // hosted Engine의 정보가 나온다
 
         log.info("Host 목록");
         return hostList.stream()
                 .map(host -> {
                     Cluster cluster = system.clustersService().clusterService(host.cluster().id()).get().send().cluster();
-                    DataCenter dataCenter = system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter();
 
                     return HostVo.builder()
                                 .id(host.id())
@@ -52,8 +50,8 @@ public class HostServiceImpl implements ItHostService {
                                 .clusterId(host.cluster().id())
                                 .clusterName(cluster.name())
                                 .datacenterId(cluster.dataCenter().id())
-                                .datacenterName(dataCenter.name())
-                                .hostedEngine(host.hostedEnginePresent() ? host.hostedEngine().active() : null)
+                                .datacenterName(system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
+                                .hostedEngine(host.hostedEnginePresent() ? host.hostedEngine().active() : null) // 별표
                                 .vmCnt(
                                         (int) system.vmsService().list().send().vms().stream()
                                             .filter(vm -> vm.host() != null && vm.host().id().equals(host.id()))
@@ -99,30 +97,44 @@ public class HostServiceImpl implements ItHostService {
             // sshport가 22면 .ssh() 설정하지 않아도 알아서 지정됨, sshport 변경을 ovirt에서 해보신적은 없어서 우선 보류
 
             // 비밀번호 잘못되면 보여줄 코드?
-            HostBuilder hostBuilder = new HostBuilder();
-            hostBuilder
-                    .name(hostCreateVo.getName())
-                    .comment(hostCreateVo.getComment())
-                    .address(hostCreateVo.getHostIp())          // 호스트이름/IP
-                    .rootPassword(hostCreateVo.getSshPw())   // 암호
-                    .spm(new SpmBuilder().priority(hostCreateVo.getSpm()))
-                    .ssh(new SshBuilder().port(hostCreateVo.getSshPort()))  // 기본값이 22
-//                    .hostedEngine(new HostedEngineBuilder().active(hostCreateVo.isHostEngine()))
-                    .cluster(cluster)
-                    .build();
+//            HostBuilder hostBuilder = new HostBuilder();
+//            hostBuilder
+//                    .name(hostCreateVo.getName())
+//                    .comment(hostCreateVo.getComment())
+//                    .address(hostCreateVo.getHostIp())          // 호스트이름/IP
+//                    .rootPassword(hostCreateVo.getSshPw())   // 암호
+//                    .spm(new SpmBuilder().priority(hostCreateVo.getSpm()))
+//                    .ssh(new SshBuilder().port(hostCreateVo.getSshPort()))  // 기본값이 22
+////                    .hostedEngine(new HostedEngineBuilder().active(hostCreateVo.isHostEngine()))
+//                    .cluster(cluster)
+//                    .build();
 
             // 호스트 엔진 배치작업 선택 (없음/배포)  -> 호스트 생성
-            Host host = hostsService.add().deployHostedEngine(hostCreateVo.isHostEngine()).host(hostBuilder).send().host();
+            Host host =
+                    hostsService.add()
+                            .deployHostedEngine(hostCreateVo.isHostEngine())
+                            .host(
+                                    new HostBuilder()
+                                            .name(hostCreateVo.getName())
+                                            .comment(hostCreateVo.getComment())
+                                            .address(hostCreateVo.getHostIp())          // 호스트이름/IP
+                                            .rootPassword(hostCreateVo.getSshPw())   // 암호
+                                            .spm(new SpmBuilder().priority(hostCreateVo.getSpm()))
+                                            .ssh(new SshBuilder().port(hostCreateVo.getSshPort()))  // 기본값이 22
+//                                            .hostedEngine(new HostedEngineBuilder().active(hostCreateVo.isHostEngine()))
+                                            .cluster(cluster)
+                            )
+                        .send().host();
 
             do{
-                log.info("Host 생성 (" + hostCreateVo.getName() + ")");
+                log.info("성공: Host 생성");
             } while (host.status().equals(HostStatus.UP));
-            
-//            return hostsService.list().send().hosts().size() == ( hostList.size()+1 );
-            return CommonVo.successResponse();
+
+            log.info("성공: Host 생성 (" + hostCreateVo.getName() + ")");
+            return CommonVo.createResponse();
         } catch (Exception e) {
-            log.error("error: ", e);
             e.printStackTrace();
+            log.error("error: ", e);
             return CommonVo.failResponse(e.getMessage());
         }
     }
@@ -130,7 +142,7 @@ public class HostServiceImpl implements ItHostService {
 
     // 호스트 편집창
     @Override
-    public HostCreateVo getHostCreate(String id) {
+    public HostCreateVo setHost(String id) {
         SystemService system = admin.getConnection().systemService();
         Host host = system.hostsService().hostService(id).get().send().host();
         Cluster cluster = system.clustersService().clusterService(host.cluster().id()).get().send().cluster();
@@ -181,13 +193,12 @@ public class HostServiceImpl implements ItHostService {
     public CommonVo<Boolean> deleteHost(String id) {
         SystemService system = admin.getConnection().systemService();
         HostService hostService = system.hostsService().hostService(id);
-        Host host = hostService.get().send().host();
-        String name = hostService.get().send().host().name();
 
         try {
-            if(host.status().equals(HostStatus.MAINTENANCE)) {
+            if(hostService.get().send().host().status().equals(HostStatus.MAINTENANCE)) {
                 hostService.remove().send();
-                log.info("delete host: {}", name);
+
+                log.info("호스트 삭제");
                 return CommonVo.successResponse();
             }else{
                 log.error("유지 보수 후 삭제 해야함");
@@ -203,7 +214,7 @@ public class HostServiceImpl implements ItHostService {
     
     // 유지보수
     @Override
-    public void deActive(String id) {
+    public CommonVo<Boolean> deActive(String id) {
         SystemService system = admin.getConnection().systemService();
         HostService hostService = system.hostsService().hostService(id);
         Host host = hostService.get().send().host();
@@ -211,16 +222,22 @@ public class HostServiceImpl implements ItHostService {
         try {
             if(host.status() != HostStatus.MAINTENANCE){
                 hostService.deactivate().send();
+
                 log.info("Host 유지보수");
+                return CommonVo.successResponse();
+            }else{
+                log.error("error ");
+                return CommonVo.failResponse("유지보수 실패");
             }
         }catch (Exception e){
             log.error("error ", e);
+            return CommonVo.failResponse(e.getMessage());
         }
     }
 
     // 활성
     @Override
-    public void active(String id) {
+    public CommonVo<Boolean> active(String id) {
         SystemService system = admin.getConnection().systemService();
         HostService hostService = system.hostsService().hostService(id);
         Host host = hostService.get().send().host();
@@ -228,24 +245,33 @@ public class HostServiceImpl implements ItHostService {
         try {
             if(host.status() != HostStatus.UP){
                 hostService.activate().send();
+
                 log.info("Host 활성");
+                return CommonVo.successResponse();
+            }else{
+                log.error("error ");
+                return CommonVo.failResponse("fail");
             }
         }catch (Exception e){
             log.error("error ", e);
+            return CommonVo.failResponse(e.getMessage());
         }
     }
 
     // 새로고침
     @Override
-    public void refresh(String id) {
+    public CommonVo<Boolean> refresh(String id) {
         SystemService system = admin.getConnection().systemService();
         HostService hostService = system.hostsService().hostService(id);
 
         try{
             hostService.refresh().send();
+
             log.info("Host 새로고침");
+            return CommonVo.successResponse();
         }catch (Exception e){
             log.error("error ", e);
+            return CommonVo.failResponse(e.getMessage());
         }
     }
 
@@ -259,7 +285,7 @@ public class HostServiceImpl implements ItHostService {
         oVirt 엔진 SDK는 호스트를 관리하기 위한 API를 제공하지만, SSH를 통한 호스트 재부팅과 같은 기능은 포함되어 있지 않습니다.
     */
     @Override
-    public void reStart(String id) {
+    public CommonVo<Boolean> reStart(String id) {
         SystemService system = admin.getConnection().systemService();
         HostsService hostsService = system.hostsService();  // reboot
         HostService hostService = system.hostsService().hostService(id);
@@ -269,8 +295,10 @@ public class HostServiceImpl implements ItHostService {
 //            hostService.fence().fenceType(FenceType.RESTART.value()).send().powerManagement();
 
             log.info("Host 재시작");
+            return CommonVo.successResponse();
         }catch (Exception e){
             log.error("error: ", e);
+            return CommonVo.failResponse(e.getMessage());
         }
     }
 
@@ -278,7 +306,7 @@ public class HostServiceImpl implements ItHostService {
     // 중지
     // TODO
     @Override
-    public void stop(String id) {
+    public CommonVo<Boolean> stop(String id) {
         SystemService system = admin.getConnection().systemService();
         HostService hostService = system.hostsService().hostService(id);
 
@@ -286,8 +314,10 @@ public class HostServiceImpl implements ItHostService {
 //            hostService.get().send().host();
 
             log.info("Host 증지");
+            return CommonVo.successResponse();
         }catch (Exception e){
             log.error("error: ", e);
+            return CommonVo.failResponse(e.getMessage());
         }
     }
 

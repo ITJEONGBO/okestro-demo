@@ -49,7 +49,7 @@ public class HostController {
 	@ResponseBody
 	public HostCreateVo getHostCreate(@PathVariable String id){
 		log.info("--- Host 수정창");
-		return hostService.getHostCreate(id);
+		return hostService.setHost(id);
 	}
 
 	// 호스트 수정

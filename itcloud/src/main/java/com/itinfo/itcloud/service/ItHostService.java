@@ -15,23 +15,26 @@ public interface ItHostService {
 
     List<ClusterVo> setHostDefaultInfo();      // 호스트 생성 - 클러스터 리스트 출력
     CommonVo<Boolean> addHost(HostCreateVo hostCreateVo);     // 생성
-    HostCreateVo getHostCreate(String id);      // 수정 창
+    HostCreateVo setHost(String id);      // 수정 창
     CommonVo<Boolean> editHost(String id, HostCreateVo hostCreateVo);       // 수정
     CommonVo<Boolean> deleteHost(String id);                  // 삭제
 
 //    boolean rebootHost(String hostId);              // 재기동
-    void deActive(String id);       // 유지보수
-    void active(String id);         // 활성
-    void refresh(String id);        // 새로고침
+    CommonVo<Boolean> deActive(String id);       // 유지보수
+    CommonVo<Boolean> active(String id);         // 활성
+    CommonVo<Boolean> refresh(String id);        // 새로고침
 
     // ssh 관리
-    void reStart(String id);        // 재시작
+    CommonVo<Boolean> reStart(String id);        // 재시작
 //    void start(String id);          // 시작
-    void stop(String id);           // 중지
+    CommonVo<Boolean> stop(String id);           // 중지
 
 
     HostVo getInfo(String id);  // 일반
+
     List<VmVo> getVm(String id);    // 가상머신
+
+
 
     List<NicVo> getNic(String id);  // 네트워크 인터페이스
 

@@ -75,7 +75,4 @@ public class HostVo {
     private HostSwVo hostSwVo;
 
     private NicVo nicVo;
-
-    private boolean crown;   // hosted engine 여부
-
 }
