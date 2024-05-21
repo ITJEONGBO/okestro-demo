@@ -625,58 +625,29 @@ public class VmServiceImpl implements ItVmService {
     public CommonVo<Boolean> deleteVm(String id, boolean disk) {
         SystemService system = admin.getConnection().systemService();
         VmService vmService = system.vmsService().vmService(id);
-        List<DiskAttachment> daList = system.vmsService().vmService(id).diskAttachmentsService().list().send().attachments();
-
-        boolean delete = system.vmsService().vmService(id).get().send().vm().deleteProtected();
 
         try {
-            // 가상머신 삭제방지 여부
-            if (!delete) {
-                if(disk){   // 디스크 삭제 여부
-                    List<Disk> diskList = daList.stream().map(DiskAttachment::disk).collect(Collectors.toList());
+            if (!system.vmsService().vmService(id).get().send().vm().deleteProtected()) {  // 가상머신 삭제방지 여부
+                // detachOnly => true 면 가상머신만 삭제/ false면 디스크도 삭제
+                // 근데 disk의 값은 true면 디스크 삭제
+                vmService.remove().detachOnly(!disk).send();
 
-                    for (Disk disk1 : diskList) {
-                        DiskService diskService = system.disksService().diskService(disk1.id());
-                        diskService.remove().send();
-
-//                        int retry = 0;
-//                        Disk dTmp = diskService.get().send().disk();
-//                        while(dTmp.statusPresent() && retry <= 20) {
-//                            Thread.sleep(1000L);
-//                            log.debug("retry: {}  disk: {}, {}", retry, dTmp.name(), dTmp.status());
-//                            retry++;
-//                        }
-//
-//                        if (dTmp.statusPresent()) {
-//                            return CommonVo.failResponse("디스크가 있다면");
-//                        }
-                    }
-
-                    vmService.remove().detachOnly(true ).send();
-                    log.info("가상머신&디스크 삭제 성공");
-                }else {
-                    vmService.remove().detachOnly(true ).send();
-                    log.info("가상머신 삭제 성공");
-                }
+                log.info(disk ? "가상머신/디스크 삭제 성공" : "가상머신 삭제 성공");
                 return CommonVo.successResponse();
             } else {
                 log.error("삭제방지 모드를 해제하세요");
                 return CommonVo.failResponse("삭제방지 모드를 해제");
             }
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("가상머신 삭제 실패 {}", e.getMessage());
             return CommonVo.failResponse("가상머신 삭제 실패");
         }
     }
 
-
     @Override
     public VmStatus getStatus(String id) {
         SystemService system = admin.getConnection().systemService();
-        Vm vm = system.vmsService().vmService(id).get().send().vm();
-
-        return vm.status();
+        return system.vmsService().vmService(id).get().send().vm().status();
     }
 
 
@@ -1355,31 +1326,42 @@ public class VmServiceImpl implements ItVmService {
                 .domainVoList(
                         storageDomainList.stream()
                                 .filter(storageDomain -> !storageDomain.id().equals(disk.storageDomains().get(0).id())) // 자신의 도메인이 아닐경우
-                                .map(storageDomain ->
-                                        DomainVo.builder()
-                                                .id(storageDomain.id())
-                                                .name(storageDomain.name())
-                                                .build()
-                                )
+                                .map(storageDomain -> {
+                                    List<DiskProfile> profileList = system.diskProfilesService().list().send().profile();
+                                    return DomainVo.builder()
+                                            .id(storageDomain.id())
+                                            .name(storageDomain.name())
+                                            .profileVoList(
+                                                    profileList.stream()
+                                                            .filter(diskProfile -> diskProfile.storageDomain().id().equals(storageDomain.id()))
+                                                            .map(diskProfile ->
+                                                                DiskProfileVo.builder()
+                                                                        .id(diskProfile.id())
+                                                                        .name(diskProfile.name())
+                                                                        .build()
+                                                            )
+                                                            .collect(Collectors.toList())
+                                            )
+                                            .build();
+                                })
                                 .collect(Collectors.toList())
                 )
                 .build();
     }
 
     @Override
-    public CommonVo<Boolean> moveDisk(String id, String daId){
+    public CommonVo<Boolean> moveDisk(String id, String daId, DiskVo diskVo){
         SystemService system = admin.getConnection().systemService();
         DiskAttachment da = system.vmsService().vmService(id).diskAttachmentsService().attachmentService(daId).get().send().attachment();
         DiskService diskService = system.disksService().diskService(da.disk().id());
-//        List<StorageDomain> storageDomainList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().list().send().storageDomains();
-
 
         try{
             diskService.move()
-//                    .storageDomain()
-//                    .diskProfile()
-                    .send();
+                    .storageDomain(new StorageDomainBuilder().id(diskVo.getDomainVo().getId()))
+                    .diskProfile(new DiskProfileBuilder().id(diskVo.getProfileVo().getId()))
+                .send();
 
+            log.info("디스크 이동");
             return CommonVo.successResponse();
         }catch (Exception e){
             e.printStackTrace();
@@ -1412,30 +1394,33 @@ public class VmServiceImpl implements ItVmService {
     @Override
     public List<SnapshotVo> getSnapshot(String id) {
         SystemService system = admin.getConnection().systemService();
-        Vm vm = system.vmsService().vmService(id).get().send().vm();
         List<Snapshot> snapList = system.vmsService().vmService(id).snapshotsService().list().send().snapshots();
         List<DiskAttachment> daList = system.vmsService().vmService(id).diskAttachmentsService().list().send().attachments();
-
+        List<Nic> nicList = system.vmsService().vmService(id).nicsService().list().send().nics();
+        Vm vm = system.vmsService().vmService(id).get().send().vm();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
         return snapList.stream()
                 .map(snapshot -> {
                     if (snapshot.vmPresent()) {  // 스냅샷 생성
                         List<Disk> diskList = system.vmsService().vmService(id).snapshotsService().snapshotService(snapshot.id()).disksService().list().send().disks();
-                        List<Nic> nicList = system.vmsService().vmService(id).snapshotsService().snapshotService(snapshot.id()).nicsService().list().send().nics();
+                        List<Nic> snapnicList = system.vmsService().vmService(id).snapshotsService().snapshotService(snapshot.id()).nicsService().list().send().nics();
 
                         return SnapshotVo.builder()
                                 .id(snapshot.id())
-                                .description(snapshot.description())
+                                .description(snapshot.description())  // 스냅샷 이름
                                 .date(sdf.format(snapshot.date().getTime()))
                                 .status(snapshot.snapshotStatus().value())
                                 .persistMemorystate(snapshot.persistMemorystate()) // 스냅샷에 메모리가 포함되어있다
+
                                 .setMemory(snapshot.vm().memory())
                                 .guaranteedMemory(snapshot.vm().memoryPolicy().guaranteed())
                                 .cpuCore(vm.cpu().topology().coresAsInteger() * vm.cpu().topology().socketsAsInteger() * vm.cpu().topology().threadsAsInteger())
+
                                 .sDiskList(
                                         diskList.stream()
                                                 .map(disk -> {
+                                                    DiskAttachment diskAttachment = system.vmsService().vmService(id).diskAttachmentsService().attachmentService(disk.id()).get().send().attachment();
                                                     return SnapshotDiskVo.builder()
                                                             .status(disk.status())
                                                             .id(disk.id())
@@ -1443,27 +1428,32 @@ public class VmServiceImpl implements ItVmService {
                                                             .virtualSize(disk.provisionedSize())
                                                             .actualSize(disk.actualSize())
                                                             .sparse(disk.sparse() ? "sparse" : "?")
-//                                                                    .diskInterface(diskAttachment.interface_())
-//                                                        .date()
-//                                                        .diskSnapId()
-                                                            .description(disk.description())
+                                                            .diskInterface(diskAttachment.interface_())
+//                                                            .date() // 생성일자
+//                                                            .diskSnapId(disk.imageId()) // 디스크 스냅샷 아이디
                                                             .storageType(disk.storageType())
+                                                            .description(disk.description())
                                                             .build();
                                                 })
                                                 .collect(Collectors.toList())
                                 )
 //                                .nicVoList(
-//                                        nicList.stream()
-//                                                .map(nic ->
-//                                                        NicVo.builder()
-//                                                                .build()
-//                                                )
+//                                        snapnicList.stream()
+//                                                .map(nic -> {
+//                                                    return NicVo.builder()
+//                                                            .name()
+//                                                            .macAddress()
+//                                                            .networkName()
+//                                                            .vnicProfileVo()
+//                                                            .rxSpeed()
+//                                                            .txSpeed()
+//
+//                                                    .build();
+//                                                })
 //                                                .collect(Collectors.toList())
 //                                )
                                 .build();
-                    } else {  // 스냅샷 기본
-                        List<Nic> nicList = system.vmsService().vmService(id).nicsService().list().send().nics();
-
+                    } else {  // 스냅샷 기본 Acitve Vm
                         return SnapshotVo.builder()
                                 .id(snapshot.id())
                                 .description(snapshot.description())
@@ -1486,7 +1476,7 @@ public class VmServiceImpl implements ItVmService {
                                                             .sparse(disk.sparse() ? "sparse" : "?")
                                                             .diskInterface(diskAttachment.interface_())
 //                                                        .date()
-//                                                        .diskSnapId()
+                                                            .diskSnapId(disk.imageId())
                                                             .description(disk.description())
                                                             .storageType(disk.storageType())
                                                             .build();
@@ -1497,6 +1487,52 @@ public class VmServiceImpl implements ItVmService {
                 })
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public CommonVo<Boolean> previewSnapshot(String id, String snapId) {
+        return null;
+    }
+
+    @Override
+    public CommonVo<Boolean> commitSnapshot(String id, String snapId) {
+        return null;
+    }
+
+    @Override
+    public CommonVo<Boolean> restoreSnapshot(String id, String snapId) {
+        return null;
+    }
+
+    // 스냅샷 삭제
+    @Override
+    public CommonVo<Boolean> deleteSnapshot(String id, String snapId) {
+        SystemService system = admin.getConnection().systemService();
+
+        try{
+            // TODO:HELP 에러처리
+            system.vmsService().vmService(id).snapshotsService().snapshotService(snapId).remove().send();
+
+            log.info("성공: 스냅샷 삭제");
+            return CommonVo.successResponse();
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return CommonVo.failResponse(e.getMessage());
+        }
+    }
+
+    @Override
+    public CommonVo<Boolean> copySnapshot() {
+        return null;
+    }
+
+    @Override
+    public CommonVo<Boolean> addTemplate() {
+        return null;
+    }
+
+
+
+
 
     // 애플리케이션
     @Override

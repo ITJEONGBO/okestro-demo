@@ -56,23 +56,32 @@ public interface ItVmService {
     CommonVo<Boolean> deleteNic(String id, String nicId);    // nic 삭제
 
 
-
-    List<VmDiskVo> getDisk(String id);  // 디스크
-    CommonVo<Boolean> addDiskImage(String id, VDiskImageVo image); // 이미지 생성, id=vmId
-    CommonVo<Boolean> editDiskImage(String id, VDiskImageVo image); // lun 수정
-    CommonVo<Boolean> addDiskLun(String id, VDiskLunVo lun); // lun 생성, id=vmId
+    // 디스크
+    List<VmDiskVo> getDisk(String id);
+    CommonVo<Boolean> addDiskImage(String id, VDiskImageVo image);  // 디스크 이미지 생성, id=vmId
+    CommonVo<Boolean> editDiskImage(String id, VDiskImageVo image); // 디스크 이미지 수정
+    CommonVo<Boolean> addDiskLun(String id, VDiskLunVo lun);        // 디스크 lun 생성, id=vmId
 //    CommonVo<Boolean> connectDisk(String id);     // 디스크 연결
-    CommonVo<Boolean> editDiskLun(String id, VDiskLunVo lun);       // lun 수정
+    CommonVo<Boolean> editDiskLun(String id, VDiskLunVo lun);       // 디스크 lun 수정
     CommonVo<Boolean> deleteDisk(String id, String daId, boolean type); // 디스크 삭제
-
     CommonVo<Boolean> activeDisk(String id, String daId);        // 디스크 활성화
-    CommonVo<Boolean> deactivateDisk(String id, String daId);     // 디스크 비활성화
-    DiskVo setDiskMove(String id, String daId);             // 디스크 이동창
-    CommonVo<Boolean> moveDisk(String id, String daId);     // 디스크 스토리지 이동
+    CommonVo<Boolean> deactivateDisk(String id, String daId);    // 디스크 비활성화
+    DiskVo setDiskMove(String id, String daId);                     // 디스크 이동창
+    CommonVo<Boolean> moveDisk(String id, String daId, DiskVo diskVo);     // 디스크 스토리지 이동
+
+
+    // 스냅샷
+    List<SnapshotVo> getSnapshot(String id);
+    CommonVo<Boolean> previewSnapshot(String id, String snapId);    // 스냅샷 미리보기
+    CommonVo<Boolean> commitSnapshot(String id, String snapId);     // 스냅샷 커밋
+    CommonVo<Boolean> restoreSnapshot(String id, String snapId);    // 스냅샷 되돌리기
+    CommonVo<Boolean> deleteSnapshot(String id, String snapId);     // 스냅샷 삭제
+    CommonVo<Boolean> copySnapshot();   // 스냅샷 복제
+    CommonVo<Boolean> addTemplate();    // 스냅샷 템플릿 생성
 
 
 
-    List<SnapshotVo> getSnapshot(String id);    // 스냅샷
+
     List<ApplicationVo> getApplication(String id);  // 어플리케이션
     List<AffinityGroupVo> getAffinitygroup(String id);  // 선호도 그룹
     List<AffinityLabelVo> getAffinitylabel(String id);  // 선호도 레이블

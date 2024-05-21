@@ -6,6 +6,7 @@ import com.itinfo.itcloud.model.create.*;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkFilterParameterVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
+import com.itinfo.itcloud.model.storage.DiskProfileVo;
 import com.itinfo.itcloud.model.storage.DiskVo;
 import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.model.storage.VmDiskVo;
@@ -227,17 +228,15 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 삭제")
     void deleteVm() {
-        // 삭제방지 모드 해제 란을 생성해야할듯
-        String id = "e34b7ada-8d03-48f8-b123-3d2872addff8";
-        boolean disk = true;
+        String id = "6a8d1a14-3546-43b5-9305-cc3109ed8266";
+        boolean disk = true; //t: 디스크지움, f:디스크남김
 
         CommonVo<Boolean> result = vmService.deleteVm(id, disk);
+        System.out.println("가상머신 삭제 disk: " + disk);
 
 //        assertThat(result.getHead().getCode()).isEqualTo(404); // 삭제방지모드
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
-
-
 
 
 
@@ -310,13 +309,12 @@ class ItVmServiceTest {
     @DisplayName("가상머신 스냅샷 창")
     void setSnapshotVm() {
 //        String id = "21a4369f-c828-47d7-afcb-1248f7c2a787"; // 디스크없음
-//        String id = "6b2cf6fb-bc4f-444d-9a19-7b3766cf1dd9"; // 1
         String id = "e929923d-8710-47ef-bfbd-e281434eb8ee"; // 2
-        List<SnapshotDiskVo> result = vmService.setSnapshot(id);
 
-        assertThat(result.size()).isEqualTo(2);
-        result.stream().map(SnapshotDiskVo::getAlias).forEach(System.out::println);
-        result.stream().map(SnapshotDiskVo::getDaId).forEach(System.out::println);
+        List<SnapshotDiskVo> result = vmService.setSnapshot(defaultId);
+
+        assertThat(result.size()).isEqualTo(1);
+        result.forEach(System.out::println);
     }
 
 
@@ -521,8 +519,8 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 디스크 이동창")
     void setMoveDisk(){
-        String id = "d9e6d0f3-8c0c-4054-8726-761180d817cd";
-        String daId = "9efac83d-9d6c-49e7-85f5-3d5120ae0cdf";
+        String id = "e929923d-8710-47ef-bfbd-e281434eb8ee";
+        String daId = "d8ec6bd4-0306-4d4f-9ac6-f076e7a5c286";
 
         DiskVo result = vmService.setDiskMove(id, daId);
 
@@ -530,7 +528,28 @@ class ItVmServiceTest {
     }
 
 
+    @Test
+    @DisplayName("가상머신 디스크 이동창")
+    void moveDisk() {
+        String id = "e929923d-8710-47ef-bfbd-e281434eb8ee";
+        String daId = "e708cb9c-287f-41c3-94e2-3e8102386313";
+        DiskVo disk =
+                DiskVo.builder()
+                        .domainVo(
+                                DomainVo.builder()
+                                        .id("e6611ac1-35b0-42b9-b339-681a6d6cb538")
+                                .build())
+                        .profileVo(
+                                DiskProfileVo.builder()
+                                        .id("b5cbcbc2-43c0-45d4-8016-0c524dc7ccd4")
+                                        .build()
+                        )
+                        .build();
 
+        CommonVo<Boolean> result = vmService.moveDisk(id, daId, disk);
+
+        assertThat(result.getHead().getCode()).isEqualTo(200);
+    }
 
 
 
@@ -539,11 +558,23 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 스냅샷")
     void getSnapshot() {
-        String id = "e929923d-8710-47ef-bfbd-e281434eb8ee";
+        String id = "e929923d-8710-47ef-bfbd-e281434eb8ee";  //b
         List<SnapshotVo> result = vmService.getSnapshot(id);
 
         result.forEach(System.out::println);
     }
+
+    @Test
+    @DisplayName("가상머신 스냅샷 삭제")
+    void deleteSnapshot() {
+        String id = "cf4efa5e-c753-4c0b-aebf-ae16fbeb6fc4";
+        String snapId = "baf91adf-8794-4ee9-b623-d467c07a0f08";
+
+        CommonVo<Boolean> result = vmService.deleteSnapshot(id, snapId);
+        assertThat(result.getHead().getCode()).isEqualTo(200);
+    }
+    
+    
 
     @Test
     @DisplayName("가상머신 애플리케이션")

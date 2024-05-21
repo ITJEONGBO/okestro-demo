@@ -31,10 +31,11 @@ public class DiskVo {
     private BigInteger virtualSize; // 가상크기
     private BigInteger actualSize;  // 실제 크기
 
-    private String diskProfileId;
-    private String diskProfileName;
+//    private String diskProfileId;
+//    private String diskProfileName;
 
     private DomainVo domainVo;
+    private DiskProfileVo profileVo;
 
     private List<DomainVo> domainVoList;    // 필요한 경우는 오직 템플릿을 위해
     private List<DiskProfileVo> dpVoList;   // 디스크 프로파일 리스트
