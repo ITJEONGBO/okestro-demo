@@ -1,14 +1,10 @@
 package com.itinfo.itcloud.model.computing;
 
-import com.itinfo.itcloud.model.network.VnicProfileVo;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.math.BigInteger;
-import java.util.Date;
-import java.util.List;
 
 @Getter @Builder @ToString
 public class VmVo {
@@ -23,6 +19,8 @@ public class VmVo {
     private String chipsetFirmwareType; // bios.type
     private int priority;    // 고가용성 HighAvailability
     private String optimizeOption;
+
+    private boolean hostEngineVm;
 
     private BigInteger memory;
     private BigInteger memoryActual;

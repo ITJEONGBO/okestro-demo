@@ -103,17 +103,17 @@ public class ClusterServiceImpl implements ItClusterService {
                 clusterBuilder
                         .dataCenter(new DataCenterBuilder().id(cVo.getDatacenterId()).build()) // 필수
                         .name(cVo.getName())    // 필수
-                        .cpu(new CpuBuilder().architecture(cVo.getCpuArc()).type(cVo.getCpuType()).build())   // 필수
+                        .cpu(new CpuBuilder().architecture(Architecture.valueOf(cVo.getCpuArc())).type(cVo.getCpuType()).build())   // 필수
                         .description(cVo.getDescription())
                         .comment(cVo.getComment())
                         .managementNetwork(new NetworkBuilder().id(cVo.getNetworkId()).build())
-                        .biosType(cVo.getBiosType())
-                        .fipsMode(cVo.getFipsMode())
+                        .biosType(BiosType.valueOf(cVo.getBiosType()))
+                        .fipsMode(FipsMode.valueOf(cVo.getFipsMode()))
                         .version(new VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())
-                        .switchType(cVo.getSwitchType())
-                        .firewallType(cVo.getFirewallType())
+                        .switchType(SwitchType.valueOf(cVo.getSwitchType()))
+                        .firewallType(FirewallType.valueOf(cVo.getFirewallType()))
                         .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
-                        .logMaxMemoryUsedThresholdType(cVo.getLogMaxType())
+                        .logMaxMemoryUsedThresholdType(LogMaxMemoryUsedThresholdType.valueOf(cVo.getLogMaxType()))
                         .virtService(cVo.isVirtService())
                         .glusterService(cVo.isGlusterService())
                         .errorHandling(new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()))
@@ -176,14 +176,14 @@ public class ClusterServiceImpl implements ItClusterService {
                 .datacenterId(dataCenter.id())
                 .datacenterName(dataCenter.name())
                 .cpuType(cluster.cpuPresent() ? cluster.cpu().type() : null)
-                .cpuArc(cluster.cpuPresent() ? cluster.cpu().architecture() : null)
-                .biosType(cluster.biosType())
-                .fipsMode(cluster.fipsMode())
+                .cpuArc(cluster.cpuPresent() ? String.valueOf(cluster.cpu().architecture()) : null)
+                .biosType(String.valueOf(cluster.biosType()))
+                .fipsMode(String.valueOf(cluster.fipsMode()))
                 .version(cluster.version().major() + "." + cluster.version().minor())
-                .switchType(cluster.switchType())
-                .firewallType(cluster.firewallType())
+                .switchType(String.valueOf(cluster.switchType()))
+                .firewallType(String.valueOf(cluster.firewallType()))
                 .logMaxMemory(cluster.logMaxMemoryUsedThresholdAsInteger())
-                .logMaxType(cluster.logMaxMemoryUsedThresholdType())
+                .logMaxType(String.valueOf(cluster.logMaxMemoryUsedThresholdType()))
                 .virtService(cluster.virtService())
                 .glusterService(cluster.glusterService())
                 .networkId(networkId)
@@ -216,15 +216,15 @@ public class ClusterServiceImpl implements ItClusterService {
                         .id(id)
                         .dataCenter(new DataCenterBuilder().id(cVo.getDatacenterId()).build()) // 필수
                         .name(cVo.getName())    // 필수
-                        .cpu(new CpuBuilder().architecture(cVo.getCpuArc()).type(cVo.getCpuType()))   // 필수
+                        .cpu(new CpuBuilder().architecture(Architecture.valueOf(cVo.getCpuArc())).type(cVo.getCpuType()))   // 필수
                         .description(cVo.getDescription())
                         .comment(cVo.getComment())
                         .managementNetwork(new NetworkBuilder().id(cVo.getNetworkId()).build())
-                        .biosType(cVo.getBiosType())
-                        .fipsMode(cVo.getFipsMode())
+                        .biosType(BiosType.valueOf(cVo.getBiosType()))
+                        .fipsMode(FipsMode.valueOf(cVo.getFipsMode()))
                         .version(new VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())  // 호환 버전
 //                    .switchType(cVo.getSwitchType())      // 선택불가
-                        .firewallType(cVo.getFirewallType())
+                        .firewallType(FirewallType.valueOf(cVo.getFirewallType()))
                         .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
                         .logMaxMemoryUsedThresholdType(LogMaxMemoryUsedThresholdType.PERCENTAGE)
                         .virtService(cVo.isVirtService())
@@ -279,14 +279,13 @@ public class ClusterServiceImpl implements ItClusterService {
         SystemService system = admin.getConnection().systemService();
         Cluster cluster = system.clustersService().clusterService(id).get().send().cluster();
         List<Vm> vmList = system.vmsService().list().send().vms();
-        String dcName = system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name();
 
         log.info("Cluster 일반");
         return ClusterVo.builder()
                     .id(id)
                     .name(cluster.name())
                     .description(cluster.description())
-                    .datacenterName(cluster.dataCenterPresent() ? dcName : null)
+                    .datacenterName(cluster.dataCenterPresent() ? system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name() : null)
                     .version(cluster.version().major() + "." + cluster.version().minor())
                     .gluster(cluster.glusterService())
                     .virt(cluster.virtService())
@@ -417,7 +416,7 @@ public class ClusterServiceImpl implements ItClusterService {
                 .collect(Collectors.toList());
     }
 
-    // TODO:HELP
+    // TODO:HELP  관리기능 애매
     @Override
     public CommonVo<Boolean> manageNetwork(String id, List<NetworkClusterVo> ncVoList) {
         SystemService system = admin.getConnection().systemService();
@@ -468,6 +467,7 @@ public class ClusterServiceImpl implements ItClusterService {
                             .id(vm.id())
                             .name(vm.name())
                             .upTime(commonService.getVmUptime(system, vm.id()))
+                            // 왕관여부
                             .ipv4(commonService.getVmIp(system, vm.id(), "v4"))
                             .ipv6(commonService.getVmIp(system, vm.id(), "v6"))
                             .build()

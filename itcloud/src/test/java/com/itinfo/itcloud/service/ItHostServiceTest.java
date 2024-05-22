@@ -101,6 +101,10 @@ class ItHostServiceTest {
 
     @Test
     void stop() {
+        String id = "507b4118-346a-47be-bd3a-a15abc36d26a";
+
+        CommonVo<Boolean> result = hostService.stop(id);
+        assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
     @Test
@@ -110,7 +114,8 @@ class ItHostServiceTest {
     @Test
     @DisplayName("호스트 가상머신 목록")
     void getVm() {
-        List<VmVo> vmVoList = hostService.getVm(defaultId);
+        String id = "507b4118-346a-47be-bd3a-a15abc36d26a";
+        List<VmVo> vmVoList = hostService.getVm(id);
 
         vmVoList.forEach(System.out::println);
     }

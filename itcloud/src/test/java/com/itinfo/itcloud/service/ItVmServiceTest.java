@@ -60,6 +60,18 @@ class ItVmServiceTest {
         result.forEach(System.out::println);
     }
 
+
+    @Test
+    @DisplayName("가상머신 생성창-부트옵션 iso")
+    void setiso() {
+        List<IdentifiedVo> result = vmService.getIsoImage();
+
+        assertThat(result.size()).isEqualTo(2);
+        result.forEach(System.out::println);
+    }
+
+
+
     @Test
     @DisplayName("가상머신 생성")
     void addVm() {
@@ -159,9 +171,9 @@ class ItVmServiceTest {
                     )
                     .vmHostVo(
                             VmHostVo.builder()
-//                                    .clusterHost(true)  // 클러스터 내 호스트
-                                    .clusterHost(false)  // 특정 호스트
-                                    .selectHostId(Arrays.asList("1c8ed321-28e5-4f83-9e34-e13f9125f253", "f08baae8-2137-490c-bec2-fd00f67a37b9"))
+                                    .clusterHost(true)  // 클러스터 내 호스트
+//                                    .clusterHost(false)  // 특정 호스트
+//                                    .selectHostId(Arrays.asList("1c8ed321-28e5-4f83-9e34-e13f9125f253", "f08baae8-2137-490c-bec2-fd00f67a37b9"))
                                     .migrationEncrypt(InheritableBoolean.FALSE)
                                     .migrationMode("PINNED")  // 마이그레이션 안함
                                     .build()
@@ -187,6 +199,7 @@ class ItVmServiceTest {
                     .vmBootVo(
                             VmBootVo.builder()
                                     .deviceList(Arrays.asList("HD", "CDROM"))
+                                    .connId("d52d0504-9f46-459b-8f54-de008c688079")
                                     .build()
                     )
                 .build();
@@ -228,8 +241,8 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 삭제")
     void deleteVm() {
-        String id = "6a8d1a14-3546-43b5-9305-cc3109ed8266";
-        boolean disk = true; //t: 디스크지움, f:디스크남김
+        String id = "bf1ef458-2b73-47f2-aa9f-0468a981fc47";
+        boolean disk = false; //t: 디스크지움, f:디스크남김
 
         CommonVo<Boolean> result = vmService.deleteVm(id, disk);
         System.out.println("가상머신 삭제 disk: " + disk);

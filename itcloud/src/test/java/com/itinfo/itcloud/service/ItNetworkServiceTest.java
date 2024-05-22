@@ -23,7 +23,7 @@ class ItNetworkServiceTest {
 
     @Autowired ItNetworkService networkService;
 
-    String id = "00ff47bb-5bd1-4af0-a080-0df002a94ee3";
+    String defaultId = "00000000-0000-0000-0000-000000000009";
 
     @Test
     @DisplayName("네트워크 리스트")
@@ -67,15 +67,43 @@ class ItNetworkServiceTest {
     }
 
     @Test
+    @DisplayName("네트워크 수정창")
     void setEditNetwork() {
+        String id = "9f6566bc-61c1-49bf-98c0-5f5e2c760d21";
+        NetworkCreateVo result = networkService.setEditNetwork(defaultId);
+
+        System.out.println(result);
     }
 
     @Test
+    @DisplayName("네트워크 수정")
     void editNetwork() {
+        String id = "9f6566bc-61c1-49bf-98c0-5f5e2c760d21";
+
+        NetworkCreateVo create =
+                NetworkCreateVo.builder()
+                        .id(id)
+                        .datacenterId("9c72ff12-a5f3-11ee-941d-00163e39cb43")
+                        .name("st")
+                        .description("tttt")
+                        .usageVm(true)
+                        .vlan(2)
+                        .mtu(122)
+//                        .stp(true)
+                        .vlan(23)
+                        .build();
+
+        CommonVo<Boolean> result =  networkService.editNetwork(create);
+        assertThat(result.getHead().getCode()).isEqualTo(201);
     }
 
     @Test
+    @DisplayName("네트워크 삭제")
     void deleteNetwork() {
+        String id = "d85b837f-51ac-40b4-bede-a05771542144";
+
+        CommonVo<Boolean> result = networkService.deleteNetwork(id);
+        assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
     @Test
@@ -151,7 +179,7 @@ class ItNetworkServiceTest {
 
     @Test
     void getPermission() {
-        List<PermissionVo> result = networkService.getPermission(id);
+        List<PermissionVo> result = networkService.getPermission(defaultId);
 
         assertThat(4).isEqualTo(result.size());
         result.stream().map(PermissionVo::getUser).forEach(System.out::println);

@@ -22,6 +22,8 @@ public interface ItVmService {
 
     List<VmSetVo> setVmSet();               // 생성 창
     List<IdentifiedVo> getCpuProfileList(String clusterId); // cpuprofile
+    List<IdentifiedVo> getIsoImage();       //  부트 옵션
+
     CommonVo<Boolean> addVm(VmCreateVo vmCreateVo);   // 생성
     VmCreateVo setEditVm(String id);      // 편집 창
     CommonVo<Boolean> editVm(String id, VmCreateVo vmCreateVo);     // 편집

@@ -126,6 +126,8 @@ public class NetworkServiceImpl implements ItNetworkService {
                                             .mtu(ncVo.getMtu())
                                             .stp(ncVo.getStp()) // ?
                                             .externalProvider(ncVo.getExternalProvider() ?  openStackNetworkProvider : null)
+                                            // TODO 물리적네트워크
+//                                            .externalProviderPhysicalNetwork(new NetworkBuilder().externalProviderPhysicalNetwork())
                             )
                             .send().network();
 
@@ -163,7 +165,6 @@ public class NetworkServiceImpl implements ItNetworkService {
     }
 
     // 네트워크 편집 창
-    // TODO
     @Override
     public NetworkCreateVo setEditNetwork(String id) {
         SystemService system = admin.getConnection().systemService();
@@ -172,26 +173,29 @@ public class NetworkServiceImpl implements ItNetworkService {
         return NetworkCreateVo.builder()
                 .datacenterId(network.dataCenter().id())
                 .datacenterName(system.dataCentersService().dataCenterService(network.dataCenter().id()).get().send().dataCenter().name())
+                .id(id)
                 .name(network.name())
                 .description(network.description())
                 .comment(network.comment())
-                .label(network.networkLabels().get(0).id())
-                .vlan(network.vlan().idAsInteger())
+                .label(network.networkLabelsPresent() ? network.networkLabels().get(0).id() : null)
+                .vlan(network.vlanPresent() ? network.vlan().idAsInteger() : null)
                 .usageVm(network.usages().contains(NetworkUsage.VM))
                 .portIsolation(network.portIsolation())
-                .dnsList(network.dnsResolverConfigurationPresent() ? network.dnsResolverConfiguration().nameServers() : null)
                 .mtu(network.mtu().intValue())
+                .dnsList(network.dnsResolverConfigurationPresent() ? network.dnsResolverConfiguration().nameServers() : null)
                 .externalProvider(network.externalProviderPresent())
-//                .physicalNw()     //물리적 네트워크
+//                .physicalNw()     // TODO:HELP 물리적 네트워크
                 .build();
     }
 
     // 네트워크 편집
+    // 중복이름 : dc 다르면 중복명 가능
+    // TODO 문제있음
     @Override
     public CommonVo<Boolean> editNetwork(NetworkCreateVo ncVo) {
         SystemService system = admin.getConnection().systemService();
         DataCenter dataCenter = system.dataCentersService().dataCenterService(ncVo.getDatacenterId()).get().send().dataCenter();
-//        OpenStackNetworkProvider openStackNetworkProvider = systemService.openstackNetworkProvidersService().list().send().providers().get(0);
+        NetworkService networkService = system.networksService().networkService(ncVo.getId());
 
         try {
             NetworkBuilder networkBuilder = new NetworkBuilder();
@@ -201,12 +205,11 @@ public class NetworkServiceImpl implements ItNetworkService {
                     .description(ncVo.getDescription())
                     .comment(ncVo.getComment())
                     .usages(ncVo.getUsageVm() ? NetworkUsage.VM : NetworkUsage.DEFAULT_ROUTE)
-                    // TODO DNS 구현안됨
-//                    .dnsResolverConfiguration()
+//                    .dnsResolverConfiguration()   // TODO:HELP DNS 구현안됨
                     .mtu(ncVo.getMtu())
                     .stp(ncVo.getStp())
                     .vlan(ncVo.getVlan() != null ? new VlanBuilder().id(ncVo.getVlan()) : null)
-//                    .externalProvider(ncVo.getExternalProvider() ? openStackNetworkProvider : null);  // 수정불가
+//                    .externalProvider(ncVo.getExternalProvider() ? system.openstackNetworkProvidersService().list().send().providers().get(0) : null)  // 수정불가
                     .dataCenter(dataCenter);
 
             // 외부 공급자 처리시 레이블 생성 안됨
@@ -219,9 +222,12 @@ public class NetworkServiceImpl implements ItNetworkService {
                 nlsService.add().label(new NetworkLabelBuilder().id(ncVo.getLabel())).send();// 그리고 다시 생성
             }
 
-            return CommonVo.successResponse();
+            networkService.update().network(networkBuilder.build()).send();
+
+            log.info("네트워크 편집");
+            return CommonVo.createResponse();
         }catch (Exception e){
-            log.error("error, ", e);
+            log.error("네트워크 편집에러, ", e);
             return CommonVo.failResponse(e.getMessage());
         }
     }
@@ -238,13 +244,17 @@ public class NetworkServiceImpl implements ItNetworkService {
                             .flatMap(cluster -> system.clustersService().clusterService(cluster.id()).networksService().list().send().networks().stream())
                             .filter(network -> network.id().equals(id))
                             .noneMatch(network -> network.status().equals(NetworkStatus.OPERATIONAL));
+        try {
+            if (cDelete) {  // 삭제 가능한 경우 네트워크를 삭제하고 성공 응답을 반환합니다
+                networkService.remove().send();
 
-        // 삭제 가능한 경우 네트워크를 삭제하고 성공 응답을 반환합니다
-        if (cDelete) {
-            networkService.remove().send();
-            log.info("network 삭제");
-            return CommonVo.successResponse();
-        } else {
+                log.info("network 삭제");
+                return CommonVo.successResponse();
+            } else {
+                log.error("network 삭제 실패");
+                return CommonVo.failResponse("오류");
+            }
+        }catch (Exception e){
             log.error("network 삭제 실패");
             return CommonVo.failResponse("오류");
         }

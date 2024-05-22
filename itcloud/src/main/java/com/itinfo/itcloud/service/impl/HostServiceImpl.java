@@ -273,14 +273,14 @@ public class HostServiceImpl implements ItHostService {
     }
 
 
-    // ssh 관리
-    // 재시작
     // TODO
+    // ssh 관리 - 재시작, 중지
     /*
         ssh 관리
         oVirt의 엔진 SDK를 통해 SSH를 통해 호스트를 재부팅하는 기능은 기본적으로 제공되지 않습니다.
         oVirt 엔진 SDK는 호스트를 관리하기 위한 API를 제공하지만, SSH를 통한 호스트 재부팅과 같은 기능은 포함되어 있지 않습니다.
     */
+    // 재시작
     @Override
     public CommonVo<Boolean> reStart(String id) {
         SystemService system = admin.getConnection().systemService();
@@ -301,7 +301,6 @@ public class HostServiceImpl implements ItHostService {
 
 
     // 중지
-    // TODO
     @Override
     public CommonVo<Boolean> stop(String id) {
         SystemService system = admin.getConnection().systemService();
@@ -388,7 +387,6 @@ public class HostServiceImpl implements ItHostService {
     }
 
 
-    // TODO: 고쳐야됨
     // 가상머신 목록
     @Override
     public List<VmVo> getVm(String id) {
@@ -397,10 +395,12 @@ public class HostServiceImpl implements ItHostService {
 
         log.info("Host 가상머신");
         return vmList.stream()
-                .filter(vm -> (vm.hostPresent() && vm.host().id().equals(id)) || (vm.placementPolicy().hostsPresent() && vm.placementPolicy().hosts().get(0).id().equals(id)))
+                .filter(vm ->
+                            (vm.hostPresent() && vm.host().id().equals(id)) ||
+                            (vm.placementPolicy().hostsPresent() && vm.placementPolicy().hosts().stream().anyMatch(host -> host.id().equals(id))))
                 .map(vm ->
                         VmVo.builder()
-                            .hostName(system.hostsService().hostService(id).get().send().host().name())
+//                            .hostName(system.hostsService().hostService(id).get().send().host().name())
                             .id(vm.id())
                             .name(vm.name())
                             .clusterName(system.clustersService().clusterService(vm.cluster().id()).get().send().cluster().name())
@@ -411,6 +411,7 @@ public class HostServiceImpl implements ItHostService {
                             .ipv6(commonService.getVmIp(system, vm.id(), "v6"))
 //                            .placement(vm.placementPolicy().hostsPresent()) // 호스트 고정여부
                                 // vm.placementPolicy().hosts() // 고정된 호스트 id가 나옴
+                            // 현재 호스트에 부착 여부
                         .build()
                 )
                 .collect(Collectors.toList());
@@ -723,67 +724,5 @@ public class HostServiceImpl implements ItHostService {
                 // Nmstate 버전
                 .build();
     }
-
-
-
-
-
-    // region: 안쓸거 같음
-
-
-
-
-//    @Override
-//    public boolean rebootHost(String hostId) {
-//        log.debug("rebootHost ... hostId: {}", hostId);
-//        SystemService system = admin.getConnection().systemService();
-//        HostService hostService = system.hostsService().hostService(hostId);
-//        /*
-//        Host hostFound = hostService.get().send().host();
-//        if (hostFound == null) {
-//            log.error("rebootHost FAILED ...");
-//            return false;
-//        }
-//        log.debug("hostFound: {}", hostFound);
-//        log.debug("hostFound.status(): {}", hostFound.status().value());
-//        */
-//        try {
-//            Host hostAfter = hostService.updateUsingSsh().async(true).host(
-//                    new HostBuilder()
-//                            .id(hostId)
-//                            // TODO: .status 메소드로 상태변경방법 조사 필요
-//                            .status(HostStatus.REBOOT)
-//                            .build()
-//            ).send().host();
-//            log.info("hostAfter: {}", hostAfter.status().value());
-//            log.info("hostAfter.status(): {}", hostAfter.status().value());
-//            return true;
-//        } catch (Exception e) {
-//            log.error("error {}", e.getLocalizedMessage());
-//            return false;
-//        }
-//    }
-
-
-
-
-
-    // 시작
-//    @Override
-//    public void start(String id) {
-//        SystemService system = admin.getConnection().systemService();
-//        HostService hostService = system.hostsService().hostService(id);
-//
-//        try {
-//            Host host = hostService.get().send().host();
-//
-//            log.info("start");
-//        }catch (Exception e){
-//            log.error("error: ", e);
-//        }
-//    }
-
-    // endregion
-
 
 }

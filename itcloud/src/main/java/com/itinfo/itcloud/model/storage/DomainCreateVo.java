@@ -24,7 +24,4 @@ public class DomainCreateVo {
     private String hostId;
     private String hostName;
 
-    // TODO
-    // 사용자 정의 연결 매개변수 해야하는건가
-
 }

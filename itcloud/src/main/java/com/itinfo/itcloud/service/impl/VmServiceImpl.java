@@ -169,6 +169,24 @@ public class VmServiceImpl implements ItVmService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<IdentifiedVo> getIsoImage(){
+        SystemService system = admin.getConnection().systemService();
+        List<Disk> diskList = system.disksService().list().send().disks();
+        // DiskContentType
+
+        return diskList.stream()
+                .filter(disk -> disk.contentType().equals(DiskContentType.ISO))
+                .map(disk ->
+                    IdentifiedVo.builder()
+                            .id(disk.id())
+                            .name(disk.name())
+                        .build()
+                )
+                .collect(Collectors.toList());
+    }
+
+//    public List<> addDiskImage
 
     // 가상머신 생성
     @Override
@@ -310,7 +328,6 @@ public class VmServiceImpl implements ItVmService {
                                 )
                 );
 
-                System.out.println(vmVo.toString());
 
                 Vm vm = vmsService.add().vm(vmBuilder.build()).send().vm();
 
@@ -328,11 +345,15 @@ public class VmServiceImpl implements ItVmService {
 
 
                 // 이것도 vm id가 있어야 생성가능
-//                if (vmVo.getVmBootVo().isCdDvdConn()) {
-//                    vmBuilder.cdroms(
-//                            new CdromBuilder().file()
-//                    )
-//                }
+                if (vmVo.getVmBootVo().getConnId() != null) {
+                    vmsService.vmService(vm.id()).cdromsService().add()
+                            .cdrom(
+                                new CdromBuilder()
+                                    .file(new FileBuilder().id(vmVo.getVmBootVo().getConnId()))
+                                .build()
+                            ).send();
+                    log.info("부트옵션 추가 성공");
+                }
 
 //                do{
 //                    Thread.sleep(3000);

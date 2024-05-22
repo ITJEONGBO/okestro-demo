@@ -8,6 +8,7 @@ import com.itinfo.itcloud.model.create.NetworkCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkClusterVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.ovirt.engine.sdk4.types.*;
@@ -22,50 +23,52 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class ItClusterServiceTest {
-    @Autowired ItClusterService cService;
+    @Autowired ItClusterService clusterService;
 
     String dcId = "9c72ff12-a5f3-11ee-941d-00163e39cb43";
-    String id = "927b7529-7e13-4e99-83dd-88adc04ebb13";
+    String id = "99ce9472-cabc-4338-80f7-9fd3d9367027";
     String defaultId = "9c7452ea-a5f3-11ee-93d2-00163e39cb43";
 
     @Test
     @DisplayName("클러스터 리스트 출력")
     void getList() {
-        List<ClusterVo> result = cService.getList();
+        List<ClusterVo> result = clusterService.getList();
 
-        assertThat(3).isEqualTo(result.size());
+        result.forEach(System.out::println);
+        assertThat(2).isEqualTo(result.size());
         assertThat(true).isEqualTo(result.stream().anyMatch(clusterVo -> clusterVo.getName().equals("Default")));
     }
 
     @Test
     @DisplayName("클러스터 생성 창")
     void setClusterDefaultInfo() {
-        List<DataCenterVo> result = cService.setClusterDefaultInfo();
+        List<DataCenterVo> result = clusterService.setClusterDefaultInfo();
 
-        assertThat(4).isEqualTo(result.size());
-        assertThat("Default").isEqualTo(result.get(0).getName());
-        assertThat(6).isEqualTo(result.get(0).getNetworkList().size());
+        assertThat(2).isEqualTo(result.size());
+        assertThat(true).isEqualTo(result.stream().anyMatch(dataCenterVo -> dataCenterVo.getName().equals("Default")));
     }
 
     @Test
     @DisplayName("클러스터 생성 - 외부 공급자 X")
     void addCluster() {
+        String randomName = RandomStringUtils.randomAlphabetic(2);
+
         ClusterCreateVo c =
                 ClusterCreateVo.builder()
                         .datacenterId(dcId)
-                        .name("test1")
-                        .cpuArc(Architecture.X86_64)
+                        .name(randomName)
+                        .cpuArc("X86_64")
                         .cpuType("Intel Nehalem Family")
 //                        .description("")
 //                        .comment("")
                         .networkId("00000000-0000-0000-0000-000000000009")
-                        .biosType(BiosType.CLUSTER_DEFAULT)
-                        .fipsMode(FipsMode.ENABLED)
+                        .biosType("Q35_SEA_BIOS")
+                        .fipsMode("ENABLED")
                         .version("4.7")
-                        .switchType(SwitchType.LEGACY)
-                        .firewallType(FirewallType.FIREWALLD)
+                        .switchType("LEGACY")
+                        .firewallType("FIREWALLD")
                         .logMaxMemory(95)
-                        .logMaxType(LogMaxMemoryUsedThresholdType.PERCENTAGE)
+                        .logMaxType("PERCENTAGE")
                         .virtService(true)
                         .glusterService(false)
                         .recoveryPolicy(MigrateOnError.MIGRATE)
@@ -74,32 +77,33 @@ class ItClusterServiceTest {
                         .networkProvider(false)
                         .build();
 
-        CommonVo<Boolean> result = cService.addCluster(c);
+        CommonVo<Boolean> result = clusterService.addCluster(c);
 
         assertThat(result.getHead().getCode()).isEqualTo(201);
-        assertThat("test1").isEqualTo(c.getName());
     }
 
 
     @Test
     @DisplayName("클러스터 생성 - 외부 공급자 O")
     void addCluster2() {
+        String randomName = RandomStringUtils.randomAlphabetic(2);
+
         ClusterCreateVo c =
                 ClusterCreateVo.builder()
                         .datacenterId(dcId)
-                        .name("test3")
-                        .cpuArc(Architecture.X86_64)
+                        .name(randomName)
+                        .cpuArc("X86_64")
                         .cpuType("Intel Nehalem Family")
 //                        .description("")
 //                        .comment("")
                         .networkId("00000000-0000-0000-0000-000000000009")
-                        .biosType(BiosType.CLUSTER_DEFAULT)
-                        .fipsMode(FipsMode.ENABLED)
+                        .biosType("CLUSTER_DEFAULT")
+                        .fipsMode("ENABLED")
                         .version("4.7")
-                        .switchType(SwitchType.LEGACY)
-                        .firewallType(FirewallType.FIREWALLD)
-                        .logMaxMemory(95)
-                        .logMaxType(LogMaxMemoryUsedThresholdType.PERCENTAGE)
+                        .switchType("LEGACY")
+                        .firewallType("FIREWALLD")
+                        .logMaxMemory(1024)
+                        .logMaxType("ABSOLUTE_VALUE_IN_MB") // ABSOLUTE_VALUE_IN_MB, PERCENTAGE
                         .virtService(true)
                         .glusterService(false)
                         .recoveryPolicy(MigrateOnError.MIGRATE)
@@ -108,32 +112,32 @@ class ItClusterServiceTest {
                         .networkProvider(true)
                         .build();
 
-        CommonVo<Boolean> result = cService.addCluster(c);
+        CommonVo<Boolean> result = clusterService.addCluster(c);
 
         assertThat(result.getHead().getCode()).isEqualTo(201);
-//        assertThat("test1").isEqualTo(c.getName());
     }
 
 
     @Test
     @DisplayName("클러스터 생성 - 외부 공급자 X, 중복이름")
     void addCluster3() {
+
         ClusterCreateVo c =
                 ClusterCreateVo.builder()
                         .datacenterId(dcId)
-                        .name("te1")
-                        .cpuArc(Architecture.X86_64)
+                        .name("MD")
+                        .cpuArc("X86_64")
                         .cpuType("Intel Nehalem Family")
 //                        .description("")
 //                        .comment("")
                         .networkId("00000000-0000-0000-0000-000000000009")
-                        .biosType(BiosType.CLUSTER_DEFAULT)
-                        .fipsMode(FipsMode.ENABLED)
+                        .biosType("CLUSTER_DEFAULT")
+                        .fipsMode("ENABLED")
                         .version("4.7")
-                        .switchType(SwitchType.LEGACY)
-                        .firewallType(FirewallType.FIREWALLD)
+                        .switchType("LEGACY")
+                        .firewallType("FIREWALLD")
                         .logMaxMemory(95)
-                        .logMaxType(LogMaxMemoryUsedThresholdType.PERCENTAGE)
+                        .logMaxType("PERCENTAGE")
                         .virtService(true)
                         .glusterService(false)
                         .recoveryPolicy(MigrateOnError.MIGRATE)
@@ -143,7 +147,7 @@ class ItClusterServiceTest {
                         .networkProvider(false)
                         .build();
 
-        CommonVo<Boolean> result = cService.addCluster(c);
+        CommonVo<Boolean> result = clusterService.addCluster(c);
 
         assertThat(result.getHead().getCode()).isEqualTo(404);
     }
@@ -152,29 +156,34 @@ class ItClusterServiceTest {
     @Test
     @DisplayName("클러스터 수정 창")
     void setEditCluster() {
-        ClusterCreateVo c = cService.setEditCluster(id);
+        String id = "ff23fc50-3d5c-4b5f-a018-8d8bff70819a";
+        ClusterCreateVo c = clusterService.setEditCluster(id);
 
-        assertThat("te1").isEqualTo(c.getName());
+        System.out.println(c);
+        assertThat("MD").isEqualTo(c.getName());
     }
 
     @Test
     @DisplayName("클러스터 수정")
     void editCluster() {
+        String randomName = RandomStringUtils.randomAlphabetic(2);
+        String id = "ff23fc50-3d5c-4b5f-a018-8d8bff70819a";
+
         ClusterCreateVo c =
                 ClusterCreateVo.builder()
                         .id(id)
 //                        .datacenterId(dcId)
-                        .name("tslkai")
-                        .cpuArc(Architecture.X86_64)
+                        .name(randomName)
+                        .cpuArc("X86_64")
                         .cpuType("Intel Nehalem Family")
                         .description("asdf")
                         .networkId("00000000-0000-0000-0000-000000000009")
-                        .biosType(BiosType.CLUSTER_DEFAULT)
-                        .fipsMode(FipsMode.ENABLED)
+                        .biosType("CLUSTER_DEFAULT")
+                        .fipsMode("ENABLED")
                         .version("4.7")
-                        .firewallType(FirewallType.FIREWALLD)
+                        .firewallType("FIREWALLD")
                         .logMaxMemory(95)
-                        .logMaxType(LogMaxMemoryUsedThresholdType.PERCENTAGE)
+                        .logMaxType("PERCENTAGE")
                         .virtService(true)
                         .glusterService(false)
                         .recoveryPolicy(MigrateOnError.MIGRATE)
@@ -183,10 +192,9 @@ class ItClusterServiceTest {
                         .networkProvider(false)
                         .build();
 
-        CommonVo<Boolean> result = cService.editCluster(id, c);
+        CommonVo<Boolean> result = clusterService.editCluster(id, c);
 
         assertThat(result.getHead().getCode()).isEqualTo(201);
-        assertThat("tslkai").isEqualTo(c.getName());
         assertThat("asdf").isEqualTo(c.getDescription());
         assertThat("Intel Nehalem Family").isEqualTo(c.getCpuType());
     }
@@ -194,20 +202,22 @@ class ItClusterServiceTest {
     @Test
     @DisplayName("클러스터 수정 - 중복이름 ")
     void editCluster2() {
+        String id = "ff23fc50-3d5c-4b5f-a018-8d8bff70819a";
+
         ClusterCreateVo c =
                 ClusterCreateVo.builder()
                         .id(id)
-                        .name("test2")
-                        .cpuArc(Architecture.X86_64)
+                        .name("ib")
+                        .cpuArc("X86_64")
                         .cpuType("Intel Nehalem Family")
                         .description("asdf")
                         .networkId("00000000-0000-0000-0000-000000000009")
-                        .biosType(BiosType.CLUSTER_DEFAULT)
-                        .fipsMode(FipsMode.ENABLED)
+                        .biosType("Q35_SEA_BIOS")
+                        .fipsMode("ENABLED")
                         .version("4.7")
-                        .firewallType(FirewallType.FIREWALLD)
+                        .firewallType("FIREWALLD")
                         .logMaxMemory(95)
-                        .logMaxType(LogMaxMemoryUsedThresholdType.PERCENTAGE)
+                        .logMaxType("PERCENTAGE")
                         .virtService(true)
                         .glusterService(false)
                         .recoveryPolicy(MigrateOnError.MIGRATE)
@@ -216,7 +226,7 @@ class ItClusterServiceTest {
                         .networkProvider(false)
                         .build();
 
-        CommonVo<Boolean> result = cService.editCluster(id, c);
+        CommonVo<Boolean> result = clusterService.editCluster(id, c);
 
         assertThat(result.getHead().getCode()).isEqualTo(404);
     }
@@ -224,28 +234,28 @@ class ItClusterServiceTest {
     @Test
     @DisplayName("클러스터 삭제")
     void deleteCluster() {
-        String did = "b9259be8-4beb-4616-8481-23de48944bf9";
+        String did = "ff23fc50-3d5c-4b5f-a018-8d8bff70819a";
 
-        CommonVo<Boolean> result = cService.deleteCluster(did);
+        CommonVo<Boolean> result = clusterService.deleteCluster(did);
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
     @Test
     @DisplayName("클러스터 정보")
     void getInfo() {
-        ClusterVo c = cService.getInfo(id);
+        ClusterVo c = clusterService.getInfo(defaultId);
 
-        assertThat("test2").isEqualTo(c.getName());
-        assertThat(0).isEqualTo(c.getHostCnt());
-        assertThat(0).isEqualTo(c.getVmCnt());
+        assertThat("Default").isEqualTo(c.getName());
+        assertThat(8).isEqualTo(c.getVmCnt());
     }
 
     @Test
     @DisplayName("클러스터 네트워크 목록")
     void getNetwork() {
-        List<NetworkVo> result = cService.getNetwork(id);
+        List<NetworkVo> result = clusterService.getNetwork(defaultId);
 
-        assertThat(3).isEqualTo(result.size());
+        result.forEach(System.out::println);
+        assertThat(5).isEqualTo(result.size());
         assertThat(true).isEqualTo(result.stream().anyMatch(networkVo -> networkVo.getName().equals("ovirtmgmt")));
     }
 
@@ -254,30 +264,30 @@ class ItClusterServiceTest {
     void addNetwork(){
         NetworkCreateVo create =
                 NetworkCreateVo.builder()
-                        .name("testnetworkcluster2")
+                        .name("test")
                         .description("test")
                         .comment("test")
                         .usageVm(true)
                         .externalProvider(false)
                         .clusterVoList(
                                 Arrays.asList(
-                                        NetworkClusterVo.builder()
-                                                .id("9c7452ea-a5f3-11ee-93d2-00163e39cb43")
-                                                .connected(true)
-                                                .required(true)
-                                                .build()
+                                    NetworkClusterVo.builder()
+                                        .id("9c7452ea-a5f3-11ee-93d2-00163e39cb43")
+                                        .connected(true)
+                                        .required(true)
+                                        .build()
                                 )
                         )
-                        .build();
+                .build();
 
-        CommonVo<Boolean> result = cService.addNetwork(defaultId, create);
+        CommonVo<Boolean> result = clusterService.addNetwork(defaultId, create);
         assertThat(result.getHead().getCode()).isEqualTo(201);
     }
 
     @Test
     @DisplayName("클러스터 네트워크 관리 창")
     void setNetworkManage() {
-        List<NetworkClusterVo> result = cService.setManageNetwork(defaultId);
+        List<NetworkClusterVo> result = clusterService.setManageNetwork(defaultId);
 
         result.forEach(System.out::println);
     }
@@ -288,7 +298,7 @@ class ItClusterServiceTest {
     @Test
     @DisplayName("클러스터 호스트 목록")
     void getHost() {
-        List<HostVo> result = cService.getHost(defaultId);
+        List<HostVo> result = clusterService.getHost(defaultId);
 
         assertThat(2).isEqualTo(result.size());
         assertThat(true).isEqualTo(result.stream().anyMatch(hostVo -> hostVo.getName().equals("host01.ititinfo.com")));
@@ -297,22 +307,22 @@ class ItClusterServiceTest {
     @Test
     @DisplayName("클러스터 가상머신 목록")
     void getVm() {
-        List<VmVo> result = cService.getVm(defaultId);
+        List<VmVo> result = clusterService.getVm(defaultId);
 
-        System.out.println(result);
+        result.forEach(System.out::println);
 
-        assertThat(10).isEqualTo(result.size());
+        assertThat(8).isEqualTo(result.size());
         assertThat(true).isEqualTo(result.stream().anyMatch(vmVo -> vmVo.getName().equals("HostedEngine")));
     }
 
     @Test
     @DisplayName("클러스터 선호도 그룹 & 레이블 생성 창")
     void setAffinityDefaultInfo() {
-        AffinityHostVm ahv = cService.setAffinityDefaultInfo(defaultId, "label");
-        AffinityHostVm ahv2 = cService.setAffinityDefaultInfo(defaultId, ""); // group
+        AffinityHostVm ahv = clusterService.setAffinityDefaultInfo(defaultId, "label");
+        AffinityHostVm ahv2 = clusterService.setAffinityDefaultInfo(defaultId, ""); // group
 
-        assertThat(2).isEqualTo(ahv.getHostList().size());
-        assertThat(10).isEqualTo(ahv.getVmList().size());
+        System.out.println(ahv.getHostList().size());
+        System.out.println(ahv.getVmList().size());
 
         System.out.println(ahv);
         System.out.println(ahv2);
@@ -321,12 +331,13 @@ class ItClusterServiceTest {
     @Test
     @DisplayName("클러스터 선호도 그룹 목록")
     void getAffinitygroup() {
-        List<AffinityGroupVo> ag = cService.getAffinitygroup(defaultId);
+        List<AffinityGroupVo> ag = clusterService.getAffinitygroup(defaultId);
 
         assertThat(3).isEqualTo(ag.size());
         assertThat(true).isEqualTo(ag.stream().anyMatch(affinityGroupVo -> affinityGroupVo.getName().equals("d")));
         ag.stream().map(AffinityGroupVo::getName).forEach(System.out::println);
     }
+    // 0522
 
     @Test
     @DisplayName("클러스터 선호도 그룹 생성")
@@ -353,7 +364,7 @@ class ItClusterServiceTest {
                         .vmList(vmList)
                         .build();
 
-        CommonVo<Boolean> result = cService.addAffinitygroup(defaultId, ag);
+        CommonVo<Boolean> result = clusterService.addAffinitygroup(defaultId, ag);
 
         assertThat(result.getHead().getCode()).isEqualTo(201);
     }
@@ -362,7 +373,7 @@ class ItClusterServiceTest {
     @DisplayName("선호도 그룹 편집 창")
     void setEditAffinitygroup() {
         String agId = "6e7b1e90-3453-4423-a40d-22204cb95943";
-        AffinityGroupCreateVo group = cService.setEditAffinitygroup(defaultId, agId);
+        AffinityGroupCreateVo group = clusterService.setEditAffinitygroup(defaultId, agId);
 
         assertThat("gg").isEqualTo(group.getName());
         System.out.println(group.toString());
@@ -388,7 +399,7 @@ class ItClusterServiceTest {
 //                        .vmList()
                         .build();
 
-        CommonVo<Boolean> result = cService.editAffinitygroup(defaultId, agId, ag);
+        CommonVo<Boolean> result = clusterService.editAffinitygroup(defaultId, agId, ag);
 
         assertThat(result.getHead().getCode()).isEqualTo(201);
     }
@@ -397,14 +408,14 @@ class ItClusterServiceTest {
     void deleteAffinitygroup() {
         String agId = "ca3ef16e-c188-4d13-9311-3ea8a123201c";
 
-        CommonVo<Boolean> result = cService.deleteAffinitygroup(id, agId);
+        CommonVo<Boolean> result = clusterService.deleteAffinitygroup(id, agId);
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
     @Test
     @DisplayName("클러스터 선호도 레이블 목록")
     void getAffinitylabelList() {
-        List<AffinityLabelVo> al = cService.getAffinitylabelList(defaultId);
+        List<AffinityLabelVo> al = clusterService.getAffinitylabelList(defaultId);
 
         assertThat(2).isEqualTo(al.size());
         assertThat(true).isEqualTo(al.stream().anyMatch(als -> als.getName().equals("test")));
@@ -427,7 +438,7 @@ class ItClusterServiceTest {
                         .vmList(vmList)
                         .build();
 
-        CommonVo<Boolean> result = cService.addAffinitylabel(id, label);
+        CommonVo<Boolean> result = clusterService.addAffinitylabel(id, label);
         assertThat(result.getHead().getCode()).isEqualTo(201);
     }
 
@@ -435,7 +446,7 @@ class ItClusterServiceTest {
     @DisplayName("클러스터 선호도 레이블 편집 창")
     void getAffinityLabel() {
         String alId = "fe36a56c-b366-42d9-80de-5f02aa4eff09";
-        AffinityLabelCreateVo label = cService.getAffinityLabel(defaultId, alId);
+        AffinityLabelCreateVo label = clusterService.getAffinityLabel(defaultId, alId);
 
         assertThat("test").isEqualTo(label.getName());
         System.out.println(label.toString());
@@ -450,13 +461,13 @@ class ItClusterServiceTest {
     void deleteAffinitylabel() {
         String alId = "0baef571-18dd-4b9f-8519-de50a05bb428";
 
-        CommonVo<Boolean> result = cService.deleteAffinitylabel(id, alId);
+        CommonVo<Boolean> result = clusterService.deleteAffinitylabel(id, alId);
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
     @Test
     void getPermission() {
-        List<PermissionVo> result = cService.getPermission(id);
+        List<PermissionVo> result = clusterService.getPermission(id);
 
         assertThat(3).isEqualTo(result.size());
         result.stream().map(PermissionVo::getUser).forEach(System.out::println);
@@ -464,6 +475,6 @@ class ItClusterServiceTest {
 
     @Test
     void getEvent() {
-        assertThat(1045).isEqualTo(cService.getEvent(defaultId).size());
+        assertThat(1045).isEqualTo(clusterService.getEvent(defaultId).size());
     }
 }

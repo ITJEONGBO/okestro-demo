@@ -171,7 +171,7 @@ public class HostController {
 		return hostService.getAffinitylabels(id);
 	}
 
-	// TODO
+
 	// 호스트 선호도 그룹 생성위한 목록
 	// 해당 host가 가지고 있는 cluster가 가지고 있는 host, vm, 레이블 생성시 필요
 	@GetMapping("/host/{id}/affinitylabel/settings")
