@@ -6,6 +6,8 @@ import com.itinfo.dao.aaa.OvirtUser
 import com.itinfo.dao.aaa.OvirtUserRepository
 import com.itinfo.dao.aaa.toUserVo
 import com.itinfo.dao.aaa.toUserVos
+import com.itinfo.dao.engine.UserDetail
+import com.itinfo.dao.engine.UserDetailRepository
 
 import com.itinfo.model.UserVo
 import org.postgresql.util.PSQLException
@@ -16,34 +18,41 @@ import org.springframework.stereotype.Component
 @Component
 class OvirtUsersDao {
 	@Autowired private lateinit var ovirtUserRepository: OvirtUserRepository
+	@Autowired private lateinit var userDetailRepository: UserDetailRepository
 
 	@Throws(PSQLException::class)
 	fun retrieveUsers(): List<UserVo> {
 		log.info("... retrieveUsers")
 		val itemsFound: List<OvirtUser> =
 			ovirtUserRepository.findAll()
+		if (itemsFound.isEmpty()) return listOf()
 		log.debug("itemFound: $itemsFound")
-		return itemsFound.toUserVos()
+
+		val userDetails: List<UserDetail> =
+			userDetailRepository.findAll()
+		log.debug("detailsFound: $userDetails")
+		return itemsFound.toUserVos(userDetails)
 	}
 
 	@Throws(PSQLException::class)
 	fun retrieveUser(username: String): UserVo? {
 		log.info("... retrieveUser('$username')")
-		val itemFound: OvirtUser? =
-			ovirtUserRepository.findByName(username)
+		val itemFound: OvirtUser =
+			ovirtUserRepository.findByName(username) ?: throw Exception("사용자를 찾을 수 없습니다.")
 		log.debug("itemFound: $itemFound")
-		return itemFound?.toUserVo()
-//			?.also { log.debug("returning ... $it") }
-//		return this.systemSqlSessionTemplate.selectOne("USERS.retrieveUser", id)
+		val detailFound: UserDetail =
+			userDetailRepository.findByExternalId(itemFound.uuid) ?: throw Exception("사용자 상세정보를 찾을 수 없습니다.")
+		log.debug("detailFound: $detailFound")
+		return itemFound.toUserVo(detailFound) // USERS.retrieveUser
 	}
 
 	@Throws(PSQLException::class)
 	fun isExistUser(user: UserVo): Boolean {
 		log.info("... isExistUser > user: $user")
-		val isUserFound: Boolean = retrieveUser(user.id) != null
+		val isUserFound: Boolean =
+			retrieveUser(user.username) != null
 		log.debug("isUserFound: $isUserFound")
-		return isUserFound
-		// return this.systemSqlSessionTemplate.selectOne("USERS.isExistUser", user)
+		return isUserFound // USERS.isExistUser
 	}
 
 	@Throws(PSQLException::class)

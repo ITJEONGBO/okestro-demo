@@ -50,7 +50,7 @@ var overviewVue = new Vue({
         },
         // get grafana uri
         getGrafanaUri: function () {
-            this.$http.post('/compute/vm/metrics/uri').then(function (response) {
+            this.$http.get('/compute/vm/metrics/uri').then(function (response) {
                 this.dashboardUri = response.data.resultKey;
             }.bind(this))
                 .catch(function (error) {

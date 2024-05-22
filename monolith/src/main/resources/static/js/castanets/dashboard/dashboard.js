@@ -74,7 +74,7 @@ new Vue({
         },
         // retrieve data center status
         retrieveDataCenterStatus: function () {
-            this.$http.get('/dashboard/retrieveDataCenterStatus')
+            this.$http.get('/v2/dashboard/dataCenter')
                 .then(function (response) {
                     this.dataCenter = response.data.resultKey;
                     this.isHistory = false;

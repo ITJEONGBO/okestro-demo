@@ -98,10 +98,10 @@ class DashboardController {
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@GetMapping(value=["/hosts/{status}"])
+	@GetMapping(value=["/hosts"])
 	@ResponseBody
 	fun retrieveHosts(
-		@PathVariable(name="status") status: String?
+		@RequestParam(name="status") status: String?
 	): JSONObject {
 		log.info("... retrieveHosts('$status')")
 		val hosts: List<HostDetailVo> =

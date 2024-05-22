@@ -8,9 +8,9 @@ new Vue({
 	el: '#addUser',
 	data: {
 		user: {
-			id: '',
+			username: '',
 			lastName: '',
-			name: '',
+			firstName: '',
 			password: '',
 			email: '',
 			administrative: true
@@ -36,8 +36,8 @@ new Vue({
 		}
 	},
 	mounted: function() {
-		this.$EventBus.$on('updateUser', id =>{
-			this.user.id = id;
+		this.$EventBus.$on('updateUser', id => {
+			this.user.username = id;
 			this.retrieveUser();
 			this.mode = 'update';
 		})
@@ -58,12 +58,11 @@ new Vue({
 					
 					if (count <= 0) {
 						alert('사용자를 추가하지 못했습니다. 사용자 중복 여부를 확인하여 주십시오.');
-
-					} else {
-						this.init();
-						this.$EventBus.$emit('closeAddModal', 'addUser');
-						this.$EventBus.$emit('retrieveList', this.blank);
+						return;
 					}
+					this.init();
+                    this.$EventBus.$emit('closeAddModal', 'addUser');
+                    this.$EventBus.$emit('retrieveList', this.blank);
 				}.bind(this)).catch(function(error) {
 				    console.log(error);
 					alert('요청을 처리하는데 문제가 발생했습니다. 관리자에게 문의해주세요');
@@ -86,19 +85,15 @@ new Vue({
 		// check id
 		checkId: function() {
             // check length
-            if (this.user.id.length >= 4) {
-                this.containsFourCharacters = true;
-            } else {
-                this.containsFourCharacters = false;
-            }
+            this.containsFourCharacters = (this.user.username.length >= 4);
 
             // check a valid id
 			const idFormat = /[ `~!@#$%^&*()+\=\[\]{};':"\\|,.<>\/?]/;
-            this.validId = !idFormat.test(this.user.id);
+            this.validId = !idFormat.test(this.user.username);
 
             // check korean
 			const korean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
-			this.containsKorean = !korean.test(this.user.id);
+			this.containsKorean = !korean.test(this.user.username);
 		},
 		// check password
 		checkPassword: function() {
@@ -120,7 +115,7 @@ new Vue({
 		// retrieve user
 		retrieveUser: function() {
 			// this.spinnerOn = true;
-			this.$http.get('/admin/users/retrieveUser?id=' + this.user.id).then(function(response) {
+			this.$http.get('/admin/users/retrieveUser?id=' + this.user.username).then(function(response) {
 				this.user = response.data.resultKey;
 
 				// check password
@@ -147,9 +142,9 @@ new Vue({
 			this.init();
 		},
 		init: function (){
-			this.user.id = '';
+			this.user.username = '';
 			this.user.lastName = '';
-			this.user.name = '';
+			this.user.firstName = '';
 			this.user.password = '';
 			this.user.email = '';
 			this.user.administrative = true;
@@ -158,7 +153,7 @@ new Vue({
 		},
 		openPop: function (modalType){
 			document.getElementById(modalType).classList.add('active');
-			this.$EventBus.$emit('password', this.user.id);
+			this.$EventBus.$emit('password', this.user.username);
 		}
 	}
 })

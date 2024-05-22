@@ -130,7 +130,7 @@ class LoginController {
 		@RequestParam(name="userId") userId: String
 	): JSONObject {
 		log.info("... resetAdminLoginCount")
-		usersService.initLoginCount(userId)
+//		usersService.initLoginCount(userId)
 
 		val systemProperties = systemPropertiesService.retrieveSystemProperties()
 		systemProperties.ip = ""

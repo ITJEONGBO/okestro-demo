@@ -51,7 +51,5 @@ interface UsersService {
 	fun updatePassword(user: UserVo): Int
 	fun updateLoginCount(user: UserVo): Int
 	fun login(id: String): String
-	fun setBlockTime(user: UserVo)
-	fun initLoginCount(userId: String)
 }
 

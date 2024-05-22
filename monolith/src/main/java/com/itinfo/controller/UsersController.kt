@@ -141,7 +141,7 @@ class UsersController {
 		@RequestBody user: UserVo
 	): JSONObject {
 		log.info("... updatePassword")
-		val passwordEnc = usersService.login(user.id)
+		val passwordEnc = usersService.login(user.username)
 //		if (Base64.isArrayByteBase64(user.password.toByteArray()))
 //			user.password = user.password.decodeBase64()
 		log.debug("user's password: $passwordEnc")

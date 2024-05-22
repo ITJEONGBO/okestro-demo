@@ -10,9 +10,6 @@ import org.postgresql.util.PSQLException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-
 
 /**
  * [UsersServiceImpl]
@@ -32,7 +29,7 @@ class UsersServiceImpl : UsersService {
     override fun fetchUsers(): List<UserVo> {
         log.info("... retrieveUsers")
         val users: List<UserVo> =
-            usersDao.retrieveUsers().also { log.debug("found: $it") }
+            usersDao.retrieveUsers()
         return users
     }
 
@@ -90,7 +87,7 @@ class UsersServiceImpl : UsersService {
     @Throws(PSQLException::class)
     override fun updatePassword(user: UserVo): Int {
         log.info("... updatePassword")
-        user.newPassword = user.newPassword.createHash()
+//      user.password = user.newPassword.createHash()
         return usersDao.updatePassword(user)
     }
 
@@ -100,7 +97,7 @@ class UsersServiceImpl : UsersService {
         return usersDao.updateLoginCount(user)
     }
 
-    @Throws(PSQLException::class)
+    /*
     override fun setBlockTime(user: UserVo) {
         log.info("... setBlockTime")
         user.blockTime = LocalDateTime.now()
@@ -114,6 +111,7 @@ class UsersServiceImpl : UsersService {
         log.info("... initLoginCount($userId)")
         usersDao.initLoginCount(userId)
     }
+    */
     
     companion object {
         private val log by LoggerDelegate()

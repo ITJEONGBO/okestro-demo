@@ -1,11 +1,11 @@
 package com.itinfo.dao.aaa
 
+import com.itinfo.dao.engine.UserDetail
 import com.itinfo.dao.gson
 import com.itinfo.model.UserVo
 
 import java.io.Serializable
 import java.time.LocalDateTime
-import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Table
 import javax.persistence.GeneratedValue
@@ -14,9 +14,8 @@ import javax.persistence.Id
 
 /**
  * [OvirtUser]
- * engine 엔티티: USERS
+ * aaa 엔티티: USERS
  *
- * USER-SQL > USER
  * @see com.itinfo.model.UserVo
  */
 @Entity
@@ -39,19 +38,28 @@ class OvirtUser(
 	val consecutiveFailures: Int,
 	val validFrom: LocalDateTime,
 	val validTo: LocalDateTime,
+	// 불가능... 다른 데이터소스에서 찾을수 있는 엔티티
+	/*
+	@OneToOne
+	@JoinColumn(name="externalId")
+	var userDetail: UserDetail
+	*/
 ): Serializable {
 	override fun toString(): String = gson.toJson(this)
 }
 
-fun OvirtUser.toUserVo(): UserVo = UserVo.userVo {
-	id { this@toUserVo.name }
+fun OvirtUser.toUserVo(userDetail: UserDetail?): UserVo = UserVo.userVo {
+	usename { this@toUserVo.name }
 	password { this@toUserVo.password }
-	// name { this@toUserVo.name }
-	// lastName { this@toUserVo.surname }
-	// email { this@toUserVo.email }
+	firstName { userDetail?.name }
+	lastName { userDetail?.surname }
+	email { userDetail?.email }
+	administrative { userDetail?.lastAdminCheckStatus }
 	// principal { this@toUserVo.namespace }
-	// administrative { this@toUserVo.lastAdminCheckStatus }
 }
 
-fun List<OvirtUser>.toUserVos(): List<UserVo> =
-	this.map { it.toUserVo() }
+fun List<OvirtUser>.toUserVos(userDetails: List<UserDetail>): List<UserVo> {
+	val itemById: Map<String, UserDetail> =
+		userDetails.associateBy { it.externalId }
+	return this.map { it.toUserVo(itemById[it.uuid]) }
+}

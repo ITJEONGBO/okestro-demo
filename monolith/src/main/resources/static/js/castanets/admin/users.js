@@ -29,7 +29,6 @@ new Vue({
 			this.$http.get('/admin/users/retrieveUsers').then(function(response) {
 				this.users = response.data.resultKey;
 				this.spinnerOn = false;
-
 			}.bind(this)).catch(function(error) {
 			    console.log(error);
 				this.spinnerOn = false;
@@ -86,7 +85,7 @@ new Vue({
 				document.getElementById('addUser').classList.add('active');
 
 				if(modalType === 'updateUser'){
-					this.$EventBus.$emit('updateUser', this.selectedUsers[0].id);
+					this.$EventBus.$emit('updateUser', this.selectedUsers[0].username);
 				}
 			}
 		},

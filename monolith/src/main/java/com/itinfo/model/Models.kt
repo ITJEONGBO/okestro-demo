@@ -2751,39 +2751,35 @@ data class UsageVo(
 )
 
 class UserVo(
-	var no: Int = -1,
-	var id: String = "",
+	var username: String = "",
 	var password: String = "",
-	var newPassword: String = "",
 	var administrative: Boolean = false,
-	var name: String = "",
-	var lastName: String = "",
-	var principal: String = "",
+	var firstName: String = "",
+	var surName: String = "",
 	var namespace: String = "",
 	var email: String = "",
 	var authProvider: String = "",
+	var principal: String = "",
 	var roleId: String = "",
-	var loginCount: Int = 0,
-	var blockTime: String = "",
+//	var loginCount: Int = 0,
+//	var blockTime: String = "",
 ): Serializable {
 	override fun toString(): String = gson.toJson(this)
 
 	class Builder {
-		private var bNo: Int = -1;fun no(block: () -> Int?) { bNo = block() ?: -1 }
-		private var bId: String = "";fun id(block: () -> String?) { bId = block() ?: "" }
+		private var bUsername: String = "";fun usename(block: () -> String?) { bUsername = block() ?: "" }
 		private var bPassword: String = "";fun password(block: () -> String?) { bPassword = block() ?: "" }
-		private var bNewPassword: String = "";fun newPassword(block: () -> String?) { bNewPassword = block() ?: "" }
 		private var bAdministrative: Boolean = false;fun administrative(block: () -> Boolean?) { bAdministrative = block() ?: false }
-		private var bName: String = "";fun name(block: () -> String?) { bName = block() ?: "" }
+		private var bFirstName: String = "";fun firstName(block: () -> String?) { bFirstName = block() ?: "" }
 		private var bLastName: String = "";fun lastName(block: () -> String?) { bLastName = block() ?: "" }
-		private var bPrincipal: String = "";fun principal(block: () -> String?) { bPrincipal = block() ?: "" }
 		private var bNamespace: String = "";fun namespace(block: () -> String?) { bNamespace = block() ?: "" }
 		private var bEmail: String = "";fun email(block: () -> String?) { bEmail = block() ?: "" }
 		private var bAuthProvider: String = "";fun authProvider(block: () -> String?) { bAuthProvider = block() ?: "" }
+		private var bPrincipal: String = "";fun principal(block: () -> String?) { bPrincipal = block() ?: "" }
 		private var bRoleId: String = "";fun roleId(block: () -> String?) { bRoleId = block() ?: "" }
-		private var bLoginCount: Int = 0;fun loginCount(block: () -> Int?) { bLoginCount = block() ?: 0 }
-		private var bBlockTime: String = "";fun blockTime(block: () -> String?) { bBlockTime = block() ?: "" }
-		fun build(): UserVo = UserVo(bNo, bId, bPassword, bNewPassword, bAdministrative, bName, bLastName, bPrincipal, bNamespace, bEmail, bAuthProvider, bRoleId, bLoginCount, bBlockTime)
+//		private var bLoginCount: Int = 0;fun loginCount(block: () -> Int?) { bLoginCount = block() ?: 0 }
+//		private var bBlockTime: String = "";fun blockTime(block: () -> String?) { bBlockTime = block() ?: "" }
+		fun build(): UserVo = UserVo(bUsername, bPassword, bAdministrative, bFirstName, bLastName, bNamespace, bEmail, bAuthProvider, bPrincipal)
 	}
 	companion object {
 		@JvmStatic inline fun userVo(block: Builder.() -> Unit): UserVo = Builder().apply(block).build()
@@ -2791,21 +2787,20 @@ class UserVo(
 }
 
 fun UserVo.toCustomUserDetails(): CustomUserDetails = CustomUserDetails.custerUserDetails {
-	userid { this@toCustomUserDetails.id }
+	userid { this@toCustomUserDetails.username }
 	passwd { this@toCustomUserDetails.password }
 }
 
 fun UserVo.user2Add(): User = Builders.user()
 	.principal(principal)
-	.userName("$name@internal@internal-authz")
+	.userName("$username@internal@internal-authz")
 	.domain(Builders.domain().name("internal-authz"))
 	.build()
 
 fun UserVo.permission2Add(): Permission = Builders.permission()
 	.role(Builders.role().id(roleId))
-	.user(Builders.user().id(id))
+	.user(Builders.user().id(username))
 	.build()
-
 
 
 data class VmConsoleVo(

@@ -76,9 +76,9 @@
 <%--											</td>--%>
 											<td v-if="user.administrative === true">관리자</td>
 											<td v-else>사용자</td>
-											<td>{{user.id}}</td>
-											<td>{{user.lastName}}</td>
-											<td>{{user.name}}</td>
+											<td>{{user.username}}</td>
+											<td>{{user.surName}}</td>
+											<td>{{user.firstName}}</td>
 											<td>{{user.email}}</td>
 											<td>
 												<div class="list-popbtn-wrap">
@@ -146,22 +146,45 @@
 							<div class="frm-unit">
 								<p class="tit">ID<span class="mustbe"></span></p>
 								<div class="inputBox">
-									<input type="text" class="input-custom" placeholder="ID" parsley-trigger="change" :disabled="mode == 'update'" @input="checkId" v-model="user.id" :maxlength="this.$maxId" required>
+									<input type="text" 
+									  class="input-custom" 
+									  placeholder="ID" 
+									  parsley-trigger="change" 
+									  :disabled="mode == 'update'" 
+									  @input="checkId" 
+									  v-model="user.username" 
+									  :maxlength="this.$maxId" 
+									  required
+									>
 								</div>
-								<p class="errTxt" v-if="(!containsFourCharacters || !validId || !containsKorean) && mode == 'create'">4~20자 영문, 숫자와 특수기호(_),(-)만 사용 가능합니다.</p>
+								<p class="errTxt" 
+								  v-if="(!containsFourCharacters || !validId || !containsKorean) && mode == 'create'"
+								>
+									4~20자 영문, 숫자와 특수기호(_),(-)만 사용 가능합니다.
+								</p>
 							</div>
 						</div>
 						<div class="frmSet">
 							<div class="frm-unit half-left">
 								<p class="tit">성</p>
 								<div class="inputBox">
-									<input type="text" class="input-custom" placeholder="성" v-model="user.lastName" :maxlength="this.$maxName">
+									<input type="text" 
+									  class="input-custom" 
+									  placeholder="성" 
+									  v-model="user.surName" 
+									  :maxlength="this.$maxName"
+									>
 								</div>
 							</div>
 							<div class="frm-unit half-right">
 								<p class="tit">이름</p>
 								<div class="inputBox">
-									<input type="text" class="input-custom" placeholder="이름" v-model="user.name" :maxlength="this.$maxName">
+									<input type="text" 
+									  class="input-custom" 
+									  placeholder="이름" 
+									  v-model="user.firstName"
+									  :maxlength="this.$maxName"
+									>
 								</div>
 							</div>
 						</div>
@@ -169,14 +192,32 @@
 							<div class="frm-unit half-left">
 								<p class="tit">비밀번호<span class="mustbe"></span></p>
 								<div class="inputBox">
-									<input type="password" class="input-custom" placeholder="비밀번호" data-parsley-maxlength="6" :disabled="mode == 'update'" @input="checkPassword" v-model="user.password" :maxlength="this.$maxPassword" required>
+									<input type="password" 
+									  class="input-custom" 
+									  placeholder="비밀번호" 
+									  data-parsley-maxlength="6" 
+									  :disabled="mode == 'update'" 
+									  @input="checkPassword" 
+									  v-model="user.password" 
+									  :maxlength="this.$maxPassword" 
+									  required
+									>
 								</div>
-								<p class="errTxt" v-if="!containsEightCharacters || !containsNumber || !containsSpecialCharacter">8~16자 자 영문, 숫자, 특수문자를 사용하십시오.</p>
+								<p class="errTxt" 
+								  v-if="!containsEightCharacters || !containsNumber || !containsSpecialCharacter"
+								>
+									8~16자 자 영문, 숫자, 특수문자를 사용하십시오.
+								</p>
 							</div>
 							<div class="frm-unit half-right">
 								<p class="tit"></p>
 								<div class="inputBox">
-									<h2 class="steps-tit" v-if="mode == 'update'" @click="openPop('password')"><a>변경하기</a></h2>
+									<h2 class="steps-tit" 
+									  v-if="mode == 'update'" 
+									  @click="openPop('password')"
+								    >
+								    	<a>변경하기</a>
+									</h2>
 								</div>
 							</div>
 						</div>
@@ -185,12 +226,22 @@
 							<div class="frm-unit half-left">
 								<p class="tit">이메일</p>
 								<div class="inputBox">
-									<input type="text" class="input-custom" placeholder="이메일" parsley-type="email" v-model="user.email" :maxlength="this.$maxEmail">
+									<input type="text" 
+									  class="input-custom" 
+									  placeholder="이메일" 
+									  parsley-type="email" 
+									  v-model="user.email" 
+									  :maxlength="this.$maxEmail"
+									>
 								</div>
 							</div>
 							<div class="frm-unit half-right">
 								<p class="tit">역할</p>
-								<selectbox-component :selectvo="createRoleSelectVo" v-on:setSelected="setSelected"></selectbox-component>
+								<selectbox-component 
+									:selectvo="createRoleSelectVo" 
+									v-on:setSelected="setSelected"
+								>
+								</selectbox-component>
 							</div>
 						</div>
 					</div>

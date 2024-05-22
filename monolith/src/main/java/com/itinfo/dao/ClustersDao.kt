@@ -28,8 +28,7 @@ class ClustersDao {
 		val itemsFound: List<HostSamplesHistory> =
 			hostSamplesHistoryRepository.findByHostIdIn(ids.toUUIDs())
 		log.info("itemsFound: $itemsFound")
-		return itemsFound.toHostUsageVos().also { log.debug("returning ... $it") }
-		// return sqlSessionTemplate.selectList("COMPUTE-CLUSTER.retrieveClusterChartUsage", ids)
+		return itemsFound.toHostUsageVos() // COMPUTE-CLUSTER.retrieveClusterChartUsage
 	}
 
 	fun retrieveHostUsage(hostId: String): List<HostUsageVo> {
@@ -37,14 +36,12 @@ class ClustersDao {
 		val itemsFound: List<HostSamplesHistory> =
 			hostSamplesHistoryRepository.findByHostIdOrderByHistoryDatetimeDesc(hostId.toUUID())
 		log.info("itemsFound: $itemsFound")
-		return itemsFound.toHostUsageVos().also { log.debug("returning ... $it") }
-		// return sqlSessionTemplate.selectList("COMPUTE-CLUSTER.retrieveHostChartUsage", hostId)
+		return itemsFound.toHostUsageVos() // COMPUTE-CLUSTER.retrieveHostChartUsage
 	}
 
 	fun retrieveHostLastUsage(hostId: String): HostUsageVo? {
 		log.info("... retrieveHostLastUsage('$hostId')")
-		return retrieveHostUsage(hostId).firstOrNull()?.also { log.debug("returning ... $it") }
-		// return sqlSessionTemplate.selectOne("COMPUTE-CLUSTER.retrieveHostLastUsage", hostId)
+		return retrieveHostUsage(hostId).firstOrNull() // COMPUTE-CLUSTER.retrieveHostLastUsage
 	}
 
 	fun retrieveHostNicUsage(nicId: String): NicUsageVo? {
@@ -52,8 +49,7 @@ class ClustersDao {
 		val itemsFound: List<HostInterfaceSamplesHistory> =
 			hostInterfaceSamplesHistoryRepository.findByHostInterfaceIdOrderByHistoryDatetimeDesc(nicId.toUUID())
 		log.debug("itemFound: $itemsFound")
-		return itemsFound.toNicUsageVos().firstOrNull()?.also { log.debug("returning ... $it") }
-		// return sqlSessionTemplate.selectOne("COMPUTE-CLUSTER.retrieveHostInterfaceLastUsage", nicId)
+		return itemsFound.toNicUsageVos().firstOrNull() // COMPUTE-CLUSTER.retrieveHostInterfaceLastUsage
 	}
 
 	fun retrieveVmUsage(vmId: String): VmUsageVo? {
@@ -61,8 +57,7 @@ class ClustersDao {
 		val itemsFound: List<VmSamplesHistory> =
 			vmSamplesHistoryRepository.findByVmIdOrderByHistoryDatetimeDesc(vmId.toUUID())
 		log.debug("itemFound: $itemsFound")
-		return itemsFound.toVmUsageVos().firstOrNull()?.also { log.debug("returning ... $it") }
-		// return sqlSessionTemplate.selectOne("COMPUTE-CLUSTER.retrieveVmLastUsage", vi)
+		return itemsFound.toVmUsageVos().firstOrNull() // COMPUTE-CLUSTER.retrieveVmLastUsage
 	}
 
 	fun retrieveVmNicUsage(nicId: String): NicUsageVo? {
@@ -70,8 +65,7 @@ class ClustersDao {
 		val itemsFound: List<VmInterfaceSamplesHistory> =
 			vmInterfaceSamplesHistoryRepository.findByVmInterfaceIdOrderByHistoryDatetimeDesc(nicId.toUUID())
 		log.debug("itemsFound: $itemsFound")
-		return itemsFound.toNicUsageVos().firstOrNull()?.also { log.debug("returning ... $it") }
-		// return sqlSessionTemplate.selectOne("COMPUTE-CLUSTER.retrieveVmInterfaceLastUsage", nicId)
+		return itemsFound.toNicUsageVos().firstOrNull() // COMPUTE-CLUSTER.retrieveVmInterfaceLastUsage
 	}
 
 	fun retrieveHostSw(hostId: String): HostSwVo? {

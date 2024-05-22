@@ -19,36 +19,85 @@
 							<div class="form-group">
 								<label class="control-label col-md-3 col-sm-3 col-xs-12">ID<span class="text-danger">*</span></label>
 								<div class="col-md-9 col-sm-9 col-xs-12">
-									<input type="text" class="form-control" placeholder="ID" parsley-trigger="change" :disabled="mode == 'update'" @input="checkId" v-model="user.id" :maxlength="this.$maxId" required>
-									<p class="text-danger" v-if="(!containsFourCharacters || !validId || !containsKorean) && mode == 'create'">4~20자 영문, 숫자와 특수기호(_),(-)만 사용 가능합니다.</p>
+									<input type="text" 
+									       class="form-control" 
+									       placeholder="ID" 
+									       parsley-trigger="change" 
+									       @input="checkId" 
+									       v-model="user.username" 
+									       :disabled="mode == 'update'"
+									       :maxlength="this.$maxId" 
+									       required
+								    >
+									<p class="text-danger" 
+									   v-if="(!containsFourCharacters || !validId || !containsKorean) && mode == 'create'"
+								    >
+									  4~20자 영문, 숫자와 특수기호(_),(-)만 사용 가능합니다.
+									</p>
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="control-label col-md-3 col-sm-3 col-xs-12">성</label>
 								<div class="col-md-9 col-sm-9 col-xs-12">
-									<input type="text" class="form-control" placeholder="성" v-model="user.lastName" :maxlength="this.$maxName">
+									<input type="text" 
+									       class="form-control" 
+									       placeholder="성" 
+									       v-model="user.surName"
+									       :maxlength="this.$maxName"
+							        >
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="control-label col-md-3 col-sm-3 col-xs-12">이름</label>
 								<div class="col-md-9 col-sm-9 col-xs-12">
-									<input type="text" class="form-control" placeholder="이름" v-model="user.name" :maxlength="this.$maxName">
+									<input type="text" 
+									       class="form-control" 
+									       placeholder="이름" 
+									       v-model="user.firstName"
+									       :maxlength="this.$maxName"
+							        >
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="control-label col-md-3 col-sm-3 col-xs-12">비밀번호<span class="text-danger">*</span>
-									&nbsp;&nbsp;<span class="align-middle" v-if="mode == 'update'"><a href="#" class="text-primary" @click="viewPassword()">변경하기</a></span>
+									&nbsp;&nbsp;
+									<span class="align-middle" v-if="mode == 'update'">
+										<a href="#" 
+										   class="text-primary" 
+										   @click="viewPassword()"
+										>
+											변경하기
+										</a>
+									</span>
 								</label>
 								<div class="col-md-9 col-sm-9 col-xs-12">
-									<input type="password" class="form-control" placeholder="비밀번호" data-parsley-maxlength="6" :disabled="mode == 'update'" @input="checkPassword" v-model="user.password" :maxlength="this.$maxPassword" required>
-									<p class="text-danger" v-if="!containsEightCharacters || !containsNumber || !containsSpecialCharacter">8~16자 영문, 숫자, 특수문자를 사용하십시오.</p>
+									<input type="password" 
+									       class="form-control" 
+									       placeholder="비밀번호" 
+									       data-parsley-maxlength="6" 
+									       @input="checkPassword" 
+									       v-model="user.password" 
+									       :maxlength="this.$maxPassword" 
+									       :disabled="mode == 'update'" 
+									       required>
+									<p class="text-danger" 
+									   v-if="!containsEightCharacters || !containsNumber || !containsSpecialCharacter"
+								    >
+									  8~16자 영문, 숫자, 특수문자를 사용하십시오.
+									</p>
 								</div>
 							</div>
 							<hr>
 							<div class="form-group">
 								<label class="control-label col-md-3 col-sm-3 col-xs-12">이메일</label>
 								<div class="col-md-9 col-sm-9 col-xs-12">
-									<input type="text" class="form-control" placeholder="이메일" parsley-type="email" v-model="user.email" :maxlength="this.$maxEmail">
+									<input type="text" 
+									       class="form-control" 
+									       placeholder="이메일" 
+									       parsley-type="email" 
+									       v-model="user.email" 
+									       :maxlength="this.$maxEmail"
+							       >
 								</div>
 							</div>
 							<div class="form-group">

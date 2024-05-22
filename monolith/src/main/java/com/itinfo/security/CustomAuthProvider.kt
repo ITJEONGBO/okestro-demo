@@ -34,15 +34,17 @@ class CustomAuthProvider : AuthenticationProvider {
 		val retrievePasswd = usersService.login(userId).also { log.debug("retrievePasswd: $it") }
 		val wad = authentication.details as WebAuthenticationDetails
 		val userIPAddress = wad.remoteAddress
-		usersService.initLoginCount(userId)
+//		usersService.initLoginCount(userId)
 
 		try {
+			// 생략: oVirt안에 그런 기능이 없음
+			/*
 			val blockTime = usersService.fetchUser(userId)?.blockTime.also {
 				log.debug("blockTime: $it")
 				if (!it.isNullOrBlank() && !SecurityUtils.compareTime(it))
 					throw BadCredentialsException("loginAttemptExceed")
 			}
-
+			*/
 
 			log.info("validating password ...")
 			if (passwd.validatePassword(retrievePasswd)) {
@@ -54,10 +56,14 @@ class CustomAuthProvider : AuthenticationProvider {
 			} else {
 				log.warn("FAILED!!!")
 				usersService.fetchUser(userId)?.let { user ->
+					// 생략: 로그인 시도 실패 시 회수 증가
+					// 사유: oVirt안에 그런 기능이 없음
+					/*
 					user.loginCount += 1
 					usersService.updateLoginCount(user)
 					if (systemPropertiesService.retrieveSystemProperties().loginLimit <= user.loginCount)
 						usersService.setBlockTime(user)
+					*/
 				}
 				log.error("Login fail [ userId :  $userId ] [ request ip : $userIPAddress ]")
 				throw BadCredentialsException(ItInfoConstant.PASSWORD_ERROR)

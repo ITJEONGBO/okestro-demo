@@ -692,7 +692,7 @@ class VirtualMachinesController {
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
 	)
-	@PostMapping("/vm/metrics/uri")
+	@GetMapping("/vm/metrics/uri")
 	@ResponseBody
 	fun getGrafanaUri(): JSONObject {
 		log.info("... getGrafanaUri")

@@ -19,14 +19,12 @@ class ComputingDao {
 		val itemsFound: List<VmSamplesHistory> =
 			vmSampleHistoryRepository.findByVmIdOrderByHistoryDatetimeDesc(vmId.toUUID())
 		log.info("itemsFound: $itemsFound")
-		return itemsFound.toVmUsageVos().also { log.debug("returning ... $it") }
-		// return this.sqlSessionTemplate.selectList("COMPUTING.retrieveVmUsage", id);
+		return itemsFound.toVmUsageVos() // COMPUTING.retrieveVmUsage
 	}
 
 	fun retrieveVmUsageOne(vmId: String): VmUsageVo? {
 		log.info("... retrieveVmUsageOne('$vmId')")
-		return retrieveVmUsage(vmId).firstOrNull()?.also { log.debug("returning ... \n$it") }
-		// return (VmUsageVo)this.sqlSessionTemplate.selectOne("COMPUTING.retrieveVmUsageOne", id);
+		return retrieveVmUsage(vmId).firstOrNull() // COMPUTING.retrieveVmUsageOne
 	}
 
 	fun retrieveVmNetworkUsage(vmIds: List<String>): List<VmNetworkUsageVo> {
@@ -36,14 +34,12 @@ class ComputingDao {
 		log.debug("itemsFound: $itemsFound")
 		return itemsFound
 			.toDashboardStatistics()
-			.toVmNetworkUsageVos().also { log.debug("returning ... $it") }
-		// return this.sqlSessionTemplate.selectList("COMPUTING.retrieveVmNetworkUsage", ids);
+			.toVmNetworkUsageVos() // COMPUTING.retrieveVmNetworkUsage
 	}
 
 	fun retrieveVmNetworkUsageOne(vmIds: List<String>): VmNetworkUsageVo? {
 		log.info("... retrieveVmNetworkUsageOne > vmIds: $vmIds")
-		return retrieveVmNetworkUsage(vmIds).firstOrNull()?.also { log.debug("returning ... \n$it") }
-		// return (VmNetworkUsageVo)this.sqlSessionTemplate.selectOne("COMPUTING.retrieveVmNetworkUsageOne", ids);
+		return retrieveVmNetworkUsage(vmIds).firstOrNull() // COMPUTING.retrieveVmNetworkUsageOne
 	}
 
 	fun retrieveVmDevices(vmId: String): List<VmDeviceVo> {
@@ -51,8 +47,7 @@ class ComputingDao {
 		val itemsFound: List<VmDeviceHistory> =
 			vmDeviceHistoryRepository.findByVmIdOrderByUpdateDateAsc(vmId.toUUID())
 		log.info("itemsFound: $itemsFound")
-		return itemsFound.toVmDeviceVos().also { log.debug("returning ... \n$it") }
-		// return this.sqlSessionTemplate.selectList("COMPUTING.retrieveVmDevices", id);
+		return itemsFound.toVmDeviceVos() // COMPUTING.retrieveVmDevices
 	}
 
 	companion object {
