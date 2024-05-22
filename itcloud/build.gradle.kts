@@ -102,7 +102,6 @@ tasks.war {
     finalizedBy(explodedWar)
 }
 
-
 val explodedWar by tasks.register<Copy>("explodedWar") {
     into(explodedWarPath)
     with(tasks.war.get())

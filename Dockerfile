@@ -1,37 +1,84 @@
-# BUILD
-# FROM gradle:7.4.2-jdk11-alpine AS builder
+# ------------------------------
+# Stage 1: Build the application using Gradle
+FROM gradle:7.4.2-jdk11-focal AS build
+WORKDIR /home/gradle/project
 
-#
-# WORKDIR /
-#
-# COPY ./ ./
-# RUN gradle monolith:war -Pprofile=staging
+# Add labels to the build stage
+LABEL maintainer="Chan Hee Lee <chanhi2000@gmail.com>"
+LABEL build-stage="gradle"
 
-# RUN
-FROM eclipse-temurin:11-jdk-alpine
-LABEL author="chlee (chanhi2000@gmail.com)"
-LABEL version='0.0.5'
+# Copy the Gradle wrapper and build files
+COPY gradle /home/gradle/project/gradle
+COPY gradlew /home/gradle/project/
+COPY build.gradle.kts /home/gradle/project/
+COPY settings.gradle.kts /home/gradle/project/
+COPY gradle.properties /home/gradle/project/
 
-ARG ARG_OVIRT_IP
-ARG ARG_OKESTRO_PORT_HTTP
-ARG ARG_OKESTRO_PORT_HTTPS
-ARG JAR_NAME=monolith-0.0.5
-ARG JAR_FILE=monolith/build/libs/${JAR_NAME}.jar
+# Ensure the gradlew script has execute permissions
+RUN chmod +x gradlew
 
-ENV OVIRT_IP=${ARG_OVIRT_IP}
-ENV OKESTRO_PORT_HTTP=${ARG_OKESTRO_PORT_HTTP}
-ENV OKESTRO_PORT_HTTPS=${ARG_OKESTRO_PORT_HTTPS}
+# Copy the rest of the application source code
+COPY common /home/gradle/project/common
+COPY util /home/gradle/project/util
+COPY buildSrc /home/gradle/project/buildSrc
+COPY itcloud /home/gradle/project/itcloud
 
-VOLUME /tmp
+# Build the application
+RUN ./gradlew itcloud:bootJar -Pprofile=prd --parallel
+
+# ------------------------------
+# Base image for the runtime stage
+FROM eclipse-temurin:11-jdk-focal
+
+# Add labels to the runtime stage
+LABEL maintainer="Chan Hee Lee <chanhi2000@gmail.com>"
+LABEL description="Spring Boot Docker Image for itcloud project"
+LABEL version="0.0.1"
+LABEL vcs-url="https://github.com/ITJEONGBO/okestro-demo"
+LABEL build-date="2024-05-23"
+LABEL commit-hash="abc123def456"
+LABEL license="Apache-2.0"
+LABEL environment="production"
+LABEL app-name="itcloud"
+
+RUN echo "================== common.properties =================="
+ARG ITCLOUD_VERSION=0.0.1
+ARG ITCLOUD_RELEASE_DATE=2024-05-23
+ARG ITCLOUD_PORT_HTTP=8080
+ARG ITCLOUD_PORT_HTTPS=8443
+ARG ITCLOUD_OVIRT_IP=192.168.0.80
+RUN echo "version: $ITCLOUD_VERSION"
+RUN echo "release-date: $ITCLOUD_RELEASE_DATE"
+RUN echo "http-port: $ITCLOUD_PORT_HTTP"
+RUN echo "http-ports: $ITCLOUD_PORT_HTTPS"
+RUN echo "ovirt-ip: $ITCLOUD_OVIRT_IP"
+RUN echo ""
+ENV ITCLOUD_VERSION=${ITCLOUD_VERSION}
+ENV ITCLOUD_RELEASE_DATE=${ITCLOUD_RELEASE_DATE}
+ENV ITCLOUD_PORT_HTTP=${ITCLOUD_PORT_HTTP}
+ENV ITCLOUD_PORT_HTTPS=${ITCLOUD_PORT_HTTPS}
+ENV ITCLOUD_OVIRT_IP=${ITCLOUD_OVIRT_IP}
+
+RUN echo "================== database.properties =================="
+ARG POSTGRES_JDBC_URL=192.168.0.80
+ARG POSTGRES_JDBC_PORT=5432
+RUN echo "jdbc:postgresql://$POSTGRES_JDBC_URL:$POSTGRES_JDBC_PORT/engine"
+RUN echo "jdbc:postgresql://$POSTGRES_JDBC_URL:$POSTGRES_JDBC_PORT/ovirt_engine_history"
+ARG POSTGRES_DATASOURCE_JDBC_ID=okestro
+ARG POSTGRES_DATASOURCE_JDBC_PW=okestro2018
+RUN echo "access acct: $POSTGRES_DATASOURCE_JDBC_ID / $POSTGRES_DATASOURCE_JDBC_PW"
+
+ENV POSTGRES_JDBC_URL=${POSTGRES_JDBC_URL}
+ENV POSTGRES_JDBC_PORT=${POSTGRES_JDBC_PORT}
+ENV POSTGRES_DATASOURCE_JDBC_ID=${POSTGRES_DATASOURCE_JDBC_ID}
+ENV POSTGRES_DATASOURCE_JDBC_PW=${POSTGRES_DATASOURCE_JDBC_PW}
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the Spring Boot jar file from the build stage
+COPY --from=build /home/gradle/project/itcloud/build/libs/*.jar app.jar
 
 EXPOSE 8080
 
-# ADD docker/okestro/server.xml /usr/local/tomcat/conf/server.xml
-# ADD docker/okestro/okestro.p12 /usr/local/tomcat/keystore/okestro.p12
-# ADD docker/okestro/ROOT /usr/local/tomcat/webapps/ROOT
-# ADD docker/okestro/entrypoint.sh /opt/entrypoint
-# RUN chmod +x /opt/entrypoint.sh
-
-ADD ${JAR_FILE} $JAR_NAME
-
-ENTRYPOINT ["java","-jar","/$JAR_NAME"]
+ENTRYPOINT ["java","-jar","app.jar"]

@@ -22,6 +22,11 @@ class BasicConfiguration {
 		private const val PNAME_OKESTRO_VERSION = "okestro.version"
 		private const val PNAME_OKESTRO_RELEASE_DATE = "okestro.release-date"
 
+		private const val PNAME_ITCLOUD_PORT_HTTP = "itcloud.port-http"
+		private const val PNAME_ITCLOUD_PORT_HTTPS = "itcloud.port-https"
+		private const val PNAME_ITCLOUD_VERSION = "itcloud.version"
+		private const val PNAME_ITCLOUD_RELEASE_DATE = "itcloud.release-date"
+
 		private const val PROP_DATABASE_FULL_PATH = "properties/database.properties"
 		private const val PNAME_POSTGRES_DRIVER_CLASS_NAME = "postgres.driverClassName"
 		private const val PNAME_POSTGRES_JDBC_PROTOCOL = "postgres.jdbc.protocol"
@@ -70,6 +75,15 @@ class BasicConfiguration {
 		get() = globalProp?.get(PNAME_OKESTRO_VERSION).toString()
 	val okestroReleaseDate: String
 		get() = globalProp?.get(PNAME_OKESTRO_RELEASE_DATE).toString()
+
+	val itcloudPortHttp: String
+		get() = globalProp?.get(PNAME_ITCLOUD_PORT_HTTP).toString()
+	val itcloudPortHttps: String
+		get() = globalProp?.get(PNAME_ITCLOUD_PORT_HTTPS).toString()
+	val itcloudVersion: String
+		get() = globalProp?.get(PNAME_ITCLOUD_VERSION).toString()
+	val itcloudReleaseDate: String
+		get() = globalProp?.get(PNAME_ITCLOUD_RELEASE_DATE).toString()
 
 	val postgresDriverClassname: String
 		get() = databaseProp?.get(PNAME_POSTGRES_DRIVER_CLASS_NAME).toString()

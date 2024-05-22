@@ -24,16 +24,16 @@
 
 - 🛠Intellij IDEA 
 - ☕JDK (OpenJDK 1.8_201)
-- 🍃Spring (`5.3.20`)
-- 🍃Spring Boot (`2.7.0`)
+- 🍃Spring (`5.3.20`) / Boot (`2.7.0`)
 - 🐘Gradle (`7.4.2`)
 - 😺Apache Tomcat (`9.0.63`)
 - 🐳Docker
   - `tomcat:8.5.38-jre8-alpine` (ssl port: `8443`)
   - `postgres:10.12-alpine` (jdbc port: `5432`)
-  - ...
+  - `gradle:7.4.2-jdk11-focal`
+  - `eclipse-temurin:11-jdk-focal`
 - Grafana (ovirt안에 내장)
-- 
+
 ---
 
 ## 🐘Gradle
@@ -84,23 +84,14 @@ Run this script to create artifact
 
 ## 🐳Docker 
 
-### 🛠Okestro 
-
-⚠ jar 빌드 후 진행!
-
-- `docker/okestro` 밑 📁`ROOT`폴더가 생기도록
-
-#### On Linux
+### 🛠Build
 
 ```sh
+# Running on macOS M1
+docker build -t itinfo/itcloud:0.0.1 .
+
+# Okestro
 docker build -t itinfo/okestro:0.0.5 .
-```
-
-#### On Windows
-
-```batch
-docker build -t okestro/cst_tomcat:0.0.5 ^
-  \.
 ```
 
 ### ▶️Run
@@ -108,12 +99,15 @@ docker build -t okestro/cst_tomcat:0.0.5 ^
 #### On Linux
 
 ```sh
-# okestro
-docker run -d -it \
-  --name itcloudBoot \
-  -p 8080:8080 \
-  -p 8443:8443 \
-  okestro/cst_tomcat:0.0.5
+# itcloud
+docker run -d -it --name itcloud \
+-e ITCLOUD_PORT_HTTP=8080 \
+-e ITCLOUD_PORT_HTTPS=8443 \
+-e ITCLOUD_OVIRT_IP=192.168.0.80 \
+-e POSTGRES_JDBC_URL=192.168.0.80 \
+-e POSTGRES_DATASOURCE_JDBC_ID=okestro \
+-e POSTGRES_DATASOURCE_JDBC_PW=okestro2018 \
+-p 8080:8080 -p 8443:8443 itinfo/itcloud:0.0.1
 
 # postgres
 docker run -d -it \
@@ -186,7 +180,7 @@ cd /etc/pki/ovirt-engine/certs
   - [x] docker 관련 정보 수집
   - [ ] model 안정화
 - [ ] package별 endpoint구현
-- [ ] docker 생성 자동화 스크립트 (환경변수 지정 > ovirt ip주소)
+- [x] docker 생성 자동화 스크립트 (환경변수 지정 > ovirt ip주소)
 - [x] swagger 구성 (`/swagger-ui.html`)
 - [x] dokka 구성
 

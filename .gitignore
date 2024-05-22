@@ -10,8 +10,8 @@ bin
 out
 .cxx
 docker/okestro/*.war
-docker/okestro/okestro-*
-docker/okestro/ROOT
+docker/monolith/okestro-*
+docker/monolith/ROOT
 docker/itcloud/*.war
 docker/itcloud/itcloud-*
 docker/itcloud/ROOT
