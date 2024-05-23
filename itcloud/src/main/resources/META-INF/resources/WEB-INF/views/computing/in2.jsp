@@ -59,7 +59,7 @@
 <div class="collapse" id="ProfileNav" style>
 <ul class="nav ">
 <li class="nav-item">
-<a class="nav-link text-white" href="https://material-dashboard-pro-laravel.creative-tim.com/overview">
+<a class="nav-link text-white" href="https://localhost:8080/computing/redirect">
 <span class="sidenav-mini-icon"> MP </span>
 <span class="sidenav-normal  ms-3  ps-1"> My Profile </span>
 </a>
@@ -130,7 +130,7 @@
 <div class="collapse  " id="LaravelExamples">
 <ul class="nav ">
 <li class="nav-item ">
-<a class="nav-link text-white   " href="https://material-dashboard-pro-laravel.creative-tim.com/user-profile">
+<a class="nav-link text-white   " href="">
 <span class="sidenav-mini-icon"> UP </span>
 <span class="sidenav-normal  ms-2  ps-1"> User Profile <b class="caret"></b></span>
 </a>

@@ -31,10 +31,8 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class VmServiceImpl implements ItVmService {
-    @Autowired
-    private AdminConnectionService admin;
-    @Autowired
-    private CommonService commonService;
+    @Autowired private AdminConnectionService admin;
+    @Autowired private CommonService commonService;
 
 
     // 가상머신 목록
