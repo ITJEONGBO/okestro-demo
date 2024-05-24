@@ -18,10 +18,11 @@ springBoot {
     version = Versions.Project.ITCLOUD
 }
 
-val profile: String = if (project.hasProperty("profile")) project.property("profile") as? String ?: "local" else "local"
+val profile: String = project.findProperty("profile") as? String ?: "local"
+val skipNpm: Boolean = (project.findProperty("skipNpm") as? String)?.toBoolean() ?: false
 var artifactName: String = "itcloud-${profile}"
 println("profile  : $profile")
-
+println("skipNpm  : $skipNpm")
 val defaultBuildClassPath: String = "build/classes/kotlin/main"
 val explodedWarName: String = "exploded"
 val explodedWarPath: String = "$buildDir/libs/$explodedWarName"
@@ -162,7 +163,9 @@ task("exploreOutput") {
 val frontendDir = "src/main/frontend"
 
 tasks.processResources {
-    dependsOn("copyReactBuildFiles")
+    if (!skipNpm) {
+        dependsOn("copyReactBuildFiles")
+    }
 }
 
 val installReact by tasks.register<Exec>("installReact") {
