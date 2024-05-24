@@ -64,7 +64,7 @@ npm build
 ./gradlew itcloud:bootRun -Pprofile=staging
 
 # 아티팩트 생성 (운영)
-./gradlew itcloud:bootJar -Pprofile=staging
+./gradlew itcloud:bootJar -Pprofile=staging -PskipNpm=true
 ```
 
 ![itcloud:bootRun](imgs/gradle-itcloud-bootRun.png)
@@ -104,13 +104,13 @@ npm build
 
 ---
 
-## 🐳Docker 
+## 🐳Docker
 
 ### 🛠Build
 
 ```sh
 # Running on macOS M1
-docker build -t itinfo/itcloud:0.0.1 .
+docker build -t itinfo/itcloud:0.0.2 .
 
 # Okestro
 docker build -t itinfo/okestro:0.0.5 .
@@ -129,7 +129,7 @@ docker run -d -it --name itcloud \
 -e POSTGRES_JDBC_URL=192.168.0.80 \
 -e POSTGRES_DATASOURCE_JDBC_ID=okestro \
 -e POSTGRES_DATASOURCE_JDBC_PW=okestro2018 \
--p 8080:8080 -p 8443:8443 itinfo/itcloud:0.0.1
+-p 8080:8080 -p 8443:8443 itinfo/itcloud:0.0.2
 
 # postgres
 docker run -d -it \

@@ -1,5 +1,15 @@
 # ------------------------------
 # Stage 1: Build the application using Gradle
+FROM node:18.12.1-alpine AS build-fe
+WORKDIR /usr/src/app
+
+COPY itcloud/src/main/frontend ./
+
+RUN npm i
+RUN npm run-script build
+
+# ------------------------------
+# Stage 2: Build the application using Gradle
 FROM gradle:7.4.2-jdk11-focal AS build
 WORKDIR /home/gradle/project
 
@@ -23,8 +33,11 @@ COPY util /home/gradle/project/util
 COPY buildSrc /home/gradle/project/buildSrc
 COPY itcloud /home/gradle/project/itcloud
 
+# Copy the node build results to path (ONLY when skipNpm=true)
+COPY --from=build-fe /usr/src/app/build /home/bradle/project/itcloud/src/main/resources/static
+
 # Build the application
-RUN ./gradlew itcloud:bootJar -Pprofile=prd --parallel
+RUN ./gradlew itcloud:bootJar -Pprofile=prd -PskipNpm=true --parallel
 
 # ------------------------------
 # Base image for the runtime stage
@@ -33,17 +46,17 @@ FROM eclipse-temurin:11-jdk-focal
 # Add labels to the runtime stage
 LABEL maintainer="Chan Hee Lee <chanhi2000@gmail.com>"
 LABEL description="Spring Boot Docker Image for itcloud project"
-LABEL version="0.0.1"
+LABEL version="0.0.2"
 LABEL vcs-url="https://github.com/ITJEONGBO/okestro-demo"
-LABEL build-date="2024-05-23"
+LABEL build-date="2024-07-08"
 LABEL commit-hash="abc123def456"
 LABEL license="Apache-2.0"
 LABEL environment="production"
 LABEL app-name="itcloud"
 
 RUN echo "================== common.properties =================="
-ARG ITCLOUD_VERSION=0.0.1
-ARG ITCLOUD_RELEASE_DATE=2024-05-23
+ARG ITCLOUD_VERSION=0.0.2
+ARG ITCLOUD_RELEASE_DATE=2024-07-08
 ARG ITCLOUD_PORT_HTTP=8080
 ARG ITCLOUD_PORT_HTTPS=8443
 ARG ITCLOUD_OVIRT_IP=192.168.0.80
@@ -81,4 +94,6 @@ COPY --from=build /home/gradle/project/itcloud/build/libs/*.jar app.jar
 
 EXPOSE 8080
 
+# ENTRYPOINT ["java","-jar","app.jar", "--server.ssl.enabled=true", "--server.ssl.key-store=/app/config/ssl/your-certificate.pem", "--server.ssl.key-store-password=yourpassword"]
+# ENTRYPOINT ["java", "-jar", "app.jar", "--server.ssl.enabled=true", "--server.ssl.key-store=/app/config/ssl/your-certificate.pem", "--server.ssl.key-store-password=${SSL_KEY_STORE_PASSWORD}"]
 ENTRYPOINT ["java","-jar","app.jar"]
