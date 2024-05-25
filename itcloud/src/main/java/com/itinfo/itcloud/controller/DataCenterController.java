@@ -20,13 +20,6 @@ import java.util.List;
 public class DataCenterController {
 	private final ItDataCenterService dcService;
 
-	@GetMapping("/hello")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	public String hello(){
-		return "hello";
-	}
-
 
 	@GetMapping("/datacenters")
 	@ResponseBody
@@ -35,31 +28,6 @@ public class DataCenterController {
 		log.info("----- 데이터센터 목록");
 		return dcService.getList();
 	}
-
-	@GetMapping("/datacenter/{id}/events")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	public List<EventVo> event(@PathVariable String id) {
-		log.info("----- 데이터센터 이벤트 : " + id);
-		return dcService.getEvent(id);
-	}
-
-
-
-	// 데이터센터 생성
-//	@ResponseStatus(HttpStatus.CREATED)
-//	@ApiResponses({
-//			@ApiResponse(code = 201, message = "CREATED"),
-//			@ApiResponse(code = 400, message = "BAD REQUEST")
-//	})
-
-	// ResponseEntity<?> 사용
-//	@PostMapping("/datacenter")
-//	@ResponseBody
-//	public ResponseEntity<?> addDatacenter(@RequestBody DataCenterCreateVo dcVo){
-//		log.info("----- 데이터센터 추가 : " + dcVo.getName());
-//		return new ResponseEntity<>(dcService.addDatacenter(dcVo),HttpStatus.CREATED);
-//	}
 
 
 	@PostMapping("/datacenter")
@@ -96,6 +64,16 @@ public class DataCenterController {
 	public CommonVo<Boolean> deleteDatacenter(@PathVariable String id){
 		log.info("----- 데이터센터 삭제");
 		return dcService.deleteDatacenter(id);
+	}
+
+
+
+	@GetMapping("/datacenter/{id}/events")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	public List<EventVo> event(@PathVariable String id) {
+		log.info("----- 데이터센터 이벤트 : " + id);
+		return dcService.getEvent(id);
 	}
 
 

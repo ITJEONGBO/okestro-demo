@@ -7,8 +7,6 @@ import com.itinfo.itcloud.model.create.DataCenterCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItDataCenterService;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.DataCenterBuilder;
 import org.ovirt.engine.sdk4.builders.VersionBuilder;
@@ -60,39 +58,39 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         SystemService system = admin.getConnection().systemService();
         DataCentersService datacentersService = system.dataCentersService();     // datacenters 서비스 불러오기
 
-        // 중복 확인 코드
-        boolean nameDuplicate = datacentersService.list().search("name="+dcVo.getName()).send().dataCenters().isEmpty();
-        String[] ver = dcVo.getVersion().split("\\.");      // 버전값 분리
-
         try {
-            if(nameDuplicate) {
-                DataCenter dataCenter = new DataCenterBuilder()
-                        .name(dcVo.getName())       // 이름
-                        .description(dcVo.getDescription())     // 설명
-                        .local(dcVo.isStorageType())    // 스토리지 유형
-                        .version(
-                            new VersionBuilder()
-                                .major(Integer.parseInt(ver[0]))
-                                .minor(Integer.parseInt(ver[1]))
-                            .build()
-                        )  // 호환 버전
-                        .quotaMode(dcVo.getQuotaMode())      // 쿼터 모드
-                        .comment(dcVo.getComment())     // 코멘트
-                    .build();
-
-                datacentersService.add().dataCenter(dataCenter).send();     // 데이터센터 만든거 추가
-
-                log.info("성공: 데이터센터 생성 {}", dataCenter.name());
-                return CommonVo.createResponse();
-            }else {
+            // 중복 확인 코드
+            if(isNameDuplicate(datacentersService, dcVo.getName(), null)){
                 log.error("실패: 데이터센터 이름 중복");
                 return CommonVo.failResponse("실패: 데이터센터 이름 중복");
             }
+
+            String[] ver = dcVo.getVersion().split("\\.");      // 버전값 분리
+
+            DataCenter dataCenter = new DataCenterBuilder()
+                    .name(dcVo.getName())       // 이름
+                    .description(dcVo.getDescription())     // 설명
+                    .local(dcVo.isStorageType())    // 스토리지 유형
+                    .version(
+                        new VersionBuilder()
+                            .major(Integer.parseInt(ver[0]))
+                            .minor(Integer.parseInt(ver[1]))
+                        .build()
+                    )  // 호환 버전
+                    .quotaMode(dcVo.getQuotaMode())      // 쿼터 모드
+                    .comment(dcVo.getComment())     // 코멘트
+                .build();
+
+            datacentersService.add().dataCenter(dataCenter).send();     // 데이터센터 만든거 추가
+
+            log.info("성공: 데이터센터 생성 {}", dataCenter.name());
+            return CommonVo.createResponse();
         }catch (Exception e){
             log.error("실패: 데이터센터 생성 ", e);
             return CommonVo.failResponse(e.getMessage());
         }
     }
+
 
 
     // 데이터센터 - edit 시 필요한 값
@@ -119,41 +117,36 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     @Override
     public CommonVo<Boolean> editDatacenter(String id, DataCenterCreateVo dcVo) {
         SystemService system = admin.getConnection().systemService();
-        DataCenterService dataCenterService = system.dataCentersService().dataCenterService(id);
-
-        // 중복 이름 확인
-        boolean nameDuplicate = system.dataCentersService().list().send().dataCenters().stream()
-                        .filter(dataCenter -> !dataCenter.id().equals(id))
-                        .anyMatch(dataCenter -> dataCenter.name().equals(dcVo.getName()));
-
-        String[] ver = dcVo.getVersion().split("\\.");      // 버전값 분리
+        DataCentersService datacentersService = system.dataCentersService();
 
         try {
-            if (!nameDuplicate) {
-                DataCenter dataCenter =
-                        new DataCenterBuilder()
-                                .id(id)
-                                .name(dcVo.getName())       // 이름
-                                .description(dcVo.getDescription())     // 설명
-                                .local(dcVo.isStorageType())    // 스토리지 유형
-                                .version(
-                                        new VersionBuilder()
-                                                .major(Integer.parseInt(ver[0]))
-                                                .minor(Integer.parseInt(ver[1]))
-                                                .build()
-                                )  // 호환 버전
-                                .quotaMode(dcVo.getQuotaMode())      // 쿼터 모드
-                                .comment(dcVo.getComment())     // 코멘트
-                                .build();
-
-                dataCenterService.update().dataCenter(dataCenter).send();   // 데이터센터 수정
-
-                log.info("성공: 데이터센터 편집");
-                return CommonVo.createResponse();
-            }else {
+            if (isNameDuplicate(datacentersService, dcVo.getName(), id)) {
                 log.error("실패: 데이터센터 이름 중복");
-                return CommonVo.failResponse("데이터센터 이름 중복");
+                return CommonVo.failResponse("실패: 데이터센터 이름 중복");
             }
+
+            String[] ver = dcVo.getVersion().split("\\.");      // 버전값 분리
+
+            DataCenter dataCenter =
+                    new DataCenterBuilder()
+                            .id(id)
+                            .name(dcVo.getName())       // 이름
+                            .description(dcVo.getDescription())     // 설명
+                            .local(dcVo.isStorageType())    // 스토리지 유형
+                            .version(
+                                    new VersionBuilder()
+                                            .major(Integer.parseInt(ver[0]))
+                                            .minor(Integer.parseInt(ver[1]))
+                                            .build()
+                            )  // 호환 버전
+                            .quotaMode(dcVo.getQuotaMode())      // 쿼터 모드
+                            .comment(dcVo.getComment())     // 코멘트
+                            .build();
+
+            datacentersService.dataCenterService(id).update().dataCenter(dataCenter).send();   // 데이터센터 수정
+
+            log.info("성공: 데이터센터 편집");
+            return CommonVo.createResponse();
         }catch (Exception e) {
             log.error("실패: 데이터센터 편집 {}", e.getMessage());
             return CommonVo.failResponse(e.getMessage());
@@ -166,15 +159,15 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     public CommonVo<Boolean> deleteDatacenter(String id) {
         SystemService system = admin.getConnection().systemService();
         DataCenterService dataCenterService = system.dataCentersService().dataCenterService(id);
-        String name = dataCenterService.get().send().dataCenter().name();
 
         try {
+            String name = dataCenterService.get().send().dataCenter().name();
             dataCenterService.remove().force(true).send();
 
              log.info("성공: 데이터센터 {} 삭제", name);
             return CommonVo.successResponse();
         }catch (Exception e){
-            log.error("실패: 데이터센터 {} 삭제 ", name, e);
+            log.error("실패: 데이터센터 삭제 ", e);
             return CommonVo.failResponse(e.getMessage());
         }
     }
@@ -205,5 +198,20 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                 )
                 .collect(Collectors.toList());
     }
+
+
+    // 이름 중복
+    private boolean isNameDuplicate(DataCentersService datacentersService, String name, String id) {
+        try {
+            return datacentersService.list().send().dataCenters().stream()
+                    .filter(dataCenter -> id == null || !dataCenter.id().equals(id))
+                    .anyMatch(dataCenter -> dataCenter.name().equals(name));
+        } catch (Exception e) {
+            log.error("이름 중복 확인 실패", e);
+            return false; // 기본적으로 false를 반환하여 이름 중복이 없다고 가정합니다.
+        }
+    }
+
+
 
 }

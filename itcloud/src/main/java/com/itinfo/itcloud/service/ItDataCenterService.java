@@ -19,12 +19,4 @@ public interface ItDataCenterService {
 
     List<EventVo> getEvent(String id);
 
-
-    // region: 안쓸 것 같음
-//    List<DomainVo> getStorage(String id);
-//    List<NetworkVo> getNetwork(String id);
-//    List<ClusterVo> getCluster(String id);
-//    List<PermissionVo> getPermission(String id);
-    // endregion
-
 }
