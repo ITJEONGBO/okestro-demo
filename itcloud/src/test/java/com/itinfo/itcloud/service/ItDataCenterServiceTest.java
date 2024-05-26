@@ -1,11 +1,13 @@
 package com.itinfo.itcloud.service;
 
+import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.create.DataCenterCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.ovirt.engine.sdk4.types.DataCenter;
 import org.ovirt.engine.sdk4.types.QuotaModeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,7 +25,9 @@ class ItDataCenterServiceTest {
     @Test
     @DisplayName("데이터센터 리스트")
     void getList() {
-        assertThat(4).isEqualTo(dcService.getList().size());
+        List<DataCenterVo> dcList = dcService.getList();
+
+        assertThat(2).isEqualTo(dcList.size());
     }
 
     @Test
@@ -40,7 +44,7 @@ class ItDataCenterServiceTest {
                 .build();
 
         CommonVo<Boolean> result =  dcService.addDatacenter(dc);
-        assertThat(result.getHead().getCode()).isEqualTo(200);
+        assertThat(result.getHead().getCode()).isEqualTo(201);
 
         assertThat("dfdf").isEqualTo(dc.getName());
         assertThat("testComment").isEqualTo(dc.getComment());
@@ -70,12 +74,11 @@ class ItDataCenterServiceTest {
     @Test
     @DisplayName("데이터센터 수정 창")
     void getDatacenter() {
-        String id = "ea9ced37-0df4-40c5-8dcc-5bb5183236da";
-
-        DataCenterCreateVo result =  dcService.getDatacenter(defaultDcId);
+        String id = "5e3e972b-7000-4e8e-a43b-d90fd3e304a6";
+        DataCenterCreateVo result =  dcService.setDatacenter(id);
 
         DataCenterCreateVo dc = DataCenterCreateVo.builder()
-                .id(defaultDcId)
+                .id(id)
                 .name(result.getName())
                 .comment(result.getComment())
                 .description(result.getDescription())
@@ -84,21 +87,23 @@ class ItDataCenterServiceTest {
                 .quotaMode(result.getQuotaMode())
                 .build();
 
-        assertThat(defaultDcId).isEqualTo(result.getId());
+        assertThat(id).isEqualTo(result.getId());
         assertThat(dc.getName()).isEqualTo(result.getName());
         assertThat(result).isEqualTo(dc);
+
+        System.out.println(dc);
     }
 
     @Test
     @DisplayName("데이터센터 수정")
     void editDatacenter() {
-        String id = "ea9ced37-0df4-40c5-8dcc-5bb5183236da";
+        String id = "5e3e972b-7000-4e8e-a43b-d90fd3e304a6";
 
         DataCenterCreateVo dc = DataCenterCreateVo.builder()
                 .id(id)
                 .name("tsfe")
-                .comment("testComment")
-                .description("asd")
+                .comment("testedit")
+                .description("s")
                 .version("4.7")
                 .storageType(false)
                 .quotaMode(QuotaModeType.AUDIT)
@@ -111,11 +116,11 @@ class ItDataCenterServiceTest {
     @Test
     @DisplayName("데이터센터 수정 - 이름 중복")
     void editDatacenter2() {
-        String id = "ea9ced37-0df4-40c5-8dcc-5bb5183236da";
+        String id = "5e3e972b-7000-4e8e-a43b-d90fd3e304a6";
 
         DataCenterCreateVo dc = DataCenterCreateVo.builder()
                 .id(id)
-                .name("e")
+                .name("Default")
                 .comment("testComment")
                 .description("testDescription")
                 .version("4.7")
@@ -131,7 +136,7 @@ class ItDataCenterServiceTest {
     @Test
     @DisplayName("데이터센터 삭제")
     void deleteDatacenter() {
-        String id = "7d736eda-a541-4fc9-95a2-03b0d4617b31";
+        String id = "5e3e972b-7000-4e8e-a43b-d90fd3e304a6";
 
         CommonVo<Boolean> result = dcService.deleteDatacenter(id);
         assertThat(result.getHead().getCode()).isEqualTo(200);

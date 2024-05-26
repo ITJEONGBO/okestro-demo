@@ -5,6 +5,7 @@ import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
 import com.itinfo.itcloud.model.create.HostCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
+import com.itinfo.itcloud.service.AffinityService;
 import com.itinfo.itcloud.service.ItHostService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
@@ -26,6 +27,7 @@ public class HostServiceImpl implements ItHostService {
 
     @Autowired private AdminConnectionService admin;
     @Autowired private CommonService commonService;
+    @Autowired private AffinityService affinityService;
 
     // 호스트 목록
     @Override
@@ -38,6 +40,11 @@ public class HostServiceImpl implements ItHostService {
                 .map(host -> {
                     Cluster cluster = system.clustersService().clusterService(host.cluster().id()).get().send().cluster();
 
+                    long vmCnt =
+                            system.vmsService().list().send().vms().stream()
+                            .filter(vm -> vm.host() != null && vm.host().id().equals(host.id()))
+                            .count();
+
                     return HostVo.builder()
                                 .id(host.id())
                                 .name(host.name())
@@ -49,11 +56,7 @@ public class HostServiceImpl implements ItHostService {
                                 .datacenterId(cluster.dataCenter().id())
                                 .datacenterName(system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
                                 .hostedEngine(host.hostedEnginePresent() ? host.hostedEngine().active() : null) // 별표
-                                .vmCnt(
-                                        (int) system.vmsService().list().send().vms().stream()
-                                            .filter(vm -> vm.host() != null && vm.host().id().equals(host.id()))
-                                            .count()
-                                )
+                                .vmCnt((int) vmCnt)
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -62,14 +65,13 @@ public class HostServiceImpl implements ItHostService {
 
     // 호스트 생성 클러스터 리스트 출력
     @Override
-    public List<ClusterVo> setHostDefaultInfo() {
+    public List<ClusterVo> setClusterList() {
         SystemService system = admin.getConnection().systemService();
         List<Cluster> clusterList = system.clustersService().list().send().clusters();
 
         log.info("Host 생성창");
         return clusterList.stream()
-                .map(
-                    cluster ->
+                .map(cluster ->
                         ClusterVo.builder()
                             .id(cluster.id())
                             .name(cluster.name())
@@ -82,29 +84,13 @@ public class HostServiceImpl implements ItHostService {
     // 호스트 생성
     @Override
     public CommonVo<Boolean> addHost(HostCreateVo hostCreateVo) {
-        // The name, address, and root_password properties are required.
         SystemService system = admin.getConnection().systemService();
-
         HostsService hostsService = system.hostsService();
-        Cluster cluster = system.clustersService().clusterService(hostCreateVo.getClusterId()).get().send().cluster();
-//        List<Host> hostList = system.hostsService().list().send().hosts();
 
         try {
             // 고려해야하는 것, ssh port번호, 전원관리 활성 여부(펜스 에이전트가 추가되는지가 달림)
             // sshport가 22면 .ssh() 설정하지 않아도 알아서 지정됨, sshport 변경을 ovirt에서 해보신적은 없어서 우선 보류
-
             // 비밀번호 잘못되면 보여줄 코드?
-//            HostBuilder hostBuilder = new HostBuilder();
-//            hostBuilder
-//                    .name(hostCreateVo.getName())
-//                    .comment(hostCreateVo.getComment())
-//                    .address(hostCreateVo.getHostIp())          // 호스트이름/IP
-//                    .rootPassword(hostCreateVo.getSshPw())   // 암호
-//                    .spm(new SpmBuilder().priority(hostCreateVo.getSpm()))
-//                    .ssh(new SshBuilder().port(hostCreateVo.getSshPort()))  // 기본값이 22
-////                    .hostedEngine(new HostedEngineBuilder().active(hostCreateVo.isHostEngine()))
-//                    .cluster(cluster)
-//                    .build();
 
             // 호스트 엔진 배치작업 선택 (없음/배포)  -> 호스트 생성
             Host host =
@@ -119,18 +105,26 @@ public class HostServiceImpl implements ItHostService {
                                             .spm(new SpmBuilder().priority(hostCreateVo.getSpm()))
                                             .ssh(new SshBuilder().port(hostCreateVo.getSshPort()))  // 기본값이 22
 //                                            .hostedEngine(new HostedEngineBuilder().active(hostCreateVo.isHostEngine()))
-                                            .cluster(cluster)
+                                            .cluster(new ClusterBuilder().id(hostCreateVo.getId()))
                             )
                         .send().host();
 
-            do{
-                log.info("성공: Host 생성");
-            } while (host.status().equals(HostStatus.UP));
+            // 호스트 상태가 "UP"이 될 때까지 대기
+            while (true) {
+                Host currentHost = hostsService.hostService(host.id()).get().send().host();
+                HostStatus status = currentHost.status();
 
-            log.info("성공: Host 생성 (" + hostCreateVo.getName() + ")");
+                if (status == HostStatus.UP) {
+                    log.info("호스트 생성 완료: " + host.name());
+                    break;
+                } else {
+                    log.info("현재 호스트 상태: " + status + ", up 상태를 기다리는 중...");
+                    Thread.sleep(5000);  // 5초 대기 후 상태 재확인
+                }
+            }
+
             return CommonVo.createResponse();
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("error: ", e);
             return CommonVo.failResponse(e.getMessage());
         }
@@ -167,39 +161,57 @@ public class HostServiceImpl implements ItHostService {
         HostService hostService = system.hostsService().hostService(id);
 
         try {
-            Host host = new HostBuilder()
-                    .id(id)
-                    .name(hostCreateVo.getName())
-                    .comment(hostCreateVo.getComment())
-                    .spm(new SpmBuilder().priority(hostCreateVo.getSpm()))
-                    .build();
-
-            hostService.update().host(host).send().host();
+            hostService.update()
+                    .host(
+                        new HostBuilder()
+                                .id(id)
+                                .name(hostCreateVo.getName())
+                                .comment(hostCreateVo.getComment())
+                                .spm(new SpmBuilder().priority(hostCreateVo.getSpm()))
+                                .build()
+                    )
+                    .send().host();
 
             log.info("Host 편집");
             return CommonVo.successResponse();
         } catch (Exception e) {
-            log.error("error ", e);
             e.printStackTrace();
+            log.error("error ", e);
             return CommonVo.failResponse(e.getMessage());
         }
     }
 
     // 호스트 삭제
+//    호스트 삭제 여부 = 가상머신 돌아가는게 있는지 -> 유지보수 상태인지 -> 삭제
     @Override
     public CommonVo<Boolean> deleteHost(String id) {
         SystemService system = admin.getConnection().systemService();
         HostService hostService = system.hostsService().hostService(id);
 
         try {
-            if(hostService.get().send().host().status().equals(HostStatus.MAINTENANCE)) {
+            Host host = hostService.get().send().host();
+            HostStatus status = host.status();
+
+            if (status == HostStatus.MAINTENANCE) {
                 hostService.remove().send();
 
-                log.info("호스트 삭제");
+                while (true) {
+                    Host currentHost = hostService.get().send().host();
+                    status = currentHost.status();
+
+                    if (status == null) {
+                        log.info("호스트 삭제 완료: " + currentHost.name());
+                        break;
+                    } else {
+                        log.info("현재 호스트 상태: " + status);
+                        Thread.sleep(5000);  // 5초 대기
+                    }
+                }
+
                 return CommonVo.successResponse();
-            }else{
-                log.error("유지 보수 후 삭제 해야함");
-                return CommonVo.failResponse("fail");
+            } else {
+                log.error("호스트 삭제불가 : " + host.name());
+                return CommonVo.failResponse("현재 호스트는 유지보수 모드가 아님");
             }
         }catch (Exception e){
             log.error("error ", e);
@@ -211,30 +223,45 @@ public class HostServiceImpl implements ItHostService {
     
     // 유지보수
     @Override
-    public CommonVo<Boolean> deActive(String id) {
+    public CommonVo<Boolean> deactiveHost(String id) {
         SystemService system = admin.getConnection().systemService();
         HostService hostService = system.hostsService().hostService(id);
-        Host host = hostService.get().send().host();
 
         try {
-            if(host.status() != HostStatus.MAINTENANCE){
+            Host host = hostService.get().send().host();
+            HostStatus status = host.status();
+
+            if (status != HostStatus.MAINTENANCE) {
                 hostService.deactivate().send();
 
-                log.info("Host 유지보수");
+                // 호스트 상태가 MAINTENANCE가 될 때까지 대기
+                while (true) {
+                    Host currentHost = hostService.get().send().host();
+                    status = currentHost.status();
+
+                    if (status == HostStatus.MAINTENANCE) {
+                        log.info("호스트 유지보수 모드 전환 완료: " + currentHost.name());
+                        break;
+                    } else {
+                        log.info("현재 호스트 상태: " + status);
+                        Thread.sleep(5000);  // 5초 대기
+                    }
+                }
+
                 return CommonVo.successResponse();
-            }else{
-                log.error("error ");
-                return CommonVo.failResponse("유지보수 실패");
+            } else {
+                log.error("현재 호스트는 유지보수 모드: " + host.name());
+                return CommonVo.failResponse("현재 호스트는 유지보수 모드");
             }
-        }catch (Exception e){
-            log.error("error ", e);
+        } catch (Exception e) {
+            log.error("호스트 유지보수 모드 전환 중 오류: ", e);
             return CommonVo.failResponse(e.getMessage());
         }
     }
 
     // 활성
     @Override
-    public CommonVo<Boolean> active(String id) {
+    public CommonVo<Boolean> activeHost(String id) {
         SystemService system = admin.getConnection().systemService();
         HostService hostService = system.hostsService().hostService(id);
         Host host = hostService.get().send().host();
@@ -257,7 +284,7 @@ public class HostServiceImpl implements ItHostService {
 
     // 새로고침
     @Override
-    public CommonVo<Boolean> refresh(String id) {
+    public CommonVo<Boolean> refreshHost(String id) {
         SystemService system = admin.getConnection().systemService();
         HostService hostService = system.hostsService().hostService(id);
 
@@ -282,7 +309,7 @@ public class HostServiceImpl implements ItHostService {
     */
     // 재시작
     @Override
-    public CommonVo<Boolean> reStart(String id) {
+    public CommonVo<Boolean> reStartHost(String id) {
         SystemService system = admin.getConnection().systemService();
         HostsService hostsService = system.hostsService();  // reboot
         HostService hostService = system.hostsService().hostService(id);
@@ -302,7 +329,7 @@ public class HostServiceImpl implements ItHostService {
 
     // 중지
     @Override
-    public CommonVo<Boolean> stop(String id) {
+    public CommonVo<Boolean> stopHost(String id) {
         SystemService system = admin.getConnection().systemService();
         HostService hostService = system.hostsService().hostService(id);
 
@@ -320,7 +347,7 @@ public class HostServiceImpl implements ItHostService {
 
     // 일반
     @Override
-    public HostVo getInfo(String id) {
+    public HostVo getHost(String id) {
         SystemService system = admin.getConnection().systemService();
 
         Host host = system.hostsService().hostService(id).get().allContent(true).send().host();
@@ -575,8 +602,8 @@ public class HostServiceImpl implements ItHostService {
                         AffinityLabelVo.builder()
                             .id(al.id())
                             .name(al.name())
-                            .hosts(commonService.getHostLabelMember(system, al.id()))
-                            .vms(commonService.getVmLabelMember(system, al.id()))
+                            .hosts(affinityService.getHostLabelMember(system, al.id()))
+                            .vms(affinityService.getVmLabelMember(system, al.id()))
                         .build())
                 .collect(Collectors.toList());
     }
@@ -592,8 +619,8 @@ public class HostServiceImpl implements ItHostService {
         log.info("Host 선호도 레이블 생성 창");
         return AffinityHostVm.builder()
                 .clusterId(id)
-                .hostList(commonService.setHostList(hostList, clusterId))
-                .vmList(commonService.setVmList(vmList, clusterId))
+                .hostList(affinityService.setHostList(hostList, clusterId))
+                .vmList(affinityService.setVmList(vmList, clusterId))
                 .build();
     }
 
@@ -647,8 +674,8 @@ public class HostServiceImpl implements ItHostService {
         return AffinityLabelCreateVo.builder()
                 .id(alId)
                 .name(al.name())
-                .hostList(al.hostsPresent() ? commonService.getHostLabelMember(system, alId) : null )
-                .vmList(al.vmsPresent() ? commonService.getVmLabelMember(system, alId) : null)
+                .hostList(al.hostsPresent() ? affinityService.getHostLabelMember(system, alId) : null )
+                .vmList(al.vmsPresent() ? affinityService.getVmLabelMember(system, alId) : null)
                 .build();
     }
 

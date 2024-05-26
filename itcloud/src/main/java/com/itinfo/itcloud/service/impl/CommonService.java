@@ -116,191 +116,6 @@ public class CommonService {
     }
 
 
-    
-    /**
-     * Affinity
-     * 해당 클러스터에 있는 모든 호스트 출력
-     * setAffinityDefaultInfo
-     * @param hostList
-     * @param clusterId 클러스터 아이디 비교
-     * @return 호스트 리스트
-     */
-//    public List<HostVo> setHostList(List<Host> hostList, String clusterId){
-//        return hostList.stream()
-//                .filter(host -> host.cluster().id().equals(clusterId))
-//                .map(host ->
-//                        HostVo.builder()
-//                                .id(host.id())
-//                                .name(host.name())
-//                                .build()
-//                )
-//                .collect(Collectors.toList());
-//    }
-
-    public List<IdentifiedVo> setHostList(List<Host> hostList, String clusterId){
-        return hostList.stream()
-                .filter(host -> host.cluster().id().equals(clusterId))
-                .map(host ->
-                        IdentifiedVo.builder()
-                                .id(host.id())
-                                .name(host.name())
-                                .build()
-                )
-                .collect(Collectors.toList());
-    }
-
-
-    /**
-     * Affinity
-     * 해당 클러스터에 있는 모든 가상머신 출력
-     * @param vmList
-     * @param clusterId
-     * @return 가상머신 리스트
-     */
-//    public List<VmVo> setVmList(List<Vm> vmList, String clusterId){
-//        return vmList.stream()
-//                .filter(vm -> vm.cluster().id().equals(clusterId))
-//                .map(vm ->
-//                        VmVo.builder()
-//                                .id(vm.id())
-//                                .name(vm.name())
-//                                .build()
-//                )
-//                .collect(Collectors.toList());
-//    }
-
-    public List<IdentifiedVo> setVmList(List<Vm> vmList, String clusterId){
-        return vmList.stream()
-                .filter(vm -> vm.cluster().id().equals(clusterId))
-                .map(vm ->
-                        IdentifiedVo.builder()
-                                .id(vm.id())
-                                .name(vm.name())
-                                .build()
-                )
-                .collect(Collectors.toList());
-    }
-
-    public List<IdentifiedVo> setLabel(SystemService system) {
-        List<AffinityLabel> alList = system.affinityLabelsService().list().send().labels();
-
-        return alList.stream()
-                .map(affinityLabel ->
-                        IdentifiedVo.builder()
-                            .id(affinityLabel.id())
-                            .name(affinityLabel.name())
-                            .build()
-                )
-                .collect(Collectors.toList());
-    }
-
-
-
-
-
-    /**
-     * AffinityLabel
-     * 선호도  - 레이블 아이디와 이름 얻기
-     * @param system
-     * @param alId
-     * @return 선호도 레이블 id, 이름
-     */
-    public List<AffinityLabelVo> getLabelName(SystemService system, String alId){
-        List<AffinityLabel> alList = system.affinityLabelsService().list().send().labels();
-
-        return alList.stream()
-                .filter(al -> al.id().equals(alId))
-                .map(al ->
-                        AffinityLabelVo.builder()
-                                .id(al.id())
-                                .name(al.name())
-                                .build())
-                .collect(Collectors.toList());
-    }
-    
-
-    /**
-     * 선호도 그룹이 가지고 있는 호스트 리스트 출력
-     * @param system
-     * @param clusterId
-     * @param agId
-     * @return 클러스터 밑의 호스트 리스트
-     */
-    public List<HostVo> getAgHostList(SystemService system, String clusterId, String agId){
-        List<Host> hostList = system.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId).hostsService().list().send().hosts();
-        return hostList.stream()
-                .map(host ->
-                        HostVo.builder()
-                                .id(host.id())
-                                .name(host.name())
-                                .build())
-                .collect(Collectors.toList());
-    }
-
-
-    /**
-     * 선호도 그룹이 가지고 있는 가상머신 리스트 출력
-     * @param system
-     * @param clusterId
-     * @param agId
-     * @return 클러스터 밑의 가상머신 리스트
-     */
-    public List<VmVo> getAgVmList(SystemService system, String clusterId, String agId){
-        List<Vm> vmList = system.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId).vmsService().list().send().vms();
-
-        return vmList.stream()
-                .map(vm ->
-                        VmVo.builder()
-                                .id(vm.id())
-                                .name(vm.name())
-                                .build())
-                .collect(Collectors.toList());
-    }
-
-
-
-    /**
-     * 선호도 레이블에 있는 호스트 출력
-     * List를 매개변수로 주지못한 이유: 이름출력이 안됨
-     * @param system
-     * @param alid 선호도 레이블 아이디
-     * @return 선호도 레이블이 가지고 있는 host 리스트
-     */
-    public List<HostVo> getHostLabelMember(SystemService system, String alid){
-        List<Host> hostList = system.affinityLabelsService().labelService(alid).hostsService().list().send().hosts();
-        
-        return hostList.stream()
-                .map(host -> {
-                    Host h = system.hostsService().hostService(host.id()).get().send().host();
-                    return HostVo.builder()
-                            .id(host.id())
-                            .name(h.name())
-                            .build();
-                })
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * 선호도 레이블에 있는 가상머신 출력
-     * List를 매개변수로 주지못한 이유: 이름출력이 안됨
-     * @param system
-     * @param alid 선호도 레이블 아이디
-     * @return 선호도 레이블이 가지고 있는 가상머신 리스트
-     */
-    public List<VmVo> getVmLabelMember(SystemService system, String alid){
-        List<Vm> vmList = system.affinityLabelsService().labelService(alid).vmsService().list().send().vms();
-        return vmList.stream()
-                .map(vm -> {
-                    Vm v = system.vmsService().vmService(vm.id()).get().send().vm();
-                    return VmVo.builder()
-                            .id(vm.id())
-                            .name(v.name())
-                            .build();
-                })
-                .collect(Collectors.toList());
-    }
-
-
     /**
      * 클러스터 내에 있는 호스트 개수 파악
      * @param hostList
@@ -308,7 +123,7 @@ public class CommonService {
      * @param ele up, down, "" 값
      * @return 호스트 개수
      */
-    public int getHostCnt(List<Host> hostList, String clusterId, String ele){
+    public int getClusterHostCnt(List<Host> hostList, String clusterId, String ele){
         if("up".equals(ele)){
             return (int) hostList.stream()
                     .filter(host -> host.cluster().id().equals(clusterId) && host.status().value().equals("up"))
@@ -332,7 +147,7 @@ public class CommonService {
      * @param ele up, down, "" 값
      * @return 가상머신 개수
      */
-    public int getVmCnt(List<Vm> vmList, String clusterId, String ele){
+    public int getClusterVmCnt(List<Vm> vmList, String clusterId, String ele){
         if("up".equals(ele)) {
             return (int) vmList.stream()
                     .filter(vm -> vm.cluster().id().equals(clusterId) && vm.status().value().equals("up"))
@@ -379,6 +194,54 @@ public class CommonService {
     }
 
 
+    // 이름 중복 검사
+    // true=이름중복없음
+    public boolean isNameDuplicate(SystemService system, String type, String name, String id) {
+        if ("datacenter".equals(type)) {
+            return system.dataCentersService().list().send().dataCenters().stream()
+                    .filter(dataCenter -> id == null || !dataCenter.id().equals(id))
+                    .anyMatch(dataCenter -> dataCenter.name().equals(name));
+        } else if ("cluster".equals(type)) {
+            return system.clustersService().list().send().clusters().stream()
+                    .filter(cluster -> id == null || !cluster.id().equals(id))
+                    .anyMatch(cluster -> cluster.name().equals(name));
+        } else if ("host".equals(type)) {
+            return system.hostsService().list().send().hosts().stream()
+                    .filter(host -> id == null || !host.id().equals(id))
+                    .anyMatch(host -> host.name().equals(name));
+        } else {
+            return system.vmsService().list().send().vms().stream()
+                    .filter(vm -> id == null || !vm.id().equals(id))
+                    .anyMatch(vm -> vm.name().equals(name));
+        }
+    }
 
+
+
+
+
+
+//    public List<VmVo> setVmList(List<Vm> vmList, String clusterId){
+//        return vmList.stream()
+//                .filter(vm -> vm.cluster().id().equals(clusterId))
+//                .map(vm ->
+//                        VmVo.builder()
+//                                .id(vm.id())
+//                                .name(vm.name())
+//                                .build()
+//                )
+//                .collect(Collectors.toList());
+//    }
+//    public List<HostVo> setHostList(List<Host> hostList, String clusterId){
+//        return hostList.stream()
+//                .filter(host -> host.cluster().id().equals(clusterId))
+//                .map(host ->
+//                        HostVo.builder()
+//                                .id(host.id())
+//                                .name(host.name())
+//                                .build()
+//                )
+//                .collect(Collectors.toList());
+//    }
 
 }

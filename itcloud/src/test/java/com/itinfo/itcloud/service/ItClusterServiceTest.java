@@ -41,8 +41,8 @@ class ItClusterServiceTest {
 
     @Test
     @DisplayName("클러스터 생성 창")
-    void setClusterDefaultInfo() {
-        List<DataCenterVo> result = clusterService.setClusterDefaultInfo();
+    void setDatacenterList() {
+        List<DataCenterVo> result = clusterService.setDatacenterList();
 
         assertThat(2).isEqualTo(result.size());
         assertThat(true).isEqualTo(result.stream().anyMatch(dataCenterVo -> dataCenterVo.getName().equals("Default")));
@@ -125,7 +125,7 @@ class ItClusterServiceTest {
         ClusterCreateVo c =
                 ClusterCreateVo.builder()
                         .datacenterId(dcId)
-                        .name("MD")
+                        .name("clustertest")
                         .cpuArc("X86_64")
                         .cpuType("Intel Nehalem Family")
 //                        .description("")
@@ -157,7 +157,7 @@ class ItClusterServiceTest {
     @DisplayName("클러스터 수정 창")
     void setEditCluster() {
         String id = "ff23fc50-3d5c-4b5f-a018-8d8bff70819a";
-        ClusterCreateVo c = clusterService.setEditCluster(id);
+        ClusterCreateVo c = clusterService.setCluster(id);
 
         System.out.println(c);
         assertThat("MD").isEqualTo(c.getName());

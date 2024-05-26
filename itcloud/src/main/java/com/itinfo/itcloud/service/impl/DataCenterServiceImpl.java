@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DataCenterServiceImpl implements ItDataCenterService {
     @Autowired private AdminConnectionService admin;
-
+    @Autowired CommonService commonService;
 
     // 데이터센터 리스트 불러오기
     @Override
@@ -60,9 +60,9 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
         try {
             // 중복 확인 코드
-            if(isNameDuplicate(datacentersService, dcVo.getName(), null)){
-                log.error("실패: 데이터센터 이름 중복");
-                return CommonVo.failResponse("실패: 데이터센터 이름 중복");
+            if(commonService.isNameDuplicate(system, "datacenter", dcVo.getName(), null)){
+                log.error("데이터센터 이름 중복");
+                return CommonVo.failResponse("데이터센터 이름 중복");
             }
 
             String[] ver = dcVo.getVersion().split("\\.");      // 버전값 분리
@@ -96,7 +96,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     // 데이터센터 - edit 시 필요한 값
     // 데이터센터 현재 설정되어있는 값 출력
     @Override
-    public DataCenterCreateVo getDatacenter(String id){
+    public DataCenterCreateVo setDatacenter(String id){
         SystemService system = admin.getConnection().systemService();
         DataCenter dataCenter = system.dataCentersService().dataCenterService(id).get().send().dataCenter();
 
@@ -120,7 +120,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         DataCentersService datacentersService = system.dataCentersService();
 
         try {
-            if (isNameDuplicate(datacentersService, dcVo.getName(), id)) {
+            if (commonService.isNameDuplicate(system, "datacenter", dcVo.getName(), id)) {
                 log.error("실패: 데이터센터 이름 중복");
                 return CommonVo.failResponse("실패: 데이터센터 이름 중복");
             }
@@ -197,19 +197,6 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                             .build()
                 )
                 .collect(Collectors.toList());
-    }
-
-
-    // 이름 중복
-    private boolean isNameDuplicate(DataCentersService datacentersService, String name, String id) {
-        try {
-            return datacentersService.list().send().dataCenters().stream()
-                    .filter(dataCenter -> id == null || !dataCenter.id().equals(id))
-                    .anyMatch(dataCenter -> dataCenter.name().equals(name));
-        } catch (Exception e) {
-            log.error("이름 중복 확인 실패", e);
-            return false; // 기본적으로 false를 반환하여 이름 중복이 없다고 가정합니다.
-        }
     }
 
 

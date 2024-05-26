@@ -89,7 +89,7 @@ class DataCenterControllerTest {
                 .andDo(print())
                 .andReturn();
 
-        verify(dcService).getDatacenter(id);
+        verify(dcService).setDatacenter(id);
     }
 
     @Test

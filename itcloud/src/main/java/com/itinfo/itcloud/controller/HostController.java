@@ -31,9 +31,9 @@ public class HostController {
 	// 호스트 생성 창
 	@GetMapping("/host/settings")
 	@ResponseBody
-	public List<ClusterVo> setHostDefaultInfo(){
+	public List<ClusterVo> setClusterList(){
 		log.info("--- Host 생성창");
-		return hostService.setHostDefaultInfo();
+		return hostService.setClusterList();
 	}
 
 	// 호스트 생성
@@ -73,25 +73,25 @@ public class HostController {
 	// 호스트 유지보수
 	@PostMapping("/host/{id}/deactivate")
 	@ResponseBody
-	public void deActive(@PathVariable String id) {
+	public void deactiveHost(@PathVariable String id) {
 		log.info("--- Host 유지보수");
-		hostService.deActive(id);
+		hostService.deactiveHost(id);
 	}
 
 	// 호스트 활성
 	@PostMapping("/host/{id}/activate")
 	@ResponseBody
-	public void active(@PathVariable String id) {
+	public void activeHost(@PathVariable String id) {
 		log.info("--- Host 활성");
-		hostService.active(id);
+		hostService.activeHost(id);
 	}
 
 	// 호스트 새로고침
 	@PostMapping("/host/{id}/refresh")
 	@ResponseBody
-	public void refresh(@PathVariable String id) {
+	public void refreshHost(@PathVariable String id) {
 		log.info("--- Host 새로고침");
-		hostService.refresh(id);
+		hostService.refreshHost(id);
 	}
 
 	
@@ -99,18 +99,18 @@ public class HostController {
 	// 호스트 ssh 재시작
 	@PostMapping("/host/{id}/restart")
 	@ResponseBody
-	public void reStart(@PathVariable String id) {
+	public void reStartHost(@PathVariable String id) {
 		log.info("--- Host 재시작");
-		hostService.reStart(id);
+		hostService.reStartHost(id);
 	}
 
 
 	// 호스트 ssh 중지
 	@PostMapping("/host/{id}/stop")
 	@ResponseBody
-	public void stop(@PathVariable String id) {
+	public void stopHost(@PathVariable String id) {
 		log.info("--- Host 정지");
-		hostService.stop(id);
+		hostService.stopHost(id);
 	}
 
 
@@ -126,9 +126,9 @@ public class HostController {
 	// 일반
 	@GetMapping("/host/{id}")
 	@ResponseBody
-	public HostVo host(@PathVariable String id) {
+	public HostVo getHost(@PathVariable String id) {
 		log.info("--- Host 일반");
-		return hostService.getInfo(id);
+		return hostService.getHost(id);
 	}
 
 	// 가상머신

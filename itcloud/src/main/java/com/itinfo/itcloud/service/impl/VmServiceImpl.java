@@ -13,6 +13,7 @@ import com.itinfo.itcloud.model.network.NetworkFilterParameterVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.model.storage.*;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
+import com.itinfo.itcloud.service.AffinityService;
 import com.itinfo.itcloud.service.ItVmService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 public class VmServiceImpl implements ItVmService {
     @Autowired private AdminConnectionService admin;
     @Autowired private CommonService commonService;
+    @Autowired private AffinityService affinityService;
 
 
     // 가상머신 목록
@@ -1608,10 +1610,10 @@ public class VmServiceImpl implements ItVmService {
                                 .hostEnabled(ag.hostsRule().enabled())
                                 .hostPositive(ag.hostsRule().positive())
                                 .hostEnforcing(ag.hostsRule().enforcing())
-                                .hostMembers(ag.hostsPresent() ? commonService.getAgHostList(system, id, ag.id()) : null)
-                                .vmMembers(ag.vmsPresent() ? commonService.getAgVmList(system, id, ag.id()) : null)
-                                .hostLabels(ag.hostLabelsPresent() ? commonService.getLabelName(system, ag.hostLabels().get(0).id()) : null)
-                                .vmLabels(ag.vmLabelsPresent() ? commonService.getLabelName(system, ag.vmLabels().get(0).id()) : null)
+                                .hostMembers(ag.hostsPresent() ? affinityService.getAgHostList(system, id, ag.id()) : null)
+                                .vmMembers(ag.vmsPresent() ? affinityService.getAgVmList(system, id, ag.id()) : null)
+                                .hostLabels(ag.hostLabelsPresent() ? affinityService.getLabelName(system, ag.hostLabels().get(0).id()) : null)
+                                .vmLabels(ag.vmLabelsPresent() ? affinityService.getLabelName(system, ag.vmLabels().get(0).id()) : null)
                                 .build())
                 .collect(Collectors.toList());
     }
@@ -1628,8 +1630,8 @@ public class VmServiceImpl implements ItVmService {
                         AffinityLabelVo.builder()
                                 .id(al.id())
                                 .name(al.name())
-                                .hosts(commonService.getHostLabelMember(system, al.id()))
-                                .vms(commonService.getVmLabelMember(system, al.id()))
+                                .hosts(affinityService.getHostLabelMember(system, al.id()))
+                                .vms(affinityService.getVmLabelMember(system, al.id()))
                                 .build())
                 .collect(Collectors.toList());
     }

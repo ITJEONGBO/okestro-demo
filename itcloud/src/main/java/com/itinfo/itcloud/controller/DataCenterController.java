@@ -44,7 +44,7 @@ public class DataCenterController {
 	@ResponseStatus(HttpStatus.OK)
 	public DataCenterCreateVo getDatacenter(@PathVariable String id){
 		log.info("-- 데이터 센터 편집 창");
-		return dcService.getDatacenter(id);
+		return dcService.setDatacenter(id);
 	}
 
 	// 데이터센터 수정
@@ -67,7 +67,7 @@ public class DataCenterController {
 	}
 
 
-
+	// 데이터센터 이벤트
 	@GetMapping("/datacenter/{id}/events")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)

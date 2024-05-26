@@ -11,6 +11,7 @@ import com.itinfo.itcloud.model.network.NetworkClusterVo;
 import com.itinfo.itcloud.model.network.NetworkUsageVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
+import com.itinfo.itcloud.service.AffinityService;
 import com.itinfo.itcloud.service.ItClusterService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
@@ -26,9 +27,9 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class ClusterServiceImpl implements ItClusterService {
-
     @Autowired private AdminConnectionService admin;
     @Autowired private CommonService commonService;
+    @Autowired private AffinityService affinityService;
 
     // 클러스터 목록
     // 상태, 이름, 코멘트, 호환버전, 설명, 클러스터cpu유형, 호스트수, 가상머신수, (업그레이드 상태)
@@ -49,8 +50,8 @@ public class ClusterServiceImpl implements ItClusterService {
                         .version(cluster.version().major() + "." + cluster.version().minor())
                         .description(cluster.description())
                         .cpuType(cluster.cpuPresent() ? cluster.cpu().type() : null)
-                        .hostCnt(commonService.getHostCnt(hostList, cluster.id(), ""))
-                        .vmCnt(commonService.getVmCnt(vmList, cluster.id(), ""))
+                        .hostCnt(commonService.getClusterHostCnt(hostList, cluster.id(), ""))
+                        .vmCnt(commonService.getClusterVmCnt(vmList, cluster.id(), ""))
                     .build()
                 )
                 .collect(Collectors.toList());
@@ -58,7 +59,7 @@ public class ClusterServiceImpl implements ItClusterService {
 
     // 클러스터 생성 위해 필요한 데이터센터 리스트
     @Override
-    public List<DataCenterVo> setClusterDefaultInfo(){
+    public List<DataCenterVo> setDatacenterList(){
         SystemService system = admin.getConnection().systemService();
         List<DataCenter> dataCenterList = system.dataCentersService().list().send().dataCenters();
 
@@ -73,10 +74,10 @@ public class ClusterServiceImpl implements ItClusterService {
                             system.dataCentersService().dataCenterService(dataCenter.id()).networksService().list().send().networks().stream()
                                 .filter(network -> !network.externalProviderPresent())
                                 .map(network ->
-                                    NetworkVo.builder()
-                                        .id(network.id())
-                                        .name(network.name())
-                                    .build()
+                                        NetworkVo.builder()
+                                            .id(network.id())
+                                            .name(network.name())
+                                        .build()
                                 )
                                 .collect(Collectors.toList())
                         )
@@ -98,49 +99,49 @@ public class ClusterServiceImpl implements ItClusterService {
         String[] ver = cVo.getVersion().split("\\.", 2);      // 버전값 분리
 
         try{
-            if(duplicateName) {
-                ClusterBuilder clusterBuilder = new ClusterBuilder();
-                clusterBuilder
-                        .dataCenter(new DataCenterBuilder().id(cVo.getDatacenterId()).build()) // 필수
-                        .name(cVo.getName())    // 필수
-                        .cpu(new CpuBuilder().architecture(Architecture.valueOf(cVo.getCpuArc())).type(cVo.getCpuType()).build())   // 필수
-                        .description(cVo.getDescription())
-                        .comment(cVo.getComment())
-                        .managementNetwork(new NetworkBuilder().id(cVo.getNetworkId()).build())
-                        .biosType(BiosType.valueOf(cVo.getBiosType()))
-                        .fipsMode(FipsMode.valueOf(cVo.getFipsMode()))
-                        .version(new VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())
-                        .switchType(SwitchType.valueOf(cVo.getSwitchType()))
-                        .firewallType(FirewallType.valueOf(cVo.getFirewallType()))
-                        .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
-                        .logMaxMemoryUsedThresholdType(LogMaxMemoryUsedThresholdType.valueOf(cVo.getLogMaxType()))
-                        .virtService(cVo.isVirtService())
-                        .glusterService(cVo.isGlusterService())
-                        .errorHandling(new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()))
-                        // TODO: 마이그레이션 정책 관련 설정 값 조회 기능 존재여부 확인필요
-                        .migration(
-                            new MigrationOptionsBuilder()
-                                .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))
-                                .encrypted(cVo.getEncrypted())
-                        )
-                        .fencingPolicy(
-                            new FencingPolicyBuilder()
-                                .skipIfConnectivityBroken(new SkipIfConnectivityBrokenBuilder().enabled(true))
-                                .skipIfSdActive(new SkipIfSdActiveBuilder().enabled(true))
-                        );
-
-                if (cVo.isNetworkProvider()) {
-                    clusterBuilder.externalNetworkProviders(openStackNetworkProvider);
-                }
-
-                clustersService.add().cluster(clusterBuilder.build()).send();
-
-                log.info("성공: 클러스터 생성");
-                return CommonVo.createResponse();
-            }else {
-                log.error("실패: 클러스터 이름 중복 에러");
-                return CommonVo.duplicateResponse();
+            if (commonService.isNameDuplicate(system, "cluster", cVo.getName(), null)) {
+                log.error("클러스터 이름 중복");
+                return CommonVo.failResponse("클러스터 이름 중복");
             }
+
+            ClusterBuilder clusterBuilder = new ClusterBuilder();
+            clusterBuilder
+                    .dataCenter(new DataCenterBuilder().id(cVo.getDatacenterId()).build()) // 필수
+                    .name(cVo.getName())    // 필수
+                    .cpu(new CpuBuilder().architecture(Architecture.valueOf(cVo.getCpuArc())).type(cVo.getCpuType()).build())   // 필수
+                    .description(cVo.getDescription())
+                    .comment(cVo.getComment())
+                    .managementNetwork(new NetworkBuilder().id(cVo.getNetworkId()).build())
+                    .biosType(BiosType.valueOf(cVo.getBiosType()))
+                    .fipsMode(FipsMode.valueOf(cVo.getFipsMode()))
+                    .version(new VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())
+                    .switchType(SwitchType.valueOf(cVo.getSwitchType()))
+                    .firewallType(FirewallType.valueOf(cVo.getFirewallType()))
+                    .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
+                    .logMaxMemoryUsedThresholdType(LogMaxMemoryUsedThresholdType.valueOf(cVo.getLogMaxType()))
+                    .virtService(cVo.isVirtService())
+                    .glusterService(cVo.isGlusterService())
+                    .errorHandling(new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()))
+                    // TODO: 마이그레이션 정책 관련 설정 값 조회 기능 존재여부 확인필요
+                    .migration(
+                        new MigrationOptionsBuilder()
+                            .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))
+                            .encrypted(cVo.getEncrypted())
+                    )
+                    .fencingPolicy(
+                        new FencingPolicyBuilder()
+                            .skipIfConnectivityBroken(new SkipIfConnectivityBrokenBuilder().enabled(true))
+                            .skipIfSdActive(new SkipIfSdActiveBuilder().enabled(true))
+                    );
+
+            if (cVo.isNetworkProvider()) {
+                clusterBuilder.externalNetworkProviders(openStackNetworkProvider);
+            }
+
+            clustersService.add().cluster(clusterBuilder.build()).send();
+
+            log.info("성공: 클러스터 생성");
+            return CommonVo.createResponse();
         }catch (Exception e){
             log.error("실패: 클러스터 생성 실패", e);
             return CommonVo.failResponse(e.getMessage());
@@ -149,7 +150,7 @@ public class ClusterServiceImpl implements ItClusterService {
 
     // 클러스터 편집 창
     @Override
-    public ClusterCreateVo setEditCluster(String id){
+    public ClusterCreateVo setCluster(String id){
         SystemService system = admin.getConnection().systemService();
         Cluster cluster = system.clustersService().clusterService(id).get().send().cluster();
         DataCenter dataCenter = system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter();
@@ -202,51 +203,47 @@ public class ClusterServiceImpl implements ItClusterService {
         ClusterService clusterService = system.clustersService().clusterService(id);
         OpenStackNetworkProvider openStackNetworkProvider = system.openstackNetworkProvidersService().list().send().providers().get(0);
 
-        // 중복이름
-        boolean nameDuplicate = system.clustersService().list().send().clusters().stream()
-                .filter(cluster -> !cluster.id().equals(id))
-                .anyMatch(cluster -> cluster.name().equals(cVo.getName()));
-
         String[] ver = cVo.getVersion().split("\\.");      // 버전값 분리
 
         try{
-            if(!nameDuplicate) {
-                ClusterBuilder clusterBuilder = new ClusterBuilder();
-                clusterBuilder
-                        .id(id)
-                        .dataCenter(new DataCenterBuilder().id(cVo.getDatacenterId()).build()) // 필수
-                        .name(cVo.getName())    // 필수
-                        .cpu(new CpuBuilder().architecture(Architecture.valueOf(cVo.getCpuArc())).type(cVo.getCpuType()))   // 필수
-                        .description(cVo.getDescription())
-                        .comment(cVo.getComment())
-                        .managementNetwork(new NetworkBuilder().id(cVo.getNetworkId()).build())
-                        .biosType(BiosType.valueOf(cVo.getBiosType()))
-                        .fipsMode(FipsMode.valueOf(cVo.getFipsMode()))
-                        .version(new VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())  // 호환 버전
-//                    .switchType(cVo.getSwitchType())      // 선택불가
-                        .firewallType(FirewallType.valueOf(cVo.getFirewallType()))
-                        .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
-                        .logMaxMemoryUsedThresholdType(LogMaxMemoryUsedThresholdType.PERCENTAGE)
-                        .virtService(cVo.isVirtService())
-                        .glusterService(cVo.isGlusterService())
-                        .errorHandling(new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()))   // 복구정책
-                        // 마이그레이션 정책
-                        .migration(new MigrationOptionsBuilder()
-                                .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))    // 대역폭
-                                .encrypted(cVo.getEncrypted())      // 암호화
-                        );
-                if (cVo.isNetworkProvider()) {
-                    clusterBuilder.externalNetworkProviders(openStackNetworkProvider);
-                }
-
-                clusterService.update().cluster(clusterBuilder.build()).send();
-
-                log.info("성공: 클러스터 편집");
-                return CommonVo.createResponse();
-            }else {
-                log.error("실패: 클러스터 중복 이름 에러");
-                return CommonVo.duplicateResponse();
+            if (commonService.isNameDuplicate(system, "cluster", cVo.getName(), id)) {
+                log.error("클러스터 이름 중복");
+                return CommonVo.failResponse("클러스터 이름 중복");
             }
+
+            ClusterBuilder clusterBuilder = new ClusterBuilder();
+            clusterBuilder
+                    .id(id)
+                    .dataCenter(new DataCenterBuilder().id(cVo.getDatacenterId()).build()) // 필수
+                    .name(cVo.getName())    // 필수
+                    .cpu(new CpuBuilder().architecture(Architecture.valueOf(cVo.getCpuArc())).type(cVo.getCpuType()))   // 필수
+                    .description(cVo.getDescription())
+                    .comment(cVo.getComment())
+                    .managementNetwork(new NetworkBuilder().id(cVo.getNetworkId()).build())
+                    .biosType(BiosType.valueOf(cVo.getBiosType()))
+                    .fipsMode(FipsMode.valueOf(cVo.getFipsMode()))
+                    .version(new VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())  // 호환 버전
+//                    .switchType(cVo.getSwitchType())      // 선택불가
+                    .firewallType(FirewallType.valueOf(cVo.getFirewallType()))
+                    .logMaxMemoryUsedThreshold(cVo.getLogMaxMemory())
+                    .logMaxMemoryUsedThresholdType(LogMaxMemoryUsedThresholdType.PERCENTAGE)
+                    .virtService(cVo.isVirtService())
+                    .glusterService(cVo.isGlusterService())
+                    .errorHandling(new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()))   // 복구정책
+                    // 마이그레이션 정책
+                    .migration(new MigrationOptionsBuilder()
+                            .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))    // 대역폭
+                            .encrypted(cVo.getEncrypted())      // 암호화
+                    );
+
+            if (cVo.isNetworkProvider()) {
+                clusterBuilder.externalNetworkProviders(openStackNetworkProvider);
+            }
+
+            clusterService.update().cluster(clusterBuilder.build()).send();
+
+            log.info("성공: 클러스터 편집");
+            return CommonVo.createResponse();
         }catch (Exception e){
             log.error("실패: 클러스터 편집", e);
             return CommonVo.failResponse(e.getMessage());
@@ -294,7 +291,7 @@ public class ClusterServiceImpl implements ItClusterService {
                     .threadsAsCore(cluster.threadsAsCores())
                     .memoryOverCommit(cluster.memoryPolicy().overCommit().percentAsInteger())
                     .restoration(TypeExtKt.findMigrateErr(cluster.errorHandling().onError()))
-                    .vmCnt(commonService.getVmCnt(vmList, id, ""))
+                    .vmCnt(commonService.getClusterVmCnt(vmList, id, ""))
                 .build();
     }
 
@@ -489,10 +486,10 @@ public class ClusterServiceImpl implements ItClusterService {
 
         return AffinityHostVm.builder()
                 .clusterId(id)
-                .hostList(commonService.setHostList(hostList, id))
-                .vmList(commonService.setVmList(vmList, id))
-                .hostLabel(commonService.setLabel(system))
-                .vmLabel(commonService.setLabel(system))
+                .hostList(affinityService.setHostList(hostList, id))
+                .vmList(affinityService.setVmList(vmList, id))
+                .hostLabel(affinityService.setLabel(system))
+                .vmLabel(affinityService.setLabel(system))
                 .build();
     }
 
@@ -519,10 +516,10 @@ public class ClusterServiceImpl implements ItClusterService {
                         .hostEnabled(ag.hostsRule().enabled())
                         .hostPositive(ag.hostsRule().positive())
                         .hostEnforcing(ag.hostsRule().enforcing())
-                        .hostMembers(ag.hostsPresent() ? commonService.getAgHostList(system, id, ag.id()) : null)
-                        .vmMembers(ag.vmsPresent() ? commonService.getAgVmList(system, id, ag.id()) : null)
-                        .hostLabels(ag.hostLabelsPresent() ? commonService.getLabelName(system, ag.hostLabels().get(0).id()) : null)
-                        .vmLabels(ag.vmLabelsPresent() ? commonService.getLabelName(system, ag.vmLabels().get(0).id()) : null)
+                        .hostMembers(ag.hostsPresent() ? affinityService.getAgHostList(system, id, ag.id()) : null)
+                        .vmMembers(ag.vmsPresent() ? affinityService.getAgVmList(system, id, ag.id()) : null)
+                        .hostLabels(ag.hostLabelsPresent() ? affinityService.getLabelName(system, ag.hostLabels().get(0).id()) : null)
+                        .vmLabels(ag.vmLabelsPresent() ? affinityService.getLabelName(system, ag.vmLabels().get(0).id()) : null)
                     .build())
                 .collect(Collectors.toList());
     }
@@ -777,8 +774,8 @@ public class ClusterServiceImpl implements ItClusterService {
                 .map(al -> AffinityLabelVo.builder()
                             .id(al.id())
                             .name(al.name())
-                            .hosts(commonService.getHostLabelMember(system, al.id()))
-                            .vms(commonService.getVmLabelMember(system, al.id()))
+                            .hosts(affinityService.getHostLabelMember(system, al.id()))
+                            .vms(affinityService.getVmLabelMember(system, al.id()))
                             .build()
                 )
                 .collect(Collectors.toList());
@@ -838,8 +835,8 @@ public class ClusterServiceImpl implements ItClusterService {
         return AffinityLabelCreateVo.builder()
                 .id(id)
                 .name(al.name())
-                .hostList(al.hostsPresent() ? commonService.getHostLabelMember(system, alId) : null )
-                .vmList(al.vmsPresent() ? commonService.getVmLabelMember(system, alId) : null)
+                .hostList(al.hostsPresent() ? affinityService.getHostLabelMember(system, alId) : null )
+                .vmList(al.vmsPresent() ? affinityService.getVmLabelMember(system, alId) : null)
                 .build();
     }
 

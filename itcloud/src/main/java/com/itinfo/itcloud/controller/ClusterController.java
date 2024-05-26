@@ -37,7 +37,7 @@ public class ClusterController {
 	@ResponseStatus(HttpStatus.OK)
 	public List<DataCenterVo> setClusterDefaultInfo(){
 		log.info("--- Cluster 생성 창");
-		return clusterService.setClusterDefaultInfo();
+		return clusterService.setDatacenterList();
 	}
 
 	// 클러스터 생성
@@ -55,7 +55,7 @@ public class ClusterController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public ClusterCreateVo setEditCluster(@PathVariable String id){
 		log.info("--- Cluster 편집 창");
-		return clusterService.setEditCluster(id);
+		return clusterService.setCluster(id);
 	}
 	
 	// 클러스터 편집

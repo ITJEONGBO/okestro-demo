@@ -10,29 +10,29 @@ import java.util.List;
 
 @Service
 public interface ItHostService {
-
     List<HostVo> getList(); // 호스트 리스트
 
-    List<ClusterVo> setHostDefaultInfo();      // 호스트 생성 - 클러스터 리스트 출력
-    CommonVo<Boolean> addHost(HostCreateVo hostCreateVo);     // 생성
-    HostCreateVo setHost(String id);      // 수정 창
-    CommonVo<Boolean> editHost(String id, HostCreateVo hostCreateVo);       // 수정
-    CommonVo<Boolean> deleteHost(String id);                  // 삭제
 
-//    boolean rebootHost(String hostId);              // 재기동
-    CommonVo<Boolean> deActive(String id);       // 유지보수
-    CommonVo<Boolean> active(String id);         // 활성
-    CommonVo<Boolean> refresh(String id);        // 새로고침
+    List<ClusterVo> setClusterList();      // 호스트 생성 - 클러스터 리스트 출력
+    CommonVo<Boolean> addHost(HostCreateVo hostCreateVo);   // 생성
+    HostCreateVo setHost(String id);                        // 수정 창
+    CommonVo<Boolean> editHost(String id, HostCreateVo hostCreateVo);       // 수정
+    CommonVo<Boolean> deleteHost(String id);                // 삭제
+
+    // 관리
+    CommonVo<Boolean> deactiveHost(String id);       // 유지보수
+    CommonVo<Boolean> activeHost(String id);         // 활성
+    CommonVo<Boolean> refreshHost(String id);        // 새로고침
 
     // ssh 관리
-    CommonVo<Boolean> reStart(String id);        // 재시작
-//    void start(String id);          // 시작
-    CommonVo<Boolean> stop(String id);           // 중지
+    CommonVo<Boolean> reStartHost(String id);        // 재시작
+    CommonVo<Boolean> stopHost(String id);           // 중지
 
 
-    HostVo getInfo(String id);  // 일반
+    HostVo getHost(String id);  // 일반
 
-    List<VmVo> getVm(String id);    // 가상머신
+    // 호스트 내 가상머신
+    List<VmVo> getVm(String id);    // 가상머신 리스트
     CommonVo<Boolean> startVm(String vmId);     // 실행
     CommonVo<Boolean> pauseVm(String vmId);     // 일시중지
     CommonVo<Boolean> stopVm(String vmId);      // 종료
@@ -40,8 +40,9 @@ public interface ItHostService {
     CommonVo<Boolean> migrationVm(String vmId);     // 마이그레이션
     CommonVo<Boolean> migrationCancelVm(String vmId);     // 마이그레이션 취소
 
-
+    // 네트워크 인터페이스
     List<NicVo> getNic(String id);  // 네트워크 인터페이스
+    // 호스트 네트워크 설정
 
     List<HostDeviceVo> getHostDevice(String id);    // 호스트 장치
     List<PermissionVo> getPermission(String id);    // 권한
@@ -58,5 +59,5 @@ public interface ItHostService {
     CommonVo<Boolean> deleteAffinitylabel(String id, String alId);           // 선호도 레이블 삭제
 
 
-    List<EventVo> getEvent(String id);
+    List<EventVo> getEvent(String id); // 호스트 이벤트 출력
 }

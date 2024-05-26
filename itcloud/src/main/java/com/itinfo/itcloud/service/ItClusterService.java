@@ -17,9 +17,9 @@ public interface ItClusterService {
     List<ClusterVo> getList();
 
     // 클러스터
-    List<DataCenterVo> setClusterDefaultInfo(); // 생성 위한 dc&network 목록
+    List<DataCenterVo> setDatacenterList(); // 생성 위한 dc/network 목록
     CommonVo<Boolean> addCluster(ClusterCreateVo cVo);   // 생성
-    ClusterCreateVo setEditCluster(String id);      // 수정 창
+    ClusterCreateVo setCluster(String id);      // 수정 창
     CommonVo<Boolean> editCluster(String id, ClusterCreateVo cVo);   // 수정
     CommonVo<Boolean> deleteCluster(String id);       // 삭제
 

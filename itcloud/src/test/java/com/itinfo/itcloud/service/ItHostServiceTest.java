@@ -32,8 +32,8 @@ class ItHostServiceTest {
 
     @Test
     @DisplayName("호스트 생성 클러스터 리스트 출력")
-    void setHostDefaultInfo() {
-        List<ClusterVo> result = hostService.setHostDefaultInfo();
+    void setClusterList() {
+        List<ClusterVo> result = hostService.setClusterList();
 
         result.forEach(System.out::println);
     }
@@ -67,13 +67,16 @@ class ItHostServiceTest {
     }
 
     @Test
+    @DisplayName("호스트 수정")
     void editHost() {
+
+
     }
 
     @Test
     @DisplayName("호스트 삭제")
     void deleteHost() {
-        String id = "1c8ed321-28e5-4f83-9e34-e13f9125f253";
+        String id = "465f8981-193a-4abe-b9aa-4b06b4fab974";
         CommonVo<Boolean> result = hostService.deleteHost(id);
 
         assertThat(result.getHead().getCode()).isEqualTo(200);
@@ -81,34 +84,40 @@ class ItHostServiceTest {
 
     @Test
     @DisplayName("호스트 유지보수")
-    void deActive() {
-        String id = "1c8ed321-28e5-4f83-9e34-e13f9125f253";
-        hostService.deActive(id);
+    void deactiveHost() {
+        String id = "ab33794b-61ec-4288-934f-83d2c38d14bc";
 
-    }
-
-    @Test
-    void active() {
-    }
-
-    @Test
-    void refresh() {
-    }
-
-    @Test
-    void reStart() {
-    }
-
-    @Test
-    void stop() {
-        String id = "507b4118-346a-47be-bd3a-a15abc36d26a";
-
-        CommonVo<Boolean> result = hostService.stop(id);
+        CommonVo<Boolean> result = hostService.deactiveHost(id);
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
     @Test
-    void getInfo() {
+    @DisplayName("호스트 활성")
+    void activeHost() {
+    }
+
+    @Test
+    @DisplayName("호스트 새로고침")
+    void refreshHost() {
+    }
+
+    @Test
+    @DisplayName("호스트 ssh-재시작")
+    void reStartHost() {
+    }
+
+    @Test
+    @DisplayName("호스트 ssh-정지")
+    void stopHost() {
+        String id = "507b4118-346a-47be-bd3a-a15abc36d26a";
+
+        CommonVo<Boolean> result = hostService.stopHost(id);
+        assertThat(result.getHead().getCode()).isEqualTo(200);
+    }
+
+    @Test
+    @DisplayName("호스트 정보")
+    void getHost() {
     }
 
     @Test
@@ -181,38 +190,47 @@ class ItHostServiceTest {
     }
 
     @Test
+    @DisplayName("호스트 장치")
     void getHostDevice() {
     }
 
     @Test
+    @DisplayName("호스트 권한")
     void getPermission() {
     }
 
     @Test
+    @DisplayName("호스트 ")
     void setAffinityDefaultInfo() {
     }
 
     @Test
+    @DisplayName("호스트 선호도 레이블")
     void getAffinitylabels() {
     }
 
     @Test
+    @DisplayName("호스트 선호도 레이블 생성")
     void addAffinitylabel() {
     }
 
     @Test
+    @DisplayName("호스트 선호도 레이블 받아오기")
     void getAffinityLabel() {
     }
 
     @Test
+    @DisplayName("호스트 선호도 레이블 수정")
     void editAffinitylabel() {
     }
 
     @Test
+    @DisplayName("호스트 선호도 레이블 삭제")
     void deleteAffinitylabel() {
     }
 
     @Test
+    @DisplayName("호스트 이벤트")
     void getEvent() {
     }
 }
