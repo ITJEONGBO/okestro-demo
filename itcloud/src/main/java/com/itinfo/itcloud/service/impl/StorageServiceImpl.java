@@ -146,7 +146,7 @@ public class StorageServiceImpl implements ItStorageService {
             DiskBuilder diskBuilder = new DiskBuilder();
             diskBuilder
 					.provisionedSize(BigInteger.valueOf(image.getSize()).multiply(BigInteger.valueOf(1024).pow(3))) // 값 받은 것을 byte로 변환하여 준다
-                    .name(image.getName())
+                    .name(image.getAlias())
                     .description(image.getDescription())
 					.storageDomains(new StorageDomain[]{ new StorageDomainBuilder().id(image.getDomainId()).build()})
                     .sparse(image.isSparse()) // 할당정책: 씬 true
@@ -163,7 +163,7 @@ public class StorageServiceImpl implements ItStorageService {
                 log.info("not ok");
             }while (disk.status() == DiskStatus.OK);
 
-            log.info("성공: 디스크 이미지 {} 생성", image.getName());
+            log.info("성공: 디스크 이미지 {} 생성", image.getAlias());
             return CommonVo.createResponse();
         }catch (Exception e){
             log.error("실패: 새 가상 디스크 (이미지) 생성");
@@ -184,7 +184,7 @@ public class StorageServiceImpl implements ItStorageService {
             diskBuilder
                     .id(image.getId())
                     .provisionedSize( (BigInteger.valueOf(image.getSize()).add(image.getAppendSize())).multiply(BigInteger.valueOf(1024).pow(3)) ) // 값 받은 것을 byte로 변환하여 준다
-                    .name(image.getName())
+                    .name(image.getAlias())
                     .description(image.getDescription())
                     .wipeAfterDelete(image.isWipeAfterDelete()) // 삭제후 초기화
                     .shareable(image.isShare())     // 공유 가능
@@ -196,7 +196,7 @@ public class StorageServiceImpl implements ItStorageService {
 
             diskService.update().disk(diskBuilder).send().disk();
 
-            log.info("성공: 디스크 이미지 {} 수정", image.getName());
+            log.info("성공: 디스크 이미지 {} 수정", image.getAlias());
             return CommonVo.createResponse();
 //            return CommonVo.successResponse();
         }catch (Exception e){
@@ -483,7 +483,7 @@ public class StorageServiceImpl implements ItStorageService {
             DiskBuilder diskBuilder = new DiskBuilder();
             diskBuilder
                     .provisionedSize((int) Math.ceil(file.getSize() / (Double)Math.pow(1024, 3))) // 값 받은 것을 byte로 변환하여 준다
-                    .name(image.getName())
+                    .name(image.getAlias())
                     .description(image.getDescription())
                     .storageDomains(new StorageDomain[]{ new StorageDomainBuilder().id(image.getDomainId()).build()})
                     .wipeAfterDelete(image.isWipeAfterDelete())
