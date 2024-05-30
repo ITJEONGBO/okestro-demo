@@ -10,10 +10,9 @@ import java.math.BigInteger;
 public class ImageCreateVo {
     private String id;
     private int size;   // 크기(Gib)
-//    private BigInteger size;   // 크기(Gib)
     private BigInteger appendSize;  // 확장 크기
-    private String name;
-    private String description;
+    private String alias;        // 별칭
+    private String description; // 설명
     private boolean sparse;     // 할당 정책 (씬 true, 사전할당 false)
     private String domainId;    // 스토리지 도메인 아이디값
     private String profileId;   // 디스크 프로파일 아이디값
