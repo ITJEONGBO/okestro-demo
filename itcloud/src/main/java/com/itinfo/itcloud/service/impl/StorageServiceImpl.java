@@ -27,7 +27,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
@@ -440,54 +439,60 @@ public class StorageServiceImpl implements ItStorageService {
     }
 
 
-    // 디스크 상태 체크
-    private void checkStatus(DisksService disksService, Disk disk, String expectStatus) throws InterruptedException {
-        while (true) {
-            DiskStatus status = disksService.diskService(disk.id()).get().send().disk().status();
-
-            if (status == DiskStatus.valueOf(expectStatus)) {
-                log.info("디스크 {} {} 완료", disk.name(), expectStatus);
-                break;
-            } else {
-                log.debug("디스크 상태: " + status + ", {} 상태를 기다리는 중...", expectStatus);
-                Thread.sleep(5000);  // 5초 대기 후 상태 재확인
-            }
-        }
-    }
 
 
 
 
-    // 파일 선택시 파일에 있는 포맷, 컨텐츠(파일 확장자로 칭하는건지), 크기 출력
-    //           파일 크기가 자동으로 디스크 옵션에 추가
-    //          파일 명칭이 파일의 이름으로 지정됨 (+설명)
+
+
+
+    // (화면표시) 파일 선택시 파일에 있는 포맷, 컨텐츠(파일 확장자로 칭하는건지), 크기 출력
+    //           파일 크기가 자동으로 디스크 옵션에 추가, 파일 명칭이 파일의 이름으로 지정됨 (+설명)
     // provisioned_size, alias, description, wipe_after_delete, shareable, backup and disk_profile.
     public CommonVo<Boolean> uploadDisk(MultipartFile file, ImageCreateVo image) throws IOException {
         SystemService system = admin.getConnection().systemService();
         DisksService disksService = system.disksService();
-        ImageTransfersService imageTransService = system.imageTransfersService(); // 이미지 추가를 위한 서비스
+        ImageTransfersService imageTransfersService = system.imageTransfersService(); // 이미지 추가를 위한 서비스
 
         try {
-            long fileSize = file.getSize();
-            int provisionedSize = (int) Math.ceil(file.getSize() / (Double) Math.pow(1024, 3));
+            if(file == null || file.isEmpty()){
+                return CommonVo.failResponse("파일이 없습니다.");
+            }
 
-            log.info("파일: {}, byte: {} -> {}, 타입: {}", file.getOriginalFilename(), fileSize, Math.ceil(fileSize / (Double) Math.pow(1024, 3)), file.getContentType());
+            long fileSize = file.getSize(); // bytes
+            int provisionedSize = (int) Math.ceil(fileSize / (Double) Math.pow(1024, 3)); // gb
 
-            Disk disk = disksService.add()
-                    .disk(createDisk(image, provisionedSize))
-                    .send().disk();
+            log.info("파일: {}, byte: {} -> {}, 타입:{}", file.getOriginalFilename(), fileSize, provisionedSize ,file.getContentType());
 
+            // 우선 입력된 디스크 정보를 바탕으로 디스크 추가
+            Disk disk = disksService.add().disk(createDisk(image, provisionedSize)).send().disk();
+
+            // 디스크 ok 상태여야 이미지 업로드 가능
             checkStatus(disksService, disk, "OK");
 
-            ImageTransfer imageTransfer = imageTransService.add()
-                    .imageTransfer(
-                            new ImageTransferBuilder()
-                                    .disk(disk)
-                                    .direction(ImageTransferDirection.UPLOAD)
-                    )
-                    .send().imageTransfer();
+//            ImageContainer imageContainer = new ImageContainer();
+//            imageContainer.id(disk.id());
+//            ImageTransferContainer imageTransferContainer = new ImageTransferContainer();
+//            imageTransferContainer.image(imageContainer);
+//            imageTransferContainer.direction(ImageTransferDirection.UPLOAD);
 
-            System.out.println("imageTransfer.transferUrl(): " + imageTransfer.transferUrl());
+
+            // 이미지 전송
+            ImageTransfer imageTransfer = system.imageTransfersService().add()
+//                                        .imageTransfer(imageTransferContainer)
+                                            .imageTransfer(
+                                                    new ImageTransferBuilder()
+                                                            .image(new ImageBuilder().id(disk.id()))
+                                                            .direction(ImageTransferDirection.UPLOAD)
+                                                    )
+                                            .send().imageTransfer();
+
+            String transferUrl = imageTransfer.transferUrl();
+//            String proxyUrl = imageTransfer.proxyUrl();
+
+            log.debug("imageTransfer.transferUrl(): {}", transferUrl);
+//            log.debug("imageTransfer.proxyUrl(): {}", proxyUrl);
+
 
             // 이미지 업로드 가능한지 체크
             do {
@@ -495,61 +500,47 @@ public class StorageServiceImpl implements ItStorageService {
                 Thread.sleep(1000L);
             } while (imageTransfer.phase() == ImageTransferPhase.INITIALIZING);
 
-            if (imageTransfer.transferUrl() != null) {
-                URL url = new URL(imageTransfer.transferUrl());
 
-                // SSL 설정
-//                trust(url, provisionedSize);
-                disableSSLVerification();
+            if(transferUrl == null || transferUrl.isEmpty()){
+                log.debug("transferUrl 없음");
+                return CommonVo.failResponse("transferUrl 가 없음");
+            }else {
+                imageSend(transferUrl, file, disk);
 
                 // 자바에서 HTTP 요청을 보낼 때 기본적으로 제한된 헤더를 사용자 코드에서 설정할 수 있도록 허용하는 설정
                 System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
 
                 // 연결
-//                HttpsURLConnection httpsConn = (HttpsURLConnection) url.openConnection();
-//                httpsConn.setRequestProperty("Content-Length", String.valueOf(file.getSize()));
-//                httpsConn.setRequestMethod("PUT");
-//                httpsConn.setFixedLengthStreamingMode(file.getSize());
+//                HttpURLConnection httpsConn = (HttpURLConnection) url.openConnection();
 //                httpsConn.setDoOutput(true);
-//                httpsConn.connect();
+//                httpsConn.setRequestMethod("POST");
+//                httpsConn.setRequestProperty("Content-Type", "application/octet-stream");
+
+//                HttpURLConnection httpConn = (HttpsURLConnection)url.openConnection();
+//                httpConn.setRequestProperty("PUT", url.getPath());
+//                httpConn.setRequestProperty("Content-Length", String.valueOf(fileSize));
+//                httpConn.setRequestMethod("PUT");
+//                httpConn.setFixedLengthStreamingMode(fileSize);
+//                httpConn.setDoOutput(true);
+//                httpConn.connect();
 //
-//                try (InputStream input = file.getInputStream();
-//                     OutputStream output = httpsConn.getOutputStream()) {
-//
-//                    byte[] buf = new byte[131072];  // 128kb
-//                    int bytes;
-//                    while ((bytes = input.read(buf)) != -1) {
-//                        output.write(buf, 0, bytes);
-//                        output.flush();
-//                    }
-//
-//                    if (httpsConn.getResponseCode() == 200) {
-//                        System.out.println("finish");
+//                try (OutputStream os = httpConn.getOutputStream();
+//                     InputStream is = file.getInputStream()) {
+//                    byte[] buffer = new byte[128];
+//                    int bytesRead;
+//                    while ((bytesRead = is.read(buffer)) != -1) {
+//                        os.write(buffer, 0, bytesRead);
 //                    }
 //                }
 
-                HttpURLConnection httpsConn = (HttpURLConnection) url.openConnection();
-                httpsConn.setDoOutput(true);
-                httpsConn.setRequestMethod("POST");
-                httpsConn.setRequestProperty("Content-Type", "application/octet-stream");
+//                int responseCode = httpConn.getResponseCode();
+//                if (responseCode != HttpURLConnection.HTTP_OK) {
+//                    throw new IOException("Server returned non-OK status: " + responseCode);
+//                }
+//
+//                imageTransfersService.imageTransferService(imageTransfer.id()).finalize_().send();
+//                httpConn.disconnect();
 
-                try (OutputStream os = httpsConn.getOutputStream()) {
-                    byte[] buffer = new byte[8192];
-                    int bytesRead;
-                    try (InputStream is = file.getInputStream()) {
-                        while ((bytesRead = is.read(buffer)) != -1) {
-                            os.write(buffer, 0, bytesRead);
-                        }
-                    }
-                }
-
-                int responseCode = httpsConn.getResponseCode();
-                if (responseCode != HttpURLConnection.HTTP_OK) {
-                    throw new IOException("Server returned non-OK status: " + responseCode);
-                }
-
-                imageTransService.imageTransferService(imageTransfer.id()).finalize_().send();
-                httpsConn.disconnect();
             }
             return CommonVo.successResponse();
         } catch (Exception var28) {
@@ -557,6 +548,86 @@ public class StorageServiceImpl implements ItStorageService {
             return CommonVo.failResponse(var28.getMessage());
         }
     }
+
+
+    private CommonVo<Boolean> imageSend(String transferUrl, MultipartFile file, Disk disk) {
+        HttpsURLConnection httpsConn = null;
+        BufferedReader buffered = null;
+
+        log.debug("imageSend 함수 내부");
+
+        try {
+            disableSSLVerification();
+
+            URL url = new URL(transferUrl);
+
+            try (InputStream input = file.getInputStream()) {
+                httpsConn = (HttpsURLConnection) url.openConnection();
+                httpsConn.setRequestMethod("PUT");
+                httpsConn.setDoOutput(true);
+                httpsConn.setRequestProperty("Authorization", "Bearer " + url);
+
+                try (OutputStream outputStream = httpsConn.getOutputStream()) {
+                    byte[] buffer = new byte[8192];
+                    int bytesRead;
+                    while ((bytesRead = input.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
+                }
+
+                if (httpsConn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    throw new RuntimeException("Failed to upload image: " + httpsConn.getResponseCode());
+                }
+
+                return CommonVo.successResponse();
+            }
+
+//            log.debug("HttpsURLConnection 시작");
+//            httpConn = (HttpsURLConnection) url.openConnection();
+//            httpConn.setDoInput(true);
+//            httpConn.setDoOutput(true);
+//            httpConn.setRequestMethod("PUT");
+//            httpConn.setRequestProperty("Content-Type", "application/octet-stream");
+////            httpConn.setConnectTimeout(2000);
+//
+//            log.debug("OutputStream 시작");
+//            InputStream inputStream = httpConn.getInputStream();
+//            try (OutputStream os = httpConn.getOutputStream();
+//                 buffered = new BufferedReader(new InputStreamReader(inputStream, "UTF-8")) {
+//
+//                byte[] buffer = new byte[128];
+//                int bytesRead;
+//                while ((bytesRead = is.read(buffer)) != -1) {
+//                    os.write(buffer, 0, bytesRead);
+//                    log.debug(String.valueOf(bytesRead));
+//                }
+//                os.flush(); // 모든 데이터를 보낸 후 출력 스트림을 플러시합니다.
+//                log.debug("bytesRead 끝");
+//            }
+//
+//            int responseCode = httpConn.getResponseCode();
+//            while(true){
+//                if(disk.status() == DiskStatus.OK){
+//                    log.info(String.valueOf(disk.status()));
+//                    break;
+//                }else {
+//                    log.error(String.valueOf(disk.status()));
+//                    Thread.sleep(1000);
+//                }
+//            }
+//
+//            if(disk.status() == DiskStatus.OK){
+//                return CommonVo.successResponse();
+//            }else {
+//                return CommonVo.failResponse("이미지 업로드 실패");
+//            }
+
+        }catch (Exception e) {
+            return CommonVo.failResponse("");
+        }
+    }
+
+
 
     private Disk createDisk(ImageCreateVo image, long provisionedSize) throws Exception {
         return new DiskBuilder()
@@ -572,7 +643,9 @@ public class StorageServiceImpl implements ItStorageService {
                 .build();
     }
 
+    // SSL 인증서를 검증하지 않도록 설정하는 메서드
     public static void disableSSLVerification() {
+        log.debug("disableSSLVerification");
         try {
             TrustManager[] trustAllCerts = new TrustManager[] {
                     new X509TrustManager() {
@@ -592,10 +665,13 @@ public class StorageServiceImpl implements ItStorageService {
 
             HostnameVerifier allHostsValid = (hostname, session) -> true;
             HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+
+            log.debug("disableSSLVerification");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     // 인증서를 keystore에 저장하는 과정
     public void trust(URL url, int bytes) throws Exception {
@@ -635,65 +711,12 @@ public class StorageServiceImpl implements ItStorageService {
     }
 
 
-    // 클라이언트가 SSL/TLS 연결을 설정할 때 서버의 인증서를 검증하는 과정에 대한 코드?
-    private void setConnection(URL url, int bytes) throws Exception {
-        String result = null;
 
-        try {
-            HttpsURLConnection httpsConn = (HttpsURLConnection) url.openConnection();
-            SSLContext ssl = SSLContext.getInstance("TLS");
 
-            ssl.init(null,
-                    new TrustManager[]{new X509TrustManager() {
-                        // 신뢰할 수 있는 기관의 목록 반환
-                        public X509Certificate[] getAcceptedIssuers() {
-                            return null;
-                        }
 
-                        // 클라이언트 인증서 검증
-                        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                        }
 
-                        // 서버 인증서 검증
-                        public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                        }
-                    }},
-                    new SecureRandom()
-            );
 
-            HttpsURLConnection.setDefaultSSLSocketFactory(ssl.getSocketFactory());
 
-            // 자바에서 HTTPS 연결을 설정할 때 서버의 호스트 이름을 검증하는 데 사용되는 인터페이스
-            // Client가 SSL/TLS 연결을 설정할 때 서버 인증서를 검증하는 과정, 서버의 호스트 이름이 인증서에 명시된 호스트 이름과 일치하는지 확인
-            HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
-
-//            HttpsURLConnection.setDefaultHostnameVerifier(
-//                    new HostnameVerifier() {
-//                        public boolean verify(String hostName, SSLSession session) {
-//                            // 반환 값: 호스트 이름 검증이 성공하면 true, 실패하면 false.
-//                            // return "example.com".equalsIgnoreCase(hostname);
-//                            return true;  // 모든 호스트 이름을 검증 없이 허용
-//                        }
-//                    }
-//            );
-
-            httpsConn.setDoInput(true);
-            httpsConn.setDoOutput(true);
-            httpsConn.setRequestMethod("PUT");
-            httpsConn.setConnectTimeout(2000);
-
-            try (OutputStream os = httpsConn.getOutputStream()) {
-                os.write(bytes);
-                os.flush();
-            }
-
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(httpsConn.getInputStream(), StandardCharsets.UTF_8))) {
-                reader.lines().collect(Collectors.joining());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 
     @Override
@@ -730,6 +753,28 @@ public class StorageServiceImpl implements ItStorageService {
     public CommonVo<Boolean> downloadDisk() {
         return null;
     }
+
+
+
+
+
+
+    // 디스크 상태 체크
+    private void checkStatus(DisksService disksService, Disk disk, String expectStatus) throws InterruptedException {
+        while (true) {
+            DiskStatus status = disksService.diskService(disk.id()).get().send().disk().status();
+
+            if (status == DiskStatus.valueOf(expectStatus)) {
+                log.info("디스크 {} {} 완료", disk.name(), expectStatus);
+                break;
+            } else {
+                log.debug("디스크 상태: " + status + ", {} 상태를 기다리는 중...", expectStatus);
+                Thread.sleep(5000);  // 5초 대기 후 상태 재확인
+            }
+        }
+    }
+
+
     // endregion
 
 
