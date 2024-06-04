@@ -484,6 +484,9 @@ public class ClusterServiceImpl implements ItClusterService {
     // 선호도 그룹 생성창
     // 선호도 그룹 생성
     // 선호도 그룹 편집 창
+    // 선호도 그룹 편집
+    // 선호도 그룹 삭제
+
 
 
     // 선호도 레이블 목록 출력

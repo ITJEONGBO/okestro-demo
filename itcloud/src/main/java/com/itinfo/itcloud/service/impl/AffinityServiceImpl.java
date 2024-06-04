@@ -18,6 +18,7 @@ import org.ovirt.engine.sdk4.types.Vm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -173,13 +174,40 @@ public class AffinityServiceImpl implements ItAffinityService {
                     .vmsRule(new AffinityRuleBuilder()
                             .enabled(agVo.isVmEnabled())    // 비활성화
                             .positive(agVo.isVmPositive())  // 양극 음극
-                            .enforcing(agVo.isVmEnforcing())) // 강제 적용
+                            .enforcing(agVo.isVmEnforcing()) // 강제 적용
+                    )
                     .hostsRule(new AffinityRuleBuilder()
                             .enabled(agVo.isHostEnabled())
                             .positive(agVo.isHostPositive())
-                            .enforcing(agVo.isHostEnforcing()));
+                            .enforcing(agVo.isHostEnforcing())
+                    );
 
-            setLabelsAndMembers(ag, agVo);
+            if (agVo.getHostLabels() != null) {
+                ag.hostLabels(
+                        agVo.getHostLabels().stream()
+                                .map(al -> new AffinityLabelBuilder().id(al.getId()).build())
+                                .collect(Collectors.toList())
+                );
+            }
+            if (agVo.getVmLabels() != null) {
+                ag.vmLabels(
+                        agVo.getVmLabels().stream()
+                                .map(al -> new AffinityLabelBuilder().id(al.getId()).build())
+                                .collect(Collectors.toList())
+                );
+            }
+            if (agVo.getHostList() != null) {
+                ag.hosts(agVo.getHostList().stream()
+                        .map(host -> new HostBuilder().id(host.getId()).build())
+                        .collect(Collectors.toList())
+                );
+            }
+            if (agVo.getVmList() != null) {
+                ag.vms(agVo.getVmList().stream()
+                        .map(vm -> new VmBuilder().id(vm.getId()).build())
+                        .collect(Collectors.toList())
+                );
+            }
 
             AffinityGroup affinityGroup = agsService.add().group(ag.build()).send().group();
 
@@ -194,97 +222,67 @@ public class AffinityServiceImpl implements ItAffinityService {
     }
 
 
-    // 선호도 그룹 생성 - 레이블과 멤버들 추가
-    private void setLabelsAndMembers(AffinityGroupBuilder ag, AffinityGroupCreateVo agVo) {
-        if (agVo.getHostLabels() != null) {
-            ag.hostLabels(
-                    agVo.getHostLabels().stream()
-                            .map(al -> new AffinityLabelBuilder().id(al.getId()).build())
-                            .collect(Collectors.toList())
-            );
-        }
-        if (agVo.getVmLabels() != null) {
-            ag.vmLabels(
-                    agVo.getVmLabels().stream()
-                            .map(al -> new AffinityLabelBuilder().id(al.getId()).build())
-                            .collect(Collectors.toList())
-            );
-        }
-        if (agVo.getHostList() != null) {
-            ag.hosts(agVo.getHostList().stream()
-                    .map(host -> new HostBuilder().id(host.getId()).build())
-                    .collect(Collectors.toList())
-            );
-        }
-        if (agVo.getVmList() != null) {
-            ag.vms(agVo.getVmList().stream()
-                    .map(vm -> new VmBuilder().id(vm.getId()).build())
-                    .collect(Collectors.toList())
-            );
-        }
-    }
 
 
     // 선호도 그룹 편집 창
     public AffinityGroupCreateVo setEditAffinitygroup(String id, String type, String agId) {
         SystemService system = admin.getConnection().systemService();
         String clusterId = "cluster".equals(type) ? id : system.vmsService().vmService(id).get().send().vm().cluster().id();
-        AffinityGroup affinityGroup = system.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId).get().follow("vmlabels,hostlabels,vms,hosts").send().group();
+        AffinityGroup ag = system.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId).get().follow("vmlabels,hostlabels,vms,hosts").send().group();
 
         log.info("cluster".equals(type) ? "클러스터 선호도 그룹 편집창" : "가상머신 선호도 그룹 편집창");
         return AffinityGroupCreateVo.builder()
                 .clusterId(clusterId)
                 .id(agId)
-                .name(affinityGroup.name())
-                .description(affinityGroup.description())
-                .priority(affinityGroup.priority().intValue())
-                .vmEnabled(affinityGroup.vmsRule().enabled())// 비활성화
-                .vmPositive(affinityGroup.vmsRule().positive()) // 양극 음극
-                .vmEnforcing(affinityGroup.vmsRule().enforcing()) // 강제 적용
-                .hostEnabled(affinityGroup.hostsRule().enabled())
-                .hostPositive(affinityGroup.hostsRule().positive())
-                .hostEnforcing(affinityGroup.hostsRule().enforcing())
-                .hostLabels(
-                        affinityGroup.hostLabels().stream()
-                                .map(affinityLabel ->
-                                        IdentifiedVo.builder()
-                                                .id(affinityLabel.id())
-                                                .name(affinityLabel.name())
-                                                .build()
-                                )
-                                .collect(Collectors.toList())
-                )
-                .vmLabels(
-                        affinityGroup.vmLabels().stream()
-                                .map(affinityLabel ->
-                                        IdentifiedVo.builder()
-                                                .id(affinityLabel.id())
-                                                .name(affinityLabel.name())
-                                                .build()
-                                )
-                                .collect(Collectors.toList())
-                )
-                .hostList(
-                        affinityGroup.hosts().stream()
-                                .map(host ->
-                                        IdentifiedVo.builder()
-                                                .id(host.id())
-                                                .name(host.name())
-                                                .build()
-                                )
-                                .collect(Collectors.toList())
-                )
-                .vmList(
-                        affinityGroup.vms().stream()
-                                .map(vm ->
-                                        IdentifiedVo.builder()
-                                                .id(vm.id())
-                                                .name(vm.name())
-                                                .build()
-                                )
-                                .collect(Collectors.toList())
-                )
+                .name(ag.name())
+                .description(ag.description())
+                .priority(ag.priority().intValue())
+                .vmEnabled(ag.vmsRule().enabled())// 비활성화
+                .vmPositive(ag.vmsRule().positive()) // 양극 음극
+                .vmEnforcing(ag.vmsRule().enforcing()) // 강제 적용
+                .hostEnabled(ag.hostsRule().enabled())
+                .hostPositive(ag.hostsRule().positive())
+                .hostEnforcing(ag.hostsRule().enforcing())
+                .hostLabels(setEdit(ag, "hostLabels"))
+                .vmLabels(setEdit(ag, "vmLabels"))
+                .hostList(setEdit(ag, "hosts"))
+                .vmList(setEdit(ag, "vms"))
                 .build();
+    }
+
+    private  List<IdentifiedVo> setEdit(AffinityGroup ag, String type){
+        switch (type) {
+            case "hostLabels":
+                return ag.hostLabels().stream()
+                        .map(label -> IdentifiedVo.builder()
+                                .id(label.id())
+                                .name(label.name())
+                                .build())
+                        .collect(Collectors.toList());
+            case "vmLabels":
+                return ag.vmLabels().stream()
+                        .map(label -> IdentifiedVo.builder()
+                                .id(label.id())
+                                .name(label.name())
+                                .build())
+                        .collect(Collectors.toList());
+            case "hosts":
+                return ag.hosts().stream()
+                        .map(host -> IdentifiedVo.builder()
+                                .id(host.id())
+                                .name(host.name())
+                                .build())
+                        .collect(Collectors.toList());
+            case "vms":
+                return ag.vms().stream()
+                        .map(vm -> IdentifiedVo.builder()
+                                .id(vm.id())
+                                .name(vm.name())
+                                .build())
+                        .collect(Collectors.toList());
+            default:
+                return Collections.emptyList();
+        }
     }
 
 

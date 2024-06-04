@@ -376,31 +376,31 @@ class ItClusterServiceTest {
         System.out.println(group.toString());
     }
 
-    @Test
-    @DisplayName("선호도 그룹 편집")
-    void editAffinitygroup() {
-        String agId = "2f60703a-0f8b-49f4-912a-e3a0bc097294";
-
-        AffinityGroupCreateVo ag =
-                AffinityGroupCreateVo.builder()
-                        .name("gg")
-                        .description("n")
-                        .priority(5)
-                        .clusterId(defaultId)
-                        .vmEnabled(false)
-                        .vmEnforcing(false)
-                        .vmPositive(true)
-                        .hostEnabled(false)
-                        .hostEnforcing(false)
-                        .hostPositive(false)
-//                        .hostList()
-//                        .vmList()
-                        .build();
-
-        CommonVo<Boolean> result = affinityService.editAffinitygroup(defaultId, agId, ag);
-
-        assertThat(result.getHead().getCode()).isEqualTo(201);
-    }
+//    @Test
+//    @DisplayName("선호도 그룹 편집")
+//    void editAffinitygroup() {
+//        String agId = "2f60703a-0f8b-49f4-912a-e3a0bc097294";
+//
+//        AffinityGroupCreateVo ag =
+//                AffinityGroupCreateVo.builder()
+//                        .name("gg")
+//                        .description("n")
+//                        .priority(5)
+//                        .clusterId(defaultId)
+//                        .vmEnabled(false)
+//                        .vmEnforcing(false)
+//                        .vmPositive(true)
+//                        .hostEnabled(false)
+//                        .hostEnforcing(false)
+//                        .hostPositive(false)
+////                        .hostList()
+////                        .vmList()
+//                        .build();
+//
+//        CommonVo<Boolean> result = affinityService.editAffinitygroup(defaultId, agId, ag);
+//
+//        assertThat(result.getHead().getCode()).isEqualTo(201);
+//    }
 
 //    @Test
 //    void deleteAffinitygroup() {

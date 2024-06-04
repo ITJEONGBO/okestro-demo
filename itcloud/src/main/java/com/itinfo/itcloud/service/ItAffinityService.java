@@ -32,7 +32,7 @@ public interface ItAffinityService {
 //    List<HostVo> getHostLabelMember(SystemService system, String alid);
 //    List<VmVo> getVmLabelMember(SystemService system, String alid);
 
-    // cluster label, group
-    // host label
-    // vm label, group
+    // cluster  : label, group
+    // host     : label
+    // vm       : label, group
 }
