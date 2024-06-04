@@ -3,8 +3,6 @@ package com.itinfo.itcloud.service.impl;
 import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.computing.AffinityGroupVo;
 import com.itinfo.itcloud.model.computing.AffinityLabelVo;
-import com.itinfo.itcloud.model.computing.HostVo;
-import com.itinfo.itcloud.model.computing.VmVo;
 import com.itinfo.itcloud.model.create.AffinityGroupCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
@@ -13,7 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
 import org.ovirt.engine.sdk4.services.AffinityGroupsService;
 import org.ovirt.engine.sdk4.services.SystemService;
-import org.ovirt.engine.sdk4.types.*;
+import org.ovirt.engine.sdk4.types.AffinityGroup;
+import org.ovirt.engine.sdk4.types.AffinityLabel;
+import org.ovirt.engine.sdk4.types.Host;
+import org.ovirt.engine.sdk4.types.Vm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,7 @@ public class AffinityServiceImpl implements ItAffinityService {
     @Autowired private AdminConnectionService admin;
 
     /**
-     * Affinity Label 생성시
+     * Affinity 생성시
      * 해당 클러스터에 있는 모든 호스트 출력
      * @param clusterId 클러스터 아이디 비교
      * @return 호스트 리스트
@@ -34,6 +35,7 @@ public class AffinityServiceImpl implements ItAffinityService {
     @Override
     public List<IdentifiedVo> getHostList(String clusterId){
         SystemService system = admin.getConnection().systemService();
+
         return system.hostsService().list().send().hosts().stream()
                 .filter(host -> host.cluster().id().equals(clusterId))
                 .map(host ->
@@ -47,7 +49,7 @@ public class AffinityServiceImpl implements ItAffinityService {
 
 
     /**
-     * Affinity Label 생성시
+     * Affinity 생성시
      * 해당 클러스터에 있는 모든 가상머신 출력
      * @param clusterId 클러스터 아이디 비교
      * @return 가상머신 리스트
@@ -103,17 +105,14 @@ public class AffinityServiceImpl implements ItAffinityService {
 
         if("cluster".equals(type)) {
             agList = system.clustersService().clusterService(id).affinityGroupsService().list().send().groups();
-            log.info("클러스터 선호도그룹 목록");
         }else { // vm
-            Vm vm = system.vmsService().vmService(id).get().send().vm();
-            agList = system.clustersService().clusterService(vm.cluster().id()).affinityGroupsService().list().send().groups();
-            log.info("가상머신 선호도그룹 목록");
-
-            agList = agList.stream()
+            String clusterId = system.vmsService().vmService(id).get().send().vm().cluster().id();
+            agList = system.clustersService().clusterService(clusterId).affinityGroupsService().list().send().groups().stream()
                     .filter(ag -> ag.vmsPresent() && ag.vms().stream().anyMatch(vm1 -> vm1.id().equals(id)))
                     .collect(Collectors.toList());
         }
-
+        
+        log.info("cluster".equals(type) ? "클러스터 선호도그룹 목록" : "가상머신 선호도그룹 목록");
         return agList.stream()
                 .map(ag ->
                         AffinityGroupVo.builder()
@@ -129,9 +128,8 @@ public class AffinityServiceImpl implements ItAffinityService {
                             .hostEnabled(ag.hostsRule().enabled())
                             .hostPositive(ag.hostsRule().positive())
                             .hostEnforcing(ag.hostsRule().enforcing())
-
-                            .hostMembers(ag.hostsPresent() ? getAgHostList(system, id, ag.id()) : null)
-                            .vmMembers(ag.vmsPresent() ? getAgVmList(system, id, ag.id()) : null)
+                            .hostMembers(ag.hostsPresent() ? getAgHostList(system, id, type, ag.id()) : null)
+                            .vmMembers(ag.vmsPresent() ? getAgVmList(system, id, type, ag.id()) : null)
                             .hostLabels(ag.hostLabelsPresent() ? getLabelName(ag.hostLabels().get(0).id()) : null)
                             .vmLabels(ag.vmLabelsPresent() ? getLabelName(ag.vmLabels().get(0).id()) : null)
                             .build()
@@ -154,19 +152,9 @@ public class AffinityServiceImpl implements ItAffinityService {
     @Override
     public CommonVo<Boolean> addAffinitygroup(String id,  String type, AffinityGroupCreateVo agVo) {
         SystemService system = admin.getConnection().systemService();
-        AffinityGroupsService agsService;
-        List<AffinityGroup> agList;
-
-        if("cluster".equals(type)){
-            agsService = system.clustersService().clusterService(id).affinityGroupsService();
-            log.info("클러스터 선호도그룹 생성 ");
-        }else { // vm
-            String clusterId = system.vmsService().vmService(id).get().send().vm().cluster().id();
-            agsService = system.clustersService().clusterService(clusterId).affinityGroupsService();
-            log.info("가상머신 선호도그룹 생성 ");
-        }
-
-        agList = agsService.list().send().groups();
+        String clusterId = "cluster".equals(type) ? id : system.vmsService().vmService(id).get().send().vm().cluster().id();
+        AffinityGroupsService agsService = system.clustersService().clusterService(clusterId).affinityGroupsService();
+        List<AffinityGroup> agList = agsService.list().send().groups();
 
         // 선호도 그룹 이름 중복검사
         boolean duplicateName = agList.stream().anyMatch(ag -> ag.name().equals(agVo.getName()));
@@ -193,9 +181,10 @@ public class AffinityServiceImpl implements ItAffinityService {
 
             setLabelsAndMembers(ag, agVo);
 
-            agsService.add().group(ag.build()).send().group();
+            AffinityGroup affinityGroup = agsService.add().group(ag.build()).send().group();
 
-            log.info("선호도그룹 생성");
+            // TODO:상태표시
+            log.info("cluster".equals(type) ? "클러스터 선호도그룹 생성" : "가상머신 선호도그룹 생성");
             return CommonVo.createResponse();
         } catch (Exception e) {
             log.error("실패: 선호도그룹 생성");
@@ -204,10 +193,6 @@ public class AffinityServiceImpl implements ItAffinityService {
         }
     }
 
-    @Override
-    public AffinityGroupCreateVo setEditAffinitygroup(String id, String type, String agId) {
-        return null;
-    }
 
     // 선호도 그룹 생성 - 레이블과 멤버들 추가
     private void setLabelsAndMembers(AffinityGroupBuilder ag, AffinityGroupCreateVo agVo) {
@@ -241,76 +226,69 @@ public class AffinityServiceImpl implements ItAffinityService {
 
 
     // 선호도 그룹 편집 창
-//    public AffinityGroupCreateVo setEditAffinitygroup(String id, String type, String agId) {
-//        SystemService system = admin.getConnection().systemService();
-//
-//        if("cluster".equals(type)){
-//            AffinityGroupHostsService h = system.clustersService().clusterService(id).affinityGroupsService().groupService(agId).hostsService();
-//            AffinityGroup affinityGroup = system.clustersService().clusterService(id).affinityGroupsService().groupService(agId).get().follow("vmlabels,hostlabels,vms,hosts").send().group();
-//
-//        }else {
-//
-//        }
-//        h.list().send().hosts().stream().map(Host::name).forEach(System.out::println);
-//
-//        log.info("Cluster 선호도 그룹 편집창");
-//        return AffinityGroupCreateVo.builder()
-//                .clusterId(clusterId)
-//                .id(agId)
-//                .name(affinityGroup.name())
-//                .description(affinityGroup.description())
-//                .priority(affinityGroup.priority().intValue())
-//                .vmEnabled(affinityGroup.vmsRule().enabled())// 비활성화
-//                .vmPositive(affinityGroup.vmsRule().positive()) // 양극 음극
-//                .vmEnforcing(affinityGroup.vmsRule().enforcing()) // 강제 적용
-//                .hostEnabled(affinityGroup.hostsRule().enabled())
-//                .hostPositive(affinityGroup.hostsRule().positive())
-//                .hostEnforcing(affinityGroup.hostsRule().enforcing())
-//                .hostLabels(
-//                        affinityGroup.hostLabels().stream()
-//                                .map(affinityLabel ->
-//                                        IdentifiedVo.builder()
-//                                                .id(affinityLabel.id())
-//                                                .name(affinityLabel.name())
-//                                                .build()
-//                                )
-//                                .collect(Collectors.toList())
-//                )
-//                .vmLabels(
-//                        affinityGroup.vmLabels().stream()
-//                                .map(affinityLabel ->
-//                                        IdentifiedVo.builder()
-//                                                .id(affinityLabel.id())
-//                                                .name(affinityLabel.name())
-//                                                .build()
-//                                )
-//                                .collect(Collectors.toList())
-//                )
-//                .hostList(
-//                        affinityGroup.hosts().stream()
-//                                .map(host ->
-//                                        IdentifiedVo.builder()
-//                                                .id(host.id())
-//                                                .name(host.name())
-//                                                .build()
-//                                )
-//                                .collect(Collectors.toList())
-//                )
-//                .vmList(
-//                        affinityGroup.vms().stream()
-//                                .map(vm ->
-//                                        IdentifiedVo.builder()
-//                                                .id(vm.id())
-//                                                .name(vm.name())
-//                                                .build()
-//                                )
-//                                .collect(Collectors.toList())
-//                )
-//                .build();
-//    }
-//
-//
-//
+    public AffinityGroupCreateVo setEditAffinitygroup(String id, String type, String agId) {
+        SystemService system = admin.getConnection().systemService();
+        String clusterId = "cluster".equals(type) ? id : system.vmsService().vmService(id).get().send().vm().cluster().id();
+        AffinityGroup affinityGroup = system.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId).get().follow("vmlabels,hostlabels,vms,hosts").send().group();
+
+        log.info("cluster".equals(type) ? "클러스터 선호도 그룹 편집창" : "가상머신 선호도 그룹 편집창");
+        return AffinityGroupCreateVo.builder()
+                .clusterId(clusterId)
+                .id(agId)
+                .name(affinityGroup.name())
+                .description(affinityGroup.description())
+                .priority(affinityGroup.priority().intValue())
+                .vmEnabled(affinityGroup.vmsRule().enabled())// 비활성화
+                .vmPositive(affinityGroup.vmsRule().positive()) // 양극 음극
+                .vmEnforcing(affinityGroup.vmsRule().enforcing()) // 강제 적용
+                .hostEnabled(affinityGroup.hostsRule().enabled())
+                .hostPositive(affinityGroup.hostsRule().positive())
+                .hostEnforcing(affinityGroup.hostsRule().enforcing())
+                .hostLabels(
+                        affinityGroup.hostLabels().stream()
+                                .map(affinityLabel ->
+                                        IdentifiedVo.builder()
+                                                .id(affinityLabel.id())
+                                                .name(affinityLabel.name())
+                                                .build()
+                                )
+                                .collect(Collectors.toList())
+                )
+                .vmLabels(
+                        affinityGroup.vmLabels().stream()
+                                .map(affinityLabel ->
+                                        IdentifiedVo.builder()
+                                                .id(affinityLabel.id())
+                                                .name(affinityLabel.name())
+                                                .build()
+                                )
+                                .collect(Collectors.toList())
+                )
+                .hostList(
+                        affinityGroup.hosts().stream()
+                                .map(host ->
+                                        IdentifiedVo.builder()
+                                                .id(host.id())
+                                                .name(host.name())
+                                                .build()
+                                )
+                                .collect(Collectors.toList())
+                )
+                .vmList(
+                        affinityGroup.vms().stream()
+                                .map(vm ->
+                                        IdentifiedVo.builder()
+                                                .id(vm.id())
+                                                .name(vm.name())
+                                                .build()
+                                )
+                                .collect(Collectors.toList())
+                )
+                .build();
+    }
+
+
+
 //    // 선호도 그룹 편집
 //    @Override
 //    public CommonVo<Boolean> editAffinitygroup(String id, String agId, AffinityGroupCreateVo agVo) {
@@ -416,6 +394,67 @@ public class AffinityServiceImpl implements ItAffinityService {
 
 
 
+    /**
+     * AffinityLabel
+     * 선호도  - 레이블 아이디와 이름 얻기
+     * @param alId
+     * @return 선호도 레이블 id, 이름
+     */
+    @Override
+    public List<IdentifiedVo> getLabelName(String alId){
+        SystemService system = admin.getConnection().systemService();
+        List<AffinityLabel> alList = system.affinityLabelsService().list().send().labels();
+
+        return alList.stream()
+                .filter(al -> al.id().equals(alId))
+                .map(al ->
+                        IdentifiedVo.builder()
+                                .id(al.id())
+                                .name(al.name())
+                                .build())
+                .collect(Collectors.toList());
+    }
+
+
+    /***
+     * 선호도 그룹이 가지고 있는 호스트 리스트 출력
+     * @param system
+     * @param id
+     * @param type
+     * @param agId
+     * @return 클러스터 밑의 호스트 리스트
+     */
+    public List<IdentifiedVo> getAgHostList(SystemService system, String id, String type, String agId) {
+        String clusterId = "cluster".equals(type) ? id : system.vmsService().vmService(id).get().send().vm().cluster().id();
+        List<Host> hostList = system.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId).hostsService().list().send().hosts();
+        log.info("호스트 목록 조회");
+
+        return hostList.stream()
+                .map(host -> IdentifiedVo.builder()
+                        .id(host.id())
+                        .name(host.name())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+
+    private List<IdentifiedVo> getAgVmList(SystemService system, String id, String type, String agId) {
+        String clusterId = "cluster".equals(type) ? id : system.vmsService().vmService(id).get().send().vm().cluster().id();
+        List<Vm> vmList = system.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId).vmsService().list().send().vms();
+        log.info("VM 목록 조회");
+
+        return vmList.stream()
+                .map(vm -> IdentifiedVo.builder()
+                        .id(vm.id())
+                        .name(vm.name())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+
+
+
+
 
 
     // 클러스터에서 선호도 레이블 목록 출력  // 호스트 id
@@ -442,69 +481,6 @@ public class AffinityServiceImpl implements ItAffinityService {
 
 
 
-    /**
-     * AffinityLabel
-     * 선호도  - 레이블 아이디와 이름 얻기
-     * @param alId
-     * @return 선호도 레이블 id, 이름
-     */
-    @Override
-    public List<AffinityLabelVo> getLabelName(String alId){
-        SystemService system = admin.getConnection().systemService();
-        List<AffinityLabel> alList = system.affinityLabelsService().list().send().labels();
-
-        return alList.stream()
-                .filter(al -> al.id().equals(alId))
-                .map(al ->
-                        AffinityLabelVo.builder()
-                                .id(al.id())
-                                .name(al.name())
-                                .build())
-                .collect(Collectors.toList());
-    }
-
-
-    /**
-     * 선호도 그룹이 가지고 있는 호스트 리스트 출력
-     * @param system
-     * @param clusterId
-     * @param agId
-     * @return 클러스터 밑의 호스트 리스트
-     */
-    @Override
-    public List<HostVo> getAgHostList(SystemService system, String clusterId, String agId){
-        List<Host> hostList = system.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId).hostsService().list().send().hosts();
-        return hostList.stream()
-                .map(host ->
-                        HostVo.builder()
-                                .id(host.id())
-                                .name(host.name())
-                                .build())
-                .collect(Collectors.toList());
-    }
-
-
-    /**
-     * 선호도 그룹이 가지고 있는 가상머신 리스트 출력
-     * @param system
-     * @param clusterId
-     * @param agId
-     * @return 클러스터 밑의 가상머신 리스트
-     */
-    @Override
-    public List<VmVo> getAgVmList(SystemService system, String clusterId, String agId){
-        List<Vm> vmList = system.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId).vmsService().list().send().vms();
-
-        return vmList.stream()
-                .map(vm ->
-                        VmVo.builder()
-                                .id(vm.id())
-                                .name(vm.name())
-                                .build())
-                .collect(Collectors.toList());
-    }
-
-
 
     /**
      * 선호도 레이블에 있는 호스트 출력
@@ -513,14 +489,13 @@ public class AffinityServiceImpl implements ItAffinityService {
      * @param alid 선호도 레이블 아이디
      * @return 선호도 레이블이 가지고 있는 host 리스트
      */
-    @Override
-    public List<HostVo> getHostLabelMember(SystemService system, String alid){
+    public List<IdentifiedVo> getHostLabelMember(SystemService system, String alid){
         List<Host> hostList = system.affinityLabelsService().labelService(alid).hostsService().list().send().hosts();
 
         return hostList.stream()
                 .map(host -> {
                     Host h = system.hostsService().hostService(host.id()).get().send().host();
-                    return HostVo.builder()
+                    return IdentifiedVo.builder()
                             .id(host.id())
                             .name(h.name())
                             .build();
@@ -535,13 +510,12 @@ public class AffinityServiceImpl implements ItAffinityService {
      * @param alid 선호도 레이블 아이디
      * @return 선호도 레이블이 가지고 있는 가상머신 리스트
      */
-    @Override
-    public List<VmVo> getVmLabelMember(SystemService system, String alid){
+    public List<IdentifiedVo> getVmLabelMember(SystemService system, String alid){
         List<Vm> vmList = system.affinityLabelsService().labelService(alid).vmsService().list().send().vms();
         return vmList.stream()
                 .map(vm -> {
                     Vm v = system.vmsService().vmService(vm.id()).get().send().vm();
-                    return VmVo.builder()
+                    return IdentifiedVo.builder()
                             .id(vm.id())
                             .name(v.name())
                             .build();

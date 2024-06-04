@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.model.computing;
 
+import com.itinfo.itcloud.model.IdentifiedVo;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -28,10 +29,10 @@ public class AffinityGroupVo {
     private boolean hostPositive;   // 호스트 측 극성 (양극, 음극)
     private boolean hostEnforcing;  // 호스트 강제적용
 
-    private List<AffinityLabelVo> vmLabels;     // 가상머신 레이블
-    private List<AffinityLabelVo> hostLabels;   // 호스트 레이블
+    private List<IdentifiedVo> vmLabels;     // 가상머신 레이블
+    private List<IdentifiedVo> hostLabels;   // 호스트 레이블
 
-    private List<VmVo> vmMembers;      // 가상머신 멤버
-    private List<HostVo> hostMembers;    // 호스트 멤버
+    private List<IdentifiedVo> vmMembers;      // 가상머신 멤버
+    private List<IdentifiedVo> hostMembers;    // 호스트 멤버
 
 }

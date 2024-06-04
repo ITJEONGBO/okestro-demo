@@ -593,19 +593,20 @@ public class HostServiceImpl implements ItHostService {
     // 호스트 선호도 레이블 목록
     @Override
     public List<AffinityLabelVo> getAffinitylabels(String id) {
-        SystemService system = admin.getConnection().systemService();
-        List<AffinityLabel> affinityLabelList = system.hostsService().hostService(id).affinityLabelsService().list().follow("hosts,vms").send().label();
-
-        log.info("Host 선호도 레이블");
-        return affinityLabelList.stream()
-                .map(al ->
-                        AffinityLabelVo.builder()
-                            .id(al.id())
-                            .name(al.name())
-                            .hosts(itAffinityService.getHostLabelMember(system, al.id()))
-                            .vms(itAffinityService.getVmLabelMember(system, al.id()))
-                        .build())
-                .collect(Collectors.toList());
+//        SystemService system = admin.getConnection().systemService();
+//        List<AffinityLabel> affinityLabelList = system.hostsService().hostService(id).affinityLabelsService().list().follow("hosts,vms").send().label();
+//
+//        log.info("Host 선호도 레이블");
+//        return affinityLabelList.stream()
+//                .map(al ->
+//                        AffinityLabelVo.builder()
+//                            .id(al.id())
+//                            .name(al.name())
+//                            .hosts(itAffinityService.getHostLabelMember(system, al.id()))
+//                            .vms(itAffinityService.getVmLabelMember(system, al.id()))
+//                        .build())
+//                .collect(Collectors.toList());
+        return null;
     }
 
     // 선호도 레이블 생성 창
@@ -665,16 +666,17 @@ public class HostServiceImpl implements ItHostService {
 
     @Override
     public AffinityLabelCreateVo getAffinityLabel(String alId) {
-        SystemService system = admin.getConnection().systemService();
-        AffinityLabel al = system.affinityLabelsService().labelService(alId).get().follow("hosts,vms").send().label();
-
-        log.info("Host 선호도 레이블 편집창");
-        return AffinityLabelCreateVo.builder()
-                .id(alId)
-                .name(al.name())
-                .hostList(al.hostsPresent() ? itAffinityService.getHostLabelMember(system, alId) : null )
-                .vmList(al.vmsPresent() ? itAffinityService.getVmLabelMember(system, alId) : null)
-                .build();
+//        SystemService system = admin.getConnection().systemService();
+//        AffinityLabel al = system.affinityLabelsService().labelService(alId).get().follow("hosts,vms").send().label();
+//
+//        log.info("Host 선호도 레이블 편집창");
+//        return AffinityLabelCreateVo.builder()
+//                .id(alId)
+//                .name(al.name())
+//                .hostList(al.hostsPresent() ? itAffinityService.getHostLabelMember(system, alId) : null )
+//                .vmList(al.vmsPresent() ? itAffinityService.getVmLabelMember(system, alId) : null)
+//                .build();
+        return null;
     }
 
     @Override

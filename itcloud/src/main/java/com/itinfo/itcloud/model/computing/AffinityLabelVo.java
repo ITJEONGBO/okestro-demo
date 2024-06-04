@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.model.computing;
 
+import com.itinfo.itcloud.model.IdentifiedVo;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -12,6 +13,6 @@ public class AffinityLabelVo {
     private String name;
     private String clusterName;
 
-    private List<HostVo> hosts;     // 호스트 멤버
-    private List<VmVo> vms;     // 가상머신 멤버(화면표시)
+    private List<IdentifiedVo> hosts;     // 호스트 멤버
+    private List<IdentifiedVo> vms;     // 가상머신 멤버(화면표시)
 }

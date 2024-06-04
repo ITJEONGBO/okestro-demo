@@ -607,11 +607,11 @@ class ItVmServiceTest {
         hostList.add(IdentifiedVo.builder().id("6a8e5257-0b2f-4b3c-b720-1d5eee1cbbfc").build());
 
         List<IdentifiedVo> vmList = new ArrayList<>();
-        vmList.add(IdentifiedVo.builder().id("c9c1c52d-d2a4-4f2a-93fe-30200f1e0bff").build());
+        vmList.add(IdentifiedVo.builder().id(defaultId).build());
 
         AffinityGroupCreateVo ag =
                 AffinityGroupCreateVo.builder()
-                        .name("sgsadf")
+                        .name("sga")
                         .description("asktestDescriptinn")
                         .priority(5)
                         .clusterId(defaultId)

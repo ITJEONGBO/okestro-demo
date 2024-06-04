@@ -2,7 +2,6 @@ package com.itinfo.itcloud.service;
 
 import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.computing.AffinityGroupVo;
-import com.itinfo.itcloud.model.computing.AffinityLabelVo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,10 +48,9 @@ class ItAffinityServiceTest {
 
     @Test
     void getLabelName() {
-        String alId = "fe36a56c-b366-42d9-80de-5f02aa4eff09";
-        List<AffinityLabelVo> result = affinityService.getLabelName(alId);
-
-        result.forEach(System.out::println);
+//        String alId = "fe36a56c-b366-42d9-80de-5f02aa4eff09";
+//        List<AffinityLabelVo> result = affinityService.getLabelName(alId);
+//        result.forEach(System.out::println);
     }
 
     @Test

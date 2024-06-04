@@ -486,9 +486,6 @@ public class ClusterServiceImpl implements ItClusterService {
     // 선호도 그룹 편집 창
 
 
-
-
-
     // 선호도 레이블 목록 출력
     @Override
     public List<AffinityLabelVo> getAffinitylabelList(String id) {  // 호스트 id
@@ -500,8 +497,8 @@ public class ClusterServiceImpl implements ItClusterService {
                 .map(al -> AffinityLabelVo.builder()
                             .id(al.id())
                             .name(al.name())
-                            .hosts(affinityService.getHostLabelMember(system, al.id()))
-                            .vms(affinityService.getVmLabelMember(system, al.id()))
+//                            .hosts(affinityService.getHostLabelMember(system, al.id()))
+//                            .vms(affinityService.getVmLabelMember(system, al.id()))
                             .build()
                 )
                 .collect(Collectors.toList());
@@ -561,8 +558,8 @@ public class ClusterServiceImpl implements ItClusterService {
         return AffinityLabelCreateVo.builder()
                 .id(id)
                 .name(al.name())
-                .hostList(al.hostsPresent() ? affinityService.getHostLabelMember(system, alId) : null )
-                .vmList(al.vmsPresent() ? affinityService.getVmLabelMember(system, alId) : null)
+//                .hostList(al.hostsPresent() ? affinityService.getHostLabelMember(system, alId) : null )
+//                .vmList(al.vmsPresent() ? affinityService.getVmLabelMember(system, alId) : null)
                 .build();
     }
 
