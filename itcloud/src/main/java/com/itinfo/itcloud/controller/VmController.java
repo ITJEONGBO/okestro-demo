@@ -126,19 +126,19 @@ public class VmController {
 		return vmService.getApplication(id);
 	}
 
-	@GetMapping("/vm/{id}/affinitygroups")
-	@ResponseBody
-	public List<AffinityGroupVo> affGroup(@PathVariable String id) {
-		log.info("----- vm affGroup 불러오기: " + id);
-		return vmService.getAffinitygroup(id);
-	}
-
-	@GetMapping("/vm/{id}/affinitylabels")
-	@ResponseBody
-	public List<AffinityLabelVo> affLabel(@PathVariable String id) {
-		log.info("----- vm affLabel 불러오기: " + id);
-		return vmService.getAffinitylabel(id);
-	}
+//	@GetMapping("/vm/{id}/affinitygroups")
+//	@ResponseBody
+//	public List<AffinityGroupVo> affGroup(@PathVariable String id) {
+//		log.info("----- vm affGroup 불러오기: " + id);
+//		return vmService.getAffinitygroup(id);
+//	}
+//
+//	@GetMapping("/vm/{id}/affinitylabels")
+//	@ResponseBody
+//	public List<AffinityLabelVo> affLabel(@PathVariable String id) {
+//		log.info("----- vm affLabel 불러오기: " + id);
+//		return vmService.getAffinitylabel(id);
+//	}
 
 	@GetMapping("/vm/{id}/guests")
 	@ResponseBody

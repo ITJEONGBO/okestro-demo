@@ -13,7 +13,7 @@ import com.itinfo.itcloud.model.network.NetworkFilterParameterVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.model.storage.*;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
-import com.itinfo.itcloud.service.AffinityService;
+import com.itinfo.itcloud.service.ItAffinityService;
 import com.itinfo.itcloud.service.ItVmService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 public class VmServiceImpl implements ItVmService {
     @Autowired private AdminConnectionService admin;
     @Autowired private CommonService commonService;
-    @Autowired private AffinityService affinityService;
+    @Autowired private ItAffinityService itAffinityService;
 
 
     // 가상머신 목록
@@ -1586,55 +1586,42 @@ public class VmServiceImpl implements ItVmService {
                 .collect(Collectors.toList());
     }
 
-    // TODO 안된거임
     // 선호도 그룹
-    @Override
-    public List<AffinityGroupVo> getAffinitygroup(String id) {
-        SystemService system = admin.getConnection().systemService();
-        Vm vm = system.vmsService().vmService(id).get().send().vm();
-        List<AffinityGroup> affinityGroupList = system.clustersService().clusterService(vm.cluster().id()).affinityGroupsService().list().send().groups();
 
-        log.info("가상머신 선호도그룹 목록");
-        return affinityGroupList.stream()
-                .map(ag ->
-                        AffinityGroupVo.builder()
-                                .id(ag.id())
-                                .name(ag.name())
-                                .description(ag.description())
-                                .status(ag.broken())
-                                .priority(ag.priority().intValue())  // 우선순위
-                                .positive(ag.positivePresent() && ag.positive())
-                                .vmEnabled(ag.vmsRule().enabled())
-                                .vmPositive(ag.vmsRule().positive())
-                                .vmEnforcing(ag.vmsRule().enforcing())
-                                .hostEnabled(ag.hostsRule().enabled())
-                                .hostPositive(ag.hostsRule().positive())
-                                .hostEnforcing(ag.hostsRule().enforcing())
-                                .hostMembers(ag.hostsPresent() ? affinityService.getAgHostList(system, id, ag.id()) : null)
-                                .vmMembers(ag.vmsPresent() ? affinityService.getAgVmList(system, id, ag.id()) : null)
-                                .hostLabels(ag.hostLabelsPresent() ? affinityService.getLabelName(system, ag.hostLabels().get(0).id()) : null)
-                                .vmLabels(ag.vmLabelsPresent() ? affinityService.getLabelName(system, ag.vmLabels().get(0).id()) : null)
-                                .build())
-                .collect(Collectors.toList());
-    }
+//    // TODO 안된거임
+//
+//    @Override
+//    public List<AffinityGroupVo> getAffinitygroup(String id) {
+//        SystemService system = admin.getConnection().systemService();
+//        Vm vm = system.vmsService().vmService(id).get().send().vm();
+//        List<AffinityGroup> affinityGroupList = system.clustersService().clusterService(vm.cluster().id()).affinityGroupsService().list().send().groups();
+//
+//        log.info("가상머신 선호도그룹 목록");
+//        return affinityGroupList.stream()
+//                .map(ag ->
+//                        AffinityGroupVo.builder()
+//                                .id(ag.id())
+//                                .name(ag.name())
+//                                .description(ag.description())
+//                                .status(ag.broken())
+//                                .priority(ag.priority().intValue())  // 우선순위
+//                                .positive(ag.positivePresent() && ag.positive())
+//                                .vmEnabled(ag.vmsRule().enabled())
+//                                .vmPositive(ag.vmsRule().positive())
+//                                .vmEnforcing(ag.vmsRule().enforcing())
+//                                .hostEnabled(ag.hostsRule().enabled())
+//                                .hostPositive(ag.hostsRule().positive())
+//                                .hostEnforcing(ag.hostsRule().enforcing())
+//                                .hostMembers(ag.hostsPresent() ? itAffinityService.getAgHostList(system, id, ag.id()) : null)
+//                                .vmMembers(ag.vmsPresent() ? itAffinityService.getAgVmList(system, id, ag.id()) : null)
+//                                .hostLabels(ag.hostLabelsPresent() ? itAffinityService.getLabelName(ag.hostLabels().get(0).id()) : null)
+//                                .vmLabels(ag.vmLabelsPresent() ? itAffinityService.getLabelName(ag.vmLabels().get(0).id()) : null)
+//                                .build())
+//                .collect(Collectors.toList());
+//    }
 
-    // 선호도 레이블
-    @Override
-    public List<AffinityLabelVo> getAffinitylabel(String id) {
-        SystemService system = admin.getConnection().systemService();
-        List<AffinityLabel> affinityLabelList = system.vmsService().vmService(id).affinityLabelsService().list().follow("hosts,vms").send().label();
-
-        log.info("가상머신 선호도 레이블");
-        return affinityLabelList.stream()
-                .map(al ->
-                        AffinityLabelVo.builder()
-                                .id(al.id())
-                                .name(al.name())
-                                .hosts(affinityService.getHostLabelMember(system, al.id()))
-                                .vms(affinityService.getVmLabelMember(system, al.id()))
-                                .build())
-                .collect(Collectors.toList());
-    }
+    // 선호도 레이블  안함
+    
 
     // 게스트 정보
     @Override

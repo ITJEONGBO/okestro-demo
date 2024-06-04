@@ -27,6 +27,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class ItVmServiceTest {
     @Autowired ItVmService vmService;
+    @Autowired ItAffinityService affinityService;
+
     String defaultId = "c9c1c52d-d2a4-4f2a-93fe-30200f1e0bff";
 
     @Test
@@ -586,8 +588,47 @@ class ItVmServiceTest {
         CommonVo<Boolean> result = vmService.deleteSnapshot(id, snapId);
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
-    
-    
+
+
+    @Test
+    @DisplayName("가상머신 선호도 그룹 목록")
+    void getAgList() {
+        String vmId = "c9c1c52d-d2a4-4f2a-93fe-30200f1e0bff";
+
+        List<AffinityGroupVo> result = affinityService.getAffinitygroup(vmId, "vm");
+        result.forEach(System.out::println);
+    }
+
+
+    @Test
+    @DisplayName("가상머신 선호도 그룹 생성")
+    void addAffinitygroup() {
+        List<IdentifiedVo> hostList = new ArrayList<>();
+        hostList.add(IdentifiedVo.builder().id("6a8e5257-0b2f-4b3c-b720-1d5eee1cbbfc").build());
+
+        List<IdentifiedVo> vmList = new ArrayList<>();
+        vmList.add(IdentifiedVo.builder().id("c9c1c52d-d2a4-4f2a-93fe-30200f1e0bff").build());
+
+        AffinityGroupCreateVo ag =
+                AffinityGroupCreateVo.builder()
+                        .name("sgsadf")
+                        .description("asktestDescriptinn")
+                        .priority(5)
+                        .clusterId(defaultId)
+                        .vmEnabled(false)
+                        .vmEnforcing(false)
+                        .vmPositive(true)
+                        .hostEnabled(false)
+                        .hostEnforcing(false)
+                        .hostPositive(false)
+                        .hostList(hostList)
+                        .vmList(vmList)
+                        .build();
+
+        CommonVo<Boolean> result = affinityService.addAffinitygroup(defaultId, "vm", ag);
+        assertThat(result.getHead().getCode()).isEqualTo(201);
+    }
+
 
     @Test
     @DisplayName("가상머신 애플리케이션")
@@ -598,25 +639,6 @@ class ItVmServiceTest {
         System.out.println(result.get(0).toString());
     }
 
-    @Test
-    @DisplayName("가상머신 선호도 그룹")
-    void getAffinitygroup() {
-        List<AffinityGroupVo> result = vmService.getAffinitygroup(defaultId);
-
-        assertThat(3).isEqualTo(result.size());
-//        result.stream().map(AffinityGroupVo::getName).forEach(System.out::println);
-    }
-
-    @Test
-    @DisplayName("가상머신 선호도 레이블")
-    void getAffinitylabel() {
-        String id = "6b2cf6fb-bc4f-444d-9a19-7b3766cf1dd9";
-
-        List<AffinityLabelVo> result = vmService.getAffinitylabel(defaultId);
-
-//        assertThat(0).isEqualTo(result.size());
-        System.out.println(result.get(0).toString());
-    }
 
     @Test
     @DisplayName("가상머신 게스트 정보")

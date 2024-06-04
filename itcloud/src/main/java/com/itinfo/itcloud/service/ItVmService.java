@@ -87,8 +87,8 @@ public interface ItVmService {
 
 
     List<ApplicationVo> getApplication(String id);  // 어플리케이션
-    List<AffinityGroupVo> getAffinitygroup(String id);  // 선호도 그룹
-    List<AffinityLabelVo> getAffinitylabel(String id);  // 선호도 레이블
+//    List<AffinityGroupVo> getAffinitygroup(String id);  // 선호도 그룹
+//    List<AffinityLabelVo> getAffinitylabel(String id);  // 선호도 레이블
     GuestInfoVo getGuestInfo(String id);    // 게스트 정보
     List<PermissionVo> getPermission(String id);    // 권한
     List<EventVo> getEvent(String id);      // 이벤트

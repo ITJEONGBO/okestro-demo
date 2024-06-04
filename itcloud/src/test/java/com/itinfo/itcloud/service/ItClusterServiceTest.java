@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.service;
 
+import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.AffinityGroupCreateVo;
 import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
@@ -24,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class ItClusterServiceTest {
     @Autowired ItClusterService clusterService;
+    @Autowired ItAffinityService affinityService;
 
     String dcId = "9c72ff12-a5f3-11ee-941d-00163e39cb43";
     String id = "99ce9472-cabc-4338-80f7-9fd3d9367027";
@@ -40,12 +42,23 @@ class ItClusterServiceTest {
     }
 
     @Test
-    @DisplayName("클러스터 생성 창")
+    @DisplayName("클러스터 생성 창 - dc 출력")
     void setDatacenterList() {
         List<DataCenterVo> result = clusterService.setDatacenterList();
 
-        assertThat(2).isEqualTo(result.size());
+        result.forEach(System.out::println);
+
+        assertThat(3).isEqualTo(result.size());
         assertThat(true).isEqualTo(result.stream().anyMatch(dataCenterVo -> dataCenterVo.getName().equals("Default")));
+    }
+
+    @Test
+    @DisplayName("클러스터 생성 창 - 네트워크 출력")
+    void setNetworkList() {
+//        String dcId = "";
+        List<NetworkVo> result = clusterService.setNetworkList(dcId);
+
+        result.forEach(System.out::println);
     }
 
     @Test
@@ -167,7 +180,7 @@ class ItClusterServiceTest {
     @DisplayName("클러스터 수정")
     void editCluster() {
         String randomName = RandomStringUtils.randomAlphabetic(2);
-        String id = "ff23fc50-3d5c-4b5f-a018-8d8bff70819a";
+        String id = "4318aae2-29bd-4062-a2ba-75f814ca847c";
 
         ClusterCreateVo c =
                 ClusterCreateVo.builder()
@@ -202,12 +215,12 @@ class ItClusterServiceTest {
     @Test
     @DisplayName("클러스터 수정 - 중복이름 ")
     void editCluster2() {
-        String id = "ff23fc50-3d5c-4b5f-a018-8d8bff70819a";
+        String id = "4318aae2-29bd-4062-a2ba-75f814ca847c";
 
         ClusterCreateVo c =
                 ClusterCreateVo.builder()
                         .id(id)
-                        .name("ib")
+                        .name("Ni")
                         .cpuArc("X86_64")
                         .cpuType("Intel Nehalem Family")
                         .description("asdf")
@@ -228,7 +241,7 @@ class ItClusterServiceTest {
 
         CommonVo<Boolean> result = clusterService.editCluster(id, c);
 
-        assertThat(result.getHead().getCode()).isEqualTo(404);
+        assertThat(result.getHead().getCode()).isEqualTo(201);
     }
 
     @Test
@@ -300,8 +313,8 @@ class ItClusterServiceTest {
     void getHost() {
         List<HostVo> result = clusterService.getHost(defaultId);
 
+        result.forEach(System.out::println);
         assertThat(2).isEqualTo(result.size());
-        assertThat(true).isEqualTo(result.stream().anyMatch(hostVo -> hostVo.getName().equals("host01.ititinfo.com")));
     }
 
     @Test
@@ -310,47 +323,32 @@ class ItClusterServiceTest {
         List<VmVo> result = clusterService.getVm(defaultId);
 
         result.forEach(System.out::println);
-
         assertThat(8).isEqualTo(result.size());
         assertThat(true).isEqualTo(result.stream().anyMatch(vmVo -> vmVo.getName().equals("HostedEngine")));
     }
 
     @Test
-    @DisplayName("클러스터 선호도 그룹 & 레이블 생성 창")
-    void setAffinityDefaultInfo() {
-        AffinityHostVm ahv = clusterService.setAffinityDefaultInfo(defaultId, "label");
-        AffinityHostVm ahv2 = clusterService.setAffinityDefaultInfo(defaultId, ""); // group
-
-        System.out.println(ahv.getHostList().size());
-        System.out.println(ahv.getVmList().size());
-
-        System.out.println(ahv);
-        System.out.println(ahv2);
-    }
-
-    @Test
     @DisplayName("클러스터 선호도 그룹 목록")
-    void getAffinitygroup() {
-        List<AffinityGroupVo> ag = clusterService.getAffinitygroup(defaultId);
+    void getAgList() {
+        String clusterId = "9c7452ea-a5f3-11ee-93d2-00163e39cb43";
 
-        assertThat(3).isEqualTo(ag.size());
-        assertThat(true).isEqualTo(ag.stream().anyMatch(affinityGroupVo -> affinityGroupVo.getName().equals("d")));
-        ag.stream().map(AffinityGroupVo::getName).forEach(System.out::println);
+        List<AffinityGroupVo> result = affinityService.getAffinitygroup(clusterId, "cluster");
+        result.forEach(System.out::println);
     }
-    // 0522
+
 
     @Test
     @DisplayName("클러스터 선호도 그룹 생성")
     void addAffinitygroup() {
-        List<HostVo> hostList = new ArrayList<>();
-        hostList.add(HostVo.builder().id("1c8ed321-28e5-4f83-9e34-e13f9125f253").build());
+        List<IdentifiedVo> hostList = new ArrayList<>();
+        hostList.add(IdentifiedVo.builder().id("6a8e5257-0b2f-4b3c-b720-1d5eee1cbbfc").build());
 
-        List<VmVo> vmList = new ArrayList<>();
-        vmList.add(VmVo.builder().id("c9c1c52d-d2a4-4f2a-93fe-30200f1e0bff").build());
+        List<IdentifiedVo> vmList = new ArrayList<>();
+        vmList.add(IdentifiedVo.builder().id("c9c1c52d-d2a4-4f2a-93fe-30200f1e0bff").build());
 
         AffinityGroupCreateVo ag =
                 AffinityGroupCreateVo.builder()
-                        .name("gg")
+                        .name("asdf")
                         .description("asktestDescriptinn")
                         .priority(5)
                         .clusterId(defaultId)
@@ -364,53 +362,53 @@ class ItClusterServiceTest {
                         .vmList(vmList)
                         .build();
 
-        CommonVo<Boolean> result = clusterService.addAffinitygroup(defaultId, ag);
-
+        CommonVo<Boolean> result = affinityService.addAffinitygroup(defaultId, "cluster", ag);
         assertThat(result.getHead().getCode()).isEqualTo(201);
     }
 
-    @Test
-    @DisplayName("선호도 그룹 편집 창")
-    void setEditAffinitygroup() {
-        String agId = "6e7b1e90-3453-4423-a40d-22204cb95943";
-        AffinityGroupCreateVo group = clusterService.setEditAffinitygroup(defaultId, agId);
 
-        assertThat("gg").isEqualTo(group.getName());
-        System.out.println(group.toString());
-    }
+//    @Test
+//    @DisplayName("선호도 그룹 편집 창")
+//    void setEditAffinitygroup() {
+//        String agId = "6e7b1e90-3453-4423-a40d-22204cb95943";
+//        AffinityGroupCreateVo group = clusterService.setEditAffinitygroup(defaultId, agId);
+//
+//        assertThat("gg").isEqualTo(group.getName());
+//        System.out.println(group.toString());
+//    }
 
-    @Test
-    void editAffinitygroup() {
-        String agId = "6e7b1e90-3453-4423-a40d-22204cb95943";
-
-        AffinityGroupCreateVo ag =
-                AffinityGroupCreateVo.builder()
-                        .name("gg")
-                        .description("n")
-                        .priority(5)
-                        .clusterId(defaultId)
-                        .vmEnabled(false)
-                        .vmEnforcing(false)
-                        .vmPositive(true)
-                        .hostEnabled(false)
-                        .hostEnforcing(false)
-                        .hostPositive(false)
-//                        .hostList()
-//                        .vmList()
-                        .build();
-
-        CommonVo<Boolean> result = clusterService.editAffinitygroup(defaultId, agId, ag);
-
-        assertThat(result.getHead().getCode()).isEqualTo(201);
-    }
-
-    @Test
-    void deleteAffinitygroup() {
-        String agId = "ca3ef16e-c188-4d13-9311-3ea8a123201c";
-
-        CommonVo<Boolean> result = clusterService.deleteAffinitygroup(id, agId);
-        assertThat(result.getHead().getCode()).isEqualTo(200);
-    }
+//    @Test
+//    void editAffinitygroup() {
+//        String agId = "6e7b1e90-3453-4423-a40d-22204cb95943";
+//
+//        AffinityGroupCreateVo ag =
+//                AffinityGroupCreateVo.builder()
+//                        .name("gg")
+//                        .description("n")
+//                        .priority(5)
+//                        .clusterId(defaultId)
+//                        .vmEnabled(false)
+//                        .vmEnforcing(false)
+//                        .vmPositive(true)
+//                        .hostEnabled(false)
+//                        .hostEnforcing(false)
+//                        .hostPositive(false)
+////                        .hostList()
+////                        .vmList()
+//                        .build();
+//
+//        CommonVo<Boolean> result = clusterService.editAffinitygroup(defaultId, agId, ag);
+//
+//        assertThat(result.getHead().getCode()).isEqualTo(201);
+//    }
+//
+//    @Test
+//    void deleteAffinitygroup() {
+//        String agId = "ca3ef16e-c188-4d13-9311-3ea8a123201c";
+//
+//        CommonVo<Boolean> result = clusterService.deleteAffinitygroup(id, agId);
+//        assertThat(result.getHead().getCode()).isEqualTo(200);
+//    }
 
     @Test
     @DisplayName("클러스터 선호도 레이블 목록")

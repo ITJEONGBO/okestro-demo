@@ -40,7 +40,7 @@ class ItStorageServiceTest {
     void addDiskImage() {
         ImageCreateVo image =
                 ImageCreateVo.builder()
-                        .name("Sd")
+                        .alias("Sd")
                         .size(2)
                         .description("test")
                         .domainId("e6611ac1-35b0-42b9-b339-681a6d6cb538")
@@ -54,7 +54,7 @@ class ItStorageServiceTest {
         CommonVo<Boolean> result = storageService.addDiskImage(image);
         assertThat(result.getHead().getCode()).isEqualTo(201);
 
-        assertThat("Sd").isEqualTo(image.getName());
+        assertThat("Sd").isEqualTo(image.getAlias());
         assertThat("test").isEqualTo(image.getDescription());
         assertThat("e6611ac1-35b0-42b9-b339-681a6d6cb538").isEqualTo(image.getDomainId());
     }
@@ -67,7 +67,7 @@ class ItStorageServiceTest {
         ImageCreateVo image =
                 ImageCreateVo.builder()
                         .id(id)
-                        .name("Sd")
+                        .alias("Sd")
                         .size(2)
                         .description("test")
                         .domainId("e6611ac1-35b0-42b9-b339-681a6d6cb538")

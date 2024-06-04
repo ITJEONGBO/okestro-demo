@@ -5,7 +5,7 @@ import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
 import com.itinfo.itcloud.model.create.HostCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
-import com.itinfo.itcloud.service.AffinityService;
+import com.itinfo.itcloud.service.ItAffinityService;
 import com.itinfo.itcloud.service.ItHostService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
@@ -27,7 +27,7 @@ public class HostServiceImpl implements ItHostService {
 
     @Autowired private AdminConnectionService admin;
     @Autowired private CommonService commonService;
-    @Autowired private AffinityService affinityService;
+    @Autowired private ItAffinityService itAffinityService;
 
     // 호스트 목록
     @Override
@@ -602,8 +602,8 @@ public class HostServiceImpl implements ItHostService {
                         AffinityLabelVo.builder()
                             .id(al.id())
                             .name(al.name())
-                            .hosts(affinityService.getHostLabelMember(system, al.id()))
-                            .vms(affinityService.getVmLabelMember(system, al.id()))
+                            .hosts(itAffinityService.getHostLabelMember(system, al.id()))
+                            .vms(itAffinityService.getVmLabelMember(system, al.id()))
                         .build())
                 .collect(Collectors.toList());
     }
@@ -612,15 +612,13 @@ public class HostServiceImpl implements ItHostService {
     @Override
     public AffinityHostVm setAffinityDefaultInfo(String id, String type) {
         SystemService system = admin.getConnection().systemService();
-        List<Host> hostList = system.hostsService().list().send().hosts();
-        List<Vm> vmList = system.vmsService().list().send().vms();
         String clusterId = system.hostsService().hostService(id).get().send().host().cluster().id();
 
         log.info("Host 선호도 레이블 생성 창");
         return AffinityHostVm.builder()
                 .clusterId(id)
-                .hostList(affinityService.setHostList(hostList, clusterId))
-                .vmList(affinityService.setVmList(vmList, clusterId))
+                .hostList(itAffinityService.getHostList(clusterId))
+                .vmList(itAffinityService.getVmList(clusterId))
                 .build();
     }
 
@@ -674,8 +672,8 @@ public class HostServiceImpl implements ItHostService {
         return AffinityLabelCreateVo.builder()
                 .id(alId)
                 .name(al.name())
-                .hostList(al.hostsPresent() ? affinityService.getHostLabelMember(system, alId) : null )
-                .vmList(al.vmsPresent() ? affinityService.getVmLabelMember(system, alId) : null)
+                .hostList(al.hostsPresent() ? itAffinityService.getHostLabelMember(system, alId) : null )
+                .vmList(al.vmsPresent() ? itAffinityService.getVmLabelMember(system, alId) : null)
                 .build();
     }
 
