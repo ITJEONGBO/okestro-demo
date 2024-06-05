@@ -13,26 +13,20 @@ import java.util.List;
 public interface ItAffinityService {
     List<IdentifiedVo> getHostList(String clusterId);
     List<IdentifiedVo> getVmList(String clusterId);
-
     List<IdentifiedVo> getLabel();
 
     List<AffinityGroupVo> getAffinitygroup(String id, String type);
     CommonVo<Boolean> addAffinitygroup(String id,  String type, AffinityGroupCreateVo agVo);
-
     AffinityGroupCreateVo setEditAffinitygroup(String id, String type, String agId);
+    CommonVo<Boolean> editAffinitygroup(String id, AffinityGroupCreateVo agVo);
+    CommonVo<Boolean> deleteAffinitygroup(String id, String type, String agId);
 
 
-    List<AffinityLabelVo> getAffinitylabel(String id);
+    List<AffinityLabelVo> getAffinitylabel(String id, String type);
+
 
     List<IdentifiedVo> getLabelName(String alId);
-
-//    List<HostVo> getAgHostList(SystemService system, String clusterId, String agId);
-//    List<VmVo> getAgVmList(SystemService system, String clusterId, String agId);
-//
-//    List<HostVo> getHostLabelMember(SystemService system, String alid);
-//    List<VmVo> getVmLabelMember(SystemService system, String alid);
-
-    // cluster  : label, group
-    // host     : label
-    // vm       : label, group
+    // cluster  : label, group      api-group
+    // host     : label             api-affinitylabels
+    // vm       : label, group      api-affinitylabels
 }

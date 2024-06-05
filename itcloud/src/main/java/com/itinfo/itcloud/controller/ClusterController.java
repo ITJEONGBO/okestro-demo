@@ -1,10 +1,12 @@
 package com.itinfo.itcloud.controller;
 
 import com.itinfo.itcloud.model.computing.*;
+import com.itinfo.itcloud.model.create.AffinityGroupCreateVo;
 import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
 import com.itinfo.itcloud.model.create.ClusterCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
+import com.itinfo.itcloud.service.ItAffinityService;
 import com.itinfo.itcloud.service.ItClusterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,7 @@ import java.util.List;
 @RequestMapping("/computing")
 public class ClusterController {
 	private final ItClusterService clusterService;
+	private final ItAffinityService affinityService;
 
 
 	// 목록
@@ -123,43 +126,42 @@ public class ClusterController {
 
 
 	// 선호도 그룹 생성
-//	@PostMapping("/cluster/{id}/affinitygroup")
-//	@ResponseBody
-//	@ResponseStatus(HttpStatus.CREATED)
-//	public CommonVo<Boolean> addAffinitygroup(@PathVariable String id,
-//											  @RequestBody AffinityGroupCreateVo agVo){
-//		log.info("--- Cluster 선호도 그룹 생성");
-//		return clusterService.addAffinitygroup(id, agVo);
-//	}
+	@PostMapping("/cluster/{id}/affinitygroup")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	public CommonVo<Boolean> addAffinitygroup(@PathVariable String id,
+											  @RequestBody AffinityGroupCreateVo agVo){
+		log.info("--- Cluster 선호도 그룹 생성");
+		return affinityService.addAffinitygroup(id, "cluster", agVo);
+	}
 
 	// 선호도 그룹 편집 창
-//	@GetMapping("/cluster/{id}/affinitygroup/{agId}/settings")
-//	@ResponseBody
-//	public AffinityGroupCreateVo setEditAffinitygroup(@PathVariable String id,
-//													  @PathVariable String agId){
-//		log.info("--- Cluster 선호도 그룹 편집 창");
-//		return clusterService.setEditAffinitygroup(id, agId);
-//	}
+	@GetMapping("/cluster/{id}/affinitygroup/{agId}/settings")
+	@ResponseBody
+	public AffinityGroupCreateVo setEditAffinitygroup(@PathVariable String id,
+													  @PathVariable String agId){
+		log.info("--- Cluster 선호도 그룹 편집 창");
+		return affinityService.setEditAffinitygroup(id, "cluster", agId);
+	}
 
 	// 선호도 그룹 편집
-//	@PutMapping("/cluster/{id}/affinitygroup/{agId}")
-//	@ResponseBody
-//	@ResponseStatus(HttpStatus.CREATED)
-//	public CommonVo<Boolean> editAffinitygroup(@PathVariable String id,
-//											   @PathVariable String agId,
-//											   @RequestBody AffinityGroupCreateVo agVo){
-//		log.info("--- Cluster 선호도 그룹 편집");
-//		return clusterService.editAffinitygroup(id, agId,agVo);
-//	}
+	@PutMapping("/cluster/{id}/affinitygroup/{agId}")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	public CommonVo<Boolean> editAffinitygroup(@PathVariable String id,
+											   @RequestBody AffinityGroupCreateVo agVo){
+		log.info("--- Cluster 선호도 그룹 편집");
+		return affinityService.editAffinitygroup(id, agVo);
+	}
 
 	// 선호도 그룹 삭제
-//	@DeleteMapping("/cluster/{id}/affinitygroup/{agId}")
-//	@ResponseBody
-//	public CommonVo<Boolean> deleteAffinitygroup(@PathVariable String id,
-//												 @PathVariable String agId){
-//		log.info("--- Cluster 선호도 그룹 삭제");
-//		return clusterService.deleteAffinitygroup(id, agId);
-//	}
+	@DeleteMapping("/cluster/{id}/affinitygroup/{agId}")
+	@ResponseBody
+	public CommonVo<Boolean> deleteAffinitygroup(@PathVariable String id,
+												 @PathVariable String agId){
+		log.info("--- Cluster 선호도 그룹 삭제");
+		return affinityService.deleteAffinitygroup(id, "cluster",agId);
+	}
 
 
 	// 선호도 레이블 목룍

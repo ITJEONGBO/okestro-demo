@@ -629,6 +629,15 @@ class ItVmServiceTest {
         assertThat(result.getHead().getCode()).isEqualTo(201);
     }
 
+    @Test
+    @DisplayName("가상머신 선호도 그룹 편집 창")
+    void setEditAffinitygroup() {
+        String agId = "92ad2ff1-2c7d-475d-80e6-8174e187cafe";
+        AffinityGroupCreateVo group = affinityService.setEditAffinitygroup(defaultId, "vm", agId);
+
+        System.out.println(group.toString());
+    }
+
 
     @Test
     @DisplayName("가상머신 애플리케이션")
