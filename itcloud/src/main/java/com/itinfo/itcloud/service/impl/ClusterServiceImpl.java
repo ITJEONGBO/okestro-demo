@@ -487,25 +487,7 @@ public class ClusterServiceImpl implements ItClusterService {
     // 선호도 그룹 편집
     // 선호도 그룹 삭제
 
-
-
     // 선호도 레이블 목록 출력
-    @Override
-    public List<AffinityLabelVo> getAffinitylabelList(String id) {  // 호스트 id
-        SystemService system = admin.getConnection().systemService();
-        List<AffinityLabel> affinityLabelList = system.affinityLabelsService().list().send().labels();
-
-        log.info("Cluster 선호도 레이블");
-        return affinityLabelList.stream()
-                .map(al -> AffinityLabelVo.builder()
-                            .id(al.id())
-                            .name(al.name())
-//                            .hosts(affinityService.getHostLabelMember(system, al.id()))
-//                            .vms(affinityService.getVmLabelMember(system, al.id()))
-                            .build()
-                )
-                .collect(Collectors.toList());
-    }
 
 
     // 선호도 레이블 생성
@@ -520,29 +502,28 @@ public class ClusterServiceImpl implements ItClusterService {
 
         try {
             if(duplicateName) {
-                AffinityLabelBuilder alBuilder = new AffinityLabelBuilder();
-                alBuilder
-                        .name(alVo.getName())
-                        .hosts(
-                            alVo.getHostList().stream()
-                                .map(host -> new HostBuilder().id(host.getId()).build())
-                                .collect(Collectors.toList())
-                        )
-                        .vms(
-                            alVo.getVmList().stream()
-                                .map(vm -> new VmBuilder().id(vm.getId()).build())
-                                .collect(Collectors.toList())
-                        )
-                        .build();
-
-                alServices.add().label(alBuilder).send().label();
-
-                log.info("Cluster 선호도레이블 생성");
-                return CommonVo.createResponse();
-            }else {
                 log.error("실패: Cluster 선호도레이블 이름 중복");
                 return CommonVo.failResponse("이름 중복");
             }
+            AffinityLabelBuilder alBuilder = new AffinityLabelBuilder();
+            alBuilder
+                    .name(alVo.getName())
+                    .hosts(
+                        alVo.getHostList().stream()
+                            .map(host -> new HostBuilder().id(host.getId()).build())
+                            .collect(Collectors.toList())
+                    )
+                    .vms(
+                        alVo.getVmList().stream()
+                            .map(vm -> new VmBuilder().id(vm.getId()).build())
+                            .collect(Collectors.toList())
+                    )
+                    .build();
+
+            alServices.add().label(alBuilder).send().label();
+
+            log.info("Cluster 선호도레이블 생성");
+            return CommonVo.createResponse();
         } catch (Exception e) {
             log.error("실패: Cluster 선호도 레이블");
             e.printStackTrace();

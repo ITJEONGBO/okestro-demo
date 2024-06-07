@@ -167,18 +167,11 @@ public class ClusterController {
 	// 선호도 레이블 목룍
 	@GetMapping("/cluster/{id}/affinitylabels")
 	@ResponseBody
-	public List<AffinityLabelVo> affLabel(@PathVariable String id) {
+	public List<AffinityLabelVo> affLabel() {
 		log.info("--- Cluster 선호도 레이블");
-		return clusterService.getAffinitylabelList(id);
+		return affinityService.getAffinitylabel();
 	}
 
-	// 선호도 레이블 생성위한 목록 \ 문제있음요
-//	@GetMapping("/cluster/{id}/affinitylabel/settings")
-//	@ResponseBody
-//	public AffinityHostVm setAffinitylabel(@PathVariable String id){
-//		log.info("--- Cluster 선호도 레이블 생성 창");
-//		return clusterService.setAffinityDefault(id, "label");
-//	}
 
 
 	// 선호도 레이블 생성

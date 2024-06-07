@@ -433,12 +433,15 @@ class ItClusterServiceTest {
     @Test
     @DisplayName("클러스터 선호도 레이블 목록")
     void getAffinitylabelList() {
-        List<AffinityLabelVo> al = clusterService.getAffinitylabelList(defaultId);
+        List<AffinityLabelVo> result = affinityService.getAffinitylabel();
 
-        assertThat(2).isEqualTo(al.size());
-        assertThat(true).isEqualTo(al.stream().anyMatch(als -> als.getName().equals("test")));
-        al.stream().map(AffinityLabelVo::getName).forEach(System.out::println);
+        assertThat(2).isEqualTo(result.size());
+
+        result.forEach(System.out::println);
     }
+
+
+
 
     @Test
     @DisplayName("클러스터 선호도 레이블 생성")

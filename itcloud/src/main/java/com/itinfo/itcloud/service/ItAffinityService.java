@@ -14,6 +14,7 @@ public interface ItAffinityService {
     List<IdentifiedVo> getHostList(String clusterId);
     List<IdentifiedVo> getVmList(String clusterId);
     List<IdentifiedVo> getLabel();
+    List<IdentifiedVo> getLabelName(String alId);
 
     List<AffinityGroupVo> getAffinitygroup(String id, String type);
     CommonVo<Boolean> addAffinitygroup(String id,  String type, AffinityGroupCreateVo agVo);
@@ -22,10 +23,11 @@ public interface ItAffinityService {
     CommonVo<Boolean> deleteAffinitygroup(String id, String type, String agId);
 
 
-    List<AffinityLabelVo> getAffinitylabel(String id, String type);
+    List<AffinityLabelVo> getAffinitylabel(/*String id, String type*/);
 
 
-    List<IdentifiedVo> getLabelName(String alId);
+
+
     // cluster  : label, group      api-group
     // host     : label             api-affinitylabels
     // vm       : label, group      api-affinitylabels

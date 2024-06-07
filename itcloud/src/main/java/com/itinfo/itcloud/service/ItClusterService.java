@@ -38,13 +38,9 @@ public interface ItClusterService {
     List<VmVo> getVm(String id);        // 가상머신 목록
 
 
-    // 선호도 그룹
-//    AffinityGroupCreateVo setEditAffinitygroup(String id, String agId);    // 선호도 그룹 편집창
-//    CommonVo<Boolean> editAffinitygroup(String id, String agId, AffinityGroupCreateVo agVo); // 선호도 그룹 편집
-//    CommonVo<Boolean> deleteAffinitygroup(String id, String agId); // 선호도 그룹 삭제
 
     // 선호도 레이블
-    List<AffinityLabelVo> getAffinitylabelList(String id);              // 전체 출력 목록
+    // 생성 시 필요한 호스트,가상머신 리스트 출력
     AffinityLabelCreateVo getAffinityLabel(String id, String alId);      // 편집창 출력
     CommonVo<Boolean> addAffinitylabel(String id, AffinityLabelCreateVo alVo);     // 선호도 레이블 생성
     CommonVo<Boolean> editAffinitylabel(String id, String alId, AffinityLabelCreateVo alVo);     // 선호도 레이블 편집
