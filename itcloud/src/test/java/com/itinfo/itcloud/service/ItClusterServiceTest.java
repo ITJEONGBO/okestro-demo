@@ -25,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class ItClusterServiceTest {
     @Autowired ItClusterService clusterService;
-    @Autowired ItAffinityService affinityService;
 
     String dcId = "9c72ff12-a5f3-11ee-941d-00163e39cb43";
     String id = "99ce9472-cabc-4338-80f7-9fd3d9367027";
@@ -327,164 +326,12 @@ class ItClusterServiceTest {
         assertThat(true).isEqualTo(result.stream().anyMatch(vmVo -> vmVo.getName().equals("HostedEngine")));
     }
 
-    @Test
-    @DisplayName("클러스터 선호도 그룹 목록")
-    void getAgList() {
-        String clusterId = "9c7452ea-a5f3-11ee-93d2-00163e39cb43";
-
-        List<AffinityGroupVo> result = affinityService.getAffinitygroup(clusterId, "cluster");
-        result.forEach(System.out::println);
-    }
 
 
-    @Test
-    @DisplayName("클러스터 선호도 그룹 생성")
-    void addAffinitygroup() {
-        List<IdentifiedVo> hostList = new ArrayList<>();
-        hostList.add(IdentifiedVo.builder().id("6a8e5257-0b2f-4b3c-b720-1d5eee1cbbfc").build());
-
-        List<IdentifiedVo> vmList = new ArrayList<>();
-        vmList.add(IdentifiedVo.builder().id("c9c1c52d-d2a4-4f2a-93fe-30200f1e0bff").build());
-
-        AffinityGroupCreateVo ag =
-                AffinityGroupCreateVo.builder()
-                        .name("asdf")
-                        .description("asktestDescriptinn")
-                        .priority(5)
-                        .clusterId(defaultId)
-                        .vmEnabled(false)
-                        .vmEnforcing(false)
-                        .vmPositive(true)
-                        .hostEnabled(false)
-                        .hostEnforcing(false)
-                        .hostPositive(false)
-                        .hostList(hostList)
-                        .vmList(vmList)
-                        .build();
-
-        CommonVo<Boolean> result = affinityService.addAffinitygroup(defaultId, "cluster", ag);
-        assertThat(result.getHead().getCode()).isEqualTo(201);
-    }
-
-
-    @Test
-    @DisplayName("선호도 그룹 편집 창")
-    void setEditAffinitygroup() {
-        String agId = "40a51411-93eb-45e3-94a3-93a4092e1188";
-        AffinityGroupCreateVo group = affinityService.setEditAffinitygroup(defaultId, "cluster", agId);
-
-        System.out.println(group.toString());
-    }
-
-    @Test
-    @DisplayName("선호도 그룹 편집")
-    void editAffinitygroup() {
-        String agId = "40a51411-93eb-45e3-94a3-93a4092e1188";
-
-        List<IdentifiedVo> hostLabels = new ArrayList<>();
-        List<IdentifiedVo> vmLabels = new ArrayList<>();
-
-
-        List<IdentifiedVo> hostList = new ArrayList<>();
-//        hostList.add(IdentifiedVo.builder().id("6a8e5257-0b2f-4b3c-b720-1d5eee1cbbfc").build());
-//        hostList.add(IdentifiedVo.builder().id("f08baae8-2137-490c-bec2-fd00f67a37b9").build());
-
-        List<IdentifiedVo> vmList = new ArrayList<>();
-//        vmList.add(IdentifiedVo.builder().id("c4326298-567b-465a-98d3-799c9bbc59b1").build());
-//        vmList.add(IdentifiedVo.builder().id("c9c1c52d-d2a4-4f2a-93fe-30200f1e0bff").build());
-//        vmList.add(IdentifiedVo.builder().id("eec63849-5026-482c-8f05-1d8e419ef548").build());
-
-
-        AffinityGroupCreateVo ag =
-                AffinityGroupCreateVo.builder()
-                        .id(agId)
-                        .name("s")
-                        .description("n")
-                        .priority(5)
-                        .clusterId(defaultId)
-                        .vmEnabled(false)
-                        .vmEnforcing(false)
-                        .vmPositive(true)
-                        .hostEnabled(false)
-                        .hostEnforcing(false)
-                        .hostPositive(false)
-                        .hostLabels(hostLabels)
-                        .vmLabels(vmLabels)
-                        .hostList(hostList)
-                        .vmList(vmList)
-                        .build();
-
-        CommonVo<Boolean> result = affinityService.editAffinitygroup(defaultId, ag);
-        System.out.println(result.getHead().getCode());
-
-        assertThat(result.getHead().getCode()).isEqualTo(201);
-    }
-
-    
-    @Test
-    @DisplayName("클러스터 선호도 그룹 삭제")
-    void deleteAffinitygroup() {
-        String agId = "92ad2ff1-2c7d-475d-80e6-8174e187cafe";
-
-        CommonVo<Boolean> result = affinityService.deleteAffinitygroup(defaultId, "cluster", agId);
-        assertThat(result.getHead().getCode()).isEqualTo(200);
-    }
-
-    @Test
-    @DisplayName("클러스터 선호도 레이블 목록")
-    void getAffinitylabelList() {
-        List<AffinityLabelVo> result = affinityService.getAffinitylabel();
-
-        assertThat(2).isEqualTo(result.size());
-
-        result.forEach(System.out::println);
-    }
+    //  선호도 그룹/ 레이블
 
 
 
-
-    @Test
-    @DisplayName("클러스터 선호도 레이블 생성")
-    void addAffinitylabel() {
-        List<HostVo> hostList = new ArrayList<>();
-        hostList.add(HostVo.builder().id("1c8ed321-28e5-4f83-9e34-e13f9125f253").build());
-
-        List<VmVo> vmList = new ArrayList<>();
-//        vmList.add(VmVo.builder().build());
-
-        AffinityLabelCreateVo label =
-                AffinityLabelCreateVo.builder()
-                        .name("as")
-                        .hostList(hostList)
-                        .vmList(vmList)
-                        .build();
-
-        CommonVo<Boolean> result = clusterService.addAffinitylabel(id, label);
-        assertThat(result.getHead().getCode()).isEqualTo(201);
-    }
-
-    @Test
-    @DisplayName("클러스터 선호도 레이블 편집 창")
-    void getAffinityLabel() {
-        String alId = "fe36a56c-b366-42d9-80de-5f02aa4eff09";
-        AffinityLabelCreateVo label = clusterService.getAffinityLabel(defaultId, alId);
-
-        assertThat("test").isEqualTo(label.getName());
-        System.out.println(label.toString());
-    }
-
-    @Test
-    void editAffinitylabel() {
-
-    }
-
-    @Test
-    void deleteAffinitylabel() {
-        String alId = "0baef571-18dd-4b9f-8519-de50a05bb428";
-
-        CommonVo<Boolean> result = clusterService.deleteAffinitylabel(id, alId);
-        assertThat(result.getHead().getCode()).isEqualTo(200);
-    }
 
     @Test
     void getPermission() {
