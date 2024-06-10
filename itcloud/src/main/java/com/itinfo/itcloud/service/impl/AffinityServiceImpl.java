@@ -90,6 +90,8 @@ public class AffinityServiceImpl implements ItAffinityService {
      * @return 선호도 그룹 목록
      */
     // 선호도 그룹 목록 - cluster, vm
+
+    // TODO:HELP clusterId를 쿠키에?
     @Override
     public List<AffinityGroupVo> getAffinitygroup(String id, String type){
         SystemService system = admin.getConnection().systemService();
@@ -299,19 +301,18 @@ public class AffinityServiceImpl implements ItAffinityService {
 
 
 
-
-
-    // 선호도 그룹 삭제 - clusterId와 agid를 가져와서 삭제
+    // 선호도 그룹 삭제 - clusterId와 agId를 가져와서 삭제
     // 선호도 그룹 내에 항목들이 아예 없어야함
     @Override
     public CommonVo<Boolean> deleteAffinitygroup(String id, String type, String agId) {
         SystemService system = admin.getConnection().systemService();
         String clusterId = "cluster".equals(type) ? id : system.vmsService().vmService(id).get().send().vm().cluster().id();
-        AffinityGroupService agService = system.clustersService().clusterService(id).affinityGroupsService().groupService(agId);
+        AffinityGroupService agService = system.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId);
+
         try {
             agService.remove().send();
 
-            log.info("Cluster 선호도그룹 삭제");
+            log.info("선호도그룹 삭제 ");
             return CommonVo.successResponse();
         } catch (Exception e) {
             log.error("실패: Cluster 선호도그룹 삭제");

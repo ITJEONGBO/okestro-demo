@@ -3,10 +3,7 @@ package com.itinfo.itcloud.service;
 import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.computing.AffinityGroupVo;
 import com.itinfo.itcloud.model.computing.AffinityLabelVo;
-import com.itinfo.itcloud.model.computing.HostVo;
-import com.itinfo.itcloud.model.computing.VmVo;
 import com.itinfo.itcloud.model.create.AffinityGroupCreateVo;
-import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,8 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ItAffinityServiceTest {
     @Autowired ItAffinityService affinityService;
 
-    String dcId = "9c72ff12-a5f3-11ee-941d-00163e39cb43";
     private final String clusterId = "9c7452ea-a5f3-11ee-93d2-00163e39cb43";
+    private final String vmId = "c9c1c52d-d2a4-4f2a-93fe-30200f1e0bff";
 
     @Test
     @DisplayName("선호도 생성위한 host 목록")
@@ -54,26 +51,22 @@ class ItAffinityServiceTest {
 
 
     @Test
-    @DisplayName("선호도 그룹 목록(cluster)")
+    @DisplayName("선호도 그룹 목록")
     void getAgClsuterLists() {
         List<AffinityGroupVo> result = affinityService.getAffinitygroup(clusterId, "cluster");
 
-        result.forEach(System.out::println);
-    }
-
-
-    @Test
-    @DisplayName("선호도 그룹 목록(vm)")
-    void getAgVmLists() {
-        String vmId = "c9c1c52d-d2a4-4f2a-93fe-30200f1e0bff";  // hostedengine
-        List<AffinityGroupVo> result = affinityService.getAffinitygroup(vmId, "vm");
+        // vm
+//        String vmId = "c9c1c52d-d2a4-4f2a-93fe-30200f1e0bff";  // hostedengine
+//        List<AffinityGroupVo> result = affinityService.getAffinitygroup(vmId, "vm");
 
         result.forEach(System.out::println);
     }
 
+
+
     @Test
-    @DisplayName("클러스터 선호도 그룹 생성")
-    void addAffinitygroup() {
+    @DisplayName("선호도 그룹 생성")
+    void addAffinitygroupCluster() {
         List<IdentifiedVo> hostList = new ArrayList<>();
         hostList.add(IdentifiedVo.builder().id("6a8e5257-0b2f-4b3c-b720-1d5eee1cbbfc").build());
 
@@ -82,10 +75,11 @@ class ItAffinityServiceTest {
 
         AffinityGroupCreateVo ag =
                 AffinityGroupCreateVo.builder()
-                        .name("x1")
+                        .name("x3")
                         .description("asktestDescriptinn")
                         .priority(5)
-                        .clusterId(clusterId)
+//                        .clusterId(clusterId)
+//                        .clusterId(vmId)
                         .vmEnabled(false)
                         .vmEnforcing(false)
                         .vmPositive(true)
@@ -96,19 +90,31 @@ class ItAffinityServiceTest {
                         .vmList(vmList)
                         .build();
 
-        CommonVo<Boolean> result = affinityService.addAffinitygroup(clusterId, "cluster", ag);
+            // cluster
+//        CommonVo<Boolean> result = affinityService.addAffinitygroup(clusterId, "cluster", ag);
+
+        // vm
+        CommonVo<Boolean> result = affinityService.addAffinitygroup(vmId, "vm", ag);
         assertThat(result.getHead().getCode()).isEqualTo(201);
     }
 
 
+
     @Test
     @DisplayName("선호도 그룹 편집 창")
-    void setEditAffinitygroup() {
-        String agId = "781d91bc-6ca7-4fed-b39c-84c8a4b0eab2";
+    void setEditAffinitygroupCluster() {
+        // cluster
+        String agId = "3f60c16d-cd9c-42e7-987c-d13061f081f8";
         AffinityGroupCreateVo group = affinityService.setEditAffinitygroup(clusterId, "cluster", agId);
+
+        // vm
+//        String agId = "3f60c16d-cd9c-42e7-987c-d13061f081f8";
+//        AffinityGroupCreateVo group = affinityService.setEditAffinitygroup(vmId, "vm", agId);
 
         System.out.println(group.toString());
     }
+
+
 
     @Test
     @DisplayName("선호도 그룹 편집")
