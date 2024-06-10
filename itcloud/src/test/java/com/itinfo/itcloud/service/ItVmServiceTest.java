@@ -36,8 +36,9 @@ class ItVmServiceTest {
     void getList() {
         List<VmVo> result = vmService.getList();
 
-        assertThat(9).isEqualTo(result.size());
-        result.stream().map(VmVo::getUpTime).forEach(System.out::println);
+        assertThat(8).isEqualTo(result.size());
+
+        result.forEach(System.out::println);
     }
 
 

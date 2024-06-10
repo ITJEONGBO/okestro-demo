@@ -1,7 +1,6 @@
 package com.itinfo.itcloud.service;
 
 import com.itinfo.itcloud.model.computing.*;
-import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
 import com.itinfo.itcloud.model.create.ClusterCreateVo;
 import com.itinfo.itcloud.model.create.NetworkCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
@@ -13,43 +12,31 @@ import java.util.List;
 
 @Service
 public interface ItClusterService {
-    List<ClusterVo> getList();
+    List<ClusterVo> getList();  // 클러스터 목록
 
-    // 클러스터
-    List<DataCenterVo> setDatacenterList();         // 생성 위한 dc 목록
+    List<DataCenterVo> setDatacenterList(); // 생성 위한 dc 목록
     List<NetworkVo> setNetworkList(String dcId);    // 생성 위한 network 목록
 
     CommonVo<Boolean> addCluster(ClusterCreateVo cVo);  // 생성
-    ClusterCreateVo setCluster(String id);              // 수정 창
-    CommonVo<Boolean> editCluster(String id, ClusterCreateVo cVo);   // 수정
-    CommonVo<Boolean> deleteCluster(String id);       // 삭제
+    ClusterCreateVo setCluster(String id);  // 수정 창
+    CommonVo<Boolean> editCluster(ClusterCreateVo cVo);  // 수정
+    CommonVo<Boolean> deleteCluster(String id); // 삭제
 
+    ClusterVo getInfo(String id);   // 일반
 
-    // 일반
-    ClusterVo getInfo(String id);
-
-    // 네트워크
     List<NetworkVo> getNetwork(String id);  // 네트워크 목록
-    CommonVo<Boolean> addNetwork(String id, NetworkCreateVo ncVo);// 네트워크 추가
-    List<NetworkClusterVo> setManageNetwork(String id); // 네트워크 관리창
+    CommonVo<Boolean> addClusterNetwork(String id, NetworkCreateVo ncVo);// 네트워크 추가
+    List<NetworkClusterVo> setManageNetwork(String id); // 네트워크 관리 창
     CommonVo<Boolean> manageNetwork(String id, List<NetworkClusterVo> ncVoList);// 네트워크 관리
 
     List<HostVo> getHost(String id);    // 호스트 목록
     List<VmVo> getVm(String id);        // 가상머신 목록
 
-
-
+    // 선호도 그룹
     // 선호도 레이블
-    // 생성 시 필요한 호스트,가상머신 리스트 출력
-    AffinityLabelCreateVo getAffinityLabel(String id, String alId);      // 편집창 출력
-    CommonVo<Boolean> addAffinitylabel(String id, AffinityLabelCreateVo alVo);     // 선호도 레이블 생성
-    CommonVo<Boolean> editAffinitylabel(String id, String alId, AffinityLabelCreateVo alVo);     // 선호도 레이블 편집
-    CommonVo<Boolean> deleteAffinitylabel(String id, String alId);                     // 선호도 레이블 삭제
 
-    List<PermissionVo> getPermission(String id);
-    List<EventVo> getEvent(String id);
+    List<PermissionVo> getPermission(String id);    // 권한
+    List<EventVo> getEvent(String id);  // 이벤트
 
-
-    // 안쓸듯
-//    List<CpuProfileVo> getCpuProfile(String id);
+//    List<CpuProfileVo> getCpuProfile(String id);  // 안쓸듯
 }

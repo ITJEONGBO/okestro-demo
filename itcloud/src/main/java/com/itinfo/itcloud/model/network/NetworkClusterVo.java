@@ -7,7 +7,7 @@ import lombok.ToString;
 @Getter @Builder @ToString
 public class NetworkClusterVo {
     // cluster
-    private String id;
+    private String id;  //network id
     private String name;
     private String description;
     private String version;

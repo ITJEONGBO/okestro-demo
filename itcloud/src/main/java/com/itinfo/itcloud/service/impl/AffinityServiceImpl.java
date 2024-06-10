@@ -10,7 +10,10 @@ import com.itinfo.itcloud.service.ItAffinityService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
 import org.ovirt.engine.sdk4.services.*;
-import org.ovirt.engine.sdk4.types.*;
+import org.ovirt.engine.sdk4.types.AffinityGroup;
+import org.ovirt.engine.sdk4.types.AffinityLabel;
+import org.ovirt.engine.sdk4.types.Host;
+import org.ovirt.engine.sdk4.types.Vm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -352,10 +355,144 @@ public class AffinityServiceImpl implements ItAffinityService {
 
 
 
+    // 클러스터에서 가지고 왓ㅇ므요
+    // 선호도 레이블 생성
+//    @Override
+//    public CommonVo<Boolean> addAffinitylabel(String id, AffinityLabelCreateVo alVo) {
+//        SystemService system = admin.getConnection().systemService();
+//        AffinityLabelsService alServices = system.affinityLabelsService();
+//        List<AffinityLabel> alList = system.affinityLabelsService().list().send().labels();
+//
+//        // 중복이름
+//        boolean duplicateName = alList.stream().noneMatch(al -> al.name().equals(alVo.getName()));
+//
+//        try {
+//            if(duplicateName) {
+//                log.error("실패: Cluster 선호도레이블 이름 중복");
+//                return CommonVo.failResponse("이름 중복");
+//            }
+//            AffinityLabelBuilder alBuilder = new AffinityLabelBuilder();
+//            alBuilder
+//                    .name(alVo.getName())
+//                    .hosts(
+//                            alVo.getHostList().stream()
+//                                    .map(host -> new HostBuilder().id(host.getId()).build())
+//                                    .collect(Collectors.toList())
+//                    )
+//                    .vms(
+//                            alVo.getVmList().stream()
+//                                    .map(vm -> new VmBuilder().id(vm.getId()).build())
+//                                    .collect(Collectors.toList())
+//                    )
+//                    .build();
+//
+//            alServices.add().label(alBuilder).send().label();
+//
+//            log.info("Cluster 선호도레이블 생성");
+//            return CommonVo.createResponse();
+//        } catch (Exception e) {
+//            log.error("실패: Cluster 선호도 레이블");
+//            e.printStackTrace();
+//            return CommonVo.failResponse(e.getMessage());
+//        }
+//    }
+//
+//
+//        // 선호도 레이블 편집 시 출력창
+//        @Override
+//        public AffinityLabelCreateVo getAffinityLabel(String id, String alId){   // id는 alid
+//            SystemService system = admin.getConnection().systemService();
+//            AffinityLabel al = system.affinityLabelsService().labelService(alId).get().follow("hosts,vms").send().label();
+//
+//            log.info("Cluster 선호도 레이블 편집창");
+//            return AffinityLabelCreateVo.builder()
+//                    .id(id)
+//                    .name(al.name())
+//    //                .hostList(al.hostsPresent() ? affinityService.getHostLabelMember(system, alId) : null )
+//    //                .vmList(al.vmsPresent() ? affinityService.getVmLabelMember(system, alId) : null)
+//                    .build();
+//        }
+//
+//        // 선호도 레이블 - 편집
+//        // 이름만 바뀌는거 같음, 호스트하고 vm은 걍 삭제하는 방식으로
+//        @Override
+//        public CommonVo<Boolean> editAffinitylabel(String id, String alId, AffinityLabelCreateVo alVo) {
+//            SystemService system = admin.getConnection().systemService();
+//            AffinityLabelService alService = system.affinityLabelsService().labelService(alVo.getId());
+//            List<AffinityLabel> alList = system.affinityLabelsService().list().send().labels();
+//
+//            // 중복이름
+//            boolean duplicateName = alList.stream().noneMatch(al -> al.name().equals(alVo.getName()));
+//
+//            try {
+//                AffinityLabelBuilder alBuilder = new AffinityLabelBuilder();
+//                alBuilder
+//                        .id(alVo.getId())
+//                        .name(alVo.getName())
+//                        .hosts(
+//                                alVo.getHostList().stream()
+//                                        .map(host ->
+//                                                new HostBuilder()
+//                                                        .id(host.getId())
+//                                                        .build()
+//                                        )
+//                                        .collect(Collectors.toList())
+//                        )
+//                        .vms(
+//                                alVo.getVmList().stream()
+//                                        .map(vm ->
+//                                                new VmBuilder()
+//                                                        .id(vm.getId())
+//                                                        .build()
+//                                        )
+//                                        .collect(Collectors.toList())
+//                        )
+//                        .build();
+//
+//    //            alVo.getVmList().stream().distinct().forEach(System.out::println);
+//
+//                alService.update().label(alBuilder).send().label();
+//                log.info("Cluster 선호도레이블 편집");
+//                return CommonVo.createResponse();
+//            } catch (Exception e) {
+//                log.error("실패: Cluster 선호도레이블 편집");
+//                e.printStackTrace();
+//                return CommonVo.failResponse(e.getMessage());
+//            }
+//        }
+//
+//
+//        // 선호도 레이블 - 삭제하려면 해당 레이블에 있는 가상머신&호스트 멤버 전부 내리고 해야함
+//        @Override
+//        public CommonVo<Boolean> deleteAffinitylabel(String id, String alId) {
+//            SystemService system = admin.getConnection().systemService();
+//            AffinityLabelService alService = system.affinityLabelsService().labelService(alId);
+//            AffinityLabel affinityLabel = system.affinityLabelsService().labelService(alId).get().follow("hosts,vms").send().label();
+//
+//            try {
+//                if(!affinityLabel.hostsPresent() && !affinityLabel.vmsPresent()) {
+//                    alService.remove().send();
+//
+//                    log.info("Cluster 선호도레이블 삭제");
+//                    return CommonVo.successResponse();
+//                } else {
+//                    log.error("가상머신 혹은 호스트를 삭제하세요");
+//                    return CommonVo.failResponse("error");
+//                }
+//            } catch (Exception e) {
+//                log.error("실패: Cluster 선호도레이블 삭제");
+//                return CommonVo.failResponse(e.getMessage());
+//            }
+//        }
+
+
+
+
+
     // -------------------------------------------------------------
 
     // 선호도 그룹 편집창 - host/vm 레이블, host/vm 아이디,이름 출력만
-    private  List<IdentifiedVo> setEdit(SystemService system, AffinityGroup ag, String type){
+    private List<IdentifiedVo> setEdit(SystemService system, AffinityGroup ag, String type){
         switch (type) {
             case "hostLabels":
                 return system.clustersService().clusterService(ag.cluster().id()).affinityGroupsService().groupService(ag.id()).hostLabelsService().list().send().labels().stream()
@@ -553,139 +690,6 @@ public class AffinityServiceImpl implements ItAffinityService {
                 })
                 .collect(Collectors.toList());
     }
-
-
-
-
-//    // 선호도 레이블 생성
-//    @Override
-//    public CommonVo<Boolean> addAffinitylabel(String id, AffinityLabelCreateVo alVo) {
-//        SystemService system = admin.getConnection().systemService();
-//        AffinityLabelsService alServices = system.affinityLabelsService();
-//        List<AffinityLabel> alList = system.affinityLabelsService().list().send().labels();
-//
-//        // 중복이름
-//        boolean duplicateName = alList.stream().noneMatch(al -> al.name().equals(alVo.getName()));
-//
-//        try {
-//            if(duplicateName) {
-//                AffinityLabelBuilder alBuilder = new AffinityLabelBuilder();
-//                alBuilder
-//                        .name(alVo.getName())
-//                        .hosts(
-//                                alVo.getHostList().stream()
-//                                        .map(host -> new HostBuilder().id(host.getId()).build())
-//                                        .collect(Collectors.toList())
-//                        )
-//                        .vms(
-//                                alVo.getVmList().stream()
-//                                        .map(vm -> new VmBuilder().id(vm.getId()).build())
-//                                        .collect(Collectors.toList())
-//                        )
-//                        .build();
-//
-//                alServices.add().label(alBuilder).send().label();
-//
-//                log.info("Cluster 선호도레이블 생성");
-//                return CommonVo.createResponse();
-//            }else {
-//                log.error("실패: Cluster 선호도레이블 이름 중복");
-//                return CommonVo.failResponse("이름 중복");
-//            }
-//        } catch (Exception e) {
-//            log.error("실패: Cluster 선호도 레이블");
-//            e.printStackTrace();
-//            return CommonVo.failResponse(e.getMessage());
-//        }
-//    }
-//
-//
-//    // 선호도 레이블 편집 시 출력창
-//    @Override
-//    public AffinityLabelCreateVo getAffinityLabel(String id, String alId){   // id는 alid
-//        SystemService system = admin.getConnection().systemService();
-//        AffinityLabel al = system.affinityLabelsService().labelService(alId).get().follow("hosts,vms").send().label();
-//
-//        log.info("Cluster 선호도 레이블 편집창");
-//        return AffinityLabelCreateVo.builder()
-//                .id(id)
-//                .name(al.name())
-////                .hostList(al.hostsPresent() ? affinityService.getHostLabelMember(system, alId) : null )
-////                .vmList(al.vmsPresent() ? affinityService.getVmLabelMember(system, alId) : null)
-//                .build();
-//    }
-//
-//    // 선호도 레이블 - 편집
-//    // 이름만 바뀌는거 같음, 호스트하고 vm은 걍 삭제하는 방식으로
-//    @Override
-//    public CommonVo<Boolean> editAffinitylabel(String id, String alId, AffinityLabelCreateVo alVo) {
-//        SystemService system = admin.getConnection().systemService();
-//        AffinityLabelService alService = system.affinityLabelsService().labelService(alVo.getId());
-//        List<AffinityLabel> alList = system.affinityLabelsService().list().send().labels();
-//
-//        // 중복이름
-//        boolean duplicateName = alList.stream().noneMatch(al -> al.name().equals(alVo.getName()));
-//
-//        try {
-//            AffinityLabelBuilder alBuilder = new AffinityLabelBuilder();
-//            alBuilder
-//                    .id(alVo.getId())
-//                    .name(alVo.getName())
-//                    .hosts(
-//                            alVo.getHostList().stream()
-//                                    .map(host ->
-//                                            new HostBuilder()
-//                                                    .id(host.getId())
-//                                                    .build()
-//                                    )
-//                                    .collect(Collectors.toList())
-//                    )
-//                    .vms(
-//                            alVo.getVmList().stream()
-//                                    .map(vm ->
-//                                            new VmBuilder()
-//                                                    .id(vm.getId())
-//                                                    .build()
-//                                    )
-//                                    .collect(Collectors.toList())
-//                    )
-//                    .build();
-//
-////            alVo.getVmList().stream().distinct().forEach(System.out::println);
-//
-//            alService.update().label(alBuilder).send().label();
-//            log.info("Cluster 선호도레이블 편집");
-//            return CommonVo.createResponse();
-//        } catch (Exception e) {
-//            log.error("실패: Cluster 선호도레이블 편집");
-//            e.printStackTrace();
-//            return CommonVo.failResponse(e.getMessage());
-//        }
-//    }
-//
-//
-//    // 선호도 레이블 - 삭제하려면 해당 레이블에 있는 가상머신&호스트 멤버 전부 내리고 해야함
-//    @Override
-//    public CommonVo<Boolean> deleteAffinitylabel(String id, String alId) {
-//        SystemService system = admin.getConnection().systemService();
-//        AffinityLabelService alService = system.affinityLabelsService().labelService(alId);
-//        AffinityLabel affinityLabel = system.affinityLabelsService().labelService(alId).get().follow("hosts,vms").send().label();
-//
-//        try {
-//            if(!affinityLabel.hostsPresent() && !affinityLabel.vmsPresent()) {
-//                alService.remove().send();
-//
-//                log.info("Cluster 선호도레이블 삭제");
-//                return CommonVo.successResponse();
-//            } else {
-//                log.error("가상머신 혹은 호스트를 삭제하세요");
-//                return CommonVo.failResponse("error");
-//            }
-//        } catch (Exception e) {
-//            log.error("실패: Cluster 선호도레이블 삭제");
-//            return CommonVo.failResponse(e.getMessage());
-//        }
-//    }
 
 
 

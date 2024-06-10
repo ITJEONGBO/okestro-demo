@@ -1,10 +1,6 @@
 package com.itinfo.itcloud.service.impl;
 
-import com.itinfo.itcloud.model.IdentifiedVo;
-import com.itinfo.itcloud.model.computing.AffinityLabelVo;
-import com.itinfo.itcloud.model.computing.HostVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
-import com.itinfo.itcloud.model.computing.VmVo;
 import org.ovirt.engine.sdk4.services.SystemService;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.stereotype.Service;
@@ -116,52 +112,6 @@ public class CommonService {
     }
 
 
-    /**
-     * 클러스터 내에 있는 호스트 개수 파악
-     * @param hostList
-     * @param clusterId host의 clusterId와 비교
-     * @param ele up, down, "" 값
-     * @return 호스트 개수
-     */
-    public int getClusterHostCnt(List<Host> hostList, String clusterId, String ele){
-        if("up".equals(ele)){
-            return (int) hostList.stream()
-                    .filter(host -> host.cluster().id().equals(clusterId) && host.status().value().equals("up"))
-                    .count();
-        }else if("down".equals(ele)){
-            return (int) hostList.stream()
-                    .filter(host -> host.cluster().id().equals(clusterId) && !host.status().value().equals("up"))
-                    .count();
-        }else {
-            return (int) hostList.stream()
-                    .filter(host -> host.cluster().id().equals(clusterId))
-                    .count();
-        }
-    }
-
-
-    /**
-     * 클러스터 내에 있는 가상머신 개수 파악
-     * @param vmList
-     * @param clusterId vm의 clusterId와 비교
-     * @param ele up, down, "" 값
-     * @return 가상머신 개수
-     */
-    public int getClusterVmCnt(List<Vm> vmList, String clusterId, String ele){
-        if("up".equals(ele)) {
-            return (int) vmList.stream()
-                    .filter(vm -> vm.cluster().id().equals(clusterId) && vm.status().value().equals("up"))
-                    .count();
-        }else if("down".equals(ele)) {
-            return (int) vmList.stream()
-                    .filter(vm -> vm.cluster().id().equals(clusterId) && !vm.status().value().equals("up"))
-                    .count();
-        }else{
-            return (int) vmList.stream()
-                    .filter(vm -> vm.cluster().id().equals(clusterId))
-                    .count();
-        }
-    }
 
     // 권한
     public List<PermissionVo> getPermission(SystemService system, List<Permission> permissionList) {
@@ -201,10 +151,6 @@ public class CommonService {
             return system.dataCentersService().list().send().dataCenters().stream()
                     .filter(dataCenter -> id == null || !dataCenter.id().equals(id))
                     .anyMatch(dataCenter -> dataCenter.name().equals(name));
-        } else if ("cluster".equals(type)) {
-            return system.clustersService().list().send().clusters().stream()
-                    .filter(cluster -> id == null || !cluster.id().equals(id))
-                    .anyMatch(cluster -> cluster.name().equals(name));
         } else if ("host".equals(type)) {
             return system.hostsService().list().send().hosts().stream()
                     .filter(host -> id == null || !host.id().equals(id))

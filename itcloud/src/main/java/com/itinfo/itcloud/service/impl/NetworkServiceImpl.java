@@ -131,11 +131,15 @@ public class NetworkServiceImpl implements ItNetworkService {
                             )
                             .send().network();
 
-            // TODO: vnic 기본생성 가능. 기본생성명 수정시 기본생성과 수정명 2개가 생김
-//            ncVo.getVnics().forEach(vnicProfileVo -> {
-//                AssignedVnicProfilesService aVnicsService = system.networksService().networkService(network.id()).vnicProfilesService();
-//                aVnicsService.add().profile(new VnicProfileBuilder().name(vnicProfileVo.getName()).build()).send().profile();
-//            });
+            // 기본생성되는 vnicprofile 삭제해주는 코드
+            AssignedVnicProfilesService aVnicsService = system.networksService().networkService(network.id()).vnicProfilesService();
+            AssignedVnicProfileService vnicService = aVnicsService.profileService(aVnicsService.list().send().profiles().get(0).id());
+            vnicService.remove().send();
+
+            ncVo.getVnics().forEach(vnicProfileVo -> {
+                aVnicsService.add().profile(new VnicProfileBuilder().name(vnicProfileVo.getName()).build()).send();
+            });
+
 
             // 클러스터 모두연결이 선택되어야지만 모두 필요가 선택됨
             ncVo.getClusterVoList().stream()

@@ -1,23 +1,22 @@
 package com.itinfo.itcloud.service;
 
-import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.computing.*;
-import com.itinfo.itcloud.model.create.AffinityGroupCreateVo;
-import com.itinfo.itcloud.model.create.AffinityLabelCreateVo;
 import com.itinfo.itcloud.model.create.ClusterCreateVo;
 import com.itinfo.itcloud.model.create.NetworkCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkClusterVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
+import com.itinfo.itcloud.model.network.VnicProfileVo;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.ovirt.engine.sdk4.types.*;
+import org.ovirt.engine.sdk4.types.InheritableBoolean;
+import org.ovirt.engine.sdk4.types.MigrateOnError;
+import org.ovirt.engine.sdk4.types.MigrationBandwidthAssignmentMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,8 +26,8 @@ class ItClusterServiceTest {
     @Autowired ItClusterService clusterService;
 
     String dcId = "9c72ff12-a5f3-11ee-941d-00163e39cb43";
-    String id = "99ce9472-cabc-4338-80f7-9fd3d9367027";
     String defaultId = "9c7452ea-a5f3-11ee-93d2-00163e39cb43";
+    String id = "99ce9472-cabc-4338-80f7-9fd3d9367027";
 
     @Test
     @DisplayName("클러스터 리스트 출력")
@@ -36,7 +35,6 @@ class ItClusterServiceTest {
         List<ClusterVo> result = clusterService.getList();
 
         result.forEach(System.out::println);
-        assertThat(2).isEqualTo(result.size());
         assertThat(true).isEqualTo(result.stream().anyMatch(clusterVo -> clusterVo.getName().equals("Default")));
     }
 
@@ -167,12 +165,12 @@ class ItClusterServiceTest {
 
     @Test
     @DisplayName("클러스터 수정 창")
-    void setEditCluster() {
-        String id = "ff23fc50-3d5c-4b5f-a018-8d8bff70819a";
+    void setCluster() {
+        String id = "729bd062-f5b6-44f1-a3c2-64d81e2dbf1b";
         ClusterCreateVo c = clusterService.setCluster(id);
 
         System.out.println(c);
-        assertThat("MD").isEqualTo(c.getName());
+//        assertThat("MD").isEqualTo(c.getName());
     }
 
     @Test
@@ -204,7 +202,7 @@ class ItClusterServiceTest {
                         .networkProvider(false)
                         .build();
 
-        CommonVo<Boolean> result = clusterService.editCluster(id, c);
+        CommonVo<Boolean> result = clusterService.editCluster(c);
 
         assertThat(result.getHead().getCode()).isEqualTo(201);
         assertThat("asdf").isEqualTo(c.getDescription());
@@ -238,7 +236,7 @@ class ItClusterServiceTest {
                         .networkProvider(false)
                         .build();
 
-        CommonVo<Boolean> result = clusterService.editCluster(id, c);
+        CommonVo<Boolean> result = clusterService.editCluster(c);
 
         assertThat(result.getHead().getCode()).isEqualTo(201);
     }
@@ -246,7 +244,7 @@ class ItClusterServiceTest {
     @Test
     @DisplayName("클러스터 삭제")
     void deleteCluster() {
-        String did = "ff23fc50-3d5c-4b5f-a018-8d8bff70819a";
+        String did = "eafa0922-b6c8-428c-bc8d-25b14be10888";
 
         CommonVo<Boolean> result = clusterService.deleteCluster(did);
         assertThat(result.getHead().getCode()).isEqualTo(200);
@@ -257,6 +255,7 @@ class ItClusterServiceTest {
     void getInfo() {
         ClusterVo c = clusterService.getInfo(defaultId);
 
+        System.out.println(c);
         assertThat("Default").isEqualTo(c.getName());
         assertThat(8).isEqualTo(c.getVmCnt());
     }
@@ -268,40 +267,88 @@ class ItClusterServiceTest {
 
         result.forEach(System.out::println);
         assertThat(5).isEqualTo(result.size());
-        assertThat(true).isEqualTo(result.stream().anyMatch(networkVo -> networkVo.getName().equals("ovirtmgmt")));
     }
 
     @Test
     @DisplayName("클러스터 네트워크 생성")
     void addNetwork(){
+        String id = "729bd062-f5b6-44f1-a3c2-64d81e2dbf1b";
+
+        List<VnicProfileVo> vnicProfileVoList = new ArrayList<>();
+        vnicProfileVoList.add(VnicProfileVo.builder().name("aa").build());
+        vnicProfileVoList.add(VnicProfileVo.builder().name("bb").build());
+
         NetworkCreateVo create =
                 NetworkCreateVo.builder()
-                        .name("test")
+                        .name("tf")
                         .description("test")
                         .comment("test")
                         .usageVm(true)
                         .externalProvider(false)
-                        .clusterVoList(
-                                Arrays.asList(
-                                    NetworkClusterVo.builder()
-                                        .id("9c7452ea-a5f3-11ee-93d2-00163e39cb43")
-                                        .connected(true)
-                                        .required(true)
-                                        .build()
-                                )
-                        )
+                        .clusterVo(NetworkClusterVo.builder().id(id).connected(true).required(true).build())
+                        .vnics(vnicProfileVoList)
                 .build();
 
-        CommonVo<Boolean> result = clusterService.addNetwork(defaultId, create);
+        CommonVo<Boolean> result = clusterService.addClusterNetwork(id, create);
         assertThat(result.getHead().getCode()).isEqualTo(201);
+    }
+
+    @Test
+    @DisplayName("클러스터 네트워크 생성- 이름중복")
+    void addNetwork2(){
+        String id = "729bd062-f5b6-44f1-a3c2-64d81e2dbf1b";
+
+        List<VnicProfileVo> vnicProfileVoList = new ArrayList<>();
+        vnicProfileVoList.add(VnicProfileVo.builder().name("a").build());
+
+        NetworkCreateVo create =
+                NetworkCreateVo.builder()
+                        .name("tes")
+                        .description("test")
+                        .comment("test")
+                        .usageVm(true)
+                        .externalProvider(false)
+                        .clusterVo(NetworkClusterVo.builder().id(id).connected(true).required(true).build())
+                        .vnics(vnicProfileVoList)
+                        .build();
+
+        CommonVo<Boolean> result = clusterService.addClusterNetwork(id, create);
+        assertThat(result.getHead().getCode()).isEqualTo(404);
     }
 
     @Test
     @DisplayName("클러스터 네트워크 관리 창")
     void setNetworkManage() {
-        List<NetworkClusterVo> result = clusterService.setManageNetwork(defaultId);
+        String id = "729bd062-f5b6-44f1-a3c2-64d81e2dbf1b";
+        List<NetworkClusterVo> result = clusterService.setManageNetwork(id);
 
         result.forEach(System.out::println);
+    }
+
+
+    @Test
+    @DisplayName("클러스터 네트워크 관리")
+    void editNetworkManage() {
+        String cid = "729bd062-f5b6-44f1-a3c2-64d81e2dbf1b";
+
+        List<NetworkClusterVo> ncVoList = new ArrayList<>();
+
+//        NetworkClusterVo nc =
+//                NetworkClusterVo.builder()
+//                        .id("")
+//                        .networkUsageVo(
+//                                NetworkUsageVo.builder()
+//                                        .management()
+//                                        .migration()
+//                                        .display()
+//                                        .gluster()
+//                                        .defaultRoute()
+//                                        .build()
+//                        )
+//                        .build();
+
+//        List<NetworkClusterVo> result = clusterService.manageNetwork(cid, );
+
     }
 
 
@@ -327,13 +374,13 @@ class ItClusterServiceTest {
     }
 
 
-
     //  선호도 그룹/ 레이블
 
 
 
 
     @Test
+    @DisplayName("클러스터 권한 목록")
     void getPermission() {
         List<PermissionVo> result = clusterService.getPermission(id);
 

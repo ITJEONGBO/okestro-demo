@@ -1,7 +1,6 @@
 package com.itinfo.itcloud.model.create;
 
 import com.itinfo.itcloud.model.network.NetworkClusterVo;
-import com.itinfo.itcloud.model.network.NetworkDnsVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,6 +14,7 @@ public class NetworkCreateVo {
     private String datacenterId;
     private String datacenterName;
 
+    private NetworkClusterVo clusterVo; // cluster=network 추가
     private List<NetworkClusterVo> clusterVoList;
 
     private String id;

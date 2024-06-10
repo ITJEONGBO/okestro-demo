@@ -41,7 +41,7 @@ public class VmServiceImpl implements ItVmService {
     @Override
     public List<VmVo> getList() {
         SystemService system = admin.getConnection().systemService();
-        List<Vm> vmList = system.vmsService().list().send().vms();
+        List<Vm> vmList = system.vmsService().list().allContent(true).send().vms();
 
         log.info("가상머신 리스트");
         return vmList.stream()
@@ -51,7 +51,7 @@ public class VmServiceImpl implements ItVmService {
 
                     return VmVo.builder()
                             .status(TypeExtKt.findVmStatus(vm.status()))
-                            // 엔진여부
+                            .hostEngineVm(vm.origin().equals("managed_hosted_engine"))  // 엔진여부
                             .name(vm.name())
                             .hostId(vm.hostPresent() ? vm.host().id() : null)
                             .hostName(vm.hostPresent() ? system.hostsService().hostService(vm.host().id()).get().send().host().name() : null)
