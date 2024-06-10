@@ -54,7 +54,7 @@ public class DataCenterController {
 	public CommonVo<Boolean> editDatacenter(@PathVariable String id,
 											@RequestBody DataCenterCreateVo dcVo){
 		log.info("----- 데이터센터 편집 : " + dcVo.getName());
-		return dcService.editDatacenter(id, dcVo);
+		return dcService.editDatacenter(dcVo);
 	}
 
 	// 데이터센터 삭제

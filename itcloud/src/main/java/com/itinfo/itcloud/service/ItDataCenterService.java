@@ -10,12 +10,12 @@ import java.util.List;
 
 @Service
 public interface ItDataCenterService {
-    List<DataCenterVo> getList();
+    List<DataCenterVo> getList();   // 목록
 
     CommonVo<Boolean> addDatacenter(DataCenterCreateVo dcVo);   // 생성
-    DataCenterCreateVo setDatacenter(String id);
-    CommonVo<Boolean> editDatacenter(String id, DataCenterCreateVo dcVo);   // 수정
-    CommonVo<Boolean> deleteDatacenter(String id);       // 삭제
+    DataCenterCreateVo setDatacenter(String id);    // 수정 창
+    CommonVo<Boolean> editDatacenter(DataCenterCreateVo dcVo);  // 수정
+    CommonVo<Boolean> deleteDatacenter(String id);  // 삭제
 
-    List<EventVo> getEvent(String id);
-}
+    List<EventVo> getEvent(String id);  // 이벤트 출력
+}   

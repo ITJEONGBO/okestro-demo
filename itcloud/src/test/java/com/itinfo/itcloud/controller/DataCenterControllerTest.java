@@ -115,7 +115,7 @@ class DataCenterControllerTest {
                 .andDo(print())
                 .andReturn();
 
-        verify(dcService).editDatacenter(id, dc);
+        verify(dcService).editDatacenter(dc);
 
     }
 
