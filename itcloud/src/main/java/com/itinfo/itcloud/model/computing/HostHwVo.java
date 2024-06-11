@@ -2,8 +2,9 @@ package com.itinfo.itcloud.model.computing;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
-@Getter @Builder
+@Getter @Builder @ToString
 public class HostHwVo {
     private String manufacturer;
     private String family;      // 제품군

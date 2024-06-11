@@ -18,8 +18,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class ItHostServiceTest {
     @Autowired ItHostService hostService;
+    @Autowired ItVmService vmService;
 
-    String defaultId = "f08baae8-2137-490c-bec2-fd00f67a37b9";
+    private final String defaultId = "4cbfa180-9244-4b61-a94d-8ecda926ac51";    // 70 host01
+//    private final String defaultId = "f08baae8-2137-490c-bec2-fd00f67a37b9";
 
     @Test
     @DisplayName("호스트 목록")
@@ -43,14 +45,15 @@ class ItHostServiceTest {
     void addHost() {
         HostCreateVo create =
                 HostCreateVo.builder()
-                        .name("host01.ititinfo.com")
-                        .comment("192.168.0.81")
-                        .hostIp("host01.ititinfo.com")
-                        .sshPw("adminRoot!@#")
-                        .spm(1)
+                        .clusterId("ae1ea51e-f642-11ee-bcc4-00163e4b3128")
+                        .name("host01.ititinfo.local")
+                        .comment("192.168.0.71")
+                        .hostIp("host01.ititinfo.local")
                         .sshPort(22)
-//                        .hostEngine(false)
-                        .clusterId("9c7452ea-a5f3-11ee-93d2-00163e39cb43")
+                        .sshPw("adminRoot!@#")
+                        .powerManagementActive(false) // 전원관리 활성화
+                        .spm(1)
+                        .hostEngine(false)
                         .build();
 
         CommonVo<Boolean> result = hostService.addHost(create);
@@ -69,15 +72,26 @@ class ItHostServiceTest {
     @Test
     @DisplayName("호스트 수정")
     void editHost() {
+        HostCreateVo create =
+                HostCreateVo.builder()
+                        .id(defaultId)
+                        .name("host01.ititinfo.local")
+                        .comment("192.168.0.71 test")
+                        .powerManagementActive(false) // 전원관리 활성화
+                        .spm(5)
+                        .hostEngine(false)
+                        .build();
 
+        CommonVo<Boolean> result = hostService.editHost(create);
 
+        assertThat(result.getHead().getCode()).isEqualTo(201);
     }
 
     @Test
     @DisplayName("호스트 삭제")
     void deleteHost() {
-        String id = "465f8981-193a-4abe-b9aa-4b06b4fab974";
-        CommonVo<Boolean> result = hostService.deleteHost(id);
+        String id = "6a8e5257-0b2f-4b3c-b720-1d5eee1cbbfc";
+        CommonVo<Boolean> result = hostService.deleteHost(defaultId);
 
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
@@ -85,20 +99,27 @@ class ItHostServiceTest {
     @Test
     @DisplayName("호스트 유지보수")
     void deactiveHost() {
-        String id = "ab33794b-61ec-4288-934f-83d2c38d14bc";
+//        String id = "6a8e5257-0b2f-4b3c-b720-1d5eee1cbbfc";
 
-        CommonVo<Boolean> result = hostService.deactiveHost(id);
+        CommonVo<Boolean> result = hostService.deactiveHost(defaultId);
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
     @Test
     @DisplayName("호스트 활성")
     void activeHost() {
+        String id = "6a8e5257-0b2f-4b3c-b720-1d5eee1cbbfc";
+
+        CommonVo<Boolean> result = hostService.activeHost(defaultId);
+        assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
     @Test
     @DisplayName("호스트 새로고침")
     void refreshHost() {
+
+        CommonVo<Boolean> result = hostService.refreshHost(defaultId);
+        assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
     @Test
@@ -118,12 +139,15 @@ class ItHostServiceTest {
     @Test
     @DisplayName("호스트 정보")
     void getHost() {
+        HostVo result = hostService.getHost(defaultId);
+
+        System.out.println(result);
     }
 
     @Test
     @DisplayName("호스트 가상머신 목록")
     void getVm() {
-        String id = "507b4118-346a-47be-bd3a-a15abc36d26a";
+        String id = "92b81da8-b160-4abf-859f-8005d07944eb";
         List<VmVo> vmVoList = hostService.getVm(id);
 
         vmVoList.forEach(System.out::println);
@@ -132,8 +156,8 @@ class ItHostServiceTest {
     @Test
     @DisplayName("호스트 가상머신 실행")
     void startVm() {
-        String vmId = "eec63849-5026-482c-8f05-1d8e419ef548";
-        CommonVo<Boolean> result = hostService.startVm(vmId);
+        String vmId = "266b7ca4-354b-4016-adbe-7324c932c8ca";
+        CommonVo<Boolean> result = vmService.startVm(vmId);
 
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
@@ -141,8 +165,8 @@ class ItHostServiceTest {
     @Test
     @DisplayName("호스트 가상머신 일시정지")
     void pauseVm() {
-        String vmId = "eec63849-5026-482c-8f05-1d8e419ef548";
-        CommonVo<Boolean> result = hostService.pauseVm(vmId);
+        String vmId = "266b7ca4-354b-4016-adbe-7324c932c8ca";
+        CommonVo<Boolean> result = vmService.pauseVm(vmId);
 
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
@@ -151,7 +175,7 @@ class ItHostServiceTest {
     @DisplayName("호스트 가상머신 종료")
     void shutdownVm() {
         String vmId = "eec63849-5026-482c-8f05-1d8e419ef548";
-        CommonVo<Boolean> result = hostService.stopVm(vmId);
+        CommonVo<Boolean> result = vmService.stopVm(vmId);
 
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
@@ -160,7 +184,7 @@ class ItHostServiceTest {
     @DisplayName("호스트 가상머신 전원끔")
     void stopVm() {
         String vmId = "eec63849-5026-482c-8f05-1d8e419ef548";
-        CommonVo<Boolean> result = hostService.shutdownVm(vmId);
+        CommonVo<Boolean> result = vmService.shutdownVm(vmId);
 
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
