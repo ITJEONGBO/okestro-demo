@@ -50,9 +50,9 @@ class ItHostServiceTest {
                         .name("host01.ititinfo.local")
                         .comment("192.168.0.71")
                         .hostIp("host01.ititinfo.local")
-                        .sshPort(22)
+                        .sshPort(22 /*1237*/)
                         .sshPw("adminRoot!@#")
-                        .powerManagementActive(false) // 전원관리 활성화
+//                        .powerManagementActive(false) // 전원관리 활성화
                         .spm(1)
                         .hostEngine(false)
                         .build();
@@ -91,8 +91,8 @@ class ItHostServiceTest {
     @Test
     @DisplayName("호스트 삭제")
     void deleteHost() {
-        String id = "6a8e5257-0b2f-4b3c-b720-1d5eee1cbbfc";
-        CommonVo<Boolean> result = hostService.deleteHost(defaultId);
+        String id = "704178f0-efa5-41d2-b14a-d8486dc3a252";
+        CommonVo<Boolean> result = hostService.deleteHost(id);
 
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }

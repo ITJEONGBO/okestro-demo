@@ -95,6 +95,7 @@ public class HostServiceImpl implements ItHostService {
 
     /**
      * 호스트 생성
+     * 전원관리 없앰
      * @param hostCreateVo 호스트 객체
      * @return host 201(create) 404(fail)
      */
@@ -103,24 +104,23 @@ public class HostServiceImpl implements ItHostService {
         SystemService system = admin.getConnection().systemService();
         HostsService hostsService = system.hostsService();
 
-        // 고려해야하는 것, ssh port번호, 전원관리 활성 여부(펜스 에이전트가 추가되는지가 달림)
-        // sshport가 22면 .ssh() 설정하지 않아도 알아서 지정됨, sshport 변경을 ovirt에서 해보신적은 없어서 우선 보류 (cmd로 하셨음)
+        // ssh port가 22면 .ssh() 설정하지 않아도 알아서 지정됨.
+        // ssh port 변경을 ovirt에서 해보신적은 없어서 우선 보류 (cmd로 하셨음)
         // 비밀번호 잘못되면 보여줄 코드?
         try {
             // 호스트 엔진 배치작업 선택 (없음/배포)  -> 호스트 생성
             Host host =
                 hostsService.add()
-                        .deployHostedEngine(hostCreateVo.isHostEngine())  // 전원관리
+                        .deployHostedEngine(hostCreateVo.isHostEngine())
                         .host(
                             new HostBuilder()
                                 .cluster(new ClusterBuilder().id(hostCreateVo.getId()))
                                 .name(hostCreateVo.getName())
                                 .comment(hostCreateVo.getComment())
-                                .address(hostCreateVo.getHostIp())          // 호스트이름/IP
-                                .rootPassword(hostCreateVo.getSshPw())   // 암호
+                                .address(hostCreateVo.getHostIp())  // 호스트이름/IP
+                                .rootPassword(hostCreateVo.getSshPw())  // 암호
                                 .spm(new SpmBuilder().priority(hostCreateVo.getSpm()))
                                 .ssh(new SshBuilder().port(hostCreateVo.getSshPort()))  // 기본값이 22
-//                                .hostedEngine(new HostedEngineBuilder().active(hostCreateVo.isHostEngine()))
                         )
                         .send().host();
 
@@ -137,7 +137,8 @@ public class HostServiceImpl implements ItHostService {
             }
 
         } catch (Exception e) {
-            log.error("호스트 추가 실패: {}", e.getMessage());
+            log.error("호스트 추가 실패 {}", e.getMessage());
+            e.getMessage();
             return CommonVo.failResponse(e.getMessage());
         }
     }
@@ -167,7 +168,6 @@ public class HostServiceImpl implements ItHostService {
                 .sshPort(host.ssh().portAsInteger())
                 // 인증 - 사용자 이름, 공개키 오케는 지정사용
                 .sshPw(host.rootPassword())
-                .powerManagementActive(host.powerManagement().enabled())
                 .spm(host.spm().priorityAsInteger())
                 .hostEngine(host.hostedEnginePresent()) // ?? 호스트 엔진 배치작업 없음
                 .build();
@@ -191,7 +191,6 @@ public class HostServiceImpl implements ItHostService {
                             .id(hcVo.getId())
                             .name(hcVo.getName())
                             .comment(hcVo.getComment())
-                            .powerManagement(new PowerManagementBuilder().enabled(hcVo.isPowerManagementActive()))
                             .spm(new SpmBuilder().priority(hcVo.getSpm()))
                             .build()
                     )
@@ -217,29 +216,14 @@ public class HostServiceImpl implements ItHostService {
     public CommonVo<Boolean> deleteHost(String id) {
         SystemService system = admin.getConnection().systemService();
         HostService hostService = system.hostsService().hostService(id);
-        List<Host> hostList = system.hostsService().list().send().hosts();
 
         try {
             Host host = hostService.get().send().host();
             HostStatus status = host.status();
 
-//            boolean a = hostList.stream().noneMatch(host1 -> host1.name().equals(host.name())); // 없으면 true
-
-            System.out.println("호스트 삭제 전 " + hostList.stream().noneMatch(host1 -> host1.name().equals(host.name())));
             if (status == HostStatus.MAINTENANCE) {
                 hostService.remove().send();
-
-                while (true){
-                    boolean dd = hostList.stream().noneMatch(host1 -> host1.name().equals(host.name()));
-                    if(dd) {
-                        log.info("호스트 삭제완료");
-                        return CommonVo.successResponse();
-                    }else {
-                        log.debug("호스트 삭제중...");
-                        Thread.sleep(1000);
-                    }
-                }
-
+                return CommonVo.successResponse();
             } else {
                 log.error("호스트 삭제불가 : {}, 유지보수 모드로 바꾸세요", host.name());
                 return CommonVo.failResponse("현재 호스트는 유지보수 모드가 아님");
