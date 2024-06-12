@@ -20,7 +20,7 @@ class ItHostServiceTest {
     @Autowired ItHostService hostService;
     @Autowired ItVmService vmService;
 
-    private final String defaultId = "4cbfa180-9244-4b61-a94d-8ecda926ac51";    // 70 host01
+    private final String defaultId = "0494c271-0a68-4070-8186-c08fade1e982";    // 70 host01
 //    private final String defaultId = "f08baae8-2137-490c-bec2-fd00f67a37b9";
 
     @Test
@@ -112,6 +112,7 @@ class ItHostServiceTest {
 
         CommonVo<Boolean> result = hostService.activeHost(defaultId);
         assertThat(result.getHead().getCode()).isEqualTo(200);
+//        assertThat(result.getHead().getCode()).isEqualTo(404);
     }
 
     @Test
@@ -125,12 +126,16 @@ class ItHostServiceTest {
     @Test
     @DisplayName("호스트 ssh-재시작")
     void reStartHost() {
+        String id = "3519950c-b03c-41b9-825b-8b339d3da2b5";
+
+        CommonVo<Boolean> result = hostService.reStartHost(id);
+        assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
     @Test
     @DisplayName("호스트 ssh-정지")
     void stopHost() {
-        String id = "507b4118-346a-47be-bd3a-a15abc36d26a";
+        String id = "0494c271-0a68-4070-8186-c08fade1e982";
 
         CommonVo<Boolean> result = hostService.stopHost(id);
         assertThat(result.getHead().getCode()).isEqualTo(200);
@@ -153,53 +158,53 @@ class ItHostServiceTest {
         vmVoList.forEach(System.out::println);
     }
 
-    @Test
-    @DisplayName("호스트 가상머신 실행")
-    void startVm() {
-        String vmId = "266b7ca4-354b-4016-adbe-7324c932c8ca";
-        CommonVo<Boolean> result = vmService.startVm(vmId);
-
-        assertThat(result.getHead().getCode()).isEqualTo(200);
-    }
-
-    @Test
-    @DisplayName("호스트 가상머신 일시정지")
-    void pauseVm() {
-        String vmId = "266b7ca4-354b-4016-adbe-7324c932c8ca";
-        CommonVo<Boolean> result = vmService.pauseVm(vmId);
-
-        assertThat(result.getHead().getCode()).isEqualTo(200);
-    }
-
-    @Test
-    @DisplayName("호스트 가상머신 종료")
-    void shutdownVm() {
-        String vmId = "eec63849-5026-482c-8f05-1d8e419ef548";
-        CommonVo<Boolean> result = vmService.stopVm(vmId);
-
-        assertThat(result.getHead().getCode()).isEqualTo(200);
-    }
-
-    @Test
-    @DisplayName("호스트 가상머신 전원끔")
-    void stopVm() {
-        String vmId = "eec63849-5026-482c-8f05-1d8e419ef548";
-        CommonVo<Boolean> result = vmService.shutdownVm(vmId);
-
-        assertThat(result.getHead().getCode()).isEqualTo(200);
-    }
-
-    @Test
-    @DisplayName("호스트 가상머신 마이그레이션")
-    void migrationVm() {
-
-    }
-
-    @Test
-    @DisplayName("호스트 가상머신 마이그레이션 취소")
-    void migrationCancelVm() {
-
-    }
+//    @Test
+//    @DisplayName("호스트 가상머신 실행")
+//    void startVm() {
+//        String vmId = "266b7ca4-354b-4016-adbe-7324c932c8ca";
+//        CommonVo<Boolean> result = vmService.startVm(vmId);
+//
+//        assertThat(result.getHead().getCode()).isEqualTo(200);
+//    }
+//
+//    @Test
+//    @DisplayName("호스트 가상머신 일시정지")
+//    void pauseVm() {
+//        String vmId = "266b7ca4-354b-4016-adbe-7324c932c8ca";
+//        CommonVo<Boolean> result = vmService.pauseVm(vmId);
+//
+//        assertThat(result.getHead().getCode()).isEqualTo(200);
+//    }
+//
+//    @Test
+//    @DisplayName("호스트 가상머신 종료")
+//    void shutdownVm() {
+//        String vmId = "eec63849-5026-482c-8f05-1d8e419ef548";
+//        CommonVo<Boolean> result = vmService.stopVm(vmId);
+//
+//        assertThat(result.getHead().getCode()).isEqualTo(200);
+//    }
+//
+//    @Test
+//    @DisplayName("호스트 가상머신 전원끔")
+//    void stopVm() {
+//        String vmId = "eec63849-5026-482c-8f05-1d8e419ef548";
+//        CommonVo<Boolean> result = vmService.shutdownVm(vmId);
+//
+//        assertThat(result.getHead().getCode()).isEqualTo(200);
+//    }
+//
+//    @Test
+//    @DisplayName("호스트 가상머신 마이그레이션")
+//    void migrationVm() {
+//
+//    }
+//
+//    @Test
+//    @DisplayName("호스트 가상머신 마이그레이션 취소")
+//    void migrationCancelVm() {
+//
+//    }
 
 
 

@@ -79,6 +79,8 @@ dependencies {
     testImplementation(Dependencies.springTest)
     testImplementation(Dependencies.springBootTest)
     testImplementation(Dependencies.hamcrest)
+    implementation("com.jcraft:jsch:0.1.55")
+
 }
 
 tasks.war {

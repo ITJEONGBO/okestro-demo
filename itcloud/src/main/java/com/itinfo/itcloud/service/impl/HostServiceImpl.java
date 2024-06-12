@@ -6,6 +6,9 @@ import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.ItAffinityService;
 import com.itinfo.itcloud.service.ItHostService;
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
 import org.ovirt.engine.sdk4.services.HostService;
@@ -224,11 +227,16 @@ public class HostServiceImpl implements ItHostService {
             if (status == HostStatus.MAINTENANCE) {
                 hostService.remove().send();
 
-                while (hostList.stream().noneMatch(host1 -> host1.name().equals(host.name()))){
-                    log.debug("호스트 삭제중...");
+                while (true){
+                    boolean dd = hostList.stream().noneMatch(host1 -> host1.name().equals(host.name()));
+                    if(dd) {
+                        log.info("호스트 삭제완료");
+                        return CommonVo.successResponse();
+                    }else {
+                        log.debug("호스트 삭제중...");
+                        Thread.sleep(1000);
+                    }
                 }
-
-                return CommonVo.successResponse();
 
             } else {
                 log.error("호스트 삭제불가 : {}, 유지보수 모드로 바꾸세요", host.name());
@@ -340,6 +348,44 @@ public class HostServiceImpl implements ItHostService {
     }
 
 
+    private boolean rebootHostViaSSH(String hostAddress, String username, String password) {
+        com.jcraft.jsch.Session session = null;
+        ChannelExec channel = null;
+
+        log.debug("ssh 시작");
+        StringBuilder response = new StringBuilder();
+
+        try {
+            // SSH 세션 생성 및 연결
+            session = new JSch().getSession(username, hostAddress, 22);
+            session.setPassword(password);
+            session.setConfig("StrictHostKeyChecking", "no");   // 호스트 키 확인을 건너뛰기 위해 설정
+            session.connect();
+
+
+            channel = (ChannelExec) session.openChannel("exec");  // SSH 채널 열기
+            channel.setCommand("sudo reboot");// 재부팅 명령 실행
+            channel.connect();
+
+            // 명령 실행 완료 대기
+            while (!channel.isClosed()) {
+                Thread.sleep(100);
+            }
+
+            int exitStatus = channel.getExitStatus();
+            return exitStatus == 0;
+        } catch (JSchException | InterruptedException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (channel != null) {
+                channel.disconnect();
+            }
+            if (session != null) {
+                session.disconnect();
+            }
+        }
+    }
 
 
     // TODO:HELP
@@ -348,21 +394,31 @@ public class HostServiceImpl implements ItHostService {
      * ssh 관리
      * - oVirt의 엔진 SDK를 통해 SSH를 통해 호스트를 재부팅하는 기능은 기본적으로 제공되지 않습니다.
      * - oVirt 엔진 SDK는 호스트를 관리하기 위한 API를 제공하지만, SSH를 통한 호스트 재부팅과 같은 기능은 포함되어 있지 않습니다.
+     * 제외하고 cli로 하는 식으로
      * @param id 호스트 id
      * @return host 200(success) 404(fail)
      */
     @Override
     public CommonVo<Boolean> reStartHost(String id) {
         SystemService system = admin.getConnection().systemService();
-        HostsService hostsService = system.hostsService();  // reboot
         HostService hostService = system.hostsService().hostService(id);
+        Host host = hostService.get().send().host();
 
-        // restart 하기 전, maintenance 인지 확인
+        log.info("호스트 재부팅 시작");
+        // restart 하기 전, 호스트 상태 확인 ???
         try {
-//            hostService.fence().fenceType(FenceType.RESTART.value()).send().powerManagement();
+            if (!rebootHostViaSSH(/*host.address()*/"192.168.0.71", "root", "adminRoot!@#")) {
+                return CommonVo.failResponse("SSH를 통한 호스트 재부팅 실패");
+            }
 
-            log.info("호스트 재시작");
-            return CommonVo.successResponse();
+            Thread.sleep(60000); // 60초 대기, 재부팅 시간 고려
+
+            if (expectStatus(hostService, HostStatus.UP, 3000, 900000)) {
+                log.info("호스트 재부팅 완료: {}", id);
+                return CommonVo.successResponse();
+            } else {
+                return CommonVo.failResponse("재부팅 전환 시간 초과");
+            }
         }catch (Exception e){
             log.error("error: ", e);
             return CommonVo.failResponse(e.getMessage());
@@ -384,15 +440,22 @@ public class HostServiceImpl implements ItHostService {
         SystemService system = admin.getConnection().systemService();
         HostService hostService = system.hostsService().hostService(id);
 
-        try {
-//            hostService.get().send().host();
-
-            log.info("호스트 증지");
-            return CommonVo.successResponse();
-        }catch (Exception e){
-            log.error("error: ", e);
-            return CommonVo.failResponse(e.getMessage());
-        }
+        // restart 하기 전, maintenance 인지 확인 ???
+//        try {
+//            Host host = hostService.get().send().host();
+//            log.debug("{} 중지할거ㅣㅇㅁ", host.name() );
+//
+//            if (!rebootHostViaSSH(host.address(), "root", "adminRoot!@#")) {
+//                return CommonVo.failResponse("SSH를 통한 호스트 재부팅 실패");
+//            }
+//
+//            log.info("호스트 중지");
+//            return CommonVo.successResponse();
+//        }catch (Exception e){
+//            log.error("error: ", e);
+//            return CommonVo.failResponse(e.getMessage());
+//        }
+        return null;
     }
 
 
@@ -427,11 +490,12 @@ public class HostServiceImpl implements ItHostService {
                 .name(host.name())
                 .address(host.address())        //호스트 ip
                 .spmPriority(host.spm().priorityAsInteger())    // spm 우선순위
+                .status(host.status().value())
                 // cpu 있으면 출력으로 바꿔야됨
-                .cpuCnt(
+                .cpuCnt(host.cpu().topologyPresent() ?
                         host.cpu().topology().coresAsInteger()
                         * host.cpu().topology().socketsAsInteger()
-                        * host.cpu().topology().threadsAsInteger()
+                        * host.cpu().topology().threadsAsInteger() : 0
                 )
                 .cpuOnline(
                         hostService.cpuUnitsService().list().send().cpuUnits().stream()
@@ -459,7 +523,7 @@ public class HostServiceImpl implements ItHostService {
                 .hugePage1048576Total(commonService.getPage(statisticList, "hugepages.1048576.total"))
                 .hugePage1048576Free(commonService.getPage(statisticList, "hugepages.1048576.free"))
                 .bootingTime(sdf.format(new Date(bootTime)))
-                .hostedEngine(host.hostedEnginePresent() && host.hostedEngine().active())       // Hosted Engine HA
+//                .hostedEngine(host.hostedEnginePresent() && host.hostedEngine().active()) // 이 호스트 내에 호스트 가상머신이 있는지 보기
                 .hostedActive(host.hostedEnginePresent() ? host.hostedEngine().active() : null)
                 .hostedScore(host.hostedEnginePresent() ? host.hostedEngine().scoreAsInteger() : 0)
                 .ksm(host.ksmPresent() && host.ksm().enabled())         // 메모리 페이지 공유  비활성
@@ -750,17 +814,17 @@ public class HostServiceImpl implements ItHostService {
      */
     private HostHwVo getHardWare(Host host){
         return HostHwVo.builder()
-                .family(host.hardwareInformation().family())           // 생산자
-                .manufacturer(host.hardwareInformation().manufacturer())     // 제품군
-                .productName(host.hardwareInformation().productName())      // 제품 이름
-                .hwVersion(host.hardwareInformation().version())        // 버전
-                .cpuName(host.cpu().name())          // cpu 모델
-                .cpuType(host.cpu().type())          // cpu 유형
-                .uuid(host.hardwareInformation().uuid())             // uuid
-                .serialNum(host.hardwareInformation().serialNumber())        // 일련번호
-                .cpuSocket(host.cpu().topology().socketsAsInteger())        // cpu 소켓
-                .coreThread(host.cpu().topology().threadsAsInteger())       // 코어당 cpu 스레드
-                .coreSocket(host.cpu().topology().coresAsInteger())       // 소켓당 cpu 코어
+                .family(host.hardwareInformation().familyPresent() ? host.hardwareInformation().family() : "")           // 생산자
+                .manufacturer(host.hardwareInformation().manufacturerPresent() ? host.hardwareInformation().manufacturer() : "")     // 제품군
+                .productName(host.hardwareInformation().productNamePresent() ? host.hardwareInformation().productName() : "")      // 제품 이름
+                .hwVersion(host.hardwareInformation().versionPresent() ? host.hardwareInformation().version() : "")        // 버전
+                .cpuName(host.cpu().namePresent() ? host.cpu().name() : "")          // cpu 모델
+                .cpuType(host.cpu().typePresent() ? host.cpu().type() : "")          // cpu 유형
+                .uuid(host.hardwareInformation().uuidPresent() ? host.hardwareInformation().uuid() : "")             // uuid
+                .serialNum(host.hardwareInformation().serialNumberPresent() ? host.hardwareInformation().serialNumber() : "")        // 일련번호
+                .cpuSocket(host.cpu().topologyPresent() ? host.cpu().topology().socketsAsInteger() : 0)        // cpu 소켓
+                .coreThread(host.cpu().topologyPresent() ? host.cpu().topology().threadsAsInteger() : 0)       // 코어당 cpu 스레드
+                .coreSocket(host.cpu().topologyPresent() ? host.cpu().topology().coresAsInteger() : 0)       // 소켓당 cpu 코어
                 .build();
     }
 
@@ -774,12 +838,12 @@ public class HostServiceImpl implements ItHostService {
      */
     private HostSwVo getSoftWare(Host host){
         return HostSwVo.builder()
-                .osVersion(host.os().type() + " " + host.os().version().fullVersion())    // os 버전
+                .osVersion((host.os().typePresent() ? host.os().type() : "") + (host.os().versionPresent() ? " " + host.os().version().fullVersion() : ""))    // os 버전
 //                .osInfo()       // os 정보
-                .kernalVersion(host.os().reportedKernelCmdline())// 커널 버전 db 수정해야함
+                .kernalVersion(host.os().reportedKernelCmdlinePresent() ? host.os().reportedKernelCmdline() : "")// 커널 버전 db 수정해야함
                 // kvm 버전 db
-                .libvirtVersion(host.libvirtVersion().fullVersion())// LIBVIRT 버전
-                .vdsmVersion(host.version().fullVersion())// VDSM 버전 db
+                .libvirtVersion(host.libvirtVersion().fullVersionPresent() ? host.libvirtVersion().fullVersion() : "")// LIBVIRT 버전
+                .vdsmVersion(host.version().fullVersionPresent() ? host.version().fullVersion() : "")// VDSM 버전 db
                 // SPICE 버전
                 // GlusterFS 버전
                 // CEPH 버전
@@ -787,5 +851,6 @@ public class HostServiceImpl implements ItHostService {
                 // Nmstate 버전
                 .build();
     }
+
 
 }
