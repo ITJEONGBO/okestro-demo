@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -348,20 +350,18 @@ public class HostServiceImpl implements ItHostService {
     }
 
 
-    private boolean rebootHostViaSSH(String hostAddress, String username, String password) {
+    // host SSH 관리 - 재시작 부분
+    private boolean rebootHostViaSSH(String hostAddress, String username, String password, int port) {
         com.jcraft.jsch.Session session = null;
         ChannelExec channel = null;
-
         log.debug("ssh 시작");
-        StringBuilder response = new StringBuilder();
 
         try {
             // SSH 세션 생성 및 연결
-            session = new JSch().getSession(username, hostAddress, 22);
+            session = new JSch().getSession(username, hostAddress, port);
             session.setPassword(password);
             session.setConfig("StrictHostKeyChecking", "no");   // 호스트 키 확인을 건너뛰기 위해 설정
             session.connect();
-
 
             channel = (ChannelExec) session.openChannel("exec");  // SSH 채널 열기
             channel.setCommand("sudo reboot");// 재부팅 명령 실행
@@ -372,18 +372,13 @@ public class HostServiceImpl implements ItHostService {
                 Thread.sleep(100);
             }
 
+            channel.disconnect();
+            session.disconnect();
             int exitStatus = channel.getExitStatus();
             return exitStatus == 0;
         } catch (JSchException | InterruptedException e) {
             e.printStackTrace();
             return false;
-        } finally {
-            if (channel != null) {
-                channel.disconnect();
-            }
-            if (session != null) {
-                session.disconnect();
-            }
         }
     }
 
@@ -391,23 +386,19 @@ public class HostServiceImpl implements ItHostService {
     // TODO:HELP
     /**
      * ssh 관리 - 재시작
-     * ssh 관리
-     * - oVirt의 엔진 SDK를 통해 SSH를 통해 호스트를 재부팅하는 기능은 기본적으로 제공되지 않습니다.
-     * - oVirt 엔진 SDK는 호스트를 관리하기 위한 API를 제공하지만, SSH를 통한 호스트 재부팅과 같은 기능은 포함되어 있지 않습니다.
-     * 제외하고 cli로 하는 식으로
+     * 제외하고 cli 로 하는 식으로
      * @param id 호스트 id
      * @return host 200(success) 404(fail)
      */
     @Override
-    public CommonVo<Boolean> reStartHost(String id) {
+    public CommonVo<Boolean> reStartHost(String id) throws UnknownHostException {
         SystemService system = admin.getConnection().systemService();
         HostService hostService = system.hostsService().hostService(id);
         Host host = hostService.get().send().host();
+        InetAddress address = InetAddress.getByName(host.address());
 
-        log.info("호스트 재부팅 시작");
-        // restart 하기 전, 호스트 상태 확인 ???
         try {
-            if (!rebootHostViaSSH(/*host.address()*/"192.168.0.71", "root", "adminRoot!@#")) {
+            if (!rebootHostViaSSH(address.getHostAddress(), "root", "adminRoot!@#", 22)) {
                 return CommonVo.failResponse("SSH를 통한 호스트 재부팅 실패");
             }
 
@@ -419,44 +410,13 @@ public class HostServiceImpl implements ItHostService {
             } else {
                 return CommonVo.failResponse("재부팅 전환 시간 초과");
             }
+
         }catch (Exception e){
             log.error("error: ", e);
             return CommonVo.failResponse(e.getMessage());
         }
     }
 
-
-    // TODO:HELP
-    /**
-     * ssh 관리 - 중지
-     * ssh 관리
-     * - oVirt의 엔진 SDK를 통해 SSH를 통해 호스트를 재부팅하는 기능은 기본적으로 제공되지 않습니다.
-     * - oVirt 엔진 SDK는 호스트를 관리하기 위한 API를 제공하지만, SSH를 통한 호스트 재부팅과 같은 기능은 포함되어 있지 않습니다.
-     * @param id 호스트 id
-     * @return host 200(success) 404(fail)
-     */
-    @Override
-    public CommonVo<Boolean> stopHost(String id) {
-        SystemService system = admin.getConnection().systemService();
-        HostService hostService = system.hostsService().hostService(id);
-
-        // restart 하기 전, maintenance 인지 확인 ???
-//        try {
-//            Host host = hostService.get().send().host();
-//            log.debug("{} 중지할거ㅣㅇㅁ", host.name() );
-//
-//            if (!rebootHostViaSSH(host.address(), "root", "adminRoot!@#")) {
-//                return CommonVo.failResponse("SSH를 통한 호스트 재부팅 실패");
-//            }
-//
-//            log.info("호스트 중지");
-//            return CommonVo.successResponse();
-//        }catch (Exception e){
-//            log.error("error: ", e);
-//            return CommonVo.failResponse(e.getMessage());
-//        }
-        return null;
-    }
 
 
 

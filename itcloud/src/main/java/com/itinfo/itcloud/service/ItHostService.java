@@ -5,6 +5,7 @@ import com.itinfo.itcloud.model.create.HostCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import org.springframework.stereotype.Service;
 
+import java.net.UnknownHostException;
 import java.util.List;
 
 @Service
@@ -22,8 +23,8 @@ public interface ItHostService {
     CommonVo<Boolean> activeHost(String id);         // 관리 - 활성
     CommonVo<Boolean> refreshHost(String id);        // 관리 - 새로고침
 
-    CommonVo<Boolean> reStartHost(String id);        // ssh 관리 - 재시작
-    CommonVo<Boolean> stopHost(String id);           // ssh 관리- 중지
+    CommonVo<Boolean> reStartHost(String id) throws UnknownHostException;        // ssh 관리 - 재시작
+//    CommonVo<Boolean> stopHost(String id);           // ssh 관리- 중지
 
     HostVo getHost(String id);  // 일반
 

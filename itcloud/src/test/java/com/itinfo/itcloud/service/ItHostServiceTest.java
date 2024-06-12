@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.net.UnknownHostException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -118,28 +119,19 @@ class ItHostServiceTest {
     @Test
     @DisplayName("호스트 새로고침")
     void refreshHost() {
-
         CommonVo<Boolean> result = hostService.refreshHost(defaultId);
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
     @Test
     @DisplayName("호스트 ssh-재시작")
-    void reStartHost() {
-        String id = "3519950c-b03c-41b9-825b-8b339d3da2b5";
+    void reStartHost() throws UnknownHostException {
+        String id = "704178f0-efa5-41d2-b14a-d8486dc3a252";
 
         CommonVo<Boolean> result = hostService.reStartHost(id);
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
-    @Test
-    @DisplayName("호스트 ssh-정지")
-    void stopHost() {
-        String id = "0494c271-0a68-4070-8186-c08fade1e982";
-
-        CommonVo<Boolean> result = hostService.stopHost(id);
-        assertThat(result.getHead().getCode()).isEqualTo(200);
-    }
 
     @Test
     @DisplayName("호스트 정보")

@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.UnknownHostException;
 import java.util.List;
 
 @Controller
@@ -90,18 +91,12 @@ public class HostController {
 	
 	@PostMapping("/host/{id}/restart")
 	@ResponseBody
-	public void reStartHost(@PathVariable String id) {
+	public void reStartHost(@PathVariable String id) throws UnknownHostException {
 		log.info("--- 호스트 ssh 재시작");
 		hostService.reStartHost(id);
 	}
 
 
-	@PostMapping("/host/{id}/stop")
-	@ResponseBody
-	public void stopHost(@PathVariable String id) {
-		log.info("--- 호스트 ssh 정지");
-		hostService.stopHost(id);
-	}
 
 
 
