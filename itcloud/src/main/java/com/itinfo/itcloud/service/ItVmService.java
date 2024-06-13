@@ -19,10 +19,19 @@ import java.util.List;
 public interface ItVmService {
     List<VmVo> getList();
 
+    // 생성 창
+    List<ClusterVo> setClusterList();    // 클러스터 리스트
+    List<TemplateVo> setTemplateList(); // 템플릿 리스트
+    List<DiskVo> setDiskList(); // 인스턴스 이미지 리스트 - 연결
+    List<DomainVo> setDiskAttach(String clusterId); // 인스턴스 이미지 리스트 - 생성
+    List<VnicProfileVo> setVnic(String clusterId); // vnicProfile
+    List<IdentifiedVo> setHostList(String clusterId);   // 호스트 리스트
+    List<IdentifiedVo> setStorageList();    // 스토리지 도메인 리스트
+    List<IdentifiedVo> setCpuProfileList(String clusterId); // cpu 할당
+    List<IdentifiedVo> setIsoImage();    // 부트 옵션 - CD/DVD 연결 ISO
+    List<IdentifiedVo> setAgList(String clusterId); // 선호도 그룹 리스트
+    List<IdentifiedVo> setAlList(); // 선호도 레이블 리스트
 
-    List<VmSetVo> setVmSet();               // 생성 창
-    List<IdentifiedVo> getCpuProfileList(String clusterId); // cpuprofile
-    List<IdentifiedVo> getIsoImage();       //  부트 옵션
 
     CommonVo<Boolean> addVm(VmCreateVo vmCreateVo);   // 생성
     VmCreateVo setEditVm(String id);      // 편집 창
@@ -32,13 +41,7 @@ public interface ItVmService {
     CommonVo<Boolean> migrateCancelVm(String id);   // 마이그레이션 취소
 
 
-    List<VnicProfileVo> setVnic(String clusterId);  // nic 연결시 필요한 리스트
-    List<DiskVo> setDiskConn();    // 인스턴스 이미지 연결
-    List<DomainVo> setDiskAttach(String clusterId); // 이미지 생성시 필요한 스토리지도메인
-
-
-    // 마우스 오른쪽버튼
-    VmStatus getStatus(String id);   // 마우스 오른쪽버튼?
+    VmStatus getStatus(String id);
     CommonVo<Boolean> startVm(String id);  // 실행
     CommonVo<Boolean> pauseVm(String id);    // 일시정지
     CommonVo<Boolean> stopVm(String id);     // 전원끔
@@ -48,7 +51,6 @@ public interface ItVmService {
 
     List<SnapshotDiskVo> setSnapshot(String id);  // vmid
     CommonVo<Boolean> addSnapshot(SnapshotVo snapshotVo);   // 스냅샷 생성
-
 
 
     VmVo getInfo(String id);        // 일반

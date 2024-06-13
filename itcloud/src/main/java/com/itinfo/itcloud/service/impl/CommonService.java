@@ -12,6 +12,17 @@ import java.util.stream.Collectors;
 @Service
 public class CommonService {
 
+    /**
+     * Byte -> MB
+     *
+     * @param memory BigInteger 값을 받는다
+     * @return MB로 변환된 값
+     */
+    public double getMB(BigInteger memory){
+        BigInteger convertMb = BigInteger.valueOf(1024).pow(2); // 제곱
+        return memory.divide(convertMb).doubleValue();
+    }
+
     
     /**
      * Statistic의 memory, swap memory, speed(rx,tx)

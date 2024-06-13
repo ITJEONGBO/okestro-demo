@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,10 +35,14 @@ import java.util.stream.Collectors;
 public class VmServiceImpl implements ItVmService {
     @Autowired private AdminConnectionService admin;
     @Autowired private CommonService commonService;
-    @Autowired private ItAffinityService itAffinityService;
+    @Autowired private ItAffinityService affinityService;
 
 
-    // 가상머신 목록
+
+    /**
+     * 가상머신 목록
+     * @return 가상머신 목록
+     */
     @Override
     public List<VmVo> getList() {
         SystemService system = admin.getConnection().systemService();
@@ -70,79 +75,107 @@ public class VmServiceImpl implements ItVmService {
                 .collect(Collectors.toList());
     }
 
-    // 가상머신 생성창
+
+
+    /**
+     * 가상머신 생성 - 클러스터 리스트
+     * @return 클러스터 리스트
+     */
     @Override
-    public List<VmSetVo> setVmSet() {
+    public List<ClusterVo> setClusterList() {
         SystemService system = admin.getConnection().systemService();
-        List<Cluster> clusterList = system.clustersService().list().send().clusters();
-        List<Host> hostList = system.hostsService().list().send().hosts();
-
-        return clusterList.stream()
+        return system.clustersService().list().send().clusters().stream()
                 .filter(cluster -> cluster.dataCenterPresent() && cluster.cpuPresent())
-                .map(cluster -> {
-                    List<Network> networkList = system.clustersService().clusterService(cluster.id()).networksService().list().send().networks();
-                    List<CpuProfile> profileList = system.clustersService().clusterService(cluster.id()).cpuProfilesService().list().send().profiles();
-                    List<AffinityGroup> affinityGroupList = system.clustersService().clusterService(cluster.id()).affinityGroupsService().list().send().groups();
-                    List<AffinityLabel> affinityLabelList = system.affinityLabelsService().list().send().labels();
+                .map(cluster ->
+                        ClusterVo.builder()
+                            .id(cluster.id())
+                            .name(cluster.name())
+                            .datacenterId(cluster.dataCenter().id())
+                            .datacenterName(system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
+                        .build()
+                )
+                .collect(Collectors.toList());
+    }
 
-                    return VmSetVo.builder()
-                            .clusterId(cluster.id())
-                            .clusterName(cluster.name())
-                            .dcName(cluster.dataCenter().id())
-                            .dcName(system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
-                            .vnicList(
-                                    networkList.stream()
-                                            .flatMap(network -> {
-                                                List<VnicProfile> vnicProfileList = system.networksService().networkService(network.id()).vnicProfilesService().list().send().profiles();
-                                                return vnicProfileList.stream()
-                                                        .map(vnicProfile ->
-                                                                VmVnicVo.builder()
-                                                                        .id(vnicProfile.id())
-                                                                        .name(vnicProfile.name())
-                                                                        .networkName(network.name())
-                                                                        .externalNetwork(network.externalProviderPresent())
-                                                                        .build()
-                                                        );
-                                            })
-                                            .collect(Collectors.toList())
+    /**
+     * 가상머신 생성 - 템플릿 목록
+     * @return 템플릿 목록
+     */
+    // TODO
+    @Override
+    public List<TemplateVo> setTemplateList() {
+        return null;
+    }
+
+    /**
+     * 가상머신 생성 - 인스턴스 이미지 - 연결
+     * @return 가상 디스크 - 이미지 목록
+     */
+    // TODO 무슨 기준으로 뜨는건지 의문
+    @Override
+    public List<DiskVo> setDiskList() {
+        SystemService system = admin.getConnection().systemService();
+        List<Disk> diskList = system.disksService().list().send().disks();
+        List<Vm> vmList = system.vmsService().list().send().vms();
+
+        return diskList.stream()
+//                .filter(disk -> {
+//                    boolean das = vmList.stream()
+//                            .allMatch(vm -> {
+//                                List<DiskAttachment> daList = system.vmsService().vmService(vm.id()).diskAttachmentsService().list().send().attachments();
+//                                return daList.stream().noneMatch(da -> da.disk().id().equals(disk.id()));
+//                            });
+//                    System.out.println("* "+das);
+//
+//                    return !das && disk.status() == DiskStatus.OK;
+//                })
+                .map(disk -> {
+                    StorageDomain storageDomain = system.storageDomainsService().storageDomainService(disk.storageDomains().get(0).id()).get().send().storageDomain();
+
+                    return DiskVo.builder()
+                            .id(disk.id())
+                            .alias(disk.alias())
+                            .description(disk.description())
+                            .virtualSize(disk.provisionedSize())
+                            .actualSize(disk.actualSize())
+                            .domainVo(
+                                    DomainVo.builder()
+                                            .id(storageDomain.id())
+                                            .name(storageDomain.name())
+                                            .build()
                             )
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+
+    /**
+     * 가상머신 생성 - 인스턴스 이미지 - 생성
+     * @param clusterId 클러스터 id
+     * @return 스토리지 도메인 목록
+     */
+    @Override
+    public List<DomainVo> setDiskAttach(String clusterId) {
+        SystemService system = admin.getConnection().systemService();
+        Cluster cluster = system.clustersService().clusterService(clusterId).get().send().cluster();
+        List<StorageDomain> sdList = system.dataCentersService().dataCenterService(cluster.dataCenter().id()).storageDomainsService().list().send().storageDomains();
+
+        return sdList.stream()
+                .map(storageDomain -> {
+                    List<DiskProfile> dpList = system.storageDomainsService().storageDomainService(storageDomain.id()).diskProfilesService().list().send().profiles();
+
+                    return DomainVo.builder()
+                            .id(storageDomain.id())
+                            .name(storageDomain.name())
+                            .diskSize(storageDomain.available().add(storageDomain.used()))
+                            .availableSize(storageDomain.available())
                             .profileVoList(
-                                    profileList.stream()
-                                            .map(cpuProfile ->
-                                                    IdentifiedVo.builder()
-                                                            .id(cpuProfile.id())
-                                                            .name(cpuProfile.name())
-                                                            .build()
-                                            )
-                                            .collect(Collectors.toList())
-                            )
-                            .hostVoList(
-                                    hostList.stream()
-                                            .filter(host -> host.cluster().id().equals(cluster.id()))
-                                            .map(host ->
-                                                    IdentifiedVo.builder()
-                                                            .id(host.id())
-                                                            .name(host.name())
-                                                            .build()
-                                            )
-                                            .collect(Collectors.toList())
-                            )
-                            .agVoList(
-                                    affinityGroupList.stream()
-                                            .map(affinityGroup ->
-                                                    IdentifiedVo.builder()
-                                                            .id(affinityGroup.id())
-                                                            .name(affinityGroup.name())
-                                                            .build()
-                                            )
-                                            .collect(Collectors.toList())
-                            )
-                            .alVoList(
-                                    affinityLabelList.stream()
-                                            .map(affinityLabel ->
-                                                    IdentifiedVo.builder()
-                                                            .id(affinityLabel.id())
-                                                            .name(affinityLabel.name())
+                                    dpList.stream()
+                                            .map(diskProfile ->
+                                                    DiskProfileVo.builder()
+                                                            .id(diskProfile.id())
+                                                            .name(diskProfile.name())
                                                             .build()
                                             )
                                             .collect(Collectors.toList())
@@ -152,13 +185,77 @@ public class VmServiceImpl implements ItVmService {
                 .collect(Collectors.toList());
     }
 
-    // 생성창에서 리소스 cpuProfile 리스트 출력
-    @Override
-    public List<IdentifiedVo> getCpuProfileList(String clusterId) {
-        SystemService system = admin.getConnection().systemService();
-        List<CpuProfile> cpuProfileList = system.cpuProfilesService().list().send().profile();
 
-        return cpuProfileList.stream()
+    /**
+     * 가상머신 생성 -  vNic 목록 출력 (가상머신 생성, 네트워크 인터페이스 생성)
+     * @param clusterId 클러스터 id
+     * @return vNic 목록
+     */
+    @Override
+    public List<VnicProfileVo> setVnic(String clusterId) {
+        // 데이터 센터가 같아야함
+        SystemService system = admin.getConnection().systemService();
+        List<VnicProfile> vnicProfileList = system.vnicProfilesService().list().send().profiles();
+        String dcId = system.clustersService().clusterService(clusterId).get().send().cluster().dataCenter().id();
+
+        return vnicProfileList.stream()
+                .filter(vNic -> {
+                    Network network = system.networksService().networkService(vNic.network().id()).get().send().network();
+                    return network.dataCenter().id().equals(dcId);
+                })
+                .map(vNic -> {
+                    Network network = system.networksService().networkService(vNic.network().id()).get().send().network();
+                    return VnicProfileVo.builder()
+                            .id(vNic.id())
+                            .name(vNic.name())
+                            .networkName(network.name())
+                            .provider(network.externalProviderPresent())
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+
+    /**
+     * 가상머신 생성 - 호스트 - 호스트 리스트
+     * @param clusterId 클러스터 id
+     * @return 호스트 리스트
+     */
+    @Override
+    public List<IdentifiedVo> setHostList(String clusterId) {
+        SystemService system = admin.getConnection().systemService();
+        return system.hostsService().list().send().hosts().stream()
+                .filter(host -> host.cluster().id().equals(clusterId))
+                .map(host ->
+                        IdentifiedVo.builder()
+                                .id(host.id())
+                                .name(host.name())
+                                .build()
+                )
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 가상머신 생성 - 고가용성 - 임대 대상 스토리지 도메인 목록
+     * @return 스토리지 도메인 목록
+     */
+    // TODO
+    @Override
+    public List<IdentifiedVo> setStorageList() {
+        return null;
+    }
+
+
+
+    /**
+      * 가상머신 생성 - 리소스할당 - cpuProfile 목록 출력
+      * @param clusterId 클러스터 id
+      * @return cpuProfile 목록
+      */
+    @Override
+    public List<IdentifiedVo> setCpuProfileList(String clusterId) {
+        SystemService system = admin.getConnection().systemService();
+        return system.cpuProfilesService().list().send().profile().stream()
                 .filter(cpuProfile -> cpuProfile.cluster().id().equals(clusterId))
                 .map(cpuProfile ->
                         IdentifiedVo.builder()
@@ -169,26 +266,70 @@ public class VmServiceImpl implements ItVmService {
                 .collect(Collectors.toList());
     }
 
+
+    /**
+     * 가상머신 생성 - 부트 옵션 - 생성 시 필요한 CD/DVD 연결할 ISO 목록
+     * @return ISO 목록
+     */
     @Override
-    public List<IdentifiedVo> getIsoImage(){
+    public List<IdentifiedVo> setIsoImage(){
         SystemService system = admin.getConnection().systemService();
         List<Disk> diskList = system.disksService().list().send().disks();
-        // DiskContentType
 
-        return diskList.stream()
+        // 이미 쓰고있는지 확인?해야하나?
+        return system.disksService().list().send().disks().stream()
                 .filter(disk -> disk.contentType().equals(DiskContentType.ISO))
                 .map(disk ->
-                    IdentifiedVo.builder()
-                            .id(disk.id())
-                            .name(disk.name())
-                        .build()
+                        IdentifiedVo.builder()
+                                .id(disk.id())
+                                .name(disk.name())
+                                .build()
                 )
                 .collect(Collectors.toList());
     }
 
-//    public List<> addDiskImage
+    /**
+     * 가상머신 생성 - 선호도 - 선호도 그룹 목록
+     * @param clusterId 클러스터 id
+     * @return 선호도 그룹 목록
+     */
+    @Override
+    public List<IdentifiedVo> setAgList(String clusterId) {
+        SystemService system = admin.getConnection().systemService();
+        return system.clustersService().clusterService(clusterId).affinityGroupsService().list().send().groups().stream()
+                .map(affinityGroup ->
+                        IdentifiedVo.builder()
+                                .id(affinityGroup.id())
+                                .name(affinityGroup.name())
+                                .build()
+                )
+                .collect(Collectors.toList());
+    }
 
-    // 가상머신 생성
+    /**
+     * 가상머신 생성 - 선호도 - 선호도 레이블 목록
+     * @return 선호도 레이블 목록
+     */
+    @Override
+    public List<IdentifiedVo> setAlList() {
+        SystemService system = admin.getConnection().systemService();
+        return system.affinityLabelsService().list().send().labels().stream()
+                .map(affinityLabel ->
+                        IdentifiedVo.builder()
+                                .id(affinityLabel.id())
+                                .name(affinityLabel.name())
+                                .build()
+                )
+                .collect(Collectors.toList());
+    }
+
+
+
+    /**
+     * 가상머신 생성
+     * @param vmVo
+     * @return
+     */
     @Override
     public CommonVo<Boolean> addVm(VmCreateVo vmVo) {
         SystemService system = admin.getConnection().systemService();
@@ -377,31 +518,6 @@ public class VmServiceImpl implements ItVmService {
 
 
 
-    // nic 목록 출력 (가상머신 생성, 네트워크 인터페이스 생성)
-    @Override
-    public List<VnicProfileVo> setVnic(String clusterId) {
-        // 데이터 센터가 같아야함
-        SystemService system = admin.getConnection().systemService();
-        List<VnicProfile> vnicProfileList = system.vnicProfilesService().list().send().profiles();
-        String dcId = system.clustersService().clusterService(clusterId).get().send().cluster().dataCenter().id();
-
-        return vnicProfileList.stream()
-                .filter(vNic -> {
-                    Network network = system.networksService().networkService(vNic.network().id()).get().send().network();
-                    return network.dataCenter().id().equals(dcId);
-                })
-                .map(vNic -> {
-                    Network network = system.networksService().networkService(vNic.network().id()).get().send().network();
-                    return VnicProfileVo.builder()
-                            .id(vNic.id())
-                            .name(vNic.name())
-                            .networkName(network.name())
-                            .provider(network.externalProviderPresent())
-                            .build();
-                })
-                .collect(Collectors.toList());
-    }
-
 
     // vm 생성 - vnic
     private CommonVo<Boolean> addVmNic(SystemService system, Vm vm, VmCreateVo vmVo) {
@@ -435,75 +551,9 @@ public class VmServiceImpl implements ItVmService {
     }
 
 
-    // 가상머신 생성 - 인스턴스 이미지 연결 목록
-    // TODO
-    @Override
-    public List<DiskVo> setDiskConn(){
-        SystemService system = admin.getConnection().systemService();
-        List<Disk> diskList = system.disksService().list().send().disks();
-        List<Vm> vmList = system.vmsService().list().send().vms();
 
-        return diskList.stream()
-//                .filter(disk -> {
-//                    boolean das = vmList.stream()
-//                            .allMatch(vm -> {
-//                                List<DiskAttachment> daList = system.vmsService().vmService(vm.id()).diskAttachmentsService().list().send().attachments();
-//                                return daList.stream().noneMatch(da -> da.disk().id().equals(disk.id()));
-//                            });
-//                    System.out.println("* "+das);
-//
-//                    return !das && disk.status() == DiskStatus.OK;
-//                })
-                .map(disk -> {
-                    StorageDomain storageDomain = system.storageDomainsService().storageDomainService(disk.storageDomains().get(0).id()).get().send().storageDomain();
 
-                    return DiskVo.builder()
-                            .id(disk.id())
-                            .alias(disk.alias())
-                            .description(disk.description())
-                            .virtualSize(disk.provisionedSize())
-                            .actualSize(disk.actualSize())
-                            .domainVo(
-                                    DomainVo.builder()
-                                            .id(storageDomain.id())
-                                            .name(storageDomain.name())
-                                            .build()
-                            )
-                            .build();
-                })
-                .collect(Collectors.toList());
-    }
 
-    // 인스턴스 이미지 생성 시 필요한 스토리지 도메인 목록
-    @Override
-    public List<DomainVo> setDiskAttach(String clusterId) {
-        SystemService system = admin.getConnection().systemService();
-        Cluster cluster = system.clustersService().clusterService(clusterId).get().send().cluster();
-        List<StorageDomain> sdList = system.dataCentersService().dataCenterService(cluster.dataCenter().id()).storageDomainsService().list().send().storageDomains();
-
-        return sdList.stream()
-                .map(storageDomain -> {
-                    List<DiskProfile> dpList = system.storageDomainsService().storageDomainService(storageDomain.id()).diskProfilesService().list().send().profiles();
-
-                    return DomainVo.builder()
-                            .id(storageDomain.id())
-                            .name(storageDomain.name())
-                            .diskSize(storageDomain.available().add(storageDomain.used()))
-                            .availableSize(storageDomain.available())
-                            .profileVoList(
-                                    dpList.stream()
-                                            .map(diskProfile ->
-                                                    DiskProfileVo.builder()
-                                                            .id(diskProfile.id())
-                                                            .name(diskProfile.name())
-                                                            .build()
-                                            )
-                                            .collect(Collectors.toList())
-                            )
-                            .build();
-                })
-                .collect(Collectors.toList());
-    }
 
 
     // TODO:HELP -> 가상머신-생성-디스크생성 / 가상머신-디스크-생성
@@ -880,6 +930,8 @@ public class VmServiceImpl implements ItVmService {
         SystemService system = admin.getConnection().systemService();
         Vm vm = system.vmsService().vmService(id).get().send().vm();
 
+        DecimalFormat df = new DecimalFormat("###,###");
+
         String hostName = null;
         if (vm.hostPresent()) {
             hostName = system.hostsService().hostService(vm.host().id()).get().send().host().name();
@@ -895,14 +947,13 @@ public class VmServiceImpl implements ItVmService {
                 .upTime(commonService.getVmUptime(system, vm.id()))
                 .templateName(system.templatesService().templateService(vm.template().id()).get().send().template().name())
                 .hostName(hostName)
-                .osSystem(vm.os().type())
+                .osSystem(TypeExtKt.findOs(OsVo.valueOf(vm.os().type())))
                 .chipsetFirmwareType(TypeExtKt.findBios(vm.bios().type()))
-                .priority(vm.highAvailability().priorityAsInteger())
+                .priority(TypeExtKt.findPriority(vm.highAvailability().priorityAsInteger()))  // 서버,클라이언트 처리?
                 .optimizeOption(TypeExtKt.findVmType(vm.type()))
                 .memory(vm.memory())
                 .memoryActual(vm.memoryPolicy().guaranteed())
                 // 게스트os의 여유/캐시+버퍼된 메모리
-//                .guestBufferedMemory() // memory.free
                 .cpuTopologyCore(vm.cpu().topology().coresAsInteger())
                 .cpuTopologySocket(vm.cpu().topology().socketsAsInteger())
                 .cpuTopologyThread(vm.cpu().topology().threadsAsInteger())
@@ -920,12 +971,15 @@ public class VmServiceImpl implements ItVmService {
     @Override
     public List<NicVo> getNic(String id) {
         SystemService system = admin.getConnection().systemService();
+        VmNicsService vmNicsService = system.vmsService().vmService(id).nicsService();
         List<Nic> nicList = system.vmsService().vmService(id).nicsService().list().send().nics();
 
         return nicList.stream()
                 .map(nic -> {
-                    List<Statistic> statisticList = system.vmsService().vmService(id).nicsService().nicService(nic.id()).statisticsService().list().send().statistics();
+                    List<Statistic> statisticList = vmNicsService.nicService(nic.id()).statisticsService().list().send().statistics();
                     VnicProfile vnicProfile = system.vnicProfilesService().profileService(nic.vnicProfile().id()).get().send().profile();
+                    String guestInterface = !vmNicsService.nicService(nic.id()).reportedDevicesService().list().send().reportedDevice().isEmpty()
+                            ? vmNicsService.nicService(nic.id()).reportedDevicesService().list().send().reportedDevice().get(0).name() : "해당없음";
 
                     return NicVo.builder()
                             .id(nic.id())
@@ -950,6 +1004,7 @@ public class VmServiceImpl implements ItVmService {
                             .rxTotalSpeed(commonService.getSpeed(statisticList, "data.total.rx"))
                             .txTotalSpeed(commonService.getSpeed(statisticList, "data.total.tx"))
                             .stop(commonService.getSpeed(statisticList, "errors.total.rx"))
+                            .guestInterface(guestInterface)
                             .build();
                 })
                 .collect(Collectors.toList());

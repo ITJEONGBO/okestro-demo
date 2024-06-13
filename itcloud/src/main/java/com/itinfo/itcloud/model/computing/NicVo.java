@@ -33,8 +33,8 @@ public class NicVo {
 
     // 일반
     private boolean plugged;    // 연결됨 t(up)/f(down)
-    private boolean linkStatus; // 링크상태
-    private boolean synced; // 동기화
+    private boolean linkStatus; // 링크상태 t(up)/f(down)
+    private boolean synced;     // 동기화
     private String interfaces;  // 유형  NicInterface
     private BigInteger speed2;
     private String guestInterface;

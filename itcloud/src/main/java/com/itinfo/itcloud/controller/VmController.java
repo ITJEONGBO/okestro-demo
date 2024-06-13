@@ -29,13 +29,6 @@ public class VmController {
 		return vmService.getList();
 	}
 
-	@GetMapping("/vm/settings")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	public List<VmSetVo> setVmSet() {
-		log.info("--- 가상머신 생성 창");
-		return vmService.setVmSet();
-	}
 
 
 	@GetMapping("/vm/settings/vnic")

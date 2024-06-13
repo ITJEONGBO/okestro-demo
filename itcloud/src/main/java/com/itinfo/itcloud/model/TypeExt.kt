@@ -229,6 +229,17 @@ fun OsVo.findOs() : String{
 	}
 }
 
+fun Int.findPriority() : String{
+	return when(this){
+		1 -> "낮음"
+		50 -> "중간"
+		100 -> "높음"
+		else -> ""
+	}
+}
+
+
+
 
 
 

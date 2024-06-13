@@ -29,49 +29,124 @@ class ItVmServiceTest {
     @Autowired ItVmService vmService;
     @Autowired ItAffinityService affinityService;
 
-    String defaultId = "c9c1c52d-d2a4-4f2a-93fe-30200f1e0bff";
+    String clusterId = "ae1ea51e-f642-11ee-bcc4-00163e4b3128";
+    String defaultId = "74bbfae5-ada6-491e-9d3d-51ac8b50471e";
 
     @Test
     @DisplayName("가상머신 리스트")
     void getList() {
         List<VmVo> result = vmService.getList();
 
-        assertThat(8).isEqualTo(result.size());
-
-        result.forEach(System.out::println);
-    }
-
-
-    @Test
-    @DisplayName("가상머신 생성 창")
-    void setVmSet() {
-        List<VmSetVo> result = vmService.setVmSet();
-
-        assertThat(2).isEqualTo(result.size());
-        assertThat(14).isEqualTo(result.get(0).getVnicList().size());
-        assertThat(6).isEqualTo(result.get(1).getVnicList().size());
-
-        System.out.println(result.toString());
-    }
-
-    @Test
-    @DisplayName("가상머신 생성창-리소스-cpuProfile")
-    void setCpuProfile() {
-        List<IdentifiedVo> result = vmService.getCpuProfileList("9c7452ea-a5f3-11ee-93d2-00163e39cb43");
-
         assertThat(result.size()).isEqualTo(2);
+
         result.forEach(System.out::println);
     }
 
 
     @Test
-    @DisplayName("가상머신 생성창-부트옵션 iso")
-    void setiso() {
-        List<IdentifiedVo> result = vmService.getIsoImage();
+    @DisplayName("생성 - 클러스터 목록")
+    void setClusterList() {
+        List<ClusterVo> result = vmService.setClusterList();
 
-        assertThat(result.size()).isEqualTo(2);
         result.forEach(System.out::println);
+        assertThat(result.size()).isEqualTo(2);
     }
+
+
+
+    @Test
+    @DisplayName("생성 - 템플릿 목록")
+    void setTemplateList() {
+        List<TemplateVo> result = vmService.setTemplateList();
+
+        result.forEach(System.out::println);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("생성 - 디스크(연결) 목록")
+    void setDiskList() {
+        List<DiskVo> result = vmService.setDiskList();
+
+        result.forEach(System.out::println);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("생성 - 디스크(생성) 목록")
+    void setDiskAttach() {
+        List<DomainVo> result = vmService.setDiskAttach(clusterId);
+
+        result.forEach(System.out::println);
+        assertThat(result.size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("생성 - vnic 목록")
+    void setVnic() {
+        List<VnicProfileVo> result = vmService.setVnic(clusterId);
+
+        result.forEach(System.out::println);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("생성 - 호스트 목록")    
+    void setHostList() {
+        List<IdentifiedVo> result = vmService.setHostList(clusterId);
+
+        result.forEach(System.out::println);
+        assertThat(result.size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("생성 - 스토리지도메인 목록")
+    void setStorageList() {
+        List<IdentifiedVo> result = vmService.setStorageList();
+
+        result.forEach(System.out::println);
+        assertThat(result.size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("생성 - cpu profile 목록")
+    void setCpuProfileList() {
+        List<IdentifiedVo> result = vmService.setCpuProfileList(clusterId);
+
+        result.forEach(System.out::println);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("생성 - iso 목록")
+    void getIsoImage() {
+        List<IdentifiedVo> result = vmService.setIsoImage();
+
+        result.forEach(System.out::println);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("생성 - 선호도 그룹 목록")
+    void setAgList() {
+        List<IdentifiedVo> result = vmService.setAgList(clusterId);
+
+        result.forEach(System.out::println);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("생성 - 선호도 레이블 목록")
+    void setAlList() {
+        List<IdentifiedVo> result = vmService.setAlList();
+
+        result.forEach(System.out::println);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+
+
+
 
 
 
@@ -361,48 +436,26 @@ class ItVmServiceTest {
     }
 
 
-    @Test
-    @DisplayName("가상머신 생성/ 새 네트워크 인터페이스 프로파일 목록 출력")
-    void setVnic() {
-        String clusterId = "9c7452ea-a5f3-11ee-93d2-00163e39cb43";
-        List<VnicProfileVo> vnic = vmService.setVnic(clusterId);
-
-        System.out.println(vnic.size());
-        vnic.forEach(System.out::println);
-    }
 
 
-    @Test
-    void setDisk() {
-        List<DiskVo> con = vmService.setDiskConn();
-        System.out.println(con);
-    }
-
-    @Test
-    void setDomains(){
-        String clusterId = "9c7452ea-a5f3-11ee-93d2-00163e39cb43";
-        List<DomainVo> set = vmService.setDiskAttach(clusterId);
-        System.out.println(set);
-    }
 
 
     @Test
     @DisplayName("가상머신 일반")
     void getInfo() {
         String id = "6b2cf6fb-bc4f-444d-9a19-7b3766cf1dd9";
-        VmVo result = vmService.getInfo(id);
+        VmVo result = vmService.getInfo(defaultId);
 
-        assertThat(true).isEqualTo(result.getName().equals("on20-ap03"));
+        assertThat("HostedEngine").isEqualTo(result.getName());
         System.out.println(result);
     }
 
     @Test
     @DisplayName("가상머신 네트워크 인터페이스")
     void getNic() {
-        String id = "e929923d-8710-47ef-bfbd-e281434eb8ee";
+        String id = "266b7ca4-354b-4016-adbe-7324c932c8ca";
         List<NicVo> result = vmService.getNic(id);
 
-//        assertThat("192.168.0.80").isEqualTo(result.get(0).getIpv4());
 //        assertThat(true).isEqualTo(result.stream().anyMatch(nicVo -> nicVo.getName().equals("vnet0")));
         result.forEach(System.out::println);
     }

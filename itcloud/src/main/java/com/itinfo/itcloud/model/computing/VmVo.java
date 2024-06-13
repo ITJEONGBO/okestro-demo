@@ -17,7 +17,7 @@ public class VmVo {
 
     private String osSystem;
     private String chipsetFirmwareType; // bios.type
-    private int priority;    // 고가용성 HighAvailability
+    private String priority;    // 고가용성 HighAvailability
     private String optimizeOption;
 
     private boolean hostEngineVm;
