@@ -30,7 +30,7 @@ class ItVmServiceTest {
     @Autowired ItAffinityService affinityService;
 
     String clusterId = "ae1ea51e-f642-11ee-bcc4-00163e4b3128";
-    String defaultId = "74bbfae5-ada6-491e-9d3d-51ac8b50471e";
+    String defaultId = "74bbfae5-ada6-491e-9d3d-51ac8b50471e"; // HostedEngine
 
     @Test
     @DisplayName("가상머신 리스트")
@@ -60,7 +60,7 @@ class ItVmServiceTest {
         List<TemplateVo> result = vmService.setTemplateList();
 
         result.forEach(System.out::println);
-        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.size()).isEqualTo(3);
     }
 
     @Test
@@ -69,7 +69,7 @@ class ItVmServiceTest {
         List<DiskVo> result = vmService.setDiskList();
 
         result.forEach(System.out::println);
-        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.size()).isEqualTo(4);
     }
 
     @Test
@@ -123,7 +123,7 @@ class ItVmServiceTest {
         List<IdentifiedVo> result = vmService.setIsoImage();
 
         result.forEach(System.out::println);
-        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.size()).isEqualTo(3);
     }
 
     @Test
@@ -158,20 +158,17 @@ class ItVmServiceTest {
 
         VmCreateVo vm =
             VmCreateVo.builder()
-                    .clusterId("9c7452ea-a5f3-11ee-93d2-00163e39cb43")
+                    .clusterId(clusterId)
                     .templateId("00000000-0000-0000-0000-000000000000")
                     .os("rhel_8x64")
                     .chipsetType("Q35_OVMF")  // String.valueOf(BiosType.Q35_OVMF)
                     .option("SERVER")  // String.valueOf(VmType.SERVER)
-
                     .name(randomName)
                     .description("")
                     .comment("cc")
                     .stateless(false)
                     .startPaused(false)
                     .deleteProtected(false)
-//                    .vDiskList()
-
                     // 네트워크
                     .vnicList(
                             Arrays.asList(
@@ -181,6 +178,7 @@ class ItVmServiceTest {
                             )
                     )
                     // 디스크
+                    // 생성
                     .vDiskList(
                             Arrays.asList(
                                     VDiskVo.builder()
@@ -189,14 +187,13 @@ class ItVmServiceTest {
                                                             .size(2)
                                                             .alias(randomDiskName)
                                                             .description("test")
-                                                            .storageDomainId("06faa572-f1ac-4874-adcc-9d26bb74a54d")
+                                                            .storageDomainId("12d17014-a612-4b6e-a512-6ec4e1aadba6") // hosted_storage
                                                             .allocationPolicy(true) // 할당정책: 씬
-                                                            .diskProfile("73247789-5b48-4684-bbd9-60f244de73d9")
+                                                            .diskProfile("23ab66ac-26c3-4b21-ba78-691ec2a004df")
                                                             .wipeAfterDelete(false)
                                                             .shareable(false)
                                                             .backup(true) // 증분백업 기본값 t
                                                             // 취소 활성화
-
                                                             .interfaces(DiskInterface.valueOf("VIRTIO_SCSI"))
                                                             .bootable(true) // 기본값:t
                                                             .readOnly(false)
@@ -207,17 +204,7 @@ class ItVmServiceTest {
                                     VDiskVo.builder()
                                             .vDiskImageVo(
                                                     VDiskImageVo.builder()
-                                                            .size(2)
-                                                            .alias(randomDiskName+"2")
-                                                            .description("testsf")
-                                                            .storageDomainId("e6611ac1-35b0-42b9-b339-681a6d6cb538")
-                                                            .allocationPolicy(true) // 할당정책: 씬
-                                                            .diskProfile("b5cbcbc2-43c0-45d4-8016-0c524dc7ccd4")
-                                                            .wipeAfterDelete(false)
-                                                            .shareable(false)
-                                                            .backup(true) // 증분백업 기본값 t
-                                                            // 취소 활성화
-
+                                                            .diskId("ab422078-c7b0-49e4-90cc-b8b1f1befa99")
                                                             .interfaces(DiskInterface.valueOf("VIRTIO_SCSI"))
                                                             .bootable(false) // 기본값:t
                                                             .readOnly(false)
@@ -226,10 +213,9 @@ class ItVmServiceTest {
                                             .build()
                             )
                     )
-
                     .vmSystemVo(
                             VmSystemVo.builder()
-                                    .instanceType("") //tiny 안됨 ( small, medium, xlarge)
+                                    .instanceType("small") //tiny 안됨 ( small, medium, xlarge)
                                     .memorySize(1024)
                                     .memoryMax(4096)
                                     .memoryActual(1024)
@@ -266,7 +252,7 @@ class ItVmServiceTest {
                     )
                     .vmResourceVo(
                             VmResourceVo.builder()
-                                    .cpuProfileId("25e675a8-0690-4dee-908e-1b3c3bd120fc")
+                                    .cpuProfileId("58ca604e-01a7-003f-01de-000000000250")
                                     .cpuShare(512)
                                     .cpuPinningPolicy("DEDICATED")
                                     .memoryBalloon(true)    // 시스템에서
@@ -277,7 +263,7 @@ class ItVmServiceTest {
                     .vmBootVo(
                             VmBootVo.builder()
                                     .deviceList(Arrays.asList("HD", "CDROM"))
-                                    .connId("d52d0504-9f46-459b-8f54-de008c688079")
+                                    .connId("a97b75d7-15fe-4168-ba5a-c52434936c70")
                                     .build()
                     )
                 .build();
@@ -294,9 +280,10 @@ class ItVmServiceTest {
     @DisplayName("가상머신 편집 창")
     void setEditVm() {
         String id = "364dfe92-fb24-4e97-8a7b-1e9de59f6be6";
-        VmCreateVo result = vmService.setEditVm(id);
+        VmCreateVo result = vmService.setEditVm(defaultId);
 
         System.out.println(result);
+        assertThat(result.getName()).isEqualTo("HostedEngine");
     }
 
     @Test
@@ -319,7 +306,7 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 삭제")
     void deleteVm() {
-        String id = "bf1ef458-2b73-47f2-aa9f-0468a981fc47";
+        String id = "97f550a7-99d4-443a-9d1d-2571ede6efdc";
         boolean disk = false; //t: 디스크지움, f:디스크남김
 
         CommonVo<Boolean> result = vmService.deleteVm(id, disk);

@@ -7,6 +7,8 @@ import org.ovirt.engine.sdk4.types.DiskInterface;
 
 @Getter @Builder @ToString
 public class VDiskImageVo {
+    private String diskId; // 연결할때
+
     // 이미지
     private long size;        // 크기(GiB)
     private String alias;       // 별칭

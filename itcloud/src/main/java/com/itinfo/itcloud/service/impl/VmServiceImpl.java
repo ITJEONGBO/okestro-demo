@@ -38,7 +38,6 @@ public class VmServiceImpl implements ItVmService {
     @Autowired private ItAffinityService affinityService;
 
 
-
     /**
      * 가상머신 목록
      * @return 가상머신 목록
@@ -77,6 +76,9 @@ public class VmServiceImpl implements ItVmService {
 
 
 
+
+    // region: 가상머신 생성 위한 목록
+
     /**
      * 가상머신 생성 - 클러스터 리스트
      * @return 클러스터 리스트
@@ -101,34 +103,41 @@ public class VmServiceImpl implements ItVmService {
      * 가상머신 생성 - 템플릿 목록
      * @return 템플릿 목록
      */
-    // TODO
     @Override
     public List<TemplateVo> setTemplateList() {
-        return null;
+        SystemService system = admin.getConnection().systemService();
+        return system.templatesService().list().send().templates().stream()
+                .map(template ->
+                        TemplateVo.builder()
+                                .id(template.id())
+                                .name(template.name())
+                                .versionName(template.versionPresent() ? template.version().versionName() : "")
+                                .versionNum(template.versionPresent() ? template.version().versionNumberAsInteger() : 0)
+                                .build()
+                )
+                .collect(Collectors.toList());
     }
 
     /**
      * 가상머신 생성 - 인스턴스 이미지 - 연결
      * @return 가상 디스크 - 이미지 목록
      */
-    // TODO 무슨 기준으로 뜨는건지 의문
     @Override
     public List<DiskVo> setDiskList() {
         SystemService system = admin.getConnection().systemService();
         List<Disk> diskList = system.disksService().list().send().disks();
-        List<Vm> vmList = system.vmsService().list().send().vms();
+
+        List<String> attDiskIdList = system.vmsService().list().send().vms().stream()
+                .flatMap(vm -> system.vmsService().vmService(vm.id()).diskAttachmentsService().list().send().attachments().stream())
+                .map(DiskAttachment::id)
+                .collect(Collectors.toList());
 
         return diskList.stream()
-//                .filter(disk -> {
-//                    boolean das = vmList.stream()
-//                            .allMatch(vm -> {
-//                                List<DiskAttachment> daList = system.vmsService().vmService(vm.id()).diskAttachmentsService().list().send().attachments();
-//                                return daList.stream().noneMatch(da -> da.disk().id().equals(disk.id()));
-//                            });
-//                    System.out.println("* "+das);
-//
-//                    return !das && disk.status() == DiskStatus.OK;
-//                })
+                .filter(disk ->
+                        (disk.storageType() == DiskStorageType.IMAGE || disk.storageType() == DiskStorageType.LUN)
+                        && disk.contentType() == DiskContentType.DATA
+                        && !attDiskIdList.contains(disk.id())
+                )
                 .map(disk -> {
                     StorageDomain storageDomain = system.storageDomainsService().storageDomainService(disk.storageDomains().get(0).id()).get().send().storageDomain();
 
@@ -138,6 +147,7 @@ public class VmServiceImpl implements ItVmService {
                             .description(disk.description())
                             .virtualSize(disk.provisionedSize())
                             .actualSize(disk.actualSize())
+                            .shareable(disk.shareable())
                             .domainVo(
                                     DomainVo.builder()
                                             .id(storageDomain.id())
@@ -148,7 +158,6 @@ public class VmServiceImpl implements ItVmService {
                 })
                 .collect(Collectors.toList());
     }
-
 
     /**
      * 가상머신 생성 - 인스턴스 이미지 - 생성
@@ -185,7 +194,6 @@ public class VmServiceImpl implements ItVmService {
                 .collect(Collectors.toList());
     }
 
-
     /**
      * 가상머신 생성 -  vNic 목록 출력 (가상머신 생성, 네트워크 인터페이스 생성)
      * @param clusterId 클러스터 id
@@ -215,7 +223,6 @@ public class VmServiceImpl implements ItVmService {
                 .collect(Collectors.toList());
     }
 
-
     /**
      * 가상머신 생성 - 호스트 - 호스트 리스트
      * @param clusterId 클러스터 id
@@ -239,13 +246,19 @@ public class VmServiceImpl implements ItVmService {
      * 가상머신 생성 - 고가용성 - 임대 대상 스토리지 도메인 목록
      * @return 스토리지 도메인 목록
      */
-    // TODO
     @Override
     public List<IdentifiedVo> setStorageList() {
-        return null;
+        SystemService system = admin.getConnection().systemService();
+        return system.storageDomainsService().list().send().storageDomains().stream()
+                .filter(storageDomain -> !storageDomain.statusPresent())
+                .map(storageDomain ->
+                    IdentifiedVo.builder()
+                            .id(storageDomain.id())
+                            .name(storageDomain.name())
+                            .build()
+                )
+                .collect(Collectors.toList());
     }
-
-
 
     /**
       * 가상머신 생성 - 리소스할당 - cpuProfile 목록 출력
@@ -265,7 +278,6 @@ public class VmServiceImpl implements ItVmService {
                 )
                 .collect(Collectors.toList());
     }
-
 
     /**
      * 가상머신 생성 - 부트 옵션 - 생성 시 필요한 CD/DVD 연결할 ISO 목록
@@ -323,219 +335,222 @@ public class VmServiceImpl implements ItVmService {
                 .collect(Collectors.toList());
     }
 
+    // endregion
 
 
     /**
      * 가상머신 생성
-     * @param vmVo
-     * @return
+     * @param vmVo 가상머신 객체
+     * @return vm 201(create) 404(fail)
      */
     @Override
     public CommonVo<Boolean> addVm(VmCreateVo vmVo) {
         SystemService system = admin.getConnection().systemService();
         VmsService vmsService = system.vmsService();
-        BigInteger convertMb = BigInteger.valueOf(1024).pow(2);
-        boolean duplicateName = vmsService.list().search("name=" + vmVo.getName()).send().vms().isEmpty();
 
-        try {
-            if (duplicateName) { // 이름 중복 검사
-                VmBuilder vmBuilder = new VmBuilder();
-                vmBuilder
-                        .cluster(new ClusterBuilder().id(vmVo.getClusterId())) //  클러스터
-                        .template(new TemplateBuilder().id(vmVo.getTemplateId()))   // 템플릿
-                        .bios(
-                                new BiosBuilder()
-                                        .type(BiosType.valueOf(vmVo.getChipsetType()))  // 칩셋/펌웨어
-                                        .bootMenu(new BootMenuBuilder().enabled(vmVo.getVmBootVo().isBootingMenu()))
-                        )
-                        .type(VmType.valueOf(vmVo.getOption()))   // 최적화 옵션
+        boolean duplicateName = !vmsService.list().search("name=" + vmVo.getName()).send().vms().isEmpty();
 
-                        .name(vmVo.getName())
-                        .description(vmVo.getDescription())
-                        .comment(vmVo.getComment())
-                        .stateless(vmVo.isStateless())      // 상태 비저장
-                        .startPaused(vmVo.isStartPaused())  // 일시정지
-                        .deleteProtected(vmVo.isDeleteProtected()) // 삭제 방지
-                        // 보관?
+        if (duplicateName) {
+            log.error("가상머신 이름 중복");
+            return CommonVo.duplicateResponse();
+        }
 
-                        .timeZone(new TimeZoneBuilder().name(vmVo.getVmSystemVo().getTimeOffset())); // 시스템-일반 하드웨어 클럭의 시간 오프셋
-                // 시스템 - 일련 번호 정책
-                // 시스템 - 사용자 정의 일련번호
+        VmBuilder vmBuilder = new VmBuilder();
 
+        getInfo(vmBuilder, vmVo);   // 일반
+        getVmSystem(system, vmBuilder, vmVo);   // 시스템
+        getVmInit(vmBuilder, vmVo); // 초기 실행
+        getVmHost(vmBuilder, vmVo); // 호스트
+        getVmResource(vmBuilder, vmVo);    // 리소스 할당
+        getVmHa(vmBuilder, vmVo);    // 고가용성
+        getVmBoot(vmBuilder, vmVo);    // 부트옵션
 
-                // 시스템
-                if (!"".equals(vmVo.getVmSystemVo().getInstanceType())) {
-                    InstanceType it = system.instanceTypesService().list().search("name=" + vmVo.getVmSystemVo().getInstanceType()).send().instanceType().get(0);
-                    vmBuilder.instanceType(it);
-                } else {    // 사용자 정의 값
-                    vmBuilder
-                            .memory(BigInteger.valueOf(vmVo.getVmSystemVo().getMemorySize()).multiply(convertMb))
-                            .memoryPolicy(
-                                    new MemoryPolicyBuilder()
-                                            .max(BigInteger.valueOf(vmVo.getVmSystemVo().getMemoryMax()).multiply(convertMb))
-                                            .ballooning(vmVo.getVmResourceVo().isMemoryBalloon())   // 리소스할당- 메모리 balloon 활성화
-                                            .guaranteed(BigInteger.valueOf(vmVo.getVmSystemVo().getMemoryActual()).multiply(convertMb))
-                            )
-                            .cpu(
-                                    new CpuBuilder()
-                                            .topology(
-                                                    new CpuTopologyBuilder()
-                                                            .cores(vmVo.getVmSystemVo().getVCpuSocketCore())
-                                                            .sockets(vmVo.getVmSystemVo().getVCpuSocket())
-                                                            .threads(vmVo.getVmSystemVo().getVCpuCoreThread())
-                                            )
-                            );
-                }
+        Vm vm = vmsService.add().vm(vmBuilder.build()).send().vm();
+        VmService vmService = vmsService.vmService(vm.id());
 
-                // 초기 실행
-                if (vmVo.getVmInitVo().isCloudInit()) {
-                    vmBuilder.initialization(
-                            new InitializationBuilder()
-                                    .hostName(vmVo.getVmInitVo().getHostName())
-                                    .timezone(vmVo.getVmInitVo().getTimeStandard())  // Asia/Seoul
-                                    .customScript(vmVo.getVmInitVo().getScript())
-                    );
-                }
+        // 가상머신 만들고 nic 붙이고 disk 붙이는 식
+
+        try{
+            if (vmVo.getVnicList() != null) {
+                addVmNic(system, vm, vmVo);
+//                CommonVo<Boolean> nicResult = addVmNic(system, vm, vmVo); // nic 붙이기
+//                if (!(nicResult.getHead().getCode() == 200)) {
+//                    return nicResult;
+//                }
+            }
+
+            // disk가 있다면
+            if (vmVo.getVDiskList() != null) {
+                addVmDisk(system, vm, vmVo.getVDiskList());
+//                CommonVo<Boolean> diskResult = addVmDisk(system, vm, vmVo.getVDiskList()); // 디스크 붙이기
+//                if (!(diskResult.getHead().getCode() == 200)) {
+//                    return diskResult;
+//                }
+            }
+
+            // 이것도 vm id가 있어야 생성가능
+            if (vmVo.getVmBootVo().getConnId() != null) {
+                vmService.cdromsService().add().cdrom(new CdromBuilder().file(new FileBuilder().id(vmVo.getVmBootVo().getConnId())).build()).send();
+            }
 
 
-                // 호스트
-                // 실행 호스트
-                VmPlacementPolicyBuilder placementBuilder = new VmPlacementPolicyBuilder();
-                if (!vmVo.getVmHostVo().isClusterHost()) {  // 특정 호스트를 선택한다면 무조건 한개는 존재
-                    placementBuilder.hosts(
-                            // 선택된 호스트 전부 넣기
-                            vmVo.getVmHostVo().getSelectHostId().stream()
-                                    .map(hostId -> new HostBuilder().id(hostId).build())
-                                    .collect(Collectors.toList())
-                    );
-                }
-
-                // 마이그레이션
-                // 사용자 정의 일때만 마이그레이션 모드 설정가능
-                vmBuilder
-                        .placementPolicy(
-                                placementBuilder
-                                        .affinity("none".equals(vmVo.getVmSystemVo().getInstanceType()) ?
-                                                VmAffinity.valueOf(vmVo.getVmHostVo().getMigrationMode()) : VmAffinity.MIGRATABLE
-                                        )
-                        )
-                        .migration(
-                                // 정책은 찾을 수가 없음
-                                // parallel Migrations 안보임
-                                new MigrationOptionsBuilder()
-                                        .encrypted(vmVo.getVmHostVo().getMigrationEncrypt()) // 암호화
-                                        .build()
-                        )
-//                        .numaNodes(new NumaNodeBuilder().build()) // numa
-                        // 고가용성
-                        .highAvailability(
-                                new HighAvailabilityBuilder()
-                                        .enabled(vmVo.getVmHaVo().isHa()) // 고가용성 여부
-                                        .priority(vmVo.getVmHaVo().getPriority())
-                                // 재개동작 모르겠음
-                        );
-
-                if (vmVo.getVmHaVo().isHa()) {       // 스토리지 도메인 지정
-                    // 선택안햇을경우
-                    vmBuilder.lease(
-                            new StorageDomainLeaseBuilder()
-                                    .storageDomain(new StorageDomainBuilder().id(vmVo.getVmHaVo().getVmStorageDomainId()))
-                    );
-                }
-
-                // 리소스 할당
-                // CPU 할당
-                vmBuilder
-                        .cpuProfile(new CpuProfileBuilder().id(vmVo.getVmResourceVo().getCpuProfileId()))
-                        .cpuShares(vmVo.getVmResourceVo().getCpuShare())
-                        .autoPinningPolicy(
-                                "RESIZE_AND_PIN_NUMA".equals(vmVo.getVmResourceVo().getCpuPinningPolicy()) ?
-                                        AutoPinningPolicy.ADJUST : AutoPinningPolicy.DISABLED
-                        )
-                        .cpuPinningPolicy(CpuPinningPolicy.valueOf(vmVo.getVmResourceVo().getCpuPinningPolicy()))
-                        .virtioScsiMultiQueuesEnabled(vmVo.getVmResourceVo().isMultiQue()); // VirtIO-SCSI 활성화
-
-
-                // 부트 옵션
-                vmBuilder.os(
-                        new OperatingSystemBuilder()
-                                .type(vmVo.getOs()) // 일반 - 운영시스템
-                                .boot(
-                                        new BootBuilder().devices(
-                                                vmVo.getVmBootVo().getDeviceList().stream()
-                                                        .map(BootDevice::valueOf)
-                                                        .collect(Collectors.toList())
-                                        )
-                                )
-                );
-
-
-                Vm vm = vmsService.add().vm(vmBuilder.build()).send().vm();
-
-                // nic
-                if (vmVo.getVnicList() != null) {
-                    addVmNic(system, vm, vmVo); // nic 붙이기
-                }
-
-                // disk
-                // 가상머신 만들고 nic 붙이고 disk 붙이는 식
-                if (vmVo.getVDiskList() != null) {
-                    // 연결하는게 있고, 생성하는게 있는데
-                    addVmDisk(system, vm, vmVo.getVDiskList());
-                }
-
-
-                // 이것도 vm id가 있어야 생성가능
-                if (vmVo.getVmBootVo().getConnId() != null) {
-                    vmsService.vmService(vm.id()).cdromsService().add()
-                            .cdrom(
-                                new CdromBuilder()
-                                    .file(new FileBuilder().id(vmVo.getVmBootVo().getConnId()))
-                                .build()
-                            ).send();
-                    log.info("부트옵션 추가 성공");
-                }
-
-//                do{
-//                    Thread.sleep(3000);
-//                    System.out.println(vm.status());
-//                }while (!vm.status().equals(VmStatus.UP));  // while 조건식이 true가 된다면 false가 될때까지 계속해서 코드가 반복
-//                System.out.println("결국 " + vm.status());
-
-
-                log.info("가상머신 생성 완료");
+            if(expectStatus(vmService, VmStatus.DOWN, 3000, 900000)){
+                log.info("가상머신 생성 완료: " + vm.name());
                 return CommonVo.createResponse();
             } else {
-                log.error("가상머신 이름 중복");
-                return CommonVo.duplicateResponse();
+                log.error("가상머신 생성 시간 초과: {}", vm.name());
+                return CommonVo.failResponse("가상머신 생성 시간 초과");
             }
+
         } catch (Exception e) {
             e.printStackTrace();
-            log.error("가상머신 생성실패");
+            log.error("가상머신 생성 실패");
             return CommonVo.failResponse("가상머신 생성 실패");
         }
     }
 
 
 
+    // region: 가상머신 생성
 
-    // vm 생성 - vnic
+    /**
+     * 가상머신 생성 - 일반 + 시스템-일반 시간
+     * @param vmBuilder 가상머신 빌더
+     * @param vmVo 가상머신 객체
+     */
+    private void getInfo(VmBuilder vmBuilder, VmCreateVo vmVo) {
+        vmBuilder.cluster(new ClusterBuilder().id(vmVo.getClusterId())) //  클러스터
+                .template(new TemplateBuilder().id(vmVo.getTemplateId()))   // 템플릿
+                .bios(new BiosBuilder().type(BiosType.valueOf(vmVo.getChipsetType())))  // 칩셋/펌웨어
+                .type(VmType.valueOf(vmVo.getOption()))   // 최적화 옵션
+                .name(vmVo.getName())
+                .description(vmVo.getDescription())
+                .comment(vmVo.getComment())
+                .stateless(vmVo.isStateless())      // 상태 비저장
+                .startPaused(vmVo.isStartPaused())  // 일시정지
+                .deleteProtected(vmVo.isDeleteProtected()); // 삭제 방지
+                // 보관?
+    }
+
+    // TODO:HELP -> 가상머신-생성-디스크생성 / 가상머신-디스크-생성
+    /**
+     * 가상머신 생성 - 인스턴스 이미지 [ 연결 / 생성 ]
+     * 디스크 여러개 가능 (연결+생성, 연결+연결, 생성+생성)
+     * @param system
+     * @param vm
+     * @param vDiskVoList
+     * @return
+     */
+    private CommonVo<Boolean> addVmDisk(SystemService system, Vm vm, List<VDiskVo> vDiskVoList) throws Exception{
+        try {
+            DiskAttachmentsService dasService = system.vmsService().vmService(vm.id()).diskAttachmentsService();
+
+            boolean bootableDiskExists = dasService.list().send().attachments().stream().anyMatch(DiskAttachment::bootable);
+
+
+            // 디스크 이미지 생성
+            for (VDiskVo vDiskVo : vDiskVoList) {
+                log.debug("null: {}", vDiskVo.getVDiskImageVo().getDiskId() != null);
+                if(vDiskVo.getVDiskImageVo().getDiskId() != null){
+                    Disk disk = system.disksService().diskService(vDiskVo.getVDiskImageVo().getDiskId()).get().send().disk();
+
+                    DiskAttachmentBuilder daBuilder = new DiskAttachmentBuilder()
+                            .disk(new DiskBuilder().id(disk.id()))
+                            .interface_(vDiskVo.getVDiskImageVo().getInterfaces())
+                            .active(true)
+                            .bootable(vDiskVo.getVDiskImageVo().isBootable())
+                            .readOnly(vDiskVo.getVDiskImageVo().isReadOnly());
+
+                    // 추가된 디스크를 VM에 붙임
+                    dasService.add().attachment(daBuilder).send().attachment();
+                    log.info("as");
+                }else {
+                    DiskBuilder diskBuilder = new DiskBuilder()
+                            .provisionedSize(BigInteger.valueOf(vDiskVo.getVDiskImageVo().getSize()).multiply(BigInteger.valueOf(1024).pow(3))) // 값 받은 것을 byte로 변환하여 준다
+                            .alias(vDiskVo.getVDiskImageVo().getAlias())
+                            .description(vDiskVo.getVDiskImageVo().getDescription())
+                            .storageDomains(new StorageDomain[]{new StorageDomainBuilder().id(vDiskVo.getVDiskImageVo().getStorageDomainId()).build()})
+                            .sparse(vDiskVo.getVDiskImageVo().isAllocationPolicy()) // 할당정책: 씬 true
+                            .diskProfile(new DiskProfileBuilder().id(vDiskVo.getVDiskImageVo().getDiskProfile()).build()) // 없어도 상관없음
+                            .wipeAfterDelete(vDiskVo.getVDiskImageVo().isWipeAfterDelete()) // 삭제후 초기화
+                            .shareable(vDiskVo.getVDiskImageVo().isShareable()) // 공유 가능 (공유가능 o 이라면 증분백업 안됨 FRONT에서 막기?)
+                            .backup(vDiskVo.getVDiskImageVo().isBackup() ? DiskBackup.INCREMENTAL : DiskBackup.NONE) // 증분 백업 사용(기본이 true)
+                            .format(vDiskVo.getVDiskImageVo().isBackup() ? DiskFormat.COW : DiskFormat.RAW); // 백업 안하면 RAW
+
+                    Disk disk = system.disksService().add().disk(diskBuilder).send().disk();
+                    DiskService diskService = system.disksService().diskService(disk.id());
+
+                    // 디스크 상태 확인 (LOCK -> OK)
+                    if (expectStatus(diskService, DiskStatus.OK, 1000, 60000)) {
+                        log.info("디스크 생성 완료: {}", disk.name());
+                    } else {
+                        log.error("디스크 생성 시간 초과: {}", disk.name());
+                        return CommonVo.failResponse("생성 시간 초과");
+                    }
+
+                    boolean isBootable = vDiskVo.getVDiskImageVo().isBootable();
+                    if (bootableDiskExists && isBootable) {
+                        log.warn("이미 부팅 가능한 디스크가 존재하므로 {} 디스크는 부팅 불가능으로 설정됨", disk.name());
+                        isBootable = false;
+                    } else if (isBootable) {
+                        bootableDiskExists = true;
+                    }
+
+                    DiskAttachmentBuilder daBuilder = new DiskAttachmentBuilder()
+                            .disk(disk)
+                            .active(true)
+                            .interface_(vDiskVo.getVDiskImageVo().getInterfaces())
+                            .bootable(isBootable)
+                            .readOnly(vDiskVo.getVDiskImageVo().isReadOnly());
+
+                    // 추가된 디스크를 VM에 붙임
+                    dasService.add().attachment(daBuilder).send().attachment();
+                }
+            }
+            log.info(vm.name() + " disk 생성 성공");
+            return CommonVo.createResponse();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("disk 생성 실패");
+            return CommonVo.failResponse(vm.name() + " disk 생성 실패");
+        }
+    }
+
+    // 가상머신 생성 - 디스크 생성 상태확인
+    private boolean expectStatus(DiskService diskService, DiskStatus expectStatus, long interval, long timeout) throws InterruptedException {
+        long startTime = System.currentTimeMillis();
+        while (true) {
+            Disk currentDisk = diskService.get().send().disk();
+            DiskStatus status = currentDisk.status();
+
+            if (status == expectStatus) {
+                return true;
+            } else if (System.currentTimeMillis() - startTime > timeout) {
+                return false;
+            }
+
+            log.info("디스크 상태: {}", status);
+            Thread.sleep(interval);
+        }
+    }
+
+
+
+    /**
+     * vm 생성 - vnic
+     * @param system
+     * @param vm
+     * @param vmVo
+     * @return
+     */
     private CommonVo<Boolean> addVmNic(SystemService system, Vm vm, VmCreateVo vmVo) {
         try {
             VmNicsService vmNicsService = system.vmsService().vmService(vm.id()).nicsService();
-
-            List<NicBuilder> nicBuilders =
-                    vmVo.getVnicList().stream()
-                            .map(identifiedVo -> 
-                                    new NicBuilder()
-                                    .name("nic" + (vmVo.getVnicList().indexOf(identifiedVo) + 1))
-                                    .vnicProfile(
-                                            new VnicProfileBuilder()
-                                                    .id(identifiedVo.getId())
-                                                    .build()
-                                    )
-                            )
-                            .collect(Collectors.toList());
+            List<NicBuilder> nicBuilders = vmVo.getVnicList().stream()
+                                            .map(identifiedVo -> new NicBuilder()
+                                                    .name("nic" + (vmVo.getVnicList().indexOf(identifiedVo) + 1))
+                                                    .vnicProfile(new VnicProfileBuilder().id(identifiedVo.getId()).build()))
+                                            .collect(Collectors.toList());
 
             for (NicBuilder nicBuilder : nicBuilders) {
                 vmNicsService.add().nic(nicBuilder).send();
@@ -552,96 +567,155 @@ public class VmServiceImpl implements ItVmService {
 
 
 
+    /**
+     * 가상머신 - 시스템
+     * @param vmBuilder 가상머신 빌더
+     * @param vmVo 가상머신 객체
+     */
+    private void getVmSystem(SystemService system, VmBuilder vmBuilder, VmCreateVo vmVo){
+        BigInteger convertMb = BigInteger.valueOf(1024).pow(2);
 
+        vmBuilder.timeZone(new TimeZoneBuilder().name(vmVo.getVmSystemVo().getTimeOffset())); // 시스템-일반 하드웨어 클럭의 시간 오프셋
 
-
-
-    // TODO:HELP -> 가상머신-생성-디스크생성 / 가상머신-디스크-생성
-    // vm 생성 - 인스턴스 이미지 [ 연결 / 생성 ]
-    // 근데 디스크 여러개 붙일수 있음
-    private CommonVo<Boolean> addVmDisk(SystemService system, Vm vm, List<VDiskVo> vDiskVoList) {
-        try {
-            DiskAttachmentsService dasService = system.vmsService().vmService(vm.id()).diskAttachmentsService();
-            DisksService disksService = system.disksService();
-
-            // 이미 부팅 가능한 디스크가 있는지 확인
-            boolean bootableDiskExists = dasService.list().send().attachments().stream().anyMatch(DiskAttachment::bootable);
-
-            // 디스크 이미지 생성
-            List<DiskBuilder> diskBuilders =
-                    vDiskVoList.stream()
-                            .map(vDiskVo -> {
-                                // image
-                                return new DiskBuilder()
-                                        .provisionedSize(BigInteger.valueOf(vDiskVo.getVDiskImageVo().getSize()).multiply(BigInteger.valueOf(1024).pow(3))) // 값 받은 것을 byte로 변환하여 준다
-                                        .alias(vDiskVo.getVDiskImageVo().getAlias())
-                                        .description(vDiskVo.getVDiskImageVo().getDescription())
-                                        .storageDomains(new StorageDomain[]{ new StorageDomainBuilder().id(vDiskVo.getVDiskImageVo().getStorageDomainId()).build() })
-                                        .sparse(vDiskVo.getVDiskImageVo().isAllocationPolicy()) // 할당정책: 씬 true
-                                        .diskProfile(new DiskProfileBuilder().id(vDiskVo.getVDiskImageVo().getDiskProfile()).build()) // 없어도 상관없음
-
-                                        .wipeAfterDelete(vDiskVo.getVDiskImageVo().isWipeAfterDelete()) // 삭제후 초기화
-                                        .shareable(vDiskVo.getVDiskImageVo().isShareable())     // 공유 가능 (공유가능 o 이라면 증분백업 안됨 FRONT에서 막기?)
-                                        .backup(vDiskVo.getVDiskImageVo().isBackup() ? DiskBackup.INCREMENTAL : DiskBackup.NONE)    // 증분 백업 사용(기본이 true)
-                                        .format(vDiskVo.getVDiskImageVo().isBackup() ? DiskFormat.COW : DiskFormat.RAW); // 백업 안하면 RAW
-                                // lun
-                            })
-                            .collect(Collectors.toList());
-
-            // 디스크 추가하는 작업
-            for (int i = 0; i < diskBuilders.size(); i++) {
-                DiskBuilder diskBuilder = diskBuilders.get(i);
-                VDiskVo vDiskVo = vDiskVoList.get(i);
-                Disk disk = disksService.add().disk(diskBuilder).send().disk();
-
-//                boolean bootable = vDiskVo.getVDiskImageVo().isBootable();
-//                if (bootableDiskExists && bootable) {// 이미 부팅 가능한 디스크가 있는 경우, 추가하려는 디스크의 부팅 가능 속성을 false로 설정
-//                    bootable = false;
-//                    return CommonVo.failResponse("부팅가능한 디스크가 존재");
-//                } else if (bootable) { // 부팅 가능한 디스크가 없는 경우, 추가하려는 디스크를 부팅 가능으로 설정하고 플래그를 true로 변경
-//                    bootableDiskExists = true;
-//                }
-
-                // 목표: disk 상태가 LOCK임으로, OK가 될 때까지 상태확인
-                int retry = 0;
-                Disk dTmp = disksService.diskService(disk.id()).get().send().disk();
-                while(dTmp.statusPresent() && dTmp.status() == DiskStatus.LOCKED && retry <= 20) {
-                    Thread.sleep(1000L);
-                    log.debug("retry: {}, disk: {}, {}", retry, dTmp.name(), dTmp.status());
-                    dTmp = disksService.diskService(disk.id()).get().send().disk();
-                    retry += 1;
-                }
-                retry = 0;
-
-                // 20번 (i.e. 20초) 조회 했는데 안된다... 그러면 예외처리
-                if (dTmp.status() != DiskStatus.OK) {
-                    // 예외처리!
-                    return CommonVo.failResponse("disk가 잠겨있음");
-                }
-
-                DiskAttachmentBuilder daBuilder =
-                        new DiskAttachmentBuilder()
-                            .disk(disk)
-                            .interface_(vDiskVo.getVDiskImageVo().getInterfaces())
-                            .bootable(vDiskVo.getVDiskImageVo().isBootable()/*bootable*/)
-                            .readOnly(vDiskVo.getVDiskImageVo().isReadOnly());
-
-                // 추가된 디스크를 vm에 붙임
-                dasService.add().attachment(daBuilder).send().attachment();
-
-                log.info(vm.name() + " disk 생성 성공");
-            }
-
-            // 연결
-
-            log.info("disk 생성 성공");
-            return CommonVo.createResponse();
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("disk 생성 실패");
-            return CommonVo.failResponse(vm.name() + " disk 생성 실패");
+        // 인스턴스 타입이 지정되어 있다면
+        if (!"".equals(vmVo.getVmSystemVo().getInstanceType())) {
+            InstanceType it = system.instanceTypesService().list().search("name=" + vmVo.getVmSystemVo().getInstanceType()).send().instanceType().get(0);
+            vmBuilder.instanceType(it);
+        } else {    // 사용자 정의 값
+            vmBuilder
+                    .memory(BigInteger.valueOf(vmVo.getVmSystemVo().getMemorySize()).multiply(convertMb))
+                    .memoryPolicy(new MemoryPolicyBuilder()
+                            .max(BigInteger.valueOf(vmVo.getVmSystemVo().getMemoryMax()).multiply(convertMb))
+                            .ballooning(vmVo.getVmResourceVo().isMemoryBalloon())   // 리소스할당- 메모리 balloon 활성화
+                            .guaranteed(BigInteger.valueOf(vmVo.getVmSystemVo().getMemoryActual()).multiply(convertMb)))
+                    .cpu(new CpuBuilder().topology(new CpuTopologyBuilder()
+                                                    .cores(vmVo.getVmSystemVo().getVCpuSocketCore())
+                                                    .sockets(vmVo.getVmSystemVo().getVCpuSocket())
+                                                    .threads(vmVo.getVmSystemVo().getVCpuCoreThread())));
         }
     }
+
+    /**
+     * 가상머신 - 초기 실행
+     * @param vmBuilder 가상머신 빌더
+     * @param vmVo 가상머신 객체
+     */
+    private void getVmInit(VmBuilder vmBuilder, VmCreateVo vmVo){
+        if (vmVo.getVmInitVo().isCloudInit()) {
+            vmBuilder.initialization(new InitializationBuilder()
+                    .hostName(vmVo.getVmInitVo().getHostName())
+                    .timezone(vmVo.getVmInitVo().getTimeStandard())  // Asia/Seoul
+                    .customScript(vmVo.getVmInitVo().getScript()));
+        }
+    }
+
+
+    /**
+     * 가상머신 - 호스트
+     * @param vmBuilder 가상머신 빌더
+     * @param vmVo 가상머신 객체
+     */
+    private void getVmHost(VmBuilder vmBuilder, VmCreateVo vmVo){
+        VmPlacementPolicyBuilder placementBuilder = new VmPlacementPolicyBuilder();
+
+        // 실행 호스트
+        if (!vmVo.getVmHostVo().isClusterHost()) {  // 특정 호스트를 선택한다면 무조건 한개는 존재
+            // 선택된 호스트 전부 넣기
+            placementBuilder.hosts(
+                    vmVo.getVmHostVo().getSelectHostId().stream()
+                            .map(hostId -> new HostBuilder().id(hostId).build())
+                            .collect(Collectors.toList())
+            );
+        }
+
+        // 마이그레이션: 사용자 정의 일때만 마이그레이션 모드 설정가능
+        vmBuilder.placementPolicy(placementBuilder.affinity(
+                                    "none".equals(vmVo.getVmSystemVo().getInstanceType()) ?
+                                        VmAffinity.valueOf(vmVo.getVmHostVo().getMigrationMode()) : VmAffinity.MIGRATABLE))
+                .migration(
+                        // 정책은 찾을 수가 없음, parallel Migrations 안보임, 암호화
+                        new MigrationOptionsBuilder().encrypted(vmVo.getVmHostVo().getMigrationEncrypt()).build());
+//                        .numaNodes(new NumaNodeBuilder().build()) // numa
+    }
+
+    /**
+     * 가상머신 - 고가용성
+     * @param vmBuilder 가상머신 빌더
+     * @param vmVo 가상머신 객체
+     */
+    private void getVmHa(VmBuilder vmBuilder, VmCreateVo vmVo){
+        // isHa: 고가용성 여부
+        // 재개동작 모르겠음
+        vmBuilder.highAvailability( new HighAvailabilityBuilder().enabled(vmVo.getVmHaVo().isHa()).priority(vmVo.getVmHaVo().getPriority()));
+
+        if (vmVo.getVmHaVo().isHa()) {       // 스토리지 도메인 지정
+            // 선택안햇을경우
+            vmBuilder.lease(new StorageDomainLeaseBuilder().storageDomain(new StorageDomainBuilder().id(vmVo.getVmHaVo().getVmStorageDomainId())));
+        }
+    }
+
+
+    /**
+     * 가상머신 - 리소스 할당
+     * @param vmBuilder 가상머신 빌더
+     * @param vmVo 가상머신 객체
+     */
+    private void getVmResource(VmBuilder vmBuilder, VmCreateVo vmVo){
+        // CPU 할당
+        vmBuilder
+                .cpuProfile(new CpuProfileBuilder().id(vmVo.getVmResourceVo().getCpuProfileId()))
+                .cpuShares(vmVo.getVmResourceVo().getCpuShare())
+                .autoPinningPolicy("RESIZE_AND_PIN_NUMA".equals(vmVo.getVmResourceVo().getCpuPinningPolicy())
+                        ? AutoPinningPolicy.ADJUST : AutoPinningPolicy.DISABLED)
+                .cpuPinningPolicy(CpuPinningPolicy.valueOf(vmVo.getVmResourceVo().getCpuPinningPolicy()))
+                .virtioScsiMultiQueuesEnabled(vmVo.getVmResourceVo().isMultiQue()); // VirtIO-SCSI 활성화
+    }
+
+
+    /**
+     * 가상머신 - 부트 옵션
+     * @param vmBuilder 가상머신 빌더
+     * @param vmVo 가상머신 객체
+     */
+    private void getVmBoot(VmBuilder vmBuilder, VmCreateVo vmVo){
+        vmBuilder.os(new OperatingSystemBuilder()
+                .type(vmVo.getOs()) // 일반 - 운영시스템
+                .boot(new BootBuilder().devices(
+                        vmVo.getVmBootVo().getDeviceList().stream()
+                                .map(BootDevice::valueOf)
+                                .collect(Collectors.toList()))));
+
+//                .bios(new BiosBuilder().type(BiosType.valueOf(vmVo.getChipsetType())))  // 칩셋/펌웨어
+//                        .bootMenu(new BootMenuBuilder().enabled(vmVo.getVmBootVo().isBootingMenu()))
+    }
+
+    /**
+     *
+     * @param system
+     * @param vm
+     * @param vmVo
+     * @throws Exception
+     */
+    private void addVmComponents(SystemService system, Vm vm, VmCreateVo vmVo) throws Exception {
+        if (vmVo.getVnicList() != null) {
+            addVmNic(system, vm, vmVo); // NIC 추가
+        }
+
+        if (vmVo.getVDiskList() != null) {
+            addVmDisk(system, vm, vmVo.getVDiskList()); // 디스크 추가
+        }
+
+        if (vmVo.getVmBootVo().getConnId() != null) {
+            system.vmsService().vmService(vm.id()).cdromsService().add()
+                    .cdrom(new CdromBuilder().file(new FileBuilder().id(vmVo.getVmBootVo().getConnId())).build())
+                    .send();
+            log.info("부트옵션 추가 성공");
+        }
+    }
+
+
+
+    // endregion
 
 
     // 가상머신 편집 창
@@ -696,7 +770,7 @@ public class VmServiceImpl implements ItVmService {
         VmService vmService = system.vmsService().vmService(id);
 
         try {
-            if (!system.vmsService().vmService(id).get().send().vm().deleteProtected()) {  // 가상머신 삭제방지 여부
+            if (!vmService.get().send().vm().deleteProtected()) {  // 가상머신 삭제방지 여부
                 // detachOnly => true 면 가상머신만 삭제/ false면 디스크도 삭제
                 // 근데 disk의 값은 true면 디스크 삭제
                 vmService.remove().detachOnly(!disk).send();
@@ -1729,6 +1803,29 @@ public class VmServiceImpl implements ItVmService {
                 )
                 .collect(Collectors.toList());
     }
+
+
+
+
+
+    // vm 상태확인
+    private boolean expectStatus(VmService vmService, VmStatus expectStatus, long interval, long timeout) throws InterruptedException {
+        long startTime = System.currentTimeMillis();
+        while (true) {
+            Vm currentVm = vmService.get().send().vm();
+            VmStatus status = currentVm.status();
+
+            if (status == expectStatus) {
+                return true;
+            } else if (System.currentTimeMillis() - startTime > timeout) {
+                return false;
+            }
+
+            log.info("가상머신 상태: {}", status);
+            Thread.sleep(interval);
+        }
+    }
+
 
 
 }
