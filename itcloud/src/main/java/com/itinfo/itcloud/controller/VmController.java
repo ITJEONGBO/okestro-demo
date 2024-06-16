@@ -55,7 +55,7 @@ public class VmController {
 	@ResponseStatus(HttpStatus.OK)
 	public VmCreateVo getVmCreate(@PathVariable String id) {
 		log.info("--- 가상머신 편집 창");
-		return vmService.setEditVm(id);
+		return vmService.setVm(id);
 	}
 
 	@PutMapping("/vm/{id}")

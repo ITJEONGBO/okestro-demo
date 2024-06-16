@@ -18,6 +18,8 @@ public class VnicProfileVo {
     private String networkId;
     private String networkName;
     private String networkFilterName;
+    
+    private String nicName; // 가상머신 편집
 
     private boolean provider;
 }

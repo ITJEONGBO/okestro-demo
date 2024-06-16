@@ -3,6 +3,7 @@ package com.itinfo.itcloud.model.create;
 import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.computing.AffinityGroupVo;
 import com.itinfo.itcloud.model.computing.AffinityLabelVo;
+import com.itinfo.itcloud.model.network.VnicProfileVo;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -33,8 +34,8 @@ public class VmCreateVo {
     // 보관
 
     private List<VDiskVo> vDiskList;    // 인스턴스 이미지
-    private List<IdentifiedVo> vnicList;       // vnic 프로파일
-//    private List<NicVo> vnicList;       // vnic 프로파일
+    private List<VnicProfileVo> vnicList;       // vnic 프로파일
+
 
     // 시스템
     private VmSystemVo vmSystemVo;

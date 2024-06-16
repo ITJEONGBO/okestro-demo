@@ -34,7 +34,7 @@ public interface ItVmService {
 
 
     CommonVo<Boolean> addVm(VmCreateVo vmCreateVo);   // 생성
-    VmCreateVo setEditVm(String id);      // 편집 창
+    VmCreateVo setVm(String id);      // 편집 창
     CommonVo<Boolean> editVm(String id, VmCreateVo vmCreateVo);     // 편집
     CommonVo<Boolean> deleteVm(String id, boolean disk);            // 삭제
     CommonVo<Boolean> migrateVm(String id, String hostId);         // 마이그레이션

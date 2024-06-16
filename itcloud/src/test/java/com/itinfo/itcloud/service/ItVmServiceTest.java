@@ -37,9 +37,8 @@ class ItVmServiceTest {
     void getList() {
         List<VmVo> result = vmService.getList();
 
-        assertThat(result.size()).isEqualTo(2);
-
         result.forEach(System.out::println);
+        assertThat(result.size()).isEqualTo(5);
     }
 
 
@@ -87,7 +86,7 @@ class ItVmServiceTest {
         List<VnicProfileVo> result = vmService.setVnic(clusterId);
 
         result.forEach(System.out::println);
-        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.size()).isEqualTo(3);
     }
 
     @Test
@@ -149,124 +148,116 @@ class ItVmServiceTest {
 
 
 
-
     @Test
-    @DisplayName("가상머신 생성")
-    void addVm() {
+    @DisplayName("가상머신 생성 - 네트워크")
+    void addVm2() {
         String randomName = RandomStringUtils.randomAlphabetic(2);
         String randomDiskName = RandomStringUtils.randomAlphabetic(3);
 
+        List<VDiskVo> diskList = Arrays.asList(
+                VDiskVo.builder().vDiskImageVo(
+                                VDiskImageVo.builder()
+                                        .size(2)
+                                        .alias(randomDiskName)
+                                        .description("test")
+                                        .storageDomainId("12d17014-a612-4b6e-a512-6ec4e1aadba6") // hosted_storage
+                                        .allocationPolicy(true) // 할당정책: 씬
+                                        .diskProfile("23ab66ac-26c3-4b21-ba78-691ec2a004df")
+                                        .wipeAfterDelete(false)
+                                        .shareable(false)
+                                        .backup(true) // 증분백업 기본값 t
+                                        // 취소 활성화
+                                        .interfaces(DiskInterface.valueOf("VIRTIO_SCSI"))
+                                        .bootable(true) // 기본값:t
+                                        .readOnly(false)
+                                        .build()
+                ).build()
+//                ,
+//                // 연결
+//                VDiskVo.builder().vDiskImageVo(VDiskImageVo.builder()
+//                                        .diskId("ab422078-c7b0-49e4-90cc-b8b1f1befa99")
+//                                        .interfaces(DiskInterface.valueOf("VIRTIO_SCSI"))
+//                                        .bootable(false) // 기본값:t
+//                                        .readOnly(false)
+//                                        .build()
+//                ).build()
+        );
+
+        List<VnicProfileVo> vnicList = Arrays.asList(
+                VnicProfileVo.builder().id("0000000a-000a-000a-000a-000000000398").build(),
+                VnicProfileVo.builder().id("7f429cf2-e7ec-497c-8c48-6ba0975f6383").build(),
+                VnicProfileVo.builder().id("41a5558d-3fbd-4348-ab9b-f66de38fe720").build()
+        );
+
         VmCreateVo vm =
-            VmCreateVo.builder()
-                    .clusterId(clusterId)
-                    .templateId("00000000-0000-0000-0000-000000000000")
-                    .os("rhel_8x64")
-                    .chipsetType("Q35_OVMF")  // String.valueOf(BiosType.Q35_OVMF)
-                    .option("SERVER")  // String.valueOf(VmType.SERVER)
-                    .name(randomName)
-                    .description("")
-                    .comment("cc")
-                    .stateless(false)
-                    .startPaused(false)
-                    .deleteProtected(false)
-                    // 네트워크
-                    .vnicList(
-                            Arrays.asList(
-                                    IdentifiedVo.builder()
-                                            .id("0000000a-000a-000a-000a-000000000398")
-                                            .build()
-                            )
-                    )
-                    // 디스크
-                    // 생성
-                    .vDiskList(
-                            Arrays.asList(
-                                    VDiskVo.builder()
-                                            .vDiskImageVo(
-                                                    VDiskImageVo.builder()
-                                                            .size(2)
-                                                            .alias(randomDiskName)
-                                                            .description("test")
-                                                            .storageDomainId("12d17014-a612-4b6e-a512-6ec4e1aadba6") // hosted_storage
-                                                            .allocationPolicy(true) // 할당정책: 씬
-                                                            .diskProfile("23ab66ac-26c3-4b21-ba78-691ec2a004df")
-                                                            .wipeAfterDelete(false)
-                                                            .shareable(false)
-                                                            .backup(true) // 증분백업 기본값 t
-                                                            // 취소 활성화
-                                                            .interfaces(DiskInterface.valueOf("VIRTIO_SCSI"))
-                                                            .bootable(true) // 기본값:t
-                                                            .readOnly(false)
-                                                            .build()
-                                            )
-                                            .build()
-                                    ,
-                                    VDiskVo.builder()
-                                            .vDiskImageVo(
-                                                    VDiskImageVo.builder()
-                                                            .diskId("ab422078-c7b0-49e4-90cc-b8b1f1befa99")
-                                                            .interfaces(DiskInterface.valueOf("VIRTIO_SCSI"))
-                                                            .bootable(false) // 기본값:t
-                                                            .readOnly(false)
-                                                            .build()
-                                            )
-                                            .build()
-                            )
-                    )
-                    .vmSystemVo(
-                            VmSystemVo.builder()
-                                    .instanceType("small") //tiny 안됨 ( small, medium, xlarge)
-                                    .memorySize(1024)
-                                    .memoryMax(4096)
-                                    .memoryActual(1024)
-                                    .vCpuSocket(1)
-                                    .vCpuSocketCore(1)
-                                    .vCpuCoreThread(1)
-                                    .timeOffset("Asia/Seoul")  // Asia/Seoul , Etc/GMT
-                                    .build()
-                    )
-                    .vmInitVo(
-                            VmInitVo.builder()
-                                    .cloudInit(true)   // 일단 안됨
-                                    .hostName(randomName) // 기본값은 해당 vm의 이름
-                                    .timeStandard("Asia/Seoul")
-                                    .script("")
-                                    .build()
-                    )
-                    .vmHostVo(
-                            VmHostVo.builder()
-                                    .clusterHost(true)  // 클러스터 내 호스트
+                VmCreateVo.builder()
+                        .clusterId(clusterId)
+                        .templateId("00000000-0000-0000-0000-000000000000")
+                        .os("rhel_8x64")
+                        .chipsetType("Q35_OVMF")  // String.valueOf(BiosType.Q35_OVMF)
+                        .option("SERVER")  // String.valueOf(VmType.SERVER)
+                        .name(randomName)
+                        .description("")
+                        .comment("cc")
+                        .stateless(false)
+                        .startPaused(false)
+                        .deleteProtected(false)
+                        .vnicList(vnicList)     // 네트워크
+                        .vDiskList(diskList)    // 디스크
+                        .vmSystemVo(
+                                VmSystemVo.builder()
+                                        .instanceType("small") //tiny 안됨 ( small, medium, xlarge)
+                                        .memorySize(1024)
+                                        .memoryMax(4096)
+                                        .memoryActual(1024)
+                                        .vCpuSocket(1)
+                                        .vCpuSocketCore(1)
+                                        .vCpuCoreThread(1)
+                                        .timeOffset("Asia/Seoul")  // Asia/Seoul , Etc/GMT
+                                        .build()
+                        )
+                        .vmInitVo(
+                                VmInitVo.builder()
+                                        .cloudInit(false)   // 일단 안됨
+                                        .hostName(randomName) // 기본값은 해당 vm의 이름
+                                        .timeStandard("Asia/Seoul")
+                                        .script("")
+                                        .build()
+                        )
+                        .vmHostVo(
+                                VmHostVo.builder()
+                                        .clusterHost(true)  // 클러스터 내 호스트
 //                                    .clusterHost(false)  // 특정 호스트
 //                                    .selectHostId(Arrays.asList("1c8ed321-28e5-4f83-9e34-e13f9125f253", "f08baae8-2137-490c-bec2-fd00f67a37b9"))
-                                    .migrationEncrypt(InheritableBoolean.FALSE)
-                                    .migrationMode("PINNED")  // 마이그레이션 안함
-                                    .build()
-                    )
-                    .vmHaVo(
-                            VmHaVo.builder()
-                                    .ha(false) // 기본 false
+                                        .migrationEncrypt(InheritableBoolean.FALSE)
+                                        .migrationMode("PINNED")  // 마이그레이션 안함
+                                        .build()
+                        )
+                        .vmHaVo(
+                                VmHaVo.builder()
+                                        .ha(false) // 기본 false
 //                                    .vmStorageDomainId("06faa572-f1ac-4874-adcc-9d26bb74a54d") // 스토리지 도메인
-                                    // 재개동작?
-                                    .priority(1)  // 우선순위: 기본 1(낮음)
-                                    .build()
-                    )
-                    .vmResourceVo(
-                            VmResourceVo.builder()
-                                    .cpuProfileId("58ca604e-01a7-003f-01de-000000000250")
-                                    .cpuShare(512)
-                                    .cpuPinningPolicy("DEDICATED")
-                                    .memoryBalloon(true)    // 시스템에서
-                                    .multiQue(true)
+                                        // 재개동작?
+                                        .priority(1)  // 우선순위: 기본 1(낮음)
+                                        .build()
+                        )
+                        .vmResourceVo(
+                                VmResourceVo.builder()
+                                        .cpuProfileId("58ca604e-01a7-003f-01de-000000000250")
+                                        .cpuShare(512)
+                                        .cpuPinningPolicy("DEDICATED")
+                                        .memoryBalloon(true)    // 시스템에서
+                                        .multiQue(true)
 //                                    .virtSCSIEnable(true)
-                                    .build()
-                    )
-                    .vmBootVo(
-                            VmBootVo.builder()
-                                    .deviceList(Arrays.asList("HD", "CDROM"))
-                                    .connId("a97b75d7-15fe-4168-ba5a-c52434936c70")
-                                    .build()
-                    )
-                .build();
+                                        .build()
+                        )
+                        .vmBootVo(
+                                VmBootVo.builder()
+                                        .deviceList(Arrays.asList("HD", "CDROM"))
+                                        .connId("a97b75d7-15fe-4168-ba5a-c52434936c70")
+                                        .build()
+                        )
+                        .build();
 
         CommonVo<Boolean> result = vmService.addVm(vm);
         assertThat(result.getHead().getCode()).isEqualTo(201);
@@ -276,14 +267,33 @@ class ItVmServiceTest {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     @Test
     @DisplayName("가상머신 편집 창")
-    void setEditVm() {
-        String id = "364dfe92-fb24-4e97-8a7b-1e9de59f6be6";
-        VmCreateVo result = vmService.setEditVm(defaultId);
+    void setVm() {
+        String id = "3f5fc65c-8eba-4b9f-a321-ecfc9a58483c";
+        VmCreateVo result = vmService.setVm(id);
 
         System.out.println(result);
-        assertThat(result.getName()).isEqualTo("HostedEngine");
+        assertThat(result.getName()).isEqualTo("sT");
     }
 
     @Test
