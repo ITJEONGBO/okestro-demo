@@ -400,50 +400,6 @@ class ItVmServiceTest {
 
 
     @Test
-    @DisplayName("가상머신 스냅샷 창")
-    void setSnapshotVm() {
-//        String id = "21a4369f-c828-47d7-afcb-1248f7c2a787"; // 디스크없음
-        String id = "e929923d-8710-47ef-bfbd-e281434eb8ee"; // 2
-
-        List<SnapshotDiskVo> result = vmService.setSnapshot(defaultId);
-
-        assertThat(result.size()).isEqualTo(1);
-        result.forEach(System.out::println);
-    }
-
-
-
-
-    @Test
-    @DisplayName("가상머신 스냅샷 생성")
-    void snapshotVm() {
-        String id = "6b2cf6fb-bc4f-444d-9a19-7b3766cf1dd9";
-
-        List<SnapshotDiskVo> sList = new ArrayList<>();
-        SnapshotDiskVo s =
-                SnapshotDiskVo.builder()
-                    .alias("")
-                    .daId("e6bff67c-dc9e-4d3b-9e5e-79fcd5cac6dd")
-                    .build();
-
-        sList.add(s);
-
-        SnapshotVo snapshotVo =
-                SnapshotVo.builder()
-                        .vmId(id)
-                        .sDiskList(sList)
-                        .build();
-        CommonVo<Boolean> result = vmService.addSnapshot(snapshotVo);
-
-//        assertThat(result.getHead().getCode()).isEqualTo(201);
-    }
-
-
-
-
-
-
-    @Test
     @DisplayName("가상머신 일반")
     void getInfo() {
         String id = "6b2cf6fb-bc4f-444d-9a19-7b3766cf1dd9";
@@ -630,11 +586,56 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 스냅샷")
     void getSnapshot() {
-        String id = "e929923d-8710-47ef-bfbd-e281434eb8ee";  //b
+        String id = "3f5fc65c-8eba-4b9f-a321-ecfc9a58483c";
         List<SnapshotVo> result = vmService.getSnapshot(id);
 
         result.forEach(System.out::println);
     }
+
+
+
+
+    @Test
+    @DisplayName("가상머신 스냅샷 창")
+    void setSnapshotVm() {
+        String id = "3f5fc65c-8eba-4b9f-a321-ecfc9a58483c"; // 2
+
+        List<SnapshotDiskVo> result = vmService.setSnapshot(id);
+
+        result.forEach(System.out::println);
+//        assertThat(result.size()).isEqualTo(1);
+    }
+
+
+
+
+    @Test
+    @DisplayName("가상머신 스냅샷 생성")
+    void snapshotVm() {
+        String id = "6b2cf6fb-bc4f-444d-9a19-7b3766cf1dd9";
+
+        List<SnapshotDiskVo> sList = new ArrayList<>();
+        SnapshotDiskVo s =
+                SnapshotDiskVo.builder()
+                        .alias("")
+                        .daId("e6bff67c-dc9e-4d3b-9e5e-79fcd5cac6dd")
+                        .build();
+
+        sList.add(s);
+
+        SnapshotVo snapshotVo =
+                SnapshotVo.builder()
+                        .vmId(id)
+                        .sDiskList(sList)
+                        .build();
+        CommonVo<Boolean> result = vmService.addSnapshot(snapshotVo);
+
+//        assertThat(result.getHead().getCode()).isEqualTo(201);
+    }
+
+
+
+
 
     @Test
     @DisplayName("가상머신 스냅샷 삭제")

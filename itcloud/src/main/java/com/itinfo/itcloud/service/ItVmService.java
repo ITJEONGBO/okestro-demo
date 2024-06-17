@@ -48,9 +48,7 @@ public interface ItVmService {
     CommonVo<Boolean> shutdownVm(String id); // 종료
     CommonVo<Boolean> rebootVm(String id);   // 재부팅
     CommonVo<Boolean> resetVm(String id);    // 재설정
-
-    List<SnapshotDiskVo> setSnapshot(String id);  // vmid
-    CommonVo<Boolean> addSnapshot(SnapshotVo snapshotVo);   // 스냅샷 생성
+    // 스냅샷 생성은 스냅샷에서 api로 연결
 
 
     VmVo getInfo(String id);        // 일반
@@ -77,7 +75,9 @@ public interface ItVmService {
 
 
     // 스냅샷
-    List<SnapshotVo> getSnapshot(String id);
+    List<SnapshotVo> getSnapshot(String id);    // 목록
+    List<SnapshotDiskVo> setSnapshot(String vmId);  // 스냅샷 생성창
+    CommonVo<Boolean> addSnapshot(SnapshotVo snapshotVo);   // 스냅샷 생성
     CommonVo<Boolean> previewSnapshot(String id, String snapId);    // 스냅샷 미리보기
     CommonVo<Boolean> commitSnapshot(String id, String snapId);     // 스냅샷 커밋
     CommonVo<Boolean> restoreSnapshot(String id, String snapId);    // 스냅샷 되돌리기
