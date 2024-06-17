@@ -64,7 +64,7 @@ public class VmController {
 	public CommonVo<Boolean> editVm(@PathVariable String id,
 									@RequestBody VmCreateVo vm) {
 		log.info("--- 가상머신 편집");
-		return vmService.editVm(id, vm);
+		return vmService.editVm(vm);
 	}
 
 	@DeleteMapping("/vm/{id}")

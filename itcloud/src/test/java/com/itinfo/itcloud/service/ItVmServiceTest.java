@@ -183,11 +183,11 @@ class ItVmServiceTest {
 //                ).build()
         );
 
-        List<VnicProfileVo> vnicList = Arrays.asList(
-                VnicProfileVo.builder().id("0000000a-000a-000a-000a-000000000398").build(),
-                VnicProfileVo.builder().id("7f429cf2-e7ec-497c-8c48-6ba0975f6383").build(),
-                VnicProfileVo.builder().id("41a5558d-3fbd-4348-ab9b-f66de38fe720").build()
-        );
+//        List<VnicProfileVo> vnicList = Arrays.asList(
+//                VnicProfileVo.builder().id("0000000a-000a-000a-000a-000000000398").build(),
+//                VnicProfileVo.builder().id("7f429cf2-e7ec-497c-8c48-6ba0975f6383").build(),
+//                VnicProfileVo.builder().id("41a5558d-3fbd-4348-ab9b-f66de38fe720").build()
+//        );
 
         VmCreateVo vm =
                 VmCreateVo.builder()
@@ -202,11 +202,11 @@ class ItVmServiceTest {
                         .stateless(false)
                         .startPaused(false)
                         .deleteProtected(false)
-                        .vnicList(vnicList)     // 네트워크
+                        .vnicList(null/*vnicList*/)     // 네트워크
                         .vDiskList(diskList)    // 디스크
                         .vmSystemVo(
                                 VmSystemVo.builder()
-                                        .instanceType("small") //tiny 안됨 ( small, medium, xlarge)
+                                        .instanceType("") //tiny 안됨 ( small, medium, xlarge)
                                         .memorySize(1024)
                                         .memoryMax(4096)
                                         .memoryActual(1024)
@@ -226,19 +226,24 @@ class ItVmServiceTest {
                         )
                         .vmHostVo(
                                 VmHostVo.builder()
-                                        .clusterHost(true)  // 클러스터 내 호스트
-//                                    .clusterHost(false)  // 특정 호스트
-//                                    .selectHostId(Arrays.asList("1c8ed321-28e5-4f83-9e34-e13f9125f253", "f08baae8-2137-490c-bec2-fd00f67a37b9"))
-                                        .migrationEncrypt(InheritableBoolean.FALSE)
-                                        .migrationMode("PINNED")  // 마이그레이션 안함
-                                        .build()
+//                                        .clusterHost(true)  // 클러스터 내 호스트
+                                    .clusterHost(false)  // 특정 호스트
+                                    .hostId(
+                                        Arrays.asList(
+                                            IdentifiedVo.builder().id("a16955bd-ff57-4e6e-add5-c7d46d5315e9").build(),
+                                            IdentifiedVo.builder().id("92b81da8-b160-4abf-859f-8005d07944eb").build())
+                                    )
+                                    .migrationEncrypt(InheritableBoolean.FALSE)
+                                    .migrationMode("PINNED")  // 마이그레이션 안함
+                                    .build()
                         )
                         .vmHaVo(
                                 VmHaVo.builder()
-                                        .ha(false) // 기본 false
-//                                    .vmStorageDomainId("06faa572-f1ac-4874-adcc-9d26bb74a54d") // 스토리지 도메인
+//                                        .ha(false) // 기본 false
+                                        .ha(true) // 기본 false
+                                    .vmStorageDomainId("12d17014-a612-4b6e-a512-6ec4e1aadba6") // 스토리지 도메인
                                         // 재개동작?
-                                        .priority(1)  // 우선순위: 기본 1(낮음)
+                                        .priority(50)  // 우선순위: 기본 1(낮음)
                                         .build()
                         )
                         .vmResourceVo(
@@ -253,7 +258,8 @@ class ItVmServiceTest {
                         )
                         .vmBootVo(
                                 VmBootVo.builder()
-                                        .deviceList(Arrays.asList("HD", "CDROM"))
+                                        .firstDevice("HD")
+//                                        .secDevice("CDROM")
                                         .connId("a97b75d7-15fe-4168-ba5a-c52434936c70")
                                         .build()
                         )
@@ -308,7 +314,7 @@ class ItVmServiceTest {
                         .chipsetType("i440fx_sea_bios")
                         .build();
 
-        CommonVo<Boolean> result = vmService.editVm(id, vm);
+        CommonVo<Boolean> result = vmService.editVm(vm);
 
         assertThat(result.getHead().getCode()).isEqualTo(201);
     }

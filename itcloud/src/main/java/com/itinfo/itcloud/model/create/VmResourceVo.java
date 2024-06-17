@@ -8,6 +8,7 @@ import lombok.ToString;
 public class VmResourceVo {
     // 리소스 할당
     private String cpuProfileId;      // CPU 프로파일
+    private String cpuProfileName;
     private int cpuShare;        // CPU 공유
     private String cpuPinningPolicy;      // CPU Pinning Policy
 //    private String cpuPinningTopology;     // 피닝 토폴로지  // ????
