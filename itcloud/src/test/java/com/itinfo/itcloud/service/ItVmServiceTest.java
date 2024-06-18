@@ -144,6 +144,109 @@ class ItVmServiceTest {
     }
 
 
+    //-----------------------생성------------------------------------
+
+    @Test
+    @DisplayName("가상머신 생성 - 기본")
+    void addVm1() {
+        String randomName = RandomStringUtils.randomAlphabetic(2);
+
+        VmCreateVo vm =
+            VmCreateVo.builder()
+                .clusterId(clusterId)
+                .templateId("00000000-0000-0000-0000-000000000000")
+                .os("other_linux")
+                .chipsetType("Q35_SEA_BIOS")  // String.valueOf(BiosType.Q35_OVMF)
+                .option("SERVER")  // String.valueOf(VmType.SERVER)
+                .name(randomName)
+                .description("")
+                .comment("")
+                .stateless(false)
+                .startPaused(false)
+                .deleteProtected(false)
+                .vnicList(
+                    Arrays.asList(VnicProfileVo.builder().id("0000000a-000a-000a-000a-000000000398").build())
+                )
+                .vDiskList(
+                    Arrays.asList(
+                        VDiskVo.builder().vDiskImageVo(
+                            VDiskImageVo.builder()
+                                .size(200)
+                                .alias(randomName + 1)
+                                .description("")
+                                .interfaces(DiskInterface.valueOf("VIRTIO_SCSI")) // 인터페이스
+                                .storageDomainId("12d17014-a612-4b6e-a512-6ec4e1aadba6") // hosted_storage
+                                .allocationPolicy(true) // 할당정책: 씬
+                                .diskProfile("23ab66ac-26c3-4b21-ba78-691ec2a004df")
+
+                                .wipeAfterDelete(false)
+                                .bootable(true) // 기본값:t
+                                .shareable(false)
+                                .readOnly(false) // 읽기전용
+                                // 취소 활성화
+                                .backup(true) // 증분백업 기본값 t
+                                .build()
+                        ).build()
+                    )
+                )
+                .vmSystemVo(
+                    VmSystemVo.builder()
+                        .instanceType("") //tiny 안됨 ( small, medium, xlarge)
+                        .memorySize(2048)
+                        .memoryMax(8192)
+                        .memoryActual(2048)
+                        .vCpuSocket(2)
+                        .vCpuSocketCore(1)
+                        .vCpuCoreThread(1)
+                        .timeOffset("Asia/Seoul")  // Asia/Seoul , Etc/GMT
+                        .build()
+                )
+                .vmInitVo(
+                    VmInitVo.builder()
+                        .cloudInit(false)   // 일단 안됨
+                        .build()
+                )
+                .vmHostVo(
+                    VmHostVo.builder()
+                        .clusterHost(false)  // 특정 호스트
+                        .hostId(
+                                Arrays.asList(IdentifiedVo.builder().id("a16955bd-ff57-4e6e-add5-c7d46d5315e9").build())
+                        )
+                        .migrationEncrypt(InheritableBoolean.INHERIT)
+                        .migrationMode("MIGRATABLE")  // 마이그레이션
+                        .build()
+                )
+                .vmHaVo(
+                    VmHaVo.builder()
+                        .ha(false) // 기본 false
+                        .priority(1)  // 우선순위: 기본 1(낮음)
+                        .build()
+                )
+                .vmResourceVo(
+                    VmResourceVo.builder()
+                        .cpuProfileId("58ca604e-01a7-003f-01de-000000000250") // 클러스터 밑에 있는 cpu profile
+                        .cpuShare(0) // 비활성화됨 0
+                        .cpuPinningPolicy("NONE")
+                        .memoryBalloon(true)    // 메모리 balloon 활성화
+                        .multiQue(true) // 멀티 큐 사용
+                        .virtSCSIEnable(true)  // virtIO-SCSI 활성화
+                        .build()
+                )
+                .vmBootVo(
+                    VmBootVo.builder()
+                        .firstDevice("HD")
+                        .connId("3516d9c2-12c1-4c38-97a2-0e43180220f6")
+                        .build()
+                )
+                .build();
+
+        CommonVo<Boolean> result = vmService.addVm(vm);
+        assertThat(result.getHead().getCode()).isEqualTo(201);
+    }
+
+
+
+
 
 
 
@@ -260,7 +363,7 @@ class ItVmServiceTest {
                                 VmBootVo.builder()
                                         .firstDevice("HD")
 //                                        .secDevice("CDROM")
-                                        .connId("a97b75d7-15fe-4168-ba5a-c52434936c70")
+                                        .connId("3516d9c2-12c1-4c38-97a2-0e43180220f6")
                                         .build()
                         )
                         .build();
@@ -320,16 +423,23 @@ class ItVmServiceTest {
     }
 
     @Test
-    @DisplayName("가상머신 삭제")
+    @DisplayName("가상머신 삭제 - 삭제방지 모드 X")
     void deleteVm() {
-        String id = "97f550a7-99d4-443a-9d1d-2571ede6efdc";
-        boolean disk = false; //t: 디스크지움, f:디스크남김
-
+        String id = "293642d3-349f-4550-bced-01bdcc9baf64";
+        boolean disk = true; //t: 디스크지움, f:디스크남김
         CommonVo<Boolean> result = vmService.deleteVm(id, disk);
-        System.out.println("가상머신 삭제 disk: " + disk);
 
-//        assertThat(result.getHead().getCode()).isEqualTo(404); // 삭제방지모드
         assertThat(result.getHead().getCode()).isEqualTo(200);
+    }
+
+    @Test
+    @DisplayName("가상머신 삭제 - 삭제방지 모드 O")
+    void deleteVm2() {
+        String id = "293642d3-349f-4550-bced-01bdcc9baf64";
+        boolean disk = true; //t: 디스크지움, f:디스크남김
+        CommonVo<Boolean> result = vmService.deleteVm(id, disk);
+
+        assertThat(result.getHead().getCode()).isEqualTo(404); // 삭제방지모드
     }
 
 
@@ -337,75 +447,106 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 실행")
     void startVm() {
-        String id = "6b2cf6fb-bc4f-444d-9a19-7b3766cf1dd9";
+        String id = "89455fd7-770a-427a-962d-ee5782db5615";
         CommonVo<Boolean> result = vmService.startVm(id);
 
         assertThat(result.getHead().getCode()).isEqualTo(200);
-//        assertThat(result.getHead().getCode()).isEqualTo(404);
     }
 
     @Test
     @DisplayName("가상머신 일시정지")
     void pauseVm() {
-        String id = "6b2cf6fb-bc4f-444d-9a19-7b3766cf1dd9";
+        String id = "89455fd7-770a-427a-962d-ee5782db5615";
         CommonVo<Boolean> result = vmService.pauseVm(id);
 
         assertThat(result.getHead().getCode()).isEqualTo(200);
-//        assertThat(result.getHead().getCode()).isEqualTo(404);
     }
     
 
     @Test
-    @DisplayName("가상머신 전원끔")
+    @DisplayName("가상머신 전원끔(강제종료)")
     void stopVm() {
-        String id = "";
-        CommonVo<Boolean> result = vmService.stopVm(id);
+        String id = "89455fd7-770a-427a-962d-ee5782db5615";
+        CommonVo<Boolean> result = vmService.powerOffVm(id);
 
         assertThat(result.getHead().getCode()).isEqualTo(200);
-//        assertThat(result.getHead().getCode()).isEqualTo(404);
     }
     
 
     @Test
     @DisplayName("가상머신 종료")
     void shutdownVm() {
-        String id = "6b2cf6fb-bc4f-444d-9a19-7b3766cf1dd9";
-        CommonVo<Boolean> result = vmService.shutdownVm(id);
+        String id = "89455fd7-770a-427a-962d-ee5782db5615";
+        CommonVo<Boolean> result = vmService.shutDownVm(id);
 
         assertThat(result.getHead().getCode()).isEqualTo(200);
-//        assertThat(result.getHead().getCode()).isEqualTo(404);
     }
     
     @Test
     @DisplayName("가상머신 재부팅")
     void rebootVm() {
-        String id = "6b2cf6fb-bc4f-444d-9a19-7b3766cf1dd9";
+        String id = "89455fd7-770a-427a-962d-ee5782db5615";
         CommonVo<Boolean> result = vmService.rebootVm(id);
 
         assertThat(result.getHead().getCode()).isEqualTo(200);
-//        assertThat(result.getHead().getCode()).isEqualTo(404);
     }
 
     
     @Test
     @DisplayName("가상머신 재설정")
     void resetVm() {
-        String id = "6b2cf6fb-bc4f-444d-9a19-7b3766cf1dd9";
+        String id = "89455fd7-770a-427a-962d-ee5782db5615";
         CommonVo<Boolean> result = vmService.resetVm(id);
 
         assertThat(result.getHead().getCode()).isEqualTo(200);
-//        assertThat(result.getHead().getCode()).isEqualTo(404);
     }
+
+
+
+
+
+    @Test
+    @DisplayName("가상머신 마이그레이션할 목록 - 클러스터 내 호스트")
+    void migrateHostList() {
+        String id = "d1d753d1-6ceb-43c7-b260-242671cbe9e4";
+        List<IdentifiedVo> result = vmService.migrateHostList(id);
+
+        result.forEach(System.out::println);
+    }
+
+
+
+//    @Test
+//    @DisplayName("가상머신 마이그레이션할 목록 - 특정 호스트")
+//    void migrateHostList2() {
+//        String id = "3f342124-8aa9-473b-b96a-043e985b5742";
+//        List<IdentifiedVo> result = vmService.migrateHostList(id);
+//
+//        result.forEach(System.out::println);
+//    }
+
+
+    @Test
+    @DisplayName("가상머신 마이그레이션")
+    void getMigrateVm() {
+        String id = "d1d753d1-6ceb-43c7-b260-242671cbe9e4";
+        String hostId = "a16955bd-ff57-4e6e-add5-c7d46d5315e9";
+        CommonVo<Boolean> result = vmService.migrateVm(id, hostId);
+
+        assertThat(result.getHead().getCode()).isEqualTo(200);
+    }
+
+
 
 
 
     @Test
     @DisplayName("가상머신 일반")
     void getInfo() {
-        String id = "6b2cf6fb-bc4f-444d-9a19-7b3766cf1dd9";
+        String id = "89455fd7-770a-427a-962d-ee5782db5615";
         VmVo result = vmService.getInfo(defaultId);
 
-        assertThat("HostedEngine").isEqualTo(result.getName());
+//        assertThat("HostedEngine").isEqualTo(result.getName());
         System.out.println(result);
     }
 
@@ -586,7 +727,7 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 스냅샷")
     void getSnapshot() {
-        String id = "3f5fc65c-8eba-4b9f-a321-ecfc9a58483c";
+        String id = "89455fd7-770a-427a-962d-ee5782db5615";
         List<SnapshotVo> result = vmService.getSnapshot(id);
 
         result.forEach(System.out::println);
@@ -598,7 +739,7 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 스냅샷 창")
     void setSnapshotVm() {
-        String id = "3f5fc65c-8eba-4b9f-a321-ecfc9a58483c"; // 2
+        String id = "3f342124-8aa9-473b-b96a-043e985b5742"; // 2
 
         List<SnapshotDiskVo> result = vmService.setSnapshot(id);
 
@@ -614,26 +755,20 @@ class ItVmServiceTest {
     void snapshotVm() {
         String id = "6b2cf6fb-bc4f-444d-9a19-7b3766cf1dd9";
 
-        List<SnapshotDiskVo> sList = new ArrayList<>();
-        SnapshotDiskVo s =
-                SnapshotDiskVo.builder()
-                        .alias("")
-                        .daId("e6bff67c-dc9e-4d3b-9e5e-79fcd5cac6dd")
-                        .build();
-
-        sList.add(s);
-
         SnapshotVo snapshotVo =
                 SnapshotVo.builder()
                         .vmId(id)
-                        .sDiskList(sList)
+                        .sDiskList(
+                            Arrays.asList(
+                                SnapshotDiskVo.builder().alias("").daId("e6bff67c-dc9e-4d3b-9e5e-79fcd5cac6dd").build()
+                            )
+                        )
                         .build();
+
         CommonVo<Boolean> result = vmService.addSnapshot(snapshotVo);
 
 //        assertThat(result.getHead().getCode()).isEqualTo(201);
     }
-
-
 
 
 

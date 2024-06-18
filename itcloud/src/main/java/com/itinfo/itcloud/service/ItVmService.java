@@ -32,23 +32,24 @@ public interface ItVmService {
     List<IdentifiedVo> setAgList(String clusterId); // 선호도 그룹 리스트
     List<IdentifiedVo> setAlList(); // 선호도 레이블 리스트
 
+    VmStatus getStatus(String id);
 
     CommonVo<Boolean> addVm(VmCreateVo vmCreateVo);   // 생성
     VmCreateVo setVm(String id);      // 편집 창
     CommonVo<Boolean> editVm(VmCreateVo vmCreateVo);     // 편집
     CommonVo<Boolean> deleteVm(String id, boolean disk);            // 삭제
-    CommonVo<Boolean> migrateVm(String id, String hostId);         // 마이그레이션
-    CommonVo<Boolean> migrateCancelVm(String id);   // 마이그레이션 취소
 
-
-    VmStatus getStatus(String id);
     CommonVo<Boolean> startVm(String id);  // 실행
     CommonVo<Boolean> pauseVm(String id);    // 일시정지
-    CommonVo<Boolean> stopVm(String id);     // 전원끔
-    CommonVo<Boolean> shutdownVm(String id); // 종료
+    CommonVo<Boolean> powerOffVm(String id);     // 전원끔
+    CommonVo<Boolean> shutDownVm(String id); // 종료
     CommonVo<Boolean> rebootVm(String id);   // 재부팅
     CommonVo<Boolean> resetVm(String id);    // 재설정
     // 스냅샷 생성은 스냅샷에서 api로 연결
+
+    List<IdentifiedVo> migrateHostList(String id);  // 마이그레이션할 호스트 목록
+    CommonVo<Boolean> migrateVm(String id, String hostId);         // 마이그레이션
+//    CommonVo<Boolean> migrateCancelVm(String id);   // 마이그레이션 취소
 
 
     VmVo getInfo(String id);        // 일반
