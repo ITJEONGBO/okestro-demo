@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.controller;
 
+import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.VmCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
@@ -114,7 +115,7 @@ public class VmController {
 
 	@GetMapping("/vm/{id}/applications")
 	@ResponseBody
-	public List<ApplicationVo> app(@PathVariable String id) {
+	public List<IdentifiedVo> app(@PathVariable String id) {
 		log.info("----- vm app 불러오기: " + id);
 		return vmService.getApplication(id);
 	}

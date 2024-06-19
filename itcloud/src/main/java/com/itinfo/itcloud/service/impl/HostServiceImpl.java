@@ -525,7 +525,7 @@ public class HostServiceImpl implements ItHostService {
         SystemService system = admin.getConnection().systemService();
         List<HostNic> hostNicList = system.hostsService().hostService(id).nicsService().list().send().nics();
         DecimalFormat df = new DecimalFormat("###,###");
-        BigInteger bps = BigInteger.valueOf(1024 * 1024);
+        BigInteger bps = BigInteger.valueOf(1024).pow(2);
         
         log.info("호스트 네트워크 인터페이스");
         return hostNicList.stream()

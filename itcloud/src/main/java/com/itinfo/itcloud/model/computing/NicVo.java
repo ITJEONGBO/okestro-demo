@@ -25,6 +25,7 @@ public class NicVo {
     private BigInteger speed;    // mbps
     private BigInteger stop;
 
+
     // 가상머신 nic
     private String networkName;
     private String ipv4;

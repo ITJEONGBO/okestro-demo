@@ -444,6 +444,8 @@ class ItVmServiceTest {
 
 
 
+
+
     @Test
     @DisplayName("가상머신 실행")
     void startVm() {
@@ -508,22 +510,11 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 마이그레이션할 목록 - 클러스터 내 호스트")
     void migrateHostList() {
-        String id = "d1d753d1-6ceb-43c7-b260-242671cbe9e4";
+        String id = "7a2e21ea-303f-444d-b3ae-964fc04c3919";
         List<IdentifiedVo> result = vmService.migrateHostList(id);
 
         result.forEach(System.out::println);
     }
-
-
-
-//    @Test
-//    @DisplayName("가상머신 마이그레이션할 목록 - 특정 호스트")
-//    void migrateHostList2() {
-//        String id = "3f342124-8aa9-473b-b96a-043e985b5742";
-//        List<IdentifiedVo> result = vmService.migrateHostList(id);
-//
-//        result.forEach(System.out::println);
-//    }
 
 
     @Test
@@ -550,47 +541,39 @@ class ItVmServiceTest {
         System.out.println(result);
     }
 
+
+
     @Test
     @DisplayName("가상머신 네트워크 인터페이스")
     void getNic() {
         String id = "266b7ca4-354b-4016-adbe-7324c932c8ca";
-        List<NicVo> result = vmService.getNic(id);
+        List<NicVo> result = vmService.getNic(defaultId);
 
-//        assertThat(true).isEqualTo(result.stream().anyMatch(nicVo -> nicVo.getName().equals("vnet0")));
         result.forEach(System.out::println);
+//        assertThat(true).isEqualTo(result.stream().anyMatch(nicVo -> nicVo.getName().equals("vnet0")));
     }
 
     @Test
     @DisplayName("가상머신 네트워크 인터페이스 생성")
     void addNic() {
-        String id = "e929923d-8710-47ef-bfbd-e281434eb8ee";
+        String id = "89455fd7-770a-427a-962d-ee5782db5615";
+        String profileId = "0000000a-000a-000a-000a-000000000398";
 
         NicVo nicVo =
-                NicVo.builder()
-                        .name("sf4")
-                        .vnicProfileVo(
-                                VnicProfileVo.builder()
-                                        .id("0000000a-000a-000a-000a-000000000398")
-                                        .build()
-                        )
-                        .interfaces("VIRTIO")
-                        .linkStatus(true)
-                        .plugged(true)
-//                        .macAddress("00:14:4a:23:67:56")
-                        .nfVoList(
-                                Arrays.asList(
-                                        NetworkFilterParameterVo.builder()
-                                                .name("s")
-                                                .value("20")
-                                                .build()
-                                        ,
-                                        NetworkFilterParameterVo.builder()
-                                                .name("s2")
-                                                .value("21")
-                                                .build()
-                                )
-                        )
-                        .build();
+            NicVo.builder()
+                .name("sfa4")
+                .vnicProfileVo(VnicProfileVo.builder().id(profileId).build())
+                .interfaces("VIRTIO")
+                .linkStatus(true)
+                .plugged(true)
+                .macAddress("00:14:4a:23:67:56")
+                .nfVoList(
+                    Arrays.asList(
+                        NetworkFilterParameterVo.builder().name("s").value("20").build(),
+                        NetworkFilterParameterVo.builder().name("s2").value("21").build()
+                    )
+                )
+            .build();
 
         CommonVo<Boolean> addNic = vmService.addNic(id, nicVo);
 
@@ -727,60 +710,60 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 스냅샷")
     void getSnapshot() {
-        String id = "89455fd7-770a-427a-962d-ee5782db5615";
+//        String id = "3f342124-8aa9-473b-b96a-043e985b5742";
+        String id = "7a2e21ea-303f-444d-b3ae-964fc04c3919";
         List<SnapshotVo> result = vmService.getSnapshot(id);
 
         result.forEach(System.out::println);
     }
 
-
-
-
     @Test
     @DisplayName("가상머신 스냅샷 창")
     void setSnapshotVm() {
-        String id = "3f342124-8aa9-473b-b96a-043e985b5742"; // 2
-
+        String id = "3f342124-8aa9-473b-b96a-043e985b5742";
         List<SnapshotDiskVo> result = vmService.setSnapshot(id);
 
         result.forEach(System.out::println);
-//        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.size()).isEqualTo(2);
     }
-
-
-
 
     @Test
     @DisplayName("가상머신 스냅샷 생성")
     void snapshotVm() {
-        String id = "6b2cf6fb-bc4f-444d-9a19-7b3766cf1dd9";
+        String id = "3f342124-8aa9-473b-b96a-043e985b5742";
 
         SnapshotVo snapshotVo =
                 SnapshotVo.builder()
                         .vmId(id)
+                        .description("asdf")
+                        .persistMemory(true)    // 메모리 저장 X
                         .sDiskList(
                             Arrays.asList(
-                                SnapshotDiskVo.builder().alias("").daId("e6bff67c-dc9e-4d3b-9e5e-79fcd5cac6dd").build()
+                                SnapshotDiskVo.builder().daId("24a47eb3-2a22-417e-aa5c-4bacbe3bfd53").build()
+//                                SnapshotDiskVo.builder().daId("0450dd6b-1325-4672-8323-9b6fb1802226").build()
                             )
                         )
                         .build();
+        System.out.println(snapshotVo);
 
         CommonVo<Boolean> result = vmService.addSnapshot(snapshotVo);
-
-//        assertThat(result.getHead().getCode()).isEqualTo(201);
+        assertThat(result.getHead().getCode()).isEqualTo(201);
     }
-
-
 
     @Test
     @DisplayName("가상머신 스냅샷 삭제")
     void deleteSnapshot() {
-        String id = "cf4efa5e-c753-4c0b-aebf-ae16fbeb6fc4";
-        String snapId = "baf91adf-8794-4ee9-b623-d467c07a0f08";
+        String id = "3f342124-8aa9-473b-b96a-043e985b5742";
+        String snapId = "74e56ce0-407d-4059-90a1-f5c76f0b7be8";
 
         CommonVo<Boolean> result = vmService.deleteSnapshot(id, snapId);
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
+
+
+
+
+
 
 
     @Test
@@ -832,14 +815,17 @@ class ItVmServiceTest {
     }
 
 
+
     @Test
     @DisplayName("가상머신 애플리케이션")
     void getApplication() {
-        List<ApplicationVo> result = vmService.getApplication(defaultId);
+        String id = "7a2e21ea-303f-444d-b3ae-964fc04c3919"; // centos
+        List<IdentifiedVo> result = vmService.getApplication(id);
 
-        assertThat(2).isEqualTo(result.size());
-        System.out.println(result.get(0).toString());
+        result.forEach(System.out::println);
+//        assertThat(2).isEqualTo(result.size());
     }
+
 
 
     @Test

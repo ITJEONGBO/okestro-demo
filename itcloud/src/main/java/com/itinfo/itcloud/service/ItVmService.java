@@ -79,17 +79,17 @@ public interface ItVmService {
     List<SnapshotVo> getSnapshot(String id);    // 목록
     List<SnapshotDiskVo> setSnapshot(String vmId);  // 스냅샷 생성창
     CommonVo<Boolean> addSnapshot(SnapshotVo snapshotVo);   // 스냅샷 생성
-    CommonVo<Boolean> previewSnapshot(String id, String snapId);    // 스냅샷 미리보기
-    CommonVo<Boolean> commitSnapshot(String id, String snapId);     // 스냅샷 커밋
-    CommonVo<Boolean> restoreSnapshot(String id, String snapId);    // 스냅샷 되돌리기
     CommonVo<Boolean> deleteSnapshot(String id, String snapId);     // 스냅샷 삭제
-    CommonVo<Boolean> copySnapshot();   // 스냅샷 복제
+//    CommonVo<Boolean> previewSnapshot(String id, String snapId);    // 스냅샷 미리보기
+//    CommonVo<Boolean> commitSnapshot(String id, String snapId);     // 스냅샷 커밋
+//    CommonVo<Boolean> restoreSnapshot(String id, String snapId);    // 스냅샷 되돌리기
+//    CommonVo<Boolean> copySnapshot();   // 스냅샷 복제
     CommonVo<Boolean> addTemplate();    // 스냅샷 템플릿 생성
 
 
 
 
-    List<ApplicationVo> getApplication(String id);  // 어플리케이션
+    List<IdentifiedVo> getApplication(String id);  // 어플리케이션
 //    List<AffinityGroupVo> getAffinitygroup(String id);  // 선호도 그룹
 //    List<AffinityLabelVo> getAffinitylabel(String id);  // 선호도 레이블
     GuestInfoVo getGuestInfo(String id);    // 게스트 정보
