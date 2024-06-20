@@ -11,7 +11,6 @@ import java.math.BigInteger;
 public class TemplateVo {
     private String id;
     private String name;
-    private String comment; // 템플릿 생성과 목록에는 있지만 일반 출력에는 없음
     private String description;
     private String versionName;
     private int versionNum;

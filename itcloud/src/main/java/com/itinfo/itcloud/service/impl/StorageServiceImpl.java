@@ -56,6 +56,7 @@ public class StorageServiceImpl implements ItStorageService {
                     return diskList.stream()
                             .map(disk -> {
                                 Disk disk1 = system.disksService().diskService(disk.id()).get().send().disk();
+                                StorageDomain sd = system.storageDomainsService().storageDomainService(disk1.storageDomains().get(0).id()).get().send().storageDomain();
 
 //                                vmList.stream()
 //                                        .flatMap(vm -> {
@@ -80,19 +81,22 @@ public class StorageServiceImpl implements ItStorageService {
                                         .description(disk.description())
                                         .shareable(disk.shareable())
                                         .status(disk.status())
-                                        .storageType(disk.storageType())
+//                                        .storageType(disk.storageType())
                                         .virtualSize(disk.provisionedSize())
 //                                        .connection()
-                                        .domainVoList(
-                                            disk1.storageDomains().stream()
-                                                    .map(storageDomain1 ->
-                                                            DomainVo.builder()
-                                                                    .id(storageDomain.id())
-                                                                    .name(storageDomain.name())
-                                                                    .build()
-                                                    )
-                                                    .collect(Collectors.toList())
-                                        )
+//                                        .domainVo(
+//                                                DomainVo.builder()
+//                                                .id(storageDomain.id())
+//                                                .name(storageDomain.name())
+//                                                .build()
+//                                    )
+//                                        .domainVoList(
+//                                            disk1.storageDomains().stream()
+//                                                    .map(storageDomain1 ->
+//
+//                                                    )
+//                                                    .collect(Collectors.toList())
+//                                        )
                                         .build();
                             });
                 })
@@ -319,17 +323,17 @@ public class StorageServiceImpl implements ItStorageService {
                 .id(disk.id())
                 .alias(disk.alias())
                 .virtualSize(disk.provisionedSize().divide(BigInteger.valueOf(1024).pow(3)))
-                .domainVoList(
-                    storageDomainList.stream()
-                            .filter(storageDomain -> !storageDomain.id().equals(disk.storageDomains().get(0).id()))
-                            .map(storageDomain ->
-                                DomainVo.builder()
-                                        .id(storageDomain.id())
-                                        .name(storageDomain.name())
-                                        .build()
-                            )
-                            .collect(Collectors.toList())
-                )
+//                .domainVoList(
+//                    storageDomainList.stream()
+//                            .filter(storageDomain -> !storageDomain.id().equals(disk.storageDomains().get(0).id()))
+//                            .map(storageDomain ->
+//                                DomainVo.builder()
+//                                        .id(storageDomain.id())
+//                                        .name(storageDomain.name())
+//                                        .build()
+//                            )
+//                            .collect(Collectors.toList())
+//                )
 //                .dpVoList(
 //                    storageDomainList.stream()
 //                            .filter(storageDomain -> !storageDomain.id().equals(disk.storageDomains().get(0).id()))
@@ -389,16 +393,16 @@ public class StorageServiceImpl implements ItStorageService {
                                 .findAny()
                                 .orElse(null)
                 )
-                .domainVoList(
-                        storageDomainList.stream()
-                                .map(storageDomain ->
-                                        DomainVo.builder()
-                                                .id(storageDomain.id())
-                                                .name(storageDomain.name())
-                                                .build()
-                                )
-                                .collect(Collectors.toList())
-                )
+//                .domainVoList(
+//                        storageDomainList.stream()
+//                                .map(storageDomain ->
+//                                        DomainVo.builder()
+//                                                .id(storageDomain.id())
+//                                                .name(storageDomain.name())
+//                                                .build()
+//                                )
+//                                .collect(Collectors.toList())
+//                )
                 .dpVoList(
                         storageDomainList.stream()
                                 .filter(storageDomain -> !storageDomain.id().equals(disk.storageDomains().get(0).id()))

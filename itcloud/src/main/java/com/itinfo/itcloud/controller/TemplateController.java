@@ -3,7 +3,7 @@ package com.itinfo.itcloud.controller;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.computing.TemplateVo;
-import com.itinfo.itcloud.model.storage.TempDiskVo;
+import com.itinfo.itcloud.model.storage.DiskVo;
 import com.itinfo.itcloud.service.ItTemplateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +39,7 @@ public class TemplateController {
 
 	@GetMapping("/templates/{id}/disks")
 	@ResponseBody
-	public List<TempDiskVo> getDisk(@PathVariable String id){
+	public List<DiskVo> getDisk(@PathVariable String id){
 		log.info("--- template 디스크");
 		return tService.getDisk(id);
 	}

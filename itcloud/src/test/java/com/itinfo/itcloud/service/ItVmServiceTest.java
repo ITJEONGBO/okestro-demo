@@ -425,7 +425,7 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 삭제 - 삭제방지 모드 X")
     void deleteVm() {
-        String id = "293642d3-349f-4550-bced-01bdcc9baf64";
+        String id = "d1d753d1-6ceb-43c7-b260-242671cbe9e4";
         boolean disk = true; //t: 디스크지움, f:디스크남김
         CommonVo<Boolean> result = vmService.deleteVm(id, disk);
 

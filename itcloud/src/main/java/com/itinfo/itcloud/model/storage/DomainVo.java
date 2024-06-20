@@ -19,6 +19,7 @@ public class DomainVo {
     private String comment;
     private String description;
 
+    private boolean active; // 상태: 활성화
     private StorageDomainStatus status;
     private StorageDomainType domainType;       // 도메인 유형
     private boolean domainTypeMaster;
@@ -45,6 +46,6 @@ public class DomainVo {
 
 //    private String hostId;
 //    private String hostName;
-
+    private List<DiskVo> diskVoList;
     private List<DiskProfileVo> profileVoList;
 }

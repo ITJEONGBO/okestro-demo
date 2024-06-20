@@ -3,13 +3,14 @@ package com.itinfo.itcloud.model.storage;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.ovirt.engine.sdk4.types.DiskInterface;
 import org.ovirt.engine.sdk4.types.DiskStatus;
 
 import java.math.BigInteger;
 import java.util.List;
 
-@Getter @Setter @Builder
+@Getter @Setter @Builder @ToString
 public class TempDiskVo {
     private String id;
     private String name;
@@ -22,7 +23,7 @@ public class TempDiskVo {
     private String sparse;// 할당정책  씬true, 사전할당false
     private DiskInterface diskInterface;   // 인터페이스
     private String storageType;     // 유형
-    private String createDate;
+//    private String createDate;
 
     private List<DomainVo> domainVoList;
 }

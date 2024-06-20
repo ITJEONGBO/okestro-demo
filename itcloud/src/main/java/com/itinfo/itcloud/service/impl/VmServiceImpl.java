@@ -1777,7 +1777,7 @@ public class VmServiceImpl implements ItVmService {
     public CommonVo<Boolean> activeDisk(String id, String daId) {
         SystemService system = admin.getConnection().systemService();
         DiskAttachmentService daService = system.vmsService().vmService(id).diskAttachmentsService().attachmentService(daId);
-        DiskAttachment da = system.vmsService().vmService(id).diskAttachmentsService().attachmentService(daId).get().send().attachment();
+        DiskAttachment da = daService.get().send().attachment();
 
         try {
             if (!da.active()) {
@@ -1819,42 +1819,27 @@ public class VmServiceImpl implements ItVmService {
 
     // 가상머신 - 디스크 이동창
     @Override
-    public DiskVo setDiskMove(String id, String daId) {
+    public DiskVo setDiskMove(String vmId, String diskId) {
         SystemService system = admin.getConnection().systemService();
-        String dcId = system.clustersService().clusterService(system.vmsService().vmService(id).get().send().vm().cluster().id()).get().send().cluster().dataCenter().id();
-        String diskId = system.vmsService().vmService(id).diskAttachmentsService().attachmentService(daId).get().send().attachment().disk().id();
-        List<StorageDomain> storageDomainList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().list().send().storageDomains();
         Disk disk = system.disksService().diskService(diskId).get().send().disk();
+        BigInteger convertMb = BigInteger.valueOf(1024).pow(3);
 
         return DiskVo.builder()
                 .id(disk.id())
                 .alias(disk.alias())
-                .virtualSize(disk.provisionedSize().divide(BigInteger.valueOf(1024).pow(3)))
-                .domainVoList(
-                        storageDomainList.stream()
-                                .filter(storageDomain -> !storageDomain.id().equals(disk.storageDomains().get(0).id())) // 자신의 도메인이 아닐경우
-                                .map(storageDomain -> {
-                                    List<DiskProfile> profileList = system.diskProfilesService().list().send().profile();
-                                    return DomainVo.builder()
-                                            .id(storageDomain.id())
-                                            .name(storageDomain.name())
-                                            .profileVoList(
-                                                    profileList.stream()
-                                                            .filter(diskProfile -> diskProfile.storageDomain().id().equals(storageDomain.id()))
-                                                            .map(diskProfile ->
-                                                                DiskProfileVo.builder()
-                                                                        .id(diskProfile.id())
-                                                                        .name(diskProfile.name())
-                                                                        .build()
-                                                            )
-                                                            .collect(Collectors.toList())
-                                            )
-                                            .build();
-                                })
-                                .collect(Collectors.toList())
-                )
+                .virtualSize(disk.provisionedSize().divide(convertMb))
                 .build();
     }
+
+    public List<IdentifiedVo> getStorageDomainList(String vmId, String diskId){
+        SystemService system = admin.getConnection().systemService();
+        Vm vm = system.vmsService().vmService(vmId).get().send().vm();
+        String dcId = system.clustersService().clusterService(vm.cluster().id()).get().send().cluster().dataCenter().id();
+        return null;
+    }
+
+
+
 
     @Override
     public CommonVo<Boolean> moveDisk(String id, String daId, DiskVo diskVo){
