@@ -454,6 +454,7 @@ public class StorageServiceImpl implements ItStorageService {
     // (화면표시) 파일 선택시 파일에 있는 포맷, 컨텐츠(파일 확장자로 칭하는건지), 크기 출력
     //           파일 크기가 자동으로 디스크 옵션에 추가, 파일 명칭이 파일의 이름으로 지정됨 (+설명)
     // provisioned_size, alias, description, wipe_after_delete, shareable, backup and disk_profile.
+    @Override
     public CommonVo<Boolean> uploadDisk(MultipartFile file, ImageCreateVo image) throws IOException {
         SystemService system = admin.getConnection().systemService();
         DisksService disksService = system.disksService();
@@ -463,14 +464,10 @@ public class StorageServiceImpl implements ItStorageService {
             if(file == null || file.isEmpty()){
                 return CommonVo.failResponse("파일이 없습니다.");
             }
-
-            log.debug("Total Memory : {}, Free Memory : {}, Max Memory : {}", Runtime.getRuntime().totalMemory(), Runtime.getRuntime().freeMemory(), Runtime.getRuntime().maxMemory());
             log.info("파일: {}, size: {}, 타입: {}", file.getOriginalFilename(), file.getSize(), file.getContentType());
 
-            long fileSize = file.getSize(); // bytes
-
             // 우선 입력된 디스크 정보를 바탕으로 디스크 추가
-            Disk disk = disksService.add().disk(createDisk(image, fileSize)).send().disk();
+            Disk disk = disksService.add().disk(createDisk(image, file.getSize())).send().disk();
             DiskService diskService = disksService.diskService(disk.id());
 
             // 디스크 ok 상태여야 이미지 업로드 가능
@@ -504,8 +501,6 @@ public class StorageServiceImpl implements ItStorageService {
                 log.debug("transferUrl 없음");
                 return CommonVo.failResponse("transferUrl 가 없음");
             }else {
-//                // 자바에서 HTTP 요청을 보낼 때 기본적으로 제한된 헤더를 사용자 코드에서 설정할 수 있도록 허용하는 설정
-//                System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
                 log.debug("imageTransfer.transferUrl(): {}", transferUrl);
                 imageSend(imageTransferService, file, disk);
             }
@@ -524,7 +519,6 @@ public class StorageServiceImpl implements ItStorageService {
      * @return
      */
     private Disk createDisk(ImageCreateVo image, long fileSize){
-        log.debug("fileSize {}", fileSize);
         return new DiskBuilder()
                 .provisionedSize(fileSize)
                 .alias(image.getAlias())
@@ -548,51 +542,42 @@ public class StorageServiceImpl implements ItStorageService {
      */
     private CommonVo<Boolean> imageSend(ImageTransferService imageTransferService, MultipartFile file, Disk disk) {
         HttpsURLConnection httpsConn = null;
-        log.debug("imageSend");
 
         try {
             disableSSLVerification();
+            log.debug("imageSend");
 
             // 자바에서 HTTP 요청을 보낼 때 기본적으로 제한된 헤더를 사용자 코드에서 설정할 수 있도록 허용하는 설정
             System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
 
             URL url = new URL(imageTransferService.get().send().imageTransfer().transferUrl());
             httpsConn = (HttpsURLConnection) url.openConnection();
-            httpsConn.setRequestProperty("PUT", httpsConn.getURL().getPath());
-            httpsConn.setRequestProperty("Content-Length", String.valueOf(file.getSize()));
             httpsConn.setRequestMethod("PUT");
-            httpsConn.setFixedLengthStreamingMode(file.getSize());
-            httpsConn.setDoOutput(true);
+            httpsConn.setRequestProperty("Content-Length", String.valueOf(file.getSize()));
+            httpsConn.setFixedLengthStreamingMode(file.getSize()); // 메모리 사용 최적화
+            httpsConn.setDoOutput(true); // 서버에 데이터를 보낼수 있게 설정
             httpsConn.connect();
 
-            // 버퍼 크기를 설정합니다. (예: 8KB)
-            int bufferSize = 131072/*8 * 1024*/;
-
+            // 버퍼 크기 설정 (128KB)
+            int bufferSize = 131072;
             try (
                     BufferedInputStream bufferedInputStream = new BufferedInputStream(file.getInputStream(), bufferSize);
                     BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(httpsConn.getOutputStream(), bufferSize);
             ) {
                 byte[] buffer = new byte[bufferSize];
                 int bytesRead;
-
-                // 파일을 버퍼 단위로 읽고 씁니다.
                 while ((bytesRead = bufferedInputStream.read(buffer)) != -1) {
                     bufferedOutputStream.write(buffer, 0, bytesRead);
                 }
-
                 bufferedOutputStream.flush();
 
+                // image 전송 완료
                 imageTransferService.finalize_().send();
-                log.debug("finalize");
 
                 httpsConn.disconnect();
-                log.debug("disconnect");
 
                 ImageTransfer imageTransfer = imageTransferService.get().send().imageTransfer();
-
-                if(imageTransfer.phase() == ImageTransferPhase.FINISHED_SUCCESS){
-                    log.debug("phase() : {}", imageTransfer.phase());
-                }
+                log.debug("phase() : {}", imageTransfer.phase());
 
                 return CommonVo.successResponse();
             } catch (IOException e) {
