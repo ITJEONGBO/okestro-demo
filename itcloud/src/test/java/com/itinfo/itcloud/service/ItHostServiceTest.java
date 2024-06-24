@@ -126,7 +126,7 @@ class ItHostServiceTest {
     @Test
     @DisplayName("호스트 ssh-재시작")
     void reStartHost() throws UnknownHostException {
-        String id = "704178f0-efa5-41d2-b14a-d8486dc3a252";
+        String id = "a16955bd-ff57-4e6e-add5-c7d46d5315e9";
 
         CommonVo<Boolean> result = hostService.reStartHost(id);
         assertThat(result.getHead().getCode()).isEqualTo(200);

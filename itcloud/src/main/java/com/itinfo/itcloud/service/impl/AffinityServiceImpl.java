@@ -552,8 +552,10 @@ public class AffinityServiceImpl implements ItAffinityService {
 
                 for (AffinityLabel al : hostLabelList) {
                     System.out.println(al.id() + ":" + al.name());
+                    // TODO: 지워지지 않음, issue에 올려서 로그 기록 확인 필요
                     agHostLabelsService.labelService(al.id()).remove().send();
                 }
+//                List<AffinityLabel> _hostLabelList =
                 System.out.println(hostLabelList.size());
 
                 return CommonVo.successResponse();

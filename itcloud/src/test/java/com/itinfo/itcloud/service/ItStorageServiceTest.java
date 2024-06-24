@@ -3,12 +3,19 @@ package com.itinfo.itcloud.service;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.model.storage.ImageCreateVo;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import java.io.*;
+import java.nio.file.Files;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -123,7 +130,29 @@ class ItStorageServiceTest {
     }
 
     @Test
-    void uploadDisk() {
+    void uploadDisk() throws IOException {
+        String path = "C:/Users/deh22/Documents/ubuntu-20.04.6-live-server-amd64.iso";
+
+        File file = new File(path);
+        FileItem fileItem = new DiskFileItem("file", Files.probeContentType(file.toPath()), false, file.getName(), (int) file.length(), file.getParentFile());
+        InputStream inputStream = new FileInputStream(file);
+        OutputStream outputStream = fileItem.getOutputStream();
+        IOUtils.copy(inputStream, outputStream);
+        MultipartFile multipartFile = new CommonsMultipartFile(fileItem);
+
+        ImageCreateVo iVo =
+                ImageCreateVo.builder()
+                        .alias("absc")
+                        .description("test")
+                        .domainId("12d17014-a612-4b6e-a512-6ec4e1aadba6")
+                        .profileId("23ab66ac-26c3-4b21-ba78-691ec2a004df")
+                        .sparse(false)
+                        .wipeAfterDelete(false)
+                        .share(false)
+                        .backup(false)
+                        .build();
+
+        CommonVo<Boolean> result = storageService.uploadDisk(multipartFile, iVo);
 
     }
 
