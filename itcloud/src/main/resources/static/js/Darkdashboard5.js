@@ -1307,26 +1307,31 @@ $('#network_new_vnic_btn').click(function(){
 });
 //!!content_detail_section 부분----------------------------------------------------
 $(function() {
-    // 기본적으로 일반 섹션을 활성화
-    $('#detail_datacenter_outer','#detail_machine_outer, #detail_template_outer, #detail_disk_outer, #detail_snapshot_outer, #detail_rent_outer, #detail_profile_outer').hide();
-    $('.content_detail_section .content_header_left div').first().addClass('active');
+    // 모든 세부 섹션을 숨기기
+    $('#detail_datacenter_outer, #detail_machine_outer, #detail_template_outer, #detail_disk_outer, #detail_snapshot_outer, #detail_rent_outer, #detail_profile_outer,#detail_event_outer,#detail_right_outer').hide();
+    
+    // 기본적으로 '일반' 섹션 활성화
+    $('.content_outer').show(); // '일반'에 해당하는 div를 보여줌
+    $('.content_detail_section .content_header_left .active').removeClass('active'); // 다른 모든 활성화 상태 제거
+    $('.content_detail_section .content_header_left div').first().addClass('active'); // '일반' div에 활성화 클래스 추가
 
-    // 버튼 클릭 이벤트 처리
+    // 탭 클릭 이벤트 처리
     $('.content_detail_section .content_header_left div').click(function() {
         var index = $(this).index();
-    
-        // 모든 섹션을 숨기고 클릭된 섹션만 보이기
         var sections = [
-            '#detail_datacenter_outer',
-            '#detail_machine_outer',
-            '#detail_template_outer',
-            '#detail_disk_outer',
-            '#detail_snapshot_outer',
-            '#detail_rent_outer',
-            '#detail_profile_outer'
+            '.content_outer',             // 일반
+            '#detail_datacenter_outer',   // 데이터 센터
+            '#detail_machine_outer',      // 가상머신
+            '#detail_template_outer',     // 템플릿
+            '#detail_disk_outer',         // 디스크
+            '#detail_snapshot_outer',     // 디스크 스냅샷
+            '#detail_rent_outer',         // 임대
+            '#detail_profile_outer',       // 디스크 프로파일
+            '#detail_event_outer',
+            '#detail_right_outer'
         ];
-        
-        // 선택된 섹션을 제외하고 모두 숨기기
+
+        // 모든 섹션을 숨기고, 선택된 섹션만 보이게 하기
         sections.forEach(function(section, i) {
             if (i === index) {
                 $(section).show();
@@ -1334,13 +1339,11 @@ $(function() {
                 $(section).hide();  
             }
         });
-    
+
         // 현재 활성화된 섹션의 content_header_left에서 active 클래스 제거
         $('.content_detail_section .content_header_left div').removeClass('active');
-    
+
         // 클릭된 요소에 active 클래스 추가
         $(this).addClass('active');
     });
-
-
 });

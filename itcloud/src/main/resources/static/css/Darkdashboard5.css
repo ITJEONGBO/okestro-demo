@@ -1175,7 +1175,9 @@ body {
 #detail_snapshot_outer,
 #detail_rent_outer,
 #detail_profile_outer,
-#detail_event_outer
+#detail_event_outer,
+#detail_right_outer
+
 {
     width: 100%;
     display: flex;
@@ -1527,8 +1529,16 @@ body {
     font-size: 0.3rem;
     padding: 0.03rem 0.2rem 0.03rem 0.2rem;
 }
-
-
+.table_outer{
+    border: 1px solid black;
+    height: 50%;
+}
+.table_outer tbody span{
+    display: block;
+    width: 100%;
+    text-align: center;
+    border: none;
+}
 #disk_content td:first-child,
 #disk_content td:nth-child(3),
 #disk_content td:nth-child(4),
