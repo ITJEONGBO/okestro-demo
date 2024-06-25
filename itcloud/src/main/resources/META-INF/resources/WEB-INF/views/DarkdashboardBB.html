@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<link rel="stylesheet" href="./css/DarkdashboardBB.css">
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script
+  src="https://code.jquery.com/jquery-1.12.4.js"
+  integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
+  crossorigin="anonymous">
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+<script src="./js/DarkdashboardBB.js"></script>
+<!--그래프-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-circle-progress/1.2.2/circle-progress.min.js"></script>
+
+<body>
+    <div id="header">
+        <div id="header_right">
+            <span>IT Cloud</span>
+        </div>
+
+        <div id="header_left">
+            <div>
+                <i class="fa fa-hdd-o"></i>
+            </div>
+            <div>
+                <i class="fa fa-bell"></i>
+            </div>
+            <div>
+                <i class="fa fa-user"></i>
+            </div>
+        </div>
+    </div>
+
+    <div id="main_outer">
+        <div id="aside_outer">
+            <div id="aside">
+                <div id="nav">
+                    <div id="aside_popup_dashboard_btn">
+                        <i class="fa fa-th-large" style="color: rgb(184, 67, 67);"></i>
+                    </div>
+                    <div id="aside_popup_machine_btn">
+                        <i class="fa fa-desktop"></i>
+                    </div>
+                    <div id="aside_popup_storage_btn">
+                        <i class="fa fa-server"></i>
+                    </div>
+                    <div id="aside_popup_network_btn">
+                        <i class="fa fa-database"></i>
+                    </div>
+                </div>
+                <div id="setting_icon">
+                    <i class="fa fa-cog"></i>
+                </div>
+            </div><!--aside끝-->
+
+            <div id="aside_popup">
+                <!--가상머신 차트-->
+                <div id="virtual_machine_chart">
+                    <div class="aside_popup_content" id="aside_popup_first">
+                        <i class="fa fa-chevron-down"></i>
+                        <i class="fa fa-building-o"></i>
+                        <span>data_center</span>
+                    </div>
+                    <div class="aside_popup_content" id="aside_popup_second" style="display: none;">
+                        <i class="fa fa-chevron-down"></i>
+                        <i class="fa fa-building-o"></i>
+                        <span>ITITINFO</span>
+                    </div>
+                    <div class="aside_popup_content" id="aside_popup_last" style="display: none;">
+                        <div>
+                            <i></i>
+                            <i class="fa fa-microchip"></i>
+                            <span>192.168.0.80</span>
+                        </div>
+                        <div>
+                            <i></i>
+                            <i class="fa fa-microchip"></i>
+                            <span>HostedEngine</span>
+                        </div>
+                        <div>
+                            <i></i>
+                            <i class="fa fa-microchip"></i>
+                            <span>on20-ap01</span>
+                        </div>
+                    </div>
+                </div>
+                <!--스토리지 차트-->
+                <div id="storage_chart" style="display: none;">
+                    <div class="aside_popup_content" id="aside_popup_first2">
+                        <i class="fa fa-chevron-down"></i>
+                        <i class="fa fa-building-o"></i>
+                        <span>data_center</span>
+                    </div>
+                    <div class="aside_popup_content" id="aside_popup_second2" style="display: none;">
+                        <i class="fa fa-chevron-down"></i>
+                        <i class="fa fa-building-o"></i>
+                        <span>Default</span>
+                    </div>
+                    
+                    <div class="aside_popup_content" id="aside_popup_last2" style="display: none;">
+                        <div>
+                            <i></i>
+                            <i class="fa fa-microchip"></i>
+                            <span>hosted-storage</span>
+                        </div>
+                        <div>
+                            <i></i>
+                            <i class="fa fa-microchip"></i>
+                            <span>NFS-Storage</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!--네트워크 차트-->
+                <div id="network_chart" style="display: none;">
+                    <div class="aside_popup_content" id="aside_popup_first3">
+                        <i class="fa fa-chevron-down"></i>
+                        <i class="fa fa-building-o"></i>
+                        <span>Default</span>
+                    </div>
+                    <div class="aside_popup_content" id="aside_popup_second3" style="display: none;">
+                        <i class="fa fa-chevron-down" style="color: white;"></i>
+                        <i class="fa fa-building-o"></i>
+                        <span>ovirtmgmt</span>
+                    </div> 
+                </div>
+
+                <!--설정 차트-->
+                <div id="setting_chart" style="display: none;">
+                    <div>
+                        <i class="fa fa-cog"></i>
+                        <span>사용자</span>
+                    </div>
+                    <div id="setting_miniset_btn">
+                        <i class="fa fa-cog"></i>
+                        <span>설정</span>
+                    </div>
+                    <div>
+                        <i class="fa fa-cog"></i>
+                        <span>사용자</span>
+                    </div>
+                    <div>
+                        <i class="fa fa-cog"></i>
+                        <span>사용자</span>
+                    </div>
+                    
+                </div>
+
+            </div>
+        </div><!--aside_outer끝-->
+
+        
+        <div id="dash_board">
+            <div id="dash_boxs">
+                <div class="box">
+                  <span>UPTIME</span>
+                  <h1>2</h1>
+                </div>
+                <div class="box">
+                  <span>데이터센터</span>
+                  <h1>2</h1>
+                  <div class="arrows">
+                    <i class="fa fa-arrow-up">1</i>
+                    <i class="fa fa-arrow-down">1</i>
+                  </div>
+                </div>
+                <div class="box">
+                  <span>클러스터</span>
+                  <h1>2</h1>
+                </div>
+              
+                <div class="box">
+                  <span>호스트</span>
+                  <h1>2</h1>
+                  <div class="arrows">
+                    <i class="fa fa-arrow-up">1</i>
+                    <i class="fa fa-arrow-down">1</i>
+                  </div>
+                </div>
+                <div class="box">
+                  <span>데이터스토리지도메인</span>
+                  <h1>2</h1>
+                </div>
+                <div class="box">
+                  <span>가상머신</span>
+                  <h1>2</h1>
+                  <div class="arrows">
+                    <i class="fa fa-arrow-up">1</i>
+                    <i class="fa fa-arrow-down">1</i>
+                  </div>
+                </div>
+                <div class="box">
+                  <span>이벤트</span>
+                  <h1>0</h1>
+                  <div class="arrows">
+                    <i class="fa fa-arrow-up">1</i>
+                    <i class="fa fa-arrow-down">1</i>
+                  </div>
+                </div>
+              </div><!--boxs 끝-->
+        
+
+            <div id="dash_section">
+                <div class="dash_section_contents"> 
+                    <h1>CPU</h1>
+                    <div class="graphs">
+                        <div class="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
+                            <div class="circle-graph1 circle-graph"> <!-- 클래스명 수정 -->
+                                <strong class="circle-percent"></strong>
+                            </div>
+                        </div>
+                        <div><canvas id="bar-chart-horizontal"></canvas></div>
+                    </div>
+                    <span>USED 64 Core / Total 192 Core</span>
+                    <div class="wave_graph">
+                        <h2>
+                            Per Host
+                        </h2>
+
+                        <div>
+                            <canvas id="line-chart" width="546" height="142"></canvas>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="dash_section_contents">
+                <h1>Memory</h1>
+                <div class="graphs">
+                    <div class="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
+                        <div class="circle-graph2 circle-graph"> <!-- 클래스명 수정 -->
+                            <strong class="circle-percent"></strong>
+                        </div>
+                    </div>
+                    <div><canvas id="bar-chart-horizontal2"></canvas></div>
+                </div>
+                <span>USED 64 Core / Total 192 Core</span>
+                <div class="wave_graph">
+                    <h2>
+                        Per Host
+                    </h2>
+
+                    <div>
+                        <canvas id="line-chart2" width="546" height="142"></canvas>
+                    </div>
+
+                </div>
+                </div>
+                <div class="dash_section_contents" style="border-right: none;">
+                <h1>CPU</h1>
+                    <div class="graphs">
+                        <div class="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
+                        <div class="circle-graph3 circle-graph"> <!-- 클래스명 수정 -->
+                            <strong class="circle-percent"></strong>
+                        </div>
+                        </div>
+                        <div><canvas id="bar-chart-horizontal3"></canvas></div>
+                    </div>
+                    <span>USED 64 Core / Total 192 Core</span>
+                    <div class="wave_graph">
+                        <h2>
+                            Per Host
+                        </h2>
+
+                        <div>
+                        <canvas id="line-chart3" width="546" height="142"></canvas>
+                        </div>
+
+                    </div>
+                </div>
+            </div><!--dash section 끝-->
+
+
+            <div id="bar">
+                <div>
+                  <span>CPU(시간 경과에 따른 CPU사용량)</span>
+                  <div>d</div>
+                </div>
+                <div>
+                  <span>MEMORY(시간 경과에 따른 Memory사용량)</span>
+                  <div>d</div>
+                </div>
+                <div>
+                  <span>Ethernet(시간 경과에 따른 Ethernet속도)</span>
+                  <div>d</div>
+                </div>  
+            </div> 
+
+        </div><!--dash_board끝-->
+    </div><!--main_outer끝-->
+    
+
+
+
+
+    <!--font-size반응형-->
+    <script>
+        function adjustFontSize() {
+            var width = window.innerWidth;
+            var fontSize = width / 40; // Adjust this value as needed
+
+            document.documentElement.style.fontSize = fontSize + 'px';
+        }
+
+        // Call the adjustFontSize function when the window size changes
+        window.onresize = function() {
+            adjustFontSize();
+        };
+
+        // Call the adjustFontSize function initially
+        adjustFontSize();
+
+    </script>
+</body>
+<script>
+/*막대 그래프*/
+new Chart(document.getElementById("bar-chart-horizontal"), {
+    type: 'horizontalBar',
+    data: {
+      labels: ["vm1", "vm2", "vm3"],
+      datasets: [
+        {
+          label: "Population (millions)",
+          backgroundColor: ["#7C7DEA", "#1597E5","#69DADB"],
+          data: [900,600,700,400]
+        }
+      ]
+    },
+    options: {
+      legend: { display: false },
+      title: {
+        display: true,
+        text: 'TOP 3'
+      },
+      scales: {
+        x: {
+          ticks: {
+            display: false // x축 눈금 숨기기
+          }
+        },
+        y: {
+          ticks: {
+            display: false // y축 눈금 숨기기
+          }
+        }
+      }
+    }
+});
+new Chart(document.getElementById("bar-chart-horizontal2"), {
+    type: 'horizontalBar',
+    data: {
+      labels: ["vm1", "vm2", "vm3"],
+      datasets: [
+        {
+          label: "Population (millions)",
+          backgroundColor: ["#7C7DEA", "#1597E5","#69DADB"],
+          data: [2478,5267,734,784,433]
+        }
+      ]
+    },
+    options: {
+      legend: { display: false },
+      title: {
+        display: true,
+        text: 'TOP 3'
+      }
+    }
+});
+new Chart(document.getElementById("bar-chart-horizontal3"), {
+    type: 'horizontalBar',
+    data: {
+      labels: ["vm1", "vm2", "vm3"],
+      datasets: [
+        {
+          label: "Population (millions)",
+          backgroundColor: ["#7C7DEA", "#1597E5","#69DADB"],
+          data: [2478,5267,734,784,433]
+        }
+      ]
+    },
+    options: {
+      legend: { display: false },
+      title: {
+        display: true,
+        text: 'TOP 3'
+      }
+    }
+});
+
+/*도넛*/
+$(window).ready(function() {
+    if ($(window).width() >= 3000) { // 뷰포트 너비가 3000px 이상인 경우
+        createCircleGraph('.circle-graph1', 70, 200, 13);
+        createCircleGraph('.circle-graph2', 60, 200, 13);
+        createCircleGraph('.circle-graph3', 90, 200, 13);
+    } else { // 그렇지 않은 경우
+        createCircleGraph('.circle-graph1', 30, 130, 8);
+        createCircleGraph('.circle-graph2', 20, 130, 8);
+        createCircleGraph('.circle-graph3', 70, 130, 8);
+    }
+});
+
+function createCircleGraph(classname, perNum, size, thickness) {
+    let circleGraph = $(classname);
+    let color;
+    
+    if (perNum < 30) {
+        color = 'green'; // 30 미만이면 초록색
+    } else if (perNum < 70) {
+        color = '#FFC100'; // 30 이상 70 미만이면 노란색
+    } else {
+        color = 'red'; // 70 이상이면 빨간색
+    }
+
+    circleGraph.circleProgress({
+        size: size, // 그래프 크기 조정
+        value: perNum / 100, // 그래프에 표시될 값
+        startAngle: 300, // 시작지점
+        thickness: thickness, // 그래프 두께 조정
+        fill: { // 그래프 선 색
+            gradient: [color],
+            gradientAngle: 0
+        },
+        animation: {
+            duration: 2000,
+            easing: "swing"
+        },
+        lineCap: "butt", // 그래프 선 모양
+        reverse: false // 그래프가 진행되는 방향
+    }).on('circle-animation-progress', function(event, progress) {
+        // 그래프 애니메이션이 진행되는 동안
+        // progress - 현재 진행 상태 0.0 ~ 1.0
+        $(this).find('.circle-percent').html(Math.round(perNum * progress) + '<i>%</i>');
+    });
+}
+
+/*물선그래프*/
+const ctx = document.getElementById('myChart');
+new Chart(document.getElementById("line-chart"), {
+  type: 'line',
+  data: {
+    labels: [1500,1600,1700,1750,1800,1850,1900,1950,1999,2050],
+    datasets: [{ 
+        data: [100,200,300,400,500,700,900,1000],
+        label: "Africa",
+        borderColor: "#1597E5",
+        fill: false
+      }, { 
+        data: [1000,500,600,200],
+        label: "Asia",
+        borderColor: "#69DADB",
+        fill: false
+      }
+    ]
+  },
+  options: {
+    responsive: false,
+  }
+});
+new Chart(document.getElementById("line-chart2"), {
+  type: 'line',
+  data: {
+    labels: [1500,1600,1700,1750,1800,1850,1900,1950,1999,2050],
+    datasets: [{ 
+        data: [100,200,300,400,500,700,900,1000],
+        label: "Africa",
+        borderColor: "#1597E5",
+        fill: false
+      }, { 
+        data: [1000,500,600,200],
+        label: "Asia",
+        borderColor: "#69DADB",
+        fill: false
+      }
+    ]
+  },
+  options: {
+    responsive: false,
+  }
+});
+new Chart(document.getElementById("line-chart3"), {
+  type: 'line',
+  data: {
+    labels: [1500,1600,1700,1750,1800,1850,1900,1950,1999,2050],
+    datasets: [{ 
+        data: [100,200,300,400,500,700,900,1000],
+        label: "Africa",
+        borderColor: "#1597E5",
+        fill: false
+      }, { 
+        data: [1000,500,600,200],
+        label: "Asia",
+        borderColor: "#69DADB",
+        fill: false
+      }
+    ]
+  },
+  options: {
+    responsive: false,
+  }
+});
+
+</script>
+</html>

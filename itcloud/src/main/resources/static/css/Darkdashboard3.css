@@ -1,0 +1,1108 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    background-color: #EBEEEE;
+    padding: 1% 1.3% 0 1.3%;
+    height: 100vh; /* 추가 */
+}
+
+#header {
+    height: 5%;
+    margin: 0 auto;
+    border-radius: 5px;
+    padding: 0 1%;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* 세로 중앙 정렬 추가 */
+    margin-bottom: 0.6%;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); 
+}
+
+#header_right {
+    font-size: 0.4rem;
+    display: flex;
+    align-items: center; /* 세로 중앙 정렬 추가 */
+}
+
+#header_right > span {
+    color: rgb(0, 0, 0);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#header_left {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.5em;
+    width: 10%;
+    align-items: center; /* 세로 중앙 정렬 추가 */
+}
+
+#header_left > div > i {
+    color: rgb(0, 0, 0);
+    font-size: 1.2em;
+    cursor: pointer;
+}
+#header_left > div:hover{
+    border-radius: 50%;
+    background-color: #9b9b9b;
+}
+/*section(중간)*/
+#main_outer{
+    height: 90%;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+#aside_outer{
+    width: 3%;
+    display: flex;
+}
+
+#aside{
+    width: 3vw;
+    height: 100%;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); 
+    padding: 0.6% 0;
+    display: flex;
+    flex-direction: column; /* 컬럼 방향으로 요소 정렬 */
+    justify-content: space-between;
+
+}
+#aside>#nav>div,#setting_icon{
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    padding: 37% 0;
+    font-size: 0.6rem;
+    color: rgb(143, 143, 143);
+    cursor: pointer;
+}
+#aside>#nav>div:hover,#setting_icon:hover{
+    color: black;
+}
+
+#aside_popup {
+    width: 78%;
+    background-color: white;
+    display: none;
+}
+#aside_popup>div{
+    color: rgb(145, 150, 155);
+    font-size: 0.35rem;
+    cursor: pointer;
+    padding-top: 0.1rem;
+}
+.aside_popup_content:hover{
+    
+}
+.aside_popup_content i:first-child{
+    font-size: 0.24rem;
+    margin-right: 0.27rem;
+}
+.aside_popup_content>span{
+    margin-left: 0.1rem;
+}
+#aside_popup_first{
+    padding-left: 0.2rem;
+}
+#aside_popup_second{
+    padding-left: 0.6rem;
+}
+#aside_popup_last{
+    padding-left: 1.4rem;
+}
+#section{
+    background-color: #ffffff;
+    border-radius: 5px;
+    width: 96%;
+    padding: 0.4%;
+    position: relative;
+}
+#section_header{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+
+}
+#section_header>div:nth-child(1){
+    font-size: 0.36rem;
+    color: blue;
+}
+#section_header>div:nth-child(2){
+    font-size: 0.6rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/*article*/
+#article{
+    display: flex;
+    justify-content: space-between;
+    margin: 0.9% 0;
+}
+#article_search_box{
+    display: flex;
+    font-size: 0.32rem;
+    display: flex;
+    align-items: center;
+    width: 23%;
+}
+#article_search_box>a{
+    background-color: #EBEBEB;
+    border: 1px solid #BDBDBD;
+    text-align: center;
+    padding: 5px 2%;
+    display: block;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+#article_search_box>input{
+    outline: none;
+    height: 100%;
+}
+/*nav*/
+#article_nav{
+    display: flex;
+    justify-content: right;
+}
+#article_nav>button{
+    margin: 0 5px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0 9px;
+    font-size: 0.3rem;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    background-color: #EBEBEB;
+    border: 1px solid #A1A1A1;
+
+}
+#article_nav>div>button{
+    padding: 0 7px;
+}
+#article_nav>div{
+    font-weight: 600;
+    padding: 0 6px;
+    display: flex;
+    font-size: 0.3rem;
+}
+#article_nav>div>button{
+    height: 100%;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.3rem;
+}
+#article_nav>div>a{
+    display: block;
+    background-color: #EBEBEB;
+    border: 1px solid #A1A1A1;
+    padding: 4px 10px;
+    border-left: none;
+}
+#article_nav button i{
+    margin-right: 3px;
+}
+#popup_btn {
+    position: relative; /* 부모 요소에 대해 상대적인 위치 설정 */
+}
+
+#popup_box {
+    width: 210px;
+    position: absolute;
+    background-color: white;
+    top: 116% ; /* 부모 요소에 대해 상대적인 위치 사용 */
+    right: 0;
+    display: none;
+    border: 1px solid #DDDDDD;
+    color: #4F4F4F;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    text-align: left;
+}
+
+#popup_box>div{
+    border-bottom: 1px solid #DDDDDD;
+    cursor: pointer;
+}
+
+#popup_box>div>div{
+    padding: 10px 4px;
+
+}
+#popup_box>div>div:hover{
+    background-color: #DDDDDD;
+}
+
+/*content_outer*/
+#content_outer{
+    width: 100%;
+    height: 57%;
+    box-shadow: 0 9px 14px -5px rgba(0, 0, 0, 0.1);
+
+    overflow: hidden; /* 내용이 넘칠 때 스크롤 표시 여부 설정 */
+}
+#content_header{
+    display: flex;
+    width: 4%;
+    border: 1px solid black;
+    margin-bottom: 10px;
+
+}
+#content_header>button{
+    width: 50%;
+    padding: 8px;
+    background: none;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    background-color: #EBEBEB;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#content_header>button>i{
+    font-size: 0.3rem;
+}
+
+/*table*/
+table{ border-collapse : collapse; } 
+th,td{
+    height: 4vh;
+    font-size: 0.34rem;
+    text-align: left;
+    padding:5px 6px;
+    border:none;
+    border-bottom: 1px solid black;
+    
+    vertical-align: top;	/* 위 */
+    vertical-align: bottom;   /* 아래 */
+    vertical-align: middle;   /* 가운데 */
+}
+table tr:nth-child(n+2){
+    cursor: pointer;
+}
+table tr:nth-child(n+2):hover{
+    background-color: #dff6ff;
+}
+/* 1열,2열 */
+table tr th:first-child,
+table tr td:first-child,
+table tr th:nth-child(2),
+table tr td:nth-child(2) {
+    width: 2.3%;
+}
+
+table tr:first-child th {
+    background-color: rgb(252, 160, 160);
+    height: 5vh;
+    
+}
+tr td:nth-child(n+3):nth-child(-n+6){
+    max-width: 157px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#table_wrapper {
+    overflow-y: auto; /* 테이블이 넘칠 때 수직 스크롤 표시 */
+    max-height: 89%; /* 테이블의 최대 높이 설정 */
+}
+
+   
+table tr td:first-child i{
+    display: block; /* 블록 요소로 설정하여 가로로 가득 차도록 함 */
+    margin: 0 auto; /* 가운데 정렬 */
+    text-align: center; /* 텍스트를 수평으로 가운데 정렬 */
+    font-size:0.6rem
+}
+table tr td:nth-child(2) i{
+    font-size:0.4rem;
+    display: block; 
+    margin: 0 auto; 
+    text-align: center;
+}
+
+
+ /*footer*/
+#footer_outer {
+    font-size: 0.34rem;
+    width: 100%;
+    left: 0;
+    max-height: 30%;
+    position: absolute;
+    bottom: 0;
+
+}
+#footer{
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    height: 4.3vh;
+    display: flex;
+
+}
+#footer>button{
+    height: 4.3vh;
+    width: 2%;
+    color: #4F4F4F; 
+    cursor: pointer;
+    
+}
+#footer>button>i{
+    font-size: 0.3rem;
+    display: block; 
+    margin: 0 auto; 
+    text-align: center;
+}
+#footer>div{
+    display: flex;
+}
+#footer>div>a{
+    font-weight: 600;
+    display: block;
+    cursor: pointer;
+    margin-top: 8px;
+}
+#footer>div>a:first-child{
+    margin: 8px 30px 0 15px;
+    border-bottom: 2px solid blue;
+    color: black;
+}
+#footer>div>a:nth-child(2){
+    color: #4F4F4F;
+}
+#footer_content{
+    height: 100%;
+    display: none;
+    background: white;
+}
+#footer_nav{
+    display: flex;
+    width: 100%;
+    padding: 5px 3px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    margin-bottom: 18px;
+}
+#footer_nav>div{
+    display: flex;
+    width: 15%;
+    justify-content: space-between;
+    border-right: 1px solid #4F4F4F;
+    padding: 2px 5px;
+    color: #4F4F4F;
+}
+#footer_img{
+
+    width: 11%;
+    margin: 0 auto;
+}
+#footer_img>img{
+    margin: 0 auto;
+    display: block;
+}
+#footer_img>span{
+    text-align: center;
+    display: block;
+    font-size: 0.33rem;
+    margin-top: 3px;
+}
+/*템플릿 생성*/
+#template_bg{
+    display: none;
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+#template_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 75%;
+    width: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+.domain_header{
+    background-color: #ebebeb;
+    display: flex;
+    padding: 8px 13px;
+    justify-content: space-between;
+    font-size: 0.18rem;
+}
+.domain_header>h1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.domain_header>button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1px;
+    border: none;
+    padding: 11px;
+    border-radius: 50%;
+    font-size: 0.38rem;
+    cursor: pointer;
+    background-color: #ebebeb;
+}
+.domain_header>button:hover{
+    background-color: #DDDDDD;
+}
+#template_article_outer{
+    padding: 0 3%;
+    font-size: 0.36rem;
+    margin-bottom: 3vh;
+}
+.template_content{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2.2%;
+}
+.template_content>span{
+    display: block;
+    color: #4F4F4F;
+}
+.template_content>input,.template_content>select{
+    width: 70%;
+    border: 1px solid gray;
+    height: 3.5vh;
+    outline: none;
+    font-size: 0.35rem;
+}
+#template_article_outer2{
+    height: 46%;
+}
+
+#template_boxs_header{
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.35rem;
+    font-weight: 600;
+    background-color: rgb(219, 219, 219);
+}
+#template_boxs_header>div{
+    width: 25%;
+    padding: 0.5%;
+    border-right: 1px solid rgb(151, 151, 151);
+}
+#template_boxs_nav{
+    display: flex;
+    font-size: 0.35rem;
+    justify-content: space-between;
+}
+
+#template_boxs_nav>div{
+    width: 25%;
+    padding: 0.5%;
+    margin: 2px;
+
+}
+#template_boxs_nav>div:first-child{
+    border: 1px solid rgb(170, 170, 170);
+    height: 100%;
+    border-radius: 2px;
+}
+#template_boxs_nav>select{
+    display: block;
+    width: 25%;
+    height: 100%;
+    padding: 0.8%;
+    margin: 2px;
+    font-size: 0.35rem;
+    outline: none;
+    border: 1px solid rgb(170, 170, 170);
+}
+
+#template_article_footer{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 0.36rem;
+}
+.checkbox-group {
+    align-items: center;
+}
+.checkbox-group input[type="checkbox"] {
+    margin-right: 3px;
+}
+#template_article_footer > div > div {
+    padding: 1%;
+}
+
+#template_article_outer2 > span {
+    font-size: 0.35rem;
+    font-weight: 600;
+}
+
+#template_footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: white; /* Adjust the background color as needed */
+    border-top: 1px solid rgb(163, 163, 163);
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for better visibility */
+    padding: 1.5% 0;
+}
+
+#template_footer div {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 10px;
+}
+
+#template_footer button {
+    padding: 0.7% 1.1%;
+    border-radius: 2px;
+    cursor: pointer;
+    margin-left: 10px; 
+    font-size: 14px; 
+    font-size: 0.3rem;
+    font-weight: 600;
+}
+
+#template_footer button:first-child {
+    background-color: #36A1DA;
+    color: white;
+    border: 1px solid #0066CC; 
+}
+
+#template_footer button:last-child {
+    background-color: white;
+    border: 1px solid gray;
+}
+
+/*가져오기 팝업*/
+#get_popup_bg{
+    display: none;
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+#get_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 80%;
+    width: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+.domain_header{
+    background-color: #ebebeb;
+    display: flex;
+    padding: 8px 13px;
+    justify-content: space-between;
+    font-size: 0.18rem;
+}
+.domain_header>h1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.domain_header>button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1px;
+    border: none;
+    padding: 11px;
+    border-radius: 50%;
+    font-size: 0.38rem;
+    cursor: pointer;
+    background-color: #ebebeb;
+}
+.domain_header>button:hover{
+    background-color: #DDDDDD;
+}
+#get_article1{
+    min-height: 13%;
+    border-bottom: 1px solid gray ;
+    padding: 8px 13px;
+    font-size: 0.36rem;
+    color: #4F4F4F;
+}
+#get_article1>div,#get_article2>div{
+    padding: 1.2% 0;
+    display: flex;
+}
+#get_article1>div>label,#get_article2>div>label,#file_path>div{
+    width: 19%;
+    display: block;
+    padding-top: 5px;
+}
+#get_article1>div>select{
+    width: 25%;
+    height: 3.5vh;
+    background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+    border: 1px solid gray;
+    border-radius: 3px;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
+    padding: 0 3px; /* 내부 패딩 크기를 조정 */
+    position: relative;
+}
+#get_article1>div>select>i{
+    position: absolute;
+    top: 0;
+}
+#get_article2{
+    font-size: 0.36rem;
+    height: 65%;
+    background-color: pink;
+    border-bottom: 1px solid gray ;
+    padding: 8px 13px;
+    color: #4F4F4F;
+}
+#get_article2>div>select{
+    width: 80%;
+    height: 3.5vh;
+    background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+    border: 1px solid gray;
+}
+#file_path>input{
+    width: 80%;
+    height: 3.5vh;
+    outline: none;
+}
+#file_path{
+    display: flex;
+}
+#get_article2>button{
+    margin-top: 20px;
+    padding: 0.5%;
+    font-size: 0.3rem;
+    cursor: pointer;
+}
+#get_article3{
+    height: 65%;
+    display: flex;
+    justify-content: space-between;
+}
+#get_article3>div{
+    width: 44%;
+}
+#get_article3>div>span{
+    font-weight: 600;
+    display: block;
+    padding: 1%;
+}
+.get_box{
+    border: 1px solid gray;
+    height: 90%;
+}
+.get_box>div:first-child{
+    background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+    padding: 2% 0;
+}
+
+
+#get_footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: white; /* Adjust the background color as needed */
+    border-top: 1px solid rgb(163, 163, 163);
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for better visibility */
+    padding: 1.5% 0;
+}
+
+#get_footer div {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 10px;
+}
+
+#get_footer button {
+    padding: 0.7% 1.1%;
+    border-radius: 2px;
+    cursor: pointer;
+    margin-left: 10px; 
+    font-size: 14px; 
+    font-size: 0.3rem;
+    font-weight: 600;
+}
+
+#get_footer button:first-child {
+    background-color: #e4e4e4e1;
+    color: rgb(99, 99, 99);
+    border: 1px solid #5f5f5f; 
+}
+
+#get_footer button:last-child {
+    background-color: white;
+    border: 1px solid gray;
+}
+/*domain팝업1*/
+#popup_bg{
+    display: none;
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+#domain_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 64%;
+    width: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+.domain_header{
+    background-color: #ebebeb;
+    display: flex;
+    padding: 8px 13px;
+    justify-content: space-between;
+    font-size: 0.18rem;
+}
+.domain_header>h1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.domain_header>button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1px;
+    border: none;
+    padding: 11px;
+    border-radius: 50%;
+    font-size: 0.38rem;
+    cursor: pointer;
+    background-color: #ebebeb;
+}
+.domain_header>button:hover{
+    background-color: #DDDDDD;
+}
+#domain_article_outer{
+    padding: 8px 13px;
+    background-color: rgb(255, 255, 255);
+}
+.domain_article{
+    padding: 20px 0;
+    height: 13vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 0.36rem;
+}
+.domain_article>div:first-child,.domain_article>label{
+    font-weight: 600;
+}
+.domain_article>div:last-child,.domain_article>select{
+    height: 54%;
+    border-radius: 3px;
+    padding-left: 7px;
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: left; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    background-color: #4F4F4F;
+}
+.domain_article:nth-child(n+2)>div:last-child,.domain_article>select{
+    background-color: white;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1), 0px 0px 0px rgba(0, 0, 0, 0.1),  5px 2px 7px  rgba(0, 0, 0, 0.3);
+}
+.domain_article>select{
+    border: none;
+    outline: none;
+}
+#domain_checkbox{
+    position: relative;
+    width: 100%;
+    height: 50px;
+    margin-bottom:1%;
+}
+#domain_checkbox>label{
+    font-size: 0.35rem;
+}
+#domain_footer{
+    width: 40%;
+}
+#domain_footer>a{
+    cursor: pointer;
+    border-radius: 3px;
+    padding:13px;
+    letter-spacing: -1px;
+    font-size: 0.38rem;
+}
+#domain_footer>a:first-child{
+    background-color: #0066CC;
+    color:white
+}
+#domain_footer>a:last-child{
+    color:#0066CC ;
+}
+#domain_footer>a:last-child:hover{
+    color:black ;
+}
+/*domain팝업2*/
+#popup_bg2{
+    display: none;
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+#domain_popup2{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    width: 40%;
+    left: 50%;
+    height: 48%;                                                 
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+#domain2_article_outer{
+    font-size: 0.41rem;
+
+    padding: 10px 16px;
+    height: 65%;
+}
+#domain2_checkboxs{
+    color: #4F4F4F;
+    margin-bottom: 14px;
+}
+#domain2_checkboxs>div{
+    padding: 17px 0;
+}
+#warning{
+    display: flex;
+    padding: 20px;
+    justify-content: space-between;
+    background-color: #FDF2E5;
+    border: 1px solid orange;
+
+}
+#warning>i{
+    color: orange;
+    font-size: 40px;
+}
+#warning>div{
+    width: 92%;
+}
+#domain2_footer{
+    border-top: 1px solid rgb(175, 175, 175);
+    display: flex;
+    justify-content: right;
+    padding: 24px 15px;
+    text-align: center;
+    height: 20%;
+}
+#domain2_footer>button{
+    cursor: pointer;
+    background-color: #36A1DA;
+    border: 1px solid #0066CC;
+    padding: 0 8px;
+    color: white;
+    font-size: 0.4rem;
+    vertical-align: middle;
+}
+/*마이그레이션 팝업*/
+#migration_popup_outer{
+    display: none;
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+#migration_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 45%;
+    width: 56%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+#migration_article_outer{
+    padding: 30px 16px;
+    height: 86%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+#migration_article{
+    display: flex;
+    height: 40%;
+    flex-direction: column;
+    justify-content: space-between;
+}
+#migration_article_outer>span{
+    font-size: 0.36rem;
+}
+#migration_dropdown{
+    display: flex;
+    justify-content: space-between;
+}
+#migration_dropdown>label{
+    padding:11px 0;
+}
+#migration_dropdown>label,#migration_article>div:last-child>div:first-child{
+    font-size: 0.36rem;
+    font-weight: 600;
+}
+#host{
+    width: 87.5%;
+    height: 5vh;
+    border-radius: 3px;
+}
+#migration_article>div:last-child{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+#migration_article>div:last-child>div{
+    padding: 10px 0;
+}
+#migration_article>div:last-child>div:last-child{
+    width: 87.5%;
+    font-size: 0.36rem;
+    height: 5vh;
+    background-color: #ebebeb;;
+    border-radius: 3px;
+}
+
+#migration_footer>a{
+    cursor: pointer;
+    border-radius: 3px;
+    padding:13px;
+    letter-spacing: -1px;
+    font-size: 0.36rem;
+}
+#migration_footer>a:first-child{
+    background-color: #0066CC;
+    color:white
+}
+#migration_footer>a:last-child{
+    color:#0066CC ;
+}
+#migration_footer>a:last-child:hover{
+    color:black ;
+}
+
+/*ova팝업*/
+#ova_outer{
+    display: none;
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+#ova_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 55%;
+    width: 42%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+#ova_article_outer{
+    border-bottom: 1px solid #9b9b9b;
+    height: 70%;
+    font-size: 0.4rem;
+    padding: 0 3%;
+}
+#ova_article_outer>div{
+    display: flex;
+    margin-bottom: 3%;
+}
+#ova_dropdown>label,#ova_article_outer>div>span{
+    display: block;
+    padding: 8px 0;
+    width: 30%;
+}
+#ova_article_outer>div>div{
+    background-color: #0066CC;
+    padding: 8px 0;
+}
+#ova_host,#ova_article_outer input,#ova_article_outer>div>div{
+    width: 70%;
+    height: 4.4vh;
+}
+#ova_footer{
+    display: flex;
+    justify-content: right;
+    padding: 24px 15px;
+}
+#ova_footer>button{
+    padding: 1.4%;
+    cursor: pointer;
+    border: none;
+    font-size: 0.33rem;
+    border-radius: 2px;
+}
+#ova_footer>button:first-child{
+    background-color: #36A1DA;
+    color: white;
+    border: 1px solid blue;
+    margin-right: 1%;
+}
+#ova_footer>button:last-child{
+    background-color: white;
+    border: 1px solid gray;
+}
+
+/*반응형*/
+@media (max-width:1390px) {
+    #article {
+        flex-direction: column;
+        margin: 16px 0;
+    }
+
+    #article_nav {
+        margin-top: 16px; /* 추가 여백 */
+        justify-content: normal; /* 떨어지면서 space-between 설정 해제 */
+    }
+   
+
+}
+
+@media screen and (max-width:820px) {
+
+}
+@media screen and (max-width:768px) {
+
+}
+@media screen and (max-width:482px) {
+
+}

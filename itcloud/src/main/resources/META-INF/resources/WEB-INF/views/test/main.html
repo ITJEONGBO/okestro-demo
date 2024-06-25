@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="aside_outer">
+        <!-- 본문 삽입될 영역 -->
+        <div id="main_content"></div>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"
+        integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
+        crossorigin="anonymous"></script>
+    <script src="script.js"></script>
+</body>
+<script>
+    $(function(){
+    // aside.html 파일을 로드하여 #main_content에 삽입
+    $("#main_content").load("aside.html", function() {
+        // 로드 후 이벤트 핸들러 설정
+        $('#aside_popup_machine_btn').click(function(){
+            if ($('#aside_popup').css('display') === 'none' || $('#aside_popup_machine_btn').css('background-color') !== 'rgb(255, 255, 0)') {
+                $('#aside_popup').css('display', 'block');
+                $('#aside_outer').css('width','20%');
+                $('#aside_popup_machine_btn').css('background-color', 'yellow'); // 배경색을 노란색으로 변경
+                $('#aside_popup_storage_btn').css('background-color', ''); // 다른 버튼 초기화
+
+                // 다른 콘텐츠 초기화
+                $('#aside_popup_second2').css('display', 'none');
+                $('#aside_popup_last').css('display', 'none');
+                $('#aside_popup_second').css('display', 'block'); // 원래의 상태로 복원
+            } else {
+                $('#aside_popup').css('display', 'none');
+                $('#aside_outer').css('width','3%');
+                $('#aside_popup_machine_btn').css('background-color', ''); // 배경색 초기화
+            }
+        });
+
+        // aside 팝업(스토리지 버튼)
+        $('#aside_popup_storage_btn').click(function(){
+            if ($('#aside_popup').css('display') === 'none' || $('#aside_popup_storage_btn').css('background-color') !== 'rgb(255, 255, 0)') {
+                $('#aside_popup').css('display', 'block');
+                $('#aside_outer').css('width','20%');
+                $('#aside_popup_storage_btn').css('background-color', 'yellow'); // 배경색을 노란색으로 변경
+                $('#aside_popup_machine_btn').css('background-color', ''); // 다른 버튼 초기화
+
+                // 다른 콘텐츠 초기화 및 변경
+                $('#aside_popup_second').css('display', 'none'); // 추가된 부분
+                $('#aside_popup_last').css('display', 'none');
+                $('#aside_popup_second2').css('display', 'block'); // 변경된 부분
+            } else {
+                $('#aside_popup').css('display', 'none');
+                $('#aside_outer').css('width','3%');
+                $('#aside_popup_storage_btn').css('background-color', ''); // 배경색 초기화
+            }
+        });
+
+        // aside_popup_content
+        $('#aside_popup_first').click(function(){
+            if($('#aside_popup_second').css('display') === 'none' && $('#aside_popup_second2').css('display') === 'none'){
+                $('#aside_popup_second').css('display', 'block');
+            } else {
+                $('#aside_popup_second').css('display', 'none');
+                $('#aside_popup_second2').css('display', 'none'); // 추가된 부분
+                $('#aside_popup_last').css('display', 'none');
+            }
+        });
+
+        $('#aside_popup_second').click(function(){
+            if($('#aside_popup_last').css('display') === 'none'){
+                $('#aside_popup_last').css('display', 'block');
+            } else {
+                $('#aside_popup_last').css('display', 'none');
+            }
+        });
+
+        $('#aside_popup_second2').click(function(){
+            if($('#aside_popup_last2').css('display') === 'none'){
+                $('#aside_popup_last2').css('display', 'block');
+            } else {
+                $('#aside_popup_last2').css('display', 'none');
+            }
+        });
+
+        // Show context menu on right click
+        $('#aside_popup_last div').contextmenu(function(event){
+            event.preventDefault();
+            $('#context_menu').css({
+                display: 'block',
+                left: event.pageX,
+                top: event.pageY
+            });
+        });
+
+        // Hide context menu on click outside
+        $(document).click(function(){
+            $('#context_menu').hide();
+        });
+
+        $('#context_menu').click(function(event){
+            event.stopPropagation();
+        });
+    });
+});
+
+</script>
+</html>

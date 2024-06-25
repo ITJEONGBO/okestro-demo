@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-1.12.4.js" integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU=" crossorigin="anonymous"></script>
+    <style>
+        #section {
+            background-color: #ffffff;
+            border-radius: 5px;
+            width: 96%;
+            position: relative;
+        }
+        .section_header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #A1A1A1;
+            align-items: center; /* 수직 가운데 정렬 추가 */
+            padding: 0.05rem 0.2rem;
+        }
+        .section_header_left {
+            display: flex;
+            align-items: center; /* 수직 가운데 정렬 추가 */
+            color: rgb(114, 199, 255);
+        }
+        .section_header_left span,
+        .section_header_left div,
+        .section_header_left button {
+            margin-right: 10px; /* 요소 간 간격 조정 */
+        }
+        .section_header_left>span, .section_header_left>button {
+            font-size: 0.31rem;
+            color: rgb(114, 199, 255);
+            display: flex; /* Flexbox 설정 추가 */
+            justify-content: center; /* 수평 가운데 정렬 */
+            align-items: center; /* 수직 가운데 정렬 */
+            margin-top: 0.1rem;
+        }
+        .section_header_left>div {
+            font-size: 0.7rem;
+        }
+        .section_header_right {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.9% 0;
+        }
+        .article_nav {
+            display: flex;
+            justify-content: right;
+        }
+        .article_nav>button {
+            margin: 0 5px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 5px 9px;
+            font-size: 0.3rem;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+            background-color: #EBEBEB;
+            border: 1px solid #A1A1A1;
+        }
+        .article_nav>div>button {
+            padding: 0 7px;
+        }
+        .article_nav>div {
+            font-weight: 600;
+            padding: 0 6px;
+            display: flex;
+            font-size: 0.3rem;
+        }
+        .article_nav>div>button {
+            height: 100%;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.3rem;
+        }
+        .article_nav>div>a {
+            display: block;
+            background-color: #EBEBEB;
+            border: 1px solid #A1A1A1;
+            padding: 4px 10px;
+            border-left: none;
+        }
+        .article_nav button i {
+            margin-right: 3px;
+        }
+        #popup_btn {
+            position: relative; /* 부모 요소에 대해 상대적인 위치 설정 */
+        }
+        #popup_box {
+            width: 210px;
+            position: absolute;
+            background-color: white;
+            top: 116%; /* 부모 요소에 대해 상대적인 위치 사용 */
+            right: 0;
+            display: none;
+            border: 1px solid #DDDDDD;
+            color: #4F4F4F;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+            text-align: left;
+        }
+        #popup_box>div {
+            border-bottom: 1px solid #DDDDDD;
+            cursor: pointer;
+        }
+        #popup_box>div>div {
+            padding: 10px 4px;
+        }
+        #popup_box>div>div:hover {
+            background-color: #DDDDDD;
+        }
+        #out_btn {
+            position: relative;
+        }
+        #out_btn_popup {
+            position: absolute;
+            width: 12vw;
+            border: 1px solid rgb(190, 190, 190);
+            top: 113%;
+            left: 0px;
+            text-align: left;
+            background-color: white;
+        }
+        #content_outer {
+    width: 100%;
+    height: calc(100% - 4.3vh); /* Initial height */
+    transition: height 0.3s; /* Smooth transition */
+    overflow: auto;
+}
+        #out_btn_popup>div {
+            padding: 3%;
+            font-size: 0.3rem;
+            font-weight: 400;
+            color: #858585;
+        }
+        #out_btn_popup>div:hover {
+            background-color: #e9f4fc;
+        }
+        .content_outer, #disk_outer, #storage_domain_outer {
+            width: 100%;
+    transition: height 0.3s; /* 애니메이션 추가 */
+    overflow: auto;
+        }
+        .content_header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.4% 0 1.6% 1%;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 1%;
+        }
+        .content_header_left {
+            display: flex;
+            align-items: center;
+            font-size: 0.65rem;
+        }
+        .content_header_left div {
+            margin-right: 20px;
+            position: relative;
+            font-size: 0.4rem;
+            cursor: pointer;
+            color: black;
+            padding: 0.1rem 0;
+        }
+        .content_header_left div.active {
+            color: rgb(114, 199, 255);
+            font-weight: 600;
+        }
+        .content_header_left div.active::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -8px;
+            width: 100%;
+            height: 2px;
+            background-color: rgb(114, 199, 255);
+        }
+        .content_header_right {
+            display: flex;
+            align-items: center;
+        }
+        .content_header_right button {
+            margin-right: 9px;
+            font-size: 0.4rem;
+            padding: 0.1rem 0.1rem;
+            cursor: pointer;
+            font-size: 0.3rem;
+            font-weight: 600;
+            background: #dff7ff;
+            border: 1px solid rgb(114, 199, 255);
+        }
+        .content_header_popup_btn {
+            position: relative;
+        }
+        .content_header_popup {
+            position: absolute;
+            background-color: white;
+            border: 1px solid rgb(189, 189, 189);
+            font-size: 0.32rem;
+            right: 0%;
+            top: 130%;
+            font-weight: 400;
+            min-width: 1500%;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+        .content_header_popup>div {
+            padding: 2% 3%;
+        }
+        .content_header_popup>div:hover {
+            background-color: #ececec;
+        }
+        .content_header_popup>div:first-child, .content_header_popup>div:nth-child(4) {
+            color: #a5a5a5;
+        }
+        .tables {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 2%;
+        }
+        .table_container_left, .table_container_center, .table_container_right {
+            width: 31%;
+        }
+        .table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .table th, .table td {
+            padding: 6px;
+            vertical-align: top;
+            border: none;
+            font-size: 0.32rem;
+        }
+        .table th {
+            text-align: left;
+            font-weight: bold;
+        }
+        .empty {
+            color: white;
+        }
+        .table td {
+            text-align: left;
+            color: #757575;
+        }
+        .footer_outer {
+            font-size: 0.34rem;
+            width: 100%;
+            left: 0;
+            max-height: 30%;
+            position: absolute;
+            bottom: 0;
+        }
+        .footer {
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+            height: 4.3vh;
+            display: flex;
+        }
+        .footer>button {
+            height: 4.3vh;
+            width: 2%;
+            color: #4F4F4F;
+            cursor: pointer;
+        }
+        .footer>button>i {
+            font-size: 0.3rem;
+            display: block;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .footer>div {
+            display: flex;
+        }
+        .footer>div>a {
+            font-weight: 600;
+            display: block;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .footer>div>a:first-child {
+            margin: 8px 30px 0 15px;
+            border-bottom: 2px solid blue;
+            color: black;
+        }
+        .footer>div>a:nth-child(2) {
+            color: #4F4F4F;
+        }
+        .footer_content {
+            display: none;
+            background: white;
+            padding: 10px;
+            box-shadow: 0 -3px 6px rgba(0, 0, 0, 0.16);
+        }
+        .footer_nav {
+            display: flex;
+            width: 100%;
+            padding: 5px 3px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+            margin-bottom: 18px;
+        }
+        .footer_nav>div {
+            display: flex;
+            width: 15%;
+            justify-content: space-between;
+            border-right: 1px solid #4F4F4F;
+            padding: 2px 5px;
+            color: #4F4F4F;
+        }
+        .footer_img {
+            width: 11%;
+            margin: 0 auto;
+        }
+        .footer_img>img {
+            margin: 0 auto;
+            display: block;
+        }
+        .footer_img>span {
+            text-align: center;
+            display: block;
+            font-size: 0.33rem;
+            margin-top: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div id="section">
+        <div id="section_header">
+            <div id="section_header_left">
+                <span>가상머신</span>
+                <div>on20-ap01</div>
+                <button><i class="fa fa-exchange"></i></button>
+            </div>
+            <div id="section_header_right">
+                <div id="article_nav">
+                    <button id="edit_btn">편집</button>
+                    <div>
+                        <button style="color: #A1A1A1;">
+                            <i class="fa fa-play"></i>실행
+                        </button>
+                    </div>
+                    <button><i class="fa fa-pause"></i>일시중지</button>
+                    <div>
+                        <button>
+                            <i class="fa fa-stop"></i>종료
+                        </button>
+                    </div>
+                    <div>
+                        <button>
+                            <i class="fa fa-repeat"></i>재부팅
+                        </button>
+                    </div>
+                    <button><i class="fa fa-desktop"></i>콘솔</button>
+                    <button>스냅샷 생성</button>
+                    <button id="migration_btn">마이그레이션</button>
+                    <button id="popup_btn">
+                        <i class="fa fa-ellipsis-v"></i>
+                        <div id="popup_box">
+                            <div>
+                                <div class="get_btn">가져오기</div>
+                                <div class="get_btn">가상 머신 복제</div>
+                            </div>
+                            <div>
+                                <div>삭제</div>
+                            </div>
+                            <div>
+                                <div>마이그레이션 취소</div>
+                                <div>변환 취소</div>
+                            </div>
+                            <div>
+                                <div id="template_btn">템플릿 생성</div>
+                            </div>
+                            <div style="border-bottom: none;">
+                                <div id="domain2">도메인으로 내보내기</div>
+                                <div id="domain">Export to Data Domai</div>
+                                <div id="ova_btn">OVA로 내보내기</div>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="content_outer">
+            <div class="content_header">
+                <div class="content_header_left">
+                    <div class="active">일반</div>
+                    <div>네트워크 인터페이스</div>
+                    <div>디스크</div>
+                    <div>스냅샷</div>
+                    <div>애플리케이션</div>
+                    <div>선호도 그룹</div>
+                    <div>선호도 레이블</div>
+                    <div>게스트 정보</div>
+                    <div>권한</div>
+                    <div>이벤트</div>
+                </div>
+            </div>
+            <div class="tables">
+                <div class="table_container_left">
+                    <table class="table">
+                        <tr>
+                            <th>이름:</th>
+                            <td>on20-ap01</td>
+                        </tr>
+                        <tr>
+                            <th>설명:</th>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>상태:</th>
+                            <td>실행 중</td>
+                        </tr>
+                        <tr>
+                            <th>업타임:</th>
+                            <td>11 days</td>
+                        </tr>
+                        <tr class="empty">
+                            <th>.</th>
+                            <td style="color: white;">.</td>
+                        </tr>
+                        <tr>
+                            <th>템플릿:</th>
+                            <td>Blank</td>
+                        </tr>
+                        <tr>
+                            <th>운영 시스템:</th>
+                            <td>Linux</td>
+                        </tr>
+                        <tr class="empty">
+                            <th>.</th>
+                            <td style="color: white;">.</td>
+                        </tr>
+                        <tr>
+                            <th>펌웨어/장치의 유형:</th>
+                            <td>BIOS의 Q35 칩셋 <i class="fa fa-ban" style="margin-left: 13%;color:orange;"></i></td>                           
+                        </tr>
+                        <tr>
+                            <th>우선 순위:</th>
+                            <td>높음</td>
+                        </tr>
+                        <tr>
+                            <th>최적화 옵션:</th>
+                            <td>서버</td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="table_container_center">
+                    <table class="table">
+                        <tr>
+                            <th>설정된 메모리:</th>
+                            <td>2048 MB</td>
+                        </tr>
+                        <tr>
+                            <th>할당할 실제 메모리:</th>
+                            <td>2048 MB</td>
+                        </tr>
+                        <tr class="empty">
+                            <th>.</th>
+                            <td style="color: white;">.</td>
+                        </tr>
+                        <tr>
+                            <th>게스트 OS의 여유/캐시+비퍼</th>
+                            <td>1003 / 0 MB</td>
+                        </tr>
+                        <tr>
+                            <th>된 메모리:</th>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>CPU 코어 수:</th>
+                            <td>2(2:1:1)</td>
+                        </tr>
+                        <tr>
+                            <th>게스트 CPU 수:</th>
+                            <td>2</td>
+                        </tr>
+                        <tr class="empty">
+                            <th>.</th>
+                            <td style="color: white;">.</td>
+                        </tr>
+                        <tr>
+                            <th>게스트 CPU</th>
+                            <td>Cascadelake-Server</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>고가용성:</th>
+                            <td>예</td>
+                        </tr>
+                        <tr>
+                            <th>모니터 수:</th>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <th>USB:</th>
+                            <td>비활성화됨</td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="table_container_right">
+                    <table class="table">
+                        <tr>
+                            <th>작성자:</th>
+                            <td>admin</td>
+                        </tr>
+                        <tr>
+                            <th>소스:</th>
+                            <td>oVirt</td>
+                        </tr>
+                        <tr>
+                            <th>실행 호스트:</th>
+                            <td>클러스터 내의 호스트</td>
+                        </tr>
+                        <tr>
+                            <th>사용자 정의 속성:</th>
+                            <td>설정되지 않음</td>
+                        </tr>
+                        <tr>
+                            <th>클러스터 호환 버전:</th>
+                            <td>4.7</td>
+                        </tr>
+                        <tr>
+                            <th>가상 머신의 ID:</th>
+                            <td>Linuxdddddddddddddddddddddd</td>
+                        </tr>
+                        <tr class="empty">
+                            <th>.</th>
+                            <td style="color: white;">.</td>
+                        </tr>
+                        <tr class="empty">
+                            <th>.</th>
+                            <td style="color: white;">.</td>
+                        </tr>
+                        <tr>
+                            <th>FQDN:</th>
+                            <td>on20-ap01</td>
+                        </tr>
+                        <tr>
+                            <th>하드웨어 클럭의 시간 오프셋:</th>
+                            <td>Asia/Seoul</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div><!--content_outer끝-->
+        <!--footer-->
+        <div class="footer_outer">
+            <div class="footer">
+                <button><i class="fa fa-chevron-down"></i></button>
+                <div>
+                    <a>최근 작업</a>
+                    <a>경보</a>
+                </div>
+            </div>
+            <div class="footer_content">
+                <div class="footer_nav">
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+                    <div style="border-right: none;">
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+                </div>
+                <div class="footer_img">
+                    <img src="img/화면 캡처 2024-04-30 164511.png">
+                    <span>항목을 찾지 못했습니다</span>
+                </div>
+            </div>
+        </div><!--footer끝-->
+    </div><!--section(중간)끝-->
+    <script>
+$(function(){
+    // footer 팝업창
+    $('.footer>button').click(function(){
+        var footerContent = $('.footer_content');
+        var contentOuter = $('#content_outer');
+
+        if(footerContent.css('display') === 'none'){
+            footerContent.css('display', 'block');
+            contentOuter.css('height', 'calc(100% - 14.3vh)'); // Adjust this value as needed
+        } else {
+            footerContent.css('display', 'none');
+            contentOuter.css('height', 'calc(100% - 4.3vh)');
+        }
+    });
+});
+
+
+        // font-size 반응형
+        function adjustFontSize() {
+            var width = window.innerWidth;
+            var fontSize = width / 40; // Adjust this value as needed
+            document.documentElement.style.fontSize = fontSize + 'px';
+        }
+
+        // Call the adjustFontSize function when the window size changes
+        window.onresize = function() {
+            adjustFontSize();
+        };
+
+        // Call the adjustFontSize function initially
+        adjustFontSize();
+    </script>
+</body>
+</html>

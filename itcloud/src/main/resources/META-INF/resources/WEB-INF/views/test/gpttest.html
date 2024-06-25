@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.form-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+}
+
+.form-container h2 {
+    margin-top: 0;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.form-group input[type="text"],
+.form-group select {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.form-group input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.radio-group {
+    display: flex;
+    align-items: center;
+}
+
+.radio-group input[type="radio"] {
+    margin-right: 5px;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+    font-size: 0.9rem;
+}
+
+.radio-group img {
+    margin-right: 5px;
+}
+
+.filter-parameters {
+    display: flex;
+    align-items: center;
+}
+
+.filter-parameters label {
+    margin-right: 10px;
+}
+
+.filter-parameters input[type="text"] {
+    margin-right: 10px;
+    width: 50px;
+}
+
+.filter-parameters button {
+    margin-right: 5px;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.form-actions button {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    margin-left: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form-actions button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.form-actions button[type="button"] {
+    background-color: #f44336;
+    color: white;
+}
+
+    </style>
+</head>
+<body>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>네트워크 인터페이스 수정</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="form-container">
+        <h2>네트워크 인터페이스 수정</h2>
+        <form>
+            <div class="form-group">
+                <label for="name">이름</label>
+                <input type="text" id="name" name="name" value="nic1">
+            </div>
+            <div class="form-group">
+                <label for="profile">프로파일</label>
+                <select id="profile" name="profile">
+                    <option value="ovirtmgmt/ovirtmgmt">ovirtmgmt/ovirtmgmt</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="type">유형</label>
+                <select id="type" name="type">
+                    <option value="VirtIO">VirtIO</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="checkbox" id="user_mac" name="user_mac">
+                <label for="user_mac">사용자 지정 MAC 주소</label>
+                <input type="text" id="mac_address" name="mac_address" value="56:6f:de:84:00:00" placeholder="예: 00:14:4a:23:67:55">
+            </div>
+            <div class="form-group">
+                <label>링크 상태</label>
+                <div class="radio-group">
+                    <input type="radio" id="link_up" name="link_status" value="Up" checked>
+                    <label for="link_up"><img src="path_to_up_icon.png" alt="Up"> Up</label>
+                    <input type="radio" id="link_down" name="link_status" value="Down">
+                    <label for="link_down"><img src="path_to_down_icon.png" alt="Down"> Down</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>카드 상태</label>
+                <div class="radio-group">
+                    <input type="radio" id="card_connected" name="card_status" value="Connected" checked>
+                    <label for="card_connected"><img src="path_to_connected_icon.png" alt="Connected"> 연결됨</label>
+                    <input type="radio" id="card_disconnected" name="card_status" value="Disconnected">
+                    <label for="card_disconnected"><img src="path_to_disconnected_icon.png" alt="Disconnected"> 분리</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>네트워크 필터 매개변수</label>
+                <div class="filter-parameters">
+                    <label for="filter_name">이름</label>
+                    <input type="text" id="filter_name" name="filter_name">
+                    <label for="filter_value">값</label>
+                    <input type="text" id="filter_value" name="filter_value">
+                    <button type="button">+</button>
+                    <button type="button">-</button>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit">OK</button>
+                <button type="button">취소</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+
+</body>
+</html>

@@ -1,0 +1,30 @@
+<canvas id="my_chart" width="400" height="200" ></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+<script>
+var ctx = document.getElementById("my_chart").getContext("2d");
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ["Jan", "Feb", "Mar", "Apr"],
+        datasets: [{
+            label: "Title on top",
+            data: [10, 80, 56, 60]
+        }]
+    },
+    options: {
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            x: {
+                display: false
+            },
+            y: {
+                display: false
+            },
+        }
+    }
+});
+</script>

@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <div id="section">
+        <div id="section_header">
+            <div id="section_header_left">
+                <span>가상머신</span>
+                <div>on20-ap01</div>
+                <button><i class="fa fa-exchange"></i></button>
+            </div>
+        
+            <div id="section_header_right">
+                <div id="article_nav">
+                    <button id="edit_btn">편집</button>
+                    <div>
+                        <button  style="color: #A1A1A1;">
+                            <i class="fa fa-play"></i>실행
+                        </button>
+                    </div>
+                    <button><i class="fa fa-pause"></i>일시중지</button>
+                    <div>
+                        <button>
+                            <i class="fa fa-stop"></i>종료
+                        </button>
+                       
+                    </div>
+                    <div>
+                        <button>
+                            <i class="fa fa-repeat"></i>재부팅
+                        </button>
+                        
+                    </div>
+                    <button><i class="fa fa-desktop"></i>콘솔</button>
+                    <button>스냅샷 생성</button>
+                    <button id="migration_btn">마이그레이션</button>
+                    <button id="popup_btn">
+                        <i class="fa fa-ellipsis-v"></i>
+                        <div id="popup_box">
+                            <div>
+                                <div class="get_btn">가져오기</div>
+                                <div class="get_btn">가상 머신 복제</div>
+                            </div>
+                            <div>
+                                <div>삭제</div>
+                            </div>
+                            <div>
+                                <div>마이그레이션 취소</div>
+                                <div>변환 취소</div>
+                            </div>
+                            <div>
+                                <div id="template_btn">템플릿 생성</div>
+                            </div>
+                            <div style="border-bottom: none;">
+                                <div id="domain2">도메인으로 내보내기</div>
+                                <div id="domain">Export to Data Domai</div>
+                                <div id="ova_btn">OVA로 내보내기</div>
+                            </div>
+                        </div>
+                        
+                                    
+                    </button>
+                </div>
+        
+            </div><!--article끝-->
+        </div><!--section_header끝-->
+
+        <div id="content_outer">
+            <div class="content_header">
+                <div class="content_header_left">
+                    <div class="active">일반</div>
+                    <div>네트워크 인터페이스</div>
+                    <div>디스크</div>
+                    <div>스냅샷</div>
+                    <div>애플리케이션</div>
+                    <div>선호도 그룹</div>
+                    <div>선호도 레이블</div>
+                    <div>게스트 정보</div>
+                    <div>권한</div>
+                    <div>이벤트</div>
+                </div>
+                <div  class="content_header_right">
+                    
+                </div>
+            </div>
+            
+            <div class="tables">
+                <div class="table_container_left">
+                    <table class="table">
+                        <tr>
+                            <th>이름:</th>
+                            <td>on20-ap01</td>
+                        </tr>
+                        <tr>
+                            <th>설명:</th>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>상태:</th>
+                            <td>실행 중</td>
+                        </tr>
+                        <tr>
+                            <th>업타임:</th>
+                            <td>11 days</td>
+                        </tr>
+                        <tr class="empty">
+                            <th>.</th>
+                            <td style="color: white;">.</td>
+                        </tr>
+                        <tr>
+                            <th>템플릿:</th>
+                            <td>Blank</td>
+                        </tr>
+                        <tr>
+                            <th>운영 시스템:</th>
+                            <td>Linux</td>
+                        </tr>
+                        <tr class="empty">
+                            <th>.</th>
+                            <td style="color: white;">.</td>
+                        </tr>
+                        <tr>
+                            <th>펌웨어/장치의 유형:</th>
+                            <td>BIOS의 Q35 칩셋 <i class="fa fa-ban" style="margin-left: 13%;color:orange;"></i></td>                           
+                        </tr>
+                        <tr>
+                            <th>우선 순위:</th>
+                            <td>높음</td>
+                        </tr>
+                        <tr>
+                            <th>최적화 옵션:</th>
+                            <td>서버</td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="table_container_center">
+                    <table class="table">
+                        <tr>
+                            <th>설정된 메모리:</th>
+                            <td>2048 MB</td>
+                        </tr>
+                        <tr>
+                            <th>할당할 실제 메모리:</th>
+                            <td>2048 MB</td>
+                        </tr>
+                        <tr class="empty">
+                            <th>.</th>
+                            <td style="color: white;">.</td>
+                        </tr>
+                        <tr>
+                            <th>게스트 OS의 여유/캐시+비퍼</th>
+                            <td>1003 / 0 MB</td>
+                        </tr>
+                        <tr>
+                            <th>된 메모리:</th>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>CPU 코어 수:</th>
+                            <td>2(2:1:1)</td>
+                        </tr>
+                        <tr>
+                            <th>게스트 CPU 수:</th>
+                            <td>2</td>
+                        </tr>
+                        <tr class="empty">
+                            <th>.</th>
+                            <td style="color: white;">.</td>
+                        </tr>
+                        <tr>
+                            <th>게스트 CPU</th>
+                            <td>Cascadelake-Server</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>고가용성:</th>
+                            <td>예</td>
+                        </tr>
+                        <tr>
+                            <th>모니터 수:</th>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <th>USB:</th>
+                            <td>비활성화됨</td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="table_container_right">
+                    <table class="table">
+                        <tr>
+                            <th>작성자:</th>
+                            <td>admin</td>
+                        </tr>
+                        <tr>
+                            <th>소스:</th>
+                            <td>oVirt</td>
+                        </tr>
+                        <tr>
+                            <th>실행 호스트:</th>
+                            <td>클러스터 내의 호스트</td>
+                        </tr>
+                        <tr>
+                            <th>사용자 정의 속성:</th>
+                            <td>설정되지 않음</td>
+                        </tr>
+                        <tr>
+                            <th>클러스터 호환 버전:</th>
+                            <td>4.7</td>
+                        </tr>
+                        <tr>
+                            <th>가상 머신의 ID:</th>
+                            <td>Linuxdddddddddddddddddddddd</td>
+                        </tr>
+                        
+                        <tr class="empty" >
+                            <th>.</th>
+                            <td style="color: white;">.</td>
+                        </tr>
+                        <tr class="empty">
+                            <th>.</th>
+                            <td style="color: white;">.</td>
+                        </tr>
+                        <tr>
+                            <th>FQDN:</th>
+                            <td>on20-ap01</td>
+                        </tr>
+                        <tr>
+                            <th>하드웨어 클럭의 시간 오프셋:</th>
+                            <td>Asia/Seoul</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+        </div><!--content_outer끝-->
+
+        <!--네트워크 인터페이스-->
+        <div id="network_outer" style="display: none;">
+            <div class="content_header">
+                <div class="content_header_left">
+                    <div>일반</div>
+                    <div class="active">네트워크 인터페이스</div>
+                    <div>디스크</div>
+                    <div>스냅샷</div>
+                    <div>애플리케이션</div>
+                    <div>선호도 그룹</div>
+                    <div>선호도 레이블</div>
+                    <div>게스트 정보</div>
+                    <div>권한</div>
+                    <div>이벤트</div>
+                </div>
+                <div  class="content_header_right">
+                    <button id="network_popup_new">새로 만들기</button>
+                    <button>수정</button>
+                    <button>제거</button>                      
+                </div>
+            </div>
+
+            <div id="network_content_outer">
+                <div class="network_content">
+                    <div>
+                        <i class="fa fa-chevron-right"></i>
+                        <i class="fa fa-arrow-circle-o-up" style="color: #21c50b; margin-left: 0.3rem;"></i>
+                        <i class="fa fa-plug"></i>
+                        <i class="fa fa-usb"></i>
+                        <span>nic1</span>
+                    </div>
+                    <div>
+                        <div>네트워크 이름</div>
+                        <div>ovirtmgmt</div>
+                    </div>
+                    <div>
+                        <div>IPv4</div>
+                        <div>192.168.10.147</div>
+                    </div>
+                    <div>
+                        <div>IPv6</div>
+                        <div>192.168.10.147</div>
+                    </div>
+                    <div style="padding-right: 3%;">
+                        <div>MAC</div>
+                        <div>192.168.10.147</div>
+                    </div>
+                    
+                </div>
+                <div class="network_content">
+                    <div>
+                        <i class="fa fa-chevron-right"></i>
+                        <i class="fa fa-arrow-circle-o-up" style="color: #21c50b; margin-left: 0.3rem;"></i>
+                        <i class="fa fa-plug"></i>
+                        <i class="fa fa-usb"></i>
+                        <span>nic1</span>
+                    </div>
+                    <div>
+                        <div>네트워크 이름</div>
+                        <div>ovirtmgmt</div>
+                    </div>
+                    <div>
+                        <div>IPv4</div>
+                        <div>192.168.10.147</div>
+                    </div>
+                    <div>
+                        <div>IPv6</div>
+                        <div>192.168.10.147</div>
+                    </div>
+                    <div style="padding-right: 3%;">
+                        <div>MAC</div>
+                        <div>192.168.10.147</div>
+                    </div>
+                    
+                </div>
+            </div>
+
+        </div><!--network_outer끝-->
+        <!--네트워크인터페이스 팝업창-->
+        <div class="network_popup_outer">
+            <div class="network_popup">
+                <div class="network_popup_header">
+                    <h1>네트워크 인터페이스 수정</h1>
+                    <button><i class="fa fa-times"></i></button>
+                </div>
+
+                <div class="network_popup_content">
+                    <div class="input_box">
+                        <sapn>이름</sapn>
+                        <input type="text"/>
+                    </div>
+                    <div class="select_box">
+                        <label for="profile">프로파일</label>
+                        <select id="profile">
+                            <option value="test02">ovirtmgmt/ovirtmgmt</option>
+                        </select>
+                    </div>
+                    <div class="select_box">
+                        <label for="type" style="color: gray;">유형</label>
+                        <select id="type" disabled>
+                            <option value="test02">VirtIO</option>
+                        </select>
+                    </div>
+                    <div class="select_box2" style="margin-bottom: 2%;">
+                        <div>
+                            <input type="checkbox" id="custom_mac_box" disabled>
+                            <label for="custom_mac_box" style="color: gray;">
+                                사용자 지정 MAC 주소
+                            </label>
+                        </div>
+                        <div>
+                            <select id="mac_address" disabled>
+                                <option value="test02">VirtIO</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="plug_radio_btn">
+                        <span>링크 상태</span>
+                        <div>
+                            <div class="radio_outer">
+                                <div>
+                                    <input type="radio" name="status" id="status_up">
+                                    <img src=".//img/스크린샷 2024-05-24 150455.png">
+                                    <label for="status_up">Up</label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="status" id="status_down">
+                                    <img src=".//img/Down.png">
+                                    <label for="status_down">Down</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="plug_radio_btn">
+                        <span>카드 상태</span>
+                        <div>
+                            <div class="radio_outer">
+                                <div>
+                                    <input type="radio" name="connection_status" id="connected">
+                                    <img src=".//img/연결됨.png">
+                                    <label for="connected">연결됨</label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="connection_status" id="disconnected">
+                                    <img src=".//img/분리.png">
+                                    <label for="disconnected">분리</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="network_parameter_outer">
+                    <span>네트워크 필터 매개변수</span>
+                    <div>
+                        <div>
+                            <span>이름</span>
+                            <input type="text"/>
+                        </div>
+                        <div>
+                            <span>값</span>
+                            <input type="text"/>
+                        </div>
+                        <div id="buttons">
+                            <button>+</button>
+                            <button>-</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="edit_footer">
+                    <button style="display: none;"></button>
+                    <button>OK</button>
+                    <button>취소</button>
+                </div>
+                
+
+            </div>
+        </div> <!--새로만들기(네트워크인터페이스) 팝업끝-->
+
+        <!--디스크 버튼-->
+        <div id="disk_outer" style="display: none;">
+            <div class="content_header">
+                <div class="content_header_left">
+                    <div >일반</div>
+                    <div>네트워크 인터페이스</div>
+                    <div class="active">디스크</div>
+                    <div>스냅샷</div>
+                    <div>애플리케이션</div>
+                    <div>선호도 그룹</div>
+                    <div>선호도 레이블</div>
+                    <div>게스트 정보</div>
+                    <div>권한</div>
+                    <div>이벤트</div>
+                </div>
+                <div  class="content_header_right">
+                    <button id="disk_popup_new">새로 만들기</button>
+                    <button id="join_popup_btn">연결</button>
+                    <button>수정</button>
+                    <button>제거</button>
+                    <button class="content_header_popup_btn">
+                        <i class="fa fa-ellipsis-v"></i>
+                        <div class="content_header_popup" style="display: none;">
+                            <div>활성</div>
+                            <div>비활성화</div>
+                            <div>이동</div>
+                            <div>LUN 새로고침</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="disk_content">
+                <div class="disk_content_header">
+                    <span>디스크 유형:</span>
+                    <button>모두</button>
+                    <button>이미지</button>
+                    <button>직접 LUN</button>
+                    <button>관리되는 블록</button>                  
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>변경</th>
+                            <th><i class="fa fa-glass"></i></th>
+                            <th><i class="fa fa-glass"></i></th>
+                            <th><i class="fa fa-glass"></i></th>
+                            <th>가상 크기</th>
+                            <th>연결 대상</th>
+                            <th>인터페이스</th>
+                            <th>논리적 이름</th>
+                            <th>상태</th>
+                            <th>유형</th>
+                            <th>설명</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><i class="fa fa-caret-up" style="color: #1DED00;"></i></td>
+                            <td>on20-ap01</td>
+                            <td><i class="fa fa-glass"></i></td>
+                            <td><i class="fa fa-glass"></i></td>
+                            <td><i class="fa fa-glass"></i></td>
+                            <td>on20-ap01</td>
+                            <td>VirtIO-SCSI</td>
+                            <td>/dev/sda</td>
+                            <td>OK</td>
+                            <td>이미지</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+        </div><!--disk_outer끝-->
+        <!--새로만들기(디스크)팝업-->
+        <div class="disk_popup_outer">
+            <div class="disk_popup">
+                <div class="network_popup_header">
+                    <h1>새 가상 디스크</h1>
+                    <button><i class="fa fa-times"></i></button>
+                </div>
+                <div id="disk_new_nav">
+                    <div>이미지</div>
+                    <div id="directlun_btn">직접LUN</div>
+                    <div id="managed_block_btn">관리되는 블록</div>
+                </div>
+                <div id="disk_new_img">
+                    <div id="disk_new_img_left">
+
+                        <div class="img_input_box">
+                            <span>크기(GIB)</span>
+                            <input type="text">
+                        </div>
+                        <div class="img_input_box">
+                            <span>별칭</span>
+                            <input type="text">
+                        </div>
+                        <div class="img_input_box">
+                            <span>설명</span>
+                            <input type="text">
+                        </div>
+                        <div class="img_select_box">
+                            <label for="os">운영 시스템</label>
+                            <select id="os">
+                                <option value="linux">Linux</option>
+                            </select>
+                        </div>
+                        <div class="img_select_box">
+                            <label for="os">스토리지 도메인</label>
+                            <select id="os">
+                                <option value="linux">Linux</option>
+                            </select>
+                        </div>
+                        <div class="img_select_box">
+                            <label for="os">할당 정책</label>
+                            <select id="os">
+                                <option value="linux">Linux</option>
+                            </select>
+                        </div>
+                        <div class="img_select_box">
+                            <label for="os">디스크 프로파일</label>
+                            <select id="os">
+                                <option value="linux">Linux</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div id="disk_new_img_right">
+                        <div>
+                            <input type="checkbox" class="disk_activation" checked>
+                            <label for="disk_activation">디스크 활성화</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="reset_after_deletion">
+                            <label for="reset_after_deletion">삭제 후 초기화</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" class="bootable" disabled>
+                            <label for="bootable" style="color: gray;">부팅 가능</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" class="shareable">
+                            <label for="shareable">공유 가능</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" class="read_only">
+                            <label for="read_only">읽기전용</label>
+                        </div>                            
+                        <div>
+                            <input type="checkbox" id="cancellable">
+                            <label for="cancellable">취소 활성화</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="incremental_backup" checked>
+                            <label for="incremental_backup">중복 백업 사용</label>
+                        </div>
+                    </div>
+                </div><!--disk_new_img 팝업 끝-->
+                <!--직접LUN-->
+                <div id="directlun_outer" style="display: none;">
+                    dd
+                </div>
+                <!--직접LUN끝-->
+                <!--관리되는 블록-->
+                <div id="managed_block_outer" style="display: none;">
+                    <div id="disk_managed_block_left">
+                        <div class="img_input_box">
+                            <span>크기(GIB)</span>
+                            <input type="text" disabled>
+                        </div>
+                        <div class="img_input_box">
+                            <span>별칭</span>
+                            <input type="text" value="on20-ap01_Disk1" disabled>
+                        </div>
+                        <div class="img_input_box">
+                            <span>설명</span>
+                            <input type="text" disabled>
+                        </div>
+                        <div class="img_select_box">
+                            <label for="os">할당 정책</label>
+                            <select id="os" disabled>
+                                <option value="linux">Linux</option>
+                            </select>
+                        </div>
+                        <div class="img_select_box">
+                            <label for="os">디스크 프로파일</label>
+                            <select id="os" disabled>
+                                <option value="linux">Linux</option>
+                            </select>
+                        </div>
+                        <span>해당 데이터 센터에 디스크를 생성할 수 있는 권한을 갖는 사용 가능한 관리 블록 스토리지 도메인이 없습니다.</span>
+                    </div>
+
+                    <div id="disk_managed_block_right">
+                        <div>
+                            <input type="checkbox" class="disk_activation" disabled>
+                            <label for="disk_activation">디스크 활성화</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" class="bootable" disabled>
+                            <label for="bootable">부팅 가능</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" class="shareable" disabled>
+                            <label for="shareable">공유 가능</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" class="read_only" disabled>
+                            <label for="read_only">읽기전용</label>
+                        </div>
+                    </div>
+
+                </div>
+                <!--관리되는 블록끝-->
+
+                <div class="edit_footer">
+                    <button style="display: none;"></button>
+                    <button>OK</button>
+                    <button>취소</button>
+                </div>
+
+            </div>
+        </div> <!--새로만들기(디스크) 팝업끝-->
+        
+        <!--연결(디스크)팝업-->
+        <div id="join_popup_outer">
+            <div id="join_popup">
+                <div class="network_popup_header">
+                    <h1>가상 디스크 연결</h1>
+                    <button><i class="fa fa-times"></i></button>
+                </div>
+
+                <div id="join_header">
+                    <div id="join_new_nav">
+                        <div id="img_btn2">이미지</div>
+                        <div id="directlun_btn2">직접LUN</div>
+                        <div id="managed_block_btn2">관리되는 블록</div>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="diskActivation" checked>
+                        <label for="diskActivation">디스크 활성화</label>                            
+                    </div>
+                </div>
+
+                <div id="join_img_content">
+                    <table>
+                        <thead>
+                            <tr id="join_img_th">
+                                <th>별칭</th>
+                                <th>설명</th>
+                                <th>ID</th>
+                                <th>가상 크기</th>
+                                <th>실제 크기</th>
+                                <th>스토리지 도메인</th>
+                                <th>인터페이스</th>
+                                <th>R/O</th>
+                                <th><i class="fa fa-external-link"></i></th>
+                                <th><i class="fa fa-external-link"></i></th>
+                            </tr>
+                            <tr id="join_directlun_th" style="display: none;">
+                                <th>별칭</th>
+                                <th>설명</th>
+                                <th>LUN ID</th>
+                                <th>ID</th>
+                                <th>크기</th>
+                                <th>#경로</th>
+                                <th>벤더ID</th> 
+                                <th>제품ID</th>
+                                <th>시리얼</th>
+                                <th>인터페이스</th>
+                                <th>R/O</th>
+                                <th><i class="fa fa-external-link"></i></th>
+                                <th><i class="fa fa-external-link"></i></th>
+                            </tr>
+                            <tr id="join_managed_th" style="display: none;">
+                                <th>별칭</th>
+                                <th>설명</th>
+                                <th>ID</th>
+                                <th>가상 크기</th>
+                                <th>스토리지 도메인</th>
+                                <th>인터페이스</th> 
+                                <th>R/O</th>
+                                <th><i class="fa fa-external-link"></i></th>
+                                <th><i class="fa fa-external-link"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="join_img_td" >
+                                <td>OK</td>
+                                <td>test02</td>
+                                <td>asd</td>
+                                <td>5</td>
+                                <td></td>
+                                <td>소프트</td>
+                                <td></td>
+                                <td>소프트</td>
+                                <td>멤버없음</td>
+                                <td>레이블없음</td>
+                            </tr>
+                            <tr class="join_directlun_td" style=" display: none;">
+                                <td >OK</td>
+                                <td>test02</td>
+                                <td>asd</td>
+                                <td>5</td>
+                                <td></td>
+                                <td>소프트</td>
+                                <td></td>
+                                <td>소프트</td>
+                                <td>멤버없음</td>
+                                <td>레이블없음</td>
+                                <td>레이블없음</td>
+                                <td>레이블없음</td>
+                                <td>레이블없음</td>
+                            </tr>
+                            <tr class="join_managed_td" style=" display: none;">
+                                <td >OK</td>
+                                <td>test02</td>
+                                <td>asd</td>
+                                <td>5</td>
+                                <td></td>
+                                <td>소프트</td>
+                                <td></td>
+                                <td>소프트</td>
+                                <td>멤버없음</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                
+
+
+                <div class="edit_footer">
+                    <button style="display: none;"></button>
+                    <button>OK</button>
+                    <button>취소</button>
+                </div>
+
+            </div>
+        </div>
+        <!--연결 디스크 팝업끝-->
+        
+
+
+        <!--스냅샷-->
+        <div id="snapshot_outer" style="display: none;">
+            <div class="content_header">
+                <div class="content_header_left">
+                    <div >일반</div>
+                    <div>네트워크 인터페이스</div>
+                    <div>디스크</div>
+                    <div class="active">스냅샷</div>
+                    <div>애플리케이션</div>
+                    <div>선호도 그룹</div>
+                    <div>선호도 레이블</div>
+                    <div>게스트 정보</div>
+                    <div>권한</div>
+                    <div>이벤트</div>
+                </div>
+                <div  class="content_header_right">
+                    <button class="snap_create_btn">생성</button>
+                    <button>미리보기</button>
+                    <button>커밋</button>
+                    <button>되돌리기</button>
+                    <button>삭제</button>
+                    <button>복제</button>
+                    <button>템플릿 생성</button>
+                </div>
+            </div>
+            
+            <div id="snapshot_content_outer">
+
+                <div class="snapshot_content">
+                    <div class="snapshot_content_left">
+                        <div><i class="fa fa-camera"></i></div>
+                        <span>Active VM</span>
+                    </div>
+                    <div class="snapshot_content_right">
+                        <div>
+                            <i class="fa fa-chevron-right"></i>
+                            <span>일반</span>
+                            <i class="fa fa-eye"></i>
+                        </div>
+                        <div>
+                            <i class="fa fa-chevron-right"></i>
+                            <span>디스크</span>
+                            <i class="fa fa-trash-o"></i>
+                        </div>
+                        <div>
+                            <i class="fa fa-chevron-right"></i>
+                            <span>네트워크 인터페이스</span>
+                            <i class="fa fa-server"></i>
+                        </div>
+                        <div>
+                            <i class="fa fa-chevron-right"></i>
+                            <span>설치된 애플리케이션</span>
+                            <i class="fa fa-newspaper-o"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="snapshot_content">
+                    <div class="snapshot_content_left">
+                        <div><i class="fa fa-camera"></i></div>
+                        <span>Active VM</span>
+                    </div>
+                    <div class="snapshot_content_right">
+                        <div>
+                            <i class="fa fa-chevron-right"></i>
+                            <span>일반</span>
+                            <i class="fa fa-eye"></i>
+                        </div>
+                        <div>
+                            <i class="fa fa-chevron-right"></i>
+                            <span>디스크</span>
+                            <i class="fa fa-trash-o"></i>
+                        </div>
+                        <div>
+                            <i class="fa fa-chevron-right"></i>
+                            <span>네트워크 인터페이스</span>
+                            <i class="fa fa-server"></i>
+                        </div>
+                        <div>
+                            <i class="fa fa-chevron-right"></i>
+                            <span>설치된 애플리케이션</span>
+                            <i class="fa fa-newspaper-o"></i>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+        </div><!--snapshot_outer끝-->
+        <!--스냅샷 팝업(생성)-->
+        <div class="snap_create_outer" style="display: none;">
+            <div class="snap_create">
+                <div class="network_popup_header">
+                    <h1>스냅샷 생성</h1>
+                    <button><i class="fa fa-times"></i></button>
+                </div>
+                <div class="snap_create_inputbox">
+                    <span>크기(GIB)</span>
+                    <input type="text">
+                </div>
+                
+                <div id="snap_create_table">
+                    <span>포함할 디스크:</span>
+                    <div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>별칭</th>
+                                    <th>설명</th>
+                                
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr >
+                                    <td>
+                                        <input type="checkbox" id="diskActivation" checked>  
+                                    </td>
+                                    <td>
+                                        <label for="diskActivation">디스크 활성화</label>                            
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+                <div id="snap_create_warning">
+                    <i class="fa fa-exclamation" style="color: orange;"></i>
+                    <span>메모리를 저장하는 도중 가상 머신이 중지됨</span>
+                </div>
+                <div class="edit_footer">
+                    <button style="display: none;"></button>
+                    <button>OK</button>
+                    <button>취소</button>
+                </div>
+            </div>
+        </div>
+        <!--스냅샷 팝업(생성)창끝-->
+
+
+
+        <!--애플리케이션-->
+        <div id="application_outer" style="display: none;">
+            <div class="content_header">
+                <div class="content_header_left">
+                    <div >일반</div>
+                    <div>네트워크 인터페이스</div>
+                    <div>디스크</div>
+                    <div>스냅샷</div>
+                    <div class="active">애플리케이션</div>
+                    <div>선호도 그룹</div>
+                    <div>선호도 레이블</div>
+                    <div>게스트 정보</div>
+                    <div>권한</div>
+                    <div>이벤트</div>
+                </div>
+            </div>
+            
+            <div id="application_content">
+                <div class="application_content_header">
+                    <button><i class="fa fa-chevron-left"></i></button>
+                    <div>1-2</div>
+                    <button><i class="fa fa-chevron-right"></i></button>
+                    <button><i class="fa fa-ellipsis-v"></i></button>            
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>설치된 애플리케이션</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>kernel-3.10.0-1062.el7.x86_64</td>
+                        </tr>
+                        <tr>
+                            <td>qemu-guest-agent-2.12.0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+        </div><!--application_outer끝-->
+
+        <!--선호도 그룹-->
+        <div id="pregroup_outer" style="display: none;">
+            <div class="content_header">
+                <div class="content_header_left">
+                    <div >일반</div>
+                    <div>네트워크 인터페이스</div>
+                    <div>디스크</div>
+                    <div>스냅샷</div>
+                    <div>애플리케이션</div>
+                    <div class="active">선호도 그룹</div>
+                    <div>선호도 레이블</div>
+                    <div>게스트 정보</div>
+                    <div>권한</div>
+                    <div>이벤트</div>
+                </div>
+                <div  class="content_header_right">
+                    <button id="pregroup_create_btn">새로만들기</button>
+                    <button>편집</button>
+                    <button>제거</button>
+                </div>
+            </div>
+            
+            <div class="pregroup_content">
+                <div class="application_content_header">
+                    <button><i class="fa fa-chevron-left"></i></button>
+                    <div>1-2</div>
+                    <button><i class="fa fa-chevron-right"></i></button>
+                    <button><i class="fa fa-ellipsis-v"></i></button>            
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>상태</th>
+                            <th>이름</th>
+                            <th>설명</th>
+                            <th>우선 순위</th>
+                            <th>가상 머신 축 극성</th>
+                            <th>가상 머신 강제 적ㅇㅇㅇ</th>
+                            <th>호스트 축 극성</th>
+                            <th>호스트 강제 적용</th>
+                            <th>가상 머신 멤버</th>
+                            <th>가상 머신 레이블</th>
+                            <th>내용1</th>
+                            <th>내용2</th>
+                            <th>내용3</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align: center;">
+                                <i class="fa fa-exclamation"></i>
+                                중단
+                            </td>
+                            <td>test02</td>
+                            <td>asd</td>
+                            <td>5</td>
+                            <td></td>
+                            <td>소프트</td>
+                            <td></td>
+                            <td>소프트</td>
+                            <td>멤버없음</td>
+                            <td>레이블없음</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">OK</td>
+                            <td>test02</td>
+                            <td>asd</td>
+                            <td>5</td>
+                            <td></td>
+                            <td>소프트</td>
+                            <td></td>
+                            <td>소프트</td>
+                            <td>멤버없음</td>
+                            <td>레이블없음</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div><!--pregroup_outer끝-->
+        <!--선호도그룹(새로만들기)팝업-->
+        <div class="pregroup_create_outer" style="display: none;">
+            <div class="pregroup_create">
+                <div class="network_popup_header">
+                    <h1>새 선호도 그룹</h1>
+                    <button><i class="fa fa-times"></i></button>
+                </div>
+
+                <div id="pregroup_create_content">
+                    <div class="snap_create_inputbox">
+                        <span>이름</span>
+                        <input type="text">
+                    </div>
+                    <div class="snap_create_inputbox">
+                        <span>설명</span>
+                        <input type="text">
+                    </div>
+                    <div class="snap_create_inputbox" style="padding-left: 0.34rem;">
+                        <div>
+                            <span>우선 순위</span>
+                            <i class="fa fa-info-circle"></i>
+                        </div>
+                        <input type="text">
+                    </div>
+                    <div class="snap_create_inputbox" style="padding-left: 0.34rem;">
+                        <div>
+                            <label for="disk_profile">가상 머신 선호도 규칙</label>
+                            <i class="fa fa-info-circle"></i>
+                        </div>
+                        <div class="pregroup_create_select">
+                            <div>
+                                <select id="disk_profile">
+                                    <option value="disabled">비활성화됨</option>
+                                </select>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="enforce_disk_profile">
+                                <label for="enforce_disk_profile">강제 적용</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="snap_create_inputbox" style="padding-left: 0.34rem;">
+                        <div>
+                            <label for="host_preference_rule">호스트 선호도 규칙</label>
+                            <i class="fa fa-info-circle"></i>
+                        </div>
+                        <div class="pregroup_create_select">
+                            <div>
+                                <select id="host_preference_rule">
+                                    <option value="disabled">비활성화됨</option>
+                                </select>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="enforce_rule">
+                                <label for="enforce_rule">강제 적용</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pregroup_create_buttons">
+                    <div class="pregroup_buttons_content">
+                        <label for="cluster">가상머신</label>
+                        <div class="pregroup_buttons_select">
+                            <div>
+                                <select id="cluster">
+                                    <option value="default">가상머신:on20-ap01</option>   
+                                </select>
+                            </div>
+                            <div>
+                                <button>+</button>
+                                <button>-</button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="pregroup_buttons_content">
+                        <label for="cluster">호스트</label>
+                        <div class="pregroup_buttons_select">
+                            <div>
+                                <select id="cluster">
+                                    <option value="default">호스트 선택</option>   
+                                </select>
+                            </div>
+                            <div>
+                                <button>+</button>
+                                <button>-</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="edit_footer">
+                    <button style="display: none;"></button>
+                    <button>OK</button>
+                    <button>취소</button>
+                </div>
+            </div>
+        </div>
+        <!--선호도그룹(새로만들기)팝업 끝-->
+        <!--선호도 레이블-->
+        <div id="pregroup_lable_outer" style="display: none;">
+            <div class="content_header">
+                <div class="content_header_left">
+                    <div >일반</div>
+                    <div>네트워크 인터페이스</div>
+                    <div>디스크</div>
+                    <div>스냅샷</div>
+                    <div>애플리케이션</div>
+                    <div>선호도 그룹</div>
+                    <div class="active">선호도 레이블</div>
+                    <div>게스트 정보</div>
+                    <div>권한</div>
+                    <div>이벤트</div>
+                </div>
+                <div  class="content_header_right">
+                    <button id="lable_create_btn">새로 만들기</button>
+                    <button>편집</button>
+                    <button>제거</button>
+                </div>
+            </div>
+            
+            <div class="pregroup_content">
+                <div class="application_content_header">
+                    <button><i class="fa fa-chevron-left"></i></button>
+                    <div>1-2</div>
+                    <button><i class="fa fa-chevron-right"></i></button>
+                    <button><i class="fa fa-ellipsis-v"></i></button>            
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>이름</th>
+                            <th>가상머신 멤버</th>
+                            <th>호스트 멤버</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>test</td>
+                            <td>HostedEngine</td>
+                            <td>host02.ititinfo.com</td>
+                            <td style="text-align: right;"><i class="fa fa-caret-up"></i></td>
+                        </tr>
+                        <tr>
+                            <td>test</td>
+                            <td>HostedEngine</td>
+                            <td>host02.ititinfo.com</td>
+                            <td style="text-align: right;"><i class="fa fa-caret-up"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div><!--pregroup_lable_outer끝-->
+        <!--선호도 레이블(새로만들기)팝업창-->
+        <div class="lable_create_outer" style="display: none;">
+            <div class="lable_create">
+                <div class="network_popup_header">
+                    <h1>새로운 선호도 레이블</h1>
+                    <button><i class="fa fa-times"></i></button>
+                </div>
+
+                <div>
+                    <div class="snap_create_inputbox" style="padding: 0.5rem;">
+                        <span>이름</span>
+                        <input type="text">
+                    </div>
+                </div>
+
+                <div class="pregroup_create_buttons" style="padding-top: 0;">
+                    <div class="pregroup_buttons_content">
+                        <label for="cluster">가상머신</label>
+                        <div class="pregroup_buttons_select">
+                            <div>
+                                <select id="cluster">
+                                    <option value="default">가상머신:on20-ap01</option>   
+                                </select>
+                            </div>
+                            <div>
+                                <button>+</button>
+                                <button>-</button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="pregroup_buttons_content">
+                        <label for="cluster">호스트</label>
+                        <div class="pregroup_buttons_select">
+                            <div>
+                                <select id="cluster">
+                                    <option value="default">호스트 선택</option>   
+                                </select>
+                            </div>
+                            <div>
+                                <button>+</button>
+                                <button>-</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="edit_footer">
+                    <button style="display: none;"></button>
+                    <button>OK</button>
+                    <button>취소</button>
+                </div>
+            </div>
+        </div>
+        <!--선호도 레이블(새로만들기)팝업 끝-->
+
+        <!--게스트 정보-->
+        <div id="guest_info_outer" style="display: none;">
+            <div class="content_header">
+                <div class="content_header_left">
+                    <div >일반</div>
+                    <div>네트워크 인터페이스</div>
+                    <div>디스크</div>
+                    <div>스냅샷</div>
+                    <div>애플리케이션</div>
+                    <div>선호도 그룹</div>
+                    <div>선호도 레이블</div>
+                    <div class="active">게스트 정보</div>
+                    <div>권한</div>
+                    <div>이벤트</div>
+                </div>
+            </div>
+            
+            <div class="tables">
+                <div class="table_container_left">
+                    <table class="table">
+                        <tr>
+                            <th>유형:</th>
+                            <td>Linux</td>
+                        </tr>
+                        <tr>
+                            <th>아키텍쳐:</th>
+                            <td>x86_64</td>
+                        </tr>
+                        <tr>
+                            <th>운영체제:</th>
+                            <td>CentOS Linux 7</td>
+                        </tr>
+                        <tr>
+                            <th>커널 버전</th>
+                            <td>3.10.0-1062.el7_x86_64</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="table_container_center">
+                    <table class="table">
+                        <tr>
+                            <th>시간대:</th>
+                            <td>KST (UTC + 09:00)</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="table_container_right">
+                    <table class="table">
+                        <tr>
+                            <th>로그인된 사용자:</th>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>콘솔 사용자:</th>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>콘솔 클라이언트 IP:</th>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+        </div><!--게스트정보 끝-->
+
+        <!--권한-->
+        <div id="power_outer" style="display: none;">
+            <div class="content_header">
+                <div class="content_header_left">
+                    <div >일반</div>
+                    <div>네트워크 인터페이스</div>
+                    <div>디스크</div>
+                    <div>스냅샷</div>
+                    <div>애플리케이션</div>
+                    <div>선호도 그룹</div>
+                    <div>선호도 레이블</div>
+                    <div>게스트 정보</div>
+                    <div class="active">권한</div>
+                    <div>이벤트</div>
+                </div>
+                <div  class="content_header_right">
+                    <button id="power_add_btn">추가</button>
+                    <button>제거</button>
+                </div>
+            </div>
+            
+            <div class="pregroup_content">
+                <div class="application_content_header">
+                    <span>Permission Filters:</span>
+                    <button>All</button>
+                    <button>Direct</button>            
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>사용자</th>
+                            <th>인증 공급자</th>
+                            <th>네임스페이스</th>
+                            <th>역할</th>
+                            <th>생성일</th>
+                            <th>Inherited From</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><i class="fa fa-user"></i></td>
+                            <td>ovirt-administrator</td>
+                            <td></td>
+                            <td>*</td>
+                            <td>SuperUser</td>
+                            <td>2023. 12. 29. AM 11:40:58</td>
+                            <td>(시스템)</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-user"></i></td>
+                            <td>admin (admin)</td>
+                            <td>internal-authz</td>
+                            <td>*</td>
+                            <td>SuperUser</td>
+                            <td>2023. 12. 29. AM 11:40:58</td>
+                            <td>(시스템)</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-user"></i></td>
+                            <td>Everyone</td>
+                            <td></td>
+                            <td>*</td>
+                            <td>UserProfileEditor</td>
+                            <td>2017. 3. 16. PM 6:52:29</td>
+                            <td>(시스템)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                
+            </div>
+        </div><!--power_outer(권한)끝-->
+        <!--권한(추가)팝업창-->
+        <div class="power_add_outer" style="display: none;">
+            <div class="power_add">
+                <div class="network_popup_header">
+                    <h1>사용자에게 권한 추가</h1>
+                    <button><i class="fa fa-times"></i></button>
+                </div>
+
+                <div class="power_radio_group">
+                    <input type="radio" id="user" name="option" checked>
+                    <label for="user">사용자</label>
+                    
+                    <input type="radio" id="group" name="option">
+                    <label for="group">그룹</label>
+                    
+                    <input type="radio" id="all" name="option">
+                    <label for="all">모두</label>
+                    
+                    <input type="radio" id="my_group" name="option">
+                    <label for="my_group">내 그룹</label>
+                </div>
+
+                <div id="power_contents_outer">
+                    <div>
+                        <label for="cluster">검색:</label>
+                        <select id="cluster">
+                            <option value="default">Default</option>   
+                        </select>
+                    </div>
+                    <div>
+                        <label for="cluster">네임스페이스:</label>
+                        <select id="cluster">
+                            <option value="default">Default</option>   
+                        </select>
+                    </div>
+                    <div>
+                        <label for="cluster" style="color: white;">.</label>
+                        <select id="cluster">
+                            <option value="default">Default</option>   
+                        </select>
+                    </div>
+                    <div>
+                        <div style="color: white;">.</div>
+                        <input type="submit" value="검색">
+                    </div>
+                </div>
+                
+
+                <div id="power_table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>이름</th>
+                                <th>성</th>
+                                <th>사용자 이름</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>dddddddddddddddddddddd</td>
+                                <td>2024. 1. 17. PM 3:14:39</td>
+                                <td>Snapshot 'on2o-ap01-Snapshot-2024_01_17' been completed.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="power_last_content">
+                    <label for="cluster">할당된 역할:</label>
+                    <select id="cluster"  style="width: 65%;">
+                        <option value="default">UserRole</option>   
+                    </select>
+                </div>
+
+                
+
+
+
+                <div class="edit_footer">
+                    <button style="display: none;"></button>
+                    <button>OK</button>
+                    <button>취소</button>
+                </div>
+            </div>
+        </div>
+        <!--권한(추가)팝업창 끝-->
+
+        <!--이벤트-->
+        <div id="event_outer" style="display: none;">
+            <div class="content_header">
+                <div class="content_header_left">
+                    <div >일반</div>
+                    <div>네트워크 인터페이스</div>
+                    <div>디스크</div>
+                    <div>스냅샷</div>
+                    <div>애플리케이션</div>
+                    <div>선호도 그룹</div>
+                    <div>선호도 레이블</div>
+                    <div>게스트 정보</div>
+                    <div>권한</div>
+                    <div class="active">이벤트</div>
+                </div>
+                <div  class="content_header_right">
+                    <button>새로 만들기</button>
+                    <button>편집</button>
+                    <button>제거</button>
+                </div>
+            </div>
+            
+            <div class="pregroup_content">
+                <div class="application_content_header">
+                    <button><i class="fa fa-chevron-left"></i></button>
+                    <div>1-2</div>
+                    <button><i class="fa fa-chevron-right"></i></button>
+                    <button><i class="fa fa-ellipsis-v"></i></button>            
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>시간</th>
+                            <th>메세지</th>
+                            <th>상관 관계 ID</th>
+                            <th>소스</th>
+                            <th>사용자 지정 이벤트 ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><i class="fa fa-check"></i></td>
+                            <td>2024. 1. 17. PM 3:14:39</td>
+                            <td>Snapshot 'on2o-ap01-Snapshot-2024_01_17' creation for 'VM on2o-ap01' has been completed.</td>
+                            <td>4b4b417a-c...</td>
+                            <td>oVirt</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-check"></i></td>
+                            <td>2024. 1. 17. PM 3:14:21</td>
+                            <td>Snapshot 'on2o-ap01-Snapshot-2024_01_17' creation for 'VM on2o-ap01' was initiated by admin@intern...</td>
+                            <td>4b4b417a-c...</td>
+                            <td>oVirt</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-times"></i></td>
+                            <td>2024. 1. 5. AM 8:37:54</td>
+                            <td>Failed to restart VM on2o-ap01 on host host01.ititinfo.com</td>
+                            <td>3400e0dc</td>
+                            <td>oVirt</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-times"></i></td>
+                            <td>2024. 1. 5. PM 8:37:10</td>
+                            <td>VM on2o-ap01 is down with error. Exit message: VM terminated with error.</td>
+                            <td>3400e0dc</td>
+                            <td>oVirt</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-check"></i></td>
+                            <td>2024. 1. 5. PM 8:34:29</td>
+                            <td>Trying to restart VM on2o-ap01 on host host01.ititinfo.com</td>
+                            <td>3400e0dc</td>
+                            <td>oVirt</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-exclamation"></i></td>
+                            <td>2024. 1. 5. PM 8:29:10</td>
+                            <td>VM on2o-ap01 was set to the Unknown status.</td>
+                            <td>3400e0dc</td>
+                            <td>oVirt</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-check"></i></td>
+                            <td>2023. 12. 29. PM 12:55:08</td>
+                            <td>VM on2o-ap01 started on Host host01.ititinfo.com</td>
+                            <td>a99b6ae8-8d...</td>
+                            <td>oVirt</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-check"></i></td>
+                            <td>2023. 12. 29. PM 12:54:48</td>
+                            <td>VM on2o-ap01 was started by admin@internal-authz (Host: host01.ititinfo.com).</td>
+                            <td>a99b6ae8-8d...</td>
+                            <td>oVirt</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-check"></i></td>
+                            <td>2023. 12. 29. PM 12:54:18</td>
+                            <td>VM on2o-ap01 configuration was updated by admin@internal-authz.</td>
+                            <td>e3b8355e-06...</td>
+                            <td>oVirt</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-check"></i></td>
+                            <td>2023. 12. 29. PM 12:54:15</td>
+                            <td>VM on2o-ap01 configuration was updated by admin@internal-authz.</td>
+                            <td>793fb95e-6df...</td>
+                            <td>oVirt</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-check"></i></td>
+                            <td>2023. 12. 29. PM 12:53:53</td>
+                            <td>VM on2o-ap01 has been successfully imported from the given configuration.</td>
+                            <td>ede53bc8-c6...</td>
+                            <td>oVirt</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+            </div>
+        </div><!--event_outer(이벤트)끝-->
+
+
+        <!--footer-->
+        <div id="footer_outer">
+            <div id="footer">
+                <button><i class="fa fa-chevron-down"></i></button>
+                <div>
+                    <a>최근 작업</a>
+                    <a>경보</a>
+                </div>
+            </div>
+            <div id="footer_content">
+
+                <div id="footer_nav">
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+
+                    <div style="border-right: none;">
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+                </div>
+
+                <div id="footer_img">
+                    <img src="img/화면 캡처 2024-04-30 164511.png">
+                    <span>항목을 찾지 못했습니다</span>
+                </div>
+
+            </div>
+        </div><!--footer끝-->
+
+    </div><!--section(중간)끝-->
+</body>
+</html>

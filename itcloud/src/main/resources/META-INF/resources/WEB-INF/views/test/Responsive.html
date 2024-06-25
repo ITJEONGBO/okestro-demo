@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Responsive Font Size</title>
+    <style>
+        #test {
+            background-color: black;
+            width: 80%;
+            height: 40vh;
+            margin: 0 auto;
+        }
+        #test2 {
+            background-color: pink;
+            width: 80%;
+            height: 50%;
+            margin: 0 auto;
+            padding: 1vh;
+        }
+        #test > div > span {
+            color: white;
+            font-size: 2em;
+        }
+    </style>
+</head>
+<body>
+    <div id="test">
+        <div id="test2">
+            <span id="text">hello</span>
+        </div>
+    </div>
+
+    <script>
+        function adjustFontSize() {
+            var width = window.innerWidth;
+            var fontSize = width / 40; // Adjust this value as needed
+
+            document.getElementById('text').style.fontSize = fontSize + 'px';
+        }
+
+        // Call the adjustFontSize function when the window size changes
+        window.onresize = function() {
+            adjustFontSize();
+        };
+
+        // Call the adjustFontSize function initially
+        adjustFontSize();
+    </script>
+</body>
+</html>

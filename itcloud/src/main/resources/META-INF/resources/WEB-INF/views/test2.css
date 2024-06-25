@@ -1,0 +1,105 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+#header{
+    background-color: rgb(214, 242, 255);
+    position: fixed;
+    top: 0;
+    width: 100%;
+	z-index: 100;
+    height: 60px;
+    padding: 0 11px;
+    display: flex;
+    justify-content: space-between;
+}
+#header_left{
+    width: 34.1%;
+    background-color: gray;
+}
+#header_left>i{
+    color: white;
+    font-size: 23px;
+    padding: 19px;
+    cursor: pointer;
+}
+#header_left>span:first-child{
+    font-size: 20px;
+}
+#header_right{
+    width: 34.1%;
+    background-color: gray;
+}
+
+/*중간*/
+#main_outer{
+    margin-top: 60px;
+    width: 100%;
+    height: 1000px;
+    display: flex;   
+}
+#aside{
+    width: 2.3%;
+    height: 100%;
+    background-color: rgb(41, 46, 52);
+}
+#aside>div{
+    height: 69px;
+    border: 1px solid black;
+}
+#aside>div>i{
+    font-size: 27px;
+    padding: 22px;
+    margin-left: 5px;
+    color: rgb(114, 118, 123);
+}
+#aside>div>span{
+    display: hidden;
+}
+#content{
+    padding: 8px;
+    width: 100%; 
+    background: lightgray;
+}
+#last_update{
+  background-color: yellow;
+  height: 32px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+#last_update>div>button{
+    padding: 6px 16px;
+    border: none;
+}
+#box_outer{
+    width: 100%;
+    height: 119px;
+    margin-bottom: 8px;
+    background: pink;
+}
+#boxs{
+    display: flex;
+    justify-content: space-between;
+}
+#box{
+    width: 15%;
+    height: 119px;
+    background-color: white;
+}
+#total_outer{
+   background-color: pink;
+   height: 545.156px;
+}
+#total_title{
+    padding: 24px 24px 16px 24px;
+    height: 66.6562px;
+    background-color: white;
+}
+
+/*반응형*/
+@media (max-width:967px){
+
+}
+    

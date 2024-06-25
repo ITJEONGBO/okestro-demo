@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<link rel="stylesheet" href="test2.css">
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script
+  src="https://code.jquery.com/jquery-1.12.4.js"
+  integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
+  crossorigin="anonymous">
+</script>
+
+<body>
+    <div id="header">
+        <div id="header_left">
+            <i class="fa fa-bars"></i>
+            <span>oVirt</span>
+            <span>OPEN VIRTUALIZATION MANAGER</span>
+        </div>
+        <div id="header_right">
+
+        </div>
+    </div>
+
+    <!--중간-->
+    <div id="main_outer">
+        <!--왼쪽 바-->
+        <div id="aside">
+            <div>
+                <i class="fa fa-clock-o"></i>
+                <span style="display: none;">대시보드</span>
+            </div>
+            <div>
+                <i class="fa fa-clock-o"></i>
+                <span style="display: none;">대시보드</span>
+            </div>
+            <div>
+                <i class="fa fa-clock-o"></i>
+            </div>
+            <div>
+                <i class="fa fa-clock-o"></i>
+            </div>
+            <div>
+                <i class="fa fa-clock-o"></i>
+            </div>
+            <div>
+                <i class="fa fa-clock-o"></i>
+            </div>
+        </div>
+
+        <div id="content">
+            <!--콘텐츠 상단-->
+            <div id="last_update">
+                <div>
+                    <button><i class="fa fa-repeat"></i></button>
+                    <span>마지막 업데이트</span>
+                    2024. 4. 23. 오후 3시 5분 14초 GMT+9
+                </div>
+                <div>
+                    Monitoring Portal
+                </div>
+            </div>
+            <!--6개 박스-->
+            <div id="box_outer">
+                <div id="boxs">
+                    <div id="box">d</div>
+                    <div id="box">d</div>
+                    <div id="box">d</div>
+                    <div id="box">d</div>
+                    <div id="box">d</div>
+                    <div id="box">d</div>
+                </div>
+            </div>
+
+            <div id="total_outer">
+                <div id="total_title">
+                    전체 사용량
+                </div>
+                <div id="total_contents">
+                    <div>d</div>
+                    <div>d</div>
+                    <div>d</div>
+                </div>
+            </div>
+
+            <div>
+                <canvas id="myChart"></canvas>
+            </div>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+        </div>
+    </div>
+</body>
+
+<script>
+$(function() {
+  var $aside = $('#aside');
+  var $headerLeftIcon = $('#header_left > i');
+  var asideMinWidth = '2.3%';
+  var asideMaxWidth = '201px';
+  var isAsideExpanded = false;
+
+  $headerLeftIcon.click(function() {
+    var newWidth = isAsideExpanded ? asideMinWidth : asideMaxWidth;
+    var animationDuration = 300; // 0.3초 동안 애니메이션 진행
+    var easingFunction = 'swing'; // 느리게 시작해서 점점 빨라지는 효과
+
+    $aside.stop(true, true).animate({
+      width: newWidth
+    }, {
+      duration: animationDuration,
+      easing: easingFunction,
+      complete: function() {
+        isAsideExpanded = !isAsideExpanded;
+      }
+    });
+  });
+});
+</script>
+</html>

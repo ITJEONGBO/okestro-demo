@@ -1,0 +1,3838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storage Section</title>
+    <style>
+       @import url(https://fonts.googleapis.com/css?family=Roboto:400,500,700,300,100);
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #EBEEEE;
+    padding: 1% 1.3% 0 1.3%;
+    height: 100vh; /* 추가 */
+    font-family: "Roboto", helvetica, arial, sans-serif;
+    text-rendering: optimizeLegibility;
+}
+
+#header {
+    height: 5%;
+    margin: 0 auto;
+    border-radius: 5px;
+    padding: 0 1%;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* 세로 중앙 정렬 추가 */
+    margin-bottom: 0.6%;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); 
+}
+
+#header_right {
+    font-size: 0.4rem;
+    display: flex;
+    align-items: center; /* 세로 중앙 정렬 추가 */
+}
+
+#header_right > span {
+    color: rgb(0, 0, 0);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#header_left {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.5em;
+    width: 10%;
+    align-items: center; /* 세로 중앙 정렬 추가 */
+}
+
+#header_left > div > i {
+    color: rgb(0, 0, 0);
+    font-size: 1.2em;
+    cursor: pointer;
+}
+#header_left > div:hover{
+    border-radius: 50%;
+    background-color: #9b9b9b;
+}
+
+#main_outer{
+    height: 90%;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+#aside_outer {
+    width: 3%;
+    display: flex;
+}
+#aside {
+    width: 3vw;
+    height: 100%;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+
+    display: flex;
+    flex-direction: column; /* 컬럼 방향으로 요소 정렬 */
+    justify-content: space-between;
+}
+#aside>#nav>div, #setting_icon {
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    padding:  0.5rem 0;
+    font-size: 0.6rem;
+    color: rgb(105, 105, 105);
+    cursor: pointer;
+}
+#aside>#nav>div:hover, #setting_icon:hover {
+    color: black;
+}
+#aside_popup {
+    width: 78%;
+    background-color: white;
+    display: none;
+}
+#aside_popup>div>div {
+    color: rgb(145, 150, 155);
+    font-size: 0.35rem;
+    cursor: pointer;
+    padding-top: 0.1rem;
+}
+.aside_popup_content i:first-child {
+    font-size: 0.24rem;
+    margin-right: 0.27rem;
+}
+.aside_popup_content>span {
+    margin-left: 0.1rem;
+}
+#aside_popup_first,#aside_popup_first2,#aside_popup_first3 {
+    padding-left: 0.2rem;
+}
+#aside_popup_second,#aside_popup_second2,#aside_popup_second3 {
+    padding-left: 0.6rem;
+}
+#aside_popup_last,#aside_popup_last2 {
+    padding-left: 1.4rem;
+}
+#aside_popup_last>div:hover,#aside_popup_last2>div:hover{
+    background-color: #dbdada;
+}
+/* 우클릭 메뉴박스*/
+#context_menu {
+    position: absolute;
+    display: none;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+#context_menu div {
+    font-size: 0.3rem;
+    cursor: pointer;
+    text-align: left;
+    padding: 0.08rem 0.5rem 0.08rem 0.03rem;
+    border-bottom: 1px solid rgb(226, 226, 226);
+}
+#context_menu div:hover {
+    background-color: #dbdada;
+}
+/* 스토리지 우클릭 메뉴박스*/
+#storage_context_menu {
+    position: absolute;
+    display: none;
+
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+#storage_context_menu div {
+    font-size: 0.3rem;
+    cursor: pointer;
+    text-align: left;
+    padding: 0.08rem 0.5rem 0.08rem 0.03rem;
+    border-bottom: 1px solid rgb(226, 226, 226);
+}
+#storage_context_menu div:hover {
+    background-color: #dbdada;
+}
+
+/*section(중간)*/
+
+#section{
+    background-color: #ffffff;
+    border-radius: 5px;
+    width: 96%;
+
+    position: relative;
+}
+.section_header{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px solid #A1A1A1;
+    align-items: center; /* 수직 가운데 정렬 추가 */
+    padding: 0.05rem 0.2rem;
+}
+.section_header_left{
+    display: flex;
+    align-items: center; /* 수직 가운데 정렬 추가 */
+    color: rgb(114, 199, 255);
+}
+.section_header_left span,
+.section_header_left div,
+.section_header_left button {
+    margin-right: 10px; /* 요소 간 간격 조정 */
+}
+.section_header_left>span,.section_header_left>button{
+    font-size: 0.31rem;
+    color: rgb(114, 199, 255);
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    margin-top: 0.1rem;
+}
+.section_header_left>div{
+    font-size: 0.7rem;
+
+}
+
+
+/*article*/
+.section_header_right{
+    display: flex;
+    justify-content: space-between;
+    margin: 0.9% 0;
+}
+
+/*nav*/
+.article_nav{
+    display: flex;
+    justify-content: right;
+}
+.article_nav>button{
+    margin: 0 5px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 5px 9px;
+    font-size: 0.3rem;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    background-color: #EBEBEB;
+    border: 1px solid #A1A1A1;
+
+}
+.article_nav>div>button{
+    padding: 0 7px;
+}
+.article_nav>div{
+    font-weight: 600;
+    padding: 0 6px;
+    display: flex;
+    font-size: 0.3rem;
+}
+.article_nav>div>button{
+    height: 100%;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.3rem;
+}
+.article_nav>div>a{
+    display: block;
+    background-color: #EBEBEB;
+    border: 1px solid #A1A1A1;
+    padding: 4px 10px;
+    border-left: none;
+}
+.article_nav button i{
+    margin-right: 3px;
+}
+#popup_btn {
+    position: relative; /* 부모 요소에 대해 상대적인 위치 설정 */
+}
+
+#popup_box {
+    width: 210px;
+    position: absolute;
+    background-color: white;
+    top: 116% ; /* 부모 요소에 대해 상대적인 위치 사용 */
+    right: 0;
+    display: none;
+    border: 1px solid #DDDDDD;
+    color: #4F4F4F;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    text-align: left;
+}
+
+#popup_box>div{
+    border-bottom: 1px solid #DDDDDD;
+    cursor: pointer;
+}
+
+#popup_box>div>div{
+    padding: 10px 4px;
+
+}
+#popup_box>div>div:hover{
+    background-color: #DDDDDD;
+}
+
+#out_btn{
+    position: relative;
+}
+#out_btn_popup{
+    position: absolute;
+    width: 12vw;
+    border: 1px solid rgb(190, 190, 190);
+    top: 113%;
+    left: 0px;
+    text-align: left;
+    background-color: white;
+}
+#out_btn_popup>div{
+    padding: 3%;
+    font-size: 0.3rem;
+    font-weight: 400;
+    color: #858585;
+}
+
+#out_btn_popup>div:hover{
+    background-color: #e9f4fc;
+}
+/*content_outer*/
+.content_outer,
+#disk_outer,#storage_domain_outer{
+    width: 100%;
+}
+.content_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0 0.4rem 0.3rem;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 1%;
+}
+
+.content_header_left {
+    display: flex;
+    align-items: center;
+    font-size: 0.65rem;
+}
+
+.content_header_left div {
+    margin-right: 20px;
+    position: relative;
+    font-size: 0.4rem;
+    cursor: pointer;
+    color: black;
+    padding: 0.1rem 0;
+}
+
+.content_header_left div.active {
+    color: rgb(114, 199, 255);
+    font-weight: 600;
+}
+
+.content_header_left div.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 100%;
+    height: 2px;
+    background-color: rgb(114, 199, 255);
+}
+
+.content_header_right {
+    display: flex;
+    align-items: center;
+}
+.content_header_right>div{
+    display: flex;
+}
+
+.content_header_right button {
+    margin-right: 9px;
+    font-size: 0.4rem;
+    padding: 0.1rem 0.1rem;
+    cursor: pointer;
+    font-size: 0.3rem;
+    font-weight: 600;
+    background: #dff7ff;
+    border: 1px solid rgb(114, 199, 255);
+}
+.content_header_right  i{
+    font-size: 0.3rem;
+}
+/*storage_volume_option_box*/
+.storage_volume_option_boxbtn{
+    position: relative;
+}
+.storage_volume_option_box{
+    position: absolute;
+    background-color: white;
+    border: 1px solid rgb(189, 189, 189);
+    font-size: 0.32rem;
+    z-index: 1;
+    top: 15%;
+    right: 2.3% ;
+    font-weight: 400;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    text-align: left;
+}
+.storage_volume_option_box>div{
+    padding: 2% 3%;
+}
+/*content_header_popup*/
+.content_header_popup_btn{
+    position: relative;
+}
+.content_header_popup{
+    position: absolute;
+    background-color: white;
+    border: 1px solid rgb(189, 189, 189);
+    font-size: 0.32rem;
+    z-index: 1;
+    right: 0%;
+    top: 130%;
+    font-weight: 400;
+    min-width: 1500%;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    text-align: left;
+}
+.content_header_popup>div{
+    padding: 2% 3%;
+}
+.content_header_popup>div:hover{
+    background-color: #ececec;
+}
+.content_header_popup>div:first-child,
+.content_header_popup>div:nth-child(4){
+    color: #a5a5a5;
+}
+/*content_info*/
+.tables{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 2%;
+}
+.table_container_left,.table_container_center,.table_container_right{
+   /* margin: 20px;*/
+   width: 31%;
+}
+.table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.table th, .table td {
+    padding: 6px;
+    vertical-align: top;
+    border: none; 
+    font-size: 0.32rem;
+}
+
+.table th {
+    text-align: left;
+    font-weight: bold;
+}
+.empty{
+    color: white;
+}
+.table td {
+    text-align: left;
+    color: #757575;
+}
+/*네트워크 인터페이스*/
+.network_content{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.34rem;
+    border-bottom: 1px solid rgb(226, 226, 226);
+    cursor: pointer;
+}
+.network_content:hover{
+    background-color: #c7ebfc;
+}
+.network_content>div:first-child{
+    padding: 0.5rem 0.3rem;
+}
+.network_content i{
+    color: #757575;
+    padding: 0.05rem;
+}
+.network_content i:first-child{
+    padding-right: 0.3rem;
+    border-right: 1px solid #757575;
+    font-size: 0.2rem;
+}
+.network_content>div:nth-child(n+2){
+    text-align: center;
+    padding-top: 0.4rem;
+}
+.network_content>div>div:nth-child(2){
+    font-size: 0.27rem;
+    color:#4F4F4F;
+}
+/*네트워크 인터페이스 팝업창들*/
+    /*새로만들기*/
+.network_popup_outer{
+    display: none;
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.network_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 70%;
+    width: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+
+.network_popup_header{
+    background-color: #ebebeb;
+    display: flex;
+    padding: 8px 13px;
+    justify-content: space-between;
+    font-size: 0.18rem;
+}
+.network_popup_header>h1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.network_popup_header>button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1px;
+    border: none;
+    padding: 11px;
+    border-radius: 50%;
+    font-size: 0.38rem;
+    cursor: pointer;
+    background-color: #ebebeb;
+}
+.network_popup_header>button:hover{
+    background-color: #DDDDDD;
+}
+.network_popup_content{
+    height: 60%;
+    padding: 1% 2%;
+    font-size: 0.35rem;
+}
+.network_popup_content>div{
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 1.3%;
+}
+
+.select_box select,
+.input_box input{
+    width: 47%;
+    height: 3.3vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem; 
+}
+.select_box2>div:last-child,
+.plug_radio_btn>div{
+    width: 47%;
+}
+.select_box2 select{
+    width: 100%;
+    height: 3.3vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem; 
+}
+.radio_outer>div{
+    width: 100%;
+    display: flex;
+    justify-content: left;
+}
+.radio_outer input{
+    cursor: pointer;
+}
+.radio_outer input, .radio_outer img{
+    margin-right: 0.3rem;
+}
+.plug_radio_btn span{
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.network_parameter_outer{
+    padding: 1% 2%;
+    font-size: 0.32rem;
+}
+.network_parameter_outer>span{
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.3rem;
+}
+.network_parameter_outer>div{
+    display: flex;
+    justify-content: space-between;
+}
+.network_parameter_outer>div>div:nth-child(-n+2){
+    display: flex;
+    width: 32%;
+    justify-content: space-between;
+}
+#buttons{
+    width: 5%;
+    display: flex;
+    justify-content: space-between;
+}
+#buttons>button{
+   width: 50%;
+   font-size: 0.4rem;
+   font-weight: 600;
+   cursor: pointer;
+}
+/*디스크(disk_content)*/
+#disk_content {
+    width: 100%;
+    padding: 0 0.3rem;
+    overflow-x: auto;
+}
+.disk_content_header{
+    display: flex;
+    font-size: 0.3rem;
+    padding-bottom: 0.3rem;
+}
+.disk_content_header span{
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    margin-right: 0.5%;
+    font-size: 0.35rem;
+}
+.disk_content_header button {
+    padding: 0.3%;
+    cursor: pointer;
+    font-size: 0.3rem;
+}
+
+#disk_content table {
+    width: 100%;
+    border-collapse: collapse;
+}
+#disk_content thead>tr{
+    background-color: #e9e9e9;
+}
+#disk_content th, #disk_content td {
+    border: 1px solid #ccc;
+    text-align: left;
+    font-size: 0.3rem;
+    padding: 0.1rem;
+}
+
+#disk_content td:first-child,
+#disk_content td:nth-child(3),
+#disk_content td:nth-child(4),
+#disk_content td:nth-child(5),
+#disk_content th:first-child,
+#disk_content th:nth-child(3),
+#disk_content th:nth-child(4),
+#disk_content th:nth-child(5)
+{
+    text-align: center;
+}
+#disk_content tbody tr:hover {
+    background-color: #e0e0e0;
+    cursor: pointer;
+}
+
+#disk_content tbody td {
+    white-space: nowrap;
+}
+/*디스크팝업*/
+    /*새로만들기*/
+.disk_popup_outer{
+    display: none;
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.disk_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 90%;
+    width: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+#disk_new_nav,#join_new_nav{
+    padding: 0.35rem;
+    width: 50%;
+    font-size: 0.3rem;
+    display: flex;
+}
+#disk_new_nav>div, #join_new_nav>div{
+    padding: 0.09rem;
+    margin-right: 2%;
+    cursor: pointer;
+}
+#disk_new_nav>div:first-child, #join_new_nav>div:first-child{
+    color: rgb(35, 132, 243); 
+    font-weight: 600;
+    border-bottom: 2px solid rgb(35, 132, 243);
+}
+.disk_new_img,#managed_block_outer,#storage_lun_first{
+    display: flex;
+    padding: 0 0.35rem;
+    font-size: 0.33rem;
+}
+#storage_managed_outer{
+    font-size: 0.3rem;
+    padding-left: 0.35rem;
+}
+.disk_new_img_left,#disk_managed_block_left{
+    width: 60%;
+
+}
+.disk_new_img_left>div, #disk_managed_block_left >div{
+    display: flex;
+    justify-content: space-between;
+}
+.img_input_box,.img_select_box{
+    padding-bottom: 0.5rem;
+}
+
+.img_input_box span,.img_select_box label{
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.img_input_box input, .img_select_box select{
+    width: 55%;
+    height: 3.5vh;
+    border: 1px solid #8b8989;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem; 
+    outline: none;
+}
+input[disabled] {
+    background-color: #f0f0f0; /* 회색 배경색 */
+    color: #a0a0a0; /* 회색 글자색 */
+    border: 1px solid #ccc; /* 회색 테두리 */
+    cursor:no-drop;
+}
+#disk_managed_block_left>span{
+    color: red;
+}
+.disk_new_img_right,#disk_managed_block_right {
+    display: flex;
+    flex-direction: column;
+    padding-left: 2%;
+}
+.disk_new_img_right div,#disk_managed_block_right div {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 0.13rem;
+}
+.disk_new_img_right label , #disk_managed_block_right label{
+    margin-left: 0.2rem;
+}
+#disk_managed_block_right label{
+    color: gray;
+}
+    /*연결*/
+#join_popup_outer{
+    display: none;
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+#join_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 91%;
+    width: 58%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+#join_header{
+    display: flex;
+    justify-content: space-between;
+}
+#join_header>div:nth-child(2){
+    padding: 0.44rem;
+    font-size: 0.3rem;
+    display: flex;
+}
+#join_img_content table{
+    width: 100%;
+    text-align: center;
+    border-collapse: collapse;
+}
+#join_img_content thead{
+    font-size: 0.3rem;
+    font-weight: 600;
+}
+#join_img_content thead tr th{
+    padding: 1% 0;
+    background-color: #1ba4e4;
+}
+#join_img_content tbody{
+    font-size: 0.3rem;
+}
+#join_img_content tbody td{
+    padding:1%;
+    border-bottom: 1px solid rgb(190, 190, 190);
+}
+/*스냅샷*/
+#snapshot_content_outer,#network_content_outer{
+    padding: 0 0.3rem;
+}
+.snapshot_content{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.34rem;
+    border-bottom: 1px solid rgb(226, 226, 226);
+    padding: 1% 0;
+    cursor: pointer;
+}
+.snapshot_content:hover{
+    background-color: #e9e9e9;
+    border-left: 2px solid rgb(161, 161, 161);
+}
+.snapshot_content_left{
+    color: #4F4F4F;
+    width: 15%;
+    display: flex;
+}
+.snapshot_content_left>div{
+    border-radius: 50%;
+    padding: 3%;
+    background-color: #dbdbdb;
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    margin-right: 10%;
+}
+.snapshot_content_left span{
+    font-weight: 600;
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.snapshot_content_left i{
+  margin-top: 1px;
+}
+.snapshot_content_right{
+    color: #4F4F4F;
+    display: flex; 
+    justify-content: right;
+    width: 60%;
+}
+.snapshot_content_right>div{
+    margin-left: 4%;
+    font-size: 0.34rem;
+}
+/*스냅샷 생성팝업*/
+.snap_create_outer{
+    display: none;
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.snap_create{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 74%;
+    width: 32%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+.snap_create_inputbox{
+    padding: 2%;
+    display: flex;
+    justify-content: space-between;
+    
+}
+.snap_create_inputbox>span{
+    font-size: 0.34rem;
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.snap_create_inputbox>input{
+    width: 55%;
+    height: 3.5vh;
+    border: 1px solid #8b8989;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem; 
+    outline: none;
+}
+#snap_create_table{
+    padding: 2%;
+}
+#snap_create_table span{
+    font-size: 0.4rem;
+    font-weight: 600;
+}
+#snap_create_table table{
+    font-size: 0.3rem;
+    width: 100%;
+    background-color: #ebebeb;
+    border-radius: 3px;
+}
+
+#snap_create_table thead th,#snap_create_table tbody td{
+    padding: 1%;
+    text-align: left;
+}
+#snap_create_warning{
+    color: red;
+    font-size: 0.34rem;
+    padding: 2.5%;
+}
+/*애플리케이션*/
+#application_content{
+    padding: 0 0.3rem;
+    
+}
+.application_content_header{
+    display: flex;
+    font-size: 0.34rem;
+    margin-bottom: 0.3rem;
+}
+.application_content_header>div,.application_content_header>button{
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.application_content_header>div{
+    padding: 0 0.3%;
+}
+.application_content_header>button{
+    padding: 0.5%;
+    border: 1px solid rgb(218, 218, 218);
+    cursor: pointer;
+}
+.pregroup_content{
+    padding: 0 0.3rem;
+}
+#application_content table,.pregroup_content table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#application_content th, #application_content td,
+.pregroup_content th, .pregroup_content td
+ {
+    border: 1px solid #ddd;
+    font-size: 0.3rem;
+    padding: 0.1rem;
+    text-align: left;
+}
+#application_content td,.pregroup_content td{
+    cursor: pointer;
+}
+#application_content td:hover,.pregroup_content tbody tr:hover{
+    background-color: rgb(233, 233, 233);
+}
+#application_content thead th,.pregroup_content thead th{
+    background-color: #e9e9e9;
+    font-weight: bold;
+}
+/*선호도 그룹 팝업(새로만들기)*/
+.pregroup_create_outer{
+    display: none;
+    position: absolute; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.pregroup_create{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 88%;
+    width: 43%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+#pregroup_create_content{
+    padding: 0 0.2rem;
+}
+.snap_create_inputbox{
+    display: flex;
+    font-size: 0.34rem;
+}
+.snap_create_inputbox>div{
+    position: relative;
+}
+#pregroup_create_content i{
+    color:#1ba4e4;
+    cursor: pointer;
+    font-size: 0.4rem;
+    position: absolute;
+    top: 0.079rem;
+    right: -0.45rem;
+}
+.pregroup_create_select{
+    display: flex;
+    justify-content: space-between;
+    width: 55%;
+}
+.pregroup_create_select>div:first-child{
+    width: 50%;
+}
+.pregroup_create_select select{
+    width: 100%;
+    height: 3.5vh;
+    border: 1px solid #8b8989;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem; 
+    outline: none;
+} 
+.pregroup_create_buttons{
+    padding: 3.4%;
+    display: flex;
+    justify-content: space-between;
+}
+.pregroup_buttons_content{
+    width: 45%;
+}
+.pregroup_buttons_content label{
+    font-size: 0.34rem;
+}
+.pregroup_buttons_select{
+    padding-top: 0.2rem;
+    display: flex;
+    justify-content: space-between;
+}
+.pregroup_buttons_select>div:first-child{
+    width: 70%;
+    font-size: 0.34rem;
+}
+.pregroup_buttons_select>div:nth-child(2){
+    width: 20%;
+    display: flex;
+   
+}
+
+.pregroup_buttons_select select{
+    width: 100%;
+    height: 3.5vh;
+    border: 1px solid #8b8989;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem; 
+    outline: none;
+}
+.pregroup_buttons_select button{
+    width: 50%;
+    height: 100%;
+    font-size: 0.44rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+/*선호도레이블(새로만들기) 팝업*/
+.lable_create_outer{
+    display: none;
+    position: absolute; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.lable_create{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 60%;
+    width: 43%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);/
+}
+/*권한*/
+#power_outer span{
+    margin-right: 0.2rem;
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+#power_outer table tr td:first-child,#event_outer tr td:first-child{
+    text-align: center;
+}
+.fa-times{
+    color: red;
+}
+.fa-check{
+    color: rgb(57, 245, 57);
+}
+.fa-exclamation{
+    color: orange;
+}
+/*권한 팝업창(추가)*/
+.power_add_outer{
+    display: none;
+    position: absolute; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.power_add{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 86%;
+    width: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+.power_radio_group{
+    display: flex;
+    font-size: 0.36rem;
+    padding:  0.3rem;
+}
+.power_radio_group input{
+    margin-right: 0.1rem;
+}
+.power_radio_group label{
+    margin-right: 0.5rem;
+}
+
+.power_contents_outer{
+    display: flex;
+    justify-content: space-between;
+    width: 95%;
+    padding:  0.3rem;
+}
+.power_contents_outer>div,.power_last_content{
+    width: 30%;
+    margin-right: 0.4rem;
+    font-size: 0.3rem;
+}
+.power_contents_outer label,.power_last_content label{
+    display: block;
+    font-size: 0.34rem;
+    margin-bottom: 0.2rem;
+}
+.power_contents_outer select ,.power_contents_outer input,.power_last_content select{
+    width: 100%;
+    height: 3.35vh;
+    cursor: pointer;
+}
+.power_contents_outer>div>div{
+    font-size: 0.34rem;
+    margin-bottom: 0.2rem;
+}
+.power_contents_outer input[type="submit"]{ 
+    width: 24%;
+    height: 3.25vh;
+    cursor: pointer;
+}
+
+.power_table{
+    height: 37vh;
+    border: 1px solid rgb(207, 207, 207);
+    border-radius: 3px;
+}
+
+.power_table table{
+    font-size: 0.3rem;
+    width: 100%;
+    height: 3.75vh;
+    border-collapse: collapse;
+}
+
+.power_table table th{
+    background-color: #dbdbdb;
+}
+
+.power_table table th, .power_table table td{
+    padding: 0.1rem;
+    border-bottom: 1px solid rgb(223, 223, 223);
+}
+
+ /*footer*/
+ .footer_outer {
+    font-size: 0.34rem;
+    width: 100%;
+    left: 0;
+    max-height: 30%;
+    position: absolute;
+    bottom: 0;
+
+}
+.footer{
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    height: 4.3vh;
+    display: flex;
+
+}
+.footer>button{
+    height: 4.3vh;
+    width: 2%;
+    color: #4F4F4F; 
+    cursor: pointer;
+    
+}
+.footer>button>i{
+    font-size: 0.3rem;
+    display: block; 
+    margin: 0 auto; 
+    text-align: center;
+}
+.footer>div{
+    display: flex;
+}
+.footer>div>a{
+    font-weight: 600;
+    display: block;
+    cursor: pointer;
+    margin-top: 8px;
+}
+.footer>div>a:first-child{
+    margin: 8px 30px 0 15px;
+    border-bottom: 2px solid blue;
+    color: black;
+}
+.footer>div>a:nth-child(2){
+    color: #4F4F4F;
+}
+.footer_content{
+    height: 100%;
+    display: none;
+    background: white;
+}
+.footer_nav{
+    display: flex;
+    width: 100%;
+    padding: 5px 3px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    margin-bottom: 18px;
+}
+.footer_nav>div{
+    display: flex;
+    width: 15%;
+    justify-content: space-between;
+    border-right: 1px solid #4F4F4F;
+    padding: 2px 5px;
+    color: #4F4F4F;
+}
+.footer_img{
+
+    width: 11%;
+    margin: 0 auto;
+}
+.footer_img>img{
+    margin: 0 auto;
+    display: block;
+}
+.footer_img>span{
+    text-align: center;
+    display: block;
+    font-size: 0.33rem;
+    margin-top: 3px;
+}
+
+/*편집팝업*/
+/*템플릿 생성*/
+
+.domain_header{
+    background-color: #ebebeb;
+    display: flex;
+    padding: 8px 13px;
+    justify-content: space-between;
+    font-size: 0.18rem;
+}
+.domain_header>h1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.domain_header>button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1px;
+    border: none;
+    padding: 11px;
+    border-radius: 50%;
+    font-size: 0.38rem;
+    cursor: pointer;
+    background-color: #ebebeb;
+}
+.domain_header>button:hover{
+    background-color: #DDDDDD;
+}
+#template_article_outer{
+    padding: 0 3%;
+    font-size: 0.36rem;
+    margin-bottom: 3vh;
+}
+.template_content{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2.2%;
+}
+.template_content>span{
+    display: block;
+    color: #4F4F4F;
+}
+.template_content>input,.template_content>select{
+    width: 70%;
+    border: 1px solid gray;
+    height: 3.5vh;
+    outline: none;
+    font-size: 0.35rem;
+}
+#template_article_outer2{
+    height: 46%;
+}
+
+#template_boxs_header{
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.35rem;
+    font-weight: 600;
+    background-color: rgb(219, 219, 219);
+}
+#template_boxs_header>div{
+    width: 25%;
+    padding: 0.5%;
+    border-right: 1px solid rgb(151, 151, 151);
+}
+#template_boxs_nav{
+    display: flex;
+    font-size: 0.35rem;
+    justify-content: space-between;
+}
+
+#template_boxs_nav>div{
+    width: 25%;
+    padding: 0.5%;
+    margin: 2px;
+
+}
+#template_boxs_nav>div:first-child{
+    border: 1px solid rgb(170, 170, 170);
+    height: 100%;
+    border-radius: 2px;
+}
+#template_boxs_nav>select{
+    display: block;
+    width: 25%;
+    height: 100%;
+    padding: 0.8%;
+    margin: 2px;
+    font-size: 0.35rem;
+    outline: none;
+    border: 1px solid rgb(170, 170, 170);
+}
+
+#template_article_footer{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 0.36rem;
+}
+.checkbox-group {
+    align-items: center;
+}
+.checkbox-group input[type="checkbox"] {
+    margin-right: 3px;
+}
+#template_article_footer > div > div {
+    padding: 1%;
+}
+
+#template_article_outer2 > span {
+    font-size: 0.35rem;
+    font-weight: 600;
+}
+
+/*편집버튼 팝업*/
+#edit_popup_bg{
+    display: none;
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+#edit_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 87%;
+    width: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+.edit_header{
+    background-color: #ebebeb;
+    display: flex;
+    padding: 8px 13px;
+    justify-content: space-between;
+    font-size: 0.18rem;
+}
+.edit_header>h1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.edit_header>button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1px;
+    border: none;
+    padding: 11px;
+    border-radius: 50%;
+    font-size: 0.38rem;
+    cursor: pointer;
+    background-color: #ebebeb;
+}
+.edit_header>button:hover{
+    background-color: #DDDDDD;
+}
+/*중간*/
+.edit_body{
+    height: 84%;
+    font-size: 0.36rem;
+}
+.edit_aside {
+    width: 100%;
+    height: 7%;
+    background-color: #FAFAFA;
+    border-right: 1px solid #ddd;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    font-weight: 800;
+    text-align: center;
+    border-bottom: 1px solid rgb(206, 206, 206);
+}
+
+.edit_aside > div {
+    display: flex;
+    width: 25%;
+    text-align: center;
+    justify-content: center; /* 중앙 정렬 */
+    align-items: center;
+    border-bottom: none; /* 이 줄을 추가하여 기본 테두리를 제거 */
+    cursor: pointer;
+    outline: none; /* 이 줄을 추가하여 기본 outline을 제거 */
+}
+
+.edit_aside > div span {
+    font-size: 0.33rem;
+}
+.edit_footer{
+    border-top: 1px solid gray;
+}
+form{
+    width: 100%;
+}
+
+form>div
+{
+    font-size: 0.32rem;
+
+}
+.edit_first_content{
+    border-bottom: 1px solid #cecece;
+}
+.edit_first_content>div:first-child{
+    padding: 3% 2% 5% 2%;
+}
+.edit_first_content>div{
+    display: flex;
+    justify-content: space-between;
+    padding: 1.2% 2%;
+}
+.edit_first_content>div:first-child{
+    position: relative;
+}
+.edit_first_content>div>div{
+    position: absolute;
+    top: 62%;
+    right: 32.5%;
+    font-style: italic;
+}
+
+
+.edit_first_content select{
+    width: 47%;
+    height: 3.3vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+}
+.edit_second_content>div,#host_third_content>div{
+    display: flex;
+    justify-content: space-between;
+    padding: 2.3% 2% 0 2%
+}
+.edit_second_content input,
+#time_offset,
+#host_third_content>div:nth-child(n+2) select,
+.cpu_res>div select,
+.cpu_res input
+{
+    width: 47%;
+    height: 3.3vh;
+    padding: 0 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+}
+#host_third_content>div:nth-child(n+2) select{
+    font-weight: 600;
+    font-size: 0.27rem;
+}
+
+.edit_second_content>div>div>i,
+#host_third_content>div>div>i,
+#ha_mode_second_content>div>div>i,
+.res_second_content i
+{
+    color:#1ba4e4;
+    cursor: pointer;
+}
+
+.edit_check_boxs{
+    display: flex;
+    padding: 0.2rem 0.4rem;
+}
+.host_checkboxs>span{
+    font-weight: 600;
+}
+.host_checkbox{
+    padding: 0.2rem 0;
+}
+.host_checkbox i{
+    color: #1ba4e4;
+    cursor: pointer;
+}
+.edit_check_boxs>div{
+    margin-right: 0.5rem;
+}
+.edit_third_content{
+    padding: 0.2rem 0.4rem;
+    margin-bottom: 0.4rem;
+}
+.edit_third_content>div:nth-child(2),.edit_fourth_content_select>div:nth-child(2){
+    display: flex;
+    justify-content: right;
+
+}
+.edit_third_content button,.edit_fourth_content_select button{
+    margin-right: 0.2rem;
+    padding: 0.08rem 0.15rem;
+    font-size: 0.3rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.edit_fourth_content{
+    padding: 0.2rem 0.4rem;
+
+    border-top: 2px solid #cecece;
+}
+.edit_fourth_content>span{
+    margin-bottom: 0.2rem;
+    display: block;
+}
+.edit_fourth_content_select{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+.edit_fourth_content_select>div:first-child{
+    width: 50%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.edit_fourth_content_select select{
+    width: 77%;
+    height: 3.3vh;
+    padding: 0 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+}
+#host_outer,
+#ha_mode_outer,
+#system_outer,
+#res_alloc_outer,
+#common_outer,
+#console_outer
+{
+    height: 63.4vh;
+    overflow-y: auto; /* 세로 스크롤 추가 */
+    overflow-x: hidden; /* 가로 스크롤 숨김 */
+}
+#system_outer,#host_outer,#ha_mode_outer,#res_alloc_outer{
+    display: none;
+}
+
+#host_second_content{
+    padding: 2%;
+}
+#host_third_content{
+    padding: 0 2%;
+}
+#host_third_content>div{
+    padding: 1% 0;
+}
+#ha_mode_second_content{
+    padding: 2%;
+}
+#ha_mode_second_content>div:first-child{
+    padding-bottom: 2%;
+}
+#ha_mode_second_content>div:nth-child(n+2):nth-child(-n+3),.ha_mode_article>div{
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 2%;
+}
+#ha_mode_second_content>div:nth-child(n+2) select
+{
+    width: 47%;
+    height: 3.3vh;
+    padding: 0 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+}
+
+.ha_mode_article>span{
+    font-weight: 600;
+    margin-bottom: 0.7%;
+    display: block;
+}
+/*콘솔*/
+#monitor{
+    width: 66%;
+}
+.console_checkboxs{
+    
+}
+#monitor select{
+    width: 18%;
+    height: 3.3vh;
+    padding: 0 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+}
+.console_checkboxs{
+    padding:0.4rem;
+}
+.console_checkboxs>div{
+    margin-bottom: 0.2rem;
+}
+.console_checkboxs>span{
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.1rem;
+}
+#console_outer>.res_alloc_checkbox{
+    padding: 0.4rem;  
+}
+#console_outer>.res_alloc_checkbox input{
+    margin-right: 0.1rem;
+}
+/*리소스할당*/
+.res_second_content{
+    padding: 2%;
+}
+
+.cpu_res>div,#threads,#boot_checkboxs>div:first-child{
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 2%;
+}
+#cpu_sharing{
+    display: flex;
+    width: 47%;
+    justify-content: space-between;
+}
+
+#cpu_sharing>input{
+    width: 23%;
+}
+#threads>div:nth-child(2),#boot_checkboxs>div>div:nth-child(2){
+    width: 47%;
+}
+#threads input[type="text"],#boot_checkboxs input[type="text"]  {
+    width: 94%;
+    height: 3.3vh;
+    padding: 0 3px;
+    cursor: pointer;
+}
+/*선호도*/
+#preference_content{
+    padding: 5%;
+}
+#preference_content>div{
+    padding-bottom: 4%;
+}
+#preference_content>div,.preference_select>div{
+    display: flex;
+    justify-content: space-between;
+}
+#preference_content>div>div{
+    width: 47%;
+}
+.preference_select select{
+    width: 85%;
+    height: 3.3vh;
+    padding: 0 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+}
+.preference_select button{
+    cursor: pointer;
+    padding: 0 1%;
+}
+.pre_selected>div>a{
+    background-color: #1ba4e4;
+    max-width: 20%;
+    height: 3vh;
+    display: block;
+    padding: 0 3px;
+    cursor: pointer;
+    font-weight: 600;
+    color: white;
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.form_checks>div{
+    padding: 1.8% 0 0 0;
+}
+.form_checks>div:nth-child(2){
+    display: flex;
+    justify-content: space-between;
+    
+}
+.form_checks>div:nth-child(2)>div:nth-child(2){
+    width: 47%;
+}
+.form_checks>div:nth-child(2) select{
+    width: 100%;
+    height: 3.3vh;
+    padding: 0 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+}
+.edit_footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: white; /* 필요에 따라 배경색을 설정 */
+    border-top: 1px solid #cecece;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 1.3%;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* 옵션: 그림자 추가 */
+}
+
+.edit_footer button {
+    padding: 1% 2%;
+    margin-left: 10px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    font-size: 0.3rem;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.edit_footer button:first-child {
+    margin-right: auto; /* 왼쪽 끝으로 이동 */
+}
+.edit_footer button:first-child,.edit_footer button:nth-child(3){
+    background-color: rgb(218, 218, 218);
+    border: 1px solid rgb(122, 122, 122);
+}
+.edit_footer button:nth-child(2){
+    background-color: rgb(46, 151, 250);
+    color: white;
+
+}
+/*스토리지 section*/
+#storage_section,#network_section,#setting_section{
+    display: none;
+    width: 96%;
+    background: white;
+    position: relative;
+}
+.section_content_outer{
+    padding: 0 0.3rem;
+
+}
+.section_option{
+    font-size: 0.34rem;                      
+    display: flex;
+    height: 2.9vh;
+    margin-bottom: 0.2rem;
+}
+.section_option>div{
+    margin-right: 0.4rem;
+}
+.section_option label{
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.section_option select {
+    height: 100%;
+    cursor: pointer;
+    font-size: 0.3rem;
+}
+.search_box{
+    width: 20%;
+    display: flex;
+}
+.search_box input{
+    height: 3.1vh;
+    width: 92%;
+    outline: none;   
+}
+.search_box>button{
+    height: 3.1vh;
+    width: 10%;
+    cursor: pointer;
+    font-size: 0.3rem;
+}
+.section_table_outer{
+    font-size: 0.3rem;
+
+}
+
+.section_table_outer table{
+    width: 100%;
+    border-collapse: collapse;
+}
+.section_table_outer table tbody tr{
+    cursor: pointer; 
+}
+.section_table_outer table tbody tr:hover{
+    background-color: #dddcdc;
+}
+.section_table_outer th,.section_table_outer td{
+    border: 1px solid rgb(204, 204, 204);
+    
+}
+.section_table_outer th{
+    padding: 0.08rem;
+    text-align: center;
+    background-color: #e9e9e9;
+}
+.section_table_outer td{
+    padding: 0.02rem 0.08rem ;
+}
+.section_table_outer td:first-child{
+    color:#1ba4e4;
+}
+.section_table_outer td:nth-child(2){
+    width: 10%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.section_table_outer td:nth-child(3),.section_table_outer td:nth-child(4){
+    text-align: center;
+}
+.section_table_outer>button{
+    padding: 0.07rem 0.1rem;
+    margin-bottom: 0.1rem;
+    cursor: pointer;
+}
+/*스토리지 도메인버튼*/
+.storage_domain_content,
+.storage_volume_content,
+.storage_storage_content{
+    font-size: 0.3rem;
+    padding: 0 0.3rem;
+}
+
+/*테이블설정*/
+.storage_domain_content table
+{
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 0.2rem;
+}
+.storage_domain_content table th,
+.storage_domain_content table td,
+.storage_volume_content th,
+.storage_volume_content td
+{
+    border: 1px solid rgb(204, 204, 204);
+   
+}
+.storage_domain_content table th,
+.empty_table table th{
+    padding: 0.08rem;
+    background-color: #e9e9e9;
+}
+.storage_domain_content table td{
+    padding: 0.04rem;
+}
+.storage_domain_content table tbody tr{
+    cursor: pointer;
+}
+.storage_domain_content table tbody tr:hover{
+    background-color: #d6d6d6;
+}
+.storage_domain_content table td:first-child,
+.storage_domain_content table td:nth-child(2){
+    text-align: center;
+}
+/*볼륨*/
+.empty_table{
+    border: 1px solid rgb(204, 204, 204);
+    width: 100%;
+    height: 20vh;
+    margin-top: 0.2rem;
+    position: relative;
+}
+.empty_table table{
+    border-collapse: collapse;
+    width: 100%;
+}
+.empty_content{
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+/*논리 네트워크*/
+/*권한*/
+.storage_right_btns{
+    display: flex;
+    font-size: 0.34rem;
+    margin-bottom: 0.3rem;
+    height: 3.3vh;
+}
+.storage_right_btns>span{
+    margin-right: 0.2rem;
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.storage_right_btns>div{
+    width: 6%;
+    background-color: yellow;
+    display: flex;
+    justify-content: space-between;
+}
+.storage_right_btns button{
+    width: 50%;
+    cursor: pointer;
+}
+/*스토리지 팝업창들*/
+    /*디스크(새로만들기)*/
+.storage_disk_new_outer{
+    display: none;
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+
+}
+.storage_disk_new_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 91%;
+    width: 58%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+
+    /*디스크(업로드)*/
+.storage_disk_upload_outer{
+    display: none;
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.storage_disk_upload_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 78.4vh;
+    width: 58%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+.storage_upload_first{
+    padding: 0.4rem;
+    display: flex;
+    font-size: 0.34rem;
+    margin-bottom:1.4rem;
+}
+.storage_upload_first>button{
+    font-weight: 600;
+    margin-right: 0.4rem;
+    padding: 0.1rem;
+   
+    cursor: pointer;
+}
+.storage_upload_first>div{
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.disk_option{
+    background-color: #e6e6e6;
+    font-size: 0.34rem;
+    font-weight: 600;
+    padding: 0.35rem 0.4rem;
+}
+.disk_new_img_right button{
+    padding: 0.1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+    /*도메인(새로운 도메인)*/
+.storage_domain_new_outer{
+    display: none;
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.storage_domain_new_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 91%;
+    width: 58%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+.storage_domain_new_first{
+    display: flex;
+    padding: 0.4rem;
+    font-size: 0.32rem;
+    justify-content: space-between;
+    border-bottom: 1px solid #dfdddd;
+}
+.storage_domain_new_first>div{
+    width: 48%;
+
+}
+.domain_new_select{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.3rem;
+}
+.domain_new_select select, 
+.domain_new_select input,
+.storage_domain_new_second input
+{
+    width: 56%;
+    height: 3.3vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+    outline: none;
+    border: 1px solid  rgb(206, 206, 206);
+}
+.storage_domain_new_second{
+    padding: 0.4rem;
+    font-size: 0.32rem;
+}
+.storage_domain_new_second>div:first-child{
+    display: flex;
+    justify-content: space-between;
+}
+.storage_domain_new_second>div{
+    margin-bottom: 0.2rem;
+}
+#domain_hidden_box_btn,#domain_hidden_box_btn2{
+    cursor: pointer;   
+}
+    /*히든박스*/
+#domain_hidden_box{
+    font-size: 0.3rem;
+    margin-top: 0.2rem;
+}
+#domain_hidden_box>span{
+    color: red;
+}
+    /*도메인(도메인 가져오기)*/
+.storage_domain_get_outer{
+    display: none;
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.storage_domain_get_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 91%;
+    width: 58%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+    /*도메인(도메인 관리)*/
+.storage_domain_administer_outer{
+    display: none;
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.storage_domain_administer_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 91%;
+    width: 58%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+    /*볼륨(새로 만들기*/
+.storage_volume_new_outer{
+    display: none;
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.storage_volume_new_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 87%;
+    width: 51%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+.volume_first_content{
+    padding: 0.4rem;
+    font-size: 0.33rem;
+    border-bottom: 1px solid #dfdddd ;
+}
+.volume_second_content,.volume_third_content{
+    padding: 0.4rem;
+    font-size: 0.33rem;
+}
+.volume_second_content>div{
+    margin-bottom: 0.3rem;
+}
+.volume_second_content button{
+    padding: 0.13rem;
+    cursor: pointer;
+}
+.volume_checkboxs{
+    display: flex;
+
+    width: 56%;
+}
+.volume_checkbox{
+    display: flex;
+}
+.volume_checkbox>label{
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    margin-left: 0.2rem;
+}
+.volume_third_content>h2{
+    font-size: 0.4rem;
+    margin-bottom: 0.2rem;
+}
+.volume_third_content>div{
+    margin-bottom: 0.15rem;
+}
+.disabled_button{
+    color: #A1A1A1;
+    background-color: #a0a0a0;
+    cursor: no-drop;
+    
+}
+    /*볼륨(스냅샷)*/
+.storage_volume_snap_outer{
+    display: none;
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.storage_volume_snap_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 65%;
+    width: 51%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+.volume_snap_first_content{
+    font-size: 0.33rem;
+    padding: 0.4rem;
+}
+.volume_snap_first_content>h2{
+    font-size: 0.4rem;
+}
+.volume_snap_table{
+    border: 1px solid rgb(185, 185, 185);
+    height: 25vh;
+}
+.volume_snap_table table{
+    border-collapse: collapse;
+    width: 100%;
+}
+.volume_snap_table thead>tr{
+    background-color:#dadada;
+}
+.volume_snap_table th,.volume_snap_table td{
+    padding: 0.05rem;
+    text-align: left;
+}
+
+
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <div id="header">
+    <div id="header_right">
+        <span>IT Cloud</span>
+    </div>
+
+    <div id="header_left">
+        <div>
+            <i class="fa fa-hdd-o"></i>
+        </div>
+        <div>
+            <i class="fa fa-bell"></i>
+        </div>
+        <div>
+            <i class="fa fa-user"></i>
+        </div>
+    </div>
+</div>
+<div id="main_outer">
+  <div id="aside_outer">
+    <div id="aside">
+        <div id="nav">
+            <div id="aside_popup_host_btn">
+                <i class="fa fa-th-large"></i>
+            </div>
+            <div id="aside_popup_machine_btn">
+                <i class="fa fa-desktop"></i>
+            </div>
+            <div id="aside_popup_storage_btn">
+                <i class="fa fa-server"></i>
+            </div>
+            <div id="aside_popup_network_btn">
+                <i class="fa fa-database"></i>
+            </div>
+        </div>
+        <div id="setting_icon">
+            <i class="fa fa-cog"></i>
+        </div>
+    </div><!--aside끝-->
+    
+    <div id="aside_popup">
+        <!--가상머신 차트-->
+        <div id="virtual_machine_chart">
+            <div class="aside_popup_content" id="aside_popup_first">
+                <i class="fa fa-chevron-down"></i>
+                <i class="fa fa-building-o"></i>
+                <span>data_center</span>
+            </div>
+            <div class="aside_popup_content" id="aside_popup_second" style="display: none;">
+                <i class="fa fa-chevron-down"></i>
+                <i class="fa fa-building-o"></i>
+                <span>ITITINFO</span>
+            </div>
+            <div class="aside_popup_content" id="aside_popup_last" style="display: none;">
+                <div>
+                    <i></i>
+                    <i class="fa fa-microchip"></i>
+                    <span>192.168.0.80</span>
+                </div>
+                <div>
+                    <i></i>
+                    <i class="fa fa-microchip"></i>
+                    <span>HostedEngine</span>
+                </div>
+                <div>
+                    <i></i>
+                    <i class="fa fa-microchip"></i>
+                    <span>on20-ap01</span>
+                </div>
+            </div>
+        </div>
+        <!--스토리지 차트-->
+        <div id="storage_chart" style="display: none;">
+            <div class="aside_popup_content" id="aside_popup_first2">
+                <i class="fa fa-chevron-down"></i>
+                <i class="fa fa-building-o"></i>
+                <span>data_center</span>
+            </div>
+            <div class="aside_popup_content" id="aside_popup_second2" style="display: none;">
+                <i class="fa fa-chevron-down"></i>
+                <i class="fa fa-building-o"></i>
+                <span>Default</span>
+            </div>
+            
+            <div class="aside_popup_content" id="aside_popup_last2" style="display: none;">
+                <div>
+                    <i></i>
+                    <i class="fa fa-microchip"></i>
+                    <span>hosted-storage</span>
+                </div>
+                <div>
+                    <i></i>
+                    <i class="fa fa-microchip"></i>
+                    <span>NFS-Storage</span>
+                </div>
+            </div>
+        </div>
+        
+        <!--네트워크 차트-->
+        <div id="network_chart" style="display: none;">
+            <div class="aside_popup_content" id="aside_popup_first3">
+                <i class="fa fa-chevron-down"></i>
+                <i class="fa fa-building-o"></i>
+                <span>Default</span>
+            </div>
+            <div class="aside_popup_content" id="aside_popup_second3" style="display: none;">
+                <i class="fa fa-chevron-down" style="color: white;"></i>
+                <i class="fa fa-building-o"></i>
+                <span>ovirtmgmt</span>
+            </div> 
+        </div>
+
+        <!--설정 차트-->
+        <div id="setting_chart" style="display: none;">
+            <div>
+                <i class="fa fa-cog"></i>
+                <span>활성 사용자 세션</span>
+            </div>
+            <div id="setting_miniset_btn">
+                <i class="fa fa-cog"></i>
+                <span>설정</span>
+            </div>
+            <div>
+                <i class="fa fa-cog"></i>
+                <span>사용자</span>
+            </div>
+            <div>
+                <i class="fa fa-cog"></i>
+                <span>사용자</span>
+            </div>
+            
+        </div>
+
+    </div>
+  </div><!--aside_outer끝-->
+    <div id="storage_section">
+      <div class="section_header">
+          <div class="section_header_left">
+              <span>데이터 센터</span>
+              <div>Default</div>
+              <button><i class="fa fa-exchange"></i></button>
+          </div>
+      
+          <div class="section_header_right">
+              <div class="article_nav">
+                  <button>편집</button>
+                  <button>삭제</button>
+                  <button id="popup_btn">
+                      <i class="fa fa-ellipsis-v"></i>
+                      <div id="popup_box">
+                          <div>
+                              <div class="get_btn">가져오기</div>
+                              <div class="get_btn">가상 머신 복제</div>
+                          </div>
+                          <div>
+                              <div>삭제</div>
+                          </div>
+                          <div>
+                              <div>마이그레이션 취소</div>
+                              <div>변환 취소</div>
+                          </div>
+                          <div>
+                              <div id="template_btn">템플릿 생성</div>
+                          </div>
+                          <div style="border-bottom: none;">
+                              <div id="domain2">도메인으로 내보내기</div>
+                              <div id="domain">Export to Data Domai</div>
+                              <div id="ova_btn">OVA로 내보내기</div>
+                          </div>
+                      </div> 
+                  </button>
+              </div>
+      
+          </div><!--article끝-->
+      </div><!--section_header끝-->
+
+      <div class="content_outer">
+          <div class="content_header">
+              <div class="content_header_left">
+                  <div class="active">디스크</div>
+                  <div>도메인</div>
+                  <div>볼륨</div>
+                  <div>스토리지</div>
+                  <div>논리 네트워크</div>
+                  <div>클러스터</div>
+                  <div>권한</div>
+                  <div>이벤트</div>
+              </div>
+              <div class="content_header_right">
+                  <button id="storage_disk_new_btn">새로 만들기</button>
+                  <button>수정</button>
+                  <button>제거</button>
+                  <button>이동</button>
+                  <button>복사</button>
+                  <button id="storage_disk_upload">업로드</button>
+                  <button>다운로드</button>
+                  <button class="content_header_popup_btn">
+                      <i class="fa fa-ellipsis-v"></i>
+                      <div class="content_header_popup" style="display: none;">
+                          <div>활성</div>
+                          <div>비활성화</div>
+                          <div>이동</div>
+                          <div>LUN 새로고침</div>
+                      </div>
+                  </button>
+              </div>
+          </div>
+
+          <div class="section_content_outer">
+              <div class="section_option">
+                  <div>
+                      <label for="disk_type">디스크 유형:</label>
+                      <select id="disk_type">
+                          <option value="default">모두</option>   
+                          <option value="image">이미지</option> 
+                          <option value="direct_lun">직접LUN</option> 
+                          <option value="managed_block">관리되는 블록</option> 
+                      </select>
+                  </div>
+                  <div>
+                      <label for="content_type">컨텐츠 유형:</label>
+                      <select id="content_type">
+                          <option value="default">모두</option>   
+                      </select>
+                  </div>
+                  <div class="search_box">
+                      <input type="text"/>
+                      <button><i class="fa fa-search"></i></button>
+                  </div>
+              </div>
+
+              <div class="section_table_outer">
+                  <button><i class="fa fa-refresh"></i></button>
+                  <table>
+                      <thead>
+                          <tr>
+                              <th>별칭</th>
+                              <th>ID</th>
+                              <th><i class="fa fa-glass"></i></th>
+                              <th></th>
+                              <th>연결 대상</th>
+                              <th>스토리지 도메인</th>
+                              <th>가상 크기</th>
+                              <th>상태</th>
+                              <th>유형</th>
+                              <th>설명</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr>
+                              <td>he_metadata</td>
+                              <td style="width: 10%;">289137398279301798</td>
+                              <td></td>
+                              <td><i class="fa fa-glass"></i></td>
+                              <td>on20-ap01</td>
+                              <td>VirtIO-SCSI</td>
+                              <td>/dev/sda</td>
+                              <td>OK</td>
+                              <td>이미지</td>
+                              <td></td>
+                          </tr>
+                          <tr>
+                              <td>he_metadata</td>
+                              <td>289137398279301798</td>
+                              <td></td>
+                              <td><i class="fa fa-glass"></i></td>
+                              <td>on20-ap01</td>
+                              <td>VirtIO-SCSI</td>
+                              <td>/dev/sda</td>
+                              <td>OK</td>
+                              <td>이미지</td>
+                              <td></td>
+                          </tr>
+                          <tr>
+                              <td>he_metadata</td>
+                              <td style="width: 10%;">289137398279301798</td>
+                              <td></td>
+                              <td><i class="fa fa-glass"></i></td>
+                              <td>on20-ap01</td>
+                              <td>VirtIO-SCSI</td>
+                              <td>/dev/sda</td>
+                              <td>OK</td>
+                              <td>이미지</td>
+                              <td></td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+          <!--스토리지 우클릭메뉴박스-->
+          <div id="storage_context_menu">
+              <div>새로 만들기</div>
+              <div>새로운 도메인</div>
+              <div>도메인 가져오기</div>
+              <div>도메인 관리</div>
+              <div>삭제</div>
+              <div>Connections</div>
+          </div>
+      </div><!--section_content_outer끝-->
+
+      <!--스토리지 디스크 새로만들기팝업-->
+      <div class="storage_disk_new_outer">
+          <div class="storage_disk_new_popup">
+              <div class="network_popup_header">
+                  <h1>새 가상 디스크</h1>
+                  <button><i class="fa fa-times"></i></button>
+              </div>
+              <div id="disk_new_nav">
+                  <div id="storage_img_btn">이미지</div>
+                  <div id="storage_directlun_btn">직접LUN</div>
+                  <div id="storage_managed_btn">관리되는 블록</div>
+              </div>
+              <div class="disk_new_img">
+                  <div class="disk_new_img_left">
+                      <div class="img_input_box">
+                          <span>크기(GIB)</span>
+                          <input type="text">
+                      </div>
+                      <div class="img_input_box">
+                          <span>별칭</span>
+                          <input type="text">
+                      </div>
+                      <div class="img_input_box">
+                          <span>설명</span>
+                          <input type="text">
+                      </div>
+                      <div class="img_select_box">
+                          <label for="os">데이터 센터</label>
+                          <select id="os">
+                              <option value="linux">Linux</option>
+                          </select>
+                      </div>
+                      <div class="img_select_box">
+                          <label for="os">스토리지 도메인</label>
+                          <select id="os">
+                              <option value="linux">Linux</option>
+                          </select>
+                      </div>
+                      <div class="img_select_box">
+                          <label for="os">할당 정책</label>
+                          <select id="os">
+                              <option value="linux">Linux</option>
+                          </select>
+                      </div>
+                      <div class="img_select_box">
+                          <label for="os">디스크 프로파일</label>
+                          <select id="os">
+                              <option value="linux">Linux</option>
+                          </select>
+                      </div>
+                  </div>
+                  <div class="disk_new_img_right">
+                      <div>
+                          <input type="checkbox" id="reset_after_deletion">
+                          <label for="reset_after_deletion">삭제 후 초기화</label>
+                      </div>
+                      <div>
+                          <input type="checkbox" class="shareable">
+                          <label for="shareable">공유 가능</label>
+                      </div>
+                      <div>
+                          <input type="checkbox" id="incremental_backup" checked>
+                          <label for="incremental_backup">중복 백업 사용</label>
+                      </div>
+                  </div>
+              </div><!--disk_new_img 팝업 끝-->
+
+              <!--직접LUN-->
+              <div id="storage_directlun_outer" style="display: none;">
+                  <div id="storage_lun_first">
+                      <div class="disk_new_img_left">
+                          <div class="img_input_box">
+                              <span>별칭</span>
+                              <input type="text">
+                          </div>
+                          <div class="img_input_box">
+                              <span>설명</span>
+                              <input type="text">
+                          </div>
+                          <div class="img_select_box">
+                              <label for="os">데이터 센터</label>
+                              <select id="os">
+                                  <option value="linux">Linux</option>
+                              </select>
+                          </div>
+                          <div class="img_select_box">
+                              <label for="os">호스트</label>
+                              <select id="os">
+                                  <option value="linux">Linux</option>
+                              </select>
+                          </div>
+                          <div class="img_select_box">
+                              <label for="os">스토리지 타입</label>
+                              <select id="os">
+                                  <option value="linux">Linux</option>
+                              </select>
+                          </div>
+                      </div>
+                      <div class="disk_new_img_right">
+                          <div>
+                              <input type="checkbox" class="shareable">
+                              <label for="shareable">공유 가능</label>
+                          </div>
+                      </div>
+                  </div>
+
+              </div>
+              <!--직접LUN끝-->
+              <!--관리되는 블록-->
+              <div id="storage_managed_outer" style="display: none;">
+                  <div id="disk_managed_block_left">
+                      <div class="img_input_box">
+                          <span>크기(GIB)</span>
+                          <input type="text" disabled>
+                      </div>
+                      <div class="img_input_box">
+                          <span>별칭</span>
+                          <input type="text" value="on20-ap01_Disk1" disabled>
+                      </div>
+                      <div class="img_input_box">
+                          <span>설명</span>
+                          <input type="text" disabled>
+                      </div>
+                      <div class="img_select_box">
+                          <label for="data_center_select">데이터 센터</label>
+                          <select id="data_center_select" disabled>
+                              <option value="dc_linux">Linux</option>
+                          </select>
+                      </div>
+                      <div class="img_select_box">
+                          <label for="storage_domain_select">스토리지 도메인</label>
+                          <select id="storage_domain_select" disabled>
+                              <option value="sd_linux">Linux</option>
+                          </select>
+                      </div>
+                      <span>해당 데이터 센터에 디스크를 생성할 수 있는 권한을 갖는 사용 가능한 관리 블록 스토리지 도메인이 없습니다.</span>
+                  </div>
+
+                  <div id="disk_managed_block_right">
+                      <div>
+                          <input type="checkbox" id="disk_shared_option" disabled>
+                          <label for="disk_shared_option">공유 가능</label>
+                      </div>
+                  </div>
+
+              </div>
+              <!--관리되는 블록끝-->
+
+              <div class="edit_footer">
+                  <button style="display: none;"></button>
+                  <button>OK</button>
+                  <button>취소</button>
+              </div>
+
+          </div>
+      </div>
+
+      <!--스토리지 디스크 새로만들기팝업-->
+      <div class="storage_disk_upload_outer">
+          <div class="storage_disk_upload_popup">
+              <div class="network_popup_header">
+                  <h1>이미지 업로드</h1>
+                  <button><i class="fa fa-times"></i></button>
+              </div>
+
+              <div class="storage_upload_first">
+                  <button>파일 선택</button>
+                  <div>선택된 파일 없음</div>
+              </div>
+
+              <div class="storage_upload_second">
+                  <div class="disk_option">
+                      디스크옵션
+                  </div>
+                  <div class="disk_new_img" style=" padding-top: 0.4rem;">
+                      <div class="disk_new_img_left">
+                          <div class="img_input_box">
+                              <span>크기(GIB)</span>
+                              <input type="text" disabled>
+                          </div>
+                          <div class="img_input_box">
+                              <span>별칭</span>
+                              <input type="text">
+                          </div>
+                          <div class="img_input_box">
+                              <span>설명</span>
+                              <input type="text">
+                          </div>
+                          <div class="img_select_box">
+                              <label for="data_hub">데이터 센터</label>
+                              <select id="data_hub">
+                                  <option value="linux">Linux</option>
+                              </select>
+                          </div>
+                          <div class="img_select_box">
+                              <label for="storage_zone">스토리지 도메인</label>
+                              <select id="storage_zone">
+                                  <option value="linux">Linux</option>
+                              </select>
+                          </div>
+                          <div class="img_select_box">
+                              <label for="disk_pattern">디스크 프로파일</label>
+                              <select id="disk_pattern">
+                                  <option value="nfs_storage">NFS-Storage</option>
+                              </select>
+                          </div>
+                          <div class="img_select_box">
+                              <label for="compute_unit">호스트</label>
+                              <select id="compute_unit">
+                                  <option value="host01">host01.ititinfo.com</option>
+                              </select>
+                          </div>
+                      </div>
+                      <div class="disk_new_img_right">    
+                          <div>
+                              <input type="checkbox" id="reset_after_deletion">
+                              <label for="reset_after_deletion">삭제 후 초기화</label>
+                          </div>
+                          <div>
+                              <input type="checkbox" class="shareable">
+                              <label for="shareable">공유 가능</label>
+                          </div>
+                          <div style="margin-bottom: 0.4rem;">
+                              <input type="checkbox" id="incremental_backup" checked>
+                              <label for="incremental_backup">중복 백업 사용</label>
+                          </div>
+                          <div>
+                              <button>연결테스트</button>
+                          </div>
+                      </div>
+                  </div><!--disk_new_img 팝업 끝-->
+
+              </div>
+
+
+
+
+              
+              <div class="edit_footer">
+                  <button style="display: none;"></button>
+                  <button>OK</button>
+                  <button>취소</button>
+              </div>
+          </div>
+      </div>
+
+      <!--스토리지 도메인 버튼-->
+      <div id="storage_domain_outer" style="display: none;">
+          <div class="content_header">
+              <div class="content_header_left">
+                  <div >디스크</div>
+                  <div>도메인</div>
+                  <div>볼륨</div>
+                  <div>스토리지</div>
+                  <div>논리 네트워크</div>
+                  <div>클러스터</div>
+                  <div>권한</div>
+                  <div>이벤트</div>
+              </div>
+              <div  class="content_header_right">
+                  <button id="new_domain_btn">새로운 도메인</button>
+                  <button id="get_domain_btn">도메인 가져오기</button>
+                  <button id="administer_domain_btn">도메인 관리</button>
+                  <button>삭제</button>
+                  <button>Connections</button>
+                  <button class="content_header_popup_btn">
+                      <i class="fa fa-ellipsis-v"></i>
+                      <div class="content_header_popup" style="display: none;">
+                          <div>활성</div>
+                          <div>비활성화</div>
+                          <div>이동</div>
+                          <div>LUN 새로고침</div>
+                      </div>
+                  </button>
+              </div>
+          </div>
+          
+          <div class="storage_domain_content">
+              <div class="search_box">
+                  <input type="text"/>
+                  <button><i class="fa fa-search"></i></button>
+              </div>
+              <table>
+                  <thead>
+                      <tr>
+                          <th>상태</th>
+                          <th></th>
+                          <th>도메인 이름</th>
+                          <th>코멘트</th>
+                          <th>도메인 유형</th>
+                          <th>스토리지 유형</th>
+                          <th>포맷</th>
+                          <th>데이터 센터간 상태</th>
+                          <th>전체 공간(GB)</th>
+                          <th>여유 공간(GB)</th>
+                          <th>확보된 여유 공간(GB)</th>
+                          <th>설명</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td><i class="fa fa-caret-up" style="color: #1DED00;"></i></td>
+                          <td><i class="fa fa-glass"></i></td>
+                          <td></td>
+                          <td></i></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                      </tr>
+                      <tr>
+                          <td><i class="fa fa-caret-up" style="color: #1DED00;"></i></td>
+                          <td><i class="fa fa-glass"></i></td>
+                          <td></td>
+                          <td></i></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                      </tr>
+                      <tr>
+                          <td><i class="fa fa-caret-up" style="color: #1DED00;"></i></td>
+                          <td><i class="fa fa-glass"></i></td>
+                          <td></td>
+                          <td></i></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                      </tr>
+                  </tbody>
+              </table>
+          </div>
+      </div><!--스토리지 도메인 버튼끝-->
+
+      <!--스토리지 도메인(새로운 도메인)팝업-->
+      <div class="storage_domain_new_outer">
+          <div class="storage_domain_new_popup">
+              <div class="network_popup_header">
+                  <h1>새로운 도메인</h1>
+                  <button><i class="fa fa-times"></i></button>
+              </div>
+              
+              <div class="storage_domain_new_first">
+                  <div class="domain_new_left">
+                      <div class="domain_new_select">
+                          <label for="data_hub_location">데이터 센터</label>
+                          <select id="data_hub_location">
+                              <option value="linux">Default(VS)</option>
+                          </select>
+                      </div>
+                      <div class="domain_new_select">
+                          <label for="domain_feature_set">도메인 기능</label>
+                          <select id="domain_feature_set">
+                              <option value="linux">데이터</option>
+                          </select>
+                      </div>
+                      <div class="domain_new_select">
+                          <label for="storage_option_type">스토리지 유형</label>
+                          <select id="storage_option_type">
+                              <option value="linux">NFS</option>
+                          </select>
+                      </div>
+                      <div class="domain_new_select" style="margin-bottom: 0;">
+                          <label for="host_identifier">호스트</label>
+                          <select id="host_identifier">
+                              <option value="linux">host02.ititinfo.com</option>
+                          </select>
+                      </div>                           
+                  </div>
+                  <div class="domain_new_right">
+                      <div class="domain_new_select">
+                          <label>호스트</label>
+                          <input type="text"/>
+                      </div>
+                      <div class="domain_new_select">
+                          <label>설명</label>
+                          <input type="text"/>
+                      </div>
+                      <div class="domain_new_select">
+                          <label>코멘트</label>
+                          <input type="text"/>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="storage_domain_new_second">
+                  <div>
+                      <label for="data_hub">내보내기 경로</label>
+                      <input type="text" placeholder="예:myserver.mydomain.com/my/local/path"/>
+                  </div>
+
+                  <div>
+                      <i class="fa fa-chevron-circle-right" id="domain_hidden_box_btn"></i>
+                      <span>사용자 정의 연결 매개 변수</span>
+                      <div id="domain_hidden_box" style="display: none;">
+                          <span>아래 필드에서 기본값을 변경하지 않을 것을 권장합니다.</span>
+                          <div class="domain_new_select">
+                              <label for="data_hub">호스트</label>
+                              <select id="data_hub">
+                                  <option value="linux">host02.ititinfo.com</option>
+                              </select>
+                          </div>
+                          <div class="domain_new_select">
+                              <label for="data_hub">재전송</label>
+                              <input type="text"/>
+                          </div>
+                          <div class="domain_new_select">
+                              <label for="data_hub">제한 시간(데시세컨드)</label>
+                              <input type="text"/>
+                          </div>
+                          <div class="domain_new_select">
+                              <label for="data_hub">추가 마운트 옵션</label>
+                              <input type="text"/>
+                          </div>
+                      </div>
+                  </div>
+                  <div>
+                      <i class="fa fa-chevron-circle-right" id="domain_hidden_box_btn2"></i>
+                      <span>고급 매개 변수</span>
+                      <div id="domain_hidden_box2" style="display: none;">
+                          <div class="domain_new_select">
+                              <label>디스크 공간 부족 경고 표시(%)</label>
+                              <input type="text"/>
+                          </div>
+                          <div class="domain_new_select">
+                              <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+                              <input type="text"/>
+                          </div>
+                          <div class="domain_new_select">
+                              <label>디스크 공간 부족 경고 표시(%)</label>
+                              <input type="text"/>
+                          </div>
+                          <div class="domain_new_select">
+                              <label for="format_type_selector" style="color: gray;">포맷</label>
+                              <select id="format_type_selector" disabled>
+                                  <option value="linux">V5</option>
+                              </select>
+                          </div>
+                          <div class="network_checkbox_type2"> 
+                              <input type="checkbox" id="photo_separation" name="photo_separation">
+                              <label for="photo_separation">포토 분리</label>
+                          </div>
+                      </div>
+
+                  </div>
+              </div>
+
+              <div class="edit_footer">
+                  <button style="display: none;"></button>
+                  <button>OK</button>
+                  <button>취소</button>
+              </div>
+          </div>
+      </div>
+      <!--스토리지 도메인(도메인 가져오기)팝업-->
+      <div class="storage_domain_get_outer">
+          <div class="storage_domain_get_popup">
+              <div class="network_popup_header">
+                  <h1>사전 구성된 도메인 가져오기</h1>
+                  <button><i class="fa fa-times"></i></button>
+              </div>
+              
+              <div class="storage_domain_new_first">
+                  <div class="domain_new_left">
+                      <div class="domain_new_select">
+                          <label for="data_hub_location">데이터 센터</label>
+                          <select id="data_hub_location">
+                              <option value="linux">Default(VS)</option>
+                          </select>
+                      </div>
+                      <div class="domain_new_select">
+                          <label for="domain_feature_set">도메인 기능</label>
+                          <select id="domain_feature_set">
+                              <option value="linux">데이터</option>
+                          </select>
+                      </div>
+                      <div class="domain_new_select">
+                          <label for="storage_option_type">스토리지 유형</label>
+                          <select id="storage_option_type">
+                              <option value="linux">NFS</option>
+                          </select>
+                      </div>
+                      <div class="domain_new_select" style="margin-bottom: 0;">
+                          <label for="host_identifier">호스트</label>
+                          <select id="host_identifier">
+                              <option value="linux">host02.ititinfo.com</option>
+                          </select>
+                      </div>                           
+                  </div>
+                  <div class="domain_new_right">
+                      <div class="domain_new_select">
+                          <label>이름</label>
+                          <input type="text"/>
+                      </div>
+                      <div class="domain_new_select">
+                          <label>설명</label>
+                          <input type="text"/>
+                      </div>
+                      <div class="domain_new_select">
+                          <label>코멘트</label>
+                          <input type="text"/>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="storage_domain_new_second">
+                  <div>
+                      <label for="data_hub">내보내기 경로</label>
+                      <input type="text" placeholder="예:myserver.mydomain.com/my/local/path"/>
+                  </div>
+
+                  <div>
+                      <i class="fa fa-chevron-circle-right" id="domain_hidden_box_btn"></i>
+                      <span>사용자 정의 연결 매개 변수</span>
+                      <div id="domain_hidden_box" style="display: none;">
+                          <span>아래 필드에서 기본값을 변경하지 않을 것을 권장합니다.</span>
+                          <div class="domain_new_select">
+                              <label for="data_hub">호스트</label>
+                              <select id="data_hub">
+                                  <option value="linux">host02.ititinfo.com</option>
+                              </select>
+                          </div>
+                          <div class="domain_new_select">
+                              <label for="data_hub">재전송</label>
+                              <input type="text"/>
+                          </div>
+                          <div class="domain_new_select">
+                              <label for="data_hub">제한 시간(데시세컨드)</label>
+                              <input type="text"/>
+                          </div>
+                          <div class="domain_new_select">
+                              <label for="data_hub">추가 마운트 옵션</label>
+                              <input type="text"/>
+                          </div>
+                      </div>
+                  </div>
+                  <div>
+                      <i class="fa fa-chevron-circle-right" id="domain_hidden_box_btn2"></i>
+                      <span>고급 매개 변수</span>
+                      <div id="domain_hidden_box2" style="display: none;">
+                          <div class="domain_new_select">
+                              <label>디스크 공간 부족 경고 표시(%)</label>
+                              <input type="text"/>
+                          </div>
+                          <div class="domain_new_select">
+                              <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+                              <input type="text"/>
+                          </div>
+                          <div class="domain_new_select">
+                              <label>디스크 공간 부족 경고 표시(%)</label>
+                              <input type="text"/>
+                          </div>
+                          <div class="domain_new_select">
+                              <label for="format_type_selector" style="color: gray;">포맷</label>
+                              <select id="format_type_selector" disabled>
+                                  <option value="linux">V5</option>
+                              </select>
+                          </div>
+                          <div class="network_checkbox_type2"> 
+                              <input type="checkbox" id="photo_separation" name="photo_separation">
+                              <label for="photo_separation">포토 분리</label>
+                          </div>
+                      </div>
+
+                  </div>
+              </div>
+
+              <div class="edit_footer">
+                  <button style="display: none;"></button>
+                  <button>OK</button>
+                  <button>취소</button>
+              </div>
+          </div>
+      </div>
+
+      <!--스토리지 도메인(도메인 관리)팝업-->
+      <div class="storage_domain_administer_outer">
+          <div class="storage_domain_administer_popup">
+              <div class="network_popup_header">
+                  <h1>도메인 관리</h1>
+                  <button><i class="fa fa-times"></i></button>
+              </div>
+              
+              <div class="storage_domain_new_first">
+                  <div class="domain_new_left">
+                      <div class="domain_new_select">
+                          <label for="data_hub_location">데이터 센터</label>
+                          <select id="data_hub_location">
+                              <option value="linux">Default(VS)</option>
+                          </select>
+                      </div>
+                      <div class="domain_new_select">
+                          <label for="domain_feature_set">도메인 기능</label>
+                          <select id="domain_feature_set">
+                              <option value="linux">데이터</option>
+                          </select>
+                      </div>
+                      <div class="domain_new_select">
+                          <label for="storage_option_type">스토리지 유형</label>
+                          <select id="storage_option_type">
+                              <option value="linux">NFS</option>
+                          </select>
+                      </div>
+                      <div class="domain_new_select" style="margin-bottom: 0;">
+                          <label for="host_identifier">호스트</label>
+                          <select id="host_identifier">
+                              <option value="linux">host02.ititinfo.com</option>
+                          </select>
+                      </div>                           
+                  </div>
+                  <div class="domain_new_right">
+                      <div class="domain_new_select">
+                          <label>이름</label>
+                          <input type="text"/>
+                      </div>
+                      <div class="domain_new_select">
+                          <label>설명</label>
+                          <input type="text"/>
+                      </div>
+                      <div class="domain_new_select">
+                          <label>코멘트</label>
+                          <input type="text"/>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="storage_domain_new_second">
+                  <div>
+                      <label for="data_hub">내보내기 경로</label>
+                      <input type="text" placeholder="예:myserver.mydomain.com/my/local/path"/>
+                  </div>
+
+                  <div>
+                      <i class="fa fa-chevron-circle-right" id="domain_hidden_box_btn"></i>
+                      <span>사용자 정의 연결 매개 변수</span>
+                      <div id="domain_hidden_box" style="display: none;">
+                          <span>아래 필드에서 기본값을 변경하지 않을 것을 권장합니다.</span>
+                          <div class="domain_new_select">
+                              <label for="data_hub">호스트</label>
+                              <select id="data_hub">
+                                  <option value="linux">host02.ititinfo.com</option>
+                              </select>
+                          </div>
+                          <div class="domain_new_select">
+                              <label for="data_hub">재전송</label>
+                              <input type="text"/>
+                          </div>
+                          <div class="domain_new_select">
+                              <label for="data_hub">제한 시간(데시세컨드)</label>
+                              <input type="text"/>
+                          </div>
+                          <div class="domain_new_select">
+                              <label for="data_hub">추가 마운트 옵션</label>
+                              <input type="text"/>
+                          </div>
+                      </div>
+                  </div>
+                  <div>
+                      <i class="fa fa-chevron-circle-right" id="domain_hidden_box_btn2"></i>
+                      <span>고급 매개 변수</span>
+                      <div id="domain_hidden_box2" style="display: none;">
+                          <div class="domain_new_select">
+                              <label>디스크 공간 부족 경고 표시(%)</label>
+                              <input type="text"/>
+                          </div>
+                          <div class="domain_new_select">
+                              <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+                              <input type="text"/>
+                          </div>
+                          <div class="domain_new_select">
+                              <label>디스크 공간 부족 경고 표시(%)</label>
+                              <input type="text"/>
+                          </div>
+                          <div class="domain_new_select">
+                              <label for="format_type_selector" style="color: gray;">포맷</label>
+                              <select id="format_type_selector" disabled>
+                                  <option value="linux">V5</option>
+                              </select>
+                          </div>
+                          <div class="network_checkbox_type2"> 
+                              <input type="checkbox" id="photo_separation" name="photo_separation">
+                              <label for="photo_separation">포토 분리</label>
+                          </div>
+                      </div>
+
+                  </div>
+              </div>
+
+              <div class="edit_footer">
+                  <button style="display: none;"></button>
+                  <button>OK</button>
+                  <button>취소</button>
+              </div>
+          </div>
+      </div>
+
+      <!--스토리지 볼륨버튼-->
+      <div id="storage_volume_outer" style="display: none;">
+          <div class="content_header">
+              <div class="content_header_left">
+                  <div >디스크</div>
+                  <div  >도메인</div>
+                  <div class="active">볼륨</div>
+                  <div>스토리지</div>
+                  <div>논리 네트워크</div>
+                  <div>클러스터</div>
+                  <div>권한</div>
+                  <div>이벤트</div>
+              </div>
+              <div  class="content_header_right">
+                  <button id="storage_volume_new_btn">새로 만들기</button>
+                  <button>삭제</button>
+                  <button>시작</button>
+                  <button class="disabled_button">중지</button>
+                  <button>프로파일링</button>
+                  <div>
+                      <button id="storage_volume_snap_btn"  style="margin: 0;">스냅샷</button>
+                      <button id="storage_volume_option_boxbtn"><i class="fa fa-chevron-down"></i>
+                          <div class="storage_volume_option_box" style="display: none;">
+                              <div>새로 만들기</div>
+                              <div>스케줄 편집</div>
+                              <div>옵션 - 클러스터</div>
+                              <div>옵션 - 볼륨</div>
+                          </div>
+                      </button>
+                  </div>
+                  <button>지역 복제</button> 
+                  <button class="content_header_popup_btn">
+                      <i class="fa fa-ellipsis-v"></i>
+                      <div class="content_header_popup" style="display: none;">
+                          <div>활성</div>
+                          <div>비활성화</div>
+                          <div>이동</div>
+                          <div>LUN 새로고침</div>
+                      </div>
+                  </button>
+              </div>
+          </div>
+          
+          <div class="storage_volume_content">
+              <div class="search_box">
+                  <input type="text"/>
+                  <button><i class="fa fa-search"></i></button>
+              </div>
+
+              <div class="empty_table">
+                  <table>
+                      <thead>
+                          <tr>
+                              <th>이름</th>
+                              <th>클러스터</th>
+                              <th>볼륨 유형</th>
+                              <th>브릭</th>
+                              <th>정보</th>
+                              <th>사용한 공간</th>
+                              <th>작업</th>
+                              <th>스냅샷 수</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <span class="empty_content">표시할 항복이 없습니다</span>
+                          <tr>
+                              
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+      </div><!--스토리지 볼륨버튼끝-->
+
+      <!--스토리지 볼륨 새로만들기팝업-->
+      <div class="storage_volume_new_outer">
+          <div class="storage_volume_new_popup">
+              <div class="network_popup_header">
+                  <h1>새 볼륨</h1>
+                  <button><i class="fa fa-times"></i></button>
+              </div>
+
+              <div class="volume_first_content">
+                  <div class="domain_new_select">
+                      <label for="data_center_selector">데이터 센터</label>
+                      <select id="data_center_selector">
+                          <option value="linux">host02.ititinfo.com</option>
+                      </select>
+                  </div>
+                  <div class="domain_new_select" style="margin-bottom: 0;">
+                      <label for="volume_cluster_selector">볼륨 클러스터</label>
+                      <select id="volume_cluster_selector">
+                          <option value="linux">host02.ititinfo.com</option>
+                      </select>
+                  </div>
+              </div>
+              <div class="volume_second_content">
+                  <div class="domain_new_select">
+                      <label>볼륨 클러스터</label>
+                      <input type="text"/>
+                  </div>
+                  <div class="domain_new_select">
+                      <label for="vol_cluster_dropdown">볼륨 클러스터</label>
+                      <select id="vol_cluster_dropdown">
+                          <option value="linux">host02.ititinfo.com</option>
+                      </select>
+                  </div>
+                  <div class="domain_new_select">
+                      <label for="data_hub">볼륨 클러스터</label>
+                      <input type="text" value="3" disabled/>
+                  </div>
+                  <div class="domain_new_select">
+                      <label>전송 유형</label>
+                      <div class="volume_checkboxs">
+                          <div class="volume_checkbox" style="margin-right: 3rem;">
+                              <input type="checkbox">
+                              <label for="photo_separation">TCP</label>
+                          </div>
+                          <div class="volume_checkbox">
+                              <input type="checkbox">
+                              <label for="photo_separation">RDMA</label>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="domain_new_select">
+                      <label>브릭</label>
+                      <button>브릭 추가</button>
+                  </div>
+              </div>
+
+              <div class="volume_third_content" style="padding-top: 0;">
+                  <h2>접근 프로토콜</h2>
+                  <div class="volume_checkbox">
+                      <input type="checkbox">
+                      <label for="photo_separation">RDMA</label>
+                  </div>
+                  <div class="volume_checkbox">
+                      <input type="checkbox">
+                      <label for="photo_separation">RDMA</label>
+                  </div>
+                  <div class="volume_checkbox">
+                      <input type="checkbox">
+                      <label for="photo_separation">RDMA</label>
+                  </div>
+                  <div class="domain_new_select">
+                      <label for="data_hub">액세스 허용할 호스트</label>
+                      <input type="text"/>
+                  </div>
+                  <div class="volume_checkbox">
+                      <input type="checkbox">
+                      <label for="photo_separation">RDMA</label>
+                  </div>
+              </div>
+
+              <div class="edit_footer">
+                  <button style="display: none;"></button>
+                  <button>OK</button>
+                  <button>취소</button>
+              </div>
+          </div>
+      </div>
+
+      <!--스토리지 볼륨 스냅샷 팝업-->
+      <div class="storage_volume_snap_outer">
+          <div class="storage_volume_snap_popup">
+              <div class="network_popup_header">
+                  <h1>볼륨 스냅샷 - 클러스터 옵션</h1>
+                  <button><i class="fa fa-times"></i></button>
+              </div>
+              
+              <div class="volume_snap_first_content">
+                  <div class="domain_new_select">
+                      <label for="vol_cluster_dropdown">볼륨 클러스터</label>
+                      <select id="vol_cluster_dropdown">
+                          <option value="linux">host02.ititinfo.com</option>
+                      </select>
+                  </div>
+
+                  <h2>스냅샷 옵션</h2>
+                  <div class="volume_snap_table">
+                      <table>
+                          <thead>
+                              <tr>
+                                  <th>이름</th>
+                                  <th>설명</th>
+                                  
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <tr>
+                                  <td>ㅇ</td>
+                                  <td>ㅇ</td>
+                              </tr>
+                              
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
+
+              <div class="edit_footer">
+                  <button style="display: none;"></button>
+                  <button>업데이트</button>
+                  <button>취소</button>
+              </div>
+          </div>
+      </div>
+
+      <!--스토리지 스토리지버튼-->
+      <div id="storage_storage_outer" style="display: none;">
+          <div class="content_header">
+              <div class="content_header_left">
+                  <div >디스크</div>
+                  <div>도메인</div>
+                  <div>볼륨</div>
+                  <div class="active">스토리지</div>
+                  <div>논리 네트워크</div>
+                  <div>클러스터</div>
+                  <div>권한</div>
+                  <div>이벤트</div>
+              </div>
+              <div  class="content_header_right">
+                  <button>데이터 연결</button>
+                  <button>ISP 연결</button>
+                  <button>내보내기 연결</button>
+                  <button>분리</button>
+                  <button>활성</button>
+                  <button>유지보수</button>
+              </div>
+          </div>
+          
+          <div class="storage_domain_content">
+              <div>
+                  <div class="application_content_header">
+                      <button><i class="fa fa-chevron-left"></i></button>
+                      <div>1-2</div>
+                      <button><i class="fa fa-chevron-right"></i></button>
+                      <button><i class="fa fa-ellipsis-v"></i></button>            
+                  </div>
+              </div>
+              <table>
+                  <thead>
+                      <tr>
+                          <th>상태</th>
+                          <th></th>
+                          <th>도메인 이름</th>
+                          <th>코멘트</th>
+                          <th>도메인 유형</th>
+                          <th>스토리지 유형</th>
+                          <th>포맷</th>
+                          <th>데이터 센터간 상태</th>
+                          <th>전체 공간(GB)</th>
+                          <th>여유 공간(GB)</th>
+                          <th>확보된 여유 공간(GB)</th>
+                          <th>설명</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td><i class="fa fa-caret-up" style="color: #1DED00;"></i></td>
+                          <td><i class="fa fa-glass"></i></td>
+                          <td></td>
+                          <td></i></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                      </tr>
+                      <tr>
+                          <td><i class="fa fa-caret-up" style="color: #1DED00;"></i></td>
+                          <td><i class="fa fa-glass"></i></td>
+                          <td></td>
+                          <td></i></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                      </tr>
+                      <tr>
+                          <td><i class="fa fa-caret-up" style="color: #1DED00;"></i></td>
+                          <td><i class="fa fa-glass"></i></td>
+                          <td></td>
+                          <td></i></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                      </tr>
+                  </tbody>
+              </table>
+          </div>
+      </div><!--스토리지 스토리지 4864버튼끝-->
+
+      <!--스토리지 논리네트워크 버튼-->
+      <div id="storage_logic_outer" style="display: none;">
+          <div class="content_header">
+              <div class="content_header_left">
+                  <div >디스크</div>
+                  <div>도메인</div>
+                  <div>볼륨</div>
+                  <div>스토리지</div>
+                  <div class="active">논리 네트워크</div>
+                  <div>클러스터</div>
+                  <div>권한</div>
+                  <div>이벤트</div>
+              </div>
+              <div  class="content_header_right">
+                  <button>새로만들기</button>
+                  <button>편집</button>
+                  <button>삭제</button>
+              </div>
+          </div>
+          
+          <div class="storage_domain_content">
+              <div>
+                  <div class="application_content_header">
+                      <button><i class="fa fa-chevron-left"></i></button>
+                      <div>1-2</div>
+                      <button><i class="fa fa-chevron-right"></i></button>
+                      <button><i class="fa fa-ellipsis-v"></i></button>            
+                  </div>
+              </div>
+              <table>
+                  <thead>
+                      <tr>
+                          <th>이름</th>
+                          <th>설명</th>
+                          
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td>ovirtmgmt</td>
+                          <td>Management Network</td>
+                      </tr>
+                      
+                  </tbody>
+              </table>
+          </div>
+      </div><!--스토리지 논리네트워크 버튼끝-->
+
+      <!--스토리지 클러스터 버튼-->
+      <div id="storage_cluster_outer" style="display: none;">
+          <div class="content_header">
+              <div class="content_header_left">
+                  <div >디스크</div>
+                  <div>도메인</div>
+                  <div>볼륨</div>
+                  <div>스토리지</div>
+                  <div class="active">논리 네트워크</div>
+                  <div>클러스터</div>
+                  <div>권한</div>
+                  <div>이벤트</div>
+              </div>
+          </div>
+          
+          <div class="storage_domain_content">
+              <div>
+                  <div class="application_content_header">
+                      <button><i class="fa fa-chevron-left"></i></button>
+                      <div>1-2</div>
+                      <button><i class="fa fa-chevron-right"></i></button>
+                      <button><i class="fa fa-ellipsis-v"></i></button>            
+                  </div>
+              </div>
+              <table>
+                  <thead>
+                      <tr>
+                          <th>이름</th>
+                          <th>호환 버전</th>
+                          <th>설명</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td>ovirtmgmt</td>
+                          <td>Management Network</td>
+                          <td>The default server cluster</td>
+                      </tr>
+                      
+                  </tbody>
+              </table>
+          </div>
+      </div><!--스토리지 클러스터 버튼끝-->
+
+      <!--스토리지 권한 버튼-->
+      <div id="storage_right_outer" style="display: none;">
+          <div class="content_header">
+              <div class="content_header_left">
+                  <div>디스크</div>
+                  <div>도메인</div>
+                  <div>볼륨</div>
+                  <div >스토리지</div>
+                  <div>논리 네트워크</div>
+                  <div>클러스터</div>
+                  <div class="active">권한</div>
+                  <div>이벤트</div>
+              </div>
+              <div  class="content_header_right">
+                  <button>추가</button>
+                  <button>제거</button>
+              </div>
+          </div>
+          
+          <div class="storage_domain_content">
+              <div class="storage_right_btns">
+                  <span>Permission Filters:</span>
+                  <div>
+                      <button>All</button>
+                      <button>Direct</button>
+                  </div>
+              </div>
+              <div>
+                  <div class="application_content_header">
+                      <button><i class="fa fa-chevron-left"></i></button>
+                      <div>1-2</div>
+                      <button><i class="fa fa-chevron-right"></i></button>
+                      <button><i class="fa fa-ellipsis-v"></i></button>            
+                  </div>
+              </div>
+              <table>
+                  <thead>
+                      <tr>
+                          <th></th>
+                          <th>사용자</th>
+                          <th>인증 공급자</th>
+                          <th>네임스페이스</th>
+                          <th>역할</th>
+                          <th>생성일</th>
+                          <th>Inherited From</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td><i class="fa fa-user"></i></td>
+                          <td>ovirtmgmt</td>
+                          <td></td>
+                          <td>*</td>
+                          <td>SuperUser</td>
+                          <td>2023.12.29 AM 11:40:58</td>
+                          <td>(시스템)</td>
+                      </tr>
+                      
+                  </tbody>
+              </table>
+          </div>
+      </div><!--스토리지 권한 버튼-->
+
+
+      <!--footer-->
+      <div class="footer_outer">
+          <div class="footer">
+              <button><i class="fa fa-chevron-down"></i></button>
+              <div>
+                  <a>최근 작업</a>
+                  <a>경보</a>
+              </div>
+          </div>
+          <div class="footer_content">
+
+              <div class="footer_nav">
+                  <div>
+                      <div>작업이름</div>
+                      <div><i class="fa fa-filter"></i></div>
+                  </div>
+
+                  <div>
+                      <div>작업이름</div>
+                      <div><i class="fa fa-filter"></i></div>
+                  </div>
+
+                  <div>
+                      <div>작업이름</div>
+                      <div><i class="fa fa-filter"></i></div>
+                  </div>
+
+                  <div>
+                      <div>작업이름</div>
+                      <div><i class="fa fa-filter"></i></div>
+                  </div>
+
+                  <div>
+                      <div>작업이름</div>
+                      <div><i class="fa fa-filter"></i></div>
+                  </div>
+
+                  <div>
+                      <div>작업이름</div>
+                      <div><i class="fa fa-filter"></i></div>
+                  </div>
+
+                  <div>
+                      <div>작업이름</div>
+                      <div><i class="fa fa-filter"></i></div>
+                  </div>
+
+                  <div style="border-right: none;">
+                      <div>작업이름</div>
+                      <div><i class="fa fa-filter"></i></div>
+                  </div>
+              </div>
+
+              <div class="footer_img">
+                  <img src="img/화면 캡처 2024-04-30 164511.png">
+                  <span>항목을 찾지 못했습니다</span>
+              </div>
+
+          </div>
+      </div><!--footer끝-->
+    </div><!--스토리지 section끝-->
+</div>
+</body>
+</html>

@@ -1,0 +1,213 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    background-color: #E1E1E1;
+    padding:84px;
+}
+#header{
+    background-color: #FFFFFF;
+    position: fixed;
+    top: 60px;
+    width: 95%;
+    z-index: 100;
+    height: 70px;
+    padding: 6px 1.3%;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 16px;
+    /* 네온
+    border: 0.2rem solid #fff; border-radius: 2rem; padding: 0.4em; box-shadow: 0 0 .2rem #fff, 0 0 .2rem #fff, 0 0 2rem #bc13fe, 0 0 0.8rem #bc13fe, 0 0 2.8rem #bc13fe, inset 0 0 1.3rem #bc13fe;
+    */
+}
+#header_left{
+    width: 34.1%;
+    padding: 15px;
+    /* background-color: gray;*/
+}
+#header_left>span{
+    font-size: 18px;
+    font-weight: 800;
+}
+
+
+#header_right{
+    width: 34.1%;
+    display: flex;
+    justify-content: right;
+}
+#header_right>div{
+    cursor: pointer;
+}
+#header_right>div>i{
+    font-size: 32px;
+    margin-right: 48px;
+    color: black;
+    padding: 12px 12px 11px 13px;
+    border-radius: 50%;
+}
+#header_right>div>i:hover{
+    background-color: gray;
+}
+/*중간*/
+#main_outer{
+    margin-top: 30px;
+    width: 100%;
+    height: 1000px;
+    display: flex;   
+}
+#aside{
+    width: 93.4844px;
+    position: fixed;
+    top: 163px;
+    z-index: 100;
+    height: 84%;
+    background-color: #FFFFFF;
+    border-radius: 16px;
+    padding-top: 12px;
+}
+#aside>div{
+    height: 78px;
+    padding: 21px 30px 3px 27px;
+    cursor: pointer;
+}
+#aside>div>i{
+    font-size: 32px;
+    margin-left: 5px;
+    color: rgb(114, 118, 123);
+}
+#aside>div>i:hover{
+    color: black;
+}
+#aside>div>span{
+    display: hidden;
+}
+#aside>div:last-child{
+    margin-top: 680px;
+}
+
+#main_content{
+    height: 109.3%;
+    background-color: #FFFFFF;
+    border-radius: 16px;
+    width: 97.05%;
+    margin-left: 117px;
+    margin-top: 52px;
+}
+#boxs{
+    padding: 16px 121px 16px 33px;
+    display: flex;
+    justify-content: space-between;
+    /* width: 41px; */
+    height: 15%;
+    border-bottom: 1px solid #DDDDDD;
+}
+#first_boxs{
+    display: flex;
+    width: 36%;
+    background-color: red;
+}
+#second_boxs{
+    display: flex;
+    width: 63%;
+    background-color: pink;
+}
+.box{
+    border: 1px solid black;
+    width: 34%;
+    padding: 8px 0 0 15px;
+}
+.box>span{
+    display: block;
+    font-size: 20px;
+    font-weight: 600;
+}
+.box>h1{
+    font-size: 37px;
+}
+
+/*박스끝*/
+
+#section{
+    padding: 25px 40px;
+    display: flex;
+    justify-content: space-between;
+    height: 60%;
+}
+.section_contents{
+    width: 34%;
+    border-right: 1px solid #DDDDDD;
+}
+.section_contents>h1{
+    margin-left: 17px;
+    font-size: 32px;
+}
+.graphs{
+    width: 100%;
+    background-color: pink;
+    margin: 20px 0;
+}
+.pie-chart{
+    margin-left: 192px;
+}
+/*도넛*/
+.pie-chart {
+    position: relative;
+    display: inline-block;
+    width: 256px;
+    height: 231px;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+  span.center{
+    background: white;
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 218px;
+    height: 201px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 203px;
+    font-size: 60px;
+    color: black;
+    transform: translate(-50%, -50%);
+  }
+/*도넛css끝*/
+.section_contents>span{
+    display: block;
+    font-size: 22px;
+    font-weight: 800;
+    background-color: #F9FAFF;
+    width: 391px;
+    height: 80px;
+    text-align: center;
+    padding-top: 2.5%;
+    margin-left: 60px;
+    margin-bottom: 10px;
+}
+.wave_graph>h2{
+    font-size: 24px;
+    margin-left: 13px;
+}
+/*물결그래프*/
+.wave_graph{
+    background-color: yellow;
+}
+#bar{
+    display: flex;
+}
+#bar>div{
+    font-size: 28px;
+    margin-left: 38px;
+    width: 33%;
+    font-weight: 600;
+}
+/*반응형*/
+@media (max-width:967px){
+
+}
+    

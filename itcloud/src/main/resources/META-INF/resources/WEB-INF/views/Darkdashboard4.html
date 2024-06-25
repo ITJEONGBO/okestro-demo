@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<link rel="stylesheet" href="./css/Darkdashboard4.css">
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script
+  src="https://code.jquery.com/jquery-1.12.4.js"
+  integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
+  crossorigin="anonymous">
+</script>
+<script src="./js/Darkdashboard4.js"></script>
+<body>
+    <div id="header">
+        <div id="header_right">
+            <span>OPEN VIRTUALIZATION MANAGER</span>
+        </div>
+
+        <div id="header_left">
+            <div>
+                <i class="fa fa-hdd-o"></i>
+            </div>
+            <div>
+                <i class="fa fa-bell"></i>
+            </div>
+            <div>
+                <i class="fa fa-user"></i>
+            </div>
+        </div>
+    </div>
+    <div id="main_outer">
+        
+        <div id="aside_outer">
+            <div id="aside">
+                <div id="nav">
+                    <div id="aside_popup_btn">
+                        <i class="fa fa-th-large"></i>
+                    </div>
+                    <div>
+                        <i class="fa fa-desktop"></i>
+                    </div>
+                    <div>
+                        <i class="fa fa-server"></i>
+                    </div>
+                    <div>
+                        <i class="fa fa-database"></i>
+                    </div>
+                </div>
+                <div id="setting_icon">
+                    <i class="fa fa-cog"></i>
+                </div>
+            </div><!--aside끝-->
+
+            <div id="aside_popup">
+                <div class="aside_popup_content" id="aside_popup_first">
+                    <i class="fa fa-chevron-down"></i>
+                    <i class="fa fa-building-o"></i>
+                    <span>data_center</span>
+                </div>
+                <div class="aside_popup_content" id="aside_popup_second" style="display: none;">
+                    <i class="fa fa-chevron-down"></i>
+                    <i class="fa fa-building-o"></i>
+                    <span>ITITINFO</span>
+                </div>
+                <div class="aside_popup_content" id="aside_popup_last" style="display: none;">
+                    <div>
+                        <i></i>
+                        <i class="fa fa-microchip"></i>
+                        <span>192.168.0.80</span>
+                    </div>
+                    <div>
+                        <i></i>
+                        <i class="fa fa-microchip"></i>
+                        <span>HostedEngine</span>
+                    </div>
+                    <div>
+                        <i></i>
+                        <i class="fa fa-microchip"></i>
+                        <span>on20-ap01</span>
+                    </div>
+                </div>
+            </div>
+        </div><!--aside_outer끝-->
+        <div id="section">
+            <div id="section_header">
+                <div>템플릿</div>
+            </div>
+            
+            <div id="article">
+                <div id="article_search_box">
+                    <a style="font-size: 0.35rem;">Vms:</a>
+                    <input type="text"/>
+                    <a><i class="fa fa-times"></i></a>
+                    <a><i class="fa fa-star-o"></i></a>
+                    <a><i class="fa fa-chevron-down"></i></a>
+                    <a><i class="fa fa-search"></i></a>
+                </div>
+                <div id="article_nav">
+                    <button>가져오기</button>
+                    <button id="edit_btn">편집</button>
+                    <button>삭제</button>
+                    <button id="out_btn">
+                        <span>내보내기</span>
+                        <i class="fa fa-chevron-down"></i>
+                        <div id="out_btn_popup" style="display: none;">
+                            <div style="border-bottom: 1px solid rgb(212, 212, 212);">내보내기 도메인으로 내보내기</div>
+                            <div>OVA로 내보내기</div>
+                        </div>
+                    </button>
+                    <button>새 가상머신</button>
+                </div>
+           
+            </div><!--article끝-->
+
+            <div id="content_outer">
+                <div id="content_header">
+                    <button style="border-right: 1px solid black;"><i class="fa fa-refresh"></i></button>
+                    <button><i class="fa fa-chevron-down"></i></button>
+                </div>
+
+                <div id="table_wrapper">
+                    <table border="1" width="100%">
+                        <tr>
+                            <th>이름</th>
+                            <th>버전</th>
+                            <th>코멘트</th>
+                            <th>생성 일자</th>
+                            <th>상태</th>
+                            <th>보관</th>
+                            <th>클러스터</th>
+                            <th>데이터 센터</th>
+                            <th>무언가</th>
+                        </tr>
+                        <tr>
+                            <td>Blank</td>
+                            <td></td>
+                            <td></td>
+                            <td>2008.4.1.AM 6:00:00</td>
+                            <td>OK</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Blank</td>
+                            <td></td>
+                            <td></td>
+                            <td>2008.4.1.AM 6:00:00</td>
+                            <td>OK</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Blank</td>
+                            <td></td>
+                            <td></td>
+                            <td>2008.4.1.AM 6:00:00</td>
+                            <td>OK</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
+            </div><!--content_outer끝-->
+
+            <div id="footer_outer">
+                <div id="footer">
+                    <button><i class="fa fa-chevron-down"></i></button>
+                    <div>
+                        <a>최근 작업</a>
+                        <a>경보</a>
+                    </div>
+                </div>
+                <div id="footer_content">
+    
+                    <div id="footer_nav">
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+    
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+    
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+    
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+    
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+    
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+    
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+    
+                        <div style="border-right: none;">
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+                    </div>
+    
+                    <div id="footer_img">
+                        <img src="img/화면 캡처 2024-04-30 164511.png">
+                        <span>항목을 찾지 못했습니다</span>
+                    </div>
+    
+                </div>
+            </div><!--footer끝-->
+
+        </div><!--section(중간)끝-->
+
+    </div><!--main_outer끝-->
+        
+    <script>
+        /*font-size반응형*/
+        function adjustFontSize() {
+            var width = window.innerWidth;
+            var fontSize = width / 40; // Adjust this value as needed
+
+            document.documentElement.style.fontSize = fontSize + 'px';
+        }
+
+        // Call the adjustFontSize function when the window size changes
+        window.onresize = function() {
+            adjustFontSize();
+        };
+
+        // Call the adjustFontSize function initially
+        adjustFontSize();
+
+    </script>
+
+<!--편집팝업-->
+<div id="edit_popup_bg">
+    <div id="edit_popup">
+        <div class="edit_header">
+            <h1>템플릿 수정</h1>
+            <button><i class="fa fa-times"></i></button>
+        </div>
+        <div class="edit_body">
+            <div id="edit_aside">
+                <div id="common_btn">
+                    <span>일반</span>
+                    <i class="fa fa-chevron-right"></i>
+                </div>
+                <div id="system_btn">
+                    <span>시스템</span>
+                    <i class="fa fa-chevron-right"></i>
+                </div>
+                <div id="host_btn">
+                    <span>호스트</span>
+                    <i class="fa fa-chevron-right"></i>
+                </div>
+                <div id="ha_mode_btn">
+                    <span>고가용성</span>
+                    <i class="fa fa-chevron-right"></i>
+                </div>
+                <div id="res_alloc_btn">
+                    <span>리소스 할당</span>
+                    <i class="fa fa-chevron-right"></i>
+                </div>
+                <div  id="boot_btn">
+                    <span>부트 옵션</span>
+                    <i class="fa fa-chevron-right"></i>
+                </div>
+
+            </div>
+
+            <form action="#">
+
+                <div id="common_outer">
+                    <div class="edit_first_content">
+                        <div>
+                            <label for="cluster">클러스터</label>
+                            <select id="cluster">
+                                <option value="default">Default</option>   
+                            </select>
+                            <div>데이터센터 Default</div>
+                        </div>
+                        
+                        <div>
+                            <label for="template" style="color: gray;">템플릿에 근거</label>
+                            <select id="template" disabled >
+                                <option value="test02">test02</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="os">운영 시스템</label>
+                            <select id="os">
+                                <option value="linux">Linux</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="firmware">칩셋/펌웨어 유형</label>
+                            <select id="firmware">
+                                <option value="bios">BIOS의 Q35 칩셋</option>
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 2%;">
+                            <label for="optimization">최적화 옵션</label>
+                            <select id="optimization">
+                                <option value="server">서버</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="edit_second_content">
+                        <div>
+                            <label for="name">이름</label>
+                            <input type="text" id="name" value="test02">
+                        </div>
+                        <div>
+                            <label for="base-version" style="color: gray;">하위 버전 이름</label>
+                            <input type="text" id="base-version" value="base version" disabled>
+                        </div>
+                        <div>
+                            <label for="description">설명</label>
+                            <input type="text" id="description">
+                        </div>
+                    </div>
+                </div><!--common_outer끝-->
+
+                <div id="system_outer">
+                    <div class="edit_first_content">
+                        <div>
+                            <label for="cluster">클러스터</label>
+                            <select id="cluster">
+                                <option value="default">Default</option>   
+                            </select>
+                            <div>데이터센터 Default</div>
+                        </div>
+                        
+                        <div>
+                            <label for="template" style="color: gray;">템플릿에 근거</label>
+                            <select id="template" disabled >
+                                <option value="test02">test02</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="os">운영 시스템</label>
+                            <select id="os">
+                                <option value="linux">Linux</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="firmware">칩셋/펌웨어 유형</label>
+                            <select id="firmware">
+                                <option value="bios">BIOS의 Q35 칩셋</option>
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 2%;">
+                            <label for="optimization">최적화 옵션</label>
+                            <select id="optimization">
+                                <option value="server">서버</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="edit_second_content">
+                        <div>
+                            <label for="memory_size">메모리 크기</label>
+                            <input type="text" id="memory_size" value="2048 MB" readonly>
+                        </div>
+                        <div>
+                            <div>
+                                <label for="max_memory">최대 메모리</label>
+                                <i class="fa fa-info-circle"></i>
+                            </div>
+                            <input type="text" id="max_memory" value="8192 MB" readonly>
+                        </div>
+                        
+                        <div>
+                            <div>
+                                <label for="actual_memory">할당할 실제 메모리</label>
+                                <i class="fa fa-info-circle"></i>
+                            </div>
+                            <input type="text" id="actual_memory" value="2048 MB" readonly>
+                        </div>
+                        
+                        <div>
+                            <div>
+                                <label for="total_cpu">총 가상 CPU</label>
+                                <i class="fa fa-info-circle"></i>
+                            </div>
+                            <input type="text" id="total_cpu" value="1" readonly>
+                        </div>
+                        <div>
+                            <div>
+                                <i class="fa fa-arrow-circle-o-right" style="color: rgb(56, 56, 56);"></i>
+                                <span>고급 매개 변수</span>
+                            </div>
+                        </div>
+                        <div style="font-weight: 600;">일반</div>
+                        <div style="padding-top: 0;">
+                            <div>
+                                <label for="time_offset">하드웨어 클릭의 시간 오프셋</label>
+                                <i class="fa fa-info-circle"></i>
+                            </div>
+                            <select id="time_offset">
+                                <option value="(GMT+09:00) Korea Standard Time">(GMT+09:00) Korea Standard Time</option>
+                            </select>
+                        </div>                      
+                    </div>
+                </div><!--system_outer끝-->
+
+                <div id="host_outer">
+                    <div class="edit_first_content">
+                        <div>
+                            <label for="cluster">클러스터</label>
+                            <select id="cluster">
+                                <option value="default">Default</option>   
+                            </select>
+                            <div>데이터센터 Default</div>
+                        </div>
+                        
+                        <div>
+                            <label for="template" style="color: gray;">템플릿에 근거</label>
+                            <select id="template" disabled >
+                                <option value="test02">test02</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="os">운영 시스템</label>
+                            <select id="os">
+                                <option value="linux">Linux</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="firmware">칩셋/펌웨어 유형</label>
+                            <select id="firmware">
+                                <option value="bios">BIOS의 Q35 칩셋</option>
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 2%;">
+                            <label for="optimization">최적화 옵션</label>
+                            <select id="optimization">
+                                <option value="server">서버</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="host_second_content">
+                        <div style="font-weight: 600;">실행 호스트:</div>
+                        <div class="form_checks">
+                            <div>
+                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                                <label class="form-check-label" for="flexRadioDefault1">
+                                클러스터 내의 호스트
+                                </label>
+                            </div>
+                            <div>
+                                <div>
+                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2">
+                                    <label class="form-check-label" for="flexRadioDefault2">
+                                    특정 호스트
+                                    </label>
+                                </div>
+                                <div>
+                                    <select id="specific_host_select">
+                                        <option value="host02.ititinfo.com">host02.ititinfo.com</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>                  
+                    </div>
+
+                    <div id="host_third_content">
+                        <div style="font-weight: 600;">마이그레이션 옵션:</div>
+                        <div>
+                            <div>
+                                <span>마이그레이션 모드</span>
+                                <i class="fa fa-info-circle"></i>
+                            </div>
+                            <select id="migration_mode">
+                                <option value="수동 및 자동 마이그레이션 허용">수동 및 자동 마이그레이션 허용</option>
+                            </select>
+                        </div>
+                        <div>
+                            <div>
+                                <span>마이그레이션 정책</span>
+                                <i class="fa fa-info-circle"></i>
+                            </div>
+                            <select id="migration_policy">
+                                <option value="클러스터 기본값(Minimal downtime)">클러스터 기본값(Minimal downtime)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <div>
+                                <span>마이그레이션 암호화 사용</span>
+                            </div>
+                            <select id="migration_encryption">
+                                <option value="클러스터 기본값(암호화하지 마십시오)">클러스터 기본값(암호화하지 마십시오)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <div>
+                                <span>Parallel Migrations</span>
+                                <i class="fa fa-info-circle"></i>
+                            </div>
+                            <select id="parallel_migrations"  readonly >
+                                <option value="클러스터 기본값(Disabled)">클러스터 기본값(Disabled)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <div>
+                                <span style="color: gray;">Number of VM Migration Connection</span>
+                            </div>
+                            <select id="vm_migration_connections" disabled>
+                                <option value=""></option>
+                            </select>
+                        </div>
+                        
+                    </div>
+                </div><!--host_outer끝-->
+
+
+                <div id="ha_mode_outer">
+                    <div class="edit_first_content">
+                        <div>
+                            <label for="cluster">클러스터</label>
+                            <select id="cluster">
+                                <option value="default">Default</option>   
+                            </select>
+                            <div>데이터센터 Default</div>
+                        </div>
+                        
+                        <div>
+                            <label for="template" style="color: gray;">템플릿에 근거</label>
+                            <select id="template" disabled >
+                                <option value="test02">test02</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="os">운영 시스템</label>
+                            <select id="os">
+                                <option value="linux">Linux</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="firmware">칩셋/펌웨어 유형</label>
+                            <select id="firmware">
+                                <option value="bios">BIOS의 Q35 칩셋</option>
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 2%;">
+                            <label for="optimization">최적화 옵션</label>
+                            <select id="optimization">
+                                <option value="server">서버</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="ha_mode_second_content">
+                        <div class="check_box">
+                            <input class="check_input" type="checkbox" value="" id="ha_mode_box">
+                            <label class="check_label" for="ha_mode_box">
+                              고가용성
+                            </label>
+                        </div>
+                        <div>
+                            <div>
+                                <span>가상 머신 임대 대상 스토리지 도메인</span>
+                                <i class="fa fa-info-circle"></i>
+                            </div>
+                            <select id="no_lease"  disabled>
+                                <option value="가상 머신 임대 없음">가상 머신 임대 없음</option>
+                            </select>
+                        </div>
+                        <div>
+                            <div>
+                                <span>재개 동작</span>
+                                <i class="fa fa-info-circle"></i>
+                            </div>
+                            <select id="force_shutdown">
+                                <option value="강제 종료">강제 종료</option>
+                            </select>
+                        </div>
+                        <div class="ha_mode_article">
+                            <span>실행/마이그레이션 큐에서 우선순위</span>
+                            <div>
+                                <span>우선 순위</span>
+                                <select id="priority">
+                                    <option value="낮음">낮음</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="ha_mode_article">
+                            <span>위치독</span>
+                            <div>
+                                <span>위치독 모델</span>
+                                <select id="watchdog_model">
+                                    <option value="감시 장치 없음">감시 장치 없음</option>
+                                </select>
+                            </div>
+                            <div>
+                                <span style="color: gray;">위치독 작업</span>
+                                <select id="watchdog_action" disabled>
+                                    <option value="없음">없음</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                </div><!--ha_mode_outer끝-->
+
+                <div id="res_alloc_outer">
+                    <div class="edit_first_content">
+                        <div>
+                            <label for="cluster">클러스터</label>
+                            <select id="cluster">
+                                <option value="default">Default</option>   
+                            </select>
+                            <div>데이터센터 Default</div>
+                        </div>
+                        
+                        <div>
+                            <label for="template" style="color: gray;">템플릿에 근거</label>
+                            <select id="template" disabled >
+                                <option value="test02">test02</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="os">운영 시스템</label>
+                            <select id="os">
+                                <option value="linux">Linux</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="firmware">칩셋/펌웨어 유형</label>
+                            <select id="firmware">
+                                <option value="bios">BIOS의 Q35 칩셋</option>
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 2%;">
+                            <label for="optimization">최적화 옵션</label>
+                            <select id="optimization">
+                                <option value="server">서버</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="res_second_content">
+                        <div class="cpu_res">
+                            <span style="font-weight: 600;">CPU 할당:</span>
+                            <div>
+                                <span>CPU 프로파일</span>
+                                <select id="watchdog_action">
+                                    <option value="없음">Default</option>
+                                </select>
+                            </div>
+                            <div>
+                                <span>CPU 공유</span>
+                                <div id="cpu_sharing">
+                                    <select id="watchdog_action" style="width: 63%;">
+                                        <option value="없음">비활성화됨</option>
+                                    </select>
+                                    <input type="text" value="0" disabled>
+                                </div>
+                            </div>
+                            <div>
+                                <span>CPU Pinning Policy</span>
+                                <select id="watchdog_action">
+                                    <option value="없음">None</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div>
+                                    <span>CPU 피닝 토폴로지</span>
+                                    <i class="fa fa-info-circle"></i>
+                                </div>
+                                <input type="text" disabled/>
+                            </div>
+                        </div>
+                        
+                        <span style="font-weight: 600;">I/O 스레드:</span>
+                        <div id="threads">
+                            
+                            <div>
+                                <input type="checkbox" id="enableIOThreads" name="enableIOThreads">
+                                <label for="enableIOThreads">I/O 스레드 활성화</label>
+                            </div>
+                            <div>
+                                <input type="text"/>
+                                <i class="fa fa-info-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div><!--res_alloc_outer끝-->
+
+                <div id="boot_outer">
+                    <div class="edit_first_content">
+                        <div>
+                            <label for="cluster">클러스터</label>
+                            <select id="cluster">
+                                <option value="default">Default</option>   
+                            </select>
+                            <div>데이터센터 Default</div>
+                        </div>
+                        
+                        <div>
+                            <label for="template" style="color: gray;">템플릿에 근거</label>
+                            <select id="template" disabled >
+                                <option value="test02">test02</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="os">운영 시스템</label>
+                            <select id="os">
+                                <option value="linux">Linux</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="firmware">칩셋/펌웨어 유형</label>
+                            <select id="firmware">
+                                <option value="bios">BIOS의 Q35 칩셋</option>
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 2%;">
+                            <label for="optimization">최적화 옵션</label>
+                            <select id="optimization">
+                                <option value="server">서버</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="res_second_content">
+                        <div class="cpu_res">
+                            <span style="font-weight: 600;">부트순서:</span>
+                            <div>
+                                <span>첫 번째 장치</span>
+                                <select id="watchdog_action">
+                                    <option value="없음">하드디스크</option>
+                                </select>
+                            </div>
+                            <div>
+                                <span>두 번째 장치</span>
+                                <select id="watchdog_action">
+                                    <option value="없음">Default</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        
+                        <div id="boot_checkboxs">
+                            <div>
+                                <div>
+                                    <input type="checkbox" id="connectCdDvd" name="connectCdDvd">
+                                    <label for="connectCdDvd">CD/DVD 연결</label>
+                                </div>
+                                <div>
+                                    <input type="text"disabled/>
+                                    <i class="fa fa-info-circle"></i>
+                                </div>
+                            </div>
+
+                            <div>
+                                <input type="checkbox" id="enableBootMenu" name="enableBootMenu">
+                                <label for="enableBootMenu">부팅 메뉴를 활성화</label>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                </div><!--boot_outer끝-->
+
+            </form>
+
+        </div><!--edit_body끝-->
+
+        <div id="edit_footer">
+            <button>고급 옵션 숨기기</button>
+            <button>OK</button>
+            <button>취소</button>
+        </div>
+    </div>
+
+    
+</div>
+
+</body>
+</html>

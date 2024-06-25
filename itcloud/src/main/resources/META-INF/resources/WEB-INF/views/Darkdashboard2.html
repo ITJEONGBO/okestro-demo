@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<link rel="stylesheet" href="Darkdashboard2.css">
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script
+  src="https://code.jquery.com/jquery-1.12.4.js"
+  integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
+  crossorigin="anonymous">
+</script>
+<script src="Darkdashboard2.js"></script>
+<body>
+    <div id="header">
+        <div id="header_left">
+            <i class="fa fa-bars"></i>
+            <span>OPEN VIRTUALIZATION MANAGER</span>
+        </div>
+        <div id="header_right">
+            <div>
+                <i class="fa fa-hdd-o"></i>
+            </div>
+            <div>
+                <i class="fa fa-bell"></i>
+            </div>
+            <div>
+                <i class="fa fa-user"></i>
+            </div>
+        </div>
+    </div>
+
+    <div id="section_outer">
+        <div id="aside">
+            <div id="nav">
+                <div><a class="nav_button"><i class="fa fa-cog"></i></a></div>
+                <div><a class="nav_button"><i class="fa fa-cog"></i></a></div>
+                <div><a class="nav_button"><i class="fa fa-cog"></i></a></div>
+                <div><a class="nav_button"><i class="fa fa-cog"></i></a></div>
+                <div><a class="nav_button"><i class="fa fa-cog"></i></a></div>
+            </div>
+            <div id="mini_nav">
+                <div><a class="nav_button"><i class="fa fa-cog"></i></a></div>
+            </div>
+            
+            <div id="aside_items">
+                <div class="aside_item">
+                    <i class="fa fa-cog"></i>
+                    <span>HostedEngine</span>
+                </div>
+                <div class="aside_item">
+                    <i class="fa fa-cog"></i>
+                    <span>HostedEngine</span>
+                </div>
+                <div class="aside_item">
+                    <i class="fa fa-cog"></i>
+                    <span>HostedEngine</span>
+                </div>
+                <div class="aside_item">
+                    <i class="fa fa-cog"></i>
+                    <span>HostedEngine</span>
+                </div>
+            </div>
+        </div>
+        <div id="section">
+            <div id="section_header">
+                <div>가상머신</div>
+                <button>Template</button>
+            </div>
+
+            <div id="article">
+                <div id="article_search_box">
+                    <a>Vms:</a>
+                    <input type="text"/>
+                    <a><i class="fa fa-times"></i></a>
+                    <a><i class="fa fa-star-o"></i></a>
+                    <a><i class="fa fa-chevron-down" style="font-size: 10px;"></i></a>
+                    <a><i class="fa fa-search"></i></a>
+                </div>
+                <div id="article_nav">
+                    <button>새로 만들기</button>
+                    <button>편집</button>
+                    <div>
+                        <button  style="color: #A1A1A1;">
+                            <i class="fa fa-play"></i>실행
+                        </button>
+                        <a  style="color: #A1A1A1;"><i class="fa fa-chevron-down" style="font-size: 10px;"></i></a>
+                    </div>
+                    <button><i class="fa fa-pause"></i>일시중지</button>
+                    <div>
+                        <button>
+                            <i class="fa fa-stop"></i>종료
+                        </button>
+                        <a><i class="fa fa-chevron-down" style="font-size: 10px;"></i></a>
+                    </div>
+                    <div>
+                        <button>
+                            <i class="fa fa-repeat"></i>재부팅
+                        </button>
+                        <a><i class="fa fa-chevron-down" style="font-size: 10px;"></i></a>
+                    </div>
+                    <button><i class="fa fa-desktop"></i>콘솔</button>
+                    <button>스냅샷 생성</button>
+                    <button>마이그레이션</button>
+                    <button id="popup_btn"><i class="fa fa-ellipsis-v"></i></button>
+                </div>
+                <div id="popup_box">
+                    <div>
+                        <div>가져오기</div>
+                        <div>가상 머신 복제</div>
+                    </div>
+                    <div>
+                        <div>삭제</div>
+                    </div>
+                    <div>
+                        <div>마이그레이션 취소</div>
+                        <div>변환 취소</div>
+                    </div>
+                    <div>
+                        <div>템플릿 생성</div>
+                    </div>
+                    <div style="border-bottom: none;">
+                        <div>도메인으로 내보내기</div>
+                        <div id="domain">
+                            Export to Data Domain
+
+                            <!--팝업창-->
+                            <div id="popup_layer" style="display:none">
+								<div id="popup" style="display:none">
+									
+							    </div>
+                            </div>
+
+                        </div>
+                        <div>OVA로 내보내기</div>
+                    </div>
+                </div>
+            </div><!--article끝-->
+
+            <div id="content_outer">
+                <div id="content_header">
+                    <button style="border-right: 1px solid black;"><i class="fa fa-refresh"></i></button>
+                    <button><a><i class="fa fa-chevron-down" style="font-size: 10px;"></i></a></button>
+                </div>
+                <div id="contents_section">
+                    <div class="contents_nav">
+                        <div></div>
+                        <div></div>
+                        <div>이름</div>
+                        <div>호스트</div>
+                        <div>IP주소</div>
+                        <div>FQDN</div>
+                        <div>플러스터</div>
+                        <div>데이터 센터</div>
+                        <div>메모리</div>
+                        <div>CPU</div>
+                        <div>네트워크</div>
+                        <div>상태</div>
+                        <div>업타임</div>
+                        <div>설명</div>
+                        <div style="border-right: none;">무언가</div>
+                    </div>
+                    
+                    <div class="contents_items">
+                        <div class="item">
+                            <div><i class="fa fa-caret-up" style="color: #1DED00;"></i></div>
+                            <div>d</div>
+                            <div>host</div>
+                            <div>host02.itinfo.com</div>
+                            <div>192.168,10.147</div>
+                            <div>ovirt</div>
+                            <div>Default</div>
+                            <div>Default</div>
+                            <div>메모리</div>
+                            <div>CPU</div>
+                            <div>네트워크</div>
+                            <div>상태</div>
+                            <div>업타임</div>
+                            <div>설명</div>
+                            <div style="border-right: none;">무언가</div>
+                        </div>
+
+                        <div class="item">
+                            <div><i class="fa fa-caret-up" style="color: #1DED00;"></i></div>
+                            <div>d</div>
+                            <div>host</div>
+                            <div>host02.itinfo.com</div>
+                            <div>192.168,10.147ekdkdkdk</div>
+                            <div>ovirt</div>
+                            <div>Default</div>
+                            <div>Default</div>
+                            <div>메모리</div>
+                            <div>CPU</div>
+                            <div>네트워크</div>
+                            <div>상태</div>
+                            <div>업타임</div>
+                            <div>설명</div>
+                            <div style="border-right: none;">무언가</div>
+                        </div>
+
+                        <div class="item">
+                            <div><i class="fa fa-caret-down" style="color: red;"></i></div>
+                            <div>d</div>
+                            <div>host</div>
+                            <div>host02.itinfo.com</div>
+                            <div>192.168,10.147ekdkdkdk</div>
+                            <div>ovirt</div>
+                            <div>Default</div>
+                            <div>Default</div>
+                            <div>메모리</div>
+                            <div>CPU</div>
+                            <div>네트워크</div>
+                            <div>상태</div>
+                            <div>업타임</div>
+                            <div>설명</div>
+                            <div style="border-right: none;">무언가</div>
+                        </div>
+
+                        <div class="item">
+                            <div><i class="fa fa-caret-down" style="color: red;"></i></div>
+                            <div>d</div>
+                            <div>host</div>
+                            <div>host02.itinfo.com</div>
+                            <div>192.168,10.147ekdkdkdk</div>
+                            <div>ovirt</div>
+                            <div>Default</div>
+                            <div>Default</div>
+                            <div>메모리</div>
+                            <div>CPU</div>
+                            <div>네트워크</div>
+                            <div>상태</div>
+                            <div>업타임</div>
+                            <div>설명</div>
+                            <div style="border-right: none;">무언가</div>
+                        </div>
+
+                        <div class="item">
+                            <div><i class="fa fa-caret-down" style="color: red;"></i></div>
+                            <div>d</div>
+                            <div>host</div>
+                            <div>host02.itinfo.com</div>
+                            <div>192.168,10.147ekdkdkdk</div>
+                            <div>ovirt</div>
+                            <div>Default</div>
+                            <div>Default</div>
+                            <div>메모리</div>
+                            <div>CPU</div>
+                            <div>네트워크</div>
+                            <div>상태</div>
+                            <div>업타임</div>
+                            <div>설명</div>
+                            <div style="border-right: none;">무언가</div>
+                        </div>
+
+                        <div class="item">
+                            <div><i class="fa fa-caret-down" style="color: red;"></i></div>
+                            <div>d</div>
+                            <div>host</div>
+                            <div>host02.itinfo.com</div>
+                            <div>192.168,10.147ekdkdkdk</div>
+                            <div>ovirt</div>
+                            <div>Default</div>
+                            <div>Default</div>
+                            <div>메모리</div>
+                            <div>CPU</div>
+                            <div>네트워크</div>
+                            <div>상태</div>
+                            <div>업타임</div>
+                            <div>설명</div>
+                            <div style="border-right: none;">무언가</div>
+                        </div>
+
+                        <div class="item">
+                            <div><i class="fa fa-caret-down" style="color: red;"></i></div>
+                            <div>d</div>
+                            <div>host</div>
+                            <div>host02.itinfo.com</div>
+                            <div>192.168,10.147ekdkdkdk</div>
+                            <div>ovirt</div>
+                            <div>Default</div>
+                            <div>Default</div>
+                            <div>메모리</div>
+                            <div>CPU</div>
+                            <div>네트워크</div>
+                            <div>상태</div>
+                            <div>업타임</div>
+                            <div>설명</div>
+                            <div style="border-right: none;">무언가</div>
+                        </div>
+                        
+                        <div class="item">
+                            <div><i class="fa fa-caret-down" style="color: red;"></i></div>
+                            <div>d</div>
+                            <div>host</div>
+                            <div>host02.itinfo.com</div>
+                            <div>192.168,10.147ekdkdkdk</div>
+                            <div>ovirt</div>
+                            <div>Default</div>
+                            <div>Default</div>
+                            <div>메모리</div>
+                            <div>CPU</div>
+                            <div>네트워크</div>
+                            <div>상태</div>
+                            <div>업타임</div>
+                            <div>설명</div>
+                            <div style="border-right: none;">무언가</div>
+                        </div>
+
+                        <div class="item">
+                            <div><i class="fa fa-caret-down" style="color: red;"></i></div>
+                            <div>d</div>
+                            <div>host</div>
+                            <div>host02.itinfo.com</div>
+                            <div>192.168,10.147ekdkdkdk</div>
+                            <div>ovirt</div>
+                            <div>Default</div>
+                            <div>Default</div>
+                            <div>메모리</div>
+                            <div>CPU</div>
+                            <div>네트워크</div>
+                            <div>상태</div>
+                            <div>업타임</div>
+                            <div>설명</div>
+                            <div style="border-right: none;">무언가</div>
+                        </div>
+
+                        <ul class="contextmenu">
+                            <li><a href="#">새로 만들기</a></li>
+                            <li><a href="#">편집</a></li>
+                            <li><a href="#">실행</a></li>
+                            <li><a href="#">일시중지</a></li>
+                            <li><a href="#">종료</a></li>
+                            <li><a href="#">전원 끔</a></li>
+                            <li><a href="#">재부팅</a></li>
+                            <li><a href="#">재설정</a></li>
+                            <li><a href="#">마이그레이션</a></li>
+                            <li><a href="#">콘솔</a></li>
+                            <li><a href="#">스냅샷 생성</a></li>
+                          </ul>
+
+
+                    </div><!--contents_items끝-->
+                    
+                    
+                </div>
+            </div>
+
+        </div>
+
+        <div id="footer_outer">
+            <div id="footer">
+                <button><i class="fa fa-chevron-down" style="font-size: 13px;"></i></button>
+                <div>
+                    <a>최근 작업</a>
+                    <a>경보</a>
+                </div>
+            </div>
+            <div id="footer_content">
+
+                <div id="footer_nav">
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+
+                    <div>
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+
+                    <div style="border-right: none;">
+                        <div>작업이름</div>
+                        <div><i class="fa fa-filter"></i></div>
+                    </div>
+                </div>
+
+                <div id="footer_img">
+                    <img src="img/화면 캡처 2024-04-30 164511.png">
+                    <span>항목을 찾지 못했습니다</span>
+                </div>
+
+            </div>
+        </div><!--footer_outer끝-->
+    </div>
+    
+
+</body>
+</html>

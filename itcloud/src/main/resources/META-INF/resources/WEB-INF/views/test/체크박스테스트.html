@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    #template_article_footer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+</style>
+<body>
+    <div id="template_article_footer">
+        <div class="checkbox-group">
+            <input type="checkbox" id="template_checkbox"/>
+            <label for="template_checkbox">모든 사용자에게 이 템플릿 접근을 허용</label>
+        </div>
+        <div class="checkbox-group">
+            <input type="checkbox" id="template_checkbox2"/>
+            <label for="template_checkbox2">가상 머신 권한 복사</label>
+        </div>
+    </div>
+    
+</body>
+</html>

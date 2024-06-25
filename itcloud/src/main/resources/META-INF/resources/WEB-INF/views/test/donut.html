@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-circle-progress/1.2.2/circle-progress.min.js"></script>
+<style>
+    .graph-wrap{
+    display:flex;
+    gap: 50px;
+}
+.circle-graph {
+    position:relative;
+}
+.circle-graph > strong {
+    position:absolute; 
+    top:50%; 
+    left:50%; 
+    transform:translate(-50%, -50%);
+    font-size:2rem;
+}
+
+</style>
+<body>
+    <div class="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
+        <div class="circle-graph1 circle-graph"> <!-- 클래스명 수정 -->
+            <strong class="circle-percent"></strong>
+        </div>
+    </div>
+    <div class="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
+        <div class="circle-graph2 circle-graph"> <!-- 클래스명 수정 -->
+            <strong class="circle-percent"></strong>
+        </div>
+    </div>
+</body>
+<script>
+$(window).ready(function() {
+    createCircleGraph('.circle-graph1', 70);
+    createCircleGraph('.circle-graph2', 30);
+});
+
+function createCircleGraph(classname, perNum) {
+    let circleGraph = $(classname);
+    circleGraph.circleProgress({
+        size: 200, // 그래프 크기
+        value: perNum / 100, // 그래프에 표시될 값
+        startAngle: 300, // 시작지점
+        thickness: 10, // 그래프 두께
+        fill: { // 그래프 선 색
+            gradient: ["red", "yellow", "green"],
+            gradientAngle: Math.PI / 2
+        },
+        animation: {
+            duration: 2200,
+            easing: "swing"
+        },
+        lineCap: "butt", // 그래프 선 모양
+        reverse: true // 그래프가 진행되는 방향
+    }).on('circle-animation-progress', function(event, progress) {
+        // 그래프 애니메이션이 진행되는 동안
+        // progress - 현재 진행 상태 0.0 ~ 1.0
+        $(this).find('.circle-percent').html(Math.round(perNum * progress) + '<i>%</i>');
+    });
+}
+</script>
+</html>

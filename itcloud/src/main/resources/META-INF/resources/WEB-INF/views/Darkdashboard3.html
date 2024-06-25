@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<link rel="stylesheet" href="./css/Darkdashboard3.css">
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script
+  src="https://code.jquery.com/jquery-1.12.4.js"
+  integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
+  crossorigin="anonymous">
+</script>
+<script src="./js/Darkdashboard3.js"></script>
+<body>
+    <div id="header">
+        <div id="header_right">
+            <span>OPEN VIRTUALIZATION MANAGER</span>
+        </div>
+
+        <div id="header_left">
+            <div>
+                <i class="fa fa-hdd-o"></i>
+            </div>
+            <div>
+                <i class="fa fa-bell"></i>
+            </div>
+            <div>
+                <i class="fa fa-user"></i>
+            </div>
+        </div>
+    </div>
+
+    <div id="main_outer">
+        
+        <div id="aside_outer">
+            <div id="aside">
+                <div id="nav">
+                    <div id="aside_popup_btn">
+                        <i class="fa fa-th-large"></i>
+                    </div>
+                    <div>
+                        <i class="fa fa-desktop"></i>
+                    </div>
+                    <div>
+                        <i class="fa fa-server"></i>
+                    </div>
+                    <div>
+                        <i class="fa fa-database"></i>
+                    </div>
+                </div>
+                <div id="setting_icon">
+                    <i class="fa fa-cog"></i>
+                </div>
+            </div><!--aside끝-->
+
+            <div id="aside_popup">
+                <div class="aside_popup_content" id="aside_popup_first">
+                    <i class="fa fa-chevron-down"></i>
+                    <i class="fa fa-building-o"></i>
+                    <span>data_center</span>
+                </div>
+                <div class="aside_popup_content" id="aside_popup_second" style="display: none;">
+                    <i class="fa fa-chevron-down"></i>
+                    <i class="fa fa-building-o"></i>
+                    <span>ITITINFO</span>
+                </div>
+                <div class="aside_popup_content" id="aside_popup_last" style="display: none;">
+                    <div>
+                        <i></i>
+                        <i class="fa fa-microchip"></i>
+                        <span>192.168.0.80</span>
+                    </div>
+                    <div>
+                        <i></i>
+                        <i class="fa fa-microchip"></i>
+                        <span>HostedEngine</span>
+                    </div>
+                    <div>
+                        <i></i>
+                        <i class="fa fa-microchip"></i>
+                        <span>on20-ap01</span>
+                    </div>
+                </div>
+                
+            </div>
+        </div><!--aside_outer끝-->
+
+        <div id="section">
+            <div id="section_header">
+                <div>가상머신</div>
+                <div>Template</div>
+            </div>
+            
+            <div id="article">
+                <div id="article_search_box">
+                    <a style="font-size: 0.35rem;">Vms:</a>
+                    <input type="text"/>
+                    <a><i class="fa fa-times"></i></a>
+                    <a><i class="fa fa-star-o"></i></a>
+                    <a><i class="fa fa-chevron-down"></i></a>
+                    <a><i class="fa fa-search"></i></a>
+                </div>
+                <div id="article_nav">
+                    <button>새로 만들기</button>
+                    <button>편집</button>
+                    <div>
+                        <button  style="color: #A1A1A1;">
+                            <i class="fa fa-play"></i>실행
+                        </button>
+                       
+                    </div>
+                    <button><i class="fa fa-pause"></i>일시중지</button>
+                    <div>
+                        <button>
+                            <i class="fa fa-stop"></i>종료
+                        </button>
+                       
+                    </div>
+                    <div>
+                        <button>
+                            <i class="fa fa-repeat"></i>재부팅
+                        </button>
+                        
+                    </div>
+                    <button><i class="fa fa-desktop"></i>콘솔</button>
+                    <button>스냅샷 생성</button>
+                    <button id="migration_btn">마이그레이션</button>
+                    <button id="popup_btn">
+                        <i class="fa fa-ellipsis-v"></i>
+                        <div id="popup_box">
+                            <div>
+                                <div class="get_btn">가져오기</div>
+                                <div class="get_btn">가상 머신 복제</div>
+                            </div>
+                            <div>
+                                <div>삭제</div>
+                            </div>
+                            <div>
+                                <div>마이그레이션 취소</div>
+                                <div>변환 취소</div>
+                            </div>
+                            <div>
+                                <div id="template_btn">템플릿 생성</div>
+                            </div>
+                            <div style="border-bottom: none;">
+                                <div id="domain2">도메인으로 내보내기</div>
+                                <div id="domain">Export to Data Domai</div>
+                                <div id="ova_btn">OVA로 내보내기</div>
+                            </div>
+                        </div>
+                        
+                                    
+                    </button>
+                </div>
+           
+            </div><!--article끝-->
+
+            <div id="content_outer">
+                <div id="content_header">
+                    <button style="border-right: 1px solid black;"><i class="fa fa-refresh"></i></button>
+                    <button><i class="fa fa-chevron-down"></i></button>
+                </div>
+
+                <div id="table_wrapper">
+                    <table border="1" width="100%">
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th>이름</th>
+                            <th>호스트</th>
+                            <th>IP주소</th>
+                            <th>FQDN</th>
+                            <th>클러스터</th>
+                            <th>데이터 센터</th>
+                            <th>메모리</th>
+                            <th>CPU</th>
+                            <th>네트워크</th>
+                            <th>상태</th>
+                            <th>업타임</th>
+                            <th>설명</th>
+                            <th>무언가</th>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-caret-up" style="color: #1DED00;"></i></td>
+                            <td><i class="fa fa-desktop"></i></td>
+                            <td>host</td>
+                            <td>host03.itinfo.com</td>
+                            <td>192.168,10.147ekdkdkdk</td>
+                            <td>ovirt</td>
+                            <td>Default</td>
+                            <td>Default</td>
+                            <td>메모리</td>
+                            <td>CPU</td>
+                            <td>네트워크</td>
+                            <td>상태</td>
+                            <td>업타임</td>
+                            <td>설명</td>
+                            <td>무언가</td>
+                            
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-caret-up" style="color: #1DED00;"></i></td>
+                            <td><i class="fa fa-desktop"></i></td>
+                            <td>host</td>
+                            <td>host02.itinfo.com</td>
+                            <td>192.168,10.147ekdkdkdk</td>
+                            <td>ovirt</td>
+                            <td>Default</td>
+                            <td>Default</td>
+                            <td>메모리</td>
+                            <td>CPU</td>
+                            <td>네트워크</td>
+                            <td>상태</td>
+                            <td>업타임</td>
+                            <td>설명</td>
+                            <td>무언가</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-caret-down" style="color: red;"></td>
+                            <td><i class="fa fa-desktop"></i></td>
+                            <td>host</td>
+                            <td>host02.itinfo.com</td>
+                            <td>192.168,10.147ekdkdkdk</td>
+                            <td>ovirt</td>
+                            <td>Default</td>
+                            <td>Default</td>
+                            <td>메모리</td>
+                            <td>CPU</td>
+                            <td>네트워크</td>
+                            <td>상태</td>
+                            <td>업타임</td>
+                            <td>설명</td>
+                            <td>무언가</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-caret-down" style="color: red;"></td>
+                            <td><i class="fa fa-desktop"></i></td>
+                            <td>host</td>
+                            <td>host02.itinfo.com</td>
+                            <td>192.168,10.147ddddd</td>
+                            <td>ovirt</td>
+                            <td>Default</td>
+                            <td>Default</td>
+                            <td>메모리</td>
+                            <td>CPU</td>
+                            <td>네트워크</td>
+                            <td>상태</td>
+                            <td>업타임</td>
+                            <td>설명</td>
+                            <td>무언가</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-caret-down" style="color: red;"></td>
+                            <td><i class="fa fa-desktop"></i></td>
+                            <td>host</td>
+                            <td>host02.itinfo.com</td>
+                            <td>192.168,10.147ddddd</td>
+                            <td>ovirt</td>
+                            <td>Default</td>
+                            <td>Default</td>
+                            <td>메모리</td>
+                            <td>CPU</td>
+                            <td>네트워크</td>
+                            <td>상태</td>
+                            <td>업타임</td>
+                            <td>설명</td>
+                            <td>무언가</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-caret-down" style="color: red;"></td>
+                            <td><i class="fa fa-desktop"></i></td>
+                            <td>host</td>
+                            <td>host02.itinfo.com</td>
+                            <td>192.168,10.147ddddd</td>
+                            <td>ovirt</td>
+                            <td>Default</td>
+                            <td>Default</td>
+                            <td>메모리</td>
+                            <td>CPU</td>
+                            <td>네트워크</td>
+                            <td>상태</td>
+                            <td>업타임</td>
+                            <td>설명</td>
+                            <td>무언가</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-caret-down" style="color: red;"></td>
+                            <td><i class="fa fa-desktop"></i></td>
+                            <td>host</td>
+                            <td>host02.itinfo.com</td>
+                            <td>192.168,10.147ddddd</td>
+                            <td>ovirt</td>
+                            <td>Default</td>
+                            <td>Default</td>
+                            <td>메모리</td>
+                            <td>CPU</td>
+                            <td>네트워크</td>
+                            <td>상태</td>
+                            <td>업타임</td>
+                            <td>설명</td>
+                            <td>무언가</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-caret-down" style="color: red;"></td>
+                            <td><i class="fa fa-desktop"></i></td>
+                            <td>host</td>
+                            <td>host02.itinfo.com</td>
+                            <td>192.168,10.147ddddd</td>
+                            <td>ovirt</td>
+                            <td>Default</td>
+                            <td>Default</td>
+                            <td>메모리</td>
+                            <td>CPU</td>
+                            <td>네트워크</td>
+                            <td>상태</td>
+                            <td>업타임</td>
+                            <td>설명</td>
+                            <td>무언가</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-caret-down" style="color: red;"></td>
+                            <td><i class="fa fa-desktop"></i></td>
+                            <td>host</td>
+                            <td>host02.itinfo.com</td>
+                            <td>192.168,10.147ddddd</td>
+                            <td>ovirt</td>
+                            <td>Default</td>
+                            <td>Default</td>
+                            <td>메모리</td>
+                            <td>CPU</td>
+                            <td>네트워크</td>
+                            <td>상태</td>
+                            <td>업타임</td>
+                            <td>설명</td>
+                            <td>무언가</td>
+                        </tr>
+                    </table>
+                </div>
+            </div><!--content_outer끝-->
+
+            <div id="footer_outer">
+                <div id="footer">
+                    <button><i class="fa fa-chevron-down"></i></button>
+                    <div>
+                        <a>최근 작업</a>
+                        <a>경보</a>
+                    </div>
+                </div>
+                <div id="footer_content">
+    
+                    <div id="footer_nav">
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+    
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+    
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+    
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+    
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+    
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+    
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+    
+                        <div style="border-right: none;">
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+                    </div>
+    
+                    <div id="footer_img">
+                        <img src="img/화면 캡처 2024-04-30 164511.png">
+                        <span>항목을 찾지 못했습니다</span>
+                    </div>
+    
+                </div>
+            </div><!--footer끝-->
+
+        </div><!--section(중간)끝-->
+        
+    </div>
+    
+<!--팝업창들-->
+<!--가져오기-->
+<div id="get_popup_bg">
+    <div id="get_popup">
+        <div class="domain_header">
+            <h1>가상머신 가져오기</h1>
+            <button><i class="fa fa-times"></i></button>
+        </div>
+
+        <div id="get_article1">
+            <div>
+                <label for="center">데이터 센터</label>
+                <select name="data_center" id="center">
+                    <option value="javascript">Default</option>
+                    <option value="php">PHP</option>
+                    <option value="java">Java</option>
+                </select>
+                
+            </div>
+            <div>
+                <label for="source">소스</label>
+                <select name="data_source" id="source">
+                    <option value="javascript">가상 어플라이언스(OVA)</option>
+                    <option value="php">PHP</option>
+                    <option value="java">Java</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div id="get_article2">
+            <div>
+                <label for="get_host">호스트</label>
+                <select name="get_popup_host" id="get_host">
+                    <option value="javascript">host01.ititinfo.com</option>
+                    <option value="php">PHP</option>
+                    <option value="java">Java</option>
+                </select>
+            </div>
+            <div id="file_path">
+                <div>
+                    <span>파일경로</span>
+                    <i class="fa fa-info-circle" style="color: blue;"></i>
+                </div>
+                <input type="text"/>
+            </div>
+
+            <button>로드</button>
+
+            <div id="get_article3">
+                <div class="get_boxs">
+                    <span>소스 상의 가상 머신</span>
+                    <div class="get_box">
+                        <div>
+                            <input type="checkbox" id="get_name_source">
+                            <label for="get_name_source">이름</label>
+                        </div>
+                        <div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <i class="fa fa-arrow-right"></i>
+                    <i class="fa fa-arrow-left"></i>
+                </div>
+
+                <div>
+                    <span>가져오기할 가상 머신</span>
+                    <div class="get_box">
+                        <div>
+                            <input type="checkbox" id="get_name_source">
+                            <label for="get_name_source">이름</label>
+                        </div>
+                        <div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div><!--get-article2끝-->
+
+        <div id="get_footer">
+            <div >
+                <button>다음</button>
+                <button id="get_footer_btn">취소</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!--템플릿 생성-->
+<div id="template_bg">
+    <div id="template_popup">
+        <div class="domain_header">
+            <h1>새 템플릿</h1>
+            <button><i class="fa fa-times"></i></button>
+        </div>
+
+        <div id="template_article_outer">
+            <div class="template_content">
+                <span>이름</span>
+                <input type="text"/>
+            </div>
+
+            <div class="template_content">
+                <span>설명</span>
+                <input type="text"/>
+            </div>
+
+            <div class="template_content">
+                <span>코멘트</span>
+                <input type="text"/>
+            </div>
+
+            <div class="template_content">
+                <label for="lang" style="font-size: 0.36rem;">클러스터</label>
+                <select name="languages" id="lang">
+                    <option value="javascript">JavaScript</option>
+                    <option value="php">PHP</option>
+                    <option value="java">Java</option>
+                </select>
+            </div>
+
+            <div class="template_content">
+                <label for="lang" style="font-size: 0.36rem;">CPU프로파일</label>
+                <select name="languages" id="lang">
+                    <option value="javascript">JavaScript</option>
+                    <option value="php">PHP</option>
+                    <option value="java">Java</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="template_article_outer2">
+            <span>디스크할당 :</span>
+
+            <div id="template_boxs">
+                <div id="template_boxs_header">
+                    <div>별칭</div>
+                    <div>가상 크기</div>
+                    <div>포맷</div>
+                    <div>대상</div>
+                    <div>디스크 프로파일</div>
+                </div>
+                
+                <div id="template_boxs_nav">
+                    <div>on20-ap02</div>
+                    <div>200 GIB</div>
+                    
+                        <select name="languages" id="lang">
+                            <option value="javascript">JavaScript</option>
+                            <option value="php">PHP</option>
+                            <option value="java">Java</option>
+                        </select>
+                    
+                        <select name="languages" id="lang">
+                            <option value="javascript">JavaScript</option>
+                            <option value="php">PHP</option>
+                            <option value="java">Java</option>
+                        </select>
+                    
+                    
+                        <select name="languages" id="lang">
+                            <option value="javascript">JavaScript</option>
+                            <option value="php">PHP</option>
+                            <option value="java">Java</option>
+                        </select>
+                    
+                    
+                </div>
+            </div>
+
+            <div id="template_article_footer">
+                <div class="checkbox-group">
+                    <div>
+                        <input type="checkbox" id="template_checkbox"/>
+                        <label for="template_checkbox">모든 사용자에게 이 템플릿 접근을 허용</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="template_checkbox2"/>
+                        <label for="template_checkbox2">가상 머신 권한 복사</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+      
+        <div id="template_footer">
+            <div>
+                <button>OK</button>
+                <button id="template_footer_btn">취소</button>
+            </div>
+        </div>
+            
+
+    </div>
+</div>
+<!--Export to Data Domain-->
+<div id="popup_bg">
+    <div id="domain_popup">
+        <div class="domain_header">
+            <h1>가상머신 내보내기</h1>
+            <button><i class="fa fa-times"></i></button>
+        </div>
+        <div id="domain_article_outer">
+            <div class="domain_article">
+                <div>가상 머신 이름</div>
+                <div style="background-color: #EDEDED;">on20-ap02</div>
+            </div>
+            <div class="domain_article">
+                <div>내보내기된 가상 머신 이름</div>
+                <div>on20-ap02</div>
+            </div>
+            <div class="domain_article">
+                <label for="lang" style="font-size: 0.36rem;">스토리지 도메인</label>
+                <select name="languages" id="lang">
+                    <option value="javascript">JavaScript</option>
+                    <option value="php">PHP</option>
+                    <option value="java">Java</option>
+                </select>
+            </div>
+            <div id="domain_checkbox">
+                <input type="checkbox" id="snapshot">
+                <label for="snapshot">스냅샷 축소</label>
+            </div>
+            <div id="domain_footer">
+                <a>Export to Data Domain</a>
+                <a>취소</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--도메인으로 내보내기-->
+<div id="popup_bg2">
+    <div id="domain_popup2">
+        <div class="domain_header">
+            <h1>가상머신 내보내기</h1>
+            <button><i class="fa fa-times"></i></button>
+        </div>
+        <div id="domain2_article_outer">
+
+            <div id="domain2_checkboxs">
+                <div>
+                    <input type="checkbox" id="coercion">
+                    <label for="coercion">강제 적용</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="snapshot2">
+                    <label for="snapshot2">스냅샷 축소</label>
+                </div>
+            </div>
+
+            <div id="warning">
+                <i class="fa fa-ban"></i>
+                <div>
+                    가상머신을 백업할 내보내기 도메인이 없습니다.<br>가상머신의 데이터 센터에 내보내기 도메인을 연결하십시오.
+                </div>
+            </div>
+
+        </div>
+
+        <div id="domain2_footer">
+            <button>종료</button>
+        </div>
+    </div>
+</div>
+
+<!--마이그레이션-->
+<div id="migration_popup_outer">
+    <div id="migration_popup">
+        <div class="domain_header">
+            <h1>가상머신 마이그레이션</h1>
+            <button><i class="fa fa-times"></i></button>
+        </div>
+        <div id="migration_article_outer">
+            <span>1대의 가상 머신이 마이그레이션되는 호스트를 선택하십시오.</span>
+            <div id="migration_article">
+                <div>
+                    <div id="migration_dropdown">
+                        <label for="host">대상 호스트 <i class="fa fa-info-circle"></i></label>
+                        <select name="host_dropdown" id="host">
+                            <option value="">호스트 자동 선택</option>
+                            <option value="">PHP</option>
+                            <option value="">Java</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <div>가상머신</div>
+                    <div>on20-ap02</div>
+                </div>
+            </div>
+            <div id="migration_footer">
+                <a>마이그레이션</a>
+                <a>취소</a>
+            </div>
+        </div>
+    </div>
+</div> 
+
+
+<!--OVA로 내보내기-->
+<div id="ova_outer">
+    <div id="ova_popup">
+
+        <div class="domain_header">
+            <h1>가상 어플라이언스로 가상 머신 내보내기</h1>
+            <button><i class="fa fa-times"></i></button>
+        </div>
+
+        <div id="ova_article_outer">
+
+            <div id="ova_dropdown">
+                <label for="ova_host">호스트</label>
+                <select name="ova_host_dropdown" id="ova_host">
+                    <option value="">host01.ititinfo.com</option>
+                    <option value="">PHP</option>
+                    <option value="">Java</option>
+                </select>
+            </div>
+
+            <div>
+                <span>디렉토리</span>
+                <input type="text">
+            </div>
+
+            <div>
+                <span>이름</span>
+                <div>on20-ap02.ova</div>
+            </div>
+        </div>
+
+        <div id="ova_footer">
+            <button>OK</button>
+            <button>취소</button>
+        </div>
+
+    </div>
+</div>
+
+
+    <script>
+        /*font-size반응형*/
+        function adjustFontSize() {
+            var width = window.innerWidth;
+            var fontSize = width / 40; // Adjust this value as needed
+
+            document.documentElement.style.fontSize = fontSize + 'px';
+        }
+
+        // Call the adjustFontSize function when the window size changes
+        window.onresize = function() {
+            adjustFontSize();
+        };
+
+        // Call the adjustFontSize function initially
+        adjustFontSize();
+
+    </script>
+</body>
+</html>
