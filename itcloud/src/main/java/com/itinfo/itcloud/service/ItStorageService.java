@@ -16,7 +16,6 @@ import java.util.List;
 @Service
 public interface ItStorageService {
 
-    // region: disk
     List<DiskVo> getDiskList(String dcId);    // 디스크 리스트
 
     // 가상 디스크 생성
@@ -24,9 +23,9 @@ public interface ItStorageService {
     CommonVo<Boolean> addDiskImage(ImageCreateVo image);    // 디스크-이미지: 생성
     CommonVo<Boolean> editDiskImage(ImageCreateVo image);   // 디스크-이미지: 수정
 
-    LunCreateVo setDiskLun(String dcId);     // 디스크-lun: 생성 창
-    CommonVo<Boolean> addDiskLun(LunCreateVo lun);      // 디스크-lun: 생성
-    CommonVo<Boolean> editDiskLun(LunCreateVo lun);     // 디스크-lun: 수정
+//    LunCreateVo setDiskLun(String dcId);     // 디스크-lun: 생성 창
+//    CommonVo<Boolean> addDiskLun(LunCreateVo lun);      // 디스크-lun: 생성
+//    CommonVo<Boolean> editDiskLun(LunCreateVo lun);     // 디스크-lun: 수정
 
 
     // 가상 디스크 생성 - 관리되는 블록 제외
@@ -39,16 +38,11 @@ public interface ItStorageService {
 
 
     CommonVo<Boolean> uploadDisk(MultipartFile file, ImageCreateVo image) throws IOException;     // 디스크 업로드 시작
-    CommonVo<Boolean> cancelUpload(String diskId); // 업로드 취소
-    CommonVo<Boolean> pauseUpload(String diskId);  // 업로드 일시정지
-    CommonVo<Boolean> resumeUpload(String diskId); // 업로드 재시작
+//    CommonVo<Boolean> cancelUpload(String diskId); // 업로드 취소
+//    CommonVo<Boolean> pauseUpload(String diskId);  // 업로드 일시정지
+//    CommonVo<Boolean> resumeUpload(String diskId); // 업로드 재시작
+//    CommonVo<Boolean> downloadDisk();               // 디스크 다운로드
 
-    CommonVo<Boolean> downloadDisk();               // 디스크 다운로드
-
-    // endregion
-
-
-    // region: domain
 
     List<DomainVo> getDomainList(String dcId);    // 도메인 리스트
 
@@ -57,28 +51,11 @@ public interface ItStorageService {
 //    CommonVo<Boolean> manageDomain();   // 관리
     CommonVo<Boolean> deleteDomain(String domainId);   // 삭제
 
-    // endregion
 
-
-    // region: volume
-
-    List<VolumeVo> getVolumeVoList(String dcId);   // 나중에
-
-    // endregion
-
-
-    // region: volume
 
     List<DomainVo> getStorageList(String dcId);    // 스토리지 리스트(이게 dc있는거)
-
-    // endregion
-
-
     List<NetworkVo> getNetworkVoList(String dcId);
-
     List<ClusterVo> getClusterVoList(String dcId);
-
     List<PermissionVo> getPermission(String dcId);
-
     List<EventVo> getEvent(String id);
 }

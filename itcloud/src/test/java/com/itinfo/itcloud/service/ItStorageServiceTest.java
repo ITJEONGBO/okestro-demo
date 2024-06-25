@@ -1,13 +1,13 @@
 package com.itinfo.itcloud.service;
 
 import com.itinfo.itcloud.model.error.CommonVo;
+import com.itinfo.itcloud.model.storage.DiskVo;
 import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.model.storage.ImageCreateVo;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,16 +24,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ItStorageServiceTest {
     @Autowired ItStorageService storageService;
 
-    String dcId = "9c72ff12-a5f3-11ee-941d-00163e39cb43";
+    String dcId = "ae1d4138-f642-11ee-9c1b-00163e4b3128";
 
     @Test
     @DisplayName("디스크 목록 출력")
-    @Order(1)
     void getDiskList() {
-        System.out.println("개수: " + storageService.getDiskList(dcId).size());
-        System.out.println(storageService.getDiskList(dcId));
+        List<DiskVo> result = storageService.getDiskList(dcId);
 
-        assertThat(36).isEqualTo(storageService.getDiskList(dcId).size());
+        result.stream()
+                .map(DiskVo::getAlias)
+                .forEach(System.out::println);
+
+        result.stream()
+                .map(DiskVo::getConnection)
+                .forEach(System.out::println);
+
+        assertThat(storageService.getDiskList(dcId).size()).isEqualTo(32);
     }
 
     @Test
@@ -89,23 +95,11 @@ class ItStorageServiceTest {
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
-    @Test
-    void setDiskLun() {
-    }
-
-    @Test
-    void addDiskLun() {
-    }
-
-    @Test
-    void editDiskLun() {
-    }
 
     @Test
     @DisplayName("디스크 이미지 삭제")
     void deleteDisk() {
         String diskId = "865386fc-350b-4d90-8b64-60c27b45068a";
-
         CommonVo<Boolean> result = storageService.deleteDisk(diskId);
 
         assertThat(result.getHead().getCode()).isEqualTo(200);
@@ -156,25 +150,11 @@ class ItStorageServiceTest {
 
     }
 
-    @Test
-    void cancelUpload() {
-    }
 
     @Test
-    void pauseUpload() {
-    }
-
-    @Test
-    void resumeUpload() {
-    }
-
-    @Test
-    void downloadDisk() {
-    }
-
-    @Test
+    @DisplayName("스토리지 도메인 목록")
     void getDomainList() {
-        String dcId = "9c72ff12-a5f3-11ee-941d-00163e39cb43";
+        String dcId = "ae1d4138-f642-11ee-9c1b-00163e4b3128";
         List<DomainVo> result = storageService.getDomainList(dcId);
         result.forEach(System.out::println);
     }

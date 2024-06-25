@@ -140,14 +140,6 @@ public class StorageController {
 
 
 
-	// 데이터센터 {id}/volumes
-	@GetMapping("/{dcId}/volumes")
-	@ResponseBody
-	public List<VolumeVo> volumes(@PathVariable("dcId") String dcId){
-		log.info("--- Domain 목록");
-		return storageService.getVolumeVoList(dcId);
-	}
-
 	@GetMapping("/{dcId}/storages")
 	@ResponseBody
 	public List<DomainVo> storages(@PathVariable("dcId") String dcId){

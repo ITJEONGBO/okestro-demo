@@ -1,9 +1,9 @@
 package com.itinfo.itcloud.service.impl;
 
+import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.TypeExtKt;
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
-import com.itinfo.itcloud.model.computing.HostVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.create.DomainSetVo;
 import com.itinfo.itcloud.model.error.CommonVo;
@@ -42,69 +42,51 @@ public class StorageServiceImpl implements ItStorageService {
 
 
     // region: disk
-    // de에 있는 디스크로 바꿔야하긴한데
     @Override
     public List<DiskVo> getDiskList(String dcId) {
         SystemService system = admin.getConnection().systemService();
-        List<StorageDomain> sdList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().list().send().storageDomains();
+        AttachedStorageDomainsService attSdsService = system.dataCentersService().dataCenterService(dcId).storageDomainsService();
 
-        List<Vm> vmList = system.vmsService().list().send().vms();
+        // 연결대상때문에 필요한듯 == vm의 diskattachment에 disk id가 같은지 비교. 근데 전체 vms를 다 뒤져야함 => 복잡
+        VmsService vmsService = system.vmsService();
 
-        // TODO
-        return sdList.stream()
-                .flatMap(storageDomain -> {
-                    List<Disk> diskList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().storageDomainService(storageDomain.id()).disksService().list().send().disks();
-                    return diskList.stream()
-                            .map(disk -> {
-                                Disk disk1 = system.disksService().diskService(disk.id()).get().send().disk();
-                                StorageDomain sd = system.storageDomainsService().storageDomainService(disk1.storageDomains().get(0).id()).get().send().storageDomain();
-
-//                                vmList.stream()
-//                                        .flatMap(vm -> {
-//                                            List<DiskAttachment> daList = system.vmsService().vmService(vm.id()).diskAttachmentsService().list().send().attachments();
-//
-//                                            return daList.stream()
-//                                                    .map(diskAttachment -> {
-//                                                        if(diskAttachment.vm().id().equals(vm.id())){
-//                                                            return system.vmsService().vmService(vm.id()).get().send().vm().name();
-//                                                        }
-//                                                    })
-//                                                    .findAny();
-//
-//                                        })
-                                // 그러니까 vm의 diskattachment에 disk id가 같은지 비교
-                                // 근데 전체 vms를 다 뒤져야함 => 복잡
+        return attSdsService.list().send().storageDomains().stream()
+                .flatMap(sd ->
+                    attSdsService.storageDomainService(sd.id()).disksService().list().send().disks().stream()
+                        .map(disk -> {
+                            boolean isAttached = vmsService.list().send().vms().stream()
+                                    .anyMatch(vm -> vmsService.vmService(vm.id()).diskAttachmentsService().list().send().attachments().stream()
+                                                .anyMatch(diskAttachment -> diskAttachment.id().equals(disk.id())));
 
                             return DiskVo.builder()
-                                        .id(disk.id())
-                                        .name(disk.name())
-                                        .alias(disk.alias())
-                                        .description(disk.description())
-                                        .shareable(disk.shareable())
-                                        .status(disk.status())
-//                                        .storageType(disk.storageType())
-                                        .virtualSize(disk.provisionedSize())
-//                                        .connection()
-//                                        .domainVo(
-//                                                DomainVo.builder()
-//                                                .id(storageDomain.id())
-//                                                .name(storageDomain.name())
-//                                                .build()
-//                                    )
-//                                        .domainVoList(
-//                                            disk1.storageDomains().stream()
-//                                                    .map(storageDomain1 ->
-//
-//                                                    )
-//                                                    .collect(Collectors.toList())
-//                                        )
-                                        .build();
-                            });
-                })
+                                    .id(disk.id())
+                                    .name(disk.name())
+                                    .alias(disk.alias())
+                                    .description(disk.description())
+                                    .shareable(disk.shareable())
+                                    .status(disk.status())
+                                    .storageType(disk.storageType().value())
+                                    .virtualSize(disk.provisionedSize())
+//                                    .connection(String.valueOf(isAttached)) // TODO:HELP 연결대상 쉽지않음
+                                    .domainVo(DomainVo.builder().id(sd.id()).name(sd.name()).build())
+                                    .build();
+                        })
+                )
+                .collect(Collectors.toList());
+    }
+
+
+    // 이미지 생성 위한 데이터센터 up 상태것만
+    public List<IdentifiedVo> setDcList(){
+        SystemService system = admin.getConnection().systemService();
+        return system.dataCentersService().list().send().dataCenters().stream()
+                .filter(dc -> dc.status() == DataCenterStatus.UP)
+                .map(dc -> IdentifiedVo.builder().id(dc.id()).name(dc.name()).build())
                 .collect(Collectors.toList());
     }
 
     // 디스크 - 새로만들기 - 이미지(데이터센터, 스토리지 도메인) 목록 보여지게
+    // TODO:HELP
     @Override
     public DiskDcVo setDiskImage(String dcId) {
         SystemService system = admin.getConnection().systemService();
@@ -214,76 +196,76 @@ public class StorageServiceImpl implements ItStorageService {
     }
 
 
-    @Override
-    public LunCreateVo setDiskLun(String dcId) {
-        SystemService system = admin.getConnection().systemService();
-        DataCenter dataCenter = system.dataCentersService().dataCenterService(dcId).get().follow("clusters").send().dataCenter();
-        List<Host> hostList = system.hostsService().list().send().hosts();
-        hostList.stream()
-                .filter(Host::clusterPresent)
-                .map(host ->
-                        HostVo.builder()
-                                .id(host.id())
-                                .name(host.name())
-                        .build()
-                )
-                .collect(Collectors.toList());
-
-        return null;
-    }
-
-    // 스토리지 > 디스크 > 새로만들기 - 직접 LUN
-    // 오케는 lun생성 없음(코드는 있음)
-    @Override
-    public CommonVo<Boolean> addDiskLun(LunCreateVo lun) {
-        SystemService system = admin.getConnection().systemService();
-        DisksService disksService = system.disksService();
-//        Host host = system.hostsService().hostService(lunVo.getHostId()).get().send().host();
-
-        // host 사용 -> 호스트는 상태 확인(예: LUN 표시) 및 LUN에 대한 기본 정보(예: 크기 및 일련 번호) 검색에 사용
-        // host 사용X ->  데이터베이스 전용 작업. 스토리지에 액세스되지 않습니다.
-
-        try{
-            DiskBuilder diskBuilder = new DiskBuilder();
-            diskBuilder
-                    .alias(lun.getAlias())
-                    .description(lun.getDescription())
-                    .lunStorage(
-                        new HostStorageBuilder()
-                            .host(new HostBuilder().id(lun.getHostId()).build())
-                            .type(lun.getStorageType())
-                            .logicalUnits(
-                                new LogicalUnitBuilder()
-                                    .address(lun.getAddress())
-                                    .port(lun.getPort())
-                                    .target(lun.getTarget())
-                                .build()
-                            )
-                        .build()
-                    )
-            .build();
-
-//            Disk disk = disksService.add().disk(diskBuilder).send().disk();
-            Disk disk = disksService.addLun().disk(diskBuilder).send().disk();
-
-            do{
-                log.info("ok");
-            }while (disk.status().equals(DiskStatus.OK));
-
-            log.info("성공: 새 가상 디스크 (lun) 생성");
-            return CommonVo.successResponse();
-        }catch (Exception e){
-            log.error("실패: 새 가상 디스크 (lun) 생성");
-            return CommonVo.failResponse(e.getMessage());
-        }
-    }
-
-    @Override
-    public CommonVo<Boolean> editDiskLun(LunCreateVo lunCreateVo) {
-        SystemService system = admin.getConnection().systemService();
-
-        return null;
-    }
+//    @Override
+//    public LunCreateVo setDiskLun(String dcId) {
+//        SystemService system = admin.getConnection().systemService();
+//        DataCenter dataCenter = system.dataCentersService().dataCenterService(dcId).get().follow("clusters").send().dataCenter();
+//        List<Host> hostList = system.hostsService().list().send().hosts();
+//        hostList.stream()
+//                .filter(Host::clusterPresent)
+//                .map(host ->
+//                        HostVo.builder()
+//                                .id(host.id())
+//                                .name(host.name())
+//                        .build()
+//                )
+//                .collect(Collectors.toList());
+//
+//        return null;
+//    }
+//
+//    // 스토리지 > 디스크 > 새로만들기 - 직접 LUN
+//    // 오케는 lun생성 없음(코드는 있음)
+//    @Override
+//    public CommonVo<Boolean> addDiskLun(LunCreateVo lun) {
+//        SystemService system = admin.getConnection().systemService();
+//        DisksService disksService = system.disksService();
+////        Host host = system.hostsService().hostService(lunVo.getHostId()).get().send().host();
+//
+//        // host 사용 -> 호스트는 상태 확인(예: LUN 표시) 및 LUN에 대한 기본 정보(예: 크기 및 일련 번호) 검색에 사용
+//        // host 사용X ->  데이터베이스 전용 작업. 스토리지에 액세스되지 않습니다.
+//
+//        try{
+//            DiskBuilder diskBuilder = new DiskBuilder();
+//            diskBuilder
+//                    .alias(lun.getAlias())
+//                    .description(lun.getDescription())
+//                    .lunStorage(
+//                        new HostStorageBuilder()
+//                            .host(new HostBuilder().id(lun.getHostId()).build())
+//                            .type(lun.getStorageType())
+//                            .logicalUnits(
+//                                new LogicalUnitBuilder()
+//                                    .address(lun.getAddress())
+//                                    .port(lun.getPort())
+//                                    .target(lun.getTarget())
+//                                .build()
+//                            )
+//                        .build()
+//                    )
+//            .build();
+//
+////            Disk disk = disksService.add().disk(diskBuilder).send().disk();
+//            Disk disk = disksService.addLun().disk(diskBuilder).send().disk();
+//
+//            do{
+//                log.info("ok");
+//            }while (disk.status().equals(DiskStatus.OK));
+//
+//            log.info("성공: 새 가상 디스크 (lun) 생성");
+//            return CommonVo.successResponse();
+//        }catch (Exception e){
+//            log.error("실패: 새 가상 디스크 (lun) 생성");
+//            return CommonVo.failResponse(e.getMessage());
+//        }
+//    }
+//
+//    @Override
+//    public CommonVo<Boolean> editDiskLun(LunCreateVo lunCreateVo) {
+//        SystemService system = admin.getConnection().systemService();
+//
+//        return null;
+//    }
 
 
 
@@ -453,7 +435,7 @@ public class StorageServiceImpl implements ItStorageService {
 
     // (화면표시) 파일 선택시 파일에 있는 포맷, 컨텐츠(파일 확장자로 칭하는건지), 크기 출력
     //           파일 크기가 자동으로 디스크 옵션에 추가, 파일 명칭이 파일의 이름으로 지정됨 (+설명)
-    // provisioned_size, alias, description, wipe_after_delete, shareable, backup and disk_profile.
+    // required: provisioned_size, alias, description, wipe_after_delete, shareable, backup, disk_profile.
     @Override
     public CommonVo<Boolean> uploadDisk(MultipartFile file, ImageCreateVo image) throws IOException {
         SystemService system = admin.getConnection().systemService();
@@ -502,7 +484,7 @@ public class StorageServiceImpl implements ItStorageService {
                 return CommonVo.failResponse("transferUrl 가 없음");
             }else {
                 log.debug("imageTransfer.transferUrl(): {}", transferUrl);
-                imageSend(imageTransferService, file, disk);
+                imageSend(imageTransferService, file);
             }
             return CommonVo.successResponse();
         } catch (Exception e) {
@@ -538,9 +520,8 @@ public class StorageServiceImpl implements ItStorageService {
      * 디스크 이미지 전송
      * @param imageTransferService
      * @param file
-     * @param disk
      */
-    private CommonVo<Boolean> imageSend(ImageTransferService imageTransferService, MultipartFile file, Disk disk) {
+    private CommonVo<Boolean> imageSend(ImageTransferService imageTransferService, MultipartFile file) {
         HttpsURLConnection httpsConn = null;
 
         try {
@@ -662,48 +643,40 @@ public class StorageServiceImpl implements ItStorageService {
     }
 
 
-
-
-
-
-
-
-
-
-    @Override
-    public CommonVo<Boolean> cancelUpload(String diskId) {
-        SystemService system = admin.getConnection().systemService();
-
-        ImageTransferService imageTranService = system.imageTransfersService().imageTransferService(diskId); // 이미지 추가를 위한 서비스
-        imageTranService.cancel().send();
-
-        return CommonVo.successResponse();
-    }
-
-    @Override
-    public CommonVo<Boolean> pauseUpload(String diskId) {
-        SystemService system = admin.getConnection().systemService();
-
-        ImageTransferService imageTranService = system.imageTransfersService().imageTransferService(diskId); // 이미지 추가를 위한 서비스
-        imageTranService.pause().send();
-
-        return CommonVo.successResponse();
-    }
-
-    @Override
-    public CommonVo<Boolean> resumeUpload(String diskId) {
-        SystemService system = admin.getConnection().systemService();
-
-        ImageTransferService imageTranService = system.imageTransfersService().imageTransferService(diskId); // 이미지 추가를 위한 서비스
-        imageTranService.resume().send();
-
-        return CommonVo.successResponse();
-    }
-
-    @Override
-    public CommonVo<Boolean> downloadDisk() {
-        return null;
-    }
+//    @Override
+//    public CommonVo<Boolean> cancelUpload(String diskId) {
+//        SystemService system = admin.getConnection().systemService();
+//
+//        imageTranService.cancel().send();
+//
+//        return CommonVo.successResponse();
+//    }
+//
+//    @Override
+//    public CommonVo<Boolean> pauseUpload(String diskId) {
+//        SystemService system = admin.getConnection().systemService();
+//
+//        imageTranService.pause().send();
+//
+//        return CommonVo.successResponse();
+//    }
+//
+//    @Override
+//    public CommonVo<Boolean> resumeUpload(String diskId) {
+//        SystemService system = admin.getConnection().systemService();
+//
+//        imageTranService.resume().send();
+//
+//        return CommonVo.successResponse();
+//    }
+//
+//    @Override
+//    public CommonVo<Boolean> downloadDisk() {
+//        SystemService system = admin.getConnection().systemService();
+//
+//
+//        return CommonVo.successResponse();
+//    }
 
 
     /**
@@ -882,14 +855,12 @@ public class StorageServiceImpl implements ItStorageService {
 
 
     // 데이터가 많이 없음 생성요청
-    @Override
-    public List<VolumeVo> getVolumeVoList(String dcId) {
-        SystemService system = admin.getConnection().systemService();
-
-
-
-        return null;
-    }
+//    @Override
+//    public List<VolumeVo> getVolumeVoList(String dcId) {
+//        SystemService system = admin.getConnection().systemService();
+//
+//        return null;
+//    }
 
 
 
@@ -897,9 +868,7 @@ public class StorageServiceImpl implements ItStorageService {
     @Override
     public List<DomainVo> getStorageList(String dcId) {
         SystemService system = admin.getConnection().systemService();
-        List<StorageDomain> storageDomainList = system.dataCentersService().dataCenterService(dcId).storageDomainsService().list().send().storageDomains();
-
-        return storageDomainList.stream()
+        return system.dataCentersService().dataCenterService(dcId).storageDomainsService().list().send().storageDomains().stream()
                 .map(storageDomain ->
                         DomainVo.builder()
                             .id(storageDomain.id())
@@ -920,9 +889,7 @@ public class StorageServiceImpl implements ItStorageService {
     @Override
     public List<NetworkVo> getNetworkVoList(String dcId) {
         SystemService system = admin.getConnection().systemService();
-        List<Network> networkList = system.dataCentersService().dataCenterService(dcId).networksService().list().send().networks();
-
-        return networkList.stream()
+        return system.dataCentersService().dataCenterService(dcId).networksService().list().send().networks().stream()
                 .map(network ->
                     NetworkVo.builder()
                             .id(network.id())
@@ -937,9 +904,7 @@ public class StorageServiceImpl implements ItStorageService {
     @Override
     public List<ClusterVo> getClusterVoList(String dcId) {
         SystemService system = admin.getConnection().systemService();
-        List<Cluster> clusterList = system.dataCentersService().dataCenterService(dcId).clustersService().list().send().clusters();
-
-        return clusterList.stream()
+        return system.dataCentersService().dataCenterService(dcId).clustersService().list().send().clusters().stream()
                 .map(cluster ->
                         ClusterVo.builder()
                                 .id(cluster.id())
