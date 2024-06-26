@@ -560,10 +560,44 @@ public class StorageServiceImpl implements ItStorageService {
     }
 
 
+    /**
+     * 스토리지 도메인 생성빌더
+     * @param dcVo
+     * @return
+     */
+    private StorageDomainBuilder configureDomain(DomainCreateVo dcVo){
+        StorageDomainBuilder storageDomainBuilder = new StorageDomainBuilder();
+
+        storageDomainBuilder
+                .name(dcVo.getName())
+                .type(dcVo.getDomainType()) // domaintype
+                .host(new HostBuilder().name(dcVo.getHostName()).build());
+//                        .discardAfterDelete()
+//                        .supportsDiscard()
+//                        .backup()
+//                        .wipeAfterDelete()
+
+        // 스토리지 유형이 iscsi 일 경우
+        if(dcVo.getStorageType().equals(StorageType.ISCSI)){
+            return storageDomainBuilder
+                    .dataCenter(new DataCenterBuilder().id(dcVo.getDatacenterId()).build())
+                    .storage(new HostStorageBuilder().type(StorageType.ISCSI).logicalUnits(new LogicalUnitBuilder().id(dcVo.getLogicalUnitId()).build()).build());
+
+        }else { // 그외 다른 유형
+            // 경로  예: myserver.mydomain.com:/my/local/path
+            // paths[0] = address, paths[1] = path
+            String[] paths = dcVo.getPath().split(":", 2);
+            return storageDomainBuilder
+                    .storage(new HostStorageBuilder().type(dcVo.getStorageType()).address(paths[0].trim()).path(paths[1].trim()).build());
+        }
+    }
+
+
+
+
     // requires: name, type, host, and storage attributes. Identify the host attribute with the id or name attributes.
     // To add a new storage domain with specified name, type, storage.type, storage.address, and storage.path,
     // and using a host with an id 123, send a request like this
-
     /**
      * 도메인 생성
      * @param dcVo
@@ -576,49 +610,7 @@ public class StorageServiceImpl implements ItStorageService {
         DataCenterService dataCenterService = system.dataCentersService().dataCenterService(dcVo.getDatacenterId());
 
         try{
-            StorageDomainBuilder storageDomainBuilder = new StorageDomainBuilder();
-
-            // 스토리지 유형이 iscsi 일 경우
-            if(dcVo.getStorageType().equals(StorageType.ISCSI)){
-                storageDomainBuilder
-                    .dataCenter(new DataCenterBuilder().id(dcVo.getDatacenterId()).build())
-                    .name(dcVo.getName())
-                    .type(dcVo.getDomainType()) // domaintype
-                    .storage(
-                        new HostStorageBuilder()
-                            .type(StorageType.ISCSI)
-                            .logicalUnits(new LogicalUnitBuilder().id(dcVo.getLogicalUnitId()).build()) // TODO
-                        .build()
-                    )
-                    .host(new HostBuilder().name(dcVo.getHostName()).build())
-//                        .discardAfterDelete()
-//                        .supportsDiscard()
-//                        .backup()
-//                        .wipeAfterDelete()
-                .build();
-            }else { // 그외 다른 유형
-                // 경로  예: myserver.mydomain.com:/my/local/path
-                // paths[0] = address, paths[1] = path
-                String[] paths = dcVo.getPath().split(":", 2);
-                if(paths.length != 2){
-                    return CommonVo.failResponse("콜론 error");
-                }
-
-                storageDomainBuilder
-                    .name(dcVo.getName())
-                    .type(dcVo.getDomainType())
-                    .storage(
-                        new HostStorageBuilder()
-                            .type(dcVo.getStorageType())
-                            .address(paths[0].trim())
-                            .path(paths[1].trim())
-                        .build()
-                    )
-                    .host(new HostBuilder().name(dcVo.getHostName()).build())
-                .build();
-            }
-
-            StorageDomain storageDomain = storageDomainsService.add().storageDomain(storageDomainBuilder).send().storageDomain();
+            StorageDomain storageDomain = storageDomainsService.add().storageDomain(configureDomain(dcVo)).send().storageDomain();
             StorageDomainService storageDomainService = storageDomainsService.storageDomainService(storageDomain.id());
 
             do {
@@ -649,6 +641,7 @@ public class StorageServiceImpl implements ItStorageService {
         }
     }
 
+
     @Override
     public CommonVo<Boolean> deleteDomain(String domainId) {
         SystemService system = admin.getConnection().systemService();
@@ -674,9 +667,9 @@ public class StorageServiceImpl implements ItStorageService {
 
 
     /**
-     *
+     * 데이터센터 밑에 있는 네트워크 목록
      * @param dcId
-     * @return
+     * @return 네트워크 목록
      */
     @Override
     public List<NetworkVo> getNetworkVoList(String dcId) {
@@ -693,6 +686,11 @@ public class StorageServiceImpl implements ItStorageService {
     }
 
 
+    /**
+     * 데이터센터 밑에 클러스터 목록
+     * @param dcId
+     * @return 클러스터 목록
+     */
     @Override
     public List<ClusterVo> getClusterVoList(String dcId) {
         SystemService system = admin.getConnection().systemService();
@@ -707,9 +705,13 @@ public class StorageServiceImpl implements ItStorageService {
                 )
                 .collect(Collectors.toList());
     }
+    
 
-
-    //데이터센터 - 권한
+    /**
+     * 데이터센터 - 권한 
+     * @param id
+     * @return 권한 목록
+     */
     @Override
     public List<PermissionVo> getPermission(String id) {
         SystemService system = admin.getConnection().systemService();
