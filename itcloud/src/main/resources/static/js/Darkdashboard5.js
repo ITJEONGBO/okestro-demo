@@ -58,6 +58,7 @@ $('#aside_popup_machine_btn, #aside_popup_storage_btn, #aside_popup_network_btn'
             $('#network_section').css('display','none');
             $('#setting_section').css('display','none');
             $('.content_detail_section').css('display','none');
+            $('.host_detail_section').css('display','none');
 
             $('#virtual_machine_chart').css('display','block');
             $('#storage_chart').css('display','none');
@@ -86,6 +87,7 @@ $('#aside_popup_machine_btn, #aside_popup_storage_btn, #aside_popup_network_btn'
             $('#network_section').css('display','none');
             $('#setting_section').css('display','none');
             $('.content_detail_section').css('display','none');
+            $('.host_detail_section').css('display','none');
 
             $('#virtual_machine_chart').css('display','none');
             $('#storage_chart').css('display','block');
@@ -115,6 +117,7 @@ $('#aside_popup_machine_btn, #aside_popup_storage_btn, #aside_popup_network_btn'
         $('#network_section').css('display','block');
         $('#setting_section').css('display','none');
         $('.content_detail_section').css('display','none');
+        $('.host_detail_section').css('display','none');
 
         $('#virtual_machine_chart').css('display','none');
         $('#storage_chart').css('display','none');
@@ -144,6 +147,7 @@ $('#aside_popup_machine_btn, #aside_popup_storage_btn, #aside_popup_network_btn'
         $('#network_section').css('display','none');
         $('#setting_section').css('display','block');
         $('.content_detail_section').css('display','none');
+        $('.host_detail_section').css('display','none');
 
         $('#virtual_machine_chart').css('display','none');
         $('#storage_chart').css('display','none');
@@ -174,12 +178,13 @@ $('#aside_popup_machine_btn, #aside_popup_storage_btn, #aside_popup_network_btn'
         $('#network_section').css('display','none');
         $('#setting_section').css('display','none');
         $('.content_detail_section').css('display','block');
+        $('.host_detail_section').css('display','none');
 
         $('#virtual_machine_chart').css('display','none');
         $('#storage_chart').css('display','none');
         $('#network_chart').css('display','none');
         $('#setting_chart').css('display','none');
-        if ($('#aside_popup').css('display') === 'none' || $('#setting_icon').css('background-color') !== 'rgb(218, 236, 245)') {
+        if ($('#aside_popup').css('display') === 'none' || $('#aside_popup_storage_btn').css('background-color') !== 'rgb(218, 236, 245)') {
             $('#aside_popup').css('display', 'block');
             $('#aside_outer').css('width','20%');
             $('#setting_icon').css('background-color', 'rgb(218, 236, 245)'); // 배경색을 노란색으로 변경
@@ -193,6 +198,35 @@ $('#aside_popup_machine_btn, #aside_popup_storage_btn, #aside_popup_network_btn'
              $('#aside_popup').css('display', 'none');
              $('#aside_outer').css('width','3%');
          }
+    });
+    // host_detail_section
+    $('#power_outer table tbody tr>td:nth-child(2)').click(function(){
+        $('#dash_board').css('display','none');
+        $('#section').css('display','none');
+        $('#storage_section').css('display','none');
+        $('#network_section').css('display','none');
+        $('#setting_section').css('display','none');
+        $('.content_detail_section').css('display','none');
+        $('.host_detail_section').css('display','block');
+
+        $('#virtual_machine_chart').css('display','none');
+        $('#storage_chart').css('display','none');
+        $('#network_chart').css('display','none');
+        $('#setting_chart').css('display','none');
+        if ($('#aside_popup').css('display') === 'none' || $('#aside_popup_storage_btn').css('background-color') !== 'rgb(218, 236, 245)') {
+            $('#aside_popup').css('display', 'block');
+            $('#aside_outer').css('width','20%');
+            $('#setting_icon').css('background-color', 'rgb(218, 236, 245)'); // 배경색을 노란색으로 변경
+            $('#aside_popup_dashboard_btn').css('background-color', '');
+            $('#aside_popup_machine_btn').css('background-color', ''); // 다른 버튼 초기화
+            $('#aside_popup_network_btn').css('background-color', ''); // 다른 버튼 초기화
+            $('#aside_popup_storage_btn').css('background-color', ''); // 다른 버튼 초기화
+            
+
+            } else {
+                $('#aside_popup').css('display', 'none');
+                $('#aside_outer').css('width','3%');
+            }
     });
 
     // aside차트(가상머신)
@@ -1345,5 +1379,45 @@ $(function() {
 
         // 클릭된 요소에 active 클래스 추가
         $(this).addClass('active');
+    });
+//-----------------------------------------------------
+
+});
+$(document).ready(function() {
+    // 처음에 모든 섹션을 숨깁니다.
+    $('#host_machine_outer, #detail_machine_outer, #detail_template_outer, #detail_disk_outer, #detail_snapshot_outer, #detail_rent_outer, #detail_profile_outer, #detail_event_outer, #detail_right_outer').hide();
+    
+    // 기본적으로 '일반' 섹션을 활성화하고 보여줍니다.
+    $('.section_content_outer').show();  // '일반'에 해당하는 div
+
+    // '일반' 섹션 활성화를 위해 첫 번째 div에 active 클래스 추가
+    $('.host_detail_section .content_header_left div').first().addClass('active');
+
+    // 탭 클릭 이벤트 처리
+    $('.host_detail_section .content_header_left div').click(function() {
+        // 모든 섹션을 숨깁니다.
+        $('.content_outerd').hide();
+        $('#host_machine_outer, #detail_machine_outer, #detail_template_outer, #detail_disk_outer, #detail_snapshot_outer, #detail_rent_outer, #detail_profile_outer, #detail_event_outer, #detail_right_outer').hide();
+
+        // 클릭된 div에서 active 클래스를 제거하고 추가합니다.
+        $('.host_detail_section .content_header_left div').removeClass('active');
+        $(this).addClass('active');
+
+        // 클릭된 탭에 해당하는 섹션을 찾아 보여줍니다.
+        var index = $(this).index();  // 클릭된 div의 인덱스를 가져옵니다.
+        var sections = [
+            '.section_content_outer',    // 일반
+            '#host_machine_outer',       // 호스트 가상머신
+            '#host_template_outer',      // 호스트 네트워크 인터페이스
+            '#detail_disk_outer',        // 호스트 장치
+            '#detail_snapshot_outer',    // 호스트 후크
+            '#detail_rent_outer',        // 호스트 권한
+            '#detail_profile_outer',     // 호스트 선호도 레이블
+            '#detail_event_outer',       // 호스트 에라타
+            '#detail_right_outer'        // 호스트 이벤트
+        ];
+
+        // 선택된 섹션만 표시합니다.
+        $(sections[index]).show();
     });
 });

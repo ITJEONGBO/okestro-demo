@@ -1152,6 +1152,7 @@ body {
 
 /*content_outer*/
 .content_outer,
+.content_outerd,
 #disk_outer,#storage_domain_outer,
 #content_outer,
 #network_outer,
@@ -1538,6 +1539,9 @@ body {
     width: 100%;
     text-align: center;
     border: none;
+}
+#detail_machine_outer .pregroup_content i{
+   
 }
 #disk_content td:first-child,
 #disk_content td:nth-child(3),
@@ -2788,7 +2792,8 @@ form>div
 #network_section,
 #setting_section,
 #setting_user_section,
-.content_detail_section
+.content_detail_section,
+.host_detail_section
 {
     display: none;
     width: 96%;
