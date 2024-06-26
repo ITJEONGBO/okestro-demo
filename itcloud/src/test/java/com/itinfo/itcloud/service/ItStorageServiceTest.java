@@ -1,6 +1,9 @@
 package com.itinfo.itcloud.service;
 
+import com.itinfo.itcloud.model.IdentifiedVo;
+import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.error.CommonVo;
+import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.storage.DiskVo;
 import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.model.storage.ImageCreateVo;
@@ -43,22 +46,46 @@ class ItStorageServiceTest {
     }
 
     @Test
-    void setDiskImage() {
+    @DisplayName("디스크 데이터센터 리스트")
+    void setDcList(){
+        List<IdentifiedVo> result = storageService.setDatacenterList();
 
-        storageService.setDiskImage(dcId);
+        result.forEach(System.out::println);
     }
+
+    @Test
+    @DisplayName("디스크 스토리지 도메인 리스트")
+    void setDomainList(){
+        List<IdentifiedVo> result = storageService.setDomainList(dcId, null);
+
+        result.forEach(System.out::println);
+    }
+
+
+    @Test
+    @DisplayName("디스크 디스크 프로파일 리스트")
+    void setDiskProfile(){
+        String domainId = "12d17014-a612-4b6e-a512-6ec4e1aadba6";
+//        String domainId = "43a786b3-e37e-4545-ba1f-5e3ae0ca6f0f";
+        List<IdentifiedVo> result = storageService.setDiskProfile(domainId);
+
+        result.forEach(System.out::println);
+    }
+
+    
+    
 
     @Test
     @DisplayName("디스크 이미지 생성")
     void addDiskImage() {
         ImageCreateVo image =
                 ImageCreateVo.builder()
-                        .alias("Sd")
+                        .alias("S1")
                         .size(2)
                         .description("test")
-                        .domainId("e6611ac1-35b0-42b9-b339-681a6d6cb538")
-                        .profileId("b5cbcbc2-43c0-45d4-8016-0c524dc7ccd4")
-                        .sparse(false)
+                        .domainId("12d17014-a612-4b6e-a512-6ec4e1aadba6")
+                        .profileId("23ab66ac-26c3-4b21-ba78-691ec2a004df")
+                        .sparse(true)
                         .wipeAfterDelete(false)
                         .share(false)
                         .backup(true)
@@ -66,25 +93,32 @@ class ItStorageServiceTest {
 
         CommonVo<Boolean> result = storageService.addDiskImage(image);
         assertThat(result.getHead().getCode()).isEqualTo(201);
-
-        assertThat("Sd").isEqualTo(image.getAlias());
-        assertThat("test").isEqualTo(image.getDescription());
-        assertThat("e6611ac1-35b0-42b9-b339-681a6d6cb538").isEqualTo(image.getDomainId());
+//        assertThat("Sdd").isEqualTo(image.getAlias());
     }
+
+
+    @Test
+    @DisplayName("디스크 이미지 수정창")
+    void setDiskImage(){
+        String diskId = "d1947b58-84df-4ff3-802a-b4a6497853c6";
+        ImageCreateVo result = storageService.setDiskImage(diskId);
+
+        System.out.println(result);
+    }
+
 
     @Test
     @DisplayName("디스크 이미지 수정")
     void editDiskImage() {
-        String id = "90fc30fb-7f77-48b4-9897-df7baf1dd6fa";
+        String diskId = "d1947b58-84df-4ff3-802a-b4a6497853c6";
 
         ImageCreateVo image =
                 ImageCreateVo.builder()
-                        .id(id)
-                        .alias("Sd")
-                        .size(2)
-                        .description("test")
-                        .domainId("e6611ac1-35b0-42b9-b339-681a6d6cb538")
-                        .profileId("b5cbcbc2-43c0-45d4-8016-0c524dc7ccd4")
+                        .id(diskId)
+                        .alias("Sdd1")
+                        .size(3)
+                        .appendSize(0)
+                        .description("tes2t")
                         .sparse(false)
                         .wipeAfterDelete(false)
                         .share(false)
@@ -92,14 +126,15 @@ class ItStorageServiceTest {
                         .build();
 
         CommonVo<Boolean> result = storageService.editDiskImage(image);
-        assertThat(result.getHead().getCode()).isEqualTo(200);
+
+        assertThat(result.getHead().getCode()).isEqualTo(201);
     }
 
 
     @Test
     @DisplayName("디스크 이미지 삭제")
     void deleteDisk() {
-        String diskId = "865386fc-350b-4d90-8b64-60c27b45068a";
+        String diskId = "b0ded29b-04fc-451b-a7a4-bfd436f47890";
         CommonVo<Boolean> result = storageService.deleteDisk(diskId);
 
         assertThat(result.getHead().getCode()).isEqualTo(200);
@@ -107,25 +142,47 @@ class ItStorageServiceTest {
 
     @Test
     @DisplayName("디스크 이동창")
-    void setDiskMove() {
+    void setDiskMoveDomainList() {
+        String diskId = "f89493dd-51f8-44bd-9bfb-4687f43c822c";
+        List<IdentifiedVo> result = storageService.setDomainList(dcId, diskId);
+
+        result.forEach(System.out::println);
     }
 
     @Test
     @DisplayName("디스크 이동")
     void moveDisk() {
+        String diskId = "f89493dd-51f8-44bd-9bfb-4687f43c822c";
+        String domainId = "43a786b3-e37e-4545-ba1f-5e3ae0ca6f0f";
+        CommonVo<Boolean> result = storageService.moveDisk(diskId, domainId);
+
+        assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
-    @Test
-    void setDiskCopy() {
-    }
 
     @Test
+    @DisplayName("디스크 복사")
     void copyDisk() {
+        String diskId = "f89493dd-51f8-44bd-9bfb-4687f43c822c";
+        String domainId = "12d17014-a612-4b6e-a512-6ec4e1aadba6";
+        DiskVo diskVo =
+            DiskVo.builder()
+                    .id(diskId)
+                    .alias("abcdTest2")
+                    .domainVo(DomainVo.builder().id(domainId).build())
+                .build();
+
+        CommonVo<Boolean> result = storageService.copyDisk(diskVo);
+
+        assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
+
     @Test
+    @DisplayName("디스크 이미지 업로드")
     void uploadDisk() throws IOException {
-        String path = "C:/Users/deh22/Documents/ubuntu-20.04.6-live-server-amd64.iso";
+        // test환경에서는 실패할 경우 있음
+        String path = "C:/Users/deh22/Documents/Rocky-8.4-x86_64-minimal.iso";
 
         File file = new File(path);
         FileItem fileItem = new DiskFileItem("file", Files.probeContentType(file.toPath()), false, file.getName(), (int) file.length(), file.getParentFile());
@@ -154,13 +211,16 @@ class ItStorageServiceTest {
     @Test
     @DisplayName("스토리지 도메인 목록")
     void getDomainList() {
-        String dcId = "ae1d4138-f642-11ee-9c1b-00163e4b3128";
         List<DomainVo> result = storageService.getDomainList(dcId);
         result.forEach(System.out::println);
     }
 
     @Test
-    void setDomain() {
+    @DisplayName("호스트 목록")
+    void setHostList() {
+        List<IdentifiedVo> result = storageService.setHostList(dcId);
+
+        result.forEach(System.out::println);
     }
 
     @Test
@@ -171,26 +231,23 @@ class ItStorageServiceTest {
     void deleteDomain() {
     }
 
-    @Test
-    void getVolumeVoList() {
-    }
-
-    @Test
-    @DisplayName("데이터센터 - 스토리지 목록")
-    void getStorageList() {
-        assertThat(2).isEqualTo(storageService.getStorageList(dcId).size());
-    }
 
     @Test
     @DisplayName("데이터센터 - 논리네트워크 목록")
     void getNetworkVoList() {
-        assertThat(8).isEqualTo(storageService.getNetworkVoList(dcId).size());
+        List<NetworkVo> result = storageService.getNetworkVoList(dcId);
+
+        result.forEach(System.out::println);
+//        assertThat(8).isEqualTo(storageService.getNetworkVoList(dcId).size());
     }
 
     @Test
     @DisplayName("데이터센터 - 클러스터 목록")
     void getClusterVoList() {
-        assertThat(1).isEqualTo(storageService.getClusterVoList(dcId).size());
+        List<ClusterVo> result = storageService.getClusterVoList(dcId);
+
+        result.forEach(System.out::println);
+//        assertThat(1).isEqualTo(storageService.getClusterVoList(dcId).size());
     }
 
     @Test

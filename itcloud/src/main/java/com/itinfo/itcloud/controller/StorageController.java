@@ -33,13 +33,7 @@ public class StorageController {
 		return storageService.getDiskList(dcId);
 	}
 
-	@GetMapping("/{dcId}/disks/settings")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	public DiskDcVo setAddDisk(@PathVariable("dcId") String dcId){
-		log.info("--- 디스크 이미지 생성창");
-		return storageService.setDiskImage(dcId);
-	}
+
 
 	@PostMapping("/{dcId}/disks/image")
 	@ResponseBody
@@ -70,41 +64,26 @@ public class StorageController {
 	}
 
 
-	@GetMapping("/{dcId}/disks/{id}/move")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	public DiskVo setDiskMove(@PathVariable("dcId") String dcId,
-							  @PathVariable("id") String id){
-		log.info("--- 디스크 - 이동창");
-		return storageService.setDiskMove(dcId, id);
-	}
 
-	@PostMapping("disks/{id}/move")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	public CommonVo<Boolean> moveDisk(@PathVariable("id") String id,
-									  @RequestBody DiskMoveCopyVo diskMoveCopyVo){
-		log.info("--- 디스크 - 이동");
-		return storageService.moveDisk(id, diskMoveCopyVo);
-	}
 
-	@GetMapping("/{dcId}/disks/{id}/copy")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	public DiskVo setDiskCopy(@PathVariable("dcId") String dcId,
-							  @PathVariable("id") String id){
-		log.info("--- 디스크 - 복사창");
-		return storageService.setDiskCopy(dcId, id);
-	}
+//	@PostMapping("disks/{id}/move")
+//	@ResponseBody
+//	@ResponseStatus(HttpStatus.OK)
+//	public CommonVo<Boolean> moveDisk(@PathVariable("id") String id,
+//									  @RequestBody DiskMoveCopyVo diskMoveCopyVo){
+//		log.info("--- 디스크 - 이동");
+//		return storageService.moveDisk(id, diskMoveCopyVo);
+//	}
+
 
 
 	@PostMapping("disks/{id}/copy")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public CommonVo<Boolean> copyDisk(@PathVariable String id,
-									  @RequestBody DiskMoveCopyVo disk){
+									  @RequestBody DiskVo disk){
 		log.info("--- 디스크 - 복사");
-		return storageService.copyDisk(id, disk);
+		return storageService.copyDisk(disk);
 	}
 
 	@PostMapping("/{dcId}/disk/upload")
@@ -140,12 +119,12 @@ public class StorageController {
 
 
 
-	@GetMapping("/{dcId}/storages")
-	@ResponseBody
-	public List<DomainVo> storages(@PathVariable("dcId") String dcId){
-		log.info("--- networks");
-		return storageService.getStorageList(dcId);
-	}
+//	@GetMapping("/{dcId}/storages")
+//	@ResponseBody
+//	public List<DomainVo> storages(@PathVariable("dcId") String dcId){
+//		log.info("--- networks");
+//		return storageService.getStorageList(dcId);
+//	}
 
 	@GetMapping("/{dcId}/networks")
 	@ResponseBody
