@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<link rel="stylesheet" href="/itcloud/src/main/resources/static/css/Darkdashboard5.css">
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script
+  src="https://code.jquery.com/jquery-1.12.4.js"
+  integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
+  crossorigin="anonymous">
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+<script src="/itcloud/src/main/resources/static/js/Darkdashboard5.js"></script>
+<body>
+    <div id="header">
+        <div id="header_right">
+            <span>Rutil Vm</span>
+        </div>
+
+        <div id="header_left">
+            <div>
+                <i class="fa fa-hdd-o"></i>
+            </div>
+            <div>
+                <i class="fa fa-bell"></i>
+            </div>
+            <div>
+                <i class="fa fa-user"></i>
+            </div>
+        </div>
+    </div>
+
+    <div id="main_outer">
+        <div id="aside_outer">
+            <div id="aside">
+                <div id="nav">
+                    <div id="aside_popup_dashboard_btn">
+                        <i class="fa fa-th-large"></i>
+                    </div>
+                    <div id="aside_popup_machine_btn">
+                        <i class="fa fa-desktop"></i>
+                    </div>
+                    <div id="aside_popup_storage_btn">
+                        <i class="fa fa-server"></i>
+                    </div>
+                    <div id="aside_popup_network_btn">
+                        <i class="fa fa-database"></i>
+                    </div>
+                </div>
+                <div id="setting_icon">
+                    <i class="fa fa-cog"></i>
+                </div>
+            </div><!--aside끝-->
+
+            <div id="aside_popup">
+                <!--가상머신 차트-->
+                <div id="virtual_machine_chart">
+                    <div class="aside_popup_content" id="aside_popup_first">
+                        <i class="fa fa-chevron-down"></i>
+                        <i class="fa fa-building-o"></i>
+                        <span>data_center</span>
+                    </div>
+                    <div class="aside_popup_content" id="aside_popup_second" style="display: none;">
+                        <i class="fa fa-chevron-down"></i>
+                        <i class="fa fa-building-o"></i>
+                        <span>ITITINFO</span>
+                    </div>
+                    <div class="aside_popup_content" id="aside_popup_last" style="display: none;">
+                        <div>
+                            <i></i>
+                            <i class="fa fa-microchip"></i>
+                            <span>192.168.0.80</span>
+                        </div>
+                        <div>
+                            <i></i>
+                            <i class="fa fa-microchip"></i>
+                            <span>HostedEngine</span>
+                        </div>
+                        <div>
+                            <i></i>
+                            <i class="fa fa-microchip"></i>
+                            <span>on20-ap01</span>
+                        </div>
+                    </div>
+                </div>
+                <!--스토리지 차트-->
+                <div id="storage_chart" style="display: none;">
+                    <div class="aside_popup_content" id="aside_popup_first2">
+                        <i class="fa fa-chevron-down"></i>
+                        <i class="fa fa-building-o"></i>
+                        <span>data_center</span>
+                    </div>
+                    <div class="aside_popup_content" id="aside_popup_second2" style="display: none;">
+                        <i class="fa fa-chevron-down"></i>
+                        <i class="fa fa-building-o"></i>
+                        <span>Default</span>
+                    </div>
+                    
+                    <div class="aside_popup_content" id="aside_popup_last2" style="display: none;">
+                        <div>
+                            <i></i>
+                            <i class="fa fa-microchip"></i>
+                            <span>hosted-storage</span>
+                        </div>
+                        <div>
+                            <i></i>
+                            <i class="fa fa-microchip"></i>
+                            <span>NFS-Storage</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!--네트워크 차트-->
+                <div id="network_chart" style="display: none;">
+                    <div class="aside_popup_content" id="aside_popup_first3">
+                        <i class="fa fa-chevron-down"></i>
+                        <i class="fa fa-building-o"></i>
+                        <span>Default</span>
+                    </div>
+                    <div class="aside_popup_content" id="aside_popup_second3" style="display: none;">
+                        <i class="fa fa-chevron-down" style="color: white;"></i>
+                        <i class="fa fa-building-o"></i>
+                        <span>ovirtmgmt</span>
+                    </div> 
+                </div>
+
+                <!--설정 차트-->
+                <div id="setting_chart" style="display: none;">
+                    <div id="setting_normal_btn">
+                        <i class="fa fa-cog"></i>
+                        <span>활성 사용자 세션</span>
+                    </div>
+                    <div id="setting_miniset_btn">
+                        <i class="fa fa-cog"></i>
+                        <span>설정</span>
+                    </div>
+                    <div id="setting_user_btn">
+                        <i class="fa fa-cog"></i>
+                        <span>사용자</span>
+                    </div>
+                    <div id="setting_account_btn">
+                        <i class="fa fa-cog"></i>
+                        <span>계정설정</span>
+                    </div>
+                    
+                </div>
+            </div>
+            
+        </div><!--aside_outer끝-->
+<!---------------------------------------------------->
+
+        <!--스토리지 section-->
+        <div id="storage_section">
+            <div class="section_header">
+                <div class="section_header_left">
+                    <span>데이터 센터</span>
+                    <div>Default</div>
+                    <button><i class="fa fa-exchange"></i></button>
+                </div>
+            
+                <div class="section_header_right">
+                    <div class="article_nav">
+                        <button>편집</button>
+                        <button>삭제</button>
+                        <button id="popup_btn">
+                            <i class="fa fa-ellipsis-v"></i>
+                            <div id="popup_box">
+                                <div>
+                                    <div class="get_btn">가져오기</div>
+                                    <div class="get_btn">가상 머신 복제</div>
+                                </div>
+                                <div>
+                                    <div>삭제</div>
+                                </div>
+                                <div>
+                                    <div>마이그레이션 취소</div>
+                                    <div>변환 취소</div>
+                                </div>
+                                <div>
+                                    <div id="template_btn">템플릿 생성</div>
+                                </div>
+                                <div style="border-bottom: none;">
+                                    <div id="domain2">도메인으로 내보내기</div>
+                                    <div id="domain">Export to Data Domai</div>
+                                    <div id="ova_btn">OVA로 내보내기</div>
+                                </div>
+                            </div> 
+                        </button>
+                    </div>
+            
+                </div><!--article끝-->
+            </div><!--section_header끝-->
+
+            <div class="content_outer">
+                <div class="content_header">
+                    <div class="content_header_left">
+                        <div class="active">디스크</div>
+                        <div>도메인</div>
+                        <div>볼륨</div>
+                        <div>스토리지</div>
+                        <div>논리 네트워크</div>
+                        <div>클러스터</div>
+                        <div>권한</div>
+                        <div>이벤트</div>
+                    </div>
+                    
+                </div>
+
+                <div class="section_content_outer">
+                    <div class="content_header_right">
+                        <button id="storage_disk_new_btn">새로 만들기</button>
+                        <button>수정</button>
+                        <button>제거</button>
+                        <button>이동</button>
+                        <button>복사</button>
+                        <button id="storage_disk_upload">업로드</button>
+                        <button>다운로드</button>
+                        <button class="content_header_popup_btn">
+                            <i class="fa fa-ellipsis-v"></i>
+                            <div class="content_header_popup" style="display: none;">
+                                <div>활성</div>
+                                <div>비활성화</div>
+                                <div>이동</div>
+                                <div>LUN 새로고침</div>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="section_option">
+                        <div>
+                            <label for="disk_type">디스크 유형:</label>
+                            <select id="disk_type">
+                                <option value="default">모두</option>   
+                                <option value="image">이미지</option> 
+                                <option value="direct_lun">직접LUN</option> 
+                                <option value="managed_block">관리되는 블록</option> 
+                            </select>
+                        </div>
+                        <div>
+                            <label for="content_type">컨텐츠 유형:</label>
+                            <select id="content_type">
+                                <option value="default">모두</option>   
+                            </select>
+                        </div>
+                        <div class="search_box">
+                            <input type="text"/>
+                            <button><i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="section_table_outer">
+                        <button><i class="fa fa-refresh"></i></button>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>별칭</th>
+                                    <th>ID</th>
+                                    <th><i class="fa fa-glass"></i></th>
+                                    <th></th>
+                                    <th>연결 대상</th>
+                                    <th>스토리지 도메인</th>
+                                    <th>가상 크기</th>
+                                    <th>상태</th>
+                                    <th>유형</th>
+                                    <th>설명</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>he_metadata</td>
+                                    <td style="width: 10%;">289137398279301798</td>
+                                    <td></td>
+                                    <td><i class="fa fa-glass"></i></td>
+                                    <td>on20-ap01</td>
+                                    <td>VirtIO-SCSI</td>
+                                    <td>/dev/sda</td>
+                                    <td>OK</td>
+                                    <td>이미지</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>he_metadata</td>
+                                    <td>289137398279301798</td>
+                                    <td></td>
+                                    <td><i class="fa fa-glass"></i></td>
+                                    <td>on20-ap01</td>
+                                    <td>VirtIO-SCSI</td>
+                                    <td>/dev/sda</td>
+                                    <td>OK</td>
+                                    <td>이미지</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>he_metadata</td>
+                                    <td style="width: 10%;">289137398279301798</td>
+                                    <td></td>
+                                    <td><i class="fa fa-glass"></i></td>
+                                    <td>on20-ap01</td>
+                                    <td>VirtIO-SCSI</td>
+                                    <td>/dev/sda</td>
+                                    <td>OK</td>
+                                    <td>이미지</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                 <!--스토리지 우클릭메뉴박스-->
+                <div id="storage_context_menu">
+                    <div>새로 만들기</div>
+                    <div>새로운 도메인</div>
+                    <div>도메인 가져오기</div>
+                    <div>도메인 관리</div>
+                    <div>삭제</div>
+                    <div>Connections</div>
+                </div>
+            </div><!--section_content_outer끝-->
+
+            <!--스토리지 디스크 새로만들기팝업-->
+            <div class="storage_disk_new_outer">
+                <div class="storage_disk_new_popup">
+                    <div class="network_popup_header">
+                        <h1>새 가상 디스크</h1>
+                        <button><i class="fa fa-times"></i></button>
+                    </div>
+                    <div id="disk_new_nav">
+                        <div id="storage_img_btn">이미지</div>
+                        <div id="storage_directlun_btn">직접LUN</div>
+                        <div id="storage_managed_btn">관리되는 블록</div>
+                    </div>
+                    <div class="disk_new_img">
+                        <div class="disk_new_img_left">
+                            <div class="img_input_box">
+                                <span>크기(GIB)</span>
+                                <input type="text">
+                            </div>
+                            <div class="img_input_box">
+                                <span>별칭</span>
+                                <input type="text">
+                            </div>
+                            <div class="img_input_box">
+                                <span>설명</span>
+                                <input type="text">
+                            </div>
+                            <div class="img_select_box">
+                                <label for="os">데이터 센터</label>
+                                <select id="os">
+                                    <option value="linux">Linux</option>
+                                </select>
+                            </div>
+                            <div class="img_select_box">
+                                <label for="os">스토리지 도메인</label>
+                                <select id="os">
+                                    <option value="linux">Linux</option>
+                                </select>
+                            </div>
+                            <div class="img_select_box">
+                                <label for="os">할당 정책</label>
+                                <select id="os">
+                                    <option value="linux">Linux</option>
+                                </select>
+                            </div>
+                            <div class="img_select_box">
+                                <label for="os">디스크 프로파일</label>
+                                <select id="os">
+                                    <option value="linux">Linux</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="disk_new_img_right">
+                            <div>
+                                <input type="checkbox" id="reset_after_deletion">
+                                <label for="reset_after_deletion">삭제 후 초기화</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" class="shareable">
+                                <label for="shareable">공유 가능</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="incremental_backup" checked>
+                                <label for="incremental_backup">중복 백업 사용</label>
+                            </div>
+                        </div>
+                    </div><!--disk_new_img 팝업 끝-->
+
+                    <!--직접LUN-->
+                    <div id="storage_directlun_outer" style="display: none;">
+                        <div id="storage_lun_first">
+                            <div class="disk_new_img_left">
+                                <div class="img_input_box">
+                                    <span>별칭</span>
+                                    <input type="text">
+                                </div>
+                                <div class="img_input_box">
+                                    <span>설명</span>
+                                    <input type="text">
+                                </div>
+                                <div class="img_select_box">
+                                    <label for="os">데이터 센터</label>
+                                    <select id="os">
+                                        <option value="linux">Linux</option>
+                                    </select>
+                                </div>
+                                <div class="img_select_box">
+                                    <label for="os">호스트</label>
+                                    <select id="os">
+                                        <option value="linux">Linux</option>
+                                    </select>
+                                </div>
+                                <div class="img_select_box">
+                                    <label for="os">스토리지 타입</label>
+                                    <select id="os">
+                                        <option value="linux">Linux</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="disk_new_img_right">
+                                <div>
+                                    <input type="checkbox" class="shareable">
+                                    <label for="shareable">공유 가능</label>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!--직접LUN끝-->
+                    <!--관리되는 블록-->
+                    <div id="storage_managed_outer" style="display: none;">
+                        <div id="disk_managed_block_left">
+                            <div class="img_input_box">
+                                <span>크기(GIB)</span>
+                                <input type="text" disabled>
+                            </div>
+                            <div class="img_input_box">
+                                <span>별칭</span>
+                                <input type="text" value="on20-ap01_Disk1" disabled>
+                            </div>
+                            <div class="img_input_box">
+                                <span>설명</span>
+                                <input type="text" disabled>
+                            </div>
+                            <div class="img_select_box">
+                                <label for="data_center_select">데이터 센터</label>
+                                <select id="data_center_select" disabled>
+                                    <option value="dc_linux">Linux</option>
+                                </select>
+                            </div>
+                            <div class="img_select_box">
+                                <label for="storage_domain_select">스토리지 도메인</label>
+                                <select id="storage_domain_select" disabled>
+                                    <option value="sd_linux">Linux</option>
+                                </select>
+                            </div>
+                            <span>해당 데이터 센터에 디스크를 생성할 수 있는 권한을 갖는 사용 가능한 관리 블록 스토리지 도메인이 없습니다.</span>
+                        </div>
+
+                        <div id="disk_managed_block_right">
+                            <div>
+                                <input type="checkbox" id="disk_shared_option" disabled>
+                                <label for="disk_shared_option">공유 가능</label>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!--관리되는 블록끝-->
+
+                    <div class="edit_footer">
+                        <button style="display: none;"></button>
+                        <button>OK</button>
+                        <button>취소</button>
+                    </div>
+        
+                </div>
+            </div>
+
+            <!--스토리지 디스크 새로만들기팝업-->
+            <div class="storage_disk_upload_outer">
+                <div class="storage_disk_upload_popup">
+                    <div class="network_popup_header">
+                        <h1>이미지 업로드</h1>
+                        <button><i class="fa fa-times"></i></button>
+                    </div>
+
+                    <div class="storage_upload_first">
+                        <button>파일 선택</button>
+                        <div>선택된 파일 없음</div>
+                    </div>
+
+                    <div class="storage_upload_second">
+                        <div class="disk_option">
+                            디스크옵션
+                        </div>
+                        <div class="disk_new_img" style=" padding-top: 0.4rem;">
+                            <div class="disk_new_img_left">
+                                <div class="img_input_box">
+                                    <span>크기(GIB)</span>
+                                    <input type="text" disabled>
+                                </div>
+                                <div class="img_input_box">
+                                    <span>별칭</span>
+                                    <input type="text">
+                                </div>
+                                <div class="img_input_box">
+                                    <span>설명</span>
+                                    <input type="text">
+                                </div>
+                                <div class="img_select_box">
+                                    <label for="data_hub">데이터 센터</label>
+                                    <select id="data_hub">
+                                        <option value="linux">Linux</option>
+                                    </select>
+                                </div>
+                                <div class="img_select_box">
+                                    <label for="storage_zone">스토리지 도메인</label>
+                                    <select id="storage_zone">
+                                        <option value="linux">Linux</option>
+                                    </select>
+                                </div>
+                                <div class="img_select_box">
+                                    <label for="disk_pattern">디스크 프로파일</label>
+                                    <select id="disk_pattern">
+                                        <option value="nfs_storage">NFS-Storage</option>
+                                    </select>
+                                </div>
+                                <div class="img_select_box">
+                                    <label for="compute_unit">호스트</label>
+                                    <select id="compute_unit">
+                                        <option value="host01">host01.ititinfo.com</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="disk_new_img_right">    
+                                <div>
+                                    <input type="checkbox" id="reset_after_deletion">
+                                    <label for="reset_after_deletion">삭제 후 초기화</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" class="shareable">
+                                    <label for="shareable">공유 가능</label>
+                                </div>
+                                <div style="margin-bottom: 0.4rem;">
+                                    <input type="checkbox" id="incremental_backup" checked>
+                                    <label for="incremental_backup">중복 백업 사용</label>
+                                </div>
+                                <div>
+                                    <button>연결테스트</button>
+                                </div>
+                            </div>
+                        </div><!--disk_new_img 팝업 끝-->
+
+                    </div>
+
+
+
+
+                    
+                    <div class="edit_footer">
+                        <button style="display: none;"></button>
+                        <button>OK</button>
+                        <button>취소</button>
+                    </div>
+                </div>
+            </div>
+
+             <!--스토리지 도메인 버튼-->
+             <div id="storage_domain_outer" style="display: none;">
+                <div class="content_header">
+                    <div class="content_header_left">
+                        <div >디스크</div>
+                        <div>도메인</div>
+                        <div>볼륨</div>
+                        <div>스토리지</div>
+                        <div>논리 네트워크</div>
+                        <div>클러스터</div>
+                        <div>권한</div>
+                        <div>이벤트</div>
+                    </div>
+                    
+                </div>
+                
+                <div class="storage_domain_content">
+                    <div  class="content_header_right">
+                        <button id="new_domain_btn">새로운 도메인</button>
+                        <button id="get_domain_btn">도메인 가져오기</button>
+                        <button id="administer_domain_btn">도메인 관리</button>
+                        <button>삭제</button>
+                        <button>Connections</button>
+                        <button class="content_header_popup_btn">
+                            <i class="fa fa-ellipsis-v"></i>
+                            <div class="content_header_popup" style="display: none;">
+                                <div>활성</div>
+                                <div>비활성화</div>
+                                <div>이동</div>
+                                <div>LUN 새로고침</div>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="search_box">
+                        <input type="text"/>
+                        <button><i class="fa fa-search"></i></button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>상태</th>
+                                <th></th>
+                                <th>도메인 이름</th>
+                                <th>코멘트</th>
+                                <th>도메인 유형</th>
+                                <th>스토리지 유형</th>
+                                <th>포맷</th>
+                                <th>데이터 센터간 상태</th>
+                                <th>전체 공간(GB)</th>
+                                <th>여유 공간(GB)</th>
+                                <th>확보된 여유 공간(GB)</th>
+                                <th>설명</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><i class="fa fa-caret-up" style="color: #1DED00;"></i></td>
+                                <td><i class="fa fa-glass"></i></td>
+                                <td></td>
+                                <td></i></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa fa-caret-up" style="color: #1DED00;"></i></td>
+                                <td><i class="fa fa-glass"></i></td>
+                                <td></td>
+                                <td></i></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa fa-caret-up" style="color: #1DED00;"></i></td>
+                                <td><i class="fa fa-glass"></i></td>
+                                <td></td>
+                                <td></i></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div><!--스토리지 도메인 버튼끝-->
+
+            <!--스토리지 도메인(새로운 도메인)팝업-->
+            <div class="storage_domain_new_outer">
+                <div class="storage_domain_new_popup">
+                    <div class="network_popup_header">
+                        <h1>새로운 도메인</h1>
+                        <button><i class="fa fa-times"></i></button>
+                    </div>
+                    
+                    <div class="storage_domain_new_first">
+                        <div class="domain_new_left">
+                            <div class="domain_new_select">
+                                <label for="data_hub_location">데이터 센터</label>
+                                <select id="data_hub_location">
+                                    <option value="linux">Default(VS)</option>
+                                </select>
+                            </div>
+                            <div class="domain_new_select">
+                                <label for="domain_feature_set">도메인 기능</label>
+                                <select id="domain_feature_set">
+                                    <option value="linux">데이터</option>
+                                </select>
+                            </div>
+                            <div class="domain_new_select">
+                                <label for="storage_option_type">스토리지 유형</label>
+                                <select id="storage_option_type">
+                                    <option value="linux">NFS</option>
+                                </select>
+                            </div>
+                            <div class="domain_new_select" style="margin-bottom: 0;">
+                                <label for="host_identifier">호스트</label>
+                                <select id="host_identifier">
+                                    <option value="linux">host02.ititinfo.com</option>
+                                </select>
+                            </div>                           
+                        </div>
+                        <div class="domain_new_right">
+                            <div class="domain_new_select">
+                                <label>호스트</label>
+                                <input type="text"/>
+                            </div>
+                            <div class="domain_new_select">
+                                <label>설명</label>
+                                <input type="text"/>
+                            </div>
+                            <div class="domain_new_select">
+                                <label>코멘트</label>
+                                <input type="text"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="storage_domain_new_second">
+                        <div>
+                            <label for="data_hub">내보내기 경로</label>
+                            <input type="text" placeholder="예:myserver.mydomain.com/my/local/path"/>
+                        </div>
+
+                        <div>
+                            <i class="fa fa-chevron-circle-right" id="domain_hidden_box_btn"></i>
+                            <span>사용자 정의 연결 매개 변수</span>
+                            <div id="domain_hidden_box" style="display: none;">
+                                <span>아래 필드에서 기본값을 변경하지 않을 것을 권장합니다.</span>
+                                <div class="domain_new_select">
+                                    <label for="data_hub">호스트</label>
+                                    <select id="data_hub">
+                                        <option value="linux">host02.ititinfo.com</option>
+                                    </select>
+                                </div>
+                                <div class="domain_new_select">
+                                    <label for="data_hub">재전송</label>
+                                    <input type="text"/>
+                                </div>
+                                <div class="domain_new_select">
+                                    <label for="data_hub">제한 시간(데시세컨드)</label>
+                                    <input type="text"/>
+                                </div>
+                                <div class="domain_new_select">
+                                    <label for="data_hub">추가 마운트 옵션</label>
+                                    <input type="text"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <i class="fa fa-chevron-circle-right" id="domain_hidden_box_btn2"></i>
+                            <span>고급 매개 변수</span>
+                            <div id="domain_hidden_box2" style="display: none;">
+                                <div class="domain_new_select">
+                                    <label>디스크 공간 부족 경고 표시(%)</label>
+                                    <input type="text"/>
+                                </div>
+                                <div class="domain_new_select">
+                                    <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+                                    <input type="text"/>
+                                </div>
+                                <div class="domain_new_select">
+                                    <label>디스크 공간 부족 경고 표시(%)</label>
+                                    <input type="text"/>
+                                </div>
+                                <div class="domain_new_select">
+                                    <label for="format_type_selector" style="color: gray;">포맷</label>
+                                    <select id="format_type_selector" disabled>
+                                        <option value="linux">V5</option>
+                                    </select>
+                                </div>
+                                <div class="network_checkbox_type2"> 
+                                    <input type="checkbox" id="photo_separation" name="photo_separation">
+                                    <label for="photo_separation">포토 분리</label>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="edit_footer">
+                        <button style="display: none;"></button>
+                        <button>OK</button>
+                        <button>취소</button>
+                    </div>
+                </div>
+            </div>
+            <!--스토리지 도메인(도메인 가져오기)팝업-->
+            <div class="storage_domain_get_outer">
+                <div class="storage_domain_get_popup">
+                    <div class="network_popup_header">
+                        <h1>사전 구성된 도메인 가져오기</h1>
+                        <button><i class="fa fa-times"></i></button>
+                    </div>
+                    
+                    <div class="storage_domain_new_first">
+                        <div class="domain_new_left">
+                            <div class="domain_new_select">
+                                <label for="data_hub_location">데이터 센터</label>
+                                <select id="data_hub_location">
+                                    <option value="linux">Default(VS)</option>
+                                </select>
+                            </div>
+                            <div class="domain_new_select">
+                                <label for="domain_feature_set">도메인 기능</label>
+                                <select id="domain_feature_set">
+                                    <option value="linux">데이터</option>
+                                </select>
+                            </div>
+                            <div class="domain_new_select">
+                                <label for="storage_option_type">스토리지 유형</label>
+                                <select id="storage_option_type">
+                                    <option value="linux">NFS</option>
+                                </select>
+                            </div>
+                            <div class="domain_new_select" style="margin-bottom: 0;">
+                                <label for="host_identifier">호스트</label>
+                                <select id="host_identifier">
+                                    <option value="linux">host02.ititinfo.com</option>
+                                </select>
+                            </div>                           
+                        </div>
+                        <div class="domain_new_right">
+                            <div class="domain_new_select">
+                                <label>이름</label>
+                                <input type="text"/>
+                            </div>
+                            <div class="domain_new_select">
+                                <label>설명</label>
+                                <input type="text"/>
+                            </div>
+                            <div class="domain_new_select">
+                                <label>코멘트</label>
+                                <input type="text"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="storage_domain_new_second">
+                        <div>
+                            <label for="data_hub">내보내기 경로</label>
+                            <input type="text" placeholder="예:myserver.mydomain.com/my/local/path"/>
+                        </div>
+
+                        <div>
+                            <i class="fa fa-chevron-circle-right" id="domain_hidden_box_btn"></i>
+                            <span>사용자 정의 연결 매개 변수</span>
+                            <div id="domain_hidden_box" style="display: none;">
+                                <span>아래 필드에서 기본값을 변경하지 않을 것을 권장합니다.</span>
+                                <div class="domain_new_select">
+                                    <label for="data_hub">호스트</label>
+                                    <select id="data_hub">
+                                        <option value="linux">host02.ititinfo.com</option>
+                                    </select>
+                                </div>
+                                <div class="domain_new_select">
+                                    <label for="data_hub">재전송</label>
+                                    <input type="text"/>
+                                </div>
+                                <div class="domain_new_select">
+                                    <label for="data_hub">제한 시간(데시세컨드)</label>
+                                    <input type="text"/>
+                                </div>
+                                <div class="domain_new_select">
+                                    <label for="data_hub">추가 마운트 옵션</label>
+                                    <input type="text"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <i class="fa fa-chevron-circle-right" id="domain_hidden_box_btn2"></i>
+                            <span>고급 매개 변수</span>
+                            <div id="domain_hidden_box2" style="display: none;">
+                                <div class="domain_new_select">
+                                    <label>디스크 공간 부족 경고 표시(%)</label>
+                                    <input type="text"/>
+                                </div>
+                                <div class="domain_new_select">
+                                    <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+                                    <input type="text"/>
+                                </div>
+                                <div class="domain_new_select">
+                                    <label>디스크 공간 부족 경고 표시(%)</label>
+                                    <input type="text"/>
+                                </div>
+                                <div class="domain_new_select">
+                                    <label for="format_type_selector" style="color: gray;">포맷</label>
+                                    <select id="format_type_selector" disabled>
+                                        <option value="linux">V5</option>
+                                    </select>
+                                </div>
+                                <div class="network_checkbox_type2"> 
+                                    <input type="checkbox" id="photo_separation" name="photo_separation">
+                                    <label for="photo_separation">포토 분리</label>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="edit_footer">
+                        <button style="display: none;"></button>
+                        <button>OK</button>
+                        <button>취소</button>
+                    </div>
+                </div>
+            </div>
+
+            <!--스토리지 도메인(도메인 관리)팝업-->
+            <div class="storage_domain_administer_outer">
+                <div class="storage_domain_administer_popup">
+                    <div class="network_popup_header">
+                        <h1>도메인 관리</h1>
+                        <button><i class="fa fa-times"></i></button>
+                    </div>
+                    
+                    <div class="storage_domain_new_first">
+                        <div class="domain_new_left">
+                            <div class="domain_new_select">
+                                <label for="data_hub_location">데이터 센터</label>
+                                <select id="data_hub_location">
+                                    <option value="linux">Default(VS)</option>
+                                </select>
+                            </div>
+                            <div class="domain_new_select">
+                                <label for="domain_feature_set">도메인 기능</label>
+                                <select id="domain_feature_set">
+                                    <option value="linux">데이터</option>
+                                </select>
+                            </div>
+                            <div class="domain_new_select">
+                                <label for="storage_option_type">스토리지 유형</label>
+                                <select id="storage_option_type">
+                                    <option value="linux">NFS</option>
+                                </select>
+                            </div>
+                            <div class="domain_new_select" style="margin-bottom: 0;">
+                                <label for="host_identifier">호스트</label>
+                                <select id="host_identifier">
+                                    <option value="linux">host02.ititinfo.com</option>
+                                </select>
+                            </div>                           
+                        </div>
+                        <div class="domain_new_right">
+                            <div class="domain_new_select">
+                                <label>이름</label>
+                                <input type="text"/>
+                            </div>
+                            <div class="domain_new_select">
+                                <label>설명</label>
+                                <input type="text"/>
+                            </div>
+                            <div class="domain_new_select">
+                                <label>코멘트</label>
+                                <input type="text"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="storage_domain_new_second">
+                        <div>
+                            <label for="data_hub">내보내기 경로</label>
+                            <input type="text" placeholder="예:myserver.mydomain.com/my/local/path"/>
+                        </div>
+
+                        <div>
+                            <i class="fa fa-chevron-circle-right" id="domain_hidden_box_btn"></i>
+                            <span>사용자 정의 연결 매개 변수</span>
+                            <div id="domain_hidden_box" style="display: none;">
+                                <span>아래 필드에서 기본값을 변경하지 않을 것을 권장합니다.</span>
+                                <div class="domain_new_select">
+                                    <label for="data_hub">호스트</label>
+                                    <select id="data_hub">
+                                        <option value="linux">host02.ititinfo.com</option>
+                                    </select>
+                                </div>
+                                <div class="domain_new_select">
+                                    <label for="data_hub">재전송</label>
+                                    <input type="text"/>
+                                </div>
+                                <div class="domain_new_select">
+                                    <label for="data_hub">제한 시간(데시세컨드)</label>
+                                    <input type="text"/>
+                                </div>
+                                <div class="domain_new_select">
+                                    <label for="data_hub">추가 마운트 옵션</label>
+                                    <input type="text"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <i class="fa fa-chevron-circle-right" id="domain_hidden_box_btn2"></i>
+                            <span>고급 매개 변수</span>
+                            <div id="domain_hidden_box2" style="display: none;">
+                                <div class="domain_new_select">
+                                    <label>디스크 공간 부족 경고 표시(%)</label>
+                                    <input type="text"/>
+                                </div>
+                                <div class="domain_new_select">
+                                    <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+                                    <input type="text"/>
+                                </div>
+                                <div class="domain_new_select">
+                                    <label>디스크 공간 부족 경고 표시(%)</label>
+                                    <input type="text"/>
+                                </div>
+                                <div class="domain_new_select">
+                                    <label for="format_type_selector" style="color: gray;">포맷</label>
+                                    <select id="format_type_selector" disabled>
+                                        <option value="linux">V5</option>
+                                    </select>
+                                </div>
+                                <div class="network_checkbox_type2"> 
+                                    <input type="checkbox" id="photo_separation" name="photo_separation">
+                                    <label for="photo_separation">포토 분리</label>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="edit_footer">
+                        <button style="display: none;"></button>
+                        <button>OK</button>
+                        <button>취소</button>
+                    </div>
+                </div>
+            </div>
+
+            <!--스토리지 볼륨버튼-->
+            <div id="storage_volume_outer" style="display: none;">
+                <div class="content_header">
+                    <div class="content_header_left">
+                        <div >디스크</div>
+                        <div  >도메인</div>
+                        <div class="active">볼륨</div>
+                        <div>스토리지</div>
+                        <div>논리 네트워크</div>
+                        <div>클러스터</div>
+                        <div>권한</div>
+                        <div>이벤트</div>
+                    </div>
+                    
+                </div>
+                
+                <div class="storage_volume_content">
+                    <div  class="content_header_right">
+                        <button id="storage_volume_new_btn">새로 만들기</button>
+                        <button>삭제</button>
+                        <button>시작</button>
+                        <button class="disabled_button">중지</button>
+                        <button>프로파일링</button>
+                        <div>
+                            <button id="storage_volume_snap_btn"  style="margin: 0;">스냅샷</button>
+                            <button id="storage_volume_option_boxbtn"><i class="fa fa-chevron-down"></i>
+                                <div class="storage_volume_option_box" style="display: none;">
+                                    <div>새로 만들기</div>
+                                    <div>스케줄 편집</div>
+                                    <div>옵션 - 클러스터</div>
+                                    <div>옵션 - 볼륨</div>
+                                </div>
+                            </button>
+                        </div>
+                        <button>지역 복제</button> 
+                        <button class="content_header_popup_btn">
+                            <i class="fa fa-ellipsis-v"></i>
+                            <div class="content_header_popup" style="display: none;">
+                                <div>활성</div>
+                                <div>비활성화</div>
+                                <div>이동</div>
+                                <div>LUN 새로고침</div>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="search_box">
+                        <input type="text"/>
+                        <button><i class="fa fa-search"></i></button>
+                    </div>
+
+                    <div class="empty_table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>이름</th>
+                                    <th>클러스터</th>
+                                    <th>볼륨 유형</th>
+                                    <th>브릭</th>
+                                    <th>정보</th>
+                                    <th>사용한 공간</th>
+                                    <th>작업</th>
+                                    <th>스냅샷 수</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <span class="empty_content">표시할 항복이 없습니다</span>
+                                <tr>
+                                    
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div><!--스토리지 볼륨버튼끝-->
+
+            <!--스토리지 볼륨 새로만들기팝업-->
+            <div class="storage_volume_new_outer">
+                <div class="storage_volume_new_popup">
+                    <div class="network_popup_header">
+                        <h1>새 볼륨</h1>
+                        <button><i class="fa fa-times"></i></button>
+                    </div>
+
+                    <div class="volume_first_content">
+                        <div class="domain_new_select">
+                            <label for="data_center_selector">데이터 센터</label>
+                            <select id="data_center_selector">
+                                <option value="linux">host02.ititinfo.com</option>
+                            </select>
+                        </div>
+                        <div class="domain_new_select" style="margin-bottom: 0;">
+                            <label for="volume_cluster_selector">볼륨 클러스터</label>
+                            <select id="volume_cluster_selector">
+                                <option value="linux">host02.ititinfo.com</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="volume_second_content">
+                        <div class="domain_new_select">
+                            <label>볼륨 클러스터</label>
+                            <input type="text"/>
+                        </div>
+                        <div class="domain_new_select">
+                            <label for="vol_cluster_dropdown">볼륨 클러스터</label>
+                            <select id="vol_cluster_dropdown">
+                                <option value="linux">host02.ititinfo.com</option>
+                            </select>
+                        </div>
+                        <div class="domain_new_select">
+                            <label for="data_hub">볼륨 클러스터</label>
+                            <input type="text" value="3" disabled/>
+                        </div>
+                        <div class="domain_new_select">
+                            <label>전송 유형</label>
+                            <div class="volume_checkboxs">
+                                <div class="volume_checkbox" style="margin-right: 3rem;">
+                                    <input type="checkbox">
+                                    <label for="photo_separation">TCP</label>
+                                </div>
+                                <div class="volume_checkbox">
+                                    <input type="checkbox">
+                                    <label for="photo_separation">RDMA</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="domain_new_select">
+                            <label>브릭</label>
+                            <button>브릭 추가</button>
+                        </div>
+                    </div>
+
+                    <div class="volume_third_content" style="padding-top: 0;">
+                        <h2>접근 프로토콜</h2>
+                        <div class="volume_checkbox">
+                            <input type="checkbox">
+                            <label for="photo_separation">RDMA</label>
+                        </div>
+                        <div class="volume_checkbox">
+                            <input type="checkbox">
+                            <label for="photo_separation">RDMA</label>
+                        </div>
+                        <div class="volume_checkbox">
+                            <input type="checkbox">
+                            <label for="photo_separation">RDMA</label>
+                        </div>
+                        <div class="domain_new_select">
+                            <label for="data_hub">액세스 허용할 호스트</label>
+                            <input type="text"/>
+                        </div>
+                        <div class="volume_checkbox">
+                            <input type="checkbox">
+                            <label for="photo_separation">RDMA</label>
+                        </div>
+                    </div>
+
+                    <div class="edit_footer">
+                        <button style="display: none;"></button>
+                        <button>OK</button>
+                        <button>취소</button>
+                    </div>
+                </div>
+            </div>
+
+            <!--스토리지 볼륨 스냅샷 팝업-->
+            <div class="storage_volume_snap_outer">
+                <div class="storage_volume_snap_popup">
+                    <div class="network_popup_header">
+                        <h1>볼륨 스냅샷 - 클러스터 옵션</h1>
+                        <button><i class="fa fa-times"></i></button>
+                    </div>
+                    
+                    <div class="volume_snap_first_content">
+                        <div class="domain_new_select">
+                            <label for="vol_cluster_dropdown">볼륨 클러스터</label>
+                            <select id="vol_cluster_dropdown">
+                                <option value="linux">host02.ititinfo.com</option>
+                            </select>
+                        </div>
+
+                        <h2>스냅샷 옵션</h2>
+                        <div class="volume_snap_table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>이름</th>
+                                        <th>설명</th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>ㅇ</td>
+                                        <td>ㅇ</td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="edit_footer">
+                        <button style="display: none;"></button>
+                        <button>업데이트</button>
+                        <button>취소</button>
+                    </div>
+                </div>
+            </div>
+
+            <!--스토리지 스토리지버튼-->
+            <div id="storage_storage_outer" style="display: none;">
+                <div class="content_header">
+                    <div class="content_header_left">
+                        <div >디스크</div>
+                        <div>도메인</div>
+                        <div>볼륨</div>
+                        <div class="active">스토리지</div>
+                        <div>논리 네트워크</div>
+                        <div>클러스터</div>
+                        <div>권한</div>
+                        <div>이벤트</div>
+                    </div>
+                    
+                </div>
+                
+                <div class="storage_domain_content">
+                    <div  class="content_header_right">
+                        <button>데이터 연결</button>
+                        <button>ISP 연결</button>
+                        <button>내보내기 연결</button>
+                        <button>분리</button>
+                        <button>활성</button>
+                        <button>유지보수</button>
+                    </div>
+                    <div>
+                        <div class="application_content_header">
+                            <button><i class="fa fa-chevron-left"></i></button>
+                            <div>1-2</div>
+                            <button><i class="fa fa-chevron-right"></i></button>
+                            <button><i class="fa fa-ellipsis-v"></i></button>            
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>상태</th>
+                                <th></th>
+                                <th>도메인 이름</th>
+                                <th>코멘트</th>
+                                <th>도메인 유형</th>
+                                <th>스토리지 유형</th>
+                                <th>포맷</th>
+                                <th>데이터 센터간 상태</th>
+                                <th>전체 공간(GB)</th>
+                                <th>여유 공간(GB)</th>
+                                <th>확보된 여유 공간(GB)</th>
+                                <th>설명</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><i class="fa fa-caret-up" style="color: #1DED00;"></i></td>
+                                <td><i class="fa fa-glass"></i></td>
+                                <td></td>
+                                <td></i></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa fa-caret-up" style="color: #1DED00;"></i></td>
+                                <td><i class="fa fa-glass"></i></td>
+                                <td></td>
+                                <td></i></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa fa-caret-up" style="color: #1DED00;"></i></td>
+                                <td><i class="fa fa-glass"></i></td>
+                                <td></td>
+                                <td></i></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div><!--스토리지 스토리지 4864버튼끝-->
+
+            <!--스토리지 논리네트워크 버튼-->
+            <div id="storage_logic_outer" style="display: none;">
+                <div class="content_header">
+                    <div class="content_header_left">
+                        <div >디스크</div>
+                        <div>도메인</div>
+                        <div>볼륨</div>
+                        <div>스토리지</div>
+                        <div class="active">논리 네트워크</div>
+                        <div>클러스터</div>
+                        <div>권한</div>
+                        <div>이벤트</div>
+                    </div>
+                    
+                </div>
+                
+                <div class="storage_domain_content">
+                    <div  class="content_header_right">
+                        <button>새로만들기</button>
+                        <button>편집</button>
+                        <button>삭제</button>
+                    </div>
+                    <div>
+                        <div class="application_content_header">
+                            <button><i class="fa fa-chevron-left"></i></button>
+                            <div>1-2</div>
+                            <button><i class="fa fa-chevron-right"></i></button>
+                            <button><i class="fa fa-ellipsis-v"></i></button>            
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>이름</th>
+                                <th>설명</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ovirtmgmt</td>
+                                <td>Management Network</td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div><!--스토리지 논리네트워크 버튼끝-->
+
+            <!--스토리지 클러스터 버튼-->
+            <div id="storage_cluster_outer" style="display: none;">
+                <div class="content_header">
+                    <div class="content_header_left">
+                        <div >디스크</div>
+                        <div>도메인</div>
+                        <div>볼륨</div>
+                        <div>스토리지</div>
+                        <div class="active">논리 네트워크</div>
+                        <div>클러스터</div>
+                        <div>권한</div>
+                        <div>이벤트</div>
+                    </div>
+                </div>
+                
+                <div class="storage_domain_content">
+                    <div>
+                        <div class="application_content_header">
+                            <button><i class="fa fa-chevron-left"></i></button>
+                            <div>1-2</div>
+                            <button><i class="fa fa-chevron-right"></i></button>
+                            <button><i class="fa fa-ellipsis-v"></i></button>            
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>이름</th>
+                                <th>호환 버전</th>
+                                <th>설명</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ovirtmgmt</td>
+                                <td>Management Network</td>
+                                <td>The default server cluster</td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div><!--스토리지 클러스터 버튼끝-->
+
+            <!--스토리지 권한 버튼-->
+            <div id="storage_right_outer" style="display: none;">
+                <div class="content_header">
+                    <div class="content_header_left">
+                        <div>디스크</div>
+                        <div>도메인</div>
+                        <div>볼륨</div>
+                        <div >스토리지</div>
+                        <div>논리 네트워크</div>
+                        <div>클러스터</div>
+                        <div class="active">권한</div>
+                        <div>이벤트</div>
+                    </div>
+                    
+                </div>
+                
+                <div class="storage_domain_content">
+                    <div  class="content_header_right">
+                        <button>추가</button>
+                        <button>제거</button>
+                    </div>
+                    <div class="storage_right_btns">
+                        <span>Permission Filters:</span>
+                        <div>
+                            <button>All</button>
+                            <button>Direct</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="application_content_header">
+                            <button><i class="fa fa-chevron-left"></i></button>
+                            <div>1-2</div>
+                            <button><i class="fa fa-chevron-right"></i></button>
+                            <button><i class="fa fa-ellipsis-v"></i></button>            
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>사용자</th>
+                                <th>인증 공급자</th>
+                                <th>네임스페이스</th>
+                                <th>역할</th>
+                                <th>생성일</th>
+                                <th>Inherited From</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><i class="fa fa-user"></i></td>
+                                <td>ovirtmgmt</td>
+                                <td></td>
+                                <td>*</td>
+                                <td>SuperUser</td>
+                                <td>2023.12.29 AM 11:40:58</td>
+                                <td>(시스템)</td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div><!--스토리지 권한 버튼-->
+
+
+            <!--footer-->
+            <div class="footer_outer">
+                <div class="footer">
+                    <button><i class="fa fa-chevron-down"></i></button>
+                    <div>
+                        <a>최근 작업</a>
+                        <a>경보</a>
+                    </div>
+                </div>
+                <div class="footer_content">
+
+                    <div class="footer_nav">
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+
+                        <div>
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+
+                        <div style="border-right: none;">
+                            <div>작업이름</div>
+                            <div><i class="fa fa-filter"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="footer_img">
+                        <img src="img/화면 캡처 2024-04-30 164511.png">
+                        <span>항목을 찾지 못했습니다</span>
+                    </div>
+
+                </div>
+            </div><!--footer끝-->
+        </div><!--스토리지 section끝-->
+<!---------------------------------------------------->
+
+
+
+
+    </div><!--main_outer끝-->
+</body>
+<script>
+    /*font-size반응형*/
+    function adjustFontSize() {
+        var width = window.innerWidth;
+        var fontSize = width / 40; // Adjust this value as needed
+
+        document.documentElement.style.fontSize = fontSize + 'px';
+    }
+
+    // Call the adjustFontSize function when the window size changes
+    window.onresize = function() {
+        adjustFontSize();
+    };
+
+    // Call the adjustFontSize function initially
+    adjustFontSize();
+
+</script>
+</html>
