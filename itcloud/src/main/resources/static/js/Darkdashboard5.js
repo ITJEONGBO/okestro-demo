@@ -1,6 +1,55 @@
 $(function(){
-   
 
+    //대시보드 버튼
+    $('#aside_popup_dashboard_btn').click(function(event) {
+        event.preventDefault(); // 기본 동작 방지
+        var targetUrl = 'Darkdashboard5.html'; // 이동할 URL
+        window.location.href = targetUrl; // 페이지 이동
+
+        $('#virtual_machine_chart').css('display','block');
+
+    });
+    //가상머신 버튼
+    $('#aside_popup_machine_btn').click(function(event) {
+        event.preventDefault(); // 기본 동작 방지
+        var targetUrl = 'machine.html'; // 이동할 URL
+        window.location.href = targetUrl; // 페이지 이동
+
+        $('#virtual_machine_chart').css('display','block');
+
+    });
+    //스토리지 버튼
+    $('#aside_popup_storage_btn').click(function(event) {
+        event.preventDefault(); // 기본 동작 방지
+        var targetUrl = 'storage.html'; // 이동할 URL
+        window.location.href = targetUrl; // 페이지 이동
+
+        $('#virtual_machine_chart').css('display','none');
+        $('#storage_chart').css('display','block');
+
+    });
+    //네트워크 버튼
+    $('#aside_popup_network_btn').click(function(event) {
+        event.preventDefault(); // 기본 동작 방지
+        var targetUrl = 'network.html'; // 이동할 URL
+        window.location.href = targetUrl; // 페이지 이동
+
+        $('#virtual_machine_chart').css('display','none');
+        $('#storage_chart').css('display','block');
+
+    });
+    //설정 버튼
+    $('#setting_icon').click(function(event) {
+        event.preventDefault(); // 기본 동작 방지
+        var targetUrl = 'setting.html'; // 이동할 URL
+        window.location.href = targetUrl; // 페이지 이동
+
+        $('#virtual_machine_chart').css('display','none');
+        $('#storage_chart').css('display','block');
+
+    });
+    
+/*
 // 처음 로딩 시 첫 번째 섹션을 기본으로 활성화
 setTimeout(function() {
     $('#aside_popup_dashboard_btn').first().trigger('click');
@@ -48,7 +97,6 @@ $('#aside_popup_machine_btn, #aside_popup_storage_btn, #aside_popup_network_btn'
     previousButton = $(this);
 });
 
-    
    
     // aside 팝업(가상머신버튼)
     $('#aside_popup_machine_btn').click(function(){
@@ -228,7 +276,7 @@ $('#aside_popup_machine_btn, #aside_popup_storage_btn, #aside_popup_network_btn'
                 $('#aside_outer').css('width','3%');
             }
     });
-
+*/
     // aside차트(가상머신)
     $('#aside_popup_first').click(function(){
         $('#aside_popup_second').toggle();

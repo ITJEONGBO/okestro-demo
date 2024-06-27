@@ -301,7 +301,7 @@
             </div> 
 
         </div><!--dash_board끝-->
-
+<!------------------------------------------------->
         <!--가상머신 section-->
         <div id="section" style="display: none;">
             <div class="section_header">
@@ -2098,352 +2098,352 @@
         </div><!--section(중간)끝-->
         
         <!--팝업창들-->
-<!--가져오기-->
-<div id="get_popup_bg">
-    <div id="get_popup">
-        <div class="domain_header">
-            <h1>가상머신 가져오기</h1>
-            <button><i class="fa fa-times"></i></button>
-        </div>
+            <!--가져오기-->
+            <div id="get_popup_bg">
+                <div id="get_popup">
+                    <div class="domain_header">
+                        <h1>가상머신 가져오기</h1>
+                        <button><i class="fa fa-times"></i></button>
+                    </div>
 
-        <div id="get_article1">
-            <div>
-                <label for="center">데이터 센터</label>
-                <select name="data_center" id="center">
-                    <option value="javascript">Default</option>
-                    <option value="php">PHP</option>
-                    <option value="java">Java</option>
-                </select>
-                
-            </div>
-            <div>
-                <label for="source">소스</label>
-                <select name="data_source" id="source">
-                    <option value="javascript">가상 어플라이언스(OVA)</option>
-                    <option value="php">PHP</option>
-                    <option value="java">Java</option>
-                </select>
-            </div>
-
-        </div>
-
-        <div id="get_article2">
-            <div>
-                <label for="get_host">호스트</label>
-                <select name="get_popup_host" id="get_host">
-                    <option value="javascript">host01.ititinfo.com</option>
-                    <option value="php">PHP</option>
-                    <option value="java">Java</option>
-                </select>
-            </div>
-            <div id="file_path">
-                <div>
-                    <span>파일경로</span>
-                    <i class="fa fa-info-circle" style="color: blue;"></i>
-                </div>
-                <input type="text"/>
-            </div>
-
-            <button>로드</button>
-
-            <div id="get_article3">
-                <div class="get_boxs">
-                    <span>소스 상의 가상 머신</span>
-                    <div class="get_box">
+                    <div id="get_article1">
                         <div>
-                            <input type="checkbox" id="get_name_source">
-                            <label for="get_name_source">이름</label>
-                        </div>
-                        <div>
+                            <label for="center">데이터 센터</label>
+                            <select name="data_center" id="center">
+                                <option value="javascript">Default</option>
+                                <option value="php">PHP</option>
+                                <option value="java">Java</option>
+                            </select>
                             
                         </div>
-                    </div>
-                </div>
-
-                <div>
-                    <i class="fa fa-arrow-right"></i>
-                    <i class="fa fa-arrow-left"></i>
-                </div>
-
-                <div>
-                    <span>가져오기할 가상 머신</span>
-                    <div class="get_box">
                         <div>
-                            <input type="checkbox" id="get_name_source">
-                            <label for="get_name_source">이름</label>
+                            <label for="source">소스</label>
+                            <select name="data_source" id="source">
+                                <option value="javascript">가상 어플라이언스(OVA)</option>
+                                <option value="php">PHP</option>
+                                <option value="java">Java</option>
+                            </select>
                         </div>
+
+                    </div>
+
+                    <div id="get_article2">
                         <div>
+                            <label for="get_host">호스트</label>
+                            <select name="get_popup_host" id="get_host">
+                                <option value="javascript">host01.ititinfo.com</option>
+                                <option value="php">PHP</option>
+                                <option value="java">Java</option>
+                            </select>
+                        </div>
+                        <div id="file_path">
+                            <div>
+                                <span>파일경로</span>
+                                <i class="fa fa-info-circle" style="color: blue;"></i>
+                            </div>
+                            <input type="text"/>
+                        </div>
+
+                        <button>로드</button>
+
+                        <div id="get_article3">
+                            <div class="get_boxs">
+                                <span>소스 상의 가상 머신</span>
+                                <div class="get_box">
+                                    <div>
+                                        <input type="checkbox" id="get_name_source">
+                                        <label for="get_name_source">이름</label>
+                                    </div>
+                                    <div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <i class="fa fa-arrow-right"></i>
+                                <i class="fa fa-arrow-left"></i>
+                            </div>
+
+                            <div>
+                                <span>가져오기할 가상 머신</span>
+                                <div class="get_box">
+                                    <div>
+                                        <input type="checkbox" id="get_name_source">
+                                        <label for="get_name_source">이름</label>
+                                    </div>
+                                    <div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div><!--get-article2끝-->
+
+                    <div id="get_footer">
+                        <div >
+                            <button>다음</button>
+                            <button id="get_footer_btn">취소</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!--템플릿 생성-->
+            <div id="template_bg">
+                <div id="template_popup">
+                    <div class="domain_header">
+                        <h1>새 템플릿</h1>
+                        <button><i class="fa fa-times"></i></button>
+                    </div>
+
+                    <div id="template_article_outer">
+                        <div class="template_content">
+                            <span>이름</span>
+                            <input type="text"/>
+                        </div>
+
+                        <div class="template_content">
+                            <span>설명</span>
+                            <input type="text"/>
+                        </div>
+
+                        <div class="template_content">
+                            <span>코멘트</span>
+                            <input type="text"/>
+                        </div>
+
+                        <div class="template_content">
+                            <label for="lang" style="font-size: 0.36rem;">클러스터</label>
+                            <select name="languages" id="lang">
+                                <option value="javascript">JavaScript</option>
+                                <option value="php">PHP</option>
+                                <option value="java">Java</option>
+                            </select>
+                        </div>
+
+                        <div class="template_content">
+                            <label for="lang" style="font-size: 0.36rem;">CPU프로파일</label>
+                            <select name="languages" id="lang">
+                                <option value="javascript">JavaScript</option>
+                                <option value="php">PHP</option>
+                                <option value="java">Java</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="template_article_outer2">
+                        <span>디스크할당 :</span>
+
+                        <div id="template_boxs">
+                            <div id="template_boxs_header">
+                                <div>별칭</div>
+                                <div>가상 크기</div>
+                                <div>포맷</div>
+                                <div>대상</div>
+                                <div>디스크 프로파일</div>
+                            </div>
                             
+                            <div id="template_boxs_nav">
+                                <div>on20-ap02</div>
+                                <div>200 GIB</div>
+                                
+                                    <select name="languages" id="lang">
+                                        <option value="javascript">JavaScript</option>
+                                        <option value="php">PHP</option>
+                                        <option value="java">Java</option>
+                                    </select>
+                                
+                                    <select name="languages" id="lang">
+                                        <option value="javascript">JavaScript</option>
+                                        <option value="php">PHP</option>
+                                        <option value="java">Java</option>
+                                    </select>
+                                
+                                
+                                    <select name="languages" id="lang">
+                                        <option value="javascript">JavaScript</option>
+                                        <option value="php">PHP</option>
+                                        <option value="java">Java</option>
+                                    </select>
+                                
+                                
+                            </div>
+                        </div>
+
+                        <div id="template_article_footer">
+                            <div class="checkbox-group">
+                                <div>
+                                    <input type="checkbox" id="template_checkbox"/>
+                                    <label for="template_checkbox">모든 사용자에게 이 템플릿 접근을 허용</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="template_checkbox2"/>
+                                    <label for="template_checkbox2">가상 머신 권한 복사</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                
+                    <div id="template_footer">
+                        <div>
+                            <button>OK</button>
+                            <button id="template_footer_btn">취소</button>
+                        </div>
+                    </div>
+                        
+
+                </div>
+            </div>
+            <!--Export to Data Domain-->
+            <div id="popup_bg">
+                <div id="domain_popup">
+                    <div class="domain_header">
+                        <h1>가상머신 내보내기</h1>
+                        <button><i class="fa fa-times"></i></button>
+                    </div>
+                    <div id="domain_article_outer">
+                        <div class="domain_article">
+                            <div>가상 머신 이름</div>
+                            <div style="background-color: #EDEDED;">on20-ap02</div>
+                        </div>
+                        <div class="domain_article">
+                            <div>내보내기된 가상 머신 이름</div>
+                            <div>on20-ap02</div>
+                        </div>
+                        <div class="domain_article">
+                            <label for="lang" style="font-size: 0.36rem;">스토리지 도메인</label>
+                            <select name="languages" id="lang">
+                                <option value="javascript">JavaScript</option>
+                                <option value="php">PHP</option>
+                                <option value="java">Java</option>
+                            </select>
+                        </div>
+                        <div id="domain_checkbox">
+                            <input type="checkbox" id="snapshot">
+                            <label for="snapshot">스냅샷 축소</label>
+                        </div>
+                        <div id="domain_footer">
+                            <a>Export to Data Domain</a>
+                            <a>취소</a>
                         </div>
                     </div>
                 </div>
-
-            </div>
-        </div><!--get-article2끝-->
-
-        <div id="get_footer">
-            <div >
-                <button>다음</button>
-                <button id="get_footer_btn">취소</button>
-            </div>
-        </div>
-
-    </div>
-</div>
-<!--템플릿 생성-->
-<div id="template_bg">
-    <div id="template_popup">
-        <div class="domain_header">
-            <h1>새 템플릿</h1>
-            <button><i class="fa fa-times"></i></button>
-        </div>
-
-        <div id="template_article_outer">
-            <div class="template_content">
-                <span>이름</span>
-                <input type="text"/>
             </div>
 
-            <div class="template_content">
-                <span>설명</span>
-                <input type="text"/>
-            </div>
-
-            <div class="template_content">
-                <span>코멘트</span>
-                <input type="text"/>
-            </div>
-
-            <div class="template_content">
-                <label for="lang" style="font-size: 0.36rem;">클러스터</label>
-                <select name="languages" id="lang">
-                    <option value="javascript">JavaScript</option>
-                    <option value="php">PHP</option>
-                    <option value="java">Java</option>
-                </select>
-            </div>
-
-            <div class="template_content">
-                <label for="lang" style="font-size: 0.36rem;">CPU프로파일</label>
-                <select name="languages" id="lang">
-                    <option value="javascript">JavaScript</option>
-                    <option value="php">PHP</option>
-                    <option value="java">Java</option>
-                </select>
-            </div>
-        </div>
-
-        <div id="template_article_outer2">
-            <span>디스크할당 :</span>
-
-            <div id="template_boxs">
-                <div id="template_boxs_header">
-                    <div>별칭</div>
-                    <div>가상 크기</div>
-                    <div>포맷</div>
-                    <div>대상</div>
-                    <div>디스크 프로파일</div>
-                </div>
-                
-                <div id="template_boxs_nav">
-                    <div>on20-ap02</div>
-                    <div>200 GIB</div>
-                    
-                        <select name="languages" id="lang">
-                            <option value="javascript">JavaScript</option>
-                            <option value="php">PHP</option>
-                            <option value="java">Java</option>
-                        </select>
-                    
-                        <select name="languages" id="lang">
-                            <option value="javascript">JavaScript</option>
-                            <option value="php">PHP</option>
-                            <option value="java">Java</option>
-                        </select>
-                    
-                    
-                        <select name="languages" id="lang">
-                            <option value="javascript">JavaScript</option>
-                            <option value="php">PHP</option>
-                            <option value="java">Java</option>
-                        </select>
-                    
-                    
-                </div>
-            </div>
-
-            <div id="template_article_footer">
-                <div class="checkbox-group">
-                    <div>
-                        <input type="checkbox" id="template_checkbox"/>
-                        <label for="template_checkbox">모든 사용자에게 이 템플릿 접근을 허용</label>
+            <!--도메인으로 내보내기-->
+            <div id="popup_bg2">
+                <div id="domain_popup2">
+                    <div class="domain_header">
+                        <h1>가상머신 내보내기</h1>
+                        <button><i class="fa fa-times"></i></button>
                     </div>
-                    <div>
-                        <input type="checkbox" id="template_checkbox2"/>
-                        <label for="template_checkbox2">가상 머신 권한 복사</label>
+                    <div id="domain2_article_outer">
+
+                        <div id="domain2_checkboxs">
+                            <div>
+                                <input type="checkbox" id="coercion">
+                                <label for="coercion">강제 적용</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="snapshot2">
+                                <label for="snapshot2">스냅샷 축소</label>
+                            </div>
+                        </div>
+
+                        <div id="warning">
+                            <i class="fa fa-ban"></i>
+                            <div>
+                                가상머신을 백업할 내보내기 도메인이 없습니다.<br>가상머신의 데이터 센터에 내보내기 도메인을 연결하십시오.
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div id="domain2_footer">
+                        <button>종료</button>
                     </div>
                 </div>
             </div>
-        </div>
 
-      
-        <div id="template_footer">
-            <div>
-                <button>OK</button>
-                <button id="template_footer_btn">취소</button>
-            </div>
-        </div>
-            
-
-    </div>
-</div>
-<!--Export to Data Domain-->
-<div id="popup_bg">
-    <div id="domain_popup">
-        <div class="domain_header">
-            <h1>가상머신 내보내기</h1>
-            <button><i class="fa fa-times"></i></button>
-        </div>
-        <div id="domain_article_outer">
-            <div class="domain_article">
-                <div>가상 머신 이름</div>
-                <div style="background-color: #EDEDED;">on20-ap02</div>
-            </div>
-            <div class="domain_article">
-                <div>내보내기된 가상 머신 이름</div>
-                <div>on20-ap02</div>
-            </div>
-            <div class="domain_article">
-                <label for="lang" style="font-size: 0.36rem;">스토리지 도메인</label>
-                <select name="languages" id="lang">
-                    <option value="javascript">JavaScript</option>
-                    <option value="php">PHP</option>
-                    <option value="java">Java</option>
-                </select>
-            </div>
-            <div id="domain_checkbox">
-                <input type="checkbox" id="snapshot">
-                <label for="snapshot">스냅샷 축소</label>
-            </div>
-            <div id="domain_footer">
-                <a>Export to Data Domain</a>
-                <a>취소</a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!--도메인으로 내보내기-->
-<div id="popup_bg2">
-    <div id="domain_popup2">
-        <div class="domain_header">
-            <h1>가상머신 내보내기</h1>
-            <button><i class="fa fa-times"></i></button>
-        </div>
-        <div id="domain2_article_outer">
-
-            <div id="domain2_checkboxs">
-                <div>
-                    <input type="checkbox" id="coercion">
-                    <label for="coercion">강제 적용</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="snapshot2">
-                    <label for="snapshot2">스냅샷 축소</label>
-                </div>
-            </div>
-
-            <div id="warning">
-                <i class="fa fa-ban"></i>
-                <div>
-                    가상머신을 백업할 내보내기 도메인이 없습니다.<br>가상머신의 데이터 센터에 내보내기 도메인을 연결하십시오.
-                </div>
-            </div>
-
-        </div>
-
-        <div id="domain2_footer">
-            <button>종료</button>
-        </div>
-    </div>
-</div>
-
-<!--마이그레이션-->
-<div id="migration_popup_outer">
-    <div id="migration_popup">
-        <div class="domain_header">
-            <h1>가상머신 마이그레이션</h1>
-            <button><i class="fa fa-times"></i></button>
-        </div>
-        <div id="migration_article_outer">
-            <span>1대의 가상 머신이 마이그레이션되는 호스트를 선택하십시오.</span>
-            <div id="migration_article">
-                <div>
-                    <div id="migration_dropdown">
-                        <label for="host">대상 호스트 <i class="fa fa-info-circle"></i></label>
-                        <select name="host_dropdown" id="host">
-                            <option value="">호스트 자동 선택</option>
-                            <option value="">PHP</option>
-                            <option value="">Java</option>
-                        </select>
+            <!--마이그레이션-->
+            <div id="migration_popup_outer">
+                <div id="migration_popup">
+                    <div class="domain_header">
+                        <h1>가상머신 마이그레이션</h1>
+                        <button><i class="fa fa-times"></i></button>
+                    </div>
+                    <div id="migration_article_outer">
+                        <span>1대의 가상 머신이 마이그레이션되는 호스트를 선택하십시오.</span>
+                        <div id="migration_article">
+                            <div>
+                                <div id="migration_dropdown">
+                                    <label for="host">대상 호스트 <i class="fa fa-info-circle"></i></label>
+                                    <select name="host_dropdown" id="host">
+                                        <option value="">호스트 자동 선택</option>
+                                        <option value="">PHP</option>
+                                        <option value="">Java</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <div>가상머신</div>
+                                <div>on20-ap02</div>
+                            </div>
+                        </div>
+                        <div id="migration_footer">
+                            <a>마이그레이션</a>
+                            <a>취소</a>
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <div>가상머신</div>
-                    <div>on20-ap02</div>
+            </div> 
+
+
+            <!--OVA로 내보내기-->
+            <div id="ova_outer">
+                <div id="ova_popup">
+
+                    <div class="domain_header">
+                        <h1>가상 어플라이언스로 가상 머신 내보내기</h1>
+                        <button><i class="fa fa-times"></i></button>
+                    </div>
+
+                    <div id="ova_article_outer">
+
+                        <div id="ova_dropdown">
+                            <label for="ova_host">호스트</label>
+                            <select name="ova_host_dropdown" id="ova_host">
+                                <option value="">host01.ititinfo.com</option>
+                                <option value="">PHP</option>
+                                <option value="">Java</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <span>디렉토리</span>
+                            <input type="text">
+                        </div>
+
+                        <div>
+                            <span>이름</span>
+                            <div>on20-ap02.ova</div>
+                        </div>
+                    </div>
+
+                    <div id="ova_footer">
+                        <button>OK</button>
+                        <button>취소</button>
+                    </div>
+
                 </div>
             </div>
-            <div id="migration_footer">
-                <a>마이그레이션</a>
-                <a>취소</a>
-            </div>
-        </div>
-    </div>
-</div> 
-
-
-<!--OVA로 내보내기-->
-<div id="ova_outer">
-    <div id="ova_popup">
-
-        <div class="domain_header">
-            <h1>가상 어플라이언스로 가상 머신 내보내기</h1>
-            <button><i class="fa fa-times"></i></button>
-        </div>
-
-        <div id="ova_article_outer">
-
-            <div id="ova_dropdown">
-                <label for="ova_host">호스트</label>
-                <select name="ova_host_dropdown" id="ova_host">
-                    <option value="">host01.ititinfo.com</option>
-                    <option value="">PHP</option>
-                    <option value="">Java</option>
-                </select>
-            </div>
-
-            <div>
-                <span>디렉토리</span>
-                <input type="text">
-            </div>
-
-            <div>
-                <span>이름</span>
-                <div>on20-ap02.ova</div>
-            </div>
-        </div>
-
-        <div id="ova_footer">
-            <button>OK</button>
-            <button>취소</button>
-        </div>
-
-    </div>
-</div>
 <!------------------------------------------------->
 
         <!--스토리지 section-->
-        <div id="storage_section">
+        <div id="storage_section" style="display: none;">
             <div class="section_header">
                 <div class="section_header_left">
                     <span>데이터 센터</span>
@@ -3847,7 +3847,7 @@
 
 <!------------------------------------------------->
         <!--네트워크 section-->
-        <div id="network_section">
+        <div id="network_section" style="display: none;">
             <div class="section_header">
                 <div class="section_header_left">
                     <div>Default</div>
@@ -4506,7 +4506,7 @@
         </div><!--설정 section끝-->
 
         <!--설정(설정)팝업-->
-        <div class="setting_setting_outer">
+        <div class="setting_setting_outer" style="display: none;">
             <div class="setting_setting_popup">
                 <div class="network_popup_header">
                     <h1>설정</h1>

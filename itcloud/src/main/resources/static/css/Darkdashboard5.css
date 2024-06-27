@@ -333,7 +333,7 @@ body {
     font-weight: 600;
 }
 
-#section{
+#section,#storage_section,#network_section,#setting_section{
     background-color: #ffffff;
     border-radius: 5px;
     width: 96%;
@@ -2788,9 +2788,9 @@ form>div
 
 }
 /*스토리지 section*/
-#storage_section,
-#network_section,
-#setting_section,
+
+
+
 #setting_user_section,
 .content_detail_section,
 .host_detail_section
