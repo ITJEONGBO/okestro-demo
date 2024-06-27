@@ -1,0 +1,3 @@
+[submodule "itcloud/src/main/resources/library/noVNC"]
+	path = itcloud/src/main/resources/library/noVNC
+	url = https://github.com/novnc/noVNC.git
