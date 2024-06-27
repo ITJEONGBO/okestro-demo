@@ -357,6 +357,8 @@ public class StorageServiceImpl implements ItStorageService {
             if(file == null || file.isEmpty()){
                 return CommonVo.failResponse("파일이 없습니다.");
             }
+
+            log.debug("Total Memory : {}, Free Memory : {}, Max Memory : {}", Runtime.getRuntime().totalMemory(), Runtime.getRuntime().freeMemory(), Runtime.getRuntime().maxMemory());
             log.info("파일: {}, size: {}, 타입: {}", file.getOriginalFilename(), file.getSize(), file.getContentType());
 
             // 우선 입력된 디스크 정보를 바탕으로 디스크 추가
@@ -766,7 +768,7 @@ public class StorageServiceImpl implements ItStorageService {
                 return false;
             }
 
-            log.info("디스크 상태: {}", status);
+            log.debug("디스크 상태: {}", status);
             Thread.sleep(interval);
         }
     }
