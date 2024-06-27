@@ -12,7 +12,7 @@ public class DashboardController {
 
 	@GetMapping("/dash")
 	public String dashboard(){
-		return "dash/Darkdashboard5";
+		return "dashboard";
 	}
 
 }
