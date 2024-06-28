@@ -96,4 +96,6 @@ public interface ItVmService {
     List<PermissionVo> getPermission(String id);    // 권한
     List<EventVo> getEvent(String id);      // 이벤트
 
+    ConsoleVo getConsole(String vmId, ConsoleVo console);
+
 }

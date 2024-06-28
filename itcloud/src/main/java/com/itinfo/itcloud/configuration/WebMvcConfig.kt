@@ -11,13 +11,8 @@ import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
 
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
-import org.springframework.web.servlet.config.annotation.ViewResolverRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
-import org.springframework.web.servlet.view.InternalResourceViewResolver
-import org.springframework.web.servlet.view.JstlView
-import org.springframework.web.servlet.view.UrlBasedViewResolver
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView
-import org.springframework.web.servlet.view.tiles3.TilesView
 
 @Configuration
 // @EnableWebMvc
@@ -31,12 +26,12 @@ import org.springframework.web.servlet.view.tiles3.TilesView
 )
 class WebMvcConfig : WebMvcConfigurer {
 
-	override fun configureViewResolvers(registry: ViewResolverRegistry) {
-		log.info("... configureViewResolvers")
-		registry.viewResolver(jspViewResolver())
-		registry.jsp("/WEB-INF/views/", ".jsp")
-		// super.configureViewResolvers(registry)
-	}
+//	override fun configureViewResolvers(registry: ViewResolverRegistry) {
+//		log.info("... configureViewResolvers")
+//		registry.viewResolver(jspViewResolver())
+//		registry.jsp("/WEB-INF/views/", ".jsp")
+//		// super.configureViewResolvers(registry)
+//	}
 
 	@Bean(name=["jsonView"])
 	fun jsonView(): MappingJackson2JsonView {
@@ -55,16 +50,18 @@ class WebMvcConfig : WebMvcConfigurer {
 //		}
 //	}
 
-	@Bean
-	fun jspViewResolver(): InternalResourceViewResolver {
-		log.info("... jspViewResolver")
-		return InternalResourceViewResolver().apply {
-			setPrefix("/WEB-INF/views/")
-			setSuffix(".jsp")
-			setViewClass(JstlView::class.java)
-			order = 2
-		}
-	}
+//	@Bean
+//	fun jspViewResolver(): InternalResourceViewResolver {
+//		log.info("... jspViewResolver")
+//		return InternalResourceViewResolver().apply {
+//			setPrefix("/WEB-INF/views/")
+//			setSuffix(".jsp")
+//			setViewClass(JstlView::class.java)
+//			order = 2
+//		}
+//	}
+
+
 
 	override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
 		log.info("addResourceHandlers ...")
@@ -79,6 +76,8 @@ class WebMvcConfig : WebMvcConfigurer {
 		registry.addResourceHandler("/swagger-ui.html**").addResourceLocations("classpath:/META-INF/resources/")
 		registry.addResourceHandler("/swagger-ui/**").addResourceLocations("classpath:/META-INF/resources/webjars/springfox-swagger-ui/")
 		registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/")
+
+
 		super.addResourceHandlers(registry)
 	}
 

@@ -15,5 +15,10 @@ public class DashboardController {
 		return "dashboard";
 	}
 
+	@GetMapping("/vnc")
+	public String vnc(){
+		return "vnc";
+	}
+
 }
 

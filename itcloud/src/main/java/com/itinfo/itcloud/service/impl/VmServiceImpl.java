@@ -2223,9 +2223,9 @@ public class VmServiceImpl implements ItVmService {
     // 이벤트
     @Override
     public List<EventVo> getEvent(String id) {
-        SystemService systemService = admin.getConnection().systemService();
-        List<Event> eventList = systemService.eventsService().list().send().events();
-        Vm vm = systemService.vmsService().vmService(id).get().send().vm();
+        SystemService system = admin.getConnection().systemService();
+        List<Event> eventList = system.eventsService().list().send().events();
+        Vm vm = system.vmsService().vmService(id).get().send().vm();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
         return eventList.stream()
@@ -2241,6 +2241,51 @@ public class VmServiceImpl implements ItVmService {
                 )
                 .collect(Collectors.toList());
     }
+
+
+
+    // region: console
+
+    @Override
+    public ConsoleVo getConsole(String vmId, ConsoleVo consoleVo) {
+        SystemService system = admin.getConnection().systemService();
+        VmService vmService = system.vmsService().vmService(vmId);
+        List<GraphicsConsole> consoles = vmService.graphicsConsolesService().list().send().consoles();
+        VmGraphicsConsolesService consolesService = vmService.graphicsConsolesService();
+
+
+        GraphicsConsoleBuilder gcb = new GraphicsConsoleBuilder();
+        gcb.protocol(GraphicsType.VNC)
+                .build();
+
+//        VmGraphicsConsoleService consoleService = consolesService.consoleService(console.id());
+//        Ticket ticket = consoleService.ticket().send().ticket();
+//        vmConsoleVo.setAddress(console.address());
+//        vmConsoleVo.setPort(String.valueOf(console.port().intValue()));
+//        vmConsoleVo.setPasswd(ticket.value());
+//        if (console.tlsPort() != null) {
+//            vmConsoleVo.setTlsPort(String.valueOf(console.tlsPort().intValue()));
+//        } else {
+//            vmConsoleVo.setTlsPort((String)null);
+//        }
+//
+//        try {
+//            SystemPropertiesVo systemProperties = this.systemPropertiesService.retrieveSystemProperties();
+//            vmConsoleVo.setHostAddress(systemProperties.getVncIp());
+//            vmConsoleVo.setHostPort(systemProperties.getVncPort());
+//        } catch (Exception var13) {
+//        }
+//
+//
+        return null;
+    }
+    // endregion
+
+
+
+
+
+
 
 
 

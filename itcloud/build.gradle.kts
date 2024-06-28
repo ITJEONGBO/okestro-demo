@@ -80,6 +80,7 @@ dependencies {
     testImplementation(Dependencies.springBootTest)
     testImplementation(Dependencies.hamcrest)
     implementation("com.jcraft:jsch:0.1.55")
+    implementation ("org.springframework.boot:spring-boot-starter-thymeleaf")
 
 }
 
