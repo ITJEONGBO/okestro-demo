@@ -1,5 +1,6 @@
 $(function(){
 
+    /*
     //대시보드 버튼
     $('#aside_popup_dashboard_btn').click(function(event) {
         event.preventDefault(); // 기본 동작 방지
@@ -9,13 +10,12 @@ $(function(){
         $('#virtual_machine_chart').css('display','block');
 
     });
+    */
     //가상머신 버튼
     $('#aside_popup_machine_btn').click(function(event) {
         event.preventDefault(); // 기본 동작 방지
         var targetUrl = 'machine.html'; // 이동할 URL
         window.location.href = targetUrl; // 페이지 이동
-
-        $('#virtual_machine_chart').css('display','block');
 
     });
     //스토리지 버튼
@@ -49,7 +49,7 @@ $(function(){
 
     });
     
-/*
+
 // 처음 로딩 시 첫 번째 섹션을 기본으로 활성화
 setTimeout(function() {
     $('#aside_popup_dashboard_btn').first().trigger('click');
@@ -97,7 +97,7 @@ $('#aside_popup_machine_btn, #aside_popup_storage_btn, #aside_popup_network_btn'
     previousButton = $(this);
 });
 
-   
+  /* 
     // aside 팝업(가상머신버튼)
     $('#aside_popup_machine_btn').click(function(){
             $('#dash_board').css('display','none');
@@ -351,14 +351,11 @@ $('#aside_popup_machine_btn, #aside_popup_storage_btn, #aside_popup_network_btn'
     });
     
     // 문서의 다른 곳을 클릭하면 배경색 초기화
-    $(document).click(function(){
-        $('#context_menu').hide();
-        if (previousDiv !== null) {
-            previousDiv.css('background-color', '');
-            previousDiv = null; // 초기화 후 previousDiv 리셋
-        }
-    });
-    
+    $('#context_menu').hide();
+    if (previousDiv !== null) {
+        previousDiv.css('background-color', '');
+        previousDiv = null; // 초기화 후 previousDiv 리셋
+    }
     $('#context_menu').click(function(event){
         event.stopPropagation();
     });
@@ -386,11 +383,11 @@ $('#aside_popup_machine_btn, #aside_popup_storage_btn, #aside_popup_network_btn'
     $(document).click(function(){
         $('#storage_context_menu').hide();
     });
-
     $('#storage_context_menu').click(function(event){
         event.stopPropagation();
     });
 
+    // 공통팝업창 점3개
        // 가져오기 팝업창
        $('.get_btn').click(function(){
         if($('#get_popup_bg').css('display') === 'none'){
@@ -481,7 +478,7 @@ $('#aside_popup_machine_btn, #aside_popup_storage_btn, #aside_popup_network_btn'
         $('#ova_outer').css('display', 'none');
     });
 
-
+    
     //편집팝업창
     $('#edit_btn').click(function(){ 
         if($('#edit_popup_bg').css('display') === 'none'){
