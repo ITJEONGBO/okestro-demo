@@ -48,6 +48,6 @@ object Versions {
     const val cglib = "3.1"
     const val lombok = "1.18.26" // compatible with jdk11
 
-    const val junit = "4.10"
+    const val junit = "5.8.2"
     const val hamcrest = "2.2"
 }

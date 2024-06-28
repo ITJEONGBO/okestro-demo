@@ -134,7 +134,10 @@ object Dependencies {
         "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}",
     )
     val junit = listOf(
-        "junit:junit:${Versions.junit}"
+        "org.junit.jupiter:junit-jupiter:${Versions.junit}",
+        "org.junit.jupiter:junit-jupiter-api:${Versions.junit}",
+        "org.junit.jupiter:junit-jupiter-engine:${Versions.junit}",
+        "org.junit.jupiter:junit-jupiter-params:${Versions.junit}",
     )
     val hamcrest = listOf(
         "org.hamcrest:hamcrest-core:${Versions.hamcrest}",
@@ -186,5 +189,11 @@ fun DependencyHandler.testImplementation(list: List<String>) {
 fun DependencyHandler.compileOnly(list: List<String>) {
     list.forEach { dependency ->
         add("compileOnly", dependency)
+    }
+}
+
+fun DependencyHandler.testCompileOnly(list: List<String>) {
+    list.forEach { dependency ->
+        add("testCompileOnly", dependency)
     }
 }

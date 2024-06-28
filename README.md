@@ -194,7 +194,7 @@ https://github.com/Gaia3D/mago3d 참고
 
 ## Swagger 3 
 
-- 접속URL: `/swagger-ui/index.html`
+- 접속URL: `/swagger-ui/`
 
 ---
 

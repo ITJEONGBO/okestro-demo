@@ -29,10 +29,10 @@ allprojects {
             freeCompilerArgs = listOf("-Xjsr305=strict")
         }
     }
-
 }
 
 subprojects {
+
     apply(plugin="org.jetbrains.kotlin.jvm")
     apply(plugin="org.jetbrains.kotlin.plugin.spring")
     apply(plugin="org.jetbrains.kotlin.plugin.jpa")
@@ -58,6 +58,8 @@ subprojects {
             extendsFrom(configurations.annotationProcessor.get())
         }
     }
+
+
 }
 
 project("common") {
@@ -70,4 +72,63 @@ project("common") {
 
 project("util") {
 
+}
+
+project(":license-common") {
+    tasks.processResources {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
+
+    dependencies {
+        compileOnly(project(":common"))
+        compileOnly(project(":util"))
+        compileOnly(Dependencies.kotlinStdlib)
+        compileOnly(Dependencies.log4j)
+        compileOnly(Dependencies.gson)
+
+        testImplementation(project(":common"))
+        testImplementation(project(":util"))
+        testImplementation(Dependencies.log4j)
+        testImplementation(Dependencies.junit)
+        testImplementation(Dependencies.hamcrest)
+    }
+}
+project(":license-enc") {
+    dependencies {
+        compileOnly(project(":common"))
+        compileOnly(project(":license-common"))
+        compileOnly(Dependencies.kotlinStdlib)
+        compileOnly(Dependencies.log4j)
+        compileOnly(Dependencies.gson)
+
+        testImplementation(project(":common"))
+        testImplementation(Dependencies.log4j)
+        testImplementation(Dependencies.junit)
+        testImplementation(Dependencies.hamcrest)
+    }
+}
+project(":license-dec") {
+    dependencies {
+        compileOnly(project(":common"))
+        compileOnly(project(":license-common"))
+        compileOnly(Dependencies.kotlinStdlib)
+        compileOnly(Dependencies.log4j)
+        compileOnly(Dependencies.gson)
+
+        testImplementation(project(":common"))
+        testImplementation(Dependencies.log4j)
+        testImplementation(Dependencies.junit)
+        testImplementation(Dependencies.hamcrest)
+    }
+}
+
+project(":license-validate") {
+    dependencies {
+        compileOnly(project(":common"))
+        compileOnly(project(":license-common"))
+        compileOnly(project(":license-enc"))
+        compileOnly(Dependencies.kotlinStdlib)
+        compileOnly(Dependencies.log4j)
+        compileOnly(Dependencies.gson)
+    }
 }

@@ -44,6 +44,9 @@ tasks.compileKotlin {dependsOn(tasks.clean) }
 dependencies {
     implementation(project(":common"))
     implementation(project(":util"))
+    implementation(project(":license-common"))
+    implementation(project(":license-dec"))
+    implementation(project(":license-validate"))
     implementation(Dependencies.springBootTomcat)
     implementation(Dependencies.tomcatEmbedded)
     api(Dependencies.kotlinStdlib)
