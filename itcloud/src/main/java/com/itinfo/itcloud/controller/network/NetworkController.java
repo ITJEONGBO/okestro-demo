@@ -1,10 +1,11 @@
-package com.itinfo.itcloud.controller;
+package com.itinfo.itcloud.controller.network;
 
 import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.create.NetworkCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.*;
 import com.itinfo.itcloud.service.ItNetworkService;
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,7 @@ import java.util.List;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
+@Api(tags = "network")
 @RequestMapping("/networks")
 public class NetworkController {
 	private final ItNetworkService networkService;

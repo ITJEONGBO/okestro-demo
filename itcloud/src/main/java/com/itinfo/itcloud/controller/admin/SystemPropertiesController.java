@@ -1,8 +1,9 @@
-package com.itinfo.itcloud.controller;
+package com.itinfo.itcloud.controller.admin;
 
 import com.itinfo.util.model.SystemPropertiesVo;
 import com.itinfo.itcloud.service.ItSystemPropertyService;
 
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
+@Api(tags = "system")
 public class SystemPropertiesController {
 	private final ItSystemPropertyService itSystemPropertyService;
 

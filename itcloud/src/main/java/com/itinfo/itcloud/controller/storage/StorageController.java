@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.controller;
+package com.itinfo.itcloud.controller.storage;
 
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
@@ -7,6 +7,7 @@ import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.model.storage.*;
 import com.itinfo.itcloud.service.ItStorageService;
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import java.util.List;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
+@Api(tags = "storage")
 @RequestMapping("/storages")
 public class StorageController {
 	private final ItStorageService storageService;

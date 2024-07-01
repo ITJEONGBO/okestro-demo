@@ -1,10 +1,11 @@
-package com.itinfo.itcloud.controller;
+package com.itinfo.itcloud.controller.computing;
 
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.HostCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.service.ItHostService;
 import com.itinfo.itcloud.service.ItVmService;
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -16,6 +17,7 @@ import java.util.List;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
+@Api(tags = "host")
 @RequestMapping("/computing")
 public class HostController {
 	private final ItHostService hostService;

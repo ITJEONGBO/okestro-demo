@@ -1,19 +1,20 @@
-package com.itinfo.itcloud.controller;
+package com.itinfo.itcloud.controller.admin;
 
 import com.itinfo.itcloud.service.ItSystemPropertyService;
 import com.itinfo.itcloud.service.ItUserService;
 import com.itinfo.itcloud.ovirt.ConnectionService;
 
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 @RequiredArgsConstructor
 @Slf4j
+@Api(tags = "login")
 public class LoginController {
 
 	private final ConnectionService ovirtConnection;

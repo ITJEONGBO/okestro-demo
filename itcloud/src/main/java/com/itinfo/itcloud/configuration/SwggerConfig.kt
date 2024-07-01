@@ -33,8 +33,8 @@ class SwaggerConfig {
 
     private fun apiInfo(): ApiInfo {
         return ApiInfo(
-            "아이티클라우드 API",
-            "아이티클라우드 API",
+            "RutilVM",
+            "RutilVM API",
             "0.0.2",
             "Terms of service",
             Contact("chlee", "github.com/ITJEONGBO", "chanhi2000@gmail.com"),

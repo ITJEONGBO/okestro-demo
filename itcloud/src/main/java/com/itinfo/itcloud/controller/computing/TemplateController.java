@@ -1,10 +1,11 @@
-package com.itinfo.itcloud.controller;
+package com.itinfo.itcloud.controller.computing;
 
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.computing.TemplateVo;
 import com.itinfo.itcloud.model.storage.DiskVo;
 import com.itinfo.itcloud.service.ItTemplateService;
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,7 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
+@Api(tags = "template")
 @RequestMapping("/computing")
 public class TemplateController {
 	private final ItTemplateService tService;

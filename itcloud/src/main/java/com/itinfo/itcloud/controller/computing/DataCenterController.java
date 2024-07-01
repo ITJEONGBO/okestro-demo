@@ -1,10 +1,12 @@
-package com.itinfo.itcloud.controller;
+package com.itinfo.itcloud.controller.computing;
 
 import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.create.DataCenterCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.service.ItDataCenterService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import java.util.List;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
+@Api(tags = "datacenter")
 @RequestMapping("/computing")
 public class DataCenterController {
 	private final ItDataCenterService dcService;
@@ -23,6 +26,7 @@ public class DataCenterController {
 
 	@GetMapping("/datacenters")
 	@ResponseBody
+	@ApiOperation(value = "데이터센터 목록", notes = "@RequestParam을 활용한 GET Method")
 	@ResponseStatus(HttpStatus.OK)
 	public List<DataCenterVo> datacenters() {
 		log.info("----- 데이터센터 목록");

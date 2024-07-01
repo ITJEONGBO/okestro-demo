@@ -1,16 +1,21 @@
-package com.itinfo.itcloud.controller;
+package com.itinfo.itcloud.controller.computing;
 
+import com.itinfo.itcloud.model.ConsoleVo;
 import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.VmCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.model.storage.VmDiskVo;
+import com.itinfo.itcloud.service.ItConsoleService;
 import com.itinfo.itcloud.service.ItVmService;
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.ovirt.engine.sdk4.types.GraphicsType;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,9 +23,11 @@ import java.util.List;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
+@Api(tags = "vm")
 @RequestMapping("/computing")
 public class VmController {
 	private final ItVmService vmService;
+	private final ItConsoleService consoleService;
 
 	@GetMapping("/vms")
 	@ResponseBody
@@ -154,5 +161,38 @@ public class VmController {
 		log.info("----- vm event 일반 불러오기: " + id);
 		return vmService.getEvent(id);
 	}
+
+
+
+
+	@PostMapping("/vm/{id}/console")
+	@ResponseStatus(HttpStatus.OK)
+	public com.itinfo.itcloud.model.ConsoleVo console(@PathVariable String id,
+													  @RequestBody com.itinfo.itcloud.model.ConsoleVo consoleVo) {
+
+		log.info("--- 가상머신 콘솔");
+		return consoleService.setDisplay(id, consoleVo);
+	}
+
+	@PostMapping("/vm/{id}/console2")
+	@ResponseStatus(HttpStatus.OK)
+	public com.itinfo.itcloud.model.ConsoleVo console2(@PathVariable String id, Model model) {
+		com.itinfo.itcloud.model.ConsoleVo vo =
+				ConsoleVo.builder()
+						.protocol(String.valueOf(GraphicsType.VNC))
+						.vmId(id)
+						.build();
+		vo = consoleService.setDisplay(id, vo);
+
+		model.addAttribute("vo", vo);
+
+		return vo;
+	}
+
+	@GetMapping("/vmConsole/vncView")
+	public String vncView() {
+		return "/computing/vnc";
+	}
+
 
 }

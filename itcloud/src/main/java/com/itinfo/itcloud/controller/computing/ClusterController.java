@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.controller;
+package com.itinfo.itcloud.controller.computing;
 
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.AffinityGroupCreateVo;
@@ -7,6 +7,7 @@ import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.service.ItAffinityService;
 import com.itinfo.itcloud.service.ItClusterService;
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,21 +19,23 @@ import java.util.List;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/computing")
+@Api(tags = "cluster")
+@RequestMapping("/computing/clusters")
 public class ClusterController {
 	private final ItClusterService clusterService;
 	private final ItAffinityService affinityService;
 
 
-	@GetMapping("/clusters")
+	@GetMapping("")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
+
 	public List<ClusterVo> clusters() {
 		log.info("--- 클러스터 목록");
 		return clusterService.getList();
 	}
 
-	@GetMapping("/cluster/settings")
+	@GetMapping("/settings")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public List<DataCenterVo> setDatacenterList(){
@@ -40,7 +43,7 @@ public class ClusterController {
 		return clusterService.setDatacenterList();
 	}
 
-	@GetMapping("/cluster/settings/{dcId}")
+	@GetMapping("/settings/{dcId}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public List<NetworkVo> setNetworkList(@PathVariable String dcId){
@@ -50,7 +53,7 @@ public class ClusterController {
 
 
 
-	@PostMapping("/cluster")
+	@PostMapping("")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> addCluster(@RequestBody ClusterCreateVo cVo){
@@ -58,7 +61,7 @@ public class ClusterController {
 		return clusterService.addCluster(cVo);
 	}
 
-	@GetMapping("/cluster/{id}/settings")
+	@GetMapping("/{id}/settings")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public ClusterCreateVo setEditCluster(@PathVariable String id){
@@ -66,7 +69,7 @@ public class ClusterController {
 		return clusterService.setCluster(id);
 	}
 	
-	@PutMapping("/cluster/{id}")
+	@PutMapping("/{id}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> editCluster(@PathVariable String id,
@@ -75,7 +78,7 @@ public class ClusterController {
 		return clusterService.editCluster(cVo);
 	}
 
-	@DeleteMapping("/cluster/{id}")
+	@DeleteMapping("/{id}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public CommonVo<Boolean> deleteCluster(@PathVariable String id){
@@ -86,7 +89,7 @@ public class ClusterController {
 
 
 
-	@GetMapping("/cluster/{id}")
+	@GetMapping("/{id}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public ClusterVo cluster(@PathVariable String id) {
@@ -94,7 +97,7 @@ public class ClusterController {
 		return clusterService.getInfo(id);
 	}
 
-	@GetMapping("/cluster/{id}/networks")
+	@GetMapping("/{id}/networks")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public List<NetworkVo> network(@PathVariable String id) {
@@ -102,7 +105,7 @@ public class ClusterController {
 		return clusterService.getNetwork(id);
 	}
 
-	@GetMapping("/cluster/{id}/hosts")
+	@GetMapping("/{id}/hosts")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public List<HostVo> host(@PathVariable String id) {
@@ -110,7 +113,7 @@ public class ClusterController {
 		return clusterService.getHost(id);
 	}
 
-	@GetMapping("/cluster/{id}/vms")
+	@GetMapping("/{id}/vms")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public List<VmVo> vm(@PathVariable String id) {
@@ -121,7 +124,7 @@ public class ClusterController {
 
 
 
-	@PostMapping("/cluster/{id}/affinitygroup")
+	@PostMapping("/{id}/affinitygroups")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> addAffinitygroup(@PathVariable String id,
@@ -130,7 +133,7 @@ public class ClusterController {
 		return affinityService.addAffinitygroup(id, "cluster", agVo);
 	}
 
-	@GetMapping("/cluster/{id}/affinitygroup/{agId}/settings")
+	@GetMapping("/{id}/affinitygroups/{agId}/settings")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public AffinityGroupCreateVo setEditAffinitygroup(@PathVariable String id,
@@ -139,7 +142,7 @@ public class ClusterController {
 		return affinityService.setEditAffinitygroup(id, "cluster", agId);
 	}
 
-	@PutMapping("/cluster/{id}/affinitygroup/{agId}")
+	@PutMapping("/{id}/affinitygroups/{agId}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> editAffinitygroup(@PathVariable String id,
@@ -148,7 +151,7 @@ public class ClusterController {
 		return affinityService.editAffinitygroup(id, agVo);
 	}
 
-	@DeleteMapping("/cluster/{id}/affinitygroup/{agId}")
+	@DeleteMapping("/{id}/affinitygroups/{agId}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public CommonVo<Boolean> deleteAffinitygroup(@PathVariable String id,
@@ -158,7 +161,7 @@ public class ClusterController {
 	}
 
 
-	@GetMapping("/cluster/{id}/affinitylabels")
+	@GetMapping("/{id}/affinitylabels")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public List<AffinityLabelVo> affLabel() {
@@ -205,7 +208,7 @@ public class ClusterController {
 
 
 
-	@GetMapping("/cluster/{id}/permissions")
+	@GetMapping("/{id}/permissions")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public List<PermissionVo> permission(@PathVariable String id) {
@@ -213,7 +216,7 @@ public class ClusterController {
 		return clusterService.getPermission(id);
 	}
 
-	@GetMapping("/cluster/{id}/events")
+	@GetMapping("/{id}/events")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public List<EventVo> event(@PathVariable String id) {
