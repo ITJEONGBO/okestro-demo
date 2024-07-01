@@ -2299,8 +2299,543 @@
                 </div>
             </div>
 
+            
+<!--가상머신 host_detail_section-->
+<div class="host_detail_section">
+    <div class="section_header">
+        <div class="section_header_left">
+            <span>컴퓨팅 > </span>
+            <span>스토리지 도메인 > </span>
+            <div>host01.ititinfo.com</div>
+            <button><i class="fa fa-exchange"></i></button>
+        </div>
+    
+        <div class="section_header_right">
+            <div class="article_nav">
+                <button>편집</button>
+                <button>삭제</button>
+                <button>관리</button>
+                <button>설치</button>
+                <button>호스트 콘솔</button>
+                <button>호스트 네트워크 복사</button>
+                <button>Connections</button>
+                <button id="popup_btn">
+                    <i class="fa fa-ellipsis-v"></i>
+                    <div id="popup_box">
+                        <div>
+                            <div class="get_btn">가져오기</div>
+                            <div class="get_btn">가상 머신 복제</div>
+                        </div>
+                        <div>
+                            <div>삭제</div>
+                        </div>
+                        <div>
+                            <div>마이그레이션 취소</div>
+                            <div>변환 취소</div>
+                        </div>
+                        <div>
+                            <div id="template_btn">템플릿 생성</div>
+                        </div>
+                        <div style="border-bottom: none;">
+                            <div id="domain2">도메인으로 내보내기</div>
+                            <div id="domain">Export to Data Domai</div>
+                            <div id="ova_btn">OVA로 내보내기</div>
+                        </div>
+                    </div> 
+                </button>
+            </div>
+    
+        </div><!--article끝-->
+    </div><!--section_header끝-->
 
+    <div class="content_outerd">
+        <div class="content_header">
+            <div class="content_header_left">
+                <div class="active">일반</div>
+                <div>가상머신</div>
+                <div>네트워크 인터페이스</div>
+                <div>호스트 장치</div>
+                <div>호스트 후크</div>
+                <div>권한</div>
+                <div>선호도 레이블</div>
+                <div>에라타</div>
+                <div>이벤트</div>
+            </div>
+        </div>
+
+        <div class="section_content_outer">
+            <div class="table_container_left">
+                <table class="table">
+                    <tr>
+                        <th>ID:</th>
+                        <td>on20-ap01</td>
+                    </tr>
+                    <tr>
+                        <th>설명:</th>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>상태:</th>
+                        <td>실행 중</td>
+                    </tr>
+                    <tr>
+                        <th>업타임:</th>
+                        <td>11 days</td>
+                    </tr>
+                    <tr>
+                        <th>템플릿:</th>
+                        <td>Blank</td>
+                    </tr>
+                    <tr>
+                        <th>운영 시스템:</th>
+                        <td>Linux</td>
+                    </tr>
+                    <tr>
+                        <th>펌웨어/장치의 유형:</th>
+                        <td>BIOS의 Q35 칩셋 <i class="fa fa-ban" style="margin-left: 13%;color:orange;"></i></td>                           
+                    </tr>
+                    <tr>
+                        <th>우선 순위:</th>
+                        <td>높음</td>
+                    </tr>
+                    <tr>
+                        <th>최적화 옵션:</th>
+                        <td>서버</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div><!--section_content_outer끝-->
+         
+
+    <!--호스트 가상머신 버튼-->
+    <div id="host_machine_outer" style="display: none;">
+        <div class="content_header">
+            <div class="content_header_left">
+                <div class="active">일반</div>
+                <div>가상머신</div>
+                <div>네트워크 인터페이스</div>
+                <div>호스트 장치</div>
+                <div>호스트 후크</div>
+                <div>권한</div>
+                <div>선호도 레이블</div>
+                <div>에라타</div>
+                <div>이벤트</div>
+            </div>
+        </div>
+        
+        <div class="pregroup_content">
+            <table>
+                <thead>
+                    <tr>
+                        <th>별칭</th>
+                        <th>디스크</th>
+                        <th>템플릿</th>
+                        <th>가상 크기</th>
+                        <th>실제 크기</th>
+                        <th>생성 일자</th>   
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <i class="fa fa-plus-circle"></i>
+                            test02
+                        </td>
+                        <td>1</td>
+                        <td>Blank</td>
+                        <td>1 GIB</td>
+                        <td>5 GIB</td>
+                        <td>2024.1.19 AM9:21:57</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
+
+    <!--호스트 네트워크 인터페이스 버튼-->
+    <div id="host_template_outer" style="display: none;">
+        <div class="content_header">
+            <div class="content_header_left">
+                <div class="active">일반</div>
+                <div>가상머신</div>
+                <div>네트워크 인터페이스</div>
+                <div>호스트 장치</div>
+                <div>호스트 후크</div>
+                <div>권한</div>
+                <div>선호도 레이블</div>
+                <div>에라타</div>
+                <div>이벤트</div>
+            </div>
+        </div>
+        
+        <div class="pregroup_content">
+            <table>
+                <thead>
+                    <tr>
+                        <th>별칭</th>
+                        <th>디스크</th>
+                        <th>가상 크기</th>
+                        <th>실제 크기</th>
+                        <th>생성 일자</th>   
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <i class="fa fa-plus-circle"></i>
+                            test02
+                        </td>
+                        <td></td>
+                        <td>1 GIB</td>
+                        <td>5 GIB</td>
+                        <td>2024.1.19 AM9:21:57</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!--호스트 호스트장치 버튼-->
+    <div id="host_device_outer" style="display: none;">
+        <div class="content_header">
+            <div class="content_header_left">
+                <div class="active">일반</div>
+                <div>가상머신</div>
+                <div>네트워크 인터페이스</div>
+                <div>호스트 장치</div>
+                <div>호스트 후크</div>
+                <div>권한</div>
+                <div>선호도 레이블</div>
+                <div>에라타</div>
+                <div>이벤트</div>
+            </div>
+        </div>
+
+        <div class="pregroup_content">
+            <div  class="content_header_right">
+                <button>이동</button>
+                <button>복사</button>
+                <button>제거</button>
+                <button>업로드</button>
+                <button>다운로드</button>
+            </div>  
+            <div class="application_content_header">
+                <button><i class="fa fa-chevron-left"></i></button>
+                <div>1-1</div>
+                <button><i class="fa fa-chevron-right"></i></button>
+                <button><i class="fa fa-ellipsis-v"></i></button>            
+            </div>
+            <div class="table_outer">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>별칭</th>
+                            <th><i class="fa fa-chevron-left"></i></th>
+                            <th><i class="fa fa-chevron-left"></i></th>
+                            <th>가상 크기</th>
+                            <th>실제 크기</th>
+                            <th>할당 정책</th>
+                            <th>스토리지 도메인</th>
+                            <th>생성 일자</th>
+                            <th>최근 업데이트</th>
+                            <th></th>
+                            <th>연결 대상</th>
+                            <th>상태</th>
+                            <th>유형</th>
+                            <th>설명</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>aa</td>
+                            <td></td>
+                            <td></td>
+                            <td>&lt;1 GiB</td>
+                            <td>&lt;1 GiB</td>
+                            <td>씬 프로비저닝</td>
+                            <td>hosted_storage</td>
+                            <td>2024. 4. 26. PM 3:19:39</td>
+                            <td>2024. 4. 26. PM 3:19:45</td>
+                            <td><i class="fa fa-chevron-left"></i></td>
+                            <td></td>
+                            <td>잠김</td>
+                            <td>이미지</td>
+                            <td>testa</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!--호스트 호스트후크 버튼-->
+    <div id="host_hook_outer" style="display: none;">
+        <div class="content_header">
+            <div class="content_header_left">
+                <div class="active">일반</div>
+                <div>가상머신</div>
+                <div>네트워크 인터페이스</div>
+                <div>호스트 장치</div>
+                <div>호스트 후크</div>
+                <div>권한</div>
+                <div>선호도 레이블</div>
+                <div>에라타</div>
+                <div>이벤트</div>
+            </div>
+        </div>
+        
+        <div class="pregroup_content">
+            <div  class="content_header_right">
+                <button>제거</button>
+            </div>  
+            <div class="application_content_header">
+                <button><i class="fa fa-chevron-left"></i></button>
+                <div>0-0</div>
+                <button><i class="fa fa-chevron-right"></i></button>
+                <button><i class="fa fa-ellipsis-v"></i></button>            
+            </div>
+            <div class="table_outer">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>크기</th>
+                            <th>생성 일자</th>
+                            <th>스냅샷 생성일</th>
+                            <th>디스크 별칭</th>
+                            <th>스냅샷 설명</th>
+                            <th>연결 대상</th>
+                            <th>상태</th>
+                            <th>디스크 스냅샷 ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <span><td>표시할 항목이 없습니다</td></span>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!--호스트 권한 버튼-->
+    <div id="host_right_outer" style="display: none;">
+        <div class="content_header">
+            <div class="content_header_left">
+                <div class="active">일반</div>
+                <div>가상머신</div>
+                <div>네트워크 인터페이스</div>
+                <div>호스트 장치</div>
+                <div>호스트 후크</div>
+                <div>권한</div>
+                <div>선호도 레이블</div>
+                <div>에라타</div>
+                <div>이벤트</div>
+            </div>
+            
+        </div>
+        
+        <div class="pregroup_content">
+            <div  class="content_header_right">
+                <button>제거</button>
+            </div>  
+            <div class="application_content_header">
+                <button><i class="fa fa-chevron-left"></i></button>
+                <div>0-0</div>
+                <button><i class="fa fa-chevron-right"></i></button>
+                <button><i class="fa fa-ellipsis-v"></i></button>            
+            </div>
+            <div class="table_outer">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>크기</th>
+                            <th>생성 일자</th>
+                            <th>스냅샷 생성일</th>
+                            <th>디스크 별칭</th>
+                            <th>스냅샷 설명</th>
+                            <th>연결 대상</th>
+                            <th>상태</th>
+                            <th>디스크 스냅샷 ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <span><td>표시할 항목이 없습니다</td></span>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!--호스트 선호도레이블 버튼-->
+    <div id="host_profile_outer" style="display: none;">
+        <div class="content_header">
+            <div class="content_header_left">
+                <div class="active">일반</div>
+                <div>가상머신</div>
+                <div>네트워크 인터페이스</div>
+                <div>호스트 장치</div>
+                <div>호스트 후크</div>
+                <div>권한</div>
+                <div>선호도 레이블</div>
+                <div>에라타</div>
+                <div>이벤트</div>
+            </div>
+        </div>
+
+        <div>dd</div>
+        
+    </div>
+
+    <!--호스트 에라타 버튼-->
+    <div id="host_erita_outer" style="display: none;">
+        <div class="content_header">
+            <div class="content_header_left">
+                <div class="active">일반</div>
+                <div>가상머신</div>
+                <div>네트워크 인터페이스</div>
+                <div>호스트 장치</div>
+                <div>호스트 후크</div>
+                <div>권한</div>
+                <div>선호도 레이블</div>
+                <div>에라타</div>
+                <div>이벤트</div>
+            </div>
+            
+        </div>
+        
+        <div>qdyga</div>
+    </div> 
+
+    <!--호스트 이벤트 버튼-->
+    <div id="host_event_outer" style="display: none;">
+        <div class="content_header">
+            <div class="content_header_left">
+                <div class="active">일반</div>
+                <div>가상머신</div>
+                <div>네트워크 인터페이스</div>
+                <div>호스트 장치</div>
+                <div>호스트 후크</div>
+                <div>권한</div>
+                <div>선호도 레이블</div>
+                <div>에라타</div>
+                <div>이벤트</div>
+            </div>
+        </div>
+        
+        <div class="storage_domain_content">
+            <div  class="content_header_right">
+                <button>추가</button>
+                <button>제거</button>
+            </div>
+            <div class="storage_right_btns">
+                <span>Permission Filters:</span>
+                <div>
+                    <button>All</button>
+                    <button>Direct</button>
+                </div>
+            </div>
+            <div>
+                <div class="application_content_header">
+                    <button><i class="fa fa-chevron-left"></i></button>
+                    <div>1-3</div>
+                    <button><i class="fa fa-chevron-right"></i></button>
+                    <button><i class="fa fa-ellipsis-v"></i></button>            
+                </div>
+            </div>
+            <div class="table_outer">
+                <table  style="margin-top: 0;">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>사용자</th>
+                            <th>인증 공급자</th>
+                            <th>네임스페이스</th>
+                            <th>역할</th>
+                            <th>생성일</th>
+                            <th>Inherited From</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><i class="fa fa-user"></i></td>
+                            <td>ovirtmgmt</td>
+                            <td></td>
+                            <td>*</td>
+                            <td>SuperUser</td>
+                            <td>2023.12.29 AM 11:40:58</td>
+                            <td>(시스템)</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <!--footer-->
+    <div class="footer_outer">
+        <div class="footer">
+            <button><i class="fa fa-chevron-down"></i></button>
+            <div>
+                <a>최근 작업</a>
+                <a>경보</a>
+            </div>
+        </div>
+        <div class="footer_content">
+
+            <div class="footer_nav">
+                <div>
+                    <div>작업이름</div>
+                    <div><i class="fa fa-filter"></i></div>
+                </div>
+
+                <div>
+                    <div>작업이름</div>
+                    <div><i class="fa fa-filter"></i></div>
+                </div>
+
+                <div>
+                    <div>작업이름</div>
+                    <div><i class="fa fa-filter"></i></div>
+                </div>
+
+                <div>
+                    <div>작업이름</div>
+                    <div><i class="fa fa-filter"></i></div>
+                </div>
+
+                <div>
+                    <div>작업이름</div>
+                    <div><i class="fa fa-filter"></i></div>
+                </div>
+
+                <div>
+                    <div>작업이름</div>
+                    <div><i class="fa fa-filter"></i></div>
+                </div>
+
+                <div>
+                    <div>작업이름</div>
+                    <div><i class="fa fa-filter"></i></div>
+                </div>
+
+                <div style="border-right: none;">
+                    <div>작업이름</div>
+                    <div><i class="fa fa-filter"></i></div>
+                </div>
+            </div>
+
+            <div class="footer_img">
+                <img src="img/화면 캡처 2024-04-30 164511.png">
+                <span>항목을 찾지 못했습니다</span>
+            </div>
+
+        </div>
+    </div><!--footer끝-->
+</div><!--host_detail_section끝-->
+
+    </div><!--main_outer끝-->
 <!---------------------------------------------------->
 <!--편집팝업-->
 <div id="edit_popup_bg">

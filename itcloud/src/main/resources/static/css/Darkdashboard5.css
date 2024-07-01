@@ -42,8 +42,11 @@ body {
     display: flex;
     justify-content: space-between;
     font-size: 0.5em;
-    min-width: 11%;
+    min-width: 15%;
     align-items: center; /* 세로 중앙 정렬 추가 */
+}
+#header_left span{
+    font-size: 0.4rem;
 }
 #header_left > div{
     padding: 0.1rem;
@@ -77,7 +80,7 @@ body {
     background-color: #ffffff;
     border-radius: 5px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-
+    border-right: 1px solid rgb(219 219 219);
     display: flex;
     flex-direction: column; /* 컬럼 방향으로 요소 정렬 */
     justify-content: space-between;
@@ -1154,6 +1157,7 @@ body {
 /*content_outer*/
 .content_outer,
 .content_outerd,
+.sto_content_outer,
 #disk_outer,#storage_domain_outer,
 #content_outer,
 #network_outer,
@@ -1178,7 +1182,15 @@ body {
 #detail_rent_outer,
 #detail_profile_outer,
 #detail_event_outer,
-#detail_right_outer
+#detail_right_outer,
+#host_machine_outer,
+#host_template_outer,
+#host_device_outer,
+#host_hook_outer,
+#host_right_outer,
+#host_profile_outer,
+#host_erita_outer,
+#host_event_outer
 
 {
     width: 100%;
@@ -1194,7 +1206,7 @@ body {
 .content_header {
     border-right: 1px solid #dddddd;
     margin-right: 1%;
-    width: 15%;
+    width: 12%;
 }
 
 .content_header_left {
@@ -1205,7 +1217,7 @@ body {
 
 .content_header_left div {
     position: relative;
-    font-size: 0.34rem;
+    font-size: 0.31rem;
     cursor: pointer;
     color: black;
     padding: 0.3rem 0.1rem;
@@ -1915,7 +1927,7 @@ input[disabled] {
     padding: 0 0.3%;
 }
 .application_content_header>button{
-    padding: 0.5%;
+    padding: 0.35%;
     cursor: pointer;
     border: 1px solid #14417c;
     border-radius: 3px;
@@ -2888,7 +2900,7 @@ form>div
 .storage_storage_content{
     font-size: 0.3rem;
     padding: 0.5rem 0.3rem;
-    width: 89%;
+    width: 100%;
 }
 
 /*테이블설정*/
@@ -3876,4 +3888,19 @@ form>div
     background-color: #d1e2eb;
     text-align: left;
     border-collapse: collapse;
+}
+
+/*반응형*/
+@media (max-width:1390px) {
+
+}
+
+@media screen and (max-width:820px) {
+
+}
+@media screen and (max-width:768px) {
+
+}
+@media screen and (max-width:482px) {
+
 }

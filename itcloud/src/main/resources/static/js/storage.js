@@ -263,40 +263,82 @@ $('#aside_popup_storage_btn').click(function() {
         }
     });
 //---------------------------------------------------------------------------------------------------------------------------------------
-$(document).ready(function() {
-    // 모든 섹션을 숨기고 클릭된 섹션만 보이기
-    var sections = [
-        '.section_content_outer',
-        '#storage_domain_outer',
-        '#storage_volume_outer',
-        '#storage_storage_outer',
-        '#storage_logic_outer',
-        '#storage_cluster_outer',
-        '#storage_right_outer'
-    ];
+// nav 파란밑줄, 각 맞는 창불러오기 
+$('.content_header_left div').click(function() {
+    var index = $(this).index();
+    var parentId = $(this).closest('.content_header').parent().attr('id');
 
-    // 클릭 이벤트 핸들러 설정
-    $('#storage_section .content_header_left div').click(function() {
-        var index = $(this).index();
+    $('.content_header_left div').removeClass('active');
+    $(this).addClass('active');
 
-        // 모든 섹션 숨기기
-        sections.forEach(function(section, i) {
-            if (i === index) {
-                $(section).show();
-            } else {
-                $(section).hide();
-            }
-        });
+    if (index === 0) {
+        $('.sto_content_outer').show();
+        $('#storage_domain_outer').hide();
+        $('#storage_volume_outer').hide();
+        $('#storage_storage_outer').hide();
+        $('#storage_logic_outer').hide();
+        $('#storage_cluster_outer').hide();
+        $('#storage_right_outer').hide();
 
-        // 현재 활성화된 섹션의 content_header_left에서 active 클래스 제거
-        $('#storage_section .content_header_left div').removeClass('active');
-
-        // 클릭된 요소에 active 클래스 추가
-        $(this).addClass('active');
-    });
-
-    // 처음 로딩 시 첫 번째 섹션을 기본으로 활성화
-    $('#storage_section .content_header_left div').first().trigger('click');
+    } else if (index === 1) {
+        $('.sto_content_outer').hide();
+        $('#storage_domain_outer').show();
+        $('#storage_volume_outer').hide();
+        $('#storage_storage_outer').hide();
+        $('#storage_logic_outer').hide();
+        $('#storage_cluster_outer').hide();
+        $('#storage_right_outer').hide();
+    } else if (index === 2) {
+        $('.sto_content_outer').hide();
+        $('#storage_domain_outer').hide();
+        $('#storage_volume_outer').show();
+        $('#storage_storage_outer').hide();
+        $('#storage_logic_outer').hide();
+        $('#storage_cluster_outer').hide();
+        $('#storage_right_outer').hide();
+    }else if (index === 3) {
+        $('.sto_content_outer').hide();
+        $('#storage_domain_outer').hide();
+        $('#storage_volume_outer').hide();
+        $('#storage_storage_outer').show();
+        $('#storage_logic_outer').hide();
+        $('#storage_cluster_outer').hide();
+        $('#storage_right_outer').hide();
+    }else if (index === 4) {
+        $('.sto_content_outer').hide();
+        $('#storage_domain_outer').hide();
+        $('#storage_volume_outer').hide();
+        $('#storage_storage_outer').hide();
+        $('#storage_logic_outer').show();
+        $('#storage_cluster_outer').hide();
+        $('#storage_right_outer').hide();
+    }else if (index === 5) {
+        $('.sto_content_outer').hide();
+        $('#storage_domain_outer').hide();
+        $('#storage_volume_outer').hide();
+        $('#storage_storage_outer').hide();
+        $('#storage_logic_outer').hide();
+        $('#storage_cluster_outer').show();
+        $('#storage_right_outer').hide();
+    }else if (index === 6) {
+        $('.sto_content_outer').hide();
+        $('#storage_domain_outer').hide();
+        $('#storage_volume_outer').hide();
+        $('#storage_storage_outer').hide();
+        $('#storage_logic_outer').hide();
+        $('#storage_cluster_outer').hide();
+        $('#storage_right_outer').show();
+    }
+    
+    
+    
+    $('.sto_content_outer .content_header_left div').eq(index).addClass('active');
+    $('#storage_domain_outer .content_header_left div').eq(index).addClass('active');
+    $('#storage_volume_outer .content_header_left div').eq(index).addClass('active');
+    $('#storage_storage_outer .content_header_left div').eq(index).addClass('active');
+    $('#storage_logic_outer .content_header_left div').eq(index).addClass('active');
+    $('#storage_cluster_outer .content_header_left div').eq(index).addClass('active');
+    $('#storage_right_outer .content_header_left div').eq(index).addClass('active');
 });
 
     //스토리지 디스크(새로만들기) 팝업창

@@ -41,12 +41,7 @@ $(function(){
 
     // aside 팝업(가상머신버튼)
     $('#aside_popup_machine_btn').click(function(){
-        $('#dash_board').css('display','none');
         $('#section').css('display','block');
-        $('#storage_section').css('display','none');
-        $('#network_section').css('display','none');
-        $('#setting_section').css('display','none');
-        $('.content_detail_section').css('display','none');
         $('.host_detail_section').css('display','none');
 
         $('#virtual_machine_chart').css('display','block');
@@ -66,6 +61,28 @@ $(function(){
             $('#aside_popup').css('display', 'none');
             $('#aside_outer').css('width','3%');
         
+        }
+    });
+      // host_detail_section
+      $('#power_outer table tbody tr>td:nth-child(2)').click(function(){
+        $('#section').css('display','none');
+        $('.host_detail_section').css('display','block');
+
+        $('#virtual_machine_chart').css('display','none');
+        $('#storage_chart').css('display','none');
+        $('#network_chart').css('display','none');
+        $('#setting_chart').css('display','none');
+        if ($('#aside_popup').css('display') === 'none' || $('#aside_popup_storage_btn').css('background-color') !== 'rgb(218, 236, 245)') {
+            $('#aside_popup').css('display', 'block');
+            $('#aside_outer').css('width','20%');
+            $('#aside_popup_machine_btn').css('background-color', 'rgb(218, 236, 245)'); // 배경색을 노란색으로 변경
+            $('#aside_popup_dashboard_btn').css('background-color', '');
+            $('#aside_popup_machine_btn').css('background-color', ''); // 다른 버튼 초기화
+            $('#aside_popup_network_btn').css('background-color', ''); // 다른 버튼 초기화
+            $('#aside_popup_storage_btn').css('background-color', ''); // 다른 버튼 초기화
+        } else {
+            $('#aside_popup').css('display', 'none');
+            $('#aside_outer').css('width','3%');
         }
     });
 
@@ -720,3 +737,118 @@ $(function(){
     
 
 });
+//-------------------------------------------------------------------------------------------
+$(document).ready(function() {
+    $('.host_detail_section .content_header_left div:first').trigger('click');
+     // nav 파란밑줄, 각 맞는 창불러오기 
+     $('.host_detail_section .content_header_left div').click(function() {
+        var index = $(this).index();
+        var parentId = $(this).closest('.host_detail_section .content_header').parent().attr('id');
+
+        $('.host_detail_section .content_header_left div').removeClass('active');
+        $(this).addClass('active');
+
+        if (index === 0) {
+            $('.content_outerd').show();
+            $('#host_machine_outer').hide();
+            $('#host_template_outer').hide();
+            $('#host_device_outer').hide();
+            $('#host_hook_outer').hide();
+            $('#host_right_outer').hide();
+            $('#host_profile_outer').hide();
+            $('#host_erita_outer').hide();
+            $('#host_event_outer').hide();
+        } else if (index === 1) {
+            $('.content_outerd').hide();
+            $('#host_machine_outer').show();
+            $('#host_template_outer').hide();
+            $('#host_device_outer').hide();
+            $('#host_hook_outer').hide();
+            $('#host_right_outer').hide();
+            $('#host_profile_outer').hide();
+            $('#host_erita_outer').hide();
+            $('#host_event_outer').hide();
+        } else if (index === 2) {
+            $('.content_outerd').hide();
+            $('#host_machine_outer').hide();
+            $('#host_template_outer').show();
+            $('#host_device_outer').hide();
+            $('#host_hook_outer').hide();
+            $('#host_right_outer').hide();
+            $('#host_profile_outer').hide();
+            $('#host_erita_outer').hide();
+            $('#host_event_outer').hide();
+        }else if (index === 3) {
+            $('.content_outerd').hide();
+            $('#host_machine_outer').hide();
+            $('#host_template_outer').hide();
+            $('#host_device_outer').show();
+            $('#host_hook_outer').hide();
+            $('#host_right_outer').hide();
+            $('#host_profile_outer').hide();
+            $('#host_erita_outer').hide();
+            $('#host_event_outer').hide();
+        }else if (index === 4) {
+            $('.content_outerd').hide();
+            $('#host_machine_outer').hide();
+            $('#host_template_outer').hide();
+            $('#host_device_outer').hide();
+            $('#host_hook_outer').show();
+            $('#host_right_outer').hide();
+            $('#host_profile_outer').hide();
+            $('#host_erita_outer').hide();
+            $('#host_event_outer').hide();
+        }else if (index === 5) {
+            $('.content_outerd').hide();
+            $('#host_machine_outer').hide();
+            $('#host_template_outer').hide();
+            $('#host_device_outer').hide();
+            $('#host_hook_outer').hide();
+            $('#host_right_outer').show();
+            $('#host_profile_outer').hide();
+            $('#host_erita_outer').hide();
+            $('#host_event_outer').hide();
+        }else if (index === 6) {
+            $('.content_outerd').hide();
+            $('#host_machine_outer').hide();
+            $('#host_template_outer').hide();
+            $('#host_device_outer').hide();
+            $('#host_hook_outer').hide();
+            $('#host_right_outer').hide();
+            $('#host_profile_outer').show();
+            $('#host_erita_outer').hide();
+            $('#host_event_outer').hide();
+        }else if (index === 7) {
+            $('.content_outerd').hide();
+            $('#host_machine_outer').hide();
+            $('#host_template_outer').hide();
+            $('#host_device_outer').hide();
+            $('#host_hook_outer').hide();
+            $('#host_right_outer').hide();
+            $('#host_profile_outer').hide();
+            $('#host_erita_outer').show();
+            $('#host_event_outer').hide();
+        }else if (index === 8) {
+            $('.content_outerd').hide();
+            $('#host_machine_outer').hide();
+            $('#host_template_outer').hide();
+            $('#host_device_outer').hide();
+            $('#host_hook_outer').hide();
+            $('#host_right_outer').hide();
+            $('#host_profile_outer').hide();
+            $('#host_erita_outer').hide();
+            $('#host_event_outer').show();
+        }
+        
+        $('.content_outerd .content_header_left div').eq(index).addClass('active');
+        $('#host_machine_outer .content_header_left div').eq(index).addClass('active');
+        $('#host_template_outer .content_header_left div').eq(index).addClass('active');
+        $('#host_device_outer .content_header_left div').eq(index).addClass('active');
+        $('#host_hook_outer .content_header_left div').eq(index).addClass('active');
+        $('#host_right_outer .content_header_left div').eq(index).addClass('active');
+        $('#host_profile_outer .content_header_left div').eq(index).addClass('active');
+        $('#host_erita_outer .content_header_left div').eq(index).addClass('active');
+        $('#host_event_outer .content_header_left div').eq(index).addClass('active');
+    });
+});
+

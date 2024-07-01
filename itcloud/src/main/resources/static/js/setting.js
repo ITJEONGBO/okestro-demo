@@ -37,13 +37,7 @@ $(function(){
     });
     // aside 팝업(세팅 버튼 수정필요)
     $('#setting_icon').click(function(){
-        $('#dash_board').css('display','none');
-        $('#section').css('display','none');
-        $('#storage_section').css('display','none');
-        $('#network_section').css('display','none');
-        $('#setting_section').css('display','block');
-        $('.content_detail_section').css('display','none');
-        $('.host_detail_section').css('display','none');
+        $('setting_user_section').css('display','none');
 
         $('#virtual_machine_chart').css('display','none');
         $('#storage_chart').css('display','none');
@@ -312,6 +306,7 @@ $(".footer>div>a").click(function(){
     $('#setting_normal_btn').click(function(){
         $('#setting_user_section').css('display','none');
         $('#setting_section').css('display','block');
+        
     });
     // 사용자버튼
     $('#setting_user_btn').click(function(){
@@ -426,3 +421,4 @@ $(".footer>div>a").click(function(){
     });
 
 });
+

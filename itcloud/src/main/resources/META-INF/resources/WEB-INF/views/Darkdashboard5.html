@@ -32,6 +32,7 @@
             </div>
             <div>
                 <i class="fa fa-user"></i>
+                <span>(user name)</span>
             </div>
         </div>
     </div>
@@ -587,13 +588,13 @@
                 </div>
                 <script>    
                     document.addEventListener("DOMContentLoaded", function() {
-                    const container = document.getElementById("network_content_outer"); // 컨테이너 선택
-                    const originalContent = document.querySelector('.network_content'); // 기존 네트워크 콘텐츠 요소
+                        const container = document.getElementById("network_content_outer"); // 컨테이너 선택
+                        const originalContent = document.querySelector('.network_content'); // 기존 네트워크 콘텐츠 요소
 
                     for (let i = 0; i < 3; i++) { // 3번 더 복제하기 (이미 하나가 있으므로 총 4개 생성)
                         const clone = originalContent.cloneNode(true); // 깊은 복제로 내부 내용도 복사
                         container.appendChild(clone); // 복제된 요소를 컨테이너에 추가
-                    }
+                        }
                     });
                 </script>
             </div><!--network_outer끝-->
