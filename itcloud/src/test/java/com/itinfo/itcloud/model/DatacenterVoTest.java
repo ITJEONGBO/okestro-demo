@@ -1,15 +1,12 @@
 package com.itinfo.itcloud.model;
 
 import com.itinfo.itcloud.model.computing.DataCenterVo;
-import com.itinfo.itcloud.ovirt.AdminConnectionService;
-import com.itinfo.itcloud.service.ItDataCenterService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.ovirt.engine.sdk4.builders.DataCenterBuilder;
 import org.ovirt.engine.sdk4.builders.VersionBuilder;
 import org.ovirt.engine.sdk4.types.DataCenter;
 import org.ovirt.engine.sdk4.types.QuotaModeType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;

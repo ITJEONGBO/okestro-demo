@@ -4,7 +4,7 @@ import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.create.NetworkCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.*;
-import com.itinfo.itcloud.service.ItNetworkService;
+import com.itinfo.itcloud.service.network.ItNetworkService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

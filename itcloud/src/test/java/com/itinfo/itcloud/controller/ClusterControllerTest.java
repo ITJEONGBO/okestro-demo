@@ -3,7 +3,7 @@ package com.itinfo.itcloud.controller;
 import com.google.gson.Gson;
 import com.itinfo.itcloud.controller.computing.DataCenterController;
 import com.itinfo.itcloud.model.computing.ClusterVo;
-import com.itinfo.itcloud.service.ItClusterService;
+import com.itinfo.itcloud.service.computing.ItClusterService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

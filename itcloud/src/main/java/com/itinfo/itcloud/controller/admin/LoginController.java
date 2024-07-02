@@ -1,7 +1,7 @@
 package com.itinfo.itcloud.controller.admin;
 
-import com.itinfo.itcloud.service.ItSystemPropertyService;
-import com.itinfo.itcloud.service.ItUserService;
+import com.itinfo.itcloud.service.admin.ItSystemPropertyService;
+import com.itinfo.itcloud.service.admin.ItUserService;
 import com.itinfo.itcloud.ovirt.ConnectionService;
 
 import io.swagger.annotations.Api;

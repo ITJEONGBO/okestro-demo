@@ -4,7 +4,7 @@ import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
 import com.itinfo.itcloud.model.computing.TemplateVo;
 import com.itinfo.itcloud.model.storage.DiskVo;
-import com.itinfo.itcloud.service.ItTemplateService;
+import com.itinfo.itcloud.service.computing.ItTemplateService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

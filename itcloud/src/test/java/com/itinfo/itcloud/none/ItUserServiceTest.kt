@@ -1,7 +1,7 @@
 package com.itinfo.itcloud.none
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.itcloud.service.ItUserService
+import com.itinfo.itcloud.service.admin.ItUserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 

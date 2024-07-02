@@ -1,7 +1,7 @@
 package com.itinfo.itcloud.none
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.itcloud.service.ItClusterService
+import com.itinfo.itcloud.service.computing.ItClusterService
 import org.junit.jupiter.api.Test
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`

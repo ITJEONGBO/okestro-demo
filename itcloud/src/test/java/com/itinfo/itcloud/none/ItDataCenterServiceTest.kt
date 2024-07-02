@@ -4,7 +4,7 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.computing.DataCenterVo
 import com.itinfo.itcloud.model.create.DataCenterCreateVo
 import com.itinfo.itcloud.model.error.CommonVo
-import com.itinfo.itcloud.service.ItDataCenterService
+import com.itinfo.itcloud.service.computing.ItDataCenterService
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.Test

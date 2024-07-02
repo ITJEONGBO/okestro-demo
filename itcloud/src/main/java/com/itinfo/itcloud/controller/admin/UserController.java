@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.controller.admin;
 
-import com.itinfo.itcloud.service.ItUserService;
+import com.itinfo.itcloud.service.admin.ItUserService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
