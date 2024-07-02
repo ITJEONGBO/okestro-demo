@@ -2265,12 +2265,15 @@ public class VmServiceImpl implements ItVmService {
     public ConsoleVo getConsole(String vmId, ConsoleVo consoleVo) {
         SystemService system = admin.getConnection().systemService();
         VmService vmService = system.vmsService().vmService(vmId);
-        List<GraphicsConsole> consoles = vmService.graphicsConsolesService().list().send().consoles();
-        VmGraphicsConsolesService consolesService = vmService.graphicsConsolesService();
+        GraphicsConsole console = vmService.graphicsConsolesService().list().send().consoles().get(0);
+        VmGraphicsConsoleService consoleService = vmService.graphicsConsolesService().consoleService(console.id());
 
+//        List<GraphicsConsole> consoles = vmService.graphicsConsolesService().list().send().consoles();
+//        VmGraphicsConsolesService consolesService = vmService.graphicsConsolesService();
 
         GraphicsConsoleBuilder gcb = new GraphicsConsoleBuilder();
-        gcb.protocol(GraphicsType.VNC)
+        gcb
+                .protocol(GraphicsType.VNC)
                 .build();
 
 //        VmGraphicsConsoleService consoleService = consolesService.consoleService(console.id());
