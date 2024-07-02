@@ -1,22 +1,9 @@
-plugins {
-    kotlin("jvm")
-}
-
 group = "com.itinfo.util"
-version = Versions.Project.OKESTRO
+description = "유틸"
+version = Versions.Project.ITCLOUD
 
-sourceSets {
-    main {
-        java.srcDirs(listOf("src/main/java", "src/main/kotlin"))
-        resources.srcDirs(listOf("src/main/resources"))
-    }
-    test {
-        java.srcDirs(listOf("src/test/java", "src/test/kotlin"))
-        resources.srcDirs(listOf("src/test/resources"))
-    }
-}
-tasks.compileJava { dependsOn(tasks.clean) }
-tasks.compileKotlin {dependsOn(tasks.clean) }
+val jar: Jar by tasks
+jar.enabled = true
 
 dependencies {
     compileOnly(Dependencies.kotlinStdlib)

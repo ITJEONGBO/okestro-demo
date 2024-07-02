@@ -2,11 +2,16 @@ import java.awt.Desktop
 import java.net.URL
 
 plugins {
-    id("org.jetbrains.dokka")
+    war
+    id("org.jetbrains.kotlin.jvm")
+    id("org.jetbrains.kotlin.plugin.spring")
+    id("org.jetbrains.kotlin.plugin.jpa")
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
 }
 
 val profile: String = if (project.hasProperty("profile")) project.property("profile") as? String ?: "local" else "local"
-var artifactName: String = "itcloud-${profile}"
+var artifactName: String = "okestro-${profile}"
 println("profile  : $profile")
 
 val defaultBuildClassPath: String = "build/classes/kotlin/main"
@@ -15,31 +20,9 @@ val explodedWarPath: String = "$buildDir/libs/$explodedWarName"
 val explodedWarDockerPath: String = "${project.rootDir}/docker/itcloud"
 println("explodedWarPath  : $explodedWarPath")
 
-tasks {
-    processResources {
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    }
-}
-
-sourceSets {
-    main {
-        java.srcDirs(listOf("src/main/java", "src/main/kotlin"))
-        resources {
-            srcDirs("src/main/resources", "src/main/resources-$profile")
-        }
-    }
-    test {
-        java.srcDirs(listOf("src/test/java"))
-        resources.srcDirs(listOf("src/test/resources"))
-    }
-}
-
 tasks.clean {
     delete(file("$explodedWarDockerPath/ROOT"))
 }
-
-tasks.compileJava { dependsOn(tasks.clean) }
-tasks.compileKotlin {dependsOn(tasks.clean) }
 
 dependencies {
     implementation(project(":common"))
@@ -153,29 +136,5 @@ task("exploreOutput") {
     description = "find artifact(s) in the project directory"
     doLast {
         Desktop.getDesktop().open(layout.buildDirectory.dir("libs").get().asFile)
-    }
-}
-
-configurations {
-    compileOnly {
-        extendsFrom(configurations.annotationProcessor.get())
-    }
-}
-
-tasks {
-    dokkaHtml {
-        dokkaSourceSets {
-            named("main") {
-                noAndroidSdkLink.set(false)
-            }
-        }
-        outputDirectory.set(file("../${project.name}-dokka"))
-        suppressInheritedMembers.set(true)
-    }
-}
-
-val cleanDokkaModuleDocs by tasks.register<Copy>("cleanDokkaModuleDocs") {
-    subprojects {
-        delete(file("${project.name}-dokka"))
     }
 }

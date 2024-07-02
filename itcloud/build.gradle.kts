@@ -1,8 +1,21 @@
+import org.springframework.boot.gradle.tasks.run.BootRun
 import java.awt.Desktop
 import java.net.URL
+import java.util.Locale
 
 plugins {
     war
+    id("org.jetbrains.kotlin.jvm")
+    id("org.jetbrains.kotlin.plugin.spring")
+    id("org.jetbrains.kotlin.plugin.jpa")
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
+}
+
+springBoot {
+    group = "com.itinfo.itcloud"
+    description = "아이티클라우드 백엔드"
+    version = Versions.Project.ITCLOUD
 }
 
 val profile: String = if (project.hasProperty("profile")) project.property("profile") as? String ?: "local" else "local"
@@ -15,31 +28,9 @@ val explodedWarPath: String = "$buildDir/libs/$explodedWarName"
 val explodedWarDockerPath: String = "${project.rootDir}/docker/itcloud"
 println("explodedWarPath  : $explodedWarPath")
 
-tasks {
-    processResources {
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    }
-}
-
-sourceSets {
-    main {
-        java.srcDirs(listOf("src/main/java", "src/main/kotlin"))
-        resources.srcDirs(listOf("src/main/resources"))
-        resources {
-            srcDirs("src/main/resources", "src/main/resources-$profile")
-        }
-    }
-    test {
-        java.srcDirs(listOf("src/test/java"))
-        resources.srcDirs(listOf("src/test/resources"))
-    }
-}
-
 tasks.clean {
     delete(file("$explodedWarDockerPath/ROOT"))
 }
-tasks.compileJava { dependsOn(tasks.clean) }
-tasks.compileKotlin {dependsOn(tasks.clean) }
 
 dependencies {
     implementation(project(":common"))
@@ -143,19 +134,21 @@ val placeOutputToDocker = task("placeOutputToDocker") {
     }
 }
 
-
 explodedWar.finalizedBy(putModules)
 putModules.finalizedBy(placeOutputToDocker)
 
-
-task("openBrowser") {
+val openBrowser = task("openBrowser") {
     description = "open browser to the running application"
     doLast {
         val port: Int = 8080
-        val contextName = "contextName"
-        val url: URL = URL("http://localhost:$port/$contextName/")
+        val contextName = ""
+        val url: URL = URL("http://localhost:$port/$contextName")
         Desktop.getDesktop().browse(url.toURI())
     }
+}
+
+tasks.named<BootRun>("bootRun") {
+    dependsOn(openBrowser)
 }
 
 task("exploreOutput") {
@@ -165,8 +158,40 @@ task("exploreOutput") {
     }
 }
 
-configurations {
-    compileOnly {
-        extendsFrom(configurations.annotationProcessor.get())
+// react 프로젝트 구성
+val frontendDir = "src/main/frontend"
+
+tasks.processResources {
+    dependsOn("copyReactBuildFiles")
+}
+
+val installReact by tasks.register<Exec>("installReact") {
+    workingDir(frontendDir)
+    inputs.dir(frontendDir)
+    group = BasePlugin.BUILD_GROUP
+    if (System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("windows")) {
+        commandLine("npm.cmd", "audit", "fix")
+        commandLine("npm.cmd", "install")
+    } else {
+        commandLine("npm", "audit", "fix")
+        commandLine("npm", "install")
     }
+}
+
+val buildReact by tasks.register<Exec>( "buildReact") {
+    dependsOn("installReact")
+    workingDir(frontendDir)
+    inputs.dir(frontendDir)
+    group = BasePlugin.BUILD_GROUP
+    if (System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("windows")) {
+        commandLine("npm.cmd", "run-script", "build")
+    } else {
+        commandLine("npm", "run-script", "build")
+    }
+}
+
+val copyReactBuildFiles by tasks.register<Copy>("copyReactBuildFiles") {
+    dependsOn("buildReact")
+    from("$frontendDir/build")
+    into("$projectDir/src/main/resources/static")
 }

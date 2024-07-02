@@ -32,12 +32,12 @@ allprojects {
 }
 
 subprojects {
+    afterEvaluate {
+        println("name: ${this.name}\tversion: ${this.version}\tdescription: ${this.description}")
+    }
 
     apply(plugin="org.jetbrains.kotlin.jvm")
-    apply(plugin="org.jetbrains.kotlin.plugin.spring")
-    apply(plugin="org.jetbrains.kotlin.plugin.jpa")
-    apply(plugin="org.springframework.boot")
-    apply(plugin="io.spring.dependency-management")
+    apply(plugin="org.jetbrains.dokka")
 
     tasks.withType<JavaCompile> {
         sourceCompatibility = Versions.java
@@ -59,9 +59,46 @@ subprojects {
         }
     }
 
+    val profile: String = if (project.hasProperty("profile")) project.property("profile") as? String ?: "local" else "local"
+    sourceSets {
+        main {
+            java.srcDirs(listOf("src/main/java", "src/main/kotlin"))
+            resources {
+                srcDirs("src/main/resources", "src/main/resources-$profile")
+            }
+            resources.srcDirs(listOf("src/main/resources"))
+        }
+        test {
+            java.srcDirs(listOf("src/test/java", "src/test/kotlin"))
+            resources.srcDirs(listOf("src/test/resources"))
+        }
+    }
+    tasks.compileJava { dependsOn(tasks.clean) }
+    tasks.compileKotlin { dependsOn(tasks.clean) }
+    tasks.processResources {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
+    tasks.processTestResources {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
 
+    tasks.dokkaHtml {
+        dokkaSourceSets {
+            named("main") {
+                noAndroidSdkLink.set(false)
+            }
+        }
+        outputDirectory.set(file("../${this@subprojects.name}-dokka"))
+        suppressInheritedMembers.set(true)
+    }
+
+    val cleanDokkaModuleDocs by tasks.register<Copy>("cleanDokkaModuleDocs") {
+        subprojects {
+            delete(file("${this@subprojects.name}-dokka"))
+        }
+    }
 }
-
+/*
 project("common") {
     val jar: Jar by tasks
     val bootJar: BootJar by tasks
@@ -69,66 +106,4 @@ project("common") {
     bootJar.enabled = false
     jar.enabled = true
 }
-
-project("util") {
-
-}
-
-project(":license-common") {
-    tasks.processResources {
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    }
-
-    dependencies {
-        compileOnly(project(":common"))
-        compileOnly(project(":util"))
-        compileOnly(Dependencies.kotlinStdlib)
-        compileOnly(Dependencies.log4j)
-        compileOnly(Dependencies.gson)
-
-        testImplementation(project(":common"))
-        testImplementation(project(":util"))
-        testImplementation(Dependencies.log4j)
-        testImplementation(Dependencies.junit)
-        testImplementation(Dependencies.hamcrest)
-    }
-}
-project(":license-enc") {
-    dependencies {
-        compileOnly(project(":common"))
-        compileOnly(project(":license-common"))
-        compileOnly(Dependencies.kotlinStdlib)
-        compileOnly(Dependencies.log4j)
-        compileOnly(Dependencies.gson)
-
-        testImplementation(project(":common"))
-        testImplementation(Dependencies.log4j)
-        testImplementation(Dependencies.junit)
-        testImplementation(Dependencies.hamcrest)
-    }
-}
-project(":license-dec") {
-    dependencies {
-        compileOnly(project(":common"))
-        compileOnly(project(":license-common"))
-        compileOnly(Dependencies.kotlinStdlib)
-        compileOnly(Dependencies.log4j)
-        compileOnly(Dependencies.gson)
-
-        testImplementation(project(":common"))
-        testImplementation(Dependencies.log4j)
-        testImplementation(Dependencies.junit)
-        testImplementation(Dependencies.hamcrest)
-    }
-}
-
-project(":license-validate") {
-    dependencies {
-        compileOnly(project(":common"))
-        compileOnly(project(":license-common"))
-        compileOnly(project(":license-enc"))
-        compileOnly(Dependencies.kotlinStdlib)
-        compileOnly(Dependencies.log4j)
-        compileOnly(Dependencies.gson)
-    }
-}
+*/

@@ -1,20 +1,19 @@
-plugins {
-    kotlin("jvm")
-}
-
 group = "com.itinfo.itcloud.license"
-version = Versions.Project.OKESTRO
+description = "라이센스 암호화"
+version = Versions.Project.ITCLOUD
 
-sourceSets {
-    main {
-        java.srcDirs(listOf("src/main/java", "src/main/kotlin"))
-        resources.srcDirs(listOf("src/main/resources"))
-    }
-    test {
-        java.srcDirs(listOf("src/test/java", "src/test/kotlin"))
-        resources.srcDirs(listOf("src/test/resources"))
-    }
+val jar: Jar by tasks
+jar.enabled = true
+
+dependencies {
+    compileOnly(project(":common"))
+    compileOnly(project(":license-common"))
+    compileOnly(Dependencies.kotlinStdlib)
+    compileOnly(Dependencies.log4j)
+    compileOnly(Dependencies.gson)
+
+    testImplementation(project(":common"))
+    testImplementation(Dependencies.log4j)
+    testImplementation(Dependencies.junit)
+    testImplementation(Dependencies.hamcrest)
 }
-tasks.compileJava { dependsOn(tasks.clean) }
-tasks.compileKotlin {dependsOn(tasks.clean) }
-

@@ -11,6 +11,8 @@
 ![shield-java][shield-java]
 ![shield-spring][shield-spring]
 ![shield-spring-security][shield-spring-security]
+![Node.js (`11.0.23`)][shield-nodejs]
+![React.js (`18.3.x`)][shield-reactjs]
 ![shield-swagger][shield-swagger]
 ![shield-kotlin][shield-kotlin]
 ![shield-gradle][shield-gradle]
@@ -26,6 +28,8 @@
 - ☕JDK (OpenJDK 1.8_201)
 - 🍃Spring (`5.3.20`) / Boot (`2.7.0`)
 - 🐘Gradle (`7.4.2`)
+- 🧶Node.js (`11.0.23`)
+- ⚛️React.js (`18.3.x`)
 - 😺Apache Tomcat (`9.0.63`)
 - 🐳Docker
   - `tomcat:8.5.38-jre8-alpine` (ssl port: `8443`)
@@ -36,22 +40,40 @@
 
 ---
 
-## 🐘Gradle
-
-Run this script to create artifact
+## 🧶Node.js
 
 ```sh
-./gradlew monolith:bootJar -Pprofile=staging
+# React 앱 실행
+npm start
+# React 앱 빌드
+npm build
+```
+
+> npm이 없을 경우 설치 권고
+
+## 🐘Gradle
+
+```sh
+#
 # 프로퍼티 `profile` 유형
 # - local: 로컬 (개발환경)
 # - staging
+#
+
+# 스프링부트 프로젝트 실행 (개발)
+./gradlew itcloud:bootRun -Pprofile=staging
+
+# 아티팩트 생성 (운영)
+./gradlew itcloud:bootJar -Pprofile=staging
 ```
+
+![itcloud:bootRun](imgs/gradle-itcloud-bootRun.png)
+
+> 실행 후 http://localhost:8080 을 브라우저로 열기
 
 ---
 
 ## 😺Tomcat 
-
-> ~~Intellij IDEA Community Edition을 사용할 경우 [Smart Tomcat 플러그인](https://github.com/zengkid/SmartTomcat) 을 활용하여 구성~~
 
 - 톰켓 환경 구성: 📁`<catalina base path>`
   - SSL 포트: `8443`
@@ -168,6 +190,7 @@ AND table_name = 'users';
 ```sh
 cd /etc/pki/ovirt-engine/certs
 ```
+
 ---
 
 
@@ -181,7 +204,7 @@ cd /etc/pki/ovirt-engine/certs
   - [ ] model 안정화
 - [ ] package별 endpoint구현
 - [x] docker 생성 자동화 스크립트 (환경변수 지정 > ovirt ip주소)
-- [x] swagger 구성 (`/swagger-ui.html`)
+- [x] swagger 구성 (`/swagger-ui/`)
 - [x] dokka 구성
 
 ---
@@ -260,6 +283,8 @@ https://github.com/Gaia3D/mago3d 참고
 [shield-java]: https://img.shields.io/badge/Temurin-11-f3812a?logo=openjdk&logoColor=f3812a&style=flat-square
 [shield-spring]: https://img.shields.io/badge/Spring-4.3.14.RELEASE-6DB33F?logo=spring&logoColor=6DB33F&style=flat-square
 [shield-spring-security]: https://img.shields.io/badge/Spring%20Security-4.2.2.RELEASE-6DB33F?logo=springsecurity&logoColor=6DB33F&style=flat-square
+[shield-nodejs]: https://img.shields.io/badge/Node.js-11.0.23-5FA04E?logo=nodedotjs&logoColor=5FA04E&style=flat-square
+[shield-reactjs]: https://img.shields.io/badge/React.js-18.3.x-61DAFB?logo=react&logoColor=61DAFB&style=flat-square
 [shield-swagger]: https://img.shields.io/badge/Swagger-2.9.2-85EA2D?logo=swagger&logoColor=85EA2D&style=flat-square 
 [shield-kotlin]: https://img.shields.io/badge/Kotlin-1.5.31-0095D5?logo=kotlin&logoColor=0095D5&style=flat-square
 [shield-gradle]: https://img.shields.io/badge/Gradle-7.4.2-abd759?logo=gradle&logoColor=abd759&style=flat-square

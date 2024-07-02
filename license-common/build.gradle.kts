@@ -1,22 +1,20 @@
-plugins {
-    kotlin("jvm")
-}
-
 group = "com.itinfo.itcloud.license"
-version = Versions.Project.OKESTRO
+description = "라이센스 공통"
+version = Versions.Project.ITCLOUD
 
-sourceSets {
-    main {
-        java.srcDirs(listOf("src/main/java", "src/main/kotlin"))
-        resources.srcDirs(listOf("src/main/resources"))
-    }
-    test {
-        java.srcDirs(listOf("src/test/java", "src/test/kotlin"))
-        resources.srcDirs(listOf("src/test/resources"))
-    }
-}
-tasks.compileJava { dependsOn(tasks.clean) }
-tasks.compileKotlin {dependsOn(tasks.clean) }
-tasks.processTestResources {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+val jar: Jar by tasks
+jar.enabled = true
+
+dependencies {
+    compileOnly(project(":common"))
+    compileOnly(project(":util"))
+    compileOnly(Dependencies.kotlinStdlib)
+    compileOnly(Dependencies.log4j)
+    compileOnly(Dependencies.gson)
+
+    testImplementation(project(":common"))
+    testImplementation(project(":util"))
+    testImplementation(Dependencies.log4j)
+    testImplementation(Dependencies.junit)
+    testImplementation(Dependencies.hamcrest)
 }
