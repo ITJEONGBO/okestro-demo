@@ -52,7 +52,7 @@ public interface ItVmService {
     CommonVo<Boolean> migrateCancelVm(String id);   // 마이그레이션 취소
 
 
-    CommonVo<Boolean> exportOvaVm(String id);
+    CommonVo<Boolean> exportOvaVm(VmExportVo vmExportVo); // ova로 내보내기
 
 
     VmVo getInfo(String id);        // 일반

@@ -521,7 +521,7 @@ class ItVmServiceTest {
 
     @Test
     @DisplayName("가상머신 마이그레이션")
-    void getMigrateVm() {
+    void migrateVm() {
         String id = "d1d753d1-6ceb-43c7-b260-242671cbe9e4";
         String hostId = "a16955bd-ff57-4e6e-add5-c7d46d5315e9";
         CommonVo<Boolean> result = vmService.migrateVm(id, hostId);
@@ -529,7 +529,22 @@ class ItVmServiceTest {
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
+    @Test
+    @DisplayName("가상머신 ova 내보내기")
+    void exportVm() {
+        String id = "7a2e21ea-303f-444d-b3ae-964fc04c3919";
+        VmExportVo exportVo =
+                VmExportVo.builder()
+                        .vmId(id)
+                        .hostName("host01.ititinfo.local")
+                        .directory("/root")
+                        .fileName("testOva.ova")
+                        .build();
 
+        CommonVo<Boolean> result = vmService.exportOvaVm(exportVo);
+
+        assertThat(result.getHead().getCode()).isEqualTo(200);
+    }
 
 
 

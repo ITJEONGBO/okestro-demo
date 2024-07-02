@@ -1337,12 +1337,22 @@ public class VmServiceImpl implements ItVmService {
 
     // ova 창 = setHostList(String clusterId)
     @Override
-    public CommonVo<Boolean> exportOvaVm(String id) {
+    public CommonVo<Boolean> exportOvaVm(VmExportVo vmExportVo) {
         SystemService system = admin.getConnection().systemService();
-        VmService vmService = system.vmsService().vmService(id);
+        VmService vmService = system.vmsService().vmService(vmExportVo.getVmId());
+//        Vm vm = vmService.get().send().vm();
 
         try{
-//            vmService.exportToPathOnHost().host(new HostBuilder().name()).directory().filename();
+            vmService.exportToPathOnHost()
+//                    .storageDomain(new StorageDomainBuilder().name(vmExportVo.getDomainName()))
+//                    .exclusive(vmExportVo.isExclusive())
+//                    .discardSnapshots(vmExportVo.isDiscardSnapshot())
+                    .host(new HostBuilder().name(vmExportVo.getHostName()))
+                    .directory(vmExportVo.getDirectory())
+                    .filename(vmExportVo.getFileName())
+                    .send();
+
+
             log.info("가상머신 OVA 내보내기");
             return CommonVo.successResponse();
         }catch (Exception e){
