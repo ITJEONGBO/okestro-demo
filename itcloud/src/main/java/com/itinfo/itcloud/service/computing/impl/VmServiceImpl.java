@@ -13,8 +13,10 @@ import com.itinfo.itcloud.model.storage.DiskVo;
 import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.model.storage.VmDiskVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
+import com.itinfo.itcloud.service.admin.ItSystemPropertyService;
 import com.itinfo.itcloud.service.computing.ItAffinityService;
 import com.itinfo.itcloud.service.computing.ItVmService;
+import com.itinfo.util.model.SystemPropertiesVo;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
 import org.ovirt.engine.sdk4.services.*;
@@ -37,6 +39,7 @@ public class VmServiceImpl implements ItVmService {
     @Autowired private AdminConnectionService admin;
     @Autowired private CommonService commonService;
     @Autowired private ItAffinityService affinityService;
+    @Autowired private ItSystemPropertyService systemService;
 
 
     /**
@@ -2272,30 +2275,20 @@ public class VmServiceImpl implements ItVmService {
 //        VmGraphicsConsolesService consolesService = vmService.graphicsConsolesService();
 
         GraphicsConsoleBuilder gcb = new GraphicsConsoleBuilder();
-        gcb
-                .protocol(GraphicsType.VNC)
-                .build();
+        gcb.protocol(GraphicsType.VNC).build();
 
-//        VmGraphicsConsoleService consoleService = consolesService.consoleService(console.id());
-//        Ticket ticket = consoleService.ticket().send().ticket();
-//        vmConsoleVo.setAddress(console.address());
-//        vmConsoleVo.setPort(String.valueOf(console.port().intValue()));
-//        vmConsoleVo.setPasswd(ticket.value());
-//        if (console.tlsPort() != null) {
-//            vmConsoleVo.setTlsPort(String.valueOf(console.tlsPort().intValue()));
-//        } else {
-//            vmConsoleVo.setTlsPort((String)null);
-//        }
-//
-//        try {
-//            SystemPropertiesVo systemProperties = this.systemPropertiesService.retrieveSystemProperties();
-//            vmConsoleVo.setHostAddress(systemProperties.getVncIp());
-//            vmConsoleVo.setHostPort(systemProperties.getVncPort());
-//        } catch (Exception var13) {
-//        }
-//
-//
-        return null;
+        Ticket ticket = consoleService.ticket().send().ticket();
+
+        SystemPropertiesVo systemPropertiesVo = systemService.searchSystemProperties();
+
+        return ConsoleVo.builder()
+                .address(console.address())
+                .port(String.valueOf(console.port().intValue()))
+                .password(ticket.value())
+                .tlsPort(String.valueOf(console.tlsPort() != null ? console.tlsPort().intValue() : null))
+                .hostAddress(systemPropertiesVo.getVncIp())
+                .hostPort(systemPropertiesVo.getVncPort())
+                .build();
     }
     // endregion
 

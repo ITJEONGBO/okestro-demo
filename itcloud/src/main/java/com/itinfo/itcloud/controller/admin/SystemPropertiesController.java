@@ -1,8 +1,8 @@
 package com.itinfo.itcloud.controller.admin;
 
-import com.itinfo.util.model.SystemPropertiesVo;
 import com.itinfo.itcloud.service.admin.ItSystemPropertyService;
 
+import com.itinfo.util.model.SystemPropertiesVo;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
