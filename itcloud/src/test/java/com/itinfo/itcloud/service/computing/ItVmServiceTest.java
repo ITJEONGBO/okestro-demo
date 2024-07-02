@@ -869,4 +869,11 @@ class ItVmServiceTest {
         assertThat(3).isEqualTo(result.size());
     }
 
+
+    @Test
+    @DisplayName("가상머신 콘솔")
+    void getConsole(){
+
+    }
+
 }

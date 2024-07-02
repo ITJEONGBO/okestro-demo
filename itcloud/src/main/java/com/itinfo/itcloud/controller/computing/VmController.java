@@ -189,7 +189,7 @@ public class VmController {
 
 	@GetMapping("/vmConsole/vncView")
 	public String vncView() {
-		return "/computing/vnc";
+		return "vnc";
 	}
 
 

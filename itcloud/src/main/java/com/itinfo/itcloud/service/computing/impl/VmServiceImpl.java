@@ -1336,6 +1336,7 @@ public class VmServiceImpl implements ItVmService {
 
 
     // ova 창 = setHostList(String clusterId)
+    // TODO:HELP
     @Override
     public CommonVo<Boolean> exportOvaVm(VmExportVo vmExportVo) {
         SystemService system = admin.getConnection().systemService();
@@ -2258,7 +2259,7 @@ public class VmServiceImpl implements ItVmService {
 
 
 
-    // region: console
+    // region: 콘솔
 
     @Override
     public ConsoleVo getConsole(String vmId, ConsoleVo consoleVo) {
