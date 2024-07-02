@@ -1,11 +1,19 @@
 $(function(){
-        //대시보드 버튼
-        $('#aside_popup_dashboard_btn').click(function(event) {
-        event.preventDefault(); // 기본 동작 방지
-        var targetUrl = 'Darkdashboard5.html'; // 이동할 URL
-        window.location.href = targetUrl; // 페이지 이동
+    // 페이지 로드 시 네트워크 버튼 배경색을 파란색으로 유지
+    $('#aside_popup_storage_btn').css('background-color', 'rgb(218, 236, 245)');
+    // 필요에 따라 추가로 초기화할 스타일들 설정
+    $('#aside_popup_dashboard_btn').css('background-color', '');
+    $('#aside_popup_machine_btn').css('background-color', '');
+    $('#setting_icon').css('background-color', '');
+    $('#aside_popup_network_btn').css('background-color', '');
+    
+    //대시보드 버튼
+    $('#aside_popup_dashboard_btn').click(function(event) {
+    event.preventDefault(); // 기본 동작 방지
+    var targetUrl = 'Darkdashboard5.html'; // 이동할 URL
+    window.location.href = targetUrl; // 페이지 이동
 
-        $('#virtual_machine_chart').css('display','block');
+    $('#virtual_machine_chart').css('display','block');
 
     });
     //가상머신 버튼
@@ -62,6 +70,29 @@ $('#aside_popup_storage_btn').click(function() {
         $('#aside_outer').css('width', '3%');
     }
 });
+
+    // content_detail_section
+    $('#storage_domain_outer tbody td:nth-child(3)').click(function(){
+        $('#storage_section').css('display', 'none');
+        $('.content_detail_section').css('display', 'block');
+    
+        $('#virtual_machine_chart').css('display', 'none');
+        $('#storage_chart').css('display', 'none');
+        $('#network_chart').css('display', 'none');
+        $('#setting_chart').css('display', 'none');
+    
+        // aside_popup_machine_btn을 색칠하고 다른 버튼들은 초기화
+        $('#aside_popup_storage_btn').css('background-color', 'rgb(218, 236, 245)');
+        $('#aside_popup_dashboard_btn').css('background-color', '');
+        $('#aside_popup_network_btn').css('background-color', '');
+        $('#aside_popup_machine_btn').css('background-color', '');
+    
+        // aside_popup이 닫혀 있으면 열지 않고, 열려 있으면 그대로 유지
+        if ($('#aside_popup').css('display') !== 'none') {
+            $('#aside_outer').css('width', '20%');
+        }
+    });
+
 
     //---------------------------------공통----------------------------------------------------------------------------------------------------------------------------
     // aside차트(가상머신)
@@ -489,5 +520,142 @@ $('.content_header_left div').click(function() {
         } else {
             $('.storage_volume_option_box').css('display', 'none');
         }
+    });
+});
+//-------------------------------------------------------------------------------------------
+$(document).ready(function() {
+    // 처음 로드될 때 '일반' div에 'active' 클래스 추가
+    $('.content_detail_section .content_header_left div:first').addClass('active');
+    
+    // nav 파란밑줄, 각 맞는 창불러오기 
+    $('.content_detail_section .content_header_left div').click(function() {
+        var index = $(this).index();
+        var parentId = $(this).closest('.content_detail_section .content_header').parent().attr('id');
+
+        $('.content_detail_section .content_header_left div').removeClass('active');
+        $(this).addClass('active');
+
+        if (index === 0) {
+            $('.content_outer').show();
+            $('#detail_datacenter_outer').hide();
+            $('#detail_machine_outer').hide();
+            $('#detail_template_outer').hide();
+            $('#detail_disk_outer').hide();
+            $('#detail_snapshot_outer').hide();
+            $('#detail_rent_outer').hide();
+            $('#detail_profile_outer').hide();
+            $('#detail_event_outer').hide();
+            $('#detail_right_outer').hide();
+        } else if (index === 1) {
+            $('.content_outer').hide();
+            $('#detail_datacenter_outer').show();
+            $('#detail_machine_outer').hide();
+            $('#detail_template_outer').hide();
+            $('#detail_disk_outer').hide();
+            $('#detail_snapshot_outer').hide();
+            $('#detail_rent_outer').hide();
+            $('#detail_profile_outer').hide();
+            $('#detail_event_outer').hide();
+            $('#detail_right_outer').hide();
+        } else if (index === 2) {
+            $('.content_outer').hide();
+            $('#detail_datacenter_outer').hide();
+            $('#detail_machine_outer').show();
+            $('#detail_template_outer').hide();
+            $('#detail_disk_outer').hide();
+            $('#detail_snapshot_outer').hide();
+            $('#detail_rent_outer').hide();
+            $('#detail_profile_outer').hide();
+            $('#detail_event_outer').hide();
+            $('#detail_right_outer').hide();
+        }else if (index === 3) {
+            $('.content_outer').hide();
+            $('#detail_datacenter_outer').hide();
+            $('#detail_machine_outer').hide();
+            $('#detail_template_outer').show();
+            $('#detail_disk_outer').hide();
+            $('#detail_snapshot_outer').hide();
+            $('#detail_rent_outer').hide();
+            $('#detail_profile_outer').hide();
+            $('#detail_event_outer').hide();
+            $('#detail_right_outer').hide();
+        }else if (index === 4) {
+            $('.content_outer').hide();
+            $('#detail_datacenter_outer').hide();
+            $('#detail_machine_outer').hide();
+            $('#detail_template_outer').hide();
+            $('#detail_disk_outer').show();
+            $('#detail_snapshot_outer').hide();
+            $('#detail_rent_outer').hide();
+            $('#detail_profile_outer').hide();
+            $('#detail_event_outer').hide();
+            $('#detail_right_outer').hide();
+        }else if (index === 5) {
+            $('.content_outer').hide();
+            $('#detail_datacenter_outer').hide();
+            $('#detail_machine_outer').hide();
+            $('#detail_template_outer').hide();
+            $('#detail_disk_outer').hide();
+            $('#detail_snapshot_outer').show();
+            $('#detail_rent_outer').hide();
+            $('#detail_profile_outer').hide();
+            $('#detail_event_outer').hide();
+            $('#detail_right_outer').hide();
+        }else if (index === 6) {
+            $('.content_outer').hide();
+            $('#detail_datacenter_outer').hide();
+            $('#detail_machine_outer').hide();
+            $('#detail_template_outer').hide();
+            $('#detail_disk_outer').hide();
+            $('#detail_snapshot_outer').hide();
+            $('#detail_rent_outer').show();
+            $('#detail_profile_outer').hide();
+            $('#detail_event_outer').hide();
+            $('#detail_right_outer').hide();
+        }else if (index === 7) {
+            $('.content_outer').hide();
+            $('#detail_datacenter_outer').hide();
+            $('#detail_machine_outer').hide();
+            $('#detail_template_outer').hide();
+            $('#detail_disk_outer').hide();
+            $('#detail_snapshot_outer').hide();
+            $('#detail_rent_outer').hide();
+            $('#detail_profile_outer').show();
+            $('#detail_event_outer').hide();
+            $('#detail_right_outer').hide();
+        }else if (index === 8) {
+            $('.content_outer').hide();
+            $('#detail_datacenter_outer').hide();
+            $('#detail_machine_outer').hide();
+            $('#detail_template_outer').hide();
+            $('#detail_disk_outer').hide();
+            $('#detail_snapshot_outer').hide();
+            $('#detail_rent_outer').hide();
+            $('#detail_profile_outer').hide();
+            $('#detail_event_outer').show();
+            $('#detail_right_outer').hide();
+        }else if (index === 9) {
+            $('.content_outer').hide();
+            $('#detail_datacenter_outer').hide();
+            $('#detail_machine_outer').hide();
+            $('#detail_template_outer').hide();
+            $('#detail_disk_outer').hide();
+            $('#detail_snapshot_outer').hide();
+            $('#detail_rent_outer').hide();
+            $('#detail_profile_outer').hide();
+            $('#detail_event_outer').hide();
+            $('#detail_right_outer').show();
+        }
+        
+        $('.content_outer .content_header_left div').eq(index).addClass('active');
+        $('#detail_datacenter_outer .content_header_left div').eq(index).addClass('active');
+        $('#detail_machine_outer .content_header_left div').eq(index).addClass('active');
+        $('#detail_template_outer .content_header_left div').eq(index).addClass('active');
+        $('#detail_disk_outer .content_header_left div').eq(index).addClass('active');
+        $('#detail_snapshot_outer .content_header_left div').eq(index).addClass('active');
+        $('#detail_rent_outer .content_header_left div').eq(index).addClass('active');
+        $('#detail_profile_outer .content_header_left div').eq(index).addClass('active');
+        $('#detail_event_outer .content_header_left div').eq(index).addClass('active');
+        $('#detail_right_outer .content_header_left div').eq(index).addClass('active');
     });
 });

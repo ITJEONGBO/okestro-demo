@@ -96,6 +96,45 @@ $('#aside_popup_machine_btn, #aside_popup_storage_btn, #aside_popup_network_btn'
     // 클릭된 버튼을 previousButton에 저장
     previousButton = $(this);
 });
+$('#header_right > span').click(function(){
+    var currentButton = $(this);
+    
+    // 이전에 클릭한 버튼이 현재 버튼과 다르면 페이지 새로고침
+    if (previousButton && previousButton.attr('id') !== currentButton.attr('id')) {
+        location.reload();
+    }
+
+    $('#dash_board').css('display','block');
+    $('#section').css('display','none');
+    $('#storage_section').css('display','none');
+    $('#network_section').css('display','none');
+    $('#setting_section').css('display','none');
+
+    $('#virtual_machine_chart').css('display','none');
+    $('#storage_chart').css('display','none');
+    $('#network_chart').css('display','none');
+    $('#setting_chart').css('display','none');
+    $('#setting_user_section').css('display','none');
+
+    if ($('#aside_popup').css('display') === 'none' || $('#aside_popup_dashboard_btn').css('background-color') !== 'rgb(218, 236, 245)') {
+        $('#aside_popup_dashboard_btn').css('background-color', 'rgb(218, 236, 245)'); // 배경색을 노란색으로 변경
+        $('#aside_popup_machine_btn').css('background-color', ''); // 다른 버튼 초기화
+        $('#aside_popup_storage_btn').css('background-color', ''); // 다른 버튼 초기화
+        $('#aside_popup_network_btn').css('background-color', ''); // 다른 버튼 초기화
+        $('#setting_icon').css('background-color', ''); // 다른 버튼 초기화
+    } else {
+        $('#aside_popup').css('display', 'none');
+        $('#aside_outer').css('width','3%');
+    }
+
+    // 현재 버튼을 previousButton에 저장
+    previousButton = currentButton;
+});
+
+$('#aside_popup_machine_btn, #aside_popup_storage_btn, #aside_popup_network_btn').click(function() {
+    // 클릭된 버튼을 previousButton에 저장
+    previousButton = $(this);
+});
 
   /* 
     // aside 팝업(가상머신버튼)

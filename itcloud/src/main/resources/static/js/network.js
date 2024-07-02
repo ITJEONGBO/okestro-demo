@@ -1,4 +1,12 @@
 $(function(){
+        // 페이지 로드 시 네트워크 버튼 배경색을 파란색으로 유지
+        $('#aside_popup_network_btn').css('background-color', 'rgb(218, 236, 245)');
+        // 필요에 따라 추가로 초기화할 스타일들 설정
+        $('#aside_popup_dashboard_btn').css('background-color', '');
+        $('#aside_popup_machine_btn').css('background-color', '');
+        $('#aside_popup_storage_btn').css('background-color', '');
+        $('#setting_icon').css('background-color', '');
+    
     //대시보드 버튼
     $('#aside_popup_dashboard_btn').click(function(event) {
         event.preventDefault(); // 기본 동작 방지

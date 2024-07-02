@@ -1,4 +1,13 @@
 $(function(){
+    // 페이지 로드 시 네트워크 버튼 배경색을 파란색으로 유지
+    $('#aside_popup_machine_btn').css('background-color', 'rgb(218, 236, 245)');
+    // 필요에 따라 추가로 초기화할 스타일들 설정
+    $('#aside_popup_dashboard_btn').css('background-color', '');
+    $('#aside_popup_network_btn').css('background-color', '');
+    $('#aside_popup_storage_btn').css('background-color', '');
+    $('#setting_icon').css('background-color', '');
+
+
      //대시보드 버튼
      $('#aside_popup_dashboard_btn').click(function(event) {
         event.preventDefault(); // 기본 동작 방지
@@ -18,25 +27,18 @@ $(function(){
         $('#storage_chart').css('display','block');
 
     });
-    //네트워크 버튼
+    // 네트워크 버튼
     $('#aside_popup_network_btn').click(function(event) {
         event.preventDefault(); // 기본 동작 방지
         var targetUrl = 'network.html'; // 이동할 URL
-        window.location.href = targetUrl; // 페이지 이동
-
-        $('#virtual_machine_chart').css('display','none');
-        $('#storage_chart').css('display','block');
-
+        window.location.href = targetUrl; 
     });
+
     //설정 버튼
     $('#setting_icon').click(function(event) {
         event.preventDefault(); // 기본 동작 방지
         var targetUrl = 'setting.html'; // 이동할 URL
         window.location.href = targetUrl; // 페이지 이동
-
-        $('#virtual_machine_chart').css('display','none');
-        $('#storage_chart').css('display','block');
-
     });
 
     // aside 팝업(가상머신버튼)
@@ -49,6 +51,7 @@ $(function(){
         $('#network_chart').css('display','none');
         $('#setting_chart').css('display','none');
         $('#setting_user_section').css('display','none');
+        
         if ($('#aside_popup').css('display') === 'none' || $('#aside_popup_machine_btn').css('background-color') !== 'rgb(218, 236, 245)') { //노란색
             $('#aside_popup').css('display', 'block');
             $('#aside_outer').css('width','20%');
@@ -64,29 +67,27 @@ $(function(){
         }
     });
       // host_detail_section
-      $('#power_outer table tbody tr>td:nth-child(2)').click(function(){
-        $('#section').css('display','none');
-        $('.host_detail_section').css('display','block');
-
-        $('#virtual_machine_chart').css('display','none');
-        $('#storage_chart').css('display','none');
-        $('#network_chart').css('display','none');
-        $('#setting_chart').css('display','none');
-        if ($('#aside_popup').css('display') === 'none' || $('#aside_popup_storage_btn').css('background-color') !== 'rgb(218, 236, 245)') {
-            $('#aside_popup').css('display', 'block');
-            $('#aside_outer').css('width','20%');
-            $('#aside_popup_machine_btn').css('background-color', 'rgb(218, 236, 245)'); // 배경색을 노란색으로 변경
-            $('#aside_popup_dashboard_btn').css('background-color', '');
-            $('#aside_popup_machine_btn').css('background-color', ''); // 다른 버튼 초기화
-            $('#aside_popup_network_btn').css('background-color', ''); // 다른 버튼 초기화
-            $('#aside_popup_storage_btn').css('background-color', ''); // 다른 버튼 초기화
-        } else {
-            $('#aside_popup').css('display', 'none');
-            $('#aside_outer').css('width','3%');
+      $('#power_outer table tbody tr>td:nth-child(2)').click(function() {
+        $('#section').css('display', 'none');
+        $('.host_detail_section').css('display', 'block');
+    
+        $('#virtual_machine_chart').css('display', 'none');
+        $('#storage_chart').css('display', 'none');
+        $('#network_chart').css('display', 'none');
+        $('#setting_chart').css('display', 'none');
+    
+        // aside_popup_machine_btn을 색칠하고 다른 버튼들은 초기화
+        $('#aside_popup_machine_btn').css('background-color', 'rgb(218, 236, 245)');
+        $('#aside_popup_dashboard_btn').css('background-color', '');
+        $('#aside_popup_network_btn').css('background-color', '');
+        $('#aside_popup_storage_btn').css('background-color', '');
+    
+        // aside_popup이 닫혀 있으면 열지 않고, 열려 있으면 그대로 유지
+        if ($('#aside_popup').css('display') !== 'none') {
+            $('#aside_outer').css('width', '20%');
         }
     });
-
-
+    
 //---------------------------------공통----------------------------------
     // aside차트(가상머신)
     $('#aside_popup_first').click(function(){
@@ -739,9 +740,11 @@ $(function(){
 });
 //-------------------------------------------------------------------------------------------
 $(document).ready(function() {
-    $('.host_detail_section .content_header_left div:first').trigger('click');
-     // nav 파란밑줄, 각 맞는 창불러오기 
-     $('.host_detail_section .content_header_left div').click(function() {
+    // 처음 로드될 때 '일반' div에 'active' 클래스 추가
+    $('.host_detail_section .content_header_left div:first').addClass('active');
+    
+    // nav 파란밑줄, 각 맞는 창불러오기 
+    $('.host_detail_section .content_header_left div').click(function() {
         var index = $(this).index();
         var parentId = $(this).closest('.host_detail_section .content_header').parent().attr('id');
 
