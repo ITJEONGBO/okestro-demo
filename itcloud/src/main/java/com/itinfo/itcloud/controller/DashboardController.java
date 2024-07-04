@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Slf4j
 @Api(tags = "dashboard")
 public class DashboardController {
-
 	@GetMapping("/dash")
 	public String dashboard(){
 		return "dashboard";
