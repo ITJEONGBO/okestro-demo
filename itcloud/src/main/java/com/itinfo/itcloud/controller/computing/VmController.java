@@ -1,6 +1,5 @@
 package com.itinfo.itcloud.controller.computing;
 
-import com.itinfo.itcloud.model.ConsoleVo;
 import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.VmCreateVo;
@@ -11,7 +10,6 @@ import com.itinfo.itcloud.service.computing.ItVmService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ovirt.engine.sdk4.types.GraphicsType;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -171,21 +169,14 @@ public class VmController {
 //		log.info("--- 가상머신 콘솔");
 //		return vmService.getConsole(id, consoleVo);
 //	}
-//
-//	@PostMapping("/vm/{id}/console2")
-//	@ResponseStatus(HttpStatus.OK)
-//	public com.itinfo.itcloud.model.ConsoleVo console2(@PathVariable String id, Model model) {
-//		com.itinfo.itcloud.model.ConsoleVo vo =
-//				ConsoleVo.builder()
-//						.protocol(String.valueOf(GraphicsType.VNC))
-//						.vmId(id)
-//						.build();
-//		vo = vmService.getConsole(id, vo);
-//
-//		model.addAttribute("vo", vo);
-//
-//		return vo;
-//	}
+
+
+	@GetMapping("/vmConsole/{id}")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	public ConsoleVo setConsole(@PathVariable String id) {
+		return vmService.getConsole(id);
+	}
 
 	@GetMapping("/vmConsole/vncView")
 	public String vncView() {

@@ -16,6 +16,7 @@ import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.admin.ItSystemPropertyService;
 import com.itinfo.itcloud.service.computing.ItAffinityService;
 import com.itinfo.itcloud.service.computing.ItVmService;
+import com.itinfo.util.BasicConfiguration;
 import com.itinfo.util.model.SystemPropertiesVo;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
@@ -2261,34 +2262,34 @@ public class VmServiceImpl implements ItVmService {
     }
 
 
-
     // region: 콘솔
 
     @Override
-    public ConsoleVo getConsole(String vmId, ConsoleVo consoleVo) {
+    public ConsoleVo getConsole(String vmId) {
         SystemService system = admin.getConnection().systemService();
         VmService vmService = system.vmsService().vmService(vmId);
-        GraphicsConsole console = vmService.graphicsConsolesService().list().send().consoles().get(0);
-        VmGraphicsConsoleService consoleService = vmService.graphicsConsolesService().consoleService(console.id());
+        Vm vm = vmService.get().send().vm();
 
-//        List<GraphicsConsole> consoles = vmService.graphicsConsolesService().list().send().consoles();
-//        VmGraphicsConsolesService consolesService = vmService.graphicsConsolesService();
+        // TODO: 처리
+        if(vm.status() == VmStatus.UP) {
+            GraphicsConsole console = vmService.graphicsConsolesService().list().send().consoles().get(0);
+            VmGraphicsConsoleService consoleService = vmService.graphicsConsolesService().consoleService(console.id());
 
-        GraphicsConsoleBuilder gcb = new GraphicsConsoleBuilder();
-        gcb.protocol(GraphicsType.VNC).build();
+            SystemPropertiesVo systemPropertiesVo = BasicConfiguration.getInstance().getSystemProperties();
+            Ticket ticket = consoleService.ticket().send().ticket();
 
-        Ticket ticket = consoleService.ticket().send().ticket();
-
-        SystemPropertiesVo systemPropertiesVo = systemService.searchSystemProperties();
-
-        return ConsoleVo.builder()
-                .address(console.address())
-                .port(String.valueOf(console.port().intValue()))
-                .password(ticket.value())
-                .tlsPort(String.valueOf(console.tlsPort() != null ? console.tlsPort().intValue() : null))
-                .hostAddress(systemPropertiesVo.getVncIp())
-                .hostPort(systemPropertiesVo.getVncPort())
-                .build();
+            return ConsoleVo.builder()
+                    .hostAddress(systemPropertiesVo.getVncIp())
+                    .hostPort(systemPropertiesVo.getVncPort())
+                    .address(vm.displayPresent() ? vm.display().address() : null)
+                    .port(vm.displayPresent() ? String.valueOf(vm.display().port().intValue()) : null)
+                    .tlsPort(String.valueOf(console.tlsPort() != null ? console.tlsPort().intValue() : null))
+                    .password(ticket.value())
+                    .type(GraphicsType.VNC)
+                    .build();
+        }else {
+            return null;
+        }
     }
     // endregion
 

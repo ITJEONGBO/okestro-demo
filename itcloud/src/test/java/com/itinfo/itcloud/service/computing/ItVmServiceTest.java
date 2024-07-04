@@ -873,6 +873,10 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 콘솔")
     void getConsole(){
+        String vmId = "3f342124-8aa9-473b-b96a-043e985b5742";
+        ConsoleVo consoleVo = vmService.getConsole(vmId);
+
+        System.out.println(consoleVo);
 
     }
 
