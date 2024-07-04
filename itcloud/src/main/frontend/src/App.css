@@ -1,5 +1,5 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,500,700,300,100);
-*{
+#root,*{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -87,7 +87,11 @@
     flex-direction: column; /* 컬럼 방향으로 요소 정렬 */
     justify-content: space-between;
 }
-#aside>#nav>div, #setting_icon {
+.link-no-underline {
+    text-decoration: none;
+    color: inherit; /* 필요에 따라 색상을 설정하세요 */
+  }
+#aside>#nav div, #setting_icon {
     display: flex; /* Flexbox 설정 추가 */
     justify-content: center; /* 수평 가운데 정렬 */
     align-items: center; /* 수직 가운데 정렬 */
