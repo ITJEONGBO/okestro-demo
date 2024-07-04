@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.controller.setting;
+package com.itinfo.itcloud.controller;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;

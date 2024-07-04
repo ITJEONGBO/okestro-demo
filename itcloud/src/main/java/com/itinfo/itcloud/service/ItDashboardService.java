@@ -1,6 +1,9 @@
-package com.itinfo.itcloud.service.setting;
+package com.itinfo.itcloud.service;
 
+import com.itinfo.itcloud.dao.enitiy.HostSamplesHistory;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public interface ItDashboardService {
@@ -10,11 +13,10 @@ public interface ItDashboardService {
     int getClusters();
     int gethosts(String type);
     int getvms(String type);
-    int getStorages(String type);
+    int getStorages();
     int getEvents(String type);
 
-
-    int getCpu(String type);
+    int getCpu();
     int getMemory(String type);
     int getStorage(String type);
 

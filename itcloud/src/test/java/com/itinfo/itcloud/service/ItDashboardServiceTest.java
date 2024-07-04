@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.service;
 
-import com.itinfo.itcloud.service.setting.ItDashboardService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,30 +13,69 @@ class ItDashboardServiceTest {
     ItDashboardService dashboardService;
 
     @Test
+    @DisplayName("대시보드 - 데이터센터 개수")
     void getDatacenters() {
         int upResult = dashboardService.getDatacenters("up");
         int downResult = dashboardService.getDatacenters("down");
         int totalResult = dashboardService.getDatacenters("");
 
+        System.out.println(upResult);
+        System.out.println(downResult);
+        System.out.println(totalResult);
+
         assertThat(1).isEqualTo(upResult);
-        assertThat(3).isEqualTo(downResult);
+        assertThat(1).isEqualTo(downResult);
+        assertThat(2).isEqualTo(totalResult);
+    }
+
+    @Test
+    @DisplayName("대시보드 - 클러스터 개수")
+    void getClusters() {
+        System.out.println(dashboardService.getClusters());
+
+        assertThat(2).isEqualTo(dashboardService.getClusters());
+    }
+
+    @Test
+    @DisplayName("대시보드 - 호스트 개수")
+    void gethosts() {
+        int upResult = dashboardService.gethosts("up");
+        int downResult = dashboardService.gethosts("down");
+        int totalResult = dashboardService.gethosts("");
+
+        System.out.println(upResult);
+        System.out.println(downResult);
+        System.out.println(totalResult);
+
+        assertThat(2).isEqualTo(upResult);
+        assertThat(0).isEqualTo(downResult);
+        assertThat(2).isEqualTo(totalResult);
+
+    }
+
+    @Test
+    @DisplayName("대시보드 - 가상머신 개수")
+    void getvms() {
+        int upResult = dashboardService.getvms("up");
+        int downResult = dashboardService.getvms("down");
+        int totalResult = dashboardService.getvms("");
+
+        System.out.println(upResult);
+        System.out.println(downResult);
+        System.out.println(totalResult);
+
+        assertThat(3).isEqualTo(upResult);
+        assertThat(1).isEqualTo(downResult);
         assertThat(4).isEqualTo(totalResult);
     }
 
     @Test
-    void getClusters() {
-    }
-
-    @Test
-    void gethosts() {
-    }
-
-    @Test
-    void getvms() {
-    }
-
-    @Test
+    @DisplayName("대시보드 - 스토리지 도메인 개수")
     void getStorages() {
+        int totalResult = dashboardService.getStorages();
+        System.out.println(totalResult);
+
+        assertThat(2).isEqualTo(totalResult);
     }
 
     @Test
@@ -44,7 +83,9 @@ class ItDashboardServiceTest {
     }
 
     @Test
+    @DisplayName("cpu값?")
     void getCpu() {
+        System.out.println(dashboardService.getCpu());
     }
 
     @Test

@@ -1,10 +1,12 @@
-package com.itinfo.itcloud.service.setting;
+package com.itinfo.itcloud.service;
 
+import com.itinfo.itcloud.dao.enitiy.HostSamplesHistory;
+import com.itinfo.itcloud.dao.repository.HostSamplesRepository;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import lombok.extern.slf4j.Slf4j;
+import org.ovirt.engine.sdk4.builders.Builders;
 import org.ovirt.engine.sdk4.services.SystemService;
-import org.ovirt.engine.sdk4.types.DataCenter;
-import org.ovirt.engine.sdk4.types.DataCenterStatus;
+import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,49 +16,92 @@ import java.util.List;
 @Slf4j
 public class DashboardServiceImpl implements ItDashboardService {
 	@Autowired private AdminConnectionService admin;
+//	@Autowired private HostSamplesRepository repository;
 
+	/**
+	 * 대시보드 데이터센터 숫자표시
+	 * @param type 데이터센터 상태 (up, down, all)
+	 * @return 데이터센터 개수
+	 */
 	@Override
 	public int getDatacenters(String type) {
 		SystemService system = admin.getConnection().systemService();
-		List<DataCenter> dataCenterList = system.dataCentersService().list().send().dataCenters();
-
-		if ("up".equals(type)) {
-			return (int) dataCenterList.stream().filter(dataCenter -> dataCenter.status() == DataCenterStatus.UP).count();
-		} else if ("down".equals(type)) {
-			return (int) dataCenterList.stream().filter(dataCenter -> dataCenter.status() != DataCenterStatus.UP).count();
-		} else{
-			return dataCenterList.size();
-		}
+		return (int) system.dataCentersService().list().send().dataCenters().stream()
+				.filter(dataCenter ->
+						"up".equals(type) ? dataCenter.status() == DataCenterStatus.UP
+						: "down".equals(type) ? dataCenter.status() != DataCenterStatus.UP
+						: true)
+				.count();
 	}
 
+	/**
+	 * 대시보드 - 클러스터 개수
+	 * @return 클러스터 개수
+	 */
 	@Override
 	public int getClusters() {
-		return 0;
+		return admin.getConnection().systemService().clustersService().list().send().clusters().size();
 	}
 
+	/**
+	 * 대시보드 호스트 숫자표시
+	 * @param type 호스트 상태 (up, down, all)
+	 * @return
+	 */
 	@Override
 	public int gethosts(String type) {
-		return 0;
+		SystemService system = admin.getConnection().systemService();
+		return (int) system.hostsService().list().send().hosts().stream()
+				.filter(host ->
+						type.equals("up") ? host.status() == HostStatus.UP
+						: type.equals("down") ? host.status() != HostStatus.UP
+						:true)
+				.count();
 	}
 
+	/**
+	 * 대시보드 가상머신 숫자표시
+	 * @param type 가상머신 상태 (up, down, all)
+	 * @return
+	 */
 	@Override
 	public int getvms(String type) {
-		return 0;
+		SystemService system = admin.getConnection().systemService();
+		return (int) system.vmsService().list().send().vms().stream()
+				.filter(vm ->
+						type.equals("up") ? vm.status() == VmStatus.UP
+						: type.equals("down") ? vm.status() != VmStatus.UP
+						:true)
+				.count();
 	}
 
+	/**
+	 * 대시보드 스토리지 도메인 숫자표시
+	 * @return
+	 */
 	@Override
-	public int getStorages(String type) {
-		return 0;
+	public int getStorages() {
+		SystemService system = admin.getConnection().systemService();
+		return (int) system.storageDomainsService().list().send().storageDomains().stream()
+				.filter(storageDomain -> !storageDomain.statusPresent())
+				.count();
 	}
 
+	// TODO : 기준이 애매하다
 	@Override
 	public int getEvents(String type) {
 		return 0;
 	}
 
+
 	@Override
-	public int getCpu(String type) {
-		return 0;
+	public int getCpu() {
+		SystemService system = admin.getConnection().systemService();
+		return system.hostsService().list().send().hosts().stream()
+						.mapToInt(host -> host.cpu().topology().cores().intValue()
+								* host.cpu().topology().sockets().intValue()
+								* host.cpu().topology().threads().intValue())
+						.sum();
 	}
 
 	@Override
@@ -70,74 +115,6 @@ public class DashboardServiceImpl implements ItDashboardService {
 	}
 
 
-	//	private DashboardVo dbVo;
-	// Dashboard 전체 불러오기
-//	@Override
-//	public DashboardVo getDashboard() {
-//		SystemService system = admin.getConnection().systemService();
-//
-//		dbVo = new DashboardVo();
-//
-//		getDatacenter(system);
-//		getCluster(system);
-//		getHost(system);
-//		getVm(system);
-//
-//		getCpu(system);
-//		getMemory(system);
-//		getStorage(system);
-//
-//		log.info("------getDashboard");
-//		return dbVo;
-//	}
-//
-//	// 데이터센터 수
-//	private void getDatacenter(SystemService system) {
-//		List<DataCenter> dataCenterList = system.dataCentersService().list().send().dataCenters();
-//
-//		// DataCenter status=up 개수
-//		int datacenterCnt = (int) dataCenterList.stream()
-//				.filter(dataCenter -> dataCenter.status().value().equals("up"))
-//				.count();
-//
-//		dbVo.setDatacenterCnt(dataCenterList.size());
-//		dbVo.setDatacenterActive(datacenterCnt);
-//		dbVo.setDatacenterInactive(dataCenterList.size() - datacenterCnt);
-//	}
-//
-//	// 클러스터 수
-//	private void getCluster(SystemService system) {
-//		dbVo.setClusterCnt(system.clustersService().list().send().clusters().size() );
-//	}
-//
-//	// 호스트 수
-//	private void getHost(SystemService system) {
-//		List<Host> hostList = system.hostsService().list().send().hosts();
-//
-//		// Host status=up 개수
-//		int hostUpCnt = (int) hostList.stream()
-//				.filter(host -> host.status().value().equals("up"))
-//				.count();
-//
-//		dbVo.setHostCnt(hostList.size());
-//		dbVo.setHostActive(hostUpCnt);
-//		dbVo.setHostInactive(dbVo.getHostCnt() - hostUpCnt);
-//	}
-//
-//	// 가상머신 수
-//	private void getVm(SystemService system) {
-//		List<Vm> vmList = system.vmsService().list().send().vms();
-//
-//		// Host status=up 개수
-//		int vmUpCnt = (int) vmList.stream()
-//				.filter(vm -> vm.status().value().equals("up"))
-//				.count();
-//
-//		dbVo.setVmCnt(vmList.size());
-//		dbVo.setVmActive(vmUpCnt);
-//		dbVo.setVmInactive(vmList.size() - vmUpCnt);
-//	}
-//
 //
 //	// 전체사용량: cpu
 //	public void getCpu(SystemService system) {
