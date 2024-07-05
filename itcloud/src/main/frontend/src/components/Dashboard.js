@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import './App.css';
-import {Routes, Route, BrowserRouter,Link} from 'react-router-dom';
-import Machine from './Machine';
+import '../App.css';
+
+
 
 
 
@@ -28,60 +28,7 @@ function Dashboard() {
 
 
   return (
-    <div id='body'>
-      <div id="header">
-        <div id="header_right">
-          <span>Rutil Vm</span>
-        </div>
-
-        <div id="header_left">
-          <div>
-            <i className="fa fa-hdd-o"></i>
-          </div>
-          <div>
-            <i className="fa fa-bell"></i>
-          </div>
-          <div>
-            <i className="fa fa-user"></i>
-            <span>(user name)</span>
-          </div>
-        </div>
-      </div>
-
-      <div id="main_outer">
-        
-        <div id="aside_outer">
-          <div id="aside">
-          
-            <div id="nav">
-              <div id="aside_popup_dashboard_btn">
-                <i className="fa fa-th-large"></i>
-              </div>
-              <Link to='/machine'  className="link-no-underline">
-                <div id="aside_popup_machine_btn">
-                  <i className="fa fa-desktop"></i>
-                </div>
-              </Link>
-              <div id="aside_popup_storage_btn">
-                <i className="fa fa-server"></i>
-              </div>
-              <div id="aside_popup_network_btn">
-                <i className="fa fa-database"></i>
-              </div>
-            </div>
-            <div id="setting_icon">
-              <i className="fa fa-cog"></i>
-            </div>
-              
-            
-          </div>{/* aside끝 */}
-
-          <div id="aside_popup">
-
-
-          </div>{/* aside_popup끝 */}
-        </div>{/* aside_outer끝 */}
-
+    <>
         {/* 대시보드 section */}
         <div id="dash_board">
           <div id="dash_boxs">
@@ -206,10 +153,7 @@ function Dashboard() {
           </div> 
         
         </div> {/* 대시보드 section끝 */}
-
-
-      </div>{/* main_outer끝 */}
-    </div>
+    </>
   );
 }
 

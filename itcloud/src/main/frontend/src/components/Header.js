@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import './App.css';
+import '../App.css';
 
 
-function Machine() {
+function Header() {
     useEffect(() => {
         function adjustFontSize() {
             const width = window.innerWidth;
@@ -21,11 +21,27 @@ function Machine() {
             window.removeEventListener('resize', adjustFontSize);
         };
     }, []);
+    
   return (
-    
-    <div>dd</div>
-    
+    <div id="header">
+        <div id="header_right">
+            <span>Rutil Vm</span>
+        </div>
+
+        <div id="header_left">
+            <div>
+                <i className="fa fa-hdd-o"></i>
+            </div>
+            <div>
+                <i className="fa fa-bell"></i>
+            </div>
+            <div>
+                <i className="fa fa-user"></i>
+                <span>(user name)</span>
+            </div>
+        </div>
+  </div>
   );
 }
 
-export default Machine;
+export default Header;
