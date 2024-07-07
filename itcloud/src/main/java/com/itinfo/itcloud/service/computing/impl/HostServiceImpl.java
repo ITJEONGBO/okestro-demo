@@ -2,8 +2,10 @@ package com.itinfo.itcloud.service.computing.impl;
 
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.HostCreateVo;
+import com.itinfo.itcloud.model.entity.HostSamplesHistory;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
+import com.itinfo.itcloud.repository.HostRepository;
 import com.itinfo.itcloud.service.computing.ItAffinityService;
 import com.itinfo.itcloud.service.computing.ItHostService;
 import com.jcraft.jsch.ChannelExec;
@@ -33,8 +35,13 @@ public class HostServiceImpl implements ItHostService {
     @Autowired private AdminConnectionService admin;
     @Autowired private CommonService commonService;
     @Autowired private ItAffinityService itAffinityService;
+    @Autowired private HostRepository repository;
 
-    
+    @Override
+    public List<HostSamplesHistory> getAllusers(){
+        return repository.findAll();
+    }
+
     /**
      * 호스트 목록
      * @return 호스트 목록

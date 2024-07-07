@@ -5,7 +5,9 @@ import com.itinfo.itcloud.model.computing.HostVo;
 import com.itinfo.itcloud.model.computing.NicVo;
 import com.itinfo.itcloud.model.computing.VmVo;
 import com.itinfo.itcloud.model.create.HostCreateVo;
+import com.itinfo.itcloud.model.entity.HostSamplesHistory;
 import com.itinfo.itcloud.model.error.CommonVo;
+import com.itinfo.itcloud.repository.HostRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +20,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class ItHostServiceTest {
-    @Autowired
-    ItHostService hostService;
+    @Autowired ItHostService hostService;
 
     private final String defaultId = "0494c271-0a68-4070-8186-c08fade1e982";    // 70 host01
 //    private final String defaultId = "f08baae8-2137-490c-bec2-fd00f67a37b9";
+
+
+    @Test
+    void dbTest(){
+
+    }
+
+
 
     @Test
     @DisplayName("호스트 목록")
