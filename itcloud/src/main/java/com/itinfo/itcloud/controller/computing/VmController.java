@@ -8,6 +8,8 @@ import com.itinfo.itcloud.model.network.VnicProfileVo;
 import com.itinfo.itcloud.model.storage.VmDiskVo;
 import com.itinfo.itcloud.service.computing.ItVmService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,12 +22,13 @@ import java.util.List;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-@Api(tags = "vm")
-@RequestMapping("/computing")
+@Api(tags = "Computing-Vm")
+@RequestMapping("/computing/vms")
 public class VmController {
 	private final ItVmService vmService;
 
-	@GetMapping("/vms")
+	@GetMapping
+	@ApiOperation(value = "가상머신 목록", notes = "전체 가상머신 목록을 조회한다")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public List<VmVo> vms() {
@@ -35,7 +38,8 @@ public class VmController {
 
 
 
-	@GetMapping("/vm/settings/vnic")
+	@GetMapping("/settings/vnic")
+	@ApiOperation(value = "가상머신 생성창", notes = "가상머신 생성시 필요한 내용을 조회한다")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public List<VnicProfileVo> setVnic() {
@@ -46,7 +50,9 @@ public class VmController {
 
 
 
-	@PostMapping("/vm")
+	@PostMapping
+	@ApiOperation(value = "가상머신 생성", notes = "가상머신을 생성한다")
+	@ApiImplicitParam(name = "vm", value = "가상머신")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> addVm(@RequestBody VmCreateVo vm) {
@@ -54,7 +60,9 @@ public class VmController {
 		return vmService.addVm(vm);
 	}
 
-	@PostMapping("/vm/{id}/setting")
+	@PostMapping("/{id}/edit")
+	@ApiOperation(value = "가상머신 수정창", notes = "선택된 가상머신의 정보를 조회한다")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public VmCreateVo getVmCreate(@PathVariable String id) {
@@ -62,7 +70,9 @@ public class VmController {
 		return vmService.setVm(id);
 	}
 
-	@PutMapping("/vm/{id}")
+	@PutMapping("/{id}")
+	@ApiOperation(value = "가상머신 수정", notes = "가상머신을 수정한다")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> editVm(@PathVariable String id,
@@ -71,7 +81,9 @@ public class VmController {
 		return vmService.editVm(vm);
 	}
 
-	@DeleteMapping("/vm/{id}")
+	@DeleteMapping("/{id}")
+	@ApiOperation(value = "가상머신 삭제", notes = "가상머신을 삭제한다")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public CommonVo<Boolean> deleteVm(@PathVariable String id) {
@@ -87,7 +99,9 @@ public class VmController {
 
 
 
-	@GetMapping("/vm/{id}")
+	@GetMapping("/{id}")
+	@ApiOperation(value = "가상머신 상세정보", notes = "가상머신의 상세정보를 조회한다")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public VmVo vm(@PathVariable String id) {
@@ -95,63 +109,77 @@ public class VmController {
 		return vmService.getInfo(id);
 	}
 
-	@GetMapping("/vm/{id}/nics")
+	@GetMapping("/{id}/nics")
+	@ApiOperation(value = "가상머신 네트워크 인터페이스 목록", notes = "선택된 가상머신의 네트워크 인터페이스 목록을 조회한다")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
 	@ResponseBody
 	public List<NicVo> nic(@PathVariable String id) {
 		log.info("----- vm nic 일반 불러오기: " + id);
 		return vmService.getNic(id);
 	}
 
-	@GetMapping("/vm/{id}/disks")
+	@GetMapping("/{id}/disks")
+	@ApiOperation(value = "가상머신 디스크 목록", notes = "선택된 가상머신의 디스크 목록을 조회한다")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
 	@ResponseBody
 	public List<VmDiskVo> disk(@PathVariable String id) {
 		log.info("----- vm disk 일반 불러오기: " + id);
 		return vmService.getDisk(id);
 	}
 
-	@GetMapping("/vm/{id}/snapshots")
+	@GetMapping("/{id}/snapshots")
+	@ApiOperation(value = "가상머신 스냅샷 목록", notes = "선택된 가상머신의 스냅샷 목록을 조회한다")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디")	
 	@ResponseBody
 	public List<SnapshotVo> snapshot(@PathVariable String id) {
 		log.info("----- vm snapshot 불러오기: " + id);
 		return vmService.getSnapshot(id);
 	}
 
-	@GetMapping("/vm/{id}/applications")
+	@GetMapping("/{id}/applications")
+	@ApiOperation(value = "가상머신 어플리케이션 목록", notes = "선택된 가상머신의 어플리케이션 목록을 조회한다")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
 	@ResponseBody
 	public List<IdentifiedVo> app(@PathVariable String id) {
 		log.info("----- vm app 불러오기: " + id);
 		return vmService.getApplication(id);
 	}
 
-//	@GetMapping("/vm/{id}/affinitygroups")
+//	@GetMapping("/{id}/affinitygroups")
 //	@ResponseBody
 //	public List<AffinityGroupVo> affGroup(@PathVariable String id) {
 //		log.info("----- vm affGroup 불러오기: " + id);
 //		return vmService.getAffinitygroup(id);
 //	}
 //
-//	@GetMapping("/vm/{id}/affinitylabels")
+//	@GetMapping("/{id}/affinitylabels")
 //	@ResponseBody
 //	public List<AffinityLabelVo> affLabel(@PathVariable String id) {
 //		log.info("----- vm affLabel 불러오기: " + id);
 //		return vmService.getAffinitylabel(id);
 //	}
 
-	@GetMapping("/vm/{id}/guests")
+	@GetMapping("/{id}/guests")
+	@ApiOperation(value = "가상머신 게스트 목록", notes = "선택된 가상머신의 게스트 목록을 조회한다")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
 	@ResponseBody
 	public GuestInfoVo guest(@PathVariable String id) {
 		log.info("----- vm disk 일반 불러오기: " + id);
 		return vmService.getGuestInfo(id);
 	}
 
-	@GetMapping("/vm/{id}/permissions")
+	@GetMapping("/{id}/permissions")
+	@ApiOperation(value = "가상머신 권한 목록", notes = "선택된 가상머신의 권한 목록을 조회한다")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
 	@ResponseBody
 	public List<PermissionVo> permission(@PathVariable String id) {
 		log.info("----- vm event 일반 불러오기: " + id);
 		return vmService.getPermission(id);
 	}
 
-	@GetMapping("/vm/{id}/events")
+	@GetMapping("/{id}/events")
+	@ApiOperation(value = "가상머신 이벤트 목록", notes = "선택된 가상머신의 이벤트 목록을 조회한다")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
 	@ResponseBody
 	public List<EventVo> event(@PathVariable String id) {
 		log.info("----- vm event 일반 불러오기: " + id);
@@ -161,7 +189,7 @@ public class VmController {
 
 
 
-//	@PostMapping("/vm/{id}/console")
+//	@PostMapping("/{id}/console")
 //	@ResponseStatus(HttpStatus.OK)
 //	public com.itinfo.itcloud.model.ConsoleVo console(@PathVariable String id,
 //													  @RequestBody ConsoleVo consoleVo) {
@@ -171,14 +199,17 @@ public class VmController {
 //	}
 
 
-	@GetMapping("/vmConsole/{id}")
+	@GetMapping("/console/{id}")
+	@ApiOperation(value = "가상머신 콘솔", notes = "선택된 가상머신의 콘솔을 출력한다")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public ConsoleVo setConsole(@PathVariable String id) {
 		return vmService.getConsole(id);
 	}
 
-	@GetMapping("/vmConsole/vncView")
+	
+	@GetMapping("/console/vncView")
 	public String vncView() {
 		return "vnc";
 	}

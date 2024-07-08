@@ -6,6 +6,8 @@ import com.itinfo.itcloud.model.computing.TemplateVo;
 import com.itinfo.itcloud.model.storage.DiskVo;
 import com.itinfo.itcloud.service.computing.ItTemplateService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -19,19 +21,22 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
-@Api(tags = "template")
-@RequestMapping("/computing")
+@Api(tags = "Computing-Template")
+@RequestMapping("/computing/templates")
 public class TemplateController {
 	private final ItTemplateService tService;
 
-	@GetMapping("/templates")
+	@GetMapping
+	@ApiOperation(value = "템플릿 목록", notes = "전체 템플릿 목록을 조회한다")
 	@ResponseBody
 	public List<TemplateVo> templates(){
 		log.info("--- templates 목록");
 		return tService.getList();
 	}
 
-	@GetMapping("/templates/{id}")
+	@GetMapping("/{id}")
+	@ApiOperation(value = "템플릿 상세정보", notes = "템플릿의 상세정보를 조회한다")
+	@ApiImplicitParam(name = "id", value = "템플릿 아이디")
 	@ResponseBody
 	public TemplateVo template(@PathVariable String id){
 		log.info("--- template 일반");
@@ -39,21 +44,27 @@ public class TemplateController {
 	}
 
 
-	@GetMapping("/templates/{id}/disks")
+	@GetMapping("/{id}/disks")
+	@ApiOperation(value = "템플릿 디스크 목록", notes = "선택된 템플릿의 디스크 목록을 조회한다")
+	@ApiImplicitParam(name = "id", value = "템플릿 아이디")
 	@ResponseBody
 	public List<DiskVo> getDisk(@PathVariable String id){
 		log.info("--- template 디스크");
 		return tService.getDisk(id);
 	}
 
-	@GetMapping("/templates/{id}/permissions")
+	@GetMapping("/{id}/permissions")
+	@ApiOperation(value = "템플릿 권한 목록", notes = "선택된 템플릿의 권한 목록을 조회한다")
+	@ApiImplicitParam(name = "id", value = "템플릿 아이디")
 	@ResponseBody
 	public List<PermissionVo> permissions(@PathVariable String id){
 		log.info("--- template 권한");
 		return tService.getPermission(id);
 	}
 
-	@GetMapping("/templates/{id}/events")
+	@GetMapping("/{id}/events")
+	@ApiOperation(value = "템플릿 이벤트 목록", notes = "선택된 템플릿의 이벤트 목록을 조회한다")
+	@ApiImplicitParam(name = "id", value = "템플릿 아이디")
 	@ResponseBody
 	public List<EventVo> events(@PathVariable String id){
 		log.info("--- template 이벤트");

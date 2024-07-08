@@ -16,7 +16,7 @@ import java.util.List;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-@Api(tags = "network")
+@Api(tags = "Network")
 @RequestMapping("/networks")
 public class NetworkController {
 	private final ItNetworkService networkService;

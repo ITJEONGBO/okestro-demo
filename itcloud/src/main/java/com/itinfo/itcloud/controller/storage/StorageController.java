@@ -21,7 +21,7 @@ import java.util.List;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-@Api(tags = "storage")
+@Api(tags = "Storage")
 @RequestMapping("/storages")
 public class StorageController {
 	private final ItStorageService storageService;
