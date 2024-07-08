@@ -25,7 +25,7 @@ import javax.sql.DataSource
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-	basePackages=["com.itinfo.itcloud.dao.history"],
+	basePackages=["com.itinfo.itcloud.repository"],
 	entityManagerFactoryRef = "historyEntityManager",
 	transactionManagerRef = "historyTransactionManager"
 )
@@ -36,7 +36,7 @@ class HistoryDatasourceConfig {
 	@Bean(name=["historyEntityManager"])
 	fun historyEntityManager(builder: EntityManagerFactoryBuilder): LocalContainerEntityManagerFactoryBean {
 		return builder.dataSource(historyDataSource())
-			.packages("com.itinfo.dao.history")
+			.packages("com.itinfo.itcloud.model.entity") // entity 클래스 패키지
 			.build().apply {
 				setJpaProperties(Properties().apply {
 					put("hibernate.physical_naming_strategy", CamelCaseToUnderscoresNamingStrategy::class.java.canonicalName)
@@ -73,11 +73,6 @@ class HistoryDatasourceConfig {
 			.initializeDataSourceBuilder()
 			.type(HikariDataSource::class.java)
 			.build()
-//			.driverClassName("org.postgresql.Driver")
-//			.url("jdbc:postgresql://192.168.0.80:5432/engine")
-//			.username("okestro")
-//			.password("okestro2018")
-//			.build()
 	}
 
 	companion object {

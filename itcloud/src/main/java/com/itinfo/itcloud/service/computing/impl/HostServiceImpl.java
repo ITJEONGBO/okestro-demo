@@ -25,8 +25,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,10 +39,12 @@ public class HostServiceImpl implements ItHostService {
     @Autowired private ItAffinityService itAffinityService;
     @Autowired private HostRepository repository;
 
+
     @Override
-    public List<HostSamplesHistory> getAllusers(){
-        return repository.findAll();
+    public List<HostSamplesHistory> retrieveHosts(UUID hostId) {
+        return repository.retrieveHosts(hostId);
     }
+
 
     /**
      * 호스트 목록

@@ -1,17 +1,18 @@
 package com.itinfo.itcloud.model.entity;
 
-import lombok.Getter;
+import lombok.*;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name="HOST_SAMPLES_HISTORY")
 @Getter
+@NoArgsConstructor
+@Table(name="HOST_SAMPLES_HISTORY")
+@ToString
 public class HostSamplesHistory {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
     private int historyId;
 
@@ -34,5 +35,4 @@ public class HostSamplesHistory {
     private int hostConfigurationVersion;
     private int ksmSharedMemoryMb;
     private int secondsInStatus;
-
 }

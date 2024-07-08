@@ -4,7 +4,6 @@ import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.HostCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.service.computing.ItHostService;
-import com.itinfo.itcloud.service.computing.ItVmService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,6 @@ import java.util.List;
 @RequestMapping("/computing")
 public class HostController {
 	private final ItHostService hostService;
-	private final ItVmService vmService;
 
 
 	@GetMapping("/hosts")

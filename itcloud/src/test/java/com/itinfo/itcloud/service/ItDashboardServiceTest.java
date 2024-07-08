@@ -39,9 +39,9 @@ class ItDashboardServiceTest {
     @Test
     @DisplayName("대시보드 - 호스트 개수")
     void gethosts() {
-        int upResult = dashboardService.gethosts("up");
-        int downResult = dashboardService.gethosts("down");
-        int totalResult = dashboardService.gethosts("");
+        int upResult = dashboardService.getHosts("up");
+        int downResult = dashboardService.getHosts("down");
+        int totalResult = dashboardService.getHosts("");
 
         System.out.println(upResult);
         System.out.println(downResult);
@@ -56,9 +56,9 @@ class ItDashboardServiceTest {
     @Test
     @DisplayName("대시보드 - 가상머신 개수")
     void getvms() {
-        int upResult = dashboardService.getvms("up");
-        int downResult = dashboardService.getvms("down");
-        int totalResult = dashboardService.getvms("");
+        int upResult = dashboardService.getVms("up");
+        int downResult = dashboardService.getVms("down");
+        int totalResult = dashboardService.getVms("");
 
         System.out.println(upResult);
         System.out.println(downResult);

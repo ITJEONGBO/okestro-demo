@@ -13,7 +13,7 @@ import org.springframework.core.SpringVersion
 	 "com.itinfo.itcloud.configuration",
 	// "com.itinfo.security",
 	"com.itinfo.itcloud.service",
-	"com.itinfo.itcloud.dao"
+	"com.itinfo.itcloud.repository"
 ])
 class ItCloudApplication: SpringBootServletInitializer() {
 	override fun configure(builder: SpringApplicationBuilder?): SpringApplicationBuilder {

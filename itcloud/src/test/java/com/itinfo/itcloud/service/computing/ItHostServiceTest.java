@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,15 +23,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ItHostServiceTest {
     @Autowired ItHostService hostService;
 
-    private final String defaultId = "0494c271-0a68-4070-8186-c08fade1e982";    // 70 host01
-//    private final String defaultId = "f08baae8-2137-490c-bec2-fd00f67a37b9";
+    private final String defaultId = "a16955bd-ff57-4e6e-add5-c7d46d5315e9";    // 70 host01
 
 
     @Test
-    void dbTest(){
-
+    @DisplayName("")
+    void df() {
+        List<HostSamplesHistory> result = hostService.retrieveHosts(UUID.fromString(defaultId));
+        result.forEach(System.out::println);
     }
-
 
 
     @Test
