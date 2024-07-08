@@ -1,15 +1,15 @@
 # okestro-demo
 
-![favicon](monolith/src/main/webapp/favicon.ico)
+![favicon](itcloud/src/main/frontend/src/logo.svg)
 
-오케스트로 (복구 중)
+(현) 아이티클라우드
 
 ---
 
 ## What's included?
 
 ![shield-java][shield-java]
-![shield-spring][shield-spring]
+![Spring (`5.3.20`) / Boot (`2.7.0`)][shield-spring]
 ![shield-spring-security][shield-spring-security]
 ![Node.js (`11.0.23`)][shield-nodejs]
 ![React.js (`18.3.x`)][shield-reactjs]
@@ -43,13 +43,11 @@
 ## 🧶Node.js
 
 ```sh
-# React 앱 실행
-npm start
-# React 앱 빌드
-npm build
+npm start  # React 앱 실행
+npm build # React 앱 빌드
 ```
 
-> npm이 없을 경우 설치 권고
+> [!IMPORTANT] npm이 없을 경우 설치 권고
 
 ## 🐘Gradle
 
@@ -123,13 +121,13 @@ docker build -t itinfo/okestro:0.0.5 .
 ```sh
 # itcloud
 docker run -d -it --name itcloud \
--e ITCLOUD_PORT_HTTP=8080 \
--e ITCLOUD_PORT_HTTPS=8443 \
--e ITCLOUD_OVIRT_IP=192.168.0.80 \
--e POSTGRES_JDBC_URL=192.168.0.80 \
--e POSTGRES_DATASOURCE_JDBC_ID=okestro \
--e POSTGRES_DATASOURCE_JDBC_PW=okestro2018 \
--p 8080:8080 -p 8443:8443 itinfo/itcloud:0.0.2
+  -e ITCLOUD_PORT_HTTP=8080 \
+  -e ITCLOUD_PORT_HTTPS=8443 \
+  -e ITCLOUD_OVIRT_IP=192.168.0.80 \
+  -e POSTGRES_JDBC_URL=192.168.0.80 \
+  -e POSTGRES_DATASOURCE_JDBC_ID=okestro \
+  -e POSTGRES_DATASOURCE_JDBC_PW=okestro2018 \
+  -p 8080:8080 -p 8443:8443 itinfo/itcloud:0.0.2
 
 # postgres
 docker run -d -it \
