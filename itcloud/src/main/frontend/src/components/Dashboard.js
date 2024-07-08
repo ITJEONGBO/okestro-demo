@@ -251,18 +251,6 @@ class HeatMapChart extends React.Component {
         data: generateData(18, { min: 0, max: 90 })
       },
       {
-        name: 'Metric6',
-        data: generateData(18, { min: 0, max: 90 })
-      },
-      {
-        name: 'Metric7',
-        data: generateData(18, { min: 0, max: 90 })
-      },
-      {
-        name: 'Metric8',
-        data: generateData(18, { min: 0, max: 90 })
-      },
-      {
         name: 'Metric9',
         data: generateData(18, { min: 0, max: 90 })
       }],
@@ -275,9 +263,7 @@ class HeatMapChart extends React.Component {
           enabled: false
         },
         colors: ["#008FFB"],
-        title: {
-          text: 'HeatMap Chart (Single color)'
-        },
+
       },
     };
   }
@@ -426,11 +412,11 @@ const Dashboard = () => {
           </div>
           <div>
             <span>MEMORY(시간 경과에 따른 Memory사용량)</span>
-            <div>d</div>
+            <div><HeatMapChart /></div>
           </div>
           <div>
             <span>Ethernet(시간 경과에 따른 Ethernet속도)</span>
-            <div>d</div>
+            <div><HeatMapChart /></div>
           </div>  
         </div>
       </div> {/* 대시보드 section끝 */}

@@ -277,7 +277,6 @@
     width: 93%;
     display: flex;
     justify-content: space-between;
-    margin: 4px 0;
 }
 
 /*도넛*/
@@ -309,7 +308,7 @@
     text-align: center;
     padding: 0.18rem 0.04rem;
     margin-left: 0.2rem;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.1rem;
     font-weight: 600;
     border-radius: 3px;
     background: #E9F1F7;
