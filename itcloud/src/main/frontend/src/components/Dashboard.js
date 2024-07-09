@@ -8,11 +8,21 @@ class ApexChart extends React.Component {
   constructor(props) {
     super(props);
 
+    const value = 50; // 도넛 차트의 값
+
+    // 값에 따른 색상 설정
+    let color = '#FF4560'; // 70이상 빨강
+    if (value < 30) {
+      color = '#00E396';  // 30 미만이면 초록색
+    } else if (value < 70) {
+      color = '#FEB019'; // 30 이상 70 미만이면 노란색
+    }
+
     this.state = {
-      series: [70],
+      series: [value],
       options: {
         chart: {
-          height: 150,
+          height: 180,  // 높이 조정
           type: 'radialBar',
         },
         plotOptions: {
@@ -46,6 +56,7 @@ class ApexChart extends React.Component {
           },
         },
         labels: [], // 라벨을 제거합니다.
+        colors: [color], // 값에 따른 색상 설정
       },
     };
   }
@@ -54,13 +65,14 @@ class ApexChart extends React.Component {
     return (
       <div>
         <div id="chart">
-          <ReactApexChart options={this.state.options} series={this.state.series} type="radialBar" height={220} />
+          <ReactApexChart options={this.state.options} series={this.state.series} type="radialBar" height={200} />
         </div>
         <div id="html-dist"></div>
       </div>
     );
   }
 }
+
 // 도넛옆에 막대
 class BarChart extends React.Component {
   constructor(props) {
@@ -73,7 +85,7 @@ class BarChart extends React.Component {
       options: {
         chart: {
           type: 'bar',
-          height: 180
+          height: 150  // 높이 조정
         },
         plotOptions: {
           bar: {
@@ -85,7 +97,7 @@ class BarChart extends React.Component {
             },
           }
         },
-        colors: ['#33b2df', '#546E7A', '#d4526e'],
+        colors: ['#1597E5', '#69DADB', '#7C7DEA'],
         dataLabels: {
           enabled: true,
           textAnchor: 'start',
@@ -144,13 +156,14 @@ class BarChart extends React.Component {
     return (
       <div>
         <div id="chart">
-          <ReactApexChart options={this.state.options} series={this.state.series} type="bar" height={200} />
+          <ReactApexChart options={this.state.options} series={this.state.series} type="bar" height={180} />
         </div>
         <div id="html-dist"></div>
       </div>
     );
   }
 }
+
 //물결그래프
 class AreaChart extends React.Component {
   constructor(props) {
@@ -162,17 +175,17 @@ class AreaChart extends React.Component {
         data: [31, 40, 28, 51, 42, 109, 100]
       }, {
         name: 'series2',
-        data: [11, 32, 45, 32, 34, 52, 41]
+        data: [11, 32, 45, 82, 34, 52, 41]
       }, {
-        name: 'series3', // 새로운 시리즈 추가
+        name: 'series3',
         data: [20, 30, 40, 50, 60, 70, 80],
       }],
       options: {
         chart: {
-          height: 350,
+          height: 140,  // 높이 조정
           type: 'area'
         },
-        colors: ['#008FFB', '#00E396', '#FF4560'], // 새로운 시리즈의 색상을 빨간색으로 설정
+        colors: ['#1597E5', '#69DADB', 'rgb(231, 190, 231)'], 
         dataLabels: {
           enabled: false
         },
@@ -211,6 +224,7 @@ class AreaChart extends React.Component {
     );
   }
 }
+
 // 바둑판
 function generateData(count, yrange) {
   var i = 0;
@@ -256,14 +270,13 @@ class HeatMapChart extends React.Component {
       }],
       options: {
         chart: {
-          height: 350,
+          height: 140,  // 높이 조정
           type: 'heatmap',
         },
         dataLabels: {
           enabled: false
         },
         colors: ["#008FFB"],
-
       },
     };
   }
