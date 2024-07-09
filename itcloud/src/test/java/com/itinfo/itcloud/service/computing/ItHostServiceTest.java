@@ -5,6 +5,7 @@ import com.itinfo.itcloud.model.computing.HostVo;
 import com.itinfo.itcloud.model.computing.NicVo;
 import com.itinfo.itcloud.model.computing.VmVo;
 import com.itinfo.itcloud.model.create.HostCreateVo;
+import com.itinfo.itcloud.model.dto.MemoryUsageDto;
 import com.itinfo.itcloud.model.entity.HostSamplesHistory;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.repository.HostRepository;
@@ -26,10 +27,18 @@ class ItHostServiceTest {
     private final String defaultId = "a16955bd-ff57-4e6e-add5-c7d46d5315e9";    // 70 host01
 
 
+
     @Test
     @DisplayName("")
     void df() {
         List<HostSamplesHistory> result = hostService.retrieveHosts(UUID.fromString(defaultId));
+        result.forEach(System.out::println);
+    }
+
+    @Test
+    @DisplayName("")
+    void ddf() {
+        List<MemoryUsageDto>  result = hostService.getTotalMemoryUsagePercent();
         result.forEach(System.out::println);
     }
 

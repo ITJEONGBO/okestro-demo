@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -19,11 +20,11 @@ public class HostSamplesHistory {
     @Type(type = "org.hibernate.type.PostgresUUIDType")
     private UUID hostId;
 
-    private int hostStatus;
+    private LocalDateTime historyDatetime;
 
     private int memoryUsagePercent;
-
     private int cpuUsagePercent;
+
     private int ksmCpuPercent;
     private int activeVms;
     private int totalVms;
@@ -31,6 +32,7 @@ public class HostSamplesHistory {
     private int cpuLoad;
     private int systemCpuUsagePercent;
     private int userCpuUsagePercent;
+    private int hostStatus;
     private int swapUsedMb;
     private int hostConfigurationVersion;
     private int ksmSharedMemoryMb;

@@ -2,6 +2,7 @@ package com.itinfo.itcloud.service.computing.impl;
 
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.HostCreateVo;
+import com.itinfo.itcloud.model.dto.MemoryUsageDto;
 import com.itinfo.itcloud.model.entity.HostSamplesHistory;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
@@ -45,6 +46,10 @@ public class HostServiceImpl implements ItHostService {
         return repository.retrieveHosts(hostId);
     }
 
+    @Override
+    public List<MemoryUsageDto> getTotalMemoryUsagePercent() {
+        return repository.findTotalMemoryUsagePercent();
+    }
 
     /**
      * 호스트 목록
