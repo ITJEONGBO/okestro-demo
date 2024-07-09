@@ -22,15 +22,12 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @Api(tags = "Storage")
-@RequestMapping("/storages")
+@RequestMapping("/storages/{dcId}")
 public class StorageController {
 	private final ItStorageService storageService;
 
 	@ApiOperation(httpMethod="GET", value="/{dcId}/disks", notes="Disk 목록")
-	@GetMapping("/{dcId}/disks")
-	@ApiImplicitParams(
-		@ApiImplicitParam(name="dcId", value="스토리지ID", dataTypeClass=String.class, required=true, paramType="path")
-	)
+	@GetMapping("/disks")
 	@ApiResponses(
 		@ApiResponse(code=200, message="OK")
 	)
@@ -44,7 +41,7 @@ public class StorageController {
 		return storageService.getDiskList(dcId);
 	}
 
-	@PostMapping("/{dcId}/disks/image")
+	@PostMapping("/disks/image")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> addDiskImage(@PathVariable("dcId") String dcId,

@@ -38,7 +38,7 @@ public class DataCenterController {
 	@PostMapping
 	@ResponseBody
 	@ApiOperation(value = "데이터센터 생성", notes = "데이터센터를 생성한다")
-	@ApiImplicitParam(name = "dcVo", value = "데이터센터")
+	@ApiImplicitParam(name = "dcVo", value = "데이터센터", dataTypeClass = DataCenterCreateVo.class)
 	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> addDatacenter(@RequestBody DataCenterCreateVo dcVo){
 		log.info("----- 데이터센터 추가 : " + dcVo.getName());
@@ -49,7 +49,7 @@ public class DataCenterController {
 	@GetMapping("/{id}/edit")
 	@ResponseBody()
 	@ApiOperation(value = "데이터센터 수정창", notes = "수정하려는 데이터센터의 정보를 불러온다")
-	@ApiImplicitParam(name = "id", value = "데이터센터 아이디")
+	@ApiImplicitParam(name = "id", value = "데이터센터 아이디", dataTypeClass = String.class)
 	@ResponseStatus(HttpStatus.OK)
 	public DataCenterCreateVo getDatacenter(@PathVariable String id){
 		log.info("-- 데이터 센터 편집 창");
@@ -60,7 +60,7 @@ public class DataCenterController {
 	@PutMapping("/{id}")
 	@ResponseBody
 	@ApiOperation(value = "데이터센터 수정", notes = "데이터센터를 수정한다")
-	@ApiImplicitParam(name = "id", value = "데이터센터 아이디")
+	@ApiImplicitParam(name = "id", value = "데이터센터 아이디", dataTypeClass = String.class)
 	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> editDatacenter(@PathVariable String id,
 											@RequestBody DataCenterCreateVo dcVo){
@@ -72,7 +72,7 @@ public class DataCenterController {
 	@DeleteMapping("/{id}")
 	@ResponseBody
 	@ApiOperation(value = "데이터센터 삭제", notes = "선택된 데이터센터 목록을 삭제한다(중복삭제 구현해야함)")
-	@ApiImplicitParam(name = "id", value = "데이터센터 아이디")
+	@ApiImplicitParam(name = "id", value = "데이터센터 아이디", dataTypeClass = String.class)
 	@ResponseStatus(HttpStatus.OK)
 	public CommonVo<Boolean> deleteDatacenter(@PathVariable String id){
 		log.info("----- 데이터센터 삭제");
@@ -84,7 +84,7 @@ public class DataCenterController {
 	@GetMapping("/{id}/events")
 	@ResponseBody
 	@ApiOperation(value = "데이터센터 이벤트 목록", notes = "선택된 데이터센터 이벤트를 조회한다")
-	@ApiImplicitParam(name = "id", value = "데이터센터 아이디")
+	@ApiImplicitParam(name = "id", value = "데이터센터 아이디", dataTypeClass = String.class)
 	@ResponseStatus(HttpStatus.OK)
 	public List<EventVo> event(@PathVariable String id) {
 		log.info("----- 데이터센터 이벤트 : " + id);

@@ -43,7 +43,7 @@ public class HostController {
 
 	@PostMapping
 	@ApiOperation(value = "호스트 생성", notes = "호스트를 생성한다")
-	@ApiImplicitParam(name = "hVo", value = "호스트")
+	@ApiImplicitParam(name = "hVo", value = "호스트", dataTypeClass = HostCreateVo.class)
 	@ResponseBody
 	public CommonVo<Boolean> addHost(@RequestBody HostCreateVo hVo){
 		log.info("--- 호스트 생성");
@@ -52,7 +52,7 @@ public class HostController {
 
 	@GetMapping("/{id}/edit")
 	@ApiOperation(value = "호스트 수정창", notes = "선택된 호스트의 정보를 조회한다")
-	@ApiImplicitParam(name = "id", value = "호스트 아이디")
+	@ApiImplicitParam(name = "id", value = "호스트 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public HostCreateVo getHostCreate(@PathVariable String id){
 		log.info("--- 호스트 수정창");
@@ -61,7 +61,7 @@ public class HostController {
 
 	@PutMapping("/{id}")
 	@ApiOperation(value = "호스트 수정", notes = "호스트를 수정한다")
-	@ApiImplicitParam(name = "id", value = "호스트 아이디")
+	@ApiImplicitParam(name = "id", value = "호스트 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public CommonVo<Boolean> editHost(@PathVariable String id,
 									  @RequestBody HostCreateVo hVo){
@@ -71,7 +71,7 @@ public class HostController {
 
 	@DeleteMapping("/{id}")
 	@ApiOperation(value = "호스트 삭제", notes = "호스트를 삭제한다")
-	@ApiImplicitParam(name = "id", value = "호스트 아이디")
+	@ApiImplicitParam(name = "id", value = "호스트 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public CommonVo<Boolean> deleteHost(@PathVariable String id){
 		log.info("--- 호스트 삭제");
@@ -81,7 +81,7 @@ public class HostController {
 	
 	@PostMapping("/{id}/deactivate")
 	@ApiOperation(value = "호스트 유지보수", notes = "호스트를 유지보수 모드로 전환한다")
-	@ApiImplicitParam(name = "id", value = "호스트 아이디")
+	@ApiImplicitParam(name = "id", value = "호스트 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public void deactiveHost(@PathVariable String id) {
 		log.info("--- 호스트 유지보수");
@@ -90,7 +90,7 @@ public class HostController {
 
 	@PostMapping("/{id}/activate")
 	@ApiOperation(value = "호스트 활성화", notes = "호스트를 활성화 모드로 전환한다")
-	@ApiImplicitParam(name = "id", value = "호스트 아이디")
+	@ApiImplicitParam(name = "id", value = "호스트 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public void activeHost(@PathVariable String id) {
 		log.info("--- 호스트 활성");
@@ -99,7 +99,7 @@ public class HostController {
 
 	@PostMapping("/{id}/refresh")
 	@ApiOperation(value = "호스트 새로고침", notes = "호스트를 새로고침한다")
-	@ApiImplicitParam(name = "id", value = "호스트 아이디")
+	@ApiImplicitParam(name = "id", value = "호스트 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public void refreshHost(@PathVariable String id) {
 		log.info("--- 호스트 새로고침");
@@ -110,7 +110,7 @@ public class HostController {
 	
 	@PostMapping("/{id}/restart")
 	@ApiOperation(value = "호스트 재시작", notes = "호스트를 재시작한다")
-	@ApiImplicitParam(name = "id", value = "호스트 아이디")
+	@ApiImplicitParam(name = "id", value = "호스트 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public void reStartHost(@PathVariable String id) throws UnknownHostException {
 		log.info("--- 호스트 ssh 재시작");
@@ -123,7 +123,7 @@ public class HostController {
 
 	@GetMapping("/{id}")
 	@ApiOperation(value = "호스트 상세정보", notes = "호스트의 상세정보를 조회한다")
-	@ApiImplicitParam(name = "id", value = "호스트 아이디")
+	@ApiImplicitParam(name = "id", value = "호스트 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public HostVo getHost(@PathVariable String id) {
 		log.info("--- 호스트 일반");
@@ -134,7 +134,7 @@ public class HostController {
 
 	@GetMapping("/{id}/vms")
 	@ApiOperation(value = "호스트 가상머신 목록", notes = "선택된 호스트의 가상머신 목록을 조회한다")
-	@ApiImplicitParam(name = "id", value = "호스트 아이디")
+	@ApiImplicitParam(name = "id", value = "호스트 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public List<VmVo> getvm(@PathVariable String id) {
 		log.info("--- 호스트 vm");
@@ -163,7 +163,7 @@ public class HostController {
 
 	@GetMapping("/{id}/nics")
 	@ApiOperation(value = "호스트 네트워크 인터페이스 목록", notes = "선택된 호스트의 네트워크 인터페이스 목록을 조회한다")
-	@ApiImplicitParam(name = "id", value = "호스트 아이디")
+	@ApiImplicitParam(name = "id", value = "호스트 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public List<NicVo> nic(@PathVariable String id) {
 		log.info("--- 호스트 nic");
@@ -173,7 +173,7 @@ public class HostController {
 
 	@GetMapping("/{id}/devices")
 	@ApiOperation(value = "호스트 장치 목록", notes = "선택된 호스트의 장치 목록을 조회한다")
-	@ApiImplicitParam(name = "id", value = "호스트 아이디")
+	@ApiImplicitParam(name = "id", value = "호스트 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public List<HostDeviceVo> device(@PathVariable String id) {
 		log.info("--- 호스트 장치");
@@ -183,7 +183,7 @@ public class HostController {
 
 	@GetMapping("/{id}/permissions")
 	@ApiOperation(value = "호스트 권한 목록", notes = "선택된 호스트의 권한 목록을 조회한다")
-	@ApiImplicitParam(name = "id", value = "호스트 아이디")
+	@ApiImplicitParam(name = "id", value = "호스트 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public List<PermissionVo> permission(@PathVariable String id) {
 		log.info("--- 호스트 권한");
@@ -246,7 +246,7 @@ public class HostController {
 
 	@GetMapping("/{id}/events")
 	@ApiOperation(value = "호스트 이벤트 목록", notes = "선택된 호스트의 이벤트 목록을 조회한다")
-	@ApiImplicitParam(name = "id", value = "호스트 아이디")
+	@ApiImplicitParam(name = "id", value = "호스트 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public List<EventVo> event(@PathVariable String id) {
 		log.info("--- 호스트 이벤트");

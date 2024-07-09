@@ -716,6 +716,7 @@ public class HostServiceImpl implements ItHostService {
 
         log.info("호스트 이벤트");
         return eventList.stream()
+                .filter(event -> !(event.severity().value().equals("alert") && event.description().contains("Failed to verify Power Management configuration for Host")))
                 .map(
                     event ->
                         EventVo.builder()

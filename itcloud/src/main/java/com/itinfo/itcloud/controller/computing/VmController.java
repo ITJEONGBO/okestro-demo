@@ -52,7 +52,7 @@ public class VmController {
 
 	@PostMapping
 	@ApiOperation(value = "가상머신 생성", notes = "가상머신을 생성한다")
-	@ApiImplicitParam(name = "vm", value = "가상머신")
+	@ApiImplicitParam(name = "vm", value = "가상머신", dataTypeClass = VmCreateVo.class)
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> addVm(@RequestBody VmCreateVo vm) {
@@ -62,7 +62,7 @@ public class VmController {
 
 	@PostMapping("/{id}/edit")
 	@ApiOperation(value = "가상머신 수정창", notes = "선택된 가상머신의 정보를 조회한다")
-	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public VmCreateVo getVmCreate(@PathVariable String id) {
@@ -72,7 +72,7 @@ public class VmController {
 
 	@PutMapping("/{id}")
 	@ApiOperation(value = "가상머신 수정", notes = "가상머신을 수정한다")
-	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> editVm(@PathVariable String id,
@@ -83,7 +83,7 @@ public class VmController {
 
 	@DeleteMapping("/{id}")
 	@ApiOperation(value = "가상머신 삭제", notes = "가상머신을 삭제한다")
-	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public CommonVo<Boolean> deleteVm(@PathVariable String id) {
@@ -101,7 +101,7 @@ public class VmController {
 
 	@GetMapping("/{id}")
 	@ApiOperation(value = "가상머신 상세정보", notes = "가상머신의 상세정보를 조회한다")
-	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public VmVo vm(@PathVariable String id) {
@@ -111,7 +111,7 @@ public class VmController {
 
 	@GetMapping("/{id}/nics")
 	@ApiOperation(value = "가상머신 네트워크 인터페이스 목록", notes = "선택된 가상머신의 네트워크 인터페이스 목록을 조회한다")
-	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public List<NicVo> nic(@PathVariable String id) {
 		log.info("----- vm nic 일반 불러오기: " + id);
@@ -120,7 +120,7 @@ public class VmController {
 
 	@GetMapping("/{id}/disks")
 	@ApiOperation(value = "가상머신 디스크 목록", notes = "선택된 가상머신의 디스크 목록을 조회한다")
-	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public List<VmDiskVo> disk(@PathVariable String id) {
 		log.info("----- vm disk 일반 불러오기: " + id);
@@ -129,7 +129,7 @@ public class VmController {
 
 	@GetMapping("/{id}/snapshots")
 	@ApiOperation(value = "가상머신 스냅샷 목록", notes = "선택된 가상머신의 스냅샷 목록을 조회한다")
-	@ApiImplicitParam(name = "id", value = "가상머신 아이디")	
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public List<SnapshotVo> snapshot(@PathVariable String id) {
 		log.info("----- vm snapshot 불러오기: " + id);
@@ -138,7 +138,7 @@ public class VmController {
 
 	@GetMapping("/{id}/applications")
 	@ApiOperation(value = "가상머신 어플리케이션 목록", notes = "선택된 가상머신의 어플리케이션 목록을 조회한다")
-	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public List<IdentifiedVo> app(@PathVariable String id) {
 		log.info("----- vm app 불러오기: " + id);
@@ -161,7 +161,7 @@ public class VmController {
 
 	@GetMapping("/{id}/guests")
 	@ApiOperation(value = "가상머신 게스트 목록", notes = "선택된 가상머신의 게스트 목록을 조회한다")
-	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public GuestInfoVo guest(@PathVariable String id) {
 		log.info("----- vm disk 일반 불러오기: " + id);
@@ -170,7 +170,7 @@ public class VmController {
 
 	@GetMapping("/{id}/permissions")
 	@ApiOperation(value = "가상머신 권한 목록", notes = "선택된 가상머신의 권한 목록을 조회한다")
-	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public List<PermissionVo> permission(@PathVariable String id) {
 		log.info("----- vm event 일반 불러오기: " + id);
@@ -179,7 +179,7 @@ public class VmController {
 
 	@GetMapping("/{id}/events")
 	@ApiOperation(value = "가상머신 이벤트 목록", notes = "선택된 가상머신의 이벤트 목록을 조회한다")
-	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public List<EventVo> event(@PathVariable String id) {
 		log.info("----- vm event 일반 불러오기: " + id);
@@ -201,7 +201,7 @@ public class VmController {
 
 	@GetMapping("/console/{id}")
 	@ApiOperation(value = "가상머신 콘솔", notes = "선택된 가상머신의 콘솔을 출력한다")
-	@ApiImplicitParam(name = "id", value = "가상머신 아이디")
+	@ApiImplicitParam(name = "id", value = "가상머신 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public ConsoleVo setConsole(@PathVariable String id) {

@@ -36,7 +36,7 @@ public class TemplateController {
 
 	@GetMapping("/{id}")
 	@ApiOperation(value = "템플릿 상세정보", notes = "템플릿의 상세정보를 조회한다")
-	@ApiImplicitParam(name = "id", value = "템플릿 아이디")
+	@ApiImplicitParam(name = "id", value = "템플릿 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public TemplateVo template(@PathVariable String id){
 		log.info("--- template 일반");
@@ -46,7 +46,7 @@ public class TemplateController {
 
 	@GetMapping("/{id}/disks")
 	@ApiOperation(value = "템플릿 디스크 목록", notes = "선택된 템플릿의 디스크 목록을 조회한다")
-	@ApiImplicitParam(name = "id", value = "템플릿 아이디")
+	@ApiImplicitParam(name = "id", value = "템플릿 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public List<DiskVo> getDisk(@PathVariable String id){
 		log.info("--- template 디스크");
@@ -55,7 +55,7 @@ public class TemplateController {
 
 	@GetMapping("/{id}/permissions")
 	@ApiOperation(value = "템플릿 권한 목록", notes = "선택된 템플릿의 권한 목록을 조회한다")
-	@ApiImplicitParam(name = "id", value = "템플릿 아이디")
+	@ApiImplicitParam(name = "id", value = "템플릿 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public List<PermissionVo> permissions(@PathVariable String id){
 		log.info("--- template 권한");
@@ -64,7 +64,7 @@ public class TemplateController {
 
 	@GetMapping("/{id}/events")
 	@ApiOperation(value = "템플릿 이벤트 목록", notes = "선택된 템플릿의 이벤트 목록을 조회한다")
-	@ApiImplicitParam(name = "id", value = "템플릿 아이디")
+	@ApiImplicitParam(name = "id", value = "템플릿 아이디", dataTypeClass = String.class)
 	@ResponseBody
 	public List<EventVo> events(@PathVariable String id){
 		log.info("--- template 이벤트");

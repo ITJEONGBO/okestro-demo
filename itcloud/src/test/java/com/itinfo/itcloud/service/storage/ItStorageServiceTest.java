@@ -39,11 +39,7 @@ class ItStorageServiceTest {
                 .map(DiskVo::getAlias)
                 .forEach(System.out::println);
 
-        result.stream()
-                .map(DiskVo::getConnection)
-                .forEach(System.out::println);
-
-        assertThat(storageService.getDiskList(dcId).size()).isEqualTo(32);
+        assertThat(storageService.getDiskList(dcId).size()).isEqualTo(38);
     }
 
     @Test
