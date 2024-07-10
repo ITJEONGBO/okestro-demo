@@ -2,8 +2,8 @@ package com.itinfo.itcloud.service.computing.impl;
 
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.HostCreateVo;
-import com.itinfo.itcloud.model.dto.MemoryUsageDto;
-import com.itinfo.itcloud.model.entity.HostSamplesHistory;
+import com.itinfo.itcloud.model.dto.HostUsageDto;
+import com.itinfo.itcloud.model.entity.HostSamplesHistoryEntity;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.repository.HostRepository;
@@ -26,7 +26,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -41,15 +40,34 @@ public class HostServiceImpl implements ItHostService {
     @Autowired private HostRepository repository;
 
 
+    /**
+     * 전체 사용량(CPU, Memory) 선 그래프
+     * @param hostId 호스트 id
+     * @return 10분마다 그래프에
+     */
     @Override
-    public List<HostSamplesHistory> retrieveHosts(UUID hostId) {
-        return repository.retrieveHosts(hostId);
+    public List<HostUsageDto> totalUsageList(UUID hostId) {
+        return repository.findByHostIdOrderByHistoryDatetimeDesc(hostId)
+                        .stream()
+                        .map(HostSamplesHistoryEntity::totalUsage)
+                        .collect(Collectors.toList());
     }
 
+    /**
+     * 전체 사용량(CPU, Memory) 원 그래프
+     * @param hostId 호스트 id
+     * @return 5분마다 한번씩 불려지게
+     */
     @Override
-    public List<MemoryUsageDto> getTotalMemoryUsagePercent() {
-        return repository.findTotalMemoryUsagePercent();
+    public HostUsageDto totalUsage(UUID hostId) {
+        return repository.findFirstByHostIdOrderByHistoryDatetimeDesc(hostId)
+                .totalUsage();
     }
+
+
+
+
+
 
     /**
      * 호스트 목록

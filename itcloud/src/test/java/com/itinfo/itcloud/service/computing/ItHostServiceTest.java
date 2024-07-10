@@ -5,10 +5,9 @@ import com.itinfo.itcloud.model.computing.HostVo;
 import com.itinfo.itcloud.model.computing.NicVo;
 import com.itinfo.itcloud.model.computing.VmVo;
 import com.itinfo.itcloud.model.create.HostCreateVo;
-import com.itinfo.itcloud.model.dto.MemoryUsageDto;
-import com.itinfo.itcloud.model.entity.HostSamplesHistory;
+import com.itinfo.itcloud.model.dto.HostUsageDto;
+import com.itinfo.itcloud.model.entity.HostSamplesHistoryEntity;
 import com.itinfo.itcloud.model.error.CommonVo;
-import com.itinfo.itcloud.repository.HostRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,20 +26,21 @@ class ItHostServiceTest {
     private final String defaultId = "a16955bd-ff57-4e6e-add5-c7d46d5315e9";    // 70 host01
 
 
-
     @Test
-    @DisplayName("")
-    void df() {
-        List<HostSamplesHistory> result = hostService.retrieveHosts(UUID.fromString(defaultId));
+    @DisplayName("totalUsageList")
+    void totalUsageList() {
+        List<HostUsageDto> result = hostService.totalUsageList(UUID.fromString(defaultId));
         result.forEach(System.out::println);
     }
 
     @Test
-    @DisplayName("")
-    void ddf() {
-        List<MemoryUsageDto>  result = hostService.getTotalMemoryUsagePercent();
-        result.forEach(System.out::println);
+    @DisplayName("totalUsage")
+    void totalUsage() {
+        HostUsageDto result = hostService.totalUsage(UUID.fromString(defaultId));
+        System.out.println(result);
     }
+
+
 
 
     @Test

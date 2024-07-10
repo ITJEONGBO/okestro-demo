@@ -2,10 +2,8 @@ package com.itinfo.itcloud.service.computing;
 
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.HostCreateVo;
-import com.itinfo.itcloud.model.dto.MemoryUsageDto;
-import com.itinfo.itcloud.model.entity.HostSamplesHistory;
+import com.itinfo.itcloud.model.dto.HostUsageDto;
 import com.itinfo.itcloud.model.error.CommonVo;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import java.net.UnknownHostException;
@@ -14,8 +12,9 @@ import java.util.UUID;
 
 @Service
 public interface ItHostService {
-    List<HostSamplesHistory> retrieveHosts(UUID hostId);
-    List<MemoryUsageDto> getTotalMemoryUsagePercent();
+    List<HostUsageDto> totalUsageList(UUID hostId);
+    HostUsageDto totalUsage(UUID hostId);
+
     List<HostVo> getList(); // 호스트 리스트
 
     List<ClusterVo> setClusterList();   // 호스트 생성 - 클러스터 리스트 출력

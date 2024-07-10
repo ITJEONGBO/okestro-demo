@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.model.entity;
 
+import com.itinfo.itcloud.model.dto.HostUsageDto;
 import lombok.*;
 import org.hibernate.annotations.Type;
 
@@ -9,10 +10,11 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@NoArgsConstructor
-@Table(name="HOST_SAMPLES_HISTORY")
 @ToString
-public class HostSamplesHistory {
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name="HOST_SAMPLES_HISTORY")
+public class HostSamplesHistoryEntity {
     @Id
     @Column(unique = true, nullable = false)
     private int historyId;
@@ -37,4 +39,15 @@ public class HostSamplesHistory {
     private int hostConfigurationVersion;
     private int ksmSharedMemoryMb;
     private int secondsInStatus;
+
+    public HostUsageDto totalUsage(){
+        return HostUsageDto.builder()
+                .hostId(hostId.toString())
+                .hostStatus(hostStatus)
+                .historyDatetime(historyDatetime)
+                .totalCpuUsagePercent(cpuUsagePercent)
+                .totalMemoryUsagePercent(memoryUsagePercent)
+                .build();
+    }
+
 }
