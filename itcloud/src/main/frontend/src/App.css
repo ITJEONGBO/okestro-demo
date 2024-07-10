@@ -330,6 +330,7 @@
 /*bar*/
 #bar{
     display: flex;
+    height: 24.3%;
     border-radius: 3px;
     font-size: 0.34rem;
     justify-content: space-between;
@@ -2224,18 +2225,18 @@ input[disabled] {
 .footer>div{
     display: flex;
 }
-.footer>div>a{
+.footer>div>div{
     font-weight: 600;
     display: block;
     cursor: pointer;
     margin-top: 8px;
 }
-.footer>div>a:first-child{
+.footer>div>div:first-child{
     margin: 8px 30px 0 15px;
     border-bottom: 2px solid #6999D9;
     color: black;
 }
-.footer>div>a:nth-child(2){
+.footer>div>div:nth-child(2){
     color: #4F4F4F;
 }
 .footer_content{
@@ -2393,12 +2394,13 @@ input[disabled] {
 /*편집버튼 팝업*/
 #edit_popup_bg{
     display: none;
-    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    position: fixed; /* fixed로 변경하여 스크롤 시에도 고정되도록 함 */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
+    z-index: 999; /* 다른 요소들보다 위에 표시되도록 z-index 설정 */
 }
 #edit_popup{
     position: absolute;
@@ -2411,6 +2413,7 @@ input[disabled] {
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+    z-index: 1000; /* #edit_popup_bg 보다 위에 표시되도록 z-index 설정 */
 }
 .edit_header{
     background-color: #ebebeb;

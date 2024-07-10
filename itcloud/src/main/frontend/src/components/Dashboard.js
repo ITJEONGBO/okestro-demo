@@ -80,7 +80,7 @@ class BarChart extends React.Component {
 
     this.state = {
       series: [{
-        data: [100, 430, 448]
+        data: [100, 430, 448] // 막대 값
       }],
       options: {
         chart: {
@@ -172,7 +172,7 @@ class AreaChart extends React.Component {
     this.state = {
       series: [{
         name: 'series1',
-        data: [31, 40, 28, 51, 42, 109, 100]
+        data: [31, 40, 28, 51, 42, 109, 100] // 물결그래프 값
       }, {
         name: 'series2',
         data: [11, 32, 45, 82, 34, 52, 41]

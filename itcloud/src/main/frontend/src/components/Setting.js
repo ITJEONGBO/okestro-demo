@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../App.css';
 
 function Setting() {
@@ -20,6 +20,17 @@ function Setting() {
             window.removeEventListener('resize', adjustFontSize);
         };
     }, []);
+      //footer
+      const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
+      const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
+  
+      const toggleFooterContent = () => {
+          setFooterContentVisibility(!isFooterContentVisible);
+      };
+  
+      const handleFooterTabClick = (tab) => {
+          setSelectedFooterTab(tab);
+      };
 
     return (
         <div id="setting_section">
@@ -100,54 +111,72 @@ function Setting() {
         </div>
   
         <div className="footer_outer">
-          <div className="footer">
-            <button><i className="fa fa-chevron-down"></i></button>
-            <div>
-              <a>최근 작업</a>
-              <a>경보</a>
+                <div className="footer">
+                    <button onClick={toggleFooterContent}><i className="fa fa-chevron-down"></i></button>
+                    <div>
+                        <div
+                            style={{
+                                color: selectedFooterTab === 'recent' ? 'black' : '#4F4F4F',
+                                borderBottom: selectedFooterTab === 'recent' ? '1px solid blue' : 'none'
+                            }}
+                            onClick={() => handleFooterTabClick('recent')}
+                        >
+                            최근 작업
+                        </div>
+                        <div
+                            style={{
+                                color: selectedFooterTab === 'alerts' ? 'black' : '#4F4F4F',
+                                borderBottom: selectedFooterTab === 'alerts' ? '1px solid blue' : 'none'
+                            }}
+                            onClick={() => handleFooterTabClick('alerts')}
+                        >
+                            경보
+                        </div>
+                    </div>
+                </div>
+                {isFooterContentVisible && (
+                    <div className="footer_content" style={{ display: 'block' }}>
+                        <div className="footer_nav">
+                            <div>
+                                <div>작업이름</div>
+                                <div><i className="fa fa-filter"></i></div>
+                            </div>
+                            <div>
+                                <div>작업이름</div>
+                                <div><i className="fa fa-filter"></i></div>
+                            </div>
+                            <div>
+                                <div>작업이름</div>
+                                <div><i className="fa fa-filter"></i></div>
+                            </div>
+                            <div>
+                                <div>작업이름</div>
+                                <div><i className="fa fa-filter"></i></div>
+                            </div>
+                            <div>
+                                <div>작업이름</div>
+                                <div><i className="fa fa-filter"></i></div>
+                            </div>
+                            <div>
+                                <div>작업이름</div>
+                                <div><i className="fa fa-filter"></i></div>
+                            </div>
+                            <div>
+                                <div>작업이름</div>
+                                <div><i className="fa fa-filter"></i></div>
+                            </div>
+                            <div style={{ borderRight: 'none' }}>
+                                <div>작업이름</div>
+                                <div><i className="fa fa-filter"></i></div>
+                            </div>
+                        </div>
+                        <div className="footer_img">
+                            <img src="img/화면 캡처 2024-04-30 164511.png" alt="스크린샷" />
+                            <span>항목을 찾지 못했습니다</span>
+                        </div>
+                    </div>
+                )}
             </div>
-          </div>
-          <div className="footer_content">
-            <div className="footer_nav">
-              <div>
-                <div>작업이름</div>
-                <div><i className="fa fa-filter"></i></div>
-              </div>
-              <div>
-                <div>작업이름</div>
-                <div><i className="fa fa-filter"></i></div>
-              </div>
-              <div>
-                <div>작업이름</div>
-                <div><i className="fa fa-filter"></i></div>
-              </div>
-              <div>
-                <div>작업이름</div>
-                <div><i className="fa fa-filter"></i></div>
-              </div>
-              <div>
-                <div>작업이름</div>
-                <div><i className="fa fa-filter"></i></div>
-              </div>
-              <div>
-                <div>작업이름</div>
-                <div><i className="fa fa-filter"></i></div>
-              </div>
-              <div>
-                <div>작업이름</div>
-                <div><i className="fa fa-filter"></i></div>
-              </div>
-              <div style={{ borderRight: 'none' }}>
-                <div>작업이름</div>
-                <div><i className="fa fa-filter"></i></div>
-              </div>
-            </div>
-            <div className="footer_img">
-              <img src="img/화면 캡처 2024-04-30 164511.png" alt="스크린샷" />
-              <span>항목을 찾지 못했습니다</span>
-            </div>
-          </div>
-        </div>
       </div>
     );
 };

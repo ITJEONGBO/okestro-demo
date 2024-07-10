@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../App.css';
 
-  // 네트워크 table 반복문
+// 네트워크인터페이스 table 반복문
 const NetworkSection = () => {
   useEffect(() => {
     const container = document.getElementById("network_content_outer");
@@ -51,6 +51,7 @@ const NetworkSection = () => {
   );
 };
 
+// 디스크
 const DiskSection = () => {
   return (
     <div id="disk_outer">
@@ -116,6 +117,7 @@ const DiskSection = () => {
   );
 };
 
+// 스냅샷
 const SnapshotSection = () => {
   return (
     <div id="snapshot_outer">
@@ -189,6 +191,8 @@ const SnapshotSection = () => {
     </div>
   );
 };
+
+// 애플리케이션
 const ApplicationSection = () => {
   return (
     <div id="application_outer">
@@ -219,6 +223,7 @@ const ApplicationSection = () => {
   );
 };
 
+// 선호도그룹
 const PregroupSection = () => {
   return (
     <div id="pregroup_outer">
@@ -292,6 +297,7 @@ const PregroupSection = () => {
   );
 };
 
+// 선호도 레이블
 const PregroupLabelSection = () => {
   return (
     <div id="pregroup_lable_outer">
@@ -335,6 +341,68 @@ const PregroupLabelSection = () => {
     </div>
   );
 };
+
+// 게스트정보
+const GuestInfoSection = () => {
+  return (
+    <div id="guest_info_outer">
+      <div className="tables">
+        <div className="table_container_left">
+          <table className="table">
+            <tbody>
+              <tr>
+                <th>유형:</th>
+                <td>Linux</td>
+              </tr>
+              <tr>
+                <th>아키텍쳐:</th>
+                <td>x86_64</td>
+              </tr>
+              <tr>
+                <th>운영체제:</th>
+                <td>CentOS Linux 7</td>
+              </tr>
+              <tr>
+                <th>커널 버전</th>
+                <td>3.10.0-1062.el7_x86_64</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="table_container_center">
+          <table className="table">
+            <tbody>
+              <tr>
+                <th>시간대:</th>
+                <td>KST (UTC + 09:00)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="table_container_right">
+          <table className="table">
+            <tbody>
+              <tr>
+                <th>로그인된 사용자:</th>
+                <td></td>
+              </tr>
+              <tr>
+                <th>콘솔 사용자:</th>
+                <td></td>
+              </tr>
+              <tr>
+                <th>콘솔 클라이언트 IP:</th>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+//권한
 const PowerSection = () => {
   return (
     <div id="power_outer">
@@ -395,65 +463,7 @@ const PowerSection = () => {
   );
 };
 
-const GuestInfoSection = () => {
-  return (
-    <div id="guest_info_outer">
-      <div className="tables">
-        <div className="table_container_left">
-          <table className="table">
-            <tbody>
-              <tr>
-                <th>유형:</th>
-                <td>Linux</td>
-              </tr>
-              <tr>
-                <th>아키텍쳐:</th>
-                <td>x86_64</td>
-              </tr>
-              <tr>
-                <th>운영체제:</th>
-                <td>CentOS Linux 7</td>
-              </tr>
-              <tr>
-                <th>커널 버전</th>
-                <td>3.10.0-1062.el7_x86_64</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div className="table_container_center">
-          <table className="table">
-            <tbody>
-              <tr>
-                <th>시간대:</th>
-                <td>KST (UTC + 09:00)</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div className="table_container_right">
-          <table className="table">
-            <tbody>
-              <tr>
-                <th>로그인된 사용자:</th>
-                <td></td>
-              </tr>
-              <tr>
-                <th>콘솔 사용자:</th>
-                <td></td>
-              </tr>
-              <tr>
-                <th>콘솔 클라이언트 IP:</th>
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-};
-
+// 이벤트
 const EventSection = () => {
   return (
     <div id="event_outer">
@@ -576,9 +586,9 @@ const EventSection = () => {
   );
 };
 
-// 편집
+// 편집팝업
 const editPopup = () => {
-  alert("Edit button clicked!");
+  <div>ddd</div>
 };
 
 
@@ -587,6 +597,18 @@ const Machine = () => {
 
   const handleSectionClick = (section) => {
     setActiveSection(section);
+  };
+
+  //footer
+  const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
+  const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
+
+  const toggleFooterContent = () => {
+      setFooterContentVisibility(!isFooterContentVisible);
+  };
+
+  const handleFooterTabClick = (tab) => {
+      setSelectedFooterTab(tab);
   };
 
   return (
@@ -828,6 +850,74 @@ const Machine = () => {
         {/* Add similar sections for snapshot, application, etc. */}
       </div>
 
+      <div className="footer_outer">
+                <div className="footer">
+                    <button onClick={toggleFooterContent}><i className="fa fa-chevron-down"></i></button>
+                    <div>
+                        <div
+                            style={{
+                                color: selectedFooterTab === 'recent' ? 'black' : '#4F4F4F',
+                                borderBottom: selectedFooterTab === 'recent' ? '1px solid blue' : 'none'
+                            }}
+                            onClick={() => handleFooterTabClick('recent')}
+                        >
+                            최근 작업
+                        </div>
+                        <div
+                            style={{
+                                color: selectedFooterTab === 'alerts' ? 'black' : '#4F4F4F',
+                                borderBottom: selectedFooterTab === 'alerts' ? '1px solid blue' : 'none'
+                            }}
+                            onClick={() => handleFooterTabClick('alerts')}
+                        >
+                            경보
+                        </div>
+                    </div>
+                </div>
+                {isFooterContentVisible && (
+                    <div className="footer_content" style={{ display: 'block' }}>
+                        <div className="footer_nav">
+                            <div>
+                                <div>작업이름</div>
+                                <div><i className="fa fa-filter"></i></div>
+                            </div>
+                            <div>
+                                <div>작업이름</div>
+                                <div><i className="fa fa-filter"></i></div>
+                            </div>
+                            <div>
+                                <div>작업이름</div>
+                                <div><i className="fa fa-filter"></i></div>
+                            </div>
+                            <div>
+                                <div>작업이름</div>
+                                <div><i className="fa fa-filter"></i></div>
+                            </div>
+                            <div>
+                                <div>작업이름</div>
+                                <div><i className="fa fa-filter"></i></div>
+                            </div>
+                            <div>
+                                <div>작업이름</div>
+                                <div><i className="fa fa-filter"></i></div>
+                            </div>
+                            <div>
+                                <div>작업이름</div>
+                                <div><i className="fa fa-filter"></i></div>
+                            </div>
+                            <div style={{ borderRight: 'none' }}>
+                                <div>작업이름</div>
+                                <div><i className="fa fa-filter"></i></div>
+                            </div>
+                        </div>
+                        <div className="footer_img">
+                            <img src="img/화면 캡처 2024-04-30 164511.png" alt="스크린샷" />
+                            <span>항목을 찾지 못했습니다</span>
+                        </div>
+                    </div>
+                )}
+      </div>
+      
       
     </div>
 

@@ -144,9 +144,11 @@ function MainOuter({ children }) {
                             </div>
                         </Link>
                     </div>
-                    <div id="setting_icon" style={{ backgroundColor: asidePopupBackgroundColor.setting }} onClick={() => handleClick('setting')}>
-                        <i className="fa fa-cog"></i>
-                    </div>
+                    <Link to='/setting' className="link-no-underline">
+                        <div id="setting_icon" style={{ backgroundColor: asidePopupBackgroundColor.setting }} onClick={() => handleClick('setting')}>
+                            <i className="fa fa-cog"></i>
+                        </div>
+                    </Link>
                 </div>
                 {/* aside 끝 */}
 
@@ -247,6 +249,16 @@ function MainOuter({ children }) {
             </div>
             {/* aside_outer 끝 */}
             {children}
+
+            {/* 우클릭메뉴박스 끝 */}
+            <div id="context_menu">
+                <div>새로 만들기</div>
+                <div>새로운 도메인</div>
+                <div>도메인 가져오기</div>
+                <div>도메인 관리</div>
+                <div>삭제</div>
+                <div>Connections</div>
+            </div>
         </div>
     );
 }
