@@ -13,7 +13,7 @@ import java.util.UUID;
 @Service
 public interface ItHostService {
     List<HostUsageDto> totalUsageList(UUID hostId);
-    HostUsageDto totalUsage(UUID hostId);
+    HostUsageDto totalUsage();
 
     List<HostVo> getList(); // 호스트 리스트
 

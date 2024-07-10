@@ -34,12 +34,11 @@ class ItHostServiceTest {
     }
 
     @Test
-    @DisplayName("totalUsage")
+    @DisplayName("전체사용량 - 원그래프 (cpu, memory)")
     void totalUsage() {
-        HostUsageDto result = hostService.totalUsage(UUID.fromString(defaultId));
-        System.out.println(result);
+        HostUsageDto result = hostService.totalUsage();
+        System.out.println("host1 " + result);
     }
-
 
 
 

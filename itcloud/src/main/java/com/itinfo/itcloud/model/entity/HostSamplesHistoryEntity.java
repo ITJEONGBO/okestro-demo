@@ -40,6 +40,26 @@ public class HostSamplesHistoryEntity {
     private int ksmSharedMemoryMb;
     private int secondsInStatus;
 
+    /**
+     * 전체 사용량 - 원 그래프 %
+     * 호스트 당 사용률 검색
+     * @return 호스트 cpu, memory %
+     */
+    public HostUsageDto totalCpuMemory(){
+        return HostUsageDto.builder()
+//                .hostId(hostId.toString())
+                .totalCpuUsagePercent(cpuUsagePercent)
+                .totalMemoryUsagePercent(memoryUsagePercent)
+                .build();
+    }
+
+
+    /**
+     * 전체 사용량 - 선 그래프 GB
+     * 호스트 사용률 전체 출력
+     * 근데 10분마다 한번씩 나오는거면 최대 10개로 제한해서 한시간 내의 정보만 보여주면 되는거 아닌가?
+     * @return 호스트 1분마다의 cpu,memory 값
+     */
     public HostUsageDto totalUsage(){
         return HostUsageDto.builder()
                 .hostId(hostId.toString())

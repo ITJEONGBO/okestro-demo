@@ -55,13 +55,28 @@ public class HostServiceImpl implements ItHostService {
 
     /**
      * 전체 사용량(CPU, Memory) 원 그래프
-     * @param hostId 호스트 id
-     * @return 5분마다 한번씩 불려지게
+     * @return 5분마다 한번씩 불려지게 해야함
      */
     @Override
-    public HostUsageDto totalUsage(UUID hostId) {
-        return repository.findFirstByHostIdOrderByHistoryDatetimeDesc(hostId)
-                .totalUsage();
+    public HostUsageDto totalUsage() {
+        // 여기서 hostId가 내가 넣는 방식이 아니고 전체의 hostList에서 값을 받아와서 넣어야됨
+        SystemService system = admin.getConnection().systemService();
+        List<String> hostIds = system.hostsService().list().send().hosts().stream().map(Host::id).collect(Collectors.toList());
+        int hostCnt = hostIds.size();
+
+        double totalCpu = 0;
+        double totalMemory = 0;
+
+        for(String hostId : hostIds){
+            HostUsageDto usage = repository.findFirstByHostIdOrderByHistoryDatetimeDesc(UUID.fromString(hostId)).totalCpuMemory();
+            totalCpu += usage.getTotalCpuUsagePercent();
+            totalMemory += usage.getTotalMemoryUsagePercent();
+        }
+
+        return HostUsageDto.builder()
+                .totalCpuUsagePercent(Math.round(totalCpu / hostCnt))
+                .totalMemoryUsagePercent(Math.round(totalMemory / hostCnt))
+                .build();
     }
 
 

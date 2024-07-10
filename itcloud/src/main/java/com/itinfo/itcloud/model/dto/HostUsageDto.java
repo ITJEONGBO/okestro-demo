@@ -10,6 +10,6 @@ public class HostUsageDto {
     private String hostId;
     private int hostStatus;
     private LocalDateTime historyDatetime;
-    private int totalCpuUsagePercent;
-    private int totalMemoryUsagePercent;
+    private double totalCpuUsagePercent;
+    private double totalMemoryUsagePercent;
 }
