@@ -19,7 +19,7 @@ public interface HostRepository extends JpaRepository<HostSamplesHistoryEntity, 
     List<HostSamplesHistoryEntity> findByHostIdOrderByHistoryDatetimeDesc(UUID hostId);
 
     // 해당 호스트 cpu, memory 한행만 출력
-    HostSamplesHistoryEntity findFirstByHostIdOrderByHistoryDatetimeDesc(UUID hostId);
+    HostSamplesHistoryEntity findFirstByHostIdAndHostStatusOrderByHistoryDatetimeDesc(UUID hostId, int hostStatus);
 
 
 }

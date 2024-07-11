@@ -1,6 +1,7 @@
 package com.itinfo.itcloud.service.storage
 
 import com.itinfo.itcloud.model.IdentifiedVo
+import com.itinfo.itcloud.model.UsageVo
 import com.itinfo.itcloud.model.computing.ClusterVo
 import com.itinfo.itcloud.model.computing.EventVo
 import com.itinfo.itcloud.model.computing.PermissionVo
@@ -14,6 +15,9 @@ import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
 
 interface ItStorageService {
+
+	fun totalStorage(): UsageVo?
+
 	/**
 	 * [ItStorageService.getDiskList]
 	 * 디스크 리스트

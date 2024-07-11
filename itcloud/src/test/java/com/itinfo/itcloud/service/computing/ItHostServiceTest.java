@@ -1,12 +1,12 @@
 package com.itinfo.itcloud.service.computing;
 
+import com.itinfo.itcloud.model.UsageVo;
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.HostVo;
 import com.itinfo.itcloud.model.computing.NicVo;
 import com.itinfo.itcloud.model.computing.VmVo;
 import com.itinfo.itcloud.model.create.HostCreateVo;
 import com.itinfo.itcloud.model.dto.HostUsageDto;
-import com.itinfo.itcloud.model.entity.HostSamplesHistoryEntity;
 import com.itinfo.itcloud.model.error.CommonVo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,17 +27,26 @@ class ItHostServiceTest {
 
 
     @Test
+    @DisplayName("전체사용량 - 원그래프 cpu %")
+    void totalUsage() {
+        HostUsageDto result = hostService.totalCpu();
+        System.out.println("host1 " + result);
+    }
+
+
+    @Test
+    @DisplayName("전체사용량- Memory")
+    void totalMemory(){
+        UsageVo result = hostService.totalMemory();
+        System.out.println(result);
+    }
+
+
+    @Test
     @DisplayName("totalUsageList")
     void totalUsageList() {
         List<HostUsageDto> result = hostService.totalUsageList(UUID.fromString(defaultId));
         result.forEach(System.out::println);
-    }
-
-    @Test
-    @DisplayName("전체사용량 - 원그래프 (cpu, memory)")
-    void totalUsage() {
-        HostUsageDto result = hostService.totalUsage();
-        System.out.println("host1 " + result);
     }
 
 

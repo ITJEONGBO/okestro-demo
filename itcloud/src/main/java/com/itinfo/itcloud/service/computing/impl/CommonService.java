@@ -60,6 +60,14 @@ public class CommonService {
                 .orElse(0);
     }
 
+    public double getMemory(List<Statistic> statisticList, String query) {
+        return statisticList.stream()
+                .filter(statistic -> statistic.name().equals(query) && statistic.valuesPresent()) // valuepresent가 애매함
+                .map(statistic -> statistic.values().get(0).datum().doubleValue())
+                .findAny()
+                .orElse(0.0);
+    }
+
 
     /**
      * Vm 업타임 구하기

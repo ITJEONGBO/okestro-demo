@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.service.computing;
 
+import com.itinfo.itcloud.model.UsageVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.HostCreateVo;
 import com.itinfo.itcloud.model.dto.HostUsageDto;
@@ -12,8 +13,12 @@ import java.util.UUID;
 
 @Service
 public interface ItHostService {
+
+    UsageVo totalMemory();
+
+
     List<HostUsageDto> totalUsageList(UUID hostId);
-    HostUsageDto totalUsage();
+    HostUsageDto totalCpu();
 
     List<HostVo> getList(); // 호스트 리스트
 
