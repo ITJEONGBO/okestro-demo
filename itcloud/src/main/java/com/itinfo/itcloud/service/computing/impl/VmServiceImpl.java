@@ -3,8 +3,10 @@ package com.itinfo.itcloud.service.computing.impl;
 import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.OsVo;
 import com.itinfo.itcloud.model.TypeExtKt;
+import com.itinfo.itcloud.model.dto.UsageChartDto;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.*;
+import com.itinfo.itcloud.model.entity.VmSamplesHistoryEntity;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkFilterParameterVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
@@ -13,6 +15,7 @@ import com.itinfo.itcloud.model.storage.DiskVo;
 import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.model.storage.VmDiskVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
+import com.itinfo.itcloud.repository.VmRepository;
 import com.itinfo.itcloud.service.admin.ItSystemPropertyService;
 import com.itinfo.itcloud.service.computing.ItAffinityService;
 import com.itinfo.itcloud.service.computing.ItVmService;
@@ -41,7 +44,22 @@ public class VmServiceImpl implements ItVmService {
     @Autowired private CommonService commonService;
     @Autowired private ItAffinityService affinityService;
     @Autowired private ItSystemPropertyService systemService;
+    @Autowired private VmRepository repository;
 
+    // no
+    @Override
+    public List<UsageChartDto> getCpuChart() {
+        return repository.findFirstByVmStatusOrderByCpuUsagePercentDesc(1)
+                .stream()
+                .map(VmSamplesHistoryEntity::getCpuChart)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UsageChartDto> getMemoryChart() {
+//        return List.of();
+        return null;
+    }
 
     /**
      * 가상머신 목록
