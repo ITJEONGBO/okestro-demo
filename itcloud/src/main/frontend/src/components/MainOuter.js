@@ -14,12 +14,17 @@ function MainOuter({ children }) {
     });
     const [isSecondVisible, setIsSecondVisible] = useState(false);
     const [isLastVisible, setIsLastVisible] = useState(false);
+   
 
     const [isSecondVisibleStorage, setIsSecondVisibleStorage] = useState(false);
     const [isLastVisibleStorage, setIsLastVisibleStorage] = useState(false);
 
     const [isSecondVisibleNetwork, setIsSecondVisibleNetwork] = useState(false);
-
+     // 우클릭메뉴박스
+     const [contextMenuVisible, setContextMenuVisible] = useState(false);
+     const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
+     const [contextMenuTarget, setContextMenuTarget] = useState(null);
+     const [hoverTarget, setHoverTarget] = useState(null);
     useEffect(() => {
         function adjustFontSize() {
             const width = window.innerWidth;
@@ -97,9 +102,29 @@ function MainOuter({ children }) {
     const getClassNames = (id) => {
         return selected === id ? 'selected' : '';
     };
-
+    // 우클릭메뉴박스
+    const handleMouseEnter = (target) => {
+        setHoverTarget(target);
+    };
+    
+    const handleMouseLeave = () => {
+        setHoverTarget(null);
+    };
+    // 우클릭메뉴박스
+    // 새로운 함수 추가
+    const handleContextMenu = (event, target) => {
+        event.preventDefault();
+        setContextMenuPosition({ x: event.clientX, y: event.clientY });
+        setContextMenuVisible(true);
+        setContextMenuTarget(target);
+    };
+    //다른 곳을 클릭하면 배경색이 원래대로 돌아오도록 하는 이벤트 핸들러
+    const handleMainClick = () => {
+        setContextMenuVisible(false);
+        setContextMenuTarget(null);
+    };
     return (
-        <div id="main_outer">
+        <div id="main_outer" onClick={handleMainClick}>
             <div id="aside_outer" style={{ width: asidePopupVisible ? '20%' : '3%' }}>
                 <div id="aside">
                     <div id="nav">
@@ -151,7 +176,6 @@ function MainOuter({ children }) {
                     </Link>
                 </div>
                 {/* aside 끝 */}
-
                 <div id="aside_popup" style={{ display: asidePopupVisible ? 'block' : 'none' }}>
                     {selected === 'machine' && (
                         <div id="virtual_machine_chart">
@@ -165,18 +189,39 @@ function MainOuter({ children }) {
                                 <i className="fa fa-building-o"></i>
                                 <span>ITITINFO</span>
                             </div>
-                            <div className="aside_popup_content" id="aside_popup_last" style={{ display: isLastVisible ? 'block' : 'none' }}>
-                                <div>
+                            <div id="aside_popup_last_machine" style={{ display: isLastVisible ? 'block' : 'none' }}>
+                                <div
+                                    onContextMenu={(e) => handleContextMenu(e, '192.168.0.80')}
+                                    onMouseEnter={() => handleMouseEnter('192.168.0.80')}
+                                    onMouseLeave={handleMouseLeave}
+                                    style={{
+                                        backgroundColor: contextMenuTarget === '192.168.0.80' ? '#e6eefa' : (hoverTarget === '192.168.0.80' ? '#e6eefa' : 'transparent')
+                                    }}
+                                >
                                     <i></i>
                                     <i className="fa fa-microchip"></i>
                                     <span>192.168.0.80</span>
                                 </div>
-                                <div>
+                                <div
+                                    onContextMenu={(e) => handleContextMenu(e, 'HostedEngine')}
+                                    onMouseEnter={() => handleMouseEnter('HostedEngine')}
+                                    onMouseLeave={handleMouseLeave}
+                                    style={{
+                                        backgroundColor: contextMenuTarget === 'HostedEngine' ? '#e6eefa' : (hoverTarget === 'HostedEngine' ? '#e6eefa' : 'transparent')
+                                    }}
+                                >
                                     <i></i>
                                     <i className="fa fa-microchip"></i>
                                     <span>HostedEngine</span>
                                 </div>
-                                <div>
+                                <div
+                                    onContextMenu={(e) => handleContextMenu(e, 'on20-ap01')}
+                                    onMouseEnter={() => handleMouseEnter('on20-ap01')}
+                                    onMouseLeave={handleMouseLeave}
+                                    style={{
+                                        backgroundColor: contextMenuTarget === 'on20-ap01' ? '#e6eefa' : (hoverTarget === 'on20-ap01' ? '#e6eefa' : 'transparent')
+                                    }}
+                                >
                                     <i></i>
                                     <i className="fa fa-microchip"></i>
                                     <span>on20-ap01</span>
@@ -196,16 +241,42 @@ function MainOuter({ children }) {
                                 <i className="fa fa-building-o"></i>
                                 <span>Default</span>
                             </div>
-                            <div className="aside_popup_content" id="aside_popup_last2" style={{ display: isLastVisibleStorage ? 'block' : 'none' }}>
-                                <div>
+                            <div id="aside_popup_last_storage" style={{ display: isLastVisibleStorage ? 'block' : 'none' }}>
+                                <div
+                                    onContextMenu={(e) => handleContextMenu(e, '192.168.0.80')}
+                                    onMouseEnter={() => handleMouseEnter('192.168.0.80')}
+                                    onMouseLeave={handleMouseLeave}
+                                    style={{
+                                        backgroundColor: contextMenuTarget === '192.168.0.80' ? '#e6eefa' : (hoverTarget === '192.168.0.80' ? '#e6eefa' : 'transparent')
+                                    }}
+                                >
                                     <i></i>
                                     <i className="fa fa-microchip"></i>
-                                    <span>hosted-storage</span>
+                                    <span>192.168.0.80</span>
                                 </div>
-                                <div>
+                                <div
+                                    onContextMenu={(e) => handleContextMenu(e, 'HostedEngine')}
+                                    onMouseEnter={() => handleMouseEnter('HostedEngine')}
+                                    onMouseLeave={handleMouseLeave}
+                                    style={{
+                                        backgroundColor: contextMenuTarget === 'HostedEngine' ? '#e6eefa' : (hoverTarget === 'HostedEngine' ? '#e6eefa' : 'transparent')
+                                    }}
+                                >
                                     <i></i>
                                     <i className="fa fa-microchip"></i>
-                                    <span>NFS-Storage</span>
+                                    <span>HostedEngine</span>
+                                </div>
+                                <div
+                                    onContextMenu={(e) => handleContextMenu(e, 'on20-ap01')}
+                                    onMouseEnter={() => handleMouseEnter('on20-ap01')}
+                                    onMouseLeave={handleMouseLeave}
+                                    style={{
+                                        backgroundColor: contextMenuTarget === 'on20-ap01' ? '#e6eefa' : (hoverTarget === 'on20-ap01' ? '#e6eefa' : 'transparent')
+                                    }}
+                                >
+                                    <i></i>
+                                    <i className="fa fa-microchip"></i>
+                                    <span>on20-ap01</span>
                                 </div>
                             </div>
                         </div>
@@ -251,7 +322,13 @@ function MainOuter({ children }) {
             {children}
 
             {/* 우클릭메뉴박스 끝 */}
-            <div id="context_menu">
+            <div id="context_menu"
+                 style={{
+                    display: contextMenuVisible ? 'block' : 'none',
+                    top: `${contextMenuPosition.y}px`,
+                    left: `${contextMenuPosition.x}px`
+                }}
+            >
                 <div>새로 만들기</div>
                 <div>새로운 도메인</div>
                 <div>도메인 가져오기</div>

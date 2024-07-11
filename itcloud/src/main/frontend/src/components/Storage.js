@@ -3,35 +3,31 @@ import '../App.css';
 
 function Storage() {
 
-    useEffect(() => {
-        function adjustFontSize() {
-            const width = window.innerWidth;
-            const fontSize = width / 40; // 필요에 따라 이 값을 조정하세요
-            document.documentElement.style.fontSize = fontSize + 'px';
-        }
+  // 폰트사이즈
+  useEffect(() => {
+      function adjustFontSize() {
+          const width = window.innerWidth;
+          const fontSize = width / 40; // 필요에 따라 이 값을 조정하세요
+          document.documentElement.style.fontSize = fontSize + 'px';
+      }
+      window.addEventListener('resize', adjustFontSize);
+      adjustFontSize();
 
-        // 창 크기가 변경될 때 adjustFontSize 함수 호출
-        window.addEventListener('resize', adjustFontSize);
+      return () => {
+          window.removeEventListener('resize', adjustFontSize);
+      };
+  }, []);
+    //footer
+    const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
+    const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
 
-        // 컴포넌트가 마운트될 때 adjustFontSize 함수 호출
-        adjustFontSize();
+    const toggleFooterContent = () => {
+        setFooterContentVisibility(!isFooterContentVisible);
+    };
 
-        // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
-        return () => {
-            window.removeEventListener('resize', adjustFontSize);
-        };
-    }, []);
-          //footer
-          const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
-          const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
-      
-          const toggleFooterContent = () => {
-              setFooterContentVisibility(!isFooterContentVisible);
-          };
-      
-          const handleFooterTabClick = (tab) => {
-              setSelectedFooterTab(tab);
-          };
+    const handleFooterTabClick = (tab) => {
+        setSelectedFooterTab(tab);
+    };
 
     return (
         <div id="storage_section">

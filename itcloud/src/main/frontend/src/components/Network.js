@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import '../App.css';
+import Modal from 'react-modal';
+// React Modal 설정
+Modal.setAppElement('#root');
 
 function Network() {
     const [activeSection, setActiveSection] = useState('common_outer');
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
 
     // 폰트사이즈
@@ -88,6 +92,10 @@ function Network() {
           setSelectedFooterTab(tab);
       };
 
+    // 팝업 열기/닫기 핸들러
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
+
     return (
         <div id="network_section">
             <div className="section_header">
@@ -136,7 +144,7 @@ function Network() {
 
                 <div className="storage_domain_content">
                     <div className="content_header_right">
-                        <button id="network_new_btn">새로 만들기</button>
+                        <button id="network_new_btn" onClick={openModal}>새로 만들기</button>
                         <button id="network_bring_btn">가져오기</button>
                         <button>편집</button>
                         <button>삭제</button>
@@ -211,6 +219,7 @@ function Network() {
             </div>
 
             <div className="footer_outer">
+                
                 <div className="footer">
                     <button onClick={toggleFooterContent}><i className="fa fa-chevron-down"></i></button>
                     <div>
@@ -277,8 +286,19 @@ function Network() {
                     </div>
                 )}
             </div>
-        
-             
+
+            {/*팝업창 예시 */}
+                <Modal
+                isOpen={isModalOpen}
+                onRequestClose={closeModal}
+                contentLabel="새로 만들기"
+                className="network_new_popup"
+                overlayClassName="network_new_outer"
+            >
+                <div>dd</div>
+                <button onClick={closeModal}>x</button> 
+            </Modal>
+
              {/*편집팝업 */}
             <div id="edit_popup_bg" style={{ display: 'none' }}>
                 <div id="edit_popup">

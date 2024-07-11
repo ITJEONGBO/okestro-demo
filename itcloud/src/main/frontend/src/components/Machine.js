@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import '../App.css';
+import Modal from 'react-modal';
+// React Modal 설정
+Modal.setAppElement('#root');
 
-// 네트워크인터페이스 table 반복문
+// 네트워크인터페이스
 const NetworkSection = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  // 팝업 열기/닫기 핸들러
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  //table반복
   useEffect(() => {
     const container = document.getElementById("network_content_outer");
     const originalContent = document.querySelector('.network_content');
@@ -17,7 +26,7 @@ const NetworkSection = () => {
     <div id="network_outer">
       <div id="network_content_outer">
         <div className="content_header_right">
-          <button id="network_popup_new">새로 만들기</button>
+          <button id="network_popup_new" onClick={openModal}>새로 만들기</button>
           <button>수정</button>
           <button>제거</button>
         </div>
@@ -47,73 +56,583 @@ const NetworkSection = () => {
           </div>
         </div>
       </div>
+
+
+
+    {/*네트워크 인터페이스(새로만들기) */}
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="새로만들기"
+        className="network_popup"
+        overlayClassName="network_popup_outer"
+      >
+                    <div className="network_popup_header">
+                <h1>네트워크 인터페이스 수정</h1>
+                <button  onClick={closeModal}><i className="fa fa-times"></i></button>
+            </div>
+
+            <div className="network_popup_content">
+                <div className="input_box">
+                    <span>이름</span>
+                    <input type="text"/>
+                </div>
+                <div className="select_box">
+                    <label htmlFor="profile">프로파일</label>
+                    <select id="profile">
+                        <option value="test02">ovirtmgmt/ovirtmgmt</option>
+                    </select>
+                </div>
+                <div className="select_box">
+                    <label htmlFor="type" style={{ color: 'gray' }}>유형</label>
+                    <select id="type" disabled>
+                        <option value="test02">VirtIO</option>
+                    </select>
+                </div>
+                <div className="select_box2" style={{ marginBottom: '2%' }}>
+                    <div>
+                        <input type="checkbox" id="custom_mac_box" disabled/>
+                        <label htmlFor="custom_mac_box" style={{ color: 'gray' }}>
+                            사용자 지정 MAC 주소
+                        </label>
+                    </div>
+                    <div>
+                        <select id="mac_address" disabled>
+                            <option value="test02">VirtIO</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div className="plug_radio_btn">
+                    <span>링크 상태</span>
+                    <div>
+                        <div className="radio_outer">
+                            <div>
+                                <input type="radio" name="status" id="status_up"/>
+                                <img src=".//img/스크린샷 2024-05-24 150455.png" alt="status_up"/>
+                                <label htmlFor="status_up">Up</label>
+                            </div>
+                            <div>
+                                <input type="radio" name="status" id="status_down"/>
+                                <img src=".//img/Down.png" alt="status_down"/>
+                                <label htmlFor="status_down">Down</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="plug_radio_btn">
+                    <span>카드 상태</span>
+                    <div>
+                        <div className="radio_outer">
+                            <div>
+                                <input type="radio" name="connection_status" id="connected"/>
+                                <img src=".//img/연결됨.png" alt="connected"/>
+                                <label htmlFor="connected">연결됨</label>
+                            </div>
+                            <div>
+                                <input type="radio" name="connection_status" id="disconnected"/>
+                                <img src=".//img/분리.png" alt="disconnected"/>
+                                <label htmlFor="disconnected">분리</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="network_parameter_outer">
+                <span>네트워크 필터 매개변수</span>
+                <div>
+                    <div>
+                        <span>이름</span>
+                        <input type="text"/>
+                    </div>
+                    <div>
+                        <span>값</span>
+                        <input type="text"/>
+                    </div>
+                    <div id="buttons">
+                        <button>+</button>
+                        <button>-</button>
+                    </div>
+                </div>
+            </div>
+
+            <div className="edit_footer">
+                <button style={{ display: 'none' }}></button>
+                <button>OK</button>
+                <button  onClick={closeModal}>취소</button>
+            </div>
+      </Modal>
+
+
+
+
+
     </div>
   );
 };
 
 // 디스크
 const DiskSection = () => {
+  const [isNewDiskModalOpen, setIsNewDiskModalOpen] = useState(false);
+  const [isJoinDiskModalOpen, setIsJoinDiskModalOpen] = useState(false);
+
+  // 새로 만들기 팝업 열기/닫기 핸들러
+  const openNewDiskModal = () => setIsNewDiskModalOpen(true);
+  const closeNewDiskModal = () => setIsNewDiskModalOpen(false);
+
+  // 연결 팝업 열기/닫기 핸들러
+  const openJoinDiskModal = () => setIsJoinDiskModalOpen(true);
+  const closeJoinDiskModal = () => setIsJoinDiskModalOpen(false);
+
   return (
-    <div id="disk_outer">
-      <div id="disk_content">
-        <div className="content_header_right">
-          <button id="disk_popup_new">새로 만들기</button>
-          <button id="join_popup_btn">연결</button>
-          <button>수정</button>
-          <button>제거</button>
-          <button className="content_header_popup_btn">
-            <i className="fa fa-ellipsis-v"></i>
-            <div className="content_header_popup" style={{ display: 'none' }}>
-              <div>활성</div>
-              <div>비활성화</div>
-              <div>이동</div>
-              <div>LUN 새로고침</div>
-            </div>
-          </button>
-        </div>
-        <div className="disk_content_header">
-          <span>디스크 유형:</span>
-          <button>모두</button>
-          <button>이미지</button>
-          <button>직접 LUN</button>
-          <button>관리되는 블록</button>
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th>변경</th>
-              <th><i className="fa fa-glass"></i></th>
-              <th><i className="fa fa-glass"></i></th>
-              <th><i className="fa fa-glass"></i></th>
-              <th>가상 크기</th>
-              <th>연결 대상</th>
-              <th>인터페이스</th>
-              <th>논리적 이름</th>
-              <th>상태</th>
-              <th>유형</th>
-              <th>설명</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i></td>
-              <td>on20-ap01</td>
-              <td><i className="fa fa-glass"></i></td>
-              <td><i className="fa fa-glass"></i></td>
-              <td><i className="fa fa-glass"></i></td>
-              <td>on20-ap01</td>
-              <td>VirtIO-SCSI</td>
-              <td>/dev/sda</td>
-              <td>OK</td>
-              <td>이미지</td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
+      <div id="disk_outer">
+          <div id="disk_content">
+              <div className="content_header_right">
+                  <button id="disk_popup_new" onClick={openNewDiskModal}>새로 만들기</button>
+                  <button id="join_popup_btn" onClick={openJoinDiskModal}>연결</button>
+                  <button>수정</button>
+                  <button>제거</button>
+                  <button className="content_header_popup_btn">
+                      <i className="fa fa-ellipsis-v"></i>
+                      <div className="content_header_popup" style={{ display: 'none' }}>
+                          <div>활성</div>
+                          <div>비활성화</div>
+                          <div>이동</div>
+                          <div>LUN 새로고침</div>
+                      </div>
+                  </button>
+              </div>
+              <div className="disk_content_header">
+                  <span>디스크 유형:</span>
+                  <button>모두</button>
+                  <button>이미지</button>
+                  <button>직접 LUN</button>
+                  <button>관리되는 블록</button>
+              </div>
+              <table>
+                  <thead>
+                      <tr>
+                          <th></th>
+                          <th>변경</th>
+                          <th><i className="fa fa-glass"></i></th>
+                          <th><i className="fa fa-glass"></i></th>
+                          <th><i className="fa fa-glass"></i></th>
+                          <th>가상 크기</th>
+                          <th>연결 대상</th>
+                          <th>인터페이스</th>
+                          <th>논리적 이름</th>
+                          <th>상태</th>
+                          <th>유형</th>
+                          <th>설명</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td><i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i></td>
+                          <td>on20-ap01</td>
+                          <td><i className="fa fa-glass"></i></td>
+                          <td><i className="fa fa-glass"></i></td>
+                          <td><i className="fa fa-glass"></i></td>
+                          <td>on20-ap01</td>
+                          <td>VirtIO-SCSI</td>
+                          <td>/dev/sda</td>
+                          <td>OK</td>
+                          <td>이미지</td>
+                          <td></td>
+                          <td></td>
+                      </tr>
+                  </tbody>
+              </table>
+          </div>
+
+          {/* 디스크(새로 만들기) 팝업 */}
+          <Modal
+              isOpen={isNewDiskModalOpen}
+              onRequestClose={closeNewDiskModal}
+              contentLabel="새로 만들기"
+              className="disk_popup"
+              overlayClassName="disk_popup_outer"
+          >
+              <div className="network_popup_header">
+                  <h1>새 가상 디스크</h1>
+                  <button onClick={closeNewDiskModal}><i className="fa fa-times"></i></button>
+              </div>
+              <div id="disk_new_nav">
+                  <div id="new_img_btn">이미지</div>
+                  <div id="directlun_btn">직접LUN</div>
+                  <div id="managed_block_btn">관리되는 블록</div>
+              </div>
+              <div className="disk_new_img">
+                  <div className="disk_new_img_left">
+                      <div className="img_input_box">
+                          <span>크기(GIB)</span>
+                          <input type="text"/>
+                      </div>
+                      <div className="img_input_box">
+                          <span>별칭</span>
+                          <input type="text"/>
+                      </div>
+                      <div className="img_input_box">
+                          <span>설명</span>
+                          <input type="text"/>
+                      </div>
+                      <div className="img_select_box">
+                          <label htmlFor="os">운영 시스템</label>
+                          <select id="os">
+                              <option value="linux">Linux</option>
+                          </select>
+                      </div>
+                      <div className="img_select_box">
+                          <label htmlFor="storage_domain">스토리지 도메인</label>
+                          <select id="storage_domain">
+                              <option value="linux">Linux</option>
+                          </select>
+                      </div>
+                      <div className="img_select_box">
+                          <label htmlFor="allocation_policy">할당 정책</label>
+                          <select id="allocation_policy">
+                              <option value="linux">Linux</option>
+                          </select>
+                      </div>
+                      <div className="img_select_box">
+                          <label htmlFor="disk_profile">디스크 프로파일</label>
+                          <select id="disk_profile">
+                              <option value="linux">Linux</option>
+                          </select>
+                      </div>
+                  </div>
+                  <div className="disk_new_img_right">
+                      <div>
+                          <input type="checkbox" className="disk_activation" defaultChecked/>
+                          <label htmlFor="disk_activation">디스크 활성화</label>
+                      </div>
+                      <div>
+                          <input type="checkbox" id="reset_after_deletion"/>
+                          <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
+                      </div>
+                      <div>
+                          <input type="checkbox" className="bootable" disabled/>
+                          <label htmlFor="bootable" style={{ color: 'gray' }}>부팅 가능</label>
+                      </div>
+                      <div>
+                          <input type="checkbox" className="shareable"/>
+                          <label htmlFor="shareable">공유 가능</label>
+                      </div>
+                      <div>
+                          <input type="checkbox" className="read_only"/>
+                          <label htmlFor="read_only">읽기전용</label>
+                      </div>
+                      <div>
+                          <input type="checkbox" id="cancellable"/>
+                          <label htmlFor="cancellable">취소 활성화</label>
+                      </div>
+                      <div>
+                          <input type="checkbox" id="incremental_backup" defaultChecked/>
+                          <label htmlFor="incremental_backup">중복 백업 사용</label>
+                      </div>
+                  </div>
+              </div>
+              {/* 직접LUN */}
+              <div id="directlun_outer" style={{ display: 'none' }}>
+                  <div>
+                      <div id="disk_managed_block_left">
+                          <div className="img_input_box">
+                              <span>별칭</span>
+                              <input type="text" defaultValue="on20-ap01_Disk1"/>
+                          </div>
+                          <div className="img_input_box">
+                              <span>설명</span>
+                              <input type="text"/>
+                          </div>
+                          <div className="img_select_box">
+                              <label htmlFor="interface">인터페이스</label>
+                              <select id="interface">
+                                  <option value="linux">Linux</option>
+                              </select>
+                          </div>
+                          <div className="img_select_box">
+                              <label htmlFor="host">호스트</label>
+                              <select id="host">
+                                  <option value="linux">Linux</option>
+                              </select>
+                          </div>
+                          <div className="img_select_box">
+                              <label htmlFor="storage_type">스토리지타입</label>
+                              <select id="storage_type">
+                                  <option value="linux">Linux</option>
+                              </select>
+                          </div>
+                      </div>
+                      <div id="disk_managed_block_right">
+                          <div>
+                              <input type="checkbox" className="disk_activation" defaultChecked/>
+                              <label htmlFor="disk_activation">디스크 활성화</label>
+                          </div>
+                          <div>
+                              <input type="checkbox" className="bootable" disabled/>
+                              <label htmlFor="bootable">부팅 가능</label>
+                          </div>
+                          <div>
+                              <input type="checkbox" className="shareable"/>
+                              <label htmlFor="shareable">공유 가능</label>
+                          </div>
+                          <div>
+                              <input type="checkbox" className="read_only"/>
+                              <label htmlFor="read_only">읽기전용</label>
+                          </div>
+                          <div>
+                              <input type="checkbox" className="read_only" disabled/>
+                              <label htmlFor="read_only">취소 활성화</label>
+                          </div>
+                          <div>
+                              <input type="checkbox" className="read_only"/>
+                              <label htmlFor="read_only">SCSI 통과 활성화</label>
+                          </div>
+                          <div>
+                              <input type="checkbox" className="read_only" disabled/>
+                              <label htmlFor="read_only">권한 부여</label>
+                          </div>
+                          <div>
+                              <input type="checkbox" className="read_only" disabled/>
+                              <label htmlFor="read_only">SCSI 혜택사용</label>
+                          </div>
+                      </div>
+                  </div>
+                  <div className="target_search">
+                      <div className="target_buttons">
+                          <div>대상 &gt; LUN</div>
+                          <div>LUN &gt; 대상</div>
+                      </div>
+                      <div className="target_info">
+                          <div>
+                              <div style={{ marginBottom: '0.2rem' }}>
+                                  <span>주소</span>
+                                  <input type="text"/>
+                              </div>
+                              <div>
+                                  <span>포트</span>
+                                  <input type="text"/>
+                              </div>
+                          </div>
+                          <div>
+                              <div>
+                                  <input type="checkbox" className="disk_activation"/>
+                                  <label htmlFor="disk_activation">사용자 인증</label>
+                              </div>
+                              <div>
+                                  <div className="target_input_text" style={{ marginBottom: '0.1rem' }}>
+                                      <span>CHWP사용자 이름</span>
+                                      <input type="text" disabled/>
+                                  </div>
+                                  <div className="target_input_text">
+                                      <span>CHAP 암호</span>
+                                      <input type="text" disabled/>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <div className="disk_search_btn">
+                          <div>검색</div>
+                          <div>전체 로그인</div>
+                      </div>
+                      <div className="target_table">
+                          <table>
+                              <thead>
+                                  <tr>
+                                      <th>대상 이름</th>
+                                      <th>주소</th>
+                                      <th>포트</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  <tr>
+                                      <td>
+                                          <label htmlFor="diskActivation">디스크 활성화</label>
+                                      </td>
+                                      <td>
+                                          <label htmlFor="diskActivation">디스크 활성화</label>
+                                      </td>
+                                      <td>
+                                          <label htmlFor="diskActivation">디스크 활성화</label>
+                                      </td>
+                                  </tr>
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+              </div>
+              <div id="managed_block_outer" style={{ display: 'none' }}>
+                  <div id="disk_managed_block_left">
+                      <div className="img_input_box">
+                          <span>크기(GIB)</span>
+                          <input type="text" disabled/>
+                      </div>
+                      <div className="img_input_box">
+                          <span>별칭</span>
+                          <input type="text" defaultValue="on20-ap01_Disk1" disabled/>
+                      </div>
+                      <div className="img_input_box">
+                          <span>설명</span>
+                          <input type="text" disabled/>
+                      </div>
+                      <div className="img_select_box">
+                          <label htmlFor="allocation_policy">할당 정책</label>
+                          <select id="allocation_policy" disabled>
+                              <option value="linux">Linux</option>
+                          </select>
+                      </div>
+                      <div className="img_select_box">
+                          <label htmlFor="disk_profile">디스크 프로파일</label>
+                          <select id="disk_profile" disabled>
+                              <option value="linux">Linux</option>
+                          </select>
+                      </div>
+                      <span>해당 데이터 센터에 디스크를 생성할 수 있는 권한을 갖는 사용 가능한 관리 블록 스토리지 도메인이 없습니다.</span>
+                  </div>
+                  <div id="disk_managed_block_right">
+                      <div>
+                          <input type="checkbox" className="disk_activation" disabled/>
+                          <label htmlFor="disk_activation">디스크 활성화</label>
+                      </div>
+                      <div>
+                          <input type="checkbox" className="bootable" disabled/>
+                          <label htmlFor="bootable">부팅 가능</label>
+                      </div>
+                      <div>
+                          <input type="checkbox" className="shareable" disabled/>
+                          <label htmlFor="shareable">공유 가능</label>
+                      </div>
+                      <div>
+                          <input type="checkbox" className="read_only" disabled/>
+                          <label htmlFor="read_only">읽기전용</label>
+                      </div>
+                  </div>
+              </div>
+              <div className="edit_footer">
+                  <button style={{ display: 'none' }}></button>
+                  <button>OK</button>
+                  <button onClick={closeNewDiskModal}>취소</button>
+              </div>
+          </Modal>
+
+          {/* 디스크(연결) 팝업 */}
+          <Modal
+              isOpen={isJoinDiskModalOpen}
+              onRequestClose={closeJoinDiskModal}
+              contentLabel="연결"
+              className="join_popup"
+              overlayClassName="join_popup_outer"
+          >
+              <div className="network_popup_header">
+                  <h1>가상 디스크 연결</h1>
+                  <button onClick={closeJoinDiskModal}><i className="fa fa-times"></i></button>
+              </div>
+
+              <div id="join_header">
+                  <div id="join_new_nav">
+                      <div id="img_btn2">이미지</div>
+                      <div id="directlun_btn2">직접LUN</div>
+                      <div id="managed_block_btn2">관리되는 블록</div>
+                  </div>
+                  <div>
+                      <input type="checkbox" id="diskActivation" defaultChecked />
+                      <label htmlFor="diskActivation">디스크 활성화</label>
+                  </div>
+              </div>
+
+              <div id="join_img_content">
+                  <table>
+                      <thead>
+                          <tr id="join_img_th">
+                              <th>별칭</th>
+                              <th>설명</th>
+                              <th>ID</th>
+                              <th>가상 크기</th>
+                              <th>실제 크기</th>
+                              <th>스토리지 도메인</th>
+                              <th>인터페이스</th>
+                              <th>R/O</th>
+                              <th><i className="fa fa-external-link"></i></th>
+                              <th><i className="fa fa-external-link"></i></th>
+                          </tr>
+                          <tr id="join_directlun_th" style={{ display: 'none' }}>
+                              <th>별칭</th>
+                              <th>설명</th>
+                              <th>LUN ID</th>
+                              <th>ID</th>
+                              <th>크기</th>
+                              <th>#경로</th>
+                              <th>벤더ID</th>
+                              <th>제품ID</th>
+                              <th>시리얼</th>
+                              <th>인터페이스</th>
+                              <th>R/O</th>
+                              <th><i className="fa fa-external-link"></i></th>
+                              <th><i className="fa fa-external-link"></i></th>
+                          </tr>
+                          <tr id="join_managed_th" style={{ display: 'none' }}>
+                              <th>별칭</th>
+                              <th>설명</th>
+                              <th>ID</th>
+                              <th>가상 크기</th>
+                              <th>스토리지 도메인</th>
+                              <th>인터페이스</th>
+                              <th>R/O</th>
+                              <th><i className="fa fa-external-link"></i></th>
+                              <th><i className="fa fa-external-link"></i></th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr className="join_img_td">
+                              <td>OK</td>
+                              <td>test02</td>
+                              <td>asd</td>
+                              <td>5</td>
+                              <td></td>
+                              <td>소프트</td>
+                              <td></td>
+                              <td>소프트</td>
+                              <td>멤버없음</td>
+                              <td>레이블없음</td>
+                          </tr>
+                          <tr className="join_directlun_td" style={{ display: 'none' }}>
+                              <td>OK</td>
+                              <td>test02</td>
+                              <td>asd</td>
+                              <td>5</td>
+                              <td></td>
+                              <td>소프트</td>
+                              <td></td>
+                              <td>소프트</td>
+                              <td>멤버없음</td>
+                              <td>레이블없음</td>
+                              <td>레이블없음</td>
+                              <td>레이블없음</td>
+                              <td>레이블없음</td>
+                          </tr>
+                          <tr className="join_managed_td" style={{ display: 'none' }}>
+                              <td>OK</td>
+                              <td>test02</td>
+                              <td>asd</td>
+                              <td>5</td>
+                              <td></td>
+                              <td>소프트</td>
+                              <td></td>
+                              <td>소프트</td>
+                              <td>멤버없음</td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+
+              <div className="edit_footer">
+                  <button style={{ display: 'none' }}></button>
+                  <button>OK</button>
+                  <button onClick={closeJoinDiskModal}>취소</button>
+              </div>
+          </Modal>
       </div>
-    </div>
   );
 };
 
@@ -122,71 +641,71 @@ const SnapshotSection = () => {
   return (
     <div id="snapshot_outer">
       <div id="snapshot_content_outer">
-      <div className="content_header_right">
-        <button className="snap_create_btn">생성</button>
-        <button>미리보기</button>
-        <button>커밋</button>
-        <button>되돌리기</button>
-        <button>삭제</button>
-        <button>복제</button>
-        <button>템플릿 생성</button>
-      </div>
-      <div className="snapshot_content">
-        <div className="snapshot_content_left">
-          <div><i className="fa fa-camera"></i></div>
-          <span>Active VM</span>
+        <div className="content_header_right">
+          <button className="snap_create_btn">생성</button>
+          <button>미리보기</button>
+          <button>커밋</button>
+          <button>되돌리기</button>
+          <button>삭제</button>
+          <button>복제</button>
+          <button>템플릿 생성</button>
         </div>
-        <div className="snapshot_content_right">
-          <div>
-            <i className="fa fa-chevron-right"></i>
-            <span>일반</span>
-            <i className="fa fa-eye"></i>
+        <div className="snapshot_content">
+          <div className="snapshot_content_left">
+            <div><i className="fa fa-camera"></i></div>
+            <span>Active VM</span>
           </div>
-          <div>
-            <i className="fa fa-chevron-right"></i>
-            <span>디스크</span>
-            <i className="fa fa-trash-o"></i>
-          </div>
-          <div>
-            <i className="fa fa-chevron-right"></i>
-            <span>네트워크 인터페이스</span>
-            <i className="fa fa-server"></i>
-          </div>
-          <div>
-            <i className="fa fa-chevron-right"></i>
-            <span>설치된 애플리케이션</span>
-            <i className="fa fa-newspaper-o"></i>
-          </div>
-        </div>
-      </div>
-      <div className="snapshot_content">
-        <div className="snapshot_content_left">
-          <div><i className="fa fa-camera"></i></div>
-          <span>Active VM</span>
-        </div>
-        <div className="snapshot_content_right">
-          <div>
-            <i className="fa fa-chevron-right"></i>
-            <span>일반</span>
-            <i className="fa fa-eye"></i>
-          </div>
-          <div>
-            <i className="fa fa-chevron-right"></i>
-            <span>디스크</span>
-            <i className="fa fa-trash-o"></i>
-          </div>
-          <div>
-            <i className="fa fa-chevron-right"></i>
-            <span>네트워크 인터페이스</span>
-            <i className="fa fa-server"></i>
-          </div>
-          <div>
-            <i className="fa fa-chevron-right"></i>
-            <span>설치된 애플리케이션</span>
-            <i className="fa fa-newspaper-o"></i>
+          <div className="snapshot_content_right">
+            <div>
+              <i className="fa fa-chevron-right"></i>
+              <span>일반</span>
+              <i className="fa fa-eye"></i>
+            </div>
+            <div>
+              <i className="fa fa-chevron-right"></i>
+              <span>디스크</span>
+              <i className="fa fa-trash-o"></i>
+            </div>
+            <div>
+              <i className="fa fa-chevron-right"></i>
+              <span>네트워크 인터페이스</span>
+              <i className="fa fa-server"></i>
+            </div>
+            <div>
+              <i className="fa fa-chevron-right"></i>
+              <span>설치된 애플리케이션</span>
+              <i className="fa fa-newspaper-o"></i>
+            </div>
           </div>
         </div>
-      </div>
+        <div className="snapshot_content">
+          <div className="snapshot_content_left">
+            <div><i className="fa fa-camera"></i></div>
+            <span>Active VM</span>
+          </div>
+          <div className="snapshot_content_right">
+            <div>
+              <i className="fa fa-chevron-right"></i>
+              <span>일반</span>
+              <i className="fa fa-eye"></i>
+            </div>
+            <div>
+              <i className="fa fa-chevron-right"></i>
+              <span>디스크</span>
+              <i className="fa fa-trash-o"></i>
+            </div>
+            <div>
+              <i className="fa fa-chevron-right"></i>
+              <span>네트워크 인터페이스</span>
+              <i className="fa fa-server"></i>
+            </div>
+            <div>
+              <i className="fa fa-chevron-right"></i>
+              <span>설치된 애플리케이션</span>
+              <i className="fa fa-newspaper-o"></i>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -586,17 +1105,62 @@ const EventSection = () => {
   );
 };
 
-// 편집팝업
-const editPopup = () => {
-  <div>ddd</div>
-};
-
-
 const Machine = () => {
   const [activeSection, setActiveSection] = useState('general');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleSectionClick = (section) => {
     setActiveSection(section);
+  };
+
+  //편집팝업
+  useEffect(() => {
+    const showEditPopup = () => {
+      setActiveSection('common_outer'); // 상태 초기화
+      const editPopupBg = document.getElementById('edit_popup_bg');
+      if (editPopupBg) {
+        editPopupBg.style.display = 'block';
+      }
+    }
+
+    const editButton = document.getElementById('edit_btn');
+    if (editButton) {
+      editButton.addEventListener('click', showEditPopup);
+    }
+
+    // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
+    return () => {
+      if (editButton) {
+        editButton.removeEventListener('click', showEditPopup);
+      }
+    };
+  }, []);
+  // 편집팝업 기본 섹션에 스타일 적용
+  useEffect(() => {
+
+    const defaultElement = document.getElementById('common_outer_btn');
+    if (defaultElement) {
+      defaultElement.style.backgroundColor = '#EDEDED';
+      defaultElement.style.color = '#1eb8ff';
+      defaultElement.style.borderBottom = '1px solid blue';
+    }
+  }, []);
+  // 편집팝업스타일 변환 부분
+  const handleSectionChange = (section) => {
+    setActiveSection(section);
+    const elements = document.querySelectorAll('.edit_aside > div');
+    elements.forEach(el => {
+      el.style.backgroundColor = '#FAFAFA';
+      el.style.color = 'black';
+      el.style.borderBottom = 'none';
+    });
+
+    const activeElement = document.getElementById(`${section}_btn`);
+    if (activeElement) {
+      activeElement.style.backgroundColor = '#EDEDED';
+      activeElement.style.color = '#1eb8ff';
+      activeElement.style.borderBottom = '1px solid blue';
+    }
   };
 
   //footer
@@ -604,13 +1168,15 @@ const Machine = () => {
   const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
 
   const toggleFooterContent = () => {
-      setFooterContentVisibility(!isFooterContentVisible);
+    setFooterContentVisibility(!isFooterContentVisible);
   };
 
   const handleFooterTabClick = (tab) => {
-      setSelectedFooterTab(tab);
+    setSelectedFooterTab(tab);
   };
-
+  // 팝업 열기/닫기 핸들러
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
   return (
     <div id="section">
       <div className="section_header">
@@ -621,7 +1187,7 @@ const Machine = () => {
         </div>
         <div className="section_header_right">
           <div className="article_nav">
-            <button id="edit_btn" onClick={editPopup}>편집</button>
+            <button id="edit_btn">편집</button>
             <div>
               <button>
                 <i className="fa fa-play"></i>실행
@@ -640,7 +1206,7 @@ const Machine = () => {
             </div>
             <button><i className="fa fa-desktop"></i>콘솔</button>
             <button>스냅샷 생성</button>
-            <button id="migration_btn">마이그레이션</button>
+            <button id="migration_btn" onClick={openModal}>마이그레이션</button>
             <button id="popup_btn">
               <i className="fa fa-ellipsis-v"></i>
               <div id="popup_box">
@@ -851,77 +1417,778 @@ const Machine = () => {
       </div>
 
       <div className="footer_outer">
-                <div className="footer">
-                    <button onClick={toggleFooterContent}><i className="fa fa-chevron-down"></i></button>
-                    <div>
-                        <div
-                            style={{
-                                color: selectedFooterTab === 'recent' ? 'black' : '#4F4F4F',
-                                borderBottom: selectedFooterTab === 'recent' ? '1px solid blue' : 'none'
-                            }}
-                            onClick={() => handleFooterTabClick('recent')}
-                        >
-                            최근 작업
-                        </div>
-                        <div
-                            style={{
-                                color: selectedFooterTab === 'alerts' ? 'black' : '#4F4F4F',
-                                borderBottom: selectedFooterTab === 'alerts' ? '1px solid blue' : 'none'
-                            }}
-                            onClick={() => handleFooterTabClick('alerts')}
-                        >
-                            경보
-                        </div>
-                    </div>
-                </div>
-                {isFooterContentVisible && (
-                    <div className="footer_content" style={{ display: 'block' }}>
-                        <div className="footer_nav">
-                            <div>
-                                <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
-                            </div>
-                            <div>
-                                <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
-                            </div>
-                            <div>
-                                <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
-                            </div>
-                            <div>
-                                <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
-                            </div>
-                            <div>
-                                <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
-                            </div>
-                            <div>
-                                <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
-                            </div>
-                            <div>
-                                <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
-                            </div>
-                            <div style={{ borderRight: 'none' }}>
-                                <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
-                            </div>
-                        </div>
-                        <div className="footer_img">
-                            <img src="img/화면 캡처 2024-04-30 164511.png" alt="스크린샷" />
-                            <span>항목을 찾지 못했습니다</span>
-                        </div>
-                    </div>
-                )}
+        <div className="footer">
+          <button onClick={toggleFooterContent}><i className="fa fa-chevron-down"></i></button>
+          <div>
+            <div
+              style={{
+                color: selectedFooterTab === 'recent' ? 'black' : '#4F4F4F',
+                borderBottom: selectedFooterTab === 'recent' ? '1px solid blue' : 'none'
+              }}
+              onClick={() => handleFooterTabClick('recent')}
+            >
+              최근 작업
+            </div>
+            <div
+              style={{
+                color: selectedFooterTab === 'alerts' ? 'black' : '#4F4F4F',
+                borderBottom: selectedFooterTab === 'alerts' ? '1px solid blue' : 'none'
+              }}
+              onClick={() => handleFooterTabClick('alerts')}
+            >
+              경보
+            </div>
+          </div>
+        </div>
+        {isFooterContentVisible && (
+          <div className="footer_content" style={{ display: 'block' }}>
+            <div className="footer_nav">
+              <div>
+                <div>작업이름</div>
+                <div><i className="fa fa-filter"></i></div>
+              </div>
+              <div>
+                <div>작업이름</div>
+                <div><i className="fa fa-filter"></i></div>
+              </div>
+              <div>
+                <div>작업이름</div>
+                <div><i className="fa fa-filter"></i></div>
+              </div>
+              <div>
+                <div>작업이름</div>
+                <div><i className="fa fa-filter"></i></div>
+              </div>
+              <div>
+                <div>작업이름</div>
+                <div><i className="fa fa-filter"></i></div>
+              </div>
+              <div>
+                <div>작업이름</div>
+                <div><i className="fa fa-filter"></i></div>
+              </div>
+              <div>
+                <div>작업이름</div>
+                <div><i className="fa fa-filter"></i></div>
+              </div>
+              <div style={{ borderRight: 'none' }}>
+                <div>작업이름</div>
+                <div><i className="fa fa-filter"></i></div>
+              </div>
+            </div>
+            <div className="footer_img">
+              <img src="img/화면 캡처 2024-04-30 164511.png" alt="스크린샷" />
+              <span>항목을 찾지 못했습니다</span>
+            </div>
+          </div>
+        )}
       </div>
       
-      
-    </div>
+{/*header팝업창----------------------- */}
+      {/*편집팝업 */}
+      <div id="edit_popup_bg" style={{ display: 'none' }}>
+        <div id="edit_popup">
+          <div className="edit_header">
+            <h1>템플릿 수정</h1>
+            <button onClick={() => document.getElementById('edit_popup_bg').style.display = 'none'}>
+              <i className="fa fa-times"></i>
+            </button>
+          </div>
+          <div className="edit_body">
+            <div className="edit_aside">
+              <div className={`edit_aside_item ${activeSection === 'common_outer' ? 'active' : ''}`} id="common_outer_btn" onClick={() => handleSectionChange('common_outer')}>
+                <span>일반</span>
+              </div>
+              <div className={`edit_aside_item ${activeSection === 'system_outer' ? 'active' : ''}`} id="system_outer_btn" onClick={() => handleSectionChange('system_outer')}>
+                <span>시스템</span>
+              </div>
+              <div className={`edit_aside_item ${activeSection === 'start_outer' ? 'active' : ''}`} id="start_outer_btn" onClick={() => handleSectionChange('start_outer')}>
+                <span>초기 실행</span>
+              </div>
+              <div className={`edit_aside_item ${activeSection === 'console_outer' ? 'active' : ''}`} id="console_outer_btn" onClick={() => handleSectionChange('console_outer')}>
+                <span>콘솔</span>
+              </div>
+            </div>
+            <div className="edit_aside">
+              <div className={`edit_aside_item ${activeSection === 'host_outer' ? 'active' : ''}`} id="host_outer_btn" onClick={() => handleSectionChange('host_outer')}>
+                <span>호스트</span>
+              </div>
+              <div className={`edit_aside_item ${activeSection === 'ha_mode_outer' ? 'active' : ''}`} id="ha_mode_outer_btn" onClick={() => handleSectionChange('ha_mode_outer')}>
+                <span>고가용성</span>
+              </div>
+              <div className={`edit_aside_item ${activeSection === 'res_alloc_outer' ? 'active' : ''}`} id="res_alloc_outer_btn" onClick={() => handleSectionChange('res_alloc_outer')}>
+                <span>리소스 할당</span>
+              </div>
+              <div className={`edit_aside_item ${activeSection === 'boot_outer' ? 'active' : ''}`} id="boot_outer_btn" onClick={() => handleSectionChange('boot_outer')}>
+                <span>부트 옵션</span>
+              </div>
+            </div>
 
-      
+            <form action="#">
+              {/* 일반 */}
+              <div id="common_outer" style={{ display: activeSection === 'common_outer' ? 'block' : 'none' }}>
+                <div className="edit_first_content">
+                  <div>
+                    <label htmlFor="cluster">클러스터</label>
+                    <select id="cluster">
+                      <option value="default">Default</option>
+                    </select>
+                    <div>데이터센터 Default</div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
+                    <select id="template" disabled>
+                      <option value="test02">test02</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="os">운영 시스템</label>
+                    <select id="os">
+                      <option value="linux">Linux</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="firmware">칩셋/펌웨어 유형</label>
+                    <select id="firmware">
+                      <option value="bios">BIOS의 Q35 칩셋</option>
+                    </select>
+                  </div>
+                  <div style={{ marginBottom: '2%' }}>
+                    <label htmlFor="optimization">최적화 옵션</label>
+                    <select id="optimization">
+                      <option value="server">서버</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="edit_second_content">
+                  <div>
+                    <label htmlFor="name">이름</label>
+                    <input type="text" id="name" value="test02" />
+                  </div>
+                  <div>
+                    <label htmlFor="base-version" style={{ color: 'gray' }}>하위 버전 이름</label>
+                    <input type="text" id="base-version" value="base version" disabled />
+                  </div>
+                  <div>
+                    <label htmlFor="description">설명</label>
+                    <input type="text" id="description" />
+                  </div>
+                </div>
+              </div>
+
+              {/* 시스템 */}
+              <div id="system_outer" style={{ display: activeSection === 'system_outer' ? 'block' : 'none' }}>
+                <div className="edit_first_content">
+                  <div>
+                    <label htmlFor="cluster">클러스터</label>
+                    <select id="cluster">
+                      <option value="default">Default</option>
+                    </select>
+                    <div>데이터센터 Default</div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
+                    <select id="template" disabled>
+                      <option value="test02">test02</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="os">운영 시스템</label>
+                    <select id="os">
+                      <option value="linux">Linux</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="firmware">칩셋/펌웨어 유형</label>
+                    <select id="firmware">
+                      <option value="bios">BIOS의 Q35 칩셋</option>
+                    </select>
+                  </div>
+                  <div style={{ marginBottom: '2%' }}>
+                    <label htmlFor="optimization">최적화 옵션</label>
+                    <select id="optimization">
+                      <option value="server">서버</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="edit_second_content">
+                  <div>
+                    <label htmlFor="memory_size">메모리 크기</label>
+                    <input type="text" id="memory_size" value="2048 MB" readOnly />
+                  </div>
+                  <div>
+                    <div>
+                      <label htmlFor="max_memory">최대 메모리</label>
+                      <i className="fa fa-info-circle"></i>
+                    </div>
+                    <input type="text" id="max_memory" value="8192 MB" readOnly />
+                  </div>
+
+                  <div>
+                    <div>
+                      <label htmlFor="actual_memory">할당할 실제 메모리</label>
+                      <i className="fa fa-info-circle"></i>
+                    </div>
+                    <input type="text" id="actual_memory" value="2048 MB" readOnly />
+                  </div>
+
+                  <div>
+                    <div>
+                      <label htmlFor="total_cpu">총 가상 CPU</label>
+                      <i className="fa fa-info-circle"></i>
+                    </div>
+                    <input type="text" id="total_cpu" value="1" readOnly />
+                  </div>
+                  <div>
+                    <div>
+                      <i className="fa fa-arrow-circle-o-right" style={{ color: 'rgb(56, 56, 56)' }}></i>
+                      <span>고급 매개 변수</span>
+                    </div>
+                  </div>
+                  <div style={{ fontWeight: 600 }}>일반</div>
+                  <div style={{ paddingTop: 0, paddingBottom: '4%' }}>
+                    <div>
+                      <label htmlFor="time_offset">하드웨어 클릭의 시간 오프셋</label>
+                      <i className="fa fa-info-circle"></i>
+                    </div>
+                    <select id="time_offset">
+                      <option value="(GMT+09:00) Korea Standard Time">(GMT+09:00) Korea Standard Time</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* 콘솔 */}
+              <div id="console_outer" style={{ display: activeSection === 'console_outer' ? 'block' : 'none' }}>
+                <div className="edit_first_content">
+                  <div>
+                    <label htmlFor="cluster">클러스터</label>
+                    <select id="cluster">
+                      <option value="default">Default</option>
+                    </select>
+                    <div>데이터센터 Default</div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
+                    <select id="template" disabled>
+                      <option value="test02">test02</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="os">운영 시스템</label>
+                    <select id="os">
+                      <option value="linux">Linux</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="firmware">칩셋/펌웨어 유형</label>
+                    <select id="firmware">
+                      <option value="bios">BIOS의 Q35 칩셋</option>
+                    </select>
+                  </div>
+                  <div style={{ marginBottom: '2%' }}>
+                    <label htmlFor="optimization">최적화 옵션</label>
+                    <select id="optimization">
+                      <option value="server">서버</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="res_alloc_checkbox" style={{ marginBottom: 0 }}>
+                  <span>그래픽 콘솔</span>
+                  <div>
+                    <input type="checkbox" id="memory_balloon" name="memory_balloon" />
+                    <label htmlFor="memory_balloon">헤드릭스(headless)모드</label>
+                    <i className="fa fa-info-circle" style={{ color: '#1ba4e4' }}></i>
+                  </div>
+                </div>
+
+                <div className="edit_second_content">
+                  <div style={{ paddingTop: 0 }}>
+                    <label htmlFor="memory_size">비디오 유형</label>
+                    <input type="text" id="memory_size" value="VGA" readOnly />
+                  </div>
+                  <div>
+                    <div>
+                      <label htmlFor="max_memory">그래픽 프로토콜</label>
+                    </div>
+                    <input type="text" id="max_memory" value="VNC" readOnly />
+                  </div>
+
+                  <div>
+                    <div>
+                      <label htmlFor="actual_memory">VNC 키보드 레이아웃</label>
+                    </div>
+                    <input type="text" id="actual_memory" value="기본값[en-us]" readOnly />
+                  </div>
+
+                  <div>
+                    <div>
+                      <label htmlFor="total_cpu">콘솔 분리 작업</label>
+                    </div>
+                    <input type="text" id="total_cpu" value="화면 잠금" readOnly />
+                  </div>
+                  <div>
+                    <div>
+                      <label htmlFor="disconnect_action_delay">Disconnect Action Delay in Minutes</label>
+                    </div>
+                    <input type="text" id="disconnect_action_delay" value="0" disabled />
+                  </div>
+                  <div id="monitor">
+                    <label htmlFor="screen">모니터</label>
+                    <select id="screen">
+                      <option value="test02">1</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="console_checkboxs">
+                  <div className="console_checkbox">
+                    <input type="checkbox" id="memory_balloon" name="memory_balloon" disabled />
+                    <label style={{ color: '#A1A1A1' }} htmlFor="memory_balloon">USB활성화</label>
+                  </div>
+                  <div className="console_checkbox">
+                    <input type="checkbox" id="memory_balloon" name="memory_balloon" disabled />
+                    <label style={{ color: '#A1A1A1' }} htmlFor="memory_balloon">스마트카드 사용가능</label>
+                  </div>
+                  <span>단일 로그인 방식</span>
+                  <div className="console_checkbox">
+                    <input type="checkbox" id="memory_balloon" name="memory_balloon" />
+                    <label htmlFor="memory_balloon">USB활성화</label>
+                  </div>
+                  <div className="console_checkbox">
+                    <input type="checkbox" id="memory_balloon" name="memory_balloon" />
+                    <label htmlFor="memory_balloon">스마트카드 사용가능</label>
+                  </div>
+                </div>
+              </div>
+
+              {/* 호스트 */}
+              <div id="host_outer" style={{ display: activeSection === 'host_outer' ? 'block' : 'none' }}>
+                <div className="edit_first_content">
+                  <div>
+                    <label htmlFor="cluster">클러스터</label>
+                    <select id="cluster">
+                      <option value="default">Default</option>
+                    </select>
+                    <div>데이터센터 Default</div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
+                    <select id="template" disabled>
+                      <option value="test02">test02</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="os">운영 시스템</label>
+                    <select id="os">
+                      <option value="linux">Linux</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="firmware">칩셋/펌웨어 유형</label>
+                    <select id="firmware">
+                      <option value="bios">BIOS의 Q35 칩셋</option>
+                    </select>
+                  </div>
+                  <div style={{ marginBottom: '2%' }}>
+                    <label htmlFor="optimization">최적화 옵션</label>
+                    <select id="optimization">
+                      <option value="server">서버</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div id="host_second_content">
+                  <div style={{ fontWeight: 600 }}>실행 호스트:</div>
+                  <div className="form_checks">
+                    <div>
+                      <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" checked />
+                      <label className="form-check-label" htmlFor="flexRadioDefault1">
+                        클러스터 내의 호스트
+                      </label>
+                    </div>
+                    <div>
+                      <div>
+                        <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" />
+                        <label className="form-check-label" htmlFor="flexRadioDefault2">
+                          특정 호스트
+                        </label>
+                      </div>
+                      <div>
+                        <select id="specific_host_select">
+                          <option value="host02.ititinfo.com">host02.ititinfo.com</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="host_checkboxs">
+                    <span>CPU 옵션:</span>
+                    <div className="host_checkbox">
+                      <input type="checkbox" id="host_cpu_passthrough" name="host_cpu_passthrough" />
+                      <label htmlFor="host_cpu_passthrough">호스트 CPU 통과</label>
+                      <i className="fa fa-info-circle"></i>
+                    </div>
+                    <div className="host_checkbox">
+                      <input type="checkbox" id="tsc_migration" name="tsc_migration" />
+                      <label htmlFor="tsc_migration">TSC 주파수가 동일한 호스트에서만 마이그레이션</label>
+                      <i className="fa fa-info-circle"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="host_third_content">
+                  <div style={{ fontWeight: 600 }}>마이그레이션 옵션:</div>
+                  <div>
+                    <div>
+                      <span>마이그레이션 모드</span>
+                      <i className="fa fa-info-circle"></i>
+                    </div>
+                    <select id="migration_mode">
+                      <option value="수동 및 자동 마이그레이션 허용">수동 및 자동 마이그레이션 허용</option>
+                    </select>
+                  </div>
+                  <div>
+                    <div>
+                      <span>마이그레이션 정책</span>
+                      <i className="fa fa-info-circle"></i>
+                    </div>
+                    <select id="migration_policy">
+                      <option value="클러스터 기본값(Minimal downtime)">클러스터 기본값(Minimal downtime)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <div>
+                      <span>마이그레이션 암호화 사용</span>
+                    </div>
+                    <select id="migration_encryption">
+                      <option value="클러스터 기본값(암호화하지 마십시오)">클러스터 기본값(암호화하지 마십시오)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <div>
+                      <span>Parallel Migrations</span>
+                      <i className="fa fa-info-circle"></i>
+                    </div>
+                    <select id="parallel_migrations" readOnly>
+                      <option value="클러스터 기본값(Disabled)">클러스터 기본값(Disabled)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <div style={{ paddingBottom: '4%' }}>
+                      <span style={{ color: 'gray' }}>Number of VM Migration Connection</span>
+                    </div>
+                    <select id="vm_migration_connections" disabled>
+                      <option value=""></option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* 고가용성 */}
+              <div id="ha_mode_outer" style={{ display: activeSection === 'ha_mode_outer' ? 'block' : 'none' }}>
+                <div className="edit_first_content">
+                  <div>
+                    <label htmlFor="cluster">클러스터</label>
+                    <select id="cluster">
+                      <option value="default">Default</option>
+                    </select>
+                    <div>데이터센터 Default</div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
+                    <select id="template" disabled>
+                      <option value="test02">test02</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="os">운영 시스템</label>
+                    <select id="os">
+                      <option value="linux">Linux</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="firmware">칩셋/펌웨어 유형</label>
+                    <select id="firmware">
+                      <option value="bios">BIOS의 Q35 칩셋</option>
+                    </select>
+                  </div>
+                  <div style={{ marginBottom: '2%' }}>
+                    <label htmlFor="optimization">최적화 옵션</label>
+                    <select id="optimization">
+                      <option value="server">서버</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div id="ha_mode_second_content">
+                  <div className="check_box">
+                    <input className="check_input" type="checkbox" value="" id="ha_mode_box" />
+                    <label className="check_label" htmlFor="ha_mode_box">
+                      고가용성
+                    </label>
+                  </div>
+                  <div>
+                    <div>
+                      <span>가상 머신 임대 대상 스토리지 도메인</span>
+                      <i className="fa fa-info-circle"></i>
+                    </div>
+                    <select id="no_lease" disabled>
+                      <option value="가상 머신 임대 없음">가상 머신 임대 없음</option>
+                    </select>
+                  </div>
+                  <div>
+                    <div>
+                      <span>재개 동작</span>
+                      <i className="fa fa-info-circle"></i>
+                    </div>
+                    <select id="force_shutdown">
+                      <option value="강제 종료">강제 종료</option>
+                    </select>
+                  </div>
+                  <div className="ha_mode_article">
+                    <span>실행/마이그레이션 큐에서 우선순위</span>
+                    <div>
+                      <span>우선 순위</span>
+                      <select id="priority">
+                        <option value="낮음">낮음</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="ha_mode_article">
+                    <span>위치독</span>
+                    <div>
+                      <span>위치독 모델</span>
+                      <select id="watchdog_model">
+                        <option value="감시 장치 없음">감시 장치 없음</option>
+                      </select>
+                    </div>
+                    <div>
+                      <span style={{ color: 'gray' }}>위치독 작업</span>
+                      <select id="watchdog_action" disabled>
+                        <option value="없음">없음</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 리소스 할당 */}
+              <div id="res_alloc_outer" style={{ display: activeSection === 'res_alloc_outer' ? 'block' : 'none' }}>
+                <div className="edit_first_content">
+                  <div>
+                    <label htmlFor="cluster">클러스터</label>
+                    <select id="cluster">
+                      <option value="default">Default</option>
+                    </select>
+                    <div>데이터센터 Default</div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
+                    <select id="template" disabled>
+                      <option value="test02">test02</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="os">운영 시스템</label>
+                    <select id="os">
+                      <option value="linux">Linux</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="firmware">칩셋/펌웨어 유형</label>
+                    <select id="firmware">
+                      <option value="bios">BIOS의 Q35 칩셋</option>
+                    </select>
+                  </div>
+                  <div style={{ marginBottom: '2%' }}>
+                    <label htmlFor="optimization">최적화 옵션</label>
+                    <select id="optimization">
+                      <option value="server">서버</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="res_second_content">
+                  <div className="cpu_res">
+                    <span style={{ fontWeight: 600 }}>CPU 할당:</span>
+                    <div>
+                      <span>CPU 프로파일</span>
+                      <select id="watchdog_action">
+                        <option value="없음">Default</option>
+                      </select>
+                    </div>
+                    <div>
+                      <span>CPU 공유</span>
+                      <div id="cpu_sharing">
+                        <select id="watchdog_action" style={{ width: '63%' }}>
+                          <option value="없음">비활성화됨</option>
+                        </select>
+                        <input type="text" value="0" disabled />
+                      </div>
+                    </div>
+                    <div>
+                      <span>CPU Pinning Policy</span>
+                      <select id="watchdog_action">
+                        <option value="없음">None</option>
+                      </select>
+                    </div>
+                    <div>
+                      <div>
+                        <span>CPU 피닝 토폴로지</span>
+                        <i className="fa fa-info-circle"></i>
+                      </div>
+                      <input type="text" disabled />
+                    </div>
+                  </div>
+
+                  <span style={{ fontWeight: 600 }}>I/O 스레드:</span>
+                  <div id="threads">
+                    <div>
+                      <input type="checkbox" id="enableIOThreads" name="enableIOThreads" />
+                      <label htmlFor="enableIOThreads">I/O 스레드 활성화</label>
+                    </div>
+                    <div>
+                      <input type="text" />
+                      <i className="fa fa-info-circle"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 부트 옵션 */}
+              <div id="boot_outer" style={{ display: activeSection === 'boot_outer' ? 'block' : 'none' }}>
+                <div className="edit_first_content">
+                  <div>
+                    <label htmlFor="cluster">클러스터</label>
+                    <select id="cluster">
+                      <option value="default">Default</option>
+                    </select>
+                    <div>데이터센터 Default</div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
+                    <select id="template" disabled>
+                      <option value="test02">test02</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="os">운영 시스템</label>
+                    <select id="os">
+                      <option value="linux">Linux</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="firmware">칩셋/펌웨어 유형</label>
+                    <select id="firmware">
+                      <option value="bios">BIOS의 Q35 칩셋</option>
+                    </select>
+                  </div>
+                  <div style={{ marginBottom: '2%' }}>
+                    <label htmlFor="optimization">최적화 옵션</label>
+                    <select id="optimization">
+                      <option value="server">서버</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="res_second_content">
+                  <div className="cpu_res">
+                    <span style={{ fontWeight: 600 }}>부트순서:</span>
+                    <div>
+                      <span>첫 번째 장치</span>
+                      <select id="watchdog_action">
+                        <option value="없음">하드디스크</option>
+                      </select>
+                    </div>
+                    <div>
+                      <span>두 번째 장치</span>
+                      <select id="watchdog_action">
+                        <option value="없음">Default</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div id="boot_checkboxs">
+                    <div>
+                      <div>
+                        <input type="checkbox" id="connectCdDvd" name="connectCdDvd" />
+                        <label htmlFor="connectCdDvd">CD/DVD 연결</label>
+                      </div>
+                      <div>
+                        <input type="text" disabled />
+                        <i className="fa fa-info-circle"></i>
+                      </div>
+                    </div>
+
+                    <div>
+                      <input type="checkbox" id="enableBootMenu" name="enableBootMenu" />
+                      <label htmlFor="enableBootMenu">부팅 메뉴를 활성화</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div className="edit_footer">
+            <button>고급 옵션 숨기기</button>
+            <button>OK</button>
+            <button onClick={() => document.getElementById('edit_popup_bg').style.display = 'none'}>취소</button>
+          </div>
+        </div>
+      </div>
+
+      {/*마이그레이션 팝업 */}
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="마이그레이션"
+        className="migration_popup"
+        overlayClassName="migration_popup_outer"
+      >
+        <div className="domain_header">
+          <h1>가상머신 마이그레이션</h1>
+          <button onClick={closeModal}><i className="fa fa-times"></i></button>
+        </div>
+        <div id="migration_article_outer">
+          <span>1대의 가상 머신이 마이그레이션되는 호스트를 선택하십시오.</span>
+          <div id="migration_article">
+            <div>
+              <div id="migration_dropdown">
+                <label htmlFor="host">대상 호스트 <i className="fa fa-info-circle"></i></label>
+                <select name="host_dropdown" id="host">
+                  <option value="">호스트 자동 선택</option>
+                  <option value="php">PHP</option>
+                  <option value="java">Java</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <div>가상머신</div>
+              <div>on20-ap02</div>
+            </div>
+          </div>
+          <div id="migration_footer">
+            <button >마이그레이션</button>
+            <button onClick={closeModal}>취소</button>
+          </div>
+        </div>
+      </Modal>
+
+    </div> //section끝
+
+
   );
 };
 
