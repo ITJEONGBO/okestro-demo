@@ -2,6 +2,7 @@ package com.itinfo.itcloud.controller.computing;
 
 import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
+import com.itinfo.itcloud.model.create.ClusterCreateVo;
 import com.itinfo.itcloud.model.create.DataCenterCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.service.computing.ItDataCenterService;
@@ -60,7 +61,10 @@ public class DataCenterController {
 	@PutMapping("/{id}")
 	@ResponseBody
 	@ApiOperation(value = "데이터센터 수정", notes = "데이터센터를 수정한다")
-	@ApiImplicitParam(name = "id", value = "데이터센터 아이디", dataTypeClass = String.class)
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "id", value = "데이터센터 아이디", dataTypeClass = String.class),
+			@ApiImplicitParam(name = "dcVo", value = "데이터센터", dataTypeClass = DataCenterCreateVo.class)
+	})
 	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> editDatacenter(@PathVariable String id,
 											@RequestBody DataCenterCreateVo dcVo){

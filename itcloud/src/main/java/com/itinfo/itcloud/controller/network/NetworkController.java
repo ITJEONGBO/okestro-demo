@@ -42,7 +42,7 @@ public class NetworkController {
 
 	@PostMapping
 	@ApiOperation(value = "네트워크 생성", notes = "네트워크를 생성한다")
-	@ApiImplicitParam(name = "nVo", value = "네트워크", dataTypeClass = String.class)
+	@ApiImplicitParam(name = "nVo", value = "네트워크", dataTypeClass = NetworkCreateVo.class)
 	@ResponseBody
 	public CommonVo<Boolean> addNetwork(@RequestBody NetworkCreateVo nVo){
 		log.info("--- Network 생성");
@@ -51,7 +51,7 @@ public class NetworkController {
 	
 	@GetMapping("/{id}/edit")
 	@ApiOperation(value = "네트워크 수정창", notes = "선택된 네트워크의 정보를 조회한다")
-	@ApiImplicitParam(name = "nVo", value = "네트워크", dataTypeClass = String.class)
+	@ApiImplicitParam(name = "id", value = "네트워크 id", dataTypeClass = String.class)
 	@ResponseBody
 	public NetworkCreateVo setEditNetwork(@PathVariable String id){
 		log.info("--- Network 편집 창");
@@ -60,7 +60,7 @@ public class NetworkController {
 
 	@PutMapping("/{id}")
 	@ApiOperation(value = "네트워크 수정", notes = "네트워크를 수정한다")
-	@ApiImplicitParam(name = "nVo", value = "네트워크", dataTypeClass = String.class)
+	@ApiImplicitParam(name = "id", value = "네트워크 id", dataTypeClass = String.class)
 	@ResponseBody
 	public CommonVo<Boolean> editNetwork(@PathVariable String id,
 										 @RequestBody NetworkCreateVo nVo){
@@ -70,7 +70,7 @@ public class NetworkController {
 
 	@DeleteMapping("/{id}")
 	@ApiOperation(value = "네트워크 삭제", notes = "네트워크를 삭제한다")
-	@ApiImplicitParam(name = "id", value = "네트워크 아이디", dataTypeClass = String.class)
+	@ApiImplicitParam(name = "id", value = "네트워크 id", dataTypeClass = String.class)
 	@ResponseBody
 	public CommonVo<Boolean> deleteNetwork(@PathVariable String id){
 		log.info("--- Network 삭제");
@@ -99,7 +99,7 @@ public class NetworkController {
 
 	@GetMapping("/{id}")
 	@ApiOperation(value = "네트워크 상세정보", notes = "네트워크의 상세정보를 조회한다")
-	@ApiImplicitParam(name = "nVo", value = "네트워크", dataTypeClass = String.class)
+	@ApiImplicitParam(name = "id", value = "네트워크 id", dataTypeClass = String.class)
 	@ResponseBody
 	public NetworkVo network(@PathVariable String id){
 		log.info("--- Network 일반");
@@ -109,7 +109,7 @@ public class NetworkController {
 
 	@GetMapping("/{id}/vnics")
 	@ApiOperation(value = "네트워크 vnic 프로파일 목록", notes = "선택된 네트워크의 vnic 프로파일 목록을 조회한다")
-	@ApiImplicitParam(name = "nVo", value = "네트워크", dataTypeClass = String.class)
+	@ApiImplicitParam(name = "id", value = "네트워크 id", dataTypeClass = String.class)
 	@ResponseBody
 	public List<VnicProfileVo> vnic(@PathVariable String id){
 		log.info("--- Network vnic 프로파일");
@@ -167,7 +167,7 @@ public class NetworkController {
 	// 클러스터 목록
 	@GetMapping("/{id}/clusters")
 	@ApiOperation(value = "네트워크 클러스터 목록", notes = "선택된 네트워크의 클러스터 목록을 조회한다")
-	@ApiImplicitParam(name = "nVo", value = "네트워크", dataTypeClass = String.class)
+	@ApiImplicitParam(name = "id", value = "네트워크 id", dataTypeClass = String.class)
 	@ResponseBody
 	public List<NetworkClusterVo> cluster(@PathVariable String id){
 		log.info("--- Network 클러스터");
@@ -188,7 +188,7 @@ public class NetworkController {
 
 	@GetMapping("/{id}/hosts")
 	@ApiOperation(value = "네트워크 호스트 목록", notes = "선택된 네트워크의 호스트 목록을 조회한다")
-	@ApiImplicitParam(name = "nVo", value = "네트워크", dataTypeClass = String.class)
+	@ApiImplicitParam(name = "id", value = "네트워크 id", dataTypeClass = String.class)
 	@ResponseBody
 	public List<NetworkHostVo> host(@PathVariable String id){
 		log.info("--- Network 호스트");
@@ -197,7 +197,7 @@ public class NetworkController {
 
 	@GetMapping("/{id}/vms")
 	@ApiOperation(value = "네트워크 가상머신 목록", notes = "선택된 네트워크의 가상머신 목록을 조회한다")
-	@ApiImplicitParam(name = "nVo", value = "네트워크", dataTypeClass = String.class)
+	@ApiImplicitParam(name = "id", value = "네트워크 id", dataTypeClass = String.class)
 	@ResponseBody
 	public List<NetworkVmVo> vm(@PathVariable String id){
 		log.info("--- Network 가상머신");
@@ -216,7 +216,7 @@ public class NetworkController {
 
 	@GetMapping("/{id}/templates")
 	@ApiOperation(value = "네트워크 템플릿 목록", notes = "선택된 네트워크의 템플릿 목록을 조회한다")
-	@ApiImplicitParam(name = "nVo", value = "네트워크", dataTypeClass = String.class)
+	@ApiImplicitParam(name = "id", value = "네트워크 id", dataTypeClass = String.class)
 	@ResponseBody
 	public List<NetworkTemplateVo> template(@PathVariable String id){
 		log.info("--- Network 템플릿");
@@ -237,7 +237,7 @@ public class NetworkController {
 	// 권한 목록
 	@GetMapping("/{id}/permissions")
 	@ApiOperation(value = "네트워크 권한 목록", notes = "선택된 네트워크의 권한 목록을 조회한다")
-	@ApiImplicitParam(name = "id", value = "네트워크 아이디", dataTypeClass = String.class)
+	@ApiImplicitParam(name = "id", value = "네트워크 id", dataTypeClass = String.class)
 	@ResponseBody
 	public List<PermissionVo> permission(@PathVariable String id){
 		log.info("--- Network 권한");
