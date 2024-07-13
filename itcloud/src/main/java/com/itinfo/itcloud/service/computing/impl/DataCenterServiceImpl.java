@@ -1,10 +1,12 @@
 package com.itinfo.itcloud.service.computing.impl;
 
 import com.itinfo.itcloud.model.TypeExtKt;
-import com.itinfo.itcloud.model.computing.DataCenterVo;
-import com.itinfo.itcloud.model.computing.EventVo;
+import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.DataCenterCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
+import com.itinfo.itcloud.model.network.NetworkVo;
+import com.itinfo.itcloud.model.storage.DiskVo;
+import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.service.computing.ItDataCenterService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,8 +15,7 @@ import org.ovirt.engine.sdk4.builders.VersionBuilder;
 import org.ovirt.engine.sdk4.services.DataCenterService;
 import org.ovirt.engine.sdk4.services.DataCentersService;
 import org.ovirt.engine.sdk4.services.SystemService;
-import org.ovirt.engine.sdk4.types.DataCenter;
-import org.ovirt.engine.sdk4.types.Event;
+import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -222,6 +223,110 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                 )
                 .collect(Collectors.toList());
     }
+
+    /**
+     * 대시보드 컴퓨팅 목록
+     * @return
+     */
+    @Override
+    public List<DataCenterVo> setComputing() {
+        SystemService system = admin.getConnection().systemService();
+        return system.dataCentersService().list().send().dataCenters().stream()
+                .map(dc -> {
+
+                    List<ClusterVo> clusters = system.clustersService().list().send().clusters().stream()
+                            .filter(cluster -> cluster.dataCenterPresent() && cluster.dataCenter().id().equals(dc.id()))
+                            .map(cluster -> {
+
+                                List<HostVo> hosts = system.hostsService().list().send().hosts().stream()
+                                        .filter(host -> host.clusterPresent() && host.cluster().id().equals(cluster.id()))
+                                        .map(host -> {
+
+                                            List<VmVo> vms = system.vmsService().list().send().vms().stream()
+                                                    .filter(vm -> vm.hostPresent() && vm.host().id().equals(host.id()))
+                                                    .map(vm -> VmVo.builder().id(vm.id()).name(vm.name()).hostId(host.id()).build())
+                                                    .collect(Collectors.toList());
+
+                                            return HostVo.builder()
+                                                    .id(host.id())
+                                                    .name(host.name())
+                                                    .vmVoList(vms) // 호스트의 가상 머신 리스트 설정
+                                                    .build();
+                                        })
+                                        .collect(Collectors.toList());
+
+                                return ClusterVo.builder()
+                                        .id(cluster.id())
+                                        .name(cluster.name())
+                                        .hostVoList(hosts) // 클러스터의 호스트 리스트 설정
+                                        .build();
+                            })
+                            .collect(Collectors.toList());
+
+                    return DataCenterVo.builder()
+                            .id(dc.id())
+                            .name(dc.name())
+                            .clusterVoList(clusters) // 데이터 센터의 클러스터 리스트 설정
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 대시보드 네트워크
+     * @return
+     */
+    @Override
+    public List<DataCenterVo> setNetwork() {
+        SystemService system = admin.getConnection().systemService();
+        return system.dataCentersService().list().send().dataCenters().stream()
+                .map(dc -> {
+                    List<NetworkVo> networkVos = system.networksService().list().send().networks().stream().filter(network -> network.dataCenter().id().equals(dc.id()))
+                            .map(network -> NetworkVo.builder().id(network.id()).name(network.name()).build())
+                            .collect(Collectors.toList());
+
+                    return DataCenterVo.builder()
+                            .id(dc.id())
+                            .name(dc.name())
+                            .networkVoList(networkVos)
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+
+
+    @Override
+    public List<DataCenterVo> setStorage() {
+        SystemService system = admin.getConnection().systemService();
+        return system.dataCentersService().list().send().dataCenters().stream()
+                .map(dc -> {
+                    List<DomainVo> domainVoList = system.storageDomainsService().list().send().storageDomains().stream()
+                            .filter(storageDomain -> storageDomain.dataCentersPresent() && storageDomain.dataCenters().get(0).id().equals(dc.id())) /*storageDomain.dataCenters().stream().anyMatch(dataCenter -> dc.id().equals(dataCenter.id()))*/
+                            .map(storageDomain -> {
+
+                                List<DiskVo> diskVoList = system.disksService().list().send().disks().stream()
+                                        .filter(disk -> disk.storageDomainsPresent() && disk.storageDomains().get(0).id().equals(storageDomain.id()))
+                                        .map(disk -> DiskVo.builder().id(disk.id()).name(disk.name()).build())
+                                        .collect(Collectors.toList());
+
+                                return DomainVo.builder()
+                                        .id(storageDomain.id())
+                                        .name(storageDomain.name())
+                                        .diskVoList(diskVoList)
+                                        .build();
+                            })
+                            .collect(Collectors.toList());
+
+                    return DataCenterVo.builder()
+                            .id(dc.id())
+                            .name(dc.name())
+                            .domainVoList(domainVoList)
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
 
     /***
      * 데이터센터 이름 중복

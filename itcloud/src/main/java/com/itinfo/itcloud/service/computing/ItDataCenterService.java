@@ -18,4 +18,8 @@ public interface ItDataCenterService {
     CommonVo<Boolean> deleteDatacenter(String id);  // 삭제
 
     List<EventVo> getEvent(String id);  // 이벤트 출력
-}   
+
+    List<DataCenterVo> setComputing();
+    List<DataCenterVo> setNetwork();
+    List<DataCenterVo> setStorage();
+}

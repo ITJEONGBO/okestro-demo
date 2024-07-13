@@ -75,4 +75,6 @@ public class HostVo {
     private HostSwVo hostSwVo;
 
     private NicVo nicVo;
+
+    private List<VmVo> vmVoList;
 }

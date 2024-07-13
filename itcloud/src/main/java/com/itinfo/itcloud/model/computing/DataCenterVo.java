@@ -1,6 +1,7 @@
 package com.itinfo.itcloud.model.computing;
 
 import com.itinfo.itcloud.model.network.NetworkVo;
+import com.itinfo.itcloud.model.storage.DomainVo;
 import lombok.*;
 import java.util.List;
 
@@ -15,5 +16,7 @@ public class DataCenterVo {
     private String version;
     private String status;
 
-    private List<NetworkVo> networkList;
+    private List<NetworkVo> networkVoList;
+    private List<ClusterVo> clusterVoList;
+    private List<DomainVo> domainVoList;
 }

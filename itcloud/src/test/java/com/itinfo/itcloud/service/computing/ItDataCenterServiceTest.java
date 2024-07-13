@@ -148,4 +148,40 @@ class ItDataCenterServiceTest {
 
         result.forEach(System.out::println);
     }
+
+    @Test
+    @DisplayName("setComputing")
+    void dash(){
+        List<DataCenterVo> result = dcService.setComputing();
+        System.out.println(result);
+    }
+
+
+    @Test
+    @DisplayName("setNetwork")
+    void networks(){
+        List<DataCenterVo> result = dcService.setNetwork();
+        System.out.println(result);
+    }
+
+
+    @Test
+    @DisplayName("setStorage")
+    void setStorage(){
+        List<DataCenterVo> result = dcService.setStorage();
+        System.out.println(result);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

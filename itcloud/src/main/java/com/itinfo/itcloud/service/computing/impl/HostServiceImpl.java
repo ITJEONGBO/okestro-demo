@@ -49,7 +49,7 @@ public class HostServiceImpl implements ItHostService {
     public UsageVo totalMemory(){
         SystemService system = admin.getConnection().systemService();
         List<Host> hostList = system.hostsService().list().search("status=up").send().hosts();
-        double gb = 1073741824;
+        double gb = 1073741824; /*Math.pow(1024,3)*/
 
         double total = hostList.stream().mapToDouble(Host::memoryAsLong).sum();
         double used = hostList.stream()

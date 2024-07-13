@@ -2,8 +2,11 @@ package com.itinfo.itcloud.service
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.*
+import com.itinfo.itcloud.model.IdentifiedVo
+import com.itinfo.itcloud.model.computing.DataCenterVo
 import com.itinfo.itcloud.ovirt.AdminConnectionService
 import org.ovirt.engine.sdk4.Connection
+import org.ovirt.engine.sdk4.services.SystemService
 import org.ovirt.engine.sdk4.types.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -55,6 +58,8 @@ interface ItDashboardService {
 	fun getCpu(): Int
 	fun getMemory(type: String = ""): Int
 	fun getStorage(type: String = ""): Int
+
+	fun setComputing() : List<DataCenterVo>
 }
 
 @Service
@@ -242,34 +247,47 @@ class DashboardServiceImpl() : ItDashboardService {
 	override fun getStorage(type: String): Int {
 		return 0
 	}
-/*
-	// storage
-	public void getStorage(SystemService system) {
-		List<StorageDomain> storageDomainList = system.storageDomainsService().list().send().storageDomains();
 
-		// storage datacenter 붙어있는지
-		int storageActive = (int) storageDomainList.stream()
-				.filter(StorageDomain::dataCentersPresent)
-				.count();
 
-		dbVo.setStorageDomainCnt(storageDomainList.size());
-		dbVo.setStorageDomainActive(storageActive);
-		dbVo.setStorageDomainInactive(storageDomainList.size() - storageActive);
+	/*
+        // storage
+        public void getStorage(SystemService system) {
+            List<StorageDomain> storageDomainList = system.storageDomainsService().list().send().storageDomains();
 
-		// 스토리지 값
-		for (StorageDomain storageDomain : storageDomainList) {
-			if (storageDomain.dataCentersPresent()) {
-				dbVo.setStorageTotal( dbVo.getStorageTotal() == null ?
-						new BigDecimal(storageDomain.available().add(storageDomain.used())) : dbVo.getStorageTotal().add(new BigDecimal(storageDomain.available().add(storageDomain.used()))) );
+            // storage datacenter 붙어있는지
+            int storageActive = (int) storageDomainList.stream()
+                    .filter(StorageDomain::dataCentersPresent)
+                    .count();
 
-				dbVo.setStorageUsed(dbVo.getStorageUsed() == null ?
-						new BigDecimal(storageDomain.used()) : dbVo.getStorageUsed().add(new BigDecimal(storageDomain.used())));
+            dbVo.setStorageDomainCnt(storageDomainList.size());
+            dbVo.setStorageDomainActive(storageActive);
+            dbVo.setStorageDomainInactive(storageDomainList.size() - storageActive);
 
-				dbVo.setStorageFree(dbVo.getStorageTotal().subtract(dbVo.getStorageUsed()));
-			}
-		}
+            // 스토리지 값
+            for (StorageDomain storageDomain : storageDomainList) {
+                if (storageDomain.dataCentersPresent()) {
+                    dbVo.setStorageTotal( dbVo.getStorageTotal() == null ?
+                            new BigDecimal(storageDomain.available().add(storageDomain.used())) : dbVo.getStorageTotal().add(new BigDecimal(storageDomain.available().add(storageDomain.used()))) );
+
+                    dbVo.setStorageUsed(dbVo.getStorageUsed() == null ?
+                            new BigDecimal(storageDomain.used()) : dbVo.getStorageUsed().add(new BigDecimal(storageDomain.used())));
+
+                    dbVo.setStorageFree(dbVo.getStorageTotal().subtract(dbVo.getStorageUsed()));
+                }
+            }
+        }
+    */
+
+	override fun setComputing(): List<DataCenterVo> {
+		log.info("set Computing ... ")
+		val system : SystemService = admin.getConnection().systemService()
+		val dataCenters : List<DataCenter> = system.dataCentersService().list().follow("clusters").send().dataCenters()
+
+
+
+		TODO("Not yet implemented")
 	}
-*/
+
 	companion object {
 		private val log by LoggerDelegate()
 	}
