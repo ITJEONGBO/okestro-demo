@@ -24,7 +24,7 @@ class ItDataCenterServiceTest {
     @Test
     @DisplayName("데이터센터 리스트")
     void getList() {
-        List<DataCenterVo> dcList = dcService.getList();
+        List<DataCenterVo> dcList = dcService.getDatacenterList();
 
         assertThat(2).isEqualTo(dcList.size());
     }
@@ -144,10 +144,12 @@ class ItDataCenterServiceTest {
     @DisplayName("데이터센터 이벤트 목록")
     void getEvent() {
         String id = "12c222e7-3165-42dd-a413-fc62852bb2d6";
-        List<EventVo> result = dcService.getEvent(id);
+        List<EventVo> result = dcService.getDatacenterEventList(id);
 
         result.forEach(System.out::println);
     }
+
+
 
     @Test
     @DisplayName("setComputing")

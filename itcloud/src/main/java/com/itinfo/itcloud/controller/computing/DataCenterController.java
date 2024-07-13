@@ -2,7 +2,6 @@ package com.itinfo.itcloud.controller.computing;
 
 import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
-import com.itinfo.itcloud.model.create.ClusterCreateVo;
 import com.itinfo.itcloud.model.create.DataCenterCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.service.computing.ItDataCenterService;
@@ -26,33 +25,29 @@ import java.util.List;
 public class DataCenterController {
 	private final ItDataCenterService dcService;
 
-
 	@GetMapping
 	@ResponseBody
 	@ApiOperation(value = "데이터센터 목록", notes = "전체 데이터센터 목록을 조회한다")
-	@ResponseStatus(HttpStatus.OK)
-	public List<DataCenterVo> datacenters() {
+	public List<DataCenterVo> dcList() {
 		log.info("----- 데이터센터 목록");
-		return dcService.getList();
+		return dcService.getDatacenterList();
 	}
 
 	@PostMapping
 	@ResponseBody
 	@ApiOperation(value = "데이터센터 생성", notes = "데이터센터를 생성한다")
 	@ApiImplicitParam(name = "dcVo", value = "데이터센터", dataTypeClass = DataCenterCreateVo.class)
-	@ResponseStatus(HttpStatus.CREATED)
-	public CommonVo<Boolean> addDatacenter(@RequestBody DataCenterCreateVo dcVo){
+	public CommonVo<Boolean> addDc(@RequestBody DataCenterCreateVo dcVo){
 		log.info("----- 데이터센터 추가 : " + dcVo.getName());
 		return dcService.addDatacenter(dcVo);
 	}
 
 	// 데이터센터 수정 창
 	@GetMapping("/{id}/edit")
-	@ResponseBody()
+	@ResponseBody
 	@ApiOperation(value = "데이터센터 수정창", notes = "수정하려는 데이터센터의 정보를 불러온다")
 	@ApiImplicitParam(name = "id", value = "데이터센터 아이디", dataTypeClass = String.class)
-	@ResponseStatus(HttpStatus.OK)
-	public DataCenterCreateVo getDatacenter(@PathVariable String id){
+	public DataCenterCreateVo setDc(@PathVariable String id){
 		log.info("-- 데이터 센터 편집 창");
 		return dcService.setDatacenter(id);
 	}
@@ -65,9 +60,8 @@ public class DataCenterController {
 			@ApiImplicitParam(name = "id", value = "데이터센터 아이디", dataTypeClass = String.class),
 			@ApiImplicitParam(name = "dcVo", value = "데이터센터", dataTypeClass = DataCenterCreateVo.class)
 	})
-	@ResponseStatus(HttpStatus.CREATED)
-	public CommonVo<Boolean> editDatacenter(@PathVariable String id,
-											@RequestBody DataCenterCreateVo dcVo){
+	public CommonVo<Boolean> editDc(@PathVariable String id,
+									@RequestBody DataCenterCreateVo dcVo){
 		log.info("----- 데이터센터 편집 : " + dcVo.getName());
 		return dcService.editDatacenter(dcVo);
 	}
@@ -77,8 +71,7 @@ public class DataCenterController {
 	@ResponseBody
 	@ApiOperation(value = "데이터센터 삭제", notes = "선택된 데이터센터 목록을 삭제한다(중복삭제 구현해야함)")
 	@ApiImplicitParam(name = "id", value = "데이터센터 아이디", dataTypeClass = String.class)
-	@ResponseStatus(HttpStatus.OK)
-	public CommonVo<Boolean> deleteDatacenter(@PathVariable String id){
+	public CommonVo<Boolean> deleteDc(@PathVariable String id){
 		log.info("----- 데이터센터 삭제");
 		return dcService.deleteDatacenter(id);
 	}
@@ -89,10 +82,9 @@ public class DataCenterController {
 	@ResponseBody
 	@ApiOperation(value = "데이터센터 이벤트 목록", notes = "선택된 데이터센터 이벤트를 조회한다")
 	@ApiImplicitParam(name = "id", value = "데이터센터 아이디", dataTypeClass = String.class)
-	@ResponseStatus(HttpStatus.OK)
-	public List<EventVo> event(@PathVariable String id) {
+	public List<EventVo> dcEventList(@PathVariable String id) {
 		log.info("----- 데이터센터 이벤트 : " + id);
-		return dcService.getEvent(id);
+		return dcService.getDatacenterEventList(id);
 	}
 
 

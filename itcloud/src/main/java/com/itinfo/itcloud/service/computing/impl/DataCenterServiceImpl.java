@@ -29,18 +29,15 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     @Autowired private AdminConnectionService admin;
     @Autowired CommonService commonService;
 
-
     /***
      * 데이터센터 목록 불러오기
      * @return 데이터센터 목록
      */
     @Override
-    public List<DataCenterVo> getList(){
+    public List<DataCenterVo> getDatacenterList(){
         SystemService system = admin.getConnection().systemService();
-        List<DataCenter> dataCenterList = system.dataCentersService().list().send().dataCenters();
-
         log.info("데이터 센터 리스트 출력");
-        return dataCenterList.stream()
+        return system.dataCentersService().list().send().dataCenters().stream()
                 .map(dataCenter ->
                     DataCenterVo.builder()
                         .id(dataCenter.id())
@@ -68,7 +65,6 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         DataCentersService datacentersService = system.dataCentersService();     // datacenters 서비스 불러오기
 
         try {
-            // 중복 확인 코드
             if(isNameDuplicate(system, dcVo.getName(),null)){
                 log.error("데이터센터 이름 중복");
                 return CommonVo.failResponse("데이터센터 이름 중복");
@@ -77,19 +73,19 @@ public class DataCenterServiceImpl implements ItDataCenterService {
             String[] ver = dcVo.getVersion().split("\\.");      // 버전값 분리
 
             DataCenter dataCenter =
-                new DataCenterBuilder()
-                    .name(dcVo.getName())       // 이름
-                    .description(dcVo.getDescription())     // 설명
-                    .local(dcVo.isStorageType())    // 스토리지 유형
-                    .version(
-                        new VersionBuilder()
-                            .major(Integer.parseInt(ver[0]))
-                            .minor(Integer.parseInt(ver[1]))
-                        .build()
-                    )  // 호환 버전
-                    .quotaMode(dcVo.getQuotaMode())      // 쿼터 모드
-                    .comment(dcVo.getComment())     // 코멘트
-                .build();
+                    new DataCenterBuilder()
+                        .name(dcVo.getName())       // 이름
+                        .description(dcVo.getDescription())     // 설명
+                        .local(dcVo.isStorageType())    // 스토리지 유형
+                        .version(
+                            new VersionBuilder()
+                                .major(Integer.parseInt(ver[0]))
+                                .minor(Integer.parseInt(ver[1]))
+                            .build()
+                        )  // 호환 버전
+                        .quotaMode(dcVo.getQuotaMode())      // 쿼터 모드
+                        .comment(dcVo.getComment())     // 코멘트
+                    .build();
 
             datacentersService.add().dataCenter(dataCenter).send();     // 데이터센터 만든거 추가
 
@@ -182,11 +178,15 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         DataCenterService dataCenterService = system.dataCentersService().dataCenterService(id);
 
         try {
-            String name = dataCenterService.get().send().dataCenter().name();
             dataCenterService.remove().force(true).send();
 
-             log.info("성공: 데이터센터 {} 삭제", name);
-            return CommonVo.successResponse();
+            if(!isDcDeleted(system, id, 1000, 60000)){
+                 log.info("데이터센터 삭제");
+                 return CommonVo.successResponse();
+            }else{
+                log.info("데이터센터 삭제 시간초과");
+                return CommonVo.failResponse("데이터센터 삭제 시간초과");
+            }
         }catch (Exception e){
             log.error("실패: 데이터센터 삭제 ", e);
             return CommonVo.failResponse(e.getMessage());
@@ -200,14 +200,12 @@ public class DataCenterServiceImpl implements ItDataCenterService {
      * @return 데이터센터 이벤트 목록
      */
     @Override
-    public List<EventVo> getEvent(String id) {
+    public List<EventVo> getDatacenterEventList(String id) {
         SystemService system = admin.getConnection().systemService();
-        List<Event> eventList = system.eventsService().list().send().events();
         String dcName = system.dataCentersService().dataCenterService(id).get().send().dataCenter().name();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
         log.info("데이터센터 {} 이벤트 출력", dcName);
-        return eventList.stream()
+        return system.eventsService().list().send().events().stream()
                 .filter(event -> event.dataCenterPresent()
                         && (event.dataCenter().idPresent() && event.dataCenter().id().equals(id) || (event.dataCenter().namePresent() && event.dataCenter().name().equals(dcName)) )
                 )
@@ -215,7 +213,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                         EventVo.builder()
                             .datacenterName(dcName)
                             .severity(TypeExtKt.findLogSeverity(event.severity()))   //상태
-                            .time(sdf.format(event.time()))
+                            .time(new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss").format(event.time()))
                             .message(event.description())
                             .relationId(event.correlationIdPresent() ? event.correlationId() : null)
                             .source(event.origin())
@@ -223,6 +221,8 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                 )
                 .collect(Collectors.toList());
     }
+
+    // 대시보드 임시방편
 
     /**
      * 대시보드 컴퓨팅 목록
@@ -237,7 +237,6 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                     List<ClusterVo> clusters = system.clustersService().list().send().clusters().stream()
                             .filter(cluster -> cluster.dataCenterPresent() && cluster.dataCenter().id().equals(dc.id()))
                             .map(cluster -> {
-
                                 List<HostVo> hosts = system.hostsService().list().send().hosts().stream()
                                         .filter(host -> host.clusterPresent() && host.cluster().id().equals(cluster.id()))
                                         .map(host -> {
@@ -342,6 +341,34 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                 .filter(dataCenter -> id == null || !dataCenter.id().equals(id))
                 .anyMatch(dataCenter -> dataCenter.name().equals(name));
     }
+
+
+    /**
+     * 데이터센터 삭제 확인
+     * @param system
+     * @param dcId
+     * @param interval
+     * @param timeout
+     * @return
+     * @throws InterruptedException
+     */
+    private boolean isDcDeleted(SystemService system, String dcId, long interval, long timeout) throws InterruptedException {
+        long startTime = System.currentTimeMillis();
+        while (true){
+            List<DataCenter> dataCenterList = system.dataCentersService().list().send().dataCenters();
+            boolean dcExists = dataCenterList.stream().anyMatch(dc -> dc.id().equals(dcId));    // dc이 어느것이라도 매치되는것이 있다면
+
+            if(!dcExists){ // !(매치되는것이 있다)
+                return true;
+            }else if (System.currentTimeMillis() - startTime > timeout) {
+                return false;
+            }
+
+            log.debug("데이터센터 삭제 진행중");
+            Thread.sleep(interval);
+        }
+    }
+
 
 
 }

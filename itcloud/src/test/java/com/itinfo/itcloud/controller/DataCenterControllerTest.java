@@ -82,7 +82,7 @@ class DataCenterControllerTest {
 
     @Test
     @DisplayName("데이터센터 수정 창")
-    void getDatacenter() throws Exception {
+    void setDc() throws Exception {
         String id = "9c72ff12-a5f3-11ee-941d-00163e39cb43";
         
         mvc.perform(get("/computing/datacenter/" + id + "/settings"))
@@ -95,7 +95,7 @@ class DataCenterControllerTest {
 
     @Test
     @DisplayName("데이터센터 수정")
-    void editDatacenter() throws Exception {
+    void editDc() throws Exception {
         String id = "b6d4202f-85e8-4786-b350-17195078f100";
 
         DataCenterCreateVo dc =
