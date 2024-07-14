@@ -31,26 +31,23 @@ public class ClusterController {
 	@GetMapping
 	@ResponseBody
 	@ApiOperation(value = "클러스터 목록", notes = "전체 클러스터 목록을 조회한다")
-	@ResponseStatus(HttpStatus.OK)
 	public List<ClusterVo> clusters() {
 		log.info("--- 클러스터 목록");
-		return clusterService.getList();
+		return clusterService.getClusters();
 	}
 
 	@GetMapping("/settings")
 	@ResponseBody
 	@ApiOperation(value = "클러스터 생성창(데이터센터)", notes = "클러스터 생성시 필요한 데이터센터 목록을 조회한다")
-	@ResponseStatus(HttpStatus.OK)
 	public List<DataCenterVo> setDatacenterList(){
 		log.info("--- 클러스터 생성 창: 데이터센터 목록");
-		return clusterService.setDatacenterList();
+		return clusterService.setDcList();
 	}
 
 	@GetMapping("/settings/{dcId}")
 	@ResponseBody
 	@ApiOperation(value = "클러스터 생성창(네트워크)", notes = "클러스터 생성 시 필요한 네트워크 목록을 조회한다")
 	@ApiImplicitParam(name = "dcId", value = "선택된 데이터센터 아이디", dataTypeClass = String.class)
-	@ResponseStatus(HttpStatus.OK)
 	public List<NetworkVo> setNetworkList(@PathVariable String dcId){
 		log.info("--- 클러스터 생성 창: 네트워크 목록");
 		return clusterService.setNetworkList(dcId);
@@ -62,7 +59,6 @@ public class ClusterController {
 	@ResponseBody
 	@ApiOperation(value = "클러스터 생성", notes = "클러스터를 생성한다")
 	@ApiImplicitParam(name = "cVo", value = "클러스터", dataTypeClass = ClusterCreateVo.class)
-	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> addCluster(@RequestBody ClusterCreateVo cVo){
 		log.info("--- 클러스터 생성");
 		return clusterService.addCluster(cVo);
@@ -72,7 +68,6 @@ public class ClusterController {
 	@ResponseBody
 	@ApiOperation(value = "클러스터 수정창", notes = "선택된 클러스터의 정보를 조회한다")
 	@ApiImplicitParam(name = "id", value = "클러스터 아이디", dataTypeClass = String.class)
-	@ResponseStatus(HttpStatus.OK)
 	public ClusterCreateVo setEditCluster(@PathVariable String id){
 		log.info("--- 클러스터 편집 창");
 		return clusterService.setCluster(id);
@@ -82,7 +77,6 @@ public class ClusterController {
 	@ResponseBody
 	@ApiOperation(value = "클러스터 수정", notes = "클러스터를 수정한다")
 	@ApiImplicitParam(name = "id", value = "클러스터 아이디", dataTypeClass = String.class)
-	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> editCluster(@PathVariable String id,
 										 @RequestBody ClusterCreateVo cVo){
 		log.info("--- 클러스터 편집");
@@ -93,7 +87,6 @@ public class ClusterController {
 	@ResponseBody
 	@ApiOperation(value = "클러스터 삭제", notes = "클러스터를 삭제한다")
 	@ApiImplicitParam(name = "id", value = "클러스터 아이디", dataTypeClass = String.class)
-	@ResponseStatus(HttpStatus.OK)
 	public CommonVo<Boolean> deleteCluster(@PathVariable String id){
 		log.info("--- 클러스터 삭제");
 		return clusterService.deleteCluster(id);
@@ -101,45 +94,40 @@ public class ClusterController {
 
 
 
-
 	@GetMapping("/{id}")
 	@ResponseBody
 	@ApiOperation(value = "클러스터 상세정보", notes = "선택된 클러스터의 상세정보을 조회한다")
 	@ApiImplicitParam(name = "id", value = "클러스터 아이디", dataTypeClass = String.class)
-	@ResponseStatus(HttpStatus.OK)
 	public ClusterVo cluster(@PathVariable String id) {
 		log.info("--- 클러스터 일반");
-		return clusterService.getInfo(id);
+		return clusterService.getClusterInfo(id);
 	}
 
 	@GetMapping("/{id}/networks")
 	@ResponseBody
 	@ApiOperation(value = "클러스터 네트워크 목록", notes = "선택된 클러스터의 네트워크 목록을 조회한다")
 	@ApiImplicitParam(name = "id", value = "클러스터 아이디", dataTypeClass = String.class)
-	@ResponseStatus(HttpStatus.OK)
 	public List<NetworkVo> network(@PathVariable String id) {
 		log.info("--- 클러스터 네트워크 목록");
-		return clusterService.getNetwork(id);
+		return clusterService.getNetworksByCluster(id);
 	}
 
 	@GetMapping("/{id}/hosts")
 	@ResponseBody
 	@ApiOperation(value = "클러스터 호스트 목록", notes = "선택된 클러스터의 호스트 목록을 조회한다")
 	@ApiImplicitParam(name = "id", value = "클러스터 아이디", dataTypeClass = String.class)
-	@ResponseStatus(HttpStatus.OK)
 	public List<HostVo> host(@PathVariable String id) {
 		log.info("--- 클러스터 호스트 목록");
-		return clusterService.getHost(id);
+		return clusterService.getHostsByCluster(id);
 	}
 
 	@GetMapping("/{id}/vms")
 	@ResponseBody
 	@ApiOperation(value = "클러스터 가상머신 목록", notes = "선택된 클러스터의 가상머신 목록을 조회한다")
 	@ApiImplicitParam(name = "id", value = "클러스터 아이디", dataTypeClass = String.class)
-	@ResponseStatus(HttpStatus.OK)
 	public List<VmVo> vm(@PathVariable String id) {
 		log.info("--- 클러스터 가상머신 목록");
-		return clusterService.getVm(id);
+		return clusterService.getVmsByCluster(id);
 	}
 
 
@@ -149,7 +137,6 @@ public class ClusterController {
 	@ResponseBody
 	@ApiOperation(value = "클러스터 선호도 그룹 생성", notes = "선택된 클러스터의 선호도 그룹을 생성한다")
 	@ApiImplicitParam(name = "id", value = "클러스터 아이디", dataTypeClass = String.class)
-	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> addAffinitygroup(@PathVariable String id,
 											  @RequestBody AffinityGroupCreateVo agVo){
 		log.info("--- 클러스터 선호도 그룹 생성");
@@ -158,7 +145,6 @@ public class ClusterController {
 
 	@GetMapping("/{id}/affinitygroups/{agId}/settings")
 	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
 	public AffinityGroupCreateVo setEditAffinitygroup(@PathVariable String id,
 													  @PathVariable String agId){
 		log.info("--- 클러스터 선호도 그룹 편집 창");
@@ -167,7 +153,6 @@ public class ClusterController {
 
 	@PutMapping("/{id}/affinitygroups/{agId}")
 	@ResponseBody
-	@ResponseStatus(HttpStatus.CREATED)
 	public CommonVo<Boolean> editAffinitygroup(@PathVariable String id,
 											   @RequestBody AffinityGroupCreateVo agVo){
 		log.info("--- 클러스터 선호도 그룹 편집");
@@ -176,7 +161,6 @@ public class ClusterController {
 
 	@DeleteMapping("/{id}/affinitygroups/{agId}")
 	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
 	public CommonVo<Boolean> deleteAffinitygroup(@PathVariable String id,
 												 @PathVariable String agId){
 		log.info("--- 클러스터 선호도 그룹 삭제");
@@ -187,7 +171,6 @@ public class ClusterController {
 	@GetMapping("/{id}/affinitylabels")
 	@ResponseBody
 	@ApiOperation(value = "클러스터 선호도 레이블 목록", notes = "클러스터의 선호도 레이블 목록을 조회한다")
-	@ResponseStatus(HttpStatus.OK)
 	public List<AffinityLabelVo> affLabel() {
 		log.info("--- 클러스터 선호도 레이블 목록");
 		return affinityService.getAffinitylabel();
@@ -236,20 +219,18 @@ public class ClusterController {
 	@ResponseBody
 	@ApiOperation(value = "클러스터 권한 목록", notes = "선택된 클러스터의 권한 목록을 조회한다")
 	@ApiImplicitParam(name = "id", value = "클러스터 아이디", dataTypeClass = String.class)
-	@ResponseStatus(HttpStatus.OK)
 	public List<PermissionVo> permission(@PathVariable String id) {
 		log.info("--- 클러스터 권한");
-		return clusterService.getPermission(id);
+		return clusterService.getPermissionsByCluster(id);
 	}
 
 	@GetMapping("/{id}/events")
 	@ResponseBody
 	@ApiOperation(value = "클러스터 이벤트 목록", notes = "선택된 클러스터의 이벤트 목록을 조회한다")
 	@ApiImplicitParam(name = "id", value = "클러스터 아이디", dataTypeClass = String.class)
-	@ResponseStatus(HttpStatus.OK)
 	public List<EventVo> event(@PathVariable String id) {
 		log.info("--- 클러스터 이벤트");
-		return clusterService.getEvent(id);
+		return clusterService.getEventsByCluster(id);
 	}
 
 

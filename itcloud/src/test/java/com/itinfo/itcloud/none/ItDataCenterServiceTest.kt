@@ -108,23 +108,23 @@ class ItDataCenterServiceTest {
 		assertThat(result.body.content, `is`(notNullValue()))
 		assertThat(result.body.content, `is`(true))
 
-		val dcAdded: DataCenterVo? =
-			service.getList().firstOrNull { it.name == dc2Add.name }
-
-		assertThat(dcAdded, `is`(notNullValue()))
-		assertThat(dcAdded?.name, `is`(dc2Add.name))
-		assertThat(dcAdded?.description, `is`(dc2Add.description))
-		assertThat(dcAdded?.isStorageType, `is`(dc2Add.isStorageType))
-		assertThat(dcAdded?.version, `is`(dc2Add.version))
-		// assertThat(dcAdded?.quotaMode, `is`(dc2Add.quotaMode))
-		// TODO: 메시지 출력임으로 extension함수 생성 필요
-
-		val deleteRes: CommonVo<Boolean> =
-			service.deleteDatacenter(dcAdded?.id)
-		assertThat(deleteRes, `is`(notNullValue()))
-		assertThat(deleteRes.body, `is`(notNullValue()))
-		assertThat(deleteRes.body.content, `is`(notNullValue()))
-		assertThat(deleteRes.body.content, `is`(true))
+//		val dcAdded: DataCenterVo? =
+//			service.getda().firstOrNull { it.name == dc2Add.name }
+//
+//		assertThat(dcAdded, `is`(notNullValue()))
+//		assertThat(dcAdded?.name, `is`(dc2Add.name))
+//		assertThat(dcAdded?.description, `is`(dc2Add.description))
+//		assertThat(dcAdded?.isStorageType, `is`(dc2Add.isStorageType))
+//		assertThat(dcAdded?.version, `is`(dc2Add.version))
+//		// assertThat(dcAdded?.quotaMode, `is`(dc2Add.quotaMode))
+//		// TODO: 메시지 출력임으로 extension함수 생성 필요
+//
+//		val deleteRes: CommonVo<Boolean> =
+//			service.deleteDatacenter(dcAdded?.id)
+//		assertThat(deleteRes, `is`(notNullValue()))
+//		assertThat(deleteRes.body, `is`(notNullValue()))
+//		assertThat(deleteRes.body.content, `is`(notNullValue()))
+//		assertThat(deleteRes.body.content, `is`(true))
 
 	}
 

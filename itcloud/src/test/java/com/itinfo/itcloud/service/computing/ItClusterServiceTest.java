@@ -23,17 +23,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class ItClusterServiceTest {
-    @Autowired
-    ItClusterService clusterService;
+    @Autowired ItClusterService clusterService;
 
     String dcId = "9c72ff12-a5f3-11ee-941d-00163e39cb43";
     String defaultId = "9c7452ea-a5f3-11ee-93d2-00163e39cb43";
-    String id = "99ce9472-cabc-4338-80f7-9fd3d9367027";
 
     @Test
     @DisplayName("클러스터 리스트 출력")
     void getList() {
-        List<ClusterVo> result = clusterService.getList();
+        List<ClusterVo> result = clusterService.getClusters();
 
         result.forEach(System.out::println);
         assertThat(true).isEqualTo(result.stream().anyMatch(clusterVo -> clusterVo.getName().equals("Default")));
@@ -42,7 +40,7 @@ class ItClusterServiceTest {
     @Test
     @DisplayName("클러스터 생성 창 - dc 출력")
     void setDatacenterList() {
-        List<DataCenterVo> result = clusterService.setDatacenterList();
+        List<DataCenterVo> result = clusterService.setDcList();
 
         result.forEach(System.out::println);
 
@@ -53,7 +51,6 @@ class ItClusterServiceTest {
     @Test
     @DisplayName("클러스터 생성 창 - 네트워크 출력")
     void setNetworkList() {
-//        String dcId = "";
         List<NetworkVo> result = clusterService.setNetworkList(dcId);
 
         result.forEach(System.out::println);
@@ -254,7 +251,7 @@ class ItClusterServiceTest {
     @Test
     @DisplayName("클러스터 정보")
     void getInfo() {
-        ClusterVo c = clusterService.getInfo(defaultId);
+        ClusterVo c = clusterService.getClusterInfo(defaultId);
 
         System.out.println(c);
         assertThat("Default").isEqualTo(c.getName());
@@ -264,7 +261,7 @@ class ItClusterServiceTest {
     @Test
     @DisplayName("클러스터 네트워크 목록")
     void getNetwork() {
-        List<NetworkVo> result = clusterService.getNetwork(defaultId);
+        List<NetworkVo> result = clusterService.getNetworksByCluster(defaultId);
 
         result.forEach(System.out::println);
         assertThat(5).isEqualTo(result.size());
@@ -358,7 +355,7 @@ class ItClusterServiceTest {
     @Test
     @DisplayName("클러스터 호스트 목록")
     void getHost() {
-        List<HostVo> result = clusterService.getHost(defaultId);
+        List<HostVo> result = clusterService.getHostsByCluster(defaultId);
 
         result.forEach(System.out::println);
         assertThat(2).isEqualTo(result.size());
@@ -367,7 +364,7 @@ class ItClusterServiceTest {
     @Test
     @DisplayName("클러스터 가상머신 목록")
     void getVm() {
-        List<VmVo> result = clusterService.getVm(defaultId);
+        List<VmVo> result = clusterService.getVmsByCluster(defaultId);
 
         result.forEach(System.out::println);
         assertThat(8).isEqualTo(result.size());
@@ -383,14 +380,17 @@ class ItClusterServiceTest {
     @Test
     @DisplayName("클러스터 권한 목록")
     void getPermission() {
-        List<PermissionVo> result = clusterService.getPermission(id);
+        List<PermissionVo> result = clusterService.getPermissionsByCluster(defaultId);
 
-        assertThat(3).isEqualTo(result.size());
-        result.stream().map(PermissionVo::getUser).forEach(System.out::println);
+        result.forEach(System.out::println);
+
+        assertThat(4).isEqualTo(result.size());
     }
 
     @Test
     void getEvent() {
-        assertThat(1045).isEqualTo(clusterService.getEvent(defaultId).size());
+        List<EventVo> result = clusterService.getEventsByCluster(defaultId);
+
+        assertThat(1045).isEqualTo(result.size());
     }
 }

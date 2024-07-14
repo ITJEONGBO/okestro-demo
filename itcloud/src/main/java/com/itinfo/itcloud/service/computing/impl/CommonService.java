@@ -151,6 +151,7 @@ public class CommonService {
                     if(!permission.groupPresent() && permission.userPresent()){
                         User user = system.usersService().userService(permission.user().id()).get().send().user();
                         return PermissionVo.builder()
+                                .permissionId(permission.id())
                                 .user(user.name())
                                 .provider(user.domainPresent() ? user.domain().name() : null)
                                 .nameSpace(user.namespace())

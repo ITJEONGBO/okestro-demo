@@ -27,8 +27,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ClusterServiceImpl implements ItClusterService {
     @Autowired private AdminConnectionService admin;
-    @Autowired private CommonService commonService;
-    @Autowired private ItAffinityService affinityService;
+    @Autowired private CommonService common;
+    @Autowired private ItAffinityService affinity;
 
 
     /***
@@ -36,23 +36,21 @@ public class ClusterServiceImpl implements ItClusterService {
      * @return 클러스터 목록
      */
     @Override
-    public List<ClusterVo> getList(){
+    public List<ClusterVo> getClusters(){
         SystemService system = admin.getConnection().systemService();
-        List<Cluster> clusterList = system.clustersService().list().send().clusters();
-
         log.info("클러스터 목록");
-        return clusterList.stream()
+        return system.clustersService().list().send().clusters().stream()
                 .map(cluster ->
-                    ClusterVo.builder()
-                        .id(cluster.id())
-                        .name(cluster.name())
-                        .comment(cluster.comment())
-                        .version(cluster.version().major() + "." + cluster.version().minor())
-                        .description(cluster.description())
-                        .cpuType(cluster.cpuPresent() ? cluster.cpu().type() : null)
-                        .hostCnt(getClusterHostCnt(system, cluster.id(), ""))
-                        .vmCnt(getClusterVmCnt(system, cluster.id(), ""))
-                    .build()
+                        ClusterVo.builder()
+                            .id(cluster.id())
+                            .name(cluster.name())
+                            .comment(cluster.comment())
+                            .version(cluster.version().major() + "." + cluster.version().minor())
+                            .description(cluster.description())
+                            .cpuType(cluster.cpuPresent() ? cluster.cpu().type() : null)
+                            .hostCnt(getClusterHostCnt(system, cluster.id(), ""))
+                            .vmCnt(getClusterVmCnt(system, cluster.id(), ""))
+                            .build()
                 )
                 .collect(Collectors.toList());
     }
@@ -63,17 +61,15 @@ public class ClusterServiceImpl implements ItClusterService {
      * @return 데이터센터 목록
      */
     @Override
-    public List<DataCenterVo> setDatacenterList(){
+    public List<DataCenterVo> setDcList(){
         SystemService system = admin.getConnection().systemService();
-        List<DataCenter> dataCenterList = system.dataCentersService().list().send().dataCenters();
-
         log.info("클러스터 생성 위해 필요한 데이터센터 목록");
-        return dataCenterList.stream()
+        return system.dataCentersService().list().send().dataCenters().stream()
                 .map(dataCenter ->
                         DataCenterVo.builder()
                             .id(dataCenter.id())
                             .name(dataCenter.name())
-                            .storageType(dataCenter.local())
+                            .storageType(dataCenter.local()) // ?
                             .build()
                 )
                 .collect(Collectors.toList());
@@ -89,17 +85,10 @@ public class ClusterServiceImpl implements ItClusterService {
     @Override
     public List<NetworkVo> setNetworkList(String dcId) {
         SystemService system = admin.getConnection().systemService();
-        List<Network> networkList = system.dataCentersService().dataCenterService(dcId).networksService().list().send().networks();
-
         log.info("클러스터 생성 위해 필요한 네트워크 목록");
-        return networkList.stream()
+        return system.dataCentersService().dataCenterService(dcId).networksService().list().send().networks().stream()
                 .filter(network -> !network.externalProviderPresent())
-                .map(network ->
-                        NetworkVo.builder()
-                            .id(network.id())
-                            .name(network.name())
-                            .build()
-                )
+                .map(network -> NetworkVo.builder().id(network.id()).name(network.name()).build())
                 .collect(Collectors.toList());
     }
 
@@ -115,7 +104,6 @@ public class ClusterServiceImpl implements ItClusterService {
     public CommonVo<Boolean> addCluster(ClusterCreateVo cVo) {
         SystemService system = admin.getConnection().systemService();
         ClustersService clustersService = system.clustersService();
-        ExternalProvider openStackNetworkProvider = system.openstackNetworkProvidersService().list().send().providers().get(0);
         String[] ver = cVo.getVersion().split("\\.", 2);      // 버전값 분리
 
         try{
@@ -160,7 +148,7 @@ public class ClusterServiceImpl implements ItClusterService {
                     );
 
             if (cVo.isNetworkProvider()) {
-                clusterBuilder.externalNetworkProviders(openStackNetworkProvider);
+                clusterBuilder.externalNetworkProviders(system.openstackNetworkProvidersService().list().send().providers().get(0));
             }
 
             Cluster cluster = clustersService.add().cluster(clusterBuilder.build()).send().cluster();
@@ -320,7 +308,7 @@ public class ClusterServiceImpl implements ItClusterService {
      * @return 클러스터 객체
      */
     @Override
-    public ClusterVo getInfo(String id){
+    public ClusterVo getClusterInfo(String id){
         SystemService system = admin.getConnection().systemService();
         Cluster cluster = system.clustersService().clusterService(id).get().send().cluster();
 
@@ -349,7 +337,7 @@ public class ClusterServiceImpl implements ItClusterService {
      * @return 클러스터 네트워크 목록
      */
     @Override
-    public List<NetworkVo> getNetwork(String id) {
+    public List<NetworkVo> getNetworksByCluster(String id) {
         SystemService system = admin.getConnection().systemService();
         List<Network> networkList = system.clustersService().clusterService(id).networksService().list().send().networks();
 
@@ -494,7 +482,8 @@ public class ClusterServiceImpl implements ItClusterService {
      * @return 클러스터 네트워크 관리 변경 결과 200(success), 404(fail)
      */
     @Override
-    public CommonVo<Boolean> manageNetwork(String id, List<NetworkClusterVo> ncVoList) {
+    public CommonVo<Boolean>
+    manageNetwork(String id, List<NetworkClusterVo> ncVoList) {
         SystemService system = admin.getConnection().systemService();
         ClusterNetworksService cNetworksService = system.clustersService().clusterService(id).networksService();
 
@@ -537,7 +526,7 @@ public class ClusterServiceImpl implements ItClusterService {
      * @return 호스트 목록
      */
     @Override
-    public List<HostVo> getHost(String id) {
+    public List<HostVo> getHostsByCluster(String id) {
         SystemService system = admin.getConnection().systemService();
         List<Host> hostList = system.hostsService().list().send().hosts();
         List<Vm> vmList = system.vmsService().list().send().vms();
@@ -568,7 +557,7 @@ public class ClusterServiceImpl implements ItClusterService {
      * @return 가상머신 목록
      */
     @Override
-    public List<VmVo> getVm(String id) {
+    public List<VmVo> getVmsByCluster(String id) {
         SystemService system = admin.getConnection().systemService();
         List<Vm> vmList = system.vmsService().list().allContent(true).send().vms();
 
@@ -580,10 +569,10 @@ public class ClusterServiceImpl implements ItClusterService {
                             .status(vm.status().value())
                             .id(vm.id())
                             .name(vm.name())
-                            .upTime(commonService.getVmUptime(system, vm.id()))
+                            .upTime(common.getVmUptime(system, vm.id()))
                             .hostEngineVm(vm.origin().equals("managed_hosted_engine"))  // 엔진여부
-                            .ipv4(commonService.getVmIp(system, vm.id(), "v4"))
-                            .ipv6(commonService.getVmIp(system, vm.id(), "v6"))
+                            .ipv4(common.getVmIp(system, vm.id(), "v4"))
+                            .ipv6(common.getVmIp(system, vm.id(), "v6"))
                             .build()
                 )
                 .collect(Collectors.toList());
@@ -603,29 +592,26 @@ public class ClusterServiceImpl implements ItClusterService {
 
     // 클러스터 권한 목록
     @Override
-    public List<PermissionVo> getPermission(String id) {
+    public List<PermissionVo> getPermissionsByCluster(String id) {
         SystemService system = admin.getConnection().systemService();
         List<Permission> permissionList = system.clustersService().clusterService(id).permissionsService().list().send().permissions();
 
         log.info("클러스터 권한 목록");
-        return commonService.getPermission(system, permissionList);
+        return common.getPermission(system, permissionList);
     }
 
 
     // 클러스터 이벤트 출력
     @Override
-    public List<EventVo> getEvent(String id) {
+    public List<EventVo> getEventsByCluster(String id) {
         SystemService system = admin.getConnection().systemService();
-        List<Event> eventList = system.eventsService().list().send().events();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
-
         log.info("클러스터 이벤트 목록");
-        return eventList.stream()
+        return system.eventsService().list().send().events().stream()
                 .filter(event -> event.clusterPresent() && event.cluster().idPresent() && event.cluster().id().equals(id))
                 .map(event ->
                     EventVo.builder()
                         .severity(event.severity().value())     // 상태[LogSeverity] : alert, error, normal, warning
-                        .time(sdf.format(event.time()))
+                        .time(new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss").format(event.time()))
                         .message(event.description())
                         .relationId(event.correlationIdPresent() ? event.correlationId() : null)
                         .source(event.origin())
@@ -673,7 +659,7 @@ public class ClusterServiceImpl implements ItClusterService {
      * 클러스터 내에 있는 호스트 개수 파악
      * @param system
      * @param clusterId host의 clusterId와 비교
-     * @param ele up, down, "" 값
+     * @param ele up, down, ""==all 값
      * @return 호스트 개수
      */
     private int getClusterHostCnt(SystemService system, String clusterId, String ele){

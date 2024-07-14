@@ -30,7 +30,7 @@ public class DataCenterController {
 	@ApiOperation(value = "데이터센터 목록", notes = "전체 데이터센터 목록을 조회한다")
 	public List<DataCenterVo> dcList() {
 		log.info("----- 데이터센터 목록");
-		return dcService.getDatacenterList();
+		return dcService.getDataCenters();
 	}
 
 	@PostMapping
@@ -84,7 +84,7 @@ public class DataCenterController {
 	@ApiImplicitParam(name = "id", value = "데이터센터 아이디", dataTypeClass = String.class)
 	public List<EventVo> dcEventList(@PathVariable String id) {
 		log.info("----- 데이터센터 이벤트 : " + id);
-		return dcService.getDatacenterEventList(id);
+		return dcService.getEventsByDatacenter(id);
 	}
 
 

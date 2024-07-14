@@ -36,12 +36,7 @@ public class AffinityServiceImpl implements ItAffinityService {
         SystemService system = admin.getConnection().systemService();
         return system.hostsService().list().send().hosts().stream()
                 .filter(host -> host.cluster().id().equals(clusterId))
-                .map(host ->
-                        IdentifiedVo.builder()
-                                .id(host.id())
-                                .name(host.name())
-                                .build()
-                )
+                .map(host -> IdentifiedVo.builder().id(host.id()).name(host.name()).build())
                 .collect(Collectors.toList());
     }
 
@@ -86,7 +81,7 @@ public class AffinityServiceImpl implements ItAffinityService {
 
     //--------------------------------------------
 
-    /***
+    /**
      *  선호도 그룹 목록 출력 [ cluster, vm ]
      * @param id    cluster/vm id가 들어간다
      * @param type  cluster/vm 인지 default는 vm
@@ -137,7 +132,7 @@ public class AffinityServiceImpl implements ItAffinityService {
 
 
 
-    /***
+    /**
      * 선호도 그룹 생성 (cluster, vm) 상관없이
      * @param id
      * @param type
@@ -214,7 +209,7 @@ public class AffinityServiceImpl implements ItAffinityService {
     }
 
 
-    /***
+    /**
      * 선호도 그룹 편집 창
      * @param id    cluster/vm ID
      * @param type  cluster/vm 인지
