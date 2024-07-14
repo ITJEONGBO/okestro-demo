@@ -1973,12 +1973,13 @@ input[disabled] {
 }
 /*선호도 그룹 팝업(새로만들기)*/
 .pregroup_create_outer{
-    display: none;
-    position: absolute; 
+    position: fixed; /* 변경 */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000; /* 추가 */
 }
 .pregroup_create{
     border: 1px solid #dfdddd;
@@ -1987,11 +1988,12 @@ input[disabled] {
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 88%;
+    height: 69%;
     width: 43%;
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1001; /* 추가 */
 }
 #pregroup_create_content{
     padding: 0 0.2rem;
@@ -2072,12 +2074,13 @@ input[disabled] {
 }
 /*선호도레이블(새로만들기) 팝업*/
 .lable_create_outer{
-    display: none;
-    position: absolute; 
+    position: fixed; /* 변경 */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000; /* 추가 */
 }
 .lable_create{
     border: 1px solid #dfdddd;
@@ -2086,11 +2089,12 @@ input[disabled] {
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 60%;
-    width: 43%;
+    height: 45%;
+    width: 58%;
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1001; /* 추가 */
 }
 /*권한*/
 #power_outer span{
@@ -2113,12 +2117,13 @@ input[disabled] {
 }
 /*권한 팝업창(추가)*/
 .power_add_outer{
-    display: none;
-    position: absolute; 
+    position: fixed; /* 변경 */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000; /* 추가 */
 }
 .power_add{
     border: 1px solid #dfdddd;
@@ -2132,6 +2137,7 @@ input[disabled] {
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1001; /* 추가 */
 }
 .power_radio_group{
     display: flex;
@@ -2209,10 +2215,10 @@ input[disabled] {
 
 }
 .footer{
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
     height: 4.3vh;
     display: flex;
-
+    border-top: 1px solid #ebebeb;
+    background: white;
 }
 .footer>button{
     height: 4.3vh;

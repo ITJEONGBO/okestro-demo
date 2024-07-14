@@ -821,109 +821,104 @@ const PregroupSection = () => {
         </table>
       </div>
 
-      {/*네트워크 인터페이스(새로만들기) */}
+      {/*선호도그룹(새로만들기) */}
       <Modal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
-        contentLabel="새로만들기"
-        className="network_popup"
-        overlayClassName="network_popup_outer"
+        contentLabel="새 선호도 그룹"
+        className="pregroup_create"
+        overlayClassName="pregroup_create_outer"
       >
-                    <div className="network_popup_header">
-                <h1>네트워크 인터페이스 수정</h1>
-                <button  onClick={closeModal}><i className="fa fa-times"></i></button>
+        <div className="network_popup_header">
+          <h1>새 선호도 그룹</h1>
+          <button onClick={closeModal}><i className="fa fa-times"></i></button>
+        </div>
+        <div id="pregroup_create_content">
+          <div className="snap_create_inputbox">
+            <span>이름</span>
+            <input type="text" />
+          </div>
+          <div className="snap_create_inputbox">
+            <span>설명</span>
+            <input type="text" />
+          </div>
+          <div className="snap_create_inputbox" style={{ paddingLeft: '0.34rem' }}>
+            <div>
+              <span>우선 순위</span>
+              <i className="fa fa-info-circle"></i>
             </div>
-
-            <div className="network_popup_content">
-                <div className="input_box">
-                    <span>이름</span>
-                    <input type="text"/>
-                </div>
-                <div className="select_box">
-                    <label htmlFor="profile">프로파일</label>
-                    <select id="profile">
-                        <option value="test02">ovirtmgmt/ovirtmgmt</option>
-                    </select>
-                </div>
-                <div className="select_box">
-                    <label htmlFor="type" style={{ color: 'gray' }}>유형</label>
-                    <select id="type" disabled>
-                        <option value="test02">VirtIO</option>
-                    </select>
-                </div>
-                <div className="select_box2" style={{ marginBottom: '2%' }}>
-                    <div>
-                        <input type="checkbox" id="custom_mac_box" disabled/>
-                        <label htmlFor="custom_mac_box" style={{ color: 'gray' }}>
-                            사용자 지정 MAC 주소
-                        </label>
-                    </div>
-                    <div>
-                        <select id="mac_address" disabled>
-                            <option value="test02">VirtIO</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div className="plug_radio_btn">
-                    <span>링크 상태</span>
-                    <div>
-                        <div className="radio_outer">
-                            <div>
-                                <input type="radio" name="status" id="status_up"/>
-                                <img src=".//img/스크린샷 2024-05-24 150455.png" alt="status_up"/>
-                                <label htmlFor="status_up">Up</label>
-                            </div>
-                            <div>
-                                <input type="radio" name="status" id="status_down"/>
-                                <img src=".//img/Down.png" alt="status_down"/>
-                                <label htmlFor="status_down">Down</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="plug_radio_btn">
-                    <span>카드 상태</span>
-                    <div>
-                        <div className="radio_outer">
-                            <div>
-                                <input type="radio" name="connection_status" id="connected"/>
-                                <img src=".//img/연결됨.png" alt="connected"/>
-                                <label htmlFor="connected">연결됨</label>
-                            </div>
-                            <div>
-                                <input type="radio" name="connection_status" id="disconnected"/>
-                                <img src=".//img/분리.png" alt="disconnected"/>
-                                <label htmlFor="disconnected">분리</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <input type="text" />
+          </div>
+          <div className="snap_create_inputbox" style={{ paddingLeft: '0.34rem' }}>
+            <div>
+              <label htmlFor="disk_profile">가상 머신 선호도 규칙</label>
+              <i className="fa fa-info-circle"></i>
             </div>
-
-            <div className="network_parameter_outer">
-                <span>네트워크 필터 매개변수</span>
-                <div>
-                    <div>
-                        <span>이름</span>
-                        <input type="text"/>
-                    </div>
-                    <div>
-                        <span>값</span>
-                        <input type="text"/>
-                    </div>
-                    <div id="buttons">
-                        <button>+</button>
-                        <button>-</button>
-                    </div>
-                </div>
+            <div className="pregroup_create_select">
+              <div>
+                <select id="disk_profile">
+                  <option value="disabled">비활성화됨</option>
+                </select>
+              </div>
+              <div>
+                <input type="checkbox" id="enforce_disk_profile" />
+                <label htmlFor="enforce_disk_profile">강제 적용</label>
+              </div>
             </div>
-
-            <div className="edit_footer">
-                <button style={{ display: 'none' }}></button>
-                <button>OK</button>
-                <button  onClick={closeModal}>취소</button>
+          </div>
+          <div className="snap_create_inputbox" style={{ paddingLeft: '0.34rem' }}>
+            <div>
+              <label htmlFor="host_preference_rule">호스트 선호도 규칙</label>
+              <i className="fa fa-info-circle"></i>
             </div>
+            <div className="pregroup_create_select">
+              <div>
+                <select id="host_preference_rule">
+                  <option value="disabled">비활성화됨</option>
+                </select>
+              </div>
+              <div>
+                <input type="checkbox" id="enforce_rule" />
+                <label htmlFor="enforce_rule">강제 적용</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="pregroup_create_buttons">
+          <div className="pregroup_buttons_content">
+            <label htmlFor="cluster">가상머신</label>
+            <div className="pregroup_buttons_select">
+              <div>
+                <select id="cluster">
+                  <option value="default">가상머신:on20-ap01</option>
+                </select>
+              </div>
+              <div>
+                <button>+</button>
+                <button>-</button>
+              </div>
+            </div>
+          </div>
+          <div className="pregroup_buttons_content">
+            <label htmlFor="cluster">호스트</label>
+            <div className="pregroup_buttons_select">
+              <div>
+                <select id="cluster">
+                  <option value="default">호스트 선택</option>
+                </select>
+              </div>
+              <div>
+                <button>+</button>
+                <button>-</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="edit_footer">
+          <button style={{ display: 'none' }}></button>
+          <button>OK</button>
+          <button onClick={closeModal}>취소</button>
+        </div>
       </Modal>
 
 
@@ -933,11 +928,17 @@ const PregroupSection = () => {
 
 // 선호도 레이블
 const PregroupLabelSection = () => {
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  // 팝업 열기/닫기 핸들러
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
   return (
     <div id="pregroup_lable_outer">
       <div className="pregroup_content">
         <div className="content_header_right">
-          <button id="lable_create_btn">새로 만들기</button>
+          <button id="lable_create_btn" onClick={openModal}>새로 만들기</button>
           <button>편집</button>
           <button>제거</button>
         </div>
@@ -972,6 +973,61 @@ const PregroupLabelSection = () => {
           </tbody>
         </table>
       </div>
+
+      {/*선호도 레이블(새로만들기) */}
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="새 선호도 레이블"
+        className="lable_create"
+        overlayClassName="lable_create_outer"
+      >
+        <div className="network_popup_header">
+          <h1>새로운 선호도 레이블</h1>
+          <button onClick={closeModal}><i className="fa fa-times"></i></button>
+        </div>
+        <div>
+          <div className="snap_create_inputbox" style={{ padding: '0.5rem' }}>
+            <span>이름</span>
+            <input type="text" />
+          </div>
+        </div>
+        <div className="pregroup_create_buttons" style={{ paddingTop: 0 }}>
+          <div className="pregroup_buttons_content">
+            <label htmlFor="cluster">가상머신</label>
+            <div className="pregroup_buttons_select">
+              <div>
+                <select id="cluster">
+                  <option value="default">가상머신:on20-ap01</option>
+                </select>
+              </div>
+              <div>
+                <button>+</button>
+                <button>-</button>
+              </div>
+            </div>
+          </div>
+          <div className="pregroup_buttons_content">
+            <label htmlFor="cluster">호스트</label>
+            <div className="pregroup_buttons_select">
+              <div>
+                <select id="cluster">
+                  <option value="default">호스트 선택</option>
+                </select>
+              </div>
+              <div>
+                <button>+</button>
+                <button>-</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="edit_footer">
+          <button style={{ display: 'none' }}></button>
+          <button>OK</button>
+          <button onClick={closeModal}>취소</button>
+        </div>
+      </Modal>
     </div>
   );
 };
@@ -1038,11 +1094,16 @@ const GuestInfoSection = () => {
 
 //권한
 const PowerSection = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  // 팝업 열기/닫기 핸들러
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
   return (
     <div id="power_outer">
       <div className="pregroup_content">
         <div className="content_header_right">
-          <button id="power_add_btn">추가</button>
+          <button onClick={openModal} id="power_add_btn">추가</button>
           <button>제거</button>
         </div>
         <div className="application_content_header">
@@ -1093,6 +1154,91 @@ const PowerSection = () => {
           </tbody>
         </table>
       </div>
+
+      {/*권한(추가)팝업 */}
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="사용자에게 권한 추가"
+        className="power_add"
+        overlayClassName="power_add_outer"
+      >
+        <div className="network_popup_header">
+          <h1>사용자에게 권한 추가</h1>
+          <button onClick={closeModal}><i className="fa fa-times"></i></button>
+        </div>
+
+        <div className="power_radio_group">
+          <input type="radio" id="user" name="option" defaultChecked />
+          <label htmlFor="user">사용자</label>
+          
+          <input type="radio" id="group" name="option" />
+          <label htmlFor="group">그룹</label>
+          
+          <input type="radio" id="all" name="option" />
+          <label htmlFor="all">모두</label>
+          
+          <input type="radio" id="my_group" name="option" />
+          <label htmlFor="my_group">내 그룹</label>
+        </div>
+
+        <div className="power_contents_outer">
+          <div>
+            <label htmlFor="search">검색:</label>
+            <select id="search">
+              <option value="default">Default</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="namespace">네임스페이스:</label>
+            <select id="namespace">
+              <option value="default">Default</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="placeholder" style={{ color: 'white' }}>.</label>
+            <select id="placeholder">
+              <option value="default">Default</option>
+            </select>
+          </div>
+          <div>
+            <div style={{ color: 'white' }}>.</div>
+            <input type="submit" value="검색" />
+          </div>
+        </div>
+
+        <div className="power_table">
+          <table>
+            <thead>
+              <tr>
+                <th>이름</th>
+                <th>성</th>
+                <th>사용자 이름</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>dddddddddddddddddddddd</td>
+                <td>2024. 1. 17. PM 3:14:39</td>
+                <td>Snapshot 'on2o-ap01-Snapshot-2024_01_17' been completed.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className="power_last_content">
+          <label htmlFor="assigned_role">할당된 역할:</label>
+          <select id="assigned_role" style={{ width: '65%' }}>
+            <option value="default">UserRole</option>
+          </select>
+        </div>
+
+        <div className="edit_footer">
+          <button style={{ display: 'none' }}></button>
+          <button>OK</button>
+          <button onClick={closeModal}>취소</button>
+        </div>
+      </Modal>
     </div>
   );
 };
