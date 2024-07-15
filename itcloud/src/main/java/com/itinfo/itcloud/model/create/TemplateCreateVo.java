@@ -6,11 +6,11 @@ import com.itinfo.itcloud.model.storage.DiskVo;
 
 import java.util.List;
 
+
 public class TemplateCreateVo {
     // 템플릿 생성을 가상머신에서 함
     private String id;
     private String name;
-    private String comment;
 
     private String dcId;
     private String dcName;

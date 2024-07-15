@@ -53,4 +53,5 @@ public class ClusterVo {
     }
 
     private List<HostVo> hostVoList;
+    private List<TemplateVo> templateVoList;
 }

@@ -31,7 +31,7 @@ public class TemplateController {
 	@ResponseBody
 	public List<TemplateVo> templates(){
 		log.info("--- templates 목록");
-		return tService.getList();
+		return tService.getTemplates();
 	}
 
 	@GetMapping("/{id}")
@@ -40,7 +40,7 @@ public class TemplateController {
 	@ResponseBody
 	public TemplateVo template(@PathVariable String id){
 		log.info("--- template 일반");
-		return tService.getInfo(id);
+		return tService.getTemplateInfo(id);
 	}
 
 
@@ -50,7 +50,7 @@ public class TemplateController {
 	@ResponseBody
 	public List<DiskVo> getDisk(@PathVariable String id){
 		log.info("--- template 디스크");
-		return tService.getDisk(id);
+		return tService.getDisksByTemplate(id);
 	}
 
 	@GetMapping("/{id}/permissions")
@@ -59,7 +59,7 @@ public class TemplateController {
 	@ResponseBody
 	public List<PermissionVo> permissions(@PathVariable String id){
 		log.info("--- template 권한");
-		return tService.getPermission(id);
+		return tService.getPermissionsByTemplate(id);
 	}
 
 	@GetMapping("/{id}/events")
@@ -68,7 +68,7 @@ public class TemplateController {
 	@ResponseBody
 	public List<EventVo> events(@PathVariable String id){
 		log.info("--- template 이벤트");
-		return tService.getEvent(id);
+		return tService.getEventsByTemplate(id);
 	}
 
 

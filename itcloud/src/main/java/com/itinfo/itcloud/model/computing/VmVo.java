@@ -22,6 +22,8 @@ public class VmVo {
 
     private boolean hostEngineVm;
 
+    private String recentHost;  // 최근 부팅되었던 호스트 명
+
     private BigInteger memory;
     private BigInteger memoryActual;
     private int cpuCoreCnt;

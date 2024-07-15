@@ -242,10 +242,16 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                                         })
                                         .collect(Collectors.toList());
 
+                                List<TemplateVo> templateList = system.templatesService().list().send().templates().stream()
+                                        .filter(template -> template.clusterPresent() && template.cluster().id().equals(cluster.id()))
+                                        .map(template -> TemplateVo.builder().id(template.id()).name(template.name()).build())
+                                        .collect(Collectors.toList());
+
                                 return ClusterVo.builder()
                                         .id(cluster.id())
                                         .name(cluster.name())
                                         .hostVoList(hosts) // 클러스터의 호스트 리스트 설정
+                                        .templateVoList(templateList) // 클러스터의 템플릿 리스트 설정
                                         .build();
                             })
                             .collect(Collectors.toList());

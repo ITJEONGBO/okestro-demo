@@ -1,11 +1,14 @@
 package com.itinfo.itcloud.model.computing;
 
+import com.itinfo.itcloud.model.storage.DiskAttachmentVo;
+import com.itinfo.itcloud.model.storage.DiskVo;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Getter @Setter @Builder @ToString
 public class TemplateVo {
@@ -35,6 +38,8 @@ public class TemplateVo {
     private boolean usb;    // usb
     private boolean noneStocked;   // 상태 비저장
     private String origin;  // 소스
+
+    private List<DiskVo> diskVoList;  // 디스크 할당
 
     private String clusterId;
     private String clusterName;

@@ -293,7 +293,7 @@ public class HostServiceImpl implements ItHostService {
 
         try {
             Host host = hostService.get().send().host();
-            HostStatus status = host.status();
+            HostStatus status = hostService.get().send().host().status();
 
             if (status == HostStatus.MAINTENANCE) {
                 hostService.remove().send();

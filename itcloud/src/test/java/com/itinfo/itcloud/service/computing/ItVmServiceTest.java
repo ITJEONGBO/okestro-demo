@@ -27,15 +27,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class ItVmServiceTest {
-    @Autowired
-    ItVmService vmService;
-    @Autowired
-    ItAffinityService affinityService;
+    @Autowired ItVmService vmService;
+    @Autowired ItAffinityService affinityService;
 
     String clusterId = "ae1ea51e-f642-11ee-bcc4-00163e4b3128";
     String defaultId = "74bbfae5-ada6-491e-9d3d-51ac8b50471e"; // HostedEngine
 
     @Test
+    @DisplayName("가상머신 cpu")
     void te() {
         List<UsageChartDto> result = vmService.getCpuChart();
         result.forEach(System.out::println);
