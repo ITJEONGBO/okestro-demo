@@ -142,7 +142,7 @@ function Network() {
                     </div>
                 </div>
 
-                <div className="storage_domain_content">
+                <div className="storage_domain_content" style={{ padding: '0.5rem 0.3rem' }}>
                     <div className="content_header_right">
                         <button id="network_new_btn" onClick={openModal}>새로 만들기</button>
                         <button id="network_bring_btn">가져오기</button>

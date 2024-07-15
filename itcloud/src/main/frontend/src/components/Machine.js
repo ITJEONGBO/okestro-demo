@@ -66,6 +66,7 @@ const NetworkSection = () => {
         contentLabel="새로만들기"
         className="network_popup"
         overlayClassName="network_popup_outer"
+        shouldCloseOnOverlayClick={false}
       >
                     <div className="network_popup_header">
                 <h1>네트워크 인터페이스 수정</h1>
@@ -253,6 +254,7 @@ const DiskSection = () => {
               contentLabel="새로 만들기"
               className="disk_popup"
               overlayClassName="disk_popup_outer"
+              shouldCloseOnOverlayClick={false}
           >
               <div className="network_popup_header">
                   <h1>새 가상 디스크</h1>
@@ -828,6 +830,7 @@ const PregroupSection = () => {
         contentLabel="새 선호도 그룹"
         className="pregroup_create"
         overlayClassName="pregroup_create_outer"
+        shouldCloseOnOverlayClick={false}
       >
         <div className="network_popup_header">
           <h1>새 선호도 그룹</h1>
@@ -981,6 +984,7 @@ const PregroupLabelSection = () => {
         contentLabel="새 선호도 레이블"
         className="lable_create"
         overlayClassName="lable_create_outer"
+        shouldCloseOnOverlayClick={false}
       >
         <div className="network_popup_header">
           <h1>새로운 선호도 레이블</h1>
@@ -1162,6 +1166,7 @@ const PowerSection = () => {
         contentLabel="사용자에게 권한 추가"
         className="power_add"
         overlayClassName="power_add_outer"
+        shouldCloseOnOverlayClick={false}
       >
         <div className="network_popup_header">
           <h1>사용자에게 권한 추가</h1>
@@ -2417,6 +2422,7 @@ const Machine = () => {
         contentLabel="마이그레이션"
         className="migration_popup"
         overlayClassName="migration_popup_outer"
+        shouldCloseOnOverlayClick={false}
       >
         <div className="domain_header">
           <h1>가상머신 마이그레이션</h1>

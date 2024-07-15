@@ -33,7 +33,7 @@ function Setting() {
       };
 
     return (
-        <div id="setting_section">
+        <div id="setting_section" style={{ padding: '0.5rem ' }}>
         <div className="section_header">
           <div className="section_header_left">
             <div style={{ color: 'gray' }}>관리 &gt; </div>

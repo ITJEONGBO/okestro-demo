@@ -3,7 +3,7 @@ import '../App.css';
 import { Link } from 'react-router-dom';
 
 function MainOuter({ children }) {
-    const [selected, setSelected] = useState('dashboard'); // 기본 선택된 상태 설정
+    const [selected, setSelected] = useState('dashboard');
     const [asidePopupVisible, setAsidePopupVisible] = useState(false);
     const [asidePopupBackgroundColor, setAsidePopupBackgroundColor] = useState({
         dashboard: '',
@@ -14,31 +14,24 @@ function MainOuter({ children }) {
     });
     const [isSecondVisible, setIsSecondVisible] = useState(false);
     const [isLastVisible, setIsLastVisible] = useState(false);
-   
-
     const [isSecondVisibleStorage, setIsSecondVisibleStorage] = useState(false);
     const [isLastVisibleStorage, setIsLastVisibleStorage] = useState(false);
-
     const [isSecondVisibleNetwork, setIsSecondVisibleNetwork] = useState(false);
-     // 우클릭메뉴박스
-     const [contextMenuVisible, setContextMenuVisible] = useState(false);
-     const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
-     const [contextMenuTarget, setContextMenuTarget] = useState(null);
-     const [hoverTarget, setHoverTarget] = useState(null);
+    const [contextMenuVisible, setContextMenuVisible] = useState(false);
+    const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
+    const [contextMenuTarget, setContextMenuTarget] = useState(null);
+    const [hoverTarget, setHoverTarget] = useState(null);
+
     useEffect(() => {
         function adjustFontSize() {
             const width = window.innerWidth;
-            const fontSize = width / 40; // 필요에 따라 이 값을 조정하세요
+            const fontSize = width / 40;
             document.documentElement.style.fontSize = fontSize + 'px';
         }
 
-        // 창 크기가 변경될 때 adjustFontSize 함수 호출
         window.addEventListener('resize', adjustFontSize);
-
-        // 컴포넌트가 마운트될 때 adjustFontSize 함수 호출
         adjustFontSize();
 
-        // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
         return () => {
             window.removeEventListener('resize', adjustFontSize);
         };
@@ -102,27 +95,31 @@ function MainOuter({ children }) {
     const getClassNames = (id) => {
         return selected === id ? 'selected' : '';
     };
-    // 우클릭메뉴박스
+
     const handleMouseEnter = (target) => {
         setHoverTarget(target);
     };
-    
+
     const handleMouseLeave = () => {
         setHoverTarget(null);
     };
-    // 우클릭메뉴박스
-    // 새로운 함수 추가
+
     const handleContextMenu = (event, target) => {
         event.preventDefault();
         setContextMenuPosition({ x: event.clientX, y: event.clientY });
         setContextMenuVisible(true);
         setContextMenuTarget(target);
     };
-    //다른 곳을 클릭하면 배경색이 원래대로 돌아오도록 하는 이벤트 핸들러
+
     const handleMainClick = () => {
         setContextMenuVisible(false);
         setContextMenuTarget(null);
     };
+
+    const handleAsidePopupBtnClick = () => {
+        setAsidePopupVisible(false);
+    };
+
     return (
         <div id="main_outer" onClick={handleMainClick}>
             <div id="aside_outer" style={{ width: asidePopupVisible ? '20%' : '3%' }}>
@@ -175,8 +172,8 @@ function MainOuter({ children }) {
                         </div>
                     </Link>
                 </div>
-                {/* aside 끝 */}
                 <div id="aside_popup" style={{ display: asidePopupVisible ? 'block' : 'none' }}>
+                    <button id='aside_popup_btn' onClick={handleAsidePopupBtnClick}><i className="fa fa-chevron-left"></i></button>
                     {selected === 'machine' && (
                         <div id="virtual_machine_chart">
                             <div className="aside_popup_content" id="aside_popup_first" onClick={handleFirstClick}>
@@ -316,12 +313,8 @@ function MainOuter({ children }) {
                         </div>
                     )}
                 </div>
-                {/* aside_popup 끝 */}
             </div>
-            {/* aside_outer 끝 */}
             {children}
-
-            {/* 우클릭메뉴박스 끝 */}
             <div id="context_menu"
                  style={{
                     display: contextMenuVisible ? 'block' : 'none',
