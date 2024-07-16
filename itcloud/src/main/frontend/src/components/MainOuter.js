@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../App.css';
 import { Link } from 'react-router-dom';
+import Modal from 'react-modal';
 
 function MainOuter({ children }) {
     const [selected, setSelected] = useState('dashboard');
@@ -21,6 +22,7 @@ function MainOuter({ children }) {
     const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
     const [contextMenuTarget, setContextMenuTarget] = useState(null);
     const [hoverTarget, setHoverTarget] = useState(null);
+    const [activePopup, setActivePopup] = useState(null); // 추가된 상태
 
     useEffect(() => {
         function adjustFontSize() {
@@ -120,6 +122,15 @@ function MainOuter({ children }) {
         setAsidePopupVisible(false);
     };
 
+    // 모달 관련 상태 및 함수
+    const openPopup = (popupType) => {
+        setActivePopup(popupType);
+    };
+
+    const closePopup = () => {
+        setActivePopup(null);
+    };
+
     return (
         <div id="main_outer" onClick={handleMainClick}>
             <div id="aside_outer" style={{ width: asidePopupVisible ? '20%' : '3%' }}>
@@ -166,11 +177,9 @@ function MainOuter({ children }) {
                             </div>
                         </Link>
                     </div>
-                    <Link to='/setting' className="link-no-underline">
-                        <div id="setting_icon" style={{ backgroundColor: asidePopupBackgroundColor.setting }} onClick={() => handleClick('setting')}>
-                            <i className="fa fa-cog"></i>
-                        </div>
-                    </Link>
+                    <div id="setting_icon" style={{ backgroundColor: asidePopupBackgroundColor.setting }} onClick={() => handleClick('setting')}>
+                        <i className="fa fa-cog"></i>
+                    </div>
                 </div>
                 <div id="aside_popup" style={{ display: asidePopupVisible ? 'block' : 'none' }}>
                     <button id='aside_popup_btn' onClick={handleAsidePopupBtnClick}><i className="fa fa-chevron-left"></i></button>
@@ -298,7 +307,7 @@ function MainOuter({ children }) {
                                 <i className="fa fa-cog"></i>
                                 <span>활성 사용자 세션</span>
                             </div>
-                            <div id="setting_miniset_btn">
+                            <div id="setting_miniset_btn" onClick={() => openPopup('setSetting')}>
                                 <i className="fa fa-cog"></i>
                                 <span>설정</span>
                             </div>
@@ -329,6 +338,116 @@ function MainOuter({ children }) {
                 <div>삭제</div>
                 <div>Connections</div>
             </div>
+
+            {/*세팅설정 클릭 팝업 */}
+            <Modal
+                isOpen={activePopup === 'setSetting'}
+                onRequestClose={closePopup}
+                contentLabel="설정"
+                className="Modal"
+                overlayClassName="Overlay"
+                shouldCloseOnOverlayClick={false}
+            >
+                <div className="network_bring_popup">
+                    <div className="network_popup_header">
+                        <h1>네트워크 가져오기</h1>
+                        <button onClick={closePopup}><i className="fa fa-times"></i></button>
+                    </div>
+
+                    <div className="network_form_group">
+                        <label htmlFor="cluster" style={{ fontSize: '0.33rem' }}>네트워크 공급자</label>
+                        <select id="cluster">
+                            <option value="default">Default</option>
+                        </select>
+                    </div>
+
+                    <div id="network_bring_table_outer">
+                        <span>공급자 네트워크</span>
+                        <div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" id="provider_network" defaultChecked />
+                                        </th>
+                                        <th>
+                                            <label htmlFor="provider_network">이름</label>
+                                        </th>
+                                        <th>
+                                            <label htmlFor="provider_network">공급자의 네트워크 ID</label>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" id="provider_network_1" defaultChecked />
+                                        </td>
+                                        <td>
+                                            <label htmlFor="provider_network_1">디스크 활성화</label>
+                                        </td>
+                                        <td>
+                                            <label htmlFor="provider_network_1">디스크 활성화</label>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="network_bring_table_outer">
+                        <span>가져올 네트워크</span>
+                        <div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" id="import_network" defaultChecked />
+                                        </th>
+                                        <th>
+                                            <label htmlFor="import_network">이름</label>
+                                        </th>
+                                        <th>
+                                            <label htmlFor="import_network">공급자의 네트워크 ID</label>
+                                        </th>
+                                        <th>
+                                            <label htmlFor="import_network">데이터 센터</label>
+                                        </th>
+                                        <th>
+                                            <label htmlFor="import_network">모두허용</label>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" id="import_network_1" defaultChecked />
+                                        </td>
+                                        <td>
+                                            <label htmlFor="import_network_1">디스크 활성화</label>
+                                        </td>
+                                        <td>
+                                            <label htmlFor="import_network_1">디스크 활성화</label>
+                                        </td>
+                                        <td>
+                                            <label htmlFor="import_network_1">디스크 활성화</label>
+                                        </td>
+                                        <td>
+                                            <label htmlFor="import_network_1">디스크 활성화</label>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div className="edit_footer">
+                        <button style={{ display: 'none' }}></button>
+                        <button>가져오기</button>
+                        <button onClick={closePopup}>취소</button>
+                    </div>
+                </div>
+            </Modal>
         </div>
     );
 }

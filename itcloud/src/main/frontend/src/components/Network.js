@@ -7,6 +7,7 @@ Modal.setAppElement('#root');
 
 function Network() {
     const [activeSection, setActiveSection] = useState('common_outer');
+    const [selectedTab, setSelectedTab] = useState('network_new_common_btn');
     const [activePopup, setActivePopup] = useState(null);
 
     // 폰트사이즈 조절
@@ -78,7 +79,7 @@ function Network() {
     // footer
     const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
     const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
-    const [selectedTab, setSelectedTab] = useState('network_new_common_btn');
+    
 
     const toggleFooterContent = () => {
         setFooterContentVisibility(!isFooterContentVisible);
