@@ -36,7 +36,7 @@ class HistoryDatasourceConfig {
 	@Bean(name=["historyEntityManager"])
 	fun historyEntityManager(builder: EntityManagerFactoryBuilder): LocalContainerEntityManagerFactoryBean {
 		return builder.dataSource(historyDataSource())
-			.packages("com.itinfo.itcloud.model.entity") // entity 클래스 패키지
+			.packages("com.itinfo.itcloud.repository.entity") // entity 클래스 패키지
 			.build().apply {
 				setJpaProperties(Properties().apply {
 					put("hibernate.physical_naming_strategy", CamelCaseToUnderscoresNamingStrategy::class.java.canonicalName)

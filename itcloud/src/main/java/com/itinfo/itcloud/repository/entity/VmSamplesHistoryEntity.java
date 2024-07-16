@@ -1,6 +1,5 @@
-package com.itinfo.itcloud.model.entity;
+package com.itinfo.itcloud.repository.entity;
 
-import com.itinfo.itcloud.model.dto.UsageChartDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,51 +29,27 @@ public class VmSamplesHistoryEntity {
 
     @Type(type="org.hibernate.type.PostgresUUIDType")
     private UUID vmId;
+
     private int vmStatus;
-
     private int cpuUsagePercent;
-
     private int memoryUsagePercent;
-
     private String vmIp;
-
     private String currentUserName;
 
     @Type(type="org.hibernate.type.PostgresUUIDType")
     private UUID currentlyRunningOnHost;
 
     private int vmConfigurationVersion;
-
     private int currentHostConfigurationVersion;
-
     private String vmClientIp;
-
     private Boolean userLoggedInToGuest;
-
     private int userCpuUsagePercent;
-
     private int systemCpuUsagePercent;
 
     @Type(type="org.hibernate.type.PostgresUUIDType")
-    private UUID currentUserId; 
+    private UUID currentUserId;
 
     private BigInteger memoryBufferedKb;
-
     private BigInteger memoryCachedKb;
-
     private int secondsInStatus;
-
-
-    public UsageChartDto getCpuChart(){
-        return UsageChartDto.builder()
-                .name(String.valueOf(vmId))
-                .percent(cpuUsagePercent)
-                .build();
-    }
-    public UsageChartDto getMemoryChart(){
-        return UsageChartDto.builder()
-                .name(String.valueOf(vmId))
-                .percent(memoryUsagePercent)
-                .build();
-    }
 }

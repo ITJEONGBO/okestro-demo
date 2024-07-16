@@ -3,7 +3,6 @@ package com.itinfo.itcloud.service.computing;
 import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.*;
-import com.itinfo.itcloud.model.dto.UsageChartDto;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkFilterParameterVo;
 import com.itinfo.itcloud.model.network.VnicProfileVo;
@@ -33,12 +32,6 @@ class ItVmServiceTest {
     String clusterId = "ae1ea51e-f642-11ee-bcc4-00163e4b3128";
     String defaultId = "74bbfae5-ada6-491e-9d3d-51ac8b50471e"; // HostedEngine
 
-    @Test
-    @DisplayName("가상머신 cpu")
-    void te() {
-        List<UsageChartDto> result = vmService.getCpuChart();
-        result.forEach(System.out::println);
-    }
 
     @Test
     @DisplayName("가상머신 리스트")

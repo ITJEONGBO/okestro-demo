@@ -1,7 +1,6 @@
 package com.itinfo.itcloud.service.storage;
 
 import com.itinfo.itcloud.model.IdentifiedVo;
-import com.itinfo.itcloud.model.UsageVo;
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
@@ -31,12 +30,6 @@ class ItStorageServiceTest {
 
     String dcId = "ae1d4138-f642-11ee-9c1b-00163e4b3128";
 
-
-    @Test
-    void totalStorage(){
-        UsageVo result = storageService.totalStorage();
-        System.out.println(result);
-    }
 
     @Test
     @DisplayName("디스크 목록 출력")

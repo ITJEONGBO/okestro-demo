@@ -1,7 +1,10 @@
-package com.itinfo.itcloud.model.entity;
+package com.itinfo.itcloud.repository.entity;
 
-import com.itinfo.itcloud.model.dto.HostUsageDto;
-import lombok.*;
+import com.itinfo.itcloud.repository.dto.HostUsageDto;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -47,7 +50,7 @@ public class HostSamplesHistoryEntity {
      */
     public HostUsageDto totalCpuMemory(){
         return HostUsageDto.builder()
-//                .hostId(hostId.toString())
+                .historyDatetime(historyDatetime)
                 .totalCpuUsagePercent(cpuUsagePercent)
                 .totalMemoryUsagePercent(memoryUsagePercent)
                 .build();
@@ -63,11 +66,13 @@ public class HostSamplesHistoryEntity {
     public HostUsageDto totalUsage(){
         return HostUsageDto.builder()
                 .hostId(hostId.toString())
-                .hostStatus(hostStatus)
                 .historyDatetime(historyDatetime)
                 .totalCpuUsagePercent(cpuUsagePercent)
                 .totalMemoryUsagePercent(memoryUsagePercent)
                 .build();
     }
+
+    // 호스트 각각 현재 사용량 보여주는 거
+
 
 }

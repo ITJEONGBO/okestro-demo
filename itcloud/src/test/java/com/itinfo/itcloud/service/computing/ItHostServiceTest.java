@@ -1,12 +1,10 @@
 package com.itinfo.itcloud.service.computing;
 
-import com.itinfo.itcloud.model.UsageVo;
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.HostVo;
 import com.itinfo.itcloud.model.computing.NicVo;
 import com.itinfo.itcloud.model.computing.VmVo;
 import com.itinfo.itcloud.model.create.HostCreateVo;
-import com.itinfo.itcloud.model.dto.HostUsageDto;
 import com.itinfo.itcloud.model.error.CommonVo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.net.UnknownHostException;
 import java.util.List;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,31 +21,6 @@ class ItHostServiceTest {
     @Autowired ItHostService hostService;
 
     private final String defaultId = "a16955bd-ff57-4e6e-add5-c7d46d5315e9";    // 70 host01
-
-
-    @Test
-    @DisplayName("전체사용량 - 원그래프 cpu %")
-    void totalUsage() {
-        HostUsageDto result = hostService.totalCpu();
-        System.out.println("host1 " + result);
-    }
-
-
-    @Test
-    @DisplayName("전체사용량- Memory")
-    void totalMemory(){
-        UsageVo result = hostService.totalMemory();
-        System.out.println(result);
-    }
-
-
-    @Test
-    @DisplayName("totalUsageList")
-    void totalUsageList() {
-        List<HostUsageDto> result = hostService.totalUsageList(UUID.fromString(defaultId));
-        result.forEach(System.out::println);
-    }
-
 
 
     @Test

@@ -1,7 +1,6 @@
 package com.itinfo.itcloud.service.computing;
 
 import com.itinfo.itcloud.model.IdentifiedVo;
-import com.itinfo.itcloud.model.dto.UsageChartDto;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.VDiskImageVo;
 import com.itinfo.itcloud.model.create.VmCreateVo;
@@ -17,8 +16,6 @@ import java.util.List;
 
 @Service
 public interface ItVmService {
-    List<UsageChartDto> getCpuChart();
-    List<UsageChartDto> getMemoryChart();
     List<VmVo> getList();
 
     // 생성 창

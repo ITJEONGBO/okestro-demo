@@ -1,25 +1,15 @@
 package com.itinfo.itcloud.service.computing;
 
-import com.itinfo.itcloud.model.UsageVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.HostCreateVo;
-import com.itinfo.itcloud.model.dto.HostUsageDto;
 import com.itinfo.itcloud.model.error.CommonVo;
 import org.springframework.stereotype.Service;
 
 import java.net.UnknownHostException;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public interface ItHostService {
-
-    UsageVo totalMemory();
-
-
-    List<HostUsageDto> totalUsageList(UUID hostId);
-    HostUsageDto totalCpu();
-
     List<HostVo> getList(); // 호스트 리스트
 
     List<ClusterVo> setClusterList();   // 호스트 생성 - 클러스터 리스트 출력

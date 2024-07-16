@@ -1,7 +1,6 @@
 package com.itinfo.itcloud.service.storage.impl;
 
 import com.itinfo.itcloud.model.IdentifiedVo;
-import com.itinfo.itcloud.model.UsageVo;
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.computing.PermissionVo;
@@ -43,27 +42,6 @@ public class StorageServiceImpl implements ItStorageService {
     @Autowired private AdminConnectionService admin;
     @Autowired private CommonService commonService;
 
-    /**
-     * 전체 사용량 - storage
-     * @return 전체 GB, 사용 GB, 사용가능 GB, 사용 %
-     */
-    @Override
-    public UsageVo totalStorage(){
-        SystemService system = admin.getConnection().systemService();
-        List<StorageDomain> storageDomainList = system.storageDomainsService().list().send().storageDomains();
-        double gb = 1073741824;
-
-        double free = storageDomainList.stream().filter(storageDomain -> !storageDomain.statusPresent()).mapToDouble(StorageDomain::availableAsLong).sum();
-        double used = storageDomainList.stream().filter(storageDomain -> !storageDomain.statusPresent()).mapToDouble(StorageDomain::usedAsLong).sum();
-        double committed = storageDomainList.stream().filter(storageDomain -> !storageDomain.statusPresent()).mapToDouble(StorageDomain::committedAsLong).sum();
-
-        return UsageVo.builder()
-                .total((free+used) / gb)
-                .used(used / gb)
-                .free(free / gb)
-                .percent((int) (used/(free+used) * 100))
-                .build();
-    }
 
     /**
      * 디스크 목록

@@ -1,13 +1,9 @@
 package com.itinfo.itcloud.service.computing.impl;
 
-import com.itinfo.itcloud.model.UsageVo;
 import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.HostCreateVo;
-import com.itinfo.itcloud.model.dto.HostUsageDto;
-import com.itinfo.itcloud.model.entity.HostSamplesHistoryEntity;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
-import com.itinfo.itcloud.repository.HostRepository;
 import com.itinfo.itcloud.service.computing.ItAffinityService;
 import com.itinfo.itcloud.service.computing.ItHostService;
 import com.jcraft.jsch.ChannelExec;
@@ -29,7 +25,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,76 +33,6 @@ public class HostServiceImpl implements ItHostService {
     @Autowired private AdminConnectionService admin;
     @Autowired private CommonService commonService;
     @Autowired private ItAffinityService itAffinityService;
-    @Autowired private HostRepository repository;
-
-
-    /**
-     * 전체 사용량 - Memory
-     * @return 전체 GB, 사용 GB, 사용가능 GB, 사용 %
-     */
-    @Override
-    public UsageVo totalMemory(){
-        SystemService system = admin.getConnection().systemService();
-        List<Host> hostList = system.hostsService().list().search("status=up").send().hosts();
-        double gb = 1073741824; /*Math.pow(1024,3)*/
-
-        double total = hostList.stream().mapToDouble(Host::memoryAsLong).sum();
-        double used = hostList.stream()
-                .flatMap(host -> system.hostsService().hostService(host.id()).statisticsService().list().send().statistics().stream())
-                .filter(stat -> "memory.used".equals(stat.name()))
-                .mapToDouble(stat -> stat.values().get(0).datum().doubleValue())
-                .sum();
-
-        return UsageVo.builder()
-                .total( total / gb )
-                .used(used / gb)
-                .free((total - used) / gb)
-
-                .percent((int) (used/total * 100))
-                .build();
-    }
-
-
-    /**
-     * 전체 사용량(CPU, Memory) 원 그래프
-     * @return 5분마다 한번씩 불려지게 해야함
-     */
-    @Override
-    public HostUsageDto totalCpu() {
-        // 여기서 hostId가 내가 넣는 방식이 아니고 전체의 hostList에서 값을 받아와서 넣어야됨
-        SystemService system = admin.getConnection().systemService();
-        List<String> hostIds = system.hostsService().list().send().hosts().stream().map(Host::id).collect(Collectors.toList());
-        int hostCnt = hostIds.size();
-
-        double totalCpu = 0;
-
-        for(String hostId : hostIds){
-            HostUsageDto usage = repository.findFirstByHostIdAndHostStatusOrderByHistoryDatetimeDesc(UUID.fromString(hostId), 1).totalCpuMemory();
-            totalCpu += usage.getTotalCpuUsagePercent();
-        }
-
-        return HostUsageDto.builder()
-                .totalCpuUsagePercent(Math.round(totalCpu / hostCnt))
-                .build();
-    }
-
-    /**
-     * 전체 사용량(CPU, Memory) 선 그래프
-     * @param hostId 호스트 id
-     * @return 10분마다 그래프에
-     */
-    @Override
-    public List<HostUsageDto> totalUsageList(UUID hostId) {
-        return repository.findByHostIdOrderByHistoryDatetimeDesc(hostId)
-                        .stream()
-                        .map(HostSamplesHistoryEntity::totalUsage)
-                        .collect(Collectors.toList());
-    }
-
-
-
-
-
 
     /**
      * 호스트 목록

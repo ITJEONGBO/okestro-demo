@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.service.admin.impl;
 
-import com.itinfo.itcloud.dao.UserDao;
+//import com.itinfo.itcloud.dao.UserDao;
 import com.itinfo.itcloud.service.admin.ItUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl implements ItUserService {
 
-	@Autowired private UserDao userDAO;
+//	@Autowired private UserDao userDAO;
 
 /*
 	@Override
