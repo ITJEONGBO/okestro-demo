@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.service.computing.impl;
 
+import com.itinfo.itcloud.repository.HostInterfaceRepository;
 import com.itinfo.itcloud.repository.StorageRepository;
 import com.itinfo.itcloud.repository.VmRepository;
 import com.itinfo.itcloud.repository.dto.HostUsageDto;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 public class DashServiceImpl implements ItDashService {
     @Autowired private AdminConnectionService admin;
     @Autowired private HostRepository hostRepository;
+    @Autowired private HostInterfaceRepository hostInterfaceRepository;
     @Autowired private VmRepository vmRepository;
     @Autowired private StorageRepository storageRepository;
 
@@ -167,6 +169,7 @@ public class DashServiceImpl implements ItDashService {
     }
 
 
+    // % 기준? GB 기준?
     @Override
     public List<UsageDto> storageChart() {
         SystemService system = admin.getConnection().systemService();
@@ -188,5 +191,52 @@ public class DashServiceImpl implements ItDashService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<UsageDto> hostCpuChart() {
+        SystemService system = admin.getConnection().systemService();
+        Pageable page = PageRequest.of(0, 3);
 
+        return hostRepository.findHostCpuChart(page).stream()
+                .map(hostEntity -> {
+                    Host host = system.hostsService().hostService(String.valueOf(hostEntity.getHostId())).get().send().host();
+                    return UsageDto.builder()
+                            .name(host.name())
+                            .cpuPercent(hostEntity.getCpuUsagePercent())
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UsageDto> hostMemoryChart() {
+        SystemService system = admin.getConnection().systemService();
+        Pageable page = PageRequest.of(0, 3);
+
+        return hostRepository.findHostMemoryChart(page).stream()
+                .map(hostEntity -> {
+                    Host host = system.hostsService().hostService(String.valueOf(hostEntity.getHostId())).get().send().host();
+                    return UsageDto.builder()
+                            .name(host.name())
+                            .memoryPercent(hostEntity.getMemoryUsagePercent())
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UsageDto> hostNetwork() {
+        SystemService system = admin.getConnection().systemService();
+        Pageable page = PageRequest.of(0, 3);
+        return null;
+//
+//        return hostInterfaceRepository.findByHostInterfaceIdOrderByHistoryDatetimeDesc(page).stream()
+//                .map(hostEntity -> {
+//                    Host host = system.hostsService().hostService(String.valueOf(hostEntity.getHostId())).get().send().host();
+//                    return UsageDto.builder()
+//                            .name(host.name())
+//                            .memoryPercent(hostEntity.getMemoryUsagePercent())
+//                            .build();
+//                })
+//                .collect(Collectors.toList());
+    }
 }

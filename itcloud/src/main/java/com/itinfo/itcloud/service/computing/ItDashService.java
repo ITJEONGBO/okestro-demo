@@ -22,5 +22,10 @@ public interface ItDashService {
     List<UsageDto> vmMemoryChart();
     List<UsageDto> storageChart();
 
+    // 호스트 사용량 top3
+    List<UsageDto> hostCpuChart();
+    List<UsageDto> hostMemoryChart();
+
+    List<UsageDto> hostNetwork();
 
 }

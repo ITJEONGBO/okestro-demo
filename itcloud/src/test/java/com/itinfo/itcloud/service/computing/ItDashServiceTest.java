@@ -58,13 +58,43 @@ class ItDashServiceTest {
         result.forEach(System.out::println);
     }
 
+
     @Test
-    @DisplayName("전체사용량 - storage memory top 3 GB")
-    void storageMemory() {
+    @DisplayName("전체사용량 - 스토리지 %?GB?")
+    void storageChart() {
         List<UsageDto> result = dashService.storageChart();
 
         result.forEach(System.out::println);
     }
+
+
+
+
+    @Test
+    @DisplayName("전체사용량 - host cpu top 3 %")
+    void hostCpu() {
+        List<UsageDto> result = dashService.hostCpuChart();
+
+        result.forEach(System.out::println);
+    }
+
+    @Test
+    @DisplayName("전체사용량 - host memory top 3 %")
+    void hostMemory() {
+        List<UsageDto> result = dashService.hostMemoryChart();
+
+        result.forEach(System.out::println);
+    }
+
+
+    @Test
+    @DisplayName("전체사용량 - host network %")
+    void hostNetwork() {
+//        List<UsageDto> result = dashService.
+//
+//        result.forEach(System.out::println);
+    }
+
 
 
 
