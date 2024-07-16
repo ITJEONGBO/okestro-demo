@@ -7,7 +7,7 @@ function MainOuter({ children }) {
     const [asidePopupVisible, setAsidePopupVisible] = useState(false);
     const [asidePopupBackgroundColor, setAsidePopupBackgroundColor] = useState({
         dashboard: '',
-        machine: '',
+        computing: '',
         storage: '',
         network: '',
         setting: ''
@@ -45,15 +45,15 @@ function MainOuter({ children }) {
     const toggleAsidePopup = (id) => {
         const newBackgroundColor = {
             dashboard: '',
-            machine: '',
+            computing: '',
             storage: '',
             network: '',
             setting: ''
         };
 
-        if (id === 'machine') {
-            setAsidePopupVisible(!asidePopupVisible || selected !== 'machine');
-            newBackgroundColor.machine = 'rgb(218, 236, 245)';
+        if (id === 'computing') {
+            setAsidePopupVisible(!asidePopupVisible || selected !== 'computing');
+            newBackgroundColor.computing = 'rgb(218, 236, 245)';
         } else if (id === 'storage') {
             setAsidePopupVisible(!asidePopupVisible || selected !== 'storage');
             newBackgroundColor.storage = 'rgb(218, 236, 245)';
@@ -135,12 +135,12 @@ function MainOuter({ children }) {
                                 <i className="fa fa-th-large"></i>
                             </div>
                         </Link>
-                        <Link to='/machine' className="link-no-underline">
+                        <Link to='/computing' className="link-no-underline">
                             <div
                                 id="aside_popup_machine_btn"
-                                className={getClassNames('machine')}
-                                onClick={() => handleClick('machine')}
-                                style={{ backgroundColor: asidePopupBackgroundColor.machine }}
+                                className={getClassNames('computing')}
+                                onClick={() => handleClick('computing')}
+                                style={{ backgroundColor: asidePopupBackgroundColor.computing }}
                             >
                                 <i className="fa fa-desktop"></i>
                             </div>
@@ -174,7 +174,7 @@ function MainOuter({ children }) {
                 </div>
                 <div id="aside_popup" style={{ display: asidePopupVisible ? 'block' : 'none' }}>
                     <button id='aside_popup_btn' onClick={handleAsidePopupBtnClick}><i className="fa fa-chevron-left"></i></button>
-                    {selected === 'machine' && (
+                    {selected === 'computing' && (
                         <div id="virtual_machine_chart">
                             <div className="aside_popup_content" id="aside_popup_first" onClick={handleFirstClick}>
                                 <i className="fa fa-chevron-down"></i>

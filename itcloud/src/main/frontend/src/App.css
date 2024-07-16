@@ -2100,7 +2100,7 @@ input[disabled] {
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 45%;
+    height: 42%;
     width: 58%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -2143,7 +2143,7 @@ input[disabled] {
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 86%;
+    height: 78%;
     width: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -3208,13 +3208,19 @@ form>div
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
     /*볼륨(새로 만들기*/
-    .Modal {
-        /* 기존 팝업 스타일 */
-      }
+
       
       .Overlay {
         /* 오버레이 스타일 */
-        background-color: rgba(0, 0, 0, 0.75); /* 반투명 검은색 배경 */
+        background-color: rgba(116, 115, 115, 0.555); /* 회색 배경 */
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
 .storage_volume_new_popup{
     border: 1px solid #dfdddd;
@@ -3732,6 +3738,7 @@ form>div
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
 /*네트워크(새로만들기)팝업*/
+
 .network_new_outer {
     position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
     top: 0;
@@ -3768,9 +3775,13 @@ form>div
     padding: 0.25rem;
     border-right: 1px solid rgb(206, 206, 206);
 }
-.network_new_nav > div.active {
+.active-tab {
     background: #e4e4e4;
     color: #449bff;
+}
+
+.inactive-tab {
+    color: black;
 }
 .network_first_contents{
     padding: 0.1rem 0;
@@ -3799,6 +3810,7 @@ form>div
     outline: none;
     border: 1px solid  rgb(206, 206, 206);
 }
+
 .network_second_contents>span{
     padding: 1.2% 2% 0 2%;
     font-weight: 800;
@@ -3894,7 +3906,7 @@ form>div
     font-size: 0.34rem;
     padding: 0 0.4rem 0.4rem 0.4rem;
 }
-#network_bring_table_outer span{
+#network_bring_table_outer span,.network_form_group label{
     font-weight: 600;
     margin-bottom: 0.1rem;
     display: block;

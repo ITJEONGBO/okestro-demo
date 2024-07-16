@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import '../App.css';
 import Modal from 'react-modal';
 // React Modal 설정
@@ -1371,39 +1372,21 @@ const EventSection = () => {
   );
 };
 
-const Machine = () => {
-  const [activeSection, setActiveSection] = useState('general');
+const Computing = () => {
+  const { section } = useParams();
+  const navigate = useNavigate();
+  const [activeSection, setActiveSection] = useState(section || 'general');
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    navigate(`/computing/${activeSection}`);
+  }, [activeSection, navigate]);
 
   const handleSectionClick = (section) => {
     setActiveSection(section);
   };
 
-  //편집팝업
   useEffect(() => {
-    const showEditPopup = () => {
-      setActiveSection('common_outer'); // 상태 초기화
-      const editPopupBg = document.getElementById('edit_popup_bg');
-      if (editPopupBg) {
-        editPopupBg.style.display = 'block';
-      }
-    }
-
-    const editButton = document.getElementById('edit_btn');
-    if (editButton) {
-      editButton.addEventListener('click', showEditPopup);
-    }
-
-    // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
-    return () => {
-      if (editButton) {
-        editButton.removeEventListener('click', showEditPopup);
-      }
-    };
-  }, []);
-  // 편집팝업 기본 섹션에 스타일 적용
-  useEffect(() => {
-
     const defaultElement = document.getElementById('common_outer_btn');
     if (defaultElement) {
       defaultElement.style.backgroundColor = '#EDEDED';
@@ -1411,7 +1394,7 @@ const Machine = () => {
       defaultElement.style.borderBottom = '1px solid blue';
     }
   }, []);
-  // 편집팝업스타일 변환 부분
+
   const handleSectionChange = (section) => {
     setActiveSection(section);
     const elements = document.querySelectorAll('.edit_aside > div');
@@ -1429,7 +1412,6 @@ const Machine = () => {
     }
   };
 
-  //footer
   const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
   const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
 
@@ -1440,9 +1422,10 @@ const Machine = () => {
   const handleFooterTabClick = (tab) => {
     setSelectedFooterTab(tab);
   };
-  // 팝업 열기/닫기 핸들러
+
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
   return (
     <div id="section">
       <div className="section_header">
@@ -2459,4 +2442,4 @@ const Machine = () => {
   );
 };
 
-export default Machine;
+export default Computing;

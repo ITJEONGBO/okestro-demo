@@ -119,7 +119,7 @@ class BarChart extends React.Component {
           colors: ['#fff']
         },
         xaxis: {
-          categories: ['South Korea', 'Canada', 'United Kingdom'],
+          categories: ['A', 'B' ,'C'], // 목록이름
         },
         yaxis: {
           labels: {
@@ -372,7 +372,7 @@ const Dashboard = () => {
             </div>
             <span>USED 64 Core / Total 192 Core</span>
             <div className="wave_graph">
-              <h2>Per Host</h2>
+              <h2>Per CPU</h2>
               <div>
                 <AreaChart /> {/* AreaChart 컴포넌트를 여기에 삽입 */}
               </div>
@@ -380,7 +380,7 @@ const Dashboard = () => {
           </div>
 
           <div className="dash_section_contents">
-            <h1>CPU</h1>
+            <h1>MEMORY</h1>
             <div className="graphs">
               <div className="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
                 <ApexChart /> {/* ApexChart 컴포넌트를 여기에 삽입 */}
@@ -389,9 +389,9 @@ const Dashboard = () => {
                 <BarChart /> {/* BarChart 컴포넌트를 여기에 삽입 */}
               </div>
             </div>
-            <span>USED 64 Core / Total 192 Core</span>
+            <span>USED 64 GB / Total 192 GB</span>
             <div className="wave_graph">
-              <h2>Per Host</h2>
+              <h2>Per MEMORY</h2>
               <div>
                 <AreaChart /> {/* AreaChart 컴포넌트를 여기에 삽입 */}
               </div>
@@ -399,7 +399,7 @@ const Dashboard = () => {
           </div>
 
           <div className="dash_section_contents" style={{ borderRight: 'none' }}>
-            <h1>CPU</h1>
+            <h1>STORAGE</h1>
             <div className="graphs">
               <div className="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
                 <ApexChart /> {/* ApexChart 컴포넌트를 여기에 삽입 */}
@@ -408,9 +408,9 @@ const Dashboard = () => {
                 <BarChart /> {/* BarChart 컴포넌트를 여기에 삽입 */}
               </div>
             </div>
-            <span>USED 64 Core / Total 192 Core</span>
+            <span>USED 64 GB / Total 192 GB</span>
             <div className="wave_graph">
-              <h2>Per Host</h2>
+              <h2>Per STORAGE</h2>
               <div>
                 <AreaChart /> {/* AreaChart 컴포넌트를 여기에 삽입 */}
               </div>

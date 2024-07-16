@@ -40,51 +40,18 @@ function Storage() {
   };
 
   // 모달 관련 상태 및 함수
-  const [isDiskPopupVisible, setDiskPopupVisible] = useState(false);
-  const [isUploadPopupVisible, setUploadPopupVisible] = useState(false);
-  const [isVolumePopupVisible, setVolumePopupVisible] = useState(false);
+  const [activePopup, setActivePopup] = useState(null);
 
-  const handleNewVolumeClick = () => {
-    setVolumePopupVisible(true);
+  const openPopup = (popupType) => {
+    setActivePopup(popupType);
   };
 
   const closePopup = () => {
-    setVolumePopupVisible(false);
+    setActivePopup(null);
   };
-  const handleNewDiskClick = () => {
-    setDiskPopupVisible(true);
-  };
-  
-  const closeDiskPopup = () => {
-    setDiskPopupVisible(false);
-  };
-  const handleUploadClick = () => {
-    setUploadPopupVisible(true);
-  };
-  
-  const closeUploadPopup = () => {
-    setUploadPopupVisible(false);
-  };
-// 도메인(새로운도메인)
-const [isDomainPopupVisible, setDomainPopupVisible] = useState(false);
 
-const handleNewDomainClick = () => {
-  setDomainPopupVisible(true);
-};
 
-const closeDomainPopup = () => {
-  setDomainPopupVisible(false);
-};
-// 도메인(도메인 가져오기)
-const [isGetDomainPopupVisible, setGetDomainPopupVisible] = useState(false);
 
-const handleGetDomainClick = () => {
-  setGetDomainPopupVisible(true);
-};
-
-const closeGetDomainPopup = () => {
-  setGetDomainPopupVisible(false);
-};
 // 도메인(도메인 관리)ㄹㄹㄹㄹ
   return (
     <div id="storage_section">
@@ -146,12 +113,12 @@ const closeGetDomainPopup = () => {
           {activeSection === 'disk' && (
             <div id="storage_disk_outer">
               <div className="content_header_right">
-                <button id="storage_disk_new_btn" onClick={handleNewDiskClick}>새로 만들기</button>
+                <button id="storage_disk_new_btn" onClick={() => openPopup('newDisk')}>새로 만들기</button>
                 <button>수정</button>
                 <button>제거</button>
                 <button>이동</button>
                 <button>복사</button>
-                <button id="storage_disk_upload" onClick={handleUploadClick}>업로드</button>
+                <button id="storage_disk_upload" onClick={() => openPopup('uploadDisk')}>업로드</button>
                 <button>다운로드</button>
                 <button className="content_header_popup_btn">
                   <i className="fa fa-ellipsis-v"></i>
@@ -238,9 +205,9 @@ const closeGetDomainPopup = () => {
             <div id="storage_domain_outer">
               <div className="storage_domain_content">
                 <div className="content_header_right">
-                  <button id="new_domain_btn" onClick={handleNewDomainClick}>새로운 도메인</button>
-                  <button id="get_domain_btn" onClick={handleGetDomainClick}>도메인 가져오기</button>
-                  <button id="administer_domain_btn">도메인 관리</button>
+                  <button id="new_domain_btn" onClick={() => openPopup('newDomain')}>새로운 도메인</button>
+                  <button id="get_domain_btn" onClick={() => openPopup('getDomain')}>도메인 가져오기</button>
+                  <button id="administer_domain_btn" onClick={() => openPopup('manageDomain')}>도메인 관리</button>
                   <button>삭제</button>
                   <button>Connections</button>
                   <button className="content_header_popup_btn">
@@ -339,13 +306,13 @@ const closeGetDomainPopup = () => {
             <div id="storage_volume_outer">
               <div className="storage_volume_content">
                 <div className="content_header_right">
-                  <button id="storage_volume_new_btn" onClick={handleNewVolumeClick}>새로 만들기</button>
+                  <button id="storage_volume_new_btn" onClick={() => openPopup('newVolume')}>새로 만들기</button>
                   <button>삭제</button>
                   <button>시작</button>
                   <button className="disabled_button">중지</button>
                   <button>프로파일링</button>
                   <div>
-                    <button id="storage_volume_snap_btn" style={{ margin: 0 }}>스냅샷</button>
+                    <button id="storage_volume_snap_btn" style={{ margin: 0 }} onClick={() => openPopup('volumeSnap')}>스냅샷</button>
                     <button id="storage_volume_option_boxbtn">
                       <i className="fa fa-chevron-down"></i>
                       <div className="storage_volume_option_box" style={{ display: 'none' }}>
@@ -691,17 +658,17 @@ const closeGetDomainPopup = () => {
       </div>
       {/*디스크(업로드)팝업 */}
       <Modal
-  isOpen={isUploadPopupVisible}
-  onRequestClose={closeUploadPopup}
-  contentLabel="이미지 업로드"
-  className="Modal"
-  overlayClassName="Overlay"
+        isOpen={activePopup === 'uploadDisk'}
+        onRequestClose={closePopup}
+        contentLabel="디스크 업로드"
+        className="Modal"
+        overlayClassName="Overlay"
   shouldCloseOnOverlayClick={false}
 >
   <div className="storage_disk_upload_popup">
     <div className="network_popup_header">
       <h1>이미지 업로드</h1>
-      <button onClick={closeUploadPopup}><i className="fa fa-times"></i></button>
+      <button onClick={closePopup}><i className="fa fa-times"></i></button>
     </div>
     <div className="storage_upload_first">
       <button>파일 선택</button>
@@ -770,24 +737,24 @@ const closeGetDomainPopup = () => {
     <div className="edit_footer">
       <button style={{ display: 'none' }}></button>
       <button>OK</button>
-      <button onClick={closeUploadPopup}>취소</button>
+      <button onClick={closePopup}>취소</button>
     </div>
   </div>
       </Modal>
 
       {/*디스크(새로만들기)팝업 */}
       <Modal
-  isOpen={isDiskPopupVisible}
-  onRequestClose={closeDiskPopup}
-  contentLabel="새 가상 디스크"
-  className="Modal"
-  overlayClassName="Overlay"
+        isOpen={activePopup === 'newDisk'}
+        onRequestClose={closePopup}
+        contentLabel="새 가상 디스크"
+        className="Modal"
+        overlayClassName="Overlay"
   shouldCloseOnOverlayClick={false}
 >
   <div className="storage_disk_new_popup">
     <div className="network_popup_header">
       <h1>새 가상 디스크</h1>
-      <button onClick={closeDiskPopup}><i className="fa fa-times"></i></button>
+      <button onClick={closePopup}><i className="fa fa-times"></i></button>
     </div>
     <div id="disk_new_nav">
       <div id="storage_img_btn">이미지</div>
@@ -924,24 +891,24 @@ const closeGetDomainPopup = () => {
     <div className="edit_footer">
       <button style={{ display: 'none' }}></button>
       <button>OK</button>
-      <button onClick={closeDiskPopup}>취소</button>
+      <button onClick={closePopup}>취소</button>
     </div>
   </div>
       </Modal>
 
       {/*도메인(새로운 도메인)팝업 */}
       <Modal
-  isOpen={isDomainPopupVisible}
-  onRequestClose={closeDomainPopup}
-  contentLabel="새로운 도메인"
-  className="Modal"
-  overlayClassName="Overlay"
-  shouldCloseOnOverlayClick={false}
+        isOpen={activePopup === 'newDomain'}
+        onRequestClose={closePopup}
+        contentLabel="새로운 도메인"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
 >
   <div className="storage_domain_new_popup">
     <div className="network_popup_header">
       <h1>새로운 도메인</h1>
-      <button onClick={closeDomainPopup}><i className="fa fa-times"></i></button>
+      <button  onClick={closePopup}><i className="fa fa-times"></i></button>
     </div>
     
     <div className="storage_domain_new_first">
@@ -1051,23 +1018,23 @@ const closeGetDomainPopup = () => {
     <div className="edit_footer">
       <button style={{ display: 'none' }}></button>
       <button>OK</button>
-      <button onClick={closeDomainPopup}>취소</button>
+      <button  onClick={closePopup}>취소</button>
     </div>
   </div>
-</Modal>
+      </Modal>
       {/*도메인(도메인 가져오기)팝업 */}
       <Modal
-  isOpen={isGetDomainPopupVisible}
-  onRequestClose={closeGetDomainPopup}
-  contentLabel="도메인 가져오기"
-  className="Modal"
-  overlayClassName="Overlay"
+        isOpen={activePopup === 'getDomain'}
+        onRequestClose={closePopup}
+        contentLabel="도메인 가져오기"
+        className="Modal"
+        overlayClassName="Overlay"
   shouldCloseOnOverlayClick={false}
 >
   <div className="storage_domain_get_popup">
     <div className="network_popup_header">
       <h1>사전 구성된 도메인 가져오기</h1>
-      <button onClick={closeGetDomainPopup}><i className="fa fa-times"></i></button>
+      <button onClick={closePopup}><i className="fa fa-times"></i></button>
     </div>
     
     <div className="storage_domain_new_first">
@@ -1177,15 +1144,142 @@ const closeGetDomainPopup = () => {
     <div className="edit_footer">
       <button style={{ display: 'none' }}></button>
       <button>OK</button>
-      <button onClick={closeGetDomainPopup}>취소</button>
+      <button onClick={closePopup}>취소</button>
     </div>
   </div>
       </Modal>
+
       {/*도메인(도메인 관리)팝업 */}
+      <Modal
+        isOpen={activePopup === 'manageDomain'}
+        onRequestClose={closePopup}
+        contentLabel="도메인 관리"
+        className="Modal"
+        overlayClassName="Overlay"
+  shouldCloseOnOverlayClick={false}
+>
+<div className="storage_domain_administer_popup">
+        <div className="network_popup_header">
+          <h1>도메인 관리</h1>
+          <button onClick={closePopup}><i className="fa fa-times"></i></button>
+        </div>
+        
+        <div className="storage_domain_new_first">
+          <div className="domain_new_left">
+            <div className="domain_new_select">
+              <label htmlFor="data_hub_location">데이터 센터</label>
+              <select id="data_hub_location">
+                <option value="linux">Default(VS)</option>
+              </select>
+            </div>
+            <div className="domain_new_select">
+              <label htmlFor="domain_feature_set">도메인 기능</label>
+              <select id="domain_feature_set">
+                <option value="linux">데이터</option>
+              </select>
+            </div>
+            <div className="domain_new_select">
+              <label htmlFor="storage_option_type">스토리지 유형</label>
+              <select id="storage_option_type">
+                <option value="linux">NFS</option>
+              </select>
+            </div>
+            <div className="domain_new_select" style={{ marginBottom: 0 }}>
+              <label htmlFor="host_identifier">호스트</label>
+              <select id="host_identifier">
+                <option value="linux">host02.ititinfo.com</option>
+              </select>
+            </div>                           
+          </div>
+          <div className="domain_new_right">
+            <div className="domain_new_select">
+              <label>이름</label>
+              <input type="text"/>
+            </div>
+            <div className="domain_new_select">
+              <label>설명</label>
+              <input type="text"/>
+            </div>
+            <div className="domain_new_select">
+              <label>코멘트</label>
+              <input type="text"/>
+            </div>
+          </div>
+        </div>
+
+        <div className="storage_domain_new_second">
+          <div>
+            <label htmlFor="data_hub">내보내기 경로</label>
+            <input type="text" placeholder="예:myserver.mydomain.com/my/local/path"/>
+          </div>
+
+          <div>
+            <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn"></i>
+            <span>사용자 정의 연결 매개 변수</span>
+            <div id="domain_hidden_box" style={{ display: 'none' }}>
+              <span>아래 필드에서 기본값을 변경하지 않을 것을 권장합니다.</span>
+              <div className="domain_new_select">
+                <label htmlFor="data_hub">호스트</label>
+                <select id="data_hub">
+                  <option value="linux">host02.ititinfo.com</option>
+                </select>
+              </div>
+              <div className="domain_new_select">
+                <label htmlFor="data_hub">재전송</label>
+                <input type="text"/>
+              </div>
+              <div className="domain_new_select">
+                <label htmlFor="data_hub">제한 시간(데시세컨드)</label>
+                <input type="text"/>
+              </div>
+              <div className="domain_new_select">
+                <label htmlFor="data_hub">추가 마운트 옵션</label>
+                <input type="text"/>
+              </div>
+            </div>
+          </div>
+          <div>
+            <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn2"></i>
+            <span>고급 매개 변수</span>
+            <div id="domain_hidden_box2" style={{ display: 'none' }}>
+              <div className="domain_new_select">
+                <label>디스크 공간 부족 경고 표시(%)</label>
+                <input type="text"/>
+              </div>
+              <div className="domain_new_select">
+                <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+                <input type="text"/>
+              </div>
+              <div className="domain_new_select">
+                <label>디스크 공간 부족 경고 표시(%)</label>
+                <input type="text"/>
+              </div>
+              <div className="domain_new_select">
+                <label htmlFor="format_type_selector" style={{ color: 'gray' }}>포맷</label>
+                <select id="format_type_selector" disabled>
+                  <option value="linux">V5</option>
+                </select>
+              </div>
+              <div className="network_checkbox_type2"> 
+                <input type="checkbox" id="photo_separation" name="photo_separation"/>
+                <label htmlFor="photo_separation">포토 분리</label>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div className="edit_footer">
+          <button style={{ display: 'none' }}></button>
+          <button>OK</button>
+          <button onClick={closePopup}>취소</button>
+        </div>
+      </div>
+      </Modal>
 
       {/*볼륨(새로만들기)팝업 */}
       <Modal
-        isOpen={isVolumePopupVisible}
+        isOpen={activePopup === 'newVolume'}
         onRequestClose={closePopup}
         contentLabel="새 볼륨"
         className="Modal"
@@ -1277,6 +1371,57 @@ const closeGetDomainPopup = () => {
           </div>
         </div>
       </Modal>
+
+      {/*볼륨(스냅샷)팝업 */}
+      <Modal
+        isOpen={activePopup === 'volumeSnap'}
+        onRequestClose={closePopup}
+        contentLabel="스냅샷"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="storage_volume_snap_popup">
+        <div className="network_popup_header">
+          <h1>볼륨 스냅샷 - 클러스터 옵션</h1>
+          <button onClick={closePopup}><i className="fa fa-times"></i></button>
+        </div>
+
+        <div className="volume_snap_first_content">
+          <div className="domain_new_select">
+            <label htmlFor="vol_cluster_dropdown">볼륨 클러스터</label>
+            <select id="vol_cluster_dropdown">
+              <option value="linux">host02.ititinfo.com</option>
+            </select>
+          </div>
+
+          <h2>스냅샷 옵션</h2>
+          <div className="volume_snap_table">
+            <table>
+              <thead>
+                <tr>
+                  <th>이름</th>
+                  <th>설명</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>ㅇ</td>
+                  <td>ㅇ</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="edit_footer">
+          <button style={{ display: 'none' }}></button>
+          <button>업데이트</button>
+          <button onClick={closePopup}>취소</button>
+        </div>
+      </div>
+      </Modal>
+
     </div>
   );
 }
