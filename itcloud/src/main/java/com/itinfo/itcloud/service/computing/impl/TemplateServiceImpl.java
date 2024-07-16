@@ -268,7 +268,7 @@ public class TemplateServiceImpl implements ItTemplateService {
     @Override
     public List<NicVo> getNicsByTemplate(String id) {
         SystemService system = admin.getConnection().systemService();
-
+        log.info("템플릿 네트워크 인터페이스 목록");
         return system.templatesService().templateService(id).nicsService().list().send().nics().stream()
                 .map(nic -> {
                     VnicProfile vnicProfile = system.vnicProfilesService().profileService(nic.vnicProfile().id()).get().send().profile();
@@ -302,9 +302,8 @@ public class TemplateServiceImpl implements ItTemplateService {
     @Override
     public List<DiskVo> getDisksByTemplate(String id) {
         SystemService system = admin.getConnection().systemService();
-        TemplateService templateService = system.templatesService().templateService(id);
-
-        return templateService.diskAttachmentsService().list().send().attachments().stream()
+        log.info("템플릿 디스크 목록");
+        return system.templatesService().templateService(id).diskAttachmentsService().list().send().attachments().stream()
                 .filter(DiskAttachment::diskPresent)
                 .map(diskAttachment -> {
                     Disk disk = system.disksService().diskService(diskAttachment.disk().id()).get().send().disk();
@@ -341,6 +340,7 @@ public class TemplateServiceImpl implements ItTemplateService {
      * @param id 템플릿 id
      * @return 스토리지 도메인 목록
      */
+    // TODO: 스토리지 도메인 묶는 작업 못함
     @Override
     public List<DomainVo> getDomainsByTemplate(String id) {
         SystemService system = admin.getConnection().systemService();
@@ -348,7 +348,6 @@ public class TemplateServiceImpl implements ItTemplateService {
         List<DiskAttachment> diskAttachmentList = dasService.list().send().attachments();
 
         return diskAttachmentList.stream()
-//                .filter()
                 .map(da -> {
                     String diskId = dasService.attachmentService(da.id()).get().send().attachment().disk().id();
                     Disk disk = system.disksService().diskService(diskId).get().send().disk();
@@ -373,17 +372,6 @@ public class TemplateServiceImpl implements ItTemplateService {
                             .build();
                 })
                 .collect(Collectors.toList());
-
-//        Disk disk = system.disksService().diskService(diskAtt.id()).get().send().disk();
-//        StorageDomain domain = system.storageDomainsService().storageDomainService(disk.storageDomains().get(0).id()).get().send().storageDomain();
-//        return DomainVo.builder()
-//                .name(domain.name())
-//                .domainType(domain.type())
-//                .active(diskAtt.active())
-//                .availableSize(domain.available())
-//                .usedSize(domain.used())
-//                .diskSize(domain.used().add(domain.available()))
-//        return null;
     }
 
 

@@ -113,13 +113,16 @@ class ItTemplateServiceTest {
     }
 
     @Test
+    @DisplayName("템플릿 권한 목록")
     void getPermission() {
+        List<PermissionVo> result = templateService.getPermissionsByTemplate(id);
+
+        result.forEach(System.out::println);
     }
 
     @Test
     @DisplayName("템플릿 이벤트 목록")
     void getEvent() {
-        String id = "a03f9c8e-3668-489b-8aac-2fe8e495b2e3";
         List<EventVo> result = templateService.getEventsByTemplate(id);
 
         result.forEach(System.out::println);
