@@ -20,9 +20,10 @@ public interface ItClusterService {
     CommonVo<Boolean> addCluster(ClusterCreateVo cVo);  // 생성
     ClusterCreateVo setCluster(String id);  // 수정 창
     CommonVo<Boolean> editCluster(ClusterCreateVo cVo);  // 수정
-    CommonVo<Boolean> deleteCluster(String id); // 삭제
+    CommonVo<Boolean> deleteCluster(List<String> ids); // 삭제
 
-    ClusterVo getClusterInfo(String id);   // 일반
+
+    ClusterVo getCluster(String id);   // 일반
 
     List<NetworkVo> getNetworksByCluster(String id);  // 네트워크 목록
     CommonVo<Boolean> addClusterNetwork(String id, NetworkCreateVo ncVo);// 네트워크 추가

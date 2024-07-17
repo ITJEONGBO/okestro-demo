@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -242,16 +243,16 @@ class ItClusterServiceTest {
     @Test
     @DisplayName("클러스터 삭제")
     void deleteCluster() {
-        String did = "eafa0922-b6c8-428c-bc8d-25b14be10888";
+        List<String> ids = Arrays.asList("76a92f14-d3d1-4add-be6f-c7f42214cfef");
 
-        CommonVo<Boolean> result = clusterService.deleteCluster(did);
+        CommonVo<Boolean> result = clusterService.deleteCluster(ids);
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
     @Test
     @DisplayName("클러스터 정보")
     void getInfo() {
-        ClusterVo c = clusterService.getClusterInfo(clusterId);
+        ClusterVo c = clusterService.getCluster(clusterId);
 
         System.out.println(c);
         assertThat("Default").isEqualTo(c.getName());

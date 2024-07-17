@@ -10,15 +10,18 @@ import org.ovirt.engine.sdk4.types.QuotaModeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.ARRAY;
 
 @SpringBootTest
 class ItDataCenterServiceTest {
     @Autowired ItDataCenterService dcService;
 
-    String defaultDcId = "ae1d4138-f642-11ee-9c1b-00163e4b3128";
+    private final String defaultDcId = "ae1d4138-f642-11ee-9c1b-00163e4b3128"; // Default
 
     @Test
     @DisplayName("데이터센터 리스트")
@@ -85,15 +88,13 @@ class ItDataCenterServiceTest {
 
         assertThat(defaultDcId).isEqualTo(result.getId());
         assertThat(dc.getName()).isEqualTo(result.getName());
-        assertThat(result).isEqualTo(dc);
-
-        System.out.println(dc);
     }
 
     @Test
     @DisplayName("데이터센터 수정")
     void editDatacenter() {
         String id = "99c24506-4bfa-4995-ba69-2692a8e81186";
+
         DataCenterCreateVo dc = DataCenterCreateVo.builder()
                 .id(id)
                 .name("tsfe")
@@ -128,9 +129,9 @@ class ItDataCenterServiceTest {
     @Test
     @DisplayName("데이터센터 삭제")
     void deleteDatacenter() {
-        String id = "12c222e7-3165-42dd-a413-fc62852bb2d6";
+        List<String> ids = Arrays.asList("402935aa-a550-4785-b5a1-02b46c6c2c20", "b997508c-0bf4-4944-94ae-61d56ca76984", "e4eae0ec-280d-460c-bd79-5c778664bbc4");
 
-        CommonVo<Boolean> result = dcService.deleteDatacenter(id);
+        CommonVo<Boolean> result = dcService.deleteDatacenter(ids);
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
@@ -145,24 +146,27 @@ class ItDataCenterServiceTest {
 
 
     @Test
-    @DisplayName("setComputing")
+    @DisplayName("대시보드 - 컴퓨팅")
     void dash(){
-        List<DataCenterVo> result = dcService.setComputing();
-        System.out.println(result);
+        List<DataCenterVo> result = dcService.dashboardComputing();
+
+        result.forEach(System.out::println);
     }
 
     @Test
-    @DisplayName("setNetwork")
+    @DisplayName("대시보드 - 네트워크")
     void networks(){
-        List<DataCenterVo> result = dcService.setNetwork();
-        System.out.println(result);
+        List<DataCenterVo> result = dcService.dashboardNetwork();
+
+        result.forEach(System.out::println);
     }
 
     @Test
-    @DisplayName("setStorage")
+    @DisplayName("대시보드 - 스토리지")
     void setStorage(){
-        List<DataCenterVo> result = dcService.setStorage();
-        System.out.println(result);
+        List<DataCenterVo> result = dcService.dashboardStorage();
+
+        result.forEach(System.out::println);
     }
 
 

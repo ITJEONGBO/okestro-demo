@@ -36,7 +36,7 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 리스트")
     void getList() {
-        List<VmVo> result = vmService.getList();
+        List<VmVo> result = vmService.getVms();
 
         result.forEach(System.out::println);
 //        assertThat(result.size()).isEqualTo(5);
@@ -551,7 +551,7 @@ class ItVmServiceTest {
     @DisplayName("가상머신 일반")
     void getInfo() {
         String id = "74bbfae5-ada6-491e-9d3d-51ac8b50471e";
-        VmVo result = vmService.getInfo(defaultId);
+        VmVo result = vmService.getVm(defaultId);
 
 //        assertThat("HostedEngine").isEqualTo(result.getName());
         System.out.println(result);
@@ -563,7 +563,7 @@ class ItVmServiceTest {
     @DisplayName("가상머신 네트워크 인터페이스")
     void getNic() {
         String id = "266b7ca4-354b-4016-adbe-7324c932c8ca";
-        List<NicVo> result = vmService.getNic(defaultId);
+        List<NicVo> result = vmService.getNicsByVm(defaultId);
 
         result.forEach(System.out::println);
 //        assertThat(true).isEqualTo(result.stream().anyMatch(nicVo -> nicVo.getName().equals("vnet0")));
@@ -619,7 +619,7 @@ class ItVmServiceTest {
     @DisplayName("가상머신 디스크")
     void getDisk() {
         String id = "e929923d-8710-47ef-bfbd-e281434eb8ee";
-        List<VmDiskVo> result = vmService.getDisk(id);
+        List<VmDiskVo> result = vmService.getDisksByVm(id);
 
 //        assertThat(true).isEqualTo(result.stream().anyMatch(vmDiskVo -> vmDiskVo.getName().equals("he_virtio_disk")));
         result.forEach(System.out::println);
@@ -728,7 +728,7 @@ class ItVmServiceTest {
     void getSnapshot() {
 //        String id = "3f342124-8aa9-473b-b96a-043e985b5742";
         String id = "7a2e21ea-303f-444d-b3ae-964fc04c3919";
-        List<SnapshotVo> result = vmService.getSnapshot(id);
+        List<SnapshotVo> result = vmService.getSnapshotsByVm(id);
 
         result.forEach(System.out::println);
     }
@@ -836,7 +836,7 @@ class ItVmServiceTest {
     @DisplayName("가상머신 애플리케이션")
     void getApplication() {
         String id = "7a2e21ea-303f-444d-b3ae-964fc04c3919"; // centos
-        List<IdentifiedVo> result = vmService.getApplication(id);
+        List<IdentifiedVo> result = vmService.getApplicationsByVm(id);
 
         result.forEach(System.out::println);
 //        assertThat(2).isEqualTo(result.size());
@@ -847,14 +847,14 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 게스트 정보")
     void getGuestInfo() {
-        GuestInfoVo result = vmService.getGuestInfo(defaultId);
+        GuestInfoVo result = vmService.getGuestByVm(defaultId);
         System.out.println(result.toString());
     }
 
     @Test
     @DisplayName("가상머신 권한")
     void getPermission() {
-        List<PermissionVo> result = vmService.getPermission(defaultId);
+        List<PermissionVo> result = vmService.getPermissionsByVm(defaultId);
 
         assertThat(3).isEqualTo(result.size());
         result.stream().map(PermissionVo::getUser).forEach(System.out::println);
@@ -863,7 +863,7 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 이벤트")
     void getEvent() {
-        List<EventVo> result = vmService.getEvent(defaultId);
+        List<EventVo> result = vmService.getEventsByVm(defaultId);
 
         assertThat(3).isEqualTo(result.size());
     }

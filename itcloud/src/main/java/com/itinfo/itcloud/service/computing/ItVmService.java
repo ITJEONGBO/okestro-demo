@@ -16,7 +16,7 @@ import java.util.List;
 
 @Service
 public interface ItVmService {
-    List<VmVo> getList();
+    List<VmVo> getVms();
 
     // 생성 창
     List<ClusterVo> setClusterList();    // 클러스터 리스트
@@ -50,13 +50,12 @@ public interface ItVmService {
     CommonVo<Boolean> migrateVm(String id, String hostId);         // 마이그레이션
     CommonVo<Boolean> migrateCancelVm(String id);   // 마이그레이션 취소
 
-
     CommonVo<Boolean> exportOvaVm(VmExportVo vmExportVo); // ova로 내보내기
 
 
-    VmVo getInfo(String id);        // 일반
+    VmVo getVm(String id);        // 일반
 
-    List<NicVo> getNic(String id);  // 네트워크 인터페이스
+    List<NicVo> getNicsByVm(String id);  // 네트워크 인터페이스
     CommonVo<Boolean> addNic(String id, NicVo nicVo);    // id=vmid, nic 추가
     NicVo setEditNic(String id, String nicId); // nic 수정창
     CommonVo<Boolean> editNic(String id, NicVo nicVo);    // nic 수정
@@ -64,7 +63,7 @@ public interface ItVmService {
 
 
     // 디스크
-    List<VmDiskVo> getDisk(String id);
+    List<VmDiskVo> getDisksByVm(String id);
     CommonVo<Boolean> addDiskImage(String id, VDiskImageVo image);  // 디스크 이미지 생성, id=vmId
 
     CommonVo<Boolean> deleteDisk(String id, String daId, boolean type); // 디스크 삭제
@@ -75,7 +74,7 @@ public interface ItVmService {
 
 
     // 스냅샷
-    List<SnapshotVo> getSnapshot(String id);    // 목록
+    List<SnapshotVo> getSnapshotsByVm(String id);    // 목록
     List<SnapshotDiskVo> setSnapshot(String vmId);  // 스냅샷 생성창
     CommonVo<Boolean> addSnapshot(SnapshotVo snapshotVo);   // 스냅샷 생성
     CommonVo<Boolean> deleteSnapshot(String id, String snapId);     // 스냅샷 삭제
@@ -83,10 +82,10 @@ public interface ItVmService {
     CommonVo<Boolean> addTemplate();    // 스냅샷 템플릿 생성
 
 
-    List<IdentifiedVo> getApplication(String id);  // 어플리케이션
-    GuestInfoVo getGuestInfo(String id);    // 게스트 정보
-    List<PermissionVo> getPermission(String id);    // 권한
-    List<EventVo> getEvent(String id);      // 이벤트
+    List<IdentifiedVo> getApplicationsByVm(String id);  // 어플리케이션
+    GuestInfoVo getGuestByVm(String id);    // 게스트 정보
+    List<PermissionVo> getPermissionsByVm(String id);    // 권한
+    List<EventVo> getEventsByVm(String id);      // 이벤트
 
     ConsoleVo getConsole(String vmId);
 

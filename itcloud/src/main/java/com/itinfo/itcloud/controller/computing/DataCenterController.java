@@ -70,10 +70,10 @@ public class DataCenterController {
 	@DeleteMapping("/{id}")
 	@ResponseBody
 	@ApiOperation(value = "데이터센터 삭제", notes = "선택된 데이터센터 목록을 삭제한다(중복삭제 구현해야함)")
-	@ApiImplicitParam(name = "id", value = "데이터센터 아이디", dataTypeClass = String.class)
-	public CommonVo<Boolean> deleteDc(@PathVariable String id){
+	@ApiImplicitParam(name = "ids", value = "데이터센터 아이디 목록", dataTypeClass = List.class)
+	public CommonVo<Boolean> deleteDc(@RequestBody List<String> ids){
 		log.info("----- 데이터센터 삭제");
-		return dcService.deleteDatacenter(id);
+		return dcService.deleteDatacenter(ids);
 	}
 
 

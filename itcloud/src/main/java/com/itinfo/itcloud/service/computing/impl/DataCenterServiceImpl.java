@@ -157,27 +157,25 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
     /**
      * 데이터센터 삭제
-     * @param id 데이터센터id
+     * @param ids 데이터센터 id 목록
      * @return  데이터센터 삭제 결과 200(success), 404(fail)
      */
     @Override
-    public CommonVo<Boolean> deleteDatacenter(String id) {
+    public CommonVo<Boolean> deleteDatacenter(List<String> ids) {
         SystemService system = admin.getConnection().systemService();
-        DataCenterService dataCenterService = system.dataCentersService().dataCenterService(id);
 
         try {
-            dataCenterService.remove().force(true).send();
-
-            if(!isDcDeleted(system, id, 1000, 60000)){
-                 log.info("데이터센터 삭제");
-                 return CommonVo.successResponse();
-            }else{
-                log.info("데이터센터 삭제 시간초과");
-                return CommonVo.failResponse("데이터센터 삭제 시간초과");
+            String name = "";
+            for (String id : ids) {
+                DataCenterService dataCenterService = system.dataCentersService().dataCenterService(id);
+                name = dataCenterService.get().send().dataCenter().name();
+                dataCenterService.remove().force(true).send();
+                log.info("데이터센터 {} 삭제", name);
             }
-        }catch (Exception e){
-            log.error("데이터센터 삭제 실패 ", e);
-            return CommonVo.failResponse(e.getMessage());
+            return CommonVo.successResponse();
+        } catch (Exception e) {
+            log.error("데이터센터 삭제 실패 {}", e.getMessage());
+            return CommonVo.failResponse("데이터센터 삭제 실패");
         }
     }
 
@@ -217,7 +215,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
      * @return
      */
     @Override
-    public List<DataCenterVo> setComputing() {
+    public List<DataCenterVo> dashboardComputing() {
         SystemService system = admin.getConnection().systemService();
         return system.dataCentersService().list().send().dataCenters().stream()
                 .map(dc -> {
@@ -243,7 +241,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                                         .collect(Collectors.toList());
 
                                 List<TemplateVo> templateList = system.templatesService().list().send().templates().stream()
-                                        .filter(template -> template.clusterPresent() && template.cluster().id().equals(cluster.id()))
+                                        .filter(template -> !template.clusterPresent() || template.cluster().id().equals(cluster.id()))
                                         .map(template -> TemplateVo.builder().id(template.id()).name(template.name()).build())
                                         .collect(Collectors.toList());
 
@@ -270,7 +268,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
      * @return
      */
     @Override
-    public List<DataCenterVo> setNetwork() {
+    public List<DataCenterVo> dashboardNetwork() {
         SystemService system = admin.getConnection().systemService();
         return system.dataCentersService().list().send().dataCenters().stream()
                 .map(dc -> {
@@ -293,7 +291,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
      * @return
      */
     @Override
-    public List<DataCenterVo> setStorage() {
+    public List<DataCenterVo> dashboardStorage() {
         SystemService system = admin.getConnection().systemService();
         return system.dataCentersService().list().send().dataCenters().stream()
                 .map(dc -> {

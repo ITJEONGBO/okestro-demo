@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,7 +27,7 @@ class ItHostServiceTest {
     @Test
     @DisplayName("호스트 목록")
     void getList() {
-        List<HostVo> hostList = hostService.getList();
+        List<HostVo> hostList = hostService.getHosts();
 
         assertThat(hostList.size()).isEqualTo(2);
         hostList.forEach(System.out::println);
@@ -90,8 +91,8 @@ class ItHostServiceTest {
     @Test
     @DisplayName("호스트 삭제")
     void deleteHost() {
-        String id = "704178f0-efa5-41d2-b14a-d8486dc3a252";
-        CommonVo<Boolean> result = hostService.deleteHost(id);
+        List<String> ids = Arrays.asList("76a92f14-d3d1-4add-be6f-c7f42214cfef");
+        CommonVo<Boolean> result = hostService.deleteHost(ids);
 
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
@@ -139,7 +140,7 @@ class ItHostServiceTest {
     @Test
     @DisplayName("호스트 가상머신 목록")
     void getVm() {
-        List<VmVo> vmVoList = hostService.getVm(host1);
+        List<VmVo> vmVoList = hostService.getVmsByHost(host1);
 
         vmVoList.forEach(System.out::println);
     }
@@ -197,7 +198,7 @@ class ItHostServiceTest {
 
     @Test
     void getNic() {
-        List<NicVo> nicList = hostService.getNic(host2);
+        List<NicVo> nicList = hostService.getNicsByHost(host2);
 
         nicList.forEach(System.out::println);
 //        assertThat(nicList.size()).isEqualTo(2);

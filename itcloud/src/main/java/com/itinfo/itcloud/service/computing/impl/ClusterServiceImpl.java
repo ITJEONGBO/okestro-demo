@@ -288,20 +288,24 @@ public class ClusterServiceImpl implements ItClusterService {
 
     /**
      * 클러스터 삭제
-     * @param id 클러스터 id
+     * @param ids 클러스터 id 목록
      * @return 클러스터 삭제 결과 200(success), 404(fail)
      */
     @Override
-    public CommonVo<Boolean> deleteCluster(String id) {
+    public CommonVo<Boolean> deleteCluster(List<String> ids) {
         SystemService system = admin.getConnection().systemService();
-        ClusterService clusterService = system.clustersService().clusterService(id);
 
         try {
-            clusterService.remove().send();
-            log.info("클러스터 삭제");
+            String name = "";
+            for(String id : ids) {
+                ClusterService clusterService = system.clustersService().clusterService(id);
+                name = clusterService.get().send().cluster().name();
+                clusterService.remove().send();
+                log.info("클러스터 {} 삭제", name);
+            }
             return CommonVo.successResponse();
         }catch (Exception e){
-            log.error("실패: Cluster 삭제 {}",  e.getMessage());
+            log.error("클러스터 삭제 실패 {}",  e.getMessage());
             return CommonVo.failResponse(e.getMessage());
         }
     }
@@ -314,7 +318,7 @@ public class ClusterServiceImpl implements ItClusterService {
      * @return 클러스터 객체
      */
     @Override
-    public ClusterVo getClusterInfo(String id){
+    public ClusterVo getCluster(String id){
         SystemService system = admin.getConnection().systemService();
         Cluster cluster = system.clustersService().clusterService(id).get().send().cluster();
 

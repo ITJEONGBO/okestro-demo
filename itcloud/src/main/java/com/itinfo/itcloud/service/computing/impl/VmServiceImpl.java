@@ -40,9 +40,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class VmServiceImpl implements ItVmService {
     @Autowired private AdminConnectionService admin;
-    @Autowired private CommonService commonService;
-    @Autowired private ItAffinityService affinityService;
-    @Autowired private ItGraphService dash;
+    @Autowired private CommonService common;
+    @Autowired private ItAffinityService affinity;
+    @Autowired private ItGraphService graph;
 
     @Autowired private VmSamplesHistoryRepository vmSamplesHistoryRepository;
     @Autowired private VmInterfaceSamplesHistoryRepository vmInterfaceSamplesHistoryRepository;
@@ -52,7 +52,7 @@ public class VmServiceImpl implements ItVmService {
      * @return 가상머신 목록
      */
     @Override
-    public List<VmVo> getList() {
+    public List<VmVo> getVms() {
         SystemService system = admin.getConnection().systemService();
         List<Vm> vmList = system.vmsService().list().allContent(true).send().vms();
 
@@ -69,17 +69,17 @@ public class VmServiceImpl implements ItVmService {
                             .name(vm.name())
                             .hostId(vm.hostPresent() ? vm.host().id() : null)
                             .hostName(vm.hostPresent() ? system.hostsService().hostService(vm.host().id()).get().send().host().name() : null)
-                            .ipv4(commonService.getVmIp(system, vm.id(), "v4"))
-                            .ipv6(commonService.getVmIp(system, vm.id(), "v6"))
+                            .ipv4(common.getVmIp(system, vm.id(), "v4"))
+                            .ipv6(common.getVmIp(system, vm.id(), "v6"))
                             .fqdn(vm.fqdn())
                             .clusterId(cluster.id())
                             .clusterName(cluster.name())
                             .datacenterId(dataCenter.id())
                             .datacenterName(dataCenter.name())
                             // 메모리, cpu, 네트워크
-                            .upTime(commonService.getVmUptime(system, vm.id()))
+                            .upTime(common.getVmUptime(system, vm.id()))
                             .description(vm.description())
-                            .usageDto(vm.status() == VmStatus.UP ? dash.vmPercent(vm.id(), vmNicId) : null)
+                            .usageDto(vm.status() == VmStatus.UP ? graph.vmPercent(vm.id(), vmNicId) : null)
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -1378,7 +1378,7 @@ public class VmServiceImpl implements ItVmService {
 
     // 일반
     @Override
-    public VmVo getInfo(String id) {
+    public VmVo getVm(String id) {
         SystemService system = admin.getConnection().systemService();
         Vm vm = system.vmsService().vmService(id).get().send().vm();
 
@@ -1396,7 +1396,7 @@ public class VmServiceImpl implements ItVmService {
                 .name(vm.name())
                 .description(vm.description())
                 .status(TypeExtKt.findVmStatus(vm.status()))
-                .upTime(commonService.getVmUptime(system, vm.id()))
+                .upTime(common.getVmUptime(system, vm.id()))
                 .templateName(system.templatesService().templateService(vm.template().id()).get().send().template().name())
                 .hostName(hostName)
                 .osSystem(TypeExtKt.findOs(OsVo.valueOf(vm.os().type())))
@@ -1421,7 +1421,7 @@ public class VmServiceImpl implements ItVmService {
 
     // 네트워크 인터페이스
     @Override
-    public List<NicVo> getNic(String id) {
+    public List<NicVo> getNicsByVm(String id) {
         SystemService system = admin.getConnection().systemService();
         VmNicsService vmNicsService = system.vmsService().vmService(id).nicsService();
 
@@ -1447,14 +1447,14 @@ public class VmServiceImpl implements ItVmService {
                             .linkStatus(nic.linked()) // 링크상태 t/f(정지)
                             .interfaces(nic.interface_().value())
                             .macAddress(nic.macPresent() ? nic.mac().address() : null)
-                            .ipv4(commonService.getVmIp(system, id, "v4"))
-                            .ipv6(commonService.getVmIp(system, id, "v6"))
+                            .ipv4(common.getVmIp(system, id, "v4"))
+                            .ipv6(common.getVmIp(system, id, "v6"))
 //                            .speed()
-                            .rxSpeed(commonService.getSpeed(statisticList, "data.current.rx.bps"))
-                            .txSpeed(commonService.getSpeed(statisticList, "data.current.tx.bps"))
-                            .rxTotalSpeed(commonService.getSpeed(statisticList, "data.total.rx"))
-                            .txTotalSpeed(commonService.getSpeed(statisticList, "data.total.tx"))
-                            .stop(commonService.getSpeed(statisticList, "errors.total.rx"))
+                            .rxSpeed(common.getSpeed(statisticList, "data.current.rx.bps"))
+                            .txSpeed(common.getSpeed(statisticList, "data.current.tx.bps"))
+                            .rxTotalSpeed(common.getSpeed(statisticList, "data.total.rx"))
+                            .txTotalSpeed(common.getSpeed(statisticList, "data.total.tx"))
+                            .stop(common.getSpeed(statisticList, "errors.total.rx"))
                             .guestInterface(!rdList.isEmpty() ? rdList.get(0).name() : "해당없음")
                             .build();
                 })
@@ -1661,7 +1661,7 @@ public class VmServiceImpl implements ItVmService {
     // 디스크
     // 별칭, 가상크기, 연결대상, 인터페이스, 논리적 이름, 상태, 유형, 설명
     @Override
-    public List<VmDiskVo> getDisk(String id) {
+    public List<VmDiskVo> getDisksByVm(String id) {
         SystemService system = admin.getConnection().systemService();
         List<DiskAttachment> diskList = system.vmsService().vmService(id).diskAttachmentsService().list().send().attachments();
 
@@ -1897,7 +1897,7 @@ public class VmServiceImpl implements ItVmService {
      */
     // TODO:HELP
     @Override
-    public List<SnapshotVo> getSnapshot(String id) {
+    public List<SnapshotVo> getSnapshotsByVm(String id) {
         SystemService system = admin.getConnection().systemService();
         VmService vmService = system.vmsService().vmService(id);
         Vm vm = vmService.get().send().vm();
@@ -1933,7 +1933,7 @@ public class VmServiceImpl implements ItVmService {
 
                 .sDiskList(snapshot.vmPresent() ? createSnapshotDisk(vmService, snapshot) : activeSnapshotDisk(system, vmService, snapshot))
                 .nicVoList(getSnapshotNic(system, vmService, snapshot))
-                .appVoList(getApplication(vm.id()))
+                .appVoList(getApplicationsByVm(vm.id()))
                 .build();
     }
 
@@ -2013,9 +2013,9 @@ public class VmServiceImpl implements ItVmService {
                             .networkName(system.networksService().networkService(vnicProfile.network().id()).get().send().network().name())
                             .vnicProfileVo(nic.vnicProfilePresent() ? VnicProfileVo.builder().name(vnicProfile.name()).build() : null)
                             .interfaces(nic.interface_().value())
-                            .rxSpeed(!snapshot.vmPresent() ? commonService.getSpeed(statisticList, "data.current.rx.bps").divide(bps) : null)
-                            .txSpeed(!snapshot.vmPresent() ? commonService.getSpeed(statisticList, "data.current.tx.bps").divide(bps) : null)
-                            .stop(snapshot.vmPresent() ? commonService.getSpeed(statisticList, "errors.total.rx").divide(bps) : null)
+                            .rxSpeed(!snapshot.vmPresent() ? common.getSpeed(statisticList, "data.current.rx.bps").divide(bps) : null)
+                            .txSpeed(!snapshot.vmPresent() ? common.getSpeed(statisticList, "data.current.tx.bps").divide(bps) : null)
+                            .stop(snapshot.vmPresent() ? common.getSpeed(statisticList, "errors.total.rx").divide(bps) : null)
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -2158,7 +2158,7 @@ public class VmServiceImpl implements ItVmService {
 
     // 애플리케이션
     @Override
-    public List<IdentifiedVo> getApplication(String id) {
+    public List<IdentifiedVo> getApplicationsByVm(String id) {
         SystemService system = admin.getConnection().systemService();
         List<Application> appList = system.vmsService().vmService(id).applicationsService().list().send().applications();
 
@@ -2210,7 +2210,7 @@ public class VmServiceImpl implements ItVmService {
 
     // 게스트 정보
     @Override
-    public GuestInfoVo getGuestInfo(String id) {
+    public GuestInfoVo getGuestByVm(String id) {
         SystemService system = admin.getConnection().systemService();
         Vm vm = system.vmsService().vmService(id).get().send().vm();
 
@@ -2237,17 +2237,17 @@ public class VmServiceImpl implements ItVmService {
 
     // 권한
     @Override
-    public List<PermissionVo> getPermission(String id) {
+    public List<PermissionVo> getPermissionsByVm(String id) {
         SystemService system = admin.getConnection().systemService();
         List<Permission> permissionList = system.vmsService().vmService(id).permissionsService().list().send().permissions();
 
-        return commonService.getPermission(system, permissionList);
+        return common.getPermission(system, permissionList);
     }
 
 
     // 이벤트
     @Override
-    public List<EventVo> getEvent(String id) {
+    public List<EventVo> getEventsByVm(String id) {
         SystemService system = admin.getConnection().systemService();
         List<Event> eventList = system.eventsService().list().send().events();
         Vm vm = system.vmsService().vmService(id).get().send().vm();

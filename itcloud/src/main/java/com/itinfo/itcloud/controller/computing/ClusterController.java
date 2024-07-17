@@ -86,10 +86,10 @@ public class ClusterController {
 	@DeleteMapping("/{id}")
 	@ResponseBody
 	@ApiOperation(value = "클러스터 삭제", notes = "클러스터를 삭제한다")
-	@ApiImplicitParam(name = "id", value = "클러스터 아이디", dataTypeClass = String.class)
-	public CommonVo<Boolean> deleteCluster(@PathVariable String id){
+	@ApiImplicitParam(name = "ids", value = "클러스터 아이디", dataTypeClass = List.class)
+	public CommonVo<Boolean> deleteCluster(@RequestBody List<String> ids){
 		log.info("--- 클러스터 삭제");
-		return clusterService.deleteCluster(id);
+		return clusterService.deleteCluster(ids);
 	}
 
 
@@ -100,7 +100,7 @@ public class ClusterController {
 	@ApiImplicitParam(name = "id", value = "클러스터 아이디", dataTypeClass = String.class)
 	public ClusterVo cluster(@PathVariable String id) {
 		log.info("--- 클러스터 일반");
-		return clusterService.getClusterInfo(id);
+		return clusterService.getCluster(id);
 	}
 
 	@GetMapping("/{id}/networks")

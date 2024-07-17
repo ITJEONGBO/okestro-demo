@@ -30,7 +30,7 @@ public class HostController {
 	@ResponseBody
 	public List<HostVo> hosts() {
 		log.info("--- 호스트 목록");
-		return hostService.getList();
+		return hostService.getHosts();
 	}
 
 	@GetMapping("/settings")
@@ -71,11 +71,11 @@ public class HostController {
 
 	@DeleteMapping("/{id}")
 	@ApiOperation(value = "호스트 삭제", notes = "호스트를 삭제한다")
-	@ApiImplicitParam(name = "id", value = "호스트 아이디", dataTypeClass = String.class)
+	@ApiImplicitParam(name = "ids", value = "호스트 아이디 목록", dataTypeClass = List.class)
 	@ResponseBody
-	public CommonVo<Boolean> deleteHost(@PathVariable String id){
+	public CommonVo<Boolean> deleteHost(@RequestBody List<String> ids){
 		log.info("--- 호스트 삭제");
-		return hostService.deleteHost(id);
+		return hostService.deleteHost(ids);
 	}
 
 	
@@ -138,7 +138,7 @@ public class HostController {
 	@ResponseBody
 	public List<VmVo> getvm(@PathVariable String id) {
 		log.info("--- 호스트 vm");
-		return hostService.getVm(id);
+		return hostService.getVmsByHost(id);
 	}
 
 //	@PostMapping("/{id}/vms/{vmId}/start")
@@ -167,7 +167,7 @@ public class HostController {
 	@ResponseBody
 	public List<NicVo> nic(@PathVariable String id) {
 		log.info("--- 호스트 nic");
-		return hostService.getNic(id);
+		return hostService.getNicsByHost(id);
 	}
 
 
@@ -177,7 +177,7 @@ public class HostController {
 	@ResponseBody
 	public List<HostDeviceVo> device(@PathVariable String id) {
 		log.info("--- 호스트 장치");
-		return hostService.getHostDevice(id);
+		return hostService.getHostDevicesByHost(id);
 	}
 
 
@@ -187,7 +187,7 @@ public class HostController {
 	@ResponseBody
 	public List<PermissionVo> permission(@PathVariable String id) {
 		log.info("--- 호스트 권한");
-		return hostService.getPermission(id);
+		return hostService.getPermissionsByHost(id);
 	}
 
 
@@ -250,7 +250,7 @@ public class HostController {
 	@ResponseBody
 	public List<EventVo> event(@PathVariable String id) {
 		log.info("--- 호스트 이벤트");
-		return hostService.getEvent(id);
+		return hostService.getEventsByHost(id);
 	}
 
 

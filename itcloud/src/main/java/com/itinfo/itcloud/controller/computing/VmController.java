@@ -33,7 +33,7 @@ public class VmController {
 	@ResponseStatus(HttpStatus.OK)
 	public List<VmVo> vms() {
 		log.info("--- 가상머신 리스트");
-		return vmService.getList();
+		return vmService.getVms();
 	}
 
 
@@ -106,7 +106,7 @@ public class VmController {
 	@ResponseStatus(HttpStatus.OK)
 	public VmVo vm(@PathVariable String id) {
 		log.info("--- 가상머신 일반");
-		return vmService.getInfo(id);
+		return vmService.getVm(id);
 	}
 
 	@GetMapping("/{id}/nics")
@@ -115,7 +115,7 @@ public class VmController {
 	@ResponseBody
 	public List<NicVo> nic(@PathVariable String id) {
 		log.info("----- vm nic 일반 불러오기: " + id);
-		return vmService.getNic(id);
+		return vmService.getNicsByVm(id);
 	}
 
 	@GetMapping("/{id}/disks")
@@ -124,7 +124,7 @@ public class VmController {
 	@ResponseBody
 	public List<VmDiskVo> disk(@PathVariable String id) {
 		log.info("----- vm disk 일반 불러오기: " + id);
-		return vmService.getDisk(id);
+		return vmService.getDisksByVm(id);
 	}
 
 	@GetMapping("/{id}/snapshots")
@@ -133,7 +133,7 @@ public class VmController {
 	@ResponseBody
 	public List<SnapshotVo> snapshot(@PathVariable String id) {
 		log.info("----- vm snapshot 불러오기: " + id);
-		return vmService.getSnapshot(id);
+		return vmService.getSnapshotsByVm(id);
 	}
 
 	@GetMapping("/{id}/applications")
@@ -142,7 +142,7 @@ public class VmController {
 	@ResponseBody
 	public List<IdentifiedVo> app(@PathVariable String id) {
 		log.info("----- vm app 불러오기: " + id);
-		return vmService.getApplication(id);
+		return vmService.getApplicationsByVm(id);
 	}
 
 //	@GetMapping("/{id}/affinitygroups")
@@ -165,7 +165,7 @@ public class VmController {
 	@ResponseBody
 	public GuestInfoVo guest(@PathVariable String id) {
 		log.info("----- vm disk 일반 불러오기: " + id);
-		return vmService.getGuestInfo(id);
+		return vmService.getGuestByVm(id);
 	}
 
 	@GetMapping("/{id}/permissions")
@@ -174,7 +174,7 @@ public class VmController {
 	@ResponseBody
 	public List<PermissionVo> permission(@PathVariable String id) {
 		log.info("----- vm event 일반 불러오기: " + id);
-		return vmService.getPermission(id);
+		return vmService.getPermissionsByVm(id);
 	}
 
 	@GetMapping("/{id}/events")
@@ -183,7 +183,7 @@ public class VmController {
 	@ResponseBody
 	public List<EventVo> event(@PathVariable String id) {
 		log.info("----- vm event 일반 불러오기: " + id);
-		return vmService.getEvent(id);
+		return vmService.getEventsByVm(id);
 	}
 
 

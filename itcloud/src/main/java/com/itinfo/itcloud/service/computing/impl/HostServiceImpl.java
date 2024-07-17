@@ -34,8 +34,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class HostServiceImpl implements ItHostService {
     @Autowired private AdminConnectionService admin;
-    @Autowired private CommonService commonService;
-    @Autowired private ItAffinityService itAffinityService;
+    @Autowired private CommonService common;
+    @Autowired private ItAffinityService affinity;
     @Autowired private ItGraphService dash;
 
     @Autowired private HostConfigurationRepository hostConfigurationRepository;
@@ -49,7 +49,7 @@ public class HostServiceImpl implements ItHostService {
      * @return 호스트 목록
      */
     @Override
-    public List<HostVo> getList() {
+    public List<HostVo> getHosts() {
         SystemService system = admin.getConnection().systemService();
         List<Host> hostList = system.hostsService().list().allContent(true).send().hosts(); // hosted Engine의 정보가 나온다
 
@@ -220,25 +220,29 @@ public class HostServiceImpl implements ItHostService {
     /**
      * 호스트 삭제
      * 삭제 여부 = 가상머신 돌아가는게 있는지 -> 유지보수 상태인지 -> 삭제
-     * @param id 호스트 id
+     * @param ids 호스트 id 목록
      * @return host 200(success) 404(fail)
      */
     @Override
-    public CommonVo<Boolean> deleteHost(String id) {
+    public CommonVo<Boolean> deleteHost(List<String> ids) {
         SystemService system = admin.getConnection().systemService();
-        HostService hostService = system.hostsService().hostService(id);
 
         try {
-            Host host = hostService.get().send().host();
-            HostStatus status = hostService.get().send().host().status();
+            for(String id : ids) {
+                HostService hostService = system.hostsService().hostService(id);
+                Host host = hostService.get().send().host();
+                HostStatus status = hostService.get().send().host().status();
+                String name = host.name();
 
-            if (status == HostStatus.MAINTENANCE) {
-                hostService.remove().send();
-                return CommonVo.successResponse();
-            } else {
-                log.error("호스트 삭제불가 : {}, 유지보수 모드로 바꾸세요", host.name());
-                return CommonVo.failResponse("현재 호스트는 유지보수 모드가 아님");
+                if (status == HostStatus.MAINTENANCE) {
+                    hostService.remove().send();
+                    log.info("호스트 {} 삭제", name);
+                } else {
+                    log.error("호스트 삭제불가 : {}, 유지보수 모드로 바꾸세요", host.name());
+                    return CommonVo.failResponse(host.name() + " 호스트는 유지보수 모드가 아님");
+                }
             }
+            return CommonVo.successResponse();
         }catch (Exception e){
             log.error("error ", e);
             return CommonVo.failResponse(e.getMessage());
@@ -465,17 +469,17 @@ public class HostServiceImpl implements ItHostService {
                 .kdump(host.kdumpStatus().value())      // kdump intergration status
                 .devicePassThrough(host.devicePassthrough().enabled())  // 장치통과
                 .memoryMax(host.maxSchedulingMemory())    // 최대 여유 메모리.
-                .memory(commonService.getSpeed(statisticList, "memory.total"))
-                .memoryFree(commonService.getSpeed(statisticList, "memory.free"))
-                .memoryUsed(commonService.getSpeed(statisticList, "memory.used"))
-                .memoryShared(commonService.getSpeed(statisticList, "memory.shared")) // 문제잇음
-                .swapTotal(commonService.getSpeed(statisticList, "swap.total"))
-                .swapFree(commonService.getSpeed(statisticList, "swap.free"))
-                .swapUsed(commonService.getSpeed(statisticList, "swap.used"))
-                .hugePage2048Total(commonService.getPage(statisticList, "hugepages.2048.total"))
-                .hugePage2048Free(commonService.getPage(statisticList, "hugepages.2048.free"))
-                .hugePage1048576Total(commonService.getPage(statisticList, "hugepages.1048576.total"))
-                .hugePage1048576Free(commonService.getPage(statisticList, "hugepages.1048576.free"))
+                .memory(common.getSpeed(statisticList, "memory.total"))
+                .memoryFree(common.getSpeed(statisticList, "memory.free"))
+                .memoryUsed(common.getSpeed(statisticList, "memory.used"))
+                .memoryShared(common.getSpeed(statisticList, "memory.shared")) // 문제잇음
+                .swapTotal(common.getSpeed(statisticList, "swap.total"))
+                .swapFree(common.getSpeed(statisticList, "swap.free"))
+                .swapUsed(common.getSpeed(statisticList, "swap.used"))
+                .hugePage2048Total(common.getPage(statisticList, "hugepages.2048.total"))
+                .hugePage2048Free(common.getPage(statisticList, "hugepages.2048.free"))
+                .hugePage1048576Total(common.getPage(statisticList, "hugepages.1048576.total"))
+                .hugePage1048576Free(common.getPage(statisticList, "hugepages.1048576.free"))
                 .bootingTime(sdf.format(new Date(bootTime)))
 //                .hostedEngine(host.hostedEnginePresent() && host.hostedEngine().active()) // 이 호스트 내에 호스트 가상머신이 있는지 보기
                 .hostedActive(host.hostedEnginePresent() ? host.hostedEngine().active() : null)
@@ -496,7 +500,7 @@ public class HostServiceImpl implements ItHostService {
      * @return 가상머신 목록
      */
     @Override
-    public List<VmVo> getVm(String id) {
+    public List<VmVo> getVmsByHost(String id) {
         SystemService system = admin.getConnection().systemService();
         List<Vm> vmList = system.vmsService().list().allContent(true).send().vms();
 
@@ -515,9 +519,9 @@ public class HostServiceImpl implements ItHostService {
                             .hostEngineVm(vm.origin().equals("managed_hosted_engine"))
                             .status(vm.status().value())
                             .fqdn(vm.fqdn())
-                            .upTime(commonService.getVmUptime(system, vm.id()))
-                            .ipv4(commonService.getVmIp(system, vm.id(), "v4"))
-                            .ipv6(commonService.getVmIp(system, vm.id(), "v6"))
+                            .upTime(common.getVmUptime(system, vm.id()))
+                            .ipv4(common.getVmIp(system, vm.id(), "v4"))
+                            .ipv6(common.getVmIp(system, vm.id(), "v6"))
                             .usageDto(vm.status() == VmStatus.UP ? dash.vmPercent(vm.id(), vmNicId) : null)
 //                            .placement(vm.placementPolicy().hostsPresent()) // 호스트 고정여부
                             // vm.placementPolicy().hosts() // 고정된 호스트 id가 나옴
@@ -534,7 +538,7 @@ public class HostServiceImpl implements ItHostService {
      * @return 네트워크 인터페이스 목록
      */
     @Override
-    public List<NicVo> getNic(String id) {
+    public List<NicVo> getNicsByHost(String id) {
         SystemService system = admin.getConnection().systemService();
         List<HostNic> hostNicList = system.hostsService().hostService(id).nicsService().list().send().nics();
         DecimalFormat df = new DecimalFormat("###,###");
@@ -553,11 +557,11 @@ public class HostServiceImpl implements ItHostService {
                             .ipv4(hostNic.ip().address())
                             .ipv6(hostNic.ipv6().addressPresent() ? hostNic.ipv6().address() : null)
                             .speed(hostNic.speed().divide(BigInteger.valueOf(1024 * 1024)))
-                            .rxSpeed(commonService.getSpeed(statisticList, "data.current.rx.bps").divide(bps))
-                            .txSpeed(commonService.getSpeed(statisticList, "data.current.tx.bps").divide(bps))
-                            .rxTotalSpeed(commonService.getSpeed(statisticList, "data.total.rx"))
-                            .txTotalSpeed(commonService.getSpeed(statisticList, "data.total.tx"))
-                            .stop(commonService.getSpeed(statisticList, "errors.total.rx").divide(bps))
+                            .rxSpeed(common.getSpeed(statisticList, "data.current.rx.bps").divide(bps))
+                            .txSpeed(common.getSpeed(statisticList, "data.current.tx.bps").divide(bps))
+                            .rxTotalSpeed(common.getSpeed(statisticList, "data.total.rx"))
+                            .txTotalSpeed(common.getSpeed(statisticList, "data.total.tx"))
+                            .stop(common.getSpeed(statisticList, "errors.total.rx").divide(bps))
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -570,7 +574,7 @@ public class HostServiceImpl implements ItHostService {
      * @return 호스트 장치 목록
      */
     @Override
-    public List<HostDeviceVo> getHostDevice(String id) {
+    public List<HostDeviceVo> getHostDevicesByHost(String id) {
         SystemService system = admin.getConnection().systemService();
         List<HostDevice> hostDeviceList = system.hostsService().hostService(id).devicesService().list().send().devices();
 
@@ -594,12 +598,12 @@ public class HostServiceImpl implements ItHostService {
      * @return 권한 목록
      */
     @Override
-    public List<PermissionVo> getPermission(String id) {
+    public List<PermissionVo> getPermissionsByHost(String id) {
         SystemService system = admin.getConnection().systemService();
         List<Permission> permissionList = system.hostsService().hostService(id).permissionsService().list().send().permissions();
         
         log.info("호스트 권한");
-        return commonService.getPermission(system, permissionList);
+        return common.getPermission(system, permissionList);
     }
 
 
@@ -712,7 +716,7 @@ public class HostServiceImpl implements ItHostService {
      * @return 이벤트 목록
      */
     @Override
-    public List<EventVo> getEvent(String id) {
+    public List<EventVo> getEventsByHost(String id) {
         SystemService system = admin.getConnection().systemService();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
         List<Event> eventList = system.eventsService().list().search("host.name=" + system.hostsService().hostService(id).get().send().host().name()).send().events();
