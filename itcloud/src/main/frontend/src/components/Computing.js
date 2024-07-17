@@ -8,6 +8,7 @@ Modal.setAppElement('#root');
 // 네트워크인터페이스
 const NetworkSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   // 팝업 열기/닫기 핸들러
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -16,6 +17,7 @@ const NetworkSection = () => {
   useEffect(() => {
     const container = document.getElementById("network_content_outer");
     const originalContent = document.querySelector('.network_content');
+    
 
     for (let i = 0; i < 3; i++) {
       const clone = originalContent.cloneNode(true);
@@ -178,6 +180,9 @@ const NetworkSection = () => {
 const DiskSection = () => {
   const [isNewDiskModalOpen, setIsNewDiskModalOpen] = useState(false);
   const [isJoinDiskModalOpen, setIsJoinDiskModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('img');
+
+  const handleTabClick = (tab) => setActiveTab(tab);
 
   // 새로 만들기 팝업 열기/닫기 핸들러
   const openNewDiskModal = () => setIsNewDiskModalOpen(true);
@@ -262,11 +267,29 @@ const DiskSection = () => {
                   <button onClick={closeNewDiskModal}><i className="fa fa-times"></i></button>
               </div>
               <div id="disk_new_nav">
-                  <div id="new_img_btn">이미지</div>
-                  <div id="directlun_btn">직접LUN</div>
-                  <div id="managed_block_btn">관리되는 블록</div>
+                  <div
+                      id="storage_img_btn"
+                      onClick={() => handleTabClick('img')}
+                      className={activeTab === 'img' ? 'active' : ''}
+                  >
+                      이미지
+                  </div>
+                  <div
+                      id="storage_directlun_btn"
+                      onClick={() => handleTabClick('directlun')}
+                      className={activeTab === 'directlun' ? 'active' : ''}
+                  >
+                      직접LUN
+                  </div>
+                  <div
+                      id="storage_managed_btn"
+                      onClick={() => handleTabClick('managed')}
+                      className={activeTab === 'managed' ? 'active' : ''}
+                  >
+                      관리되는 블록
+                  </div>
               </div>
-              <div className="disk_new_img">
+              <div className="disk_new_img" style={{ display: activeTab === 'img' ? 'block' : 'none' }}>
                   <div className="disk_new_img_left">
                       <div className="img_input_box">
                           <span>크기(GIB)</span>
@@ -336,8 +359,9 @@ const DiskSection = () => {
                       </div>
                   </div>
               </div>
-              {/* 직접LUN */}
-              <div id="directlun_outer" style={{ display: 'none' }}>
+
+              <div id="directlun_outer" style={{ display: activeTab === 'directlun' ? 'block' : 'none' }}>
+                  {/* 직접LUN 내용 */}
                   <div>
                       <div id="disk_managed_block_left">
                           <div className="img_input_box">
@@ -465,7 +489,9 @@ const DiskSection = () => {
                       </div>
                   </div>
               </div>
-              <div id="managed_block_outer" style={{ display: 'none' }}>
+
+              <div id="managed_block_outer" style={{ display: activeTab === 'managed' ? 'block' : 'none' }}>
+                  {/* 관리되는 블록 내용 */}
                   <div id="disk_managed_block_left">
                       <div className="img_input_box">
                           <span>크기(GIB)</span>
@@ -638,6 +664,7 @@ const DiskSection = () => {
       </div>
   );
 };
+
 
 // 스냅샷
 const SnapshotSection = () => {

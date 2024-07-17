@@ -26,6 +26,7 @@ function Storage() {
   // Footer state
   const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
   const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
+  const [activeTab, setActiveTab] = useState('img');
 
   const toggleFooterContent = () => {
     setFooterContentVisibility(!isFooterContentVisible);
@@ -39,6 +40,10 @@ function Storage() {
     setActiveSection(section);
   };
 
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+  };
+
   // 모달 관련 상태 및 함수
   const [activePopup, setActivePopup] = useState(null);
 
@@ -50,9 +55,19 @@ function Storage() {
     setActivePopup(null);
   };
 
+  // Popup box visibility state and toggle function
+  const [isPopupBoxVisible, setPopupBoxVisibility] = useState(false);
+
+  const togglePopupBox = () => {
+    setPopupBoxVisibility(!isPopupBoxVisible);
+  };
+
+  // 닫힘방지
+  const handlePopupBoxItemClick = (e) => {
+    e.stopPropagation();
+  };
 
 
-// 도메인(도메인 관리)ㄹㄹㄹㄹ
   return (
     <div id="storage_section">
       <div className="section_header">
@@ -67,27 +82,27 @@ function Storage() {
           <div className="article_nav">
             <button>편집</button>
             <button>삭제</button>
-            <button id="popup_btn">
+            <button id="popup_btn" onClick={togglePopupBox}>
               <i className="fa fa-ellipsis-v"></i>
-              <div id="popup_box">
+              <div id="popup_box" style={{ display: isPopupBoxVisible ? 'block' : 'none' }} onClick={handlePopupBoxItemClick}>
                 <div>
-                  <div className="get_btn">가져오기</div>
-                  <div className="get_btn">가상 머신 복제</div>
+                  <div className="get_btn" onClick={handlePopupBoxItemClick}>가져오기</div>
+                  <div className="get_btn" onClick={handlePopupBoxItemClick}>가상 머신 복제</div>
                 </div>
                 <div>
-                  <div>삭제</div>
+                  <div onClick={handlePopupBoxItemClick}>삭제</div>
                 </div>
                 <div>
-                  <div>마이그레이션 취소</div>
-                  <div>변환 취소</div>
+                  <div onClick={handlePopupBoxItemClick}>마이그레이션 취소</div>
+                  <div onClick={handlePopupBoxItemClick}>변환 취소</div>
                 </div>
                 <div>
-                  <div id="template_btn">템플릿 생성</div>
+                  <div id="template_btn" onClick={handlePopupBoxItemClick}>템플릿 생성</div>
                 </div>
                 <div style={{ borderBottom: 'none' }}>
-                  <div id="domain2">도메인으로 내보내기</div>
-                  <div id="domain">Export to Data Domai</div>
-                  <div id="ova_btn">OVA로 내보내기</div>
+                  <div id="domain2" onClick={handlePopupBoxItemClick}>도메인으로 내보내기</div>
+                  <div id="domain" onClick={handlePopupBoxItemClick}>Export to Data Domai</div>
+                  <div id="ova_btn" onClick={handlePopupBoxItemClick}>OVA로 내보내기</div>
                 </div>
               </div>
             </button>
@@ -757,65 +772,88 @@ function Storage() {
       <button onClick={closePopup}><i className="fa fa-times"></i></button>
     </div>
     <div id="disk_new_nav">
-      <div id="storage_img_btn">이미지</div>
-      <div id="storage_directlun_btn">직접LUN</div>
-      <div id="storage_managed_btn">관리되는 블록</div>
-    </div>
-    <div className="disk_new_img">
-      <div className="disk_new_img_left">
-        <div className="img_input_box">
-          <span>크기(GIB)</span>
-          <input type="text" />
-        </div>
-        <div className="img_input_box">
-          <span>별칭</span>
-          <input type="text" />
-        </div>
-        <div className="img_input_box">
-          <span>설명</span>
-          <input type="text" />
-        </div>
-        <div className="img_select_box">
-          <label htmlFor="os">데이터 센터</label>
-          <select id="os">
-            <option value="linux">Linux</option>
-          </select>
-        </div>
-        <div className="img_select_box">
-          <label htmlFor="os">스토리지 도메인</label>
-          <select id="os">
-            <option value="linux">Linux</option>
-          </select>
-        </div>
-        <div className="img_select_box">
-          <label htmlFor="os">할당 정책</label>
-          <select id="os">
-            <option value="linux">Linux</option>
-          </select>
-        </div>
-        <div className="img_select_box">
-          <label htmlFor="os">디스크 프로파일</label>
-          <select id="os">
-            <option value="linux">Linux</option>
-          </select>
-        </div>
+      <div
+        id="storage_img_btn"
+        onClick={() => handleTabClick('img')}
+        className={activeTab === 'img' ? 'active' : ''}
+      >
+        이미지
       </div>
-      <div className="disk_new_img_right">
-        <div>
-          <input type="checkbox" id="reset_after_deletion" />
-          <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
-        </div>
-        <div>
-          <input type="checkbox" className="shareable" />
-          <label htmlFor="shareable">공유 가능</label>
-        </div>
-        <div>
-          <input type="checkbox" id="incremental_backup" defaultChecked />
-          <label htmlFor="incremental_backup">중복 백업 사용</label>
-        </div>
+      <div
+        id="storage_directlun_btn"
+        onClick={() => handleTabClick('directlun')}
+        className={activeTab === 'directlun' ? 'active' : ''}
+      >
+        직접LUN
+      </div>
+      <div
+        id="storage_managed_btn"
+        onClick={() => handleTabClick('managed')}
+        className={activeTab === 'managed' ? 'active' : ''}
+      >
+        관리되는 블록
       </div>
     </div>
-    <div id="storage_directlun_outer" style={{ display: 'none' }}>
+    {/*이미지*/}
+    {activeTab === 'img' && (
+      <div className="disk_new_img">
+        <div className="disk_new_img_left">
+          <div className="img_input_box">
+            <span>크기(GIB)</span>
+            <input type="text" />
+          </div>
+          <div className="img_input_box">
+            <span>별칭</span>
+            <input type="text" />
+          </div>
+          <div className="img_input_box">
+            <span>설명</span>
+            <input type="text" />
+          </div>
+          <div className="img_select_box">
+            <label htmlFor="os">데이터 센터</label>
+            <select id="os">
+              <option value="linux">Linux</option>
+            </select>
+          </div>
+          <div className="img_select_box">
+            <label htmlFor="os">스토리지 도메인</label>
+            <select id="os">
+              <option value="linux">Linux</option>
+            </select>
+          </div>
+          <div className="img_select_box">
+            <label htmlFor="os">할당 정책</label>
+            <select id="os">
+              <option value="linux">Linux</option>
+            </select>
+          </div>
+          <div className="img_select_box">
+            <label htmlFor="os">디스크 프로파일</label>
+            <select id="os">
+              <option value="linux">Linux</option>
+            </select>
+          </div>
+        </div>
+        <div className="disk_new_img_right">
+          <div>
+            <input type="checkbox" id="reset_after_deletion" />
+            <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
+          </div>
+          <div>
+            <input type="checkbox" className="shareable" />
+            <label htmlFor="shareable">공유 가능</label>
+          </div>
+          <div>
+            <input type="checkbox" id="incremental_backup" defaultChecked />
+            <label htmlFor="incremental_backup">중복 백업 사용</label>
+          </div>
+        </div>
+      </div>
+    )}
+    {/*직접LUN*/}
+    {activeTab === 'directlun' && (
+    <div id="storage_directlun_outer" >
       <div id="storage_lun_first">
         <div className="disk_new_img_left">
           <div className="img_input_box">
@@ -853,7 +891,10 @@ function Storage() {
         </div>
       </div>
     </div>
-    <div id="storage_managed_outer" style={{ display: 'none' }}>
+    )}
+    {/*관리되는 블록 */}
+    {activeTab === 'managed' && (
+    <div id="storage_managed_outer" >
       <div id="disk_managed_block_left">
         <div className="img_input_box">
           <span>크기(GIB)</span>
@@ -888,6 +929,7 @@ function Storage() {
         </div>
       </div>
     </div>
+    )}
     <div className="edit_footer">
       <button style={{ display: 'none' }}></button>
       <button>OK</button>
@@ -1423,6 +1465,118 @@ function Storage() {
       </Modal>
 
     </div>
+    //스토리지 섹션끝
+
+    // 도메인->도메인이름 클릭
+    //   <div className="content_detail_section">
+    //   <div className="section_header">
+    //     <div className="section_header_left">
+    //       <span>데이터 센터 > </span>
+    //       <span>스토리지 도메인 > </span>
+    //       <div>hosted_storage</div>
+    //       <button>
+    //         <i className="fa fa-exchange"></i>
+    //       </button>
+    //     </div>
+
+    //     <div className="section_header_right">
+    //       <div className="article_nav">
+    //         <button>도메인 관리</button>
+    //         <button>삭제</button>
+    //         <button>Connections</button>
+    //         <button id="popup_btn" onClick={togglePopupBox}>
+    //           <i className="fa fa-ellipsis-v"></i>
+    //           {isPopupBoxVisible && (
+    //             <div id="popup_box" onClick={handlePopupClick}>
+    //               <div>
+    //                 <div className="get_btn">가져오기</div>
+    //                 <div className="get_btn">가상 머신 복제</div>
+    //               </div>
+    //               <div>
+    //                 <div>삭제</div>
+    //               </div>
+    //               <div>
+    //                 <div>마이그레이션 취소</div>
+    //                 <div>변환 취소</div>
+    //               </div>
+    //               <div>
+    //                 <div id="template_btn">템플릿 생성</div>
+    //               </div>
+    //               <div style={{ borderBottom: 'none' }}>
+    //                 <div id="domain2">도메인으로 내보내기</div>
+    //                 <div id="domain">Export to Data Domai</div>
+    //                 <div id="ova_btn">OVA로 내보내기</div>
+    //               </div>
+    //             </div>
+    //           )}
+    //         </button>
+    //       </div>
+    //     </div>
+    //   </div>
+
+    //   <div className="content_outer">
+    //     <div className="content_header">
+    //       <div className="content_header_left">
+    //         <div className="active">일반</div>
+    //         <div>데이터 센터</div>
+    //         <div>가상머신</div>
+    //         <div>템플릿</div>
+    //         <div>디스크</div>
+    //         <div>디스크 스냅샷</div>
+    //         <div>임대</div>
+    //         <div>디스크 프로파일</div>
+    //         <div>이벤트</div>
+    //         <div>권한</div>
+    //       </div>
+    //     </div>
+
+    //     <div className="section_content_outer">
+    //       <div className="table_container_left">
+    //         <table className="table">
+    //           <tr>
+    //             <th>ID:</th>
+    //             <td>on20-ap01</td>
+    //           </tr>
+    //           <tr>
+    //             <th>설명:</th>
+    //             <td></td>
+    //           </tr>
+    //           <tr>
+    //             <th>상태:</th>
+    //             <td>실행 중</td>
+    //           </tr>
+    //           <tr>
+    //             <th>업타임:</th>
+    //             <td>11 days</td>
+    //           </tr>
+    //           <tr>
+    //             <th>템플릿:</th>
+    //             <td>Blank</td>
+    //           </tr>
+    //           <tr>
+    //             <th>운영 시스템:</th>
+    //             <td>Linux</td>
+    //           </tr>
+    //           <tr>
+    //             <th>펌웨어/장치의 유형:</th>
+    //             <td>
+    //               BIOS의 Q35 칩셋{' '}
+    //               <i className="fa fa-ban" style={{ marginLeft: '13%', color: 'orange' }}></i>
+    //             </td>
+    //           </tr>
+    //           <tr>
+    //             <th>우선 순위:</th>
+    //             <td>높음</td>
+    //           </tr>
+    //           <tr>
+    //             <th>최적화 옵션:</th>
+    //             <td>서버</td>
+    //           </tr>
+    //         </table>
+    //       </div>
+    //     </div>
+    //   </div>
+    // </div>
   );
 }
 

@@ -1611,7 +1611,7 @@
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 75%;
+    height: 86%;
     width: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -1628,11 +1628,23 @@
     margin-right: 2%;
     cursor: pointer;
 }
-#disk_new_nav>div:first-child, #join_new_nav>div:first-child{
+ #join_new_nav>div:first-child{
     color: rgb(35, 132, 243); 
     font-weight: 600;
     border-bottom: 2px solid rgb(35, 132, 243);
 }
+/* 기본 탭 스타일 */
+#disk_new_nav div {
+    cursor: pointer;
+    padding: 10px;
+  }
+  
+  /* 활성화된 탭 스타일 */
+  #disk_new_nav .active {
+    color: rgb(35, 132, 243); 
+    font-weight: 600;
+    border-bottom: 2px solid rgb(35, 132, 243);
+  }
 .disk_new_img,#managed_block_outer,#storage_lun_first,#directlun_outer>div:first-child{
     display: flex;
     padding: 0 0.35rem;
@@ -3377,6 +3389,12 @@ form>div
     font-size: 0.34rem;
     margin-bottom: 0.3rem;
 }
+
+
+.network_new_nav div.active {
+    background: #e4e4e4;
+    color: #449bff;
+}
 .setting_buttons{
     display: flex;
 }
@@ -3423,8 +3441,8 @@ form>div
     background: #fff;
     top: 50%;
     z-index: 3;
-    height: 74%;
-    width: 78%;
+    height: 63%;
+    width: 44%;
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
@@ -3510,8 +3528,8 @@ form>div
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 87%;
-    width: 90%;
+    height: 77%;
+    width: 60%;
     z-index: 3;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -3541,8 +3559,8 @@ form>div
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 87%;
-    width: 90%;
+    height: 85%;
+    width: 61%;
     z-index: 3;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -3629,8 +3647,8 @@ form>div
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 55%;
-    width: 90%;
+    height: 46%;
+    width: 47%;
     z-index: 3;
     left: 50%;
     transform: translate(-50%, -50%);
