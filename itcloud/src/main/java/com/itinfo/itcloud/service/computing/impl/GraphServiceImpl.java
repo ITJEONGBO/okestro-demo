@@ -1,14 +1,11 @@
 package com.itinfo.itcloud.service.computing.impl;
 
-import com.itinfo.itcloud.repository.HostInterfaceRepository;
-import com.itinfo.itcloud.repository.StorageRepository;
-import com.itinfo.itcloud.repository.VmRepository;
+import com.itinfo.itcloud.repository.*;
 import com.itinfo.itcloud.repository.dto.HostUsageDto;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
-import com.itinfo.itcloud.repository.HostRepository;
 import com.itinfo.itcloud.repository.dto.StorageUsageDto;
 import com.itinfo.itcloud.repository.dto.UsageDto;
-import com.itinfo.itcloud.service.computing.ItDashService;
+import com.itinfo.itcloud.service.computing.ItGraphService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.services.SystemService;
 import org.ovirt.engine.sdk4.types.Host;
@@ -26,12 +23,15 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class DashServiceImpl implements ItDashService {
+public class GraphServiceImpl implements ItGraphService {
     @Autowired private AdminConnectionService admin;
-    @Autowired private HostRepository hostRepository;
-    @Autowired private HostInterfaceRepository hostInterfaceRepository;
-    @Autowired private VmRepository vmRepository;
-    @Autowired private StorageRepository storageRepository;
+
+    @Autowired private HostConfigurationRepository hostConfigurationRepository;
+    @Autowired private HostSamplesHistoryRepository hostSamplesHistoryRepository;
+    @Autowired private HostInterfaceSampleHistoryRepository hostInterfaceSampleHistoryRepository;
+    @Autowired private VmSamplesHistoryRepository vmSamplesHistoryRepository;
+    @Autowired private VmInterfaceSamplesHistoryRepository vmInterfaceSamplesHistoryRepository;
+    @Autowired private StorageDomainSamplesHistoryRepository storageDomainSamplesHistoryRepository;
 
     private final double GB = 1073741824; // gb 변환
 
@@ -58,7 +58,7 @@ public class DashServiceImpl implements ItDashService {
         double totalMemory = 0;
         LocalDateTime time = null;
         for(Host host : hostList){
-            HostUsageDto usage = hostRepository.findFirstByHostIdOrderByHistoryDatetimeDesc(UUID.fromString(host.id())).totalCpuMemory();
+            HostUsageDto usage = hostSamplesHistoryRepository.findFirstByHostIdOrderByHistoryDatetimeDesc(UUID.fromString(host.id())).totalCpuMemory();
             totalCpu += usage.getTotalCpuUsagePercent();
             totalMemory += usage.getTotalMemoryUsagePercent();
             time = usage.getHistoryDatetime();
@@ -116,7 +116,7 @@ public class DashServiceImpl implements ItDashService {
         Pageable page = PageRequest.of(0, limit);
         String hostName = system.hostsService().list().search("id=" + hostId).send().hosts().get(0).name();
 
-        return hostRepository.findByHostIdOrderByHistoryDatetimeDesc(hostId, page).stream()
+        return hostSamplesHistoryRepository.findByHostIdOrderByHistoryDatetimeDesc(hostId, page).stream()
                 .map(hostEntity ->
                         HostUsageDto.builder()
                             .hostName(hostName)
@@ -137,7 +137,7 @@ public class DashServiceImpl implements ItDashService {
         SystemService system = admin.getConnection().systemService();
         Pageable page = PageRequest.of(0, 3);
 
-        return vmRepository.findVmCpuChart(page).stream()
+        return vmSamplesHistoryRepository.findVmCpuChart(page).stream()
                 .map(vmEntity -> {
                     Vm vm = system.vmsService().vmService(String.valueOf(vmEntity.getVmId())).get().send().vm();
                     return UsageDto.builder()
@@ -157,7 +157,7 @@ public class DashServiceImpl implements ItDashService {
         SystemService system = admin.getConnection().systemService();
         Pageable page = PageRequest.of(0, 3);
 
-        return vmRepository.findVmMemoryChart(page).stream()
+        return vmSamplesHistoryRepository.findVmMemoryChart(page).stream()
                 .map(vmEntity -> {
                     Vm vm = system.vmsService().vmService(String.valueOf(vmEntity.getVmId())).get().send().vm();
                     return UsageDto.builder()
@@ -175,7 +175,7 @@ public class DashServiceImpl implements ItDashService {
         SystemService system = admin.getConnection().systemService();
         Pageable page = PageRequest.of(0, 3);
 
-        return storageRepository.findStorageChart(page).stream()
+        return storageDomainSamplesHistoryRepository.findStorageChart(page).stream()
                 .map(domainEntity -> {
                     StorageDomain storageDomain = system.storageDomainsService().storageDomainService(String.valueOf(domainEntity.getStorageDomainId())).get().send().storageDomain();
                     int totalGB = domainEntity.getAvailableDiskSizeGb() + domainEntity.getUsedDiskSizeGb();
@@ -196,7 +196,7 @@ public class DashServiceImpl implements ItDashService {
         SystemService system = admin.getConnection().systemService();
         Pageable page = PageRequest.of(0, 3);
 
-        return hostRepository.findHostCpuChart(page).stream()
+        return hostSamplesHistoryRepository.findHostCpuChart(page).stream()
                 .map(hostEntity -> {
                     Host host = system.hostsService().hostService(String.valueOf(hostEntity.getHostId())).get().send().host();
                     return UsageDto.builder()
@@ -212,7 +212,7 @@ public class DashServiceImpl implements ItDashService {
         SystemService system = admin.getConnection().systemService();
         Pageable page = PageRequest.of(0, 3);
 
-        return hostRepository.findHostMemoryChart(page).stream()
+        return hostSamplesHistoryRepository.findHostMemoryChart(page).stream()
                 .map(hostEntity -> {
                     Host host = system.hostsService().hostService(String.valueOf(hostEntity.getHostId())).get().send().host();
                     return UsageDto.builder()
@@ -223,20 +223,22 @@ public class DashServiceImpl implements ItDashService {
                 .collect(Collectors.toList());
     }
 
+
     @Override
-    public List<UsageDto> hostNetwork() {
-        SystemService system = admin.getConnection().systemService();
-        Pageable page = PageRequest.of(0, 3);
-        return null;
-//
-//        return hostInterfaceRepository.findByHostInterfaceIdOrderByHistoryDatetimeDesc(page).stream()
-//                .map(hostEntity -> {
-//                    Host host = system.hostsService().hostService(String.valueOf(hostEntity.getHostId())).get().send().host();
-//                    return UsageDto.builder()
-//                            .name(host.name())
-//                            .memoryPercent(hostEntity.getMemoryUsagePercent())
-//                            .build();
-//                })
-//                .collect(Collectors.toList());
+    public UsageDto hostPercent(String hostId, String hostNicId) {
+        UsageDto usageDto = hostSamplesHistoryRepository.findFirstByHostIdOrderByHistoryDatetimeDesc(UUID.fromString(hostId)).getUsage();
+        int networkRate = hostInterfaceSampleHistoryRepository.findFirstByHostInterfaceIdOrderByHistoryDatetimeDesc(UUID.fromString(hostNicId)).getNetworkRate();
+        usageDto.setNetworkPercent(networkRate);
+
+        return usageDto;
+    }
+
+    @Override
+    public UsageDto vmPercent(String vmId, String vmNicId) {
+        UsageDto usageDto = vmSamplesHistoryRepository.findFirstByVmIdOrderByHistoryDatetimeDesc(UUID.fromString(vmId)).getUsage();
+        int networkRate = vmInterfaceSamplesHistoryRepository.findFirstByVmInterfaceIdOrderByHistoryDatetimeDesc(UUID.fromString(vmNicId)).getNetworkRate();
+        usageDto.setNetworkPercent(networkRate);
+
+        return usageDto;
     }
 }

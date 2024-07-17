@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface HostRepository extends JpaRepository<HostSamplesHistoryEntity, Integer> {
+public interface HostSamplesHistoryRepository extends JpaRepository<HostSamplesHistoryEntity, Integer> {
 
     // 해당 호스트 cpu, memory 한행만 % 출력
     HostSamplesHistoryEntity findFirstByHostIdOrderByHistoryDatetimeDesc(UUID hostId);

@@ -13,9 +13,10 @@ import com.itinfo.itcloud.model.storage.DiskVo;
 import com.itinfo.itcloud.model.storage.DomainVo;
 import com.itinfo.itcloud.model.storage.VmDiskVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
-import com.itinfo.itcloud.repository.VmRepository;
-import com.itinfo.itcloud.service.admin.ItSystemPropertyService;
+import com.itinfo.itcloud.repository.VmInterfaceSamplesHistoryRepository;
+import com.itinfo.itcloud.repository.VmSamplesHistoryRepository;
 import com.itinfo.itcloud.service.computing.ItAffinityService;
+import com.itinfo.itcloud.service.computing.ItGraphService;
 import com.itinfo.itcloud.service.computing.ItVmService;
 import com.itinfo.util.BasicConfiguration;
 import com.itinfo.util.model.SystemPropertiesVo;
@@ -41,7 +42,10 @@ public class VmServiceImpl implements ItVmService {
     @Autowired private AdminConnectionService admin;
     @Autowired private CommonService commonService;
     @Autowired private ItAffinityService affinityService;
-    @Autowired private ItSystemPropertyService systemService;
+    @Autowired private ItGraphService dash;
+
+    @Autowired private VmSamplesHistoryRepository vmSamplesHistoryRepository;
+    @Autowired private VmInterfaceSamplesHistoryRepository vmInterfaceSamplesHistoryRepository;
 
     /**
      * 가상머신 목록
@@ -57,6 +61,7 @@ public class VmServiceImpl implements ItVmService {
                 .map(vm -> {
                     Cluster cluster = system.clustersService().clusterService(vm.cluster().id()).get().send().cluster();
                     DataCenter dataCenter = system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter();
+                    String vmNicId = system.vmsService().vmService(vm.id()).nicsService().list().send().nics().get(0).id();
 
                     return VmVo.builder()
                             .status(TypeExtKt.findVmStatus(vm.status()))
@@ -74,6 +79,7 @@ public class VmServiceImpl implements ItVmService {
                             // 메모리, cpu, 네트워크
                             .upTime(commonService.getVmUptime(system, vm.id()))
                             .description(vm.description())
+                            .usageDto(vm.status() == VmStatus.UP ? dash.vmPercent(vm.id(), vmNicId) : null)
                             .build();
                 })
                 .collect(Collectors.toList());

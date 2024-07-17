@@ -1,6 +1,5 @@
 package com.itinfo.itcloud.repository.entity;
 
-import com.itinfo.itcloud.repository.dto.UsageDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,26 +19,27 @@ import java.util.UUID;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="HOST_INTERFACE_SAMPLES_HISTORY")
-public class HostInterfaceSamplesHistoryEntity {
+@Table(name="VM_INTERFACE_SAMPLES_HISTORY")
+public class VmInterfaceSamplesHistoryEntity {
     @Id
     @Column(unique = true, nullable = false)
     private int historyId;
 
     @Type(type = "org.hibernate.type.PostgresUUIDType")
-    private UUID hostInterfaceId;
+    private UUID vmInterfaceId;
 
     private LocalDateTime historyDatetime;
 
     private BigDecimal receiveRatePercent;
     private BigDecimal transmitRatePercent;
 
-    private int hostInterfaceConfigurationVersion;
+    private Integer vmInterfaceConfigurationVersion;
 
     private BigDecimal receivedTotalByte;
     private BigDecimal transmittedTotalByte;
     private BigDecimal receivedDroppedTotalPackets;
     private BigDecimal transmittedDroppedTotalPackets;
+
 
     public Integer getNetworkRate(){
         return receiveRatePercent.intValue();

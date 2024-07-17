@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.model.computing;
 
+import com.itinfo.itcloud.repository.dto.UsageDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -75,6 +76,7 @@ public class HostVo {
     private HostSwVo hostSwVo;
 
     private NicVo nicVo;
+    private UsageDto usageDto;
 
     private List<VmVo> vmVoList;
 }

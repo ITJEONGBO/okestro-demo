@@ -10,8 +10,11 @@ import com.itinfo.itcloud.model.network.NetworkClusterVo;
 import com.itinfo.itcloud.model.network.NetworkUsageVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
+import com.itinfo.itcloud.repository.VmInterfaceSamplesHistoryRepository;
+import com.itinfo.itcloud.repository.VmSamplesHistoryRepository;
 import com.itinfo.itcloud.service.computing.ItAffinityService;
 import com.itinfo.itcloud.service.computing.ItClusterService;
+import com.itinfo.itcloud.service.computing.ItGraphService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
 import org.ovirt.engine.sdk4.services.*;
@@ -29,7 +32,10 @@ public class ClusterServiceImpl implements ItClusterService {
     @Autowired private AdminConnectionService admin;
     @Autowired private CommonService common;
     @Autowired private ItAffinityService affinity;
+    @Autowired private ItGraphService dash;
 
+    @Autowired private VmSamplesHistoryRepository vmSamplesHistoryRepository;
+    @Autowired private VmInterfaceSamplesHistoryRepository vmInterfaceSamplesHistoryRepository;
 
     /***
      * 클러스터 목록
@@ -534,19 +540,22 @@ public class ClusterServiceImpl implements ItClusterService {
         log.info("클러스터 호스트 목록");
         return hostList.stream()
                 .filter(host -> host.cluster().id().equals(id))
-                .map(host ->
-                    HostVo.builder()
-                        .id(host.id())
-                        .name(host.name())
-                        .status(host.status().value())
-                        .address(host.address())
-                        .vmUpCnt(
-                            (int) vmList.stream()
-                                    .filter(vm -> vm.hostPresent() && vm.host().id().equals(host.id()) && vm.status().value().equals("up"))
-                                    .count()
-                        )
-                    .build()
-                )
+                .map(host -> {
+                    String hostNicId = system.hostsService().hostService(host.id()).nicsService().list().send().nics().get(0).id();
+
+                    return HostVo.builder()
+                            .id(host.id())
+                            .name(host.name())
+                            .status(host.status().value())
+                            .address(host.address())
+                            .vmUpCnt(
+                                    (int) vmList.stream()
+                                            .filter(vm -> vm.hostPresent() && vm.host().id().equals(host.id()) && vm.status().value().equals("up"))
+                                            .count()
+                            )
+                            .usageDto(host.status() == HostStatus.UP ? dash.hostPercent(host.id(), hostNicId) : null)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
@@ -564,8 +573,10 @@ public class ClusterServiceImpl implements ItClusterService {
         log.info("클러스터 가상머신 목록");
         return vmList.stream()
                 .filter(vm -> vm.cluster().id().equals(id))
-                .map(vm ->
-                    VmVo.builder()
+                .map(vm -> {
+                    String vmNicId = system.vmsService().vmService(vm.id()).nicsService().list().send().nics().get(0).id();
+
+                    return VmVo.builder()
                             .status(vm.status().value())
                             .id(vm.id())
                             .name(vm.name())
@@ -573,8 +584,9 @@ public class ClusterServiceImpl implements ItClusterService {
                             .hostEngineVm(vm.origin().equals("managed_hosted_engine"))  // 엔진여부
                             .ipv4(common.getVmIp(system, vm.id(), "v4"))
                             .ipv6(common.getVmIp(system, vm.id(), "v6"))
-                            .build()
-                )
+                            .usageDto(vm.status() == VmStatus.UP ? dash.vmPercent(vm.id(), vmNicId) : null)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 

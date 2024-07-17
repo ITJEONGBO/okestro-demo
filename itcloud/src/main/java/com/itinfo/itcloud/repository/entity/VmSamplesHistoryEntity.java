@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.repository.entity;
 
+import com.itinfo.itcloud.repository.dto.UsageDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,25 +32,35 @@ public class VmSamplesHistoryEntity {
     private UUID vmId;
 
     private int vmStatus;
-    private int cpuUsagePercent;
-    private int memoryUsagePercent;
+    private Integer cpuUsagePercent;
+    private Integer memoryUsagePercent;
     private String vmIp;
     private String currentUserName;
 
     @Type(type="org.hibernate.type.PostgresUUIDType")
     private UUID currentlyRunningOnHost;
 
-    private int vmConfigurationVersion;
-    private int currentHostConfigurationVersion;
+    private Integer vmConfigurationVersion;
+    private Integer currentHostConfigurationVersion;
     private String vmClientIp;
     private Boolean userLoggedInToGuest;
-    private int userCpuUsagePercent;
-    private int systemCpuUsagePercent;
+    private Integer userCpuUsagePercent;
+    private Integer systemCpuUsagePercent;
 
     @Type(type="org.hibernate.type.PostgresUUIDType")
     private UUID currentUserId;
 
     private BigInteger memoryBufferedKb;
     private BigInteger memoryCachedKb;
-    private int secondsInStatus;
+    private Integer secondsInStatus;
+
+    // 호스트 각각 현재 사용량 보여주는 거
+    public UsageDto getUsage(){
+        return UsageDto.builder()
+//                .id(hostId.toString())
+                .cpuPercent(cpuUsagePercent)
+                .memoryPercent(memoryUsagePercent)
+                .build();
+    }
+
 }

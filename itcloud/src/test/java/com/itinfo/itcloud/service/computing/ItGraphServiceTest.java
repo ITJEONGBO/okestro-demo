@@ -12,8 +12,9 @@ import java.util.List;
 import java.util.UUID;
 
 @SpringBootTest
-class ItDashServiceTest {
-    @Autowired ItDashService dashService;
+class ItGraphServiceTest {
+    @Autowired
+    ItGraphService dashService;
 
     private final String defaultId = "971160c2-307d-463b-8f52-459561aa6996";    // 70 host01
 
@@ -44,7 +45,7 @@ class ItDashServiceTest {
 
     @Test
     @DisplayName("전체사용량 - vm cpu top 3 %")
-    void vmCpu() {
+    void vmCpuChart() {
         List<UsageDto> result = dashService.vmCpuChart();
 
         result.forEach(System.out::println);
@@ -52,7 +53,7 @@ class ItDashServiceTest {
 
     @Test
     @DisplayName("전체사용량 - vm memory top 3 %")
-    void vmMemory() {
+    void vmMemoryChart() {
         List<UsageDto> result = dashService.vmMemoryChart();
 
         result.forEach(System.out::println);
@@ -72,7 +73,7 @@ class ItDashServiceTest {
 
     @Test
     @DisplayName("전체사용량 - host cpu top 3 %")
-    void hostCpu() {
+    void hostCpuChart() {
         List<UsageDto> result = dashService.hostCpuChart();
 
         result.forEach(System.out::println);
@@ -80,20 +81,23 @@ class ItDashServiceTest {
 
     @Test
     @DisplayName("전체사용량 - host memory top 3 %")
-    void hostMemory() {
+    void hostMemoryChart() {
         List<UsageDto> result = dashService.hostMemoryChart();
 
         result.forEach(System.out::println);
     }
 
 
-    @Test
-    @DisplayName("전체사용량 - host network %")
-    void hostNetwork() {
-//        List<UsageDto> result = dashService.
+
+
+//    @Test
+//    @DisplayName("host cpu, memory %")
+//    void hostCpuMemory() {
+//        UsageDto result = dashService.hostPercent(defaultId);
 //
-//        result.forEach(System.out::println);
-    }
+//        System.out.println(result);
+//    }
+
 
 
 

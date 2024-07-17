@@ -4,7 +4,9 @@ import com.itinfo.itcloud.model.computing.*;
 import com.itinfo.itcloud.model.create.HostCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
+import com.itinfo.itcloud.repository.*;
 import com.itinfo.itcloud.service.computing.ItAffinityService;
+import com.itinfo.itcloud.service.computing.ItGraphService;
 import com.itinfo.itcloud.service.computing.ItHostService;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -25,6 +27,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +36,13 @@ public class HostServiceImpl implements ItHostService {
     @Autowired private AdminConnectionService admin;
     @Autowired private CommonService commonService;
     @Autowired private ItAffinityService itAffinityService;
+    @Autowired private ItGraphService dash;
+
+    @Autowired private HostConfigurationRepository hostConfigurationRepository;
+    @Autowired private HostSamplesHistoryRepository hostSamplesHistoryRepository;
+    @Autowired private HostInterfaceSampleHistoryRepository hostInterfaceSampleHistoryRepository;
+    @Autowired private VmSamplesHistoryRepository vmSamplesHistoryRepository;
+    @Autowired private VmInterfaceSamplesHistoryRepository vmInterfaceSamplesHistoryRepository;
 
     /**
      * 호스트 목록
@@ -47,6 +57,8 @@ public class HostServiceImpl implements ItHostService {
         return hostList.stream()
                 .map(host -> {
                     Cluster cluster = system.clustersService().clusterService(host.cluster().id()).get().send().cluster();
+                    String hostNicId = system.hostsService().hostService(host.id()).nicsService().list().send().nics().get(0).id();
+
                     return HostVo.builder()
                                 .id(host.id())
                                 .name(host.name())
@@ -63,11 +75,11 @@ public class HostServiceImpl implements ItHostService {
                                         .filter(vm -> vm.host() != null && vm.host().id().equals(host.id()))
                                         .count()
                                 )
+                                .usageDto(host.status() == HostStatus.UP ? dash.hostPercent(host.id(), hostNicId) : null)
                             .build();
                 })
                 .collect(Collectors.toList());
     }
-
 
 
     /**
@@ -493,8 +505,10 @@ public class HostServiceImpl implements ItHostService {
                 .filter(vm ->
                             (vm.hostPresent() && vm.host().id().equals(id)) ||
                             (vm.placementPolicy().hostsPresent() && vm.placementPolicy().hosts().stream().anyMatch(host -> host.id().equals(id))))
-                .map(vm ->
-                        VmVo.builder()
+                .map(vm -> {
+                    String vmNicId = system.vmsService().vmService(vm.id()).nicsService().list().send().nics().get(0).id();
+
+                    return VmVo.builder()
                             .id(vm.id())
                             .name(vm.name())
                             .clusterName(system.clustersService().clusterService(vm.cluster().id()).get().send().cluster().name())
@@ -504,11 +518,12 @@ public class HostServiceImpl implements ItHostService {
                             .upTime(commonService.getVmUptime(system, vm.id()))
                             .ipv4(commonService.getVmIp(system, vm.id(), "v4"))
                             .ipv6(commonService.getVmIp(system, vm.id(), "v6"))
+                            .usageDto(vm.status() == VmStatus.UP ? dash.vmPercent(vm.id(), vmNicId) : null)
 //                            .placement(vm.placementPolicy().hostsPresent()) // 호스트 고정여부
-                                // vm.placementPolicy().hosts() // 고정된 호스트 id가 나옴
+                            // vm.placementPolicy().hosts() // 고정된 호스트 id가 나옴
                             // 현재 호스트에 부착 여부
-                        .build()
-                )
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
@@ -780,19 +795,10 @@ public class HostServiceImpl implements ItHostService {
      * @return 소프트웨어 정보
      */
     private HostSwVo getSoftWare(Host host){
-        return HostSwVo.builder()
-                .osVersion((host.os().typePresent() ? host.os().type() : "") + (host.os().versionPresent() ? " " + host.os().version().fullVersion() : ""))    // os 버전
-//                .osInfo()       // os 정보
-                .kernalVersion(host.os().reportedKernelCmdlinePresent() ? host.os().reportedKernelCmdline() : "")// 커널 버전 db 수정해야함
-                // kvm 버전 db
-                .libvirtVersion(host.libvirtVersion().fullVersionPresent() ? host.libvirtVersion().fullVersion() : "")// LIBVIRT 버전
-                .vdsmVersion(host.version().fullVersionPresent() ? host.version().fullVersion() : "")// VDSM 버전 db
-                // SPICE 버전
-                // GlusterFS 버전
-                // CEPH 버전
-                // Open vSwitch 버전
-                // Nmstate 버전
-                .build();
+        HostSwVo swVo = hostConfigurationRepository.findFirstByHostIdOrderByUpdateDateDesc(UUID.fromString(host.id())).getSoftware();
+        swVo.setLibvirtVersion(host.libvirtVersion().fullVersionPresent() ? host.libvirtVersion().fullVersion() : "");
+        swVo.setVdsmVersion(host.version().fullVersionPresent() ? host.version().fullVersion() : "");
+        return swVo;
     }
 
 

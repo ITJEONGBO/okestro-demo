@@ -1,6 +1,7 @@
 package com.itinfo.itcloud.repository.entity;
 
 import com.itinfo.itcloud.repository.dto.HostUsageDto;
+import com.itinfo.itcloud.repository.dto.UsageDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Table(name="HOST_SAMPLES_HISTORY")
 public class HostSamplesHistoryEntity {
+
     @Id
     @Column(unique = true, nullable = false)
     private int historyId;
@@ -27,21 +29,21 @@ public class HostSamplesHistoryEntity {
 
     private LocalDateTime historyDatetime;
 
-    private int memoryUsagePercent;
-    private int cpuUsagePercent;
+    private Integer memoryUsagePercent;
+    private Integer cpuUsagePercent;
 
-    private int ksmCpuPercent;
-    private int activeVms;
-    private int totalVms;
-    private int totalVmsVcpus;
-    private int cpuLoad;
-    private int systemCpuUsagePercent;
-    private int userCpuUsagePercent;
-    private int hostStatus;
-    private int swapUsedMb;
-    private int hostConfigurationVersion;
-    private int ksmSharedMemoryMb;
-    private int secondsInStatus;
+    private Integer ksmCpuPercent;
+    private Integer activeVms;
+    private Integer totalVms;
+    private Integer totalVmsVcpus;
+    private Integer cpuLoad;
+    private Integer systemCpuUsagePercent;
+    private Integer userCpuUsagePercent;
+    private Integer hostStatus;
+    private Integer swapUsedMb;
+    private Integer hostConfigurationVersion;
+    private Integer ksmSharedMemoryMb;
+    private Integer secondsInStatus;
 
     /**
      * 전체 사용량 - 원 그래프 %
@@ -73,6 +75,12 @@ public class HostSamplesHistoryEntity {
     }
 
     // 호스트 각각 현재 사용량 보여주는 거
-
+    public UsageDto getUsage(){
+        return UsageDto.builder()
+//                .id(hostId.toString())
+                .cpuPercent(cpuUsagePercent)
+                .memoryPercent(memoryUsagePercent)
+                .build();
+    }
 
 }

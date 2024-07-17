@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface StorageRepository extends JpaRepository<StorageDomainSamplesHistoryEntity, Integer> {
+public interface StorageDomainSamplesHistoryRepository extends JpaRepository<StorageDomainSamplesHistoryEntity, Integer> {
 
     // 전체 사용량 - 스토리지
     StorageDomainSamplesHistoryEntity findFirstByStorageDomainIdOrderByHistoryDatetimeDesc(UUID storageDomainId);

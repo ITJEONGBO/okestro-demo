@@ -2,15 +2,16 @@ package com.itinfo.itcloud.repository.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
-@Getter @ToString @Builder
+@Getter @Setter @ToString @Builder
 public class UsageDto {
     // host, vm 상세 그래프
     private String id;
     private String name;
 
-    private int cpuPercent;
-    private int memoryPercent;
-    private int networkPercent;
+    private Integer cpuPercent;
+    private Integer memoryPercent;
+    private Integer networkPercent;
 }

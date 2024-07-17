@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public interface ItDashService {
+public interface ItGraphService {
     // 원 그래프
     HostUsageDto totalCpuMemory();
     StorageUsageDto totalStorage();
@@ -26,6 +26,10 @@ public interface ItDashService {
     List<UsageDto> hostCpuChart();
     List<UsageDto> hostMemoryChart();
 
-    List<UsageDto> hostNetwork();
+    // 호스트 목록 - 그래프
+    UsageDto hostPercent(String hostId, String hostNicId);
+
+    // 가상머신 목록 - 그래프
+    UsageDto vmPercent(String vmId, String vmNicId);
 
 }
