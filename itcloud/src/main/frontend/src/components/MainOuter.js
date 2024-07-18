@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import '../App.css';
 import { Link } from 'react-router-dom';
 import Modal from 'react-modal';
+import HostDetail from '../detail/HostDetail';
 
 function MainOuter({ children }) {
     const [selected, setSelected] = useState('dashboard');
@@ -13,8 +14,7 @@ function MainOuter({ children }) {
         network: '',
         setting: ''
     });
-    const [isSecondVisible, setIsSecondVisible] = useState(false);
-    const [isLastVisible, setIsLastVisible] = useState(false);
+
     const [isSecondVisibleStorage, setIsSecondVisibleStorage] = useState(false);
     const [isLastVisibleStorage, setIsLastVisibleStorage] = useState(false);
     const [isSecondVisibleNetwork, setIsSecondVisibleNetwork] = useState(false);
@@ -25,6 +25,12 @@ function MainOuter({ children }) {
     const [activePopup, setActivePopup] = useState(null);
     const [activeSettingForm, setActiveSettingForm] = useState('part');
     const [settingPopupOpen, setSettingPopupOpen] = useState(false);
+
+    const [isSecondVisible, setIsSecondVisible] = useState(false);
+    const [isThirdVisible, setIsThirdVisible] = useState(false);
+    const [isLastVisible, setIsLastVisible] = useState(false);
+    
+    const [sectionContent, setSectionContent] = useState('default');
 
     useEffect(() => {
         function adjustFontSize() {
@@ -43,9 +49,9 @@ function MainOuter({ children }) {
 
     const handleClick = (id) => {
         setSelected(id);
+        setSectionContent('default'); 
         toggleAsidePopup(id);
     };
-
     const toggleAsidePopup = (id) => {
         const newBackgroundColor = {
             dashboard: '',
@@ -76,13 +82,23 @@ function MainOuter({ children }) {
 
     const handleFirstClick = () => {
         setIsSecondVisible(!isSecondVisible);
-        setIsLastVisible(false);
+        if (isSecondVisible) {
+            setIsThirdVisible(false);
+            setIsLastVisible(false);
+        }
     };
-
+    
     const handleSecondClick = () => {
+        setIsThirdVisible(!isThirdVisible);
+        if (isThirdVisible) {
+            setIsLastVisible(false);
+        }
+    };
+    
+    const handleThirdClick = () => {
         setIsLastVisible(!isLastVisible);
     };
-
+    
     const handleFirstClickStorage = () => {
         setIsSecondVisibleStorage(!isSecondVisibleStorage);
         setIsLastVisibleStorage(false);
@@ -144,6 +160,10 @@ function MainOuter({ children }) {
         setSettingPopupOpen(false);
     };
 
+    const handleDetailClick = (content) => {
+        setSectionContent(content);
+    };
+
     return (
         <div id="main_outer" onClick={handleMainClick}>
             <div id="aside_outer" style={{ width: asidePopupVisible ? '20%' : '3%' }}>
@@ -199,19 +219,30 @@ function MainOuter({ children }) {
                 <div id="aside_popup" style={{ display: asidePopupVisible ? 'block' : 'none' }}>
                     <button id='aside_popup_btn' onClick={handleAsidePopupBtnClick}><i className="fa fa-chevron-left"></i></button>
                     {selected === 'computing' && (
-                        <div id="virtual_machine_chart">
-                            <div className="aside_popup_content" id="aside_popup_first" onClick={handleFirstClick}>
-                                <i className="fa fa-chevron-down"></i>
+                    <div id="virtual_machine_chart">
+                        <div className="aside_popup_content" id="aside_popup_first" onClick={handleFirstClick}>
+                            <i className={`fa fa-chevron-${isSecondVisible ? 'down' : 'right'}`}></i>
+                            <i className="fa fa-building-o"></i>
+                            <span>data_center</span>
+                        </div>
+                        {isSecondVisible && (
+                            <div className="aside_popup_content" id="aside_popup_second" onClick={handleSecondClick}>
+                                <i className={`fa fa-chevron-${isThirdVisible ? 'down' : 'right'}`}></i>
                                 <i className="fa fa-building-o"></i>
-                                <span>data_center</span>
+                                <span>클러스터</span>
                             </div>
-                            <div className="aside_popup_content" id="aside_popup_second" style={{ display: isSecondVisible ? 'block' : 'none' }} onClick={handleSecondClick}>
-                                <i className="fa fa-chevron-down"></i>
+                        )}
+                        {isThirdVisible && (
+                            <div className="aside_popup_content" id="aside_popup_third" onClick={handleThirdClick}>
+                                <i className={`fa fa-chevron-${isLastVisible ? 'down' : 'right'}`}></i>
                                 <i className="fa fa-building-o"></i>
-                                <span>ITITINFO</span>
+                                <span>호스트</span>
                             </div>
-                            <div id="aside_popup_last_machine" style={{ display: isLastVisible ? 'block' : 'none' }}>
+                        )}
+                        {isLastVisible && (
+                            <div id="aside_popup_last_machine">
                                 <div
+                                    onClick={() => handleDetailClick('detail1')}
                                     onContextMenu={(e) => handleContextMenu(e, '192.168.0.80')}
                                     onMouseEnter={() => handleMouseEnter('192.168.0.80')}
                                     onMouseLeave={handleMouseLeave}
@@ -224,6 +255,7 @@ function MainOuter({ children }) {
                                     <span>192.168.0.80</span>
                                 </div>
                                 <div
+                                    onClick={() => handleDetailClick('detail1')}
                                     onContextMenu={(e) => handleContextMenu(e, 'HostedEngine')}
                                     onMouseEnter={() => handleMouseEnter('HostedEngine')}
                                     onMouseLeave={handleMouseLeave}
@@ -236,6 +268,7 @@ function MainOuter({ children }) {
                                     <span>HostedEngine</span>
                                 </div>
                                 <div
+                                    onClick={() => handleDetailClick('detail1')}
                                     onContextMenu={(e) => handleContextMenu(e, 'on20-ap01')}
                                     onMouseEnter={() => handleMouseEnter('on20-ap01')}
                                     onMouseLeave={handleMouseLeave}
@@ -247,9 +280,11 @@ function MainOuter({ children }) {
                                     <i className="fa fa-microchip"></i>
                                     <span>on20-ap01</span>
                                 </div>
-                            </div>
                         </div>
+                        )}
+                    </div>
                     )}
+
                     {selected === 'storage' && (
                         <div id="storage_chart">
                             <div className="aside_popup_content" id="aside_popup_first2" onClick={handleFirstClickStorage}>
@@ -338,7 +373,14 @@ function MainOuter({ children }) {
                     )}
                 </div>
             </div>
-            {children}
+            {sectionContent === 'default' ? children : (
+                <div id="detail_section">
+                    {/* Add the content for the detailed section here */}
+                    {sectionContent === 'detail1' && <HostDetail />}
+                    {/* {sectionContent === 'detail2' && <div>Detail Page 2 Content</div>}
+                    {sectionContent === 'detail3' && <div>Detail Page 3 Content</div>} */}
+                </div>
+            )}
             <div id="context_menu"
                  style={{
                     display: contextMenuVisible ? 'block' : 'none',
@@ -669,10 +711,11 @@ function MainOuter({ children }) {
                     )}
 
                     <div className="edit_footer">
-                        <button style={{ display: 'none' }}></button>
+                        <button style={{ display: 'none' }} onClick={closeSettingPopup}></button>
                         <button>OK</button>
-                        <button >취소</button>
+                        <button onClick={closeSettingPopup}>취소</button>
                     </div>
+
                 </div>
             </Modal>
 

@@ -140,8 +140,11 @@
 #aside_popup_first,#aside_popup_first2,#aside_popup_first3 {
     padding-left: 0.2rem;
 }
-#aside_popup_second,#aside_popup_second2,#aside_popup_second3 {
-    padding-left: 0.6rem;
+#aside_popup_second{
+    padding-left: 0.5rem;
+}
+#aside_popup_third{
+    padding-left: 0.7rem;
 }
 #aside_popup_last_machine,#aside_popup_last_storage {
     padding-left: 1.4rem;
@@ -358,7 +361,7 @@
     font-weight: 600;
 }
 
-#section,#storage_section,#network_section,#setting_section{
+#section,#storage_section,#network_section,#setting_section,#detail_section{
     background-color: #ffffff;
     border-radius: 5px;
     width: 96%;
@@ -2845,9 +2848,12 @@ form>div
 /*스토리지 section*/
 
 
-
+.content_detail_section{
+    width: 100%;
+    background: white;
+    position: relative;
+}
 #setting_user_section,
-.content_detail_section,
 .host_detail_section
 {
     display: none;
