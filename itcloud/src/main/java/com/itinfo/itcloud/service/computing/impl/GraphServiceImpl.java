@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.service.computing.impl;
 
+import com.itinfo.itcloud.model.computing.DashBoardVo;
 import com.itinfo.itcloud.repository.*;
 import com.itinfo.itcloud.repository.dto.HostUsageDto;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
@@ -7,7 +8,10 @@ import com.itinfo.itcloud.repository.dto.StorageUsageDto;
 import com.itinfo.itcloud.repository.dto.UsageDto;
 import com.itinfo.itcloud.service.computing.ItGraphService;
 import lombok.extern.slf4j.Slf4j;
+import org.ovirt.engine.sdk4.services.DataCentersService;
+import org.ovirt.engine.sdk4.services.HostsService;
 import org.ovirt.engine.sdk4.services.SystemService;
+import org.ovirt.engine.sdk4.services.VmsService;
 import org.ovirt.engine.sdk4.types.Host;
 import org.ovirt.engine.sdk4.types.StorageDomain;
 import org.ovirt.engine.sdk4.types.Vm;
@@ -34,6 +38,45 @@ public class GraphServiceImpl implements ItGraphService {
     @Autowired private StorageDomainSamplesHistoryRepository storageDomainSamplesHistoryRepository;
 
     private final double GB = 1073741824; // gb 변환
+
+
+
+    @Override
+    public DashBoardVo getDashboard() {
+        SystemService system = admin.getConnection().systemService();
+
+        DataCentersService dcsService = system.dataCentersService();
+        HostsService hostsService = system.hostsService();
+        VmsService vmsService = system.vmsService();
+
+        int dataCenters = dcsService.list().send().dataCenters().size();
+        int dataCentersUp = dcsService.list().search("status=up").send().dataCenters().size();
+
+        int clusters = system.clustersService().list().send().clusters().size();
+
+        int hosts = hostsService.list().send().hosts().size();
+        int hostsUp = hostsService.list().search("status=up").send().hosts().size();
+
+        int vms = vmsService.list().send().vms().size();
+        int vmsUp = vmsService.list().search("status=up").send().vms().size();
+
+        int storageDomains = (int) system.storageDomainsService().list().send().storageDomains().stream().filter(storageDomain -> !storageDomain.statusPresent()).count();
+
+        return DashBoardVo.builder()
+                .datacenters(dataCenters)
+                .datacentersUp(dataCentersUp)
+                .datacentersDown(dataCenters - dataCentersUp)
+                .clusters(clusters)
+                .hosts(hosts)
+                .hostsUp(hostsUp)
+                .hostsDown(hosts - hostsUp)
+                .vms(vms)
+                .vmsUp(vmsUp)
+                .vmsDown(vms - vmsUp)
+                .storageDomains(storageDomains)
+                .build();
+    }
+
 
     /**
      * 전체 사용량 - Host (CPU, Memory  % ) 원 그래프
@@ -74,6 +117,18 @@ public class GraphServiceImpl implements ItGraphService {
                 .build();
     }
 
+    @Override
+    public int totalCpu() {
+        SystemService system = admin.getConnection().systemService();
+        List<Host> hostList = system.hostsService().list().send().hosts();
+
+        double totalCpu = 0;
+        for(Host host : hostList){
+            HostUsageDto usage = hostSamplesHistoryRepository.findFirstByHostIdOrderByHistoryDatetimeDesc(UUID.fromString(host.id())).totalCpuMemory();
+            totalCpu += usage.getTotalCpuUsagePercent();
+        }
+        return (int) totalCpu;
+    }
 
     /**
      * 전체 사용량 - Storage % 원 그래프

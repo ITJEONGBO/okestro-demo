@@ -23,6 +23,4 @@ public interface ItDataCenterService {
     List<DataCenterVo> dashboardComputing();
     List<DataCenterVo> dashboardNetwork();
     List<DataCenterVo> dashboardStorage();
-
-    DashBoardVo getDashboard();
 }

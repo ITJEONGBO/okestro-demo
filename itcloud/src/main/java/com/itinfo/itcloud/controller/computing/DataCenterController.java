@@ -88,15 +88,4 @@ public class DataCenterController {
 		return dcService.getEventsByDatacenter(id);
 	}
 
-	// Dashboard
-	@GetMapping("/dashboard")
-	@ResponseBody
-	public DashBoardVo dashboard() {
-		log.info("----- 대시보드");
-		return dcService.getDashboard();
-	}
-
-
-
-
 }

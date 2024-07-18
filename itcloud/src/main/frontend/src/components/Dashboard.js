@@ -10,7 +10,163 @@ class ApexChart extends React.Component {
   constructor(props) {
     super(props);
 
-    const value = 50; // 도넛 차트의 값
+    this.state = {
+      series: [0],
+      options: {
+        chart: {
+          height: 180,  // 높이 조정
+          type: 'radialBar',
+        },
+        plotOptions: {
+          radialBar: {
+            hollow: {
+              size: '70%',
+            },
+            dataLabels: {
+              show: true,
+              name: {
+                show: false, // name 라벨을 제거합니다.
+              },
+              value: {
+                show: true,
+                fontSize: '0.6rem', // 값 크기를 rem 단위로 설정합니다.
+                fontWeight: 'bold',
+                color: '#111',
+                formatter: function (val) {
+                  return parseInt(val) + "%"; // 값 포맷
+                }
+              }
+            },
+            track: {
+              background: '#f0f0f0',
+              strokeWidth: '100%', // 선 두께 설정
+              margin: 5, // 차트 간격 설정
+            },
+            stroke: {
+              lineCap: 'round' // 선의 끝 모양 설정
+            }
+          },
+        },
+        labels: [], // 라벨을 제거합니다.
+        colors: ['#FEB019'], // 값에 따른 색상 설정
+      },
+    };
+  }
+
+  componentDidMount() {
+    axios.get('https://api.example.com/data')  // 데이터를 가져올 API 주소로 변경
+      .then(response => {
+
+
+        const value = response.data.value;  // API 응답에서 값을 가져옴
+
+        // 값에 따른 색상 설정
+        let color = '#FF4560';
+        if (value < 30) {
+          color = '#00E396';
+        } else if (value < 70) {
+          color = '#FEB019';
+        }
+
+        this.setState({
+          series: [value],
+          options: {
+            ...this.state.options,
+            colors: [color]
+          }
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  }
+  render() {
+    return (
+      <div>
+        <div id="chart">
+          <ReactApexChart options={this.state.options} series={this.state.series} type="radialBar" height={200} />
+        </div>
+        <div id="html-dist"></div>
+      </div>
+    );
+  }
+}
+
+class ApexChart2 extends React.Component {
+  constructor(props) {
+    super(props);
+
+    const value = 40; // 도넛 차트의 값
+
+    // 값에 따른 색상 설정
+    let color = '#FF4560'; // 70이상 빨강
+    if (value < 30) {
+      color = '#00E396';  // 30 미만이면 초록색
+    } else if (value < 70) {
+      color = '#FEB019'; // 30 이상 70 미만이면 노란색
+    }
+
+    this.state = {
+      series: [value],
+      options: {
+        chart: {
+          height: 180,  // 높이 조정
+          type: 'radialBar',
+        },
+        plotOptions: {
+          radialBar: {
+            hollow: {
+              size: '70%',
+            },
+            dataLabels: {
+              show: true,
+              name: {
+                show: false, // name 라벨을 제거합니다.
+              },
+              value: {
+                show: true,
+                fontSize: '0.6rem', // 값 크기를 rem 단위로 설정합니다.
+                fontWeight: 'bold',
+                color: '#111',
+                formatter: function (val) {
+                  return parseInt(val) + "%"; // 값 포맷
+                }
+              }
+            },
+            track: {
+              background: '#f0f0f0',
+              strokeWidth: '100%', // 선 두께 설정
+              margin: 5, // 차트 간격 설정
+            },
+            stroke: {
+              lineCap: 'round' // 선의 끝 모양 설정
+            }
+          },
+        },
+        labels: [], // 라벨을 제거합니다.
+        colors: [color], // 값에 따른 색상 설정
+      },
+    };
+  }
+
+  render() {
+    return (
+      <div>
+        <div id="chart">
+          <ReactApexChart options={this.state.options} series={this.state.series} type="radialBar" height={200} />
+        </div>
+        <div id="html-dist"></div>
+      </div>
+    );
+  }
+}
+
+
+class ApexChart3 extends React.Component {
+  constructor(props) {
+    super(props);
+
+    const value = 70; // 도넛 차트의 값
 
     // 값에 따른 색상 설정
     let color = '#FF4560'; // 70이상 빨강
@@ -315,7 +471,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
         try {
-          const response = await axios.get('http://localhost:8080/computing/datacenters/dashboard');
+          const response = await axios.get('http://localhost:8080/dashboard');
           setData(response.data);
         } catch (error) {
           console.error('Error fetching dashboard data:', error);
@@ -345,8 +501,8 @@ const Dashboard = () => {
             <span>데이터센터</span>
             <h1>{data.datacenters}</h1>
             <div className="arrows">
-              <i className="fa fa-arrow-up">{data.datacentersUp}</i> &nbsp;
-              <i className="fa fa-arrow-down">{data.datacentersDown}</i>
+              <i className="fa fa-arrow-up"> {data.datacentersUp}</i> &nbsp;
+              <i className="fa fa-arrow-down"> {data.datacentersDown}</i>
             </div>
           </div>
           <div className="box">
@@ -357,8 +513,8 @@ const Dashboard = () => {
             <span>호스트</span>
             <h1>{data.hosts}</h1>
             <div className="arrows">
-              <i className="fa fa-arrow-up">{data.hostsUp}</i> &nbsp;
-              <i className="fa fa-arrow-down">{data.hostsDown}</i>
+              <i className="fa fa-arrow-up"> {data.hostsUp}</i> &nbsp;
+              <i className="fa fa-arrow-down"> {data.hostsDown}</i>
             </div>
           </div>
           <div className="box">
@@ -369,16 +525,16 @@ const Dashboard = () => {
             <span>가상머신</span>
             <h1>{data.vms}</h1>
             <div className="arrows">
-              <i className="fa fa-arrow-up">{data.vmsUp}</i> &nbsp;
-              <i className="fa fa-arrow-down">{data.vmsDown}</i>
+              <i className="fa fa-arrow-up"> {data.vmsUp}</i> &nbsp;
+              <i className="fa fa-arrow-down"> {data.vmsDown}</i>
             </div>
           </div>
           <div className="box">
             <span>이벤트</span>
             <h1>0</h1>
             <div className="arrows">
-              <i className="fa fa-arrow-up">1</i> &nbsp;
-              <i className="fa fa-arrow-down">1</i>
+              <i className="fa fa-arrow-up"> 1</i> &nbsp;
+              <i className="fa fa-arrow-down"> 1</i>
             </div>
           </div>
         </div> {/* boxs 끝 */}
@@ -407,7 +563,7 @@ const Dashboard = () => {
             <h1>MEMORY</h1>
             <div className="graphs">
               <div className="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
-                <ApexChart /> {/* ApexChart 컴포넌트를 여기에 삽입 */}
+                <ApexChart2 /> {/* ApexChart 컴포넌트를 여기에 삽입 */}
               </div>
               <div>
                 <BarChart /> {/* BarChart 컴포넌트를 여기에 삽입 */}
@@ -426,7 +582,7 @@ const Dashboard = () => {
             <h1>STORAGE</h1>
             <div className="graphs">
               <div className="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
-                <ApexChart /> {/* ApexChart 컴포넌트를 여기에 삽입 */}
+                <ApexChart3 /> {/* ApexChart 컴포넌트를 여기에 삽입 */}
               </div>
               <div>
                 <BarChart /> {/* BarChart 컴포넌트를 여기에 삽입 */}

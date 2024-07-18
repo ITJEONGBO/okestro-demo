@@ -171,14 +171,5 @@ class ItDataCenterServiceTest {
     }
 
 
-    @Test
-    @DisplayName("대시보드 ")
-    void getDashboard(){
-        DashBoardVo result = dcService.getDashboard();
-
-        System.out.println(result);
-    }
-
-
 
 }

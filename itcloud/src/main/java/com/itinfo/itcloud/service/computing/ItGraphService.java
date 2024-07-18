@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.service.computing;
 
+import com.itinfo.itcloud.model.computing.DashBoardVo;
 import com.itinfo.itcloud.repository.dto.HostUsageDto;
 import com.itinfo.itcloud.repository.dto.StorageUsageDto;
 import com.itinfo.itcloud.repository.dto.UsageDto;
@@ -10,8 +11,14 @@ import java.util.UUID;
 
 @Service
 public interface ItGraphService {
+
+    DashBoardVo getDashboard();
+
     // 원 그래프
+    int totalCpu();
+//    int totalMemory();
     HostUsageDto totalCpuMemory();
+
     StorageUsageDto totalStorage();
 
     // 선 그래프
