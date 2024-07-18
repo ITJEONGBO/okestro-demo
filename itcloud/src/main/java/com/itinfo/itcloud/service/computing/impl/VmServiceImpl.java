@@ -1383,12 +1383,13 @@ public class VmServiceImpl implements ItVmService {
         Vm vm = system.vmsService().vmService(id).get().send().vm();
 
         DecimalFormat df = new DecimalFormat("###,###");
+        HostsService hostsService = system.hostsService();
 
         String hostName = null;
         if (vm.hostPresent()) {
-            hostName = system.hostsService().hostService(vm.host().id()).get().send().host().name();
+            hostName = hostsService.hostService(vm.host().id()).get().send().host().name();
         } else if (!vm.hostPresent() && vm.placementPolicy().hostsPresent()) {
-            hostName = system.hostsService().hostService(vm.placementPolicy().hosts().get(0).id()).get().send().host().name();
+            hostName = hostsService.hostService(vm.placementPolicy().hosts().get(0).id()).get().send().host().name();
         }
 
         return VmVo.builder()
@@ -1655,7 +1656,6 @@ public class VmServiceImpl implements ItVmService {
             return CommonVo.failResponse(e.getMessage());
         }
     }
-
 
 
     // 디스크
@@ -2154,6 +2154,68 @@ public class VmServiceImpl implements ItVmService {
 
 
 
+    // 선호도 그룹
+
+    /**
+     * 가상머신 선호도 그룹 목록
+     * @param id vm id
+     * @return 선호도 그룹 목록
+     */
+    @Override
+    public List<AffinityGroupVo> getAffinityGroupByVm(String id) {
+        log.info("가상머신 선호도 그룹 목록");
+        return affinity.getVmAffinityGroups(id);
+    }
+
+    /**
+     * 가상머신 선호도 그룹 생성
+     * @param id vm id
+     * @param agVo
+     * @return
+     */
+    @Override
+    public CommonVo<Boolean> addAffinityGroupByVm(String id, AffinityGroupVo agVo) {
+        log.info("가상머신 선호도 그룹 생성");
+        return affinity.addAffinityGroup(id, false, agVo);
+    }
+
+    /**
+     * 가상머신 선호도 그룹 편집창
+     * @param id vm id
+     * @param agId
+     * @return
+     */
+    @Override
+    public AffinityGroupVo setAffinityGroupByVm(String id, String agId) {
+        log.info("가상머신 선호도 그룹 편집창");
+        return affinity.setAffinityGroup(id, false, agId);
+    }
+
+    /**
+     * 가상머신 선호도 그룹 편집
+     * @param agVo
+     * @return
+     */
+    @Override
+    public CommonVo<Boolean> editAffinityGroupByVm(AffinityGroupVo agVo) {
+        log.info("가상머신 선호도 그룹 편집");
+        return affinity.editAffinityGroup(agVo);
+    }
+
+    /**
+     * 가상머신 선호도 그룹 삭제
+     * @param id vm id
+     * @param agId
+     * @return
+     */
+    @Override
+    public CommonVo<Boolean> deleteAffinityGroupByVm(String id, String agId) {
+        log.info("가상머신 선호도 그룹 삭제");
+        return affinity.deleteAffinityGroup(id, false, agId);
+    }
+
+    // 선호도 레이블  안함
+
 
 
     // 애플리케이션
@@ -2171,42 +2233,7 @@ public class VmServiceImpl implements ItVmService {
                 .collect(Collectors.toList());
     }
 
-    // 선호도 그룹
 
-//    // TODO 안된거임
-//
-//    @Override
-//    public List<AffinityGroupVo> getAffinitygroup(String id) {
-//        SystemService system = admin.getConnection().systemService();
-//        Vm vm = system.vmsService().vmService(id).get().send().vm();
-//        List<AffinityGroup> affinityGroupList = system.clustersService().clusterService(vm.cluster().id()).affinityGroupsService().list().send().groups();
-//
-//        log.info("가상머신 선호도그룹 목록");
-//        return affinityGroupList.stream()
-//                .map(ag ->
-//                        AffinityGroupVo.builder()
-//                                .id(ag.id())
-//                                .name(ag.name())
-//                                .description(ag.description())
-//                                .status(ag.broken())
-//                                .priority(ag.priority().intValue())  // 우선순위
-//                                .positive(ag.positivePresent() && ag.positive())
-//                                .vmEnabled(ag.vmsRule().enabled())
-//                                .vmPositive(ag.vmsRule().positive())
-//                                .vmEnforcing(ag.vmsRule().enforcing())
-//                                .hostEnabled(ag.hostsRule().enabled())
-//                                .hostPositive(ag.hostsRule().positive())
-//                                .hostEnforcing(ag.hostsRule().enforcing())
-//                                .hostMembers(ag.hostsPresent() ? itAffinityService.getAgHostList(system, id, ag.id()) : null)
-//                                .vmMembers(ag.vmsPresent() ? itAffinityService.getAgVmList(system, id, ag.id()) : null)
-//                                .hostLabels(ag.hostLabelsPresent() ? itAffinityService.getLabelName(ag.hostLabels().get(0).id()) : null)
-//                                .vmLabels(ag.vmLabelsPresent() ? itAffinityService.getLabelName(ag.vmLabels().get(0).id()) : null)
-//                                .build())
-//                .collect(Collectors.toList());
-//    }
-
-    // 선호도 레이블  안함
-    
 
     // 게스트 정보
     @Override

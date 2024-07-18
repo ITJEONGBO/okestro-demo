@@ -1,9 +1,10 @@
 package com.itinfo.itcloud.service.computing;
 
 import com.itinfo.itcloud.model.IdentifiedVo;
+import com.itinfo.itcloud.model.computing.AffinityGroupMember;
 import com.itinfo.itcloud.model.computing.AffinityGroupVo;
+import com.itinfo.itcloud.model.computing.AffinityLabelMember;
 import com.itinfo.itcloud.model.computing.AffinityLabelVo;
-import com.itinfo.itcloud.model.create.AffinityGroupCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,19 +15,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.type;
 
 @SpringBootTest
 class ItAffinityServiceTest {
     @Autowired
     ItAffinityService affinityService;
 
-    private final String clusterId = "9c7452ea-a5f3-11ee-93d2-00163e39cb43";
-    private final String vmId = "c9c1c52d-d2a4-4f2a-93fe-30200f1e0bff";
+    String dcId = "9c72ff12-a5f3-11ee-941d-00163e39cb43";
+    String clusterId = "ae1ea51e-f642-11ee-bcc4-00163e4b3128";
+    String hostId = "971160c2-307d-463b-8f52-459561aa6996";
+    String vmId = "74bbfae5-ada6-491e-9d3d-51ac8b50471e"; // HostedEngine
 
     @Test
     @DisplayName("선호도 생성위한 host 목록")
     void getHostList() {
-        List<IdentifiedVo> result =  affinityService.getHostList(clusterId);
+        List<IdentifiedVo> result =  affinityService.setHostList(clusterId);
 
         result.forEach(System.out::println);
     }
@@ -34,7 +38,7 @@ class ItAffinityServiceTest {
     @Test
     @DisplayName("선호도 생성위한 vm 목록")
     void getVmList() {
-        List<IdentifiedVo> result =  affinityService.getVmList(clusterId);
+        List<IdentifiedVo> result =  affinityService.setVmList(clusterId);
 
         result.forEach(System.out::println);
     }
@@ -42,7 +46,7 @@ class ItAffinityServiceTest {
     @Test
     @DisplayName("선호도 생성위한 레이블 목록")
     void getLabelList() {
-        List<IdentifiedVo> result = affinityService.getLabelList();
+        List<IdentifiedVo> result = affinityService.setLabelList();
 
         result.forEach(System.out::println);
     }
@@ -52,50 +56,45 @@ class ItAffinityServiceTest {
 
 
     @Test
-    @DisplayName("선호도 그룹 목록")
-    void getAgClsuterLists() {
-        List<AffinityGroupVo> result = affinityService.getAffinitygroup(clusterId, "cluster");
-
-        // vm
-//        String vmId = "c9c1c52d-d2a4-4f2a-93fe-30200f1e0bff";  // hostedengine
-//        List<AffinityGroupVo> result = affinityService.getAffinitygroup(vmId, "vm");
-
-        result.forEach(System.out::println);
-    }
-
-
-
-    @Test
     @DisplayName("선호도 그룹 생성")
     void addAffinitygroupCluster() {
         List<IdentifiedVo> hostList = new ArrayList<>();
-        hostList.add(IdentifiedVo.builder().id("6a8e5257-0b2f-4b3c-b720-1d5eee1cbbfc").build());
+        hostList.add(IdentifiedVo.builder().id(hostId).build());
 
         List<IdentifiedVo> vmList = new ArrayList<>();
-        vmList.add(IdentifiedVo.builder().id("c9c1c52d-d2a4-4f2a-93fe-30200f1e0bff").build());
+        vmList.add(IdentifiedVo.builder().id(vmId).build());
 
-        AffinityGroupCreateVo ag =
-                AffinityGroupCreateVo.builder()
-                        .name("x3")
+        List<IdentifiedVo> hostLabelList = new ArrayList<>();
+        hostLabelList.add(IdentifiedVo.builder().id("0d7ec025-dd1c-4351-93f5-7c877ebb3d69").build());
+
+        AffinityGroupVo ag =
+                AffinityGroupVo.builder()
+                        .name("asdfasdgasgasdfs")
                         .description("asktestDescriptinn")
                         .priority(5)
-//                        .clusterId(clusterId)
-//                        .clusterId(vmId)
-                        .vmEnabled(false)
+                        .vmEnabled(true)
                         .vmEnforcing(false)
                         .vmPositive(true)
                         .hostEnabled(false)
                         .hostEnforcing(false)
                         .hostPositive(false)
-                        .hostList(hostList)
-                        .vmList(vmList)
+                        .members(
+                                AffinityGroupMember.builder()
+                                        .hostMembers(hostList)
+                                        .vmMembers(vmList)
+                                .build()
+                        )
+                        .labels(
+                                AffinityLabelMember.builder()
+                                        .hostLabels(hostLabelList)
+                                        .build()
+                        )
                         .build();
 
-            // cluster
-//        CommonVo<Boolean> result = affinityService.addAffinitygroup(clusterId, "cluster", ag);
+        // cluster
+        CommonVo<Boolean> result = affinityService.addAffinityGroup(clusterId, true, ag);
+//        CommonVo<Boolean> result = affinityService.addAffinityGroup(vmId, false, ag);     // vm
 
-        // vm
-        CommonVo<Boolean> result = affinityService.addAffinitygroup(vmId, "vm", ag);
         assertThat(result.getHead().getCode()).isEqualTo(201);
     }
 
@@ -106,7 +105,7 @@ class ItAffinityServiceTest {
     void setEditAffinitygroupCluster() {
         // cluster
         String agId = "3f60c16d-cd9c-42e7-987c-d13061f081f8";
-        AffinityGroupCreateVo group = affinityService.setEditAffinitygroup(clusterId, "cluster", agId);
+        AffinityGroupVo group = affinityService.setAffinityGroup(clusterId, true, agId);
 
         // vm
 //        String agId = "3f60c16d-cd9c-42e7-987c-d13061f081f8";
@@ -138,8 +137,8 @@ class ItAffinityServiceTest {
 //        vmLabels.add(IdentifiedVo.builder().id("ecfe4125-d1aa-44ce-8811-d4a4ce8328ce").build());
 
 
-        AffinityGroupCreateVo ag =
-                AffinityGroupCreateVo.builder()
+        AffinityGroupVo ag =
+                AffinityGroupVo.builder()
                         .id(agId)
                         .name("saaaa")
                         .description("n")
@@ -151,13 +150,21 @@ class ItAffinityServiceTest {
                         .hostEnabled(false)
                         .hostEnforcing(false)
                         .hostPositive(false)
-                        .hostLabels(hostLabels)
-                        .vmLabels(vmLabels)
-                        .hostList(hostList)
-                        .vmList(vmList)
+                        .members(
+                                AffinityGroupMember.builder()
+                                        .hostMembers(hostList)
+                                        .vmMembers(vmList)
+                                        .build()
+                        )
+                        .labels(
+                                AffinityLabelMember.builder()
+                                        .hostLabels(hostLabels)
+                                        .vmLabels(vmLabels)
+                                        .build()
+                        )
                         .build();
 
-        CommonVo<Boolean> result = affinityService.editAffinitygroup(clusterId, ag);
+        CommonVo<Boolean> result = affinityService.editAffinityGroup(ag);
 
         assertThat(result.getHead().getCode()).isEqualTo(201);
     }
@@ -168,14 +175,14 @@ class ItAffinityServiceTest {
     void deleteAffinitygroup() {
         String agId = "92ad2ff1-2c7d-475d-80e6-8174e187cafe";
 
-        CommonVo<Boolean> result = affinityService.deleteAffinitygroup(clusterId, "cluster", agId);
+        CommonVo<Boolean> result = affinityService.deleteAffinityGroup(clusterId, true, agId);
         assertThat(result.getHead().getCode()).isEqualTo(200);
     }
 
     @Test
     @DisplayName("클러스터 선호도 레이블 목록")
     void getAffinitylabelList() {
-        List<AffinityLabelVo> result = affinityService.getAffinitylabel();
+        List<AffinityLabelVo> result = affinityService.getAffinityLabels();
 
         assertThat(2).isEqualTo(result.size());
 

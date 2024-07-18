@@ -27,7 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class ItVmServiceTest {
     @Autowired ItVmService vmService;
-    @Autowired ItAffinityService affinityService;
 
     String clusterId = "ae1ea51e-f642-11ee-bcc4-00163e4b3128";
     String defaultId = "74bbfae5-ada6-491e-9d3d-51ac8b50471e"; // HostedEngine
@@ -785,50 +784,49 @@ class ItVmServiceTest {
     @Test
     @DisplayName("가상머신 선호도 그룹 목록")
     void getAgList() {
-        String vmId = "c9c1c52d-d2a4-4f2a-93fe-30200f1e0bff";
+        List<AffinityGroupVo> result = vmService.getAffinityGroupByVm(defaultId);
 
-        List<AffinityGroupVo> result = affinityService.getAffinitygroup(vmId, "vm");
         result.forEach(System.out::println);
     }
 
 
-    @Test
-    @DisplayName("가상머신 선호도 그룹 생성")
-    void addAffinitygroup() {
-        List<IdentifiedVo> hostList = new ArrayList<>();
-        hostList.add(IdentifiedVo.builder().id("6a8e5257-0b2f-4b3c-b720-1d5eee1cbbfc").build());
-
-        List<IdentifiedVo> vmList = new ArrayList<>();
-        vmList.add(IdentifiedVo.builder().id(defaultId).build());
-
-        AffinityGroupCreateVo ag =
-                AffinityGroupCreateVo.builder()
-                        .name("sga")
-                        .description("asktestDescriptinn")
-                        .priority(5)
-                        .clusterId(defaultId)
-                        .vmEnabled(false)
-                        .vmEnforcing(false)
-                        .vmPositive(true)
-                        .hostEnabled(false)
-                        .hostEnforcing(false)
-                        .hostPositive(false)
-                        .hostList(hostList)
-                        .vmList(vmList)
-                        .build();
-
-        CommonVo<Boolean> result = affinityService.addAffinitygroup(defaultId, "vm", ag);
-        assertThat(result.getHead().getCode()).isEqualTo(201);
-    }
-
-    @Test
-    @DisplayName("가상머신 선호도 그룹 편집 창")
-    void setEditAffinitygroup() {
-        String agId = "92ad2ff1-2c7d-475d-80e6-8174e187cafe";
-        AffinityGroupCreateVo group = affinityService.setEditAffinitygroup(defaultId, "vm", agId);
-
-        System.out.println(group.toString());
-    }
+//    @Test
+//    @DisplayName("가상머신 선호도 그룹 생성")
+//    void addAffinitygroup() {
+//        List<IdentifiedVo> hostList = new ArrayList<>();
+//        hostList.add(IdentifiedVo.builder().id("6a8e5257-0b2f-4b3c-b720-1d5eee1cbbfc").build());
+//
+//        List<IdentifiedVo> vmList = new ArrayList<>();
+//        vmList.add(IdentifiedVo.builder().id(defaultId).build());
+//
+//        AffinityGroupCreateVo ag =
+//                AffinityGroupCreateVo.builder()
+//                        .name("sga")
+//                        .description("asktestDescriptinn")
+//                        .priority(5)
+//                        .clusterId(defaultId)
+//                        .vmEnabled(false)
+//                        .vmEnforcing(false)
+//                        .vmPositive(true)
+//                        .hostEnabled(false)
+//                        .hostEnforcing(false)
+//                        .hostPositive(false)
+//                        .hostList(hostList)
+//                        .vmList(vmList)
+//                        .build();
+//
+//        CommonVo<Boolean> result = affinityService.addAffinitygroup(defaultId, "vm", ag);
+//        assertThat(result.getHead().getCode()).isEqualTo(201);
+//    }
+//
+//    @Test
+//    @DisplayName("가상머신 선호도 그룹 편집 창")
+//    void setEditAffinitygroup() {
+//        String agId = "92ad2ff1-2c7d-475d-80e6-8174e187cafe";
+//        AffinityGroupCreateVo group = affinityService.setEditAffinitygroup(defaultId, "vm", agId);
+//
+//        System.out.println(group.toString());
+//    }
 
 
 

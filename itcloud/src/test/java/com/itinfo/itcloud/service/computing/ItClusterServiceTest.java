@@ -373,7 +373,15 @@ class ItClusterServiceTest {
     }
 
 
+
     //  선호도 그룹/ 레이블
+    @Test
+    @DisplayName("클러스터 선호도 그룹 목록")
+    void getAffinityGroup(){
+        List<AffinityGroupVo> result = clusterService.getAffinityGroupsByCluster(clusterId);
+
+        result.forEach(System.out::println);
+    }
 
 
 

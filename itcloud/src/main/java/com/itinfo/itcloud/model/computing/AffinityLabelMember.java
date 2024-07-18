@@ -8,10 +8,7 @@ import lombok.ToString;
 import java.util.List;
 
 @Getter @Builder @ToString
-public class AffinityLabelVo {
-    private String id;
-    private String name;
-    private String clusterName;
-
-    private AffinityGroupMember members;
+public class AffinityLabelMember {
+    private List<IdentifiedVo> vmLabels;     // 가상머신 레이블
+    private List<IdentifiedVo> hostLabels;   // 호스트 레이블
 }

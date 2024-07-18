@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.model.computing;
 
+import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.repository.dto.UsageDto;
 import lombok.Builder;
 import lombok.Getter;
@@ -58,6 +59,7 @@ public class VmVo {
     private String ipv6;
 
     private String placement;  // 호스트에 부탁 여부 ( 호스트에 고정, 호스트에서 실행중, 호스트에서 고정 및 실행)
+//    private IdentifiedVo currentlyRunningHost; // 가장 최근 실행 호스트
 
     private UsageDto usageDto; // 사용량
 }

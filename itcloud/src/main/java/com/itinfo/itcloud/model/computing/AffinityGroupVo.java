@@ -9,12 +9,13 @@ import java.util.List;
 
 @Getter @Builder @ToString
 public class AffinityGroupVo {
-    // 선호도 그룹
     private String id;
     private String name;
     private String description;
     private boolean status;     // broken
     private int priority;       // 우선순위
+
+    private String clusterId;
 
     private boolean positive;   // 양극/음극    | 가상머신 따라감
     private boolean enforcing;  // 강제적용     | 가상머신 따라감
@@ -29,10 +30,6 @@ public class AffinityGroupVo {
     private boolean hostPositive;   // 호스트 측 극성 (양극, 음극)
     private boolean hostEnforcing;  // 호스트 강제적용
 
-    private List<IdentifiedVo> vmLabels;     // 가상머신 레이블
-    private List<IdentifiedVo> hostLabels;   // 호스트 레이블
-
-    private List<IdentifiedVo> vmMembers;      // 가상머신 멤버
-    private List<IdentifiedVo> hostMembers;    // 호스트 멤버
-
+    private AffinityGroupMember members;    // 멤버
+    private AffinityLabelMember labels;     // 레이블
 }

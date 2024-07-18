@@ -32,7 +32,7 @@ public class ClusterServiceImpl implements ItClusterService {
     @Autowired private AdminConnectionService admin;
     @Autowired private CommonService common;
     @Autowired private ItAffinityService affinity;
-    @Autowired private ItGraphService dash;
+    @Autowired private ItGraphService graph;
 
     @Autowired private VmSamplesHistoryRepository vmSamplesHistoryRepository;
     @Autowired private VmInterfaceSamplesHistoryRepository vmInterfaceSamplesHistoryRepository;
@@ -557,7 +557,7 @@ public class ClusterServiceImpl implements ItClusterService {
                                             .filter(vm -> vm.hostPresent() && vm.host().id().equals(host.id()) && vm.status().value().equals("up"))
                                             .count()
                             )
-                            .usageDto(host.status() == HostStatus.UP ? dash.hostPercent(host.id(), hostNicId) : null)
+                            .usageDto(host.status() == HostStatus.UP ? graph.hostPercent(host.id(), hostNicId) : null)
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -588,7 +588,7 @@ public class ClusterServiceImpl implements ItClusterService {
                             .hostEngineVm(vm.origin().equals("managed_hosted_engine"))  // 엔진여부
                             .ipv4(common.getVmIp(system, vm.id(), "v4"))
                             .ipv6(common.getVmIp(system, vm.id(), "v6"))
-                            .usageDto(vm.status() == VmStatus.UP ? dash.vmPercent(vm.id(), vmNicId) : null)
+                            .usageDto(vm.status() == VmStatus.UP ? graph.vmPercent(vm.id(), vmNicId) : null)
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -596,13 +596,35 @@ public class ClusterServiceImpl implements ItClusterService {
 
     // AffinityService에서 선호도 그룹/레이블 출력
     // 선호도 그룹 목록
-    // 선호도 그룹 생성창
-    // 선호도 그룹 생성
-    // 선호도 그룹 편집 창
-    // 선호도 그룹 편집
-    // 선호도 그룹 삭제
+
+    @Override
+    public List<AffinityGroupVo> getAffinityGroupsByCluster(String id) {
+        log.info("클러스터 선호도 그룹 목록");
+        return affinity.getClusterAffinityGroups(id);
+    }
+
+    @Override
+    public CommonVo<Boolean> addAffinityGroupByCluster(String id, AffinityGroupVo agVo) {
+        return affinity.addAffinityGroup(id, true, agVo);
+    }
+
+    @Override
+    public AffinityGroupVo setAffinityGroupByCluster(String id, String agId) {
+        return affinity.setAffinityGroup(id, true, agId);
+    }
+
+    @Override
+    public CommonVo<Boolean> editAffinityGroupByCluster(AffinityGroupVo agVo) {
+        return affinity.editAffinityGroup(agVo);
+    }
+
+    @Override
+    public CommonVo<Boolean> deleteAffinityGroupByCluster(String id, String agId) {
+        return affinity.deleteAffinityGroup(id, true, agId);
+    }
 
     // 선호도 레이블 목록 출력
+
     
     
 

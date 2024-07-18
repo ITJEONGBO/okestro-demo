@@ -82,6 +82,15 @@ public interface ItVmService {
     CommonVo<Boolean> addTemplate();    // 스냅샷 템플릿 생성
 
 
+    List<AffinityGroupVo> getAffinityGroupByVm(String id);  // 선호도 그룹
+    CommonVo<Boolean> addAffinityGroupByVm(String id, AffinityGroupVo agVo);  // 선호도 그룹 생성
+    AffinityGroupVo setAffinityGroupByVm(String id, String agId);    // 선호도 그룹 편집창
+    CommonVo<Boolean> editAffinityGroupByVm(AffinityGroupVo agVo); // 선호도 그룹 편집
+    CommonVo<Boolean> deleteAffinityGroupByVm(String id, String agId); // 선호도 그룹 삭제
+
+//    List<AffinityLabelVo> getAffinityLabelByVm(String id);  // 선호도 레이블
+
+
     List<IdentifiedVo> getApplicationsByVm(String id);  // 어플리케이션
     GuestInfoVo getGuestByVm(String id);    // 게스트 정보
     List<PermissionVo> getPermissionsByVm(String id);    // 권한
@@ -100,8 +109,5 @@ public interface ItVmService {
 //    CommonVo<Boolean> restoreSnapshot(String id, String snapId);    // 스냅샷 되돌리기
 //    CommonVo<Boolean> copySnapshot();   // 스냅샷 복제
 
-
-//    List<AffinityGroupVo> getAffinitygroup(String id);  // 선호도 그룹
-//    List<AffinityLabelVo> getAffinitylabel(String id);  // 선호도 레이블
 
 }

@@ -3,7 +3,6 @@ package com.itinfo.itcloud.service.computing;
 import com.itinfo.itcloud.model.IdentifiedVo;
 import com.itinfo.itcloud.model.computing.AffinityGroupVo;
 import com.itinfo.itcloud.model.computing.AffinityLabelVo;
-import com.itinfo.itcloud.model.create.AffinityGroupCreateVo;
 import com.itinfo.itcloud.model.error.CommonVo;
 import org.springframework.stereotype.Service;
 
@@ -11,24 +10,19 @@ import java.util.List;
 
 @Service
 public interface ItAffinityService {
-    // 선호도 생성을 위한 호스트 목록 (클러스트ID에 의존)
-    List<IdentifiedVo> getHostList(String clusterId);
-    // 선호도 생성을 위한 가상머신 목록 (클러스트ID에 의존)
-    List<IdentifiedVo> getVmList(String clusterId);
-    // 선호도 레이블 출력은 데이터센터 상관없이 나옴
-    List<IdentifiedVo> getLabelList();
+    List<AffinityGroupVo> getClusterAffinityGroups(String clusterId);   // 선호도 그룹 목록 - 클러스터
+    List<AffinityGroupVo> getVmAffinityGroups(String vmId);             // 선호도 그룹 목록 - 가상머신
 
+    List<IdentifiedVo> setHostList(String clusterId);   // 선호도 생성창 - 호스트 목록 (클러스트 ID에 의존)
+    List<IdentifiedVo> setVmList(String clusterId);     // 선호도 생성창 - 가상머신 목록 (클러스트 ID에 의존)
+    List<IdentifiedVo> setLabelList();                  // 선호도 생성창 - 선호도 레이블 목록 (출력은 데이터센터 상관없이 나옴)
 
-    List<AffinityGroupVo> getAffinitygroup(String id, String type);
-    CommonVo<Boolean> addAffinitygroup(String id,  String type, AffinityGroupCreateVo agVo);
-    AffinityGroupCreateVo setEditAffinitygroup(String id, String type, String agId);
-    CommonVo<Boolean> editAffinitygroup(String id, AffinityGroupCreateVo agVo);
-    CommonVo<Boolean> deleteAffinitygroup(String id, String type, String agId);
+    CommonVo<Boolean> addAffinityGroup(String id,  boolean cluster, AffinityGroupVo agVo);  // 선호도 그룹 생성
+    AffinityGroupVo setAffinityGroup(String id, boolean cluster, String agId);    // 선호도 그룹 편집창
+    CommonVo<Boolean> editAffinityGroup(AffinityGroupVo agVo); // 선호도 그룹 편집
+    CommonVo<Boolean> deleteAffinityGroup(String id, boolean cluster, String agId); // 선호도 그룹 삭제
 
-
-    List<AffinityLabelVo> getAffinitylabel(/*String id, String type*/);
-
-
+    List<AffinityLabelVo> getAffinityLabels();  // 선호도 레이블 목록 - 클러스터, 호스트, 가상머신
 
 
     // cluster  : label, group      api-group

@@ -34,6 +34,12 @@ public interface ItClusterService {
     List<VmVo> getVmsByCluster(String id);        // 가상머신 목록
 
     // 선호도 그룹
+    List<AffinityGroupVo> getAffinityGroupsByCluster(String id);
+    CommonVo<Boolean> addAffinityGroupByCluster(String id, AffinityGroupVo agVo);  // 선호도 그룹 생성
+    AffinityGroupVo setAffinityGroupByCluster(String id, String agId);    // 선호도 그룹 편집창
+    CommonVo<Boolean> editAffinityGroupByCluster(AffinityGroupVo agVo); // 선호도 그룹 편집
+    CommonVo<Boolean> deleteAffinityGroupByCluster(String id, String agId); // 선호도 그룹 삭제
+
     // 선호도 레이블
 
     List<PermissionVo> getPermissionsByCluster(String id);    // 권한
