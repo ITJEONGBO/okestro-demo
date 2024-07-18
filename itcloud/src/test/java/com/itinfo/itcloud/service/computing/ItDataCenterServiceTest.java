@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.service.computing;
 
+import com.itinfo.itcloud.model.computing.DashBoardVo;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.create.DataCenterCreateVo;
@@ -167,6 +168,15 @@ class ItDataCenterServiceTest {
         List<DataCenterVo> result = dcService.dashboardStorage();
 
         result.forEach(System.out::println);
+    }
+
+
+    @Test
+    @DisplayName("대시보드 ")
+    void getDashboard(){
+        DashBoardVo result = dcService.getDashboard();
+
+        System.out.println(result);
     }
 
 

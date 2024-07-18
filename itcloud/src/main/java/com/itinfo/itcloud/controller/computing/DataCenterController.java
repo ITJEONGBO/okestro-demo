@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.controller.computing;
 
+import com.itinfo.itcloud.model.computing.DashBoardVo;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.create.DataCenterCreateVo;
@@ -86,6 +87,16 @@ public class DataCenterController {
 		log.info("----- 데이터센터 이벤트 : " + id);
 		return dcService.getEventsByDatacenter(id);
 	}
+
+	// Dashboard
+	@GetMapping("/dashboard")
+	@ResponseBody
+	public DashBoardVo dashboard() {
+		log.info("----- 대시보드");
+		return dcService.getDashboard();
+	}
+
+
 
 
 }

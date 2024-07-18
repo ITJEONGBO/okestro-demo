@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.service.computing;
 
+import com.itinfo.itcloud.model.computing.DashBoardVo;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.itcloud.model.computing.EventVo;
 import com.itinfo.itcloud.model.create.DataCenterCreateVo;
@@ -22,4 +23,6 @@ public interface ItDataCenterService {
     List<DataCenterVo> dashboardComputing();
     List<DataCenterVo> dashboardNetwork();
     List<DataCenterVo> dashboardStorage();
+
+    DashBoardVo getDashboard();
 }

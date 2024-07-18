@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import ReactApexChart from 'react-apexcharts';
 import '../App.css';
+import axios from 'axios';
+
 
 // 도넛
 class ApexChart extends React.Component {
@@ -295,7 +297,33 @@ class HeatMapChart extends React.Component {
 
 //폰트사이즈 조정 
 const Dashboard = () => {
+    const [data, setData] = useState({
+        uptime: 0,
+        datacenters: 0,
+        datacentersUp: 0,
+        datacentersDown: 0,
+        clusters: 0,
+        hosts: 0,
+        hostsUp: 0,
+        hostsDown: 0,
+        vms: 0,
+        vmsUp: 0,
+        vmsDown: 0,
+        storageDomains: 0,
+      });
+
   useEffect(() => {
+    const fetchData = async () => {
+        try {
+          const response = await axios.get('http://localhost:8080/computing/datacenters/dashboard');
+          setData(response.data);
+        } catch (error) {
+          console.error('Error fetching dashboard data:', error);
+        }
+      };
+
+    fetchData();
+
     function adjustFontSize() {
       const width = window.innerWidth;
       const fontSize = width / 40; // 필요에 따라 이 값을 조정하세요
@@ -314,46 +342,42 @@ const Dashboard = () => {
       <div id="dash_board">
         <div id="dash_boxs">
           <div className="box">
-            <span>UPTIME</span>
-            <h1>2</h1>
-          </div>
-          <div className="box">
             <span>데이터센터</span>
-            <h1>2</h1>
+            <h1>{data.datacenters}</h1>
             <div className="arrows">
-              <i className="fa fa-arrow-up">1</i>
-              <i className="fa fa-arrow-down">1</i>
+              <i className="fa fa-arrow-up">{data.datacentersUp}</i> &nbsp;
+              <i className="fa fa-arrow-down">{data.datacentersDown}</i>
             </div>
           </div>
           <div className="box">
             <span>클러스터</span>
-            <h1>2</h1>
+            <h1>{data.clusters}</h1>
           </div>
           <div className="box">
             <span>호스트</span>
-            <h1>2</h1>
+            <h1>{data.hosts}</h1>
             <div className="arrows">
-              <i className="fa fa-arrow-up">1</i>
-              <i className="fa fa-arrow-down">1</i>
+              <i className="fa fa-arrow-up">{data.hostsUp}</i> &nbsp;
+              <i className="fa fa-arrow-down">{data.hostsDown}</i>
             </div>
           </div>
           <div className="box">
             <span>데이터스토리지도메인</span>
-            <h1>2</h1>
+            <h1>{data.storageDomains}</h1>
           </div>
           <div className="box">
             <span>가상머신</span>
-            <h1>2</h1>
+            <h1>{data.vms}</h1>
             <div className="arrows">
-              <i className="fa fa-arrow-up">1</i>
-              <i className="fa fa-arrow-down">1</i>
+              <i className="fa fa-arrow-up">{data.vmsUp}</i> &nbsp;
+              <i className="fa fa-arrow-down">{data.vmsDown}</i>
             </div>
           </div>
           <div className="box">
             <span>이벤트</span>
             <h1>0</h1>
             <div className="arrows">
-              <i className="fa fa-arrow-up">1</i>
+              <i className="fa fa-arrow-up">1</i> &nbsp;
               <i className="fa fa-arrow-down">1</i>
             </div>
           </div>

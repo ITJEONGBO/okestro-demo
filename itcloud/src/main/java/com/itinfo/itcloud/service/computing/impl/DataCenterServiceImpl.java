@@ -12,9 +12,7 @@ import com.itinfo.itcloud.service.computing.ItDataCenterService;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.DataCenterBuilder;
 import org.ovirt.engine.sdk4.builders.VersionBuilder;
-import org.ovirt.engine.sdk4.services.DataCenterService;
-import org.ovirt.engine.sdk4.services.DataCentersService;
-import org.ovirt.engine.sdk4.services.SystemService;
+import org.ovirt.engine.sdk4.services.*;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -321,6 +319,44 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public DashBoardVo getDashboard() {
+        SystemService system = admin.getConnection().systemService();
+
+        DataCentersService dcsService = system.dataCentersService();
+        HostsService hostsService = system.hostsService();
+        VmsService vmsService = system.vmsService();
+
+        int dataCenters = dcsService.list().send().dataCenters().size();
+        int dataCentersUp = dcsService.list().search("status=up").send().dataCenters().size();
+
+        int clusters = system.clustersService().list().send().clusters().size();
+
+        int hosts = hostsService.list().send().hosts().size();
+        int hostsUp = hostsService.list().search("status=up").send().hosts().size();
+
+        int vms = vmsService.list().send().vms().size();
+        int vmsUp = vmsService.list().search("status=up").send().vms().size();
+
+        int storageDomains = (int) system.storageDomainsService().list().send().storageDomains().stream().filter(storageDomain -> !storageDomain.statusPresent()).count();
+
+        return DashBoardVo.builder()
+                .datacenters(dataCenters)
+                .datacentersUp(dataCentersUp)
+                .datacentersDown(dataCenters - dataCentersUp)
+                .clusters(clusters)
+                .hosts(hosts)
+                .hostsUp(hostsUp)
+                .hostsDown(hosts - hostsUp)
+                .vms(vms)
+                .vmsUp(vmsUp)
+                .vmsDown(vms - vmsUp)
+                .storageDomains(storageDomains)
+                .build();
+    }
+
+
+    //-------------------------------------------------------------
 
     /***
      * 데이터센터 이름 중복
