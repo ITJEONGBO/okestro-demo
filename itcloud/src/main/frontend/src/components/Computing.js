@@ -8,7 +8,10 @@ Modal.setAppElement('#root');
 // 네트워크인터페이스
 const NetworkSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [visibleDetails, setVisibleDetails] = useState([]);
+  useEffect(() => {
+    setVisibleDetails(Array(3).fill(false)); // 초기 상태: 모든 detail 숨김
+  }, []);
   // 팝업 열기/닫기 핸들러
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -24,6 +27,13 @@ const NetworkSection = () => {
       container.appendChild(clone);
     }
   }, []);
+ const toggleDetails = (index) => {
+  setVisibleDetails((prevDetails) => {
+    const newDetails = [...prevDetails];
+    newDetails[index] = !newDetails[index];
+    return newDetails;
+  });
+};
 
   return (
     <div id="network_outer">
@@ -33,31 +43,40 @@ const NetworkSection = () => {
           <button>수정</button>
           <button>제거</button>
         </div>
-        <div className="network_content">
-          <div>
-            <i className="fa fa-chevron-right"></i>
-            <i className="fa fa-arrow-circle-o-up" style={{ color: '#21c50b', marginLeft: '0.3rem' }}></i>
-            <i className="fa fa-plug"></i>
-            <i className="fa fa-usb"></i>
-            <span>nic1</span>
-          </div>
-          <div>
-            <div>네트워크 이름</div>
-            <div>ovirtmgmt</div>
-          </div>
-          <div>
-            <div>IPv4</div>
-            <div>192.168.10.147</div>
-          </div>
-          <div>
-            <div>IPv6</div>
-            <div>192.168.10.147</div>
-          </div>
-          <div style={{ paddingRight: '3%' }}>
-            <div>MAC</div>
-            <div>192.168.10.147</div>
-          </div>
-        </div>
+        {Array.from({ length: 3 }).map((_, index) => (
+  <div key={index}>
+    <div className="network_content">
+      <div>
+        <i className="fa fa-chevron-right" onClick={() => toggleDetails(index)}></i>
+        <i className="fa fa-arrow-circle-o-up" style={{ color: '#21c50b', marginLeft: '0.3rem' }}></i>
+        <i className="fa fa-plug"></i>
+        <i className="fa fa-usb"></i>
+        <span>nic1</span>
+      </div>
+      <div>
+        <div>네트워크 이름</div>
+        <div>ovirtmgmt</div>
+      </div>
+      <div>
+        <div>IPv4</div>
+        <div>192.168.10.147</div>
+      </div>
+      <div>
+        <div>IPv6</div>
+        <div>192.168.10.147</div>
+      </div>
+      <div style={{ paddingRight: '3%' }}>
+        <div>MAC</div>
+        <div>192.168.10.147</div>
+      </div>
+    </div>
+    <div className='network_content_detail' style={{ display: visibleDetails[index] ? 'block' : 'none' }}>
+      설명입력
+    </div>
+  </div>
+))}
+
+       
       </div>
 
 
@@ -1453,6 +1472,11 @@ const Computing = () => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+
+  const togglePopup = () => {
+    setIsPopupVisible(!isPopupVisible);
+  };
   return (
     <div id="section">
       <div className="section_header">
@@ -1483,9 +1507,10 @@ const Computing = () => {
             <button><i className="fa fa-desktop"></i>콘솔</button>
             <button>스냅샷 생성</button>
             <button id="migration_btn" onClick={openModal}>마이그레이션</button>
-            <button id="popup_btn">
+            <button id="popup_btn"  onClick={togglePopup}>
               <i className="fa fa-ellipsis-v"></i>
-              <div id="popup_box">
+              <div id="popup_box"style={{ display: isPopupVisible ? 'block' : 'none' }}>
+                
                 <div>
                   <div className="get_btn">가져오기</div>
                   <div className="get_btn">가상 머신 복제</div>
