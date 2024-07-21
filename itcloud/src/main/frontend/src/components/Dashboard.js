@@ -4,93 +4,102 @@ import ReactApexChart from 'react-apexcharts';
 import '../App.css';
 import axios from 'axios';
 
+async function getCpu() {
+    const cpu = await axios.get('/dashboard/cpu');
+    return cpu.data;
+}
 
 // 도넛
-class ApexChart extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      series: [0],
-      options: {
-        chart: {
-          height: 180,  // 높이 조정
-          type: 'radialBar',
-        },
-        plotOptions: {
-          radialBar: {
-            hollow: {
-              size: '70%',
+const ApexChart = () => {
+    const [value, setValue] = useState(0);
+    const [series, setSeries] = useState([0]);
+    const [chartOptions, setChartOptions] = useState({
+      chart: {
+        height: 180, // 높이 조정
+        type: 'radialBar',
+      },
+      plotOptions: {
+        radialBar: {
+          hollow: {
+            size: '70%',
+          },
+          dataLabels: {
+            show: true,
+            name: {
+              show: false, // name 라벨을 제거합니다.
             },
-            dataLabels: {
+            value: {
               show: true,
-              name: {
-                show: false, // name 라벨을 제거합니다.
+              fontSize: '0.6rem', // 값 크기를 rem 단위로 설정합니다.
+              fontWeight: 'bold',
+              color: '#111',
+              formatter: function (val) {
+                return parseInt(val) + "%"; // 값 포맷
               },
-              value: {
-                show: true,
-                fontSize: '0.6rem', // 값 크기를 rem 단위로 설정합니다.
-                fontWeight: 'bold',
-                color: '#111',
-                formatter: function (val) {
-                  return parseInt(val) + "%"; // 값 포맷
-                }
-              }
             },
-            track: {
-              background: '#f0f0f0',
-              strokeWidth: '100%', // 선 두께 설정
-              margin: 5, // 차트 간격 설정
-            },
-            stroke: {
-              lineCap: 'round' // 선의 끝 모양 설정
-            }
+          },
+          track: {
+            background: '#f0f0f0',
+            strokeWidth: '100%', // 선 두께 설정
+            margin: 5, // 차트 간격 설정
+          },
+          stroke: {
+            lineCap: 'round', // 선의 끝 모양 설정
           },
         },
-        labels: [], // 라벨을 제거합니다.
-        colors: ['#FEB019'], // 값에 따른 색상 설정
       },
-    };
-  }
+      labels: [], // 라벨을 제거합니다.
+      colors: ['#FF4560'], // 초기 색상 설정
+    });
 
-  componentDidMount() {
-    axios.get('https://api.example.com/data')  // 데이터를 가져올 API 주소로 변경
-      .then(response => {
+    useEffect(() => {
+      async function fetchCpu() {
+        const cpuData = await getCpu();
+        setValue(cpuData);
+        setSeries([cpuData]);
+      }
+      fetchCpu();
+    }, []);
 
+    useEffect(() => {
+      let color = '#FF4560'; // 70 이상 빨강
+      if (value < 30) {
+        color = '#00E396';  // 30 미만이면 초록색
+      } else if (value < 70) {
+        color = '#FEB019'; // 30 이상 70 미만이면 노란색
+      }
 
-        const value = response.data.value;  // API 응답에서 값을 가져옴
+      setChartOptions((prevOptions) => ({
+        ...prevOptions,
+        colors: [color],
+        plotOptions: {
+          ...prevOptions.plotOptions,
+          radialBar: {
+            ...prevOptions.plotOptions.radialBar,
+            dataLabels: {
+              ...prevOptions.plotOptions.radialBar.dataLabels,
+              value: {
+                ...prevOptions.plotOptions.radialBar.dataLabels.value,
+                formatter: function (val) {
+                  return parseInt(val) + "%"; // 값 포맷
+                },
+              },
+            },
+          },
+        },
+      }));
+    }, [value]);
 
-        // 값에 따른 색상 설정
-        let color = '#FF4560';
-        if (value < 30) {
-          color = '#00E396';
-        } else if (value < 70) {
-          color = '#FEB019';
-        }
-
-        this.setState({
-          series: [value],
-          options: {
-            ...this.state.options,
-            colors: [color]
-          }
-        });
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
-  }
-  render() {
-    return (
-      <div>
-        <div id="chart">
-          <ReactApexChart options={this.state.options} series={this.state.series} type="radialBar" height={200} />
-        </div>
-        <div id="html-dist"></div>
+  return (
+    <div>
+      <div id="chart">
+        <ReactApexChart options={chartOptions} series={series} type="radialBar" height={200} />
       </div>
-    );
-  }
+      <div id="html-dist"></div>
+    </div>
+  );
 }
+
 
 class ApexChart2 extends React.Component {
   constructor(props) {
