@@ -367,6 +367,9 @@
     width: 96%;
     position: relative;
 }
+#storage_section>div{
+    height: 98%;
+}
 .section_header{
     width: 100%;
     display: flex;
@@ -1397,6 +1400,12 @@
 .network_content>div>div:nth-child(2){
     font-size: 0.27rem;
     color:#4F4F4F;
+}
+.network_content_detail{
+    height: 20vh;
+    font-size: 0.3rem;
+    padding: 0.2rem;
+    display: none;
 }
 /*네트워크 인터페이스 팝업창들*/
     /*새로만들기*/
