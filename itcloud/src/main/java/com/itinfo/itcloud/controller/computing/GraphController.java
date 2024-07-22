@@ -2,6 +2,7 @@ package com.itinfo.itcloud.controller.computing;
 
 import com.itinfo.itcloud.model.computing.DashBoardVo;
 import com.itinfo.itcloud.repository.dto.HostUsageDto;
+import com.itinfo.itcloud.repository.dto.StorageUsageDto;
 import com.itinfo.itcloud.service.computing.ItGraphService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,12 @@ public class GraphController {
     public HostUsageDto totalCpuMemory() {
         log.info("----- cpu, memory");
         return graphService.totalCpuMemory();
+    }
+
+    @GetMapping("/storage")
+    public StorageUsageDto totalStorage() {
+        log.info("----- storage");
+        return graphService.totalStorage();
     }
 
 }

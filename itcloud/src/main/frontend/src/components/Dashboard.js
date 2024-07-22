@@ -4,14 +4,21 @@ import ReactApexChart from 'react-apexcharts';
 import '../App.css';
 import axios from 'axios';
 
-async function getCpu() {
-    const cpu = await axios.get('/dashboard/cpu');
-    return cpu.data;
+// cpu, memory api 불러오는 값
+async function getCpuMemory() {
+    const cpuMemory = await axios.get('/dashboard/cpumemory');
+    return cpuMemory.data;
 }
 
+// storage api 불러오는 값
+async function getStorage() {
+    const storage = await axios.get('/dashboard/storage');
+    return storage.data;
+}
+
+
 // 도넛
-const ApexChart = () => {
-    const [value, setValue] = useState(0);
+const ApexChart = ({ cpu }) => {
     const [series, setSeries] = useState([0]);
     const [chartOptions, setChartOptions] = useState({
       chart: {
@@ -52,20 +59,14 @@ const ApexChart = () => {
       colors: ['#FF4560'], // 초기 색상 설정
     });
 
-    useEffect(() => {
-      async function fetchCpu() {
-        const cpuData = await getCpu();
-        setValue(cpuData);
-        setSeries([cpuData]);
-      }
-      fetchCpu();
-    }, []);
 
     useEffect(() => {
+       setSeries([cpu]);
+
       let color = '#FF4560'; // 70 이상 빨강
-      if (value < 30) {
+      if (cpu < 30) {
         color = '#00E396';  // 30 미만이면 초록색
-      } else if (value < 70) {
+      } else if (cpu < 70) {
         color = '#FEB019'; // 30 이상 70 미만이면 노란색
       }
 
@@ -88,7 +89,92 @@ const ApexChart = () => {
           },
         },
       }));
-    }, [value]);
+    }, [cpu]);
+
+
+  return (
+    <div>
+      <div id="chart">
+        <ReactApexChart options={chartOptions} series={series} type="radialBar" height={200} />
+      </div>
+      <div id="html-dist"></div>
+    </div>
+  );
+}
+
+const ApexChart2 = ({ memory }) => {
+    const [series, setSeries] = useState([0]);
+    const [chartOptions, setChartOptions] = useState({
+      chart: {
+        height: 180, // 높이 조정
+        type: 'radialBar',
+      },
+      plotOptions: {
+        radialBar: {
+          hollow: {
+            size: '70%',
+          },
+          dataLabels: {
+            show: true,
+            name: {
+              show: false, // name 라벨을 제거합니다.
+            },
+            value: {
+              show: true,
+              fontSize: '0.6rem', // 값 크기를 rem 단위로 설정합니다.
+              fontWeight: 'bold',
+              color: '#111',
+              formatter: function (val) {
+                return parseInt(val) + "%"; // 값 포맷
+              },
+            },
+          },
+          track: {
+            background: '#f0f0f0',
+            strokeWidth: '100%', // 선 두께 설정
+            margin: 5, // 차트 간격 설정
+          },
+          stroke: {
+            lineCap: 'round', // 선의 끝 모양 설정
+          },
+        },
+      },
+      labels: [], // 라벨을 제거합니다.
+      colors: ['#FF4560'], // 초기 색상 설정
+    });
+
+
+    useEffect(() => {
+       setSeries([memory]);
+
+      let color = '#FF4560'; // 70 이상 빨강
+      if (memory < 30) {
+        color = '#00E396';  // 30 미만이면 초록색
+      } else if (memory < 70) {
+        color = '#FEB019'; // 30 이상 70 미만이면 노란색
+      }
+
+      setChartOptions((prevOptions) => ({
+        ...prevOptions,
+        colors: [color],
+        plotOptions: {
+          ...prevOptions.plotOptions,
+          radialBar: {
+            ...prevOptions.plotOptions.radialBar,
+            dataLabels: {
+              ...prevOptions.plotOptions.radialBar.dataLabels,
+              value: {
+                ...prevOptions.plotOptions.radialBar.dataLabels.value,
+                formatter: function (val) {
+                  return parseInt(val) + "%"; // 값 포맷
+                },
+              },
+            },
+          },
+        },
+      }));
+    }, [memory]);
+
 
   return (
     <div>
@@ -101,144 +187,90 @@ const ApexChart = () => {
 }
 
 
-class ApexChart2 extends React.Component {
-  constructor(props) {
-    super(props);
-
-    const value = 40; // 도넛 차트의 값
-
-    // 값에 따른 색상 설정
-    let color = '#FF4560'; // 70이상 빨강
-    if (value < 30) {
-      color = '#00E396';  // 30 미만이면 초록색
-    } else if (value < 70) {
-      color = '#FEB019'; // 30 이상 70 미만이면 노란색
-    }
-
-    this.state = {
-      series: [value],
-      options: {
-        chart: {
-          height: 180,  // 높이 조정
-          type: 'radialBar',
-        },
-        plotOptions: {
-          radialBar: {
-            hollow: {
-              size: '70%',
+const ApexChart3 = ({ storage }) => {
+    const [series, setSeries] = useState([0]);
+    const [chartOptions, setChartOptions] = useState({
+      chart: {
+        height: 180, // 높이 조정
+        type: 'radialBar',
+      },
+      plotOptions: {
+        radialBar: {
+          hollow: {
+            size: '70%',
+          },
+          dataLabels: {
+            show: true,
+            name: {
+              show: false, // name 라벨을 제거합니다.
             },
-            dataLabels: {
+            value: {
               show: true,
-              name: {
-                show: false, // name 라벨을 제거합니다.
+              fontSize: '0.6rem', // 값 크기를 rem 단위로 설정합니다.
+              fontWeight: 'bold',
+              color: '#111',
+              formatter: function (val) {
+                return parseInt(val) + "%"; // 값 포맷
               },
-              value: {
-                show: true,
-                fontSize: '0.6rem', // 값 크기를 rem 단위로 설정합니다.
-                fontWeight: 'bold',
-                color: '#111',
-                formatter: function (val) {
-                  return parseInt(val) + "%"; // 값 포맷
-                }
-              }
             },
-            track: {
-              background: '#f0f0f0',
-              strokeWidth: '100%', // 선 두께 설정
-              margin: 5, // 차트 간격 설정
-            },
-            stroke: {
-              lineCap: 'round' // 선의 끝 모양 설정
-            }
+          },
+          track: {
+            background: '#f0f0f0',
+            strokeWidth: '100%', // 선 두께 설정
+            margin: 5, // 차트 간격 설정
+          },
+          stroke: {
+            lineCap: 'round', // 선의 끝 모양 설정
           },
         },
-        labels: [], // 라벨을 제거합니다.
-        colors: [color], // 값에 따른 색상 설정
       },
-    };
-  }
-
-  render() {
-    return (
-      <div>
-        <div id="chart">
-          <ReactApexChart options={this.state.options} series={this.state.series} type="radialBar" height={200} />
-        </div>
-        <div id="html-dist"></div>
-      </div>
-    );
-  }
-}
+      labels: [], // 라벨을 제거합니다.
+      colors: ['#FF4560'], // 초기 색상 설정
+    });
 
 
-class ApexChart3 extends React.Component {
-  constructor(props) {
-    super(props);
+    useEffect(() => {
+       setSeries([storage]);
 
-    const value = 70; // 도넛 차트의 값
+      let color = '#FF4560'; // 70 이상 빨강
+      if (storage < 30) {
+        color = '#00E396';  // 30 미만이면 초록색
+      } else if (storage < 70) {
+        color = '#FEB019'; // 30 이상 70 미만이면 노란색
+      }
 
-    // 값에 따른 색상 설정
-    let color = '#FF4560'; // 70이상 빨강
-    if (value < 30) {
-      color = '#00E396';  // 30 미만이면 초록색
-    } else if (value < 70) {
-      color = '#FEB019'; // 30 이상 70 미만이면 노란색
-    }
-
-    this.state = {
-      series: [value],
-      options: {
-        chart: {
-          height: 180,  // 높이 조정
-          type: 'radialBar',
-        },
+      setChartOptions((prevOptions) => ({
+        ...prevOptions,
+        colors: [color],
         plotOptions: {
+          ...prevOptions.plotOptions,
           radialBar: {
-            hollow: {
-              size: '70%',
-            },
+            ...prevOptions.plotOptions.radialBar,
             dataLabels: {
-              show: true,
-              name: {
-                show: false, // name 라벨을 제거합니다.
-              },
+              ...prevOptions.plotOptions.radialBar.dataLabels,
               value: {
-                show: true,
-                fontSize: '0.6rem', // 값 크기를 rem 단위로 설정합니다.
-                fontWeight: 'bold',
-                color: '#111',
+                ...prevOptions.plotOptions.radialBar.dataLabels.value,
                 formatter: function (val) {
                   return parseInt(val) + "%"; // 값 포맷
-                }
-              }
+                },
+              },
             },
-            track: {
-              background: '#f0f0f0',
-              strokeWidth: '100%', // 선 두께 설정
-              margin: 5, // 차트 간격 설정
-            },
-            stroke: {
-              lineCap: 'round' // 선의 끝 모양 설정
-            }
           },
         },
-        labels: [], // 라벨을 제거합니다.
-        colors: [color], // 값에 따른 색상 설정
-      },
-    };
-  }
+      }));
+    }, [storage]);
 
-  render() {
-    return (
-      <div>
-        <div id="chart">
-          <ReactApexChart options={this.state.options} series={this.state.series} type="radialBar" height={200} />
-        </div>
-        <div id="html-dist"></div>
+
+  return (
+    <div>
+      <div id="chart">
+        <ReactApexChart options={chartOptions} series={series} type="radialBar" height={200} />
       </div>
-    );
-  }
+      <div id="html-dist"></div>
+    </div>
+  );
 }
+
 
 // 도넛옆에 막대
 class BarChart extends React.Component {
@@ -477,11 +509,34 @@ const Dashboard = () => {
         storageDomains: 0,
       });
 
+    const [memoryGb, setMemoryGb] = useState({
+        totalCpuUsagePercent: 0,
+        totalMemoryUsagePercent: 0,
+        totalMemoryGB: 0,
+        usedMemoryGB: 0,
+        freeMemoryGB: 0
+    });
+
+    const [storageGb, setStorageGb] = useState({
+        usedPercent: 0,
+        totalGB: 0,
+        usedGB: 0,
+        freeGB: 0
+    });
+
   useEffect(() => {
     const fetchData = async () => {
         try {
-          const response = await axios.get('http://localhost:8080/dashboard');
+          const response = await axios.get('/dashboard');
           setData(response.data);
+
+          const memorys = await getCpuMemory();
+          setMemoryGb(memorys);
+
+          const storages = await getStorage();
+          setStorageGb(storages);
+
+
         } catch (error) {
           console.error('Error fetching dashboard data:', error);
         }
@@ -553,7 +608,7 @@ const Dashboard = () => {
             <h1>CPU</h1>
             <div className="graphs">
               <div className="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
-                <ApexChart /> {/* ApexChart 컴포넌트를 여기에 삽입 */}
+                <ApexChart cpu = {memoryGb.totalCpuUsagePercent} /> {/* ApexChart 컴포넌트를 여기에 삽입 */}
               </div>
               <div>
                 <BarChart /> {/* BarChart 컴포넌트를 여기에 삽입 */}
@@ -572,13 +627,13 @@ const Dashboard = () => {
             <h1>MEMORY</h1>
             <div className="graphs">
               <div className="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
-                <ApexChart2 /> {/* ApexChart 컴포넌트를 여기에 삽입 */}
+                <ApexChart2 memory = {memoryGb.totalMemoryUsagePercent}/> {/* ApexChart 컴포넌트를 여기에 삽입 */}
               </div>
               <div>
                 <BarChart /> {/* BarChart 컴포넌트를 여기에 삽입 */}
               </div>
             </div>
-            <span>USED 64 GB / Total 192 GB</span>
+            <span>USED { (memoryGb.usedMemoryGB).toFixed(1) } GB / Total { (memoryGb.totalMemoryGB).toFixed(1) } GB</span>
             <div className="wave_graph">
               <h2>Per MEMORY</h2>
               <div>
@@ -591,13 +646,13 @@ const Dashboard = () => {
             <h1>STORAGE</h1>
             <div className="graphs">
               <div className="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
-                <ApexChart3 /> {/* ApexChart 컴포넌트를 여기에 삽입 */}
+                <ApexChart3 storage = { storageGb.usedPercent } /> {/* ApexChart 컴포넌트를 여기에 삽입 */}
               </div>
               <div>
                 <BarChart /> {/* BarChart 컴포넌트를 여기에 삽입 */}
               </div>
             </div>
-            <span>USED 64 GB / Total 192 GB</span>
+            <span>USED { (storageGb.usedGB).toFixed(1) } GB / Total { (storageGb.freeGB).toFixed(1) } GB</span>
             <div className="wave_graph">
               <h2>Per STORAGE</h2>
               <div>
