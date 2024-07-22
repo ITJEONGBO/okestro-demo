@@ -16,6 +16,12 @@ async function getStorage() {
     return storage.data;
 }
 
+// vmCpu api 불러오는 값
+async function getVmCpu() {
+    const vmCpu = await axios.get('/dashboard/vmCpu');
+    return vmCpu.data;
+}
+
 
 // 도넛
 const ApexChart = ({ cpu }) => {
@@ -273,95 +279,112 @@ const ApexChart3 = ({ storage }) => {
 
 
 // 도넛옆에 막대
-class BarChart extends React.Component {
-  constructor(props) {
-    super(props);
+const BarChart = () => {
+  const [series, setSeries] = useState([{
+    data: [] // 막대 값
+  }]);
 
-    this.state = {
-      series: [{
-        data: [100, 430, 448] // 막대 값
-      }],
-      options: {
-        chart: {
-          type: 'bar',
-          height: 150  // 높이 조정
-        },
-        plotOptions: {
-          bar: {
-            barHeight: '100%',
-            distributed: true,
-            horizontal: true,
-            dataLabels: {
-              position: 'bottom'
-            },
-          }
-        },
-        colors: ['#1597E5', '#69DADB', '#7C7DEA'],
+  const [options, setOptions] = useState({
+    chart: {
+      type: 'bar',
+      height: 150  // 높이 조정
+    },
+    plotOptions: {
+      bar: {
+        barHeight: '100%',
+        distributed: true,
+        horizontal: true,
         dataLabels: {
-          enabled: true,
-          textAnchor: 'start',
-          style: {
-            colors: ['#fff'],
-            fontSize: '0.25rem', // 텍스트 크기를 rem 단위로 설정합니다.
-            fontWeight: '400'
-          },
-          formatter: function (val, opt) {
-            return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val
-          },
-          offsetX: 0,
-          dropShadow: {
-            enabled: true
-          }
+          position: 'bottom'
         },
-        stroke: {
-          width: 1,
-          colors: ['#fff']
-        },
-        xaxis: {
-          categories: ['A', 'B' ,'C'], // 목록이름
-        },
-        yaxis: {
-          labels: {
-            show: false // y축 레이블을 제거합니다.
-          }
-        },
+      }
+    },
+    colors: ['#1597E5', '#69DADB', '#7C7DEA'],
+    dataLabels: {
+      enabled: true,
+      textAnchor: 'start',
+      style: {
+        colors: ['#fff'],
+        fontSize: '0.25rem', // 텍스트 크기를 rem 단위로 설정합니다.
+        fontWeight: '400'
+      },
+      formatter: function (val, opt) {
+        return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val;
+      },
+      offsetX: 0,
+      dropShadow: {
+        enabled: true
+      }
+    },
+    stroke: {
+      width: 1,
+      colors: ['#fff']
+    },
+    xaxis: {
+      categories: [], // 목록이름
+    },
+    yaxis: {
+      labels: {
+        show: false // y축 레이블을 제거합니다.
+      }
+    },
+    title: {
+      text: '', // 제목을 제거합니다.
+      align: 'center',
+      floating: true
+    },
+    subtitle: {
+      text: '', // 부제목을 제거합니다.
+      align: 'center',
+    },
+    tooltip: {
+      theme: 'dark',
+      x: {
+        show: false // x축 제목을 제거합니다.
+      },
+      y: {
         title: {
-          text: '', // 제목을 제거합니다.
-          align: 'center',
-          floating: true
-        },
-        subtitle: {
-          text: '', // 부제목을 제거합니다.
-          align: 'center',
-        },
-        tooltip: {
-          theme: 'dark',
-          x: {
-            show: false // x축 제목을 제거합니다.
-          },
-          y: {
-            title: {
-              formatter: function () {
-                return ''
-              }
-            }
+          formatter: function () {
+            return '';
           }
         }
-      },
-    };
-  }
+      }
+    }
+  });
 
-  render() {
-    return (
-      <div>
-        <div id="chart">
-          <ReactApexChart options={this.state.options} series={this.state.series} type="bar" height={180} />
-        </div>
-        <div id="html-dist"></div>
+  useEffect(() => {
+      async function fetchData() {
+        try {
+          const data = await getVmCpu();
+          const names = data.map(item => item.name);
+          const cpuPercents = data.map(item => item.cpuPercent);
+
+          setSeries([{ data: cpuPercents }]);
+          setOptions(prevOptions => ({
+            ...prevOptions,
+            xaxis: {
+              ...prevOptions.xaxis,
+              categories: names,
+            }
+          }));
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      }
+
+      fetchData();
+    }, []);
+
+  return (
+    <div>
+      <div id="chart">
+        <ReactApexChart options={options} series={series} type="bar" height={180} />
       </div>
-    );
-  }
+      <div id="html-dist"></div>
+    </div>
+  );
 }
+
 
 //물결그래프
 class AreaChart extends React.Component {

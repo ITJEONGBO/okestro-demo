@@ -3,6 +3,7 @@ package com.itinfo.itcloud.controller.computing;
 import com.itinfo.itcloud.model.computing.DashBoardVo;
 import com.itinfo.itcloud.repository.dto.HostUsageDto;
 import com.itinfo.itcloud.repository.dto.StorageUsageDto;
+import com.itinfo.itcloud.repository.dto.UsageDto;
 import com.itinfo.itcloud.service.computing.ItGraphService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 @Controller
 @Slf4j
@@ -47,5 +50,13 @@ public class GraphController {
         log.info("----- storage");
         return graphService.totalStorage();
     }
+
+    @GetMapping("/vmCpu")
+    public List<UsageDto> vmCpuChart() {
+        log.info("----- storage");
+        return graphService.vmCpuChart();
+    }
+
+
 
 }
