@@ -46,17 +46,25 @@ public class GraphController {
         return graphService.totalStorage();
     }
 
+
+
     @GetMapping("/vmCpu")
     public List<UsageDto> vmCpuChart() {
         log.info("----- vmCpuChart");
         return graphService.vmCpuChart();
     }
 
-
     @GetMapping("/vmMemory")
     public List<UsageDto> vmMemoryChart() {
         log.info("----- vmMemoryChart");
         return graphService.vmMemoryChart();
+    }
+
+
+    @GetMapping("/storageMemory")
+    public List<UsageDto> storageChart() {
+        log.info("----- storageChart");
+        return graphService.storageChart();
     }
 
 

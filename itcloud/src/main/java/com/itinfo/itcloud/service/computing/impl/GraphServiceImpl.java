@@ -222,14 +222,11 @@ public class GraphServiceImpl implements ItGraphService {
         return storageDomainSamplesHistoryRepository.findStorageChart(page).stream()
                 .map(domainEntity -> {
                     StorageDomain storageDomain = system.storageDomainsService().storageDomainService(String.valueOf(domainEntity.getStorageDomainId())).get().send().storageDomain();
-                    int totalGB = domainEntity.getAvailableDiskSizeGb() + domainEntity.getUsedDiskSizeGb();
-
-//                    System.out.println(domainEntity.getUsedDiskSizeGb());
-//                    System.out.println(totalGB);
+                    double totalGB = domainEntity.getAvailableDiskSizeGb() + domainEntity.getUsedDiskSizeGb();
 
                     return UsageDto.builder()
                             .name(storageDomain.name())
-                            .memoryPercent((domainEntity.getUsedDiskSizeGb() / totalGB) * 100)
+                            .memoryPercent((int) ((domainEntity.getUsedDiskSizeGb() / totalGB) * 100))
                             .build();
                 })
                 .collect(Collectors.toList());

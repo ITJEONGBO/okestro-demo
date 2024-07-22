@@ -22,10 +22,16 @@ async function getVmCpu() {
     return vmCpu.data;
 }
 
-// vmCpu api 불러오는 값
+// vmMemory api 불러오는 값
 async function getVmMemory() {
     const vmMemory = await axios.get('/dashboard/vmMemory');
     return vmMemory.data;
+}
+
+// vmMemory api 불러오는 값
+async function getStorageMemory() {
+    const storageMemory = await axios.get('/dashboard/storageMemory');
+    return storageMemory.data;
 }
 
 
@@ -500,7 +506,7 @@ const MemoryBarChart = () => {
 
 
 
-const BarChart = () => {
+const StorageBarChart = () => {
   const [series, setSeries] = useState([{
     data: [] // 막대 값
   }]);
@@ -576,11 +582,11 @@ const BarChart = () => {
   useEffect(() => {
       async function fetchData() {
         try {
-          const data = await getVmCpu();
+          const data = await getStorageMemory();
           const names = data.map(item => item.name);
-          const cpuPercents = data.map(item => item.cpuPercent);
+          const memoryPercent = data.map(item => item.memoryPercent);
 
-          setSeries([{ data: cpuPercents }]);
+          setSeries([{ data: memoryPercent }]);
           setOptions(prevOptions => ({
             ...prevOptions,
             xaxis: {
@@ -852,7 +858,7 @@ const Dashboard = () => {
                 <CpuApexChart cpu = {memoryGb.totalCpuUsagePercent} /> {/* ApexChart 컴포넌트를 여기에 삽입 */}
               </div>
               <div>
-                <BarChart /> {/* BarChart 컴포넌트를 여기에 삽입 */}
+                <CpuBarChart /> {/* BarChart 컴포넌트를 여기에 삽입 */}
               </div>
             </div>
             <span>USED 64 Core / Total 192 Core</span>
@@ -890,7 +896,7 @@ const Dashboard = () => {
                 <StorageApexChart storage = { storageGb.usedPercent } /> {/* ApexChart 컴포넌트를 여기에 삽입 */}
               </div>
               <div>
-                <BarChart /> {/* BarChart 컴포넌트를 여기에 삽입 */}
+                <StorageBarChart /> {/* BarChart 컴포넌트를 여기에 삽입 */}
               </div>
             </div>
             <span>USED { storageGb.usedGB } GB / Total { storageGb.freeGB } GB</span>
