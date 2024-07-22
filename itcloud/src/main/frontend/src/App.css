@@ -1,15 +1,14 @@
 @font-face {
-    font-family: 'TTHakgyoansimMonggeulmonggeulR';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_keris@1.0/TTHakgyoansimMonggeulmonggeulR.woff2') format('woff2'),
-         url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_keris@1.0/TTHakgyoansimMonggeulmonggeulR.woff') format('woff');
+    font-family: 'GowunDodum-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 }
-
 #root,*{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'GowunDodum-Regular';
 }
 .selected {
     background-color: #a4d9db;
@@ -19,7 +18,7 @@
     background-color: #EBEEEE;
     padding: 1% 1.3% 0 1.3%;
     height: 100vh; /* 추가 */
-    font-family: "Roboto", helvetica, arial, sans-serif;
+
     text-rendering: optimizeLegibility;
 }
 
@@ -33,7 +32,7 @@
     justify-content: space-between;
     align-items: center; /* 세로 중앙 정렬 추가 */
     margin-bottom: 0.6%;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); 
+    box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.13);
 }
 
 #header_right {
@@ -76,9 +75,14 @@
 
     
 }
-.apexcharts-menu-icon{
+/*차트위에 아이콘 제거*/
+.apexcharts-menu-icon,.apexcharts-toolbar>div{
     display: none;
 }
+.apexcharts-legend.apx-legend-position-bottom.apexcharts-align-center, .apexcharts-legend.apx-legend-position-top.apexcharts-align-center {
+    display: none;
+}
+
 #main_outer{
     height: 88vh;
     display: flex;
@@ -91,10 +95,10 @@
 }
 #aside {
     width: 3vw;
-    height: 101%;
+    height: 100%;
     background-color: #ffffff;
     border-radius: 5px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.13);
     border-right: 1px solid rgb(219 219 219);
     display: flex;
     flex-direction: column; /* 컬럼 방향으로 요소 정렬 */
@@ -212,39 +216,39 @@
 }
 
 #dash_boxs{
-    padding: 0.25rem 0.3rem;
+    padding: 0.23rem 0.2rem;
     display: flex;
     justify-content: space-between;
     min-height: 15%;
     border-radius: 5px;
     margin-bottom: 11px;
     background-color: #fafaff;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.13);
 }
 #dash_boxs>.box{
-    width: 13%;
+    width: 16%;
     cursor: pointer;
 }
 .box:nth-child(n+1){
     margin: 0 6px;
     padding: 7px 0 0 7px;
-    border-radius: 3px;
-    border: 1px solid #17977b;
-    background: #85C7CA;
+    border-right: 2px solid #5e95a745;
 }
 .box:nth-child(n+4){
     margin: 0 6px;
     padding: 7px 0 0 7px;
-    border-radius: 3px;
-    border: 1px solid #3383cb;
-    background: #6999D9;
+
+    border-right: 2px solid #5e95a745;
+}
+.box:last-child{
+    border-right: none;
 }
 .box>span{
     display: block;
     font-size: 0.4rem;
     font-weight: 600;
     width: 90%;
-    color: #ffffff;
+    color: #1190c3;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -257,18 +261,18 @@
     font-weight: 600;
     text-align: left;
     margin-left: 4px;
-    color: rgb(255, 255, 255);
+    color: #1190c3;
 }
 .arrows{
     height: 24px;
     margin-top: 6px;
     text-align: right;
     margin-top: 9px;
-    margin-right: 10px;
+    margin-right: 0.5rem;
     font-size: 16px;
 }
 .arrows>i:first-child{
-    color: #dbff1f;
+    color: #ff8417;
 }
 .arrows>i:last-child{
     color: #4d4d4d;
@@ -283,7 +287,7 @@
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    height: 59%;
+    height: 61%;
     background-color: #ffffff;
     padding: 0 0.2rem;
     margin-bottom: 11px;
@@ -294,8 +298,8 @@
     width: 33.3%;
 }
 .dash_section_contents>h1{
-    padding: 6px 29px;
-    font-size: 0.5rem;
+    padding: 6px 15px;
+    font-size: 0.45rem;
     margin-top: 5px;
     color: #1a74e7;
     font-weight: 800;
@@ -330,22 +334,22 @@
 /*도넛css끝*/
 .dash_section_contents>span{
     display: block;
-    font-size: 0.35rem;
-    width: 47%;
+    font-size: 0.33rem;
+    width: 44%;
     color: #000000;
     text-align: center;
     padding: 0.18rem 0.04rem;
     margin-left: 0.2rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
     font-weight: 600;
     border-radius: 3px;
     background: #E9F1F7;
 }
 .wave_graph>h2{
-    font-size: 20px;
+    font-size: 0.37rem;
     margin-left: 9px;
     margin-bottom: 5px;
-    color: #000000;  
+    color: #000000;
 }
 /*물결그래프*/
 
@@ -356,7 +360,7 @@
 /*bar*/
 #bar{
     display: flex;
-    height: 24.3%;
+    height: 22.4%;
     border-radius: 3px;
     font-size: 0.34rem;
     justify-content: space-between;
@@ -1225,7 +1229,12 @@
 #host_right_outer,
 #host_profile_outer,
 #host_erita_outer,
-#host_event_outer
+#host_event_outer,
+#detail_vnic_outer,
+#detail_cluster_outer,
+#detail_host_outer,
+#detail_virtual_outer,
+#detail_permission_outer
 
 {
     width: 100%;
@@ -1238,6 +1247,13 @@
 #network_content_outer{
     width: 100%;
 }
+#detail_machine_outer,#detail_template_outer{
+    padding: 1.4rem 0;
+}
+.table_outer2{
+    height: 50%;
+}
+
 .content_header {
     border-right: 1px solid #dddddd;
     margin-right: 1%;

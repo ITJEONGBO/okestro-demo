@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../App.css';
 import Modal from 'react-modal';
+import NetworkDetail from '../detail/NetworkDetail';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -9,6 +10,13 @@ function Network() {
     const [activeSection, setActiveSection] = useState('common_outer');
     const [selectedTab, setSelectedTab] = useState('network_new_common_btn');
     const [activePopup, setActivePopup] = useState(null);
+
+    // 세부페이지이동
+    const [showNetworkSection, setShowNetworkSection] = useState(true);
+    const handleNetworkNameClick = () => {
+        setShowNetworkSection(false);
+    };
+
 
     // 폰트사이즈 조절
     useEffect(() => {
@@ -103,83 +111,91 @@ function Network() {
     };
     // 새로만들기 버튼
     return (
+  
         <div id="network_section">
-            <div className="section_header">
-                <div className="section_header_left">
-                    <div>Default</div>
-                    <button><i className="fa fa-exchange"></i></button>
-                </div>
-                <div className="section_header_right">
-                    <div className="article_nav">
-                        <button id="network_first_edit_btn">편집</button>
-                        <button>삭제</button>
-                        <button id="popup_btn">
-                            <i className="fa fa-ellipsis-v"></i>
-                            <div id="popup_box">
-                                <div>
-                                    <div className="get_btn">가져오기</div>
-                                    <div className="get_btn">가상 머신 복제</div>
-                                </div>
-                                <div>
-                                    <div>삭제</div>
-                                </div>
-                                <div>
-                                    <div>마이그레이션 취소</div>
-                                    <div>변환 취소</div>
-                                </div>
-                                <div>
-                                    <div id="template_btn">템플릿 생성</div>
-                                </div>
-                                <div style={{ borderBottom: 'none' }}>
-                                    <div id="domain2">도메인으로 내보내기</div>
-                                    <div id="domain">Export to Data Domai</div>
-                                    <div id="ova_btn">OVA로 내보내기</div>
-                                </div>
-                            </div>
-                        </button>
+             {showNetworkSection ? ( //꼭 div하나로 감싸주기
+            <div>
+                <div className="section_header">
+                    <div className="section_header_left">
+                        <div>Default</div>
+                        <button><i className="fa fa-exchange"></i></button>
                     </div>
-                </div>
-            </div>
-
-            <div className="content_outer">
-                <div className="content_header">
-                    <div className="content_header_left">
-                        <div className="active">논리 네트워크</div>
-                    </div>
-                </div>
-
-                <div className="storage_domain_content" style={{ padding: '0.5rem 0.3rem' }}>
-                    <div className="content_header_right">
-                        <button id="network_new_btn" onClick={() => openPopup('newNetwork')}>새로 만들기</button>
-                        <button id="network_bring_btn" onClick={() => openPopup('getNetwork')}>가져오기</button>
-                        <button>편집</button>
-                        <button>삭제</button>
-                    </div>
-                    <div>
-                        <div className="application_content_header">
-                            <button><i className="fa fa-chevron-left"></i></button>
-                            <div>1-2</div>
-                            <button><i className="fa fa-chevron-right"></i></button>
-                            <button><i className="fa fa-ellipsis-v"></i></button>
+                    <div className="section_header_right">
+                        <div className="article_nav">
+                            <button id="network_first_edit_btn">편집</button>
+                            <button>삭제</button>
+                            <button id="popup_btn">
+                                <i className="fa fa-ellipsis-v"></i>
+                                <div id="popup_box">
+                                    <div>
+                                        <div className="get_btn">가져오기</div>
+                                        <div className="get_btn">가상 머신 복제</div>
+                                    </div>
+                                    <div>
+                                        <div>삭제</div>
+                                    </div>
+                                    <div>
+                                        <div>마이그레이션 취소</div>
+                                        <div>변환 취소</div>
+                                    </div>
+                                    <div>
+                                        <div id="template_btn">템플릿 생성</div>
+                                    </div>
+                                    <div style={{ borderBottom: 'none' }}>
+                                        <div id="domain2">도메인으로 내보내기</div>
+                                        <div id="domain">Export to Data Domai</div>
+                                        <div id="ova_btn">OVA로 내보내기</div>
+                                    </div>
+                                </div>
+                            </button>
                         </div>
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>이름</th>
-                                <th>설명</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>ovirtmgmt</td>
-                                <td>Management Network</td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
-            </div>
 
+                <div className="content_outer">
+                    <div className="content_header">
+                        <div className="content_header_left">
+                            <div className="active">논리 네트워크</div>
+                        </div>
+                    </div>
+
+                    <div className="storage_domain_content" style={{ padding: '0.5rem 0.3rem' }}>
+                        <div className="content_header_right">
+                            <button id="network_new_btn" onClick={() => openPopup('newNetwork')}>새로 만들기</button>
+                            <button id="network_bring_btn" onClick={() => openPopup('getNetwork')}>가져오기</button>
+                            <button>편집</button>
+                            <button>삭제</button>
+                        </div>
+                        <div>
+                            <div className="application_content_header">
+                                <button><i className="fa fa-chevron-left"></i></button>
+                                <div>1-2</div>
+                                <button><i className="fa fa-chevron-right"></i></button>
+                                <button><i className="fa fa-ellipsis-v"></i></button>
+                            </div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>이름</th>
+                                    <th>설명</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td onClick={handleNetworkNameClick}>ovirtmgmt</td>
+                                    <td>Management Network</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>            ) : (
+                <NetworkDetail />
+            )}
+
+
+            
             <div id="network_logic_outer" style={{ display: 'none' }}>
                 <div className="content_header">
                     <div className="content_header_left">
@@ -223,6 +239,7 @@ function Network() {
                     </table>
                 </div>
             </div>
+           
 
             <div className="footer_outer">
                 <div className="footer">

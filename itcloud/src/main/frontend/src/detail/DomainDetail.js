@@ -11,8 +11,8 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
     <div className="content_detail_section">
       <div className="section_header">
         <div className="section_header_left">
-          <span>데이터 센터 </span>
-          <span>스토리지 도메인</span>
+          <span>스토리지 </span>
+          <span>도메인</span>
           <div>hosted_storage</div>
           <button>
             <i className="fa fa-exchange"></i>
@@ -98,20 +98,6 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
               onClick={() => handleTabClick('disk_snapshot')}
             >
               디스크 스냅샷
-            </div>
-            <div
-              className={activeTab === 'lease' ? 'active' : ''}
-              style={{ color: activeTab === 'lease' ? '#6999D9' : 'black' }}
-              onClick={() => handleTabClick('lease')}
-            >
-              임대
-            </div>
-            <div
-              className={activeTab === 'disk_profile' ? 'active' : ''}
-              style={{ color: activeTab === 'disk_profile' ? '#6999D9' : 'black' }}
-              onClick={() => handleTabClick('disk_profile')}
-            >
-              디스크 프로파일
             </div>
             <div
               className={activeTab === 'event' ? 'active' : ''}
@@ -299,7 +285,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                 <button><i className="fa fa-chevron-right"></i></button>
                 <button><i className="fa fa-ellipsis-v"></i></button>
             </div>
-            <div className="table_outer">
+            <div className="table_outer2">
                 <table>
                 <thead>
                     <tr>
@@ -356,7 +342,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                 <button><i className="fa fa-chevron-right"></i></button>
                 <button><i className="fa fa-ellipsis-v"></i></button>
             </div>
-            <div className="table_outer">
+            <div className="table_outer2">
                 <table>
                 <thead>
                     <tr>
@@ -381,79 +367,9 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
         </div>
         )}
 
-        {activeTab === 'lease' && (
-            <div id="detail_rent_outer">
-                <div className="pregroup_content">
-                    <div className="content_header_right">
-                        <button>제거</button>
-                    </div>
-                    <div className="application_content_header">
-                        <button><i className="fa fa-chevron-left"></i></button>
-                        <div>0-0</div>
-                        <button><i className="fa fa-chevron-right"></i></button>
-                        <button><i className="fa fa-ellipsis-v"></i></button>
-                    </div>
-                    <div className="table_outer">
-                        <table>
-                        <thead>
-                            <tr>
-                            <th>크기</th>
-                            <th>생성 일자</th>
-                            <th>스냅샷 생성일</th>
-                            <th>디스크 별칭</th>
-                            <th>스냅샷 설명</th>
-                            <th>연결 대상</th>
-                            <th>상태</th>
-                            <th>디스크 스냅샷 ID</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                            <td colSpan="8" style={{ textAlign: 'center' }}>표시할 항목이 없습니다</td>
-                            </tr>
-                        </tbody>
-                        </table>
-                    </div>
-                </div>
-          </div>
-        )}
+       
 
-        {activeTab === 'disk_profile' && (
-        <div id="detail_profile_outer">
-            <div className="pregroup_content">
-                <div className="content_header_right">
-                <button>새로 만들기</button>
-                <button>편집</button>
-                <button>제거</button>
-                </div>
-                <div className="application_content_header">
-                <button><i className="fa fa-chevron-left"></i></button>
-                <div>1-2</div>
-                <button><i className="fa fa-chevron-right"></i></button>
-                <button><i className="fa fa-ellipsis-v"></i></button>
-                </div>
-                <div className="table_outer">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>이름</th>
-                        <th>설명</th>
-                        <th>QoS이름</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>hosted_storage</td>
-                        <td></td>
-                        <td>제한 없음</td>
-                    </tr>
-                    </tbody>
-                </table>
-                </div>
-            </div>
-        </div>
         
-        )}
 
         {activeTab === 'event' && (
         <div id="detail_event_outer">
@@ -471,7 +387,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                 <button><i className="fa fa-chevron-right"></i></button>
                 <button><i className="fa fa-ellipsis-v"></i></button>
               </div>
-              <div className="table_outer">
+              <div className="table_outer2">
                 <table>
                   <thead>
                     <tr>
@@ -518,7 +434,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
 
         {activeTab === 'permission' && (
         <div id="detail_right_outer">
-            <div className="storage_domain_content">
+            <div className="pregroup_content">
               <div className="content_header_right">
                 <button>추가</button>
                 <button>제거</button>
@@ -538,7 +454,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                   <button><i className="fa fa-ellipsis-v"></i></button>
                 </div>
               </div>
-              <div className="table_outer">
+              <div className="table_outer2">
                 <table style={{ marginTop: 0 }}>
                   <thead>
                     <tr>
