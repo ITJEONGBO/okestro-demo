@@ -33,11 +33,6 @@ public class GraphController {
         return graphService.getDashboard();
     }
 
-    @GetMapping("/cpu")
-    public int totalCpu() {
-        log.info("----- cpu");
-        return graphService.totalCpu();
-    }
 
     @GetMapping("/cpumemory")
     public HostUsageDto totalCpuMemory() {
@@ -53,8 +48,15 @@ public class GraphController {
 
     @GetMapping("/vmCpu")
     public List<UsageDto> vmCpuChart() {
-        log.info("----- storage");
+        log.info("----- vmCpuChart");
         return graphService.vmCpuChart();
+    }
+
+
+    @GetMapping("/vmMemory")
+    public List<UsageDto> vmMemoryChart() {
+        log.info("----- vmMemoryChart");
+        return graphService.vmMemoryChart();
     }
 
 

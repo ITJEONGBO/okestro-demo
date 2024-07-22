@@ -40,7 +40,6 @@ public class GraphServiceImpl implements ItGraphService {
     private final double GB = 1073741824; // gb 변환
 
 
-
     @Override
     public DashBoardVo getDashboard() {
         SystemService system = admin.getConnection().systemService();
@@ -107,6 +106,8 @@ public class GraphServiceImpl implements ItGraphService {
             time = usage.getHistoryDatetime();
         }
 
+        System.out.println(totalCpu + ", " + hostList.size());
+
         return HostUsageDto.builder()
                 .historyDatetime(time)
                 .totalCpuUsagePercent(Math.round(totalCpu / hostCnt))
@@ -117,18 +118,6 @@ public class GraphServiceImpl implements ItGraphService {
                 .build();
     }
 
-    @Override
-    public int totalCpu() {
-        SystemService system = admin.getConnection().systemService();
-        List<Host> hostList = system.hostsService().list().send().hosts();
-
-        double totalCpu = 0;
-        for(Host host : hostList){
-            HostUsageDto usage = hostSamplesHistoryRepository.findFirstByHostIdOrderByHistoryDatetimeDesc(UUID.fromString(host.id())).totalCpuMemory();
-            totalCpu += usage.getTotalCpuUsagePercent();
-        }
-        return (int) totalCpu;
-    }
 
     /**
      * 전체 사용량 - Storage % 원 그래프

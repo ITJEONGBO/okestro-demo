@@ -14,9 +14,6 @@ public interface ItGraphService {
 
     DashBoardVo getDashboard();
 
-    // 원 그래프
-    int totalCpu();
-//    int totalMemory();
     HostUsageDto totalCpuMemory();
 
     StorageUsageDto totalStorage();
