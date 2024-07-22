@@ -189,16 +189,6 @@ function MainOuter({ children }) {
                                 <i className="fa fa-desktop"></i>
                             </div>
                         </Link>
-                        <Link to='/storage' className="link-no-underline">
-                            <div
-                                id="aside_popup_storage_btn"
-                                className={getClassNames('storage')}
-                                onClick={() => handleClick('storage')}
-                                style={{ backgroundColor: asidePopupBackgroundColor.storage }}
-                            >
-                                <i className="fa fa-server"></i>
-                            </div>
-                        </Link>
                         <Link to='/network' className="link-no-underline">
                             <div
                                 id="aside_popup_network_btn"
@@ -209,6 +199,17 @@ function MainOuter({ children }) {
                                 <i className="fa fa-database"></i>
                             </div>
                         </Link>
+                        <Link to='/storage' className="link-no-underline">
+                            <div
+                                id="aside_popup_storage_btn"
+                                className={getClassNames('storage')}
+                                onClick={() => handleClick('storage')}
+                                style={{ backgroundColor: asidePopupBackgroundColor.storage }}
+                            >
+                                <i className="fa fa-server"></i>
+                            </div>
+                        </Link>
+                        
                     </div>
                     <Link to='/setting' className="link-no-underline">
                         <div id="setting_icon" style={{ backgroundColor: asidePopupBackgroundColor.setting }} onClick={() => handleClick('setting')}>
