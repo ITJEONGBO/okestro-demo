@@ -1247,7 +1247,7 @@
 #network_content_outer{
     width: 100%;
 }
-#detail_machine_outer,#detail_template_outer{
+#detail_machine_outer{
     padding: 1.4rem 0;
 }
 .table_outer2{
@@ -3090,14 +3090,6 @@ form>div
 }
 
     /*디스크(업로드)*/
-.storage_disk_upload_outer{
-    display: none;
-    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
 .storage_disk_upload_popup{
     border: 1px solid #dfdddd;
     position: absolute;
@@ -3988,7 +3980,83 @@ form>div
     text-align: left;
     border-collapse: collapse;
 }
+/*NetworkDetail*/
+/*vNic프로파일(새로만들기)*/
+.vnic_new_content_popup{
+border: 1px solid #dfdddd;
+position: absolute;
+box-sizing: border-box;
+border-radius: 4px;
+background: #fff;
+top: 50%;
+height: 80.4vh;
+width: 45%;
+left: 50%;
+transform: translate(-50%, -50%);
+box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+.vnic_new_contents{
+    font-size: 0.33rem;
+}
 
+.vnic_new_box{
+    padding: 1.2% 0.3rem;
+    display: flex;
+    justify-content: space-between;
+}
+.vnic_new_box>input,.vnic_new_box>select{
+    width: 50%;
+    height: 3.5vh;
+    border: 1px solid #8b8989;
+    background: white;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+    outline: none;
+}
+.vnic_new_checkbox{
+    padding: 1.2% 0.3rem;
+}
+.vnic_new_checkbox input{
+    margin-right: 0.2rem;
+}
+.vnic_new_inputs{
+    padding: 1.2% 0.3rem;
+}
+
+.vnic_new_buttons{
+    display: flex;
+    justify-content: space-between;
+}
+.vnic_new_buttons>div{
+    display: flex;
+    width: 8%;
+}
+.vnic_new_buttons>div>div{
+    width: 50%;
+    border: 1px solid #8b8989;
+    text-align: center;
+    font-size: 0.4rem;
+    font-weight: 800;
+    border-radius: 3px;
+    color: #8b8989;
+    cursor: pointer;
+}
+.vnic_new_inputs select{
+    width: 30%;
+    height: 3.5vh;
+    border: 1px solid #8b8989;
+    background: white;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+    outline: none;
+}
+/*호스트(호스트 네트워크 설정)*/
+.host_network_top{
+    height: 47vh;
+    background-color: yellow;
+}
 /*반응형*/
 @media (max-width:1390px) {
 
