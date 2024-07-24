@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.UUID;
-
+/*
 @Repository
 public interface StorageDomainSamplesHistoryRepository extends JpaRepository<StorageDomainSamplesHistoryEntity, Integer> {
 
@@ -22,3 +22,4 @@ public interface StorageDomainSamplesHistoryRepository extends JpaRepository<Sto
     List<StorageDomainSamplesHistoryEntity> findStorageChart(Pageable page);
 
 }
+*/

@@ -1,6 +1,5 @@
 package com.itinfo.itcloud.repository.entity;
 
-import com.itinfo.itcloud.repository.dto.UsageDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +13,7 @@ import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
+/*
 @Entity
 @Getter
 @ToString
@@ -45,3 +44,4 @@ public class HostInterfaceSamplesHistoryEntity {
         return receiveRatePercent.intValue();
     }
 }
+*/

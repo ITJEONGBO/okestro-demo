@@ -13,7 +13,7 @@ import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
+/*
 @Entity
 @Getter
 @ToString
@@ -45,3 +45,4 @@ public class VmInterfaceSamplesHistoryEntity {
         return receiveRatePercent.intValue();
     }
 }
+*/

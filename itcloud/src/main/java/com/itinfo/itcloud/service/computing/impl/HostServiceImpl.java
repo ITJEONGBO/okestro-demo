@@ -1,40 +1,37 @@
+/*
 package com.itinfo.itcloud.service.computing.impl;
 
+import com.itinfo.itcloud.ExpectStatusExtKt;
+import com.itinfo.itcloud.ItCloudApplicationKt;
 import com.itinfo.itcloud.model.computing.*;
-import com.itinfo.itcloud.model.create.HostCreateVo;
-import com.itinfo.itcloud.model.error.CommonVo;
-import com.itinfo.itcloud.ovirt.AdminConnectionService;
+import com.itinfo.itcloud.model.response.Res;
+import com.itinfo.itcloud.model.network.NicVo;
+import com.itinfo.itcloud.model.setting.PermissionVo;
+import com.itinfo.itcloud.model.setting.PermissionVoKt;
 import com.itinfo.itcloud.repository.*;
+import com.itinfo.itcloud.service.BaseService;
 import com.itinfo.itcloud.service.computing.ItAffinityService;
 import com.itinfo.itcloud.service.computing.ItGraphService;
 import com.itinfo.itcloud.service.computing.ItHostService;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
+import com.itinfo.util.ovirt.StatisticExtKt;
 import lombok.extern.slf4j.Slf4j;
 import org.ovirt.engine.sdk4.builders.*;
 import org.ovirt.engine.sdk4.services.HostService;
 import org.ovirt.engine.sdk4.services.HostsService;
-import org.ovirt.engine.sdk4.services.SystemService;
 import org.ovirt.engine.sdk4.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class HostServiceImpl implements ItHostService {
-    @Autowired private AdminConnectionService admin;
-    @Autowired private CommonService common;
+public class HostServiceImpl extends BaseService implements ItHostService {
     @Autowired private ItAffinityService affinity;
     @Autowired private ItGraphService dash;
 
@@ -44,77 +41,31 @@ public class HostServiceImpl implements ItHostService {
     @Autowired private VmSamplesHistoryRepository vmSamplesHistoryRepository;
     @Autowired private VmInterfaceSamplesHistoryRepository vmInterfaceSamplesHistoryRepository;
 
-    /**
+    */
+/**
      * 호스트 목록
      * @return 호스트 목록
-     */
-    @Override
-    public List<HostVo> getHosts() {
-        SystemService system = admin.getConnection().systemService();
-        List<Host> hostList = system.hostsService().list().allContent(true).send().hosts(); // hosted Engine의 정보가 나온다
+     *//*
 
+    @Override
+    public List<HostVo> findAll() {
+        List<Host> hostList = getSystem().hostsService().list().allContent(true).send().hosts(); // hosted Engine의 정보가 나온다
         log.info("호스트 목록");
-        return hostList.stream()
-                .map(host -> {
-                    Cluster cluster = system.clustersService().clusterService(host.cluster().id()).get().send().cluster();
-                    String hostNicId = system.hostsService().hostService(host.id()).nicsService().list().send().nics().get(0).id();
-
-                    return HostVo.builder()
-                                .id(host.id())
-                                .name(host.name())
-                                .comment(host.comment())
-                                .status(host.status().value())
-                                .address(host.address())
-                                .clusterId(host.cluster().id())
-                                .clusterName(cluster.name())
-                                .datacenterId(cluster.dataCenter().id())
-                                .datacenterName(system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
-                                .hostedEngine(host.hostedEnginePresent() ? host.hostedEngine().active() : null) // 별표
-                                .vmCnt(
-                                        (int) system.vmsService().list().send().vms().stream()
-                                        .filter(vm -> vm.host() != null && vm.host().id().equals(host.id()))
-                                        .count()
-                                )
-                                .usageDto(host.status() == HostStatus.UP ? dash.hostPercent(host.id(), hostNicId) : null)
-                            .build();
-                })
-                .collect(Collectors.toList());
+        return HostVoKt.toHostVos(hostList, getConn());
     }
 
 
-    /**
-     * 호스트 생성 - 클러스터 리스트 출력
-     * @return 클러스터 리스트
-     */
-    @Override
-    public List<ClusterVo> setClusterList() {
-        SystemService system = admin.getConnection().systemService();
-        List<Cluster> clusterList = system.clustersService().list().send().clusters();
-
-        log.info("호스트 생성창");
-        return clusterList.stream()
-                .map(cluster ->
-                        ClusterVo.builder()
-                            .id(cluster.id())
-                            .name(cluster.name())
-                            .datacenterName(system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
-                        .build()
-                )
-                .collect(Collectors.toList());
-    }
-
-
-    /**
+    */
+/**
      * 호스트 생성
      * 전원관리 없앰
      * @param hostCreateVo 호스트 객체
      * @return host 201(create) 404(fail)
-     */
-    @Override
-    public CommonVo<Boolean> addHost(HostCreateVo hostCreateVo) {
-        SystemService system = admin.getConnection().systemService();
-        HostsService hostsService = system.hostsService();
+     *//*
 
+    @Override
+    public Res<Boolean> addHost(HostCreateVo hostCreateVo) {
+        HostsService hostsService = getSystem().hostsService();
         // ssh port가 22면 .ssh() 설정하지 않아도 알아서 지정됨.
         // ssh port 변경을 ovirt에서 해보신적은 없어서 우선 보류 (cmd로 하셨음)
         // 비밀번호 잘못되면 보여줄 코드?
@@ -135,43 +86,44 @@ public class HostServiceImpl implements ItHostService {
                         )
                         .send().host();
 
-            HostService hostService = system.hostsService().hostService(host.id());
+            HostService hostService = getSystem().hostsService().hostService(host.id());
 
-            // 호스트 상태가 "UP"이 될 때까지 대기
-            // 3초 씩 15분 기다림
-            if(expectStatus(hostService, HostStatus.UP, 3000, 900000)){
+
+            if(ExpectStatusExtKt.expectHostStatus(getConn(), host.id(), HostStatus.UP, 900000, 3000)) {
                 log.info("호스트 생성 완료: " + host.name());
-                return CommonVo.createResponse();
+                return Res.createResponse();
             } else {
                 log.error("호스트 생성 시간 초과: {}", host.name());
-                return CommonVo.failResponse("호스트 생성 시간 초과");
+                return Res.failResponse("호스트 생성 시간 초과");
             }
 
         } catch (Exception e) {
             log.error("호스트 추가 실패 {}", e.getMessage());
             e.getMessage();
-            return CommonVo.failResponse(e.getMessage());
+            return Res.failResponse(e.getMessage());
         }
     }
 
 
-    /**
+    */
+/**
      * 호스트 편집창
      * @param id 호스트 id
      * @return 호스트 객체
-     */
+     *//*
+
     @Override
     public HostCreateVo setHost(String id) {
-        SystemService system = admin.getConnection().systemService();
-        Host host = system.hostsService().hostService(id).get().allContent(true).send().host();
-        Cluster cluster = system.clustersService().clusterService(host.cluster().id()).get().send().cluster();
+        
+        Host host = getSystem().hostsService().hostService(id).get().allContent(true).send().host();
+        Cluster cluster = getSystem().clustersService().clusterService(host.cluster().id()).get().send().cluster();
 
         log.info("호스트 편집창");
 
         return HostCreateVo.builder()
                 .clusterId(cluster.id())
                 .clusterName(cluster.name())
-                .datacenterName(system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
+                .datacenterName(getSystem().dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter().name())
                 .id(id)
                 .name(host.name())
                 .comment(host.comment())
@@ -185,15 +137,17 @@ public class HostServiceImpl implements ItHostService {
     }
 
 
-    /**
+    */
+/**
      * 호스트 편집
      * @param hcVo 호스트 객체
      * @return host 201(create) 404(fail)
-     */
+     *//*
+
     @Override
-    public CommonVo<Boolean> editHost(HostCreateVo hcVo) {
-        SystemService system = admin.getConnection().systemService();
-        HostService hostService = system.hostsService().hostService(hcVo.getId());
+    public Res<Boolean> editHost(HostCreateVo hcVo) {
+
+        HostService hostService = getSystem().hostsService().hostService(hcVo.getId());
 
         try {
             hostService.update()
@@ -208,28 +162,28 @@ public class HostServiceImpl implements ItHostService {
                     .send().host();
 
             log.info("호스트 편집");
-            return CommonVo.createResponse();
+            return Res.createResponse();
         } catch (Exception e) {
             log.error("호스트 편집 error : ", e);
-            return CommonVo.failResponse(e.getMessage());
+            return Res.failResponse(e.getMessage());
         }
     }
 
 
 
-    /**
+    */
+/**
      * 호스트 삭제
      * 삭제 여부 = 가상머신 돌아가는게 있는지 -> 유지보수 상태인지 -> 삭제
      * @param ids 호스트 id 목록
      * @return host 200(success) 404(fail)
-     */
-    @Override
-    public CommonVo<Boolean> deleteHost(List<String> ids) {
-        SystemService system = admin.getConnection().systemService();
+     *//*
 
+    @Override
+    public Res<Boolean> deleteHost(List<String> ids) {
         try {
             for(String id : ids) {
-                HostService hostService = system.hostsService().hostService(id);
+                HostService hostService = getSystem().hostsService().hostService(id);
                 Host host = hostService.get().send().host();
                 HostStatus status = hostService.get().send().host().status();
                 String name = host.name();
@@ -239,28 +193,30 @@ public class HostServiceImpl implements ItHostService {
                     log.info("호스트 {} 삭제", name);
                 } else {
                     log.error("호스트 삭제불가 : {}, 유지보수 모드로 바꾸세요", host.name());
-                    return CommonVo.failResponse(host.name() + " 호스트는 유지보수 모드가 아님");
+                    return Res.failResponse(host.name() + " 호스트는 유지보수 모드가 아님");
                 }
             }
-            return CommonVo.successResponse();
+            return Res.successResponse();
         }catch (Exception e){
             log.error("error ", e);
-            return CommonVo.failResponse(e.getMessage());
+            return Res.failResponse(e.getMessage());
         }
     }
 
 
 
 
-    /**
+    */
+/**
      * 호스트 유지보수
      * @param id 호스트 id
      * @return host 200(success) 404(fail)
-     */
+     *//*
+
     @Override
-    public CommonVo<Boolean> deactiveHost(String id) {
-        SystemService system = admin.getConnection().systemService();
-        HostService hostService = system.hostsService().hostService(id);
+    public Res<Boolean> deactiveHost(String id) {
+        
+        HostService hostService = getSystem().hostsService().hostService(id);
 
         try {
             Host host = hostService.get().send().host();
@@ -269,33 +225,35 @@ public class HostServiceImpl implements ItHostService {
             if (status != HostStatus.MAINTENANCE) {
                 hostService.deactivate().send();
 
-                if (expectStatus(hostService, HostStatus.MAINTENANCE, 3000, 60000)) {
+                if (ExpectStatusExtKt.expectHostStatus(getConn(), host.id(), HostStatus.MAINTENANCE, 900000, 6000)) {
                     log.info("호스트 유지보수 모드 전환 완료: {}", host.name());
-                    return CommonVo.successResponse();
+                    return Res.successResponse();
                 } else {
                     log.error("호스트 유지보수 모드 전환 시간 초과: {}", host.name());
-                    return CommonVo.failResponse("유지보수 모드 전환 시간 초과");
+                    return Res.failResponse("유지보수 모드 전환 시간 초과");
                 }
             } else {
                 log.info("현재 호스트는 이미 유지보수 모드입니다: {}", host.name());
-                return CommonVo.failResponse("현재 호스트는 이미 유지보수 모드입니다");
+                return Res.failResponse("현재 호스트는 이미 유지보수 모드입니다");
             }
         } catch (Exception e) {
             log.error("호스트 유지보수 모드 전환 중 오류: ", e);
-            return CommonVo.failResponse(e.getMessage());
+            return Res.failResponse(e.getMessage());
         }
     }
 
 
-    /**
+    */
+/**
      * 호스트 활성
      * @param id 호스트 id
      * @return host 200(success) 404(fail)
-     */
+     *//*
+
     @Override
-    public CommonVo<Boolean> activeHost(String id) {
-        SystemService system = admin.getConnection().systemService();
-        HostService hostService = system.hostsService().hostService(id);
+    public Res<Boolean> activeHost(String id) {
+        
+        HostService hostService = getSystem().hostsService().hostService(id);
 
         try {
             Host host = hostService.get().send().host();
@@ -304,47 +262,49 @@ public class HostServiceImpl implements ItHostService {
             if (status != HostStatus.UP) {
                 hostService.activate().send();
 
-                if (expectStatus(hostService, HostStatus.UP, 3000, 60000)) {
+                if (ExpectStatusExtKt.expectHostStatus(getConn(), host.id(), HostStatus.UP, 60000, 3000)) {
                     log.info("호스트 활성 전환 완료: {}", host.name());
-                    return CommonVo.successResponse();
+                    return Res.successResponse();
                 } else {
                     log.error("호스트 활성 전환 시간 초과: {}", host.name());
-                    return CommonVo.failResponse("활성 전환 시간 초과");
+                    return Res.failResponse("활성 전환 시간 초과");
                 }
             } else {
                 log.info("현재 호스트는 이미 활성 상태입니다: {}", host.name());
-                return CommonVo.failResponse("현재 호스트는 이미 활성 상태입니다");
+                return Res.failResponse("현재 호스트는 이미 활성 상태입니다");
             }
         } catch (Exception e) {
             log.error("호스트 활성 전환 중 오류: ", e);
-            return CommonVo.failResponse(e.getMessage());
+            return Res.failResponse(e.getMessage());
         }
     }
 
 
-    /**
+    */
+/**
      * 호스트 새로고침
      * @param id 호스트 id
      * @return host 200(success) 404(fail)
-     */
+     *//*
+
     @Override
-    public CommonVo<Boolean> refreshHost(String id) {
-        SystemService system = admin.getConnection().systemService();
-        HostService hostService = system.hostsService().hostService(id);
+    public Res<Boolean> refreshHost(String id) {
+
+        HostService hostService = getSystem().hostsService().hostService(id);
 
         try {
             hostService.refresh().send();
 
-            if (expectStatus(hostService, HostStatus.UP, 3000, 60000)) {
+            if (ExpectStatusExtKt.expectHostStatus(getConn(), id, HostStatus.UP, 60000, 3000)) {
                 log.info("호스트 새로고침 완료: {}", hostService.get().send().host().name());
-                return CommonVo.successResponse();
+                return Res.successResponse();
             } else {
                 log.error("호스트 새로고침 시간 초과: {}", hostService.get().send().host().name());
-                return CommonVo.failResponse("새로고침 시간 초과");
+                return Res.failResponse("새로고침 시간 초과");
             }
         } catch (Exception e) {
             log.error("호스트 새로고침 중 오류: ", e);
-            return CommonVo.failResponse(e.getMessage());
+            return Res.failResponse(e.getMessage());
         }
     }
 
@@ -382,54 +342,53 @@ public class HostServiceImpl implements ItHostService {
     }
 
 
-    /**
+    */
+/**
      * ssh 관리 - 재시작
      * 제외하고 cli 로 하는 식으로
      * @param id 호스트 id
      * @return host 200(success) 404(fail)
-     */
+     *//*
+
     @Override
-    public CommonVo<Boolean> reStartHost(String id) throws UnknownHostException {
-        SystemService system = admin.getConnection().systemService();
-        HostService hostService = system.hostsService().hostService(id);
+    public Res<Boolean> reStartHost(String id) throws UnknownHostException {
+        HostService hostService = getSystem().hostsService().hostService(id);
         Host host = hostService.get().send().host();
         InetAddress address = InetAddress.getByName(host.address());
 
         try {
             if (!rebootHostViaSSH(address.getHostAddress(), "root", "adminRoot!@#", 22)) {
-                return CommonVo.failResponse("SSH를 통한 호스트 재부팅 실패");
+                return Res.failResponse("SSH를 통한 호스트 재부팅 실패");
             }
 
             Thread.sleep(60000); // 60초 대기, 재부팅 시간 고려
 
             if (expectStatus(hostService, HostStatus.UP, 3000, 900000)) {
                 log.info("호스트 재부팅 완료: {}", id);
-                return CommonVo.successResponse();
+                return Res.successResponse();
             } else {
-                return CommonVo.failResponse("재부팅 전환 시간 초과");
+                return Res.failResponse("재부팅 전환 시간 초과");
             }
 
         }catch (Exception e){
             log.error("error: ", e);
-            return CommonVo.failResponse(e.getMessage());
+            return Res.failResponse(e.getMessage());
         }
     }
 
 
-
-
-
-
-    /**
+    */
+/**
      * 일반
      * @param id 호스트 id
      * @return 호스트 객체
-     */
+     *//*
+
     @Override
     public HostVo getHost(String id) {
-        SystemService system = admin.getConnection().systemService();
-        Host host = system.hostsService().hostService(id).get().allContent(true).send().host();
-        HostService hostService = system.hostsService().hostService(id);
+        
+        Host host = getSystem().hostsService().hostService(id).get().allContent(true).send().host();
+        HostService hostService = getSystem().hostsService().hostService(id);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
 
         // 온라인 논리 CPU 코어수 - HostCpuUnit 이 없음 인식안됨
@@ -461,7 +420,7 @@ public class HostServiceImpl implements ItHostService {
                                 .collect(Collectors.toList())
                 )
                 .vmUpCnt(
-                        (int) system.vmsService().list().send().vms().stream()
+                        (int) getSystem().vmsService().list().send().vms().stream()
                                 .filter(vm -> vm.host()!= null && vm.host().id().equals(host.id()) && vm.status().value().equals("up"))
                                 .count()
                 )
@@ -469,17 +428,17 @@ public class HostServiceImpl implements ItHostService {
                 .kdump(host.kdumpStatus().value())      // kdump intergration status
                 .devicePassThrough(host.devicePassthrough().enabled())  // 장치통과
                 .memoryMax(host.maxSchedulingMemory())    // 최대 여유 메모리.
-                .memory(common.getSpeed(statisticList, "memory.total"))
-                .memoryFree(common.getSpeed(statisticList, "memory.free"))
-                .memoryUsed(common.getSpeed(statisticList, "memory.used"))
-                .memoryShared(common.getSpeed(statisticList, "memory.shared")) // 문제잇음
-                .swapTotal(common.getSpeed(statisticList, "swap.total"))
-                .swapFree(common.getSpeed(statisticList, "swap.free"))
-                .swapUsed(common.getSpeed(statisticList, "swap.used"))
-                .hugePage2048Total(common.getPage(statisticList, "hugepages.2048.total"))
-                .hugePage2048Free(common.getPage(statisticList, "hugepages.2048.free"))
-                .hugePage1048576Total(common.getPage(statisticList, "hugepages.1048576.total"))
-                .hugePage1048576Free(common.getPage(statisticList, "hugepages.1048576.free"))
+                .memory(StatisticExtKt.findSpeed(statisticList, "memory.total"))
+                .memoryFree(StatisticExtKt.findSpeed(statisticList, "memory.free"))
+                .memoryUsed(StatisticExtKt.findSpeed(statisticList, "memory.used"))
+                .memoryShared(StatisticExtKt.findSpeed(statisticList, "memory.shared")) // 문제잇음
+                .swapTotal(StatisticExtKt.findSpeed(statisticList, "swap.total"))
+                .swapFree(StatisticExtKt.findSpeed(statisticList, "swap.free"))
+                .swapUsed(StatisticExtKt.findSpeed(statisticList, "swap.used"))
+                .hugePage2048Total(StatisticExtKt.findPage(statisticList, "hugepages.2048.total"))
+                .hugePage2048Free(StatisticExtKt.findPage(statisticList, "hugepages.2048.free"))
+                .hugePage1048576Total(StatisticExtKt.findPage(statisticList, "hugepages.1048576.total"))
+                .hugePage1048576Free(StatisticExtKt.findPage(statisticList, "hugepages.1048576.free"))
                 .bootingTime(sdf.format(new Date(bootTime)))
 //                .hostedEngine(host.hostedEnginePresent() && host.hostedEngine().active()) // 이 호스트 내에 호스트 가상머신이 있는지 보기
                 .hostedActive(host.hostedEnginePresent() ? host.hostedEngine().active() : null)
@@ -488,21 +447,23 @@ public class HostServiceImpl implements ItHostService {
                 .pageSize(host.transparentHugePages().enabled())    // 자동으로 페이지를 크게 (확실하지 않음. 매우)
                 .seLinux(host.seLinux().mode().value())     // selinux모드: disabled, enforcing, permissive
                 // 클러스터 호환버전
-                .hostHwVo(getHardWare(host))
-                .hostSwVo(getSoftWare(host))
+                .hostHwVo(HostHwVoKt.toHostHwVo(host))
+                .hostSwVo(HostSwVoKt.toHostSwVo(host))
             .build();
     }
     
 
-    /**
+    */
+/**
      * 호스트 가상머신 목록
      * @param id 호스트 id
      * @return 가상머신 목록
-     */
+     *//*
+
     @Override
-    public List<VmVo> getVmsByHost(String id) {
-        SystemService system = admin.getConnection().systemService();
-        List<Vm> vmList = system.vmsService().list().allContent(true).send().vms();
+    public List<VmVo> findAllVmsFromHost(String id) {
+        
+        List<Vm> vmList = getSystem().vmsService().list().allContent(true).send().vms();
 
         log.info("호스트 가상머신");
         return vmList.stream()
@@ -510,18 +471,18 @@ public class HostServiceImpl implements ItHostService {
                             (vm.hostPresent() && vm.host().id().equals(id)) ||
                             (vm.placementPolicy().hostsPresent() && vm.placementPolicy().hosts().stream().anyMatch(host -> host.id().equals(id))))
                 .map(vm -> {
-                    String vmNicId = system.vmsService().vmService(vm.id()).nicsService().list().send().nics().get(0).id();
+                    String vmNicId = getSystem().vmsService().vmService(vm.id()).nicsService().list().send().nics().get(0).id();
 
                     return VmVo.builder()
                             .id(vm.id())
                             .name(vm.name())
-                            .clusterName(system.clustersService().clusterService(vm.cluster().id()).get().send().cluster().name())
+                            .clusterName(getSystem().clustersService().clusterService(vm.cluster().id()).get().send().cluster().name())
                             .hostEngineVm(vm.origin().equals("managed_hosted_engine"))
                             .status(vm.status().value())
                             .fqdn(vm.fqdn())
-                            .upTime(common.getVmUptime(system, vm.id()))
-                            .ipv4(common.getVmIp(system, vm.id(), "v4"))
-                            .ipv6(common.getVmIp(system, vm.id(), "v6"))
+                            .upTime(VmVoKt.findVmUptime(vm, getConn()))
+                            .ipv4(VmVoKt.findVmIp(vm, getConn(),"v4"))
+                            .ipv6(VmVoKt.findVmIp(vm, getConn(),"v6"))
                             .usageDto(vm.status() == VmStatus.UP ? dash.vmPercent(vm.id(), vmNicId) : null)
 //                            .placement(vm.placementPolicy().hostsPresent()) // 호스트 고정여부
                             // vm.placementPolicy().hosts() // 고정된 호스트 id가 나옴
@@ -532,51 +493,55 @@ public class HostServiceImpl implements ItHostService {
     }
 
 
-    /**
+    */
+/**
      * 호스트 네트워크 인터페이스 목록
      * @param id 호스트 id
      * @return 네트워크 인터페이스 목록
-     */
+     *//*
+
     @Override
     public List<NicVo> getNicsByHost(String id) {
-        SystemService system = admin.getConnection().systemService();
-        List<HostNic> hostNicList = system.hostsService().hostService(id).nicsService().list().send().nics();
+        
+        List<HostNic> hostNicList = getSystem().hostsService().hostService(id).nicsService().list().send().nics();
         DecimalFormat df = new DecimalFormat("###,###");
         BigInteger bps = BigInteger.valueOf(1024).pow(2);
         
         log.info("호스트 네트워크 인터페이스");
         return hostNicList.stream()
                 .map(hostNic -> {
-                    List<Statistic> statisticList = system.hostsService().hostService(id).nicsService().nicService(hostNic.id()).statisticsService().list().send().statistics();
+                    List<Statistic> statisticList = getSystem().hostsService().hostService(id).nicsService().nicService(hostNic.id()).statisticsService().list().send().statistics();
 
                     return NicVo.builder()
                             .status(hostNic.status())
                             .name(hostNic.name())
-                            .networkName(system.networksService().networkService(hostNic.network().id()).get().send().network().name())
+                            .networkName(getSystem().networksService().networkService(hostNic.network().id()).get().send().network().name())
                             .macAddress(hostNic.macPresent() ? hostNic.mac().address() : "")
                             .ipv4(hostNic.ip().address())
                             .ipv6(hostNic.ipv6().addressPresent() ? hostNic.ipv6().address() : null)
                             .speed(hostNic.speed().divide(BigInteger.valueOf(1024 * 1024)))
-                            .rxSpeed(common.getSpeed(statisticList, "data.current.rx.bps").divide(bps))
-                            .txSpeed(common.getSpeed(statisticList, "data.current.tx.bps").divide(bps))
-                            .rxTotalSpeed(common.getSpeed(statisticList, "data.total.rx"))
-                            .txTotalSpeed(common.getSpeed(statisticList, "data.total.tx"))
-                            .stop(common.getSpeed(statisticList, "errors.total.rx").divide(bps))
+                            .rxSpeed(StatisticExtKt.findSpeed(statisticList, "data.current.rx.bps").divide(bps))
+                            .txSpeed(StatisticExtKt.findSpeed(statisticList, "data.current.tx.bps").divide(bps))
+                            .rxTotalSpeed(StatisticExtKt.findSpeed(statisticList, "data.total.rx"))
+                            .txTotalSpeed(StatisticExtKt.findSpeed(statisticList, "data.total.tx"))
+                            .stop(StatisticExtKt.findSpeed(statisticList, "errors.total.rx").divide(bps))
                             .build();
                 })
                 .collect(Collectors.toList());
     }
 
 
-    /**
+    */
+/**
      * 호스트 호스트장치 목록
      * @param id 호스트 id
      * @return 호스트 장치 목록
-     */
+     *//*
+
     @Override
     public List<HostDeviceVo> getHostDevicesByHost(String id) {
-        SystemService system = admin.getConnection().systemService();
-        List<HostDevice> hostDeviceList = system.hostsService().hostService(id).devicesService().list().send().devices();
+        
+        List<HostDevice> hostDeviceList = getSystem().hostsService().hostService(id).devicesService().list().send().devices();
 
         log.info("호스트 호스트장치");
         return hostDeviceList.stream()
@@ -592,27 +557,25 @@ public class HostServiceImpl implements ItHostService {
                 .collect(Collectors.toList());
     }
 
-    /**
+    */
+/**
      * 호스트 권한 목록
      * @param id 호스트 id
      * @return 권한 목록
-     */
+     *//*
+
     @Override
-    public List<PermissionVo> getPermissionsByHost(String id) {
-        SystemService system = admin.getConnection().systemService();
-        List<Permission> permissionList = system.hostsService().hostService(id).permissionsService().list().send().permissions();
-        
+    public List<PermissionVo> findAllPermissionsFromHost(String id) {
+        List<Permission> permissionList = getSystem().hostsService().hostService(id).permissionsService().list().send().permissions();
         log.info("호스트 권한");
-        return common.getPermission(system, permissionList);
+        return PermissionVoKt.toPermissionVos(permissionList, getConn());
     }
-
-
 
     // 호스트 선호도 레이블 목록
 //    @Override
 //    public List<AffinityLabelVo> getAffinitylabels(String id) {
-////        SystemService system = admin.getConnection().systemService();
-////        List<AffinityLabel> affinityLabelList = system.hostsService().hostService(id).affinityLabelsService().list().follow("hosts,vms").send().label();
+////        
+////        List<AffinityLabel> affinityLabelList = getSystem().hostsService().hostService(id).affinityLabelsService().list().follow("hosts,vms").send().label();
 ////
 ////        log.info("Host 선호도 레이블");
 ////        return affinityLabelList.stream()
@@ -630,8 +593,8 @@ public class HostServiceImpl implements ItHostService {
 //    // 선호도 레이블 생성 창
 //    @Override
 //    public AffinityHostVm setAffinityDefaultInfo(String id, String type) {
-//        SystemService system = admin.getConnection().systemService();
-//        String clusterId = system.hostsService().hostService(id).get().send().host().cluster().id();
+//        
+//        String clusterId = getSystem().hostsService().hostService(id).get().send().host().cluster().id();
 //
 //        log.info("Host 선호도 레이블 생성 창");
 //        return AffinityHostVm.builder()
@@ -644,9 +607,9 @@ public class HostServiceImpl implements ItHostService {
 //
 //    @Override
 //    public CommonVo<Boolean> addAffinitylabel(String id, AffinityLabelCreateVo alVo) {
-//        SystemService system = admin.getConnection().systemService();
-//        AffinityLabelsService alServices = system.affinityLabelsService();
-//        List<AffinityLabel> alList = system.affinityLabelsService().list().send().labels();
+//        
+//        AffinityLabelsService alServices = getSystem().affinityLabelsService();
+//        List<AffinityLabel> alList = getSystem().affinityLabelsService().list().send().labels();
 //
 //        // 중복이름
 //        boolean duplicateName = alList.stream().noneMatch(al -> al.name().equals(alVo.getName()));
@@ -684,8 +647,8 @@ public class HostServiceImpl implements ItHostService {
 //
 //    @Override
 //    public AffinityLabelCreateVo getAffinityLabel(String alId) {
-////        SystemService system = admin.getConnection().systemService();
-////        AffinityLabel al = system.affinityLabelsService().labelService(alId).get().follow("hosts,vms").send().label();
+////        
+////        AffinityLabel al = getSystem().affinityLabelsService().labelService(alId).get().follow("hosts,vms").send().label();
 ////
 ////        log.info("Host 선호도 레이블 편집창");
 ////        return AffinityLabelCreateVo.builder()
@@ -710,16 +673,18 @@ public class HostServiceImpl implements ItHostService {
 //    }
 
 
-    /**
+    */
+/**
      * 호스트 이벤트 목록
      * @param id 호스트 id
      * @return 이벤트 목록
-     */
+     *//*
+
     @Override
-    public List<EventVo> getEventsByHost(String id) {
-        SystemService system = admin.getConnection().systemService();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy. MM. dd. HH:mm:ss");
-        List<Event> eventList = system.eventsService().list().search("host.name=" + system.hostsService().hostService(id).get().send().host().name()).send().events();
+    public List<EventVo> findAllEventsFromHost(String id) {
+        
+        SimpleDateFormat sdf = new ItCloudApplicationKt.getOvirtDf();
+        List<Event> eventList = getSystem().eventsService().list().search("host.name=" + getSystem().hostsService().hostService(id).get().send().host().name()).send().events();
 
         log.info("호스트 이벤트");
         return eventList.stream()
@@ -736,74 +701,5 @@ public class HostServiceImpl implements ItHostService {
                 )
                 .collect(Collectors.toList());
     }
-
-
-
-
-    //-------------------------------------------------------------------------------------------
-
-    /**
-     * 호스트 상태 체크하는 메소드
-     * @param hostService 호스트 서비스
-     * @param expectStatus 원하는 호스트 상태
-     * @param check 상태 확인 간격(밀리초)
-     * @param timeout 최대 대기 시간(밀리초)
-     * @return true =pass / false=fail
-     * @throws InterruptedException
-     */
-    private boolean expectStatus(HostService hostService, HostStatus expectStatus, long check, long timeout) throws InterruptedException {
-        long startTime = System.currentTimeMillis();
-        while (true) {
-            Host currentHost = hostService.get().send().host();
-            HostStatus status = currentHost.status();
-
-            if (status == expectStatus) {
-                return true;
-            } else if (System.currentTimeMillis() - startTime > timeout) {
-                return false;
-            }
-
-            log.info("호스트 상태: {}", status);
-            Thread.sleep(check);
-        }
-    }
-
-
-    /**
-     * 호스트 하드웨어 정보 받기
-     * @param host  호스트 객체
-     * @return 하드웨어 정보
-     */
-    private HostHwVo getHardWare(Host host){
-        return HostHwVo.builder()
-                .family(host.hardwareInformation().familyPresent() ? host.hardwareInformation().family() : "")           // 생산자
-                .manufacturer(host.hardwareInformation().manufacturerPresent() ? host.hardwareInformation().manufacturer() : "")     // 제품군
-                .productName(host.hardwareInformation().productNamePresent() ? host.hardwareInformation().productName() : "")      // 제품 이름
-                .hwVersion(host.hardwareInformation().versionPresent() ? host.hardwareInformation().version() : "")        // 버전
-                .cpuName(host.cpu().namePresent() ? host.cpu().name() : "")          // cpu 모델
-                .cpuType(host.cpu().typePresent() ? host.cpu().type() : "")          // cpu 유형
-                .uuid(host.hardwareInformation().uuidPresent() ? host.hardwareInformation().uuid() : "")             // uuid
-                .serialNum(host.hardwareInformation().serialNumberPresent() ? host.hardwareInformation().serialNumber() : "")        // 일련번호
-                .cpuSocket(host.cpu().topologyPresent() ? host.cpu().topology().socketsAsInteger() : 0)        // cpu 소켓
-                .coreThread(host.cpu().topologyPresent() ? host.cpu().topology().threadsAsInteger() : 0)       // 코어당 cpu 스레드
-                .coreSocket(host.cpu().topologyPresent() ? host.cpu().topology().coresAsInteger() : 0)       // 소켓당 cpu 코어
-                .build();
-    }
-
-    
-
-    /**
-     * 호스트 소프트웨어 정보 받기
-     * 구하는 방법이 db밖에는 없는건지 확인필요
-     * @param host 호스트 객체
-     * @return 소프트웨어 정보
-     */
-    private HostSwVo getSoftWare(Host host){
-        HostSwVo swVo = hostConfigurationRepository.findFirstByHostIdOrderByUpdateDateDesc(UUID.fromString(host.id())).getSoftware();
-        swVo.setLibvirtVersion(host.libvirtVersion().fullVersionPresent() ? host.libvirtVersion().fullVersion() : "");
-        swVo.setVdsmVersion(host.version().fullVersionPresent() ? host.version().fullVersion() : "");
-        return swVo;
-    }
-
-
 }
+*/

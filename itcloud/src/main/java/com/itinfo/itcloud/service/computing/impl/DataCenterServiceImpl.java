@@ -1,3 +1,4 @@
+/*
 package com.itinfo.itcloud.service.computing.impl;
 
 import com.itinfo.itcloud.model.TypeExtKt;
@@ -27,10 +28,12 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     @Autowired private AdminConnectionService admin;
     @Autowired private CommonService common;
 
-    /***
+    */
+/***
      * 데이터센터 목록 불러오기
      * @return 데이터센터 목록
-     */
+     *//*
+
     @Override
     public List<DataCenterVo> getDataCenters(){
         SystemService system = admin.getConnection().systemService();
@@ -51,11 +54,13 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                 .collect(Collectors.toList());
     }
 
-    /***
+    */
+/***
      * 데이터센터 생성
      * @param dcVo 데이터센터 값
      * @return 데이터센터 생성 결과 201(create), 404(fail)
-     */
+     *//*
+
     @Override
     public CommonVo<Boolean> addDatacenter(DataCenterCreateVo dcVo) {
         SystemService system = admin.getConnection().systemService();
@@ -79,11 +84,13 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     }
 
 
-    /***
+    */
+/***
      * 데이터센터 편집 창
      * @param id 데이터센터 id
      * @return 데이터센터 값
-     */
+     *//*
+
     @Override
     public DataCenterCreateVo setDatacenter(String id){
         SystemService system = admin.getConnection().systemService();
@@ -101,11 +108,13 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                 .build();
     }
 
-    /**
+    */
+/**
      * 데이터센터 수정
      * @param dcVo 데이터센터 id
      * @return 데이터센터 수정 결과 201(create), 404(fail)
-     */
+     *//*
+
     @Override
     public CommonVo<Boolean> editDatacenter(DataCenterCreateVo dcVo) {
         SystemService system = admin.getConnection().systemService();
@@ -129,12 +138,14 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     }
 
 
-    /**
+    */
+/**
      * 데이터센터 생성&수정 빌더
      * @param dcVo 데이터센터
      * @param add 생성시 true, 수정시 false
      * @return 데이터센터 빌더
-     */
+     *//*
+
     private DataCenterBuilder setDcBuilder(DataCenterCreateVo dcVo, boolean add){
         String[] ver = dcVo.getVersion().split("\\.");      // 버전값 분리
 
@@ -153,11 +164,13 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         }
     }
 
-    /**
+    */
+/**
      * 데이터센터 삭제
      * @param ids 데이터센터 id 목록
      * @return  데이터센터 삭제 결과 200(success), 404(fail)
-     */
+     *//*
+
     @Override
     public CommonVo<Boolean> deleteDatacenter(List<String> ids) {
         SystemService system = admin.getConnection().systemService();
@@ -177,11 +190,13 @@ public class DataCenterServiceImpl implements ItDataCenterService {
         }
     }
 
-    /**
+    */
+/**
      * 데이터센터 이벤트 출력
      * @param id 데이터센터 id
      * @return 데이터센터 이벤트 목록
-     */
+     *//*
+
     @Override
     public List<EventVo> getEventsByDatacenter(String id) {
         SystemService system = admin.getConnection().systemService();
@@ -208,10 +223,12 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
 
     // 대시보드 임시방편
-    /**
+    */
+/**
      * 대시보드 컴퓨팅 목록
      * @return
-     */
+     *//*
+
     @Override
     public List<DataCenterVo> dashboardComputing() {
         SystemService system = admin.getConnection().systemService();
@@ -233,7 +250,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                                             return HostVo.builder()
                                                     .id(host.id())
                                                     .name(host.name())
-                                                    .vmVoList(vms) // 호스트의 가상 머신 리스트 설정
+                                                    .vmVoList(vms) // 호스트의 가상 머신 목록 설정
                                                     .build();
                                         })
                                         .collect(Collectors.toList());
@@ -246,7 +263,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                                 return ClusterVo.builder()
                                         .id(cluster.id())
                                         .name(cluster.name())
-                                        .hostVoList(hosts) // 클러스터의 호스트 리스트 설정
+                                        .hostVoList(hosts) // 클러스터의 호스트 목록 설정
                                         .templateVoList(templateList) // 클러스터의 템플릿 리스트 설정
                                         .build();
                             })
@@ -261,10 +278,12 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                 .collect(Collectors.toList());
     }
 
-    /**
+    */
+/**
      * 대시보드 네트워크
      * @return
-     */
+     *//*
+
     @Override
     public List<DataCenterVo> dashboardNetwork() {
         SystemService system = admin.getConnection().systemService();
@@ -284,17 +303,21 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     }
 
 
-    /**
+    */
+/**
      * 대시보드 - 스토리지
      * @return
-     */
+     *//*
+
     @Override
     public List<DataCenterVo> dashboardStorage() {
         SystemService system = admin.getConnection().systemService();
         return system.dataCentersService().list().send().dataCenters().stream()
                 .map(dc -> {
                     List<DomainVo> domainVoList = system.storageDomainsService().list().send().storageDomains().stream()
-                            .filter(storageDomain -> storageDomain.dataCentersPresent() && storageDomain.dataCenters().get(0).id().equals(dc.id())) /*storageDomain.dataCenters().stream().anyMatch(dataCenter -> dc.id().equals(dataCenter.id()))*/
+                            .filter(storageDomain -> storageDomain.dataCentersPresent() && storageDomain.dataCenters().get(0).id().equals(dc.id())) */
+/*storageDomain.dataCenters().stream().anyMatch(dataCenter -> dc.id().equals(dataCenter.id()))*//*
+
                             .map(storageDomain -> {
 
                                 List<DiskVo> diskVoList = system.disksService().list().send().disks().stream()
@@ -322,13 +345,15 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
     //-------------------------------------------------------------
 
-    /***
+    */
+/***
      * 데이터센터 이름 중복
      * @param system
      * @param name
      * @param id
      * @return 이름 중복되는게 있으면 true 반환
-     */
+     *//*
+
     // 애매한게 생성시에는 데이터센터 목록에서 찾고
     // 수정시에는 데이터센터 목록에서 찾지만, 아이디가 같다면 이름중복 허용(내자신의 이름과 비교x)
     private boolean isNameDuplicate(SystemService system, String name, String id) {
@@ -338,7 +363,8 @@ public class DataCenterServiceImpl implements ItDataCenterService {
     }
 
 
-    /**
+    */
+/**
      * 데이터센터 삭제 확인
      * @param system
      * @param dcId
@@ -346,7 +372,8 @@ public class DataCenterServiceImpl implements ItDataCenterService {
      * @param timeout
      * @return
      * @throws InterruptedException
-     */
+     *//*
+
     private boolean isDcDeleted(SystemService system, String dcId, long interval, long timeout) throws InterruptedException {
         long startTime = System.currentTimeMillis();
         while (true){
@@ -367,3 +394,4 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
 
 }
+*/

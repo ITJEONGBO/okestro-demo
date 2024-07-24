@@ -52,19 +52,20 @@ npm build # React 앱 빌드
 
 ## 🐘Gradle
 
-```sh
-#
-# 프로퍼티 `profile` 유형
-# - local: 로컬 (개발환경)
-# - staging
-#
-
-# 스프링부트 프로젝트 실행 (개발)
-./gradlew itcloud:bootRun -Pprofile=staging
-
-# 아티팩트 생성 (운영)
-./gradlew itcloud:bootJar -Pprofile=staging -PskipNpm=true
-```
+> [!IMPORTANT]
+>
+> ```sh
+> #
+> # 프로퍼티 `profile` 유형
+> # - local: 로컬 (개발환경)
+> # - staging
+> #
+> # 스프링부트 프로젝트 실행 (개발)
+> ./gradlew itcloud:bootRun -Pprofile=staging
+> 
+> # 아티팩트 생성 (운영)
+> ./gradlew itcloud:bootJar -Pprofile=staging -PskipNpm=true
+> ```
 
 ![itcloud:bootRun](imgs/gradle-itcloud-bootRun.png)
 
@@ -105,15 +106,17 @@ npm build # React 앱 빌드
 
 ## 🐳Docker
 
-### 🛠Build
-
-```sh
-# Running on macOS M1
-docker build -t itinfo/itcloud:0.0.2 .
-
-# Okestro
-docker build -t itinfo/okestro:0.0.5 .
-```
+> [!IMPORTANT]
+> 
+> 🛠Build
+> 
+> ```sh
+> # Running on macOS M1
+> docker build -t itinfo/itcloud:0.0.2 .
+> 
+> # Okestro
+> docker build -t itinfo/okestro:0.0.5 .
+> ```
 
 ### ▶️Run
 

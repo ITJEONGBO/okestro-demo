@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.UUID;
-
+/*
 @Repository
 public interface VmSamplesHistoryRepository extends JpaRepository<VmSamplesHistoryEntity, Integer> {
 
@@ -27,7 +27,7 @@ public interface VmSamplesHistoryRepository extends JpaRepository<VmSamplesHisto
 
     // vm 사용량 순위
     List<VmSamplesHistoryEntity> findFirstByVmStatusOrderByCpuUsagePercentDesc(int vmStatus);
-
+*/
 
     /*
     WITH rounded_times AS (
@@ -45,5 +45,6 @@ SELECT DISTINCT ON (rounded_time, vm_id)
     cpu_usage_percent
 FROM rounded_times
 ORDER BY rounded_time desc, vm_id, history_datetime;
-     */
+
 }
+ */

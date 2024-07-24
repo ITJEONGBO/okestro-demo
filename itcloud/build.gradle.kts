@@ -36,6 +36,7 @@ tasks.clean {
 dependencies {
     implementation(project(":common"))
     implementation(project(":util"))
+    implementation(project(":util-ovirt"))
     implementation(Dependencies.springBootTomcat)
     implementation(Dependencies.tomcatEmbedded)
     api(Dependencies.kotlinStdlib)

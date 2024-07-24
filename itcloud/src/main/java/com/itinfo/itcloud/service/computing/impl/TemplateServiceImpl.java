@@ -1,37 +1,11 @@
 package com.itinfo.itcloud.service.computing.impl;
 
-import com.itinfo.itcloud.model.OsVo;
-import com.itinfo.itcloud.model.TypeExtKt;
-import com.itinfo.itcloud.model.computing.*;
-import com.itinfo.itcloud.model.create.TemplateCreateVo;
-import com.itinfo.itcloud.model.error.CommonVo;
-import com.itinfo.itcloud.model.network.VnicProfileVo;
-import com.itinfo.itcloud.model.storage.DiskVo;
-import com.itinfo.itcloud.model.storage.DomainVo;
-import com.itinfo.itcloud.ovirt.AdminConnectionService;
-import com.itinfo.itcloud.service.computing.ItTemplateService;
-import lombok.extern.slf4j.Slf4j;
-import org.ovirt.engine.sdk4.builders.*;
-import org.ovirt.engine.sdk4.services.*;
-import org.ovirt.engine.sdk4.types.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
+//import com.itinfo.itcloud.model.TypeExtKt;
+/*
 @Service @Slf4j
-public class TemplateServiceImpl implements ItTemplateService {
+public class TemplateServiceImpl extends BaseService implements ItTemplateService {
     @Autowired private AdminConnectionService admin;
-    @Autowired private CommonService common;
 
-
-    /**
-     * 템플릿 목록
-     * @return 템플릿 목록
-     */
     @Override
     public List<TemplateVo> getTemplates() {
         SystemService system = admin.getConnection().systemService();
@@ -55,12 +29,6 @@ public class TemplateServiceImpl implements ItTemplateService {
                 .collect(Collectors.toList());
     }
 
-
-
-    /**
-     * 템플릿 생성시 필요한 클러스터 리스트
-     * @return 클러스터 리스트
-     */
     @Override
     public List<ClusterVo> setClusterList() {
         SystemService system = admin.getConnection().systemService();
@@ -86,17 +54,6 @@ public class TemplateServiceImpl implements ItTemplateService {
 //        return null;
 //    }
 
-
-
-
-    /**
-     * 템플릿 생성 (Vm Status != up)
-     *
-     * 템플릿 디스크 붙이는 작업 (if, 도메인 용량이 초과 되었을 때, ovirt에서 알아서 다른 도메인을 설정해주는지는 알 수 없음)
-     * 이부분은 나중에
-     * @param vmId
-     * @return
-     */
     @Override
     public CommonVo<Boolean> addTemplate(String vmId, TemplateVo templateVo){
         SystemService system = admin.getConnection().systemService();
@@ -113,7 +70,7 @@ public class TemplateServiceImpl implements ItTemplateService {
                 return CommonVo.duplicateResponse();
             }
 
-            TemplateBuilder templateBuilder = addTemplateBuilder(templateVo);
+            TemplateBuilder templateBuilder = TemplateVoKt.toTemplateBuilder4Add(templateVo);
             Template template = templatesService.add().template(templateBuilder.build()).send().template();
 
             TemplateService templateService = templatesService.templateService(template.id());
@@ -131,11 +88,6 @@ public class TemplateServiceImpl implements ItTemplateService {
     }
 
 
-    /**
-     * 템플릿 편집 창
-     * @param id 템플릿 id
-     * @return
-     */
     @Override
     public TemplateVo setTemplate(String id) {
         SystemService system = admin.getConnection().systemService();
@@ -152,11 +104,7 @@ public class TemplateServiceImpl implements ItTemplateService {
                 .build();
     }
 
-    /**
-     * 템플릿 편집
-     * @param tVo 템플릿 객체
-     * @return
-     */
+
     @Override
     public CommonVo<Boolean> editTemplate(TemplateVo tVo) {
         SystemService system = admin.getConnection().systemService();
@@ -168,7 +116,7 @@ public class TemplateServiceImpl implements ItTemplateService {
                 return CommonVo.duplicateResponse();
             }
 
-            TemplateBuilder templateBuilder = editTemplateBuilder(tVo);
+            TemplateBuilder templateBuilder = TemplateVoKt.toTemplateBuilder4Edit(tVo);
             templateService.update().template(templateBuilder.build()).send().template();
 
             log.info("템플릿 편집");
@@ -179,11 +127,7 @@ public class TemplateServiceImpl implements ItTemplateService {
         }
     }
 
-    /**
-     * 템플릿 삭제
-     * @param id 템플릿 id
-     * @return
-     */
+
     @Override
     public CommonVo<Boolean> deleteTemplate(String id) {
         SystemService system = admin.getConnection().systemService();
@@ -200,11 +144,6 @@ public class TemplateServiceImpl implements ItTemplateService {
     }
 
 
-    /**
-     * 템플릿 정보
-     * @param id 템플릿 id
-     * @return
-     */
     @Override
     public TemplateVo getTemplateInfo(String id) {
         SystemService system = admin.getConnection().systemService();
@@ -233,11 +172,6 @@ public class TemplateServiceImpl implements ItTemplateService {
     }
 
 
-    /**
-     * 템플릿 가상머신 목록
-     * @param id 템플릿 id
-     * @return 가상머신 목록
-     */
     @Override
     public List<VmVo> getVmsByTemplate(String id) {
         SystemService system = admin.getConnection().systemService();
@@ -249,22 +183,17 @@ public class TemplateServiceImpl implements ItTemplateService {
                                 .id(vm.id())
                                 .name(vm.name())
                                 .hostName(vm.hostPresent() ? system.hostsService().hostService(vm.host().id()).get().send().host().name() : null)
-                                .ipv4(common.getVmIp(system, vm.id(), "v4"))
-                                .ipv6(common.getVmIp(system, vm.id(), "v6"))
+                                .ipv4(VmVoKt.findVmIp(vm, getConn(), "v4"))
+                                .ipv6(VmVoKt.findVmIp(vm, getConn(), "v6"))
                                 .fqdn(vm.fqdnPresent() ? vm.fqdn() : null)
                                 .status(vm.status().value())
-                                .upTime(common.getVmUptime(system, vm.id()))
+                                .upTime(VmVoKt.findVmUptime(vm, getConn()))
                                 .build()
                 )
                 .collect(Collectors.toList());
     }
 
 
-    /**
-     * 템플릿 네트워크 인터페이스 목록
-     * @param id 템플릿 id
-     * @return 네트워크 인터페이스 목록
-     */
     @Override
     public List<NicVo> getNicsByTemplate(String id) {
         SystemService system = admin.getConnection().systemService();
@@ -292,13 +221,6 @@ public class TemplateServiceImpl implements ItTemplateService {
     }
 
 
-
-
-    /**
-     * 템플릿 디스크 목록
-     * @param id 템플릿 id
-     * @return 디스크 목록
-     */
     @Override
     public List<DiskVo> getDisksByTemplate(String id) {
         SystemService system = admin.getConnection().systemService();
@@ -323,7 +245,7 @@ public class TemplateServiceImpl implements ItTemplateService {
                                             .name(sd.name())
                                             .active(diskAttachment.active())
                                             .domainType(sd.type()) // 마스터
-                                            .domainTypeMaster(sd.master() /*? "마스터" : ""*/)
+                                            .domainTypeMaster(sd.master())
                                             .usedSize(sd.used())
                                             .availableSize(sd.available())
                                             .diskSize(sd.used().add(sd.available()))
@@ -335,12 +257,6 @@ public class TemplateServiceImpl implements ItTemplateService {
     }
 
 
-    /**
-     * 템플릿 스토리지 도메인 목록
-     * @param id 템플릿 id
-     * @return 스토리지 도메인 목록
-     */
-    // TODO: 스토리지 도메인 묶는 작업 못함
     @Override
     public List<DomainVo> getDomainsByTemplate(String id) {
         SystemService system = admin.getConnection().systemService();
@@ -375,25 +291,14 @@ public class TemplateServiceImpl implements ItTemplateService {
     }
 
 
-    /**
-     * 템플릿 권한 목록
-     * @param id 템플릿 id
-     * @return 권한 목록
-     */
     @Override
     public List<PermissionVo> getPermissionsByTemplate(String id) {
         SystemService system = admin.getConnection().systemService();
         List<Permission> permissionList = system.clustersService().clusterService(id).permissionsService().list().send().permissions();
-
-        return common.getPermission(system, permissionList);
+        return PermissionVoKt.toPermissionVos(permissionList, getConn());
     }
 
 
-    /**
-     * 템플릿 이벤트 목록
-     * @param id 템플릿 id
-     * @return 이벤트 목록
-     */
     @Override
     public List<EventVo> getEventsByTemplate(String id) {
         SystemService system = admin.getConnection().systemService();
@@ -414,55 +319,15 @@ public class TemplateServiceImpl implements ItTemplateService {
     }
 
 
-
-
-    /**
-     * 템플릿 생성 빌더
-     * @param tVo 템플릿
-     * @return 템플릿 빌더
-     */
-    private TemplateBuilder addTemplateBuilder(TemplateVo tVo){
-        return new TemplateBuilder()
-                .name(tVo.getName())
-                .description(tVo.getDescription())
-                .cluster(new ClusterBuilder().id(tVo.getClusterId()));
-    }
-
-
-    /**
-     * 템플릿 수정 빌더
-     * @param tVo 템플릿
-     * @return 템플릿 빌더
-     */
-    private TemplateBuilder editTemplateBuilder(TemplateVo tVo){
-        return new TemplateBuilder()
-                .id(tVo.getId())
-                .name(tVo.getName())
-                .description(tVo.getDescription())
-                .os(new OperatingSystemBuilder().type(tVo.getOsType()))
-                .bios(new BiosBuilder().type(BiosType.valueOf(tVo.getChipsetFirmwareType())))
-                .cluster(new ClusterBuilder().id(tVo.getClusterId()))
-                .type(VmType.valueOf(tVo.getOptimizeOption()));
-    }
-
-    /**
-     * 템플릿 상태확인
-     * @param templateService
-     * @param expectStatus
-     * @param interval
-     * @param timeout
-     * @return
-     * @throws InterruptedException
-     */
     private boolean expectTemplateStatus(TemplateService templateService, TemplateStatus expectStatus, long interval, long timeout) throws InterruptedException{
         long startTime = System.currentTimeMillis();
-        while(true){
+        while(true) {
             Template currentTmp = templateService.get().send().template();
             TemplateStatus status = currentTmp.status();
 
-            if(status == expectStatus){
+            if (status == expectStatus) {
                 return true;
-            }else if(System.currentTimeMillis() - startTime > timeout){
+            } else if(System.currentTimeMillis() - startTime > timeout){
                 return false;
             }
             log.debug("템플릿 상태: {}", status);
@@ -470,19 +335,10 @@ public class TemplateServiceImpl implements ItTemplateService {
         }
     }
 
-    /**
-     * 템플릿 이름 중복 확인
-     * @param system
-     * @param name
-     * @param id
-     * @return
-     */
     private boolean nameDuplicate(SystemService system, String name, String id){
         return system.templatesService().list().send().templates().stream()
                 .filter(template -> template.id() == null || !template.id().equals(id))
                 .anyMatch(template -> template.name().equals(name));
     }
-
-
-
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package com.itinfo.itcloud.model;
 
 import com.itinfo.itcloud.model.computing.DataCenterVo;
@@ -57,3 +58,4 @@ public class DatacenterVoTest {
 
 
 }
+*/

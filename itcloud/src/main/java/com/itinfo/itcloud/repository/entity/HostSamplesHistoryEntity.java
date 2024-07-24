@@ -11,7 +11,7 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
+/*
 @Entity
 @Getter
 @ToString
@@ -45,11 +45,6 @@ public class HostSamplesHistoryEntity {
     private Integer ksmSharedMemoryMb;
     private Integer secondsInStatus;
 
-    /**
-     * 전체 사용량 - 원 그래프 %
-     * 호스트 당 사용률 검색
-     * @return 호스트 cpu, memory %
-     */
     public HostUsageDto totalCpuMemory(){
         return HostUsageDto.builder()
                 .historyDatetime(historyDatetime)
@@ -59,12 +54,6 @@ public class HostSamplesHistoryEntity {
     }
 
 
-    /**
-     * 전체 사용량 - 선 그래프 GB
-     * 호스트 사용률 전체 출력
-     * 근데 10분마다 한번씩 나오는거면 최대 10개로 제한해서 한시간 내의 정보만 보여주면 되는거 아닌가?
-     * @return 호스트 1분마다의 cpu,memory 값
-     */
     public HostUsageDto totalUsage(){
         return HostUsageDto.builder()
                 .hostId(hostId.toString())
@@ -74,13 +63,13 @@ public class HostSamplesHistoryEntity {
                 .build();
     }
 
-    // 호스트 각각 현재 사용량 보여주는 거
     public UsageDto getUsage(){
         return UsageDto.builder()
-//                .id(hostId.toString())
+//              .id(hostId.toString())
                 .cpuPercent(cpuUsagePercent)
                 .memoryPercent(memoryUsagePercent)
                 .build();
     }
 
 }
+*/

@@ -45,12 +45,11 @@ class AAADatasourceConfig {
 		return aaaDataSourceProperties()
 			.initializeDataSourceBuilder()
 			.type(HikariDataSource::class.java)
-			.build()
 //			.driverClassName("org.postgresql.Driver")
 //			.url("jdbc:postgresql://192.168.0.80:5432/engine")
 //			.username("okestro")
 //			.password("okestro2018")
-//			.build()
+			.build()
 	}
 
 	@Bean(name=["aaaEntityManager"])

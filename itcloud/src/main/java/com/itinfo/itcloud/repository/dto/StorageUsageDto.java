@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
-
+/*
 @Getter @ToString @Builder
 public class StorageUsageDto {
     // 전체 사용량 용도
@@ -19,3 +19,4 @@ public class StorageUsageDto {
     private double usedGB;
     private double freeGB;
 }
+*/

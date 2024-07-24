@@ -1,17 +1,16 @@
 package com.itinfo.itcloud.service.computing.impl;
 
 import com.itinfo.itcloud.model.computing.DashBoardVo;
+import com.itinfo.itcloud.model.computing.DashBoardVoKt;
 import com.itinfo.itcloud.repository.*;
 import com.itinfo.itcloud.repository.dto.HostUsageDto;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.repository.dto.StorageUsageDto;
 import com.itinfo.itcloud.repository.dto.UsageDto;
+import com.itinfo.itcloud.service.BaseService;
 import com.itinfo.itcloud.service.computing.ItGraphService;
 import lombok.extern.slf4j.Slf4j;
-import org.ovirt.engine.sdk4.services.DataCentersService;
-import org.ovirt.engine.sdk4.services.HostsService;
 import org.ovirt.engine.sdk4.services.SystemService;
-import org.ovirt.engine.sdk4.services.VmsService;
 import org.ovirt.engine.sdk4.types.Host;
 import org.ovirt.engine.sdk4.types.StorageDomain;
 import org.ovirt.engine.sdk4.types.Vm;
@@ -24,12 +23,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
+/*
 @Service
 @Slf4j
-public class GraphServiceImpl implements ItGraphService {
-    @Autowired private AdminConnectionService admin;
-
+public class GraphServiceImpl extends BaseService implements ItGraphService {
     @Autowired private HostConfigurationRepository hostConfigurationRepository;
     @Autowired private HostSamplesHistoryRepository hostSamplesHistoryRepository;
     @Autowired private HostInterfaceSampleHistoryRepository hostInterfaceSampleHistoryRepository;
@@ -37,60 +34,22 @@ public class GraphServiceImpl implements ItGraphService {
     @Autowired private VmInterfaceSamplesHistoryRepository vmInterfaceSamplesHistoryRepository;
     @Autowired private StorageDomainSamplesHistoryRepository storageDomainSamplesHistoryRepository;
 
-    private final double GB = 1073741824; // gb 변환
-
 
     @Override
     public DashBoardVo getDashboard() {
-        SystemService system = admin.getConnection().systemService();
-
-        DataCentersService dcsService = system.dataCentersService();
-        HostsService hostsService = system.hostsService();
-        VmsService vmsService = system.vmsService();
-
-        int dataCenters = dcsService.list().send().dataCenters().size();
-        int dataCentersUp = dcsService.list().search("status=up").send().dataCenters().size();
-
-        int clusters = system.clustersService().list().send().clusters().size();
-
-        int hosts = hostsService.list().send().hosts().size();
-        int hostsUp = hostsService.list().search("status=up").send().hosts().size();
-
-        int vms = vmsService.list().send().vms().size();
-        int vmsUp = vmsService.list().search("status=up").send().vms().size();
-
-        int storageDomains = (int) system.storageDomainsService().list().send().storageDomains().stream().filter(storageDomain -> !storageDomain.statusPresent()).count();
-
-        return DashBoardVo.builder()
-                .datacenters(dataCenters)
-                .datacentersUp(dataCentersUp)
-                .datacentersDown(dataCenters - dataCentersUp)
-                .clusters(clusters)
-                .hosts(hosts)
-                .hostsUp(hostsUp)
-                .hostsDown(hosts - hostsUp)
-                .vms(vms)
-                .vmsUp(vmsUp)
-                .vmsDown(vms - vmsUp)
-                .storageDomains(storageDomains)
-                .build();
+        return DashBoardVoKt.toDashboardVo(getConn());
     }
 
 
-    /**
-     * 전체 사용량 - Host (CPU, Memory  % ) 원 그래프
-     * @return 5분마다 한번씩 불려지게 해야함
-     */
     @Override
     public HostUsageDto totalCpuMemory() {
-        SystemService system = admin.getConnection().systemService();
-        List<Host> hostList = system.hostsService().list().send().hosts();
+        List<Host> hostList = getSystem().hostsService().list().send().hosts();
 
         int hostCnt = hostList.size();
 
         double total = hostList.stream().mapToDouble(Host::memoryAsLong).sum() / GB;
         double used = hostList.stream()
-                .flatMap(host -> system.hostsService().hostService(host.id()).statisticsService().list().send().statistics().stream())
+                .flatMap(host -> getSystem().hostsService().hostService(host.id()).statisticsService().list().send().statistics().stream())
                 .filter(stat -> "memory.used".equals(stat.name()))
                 .mapToDouble(stat -> stat.values().get(0).datum().doubleValue())
                 .sum() / GB;
@@ -118,22 +77,16 @@ public class GraphServiceImpl implements ItGraphService {
                 .build();
     }
 
-
-    /**
-     * 전체 사용량 - Storage % 원 그래프
-     * @return 스토리지 사용량
-     */
     @Override
     public StorageUsageDto totalStorage() {
-        SystemService system = admin.getConnection().systemService();
-        List<StorageDomain> storageDomainList = system.storageDomainsService().list().send().storageDomains();
+        List<StorageDomain> storageDomains = getSystem().storageDomainsService().list().send().storageDomains();
 
-        double free = storageDomainList.stream()
+        double free = storageDomains.stream()
                 .filter(StorageDomain::availablePresent)
                 .mapToDouble(StorageDomain::availableAsLong)
                 .sum() / GB;
 
-        double used = storageDomainList.stream()
+        double used = storageDomains.stream()
                 .filter(StorageDomain::usedPresent)
                 .mapToDouble(StorageDomain::usedAsLong)
                 .sum() / GB;
@@ -147,13 +100,6 @@ public class GraphServiceImpl implements ItGraphService {
 
     }
 
-
-
-    /**
-     * 전체 사용량(CPU, Memory %) 선 그래프
-     * @param hostId 호스트 id
-     * @return 10분마다 그래프에 찍히게?
-     */
     @Override
     public List<HostUsageDto> totalCpuMemoryList(UUID hostId, int limit) {
         SystemService system = admin.getConnection().systemService();
@@ -172,10 +118,6 @@ public class GraphServiceImpl implements ItGraphService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 가상머신 cpu 사용량 3
-     * @return
-     */
     @Override
     public List<UsageDto> vmCpuChart() {
         SystemService system = admin.getConnection().systemService();
@@ -192,10 +134,6 @@ public class GraphServiceImpl implements ItGraphService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 가상머신 memory 사용량 3
-     * @return
-     */
     @Override
     public List<UsageDto> vmMemoryChart() {
         SystemService system = admin.getConnection().systemService();
@@ -212,8 +150,6 @@ public class GraphServiceImpl implements ItGraphService {
                 .collect(Collectors.toList());
     }
 
-
-    // % 기준? GB 기준?
     @Override
     public List<UsageDto> storageChart() {
         SystemService system = admin.getConnection().systemService();
@@ -283,3 +219,4 @@ public class GraphServiceImpl implements ItGraphService {
         return usageDto;
     }
 }
+*/

@@ -167,9 +167,9 @@ class ItHostServiceTest {
 
 	/**
 	 * [should_addHost]
-	 * [ItHostService.addHost]에 대한 단위테스트
+	 * [ItHostService.add]에 대한 단위테스트
 	 * 
-	 * @see [ItHostService.addHost]
+	 * @see [ItHostService.add]
 	 */
 	@Test
 	fun should_addHost() {
@@ -180,9 +180,9 @@ class ItHostServiceTest {
 
 	/**
 	 * [should_editHost]
-	 * [ItHostService.editHost]에 대한 단위테스트
+	 * [ItHostService.update]에 대한 단위테스트
 	 * 
-	 * @see [ItHostService.editHost]
+	 * @see [ItHostService.update]
 	 */
 	@Test
 	fun should_editHost() {
@@ -206,9 +206,9 @@ class ItHostServiceTest {
 
 	/**
 	 * [should_deleteHost]
-	 * [ItHostService.deleteHost]에 대한 단위테스트
+	 * [ItHostService.remove]에 대한 단위테스트
 	 * 
-	 * @see [ItHostService.deleteHost]
+	 * @see [ItHostService.remove]
 	 */
 	@Test
 	fun should_deleteHost() {

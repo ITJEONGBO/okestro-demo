@@ -1,0 +1,108 @@
+package com.itinfo.util.ovirt.error
+
+import com.itinfo.util.ovirt.Term
+import org.apache.http.HttpStatus
+import org.ovirt.engine.sdk4.Error
+import java.util.concurrent.ConcurrentHashMap
+
+enum class ErrorPattern(
+	val code: String,
+	val term: Term,
+	val failureType: FailureType,
+) {
+	DATACENTER_ID_NOT_FOUND("DATACENTER-E001", Term.DATACENTER, FailureType.ID_NOT_FOUND),
+	DATACENTER_NOT_FOUND("DATACENTER-E002", Term.DATACENTER, FailureType.NOT_FOUND),
+	DATACENTER_VO_INVALID("DATACENTER-E003", Term.DATACENTER, FailureType.BAD_REQUEST),
+	CLUSTER_ID_NOT_FOUND("CLUSTER-E001", Term.CLUSTER, FailureType.ID_NOT_FOUND),
+	CLUSTER_NOT_FOUND("CLUSTER-E002", Term.CLUSTER, FailureType.NOT_FOUND),
+	CLUSTER_VO_INVALID("CLUSTER-E003", Term.CLUSTER, FailureType.BAD_REQUEST),
+	STORAGE_DOMAIN_ID_NOT_FOUND("STORAGEDOMAIN-E001", Term.STORAGE_DOMAIN, FailureType.ID_NOT_FOUND),
+	STORAGE_DOMAIN_NOT_FOUND("STORAGEDOMAIN-E002", Term.STORAGE_DOMAIN, FailureType.NOT_FOUND),
+	STORAGE_DOMAIN_VO_INVALID("STORAGEDOMAIN-E003", Term.STORAGE_DOMAIN, FailureType.BAD_REQUEST),
+	HOST_ID_NOT_FOUND("HOST-E001", Term.HOST, FailureType.ID_NOT_FOUND),
+	HOST_NOT_FOUND("HOST-E002", Term.HOST, FailureType.NOT_FOUND),
+	HOST_VO_INVALID("HOST-E003", Term.HOST, FailureType.BAD_REQUEST),
+	DISK_ID_NOT_FOUND("DISK-E001", Term.DISK, FailureType.ID_NOT_FOUND),
+	DISK_NOT_FOUND("DISK-E002", Term.DISK, FailureType.NOT_FOUND),
+	DISK_VO_INVALID("DISK-E003", Term.DISK, FailureType.BAD_REQUEST),
+	DISK_IMAGE_ID_NOT_FOUND("DISKIMAGE-E001", Term.DISK_IMAGE, FailureType.ID_NOT_FOUND),
+	DISK_IMAGE_NOT_FOUND("DISKIMAGE-E002", Term.DISK_IMAGE, FailureType.NOT_FOUND),
+	DISK_IMAGE_VO_INVALID("DISKIMAGE-E003", Term.DISK_IMAGE, FailureType.BAD_REQUEST),
+	DISK_ATTACHMENT_ID_NOT_FOUND("DISKATTACHMENT-E001", Term.DISK_ATTACHMENT, FailureType.ID_NOT_FOUND),
+	DISK_ATTACHMENT_NOT_FOUND("DISKATTACHMENT-E002", Term.DISK_ATTACHMENT, FailureType.NOT_FOUND),
+	DISK_ATTACHMENT_VO_INVALID("DISKATTACHMENT-E003", Term.DISK_ATTACHMENT, FailureType.BAD_REQUEST),
+	NETWORK_ID_NOT_FOUND("NETWORK-E001", Term.NETWORK, FailureType.ID_NOT_FOUND),
+	NETWORK_NOT_FOUND("NETWORK-E002", Term.NETWORK, FailureType.NOT_FOUND),
+	NETWORK_VO_INVALID("NETWORK-E002", Term.NETWORK, FailureType.BAD_REQUEST),
+	NIC_ID_NOT_FOUND("NIC-E001", Term.NIC, FailureType.ID_NOT_FOUND),
+	NIC_NOT_FOUND("NIC-E002", Term.NIC, FailureType.NOT_FOUND),
+	NIC_VO_INVALID("NIC-E003", Term.NIC, FailureType.BAD_REQUEST),
+	VM_ID_NOT_FOUND("VM-E001", Term.VM, FailureType.ID_NOT_FOUND),
+	VM_NOT_FOUND("VM-E002", Term.VM, FailureType.NOT_FOUND),
+	VM_VO_INVALID("VM-E003", Term.VM, FailureType.BAD_REQUEST),
+	VM_PROTECTED("VM-E004", Term.VM, FailureType.UNPROCESSABLE_CONTENT), // TODO: 모드에 대한 처리 예외
+	VNIC_PROFILE_ID_NOT_FOUND("VNICPROFILE-E001", Term.VNIC_PROFILE, FailureType.ID_NOT_FOUND),
+	VNIC_PROFILE_NOT_FOUND("VNICPROFILE-E002", Term.VNIC_PROFILE, FailureType.NOT_FOUND),
+	VNIC_PROFILE_VO_INVALID("VNICPROFILE-E003", Term.VNIC_PROFILE, FailureType.BAD_REQUEST),
+	TEMPLATE_ID_NOT_FOUND("TEMPLATE-E001", Term.TEMPLATE, FailureType.ID_NOT_FOUND),
+	TEMPLATE_NOT_FOUND("TEMPLATE-E002", Term.TEMPLATE, FailureType.NOT_FOUND),
+	TEMPLATE_VO_INVALID("TEMPLATE-E003", Term.TEMPLATE, FailureType.BAD_REQUEST),
+	CONSOLE_ID_NOT_FOUND("CONSOLE-E001", Term.CONSOLE, FailureType.ID_NOT_FOUND),
+	CONSOLE_NOT_FOUND("CONSOLE-E002", Term.CONSOLE, FailureType.NOT_FOUND),
+	CONSOLE_VO_INVALID("CONSOLE-E003", Term.CONSOLE, FailureType.BAD_REQUEST),
+	UNKNOWN("UNKNOWN-E001", Term.UNKNOWN, FailureType.UNKNOWN)
+	;
+
+	companion object {
+		private val findMap: MutableMap<String, ErrorPattern> = ConcurrentHashMap<String, ErrorPattern>()
+		init {
+			values().forEach { findMap[it.code] = it }
+		}
+		@JvmStatic fun findByCode(code: String): ErrorPattern? = findMap[code]
+	}
+}
+
+fun ErrorPattern.toError(): Error {
+	return when(this) {
+		ErrorPattern.DATACENTER_ID_NOT_FOUND,
+		ErrorPattern.CLUSTER_ID_NOT_FOUND,
+		ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND,
+		ErrorPattern.HOST_ID_NOT_FOUND,
+		ErrorPattern.DISK_ID_NOT_FOUND,
+		ErrorPattern.DISK_IMAGE_ID_NOT_FOUND,
+		ErrorPattern.DISK_ATTACHMENT_ID_NOT_FOUND,
+		ErrorPattern.NETWORK_ID_NOT_FOUND,
+		ErrorPattern.NIC_ID_NOT_FOUND,
+		ErrorPattern.VM_ID_NOT_FOUND,
+		ErrorPattern.VNIC_PROFILE_ID_NOT_FOUND,
+		ErrorPattern.TEMPLATE_ID_NOT_FOUND,
+		ErrorPattern.CONSOLE_ID_NOT_FOUND, -> Error("[${code}] ${term.desc} ${failureType.message}")
+		ErrorPattern.DATACENTER_NOT_FOUND,
+		ErrorPattern.CLUSTER_NOT_FOUND,
+		ErrorPattern.STORAGE_DOMAIN_NOT_FOUND,
+		ErrorPattern.HOST_NOT_FOUND,
+		ErrorPattern.DISK_NOT_FOUND,
+		ErrorPattern.DISK_IMAGE_NOT_FOUND,
+		ErrorPattern.DISK_ATTACHMENT_NOT_FOUND,
+		ErrorPattern.NETWORK_NOT_FOUND,
+		ErrorPattern.NIC_NOT_FOUND,
+		ErrorPattern.VM_NOT_FOUND,
+		ErrorPattern.VNIC_PROFILE_NOT_FOUND,
+		ErrorPattern.TEMPLATE_NOT_FOUND,
+		ErrorPattern.CONSOLE_NOT_FOUND, -> Error("[${code}] ${failureType.message} ${term.desc}")
+		ErrorPattern.DATACENTER_VO_INVALID,
+		ErrorPattern.CLUSTER_VO_INVALID,
+		ErrorPattern.STORAGE_DOMAIN_VO_INVALID,
+		ErrorPattern.HOST_VO_INVALID,
+		ErrorPattern.DISK_VO_INVALID,
+		ErrorPattern.DISK_IMAGE_VO_INVALID,
+		ErrorPattern.DISK_ATTACHMENT_VO_INVALID,
+		ErrorPattern.NETWORK_VO_INVALID,
+		ErrorPattern.NIC_VO_INVALID,
+		ErrorPattern.VM_VO_INVALID,
+		ErrorPattern.VNIC_PROFILE_VO_INVALID,
+		ErrorPattern.TEMPLATE_VO_INVALID,
+		ErrorPattern.CONSOLE_VO_INVALID, -> Error("[${code}] ${term.desc} ${failureType.message}")
+		else -> Error(failureType.message)
+	}
+}

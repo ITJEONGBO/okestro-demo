@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.UUID;
-
+/*
 @Repository
 public interface HostSamplesHistoryRepository extends JpaRepository<HostSamplesHistoryEntity, Integer> {
 
@@ -28,6 +28,5 @@ public interface HostSamplesHistoryRepository extends JpaRepository<HostSamplesH
             "\tand h.history_Datetime = (SELECT MAX(h2.history_Datetime) FROM host_Samples_History h2 WHERE h2.host_Id = h.host_Id)\n" +
             "ORDER BY h.memory_Usage_Percent DESC", nativeQuery = true)
     List<HostSamplesHistoryEntity> findHostMemoryChart(Pageable page);
-
-
 }
+*/

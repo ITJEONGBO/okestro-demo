@@ -95,5 +95,4 @@ COPY --from=build /home/gradle/project/itcloud/build/libs/*.jar app.jar
 EXPOSE 8080
 
 # ENTRYPOINT ["java","-jar","app.jar", "--server.ssl.enabled=true", "--server.ssl.key-store=/app/config/ssl/your-certificate.pem", "--server.ssl.key-store-password=yourpassword"]
-# ENTRYPOINT ["java", "-jar", "app.jar", "--server.ssl.enabled=true", "--server.ssl.key-store=/app/config/ssl/your-certificate.pem", "--server.ssl.key-store-password=${SSL_KEY_STORE_PASSWORD}"]
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar", "--server.ssl.enabled=true", "--server.ssl.key-store=/app/config/ssl/your-certificate.pem", "--server.ssl.key-store-password=${SSL_KEY_STORE_PASSWORD}"]

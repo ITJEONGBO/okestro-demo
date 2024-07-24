@@ -3,7 +3,7 @@ package com.itinfo.itcloud.repository.dto;
 import lombok.*;
 
 import java.time.LocalDateTime;
-
+/*
 @Getter @ToString @Builder
 public class HostUsageDto {
     // 전체 사용량 용도
@@ -18,3 +18,4 @@ public class HostUsageDto {
     private double usedMemoryGB;
     private double freeMemoryGB;
 }
+*/

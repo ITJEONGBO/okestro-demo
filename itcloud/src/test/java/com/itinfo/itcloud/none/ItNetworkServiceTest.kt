@@ -50,9 +50,9 @@ class ItNetworkServiceTest {
 
 	/**
 	 * [should_getNetwork]
-	 * [ItNetworkService.getNetwork]에 대한 단위테스트
+	 * [ItNetworkService.findOne]에 대한 단위테스트
 	 * 
-	 * @see ItNetworkService.getNetwork
+	 * @see ItNetworkService.findOne
 	 */
 	@Test
 	fun should_getNetwork() {
@@ -115,9 +115,9 @@ class ItNetworkServiceTest {
 
 	/**
 	 * [should_getTemplate]
-	 * [ItNetworkService.getTemplate]에 대한 단위테스트
+	 * [ItNetworkService.findTemplates]에 대한 단위테스트
 	 * 
-	 * @see ItNetworkService.getTemplate
+	 * @see ItNetworkService.findTemplates
 	 */
 	@Test
 	fun should_getTemplate() {
@@ -141,9 +141,9 @@ class ItNetworkServiceTest {
 
 	/**
 	 * [should_addNetwork]
-	 * [ItNetworkService.addNetwork]에 대한 단위테스트
+	 * [ItNetworkService.add]에 대한 단위테스트
 	 * 
-	 * @see ItNetworkService.addNetwork
+	 * @see ItNetworkService.add
 	 */
 	@Test
 	fun should_addNetwork() {
@@ -154,9 +154,9 @@ class ItNetworkServiceTest {
 
 	/**
 	 * [should_editNetwork]
-	 * [ItNetworkService.editNetwork]에 대한 단위테스트
+	 * [ItNetworkService.update]에 대한 단위테스트
 	 * 
-	 * @see ItNetworkService.editNetwork
+	 * @see ItNetworkService.update
 	 */
 	@Test
 	fun should_editNetwork() {

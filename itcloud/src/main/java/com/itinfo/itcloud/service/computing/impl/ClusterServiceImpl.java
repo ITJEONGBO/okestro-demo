@@ -1,3 +1,4 @@
+/*
 package com.itinfo.itcloud.service.computing.impl;
 
 import com.itinfo.itcloud.model.IdentifiedVo;
@@ -9,6 +10,7 @@ import com.itinfo.itcloud.model.error.CommonVo;
 import com.itinfo.itcloud.model.network.NetworkClusterVo;
 import com.itinfo.itcloud.model.network.NetworkUsageVo;
 import com.itinfo.itcloud.model.network.NetworkVo;
+import com.itinfo.itcloud.model.setting.PermissionVo;
 import com.itinfo.itcloud.ovirt.AdminConnectionService;
 import com.itinfo.itcloud.repository.VmInterfaceSamplesHistoryRepository;
 import com.itinfo.itcloud.repository.VmSamplesHistoryRepository;
@@ -37,10 +39,12 @@ public class ClusterServiceImpl implements ItClusterService {
     @Autowired private VmSamplesHistoryRepository vmSamplesHistoryRepository;
     @Autowired private VmInterfaceSamplesHistoryRepository vmInterfaceSamplesHistoryRepository;
 
-    /***
+    */
+/***
      * 클러스터 목록
      * @return 클러스터 목록
-     */
+     *//*
+
     @Override
     public List<ClusterVo> getClusters(){
         SystemService system = admin.getConnection().systemService();
@@ -62,10 +66,12 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
 
-    /***
+    */
+/***
      * 클러스터 생성 위해 필요한 데이터센터 목록
      * @return 데이터센터 목록
-     */
+     *//*
+
     @Override
     public List<DataCenterVo> setDcList(){
         SystemService system = admin.getConnection().systemService();
@@ -83,11 +89,13 @@ public class ClusterServiceImpl implements ItClusterService {
 
     //
 
-    /***
+    */
+/***
      * 클러스터 생성 위해 필요한 네트워크 목록
      * @param dcId 데이터센터 아이디에 의존
      * @return 네트워크 목록
-     */
+     *//*
+
     @Override
     public List<NetworkVo> setNetworkList(String dcId) {
         SystemService system = admin.getConnection().systemService();
@@ -99,13 +107,15 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
 
-    
-    /***
+
+    */
+/***
      * 클러스터 생성
      * required: name, cpu.type, data_center (Identify the datacenter with either id or name)
      * @param cVo 클러스터 객체
      * @return 클러스터 생성 결과 201(create), 404(fail)
-     */
+     *//*
+
     @Override
     public CommonVo<Boolean> addCluster(ClusterCreateVo cVo) {
         SystemService system = admin.getConnection().systemService();
@@ -176,14 +186,16 @@ public class ClusterServiceImpl implements ItClusterService {
             return CommonVo.failResponse(e.getMessage());
         }
     }
-    
-    /***
+
+    */
+/***
      * 클러스터 편집 창
      * @param id 클러스터 id
      * @return 클러스터 값
-     */
+     *//*
+
     @Override
-    public ClusterCreateVo setCluster(String id){
+    public ClusterCreateVo getCluster(String id){
         SystemService system = admin.getConnection().systemService();
         Cluster cluster = system.clustersService().clusterService(id).get().send().cluster();
         DataCenter dataCenter = system.dataCentersService().dataCenterService(cluster.dataCenter().id()).get().send().dataCenter();
@@ -228,11 +240,13 @@ public class ClusterServiceImpl implements ItClusterService {
                 .build();
     }
 
-    /**
+    */
+/**
      * 클러스터 편집
      * @param cVo 클러스터 객체
      * @return 클러스터 수정 결과 201(create), 404(fail)
-     */
+     *//*
+
     @Override
     public CommonVo<Boolean> editCluster(ClusterCreateVo cVo) {
         SystemService system = admin.getConnection().systemService();
@@ -286,11 +300,13 @@ public class ClusterServiceImpl implements ItClusterService {
         }
     }
 
-    /**
+    */
+/**
      * 클러스터 삭제
      * @param ids 클러스터 id 목록
      * @return 클러스터 삭제 결과 200(success), 404(fail)
-     */
+     *//*
+
     @Override
     public CommonVo<Boolean> deleteCluster(List<String> ids) {
         SystemService system = admin.getConnection().systemService();
@@ -312,13 +328,15 @@ public class ClusterServiceImpl implements ItClusterService {
 
 
 
-    /**
+    */
+/**
      * 클러스터 일반
      * @param id 클러스터 id
      * @return 클러스터 객체
-     */
+     *//*
+
     @Override
-    public ClusterVo getCluster(String id){
+    public ClusterVo getClusterDetail(String id){
         SystemService system = admin.getConnection().systemService();
         Cluster cluster = system.clustersService().clusterService(id).get().send().cluster();
 
@@ -341,11 +359,13 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
 
-    /**
+    */
+/**
      * 클러스터 네트워크 목록
      * @param id 클러스터 id
      * @return 클러스터 네트워크 목록
-     */
+     *//*
+
     @Override
     public List<NetworkVo> getNetworksByCluster(String id) {
         SystemService system = admin.getConnection().systemService();
@@ -377,14 +397,16 @@ public class ClusterServiceImpl implements ItClusterService {
 
 
 
-    /**
+    */
+/**
      * 클러스터 네트워크 생성
      * @param id 클러스터 id
      * @param ncVo 네트워크 생성 객체
      * @return 네트워크 생성 결과 201(create), 404(fail)
-     */
+     *//*
+
     @Override
-    public CommonVo<Boolean> addClusterNetwork(String id, NetworkCreateVo ncVo) {
+    public CommonVo<Boolean> addNetworkByCluster(String id, NetworkCreateVo ncVo) {
         SystemService system = admin.getConnection().systemService();
         NetworksService networksService = system.networksService();
         OpenStackNetworkProvider openStackNetworkProvider = system.openstackNetworkProvidersService().list().send().providers().get(0);
@@ -451,13 +473,15 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
 
-    /**
+    */
+/**
      * 클러스터 네트워크 관리 창
      * @param id 클러스터 id
      * @return 네트워크 usages 목록들
-     */
+     *//*
+
     @Override
-    public List<NetworkClusterVo> setManageNetwork(String id) {
+    public List<NetworkClusterVo> getManageNetworkByCluster(String id) {
         SystemService system = admin.getConnection().systemService();
         List<Network> networkList = system.clustersService().clusterService(id).networksService().list().send().networks();
 
@@ -485,15 +509,16 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
     // TODO:HELP  관리기능 애매
-    /**
+    */
+/**
      * 클러스터 네트워크 관리
      * @param id 클러스터 id
      * @param ncVoList 네트워크 usages 값들
      * @return 클러스터 네트워크 관리 변경 결과 200(success), 404(fail)
-     */
+     *//*
+
     @Override
-    public CommonVo<Boolean>
-    manageNetwork(String id, List<NetworkClusterVo> ncVoList) {
+    public CommonVo<Boolean> manageNetworkByCluster(String id, List<NetworkClusterVo> ncVoList) {
         SystemService system = admin.getConnection().systemService();
         ClusterNetworksService cNetworksService = system.clustersService().clusterService(id).networksService();
 
@@ -529,12 +554,14 @@ public class ClusterServiceImpl implements ItClusterService {
         return null;
     }
 
-    
-    /**
+
+    */
+/**
      * 클러스터 호스트 목록
      * @param id 클러스터 id
      * @return 호스트 목록
-     */
+     *//*
+
     @Override
     public List<HostVo> getHostsByCluster(String id) {
         SystemService system = admin.getConnection().systemService();
@@ -564,11 +591,13 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
 
-    /**
+    */
+/**
      * 클러스터 가상머신 목록
      * @param id 클러스터 id
      * @return 가상머신 목록
-     */
+     *//*
+
     @Override
     public List<VmVo> getVmsByCluster(String id) {
         SystemService system = admin.getConnection().systemService();
@@ -609,7 +638,7 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
     @Override
-    public AffinityGroupVo setAffinityGroupByCluster(String id, String agId) {
+    public AffinityGroupVo getAffinityGroupByCluster(String id, String agId) {
         return affinity.setAffinityGroup(id, true, agId);
     }
 
@@ -625,8 +654,8 @@ public class ClusterServiceImpl implements ItClusterService {
 
     // 선호도 레이블 목록 출력
 
-    
-    
+
+
 
     // 클러스터 권한 목록
     @Override
@@ -665,26 +694,30 @@ public class ClusterServiceImpl implements ItClusterService {
 //-------------------------------------------------------------------------------
 
 
-    /***
+    */
+/***
      * 클러스터 이름 중복
      * @param system
      * @param name
      * @param id
      * @return 이름 중복되는게 있으면 true 반환
-     */
+     *//*
+
     private boolean isNameDuplicate(SystemService system, String name, String id) {
         return system.clustersService().list().send().clusters().stream()
                 .filter(cluster -> id == null || !cluster.id().equals(id))
                 .anyMatch(cluster -> cluster.name().equals(name));
     }
 
-    /**
+    */
+/**
      * 클러스터에서 네트워크 생성시 필요한 네트워크 이름 중복
      * @param system
      * @param name
      * @param dcId
      * @return 이름 중복되는게 있으면 true 반환
-     */
+     *//*
+
     // 클러스터가 가진 dc 아이디와 네트워크에서
     private boolean networkNameDuplicate(SystemService system, String name, String dcId) {
         return system.networksService().list().send().networks().stream()
@@ -693,16 +726,18 @@ public class ClusterServiceImpl implements ItClusterService {
     }
 
 
-    /**
+    */
+/**
      * 클러스터 내에 있는 호스트 개수 파악
      * @param system
      * @param clusterId host의 clusterId와 비교
      * @param ele up, down, ""==all 값
      * @return 호스트 개수
-     */
+     *//*
+
     private int getClusterHostCnt(SystemService system, String clusterId, String ele){
         List<Host> hostList = system.hostsService().list().send().hosts();
-        
+
         if("up".equals(ele)){
             return (int) hostList.stream()
                     .filter(host -> host.cluster().id().equals(clusterId) && host.status().value().equals("up"))
@@ -718,13 +753,15 @@ public class ClusterServiceImpl implements ItClusterService {
         }
     }
 
-    /**
+    */
+/**
      * 클러스터 내에 있는 가상머신 개수 파악
      * @param system
      * @param clusterId vm의 clusterId와 비교
      * @param ele up, down, "" 값
      * @return 가상머신 개수
-     */
+     *//*
+
     private int getClusterVmCnt(SystemService system, String clusterId, String ele){
         List<Vm> vmList = system.vmsService().list().send().vms();
 
@@ -742,11 +779,11 @@ public class ClusterServiceImpl implements ItClusterService {
                     .count();
         }
     }
-    
-    
-    
-    
-    
+
+
+
+
+
 
     // ----------------------------------------------------------------------------------------
 
@@ -776,3 +813,4 @@ public class ClusterServiceImpl implements ItClusterService {
     // endregion
 
 }
+*/

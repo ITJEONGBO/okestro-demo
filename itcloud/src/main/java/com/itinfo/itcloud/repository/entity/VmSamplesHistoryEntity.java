@@ -14,7 +14,7 @@ import javax.persistence.Table;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
+/*
 @Entity
 @Getter
 @ToString
@@ -53,14 +53,5 @@ public class VmSamplesHistoryEntity {
     private BigInteger memoryBufferedKb;
     private BigInteger memoryCachedKb;
     private Integer secondsInStatus;
-
-    // 호스트 각각 현재 사용량 보여주는 거
-    public UsageDto getUsage(){
-        return UsageDto.builder()
-//                .id(hostId.toString())
-                .cpuPercent(cpuUsagePercent)
-                .memoryPercent(memoryUsagePercent)
-                .build();
-    }
-
 }
+*/

@@ -1,12 +1,13 @@
 package com.itinfo.itcloud.service
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.itcloud.*
-import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.DataCenterVo
-import com.itinfo.itcloud.ovirt.AdminConnectionService
-import org.ovirt.engine.sdk4.Connection
-import org.ovirt.engine.sdk4.services.SystemService
+import com.itinfo.itcloud.service.computing.ItClusterService
+import com.itinfo.itcloud.service.computing.ItHostService
+import com.itinfo.itcloud.service.computing.ItVmService
+import com.itinfo.util.ovirt.findAllDataCenters
+import com.itinfo.util.ovirt.findAllStorageDomains
+import com.itinfo.util.ovirt.findAllHosts
 import org.ovirt.engine.sdk4.types.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -58,107 +59,68 @@ interface ItDashboardService {
 	fun getCpu(): Int
 	fun getMemory(type: String = ""): Int
 	fun getStorage(type: String = ""): Int
-
 	fun setComputing() : List<DataCenterVo>
 }
 
 @Service
-class DashboardServiceImpl() : ItDashboardService {
-	@Autowired private lateinit var admin: AdminConnectionService
-    // @Autowired private lateinit var repository: HostSamplesRepository
+class DashboardServiceImpl(
 
-	/**
-	 * [ItDashboardService.getDatacenters]
-	 * 대시보드 - 데이터센터 개수
-	 *
-	 * @param type [String] 데이터센터 상태 (up, down, all)
-	 * @return [Int] 데이터센터 개수
-	 */
+): BaseService(), ItDashboardService {
+
+	@Autowired private lateinit var vm: ItVmService
+	@Autowired private lateinit var cluster: ItClusterService
+	@Autowired private lateinit var host: ItHostService
+
 	override fun getDatacenters(type: String): Int {
 		log.info("getDatacenters ... type: $type")
-		val conn: Connection = admin.getConnection()
-		val dataCenters: List<DataCenter> = conn.findAllDataCenters()
-		log.info("getDatacenters ... ${dataCenters.size} found ... ")
-
-		return dataCenters.count { dataCenter: DataCenter ->
-			when (type) {
-				"up" -> dataCenter.status() == DataCenterStatus.UP
-				"down" -> dataCenter.status() != DataCenterStatus.UP
-				else -> true
+		val dataCenters: List<DataCenter> =
+			conn.findAllDataCenters()
+				.getOrDefault(listOf())
+		return dataCenters.count {
+				when (type) {
+					"up" -> it.status() == DataCenterStatus.UP
+					"down" -> it.status() != DataCenterStatus.UP
+					else -> true
+				}
 			}
-		}
 	}
 
-	/**
-	 * [ItDashboardService.getClusters]
-	 * 대시보드 - 클러스터 개수
-	 *
-	 * @return [Int] 클러스터 개수
-	 */
 	override fun getClusters(): Int {
 		log.info("getClusters ...")
-		val conn: Connection = admin.getConnection()
-		val clusters: List<Cluster> = conn.findAllClusters()
-		log.info("getClusters ... ${clusters.size} found ... ")
-		return clusters.size
+		return cluster.findAll().size
 	}
 
-	/**
-	 * [ItDashboardService.getHosts]
-	 * 대시보드 - 호스트 개수
-	 *
-	 * @param [String] type 호스트 상태 (up, down, all)
-	 * @return [Int]
-	 */
 	override fun getHosts(type: String): Int {
 		log.info("getHosts ... type: $type")
-		val conn: Connection = admin.getConnection()
-		val hosts: List<Host> = conn.findAllHosts()
-		log.info("getHosts ... ${hosts.size} found ... ")
-
-		return hosts.count { host: Host ->
+		return host.findAll().count {
 			when (type) {
-				"up" -> host.status() == HostStatus.UP
-				"down" -> host.status() != HostStatus.UP
+				"up" -> it.status == HostStatus.UP
+				"down" -> it.status != HostStatus.UP
 				else -> true
 			}
 		}
 	}
 
-	/**
-	 * [ItDashboardService.getVms]
-	 * 대시보드 - 가상머신 개수
-	 *
-	 * @param type [String] 데이터센터 상태 (up, down, all)
-	 * @return [Int] 가상머신 개수
-	 */
 	override fun getVms(type: String): Int {
 		log.info("getVms ... type: $type")
-		val conn: Connection = admin.getConnection()
-		val vms: List<Vm> = conn.findAllVms()
-		log.info("getVms ... ${vms.size} found ... ")
-		return vms.count { vm: Vm ->
+		return vm.findAll().count {
 			when (type) {
-				"up" -> vm.status() == VmStatus.UP
-				"down" -> vm.status() != VmStatus.UP
+				"up" -> it.status == VmStatus.UP
+				"down" -> it.status != VmStatus.UP
 				else -> true
 			}
 		}
 	}
 
-	/**
-	 * [ItDashboardService.getStorages]
-	 * 대시보드 - 스토리지 도메인 개수
-	 * 
-	 * @return [Int] 스토리지 도메인 개수
-	 */
 	override fun getStorages(): Int {
 		log.info("getStorages ... ")
-		val conn: Connection = admin.getConnection()
-		val storageDomains: List<StorageDomain> = conn.findAllStorageDomains()
+		val storageDomains: List<StorageDomain> =
+			conn.findAllStorageDomains()
+				.getOrDefault(listOf())
+
 		log.info("getStorages ... ${storageDomains.size} found ... ")
-		return storageDomains.count { storageDomain: StorageDomain ->
-			!storageDomain.statusPresent()
+		return storageDomains.count {
+			!it.statusPresent()
 		}
 	}
 
@@ -175,14 +137,13 @@ class DashboardServiceImpl() : ItDashboardService {
 	}
 
 	override fun getCpu(): Int {
-		val system = admin.getConnection().systemService()
-		return system.hostsService().list().send().hosts().stream()
-			.mapToInt { host: Host ->
-				(host.cpu().topology().cores().toInt()
-						* host.cpu().topology().sockets().toInt()
-						* host.cpu().topology().threads().toInt())
+		return conn.findAllHosts()
+			.getOrDefault(listOf())
+			.sumOf {
+				it.cpu().topology().cores().toInt() *
+				it.cpu().topology().sockets().toInt() *
+				it.cpu().topology().threads().toInt()
 			}
-			.sum()
 	}
 /*
 	// 전체사용량: cpu
@@ -280,11 +241,9 @@ class DashboardServiceImpl() : ItDashboardService {
 
 	override fun setComputing(): List<DataCenterVo> {
 		log.info("set Computing ... ")
-		val system : SystemService = admin.getConnection().systemService()
-		val dataCenters : List<DataCenter> = system.dataCentersService().list().follow("clusters").send().dataCenters()
-
-
-
+		val dataCenters : List<DataCenter> =
+			conn.findAllDataCenters("", "clusters")
+				.getOrDefault(listOf())
 		TODO("Not yet implemented")
 	}
 

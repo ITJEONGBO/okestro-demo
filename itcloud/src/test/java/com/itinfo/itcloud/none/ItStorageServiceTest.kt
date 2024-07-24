@@ -128,9 +128,9 @@ class ItStorageServiceTest {
 
 	/**
 	 * [should_getEvent]
-	 * [ItStorageService.getEvent]에 대한 단위테스트
+	 * [ItStorageService.findAllEventsFromStorageDomain]에 대한 단위테스트
 	 * 
-	 * @see [ItStorageService.getEvent]
+	 * @see [ItStorageService.findAllEventsFromStorageDomain]
 	 */
 	@Test
 	fun should_getEvent() {
@@ -141,9 +141,9 @@ class ItStorageServiceTest {
 
 	/**
 	 * [should_getPermission]
-	 * [ItStorageService.getPermission]에 대한 단위테스트
+	 * [ItStorageService.findAllPermissionsFromStorageDomain]에 대한 단위테스트
 	 * 
-	 * @see [ItStorageService.getPermission]
+	 * @see [ItStorageService.findAllPermissionsFromStorageDomain]
 	 */
 	@Test
 	fun should_getPermission() {

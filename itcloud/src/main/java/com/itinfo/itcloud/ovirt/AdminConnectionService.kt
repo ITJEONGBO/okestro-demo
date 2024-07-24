@@ -1,7 +1,7 @@
 package com.itinfo.itcloud.ovirt
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.itcloud.service.admin.ItSystemPropertyService
+import com.itinfo.itcloud.service.admin.ItSystemPropertiesService
 import org.ovirt.engine.sdk4.Connection
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component
 @Component
 class AdminConnectionService {
 	@Autowired
-	private lateinit var systemPropertiesService: ItSystemPropertyService
+	private lateinit var systemPropertiesService: ItSystemPropertiesService
 	fun getConnection(): Connection {
 		// TODO null 체크 할 수 있는 예외처리 필요
 		log.debug("getConnection ... ")
-		val systemProperties = systemPropertiesService.searchSystemProperties()
+		val systemProperties = systemPropertiesService.findOne()
 		var connection: Connection? = null
 		try {
 			connection = systemProperties.toConnection()
