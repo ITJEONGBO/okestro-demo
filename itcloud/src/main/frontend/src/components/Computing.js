@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import '../App.css';
 import Modal from 'react-modal';
+import '../App.css';
+import './Computing.css';
+
 // React Modal 설정
 Modal.setAppElement('#root');
 

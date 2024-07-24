@@ -27,7 +27,7 @@ logs
 
 node_modules
 bower_components
-
+src/main/resources/static
 *.sublime*
 
 psd

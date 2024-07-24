@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
-import '../App.css';
 import DomainDetail from '../detail/DomainDetail';
+import '../App.css';
+import './Storage.css';
 
 Modal.setAppElement('#root'); // React 16 이상에서는 필수
 
-function Storage() {
+const Storage = ({}) => {
   // 폰트사이즈 조절
   useEffect(() => {
     function adjustFontSize() {

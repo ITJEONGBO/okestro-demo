@@ -9,6 +9,7 @@ dependencies {
     compileOnly(project(":common"))
     compileOnly(project(":license-common"))
     compileOnly(project(":license-enc"))
+    compileOnly(project(":license-dec"))
     compileOnly(Dependencies.kotlinStdlib)
     compileOnly(Dependencies.log4j)
     compileOnly(Dependencies.gson)

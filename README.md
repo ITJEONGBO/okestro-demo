@@ -47,7 +47,8 @@ npm start  # React 앱 실행
 npm build # React 앱 빌드
 ```
 
-> [!IMPORTANT] npm이 없을 경우 설치 권고
+> [!IMPORTANT] 
+> npm이 없을 경우 설치 권고
 
 ## 🐘Gradle
 

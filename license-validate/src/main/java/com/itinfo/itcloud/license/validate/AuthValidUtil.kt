@@ -1,7 +1,12 @@
 package com.itinfo.itcloud.license.validate
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.license.common.LicenseInfo
+import com.itinfo.itcloud.license.dec.DecUtil
+import com.itinfo.itcloud.license.enc.EncUtil
 import org.slf4j.Logger
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
 /**
@@ -19,5 +24,24 @@ class AuthValidUtil {
 			return AuthValidUtil()
 		}
 		private val log: Logger by LoggerDelegate()
+	}
+
+	private val enc = EncUtil.getInstance()
+	private val dec = DecUtil.getInstance()
+
+	fun validate(auth: String): Boolean {
+		val licenseInfo = LicenseInfo.refresh()
+		val encryptAuth = enc.encrypt(auth)
+		val decryptAuth = dec.decrypt(encryptAuth)
+		return licenseInfo.auth == decryptAuth
+	}
+
+
+	fun expired(): Boolean{
+		val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+		val dateProperties = LocalDate.parse(LicenseInfo.refresh().date, dateFormatter)
+		val nowDate = LocalDate.now()
+
+		return dateProperties.isAfter(nowDate)
 	}
 }

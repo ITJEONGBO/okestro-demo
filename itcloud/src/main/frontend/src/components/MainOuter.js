@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import '../App.css';
 import { Link } from 'react-router-dom';
 import Modal from 'react-modal';
 import HostDetail from '../detail/HostDetail';
+import '../App.css';
+import './MainOuter.css';
 
 function MainOuter({ children }) {
     const [selected, setSelected] = useState('dashboard');

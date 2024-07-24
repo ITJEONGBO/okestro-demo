@@ -2,8 +2,9 @@ package com.itinfo.itcloud.license.enc
 
 import com.itinfo.common.LoggerDelegate
 import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import java.io.Closeable
+import java.util.*
+import javax.crypto.Cipher
+import javax.crypto.spec.SecretKeySpec
 
 /**
  * [EncUtil]
@@ -21,4 +22,16 @@ class EncUtil {
 		}
 		private val log: Logger by LoggerDelegate()
 	}
+
+	private val encKey = "ITCLOUD_RUTIL_VM_AES_PRIVATE_KEY" // aes256
+
+	fun encrypt(data: String): String {
+		val secretKey = SecretKeySpec(encKey.toByteArray(), "AES")
+		val cipher = Cipher.getInstance("AES")
+		cipher.init(Cipher.ENCRYPT_MODE, secretKey)
+
+		val encodeValue = cipher.doFinal(data.toByteArray())
+		return Base64.getEncoder().encodeToString(encodeValue)
+	}
+
 }

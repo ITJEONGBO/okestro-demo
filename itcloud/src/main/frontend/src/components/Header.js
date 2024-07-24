@@ -1,9 +1,18 @@
 import React, { useEffect } from 'react';
 import '../App.css';
+import './Header.css';
 
-
-function Header() {
+/**
+ * @name Header
+ * @description 컴포넌트 > 헤더 
+ * @returns 
+ */
+const Header = ({ }) => {
     useEffect(() => {
+        /**
+         * @name adjustFontSize
+         * @description 
+         */
         function adjustFontSize() {
             const width = window.innerWidth;
             const fontSize = width / 40; // 필요에 따라 이 값을 조정하세요
@@ -21,7 +30,7 @@ function Header() {
             window.removeEventListener('resize', adjustFontSize);
         };
     }, []);
-    
+
   return (
     <div id="header">
         <div id="header_right">

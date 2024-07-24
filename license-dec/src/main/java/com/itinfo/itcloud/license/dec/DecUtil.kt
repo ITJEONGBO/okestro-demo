@@ -2,6 +2,9 @@ package com.itinfo.itcloud.license.dec
 
 import com.itinfo.common.LoggerDelegate
 import org.slf4j.Logger
+import java.util.Base64
+import javax.crypto.Cipher
+import javax.crypto.spec.SecretKeySpec
 
 
 /**
@@ -20,4 +23,17 @@ class DecUtil {
 		}
 		private val log: Logger by LoggerDelegate()
 	}
+
+	private val encKey = "ITCLOUD_RUTIL_VM_AES_PRIVATE_KEY" // aes256
+
+	fun decrypt(data: String): String {
+		val secretKey = SecretKeySpec(encKey.toByteArray(), "AES")
+		val cipher = Cipher.getInstance("AES")
+		cipher.init(Cipher.ENCRYPT_MODE, secretKey)
+
+		val decode = Base64.getDecoder().decode(data)
+		val decodeValue = cipher.doFinal(decode)
+		return String(decodeValue)
+	}
+
 }

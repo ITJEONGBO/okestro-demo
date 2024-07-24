@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import '../App.css';
 import Modal from 'react-modal';
 import NetworkDetail from '../detail/NetworkDetail';
+import '../App.css';
+import './Network.css';
 
 // React Modal 설정
 Modal.setAppElement('#root');
