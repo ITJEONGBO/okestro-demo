@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
-import DomainDetail from '../detail/DomainDetail';
+import StorageDetail from '../detail/StorageDetail';
 import '../App.css';
 import './Storage.css';
 
@@ -75,6 +75,15 @@ const Storage = ({}) => {
     e.stopPropagation();
   };
 
+  //domain_hidden_box 열고닫기
+  const [isDomainHiddenBoxVisible, setDomainHiddenBoxVisible] = useState(false);
+  const toggleDomainHiddenBox = () => {
+    setDomainHiddenBoxVisible(!isDomainHiddenBoxVisible);
+  };
+  const [isDomainHiddenBox2Visible, setDomainHiddenBox2Visible] = useState(false);
+  const toggleDomainHiddenBox2 = () => {
+    setDomainHiddenBox2Visible(!isDomainHiddenBox2Visible);
+  };
 
   return (
     <div id="storage_section">
@@ -685,7 +694,7 @@ const Storage = ({}) => {
       </div>
     ) : (
       // 도메인 상세 페이지 내용
-      <DomainDetail
+      <StorageDetail
       togglePopupBox={togglePopupBox}
       isPopupBoxVisible={isPopupBoxVisible}
       handlePopupBoxItemClick={handlePopupBoxItemClick}
@@ -1003,7 +1012,7 @@ const Storage = ({}) => {
           </div>
           <div className="domain_new_right">
             <div className="domain_new_select">
-              <label>호스트</label>
+              <label>이름</label>
               <input type="text" />
             </div>
             <div className="domain_new_select">
@@ -1024,14 +1033,14 @@ const Storage = ({}) => {
           </div>
 
           <div>
-            <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn"></i>
+            <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn" onClick={toggleDomainHiddenBox}></i>
             <span>사용자 정의 연결 매개 변수</span>
-            <div id="domain_hidden_box" style={{ display: 'none' }}>
+            <div id="domain_hidden_box" style={{ display: isDomainHiddenBoxVisible ? 'block' : 'none' }}>
               <span>아래 필드에서 기본값을 변경하지 않을 것을 권장합니다.</span>
               <div className="domain_new_select">
-                <label htmlFor="data_hub">호스트</label>
-                <select id="data_hub">
-                  <option value="linux">host02.ititinfo.com</option>
+                <label htmlFor="nfs_version">NFS 버전</label>
+                <select id="nfs_version">
+                  <option value="host02_ititinfo_com">host02.ititinfo.com</option>
                 </select>
               </div>
               <div className="domain_new_select">
@@ -1049,9 +1058,9 @@ const Storage = ({}) => {
             </div>
           </div>
           <div>
-            <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn2"></i>
+            <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn2" onClick={toggleDomainHiddenBox2}></i>
             <span>고급 매개 변수</span>
-            <div id="domain_hidden_box2" style={{ display: 'none' }}>
+            <div id="domain_hidden_box2" style={{ display: isDomainHiddenBox2Visible ? 'block' : 'none' }}>
               <div className="domain_new_select">
                 <label>디스크 공간 부족 경고 표시(%)</label>
                 <input type="text" />
@@ -1070,10 +1079,15 @@ const Storage = ({}) => {
                   <option value="linux">V5</option>
                 </select>
               </div>
-              <div className="network_checkbox_type2">
-                <input type="checkbox" id="photo_separation" name="photo_separation" />
-                <label htmlFor="photo_separation">포토 분리</label>
+              <div className="hidden_checkbox">
+                <input type="checkbox" id="reset_after_deletion"/>
+                <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
               </div>
+              <div className="hidden_checkbox">
+                <input type="checkbox" id="backup_vault"/>
+                <label htmlFor="backup_vault">백업</label>
+              </div>
+
             </div>
           </div>
         </div>
@@ -1151,14 +1165,14 @@ const Storage = ({}) => {
           </div>
 
           <div>
-            <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn"></i>
+            <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn" onClick={toggleDomainHiddenBox}></i>
             <span>사용자 정의 연결 매개 변수</span>
-            <div id="domain_hidden_box" style={{ display: 'none' }}>
+            <div id="domain_hidden_box" style={{ display: isDomainHiddenBoxVisible ? 'block' : 'none' }}>
               <span>아래 필드에서 기본값을 변경하지 않을 것을 권장합니다.</span>
               <div className="domain_new_select">
-                <label htmlFor="data_hub">호스트</label>
-                <select id="data_hub">
-                  <option value="linux">host02.ititinfo.com</option>
+                <label htmlFor="nfs_version">NFS 버전</label>
+                <select id="nfs_version">
+                  <option value="host02_ititinfo_com">host02.ititinfo.com</option>
                 </select>
               </div>
               <div className="domain_new_select">
@@ -1176,32 +1190,40 @@ const Storage = ({}) => {
             </div>
           </div>
           <div>
-            <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn2"></i>
+            <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn2" onClick={toggleDomainHiddenBox2}></i>
             <span>고급 매개 변수</span>
-            <div id="domain_hidden_box2" style={{ display: 'none' }}>
-              <div className="domain_new_select">
-                <label>디스크 공간 부족 경고 표시(%)</label>
-                <input type="text" />
+              <div id="domain_hidden_box2" style={{ display: isDomainHiddenBox2Visible ? 'block' : 'none' }}>
+                <div className="domain_new_select">
+                  <label>디스크 공간 부족 경고 표시(%)</label>
+                  <input type="text" />
+                </div>
+                <div className="domain_new_select">
+                  <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+                  <input type="text" />
+                </div>
+                <div className="domain_new_select">
+                  <label>디스크 공간 부족 경고 표시(%)</label>
+                  <input type="text" />
+                </div>
+                <div className="domain_new_select">
+                  <label htmlFor="format_type_selector" style={{ color: 'gray' }}>포맷</label>
+                  <select id="format_type_selector" disabled>
+                    <option value="linux">V5</option>
+                  </select>
+                </div>
+                <div className="hidden_checkbox">
+                  <input type="checkbox" id="reset_after_deletion"/>
+                  <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
+                </div>
+                <div className="hidden_checkbox">
+                  <input type="checkbox" id="backup_vault"/>
+                  <label htmlFor="backup_vault">백업</label>
+                </div>
+                <div className="hidden_checkbox">
+                  <input type="checkbox" id="activate_domain"/>
+                  <label htmlFor="activate_domain">데이터 센터에 있는 도메인을 활성화</label>
+                </div>
               </div>
-              <div className="domain_new_select">
-                <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
-                <input type="text" />
-              </div>
-              <div className="domain_new_select">
-                <label>디스크 공간 부족 경고 표시(%)</label>
-                <input type="text" />
-              </div>
-              <div className="domain_new_select">
-                <label htmlFor="format_type_selector" style={{ color: 'gray' }}>포맷</label>
-                <select id="format_type_selector" disabled>
-                  <option value="linux">V5</option>
-                </select>
-              </div>
-              <div className="network_checkbox_type2">
-                <input type="checkbox" id="photo_separation" name="photo_separation" />
-                <label htmlFor="photo_separation">포토 분리</label>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -1278,18 +1300,18 @@ const Storage = ({}) => {
           </div>
 
           <div>
-            <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn"></i>
+            <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn" onClick={toggleDomainHiddenBox}></i>
             <span>사용자 정의 연결 매개 변수</span>
-            <div id="domain_hidden_box" style={{ display: 'none' }}>
+            <div id="domain_hidden_box" style={{ display: isDomainHiddenBoxVisible ? 'block' : 'none' }}>
               <span>아래 필드에서 기본값을 변경하지 않을 것을 권장합니다.</span>
               <div className="domain_new_select">
-                <label htmlFor="data_hub">호스트</label>
-                <select id="data_hub">
-                  <option value="linux">host02.ititinfo.com</option>
+                <label htmlFor="nfs_version">NFS 버전</label>
+                <select id="nfs_version" disabled style={{cursor:'no-drop'}}>
+                  <option value="host02_ititinfo_com" >자동 협상(기본)</option>
                 </select>
               </div>
               <div className="domain_new_select">
-                <label htmlFor="data_hub">재전송</label>
+                <label htmlFor="data_hub">재전송(#)</label>
                 <input type="text" />
               </div>
               <div className="domain_new_select">
@@ -1303,9 +1325,9 @@ const Storage = ({}) => {
             </div>
           </div>
           <div>
-            <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn2"></i>
+            <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn2" onClick={toggleDomainHiddenBox2}></i>
             <span>고급 매개 변수</span>
-            <div id="domain_hidden_box2" style={{ display: 'none' }}>
+            <div id="domain_hidden_box2" style={{ display: isDomainHiddenBox2Visible ? 'block' : 'none' }}>
               <div className="domain_new_select">
                 <label>디스크 공간 부족 경고 표시(%)</label>
                 <input type="text" />
@@ -1324,10 +1346,15 @@ const Storage = ({}) => {
                   <option value="linux">V5</option>
                 </select>
               </div>
-              <div className="network_checkbox_type2">
-                <input type="checkbox" id="photo_separation" name="photo_separation" />
-                <label htmlFor="photo_separation">포토 분리</label>
+              <div className="hidden_checkbox">
+                <input type="checkbox" id="reset_after_deletion"/>
+                <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
               </div>
+              <div className="hidden_checkbox">
+                <input type="checkbox" id="backup_vault"/>
+                <label htmlFor="backup_vault">백업</label>
+              </div>
+
             </div>
           </div>
         </div>
