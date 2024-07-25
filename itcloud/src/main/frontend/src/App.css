@@ -4251,6 +4251,7 @@ box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
     justify-content: center; /* 수평 가운데 정렬 */
     color: #0066CC;
     margin-left: 0.1rem;
+    
 }
 .host_network_bottom{
     border-top: 1px solid #d1d1d1;

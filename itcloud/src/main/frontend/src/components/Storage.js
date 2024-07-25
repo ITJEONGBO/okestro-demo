@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import StorageDetail from '../detail/StorageDetail';
-import '../App.css';
+
 import './Storage.css';
 
 Modal.setAppElement('#root'); // React 16 이상에서는 필수

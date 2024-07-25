@@ -1,4 +1,5 @@
 import React, { useState,useEffect } from 'react';
+import './StorageDetail.css';
 
 function StorageDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const [activeTab, setActiveTab] = useState('general');

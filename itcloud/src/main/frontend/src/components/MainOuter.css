@@ -1,1 +1,85 @@
-/* TODO: App.css 에 있는 부분 정리하여 기입 */
+#main_outer{
+    height: 88vh;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+#aside_outer {
+    width: 3%;
+    display: flex;
+}
+#aside {
+    width: 3vw;
+    height: 100%;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.13);
+    border-right: 1px solid rgb(219 219 219);
+    display: flex;
+    flex-direction: column; /* 컬럼 방향으로 요소 정렬 */
+    justify-content: space-between;
+}
+.link-no-underline {
+    text-decoration: none;
+    color: inherit; /* 필요에 따라 색상을 설정하세요 */
+  }
+#aside>#nav div, #setting_icon {
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    padding:  0.5rem 0;
+    font-size: 0.6rem;
+    color: rgb(105, 105, 105);
+    cursor: pointer;
+}
+#aside>#nav>div:hover, #setting_icon:hover {
+    color: black;
+}
+#aside_popup {
+    width: 78%;
+    background-color: white;
+    display: none;
+    position: relative;
+}
+#aside_popup>div>div {
+    color: rgb(145, 150, 155);
+    font-size: 0.35rem;
+    cursor: pointer;
+    padding-top: 0.1rem;
+}
+#aside_popup_btn{
+    position: absolute;
+    right: 0;
+    border: 1px solid gray;
+    border-right: none;
+    top: 47%;
+    color: #407885;
+    height: 5%;
+    cursor: pointer;
+    padding: 0.08rem;
+}
+.aside_popup_content i:first-child {
+    font-size: 0.24rem;
+    margin-right: 0.27rem;
+}
+.aside_popup_content>span {
+    margin-left: 0.1rem;
+}
+#aside_popup_first,#aside_popup_first2,#aside_popup_first3 {
+    padding-left: 0.2rem;
+}
+#aside_popup_second{
+    padding-left: 0.5rem;
+}
+#aside_popup_third{
+    padding-left: 0.7rem;
+}
+#aside_popup_last_machine,#aside_popup_last_storage {
+    padding-left: 1.4rem;
+}
+#aside_popup_last_machine>div:hover,#aside_popup_last_storage>div:hover{
+    background-color: #e6eefa;
+}
+#aside_popup_last_machine>div span,#aside_popup_last_storage>div span{
+    margin-left: 0.1rem;
+}

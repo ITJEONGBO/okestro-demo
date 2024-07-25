@@ -1,1 +1,904 @@
-/* TODO: App.css 에 있는 부분 정리하여 기입 */
+@font-face {
+    font-family: 'GowunDodum-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+#root,*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'GowunDodum-Regular';
+}
+
+#root {
+    background-color: #EBEEEE;
+    padding: 1% 1.3% 0 1.3%;
+    height: 100vh; /* 추가 */
+    text-rendering: optimizeLegibility;
+}
+
+#storage_section{
+    background-color: #ffffff;
+    border-radius: 5px;
+    width: 96%;
+    position: relative;
+}
+#storage_section>div{
+    height: 98%;
+}
+.section_header{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #6999D9;
+    align-items: center; /* 수직 가운데 정렬 추가 */
+    padding: 0.05rem 0.2rem;
+}
+.section_header_left{
+    display: flex;
+    align-items: center; /* 수직 가운데 정렬 추가 */
+    color: #0b4db5;
+}
+.section_header_left span,
+.section_header_left div,
+.section_header_left button {
+    margin-right: 10px; /* 요소 간 간격 조정 */
+}
+.section_header_left>span,.section_header_left>button{
+    font-size: 0.31rem;
+    color: #0b4db5;
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    margin-top: 0.1rem;
+}
+.section_header_left>div{
+    font-size: 0.7rem;
+
+}
+
+
+/*article*/
+.section_header_right{
+    display: flex;
+    justify-content: space-between;
+    margin: 0.9% 0;
+}
+
+/*nav*/
+
+.article_nav{
+    display: flex;
+    justify-content: right;
+}
+.article_nav>button{
+    margin: 0 5px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.1rem 0.2rem;
+    font-size: 0.3rem;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    background-color: #89b0e3;
+    border: 1px solid #295b9c;
+    border-radius: 3px;
+    color: white;
+
+}
+.article_nav>div>button{
+    padding: 0 7px;
+}
+.article_nav>div{
+    font-weight: 600;
+    padding: 0 0.14rem;
+    display: flex;
+    font-size: 0.3rem;
+}
+.article_nav>div>button{
+    height: 100%;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.3rem;
+    background-color: #89b0e3;
+    border: 1px solid #295b9c;
+    color: white;
+    border-radius: 3px;
+}
+.article_nav>div>a{
+    display: block;
+    background-color: #EBEBEB;
+    border: 1px solid #A1A1A1;
+    padding: 4px 10px;
+    border-left: none;
+}
+.article_nav button i{
+    margin-right: 3px;
+}
+#popup_btn {
+    position: relative; /* 부모 요소에 대해 상대적인 위치 설정 */
+}
+
+#popup_box {
+    width: 210px;
+    position: absolute;
+    background-color: white;
+    top: 116% ; /* 부모 요소에 대해 상대적인 위치 사용 */
+    right: 0;
+    display: none;
+    border: 1px solid #DDDDDD;
+    color: #4F4F4F;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    text-align: left;
+    z-index: 3;
+}
+
+#popup_box>div{
+    border-bottom: 1px solid #DDDDDD;
+    cursor: pointer;
+}
+
+#popup_box>div>div{
+    padding: 10px 4px;
+
+}
+#popup_box>div>div:hover{
+    background-color: #DDDDDD;
+}
+
+#out_btn{
+    position: relative;
+}
+#out_btn_popup{
+    position: absolute;
+    width: 12vw;
+    border: 1px solid rgb(190, 190, 190);
+    top: 113%;
+    left: 0px;
+    text-align: left;
+    background-color: white;
+}
+#out_btn_popup>div{
+    padding: 3%;
+    font-size: 0.3rem;
+    font-weight: 400;
+    color: #858585;
+}
+
+#out_btn_popup>div:hover{
+    background-color: #e9f4fc;
+}
+#storage_managed_outer{
+    font-size: 0.3rem;
+    padding-left: 0.35rem;
+}
+/*content_outer*/
+.content_outer,
+.content_outerd,
+.sto_content_outer,
+#disk_outer,#storage_domain_outer,
+#content_outer,
+#network_outer,
+#disk_outer,
+#snapshot_outer,
+#application_outer,
+#pregroup_outer,
+#pregroup_lable_outer,
+#guest_info_outer,
+#power_outer,
+#event_outer,
+#storage_volume_outer,
+#storage_storage_outer,
+#storage_cluster_outer,
+#storage_right_outer,
+#storage_logic_outer,
+#detail_datacenter_outer,
+#detail_machine_outer,
+#detail_template_outer,
+#detail_disk_outer,
+#detail_snapshot_outer,
+#detail_rent_outer,
+#detail_profile_outer,
+#detail_event_outer,
+#detail_right_outer,
+#host_machine_outer,
+#host_template_outer,
+#host_device_outer,
+#host_hook_outer,
+#host_right_outer,
+#host_profile_outer,
+#host_erita_outer,
+#host_event_outer,
+#detail_vnic_outer,
+#detail_cluster_outer,
+#detail_host_outer,
+#detail_virtual_outer,
+#detail_permission_outer
+
+{
+    width: 100%;
+    display: flex;
+    height: 88%;
+}
+
+/*스토리지 section*/
+
+
+.content_detail_section{
+    width: 100%;
+    background: white;
+    position: relative;
+}
+#setting_user_section,
+.host_detail_section
+{
+    display: none;
+    width: 96%;
+    background: white;
+    position: relative;
+}
+.section_content_outer{
+    padding: 0.5rem 0.3rem;
+    width: 89%;
+}
+.section_option{
+    font-size: 0.34rem;                      
+    display: flex;
+    height: 2.9vh;
+    margin-bottom: 0.2rem;
+}
+.section_option>div{
+    margin-right: 0.4rem;
+}
+.section_option label{
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.section_option select {
+    height: 100%;
+    cursor: pointer;
+    font-size: 0.3rem;
+}
+.search_box{
+    width: 20%;
+    display: flex;
+}
+.search_box input{
+    height: 3.1vh;
+    width: 92%;
+    outline: none;   
+}
+.search_box>button{
+    height: 3.1vh;
+    width: 10%;
+    cursor: pointer;
+    font-size: 0.3rem;
+}
+.section_table_outer{
+    font-size: 0.3rem;
+
+}
+
+.section_table_outer table{
+    width: 100%;
+    border-collapse: collapse;
+}
+.section_table_outer table tbody tr{
+    cursor: pointer; 
+}
+.section_table_outer table tbody tr:hover{
+    background-color: #ebececd8;
+}
+.section_table_outer th,.section_table_outer td{
+    border: 1px solid rgb(204, 204, 204);
+    
+}
+.section_table_outer th{
+    padding: 0.08rem;
+    text-align: center;
+    background-color: #d1e2eb;
+}
+.section_table_outer td{
+    padding: 0.02rem 0.1rem ;
+}
+.section_table_outer td:first-child{
+    color:#1ba4e4;
+}
+.section_table_outer td:nth-child(2){
+    width: 10%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.section_table_outer td:nth-child(3),.section_table_outer td:nth-child(4){
+    text-align: center;
+}
+.section_table_outer>button{
+    padding: 0.07rem 0.1rem;
+    margin-bottom: 0.1rem;
+    cursor: pointer;
+}
+/*스토리지 도메인버튼*/
+.storage_domain_content,
+.storage_volume_content,
+.storage_storage_content{
+    font-size: 0.3rem;
+    width: 100%;
+
+}
+  /* 활성화된 탭 스타일 */
+  #disk_new_nav .active {
+    color: rgb(35, 132, 243); 
+    font-weight: 600;
+    border-bottom: 2px solid rgb(35, 132, 243);
+  }
+.disk_new_img,#managed_block_outer,#storage_lun_first,#directlun_outer>div:first-child{
+    display: flex;
+    padding: 0 0.35rem;
+    font-size: 0.33rem;
+}
+#storage_managed_outer{
+    font-size: 0.3rem;
+    padding-left: 0.35rem;
+}
+.disk_new_img_left,#disk_managed_block_left{
+    width: 60%;
+}
+.disk_new_img_left>div, #disk_managed_block_left >div{
+    display: flex;
+    justify-content: space-between;
+}
+.img_input_box,.img_select_box{
+    padding-bottom: 0.5rem;
+}
+
+.img_input_box span,.img_select_box label{
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.img_input_box input, .img_select_box select{
+    width: 55%;
+    height: 3.5vh;
+    border: 1px solid #8b8989;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem; 
+    outline: none;
+}
+input[disabled] {
+    background-color: #f0f0f0; /* 회색 배경색 */
+    color: #a0a0a0; /* 회색 글자색 */
+    border: 1px solid #ccc; /* 회색 테두리 */
+    cursor:no-drop;
+}
+#disk_managed_block_left>span{
+    color: red;
+}
+.disk_new_img_right,#disk_managed_block_right {
+    display: flex;
+    flex-direction: column;
+    padding-left: 2%;
+}
+.disk_new_img_right div,#disk_managed_block_right div {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 0.13rem;
+}
+.disk_new_img_right label , #disk_managed_block_right label{
+    margin-left: 0.2rem;
+}
+
+#disk_managed_block_right label{
+    color: gray;
+}
+.target_search{
+    padding: 0 0.35rem;
+    font-size: 0.33rem;
+}
+.target_buttons{
+    display: flex;
+}
+.target_buttons>div{
+    padding: 0.07rem;
+    cursor: pointer;
+    border: 1px solid black;
+    border-radius: 3px;
+    margin-left: 0.1rem;
+}
+.target_info{
+    display: flex;
+    padding: 0.3rem 0;
+}
+.target_info>div{
+    width: 50%;
+    padding: 0 0.3rem;
+}
+.target_info>div:first-child>div{
+    display: flex;
+    justify-content: space-between;
+}
+.target_info>div:first-child input[type="text"]{
+    width: 70%;
+    height: 3vh;
+    border: 1px solid #8b8989;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem; 
+    outline: none;
+}
+.target_info>div:first-child{
+    border-right: 1px solid black;
+}
+.target_input_text{
+    display: flex;
+    justify-content: space-between;
+}
+.target_info>div:nth-child(2) input[type="text"]{
+    width: 30%;
+    border-radius: 3px;
+}
+.target_table table{
+    border-collapse: collapse;
+    width: 100%
+}
+.target_table th,.target_table td{
+    border: 1px solid black;
+}
+.disk_search_btn{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.1rem;
+}
+.disk_search_btn>div{
+    border: 1px solid black;
+    padding: 0.07rem;
+    text-align: center;
+    border-radius: 3px;
+    cursor: pointer;
+}
+/*테이블설정*/
+.storage_domain_content table
+{
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 0.2rem;
+}
+.storage_domain_content table th,
+.storage_domain_content table td,
+.storage_volume_content th,
+.storage_volume_content td
+{
+    border: 1px solid rgb(204, 204, 204);
+   
+}
+.storage_domain_content table th,
+.empty_table table th{
+    padding: 0.08rem;
+    background-color: #d1e2eb;
+}
+.storage_domain_content table td{
+    padding: 0.03rem 0.2rem 0.03rem 0.2rem;
+}
+.storage_domain_content table tbody tr{
+    cursor: pointer;
+}
+.storage_domain_content table tbody tr:hover{
+    background-color: #ebececd8;
+}
+.storage_domain_content table td:first-child,
+.storage_domain_content table td:nth-child(2){
+    text-align: center;
+}
+/*볼륨*/
+.empty_table{
+    border: 1px solid rgb(204, 204, 204);
+    width: 100%;
+    height: 20vh;
+    margin-top: 0.2rem;
+    position: relative;
+}
+.empty_table table{
+    border-collapse: collapse;
+    width: 100%;
+}
+.empty_content{
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+/*논리 네트워크*/
+/*권한*/
+.storage_right_btns{
+    display: flex;
+    font-size: 0.34rem;
+    margin-bottom: 0.3rem;
+    height: 3.3vh;
+}
+.storage_right_btns>span{
+    margin-right: 0.2rem;
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.storage_right_btns>div{
+    width: 8%;
+    display: flex;
+    justify-content: space-between;
+}
+.storage_right_btns button{
+    width: 50%;
+    cursor: pointer;
+    border: 1px solid #14417c;
+    border-radius: 3px;
+    color: rgb(10, 55, 107);
+    font-weight: 600;
+}
+
+/*스토리지 팝업창들*/
+    /*디스크(새로만들기)*/
+    .storage_disk_new_outer{
+        display: none;
+        position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        
+    
+    }
+    .storage_disk_new_popup{
+        border: 1px solid #dfdddd;
+        position: absolute;
+        box-sizing: border-box;
+        border-radius: 4px;
+        background: #fff;
+        top: 50%;
+        height: 80%;
+        width: 58%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+    }
+    #disk_new_nav,#join_new_nav{
+        padding: 0.35rem;
+        width: 50%;
+        font-size: 0.3rem;
+        display: flex;
+    }
+    #disk_new_nav>div, #join_new_nav>div{
+        padding: 0.09rem;
+        margin-right: 2%;
+        cursor: pointer;
+    }
+    .img_input_box,.img_select_box{
+        padding-bottom: 0.5rem;
+    }
+    
+    .img_input_box span,.img_select_box label{
+        display: flex; /* Flexbox 설정 추가 */
+        justify-content: center; /* 수평 가운데 정렬 */
+        align-items: center; /* 수직 가운데 정렬 */
+    }
+    .img_input_box input, .img_select_box select{
+        width: 55%;
+        height: 3.5vh;
+        border: 1px solid #8b8989;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 0.29rem; 
+        outline: none;
+    }
+    input[disabled] {
+        background-color: #f0f0f0; /* 회색 배경색 */
+        color: #a0a0a0; /* 회색 글자색 */
+        border: 1px solid #ccc; /* 회색 테두리 */
+        cursor:no-drop;
+    }
+        /*디스크(업로드)*/
+    .storage_disk_upload_popup{
+        border: 1px solid #dfdddd;
+        position: absolute;
+        box-sizing: border-box;
+        border-radius: 4px;
+        background: #fff;
+        top: 50%;
+        height: 78.4vh;
+        width: 58%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+    }
+    .storage_upload_first{
+        padding: 0.4rem;
+        display: flex;
+        font-size: 0.34rem;
+        margin-bottom:1rem;
+    }
+    .storage_upload_first>button{
+        font-weight: 600;
+        margin-right: 0.4rem;
+        padding: 0.1rem;
+       
+        cursor: pointer;
+    }
+    .storage_upload_first>div{
+        display: flex; /* Flexbox 설정 추가 */
+        justify-content: center; /* 수평 가운데 정렬 */
+        align-items: center; /* 수직 가운데 정렬 */
+    }
+    .disk_option{
+        background-color: #e6e6e6;
+        font-size: 0.34rem;
+        font-weight: 600;
+        padding: 0.35rem 0.4rem;
+    }
+    .disk_new_img_right button{
+        padding: 0.1rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    
+        /*도메인(새로운 도메인)*/
+    .storage_domain_new_outer{
+        display: none;
+        position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    .storage_domain_new_popup{
+        border: 1px solid #dfdddd;
+        position: absolute;
+        box-sizing: border-box;
+        border-radius: 4px;
+        background: #fff;
+        top: 50%;
+        height: 91%;
+        width: 58%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+    }
+    .storage_domain_new_first{
+        display: flex;
+        padding: 0.4rem;
+        font-size: 0.32rem;
+        justify-content: space-between;
+        border-bottom: 1px solid #dfdddd;
+    }
+    .storage_domain_new_first>div{
+        width: 48%;
+    
+    }
+    .domain_new_select{
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.3rem;
+    }
+    .domain_new_select select, 
+    .domain_new_select input,
+    .storage_domain_new_second input
+    {
+        width: 56%;
+        height: 3.3vh;
+        padding: 0 3px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 0.29rem;
+        outline: none;
+        border: 1px solid  rgb(206, 206, 206);
+    }
+    .storage_domain_new_second{
+        padding: 0.4rem;
+        font-size: 0.32rem;
+        overflow-y: auto;
+        height: 54vh;
+        overflow-x: hidden;
+    }
+    /* 번짐 효과를 위한 CSS */
+    input[type="text"]:focus {
+        box-shadow: 0 0 8px rgba(22, 90, 190, 0.8); /* 파란색 번짐 효과 */
+        outline: none; /* 기본 아웃라인 제거 */
+      }
+    input[type="checkbox"]{
+        cursor: pointer;
+    }
+    .storage_domain_new_second i{
+        margin-right: 0.08rem;
+    }
+    
+    .storage_domain_new_second>div:first-child{
+        display: flex;
+        justify-content: space-between;
+    }
+    .storage_domain_new_second>div{
+        margin-bottom: 0.2rem;
+    }
+    #domain_hidden_box_btn,#domain_hidden_box_btn2{
+        cursor: pointer;   
+    }
+        /*히든박스*/
+    #domain_hidden_box{
+        font-size: 0.3rem;
+        margin-top: 0.2rem;
+    }
+    #domain_hidden_box>span{
+        color: red;
+    }
+    .hidden_checkbox{
+        display: flex;
+        
+    }
+    .hidden_checkbox input{
+        text-align: left;
+        width: 1.5%;
+        margin-right: 0.1rem;
+    }
+    .hidden_checkbox label{
+    display: flex; /* Flexbox 설정 추가 */
+        justify-content: center; /* 수평 가운데 정렬 */
+        align-items: center; /* 수직 가운데 정렬 */
+    }
+        /*도메인(도메인 가져오기)*/
+    .storage_domain_get_outer{
+        display: none;
+        position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    .storage_domain_get_popup{
+        border: 1px solid #dfdddd;
+        position: absolute;
+        box-sizing: border-box;
+        border-radius: 4px;
+        background: #fff;
+        top: 50%;
+        height: 91%;
+        width: 58%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+    }
+        /*도메인(도메인 관리)*/
+    .storage_domain_administer_outer{
+        display: none;
+        position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    .storage_domain_administer_popup{
+        border: 1px solid #dfdddd;
+        position: absolute;
+        box-sizing: border-box;
+        border-radius: 4px;
+        background: #fff;
+        top: 50%;
+        height: 91%;
+        width: 58%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+    }
+        /*볼륨(새로 만들기*/
+    
+          
+          .Overlay {
+            /* 오버레이 스타일 */
+            background-color: rgba(116, 115, 115, 0.555); /* 회색 배경 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+    .storage_volume_new_popup{
+        border: 1px solid #dfdddd;
+        position: absolute;
+        box-sizing: border-box;
+        border-radius: 4px;
+        background: #fff;
+        top: 50%;
+        height: 79%;
+        width: 51%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+    }
+    .volume_first_content{
+        padding: 0.4rem;
+        font-size: 0.33rem;
+        border-bottom: 1px solid #dfdddd ;
+    }
+    .volume_second_content,.volume_third_content{
+        padding: 0.4rem;
+        font-size: 0.33rem;
+    }
+    .volume_second_content>div{
+        margin-bottom: 0.3rem;
+    }
+    .volume_second_content button{
+        padding: 0.13rem;
+        cursor: pointer;
+    }
+    .volume_checkboxs{
+        display: flex;
+    
+        width: 56%;
+    }
+    .volume_checkbox{
+        display: flex;
+    }
+    .volume_checkbox>label{
+        display: flex; /* Flexbox 설정 추가 */
+        justify-content: center; /* 수평 가운데 정렬 */
+        align-items: center; /* 수직 가운데 정렬 */
+        margin-left: 0.2rem;
+    }
+    .volume_third_content>h2{
+        font-size: 0.4rem;
+        margin-bottom: 0.2rem;
+    }
+    .volume_third_content>div{
+        margin-bottom: 0.15rem;
+    }
+    .disabled_button{
+        color: #d82626;
+        background-color: #eeeeee;
+        cursor: no-drop;
+        
+    }
+        /*볼륨(스냅샷)*/
+.storage_volume_snap_outer{
+    display: none;
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.storage_volume_snap_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 65%;
+    width: 51%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+.volume_snap_first_content{
+    font-size: 0.33rem;
+    padding: 0.4rem;
+}
+.volume_snap_first_content>h2{
+    font-size: 0.4rem;
+}
+.volume_snap_table{
+    border: 1px solid rgb(185, 185, 185);
+    height: 25vh;
+}
+.volume_snap_table table{
+    border-collapse: collapse;
+    width: 100%;
+}
+.volume_snap_table thead>tr{
+    background-color:#dadada;
+}
+.volume_snap_table th,.volume_snap_table td{
+    padding: 0.05rem;
+    text-align: left;
+}

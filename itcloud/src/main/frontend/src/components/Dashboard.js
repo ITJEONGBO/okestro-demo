@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import ReactApexChart from 'react-apexcharts';
 import axios from 'axios';
-import '../App.css';
 import './Dashboard.css';
 
 // cpu, memory api 불러오는 값

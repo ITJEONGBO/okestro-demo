@@ -1,0 +1,229 @@
+/*content_outer*/
+.content_outer,
+.content_outerd,
+.sto_content_outer,
+#disk_outer,#storage_domain_outer,
+#content_outer,
+#network_outer,
+#disk_outer,
+#snapshot_outer,
+#application_outer,
+#pregroup_outer,
+#pregroup_lable_outer,
+#guest_info_outer,
+#power_outer,
+#event_outer,
+#storage_volume_outer,
+#storage_storage_outer,
+#storage_cluster_outer,
+#storage_right_outer,
+#storage_logic_outer,
+#detail_datacenter_outer,
+#detail_machine_outer,
+#detail_template_outer,
+#detail_disk_outer,
+#detail_snapshot_outer,
+#detail_rent_outer,
+#detail_profile_outer,
+#detail_event_outer,
+#detail_right_outer,
+#host_machine_outer,
+#host_template_outer,
+#host_device_outer,
+#host_hook_outer,
+#host_right_outer,
+#host_profile_outer,
+#host_erita_outer,
+#host_event_outer,
+#detail_vnic_outer,
+#detail_cluster_outer,
+#detail_host_outer,
+#detail_virtual_outer,
+#detail_permission_outer
+
+{
+    width: 100%;
+    display: flex;
+    height: 88%;
+}
+.pregroup_content,
+#application_content,
+#snapshot_content_outer,
+#network_content_outer{
+    width: 100%;
+}
+#detail_machine_outer,#detail_template_outer{
+    padding: 1.4rem 0;
+}
+.content_header {
+    border-right: 1px solid #dddddd;
+    margin-right: 1%;
+    width: 12%;
+}
+
+.content_header_left {
+    font-size: 0.65rem;
+    border-radius: 3px;
+    margin-top: 0.2rem;
+}
+
+.content_header_left div {
+    position: relative;
+    font-size: 0.31rem;
+    cursor: pointer;
+    color: black;
+    padding: 0.3rem 0.1rem 0.3rem 0.2rem;
+}
+
+.content_header_left div.active {
+    color: #6999D9;
+    font-weight: 600;
+    background-color: #e6eefa;
+}
+
+.content_header_left div.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 1px;
+    width: 100%;
+    height: 2px;
+    background-color: #6999D9;
+}
+
+.content_header_right {  
+    display: flex;
+    margin-bottom: 0.3rem;
+    align-items: center;
+    justify-content: right;
+}
+
+.content_header_right button {
+    margin-right: 0.2rem;
+    font-size: 0.4rem;
+    padding: 0.1rem 0.1rem;
+    cursor: pointer;
+    font-size: 0.3rem;
+    font-weight: 600;
+    border-radius: 3px;
+    border: 1px solid #14417c;
+    border-radius: 3px;
+    color: rgb(10, 55, 107);
+    background: white;
+}
+.content_header_right  i{
+    font-size: 0.3rem;
+    font-weight: 800;
+}
+/*content_info*/
+#network_content_outer,.pregroup_content{
+    padding: 0.5rem 0.3rem 0 0;
+}
+.pregroup_content i{
+    margin-right: 0.1rem;
+}
+.tables{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1rem 0.3rem;
+}
+.table_container_left,.table_container_center,.table_container_right{
+   /* margin: 20px;*/
+   width: 31%;
+}
+.table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.table th, .table td {
+    padding: 6px;
+    vertical-align: top;
+    border: none; 
+    font-size: 0.32rem;
+}
+
+.table th {
+    text-align: left;
+    font-weight: bold;
+}
+.empty{
+    color: white;
+}
+.table td {
+    text-align: left;
+    color: #757575;
+}
+.pregroup_content,
+#application_content,
+#snapshot_content_outer,
+#network_content_outer{
+    width: 100%;
+}
+#application_content table,.pregroup_content table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#application_content th, #application_content td,
+.pregroup_content th, .pregroup_content td
+ {
+    border: 1px solid #ddd;
+    font-size: 0.3rem;
+    padding: 0.03rem 0.2rem 0.03rem 0.2rem;
+    text-align: left;
+}
+#application_content td,.pregroup_content td{
+    cursor: pointer;
+}
+#application_content td:hover,.pregroup_content tbody tr:hover{
+    background-color: #ebececd8;
+}
+#application_content thead th,.pregroup_content thead th{
+    background-color: #d1e2eb;
+    font-weight: bold;
+}
+.application_content_header>div,.application_content_header>button{
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.application_content_header>div{
+    padding: 0 0.3%;
+}
+.application_content_header>button{
+    padding: 0.35%;
+    cursor: pointer;
+    border: 1px solid #14417c;
+    border-radius: 3px;
+    color: rgb(10, 55, 107);
+    font-weight: 600;
+}
+
+/*업로드 박스*/
+.storage_volume_option_boxbtn,.upload_option_boxbtn{
+    position: relative;
+}
+
+.upload_option_box{
+    position: absolute;
+    background-color: white;
+    border: 1px solid rgb(189, 189, 189);
+    font-size: 0.32rem;
+    z-index: 1;
+    top: 16%;
+    right: 0%;
+    border-radius: 3px;
+    font-weight: 400;
+    
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    text-align: left;
+    width: 9%;
+}
+.storage_volume_option_box>div,.upload_option_box>div{
+    padding: 2% 3%;
+    cursor: pointer;
+}
+.upload_option_box>div:hover{
+    background-color: #e8f2fc;
+}
