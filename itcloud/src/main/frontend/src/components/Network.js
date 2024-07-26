@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import NetworkDetail from '../detail/NetworkDetail';
 import './Network.css';
+import Table from './table/NetworkTable';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -109,6 +110,16 @@ function Network() {
     const handleTabClick = (tab) => {
         setSelectedTab(tab);
     };
+    // 테이블 데이터
+    const data = [
+        { name: 'ovirtmgmt', description: 'Management Network' },
+        { name: 'example1', description: 'Example Description 1' },
+        { name: 'example2', description: 'Example Description 2' },
+        // 필요한 만큼 데이터 추가
+      ];
+      
+
+
     // 새로만들기 버튼
     return (
   
@@ -186,6 +197,7 @@ function Network() {
                                     <td onClick={handleNetworkNameClick}>ovirtmgmt</td>
                                     <td>Management Network</td>
                                 </tr>
+                                <Table data={data} onRowClick={handleNetworkNameClick} />
                             </tbody>
                         </table>
                     </div>
@@ -223,6 +235,7 @@ function Network() {
                             <button><i className="fa fa-ellipsis-v"></i></button>
                         </div>
                     </div>
+                    
                     <table>
                         <thead>
                             <tr>
@@ -231,12 +244,11 @@ function Network() {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>ovirtmgmt</td>
-                                <td>Management Network</td>
-                            </tr>
+                        <Table data={data} />
+                            
                         </tbody>
                     </table>
+
                 </div>
             </div>
            
@@ -1277,5 +1289,14 @@ function Network() {
         </div>
     );
 };
+
+// function Table(){
+//     return(
+//     <tr>
+//         <td>ovirtmgmt</td>
+//         <td>Management Network</td>
+//     </tr>
+//     )
+// }
 
 export default Network;
