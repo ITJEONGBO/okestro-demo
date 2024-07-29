@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import NetworkDetail from '../detail/NetworkDetail';
 import './Network.css';
-import Table from './table/NetworkTable';
+import Table from './table/Table';
 
 // React Modal 설정
 Modal.setAppElement('#root');
 
-function Network() {
+const Network = () => {
     const [activeSection, setActiveSection] = useState('common_outer');
     const [selectedTab, setSelectedTab] = useState('network_new_common_btn');
     const [activePopup, setActivePopup] = useState(null);
@@ -17,7 +17,6 @@ function Network() {
     const handleNetworkNameClick = () => {
         setShowNetworkSection(false);
     };
-
 
     // 폰트사이즈 조절
     useEffect(() => {
@@ -88,7 +87,6 @@ function Network() {
     // footer
     const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
     const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
-    
 
     const toggleFooterContent = () => {
         setFooterContentVisibility(!isFooterContentVisible);
@@ -110,148 +108,90 @@ function Network() {
     const handleTabClick = (tab) => {
         setSelectedTab(tab);
     };
+
     // 테이블 데이터
     const data = [
         { name: 'ovirtmgmt', description: 'Management Network' },
         { name: 'example1', description: 'Example Description 1' },
         { name: 'example2', description: 'Example Description 2' },
         // 필요한 만큼 데이터 추가
-      ];
-      
+    ];
 
+    const columns = [
+        { header: '이름', accessor: 'name', clickable: true },
+        { header: '설명', accessor: 'description', clickable: false },
+    ];
 
-    // 새로만들기 버튼
     return (
-  
         <div id="network_section">
-             {showNetworkSection ? ( //꼭 div하나로 감싸주기
-            <div>
-                <div className="section_header">
-                    <div className="section_header_left">
-                        <div>Default</div>
-                        <button><i className="fa fa-exchange"></i></button>
-                    </div>
-                    <div className="section_header_right">
-                        <div className="article_nav">
-                            <button id="network_first_edit_btn">편집</button>
-                            <button>삭제</button>
-                            <button id="popup_btn">
-                                <i className="fa fa-ellipsis-v"></i>
-                                <div id="popup_box">
-                                    <div>
-                                        <div className="get_btn">가져오기</div>
-                                        <div className="get_btn">가상 머신 복제</div>
-                                    </div>
-                                    <div>
-                                        <div>삭제</div>
-                                    </div>
-                                    <div>
-                                        <div>마이그레이션 취소</div>
-                                        <div>변환 취소</div>
-                                    </div>
-                                    <div>
-                                        <div id="template_btn">템플릿 생성</div>
-                                    </div>
-                                    <div style={{ borderBottom: 'none' }}>
-                                        <div id="domain2">도메인으로 내보내기</div>
-                                        <div id="domain">Export to Data Domai</div>
-                                        <div id="ova_btn">OVA로 내보내기</div>
-                                    </div>
-                                </div>
-                            </button>
+            {showNetworkSection ? ( // 꼭 div 하나로 감싸주기
+                <div>
+                    <div className="section_header">
+                        <div className="section_header_left">
+                            <div>Default</div>
+                            <button><i className="fa fa-exchange"></i></button>
                         </div>
-                    </div>
-                </div>
-
-                <div className="content_outer">
-                    <div className="content_header">
-                        <div className="content_header_left">
-                            <div className="active">논리 네트워크</div>
-                        </div>
-                    </div>
-
-                    <div className="storage_domain_content" style={{ padding: '0.5rem 0.3rem' }}>
-                        <div className="content_header_right">
-                            <button id="network_new_btn" onClick={() => openPopup('newNetwork')}>새로 만들기</button>
-                            <button id="network_bring_btn" onClick={() => openPopup('getNetwork')}>가져오기</button>
-                            <button>편집</button>
-                            <button>삭제</button>
-                        </div>
-                        <div>
-                            <div className="application_content_header">
-                                <button><i className="fa fa-chevron-left"></i></button>
-                                <div>1-2</div>
-                                <button><i className="fa fa-chevron-right"></i></button>
-                                <button><i className="fa fa-ellipsis-v"></i></button>
+                        <div className="section_header_right">
+                            <div className="article_nav">
+                                <button id="network_first_edit_btn">편집</button>
+                                <button>삭제</button>
+                                <button id="popup_btn">
+                                    <i className="fa fa-ellipsis-v"></i>
+                                    <div id="popup_box">
+                                        <div>
+                                            <div className="get_btn">가져오기</div>
+                                            <div className="get_btn">가상 머신 복제</div>
+                                        </div>
+                                        <div>
+                                            <div>삭제</div>
+                                        </div>
+                                        <div>
+                                            <div>마이그레이션 취소</div>
+                                            <div>변환 취소</div>
+                                        </div>
+                                        <div>
+                                            <div id="template_btn">템플릿 생성</div>
+                                        </div>
+                                        <div style={{ borderBottom: 'none' }}>
+                                            <div id="domain2">도메인으로 내보내기</div>
+                                            <div id="domain">Export to Data Domai</div>
+                                            <div id="ova_btn">OVA로 내보내기</div>
+                                        </div>
+                                    </div>
+                                </button>
                             </div>
                         </div>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>이름</th>
-                                    <th>설명</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td onClick={handleNetworkNameClick}>ovirtmgmt</td>
-                                    <td>Management Network</td>
-                                </tr>
-                                <Table data={data} onRowClick={handleNetworkNameClick} />
-                            </tbody>
-                        </table>
                     </div>
-                </div>
-            </div>            ) : (
-                <NetworkDetail />
-            )}
 
+                    <div className="content_outer">
+                        <div className="content_header">
+                            <div className="content_header_left">
+                                <div className="active">논리 네트워크</div>
+                            </div>
+                        </div>
 
-            
-            <div id="network_logic_outer" style={{ display: 'none' }}>
-                <div className="content_header">
-                    <div className="content_header_left">
-                        <div>디스크</div>
-                        <div>도메인</div>
-                        <div>볼륨</div>
-                        <div>스토리지</div>
-                        <div className="active">논리 네트워크</div>
-                        <div>클러스터</div>
-                        <div>권한</div>
-                        <div>이벤트</div>
-                    </div>
-                </div>
-                <div className="storage_domain_content">
-                    <div className="content_header_right">
-                        <button>새로만들기</button>
-                        <button>편집</button>
-                        <button>삭제</button>
-                    </div>
-                    <div>
-                        <div className="application_content_header">
-                            <button><i className="fa fa-chevron-left"></i></button>
-                            <div>1-2</div>
-                            <button><i className="fa fa-chevron-right"></i></button>
-                            <button><i className="fa fa-ellipsis-v"></i></button>
+                        <div className="storage_domain_content" style={{ padding: '0.5rem 0.3rem' }}>
+                            <div className="content_header_right">
+                                <button id="network_new_btn" onClick={() => openPopup('newNetwork')}>새로 만들기</button>
+                                <button id="network_bring_btn" onClick={() => openPopup('getNetwork')}>가져오기</button>
+                                <button>편집</button>
+                                <button>삭제</button>
+                            </div>
+                            <div>
+                                <div className="application_content_header">
+                                    <button><i className="fa fa-chevron-left"></i></button>
+                                    <div>1-2</div>
+                                    <button><i className="fa fa-chevron-right"></i></button>
+                                    <button><i className="fa fa-ellipsis-v"></i></button>
+                                </div>
+                            </div>
+                            <Table columns={columns} data={data} onRowClick={handleNetworkNameClick} />
                         </div>
                     </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>이름</th>
-                                <th>설명</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <Table data={data} />
-                            
-                        </tbody>
-                    </table>
-
                 </div>
-            </div>
-           
+            ) : (
+                <NetworkDetail />
+            )}
 
             <div className="footer_outer">
                 <div className="footer">
@@ -1001,24 +941,24 @@ function Network() {
                     </div>
 
                     <div className="network_new_nav">
-                        <div 
-                            id="network_new_common_btn" 
-                            className={selectedTab === 'network_new_common_btn' ? 'active-tab' : 'inactive-tab'} 
+                        <div
+                            id="network_new_common_btn"
+                            className={selectedTab === 'network_new_common_btn' ? 'active-tab' : 'inactive-tab'}
                             onClick={() => handleTabClick('network_new_common_btn')}
                         >
                             일반
                         </div>
-                        <div 
-                            id="network_new_cluster_btn" 
-                            className={selectedTab === 'network_new_cluster_btn' ? 'active-tab' : 'inactive-tab'} 
+                        <div
+                            id="network_new_cluster_btn"
+                            className={selectedTab === 'network_new_cluster_btn' ? 'active-tab' : 'inactive-tab'}
                             onClick={() => handleTabClick('network_new_cluster_btn')}
                         >
                             클러스터
                         </div>
-                        <div 
-                            id="network_new_vnic_btn" 
-                            className={selectedTab === 'network_new_vnic_btn' ? 'active-tab' : 'inactive-tab'} 
-                            onClick={() => handleTabClick('network_new_vnic_btn')} 
+                        <div
+                            id="network_new_vnic_btn"
+                            className={selectedTab === 'network_new_vnic_btn' ? 'active-tab' : 'inactive-tab'}
+                            onClick={() => handleTabClick('network_new_vnic_btn')}
                             style={{ borderRight: 'none' }}
                         >
                             vNIC 프로파일
@@ -1027,147 +967,147 @@ function Network() {
 
                     {/* 일반 */}
                     {selectedTab === 'network_new_common_btn' && (
-                    <form id="network_new_common_form">
-                        <div className="network_first_contents">
-                            <div className="network_form_group">
-                                <label htmlFor="cluster">데이터 센터</label>
-                                <select id="cluster">
-                                    <option value="default">Default</option>
-                                </select>
-                            </div>
-                            <div className="network_form_group">
-                                <div>
-                                    <label htmlFor="name">이름</label>
-                                    <i className="fa fa-info-circle" style={{ color: '#1ba4e4' }}></i>
+                        <form id="network_new_common_form">
+                            <div className="network_first_contents">
+                                <div className="network_form_group">
+                                    <label htmlFor="cluster">데이터 센터</label>
+                                    <select id="cluster">
+                                        <option value="default">Default</option>
+                                    </select>
                                 </div>
-                                <input type="text" id="name" />
+                                <div className="network_form_group">
+                                    <div>
+                                        <label htmlFor="name">이름</label>
+                                        <i className="fa fa-info-circle" style={{ color: '#1ba4e4' }}></i>
+                                    </div>
+                                    <input type="text" id="name" />
+                                </div>
+                                <div className="network_form_group">
+                                    <label htmlFor="description">설명</label>
+                                    <input type="text" id="description" />
+                                </div>
+                                <div className="network_form_group">
+                                    <label htmlFor="comment">코멘트</label>
+                                    <input type="text" id="comment" />
+                                </div>
                             </div>
-                            <div className="network_form_group">
-                                <label htmlFor="description">설명</label>
-                                <input type="text" id="description" />
-                            </div>
-                            <div className="network_form_group">
-                                <label htmlFor="comment">코멘트</label>
-                                <input type="text" id="comment" />
-                            </div>
-                        </div>
 
-                        <div className="network_second_contents">
-                            <span>네트워크 매개변수</span>
-                            <div className="network_form_group">
-                                <label htmlFor="network_label">네트워크 레이블</label>
-                                <input type="text" id="network_label" />
-                            </div>
-                            <div className="network_checkbox_type1">
-                                <div>
-                                    <input type="checkbox" id="valn_tagging" name="valn_tagging" />
-                                    <label htmlFor="valn_tagging">VALN 태깅 활성화</label>
+                            <div className="network_second_contents">
+                                <span>네트워크 매개변수</span>
+                                <div className="network_form_group">
+                                    <label htmlFor="network_label">네트워크 레이블</label>
+                                    <input type="text" id="network_label" />
                                 </div>
-                                <input type="text" id="valn_tagging_input" disabled />
-                            </div>
-                            <div className="network_checkbox_type2">
-                                <input type="checkbox" id="vm_network" name="vm_network" />
-                                <label htmlFor="vm_network">가상 머신 네트워크</label>
-                            </div>
-                            <div className="network_checkbox_type2">
-                                <input type="checkbox" id="photo_separation" name="photo_separation" />
-                                <label htmlFor="photo_separation">포토 분리</label>
-                            </div>
-                            <div className="network_radio_group">
-                                <div style={{ marginTop: '0.2rem' }}>MTU</div>
-                                <div>
-                                    <div className="radio_option">
-                                        <input type="radio" id="default_mtu" name="mtu" value="default" checked />
-                                        <label htmlFor="default_mtu">기본값 (1500)</label>
+                                <div className="network_checkbox_type1">
+                                    <div>
+                                        <input type="checkbox" id="valn_tagging" name="valn_tagging" />
+                                        <label htmlFor="valn_tagging">VALN 태깅 활성화</label>
                                     </div>
-                                    <div className="radio_option">
-                                        <input type="radio" id="user_defined_mtu" name="mtu" value="user_defined" />
-                                        <label htmlFor="user_defined_mtu">사용자 정의</label>
+                                    <input type="text" id="valn_tagging_input" disabled />
+                                </div>
+                                <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="vm_network" name="vm_network" />
+                                    <label htmlFor="vm_network">가상 머신 네트워크</label>
+                                </div>
+                                <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="photo_separation" name="photo_separation" />
+                                    <label htmlFor="photo_separation">포토 분리</label>
+                                </div>
+                                <div className="network_radio_group">
+                                    <div style={{ marginTop: '0.2rem' }}>MTU</div>
+                                    <div>
+                                        <div className="radio_option">
+                                            <input type="radio" id="default_mtu" name="mtu" value="default" checked />
+                                            <label htmlFor="default_mtu">기본값 (1500)</label>
+                                        </div>
+                                        <div className="radio_option">
+                                            <input type="radio" id="user_defined_mtu" name="mtu" value="user_defined" />
+                                            <label htmlFor="user_defined_mtu">사용자 정의</label>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="network_checkbox_type2">
-                                <input type="checkbox" id="dns_settings" name="dns_settings" />
-                                <label htmlFor="dns_settings">DNS 설정</label>
-                            </div>
-                            <span>DB서버</span>
-                            <div className="network_checkbox_type3">
-                                <input type="text" id="name" disabled />
-                                <div>
-                                    <button>+</button>
-                                    <button>-</button>
+                                <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="dns_settings" name="dns_settings" />
+                                    <label htmlFor="dns_settings">DNS 설정</label>
+                                </div>
+                                <span>DB서버</span>
+                                <div className="network_checkbox_type3">
+                                    <input type="text" id="name" disabled />
+                                    <div>
+                                        <button>+</button>
+                                        <button>-</button>
+                                    </div>
+                                </div>
+                                <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="external_vendor_creation" name="external_vendor_creation" />
+                                    <label htmlFor="external_vendor_creation">외부 업체에서 작성</label>
+                                </div>
+                                <span>외부</span>
+                                <div className="network_form_group" style={{ paddingTop: 0 }}>
+                                    <label htmlFor="external_provider">외부 공급자</label>
+                                    <select id="external_provider">
+                                        <option value="default">ovirt-provider-ovn</option>
+                                    </select>
+                                </div>
+                                <div className="network_form_group">
+                                    <label htmlFor="network_port_security">네트워크 포트 보안</label>
+                                    <select id="network_port_security">
+                                        <option value="default">활성화</option>
+                                    </select>
+                                </div>
+                                <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="connect_to_physical_network" name="connect_to_physical_network" />
+                                    <label htmlFor="connect_to_physical_network">물리적 네트워크에 연결</label>
                                 </div>
                             </div>
-                            <div className="network_checkbox_type2">
-                                <input type="checkbox" id="external_vendor_creation" name="external_vendor_creation" />
-                                <label htmlFor="external_vendor_creation">외부 업체에서 작성</label>
-                            </div>
-                            <span>외부</span>
-                            <div className="network_form_group" style={{ paddingTop: 0 }}>
-                                <label htmlFor="external_provider">외부 공급자</label>
-                                <select id="external_provider">
-                                    <option value="default">ovirt-provider-ovn</option>
-                                </select>
-                            </div>
-                            <div className="network_form_group">
-                                <label htmlFor="network_port_security">네트워크 포트 보안</label>
-                                <select id="network_port_security">
-                                    <option value="default">활성화</option>
-                                </select>
-                            </div>
-                            <div className="network_checkbox_type2">
-                                <input type="checkbox" id="connect_to_physical_network" name="connect_to_physical_network" />
-                                <label htmlFor="connect_to_physical_network">물리적 네트워크에 연결</label>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
                     )}
                     {/* 클러스터 */}
                     {selectedTab === 'network_new_cluster_btn' && (
-                    <form id="network_new_cluster_form">
-                        <span>클러스터에서 네트워크를 연결/분리</span>
-                        <div>
-                            <table className="network_new_cluster_table">
-                                <thead>
-                                    <tr>
-                                        <th>이름</th>
-                                        <th><input type="checkbox" id="connect_all" /><label htmlFor="connect_all"> 모두 연결</label></th>
-                                        <th><input type="checkbox" id="require_all" /><label htmlFor="require_all"> 모두 필요</label></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Default</td>
-                                        <td className="checkbox-group"><input type="checkbox" id="connect_default" /><label htmlFor="connect_default"> 연결</label></td>
-                                        <td className="checkbox-group"><input type="checkbox" id="require_default" /><label htmlFor="require_default"> 필수</label></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </form>
+                        <form id="network_new_cluster_form">
+                            <span>클러스터에서 네트워크를 연결/분리</span>
+                            <div>
+                                <table className="network_new_cluster_table">
+                                    <thead>
+                                        <tr>
+                                            <th>이름</th>
+                                            <th><input type="checkbox" id="connect_all" /><label htmlFor="connect_all"> 모두 연결</label></th>
+                                            <th><input type="checkbox" id="require_all" /><label htmlFor="require_all"> 모두 필요</label></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Default</td>
+                                            <td className="checkbox-group"><input type="checkbox" id="connect_default" /><label htmlFor="connect_default"> 연결</label></td>
+                                            <td className="checkbox-group"><input type="checkbox" id="require_default" /><label htmlFor="require_default"> 필수</label></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </form>
                     )}
 
                     {/* vNIC 프로파일 */}
                     {selectedTab === 'network_new_vnic_btn' && (
-                    <form id="network_new_vnic_form">
-                        <span>vNIC 프로파일</span>
-                        <div>
-                            <input type="text" id="vnic_profile" />
+                        <form id="network_new_vnic_form">
+                            <span>vNIC 프로파일</span>
                             <div>
-                                <input type="checkbox" id="public" disabled />
-                                <label htmlFor="public">공개</label>
-                                <i className="fa fa-info-circle" style={{ color: 'rgb(83, 163, 255)' }}></i>
+                                <input type="text" id="vnic_profile" />
+                                <div>
+                                    <input type="checkbox" id="public" disabled />
+                                    <label htmlFor="public">공개</label>
+                                    <i className="fa fa-info-circle" style={{ color: 'rgb(83, 163, 255)' }}></i>
+                                </div>
+                                <label htmlFor="qos">QoS</label>
+                                <select id="qos">
+                                    <option value="none">제한 없음</option>
+                                </select>
+                                <div className="network_new_vnic_buttons">
+                                    <button>+</button>
+                                    <button>-</button>
+                                </div>
                             </div>
-                            <label htmlFor="qos">QoS</label>
-                            <select id="qos">
-                                <option value="none">제한 없음</option>
-                            </select>
-                            <div className="network_new_vnic_buttons">
-                                <button>+</button>
-                                <button>-</button>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
                     )}
                     <div className="edit_footer">
                         <button style={{ display: 'none' }}></button>
@@ -1176,7 +1116,7 @@ function Network() {
                     </div>
                 </div>
             </Modal>
-       
+
             {/* 가져오기 팝업 */}
             <Modal
                 isOpen={activePopup === 'getNetwork'}
@@ -1202,80 +1142,36 @@ function Network() {
                     <div id="network_bring_table_outer">
                         <span>공급자 네트워크</span>
                         <div>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            <input type="checkbox" id="provider_network" defaultChecked />
-                                        </th>
-                                        <th>
-                                            <label htmlFor="provider_network">이름</label>
-                                        </th>
-                                        <th>
-                                            <label htmlFor="provider_network">공급자의 네트워크 ID</label>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <input type="checkbox" id="provider_network_1" defaultChecked />
-                                        </td>
-                                        <td>
-                                            <label htmlFor="provider_network_1">디스크 활성화</label>
-                                        </td>
-                                        <td>
-                                            <label htmlFor="provider_network_1">디스크 활성화</label>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <Table 
+                                columns={[
+                                    { header: '', accessor: 'checkbox' },
+                                    { header: '이름', accessor: 'name' },
+                                    { header: '공급자의 네트워크 ID', accessor: 'networkId' },
+                                ]}
+                                data={[
+                                    { checkbox: <input type="checkbox" id="provider_network_1" defaultChecked />, name: '디스크 활성화', networkId: '디스크 활성화' },
+                                    // 필요한 만큼 데이터 추가
+                                ]}
+                            />
                         </div>
                     </div>
 
                     <div id="network_bring_table_outer">
                         <span>가져올 네트워크</span>
                         <div>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            <input type="checkbox" id="import_network" defaultChecked />
-                                        </th>
-                                        <th>
-                                            <label htmlFor="import_network">이름</label>
-                                        </th>
-                                        <th>
-                                            <label htmlFor="import_network">공급자의 네트워크 ID</label>
-                                        </th>
-                                        <th>
-                                            <label htmlFor="import_network">데이터 센터</label>
-                                        </th>
-                                        <th>
-                                            <label htmlFor="import_network">모두허용</label>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <input type="checkbox" id="import_network_1" defaultChecked />
-                                        </td>
-                                        <td>
-                                            <label htmlFor="import_network_1">디스크 활성화</label>
-                                        </td>
-                                        <td>
-                                            <label htmlFor="import_network_1">디스크 활성화</label>
-                                        </td>
-                                        <td>
-                                            <label htmlFor="import_network_1">디스크 활성화</label>
-                                        </td>
-                                        <td>
-                                            <label htmlFor="import_network_1">디스크 활성화</label>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <Table 
+                                columns={[
+                                    { header: '', accessor: 'checkbox' },
+                                    { header: '이름', accessor: 'name' },
+                                    { header: '공급자의 네트워크 ID', accessor: 'networkId' },
+                                    { header: '데이터 센터', accessor: 'dataCenter' },
+                                    { header: '모두허용', accessor: 'allowAll' },
+                                ]}
+                                data={[
+                                    { checkbox: <input type="checkbox" id="import_network_1" defaultChecked />, name: '디스크 활성화', networkId: '디스크 활성화', dataCenter: '디스크 활성화', allowAll: '디스크 활성화' },
+                                    // 필요한 만큼 데이터 추가
+                                ]}
+                            />
                         </div>
                     </div>
 
@@ -1289,14 +1185,5 @@ function Network() {
         </div>
     );
 };
-
-// function Table(){
-//     return(
-//     <tr>
-//         <td>ovirtmgmt</td>
-//         <td>Management Network</td>
-//     </tr>
-//     )
-// }
 
 export default Network;

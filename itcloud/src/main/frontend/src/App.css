@@ -252,7 +252,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-style: italic;
+   
 }
 
 .box>h1{

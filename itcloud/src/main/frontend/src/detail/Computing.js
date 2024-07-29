@@ -796,7 +796,626 @@ const ApplicationSection = () => {
   );
 };
 
+// 선호도그룹
+const PregroupSection = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
+  // 테이블 컬럼 정의
+  const columns = [
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
+    { header: '우선 순위', accessor: 'priority', clickable: false },
+    { header: '가상 머신 축 극성', accessor: 'vmPolarity', clickable: false },
+    { header: '가상 머신 강제 적용', accessor: 'vmEnforce', clickable: false },
+    { header: '호스트 축 극성', accessor: 'hostPolarity', clickable: false },
+    { header: '호스트 강제 적용', accessor: 'hostEnforce', clickable: false },
+    { header: '가상 머신 멤버', accessor: 'vmMember', clickable: false },
+    { header: '가상 머신 레이블', accessor: 'vmLabel', clickable: false },
+    { header: '내용1', accessor: 'content1', clickable: false },
+    { header: '내용2', accessor: 'content2', clickable: false },
+    { header: '내용3', accessor: 'content3', clickable: false },
+  ];
+
+  // 테이블 데이터 정의
+  const data = [
+    {
+      status: <i className="fa fa-exclamation"></i>,
+      name: 'test02',
+      description: 'asd',
+      priority: '5',
+      vmPolarity: '',
+      vmEnforce: '소프트',
+      hostPolarity: '',
+      hostEnforce: '소프트',
+      vmMember: '멤버없음',
+      vmLabel: '레이블없음',
+      content1: '',
+      content2: '',
+      content3: '',
+    },
+    {
+      status: 'OK',
+      name: 'test02',
+      description: 'asd',
+      priority: '5',
+      vmPolarity: '',
+      vmEnforce: '소프트',
+      hostPolarity: '',
+      hostEnforce: '소프트',
+      vmMember: '멤버없음',
+      vmLabel: '레이블없음',
+      content1: '',
+      content2: '',
+      content3: '',
+    },
+  ];
+
+  const handleRowClick = () => {
+    console.log('Row clicked');
+  };
+
+  return (
+    <div id="pregroup_outer">
+      <div className="pregroup_content">
+        <div className="content_header_right">
+          <button id="pregroup_create_btn" onClick={openModal}>새로 만들기</button>
+          <button>편집</button>
+          <button>제거</button>
+        </div>
+        <div className="application_content_header">
+          <button><i className="fa fa-chevron-left"></i></button>
+          <div>1-2</div>
+          <button><i className="fa fa-chevron-right"></i></button>
+          <button><i className="fa fa-ellipsis-v"></i></button>
+        </div>
+        
+        <Table columns={columns} data={data} onRowClick={handleRowClick} />
+      </div>
+
+      {/* 선호도 그룹(새로 만들기) */}
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="새 선호도 그룹"
+        className="pregroup_create"
+        overlayClassName="pregroup_create_outer"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="network_popup_header">
+          <h1>새 선호도 그룹</h1>
+          <button onClick={closeModal}><i className="fa fa-times"></i></button>
+        </div>
+        <div id="pregroup_create_content">
+          <div className="snap_create_inputbox">
+            <span>이름</span>
+            <input type="text" />
+          </div>
+          <div className="snap_create_inputbox">
+            <span>설명</span>
+            <input type="text" />
+          </div>
+          <div className="snap_create_inputbox" style={{ paddingLeft: '0.34rem' }}>
+            <div>
+              <span>우선 순위</span>
+              <i className="fa fa-info-circle"></i>
+            </div>
+            <input type="text" />
+          </div>
+          <div className="snap_create_inputbox" style={{ paddingLeft: '0.34rem' }}>
+            <div>
+              <label htmlFor="disk_profile">가상 머신 선호도 규칙</label>
+              <i className="fa fa-info-circle"></i>
+            </div>
+            <div className="pregroup_create_select">
+              <div>
+                <select id="disk_profile">
+                  <option value="disabled">비활성화됨</option>
+                </select>
+              </div>
+              <div>
+                <input type="checkbox" id="enforce_disk_profile" />
+                <label htmlFor="enforce_disk_profile">강제 적용</label>
+              </div>
+            </div>
+          </div>
+          <div className="snap_create_inputbox" style={{ paddingLeft: '0.34rem' }}>
+            <div>
+              <label htmlFor="host_preference_rule">호스트 선호도 규칙</label>
+              <i className="fa fa-info-circle"></i>
+            </div>
+            <div className="pregroup_create_select">
+              <div>
+                <select id="host_preference_rule">
+                  <option value="disabled">비활성화됨</option>
+                </select>
+              </div>
+              <div>
+                <input type="checkbox" id="enforce_rule" />
+                <label htmlFor="enforce_rule">강제 적용</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="pregroup_create_buttons">
+          <div className="pregroup_buttons_content">
+            <label htmlFor="cluster">가상머신</label>
+            <div className="pregroup_buttons_select">
+              <div>
+                <select id="cluster">
+                  <option value="default">가상머신:on20-ap01</option>
+                </select>
+              </div>
+              <div>
+                <button>+</button>
+                <button>-</button>
+              </div>
+            </div>
+          </div>
+          <div className="pregroup_buttons_content">
+            <label htmlFor="cluster">호스트</label>
+            <div className="pregroup_buttons_select">
+              <div>
+                <select id="cluster">
+                  <option value="default">호스트 선택</option>
+                </select>
+              </div>
+              <div>
+                <button>+</button>
+                <button>-</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="edit_footer">
+          <button style={{ display: 'none' }}></button>
+          <button>OK</button>
+          <button onClick={closeModal}>취소</button>
+        </div>
+      </Modal>
+    </div>
+  );
+};
+
+// 선호도 레이블
+const PregroupLabelSection = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // 팝업 열기/닫기 핸들러
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  // 테이블 컬럼 정의
+  const columns = [
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '가상머신 멤버', accessor: 'vmMember', clickable: false },
+    { header: '호스트 멤버', accessor: 'hostMember', clickable: false },
+    { header: '', accessor: 'icon', clickable: true },
+  ];
+
+  // 테이블 데이터 정의
+  const data = [
+    { name: 'test', vmMember: 'HostedEngine', hostMember: 'host02.ititinfo.com', icon: <i className="fa fa-caret-up"></i> },
+    { name: 'test', vmMember: 'HostedEngine', hostMember: 'host02.ititinfo.com', icon: <i className="fa fa-caret-up"></i> },
+  ];
+
+  const handleRowClick = () => {
+    console.log('Row clicked');
+  };
+
+  return (
+    <div id="pregroup_lable_outer">
+      <div className="pregroup_content">
+        <div className="content_header_right">
+          <button id="lable_create_btn" onClick={openModal}>새로 만들기</button>
+          <button>편집</button>
+          <button>제거</button>
+        </div>
+        <div className="application_content_header">
+          <button><i className="fa fa-chevron-left"></i></button>
+          <div>1-2</div>
+          <button><i className="fa fa-chevron-right"></i></button>
+          <button><i className="fa fa-ellipsis-v"></i></button>
+        </div>
+        
+        <Table columns={columns} data={data} onRowClick={handleRowClick} />
+      </div>
+
+      {/* 선호도 레이블(새로 만들기) */}
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="새 선호도 레이블"
+        className="lable_create"
+        overlayClassName="lable_create_outer"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="network_popup_header">
+          <h1>새로운 선호도 레이블</h1>
+          <button onClick={closeModal}><i className="fa fa-times"></i></button>
+        </div>
+        <div>
+          <div className="snap_create_inputbox" style={{ padding: '0.5rem' }}>
+            <span>이름</span>
+            <input type="text" />
+          </div>
+        </div>
+        <div className="pregroup_create_buttons" style={{ paddingTop: 0 }}>
+          <div className="pregroup_buttons_content">
+            <label htmlFor="cluster">가상머신</label>
+            <div className="pregroup_buttons_select">
+              <div>
+                <select id="cluster">
+                  <option value="default">가상머신:on20-ap01</option>
+                </select>
+              </div>
+              <div>
+                <button>+</button>
+                <button>-</button>
+              </div>
+            </div>
+          </div>
+          <div className="pregroup_buttons_content">
+            <label htmlFor="cluster">호스트</label>
+            <div className="pregroup_buttons_select">
+              <div>
+                <select id="cluster">
+                  <option value="default">호스트 선택</option>
+                </select>
+              </div>
+              <div>
+                <button>+</button>
+                <button>-</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="edit_footer">
+          <button style={{ display: 'none' }}></button>
+          <button>OK</button>
+          <button onClick={closeModal}>취소</button>
+        </div>
+      </Modal>
+    </div>
+  );
+};
+
+// 게스트정보
+const GuestInfoSection = () => {
+  return (
+    <div id="guest_info_outer">
+      <div className="tables">
+        <div className="table_container_left">
+          <table className="table">
+            <tbody>
+              <tr>
+                <th>유형:</th>
+                <td>Linux</td>
+              </tr>
+              <tr>
+                <th>아키텍쳐:</th>
+                <td>x86_64</td>
+              </tr>
+              <tr>
+                <th>운영체제:</th>
+                <td>CentOS Linux 7</td>
+              </tr>
+              <tr>
+                <th>커널 버전</th>
+                <td>3.10.0-1062.el7_x86_64</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="table_container_center">
+          <table className="table">
+            <tbody>
+              <tr>
+                <th>시간대:</th>
+                <td>KST (UTC + 09:00)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="table_container_right">
+          <table className="table">
+            <tbody>
+              <tr>
+                <th>로그인된 사용자:</th>
+                <td></td>
+              </tr>
+              <tr>
+                <th>콘솔 사용자:</th>
+                <td></td>
+              </tr>
+              <tr>
+                <th>콘솔 클라이언트 IP:</th>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+//권한
+const PowerSection = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  // 테이블 컬럼 정의
+  const columns = [
+    { header: '', accessor: 'icon', clickable: false },
+    { header: '사용자', accessor: 'user', clickable: false },
+    { header: '인증 공급자', accessor: 'authProvider', clickable: false },
+    { header: '네임스페이스', accessor: 'namespace', clickable: false },
+    { header: '역할', accessor: 'role', clickable: false },
+    { header: '생성일', accessor: 'creationDate', clickable: false },
+    { header: 'Inherited From', accessor: 'inheritedFrom', clickable: false },
+  ];
+
+  // 테이블 데이터 정의
+  const data = [
+    {
+      icon: <i className="fa fa-user"></i>,
+      user: 'ovirt-administrator',
+      authProvider: '',
+      namespace: '*',
+      role: 'SuperUser',
+      creationDate: '2023. 12. 29. AM 11:40:58',
+      inheritedFrom: '(시스템)',
+    },
+    {
+      icon: <i className="fa fa-user"></i>,
+      user: 'admin (admin)',
+      authProvider: 'internal-authz',
+      namespace: '*',
+      role: 'SuperUser',
+      creationDate: '2023. 12. 29. AM 11:40:58',
+      inheritedFrom: '(시스템)',
+    },
+    {
+      icon: <i className="fa fa-user"></i>,
+      user: 'Everyone',
+      authProvider: '',
+      namespace: '*',
+      role: 'UserProfileEditor',
+      creationDate: '2017. 3. 16. PM 6:52:29',
+      inheritedFrom: '(시스템)',
+    },
+  ];
+
+  const handleRowClick = () => {
+    console.log('Row clicked');
+  };
+
+  return (
+    <div id="power_outer">
+      <div className="pregroup_content">
+        <div className="content_header_right">
+          <button onClick={openModal} id="power_add_btn">추가</button>
+          <button>제거</button>
+        </div>
+        <div className="application_content_header">
+          <span>Permission Filters:</span>
+          <button>All</button>
+          <button>Direct</button>
+        </div>
+
+        <Table columns={columns} data={data} onRowClick={handleRowClick} />
+      </div>
+
+      {/* 권한(추가)팝업 */}
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="사용자에게 권한 추가"
+        className="power_add"
+        overlayClassName="power_add_outer"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="network_popup_header">
+          <h1>사용자에게 권한 추가</h1>
+          <button onClick={closeModal}><i className="fa fa-times"></i></button>
+        </div>
+
+        <div className="power_radio_group">
+          <input type="radio" id="user" name="option" defaultChecked />
+          <label htmlFor="user">사용자</label>
+          
+          <input type="radio" id="group" name="option" />
+          <label htmlFor="group">그룹</label>
+          
+          <input type="radio" id="all" name="option" />
+          <label htmlFor="all">모두</label>
+          
+          <input type="radio" id="my_group" name="option" />
+          <label htmlFor="my_group">내 그룹</label>
+        </div>
+
+        <div className="power_contents_outer">
+          <div>
+            <label htmlFor="search">검색:</label>
+            <select id="search">
+              <option value="default">Default</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="namespace">네임스페이스:</label>
+            <select id="namespace">
+              <option value="default">Default</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="placeholder" style={{ color: 'white' }}>.</label>
+            <select id="placeholder">
+              <option value="default">Default</option>
+            </select>
+          </div>
+          <div>
+            <div style={{ color: 'white' }}>.</div>
+            <input type="submit" value="검색" />
+          </div>
+        </div>
+
+        <div className="power_table">
+          <Table 
+            columns={[
+              { header: '이름', accessor: 'firstName' },
+              { header: '성', accessor: 'lastName' },
+              { header: '사용자 이름', accessor: 'username' },
+            ]}
+            data={[
+              { firstName: 'dddddddddddddddddddddd', lastName: '2024. 1. 17. PM 3:14:39', username: "Snapshot 'on2o-ap01-Snapshot-2024_01_17' been completed." }
+            ]}
+            onRowClick={handleRowClick}
+          />
+        </div>
+
+        <div className="power_last_content">
+          <label htmlFor="assigned_role">할당된 역할:</label>
+          <select id="assigned_role" style={{ width: '65%' }}>
+            <option value="default">UserRole</option>
+          </select>
+        </div>
+
+        <div className="edit_footer">
+          <button style={{ display: 'none' }}></button>
+          <button>OK</button>
+          <button onClick={closeModal}>취소</button>
+        </div>
+      </Modal>
+    </div>
+  );
+};
+
+// 이벤트
+const EventSection = () => {
+  return (
+    <div id="event_outer">
+      <div className="pregroup_content">
+        <div className="content_header_right">
+          <button>새로 만들기</button>
+          <button>편집</button>
+          <button>제거</button>
+        </div>
+        <div className="application_content_header">
+          <button><i className="fa fa-chevron-left"></i></button>
+          <div>1-2</div>
+          <button><i className="fa fa-chevron-right"></i></button>
+          <button><i className="fa fa-ellipsis-v"></i></button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>시간</th>
+              <th>메세지</th>
+              <th>상관 관계 ID</th>
+              <th>소스</th>
+              <th>사용자 지정 이벤트 ID</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><i className="fa fa-check"></i></td>
+              <td>2024. 1. 17. PM 3:14:39</td>
+              <td>Snapshot 'on2o-ap01-Snapshot-2024_01_17' creation for 'VM on2o-ap01' has been completed.</td>
+              <td>4b4b417a-c...</td>
+              <td>oVirt</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td><i className="fa fa-check"></i></td>
+              <td>2024. 1. 17. PM 3:14:21</td>
+              <td>Snapshot 'on2o-ap01-Snapshot-2024_01_17' creation for 'VM on2o-ap01' was initiated by admin@intern...</td>
+              <td>4b4b417a-c...</td>
+              <td>oVirt</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td><i className="fa fa-times"></i></td>
+              <td>2024. 1. 5. AM 8:37:54</td>
+              <td>Failed to restart VM on2o-ap01 on host host01.ititinfo.com</td>
+              <td>3400e0dc</td>
+              <td>oVirt</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td><i className="fa fa-times"></i></td>
+              <td>2024. 1. 5. PM 8:37:10</td>
+              <td>VM on2o-ap01 is down with error. Exit message: VM terminated with error.</td>
+              <td>3400e0dc</td>
+              <td>oVirt</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td><i className="fa fa-check"></i></td>
+              <td>2024. 1. 5. PM 8:34:29</td>
+              <td>Trying to restart VM on2o-ap01 on host host01.ititinfo.com</td>
+              <td>3400e0dc</td>
+              <td>oVirt</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td><i className="fa fa-exclamation"></i></td>
+              <td>2024. 1. 5. PM 8:29:10</td>
+              <td>VM on2o-ap01 was set to the Unknown status.</td>
+              <td>3400e0dc</td>
+              <td>oVirt</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td><i className="fa fa-check"></i></td>
+              <td>2023. 12. 29. PM 12:55:08</td>
+              <td>VM on2o-ap01 started on Host host01.ititinfo.com</td>
+              <td>a99b6ae8-8d...</td>
+              <td>oVirt</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td><i className="fa fa-check"></i></td>
+              <td>2023. 12. 29. PM 12:54:48</td>
+              <td>VM on2o-ap01 was started by admin@internal-authz (Host: host01.ititinfo.com).</td>
+              <td>a99b6ae8-8d...</td>
+              <td>oVirt</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td><i className="fa fa-check"></i></td>
+              <td>2023. 12. 29. PM 12:54:18</td>
+              <td>VM on2o-ap01 configuration was updated by admin@internal-authz.</td>
+              <td>e3b8355e-06...</td>
+              <td>oVirt</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td><i className="fa fa-check"></i></td>
+              <td>2023. 12. 29. PM 12:54:15</td>
+              <td>VM on2o-ap01 configuration was updated by admin@internal-authz.</td>
+              <td>793fb95e-6df...</td>
+              <td>oVirt</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td><i className="fa fa-check"></i></td>
+              <td>2023. 12. 29. PM 12:53:53</td>
+              <td>VM on2o-ap01 has been successfully imported from the given configuration.</td>
+              <td>ede53bc8-c6...</td>
+              <td>oVirt</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
 
 const Computing = () => {
   const { section } = useParams();
@@ -857,19 +1476,6 @@ const Computing = () => {
   const togglePopup = () => {
     setIsPopupVisible(!isPopupVisible);
   };
-
-      // 테이블 데이터
-      const data = [
-        { name: 'ovirtmgmt', description: 'Management Network' },
-        { name: 'example1', description: 'Example Description 1' },
-        { name: 'example2', description: 'Example Description 2' },
-        // 필요한 만큼 데이터 추가
-    ];
-
-    const columns = [
-        { header: '이름', accessor: 'name', clickable: true },
-        { header: '설명', accessor: 'description', clickable: false },
-    ];
   return (
     <div id="section">
       <div className="section_header">
@@ -931,18 +1537,170 @@ const Computing = () => {
       <div className="content_outer">
         <div className="content_header">
           <div className="content_header_left">
-            <div className={activeSection === 'general' ? 'active' : ''} onClick={() => handleSectionClick('general')}>가상머신</div>
-            <div className={activeSection === 'network' ? 'active' : ''} onClick={() => handleSectionClick('network')}>템플릿</div>
-            <div className={activeSection === 'disk' ? 'active' : ''} onClick={() => handleSectionClick('disk')}>풀</div>
-            <div className={activeSection === 'snapshot' ? 'active' : ''} onClick={() => handleSectionClick('snapshot')}>데이터 센터</div>
-            <div className={activeSection === 'application' ? 'active' : ''} onClick={() => handleSectionClick('application')}>클러스터</div>
+            <div className={activeSection === 'general' ? 'active' : ''} onClick={() => handleSectionClick('general')}>일반</div>
+            <div className={activeSection === 'network' ? 'active' : ''} onClick={() => handleSectionClick('network')}>네트워크 인터페이스</div>
+            <div className={activeSection === 'disk' ? 'active' : ''} onClick={() => handleSectionClick('disk')}>디스크</div>
+            <div className={activeSection === 'snapshot' ? 'active' : ''} onClick={() => handleSectionClick('snapshot')}>스냅샷</div>
+            <div className={activeSection === 'application' ? 'active' : ''} onClick={() => handleSectionClick('application')}>애플리케이션</div>
+            <div className={activeSection === 'pregroup' ? 'active' : ''} onClick={() => handleSectionClick('pregroup')}>선호도 그룹</div>
+            <div className={activeSection === 'pregroup_label' ? 'active' : ''} onClick={() => handleSectionClick('pregroup_label')}>선호도 레이블</div>
+            <div className={activeSection === 'guest_info' ? 'active' : ''} onClick={() => handleSectionClick('guest_info')}>게스트 정보</div>
+            <div className={activeSection === 'power' ? 'active' : ''} onClick={() => handleSectionClick('power')}>권한</div>
+            <div className={activeSection === 'event' ? 'active' : ''} onClick={() => handleSectionClick('event')}>이벤트</div>
           </div>
         </div>
-
         {activeSection === 'general' && (
           <div className="tables">
-            <div className="storage_domain_content">
-              <Table columns={columns} data={data} />
+            <div className="table_container_left">
+              <table className="table">
+                <tbody>
+                  <tr>
+                    <th>이름:</th>
+                    <td>on20-ap01</td>
+                  </tr>
+                  <tr>
+                    <th>설명:</th>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <th>상태:</th>
+                    <td>실행 중</td>
+                  </tr>
+                  <tr>
+                    <th>업타임:</th>
+                    <td>11 days</td>
+                  </tr>
+                  <tr className="empty">
+                    <th>.</th>
+                    <td style={{ color: 'white' }}>.</td>
+                  </tr>
+                  <tr>
+                    <th>템플릿:</th>
+                    <td>Blank</td>
+                  </tr>
+                  <tr>
+                    <th>운영 시스템:</th>
+                    <td>Linux</td>
+                  </tr>
+                  <tr className="empty">
+                    <th>.</th>
+                    <td style={{ color: 'white' }}>.</td>
+                  </tr>
+                  <tr>
+                    <th>펌웨어/장치의 유형:</th>
+                    <td>BIOS의 Q35 칩셋 <i className="fa fa-ban" style={{ marginLeft: '13%', color: 'orange' }}></i></td>
+                  </tr>
+                  <tr>
+                    <th>우선 순위:</th>
+                    <td>높음</td>
+                  </tr>
+                  <tr>
+                    <th>최적화 옵션:</th>
+                    <td>서버</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="table_container_center">
+              <table className="table">
+                <tbody>
+                  <tr>
+                    <th>설정된 메모리:</th>
+                    <td>2048 MB</td>
+                  </tr>
+                  <tr>
+                    <th>할당할 실제 메모리:</th>
+                    <td>2048 MB</td>
+                  </tr>
+                  <tr className="empty">
+                    <th>.</th>
+                    <td style={{ color: 'white' }}>.</td>
+                  </tr>
+                  <tr>
+                    <th>게스트 OS의 여유/캐시+비퍼</th>
+                    <td>1003 / 0 MB</td>
+                  </tr>
+                  <tr>
+                    <th>된 메모리:</th>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <th>CPU 코어 수:</th>
+                    <td>2(2:1:1)</td>
+                  </tr>
+                  <tr>
+                    <th>게스트 CPU 수:</th>
+                    <td>2</td>
+                  </tr>
+                  <tr className="empty">
+                    <th>.</th>
+                    <td style={{ color: 'white' }}>.</td>
+                  </tr>
+                  <tr>
+                    <th>게스트 CPU</th>
+                    <td>Cascadelake-Server</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <th>고가용성:</th>
+                    <td>예</td>
+                  </tr>
+                  <tr>
+                    <th>모니터 수:</th>
+                    <td>1</td>
+                  </tr>
+                  <tr>
+                    <th>USB:</th>
+                    <td>비활성화됨</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="table_container_right">
+              <table className="table">
+                <tbody>
+                  <tr>
+                    <th>작성자:</th>
+                    <td>admin</td>
+                  </tr>
+                  <tr>
+                    <th>소스:</th>
+                    <td>oVirt</td>
+                  </tr>
+                  <tr>
+                    <th>실행 호스트:</th>
+                    <td>클러스터 내의 호스트</td>
+                  </tr>
+                  <tr>
+                    <th>사용자 정의 속성:</th>
+                    <td>설정되지 않음</td>
+                  </tr>
+                  <tr>
+                    <th>클러스터 호환 버전:</th>
+                    <td>4.7</td>
+                  </tr>
+                  <tr>
+                    <th>가상 머신의 ID:</th>
+                    <td>Linuxdddddddddddddddddddddd</td>
+                  </tr>
+                  <tr className="empty">
+                    <th>.</th>
+                    <td style={{ color: 'white' }}>.</td>
+                  </tr>
+                  <tr className="empty">
+                    <th>.</th>
+                    <td style={{ color: 'white' }}>.</td>
+                  </tr>
+                  <tr>
+                    <th>FQDN:</th>
+                    <td>on20-ap01</td>
+                  </tr>
+                  <tr>
+                    <th>하드웨어 클럭의 시간 오프셋:</th>
+                    <td>Asia/Seoul</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         )}
@@ -950,7 +1708,12 @@ const Computing = () => {
         {activeSection === 'disk' && <DiskSection />}
         {activeSection === 'snapshot' && <SnapshotSection />}
         {activeSection === 'application' && <ApplicationSection />}
-      
+        {activeSection === 'pregroup' && <PregroupSection />}
+        {activeSection === 'pregroup_label' && <PregroupLabelSection />}
+        {activeSection === 'guest_info' && <GuestInfoSection />}
+        {activeSection === 'power' && <PowerSection />}
+        {activeSection === 'event' && <EventSection />}
+        {/* Add similar sections for snapshot, application, etc. */}
       </div>
 
       <div className="footer_outer">
@@ -977,8 +1740,6 @@ const Computing = () => {
             </div>
           </div>
         </div>
-
-
         {isFooterContentVisible && (
           <div className="footer_content" style={{ display: 'block' }}>
             <div className="footer_nav">

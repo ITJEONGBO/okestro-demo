@@ -809,7 +809,7 @@ const Dashboard = () => {
       <div id="dash_board">
         <div id="dash_boxs">
           <div className="box">
-            <span>데이터센터</span>
+            <span>Datacenter</span>
             <h1>{data.datacenters}</h1>
             <div className="arrows">
               <i className="fa fa-arrow-up"> {data.datacentersUp}</i> &nbsp;
