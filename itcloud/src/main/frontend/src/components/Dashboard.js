@@ -817,11 +817,11 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="box">
-            <span>클러스터</span>
+            <span>Cluster</span>
             <h1>{data.clusters}</h1>
           </div>
           <div className="box">
-            <span>호스트</span>
+            <span>Host</span>
             <h1>{data.hosts}</h1>
             <div className="arrows">
               <i className="fa fa-arrow-up"> {data.hostsUp}</i> &nbsp;
@@ -829,7 +829,7 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="box">
-            <span>데이터스토리지도메인</span>
+            <span>Datastoragedomain</span>
             <h1>{data.storageDomains}</h1>
           </div>
           <div className="box">

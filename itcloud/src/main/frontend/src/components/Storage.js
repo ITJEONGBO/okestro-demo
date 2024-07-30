@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import StorageDetail from '../detail/StorageDetail';
 import StorageDisk from '../detail/StorageDisk';
-
+import HeaderButton from './button/HeaderButton';
 import './Storage.css';
 
 Modal.setAppElement('#root'); // React 16 이상에서는 필수
 
-const Storage = ({}) => {
+const Storage = () => {
   useEffect(() => {
     function adjustFontSize() {
       const width = window.innerWidth;
@@ -87,6 +87,23 @@ const Storage = ({}) => {
     setDomainHiddenBox2Visible(!isDomainHiddenBox2Visible);
   };
 
+  const sectionHeaderButtons = [
+    { label: '편집', onClick: () => {} },
+    { label: '삭제', onClick: () => {} },
+  ];
+
+  const sectionHeaderPopupItems = [
+    '가져오기',
+    '가상 머신 복제',
+    '삭제',
+    '마이그레이션 취소',
+    '변환 취소',
+    '템플릿 생성',
+    '도메인으로 내보내기',
+    'Export to Data Domai',
+    'OVA로 내보내기',
+  ];
+
   return (
     <div id="storage_section">
       {!showStorageSection ? (
@@ -105,46 +122,12 @@ const Storage = ({}) => {
         )
       ) : (
         <div>
-          <div className="section_header">
-            <div className="section_header_left">
-              <span>데이터 센터</span>
-              <div>Default</div>
-              <button>
-                <i className="fa fa-exchange"></i>
-              </button>
-            </div>
-            <div className="section_header_right">
-              <div className="article_nav">
-                <button>편집</button>
-                <button>삭제</button>
-                <button id="popup_btn" onClick={togglePopupBox}>
-                  <i className="fa fa-ellipsis-v"></i>
-                  <div id="popup_box" style={{ display: isPopupBoxVisible ? 'block' : 'none' }} onClick={handlePopupBoxItemClick}>
-                    <div>
-                      <div className="get_btn" onClick={handlePopupBoxItemClick}>가져오기</div>
-                      <div className="get_btn" onClick={handlePopupBoxItemClick}>가상 머신 복제</div>
-                    </div>
-                    <div>
-                      <div onClick={handlePopupBoxItemClick}>삭제</div>
-                    </div>
-                    <div>
-                      <div onClick={handlePopupBoxItemClick}>마이그레이션 취소</div>
-                      <div onClick={handlePopupBoxItemClick}>변환 취소</div>
-                    </div>
-                    <div>
-                      <div id="template_btn" onClick={handlePopupBoxItemClick}>템플릿 생성</div>
-                    </div>
-                    <div style={{ borderBottom: 'none' }}>
-                      <div id="domain2" onClick={handlePopupBoxItemClick}>도메인으로 내보내기</div>
-                      <div id="domain" onClick={handlePopupBoxItemClick}>Export to Data Domai</div>
-                      <div id="ova_btn" onClick={handlePopupBoxItemClick}>OVA로 내보내기</div>
-                    </div>
-                  </div>
-                </button>
-              </div>
-            </div>
-          </div>
-
+          <HeaderButton
+            title="데이터 센터"
+            subtitle="Default"
+            buttons={sectionHeaderButtons}
+            popupItems={sectionHeaderPopupItems}
+          />
           <div className="content_outer">
             <div className="content_header">
               <div className="content_header_left">
@@ -158,7 +141,6 @@ const Storage = ({}) => {
                 <div className={activeSection === 'event' ? 'active' : ''} onClick={() => handleSectionClick('event')}>이벤트</div>
               </div>
             </div>
-
             <div className="section_content_outer">
               {activeSection === 'disk' && (
                 <div id="storage_disk_outer">
@@ -180,7 +162,6 @@ const Storage = ({}) => {
                       </div>
                     </button>
                   </div>
-
                   <div className="section_table_outer">
                     <button>
                       <i className="fa fa-refresh"></i>
@@ -190,9 +171,7 @@ const Storage = ({}) => {
                         <tr>
                           <th>별칭</th>
                           <th>ID</th>
-                          <th>
-                            <i className="fa fa-glass"></i>
-                          </th>
+                          <th><i className="fa fa-glass"></i></th>
                           <th></th>
                           <th>연결 대상</th>
                           <th>스토리지 도메인</th>
@@ -207,9 +186,7 @@ const Storage = ({}) => {
                           <td onClick={handleDomainNameClick}>he_metadata</td>
                           <td style={{ width: '10%' }}>289137398279301798</td>
                           <td></td>
-                          <td>
-                            <i className="fa fa-glass"></i>
-                          </td>
+                          <td><i className="fa fa-glass"></i></td>
                           <td>on20-ap01</td>
                           <td>VirtIO-SCSI</td>
                           <td>/dev/sda</td>
@@ -221,9 +198,7 @@ const Storage = ({}) => {
                           <td>he_metadata</td>
                           <td>289137398279301798</td>
                           <td></td>
-                          <td>
-                            <i className="fa fa-glass"></i>
-                          </td>
+                          <td><i className="fa fa-glass"></i></td>
                           <td>on20-ap01</td>
                           <td>VirtIO-SCSI</td>
                           <td>/dev/sda</td>
@@ -235,9 +210,7 @@ const Storage = ({}) => {
                           <td>he_metadata</td>
                           <td style={{ width: '10%' }}>289137398279301798</td>
                           <td></td>
-                          <td>
-                            <i className="fa fa-glass"></i>
-                          </td>
+                          <td><i className="fa fa-glass"></i></td>
                           <td>on20-ap01</td>
                           <td>VirtIO-SCSI</td>
                           <td>/dev/sda</td>
@@ -250,7 +223,6 @@ const Storage = ({}) => {
                   </div>
                 </div>
               )}
-
               {activeSection === 'domain' && (
                 <div id="storage_domain_outer">
                   <div className="storage_domain_content">
@@ -272,9 +244,7 @@ const Storage = ({}) => {
                     </div>
                     <div className="search_box">
                       <input type="text" />
-                      <button>
-                        <i className="fa fa-search"></i>
-                      </button>
+                      <button><i className="fa fa-search"></i></button>
                     </div>
                     <table>
                       <thead>
@@ -295,12 +265,8 @@ const Storage = ({}) => {
                       </thead>
                       <tbody>
                         <tr>
-                          <td>
-                            <i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i>
-                          </td>
-                          <td>
-                            <i className="fa fa-glass"></i>
-                          </td>
+                          <td><i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i></td>
+                          <td><i className="fa fa-glass"></i></td>
                           <td onClick={handleDomainNameClick}>ddddddd</td>
                           <td></td>
                           <td></td>
@@ -313,13 +279,10 @@ const Storage = ({}) => {
                           <td></td>
                         </tr>
                         <tr>
-                          <td>
-                            <i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i>
-                          </td>
-                          <td>
-                            <i className="fa fa-glass"></i>
-                          </td>
+                          <td><i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i></td>
+                          <td><i className="fa fa-glass"></i></td>
                           <td onClick={handleDomainNameClick}>dddd</td>
+                          <td></td>
                           <td></td>
                           <td></td>
                           <td></td>
@@ -330,13 +293,10 @@ const Storage = ({}) => {
                           <td></td>
                         </tr>
                         <tr>
-                          <td>
-                            <i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i>
-                          </td>
-                          <td>
-                            <i className="fa fa-glass"></i>
-                          </td>
+                          <td><i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i></td>
+                          <td><i className="fa fa-glass"></i></td>
                           <td onClick={handleDomainNameClick}>ddddd</td>
+                          <td></td>
                           <td></td>
                           <td></td>
                           <td></td>
@@ -351,7 +311,6 @@ const Storage = ({}) => {
                   </div>
                 </div>
               )}
-
               {activeSection === 'volume' && (
                 <div id="storage_volume_outer">
                   <div className="storage_volume_content">
@@ -386,9 +345,7 @@ const Storage = ({}) => {
                     </div>
                     <div className="search_box">
                       <input type="text" />
-                      <button>
-                        <i className="fa fa-search"></i>
-                      </button>
+                      <button><i className="fa fa-search"></i></button>
                     </div>
                     <div className="empty_table">
                       <table>
@@ -405,15 +362,15 @@ const Storage = ({}) => {
                           </tr>
                         </thead>
                         <tbody>
-                          <span className="empty_content">표시할 항복이 없습니다</span>
-                          <tr></tr>
+                          <tr>
+                            <td colSpan="8" className="empty_content">표시할 항목이 없습니다</td>
+                          </tr>
                         </tbody>
                       </table>
                     </div>
                   </div>
                 </div>
               )}
-
               {activeSection === 'storage' && (
                 <div id="storage_storage_outer">
                   <div className="storage_domain_content">
@@ -498,7 +455,6 @@ const Storage = ({}) => {
                   </div>
                 </div>
               )}
-
               {activeSection === 'logic_network' && (
                 <div id="storage_logic_outer">
                   <div className="storage_domain_content">
@@ -532,7 +488,6 @@ const Storage = ({}) => {
                   </div>
                 </div>
               )}
-
               {activeSection === 'cluster' && (
                 <div id="storage_cluster_outer">
                   <div className="storage_domain_content">
@@ -563,7 +518,6 @@ const Storage = ({}) => {
                   </div>
                 </div>
               )}
-
               {activeSection === 'right' && (
                 <div id="storage_right_outer">
                   <div className="storage_domain_content">
@@ -613,7 +567,6 @@ const Storage = ({}) => {
                   </div>
                 </div>
               )}
-
               {activeSection === 'event' && (
                 <div id="storage_event_outer">
                   {/* Event Section */}
@@ -621,7 +574,6 @@ const Storage = ({}) => {
               )}
             </div>
           </div>
-
           <div className="footer_outer">
             <div className="footer">
               <button onClick={toggleFooterContent}>
@@ -653,51 +605,35 @@ const Storage = ({}) => {
                 <div className="footer_nav">
                   <div>
                     <div>작업이름</div>
-                    <div>
-                      <i className="fa fa-filter"></i>
-                    </div>
+                    <div><i className="fa fa-filter"></i></div>
                   </div>
                   <div>
                     <div>작업이름</div>
-                    <div>
-                      <i className="fa fa-filter"></i>
-                    </div>
+                    <div><i className="fa fa-filter"></i></div>
                   </div>
                   <div>
                     <div>작업이름</div>
-                    <div>
-                      <i className="fa fa-filter"></i>
-                    </div>
+                    <div><i className="fa fa-filter"></i></div>
                   </div>
                   <div>
                     <div>작업이름</div>
-                    <div>
-                      <i className="fa fa-filter"></i>
-                    </div>
+                    <div><i className="fa fa-filter"></i></div>
                   </div>
                   <div>
                     <div>작업이름</div>
-                    <div>
-                      <i className="fa fa-filter"></i>
-                    </div>
+                    <div><i className="fa fa-filter"></i></div>
                   </div>
                   <div>
                     <div>작업이름</div>
-                    <div>
-                      <i className="fa fa-filter"></i>
-                    </div>
+                    <div><i className="fa fa-filter"></i></div>
                   </div>
                   <div>
                     <div>작업이름</div>
-                    <div>
-                      <i className="fa fa-filter"></i>
-                    </div>
+                    <div><i className="fa fa-filter"></i></div>
                   </div>
                   <div style={{ borderRight: 'none' }}>
                     <div>작업이름</div>
-                    <div>
-                      <i className="fa fa-filter"></i>
-                    </div>
+                    <div><i className="fa fa-filter"></i></div>
                   </div>
                 </div>
                 <div className="footer_img">

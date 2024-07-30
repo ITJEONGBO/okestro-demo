@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import NetworkDetail from '../detail/NetworkDetail';
 import './Network.css';
-import Table from './table/Table';
+import { Table, Table1, TableRs } from './table/Table';
+import HeaderButton from './button/HeaderButton';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -121,47 +122,32 @@ const Network = () => {
         { header: '이름', accessor: 'name', clickable: true },
         { header: '설명', accessor: 'description', clickable: false },
     ];
+      // Button and popup items for the SectionHeader
+  const sectionHeaderButtons = [
+    { id: 'network_first_edit_btn', label: '편집', onClick: () => {} },
+    { label: '삭제', onClick: () => {} },
+  ];
 
+  const sectionHeaderPopupItems = [
+    '가져오기',
+    '가상 머신 복제',
+    '삭제',
+    '마이그레이션 취소',
+    '변환 취소',
+    '템플릿 생성',
+    '도메인으로 내보내기',
+    'Export to Data Domai',
+    'OVA로 내보내기',
+  ];
     return (
         <div id="network_section">
             {showNetworkSection ? ( // 꼭 div 하나로 감싸주기
                 <div>
-                    <div className="section_header">
-                        <div className="section_header_left">
-                            <div>Default</div>
-                            <button><i className="fa fa-exchange"></i></button>
-                        </div>
-                        <div className="section_header_right">
-                            <div className="article_nav">
-                                <button id="network_first_edit_btn">편집</button>
-                                <button>삭제</button>
-                                <button id="popup_btn">
-                                    <i className="fa fa-ellipsis-v"></i>
-                                    <div id="popup_box">
-                                        <div>
-                                            <div className="get_btn">가져오기</div>
-                                            <div className="get_btn">가상 머신 복제</div>
-                                        </div>
-                                        <div>
-                                            <div>삭제</div>
-                                        </div>
-                                        <div>
-                                            <div>마이그레이션 취소</div>
-                                            <div>변환 취소</div>
-                                        </div>
-                                        <div>
-                                            <div id="template_btn">템플릿 생성</div>
-                                        </div>
-                                        <div style={{ borderBottom: 'none' }}>
-                                            <div id="domain2">도메인으로 내보내기</div>
-                                            <div id="domain">Export to Data Domai</div>
-                                            <div id="ova_btn">OVA로 내보내기</div>
-                                        </div>
-                                    </div>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                     <HeaderButton
+            title="Default"
+            buttons={sectionHeaderButtons}
+            popupItems={sectionHeaderPopupItems}
+          />
 
                     <div className="content_outer">
                         <div className="content_header">

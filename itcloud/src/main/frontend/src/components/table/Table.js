@@ -26,4 +26,16 @@ const Table = ({ columns, data, onRowClick }) => {
   );
 };
 
-export default Table;
+const Table1 = ({ columns, data, onRowClick }) => {
+  return (<div></div>
+  );
+};
+
+const TableRs = ({data}) => {
+  return (<div></div>
+  );
+}
+
+export {
+  Table, Table1, TableRs
+};;
