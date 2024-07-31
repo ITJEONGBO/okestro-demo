@@ -833,7 +833,7 @@ const Dashboard = () => {
             <h1>{data.storageDomains}</h1>
           </div>
           <div className="box">
-            <span>가상머신</span>
+            <span>Virtual machine</span>
             <h1>{data.vms}</h1>
             <div className="arrows">
               <i className="fa fa-arrow-up"> {data.vmsUp}</i> &nbsp;
@@ -841,7 +841,7 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="box">
-            <span>이벤트</span>
+            <span>Event</span>
             <h1>0</h1>
             <div className="arrows">
               <i className="fa fa-arrow-up"> 1</i> &nbsp;

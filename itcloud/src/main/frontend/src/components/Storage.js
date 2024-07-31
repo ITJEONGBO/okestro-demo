@@ -4,6 +4,7 @@ import StorageDetail from '../detail/StorageDetail';
 import StorageDisk from '../detail/StorageDisk';
 import HeaderButton from './button/HeaderButton';
 import './Storage.css';
+import NavButton from './navigation/NavButton';
 
 Modal.setAppElement('#root'); // React 16 이상에서는 필수
 
@@ -103,7 +104,16 @@ const Storage = () => {
     'Export to Data Domai',
     'OVA로 내보내기',
   ];
-
+  const navSections = [
+    { id: 'disk', label: '디스크' },
+    { id: 'domain', label: '도메인' },
+    { id: 'volume', label: '볼륨' },
+    { id: 'storage', label: '스토리지' },
+    { id: 'logic_network', label: '논리 네트워크' },
+    { id: 'cluster', label: '클러스터' },
+    { id: 'right', label: '권한' },
+    { id: 'event', label: '이벤트' },
+  ];
   return (
     <div id="storage_section">
       {!showStorageSection ? (
@@ -128,19 +138,13 @@ const Storage = () => {
             buttons={sectionHeaderButtons}
             popupItems={sectionHeaderPopupItems}
           />
+          
           <div className="content_outer">
-            <div className="content_header">
-              <div className="content_header_left">
-                <div className={activeSection === 'disk' ? 'active' : ''} onClick={() => handleSectionClick('disk')}>디스크</div>
-                <div className={activeSection === 'domain' ? 'active' : ''} onClick={() => handleSectionClick('domain')}>도메인</div>
-                <div className={activeSection === 'volume' ? 'active' : ''} onClick={() => handleSectionClick('volume')}>볼륨</div>
-                <div className={activeSection === 'storage' ? 'active' : ''} onClick={() => handleSectionClick('storage')}>스토리지</div>
-                <div className={activeSection === 'logic_network' ? 'active' : ''} onClick={() => handleSectionClick('logic_network')}>논리 네트워크</div>
-                <div className={activeSection === 'cluster' ? 'active' : ''} onClick={() => handleSectionClick('cluster')}>클러스터</div>
-                <div className={activeSection === 'right' ? 'active' : ''} onClick={() => handleSectionClick('right')}>권한</div>
-                <div className={activeSection === 'event' ? 'active' : ''} onClick={() => handleSectionClick('event')}>이벤트</div>
-              </div>
-            </div>
+            <NavButton
+              sections={navSections}
+              activeSection={activeSection}
+              handleSectionClick={handleSectionClick}
+            />
             <div className="section_content_outer">
               {activeSection === 'disk' && (
                 <div id="storage_disk_outer">

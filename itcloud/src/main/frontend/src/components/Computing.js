@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 
-import './Computing.css';
+
+import HeaderButton from './button/HeaderButton';
+import NavButton from './navigation/NavButton';
+import ComputingDetail from '../detail/ComputingDetail';  // 여기서 임포트
 
 
 // React Modal 설정
@@ -823,13 +826,12 @@ const Computing = () => {
 
   const handleSectionChange = (section) => {
     setActiveSection(section);
-    const elements = document.querySelectorAll('.edit_aside > div');
+    const elements = document.querySelectorAll('.edit_aside_item');
     elements.forEach(el => {
       el.style.backgroundColor = '#FAFAFA';
       el.style.color = 'black';
       el.style.borderBottom = 'none';
     });
-
     const activeElement = document.getElementById(`${section}_btn`);
     if (activeElement) {
       activeElement.style.backgroundColor = '#EDEDED';
@@ -861,8 +863,11 @@ const Computing = () => {
 
 
   const handleRowClick = () => {
-    navigate('/detail/computing'); // 경로를 /computing으로 변경
+    navigate('/detail/computingdetail'); // 경로를 /computing으로 변경
   };
+
+  
+
     //   // 테이블 데이터
     //   const data = [
     //     { name: 'ovirtmgmt', description: 'Management Network' },
@@ -875,74 +880,51 @@ const Computing = () => {
     //     { header: '이름', accessor: 'name', clickable: true },
     //     { header: '설명', accessor: 'description', clickable: false },
     // ];
+      const sectionHeaderButtons = [
+    { id: 'edit_btn', label: '편집', onClick: () => {} },
+    { id: 'run_btn', label: '실행', icon: 'fa-play', onClick: () => {} },
+    { id: 'pause_btn', label: '일시중지', icon: 'fa-pause', onClick: () => {} },
+    { id: 'stop_btn', label: '종료', icon: 'fa-stop', onClick: () => {} },
+    { id: 'reboot_btn', label: '재부팅', icon: 'fa-repeat', onClick: () => {} },
+    { id: 'console_btn', label: '콘솔', icon: 'fa-desktop', onClick: () => {} },
+    { id: 'snapshot_btn', label: '스냅샷 생성', onClick: () => {} },
+    { id: 'migration_btn', label: '마이그레이션', onClick: openModal },
+  ];
+    const sectionHeaderPopupItems = [
+      '가져오기',
+      '가상 머신 복제',
+      '삭제',
+      '마이그레이션 취소',
+      '변환 취소',
+      '템플릿 생성',
+      '도메인으로 내보내기',
+      'Export to Data Domain',
+      'OVA로 내보내기',
+    ];
+    const navSections = [
+      { id: 'general', label: '가상머신' },
+      { id: 'network', label: '템플릿' },
+      { id: 'disk', label: '풀' },
+      { id: 'snapshot', label: '데이터 센터' },
+      { id: 'application', label: '클러스터' },
+    ];
+    
   return (
     <div id="section">
-      <div className="section_header">
-        <div className="section_header_left">
-          <span>가상머신</span>
-          <div>on20-ap01</div>
-          <button><i className="fa fa-exchange"></i></button>
-        </div>
-        <div className="section_header_right">
-          <div className="article_nav">
-            <button id="edit_btn">편집</button>
-            <div>
-              <button>
-                <i className="fa fa-play"></i>실행
-              </button>
-            </div>
-            <button><i className="fa fa-pause"></i>일시중지</button>
-            <div>
-              <button>
-                <i className="fa fa-stop"></i>종료
-              </button>
-            </div>
-            <div>
-              <button>
-                <i className="fa fa-repeat"></i>재부팅
-              </button>
-            </div>
-            <button><i className="fa fa-desktop"></i>콘솔</button>
-            <button>스냅샷 생성</button>
-            <button id="migration_btn" onClick={openModal}>마이그레이션</button>
-            <button id="popup_btn"  onClick={togglePopup}>
-              <i className="fa fa-ellipsis-v"></i>
-              <div id="popup_box"style={{ display: isPopupVisible ? 'block' : 'none' }}>
-                
-                <div>
-                  <div className="get_btn">가져오기</div>
-                  <div className="get_btn">가상 머신 복제</div>
-                </div>
-                <div>
-                  <div>삭제</div>
-                </div>
-                <div>
-                  <div>마이그레이션 취소</div>
-                  <div>변환 취소</div>
-                </div>
-                <div>
-                  <div id="template_btn">템플릿 생성</div>
-                </div>
-                <div style={{ borderBottom: 'none' }}>
-                  <div id="domain2">도메인으로 내보내기</div>
-                  <div id="domain">Export to Data Domain</div>
-                  <div id="ova_btn">OVA로 내보내기</div>
-                </div>
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
+       <HeaderButton
+        title="가상머신"
+        subtitle="on20-ap01"
+        buttons={sectionHeaderButtons}
+        popupItems={sectionHeaderPopupItems}
+        openModal={openModal}
+        togglePopup={togglePopup}
+      />
       <div className="content_outer">
-        <div className="content_header">
-          <div className="content_header_left">
-            <div className={activeSection === 'general' ? 'active' : ''} onClick={() => handleSectionClick('general')}>가상머신</div>
-            <div className={activeSection === 'network' ? 'active' : ''} onClick={() => handleSectionClick('network')}>템플릿</div>
-            <div className={activeSection === 'disk' ? 'active' : ''} onClick={() => handleSectionClick('disk')}>풀</div>
-            <div className={activeSection === 'snapshot' ? 'active' : ''} onClick={() => handleSectionClick('snapshot')}>데이터 센터</div>
-            <div className={activeSection === 'application' ? 'active' : ''} onClick={() => handleSectionClick('application')}>클러스터</div>
-          </div>
-        </div>
+        <NavButton
+              sections={navSections}
+              activeSection={activeSection}
+              handleSectionClick={handleSectionClick}
+        />
 
         {activeSection === 'general' && (
           <div className="tables">

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import './Button.css';
 
-const HeaderButton = ({ title, buttons, popupItems }) => {
+
+const HeaderButton = ({ title, subtitle, buttons, popupItems }) => {
   const [isPopupBoxVisible, setIsPopupBoxVisible] = useState(false);
 
   const togglePopupBox = () => {
@@ -16,6 +18,7 @@ const HeaderButton = ({ title, buttons, popupItems }) => {
     <div className="section_header">
       <div className="section_header_left">
         <div>{title}</div>
+        <div>{subtitle}</div>
         <button><i className="fa fa-exchange"></i></button>
       </div>
       <div className="section_header_right">
