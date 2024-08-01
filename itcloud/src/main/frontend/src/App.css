@@ -1211,7 +1211,7 @@
 #storage_volume_outer,
 #storage_storage_outer,
 #storage_cluster_outer,
-#storage_right_outer,
+.storage_right_outer,
 #storage_logic_outer,
 #detail_datacenter_outer,
 #detail_machine_outer,
@@ -1241,6 +1241,14 @@
     display: flex;
     height: 88%;
 }
+/*hostdetail.js*/
+.host_detail_outer{
+    width: 100%;
+    display: flex;
+    height: 88%;
+}
+
+/**/
 .pregroup_content,
 #application_content,
 #snapshot_content_outer,

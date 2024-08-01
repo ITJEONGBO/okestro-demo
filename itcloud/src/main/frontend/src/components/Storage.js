@@ -523,7 +523,7 @@ const Storage = () => {
                 </div>
               )}
               {activeSection === 'right' && (
-                <div id="storage_right_outer">
+                <div className="storage_right_outer">
                   <div className="storage_domain_content">
                     <div className="content_header_right">
                       <button>추가</button>

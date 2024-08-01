@@ -2,16 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 
-
 import HeaderButton from './button/HeaderButton';
 import NavButton from './navigation/NavButton';
-import ComputingDetail from '../detail/ComputingDetail';  // 여기서 임포트
-
+import ComputingDetail from '../detail/ComputingDetail';
 
 // React Modal 설정
 Modal.setAppElement('#root');
 
-// 네트워크인터페이스
+// 템플릿
 const NetworkSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [visibleDetails, setVisibleDetails] = useState([]);
@@ -22,66 +20,48 @@ const NetworkSection = () => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  //table반복
-  useEffect(() => {
-    const container = document.getElementById("network_content_outer");
-    const originalContent = document.querySelector('.network_content');
-    
 
-    for (let i = 0; i < 3; i++) {
-      const clone = originalContent.cloneNode(true);
-      container.appendChild(clone);
-    }
-  }, []);
- const toggleDetails = (index) => {
-  setVisibleDetails((prevDetails) => {
-    const newDetails = [...prevDetails];
-    newDetails[index] = !newDetails[index];
-    return newDetails;
-  });
-};
 
   return (
     <div id="network_outer">
-      <div id="network_content_outer">
+      <div className="pregroup_content">
         <div className="content_header_right">
-          <button id="network_popup_new" onClick={openModal}>새로 만들기</button>
-          <button>수정</button>
-          <button>제거</button>
+          <button id="network_popup_new" onClick={openModal}>가져오기</button>
+          <button>편집</button>
+          <button>삭제</button>
+          <button>내보내기</button>
+          <button>새 가상머신</button>
         </div>
-        {Array.from({ length: 3 }).map((_, index) => (
-  <div key={index}>
-    <div className="network_content">
-      <div>
-        <i className="fa fa-chevron-right" onClick={() => toggleDetails(index)}></i>
-        <i className="fa fa-arrow-circle-o-up" style={{ color: '#21c50b', marginLeft: '0.3rem' }}></i>
-        <i className="fa fa-plug"></i>
-        <i className="fa fa-usb"></i>
-        <span>nic1</span>
-      </div>
-      <div>
-        <div>네트워크 이름</div>
-        <div>ovirtmgmt</div>
-      </div>
-      <div>
-        <div>IPv4</div>
-        <div>192.168.10.147</div>
-      </div>
-      <div>
-        <div>IPv6</div>
-        <div>192.168.10.147</div>
-      </div>
-      <div style={{ paddingRight: '3%' }}>
-        <div>MAC</div>
-        <div>192.168.10.147</div>
-      </div>
-    </div>
-    <div className='network_content_detail' style={{ display: visibleDetails[index] ? 'block' : 'none' }}>
-      설명입력
-    </div>
-  </div>
-))}
 
+        <table>
+                  <thead>
+                      <tr>
+                          <th>이름</th>
+                          <th>버전</th>
+                          <th>코멘트</th>
+                          <th>생성 일자</th>
+                          <th>상태</th>
+                          <th>보관</th>
+                          <th>클러스터</th>
+                          <th>데이터 센터</th>
+                          <th>설명</th>
+                         
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td>Blank</td>
+                          <td></td>
+                          <td></td>
+                          <td>2008.4.1.AM</td>
+                          <td>OK</td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td>설명</td>
+                      </tr>
+                  </tbody>
+              </table>
        
       </div>
 
@@ -193,18 +173,13 @@ const NetworkSection = () => {
             </div>
       </Modal>
 
-
-
-
-
     </div>
   );
 };
 
-// 디스크
+// 풀
 const DiskSection = () => {
   const [isNewDiskModalOpen, setIsNewDiskModalOpen] = useState(false);
-  const [isJoinDiskModalOpen, setIsJoinDiskModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('img');
 
   const handleTabClick = (tab) => setActiveTab(tab);
@@ -213,27 +188,16 @@ const DiskSection = () => {
   const openNewDiskModal = () => setIsNewDiskModalOpen(true);
   const closeNewDiskModal = () => setIsNewDiskModalOpen(false);
 
-  // 연결 팝업 열기/닫기 핸들러
-  const openJoinDiskModal = () => setIsJoinDiskModalOpen(true);
-  const closeJoinDiskModal = () => setIsJoinDiskModalOpen(false);
+
 
   return (
       <div id="disk_outer">
           <div id="disk_content">
               <div className="content_header_right">
                   <button id="disk_popup_new" onClick={openNewDiskModal}>새로 만들기</button>
-                  <button id="join_popup_btn" onClick={openJoinDiskModal}>연결</button>
-                  <button>수정</button>
-                  <button>제거</button>
-                  <button className="content_header_popup_btn">
-                      <i className="fa fa-ellipsis-v"></i>
-                      <div className="content_header_popup" style={{ display: 'none' }}>
-                          <div>활성</div>
-                          <div>비활성화</div>
-                          <div>이동</div>
-                          <div>LUN 새로고침</div>
-                      </div>
-                  </button>
+                  <button>편집</button>
+                  <button>삭제</button>
+                 
               </div>
               <div className="disk_content_header">
                   <span>디스크 유형:</span>
@@ -245,40 +209,24 @@ const DiskSection = () => {
               <table>
                   <thead>
                       <tr>
-                          <th></th>
-                          <th>변경</th>
-                          <th><i className="fa fa-glass"></i></th>
-                          <th><i className="fa fa-glass"></i></th>
-                          <th><i className="fa fa-glass"></i></th>
-                          <th>가상 크기</th>
-                          <th>연결 대상</th>
-                          <th>인터페이스</th>
-                          <th>논리적 이름</th>
-                          <th>상태</th>
+                          <th>이름</th>
+                          <th>코멘트</th>
+                          <th>할당된 가상 머신</th>
+                          <th>실행중인 가상머신</th>
                           <th>유형</th>
                           <th>설명</th>
+                        
                       </tr>
                   </thead>
                   <tbody>
-                      <tr>
-                          <td><i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i></td>
-                          <td>on20-ap01</td>
-                          <td><i className="fa fa-glass"></i></td>
-                          <td><i className="fa fa-glass"></i></td>
-                          <td><i className="fa fa-glass"></i></td>
-                          <td>on20-ap01</td>
-                          <td>VirtIO-SCSI</td>
-                          <td>/dev/sda</td>
-                          <td>OK</td>
-                          <td>이미지</td>
-                          <td></td>
-                          <td></td>
-                      </tr>
+                      
+                          <div>표시할 항목x</div>
+                      
                   </tbody>
               </table>
           </div>
 
-          {/* 디스크(새로 만들기) 팝업 */}
+          {/* 풀(새로 만들기) 팝업 */}
           <Modal
               isOpen={isNewDiskModalOpen}
               onRequestClose={closeNewDiskModal}
@@ -570,246 +518,128 @@ const DiskSection = () => {
               </div>
           </Modal>
 
-          {/* 디스크(연결) 팝업 */}
-          <Modal
-              isOpen={isJoinDiskModalOpen}
-              onRequestClose={closeJoinDiskModal}
-              contentLabel="연결"
-              className="join_popup"
-              overlayClassName="join_popup_outer"
-          >
-              <div className="network_popup_header">
-                  <h1>가상 디스크 연결</h1>
-                  <button onClick={closeJoinDiskModal}><i className="fa fa-times"></i></button>
-              </div>
-
-              <div id="join_header">
-                  <div id="join_new_nav">
-                      <div id="img_btn2">이미지</div>
-                      <div id="directlun_btn2">직접LUN</div>
-                      <div id="managed_block_btn2">관리되는 블록</div>
-                  </div>
-                  <div>
-                      <input type="checkbox" id="diskActivation" defaultChecked />
-                      <label htmlFor="diskActivation">디스크 활성화</label>
-                  </div>
-              </div>
-
-              <div id="join_img_content">
-                  <table>
-                      <thead>
-                          <tr id="join_img_th">
-                              <th>별칭</th>
-                              <th>설명</th>
-                              <th>ID</th>
-                              <th>가상 크기</th>
-                              <th>실제 크기</th>
-                              <th>스토리지 도메인</th>
-                              <th>인터페이스</th>
-                              <th>R/O</th>
-                              <th><i className="fa fa-external-link"></i></th>
-                              <th><i className="fa fa-external-link"></i></th>
-                          </tr>
-                          <tr id="join_directlun_th" style={{ display: 'none' }}>
-                              <th>별칭</th>
-                              <th>설명</th>
-                              <th>LUN ID</th>
-                              <th>ID</th>
-                              <th>크기</th>
-                              <th>#경로</th>
-                              <th>벤더ID</th>
-                              <th>제품ID</th>
-                              <th>시리얼</th>
-                              <th>인터페이스</th>
-                              <th>R/O</th>
-                              <th><i className="fa fa-external-link"></i></th>
-                              <th><i className="fa fa-external-link"></i></th>
-                          </tr>
-                          <tr id="join_managed_th" style={{ display: 'none' }}>
-                              <th>별칭</th>
-                              <th>설명</th>
-                              <th>ID</th>
-                              <th>가상 크기</th>
-                              <th>스토리지 도메인</th>
-                              <th>인터페이스</th>
-                              <th>R/O</th>
-                              <th><i className="fa fa-external-link"></i></th>
-                              <th><i className="fa fa-external-link"></i></th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          <tr className="join_img_td">
-                              <td>OK</td>
-                              <td>test02</td>
-                              <td>asd</td>
-                              <td>5</td>
-                              <td></td>
-                              <td>소프트</td>
-                              <td></td>
-                              <td>소프트</td>
-                              <td>멤버없음</td>
-                              <td>레이블없음</td>
-                          </tr>
-                          <tr className="join_directlun_td" style={{ display: 'none' }}>
-                              <td>OK</td>
-                              <td>test02</td>
-                              <td>asd</td>
-                              <td>5</td>
-                              <td></td>
-                              <td>소프트</td>
-                              <td></td>
-                              <td>소프트</td>
-                              <td>멤버없음</td>
-                              <td>레이블없음</td>
-                              <td>레이블없음</td>
-                              <td>레이블없음</td>
-                              <td>레이블없음</td>
-                          </tr>
-                          <tr className="join_managed_td" style={{ display: 'none' }}>
-                              <td>OK</td>
-                              <td>test02</td>
-                              <td>asd</td>
-                              <td>5</td>
-                              <td></td>
-                              <td>소프트</td>
-                              <td></td>
-                              <td>소프트</td>
-                              <td>멤버없음</td>
-                          </tr>
-                      </tbody>
-                  </table>
-              </div>
-
-              <div className="edit_footer">
-                  <button style={{ display: 'none' }}></button>
-                  <button>OK</button>
-                  <button onClick={closeJoinDiskModal}>취소</button>
-              </div>
-          </Modal>
+         
       </div>
   );
 };
 
 
-// 스냅샷
+// 데이터 센터
 const SnapshotSection = () => {
   return (
-    <div id="snapshot_outer">
-      <div id="snapshot_content_outer">
+<div id="network_outer">
+      <div className="pregroup_content">
         <div className="content_header_right">
-          <button className="snap_create_btn">생성</button>
-          <button>미리보기</button>
-          <button>커밋</button>
-          <button>되돌리기</button>
+          <button>새로 만들기</button>
+          <button>편집</button>
           <button>삭제</button>
-          <button>복제</button>
-          <button>템플릿 생성</button>
         </div>
-        <div className="snapshot_content">
-          <div className="snapshot_content_left">
-            <div><i className="fa fa-camera"></i></div>
-            <span>Active VM</span>
-          </div>
-          <div className="snapshot_content_right">
-            <div>
-              <i className="fa fa-chevron-right"></i>
-              <span>일반</span>
-              <i className="fa fa-eye"></i>
-            </div>
-            <div>
-              <i className="fa fa-chevron-right"></i>
-              <span>디스크</span>
-              <i className="fa fa-trash-o"></i>
-            </div>
-            <div>
-              <i className="fa fa-chevron-right"></i>
-              <span>네트워크 인터페이스</span>
-              <i className="fa fa-server"></i>
-            </div>
-            <div>
-              <i className="fa fa-chevron-right"></i>
-              <span>설치된 애플리케이션</span>
-              <i className="fa fa-newspaper-o"></i>
-            </div>
-          </div>
-        </div>
-        <div className="snapshot_content">
-          <div className="snapshot_content_left">
-            <div><i className="fa fa-camera"></i></div>
-            <span>Active VM</span>
-          </div>
-          <div className="snapshot_content_right">
-            <div>
-              <i className="fa fa-chevron-right"></i>
-              <span>일반</span>
-              <i className="fa fa-eye"></i>
-            </div>
-            <div>
-              <i className="fa fa-chevron-right"></i>
-              <span>디스크</span>
-              <i className="fa fa-trash-o"></i>
-            </div>
-            <div>
-              <i className="fa fa-chevron-right"></i>
-              <span>네트워크 인터페이스</span>
-              <i className="fa fa-server"></i>
-            </div>
-            <div>
-              <i className="fa fa-chevron-right"></i>
-              <span>설치된 애플리케이션</span>
-              <i className="fa fa-newspaper-o"></i>
-            </div>
-          </div>
-        </div>
+
+        <table>
+                  <thead>
+                      <tr>
+                          <th></th>
+                          <th></th>
+                          <th>이름</th>
+                          <th>코멘트</th>
+                          <th>스토리지 유형</th>
+                          <th>상태</th>
+                          <th>호환 버전</th>
+                          <th>설명</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td><i className="fa fa-external-link"></i></td>
+                          <td></td>
+                          <td>Default</td>
+                          <td></td>
+                          <td>공유됨</td>
+                          <td>Up</td>
+                          <td>4.7</td>
+                          <td>The default Data Center</td>
+                      </tr>
+                  </tbody>
+        </table>
+       
       </div>
+
+
+
+ 
+
     </div>
   );
 };
 
-// 애플리케이션
+// 클러스터
 const ApplicationSection = () => {
 
 
   return (
     <div id="application_outer">
-      <div id="application_content">
-        <div className="application_content_header">
-          <button><i className="fa fa-chevron-left"></i></button>
-          <div>1-2</div>
-          <button><i className="fa fa-chevron-right"></i></button>
-          <button><i className="fa fa-ellipsis-v"></i></button>
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th>설치된 애플리케이션</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>kernel-3.10.0-1062.el7.x86_64</td>
-            </tr>
-            <tr>
-              <td>qemu-guest-agent-2.12.0</td>
-            </tr>
-          </tbody>
-        </table>
+      <div div className="pregroup_content">
+        
+          <div className="content_header_right">
+            <button>새로 만들기</button>
+            <button>편집</button>
+            <button>업그레이드</button>
+          </div>
+           
+        
+        <div className="section_table_outer">
+                    <button>
+                      <i className="fa fa-refresh"></i>
+                    </button>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>상태</th>
+                          <th>이름</th>
+                          
+                          <th>코멘트</th>
+                          <th>호환 버전</th>
+                          <th>설명</th>
+                          <th>클러스터 CPU 유형</th>
+                          <th>호스트 수</th>
+                          <th>가상 머신 수</th>
+                          <th>업그레이드 상태</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td></td>
+                          <td>Default</td>
+                          <td></td>
+                          <td>4.7</td>
+                          <td>The derault server cluster</td>
+                          <td>Secure Intel Cascadelak</td>
+                          <td>2</td>
+                          <td>7</td>
+                          <td></td>
+                    
+                        </tr>
+                       
+                      </tbody>
+                    </table>
+                  </div>
       </div>
     </div>
   );
 };
 
 
-
+// 가상머신
 const Computing = () => {
   const { section } = useParams();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState(section || 'general');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showDetail, setShowDetail] = useState(false);  // 추가된 상태
 
   useEffect(() => {
     navigate(`/computing/${activeSection}`);
-  }, [activeSection, navigate]);
+  }, [activeSection, navigate, showDetail]);
 
   const handleSectionClick = (section) => {
     setActiveSection(section);
@@ -824,21 +654,6 @@ const Computing = () => {
     }
   }, []);
 
-  const handleSectionChange = (section) => {
-    setActiveSection(section);
-    const elements = document.querySelectorAll('.edit_aside_item');
-    elements.forEach(el => {
-      el.style.backgroundColor = '#FAFAFA';
-      el.style.color = 'black';
-      el.style.borderBottom = 'none';
-    });
-    const activeElement = document.getElementById(`${section}_btn`);
-    if (activeElement) {
-      activeElement.style.backgroundColor = '#EDEDED';
-      activeElement.style.color = '#1eb8ff';
-      activeElement.style.borderBottom = '1px solid blue';
-    }
-  };
 
   const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
   const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
@@ -852,7 +667,7 @@ const Computing = () => {
   };
 
   const openModal = () => setIsModalOpen(true);
-  //const closeModal = () => setIsModalOpen(false);
+  const closeModal = () => setIsModalOpen(false);
 
   const [isPopupVisible, setIsPopupVisible] = useState(false);
 
@@ -863,7 +678,7 @@ const Computing = () => {
 
 
   const handleRowClick = () => {
-    navigate('/detail/computingdetail'); // 경로를 /computing으로 변경
+    setShowDetail(true);  // detail 표시 설정
   };
 
   
@@ -908,7 +723,9 @@ const Computing = () => {
       { id: 'snapshot', label: '데이터 센터' },
       { id: 'application', label: '클러스터' },
     ];
-    
+    if (showDetail) {
+      return <ComputingDetail />;  // detail 표시
+    }
   return (
     <div id="section">
        <HeaderButton
@@ -1044,7 +861,43 @@ const Computing = () => {
       </div>
       
 {/*header팝업창----------------------- */}
-      
+       {/* 마이그레이션 팝업 */}
+       <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="마이그레이션"
+        className="migration_popup"
+        overlayClassName="migration_popup_outer"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="domain_header">
+          <h1>가상머신 마이그레이션</h1>
+          <button onClick={closeModal}><i className="fa fa-times"></i></button>
+        </div>
+        <div id="migration_article_outer">
+          <span>1대의 가상 머신이 마이그레이션되는 호스트를 선택하십시오.</span>
+          <div id="migration_article">
+            <div>
+              <div id="migration_dropdown">
+                <label htmlFor="host">대상 호스트 <i className="fa fa-info-circle"></i></label>
+                <select name="host_dropdown" id="host">
+                  <option value="">호스트 자동 선택</option>
+                  <option value="php">PHP</option>
+                  <option value="java">Java</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <div>가상머신</div>
+              <div>on20-ap02</div>
+            </div>
+          </div>
+          <div id="migration_footer">
+            <button>마이그레이션</button>
+            <button onClick={closeModal}>취소</button>
+          </div>
+        </div>
+      </Modal>
 
     
 
