@@ -1,9 +1,21 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
+import NavButton from '../components/navigation/NavButton';
 
 function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const [activeTab, setActiveTab] = useState('general');
 
+  // NAV컴포넌트
+  const sections = [
+    { id: 'general', label: '일반' },
+    { id: 'vNIC_profile', label: 'vNIC 프로파일' },
+    { id: 'cluster', label: '클러스터' },
+    { id: 'host', label: '호스트' },
+    { id: 'virtual_machine', label: '가상 머신' },
+    { id: 'template', label: '템플릿' },
+    { id: 'permission', label: '권한' },
+  ];
+  //
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
@@ -40,59 +52,11 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
       </div>
 
       <div className="content_outer">
-        <div className="content_header">
-        <div className="content_header_left">
-            <div
-            className={activeTab === 'general' ? 'active' : ''}
-            style={{ color: activeTab === 'general' ? '#6999D9' : 'black' }}
-            onClick={() => handleTabClick('general')}
-            >
-            일반
-            </div>
-            <div
-            className={activeTab === 'vNIC_profile' ? 'active' : ''}
-            style={{ color: activeTab === 'vNIC_profile' ? '#6999D9' : 'black' }}
-            onClick={() => handleTabClick('vNIC_profile')}
-            >
-            vNIC 프로파일
-            </div>
-            <div
-            className={activeTab === 'cluster' ? 'active' : ''}
-            style={{ color: activeTab === 'cluster' ? '#6999D9' : 'black' }}
-            onClick={() => handleTabClick('cluster')}
-            >
-            클러스터
-            </div>
-            <div
-            className={activeTab === 'host' ? 'active' : ''}
-            style={{ color: activeTab === 'host' ? '#6999D9' : 'black' }}
-            onClick={() => handleTabClick('host')}
-            >
-            호스트
-            </div>
-            <div
-            className={activeTab === 'virtual_machine' ? 'active' : ''}
-            style={{ color: activeTab === 'virtual_machine' ? '#6999D9' : 'black' }}
-            onClick={() => handleTabClick('virtual_machine')}
-            >
-            가상 머신
-            </div>
-            <div
-            className={activeTab === 'template' ? 'active' : ''}
-            style={{ color: activeTab === 'template' ? '#6999D9' : 'black' }}
-            onClick={() => handleTabClick('template')}
-            >
-            템플릿
-            </div>
-            <div
-            className={activeTab === 'permission' ? 'active' : ''}
-            style={{ color: activeTab === 'permission' ? '#6999D9' : 'black' }}
-            onClick={() => handleTabClick('permission')}
-            >
-            권한
-            </div>
-        </div>
-        </div>
+        <NavButton 
+          sections={sections} 
+          activeSection={activeTab} 
+          handleSectionClick={handleTabClick} 
+        />
 
 
         {activeTab === 'general' && (

@@ -1,4 +1,5 @@
 import React, { useState,useEffect } from 'react';
+import NavButton from '../components/navigation/NavButton';
 
 
 function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
@@ -8,6 +9,13 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
     setActiveTab(tab);
   };
 
+  // nav 컴포넌트
+  const sections = [
+    { id: 'general', label: '일반' },
+    { id: 'machine', label: '가상머신' },
+    { id: 'storage', label: '스토리지' },
+    { id: 'permission', label: '권한' },
+  ];
   // 옵션박스 열고닫기
   const [isUploadOptionBoxVisible, setUploadOptionBoxVisible] = useState(false);
   const toggleUploadOptionBox = () => {
@@ -82,38 +90,11 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
       </div>
 
       <div className="content_outer">
-        <div className="content_header">
-          <div className="content_header_left">
-            <div
-              className={activeTab === 'general' ? 'active' : ''}
-              style={{ color: activeTab === 'general' ? '#6999D9' : 'black' }}
-              onClick={() => handleTabClick('general')}
-            >
-              일반
-            </div>
-            <div
-              className={activeTab === 'machine' ? 'active' : ''}
-              style={{ color: activeTab === 'machine' ? '#6999D9' : 'black' }}
-              onClick={() => handleTabClick('machine')}
-            >
-              가상머신
-            </div>
-            <div
-              className={activeTab === 'storage' ? 'active' : ''}
-              style={{ color: activeTab === 'storage' ? '#6999D9' : 'black' }}
-              onClick={() => handleTabClick('storage')}
-            >
-              스토리지
-            </div>
-            <div
-              className={activeTab === 'permission' ? 'active' : ''}
-              style={{ color: activeTab === 'permission' ? '#6999D9' : 'black' }}
-              onClick={() => handleTabClick('permission')}
-            >
-              권한
-            </div>
-          </div>
-        </div>
+      <NavButton 
+                sections={sections} 
+                activeSection={activeTab} 
+                handleSectionClick={handleTabClick} 
+            />
 
         {activeTab === 'general' && (
           <div className="section_content_outer">

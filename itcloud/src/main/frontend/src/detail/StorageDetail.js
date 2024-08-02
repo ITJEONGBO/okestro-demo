@@ -1,5 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import './StorageDetail.css';
+import NavButton from '../components/navigation/NavButton';
 
 function StorageDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const [activeTab, setActiveTab] = useState('general');
@@ -13,6 +14,17 @@ function StorageDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   const toggleUploadOptionBox = () => {
     setUploadOptionBoxVisible(!isUploadOptionBoxVisible);
   };
+  // NAV컴포넌트
+  const sections = [
+    { id: 'general', label: '일반' },
+    { id: 'datacenter', label: '데이터 센터' },
+    { id: 'machine', label: '가상머신' },
+    { id: 'template', label: '템플릿' },
+    { id: 'disk', label: '디스크' },
+    { id: 'disk_snapshot', label: '디스크 스냅샷' },
+    { id: 'event', label: '이벤트' },
+    { id: 'permission', label: '권한' },
+  ];
   // 바탕클릭하면 옵션박스 닫기
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -24,7 +36,8 @@ function StorageDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         setUploadOptionBoxVisible(false);
       }
     };
-  
+    
+    //
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -78,66 +91,11 @@ function StorageDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
       </div>
 
       <div className="content_outer">
-        <div className="content_header">
-          <div className="content_header_left">
-            <div
-              className={activeTab === 'general' ? 'active' : ''}
-              style={{ color: activeTab === 'general' ? '#6999D9' : 'black' }}
-              onClick={() => handleTabClick('general')}
-            >
-              일반
-            </div>
-            <div
-              className={activeTab === 'datacenter' ? 'active' : ''}
-              style={{ color: activeTab === 'datacenter' ? '#6999D9' : 'black' }}
-              onClick={() => handleTabClick('datacenter')}
-            >
-              데이터 센터
-            </div>
-            <div
-              className={activeTab === 'machine' ? 'active' : ''}
-              style={{ color: activeTab === 'machine' ? '#6999D9' : 'black' }}
-              onClick={() => handleTabClick('machine')}
-            >
-              가상머신
-            </div>
-            <div
-              className={activeTab === 'template' ? 'active' : ''}
-              style={{ color: activeTab === 'template' ? '#6999D9' : 'black' }}
-              onClick={() => handleTabClick('template')}
-            >
-              템플릿
-            </div>
-            <div
-              className={activeTab === 'disk' ? 'active' : ''}
-              style={{ color: activeTab === 'disk' ? '#6999D9' : 'black' }}
-              onClick={() => handleTabClick('disk')}
-            >
-              디스크
-            </div>
-            <div
-              className={activeTab === 'disk_snapshot' ? 'active' : ''}
-              style={{ color: activeTab === 'disk_snapshot' ? '#6999D9' : 'black' }}
-              onClick={() => handleTabClick('disk_snapshot')}
-            >
-              디스크 스냅샷
-            </div>
-            <div
-              className={activeTab === 'event' ? 'active' : ''}
-              style={{ color: activeTab === 'event' ? '#6999D9' : 'black' }}
-              onClick={() => handleTabClick('event')}
-            >
-              이벤트
-            </div>
-            <div
-              className={activeTab === 'permission' ? 'active' : ''}
-              style={{ color: activeTab === 'permission' ? '#6999D9' : 'black' }}
-              onClick={() => handleTabClick('permission')}
-            >
-              권한
-            </div>
-          </div>
-        </div>
+        <NavButton 
+          sections={sections} 
+          activeSection={activeTab} 
+          handleSectionClick={handleTabClick} 
+        />
 
         {activeTab === 'general' && (
           <div className="section_content_outer">

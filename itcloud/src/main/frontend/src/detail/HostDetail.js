@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import NavButton from '../components/navigation/NavButton';
 
 function HostDetail() {
 
@@ -7,7 +8,17 @@ function HostDetail() {
     const handleTabClick = (tab) => {
         setActiveTab(tab);
     };
-
+    const sections = [
+        { id: 'general', label: '일반' },
+        { id: 'machine', label: '가상머신' },
+        { id: 'networkinterface', label: '네트워크 인터페이스' },
+        { id: 'hostdevice', label: '호스트 장치' },
+        { id: 'hosthook', label: '호스트 후크' },
+        { id: 'permission', label: '권한' },
+        { id: 'lable', label: '선호도 레이블' },
+        { id: 'errata', label: '에라타' },
+        { id: 'event', label: '이벤트' }
+      ];
 
     return (
         <div id='host_detail_section'>
@@ -35,74 +46,11 @@ function HostDetail() {
 
 
             <div className="content_outer">
-                <div className="content_header">
-                    <div className="content_header_left">
-                        <div
-                        className={activeTab === 'general' ? 'active' : ''}
-                        style={{ color: activeTab === 'general' ? '#6999D9' : 'black' }}
-                        onClick={() => handleTabClick('general')}
-                        >
-                        일반
-                        </div>
-                        <div
-                        className={activeTab === 'machine' ? 'active' : ''}
-                        style={{ color: activeTab === 'machine' ? '#6999D9' : 'black' }}
-                        onClick={() => handleTabClick('machine')}
-                        >
-                        가상머신
-                        </div>
-                        <div
-                        className={activeTab === 'networkinterface' ? 'active' : ''}
-                        style={{ color: activeTab === 'networkinterface' ? '#6999D9' : 'black' }}
-                        onClick={() => handleTabClick('networkinterface')}
-                        >
-                        네트워크 인터페이스
-                        </div>
-                        <div
-                        className={activeTab === 'hostdevice' ? 'active' : ''}
-                        style={{ color: activeTab === 'hostdevice' ? '#6999D9' : 'black' }}
-                        onClick={() => handleTabClick('hostdevice')}
-                        >
-                        호스트 장치
-                        </div>
-                        <div
-                        className={activeTab === 'hosthook' ? 'active' : ''}
-                        style={{ color: activeTab === 'hosthook' ? '#6999D9' : 'black' }}
-                        onClick={() => handleTabClick('hosthook')}
-                        >
-                        호스트 후크
-                        </div>
-                        <div
-                        className={activeTab === 'permission' ? 'active' : ''}
-                        style={{ color: activeTab === 'permission' ? '#6999D9' : 'black' }}
-                        onClick={() => handleTabClick('permission')}
-                        >
-                        권한
-                        </div>
-                        <div
-                        className={activeTab === 'lable' ? 'active' : ''}
-                        style={{ color: activeTab === 'lable' ? '#6999D9' : 'black' }}
-                        onClick={() => handleTabClick('lable')}
-                        >
-                        선호도 레이블
-                        </div>
-                        <div
-                        className={activeTab === 'errata' ? 'active' : ''}
-                        style={{ color: activeTab === 'errata' ? '#6999D9' : 'black' }}
-                        onClick={() => handleTabClick('errata')}
-                        >
-                        에라타
-                        </div>
-                        <div
-                        className={activeTab === 'event' ? 'active' : ''}
-                        style={{ color: activeTab === 'event' ? '#6999D9' : 'black' }}
-                        onClick={() => handleTabClick('event')}
-                        >
-                        이벤트
-                        </div>
-                        
-                    </div>
-                </div>
+                <NavButton
+                    sections={sections} 
+                    activeSection={activeTab} 
+                    handleSectionClick={handleTabClick} 
+                />
 
                 {/* 일반 */}
                 {activeTab === 'general' && (
