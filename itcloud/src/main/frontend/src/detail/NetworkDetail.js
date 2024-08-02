@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import NavButton from '../components/navigation/NavButton';
+import HeaderButton from '../components/button/HeaderButton';
 
 function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const [activeTab, setActiveTab] = useState('general');
@@ -8,7 +9,14 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
+  //headerbutton 컴포넌트
+  const buttons = [
+    { id: 'edit_btn', label: '편집', onClick: () => console.log('Edit button clicked') },
+    { id: 'delete_btn', label: '삭제', onClick: () => console.log('Delete button clicked') },
+  ];
 
+  const popupItems = ['Option 1', 'Option 2', 'Option 3'];
+  
    // 모달 관련 상태 및 함수
    const [activePopup, setActivePopup] = useState(null);
 
@@ -30,24 +38,12 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
     ];
   return (
     <div className="content_detail_section">
-      <div className="section_header">
-        <div className="section_header_left">
-          <span>네트워크 </span>
-          <span>논리네트워크</span>
-          <div>hosted_storage</div>
-          <button>
-            <i className="fa fa-exchange"></i>
-          </button>
-        </div>
-
-        <div className="section_header_right">
-          <div className="article_nav">
-            <button>편집</button>
-            <button>삭제</button> 
-          </div>
-        </div>
-
-      </div>
+      <HeaderButton
+      title="네트워크"
+      subtitle="논리네트워크"
+      buttons={buttons}
+      popupItems={popupItems}
+    />
 
       <div className="content_outer">
       <NavButton 

@@ -1,6 +1,7 @@
 import React, { useState,useEffect } from 'react';
 import './StorageDetail.css';
 import NavButton from '../components/navigation/NavButton';
+import HeaderButton from '../components/button/HeaderButton';
 
 function StorageDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const [activeTab, setActiveTab] = useState('general');
@@ -14,6 +15,24 @@ function StorageDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   const toggleUploadOptionBox = () => {
     setUploadOptionBoxVisible(!isUploadOptionBoxVisible);
   };
+  //headerbutton 컴포넌트
+  const buttons = [
+    { id: 'manage_domain_btn', label: '도메인 관리', onClick: () => console.log('Manage Domain button clicked') },
+    { id: 'delete_btn', label: '삭제', onClick: () => console.log('Delete button clicked') },
+    { id: 'connections_btn', label: 'Connections', onClick: () => console.log('Connections button clicked') },
+  ];
+
+  const popupItems = [
+    '가져오기',
+    '가상 머신 복제',
+    '삭제',
+    '마이그레이션 취소',
+    '변환 취소',
+    '템플릿 생성',
+    '도메인으로 내보내기',
+    'Export to Data Domai',
+    'OVA로 내보내기',
+  ];
   // NAV컴포넌트
   const sections = [
     { id: 'general', label: '일반' },
@@ -45,50 +64,13 @@ function StorageDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   }, [isUploadOptionBoxVisible]);
   return (
     <div className="content_detail_section">
-      <div className="section_header">
-        <div className="section_header_left">
-          <span>스토리지 </span>
-          <span>스토리지 도메인</span>
-          <div>hosted_storage</div>
-          <button>
-            <i className="fa fa-exchange"></i>
-          </button>
-        </div>
-
-        <div className="section_header_right">
-          <div className="article_nav">
-            <button>도메인 관리</button>
-            <button>삭제</button>
-            <button>Connections</button>
-            <button id="popup_btn" onClick={togglePopupBox}>
-              <i className="fa fa-ellipsis-v"></i>
-              {isPopupBoxVisible && (
-                <div id="popup_box" onClick={handlePopupBoxItemClick}>
-                  <div>
-                    <div className="get_btn">가져오기</div>
-                    <div className="get_btn">가상 머신 복제</div>
-                  </div>
-                  <div>
-                    <div>삭제</div>
-                  </div>
-                  <div>
-                    <div>마이그레이션 취소</div>
-                    <div>변환 취소</div>
-                  </div>
-                  <div>
-                    <div id="template_btn">템플릿 생성</div>
-                  </div>
-                  <div style={{ borderBottom: 'none' }}>
-                    <div id="domain2">도메인으로 내보내기</div>
-                    <div id="domain">Export to Data Domai</div>
-                    <div id="ova_btn">OVA로 내보내기</div>
-                  </div>
-                </div>
-              )}
-            </button>
-          </div>
-        </div>
-      </div>
+      <HeaderButton
+      title="스토리지"
+      subtitle="스토리지 도메인"
+      additionalText="hosted_storage"
+      buttons={buttons}
+      popupItems={popupItems}
+    />
 
       <div className="content_outer">
         <NavButton 

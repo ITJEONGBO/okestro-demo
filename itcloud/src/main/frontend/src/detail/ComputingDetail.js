@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import { Table } from '../components/table/Table';
+import HeaderButton from '../components/button/HeaderButton';
 
 // 네트워크 인터페이스 섹션
 const NetworkSection = () => {
@@ -1427,6 +1428,30 @@ const sections = [
   { id: 'event', label: '이벤트' }
 ];
 
+// headerbutton 컴포넌트
+const buttons = [
+  { id: 'edit_btn', label: '편집', onClick: () => console.log('편집 clicked') },
+  { id: 'run_btn', label: <><i className="fa fa-play"></i>실행</>, onClick: () => console.log('실행 clicked') },
+  { id: 'pause_btn', label: <><i className="fa fa-pause"></i>일시중지</>, onClick: () => console.log('일시중지 clicked') },
+  { id: 'stop_btn', label: <><i className="fa fa-stop"></i>종료</>, onClick: () => console.log('종료 clicked') },
+  { id: 'reboot_btn', label: <><i className="fa fa-repeat"></i>재부팅</>, onClick: () => console.log('재부팅 clicked') },
+  { id: 'console_btn', label: <><i className="fa fa-desktop"></i>콘솔</>, onClick: () => console.log('콘솔 clicked') },
+  { id: 'snapshot_btn', label: '스냅샷 생성', onClick: () => console.log('스냅샷 생성 clicked') },
+  { id: 'migration_btn', label: '마이그레이션', onClick: () => console.log('마이그레이션 clicked') },
+];
+
+const popupItems = [
+  '가져오기',
+  '가상 머신 복제',
+  '삭제',
+  '마이그레이션 취소',
+  '변환 취소',
+  '템플릿 생성',
+  '도메인으로 내보내기',
+  'Export to Data Domain',
+  'OVA로 내보내기',
+];
+//
 const ComputingDetail = () => {
   const { section } = useParams();
   const navigate = useNavigate();
@@ -1635,61 +1660,12 @@ const ComputingDetail = () => {
 
   return (
     <div id="section">
-      <div className="section_header">
-        <div className="section_header_left">
-          <span>가상머신</span>
-          <div>on20-ap01</div>
-          <button><i className="fa fa-exchange"></i></button>
-        </div>
-        <div className="section_header_right">
-          <div className="article_nav">
-            <button id="edit_btn">편집</button>
-            <div>
-              <button>
-                <i className="fa fa-play"></i>실행
-              </button>
-            </div>
-            <button><i className="fa fa-pause"></i>일시중지</button>
-            <div>
-              <button>
-                <i className="fa fa-stop"></i>종료
-              </button>
-            </div>
-            <div>
-              <button>
-                <i className="fa fa-repeat"></i>재부팅
-              </button>
-            </div>
-            <button><i className="fa fa-desktop"></i>콘솔</button>
-            <button>스냅샷 생성</button>
-            <button id="migration_btn" onClick={openModal}>마이그레이션</button>
-            <button id="popup_btn">
-              <i className="fa fa-ellipsis-v"></i>
-              <div id="popup_box">
-                <div>
-                  <div className="get_btn">가져오기</div>
-                  <div className="get_btn">가상 머신 복제</div>
-                </div>
-                <div>
-                  <div>삭제</div>
-                </div>
-                <div>
-                  <div>마이그레이션 취소</div>
-                  <div>변환 취소</div>
-                </div>
-                <div>
-                  <div id="template_btn">템플릿 생성</div>
-                </div>
-                <div style={{ borderBottom: 'none' }}>
-                  <div id="domain2">도메인으로 내보내기</div>
-                  <div id="domain">Export to Data Domain</div>
-                  <div id="ova_btn">OVA로 내보내기</div>
-                </div>
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
+       <HeaderButton
+      title="가상머신"
+      subtitle="on20-ap01"
+      buttons={buttons}
+      popupItems={popupItems}
+    />
       <div className="content_outer">
         <div className="content_header">
           <div className="content_header_left">

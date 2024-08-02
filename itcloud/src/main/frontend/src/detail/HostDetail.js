@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import NavButton from '../components/navigation/NavButton';
+import HeaderButton from '../components/button/HeaderButton';
 
 function HostDetail() {
 
@@ -8,6 +9,19 @@ function HostDetail() {
     const handleTabClick = (tab) => {
         setActiveTab(tab);
     };
+    //headerbutton 컴포넌트
+    const buttons = [
+        { id: 'edit_btn', label: '편집', onClick: () => console.log('Edit button clicked') },
+        { id: 'delete_btn', label: '삭제', onClick: () => console.log('Delete button clicked') },
+        { id: 'manage_btn', label: '관리', onClick: () => console.log('Manage button clicked') },
+        { id: 'install_btn', label: '설치', onClick: () => console.log('Install button clicked') },
+        { id: 'host_console_btn', label: '호스트 콘솔', onClick: () => console.log('Host Console button clicked') },
+        { id: 'copy_network_btn', label: '호스트 네트워크 복사', onClick: () => console.log('Copy Host Network button clicked') },
+      ];
+    
+      const popupItems = []; // 현재 팝업 아이템이 없으므로 빈 배열로 설정
+      const uploadOptions = []; // 현재 업로드 옵션이 없으므로 빈 배열로 설정
+    // nav컴포넌트
     const sections = [
         { id: 'general', label: '일반' },
         { id: 'machine', label: '가상머신' },
@@ -22,26 +36,14 @@ function HostDetail() {
 
     return (
         <div id='host_detail_section'>
-            <div className="section_header">
-                <div className="section_header_left">
-                    <span>컴퓨팅</span>
-                    <span>호스트</span>
-                    <div>목록이름</div>
-                    <button>
-                    <i className="fa fa-exchange"></i>
-                    </button>
-                </div>
-                <div className="section_header_right">
-                    <div className="article_nav">
-                        <button>편집</button>
-                        <button>삭제</button>
-                        <button>관리</button>
-                        <button>설치</button>
-                        <button>호스트 콘솔</button>
-                        <button>호스트 네트워크 복사</button>
-                    </div>
-                </div>
-            </div>
+             <HeaderButton
+      title="컴퓨팅"
+      subtitle="호스트"
+      additionalText="목록이름"
+      buttons={buttons}
+      popupItems={popupItems}
+      uploadOptions={uploadOptions}
+    />
 
 
 
