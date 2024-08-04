@@ -1,7 +1,58 @@
 import React, { useEffect, useState } from 'react';
 import './Setting.css';
+import { Table } from './table/Table';
 
 const Setting = ({ }) => {
+    //테이블 컴포넌트
+    const sessionColumns = [
+      { header: '세션 DB ID', accessor: 'sessionId', clickable: false },
+      { header: '사용자 이름', accessor: 'username', clickable: false },
+      { header: '인증 공급자', accessor: 'authProvider', clickable: false },
+      { header: '사용자 ID', accessor: 'userId', clickable: false },
+      { header: '소스 IP', accessor: 'sourceIp', clickable: false },
+      { header: '세션 시작 시간', accessor: 'sessionStartTime', clickable: false },
+      { header: '마지막 세션 활성', accessor: 'lastSessionActive', clickable: false },
+    ];
+  
+    const sessionData = [
+      {
+        sessionId: '3204',
+        username: 'admin',
+        authProvider: 'internal-authz',
+        userId: 'b5e54b30-a5f3-11ee-81fa-00163...',
+        sourceIp: '192.168.0.218',
+        sessionStartTime: '2024. 1. 19. PM 1:04:09',
+        lastSessionActive: '2024. 1. 19. PM 4:45:55',
+      },
+      {
+        sessionId: '3206',
+        username: 'admin',
+        authProvider: 'internal-authz',
+        userId: 'b5e54b30-a5f3-11ee-81fa-00163...',
+        sourceIp: '192.168.0.214',
+        sessionStartTime: '2024. 1. 19. PM 3:46:55',
+        lastSessionActive: '2024. 1. 19. PM 4:45:55',
+      },
+      {
+        sessionId: '3204',
+        username: 'admin',
+        authProvider: 'internal-authz',
+        userId: 'b5e54b30-a5f3-11ee-81fa-00163...',
+        sourceIp: '192.168.0.218',
+        sessionStartTime: '2024. 1. 19. PM 1:04:09',
+        lastSessionActive: '2024. 1. 19. PM 4:45:55',
+      },
+      {
+        sessionId: '3206',
+        username: 'admin',
+        authProvider: 'internal-authz',
+        userId: 'b5e54b30-a5f3-11ee-81fa-00163...',
+        sourceIp: '192.168.0.214',
+        sessionStartTime: '2024. 1. 19. PM 3:46:55',
+        lastSessionActive: '2024. 1. 19. PM 4:45:55',
+      },
+    ];
+    //
     useEffect(() => {
         function adjustFontSize() {
             const width = window.innerWidth;
@@ -56,57 +107,7 @@ const Setting = ({ }) => {
                 <button>세션종료</button>
               </div>
             </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>세션 DB ID</th>
-                  <th>사용자 이름</th>
-                  <th>인증 공급자</th>
-                  <th>사용자 ID</th>
-                  <th>소스 IP</th>
-                  <th>세션 시작 시간</th>
-                  <th>마지막 세션 활성</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>3204</td>
-                  <td>admin</td>
-                  <td>internal-authz</td>
-                  <td>b5e54b30-a5f3-11ee-81fa-00163...</td>
-                  <td>192.168.0.218</td>
-                  <td>2024. 1. 19. PM 1:04:09</td>
-                  <td>2024. 1. 19. PM 4:45:55</td>
-                </tr>
-                <tr>
-                  <td>3206</td>
-                  <td>admin</td>
-                  <td>internal-authz</td>
-                  <td>b5e54b30-a5f3-11ee-81fa-00163...</td>
-                  <td>192.168.0.214</td>
-                  <td>2024. 1. 19. PM 3:46:55</td>
-                  <td>2024. 1. 19. PM 4:45:55</td>
-                </tr>
-                <tr>
-                  <td>3204</td>
-                  <td>admin</td>
-                  <td>internal-authz</td>
-                  <td>b5e54b30-a5f3-11ee-81fa-00163...</td>
-                  <td>192.168.0.218</td>
-                  <td>2024. 1. 19. PM 1:04:09</td>
-                  <td>2024. 1. 19. PM 4:45:55</td>
-                </tr>
-                <tr>
-                  <td>3206</td>
-                  <td>admin</td>
-                  <td>internal-authz</td>
-                  <td>b5e54b30-a5f3-11ee-81fa-00163...</td>
-                  <td>192.168.0.214</td>
-                  <td>2024. 1. 19. PM 3:46:55</td>
-                  <td>2024. 1. 19. PM 4:45:55</td>
-                </tr>
-              </tbody>
-            </table>
+            <Table columns={sessionColumns} data={sessionData} onRowClick={() => console.log('Row clicked')} />
           </div>
         </div>
   

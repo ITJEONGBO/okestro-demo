@@ -2,8 +2,228 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import NavButton from '../components/navigation/NavButton';
 import HeaderButton from '../components/button/HeaderButton';
+import { Table } from '../components/table/Table';
 
 function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
+  // 테이블컴포넌트
+  // 일반
+  const generalColumns = [
+    { header: 'ID', accessor: 'id', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '업타임', accessor: 'uptime', clickable: false },
+    { header: '템플릿', accessor: 'template', clickable: false },
+    { header: '운영 시스템', accessor: 'os', clickable: false },
+    { header: '펌웨어/장치의 유형', accessor: 'firmware', clickable: false },
+    { header: '우선 순위', accessor: 'priority', clickable: false },
+    { header: '최적화 옵션', accessor: 'optimization', clickable: false },
+  ];
+
+  const generalData = [
+    {
+      id: 'on20-ap01',
+      description: '',
+      status: '실행 중',
+      uptime: '11 days',
+      template: 'Blank',
+      os: 'Linux',
+      firmware: (
+        <>
+          BIOS의 Q35 칩셋{' '}
+          <i className="fa fa-ban" style={{ marginLeft: '13%', color: 'orange' }}></i>
+        </>
+      ),
+      priority: '높음',
+      optimization: '서버',
+    },
+  ];
+  //vnic
+  const vnicColumns = [
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '네트워크', accessor: 'network', clickable: false },
+    { header: '데이터 센터', accessor: 'dataCenter', clickable: false },
+    { header: '호환 버전', accessor: 'compatVersion', clickable: false },
+    { header: 'QoS 이름', accessor: 'qosName', clickable: false },
+    { header: '네트워크 필터', accessor: 'networkFilter', clickable: false },
+    { header: '포트 미러링', accessor: 'portMirroring', clickable: false },
+    { header: '통과', accessor: 'passthrough', clickable: false },
+  ];
+
+  const vnicData = [
+    {
+      name: 'ovirtmgmt',
+      network: 'ovirtmgmt',
+      dataCenter: 'Default',
+      compatVersion: '4.7',
+      qosName: '',
+      networkFilter: 'wdsm-no-mac-spoofing',
+      portMirroring: '',
+      passthrough: '아니요',
+    },
+  ];
+  //클러스터
+  const clusterColumns = [
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '호환 버전', accessor: 'compatVersion', clickable: false },
+    { header: '연결된 네트워크', accessor: 'connectedNetwork', clickable: false },
+    { header: '네트워크 상태', accessor: 'networkStatus', clickable: false },
+    { header: '필수 네트워크', accessor: 'requiredNetwork', clickable: false },
+    { header: '네트워크 역할', accessor: 'networkRole', clickable: false, style: { textAlign: 'center' } },
+    { header: '설명', accessor: 'description', clickable: false },
+  ];
+
+  const clusterData = [
+    {
+      name: 'Default',
+      compatVersion: '4.7',
+      connectedNetwork: <i className="fa fa-chevron-left"></i>,
+      networkStatus: <i className="fa fa-chevron-left"></i>,
+      requiredNetwork: <i className="fa fa-chevron-left"></i>,
+      networkRole: (
+        <>
+          <i className="fa fa-chevron-left"></i>
+          <i className="fa fa-chevron-left"></i>
+          <i className="fa fa-chevron-left"></i>
+          <i className="fa fa-chevron-left"></i>
+        </>
+      ),
+      description: 'The default server cluster',
+    },
+  ];
+  // 클러스터 팝업
+  const clusterPopupColumns = [
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '호환 버전', accessor: 'compatVersion', clickable: false },
+    { header: '연결된 네트워크', accessor: 'connectedNetwork', clickable: false },
+    { header: '네트워크 상태', accessor: 'networkStatus', clickable: false },
+    { header: '필수 네트워크', accessor: 'requiredNetwork', clickable: false },
+    { header: '네트워크 역할', accessor: 'networkRole', clickable: false, style: { textAlign: 'center' } },
+    { header: '설명', accessor: 'description', clickable: false },
+  ];
+
+  const clusterPopupData = [
+    {
+      name: 'Default',
+      compatVersion: '4.7',
+      connectedNetwork: <i className="fa fa-chevron-left"></i>,
+      networkStatus: <i className="fa fa-chevron-left"></i>,
+      requiredNetwork: <i className="fa fa-chevron-left"></i>,
+      networkRole: (
+        <>
+          <i className="fa fa-chevron-left"></i>
+          <i className="fa fa-chevron-left"></i>
+          <i className="fa fa-chevron-left"></i>
+          <i className="fa fa-chevron-left"></i>
+        </>
+      ),
+      description: 'The default server cluster',
+    },
+  ];
+  // 호스트
+  const hostColumns = [
+    { header: '', accessor: 'icon', clickable: false },
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '클러스터', accessor: 'cluster', clickable: false },
+    { header: '데이터 센터', accessor: 'dataCenter', clickable: false },
+    { header: '네트워크 장치 상태', accessor: 'networkDeviceStatus', clickable: false },
+    { header: '비동기', accessor: 'async', clickable: false },
+    { header: '네트워크 장치', accessor: 'networkDevice', clickable: false },
+    { header: '속도', accessor: 'speed', clickable: false },
+    { header: 'Rx', accessor: 'rx', clickable: false },
+    { header: 'Tx', accessor: 'tx', clickable: false },
+    { header: '총 Rx', accessor: 'totalRx', clickable: false },
+    { header: '총 Tx', accessor: 'totalTx', clickable: false },
+  ];
+
+  const hostData = [
+    {
+      icon: <i className="fa fa-chevron-left"></i>,
+      name: 'host01.ititinfo.com',
+      cluster: 'Default',
+      dataCenter: 'Default',
+      networkDeviceStatus: <i className="fa fa-chevron-left"></i>,
+      async: '',
+      networkDevice: 'ens192',
+      speed: '10000',
+      rx: '118',
+      tx: '1',
+      totalRx: '25,353,174,284,042',
+      totalTx: '77,967,054,294',
+    },
+  ];
+  //가상머신
+  const vmColumns = [
+    { header: '', accessor: 'icon', clickable: false, style: { textAlign: 'center' } },
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '클러스터', accessor: 'cluster', clickable: false },
+    { header: 'IP 주소', accessor: 'ipAddress', clickable: false },
+    { header: 'vNIC 상태', accessor: 'vnicStatus', clickable: false },
+    { header: 'vNIC', accessor: 'vnic', clickable: false },
+    { header: 'vNIC Rx', accessor: 'vnicRx', clickable: false },
+    { header: 'vNIC Tx', accessor: 'vnicTx', clickable: false },
+    { header: '총 Rx', accessor: 'totalRx', clickable: false },
+    { header: '총 Tx', accessor: 'totalTx', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
+    { header: '', accessor: 'empty', clickable: false },
+  ];
+
+  const vmData = [
+    {
+      icon: <i className="fa fa-chevron-left"></i>,
+      name: 'HostedEngine',
+      cluster: 'Default',
+      ipAddress: '192.168.0.08 fe80::2342',
+      vnicStatus: <i className="fa fa-chevron-left"></i>,
+      vnic: 'vnet0',
+      vnicRx: '1',
+      vnicTx: '1',
+      totalRx: '5,353,174,284',
+      totalTx: '5,353,174,284',
+      description: 'Hosted engine VM',
+      empty: '',
+    },
+  ];
+  //템플릿
+  const templateColumns = [
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '버전', accessor: 'version', clickable: false },
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '클러스터', accessor: 'cluster', clickable: false },
+    { header: 'vNIC', accessor: 'vnic', clickable: false },
+  ];
+
+  const templateData = [
+    {
+      name: 'test02',
+      version: '1',
+      status: 'OK',
+      cluster: 'Default',
+      vnic: 'nic1',
+    },
+  ];
+  //권한
+  const permissionColumns = [
+    { header: '', accessor: 'icon', clickable: false },
+    { header: '사용자', accessor: 'user', clickable: false },
+    { header: '인증 공급자', accessor: 'authProvider', clickable: false },
+    { header: '네임스페이스', accessor: 'namespace', clickable: false },
+    { header: '역할', accessor: 'role', clickable: false },
+    { header: '생성일', accessor: 'createdDate', clickable: false },
+    { header: 'Inherited From', accessor: 'inheritedFrom', clickable: false },
+  ];
+
+  const permissionData = [
+    {
+      icon: <i className="fa fa-user"></i>,
+      user: 'ovirtmgmt',
+      authProvider: '',
+      namespace: '*',
+      role: 'SuperUser',
+      createdDate: '2023.12.29 AM 11:40:58',
+      inheritedFrom: '(시스템)',
+    },
+  ];
+  // 
   const [activeTab, setActiveTab] = useState('general');
 
   const handleTabClick = (tab) => {
@@ -57,49 +277,8 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
         {activeTab === 'general' && (
           <div className="section_content_outer">
             <div className="table_container_left">
-              <table className="table">
-                <tbody>
-                  <tr>
-                    <th>ID:</th>
-                    <td>on20-ap01</td>
-                  </tr>
-                  <tr>
-                    <th>설명:</th>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <th>상태:</th>
-                    <td>실행 중</td>
-                  </tr>
-                  <tr>
-                    <th>업타임:</th>
-                    <td>11 days</td>
-                  </tr>
-                  <tr>
-                    <th>템플릿:</th>
-                    <td>Blank</td>
-                  </tr>
-                  <tr>
-                    <th>운영 시스템:</th>
-                    <td>Linux</td>
-                  </tr>
-                  <tr>
-                    <th>펌웨어/장치의 유형:</th>
-                    <td>
-                      BIOS의 Q35 칩셋{' '}
-                      <i className="fa fa-ban" style={{ marginLeft: '13%', color: 'orange' }}></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>우선 순위:</th>
-                    <td>높음</td>
-                  </tr>
-                  <tr>
-                    <th>최적화 옵션:</th>
-                    <td>서버</td>
-                  </tr>
-                </tbody>
-              </table>
+            
+            <Table columns={generalColumns} data={generalData} onRowClick={() => console.log('Row clicked')} />
             </div>
           </div>
         )}
@@ -121,32 +300,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                 </div>
 
                 <div className="table_outer2">
-                    <table>
-                    <thead>
-                        <tr>
-                            <th>이름</th>
-                            <th>네트워크</th>
-                            <th>데이터 센터</th>
-                            <th>호환 버전</th>
-                            <th>QoS 이름</th>
-                            <th>네트워크 필터</th>
-                            <th>포트 미러링</th>
-                            <th>통과</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>ovirtmgmt</td>
-                            <td>ovirtmgmt</td>
-                            <td>Default</td>
-                            <td>4.7</td>
-                            <td></td>
-                            <td>wdsm-no-mac-spoofing</td>
-                            <td></td>
-                            <td>아니요</td>
-                        </tr>
-                    </tbody>
-                    </table>
+                <Table columns={vnicColumns} data={vnicData} onRowClick={() => console.log('Row clicked')} />
                 </div>
             </div>
        </div>
@@ -167,35 +321,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                 <button><i className="fa fa-ellipsis-v"></i></button>
             </div>
             <div className="table_outer2">
-                <table>
-                <thead>
-                    <tr>
-                        <th>이름</th>
-                        <th>호환 버전</th>
-                        <th>연결된 네트워크</th>
-                        <th>네트워크 상태</th>
-                        <th>필수 네트워크</th>
-                        <th>네트워크 역할</th>
-                        <th>설명</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Default</td>
-                        <td>4.7</td>
-                        <td><i className="fa fa-chevron-left"></i></td>
-                        <td><i className="fa fa-chevron-left"></i></td>
-                        <td ><i className="fa fa-chevron-left"></i></td>
-                        <td style={{ textAlign: 'center' }}>
-                            <i className="fa fa-chevron-left"></i>
-                            <i className="fa fa-chevron-left"></i>
-                            <i className="fa fa-chevron-left"></i>
-                            <i className="fa fa-chevron-left"></i>
-                        </td>
-                        <td>The default server cluster</td>
-                    </tr>
-                </tbody>
-                </table>
+            <Table columns={clusterColumns} data={clusterData} onRowClick={() => console.log('Row clicked')} />
             </div>
 
             </div>
@@ -222,40 +348,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                 </div>
             
             <div className="table_outer2">
-                <table>
-                  <thead>
-                      <tr>
-                          <th></th>
-                          <th>이름</th>
-                          <th>클러스터</th>
-                          <th>데이터 센터</th>
-                          <th>네트워크 장치 상태</th>
-                          <th>비동기</th>
-                          <th>네트워크 장치</th>
-                          <th>속도</th>
-                          <th>Rx</th>
-                          <th>Tx</th>
-                          <th>총 Rx</th>
-                          <th>총 Tx</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      <tr>
-                        <td><i className="fa fa-chevron-left"></i></td> 
-                        <td>host01.ititinfo.com</td>
-                        <td>Default</td>
-                        <td>Default</td>
-                        <td><i className="fa fa-chevron-left"></i></td>
-                        <td></td>
-                        <td>ens192</td>
-                        <td>10000</td>
-                        <td>118</td>
-                        <td>1</td>
-                        <td>25,353,174,284,042</td>
-                        <td>77,967,054,294</td>
-                      </tr>
-                  </tbody>
-                </table>
+            <Table columns={hostColumns} data={hostData} onRowClick={() => console.log('Row clicked')} />
             </div>
             </div>
        </div>
@@ -280,41 +373,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                   <button><i className="fa fa-ellipsis-v"></i></button>
               </div>
             <div className="table_outer2">
-                <table>
-                <thead>
-                    <tr>
-                      <th></th>
-                      <th>이름</th>
-                      <th>클러스터</th>
-                      <th>IP 주소</th>
-                      <th>vNIC 상태</th>
-                      <th>vNIC</th>
-                      <th>vNIC Rx</th>
-                      <th>vNIC Tx</th>
-                      <th>총 Rx</th>
-                      <th>총 Tx</th>
-                      <th>설명</th>
-                      <th></th>
-
-                    </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td style={{ textAlign: 'center' }}><i className="fa fa-chevron-left"></i></td> 
-                    <td>HostedEngine</td>
-                    <td>Default</td>
-                    <td>192.168.0.08 fe80::2342</td>
-                    <td><i className="fa fa-chevron-left"></i></td>
-                    <td>vnet0</td>
-                    <td>1</td>
-                    <td>1</td>
-                    <td>5,353,174,284</td>
-                    <td>5,353,174,284</td>
-                    <td>Hosted engine VM</td>
-                    <td></td>
-                  </tr>
-                </tbody>
-                </table>
+              <Table columns={vmColumns} data={vmData} onRowClick={() => console.log('Row clicked')} />
             </div>
             </div>
        </div>
@@ -334,29 +393,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                   <button><i className="fa fa-ellipsis-v"></i></button>
               </div>
             <div className="table_outer2">
-                <table>
-                <thead>
-                    <tr>
-                      <th>이름</th>
-                      <th>버전</th>
-                      <th>상태</th>
-                      <th>클러스터</th>
-                      <th>vNIC</th>
-                      
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                    {/*<td colSpan="8" style={{ textAlign: 'center' }}>표시할 항목이 없습니다</td>*/}
-                      <td>test02</td>
-                      <td>1</td>
-                      <td>OK</td>
-                      <td>Default</td>
-                      <td>nic1</td>
-                      
-                    </tr>
-                </tbody>
-                </table>
+            <Table columns={templateColumns} data={templateData} onRowClick={() => console.log('Row clicked')} />
             </div>
             </div>
         </div>
@@ -385,30 +422,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                 </div>
               </div>
               <div className="table_outer2">
-                <table style={{ marginTop: 0 }}>
-                  <thead>
-                    <tr>
-                      <th></th>
-                      <th>사용자</th>
-                      <th>인증 공급자</th>
-                      <th>네임스페이스</th>
-                      <th>역할</th>
-                      <th>생성일</th>
-                      <th>Inherited From</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><i className="fa fa-user"></i></td>
-                      <td>ovirtmgmt</td>
-                      <td></td>
-                      <td>*</td>
-                      <td>SuperUser</td>
-                      <td>2023.12.29 AM 11:40:58</td>
-                      <td>(시스템)</td>
-                    </tr>
-                  </tbody>
-                </table>
+              <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
               </div>
             </div>
         </div>
@@ -624,35 +638,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
           </div>
           
           <div className="table_outer2">
-                <table>
-                  <thead>
-                      <tr>
-                          <th>이름</th>
-                          <th>호환 버전</th>
-                          <th>연결된 네트워크</th>
-                          <th>네트워크 상태</th>
-                          <th>필수 네트워크</th>
-                          <th>네트워크 역할</th>
-                          <th>설명</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      <tr>
-                          <td>Default</td>
-                          <td>4.7</td>
-                          <td><i className="fa fa-chevron-left"></i></td>
-                          <td><i className="fa fa-chevron-left"></i></td>
-                          <td ><i className="fa fa-chevron-left"></i></td>
-                          <td style={{ textAlign: 'center' }} >
-                              <i className="fa fa-chevron-left"></i>
-                              <i className="fa fa-chevron-left"></i>
-                              <i className="fa fa-chevron-left"></i>
-                              <i className="fa fa-chevron-left"></i>
-                          </td>
-                          <td>The default server cluster</td>
-                      </tr>
-                  </tbody>
-                </table>
+            <Table columns={clusterPopupColumns} data={clusterPopupData} onRowClick={() => console.log('Row clicked')} />
             </div>
           
 

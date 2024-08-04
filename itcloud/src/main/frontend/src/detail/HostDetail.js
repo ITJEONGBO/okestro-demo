@@ -1,14 +1,200 @@
 import React, { useState } from 'react';
 import NavButton from '../components/navigation/NavButton';
 import HeaderButton from '../components/button/HeaderButton';
+import { Table } from '../components/table/Table';
 
 function HostDetail() {
+     // 가상머신 테이블컴포넌트
+     const columns = [
+        { header: '', accessor: 'icon', clickable: false },
+        { header: '사용자', accessor: 'user', clickable: false },
+        { header: '인증 공급자', accessor: 'authProvider', clickable: false },
+        { header: '네임스페이스', accessor: 'namespace', clickable: false },
+        { header: '역할', accessor: 'role', clickable: false },
+        { header: '생성일', accessor: 'createdDate', clickable: false },
+        { header: 'Inherited From', accessor: 'inheritedFrom', clickable: false },
+      ];
+    
+      const data = [
+        {
+          icon: <i className="fa fa-user"></i>,
+          user: 'ovirtmgmt',
+          authProvider: '',
+          namespace: '*',
+          role: 'SuperUser',
+          createdDate: '2023.12.29 AM 11:40:58',
+          inheritedFrom: '(시스템)',
+        },
+      ];
+   // 호스트장치 테이블 컴포넌트
+   const volumeColumns = [
+    { header: '별칭', accessor: 'alias', clickable: false },
+    { header: <i className="fa fa-chevron-left"></i>, accessor: 'icon1', clickable: false },
+    { header: <i className="fa fa-chevron-left"></i>, accessor: 'icon2', clickable: false },
+    { header: '가상 크기', accessor: 'virtualSize', clickable: false },
+    { header: '실제 크기', accessor: 'actualSize', clickable: false },
+    { header: '할당 정책', accessor: 'allocationPolicy', clickable: false },
+    { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
+    { header: '생성 일자', accessor: 'creationDate', clickable: false },
+    { header: '최근 업데이트', accessor: 'lastUpdate', clickable: false },
+    { header: '', accessor: 'icon3', clickable: false },
+    { header: '연결 대상', accessor: 'connectionTarget', clickable: false },
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '유형', accessor: 'type', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
+  ];
 
+  const volumeData = [
+    {
+      alias: 'aa',
+      icon1: '',
+      icon2: '',
+      virtualSize: '<1 GiB',
+      actualSize: '<1 GiB',
+      allocationPolicy: '씬 프로비저닝',
+      storageDomain: 'hosted_storage',
+      creationDate: '2024. 4. 26. PM 3:19:39',
+      lastUpdate: '2024. 4. 26. PM 3:19:45',
+      icon3: <i className="fa fa-chevron-left"></i>,
+      connectionTarget: '',
+      status: '잠김',
+      type: '이미지',
+      description: 'testa',
+    },
+  ];
+    // 호스트후크 테이블 컴포넌트
+    const userColumns = [
+        { header: '별칭', accessor: 'alias', clickable: false },
+        { header: <i className="fa fa-chevron-left"></i>, accessor: 'icon1', clickable: false },
+        { header: <i className="fa fa-chevron-left"></i>, accessor: 'icon2', clickable: false },
+        { header: '가상 크기', accessor: 'virtualSize', clickable: false },
+        { header: '실제 크기', accessor: 'actualSize', clickable: false },
+        { header: '할당 정책', accessor: 'allocationPolicy', clickable: false },
+        { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
+        { header: '생성 일자', accessor: 'creationDate', clickable: false },
+        { header: '최근 업데이트', accessor: 'lastUpdate', clickable: false },
+        { header: '', accessor: 'icon3', clickable: false },
+        { header: '연결 대상', accessor: 'connectionTarget', clickable: false },
+        { header: '상태', accessor: 'status', clickable: false },
+        { header: '유형', accessor: 'type', clickable: false },
+        { header: '설명', accessor: 'description', clickable: false },
+      ];
+    
+      const userData = [
+        {
+          alias: 'aa',
+          icon1: '',
+          icon2: '',
+          virtualSize: '<1 GiB',
+          actualSize: '<1 GiB',
+          allocationPolicy: '씬 프로비저닝',
+          storageDomain: 'hosted_storage',
+          creationDate: '2024. 4. 26. PM 3:19:39',
+          lastUpdate: '2024. 4. 26. PM 3:19:45',
+          icon3: <i className="fa fa-chevron-left"></i>,
+          connectionTarget: '',
+          status: '잠김',
+          type: '이미지',
+          description: 'testa',
+        },
+    ];
+    // 권한 테이블 컴포넌트
+    const permissionColumns = [
+        { header: '', accessor: 'icon', clickable: false },
+        { header: '사용자', accessor: 'user', clickable: false },
+        { header: '인증 공급자', accessor: 'authProvider', clickable: false },
+        { header: '네임스페이스', accessor: 'namespace', clickable: false },
+        { header: '역할', accessor: 'role', clickable: false },
+        { header: '생성일', accessor: 'createdDate', clickable: false },
+        { header: 'Inherited From', accessor: 'inheritedFrom', clickable: false },
+      ];
+    
+      const permissionData = [
+        {
+          icon: <i className="fa fa-user"></i>,
+          user: 'ovirtmgmt',
+          authProvider: '',
+          namespace: '*',
+          role: 'SuperUser',
+          createdDate: '2023.12.29 AM 11:40:58',
+          inheritedFrom: '(시스템)',
+        },
+      ];
+      //선호도 레이블 테이블 컴포넌트
+      const memberColumns = [
+        { header: '이름', accessor: 'name', clickable: false },
+        { header: '가상머신 멤버', accessor: 'vmMember', clickable: false },
+        { header: '호스트 멤버', accessor: 'hostMember', clickable: false },
+      ];
+    
+      const memberData = [
+        {
+          name: '',
+          vmMember: '',
+          hostMember: '',
+          colSpan: 3,
+          style: { textAlign: 'center' },
+          noItemsText: '표시할 항목이 없습니다',
+        },
+      ];
+      // 에라타 테이블 컴포넌트
+      const qosColumns = [
+        { header: '이름', accessor: 'name', clickable: false },
+        { header: '설명', accessor: 'description', clickable: false },
+        { header: 'QoS이름', accessor: 'qosName', clickable: false },
+      ];
+    
+      const qosData = [
+        {
+          name: 'hosted_storage',
+          description: '',
+          qosName: '제한 없음',
+        },
+      ];
+      // 이벤트 테이블 컴포넌트
+      const storageColumns = [
+        { header: '별칭', accessor: 'alias', clickable: false },
+        { header: <i className="fa fa-chevron-left"></i>, accessor: 'icon1', clickable: false },
+        { header: <i className="fa fa-chevron-left"></i>, accessor: 'icon2', clickable: false },
+        { header: '가상 크기', accessor: 'virtualSize', clickable: false },
+        { header: '실제 크기', accessor: 'actualSize', clickable: false },
+        { header: '할당 정책', accessor: 'allocationPolicy', clickable: false },
+        { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
+        { header: '생성 일자', accessor: 'creationDate', clickable: false },
+        { header: '최근 업데이트', accessor: 'lastUpdate', clickable: false },
+        { header: '', accessor: 'icon3', clickable: false },
+        { header: '연결 대상', accessor: 'connectionTarget', clickable: false },
+        { header: '상태', accessor: 'status', clickable: false },
+        { header: '유형', accessor: 'type', clickable: false },
+        { header: '설명', accessor: 'description', clickable: false },
+      ];
+    
+      const storageData = [
+        {
+          alias: 'aa',
+          icon1: '',
+          icon2: '',
+          virtualSize: '<1 GiB',
+          actualSize: '<1 GiB',
+          allocationPolicy: '씬 프로비저닝',
+          storageDomain: 'hosted_storage',
+          creationDate: '2024. 4. 26. PM 3:19:39',
+          lastUpdate: '2024. 4. 26. PM 3:19:45',
+          icon3: <i className="fa fa-chevron-left"></i>,
+          connectionTarget: '',
+          status: '잠김',
+          type: '이미지',
+          description: 'testa',
+        },
+      ];
+    //
     const [activeTab, setActiveTab] = useState('general');
 
     const handleTabClick = (tab) => {
         setActiveTab(tab);
     };
+
+
     //headerbutton 컴포넌트
     const buttons = [
         { id: 'edit_btn', label: '편집', onClick: () => console.log('Edit button clicked') },
@@ -34,6 +220,7 @@ function HostDetail() {
         { id: 'event', label: '이벤트' }
       ];
 
+      
     return (
         <div id='host_detail_section'>
              <HeaderButton
@@ -106,6 +293,7 @@ function HostDetail() {
                 )}
                 {/* 가상머신 */}
                 {activeTab === 'machine' && (
+                    
                 <div className="storage_right_outer">
                     <div className="storage_domain_content">
                         <div className="content_header_right">
@@ -127,30 +315,7 @@ function HostDetail() {
                             <button><i className="fa fa-ellipsis-v"></i></button>
                             </div>
                         </div>
-                        <table>
-                            <thead>
-                            <tr>
-                                <th></th>
-                                <th>사용자</th>
-                                <th>인증 공급자</th>
-                                <th>네임스페이스</th>
-                                <th>역할</th>
-                                <th>생성일</th>
-                                <th>Inherited From</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td><i className="fa fa-user"></i></td>
-                                <td>ovirtmgmt</td>
-                                <td></td>
-                                <td>*</td>
-                                <td>SuperUser</td>
-                                <td>2023.12.29 AM 11:40:58</td>
-                                <td>(시스템)</td>
-                            </tr>
-                            </tbody>
-                        </table>
+                        <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
                     </div>
             </div>
                 )}
@@ -181,46 +346,9 @@ function HostDetail() {
                     <button><i className="fa fa-chevron-right"></i></button>
                     <button><i className="fa fa-ellipsis-v"></i></button>
                 </div>
-                <div className="table_outer">
-                    <table>
-                    <thead>
-                        <tr>
-                        <th>별칭</th>
-                        <th><i className="fa fa-chevron-left"></i></th>
-                        <th><i className="fa fa-chevron-left"></i></th>
-                        <th>가상 크기</th>
-                        <th>실제 크기</th>
-                        <th>할당 정책</th>
-                        <th>스토리지 도메인</th>
-                        <th>생성 일자</th>
-                        <th>최근 업데이트</th>
-                        <th></th>
-                        <th>연결 대상</th>
-                        <th>상태</th>
-                        <th>유형</th>
-                        <th>설명</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                        <td>aa</td>
-                        <td></td>
-                        <td></td>
-                        <td>&lt;1 GiB</td>
-                        <td>&lt;1 GiB</td>
-                        <td>씬 프로비저닝</td>
-                        <td>hosted_storage</td>
-                        <td>2024. 4. 26. PM 3:19:39</td>
-                        <td>2024. 4. 26. PM 3:19:45</td>
-                        <td><i className="fa fa-chevron-left"></i></td>
-                        <td></td>
-                        <td>잠김</td>
-                        <td>이미지</td>
-                        <td>testa</td>
-                        </tr>
-                    </tbody>
-                    </table>
-                </div>
+                
+                <Table columns={volumeColumns} data={volumeData} onRowClick={() => console.log('Row clicked')} />
+                
                 </div>
                 </div>
                 )}
@@ -236,46 +364,9 @@ function HostDetail() {
                         <button><i className="fa fa-chevron-right"></i></button>
                         <button><i className="fa fa-ellipsis-v"></i></button>
                     </div>
-                    <div className="table_outer">
-                        <table>
-                        <thead>
-                            <tr>
-                            <th>별칭</th>
-                            <th><i className="fa fa-chevron-left"></i></th>
-                            <th><i className="fa fa-chevron-left"></i></th>
-                            <th>가상 크기</th>
-                            <th>실제 크기</th>
-                            <th>할당 정책</th>
-                            <th>스토리지 도메인</th>
-                            <th>생성 일자</th>
-                            <th>최근 업데이트</th>
-                            <th></th>
-                            <th>연결 대상</th>
-                            <th>상태</th>
-                            <th>유형</th>
-                            <th>설명</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                            <td>aa</td>
-                            <td></td>
-                            <td></td>
-                            <td>&lt;1 GiB</td>
-                            <td>&lt;1 GiB</td>
-                            <td>씬 프로비저닝</td>
-                            <td>hosted_storage</td>
-                            <td>2024. 4. 26. PM 3:19:39</td>
-                            <td>2024. 4. 26. PM 3:19:45</td>
-                            <td><i className="fa fa-chevron-left"></i></td>
-                            <td></td>
-                            <td>잠김</td>
-                            <td>이미지</td>
-                            <td>testa</td>
-                            </tr>
-                        </tbody>
-                        </table>
-                    </div>
+                    
+                    <Table columns={userColumns} data={userData} onRowClick={() => console.log('Row clicked')} />
+                    
                     </div>
                 </div>
             
@@ -303,30 +394,7 @@ function HostDetail() {
                             <button><i className="fa fa-ellipsis-v"></i></button>
                             </div>
                         </div>
-                        <table>
-                            <thead>
-                            <tr>
-                                <th></th>
-                                <th>사용자</th>
-                                <th>인증 공급자</th>
-                                <th>네임스페이스</th>
-                                <th>역할</th>
-                                <th>생성일</th>
-                                <th>Inherited From</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td><i className="fa fa-user"></i></td>
-                                <td>ovirtmgmt</td>
-                                <td></td>
-                                <td>*</td>
-                                <td>SuperUser</td>
-                                <td>2023.12.29 AM 11:40:58</td>
-                                <td>(시스템)</td>
-                            </tr>
-                            </tbody>
-                        </table>
+                        <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
                     </div>
                 </div>
                 )}
@@ -345,22 +413,9 @@ function HostDetail() {
                                 <button><i className="fa fa-chevron-right"></i></button>
                                 <button><i className="fa fa-ellipsis-v"></i></button>
                             </div>
-                            <div className="table_outer">
-                                <table>
-                                <thead>
-                                    <tr>
-                                        <th>이름</th>
-                                        <th>가상머신 멤버</th>
-                                        <th>호스트 멤버</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                    <td colSpan="8" style={{ textAlign: 'center' }}>표시할 항목이 없습니다</td>
-                                    </tr>
-                                </tbody>
-                                </table>
-                            </div>
+                            
+                            <Table columns={memberColumns} data={memberData} onRowClick={() => console.log('Row clicked')} />
+                            
                         </div>
                 </div>
                 )}
@@ -379,24 +434,9 @@ function HostDetail() {
                         <button><i className="fa fa-chevron-right"></i></button>
                         <button><i className="fa fa-ellipsis-v"></i></button>
                         </div>
-                        <div className="table_outer">
-                        <table>
-                            <thead>
-                            <tr>
-                                <th>이름</th>
-                                <th>설명</th>
-                                <th>QoS이름</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>hosted_storage</td>
-                                <td></td>
-                                <td>제한 없음</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        </div>
+                        
+                        <Table columns={qosColumns} data={qosData} onRowClick={() => console.log('Row clicked')} />
+                        
                     </div>
                 </div>
                 
@@ -411,46 +451,9 @@ function HostDetail() {
                         <button><i className="fa fa-chevron-right"></i></button>
                         <button><i className="fa fa-ellipsis-v"></i></button>
                     </div>
-                    <div className="table_outer">
-                        <table>
-                        <thead>
-                            <tr>
-                            <th>별칭</th>
-                            <th><i className="fa fa-chevron-left"></i></th>
-                            <th><i className="fa fa-chevron-left"></i></th>
-                            <th>가상 크기</th>
-                            <th>실제 크기</th>
-                            <th>할당 정책</th>
-                            <th>스토리지 도메인</th>
-                            <th>생성 일자</th>
-                            <th>최근 업데이트</th>
-                            <th></th>
-                            <th>연결 대상</th>
-                            <th>상태</th>
-                            <th>유형</th>
-                            <th>설명</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                            <td>aa</td>
-                            <td></td>
-                            <td></td>
-                            <td>&lt;1 GiB</td>
-                            <td>&lt;1 GiB</td>
-                            <td>씬 프로비저닝</td>
-                            <td>hosted_storage</td>
-                            <td>2024. 4. 26. PM 3:19:39</td>
-                            <td>2024. 4. 26. PM 3:19:45</td>
-                            <td><i className="fa fa-chevron-left"></i></td>
-                            <td></td>
-                            <td>잠김</td>
-                            <td>이미지</td>
-                            <td>testa</td>
-                            </tr>
-                        </tbody>
-                        </table>
-                    </div>
+                    
+                    <Table columns={storageColumns} data={storageData} onRowClick={() => console.log('Row clicked')} />
+                    
                     </div>
                 </div>
                 

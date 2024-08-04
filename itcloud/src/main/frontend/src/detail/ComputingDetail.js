@@ -208,6 +208,38 @@ const DiskSection = () => {
   const openJoinDiskModal = () => setIsJoinDiskModalOpen(true);
   const closeJoinDiskModal = () => setIsJoinDiskModalOpen(false);
 
+  // 테이블 컴포넌트
+  const columns = [
+    { header: '', accessor: 'statusIcon', clickable: false },
+    { header: '변경', accessor: 'change', clickable: false },
+    { header: <i className="fa fa-glass"></i>, accessor: 'glass1', clickable: false },
+    { header: <i className="fa fa-glass"></i>, accessor: 'glass2', clickable: false },
+    { header: <i className="fa fa-glass"></i>, accessor: 'glass3', clickable: false },
+    { header: '가상 크기', accessor: 'virtualSize', clickable: false },
+    { header: '연결 대상', accessor: 'connectionTarget', clickable: false },
+    { header: '인터페이스', accessor: 'interface', clickable: false },
+    { header: '논리적 이름', accessor: 'logicalName', clickable: false },
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '유형', accessor: 'type', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
+  ];
+
+  const data = [
+    {
+      statusIcon: <i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i>,
+      change: 'on20-ap01',
+      glass1: <i className="fa fa-glass"></i>,
+      glass2: <i className="fa fa-glass"></i>,
+      glass3: <i className="fa fa-glass"></i>,
+      virtualSize: 'on20-ap01',
+      connectionTarget: 'VirtIO-SCSI',
+      interface: '/dev/sda',
+      logicalName: 'OK',
+      status: '이미지',
+      type: '',
+      description: '',
+    },
+  ];
   return (
       <div id="disk_outer">
           <div id="disk_content">
@@ -233,40 +265,7 @@ const DiskSection = () => {
                   <button>직접 LUN</button>
                   <button>관리되는 블록</button>
               </div>
-              <table>
-                  <thead>
-                      <tr>
-                          <th></th>
-                          <th>변경</th>
-                          <th><i className="fa fa-glass"></i></th>
-                          <th><i className="fa fa-glass"></i></th>
-                          <th><i className="fa fa-glass"></i></th>
-                          <th>가상 크기</th>
-                          <th>연결 대상</th>
-                          <th>인터페이스</th>
-                          <th>논리적 이름</th>
-                          <th>상태</th>
-                          <th>유형</th>
-                          <th>설명</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      <tr>
-                          <td><i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i></td>
-                          <td>on20-ap01</td>
-                          <td><i className="fa fa-glass"></i></td>
-                          <td><i className="fa fa-glass"></i></td>
-                          <td><i className="fa fa-glass"></i></td>
-                          <td>on20-ap01</td>
-                          <td>VirtIO-SCSI</td>
-                          <td>/dev/sda</td>
-                          <td>OK</td>
-                          <td>이미지</td>
-                          <td></td>
-                          <td></td>
-                      </tr>
-                  </tbody>
-              </table>
+              <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
           </div>
 
           {/* 디스크(새로 만들기) 팝업 */}
@@ -759,6 +758,15 @@ const SnapshotSection = () => {
 
 // 애플리케이션 섹션
 const ApplicationSection = () => {
+  const columns = [
+    { header: '설치된 애플리케이션', accessor: 'application', clickable: false },
+  ];
+
+  const data = [
+    { application: 'kernel-3.10.0-1062.el7.x86_64' },
+    { application: 'qemu-guest-agent-2.12.0' },
+  ];
+
   return (
     <div id="application_outer">
       <div id="application_content">
@@ -768,21 +776,7 @@ const ApplicationSection = () => {
           <button><i className="fa fa-chevron-right"></i></button>
           <button><i className="fa fa-ellipsis-v"></i></button>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>설치된 애플리케이션</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>kernel-3.10.0-1062.el7.x86_64</td>
-            </tr>
-            <tr>
-              <td>qemu-guest-agent-2.12.0</td>
-            </tr>
-          </tbody>
-        </table>
+        <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
       </div>
     </div>
   );
@@ -1104,6 +1098,7 @@ const GuestInfoSection = () => {
             </tbody>
           </table>
         </div>
+
         <div className="table_container_center">
           <table className="table">
             <tbody>
@@ -1293,6 +1288,27 @@ const PowerSection = () => {
 
 // 이벤트 섹션
 const EventSection = () => {
+  const columns = [
+    { header: '', accessor: 'icon', clickable: false },
+    { header: '시간', accessor: 'time', clickable: false },
+    { header: '메세지', accessor: 'message', clickable: false },
+    { header: '상관 관계 ID', accessor: 'correlationId', clickable: false },
+    { header: '소스', accessor: 'source', clickable: false },
+    { header: '사용자 지정 이벤트 ID', accessor: 'customEventId', clickable: false }
+  ];
+  const data = [
+    { icon: <i className="fa fa-check"></i>, time: '2024. 1. 17. PM 3:14:39', message: "Snapshot 'on2o-ap01-Snapshot-2024_01_17' creation for 'VM on2o-ap01' has been completed.", correlationId: '4b4b417a-c...', source: 'oVirt', customEventId: '' },
+    { icon: <i className="fa fa-check"></i>, time: '2024. 1. 17. PM 3:14:21', message: "Snapshot 'on2o-ap01-Snapshot-2024_01_17' creation for 'VM on2o-ap01' was initiated by admin@intern...", correlationId: '4b4b417a-c...', source: 'oVirt', customEventId: '' },
+    { icon: <i className="fa fa-times"></i>, time: '2024. 1. 5. AM 8:37:54', message: 'Failed to restart VM on2o-ap01 on host host01.ititinfo.com', correlationId: '3400e0dc', source: 'oVirt', customEventId: '' },
+    { icon: <i className="fa fa-times"></i>, time: '2024. 1. 5. PM 8:37:10', message: 'VM on2o-ap01 is down with error. Exit message: VM terminated with error.', correlationId: '3400e0dc', source: 'oVirt', customEventId: '' },
+    { icon: <i className="fa fa-check"></i>, time: '2024. 1. 5. PM 8:34:29', message: 'Trying to restart VM on2o-ap01 on host host01.ititinfo.com', correlationId: '3400e0dc', source: 'oVirt', customEventId: '' },
+    { icon: <i className="fa fa-exclamation"></i>, time: '2024. 1. 5. PM 8:29:10', message: 'VM on2o-ap01 was set to the Unknown status.', correlationId: '3400e0dc', source: 'oVirt', customEventId: '' },
+    { icon: <i className="fa fa-check"></i>, time: '2023. 12. 29. PM 12:55:08', message: 'VM on2o-ap01 started on Host host01.ititinfo.com', correlationId: 'a99b6ae8-8d...', source: 'oVirt', customEventId: '' },
+    { icon: <i className="fa fa-check"></i>, time: '2023. 12. 29. PM 12:54:48', message: 'VM on2o-ap01 was started by admin@internal-authz (Host: host01.ititinfo.com).', correlationId: 'a99b6ae8-8d...', source: 'oVirt', customEventId: '' },
+    { icon: <i className="fa fa-check"></i>, time: '2023. 12. 29. PM 12:54:18', message: 'VM on2o-ap01 configuration was updated by admin@internal-authz.', correlationId: 'e3b8355e-06...', source: 'oVirt', customEventId: '' },
+    { icon: <i className="fa fa-check"></i>, time: '2023. 12. 29. PM 12:54:15', message: 'VM on2o-ap01 configuration was updated by admin@internal-authz.', correlationId: '793fb95e-6df...', source: 'oVirt', customEventId: '' },
+    { icon: <i className="fa fa-check"></i>, time: '2023. 12. 29. PM 12:53:53', message: 'VM on2o-ap01 has been successfully imported from the given configuration.', correlationId: 'ede53bc8-c6...', source: 'oVirt', customEventId: '' }
+  ];
   return (
     <div id="event_outer">
       <div className="pregroup_content">
@@ -1307,108 +1323,7 @@ const EventSection = () => {
           <button><i className="fa fa-chevron-right"></i></button>
           <button><i className="fa fa-ellipsis-v"></i></button>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th>시간</th>
-              <th>메세지</th>
-              <th>상관 관계 ID</th>
-              <th>소스</th>
-              <th>사용자 지정 이벤트 ID</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><i className="fa fa-check"></i></td>
-              <td>2024. 1. 17. PM 3:14:39</td>
-              <td>Snapshot 'on2o-ap01-Snapshot-2024_01_17' creation for 'VM on2o-ap01' has been completed.</td>
-              <td>4b4b417a-c...</td>
-              <td>oVirt</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td><i className="fa fa-check"></i></td>
-              <td>2024. 1. 17. PM 3:14:21</td>
-              <td>Snapshot 'on2o-ap01-Snapshot-2024_01_17' creation for 'VM on2o-ap01' was initiated by admin@intern...</td>
-              <td>4b4b417a-c...</td>
-              <td>oVirt</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td><i className="fa fa-times"></i></td>
-              <td>2024. 1. 5. AM 8:37:54</td>
-              <td>Failed to restart VM on2o-ap01 on host host01.ititinfo.com</td>
-              <td>3400e0dc</td>
-              <td>oVirt</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td><i className="fa fa-times"></i></td>
-              <td>2024. 1. 5. PM 8:37:10</td>
-              <td>VM on2o-ap01 is down with error. Exit message: VM terminated with error.</td>
-              <td>3400e0dc</td>
-              <td>oVirt</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td><i className="fa fa-check"></i></td>
-              <td>2024. 1. 5. PM 8:34:29</td>
-              <td>Trying to restart VM on2o-ap01 on host host01.ititinfo.com</td>
-              <td>3400e0dc</td>
-              <td>oVirt</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td><i className="fa fa-exclamation"></i></td>
-              <td>2024. 1. 5. PM 8:29:10</td>
-              <td>VM on2o-ap01 was set to the Unknown status.</td>
-              <td>3400e0dc</td>
-              <td>oVirt</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td><i className="fa fa-check"></i></td>
-              <td>2023. 12. 29. PM 12:55:08</td>
-              <td>VM on2o-ap01 started on Host host01.ititinfo.com</td>
-              <td>a99b6ae8-8d...</td>
-              <td>oVirt</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td><i className="fa fa-check"></i></td>
-              <td>2023. 12. 29. PM 12:54:48</td>
-              <td>VM on2o-ap01 was started by admin@internal-authz (Host: host01.ititinfo.com).</td>
-              <td>a99b6ae8-8d...</td>
-              <td>oVirt</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td><i className="fa fa-check"></i></td>
-              <td>2023. 12. 29. PM 12:54:18</td>
-              <td>VM on2o-ap01 configuration was updated by admin@internal-authz.</td>
-              <td>e3b8355e-06...</td>
-              <td>oVirt</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td><i className="fa fa-check"></i></td>
-              <td>2023. 12. 29. PM 12:54:15</td>
-              <td>VM on2o-ap01 configuration was updated by admin@internal-authz.</td>
-              <td>793fb95e-6df...</td>
-              <td>oVirt</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td><i className="fa fa-check"></i></td>
-              <td>2023. 12. 29. PM 12:53:53</td>
-              <td>VM on2o-ap01 has been successfully imported from the given configuration.</td>
-              <td>ede53bc8-c6...</td>
-              <td>oVirt</td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
+        <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
       </div>
     </div>
   );

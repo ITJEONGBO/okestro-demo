@@ -1,9 +1,85 @@
 import React, { useState,useEffect } from 'react';
 import NavButton from '../components/navigation/NavButton';
 import HeaderButton from '../components/button/HeaderButton';
+import { Table } from '../components/table/Table';
 
 
 function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
+  // 테이블 컴포넌트
+  // 가상머신
+  const vmColumns = [
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '클러스터', accessor: 'cluster', clickable: false },
+    { header: '볼륨 유형', accessor: 'volumeType', clickable: false },
+    { header: '브릭', accessor: 'brick', clickable: false },
+    { header: '정보', accessor: 'info', clickable: false },
+    { header: '사용한 공간', accessor: 'usedSpace', clickable: false },
+    { header: '작업', accessor: 'operation', clickable: false },
+    { header: '스냅샷 수', accessor: 'snapshotCount', clickable: false },
+  ];
+
+  const vmData = [];
+
+  //스토리지
+  const storageColumns = [
+    { header: '별칭', accessor: 'alias', clickable: false },
+    { header: <i className="fa fa-chevron-left"></i>, accessor: 'icon1', clickable: false },
+    { header: <i className="fa fa-chevron-left"></i>, accessor: 'icon2', clickable: false },
+    { header: '가상 크기', accessor: 'virtualSize', clickable: false },
+    { header: '실제 크기', accessor: 'actualSize', clickable: false },
+    { header: '할당 정책', accessor: 'allocationPolicy', clickable: false },
+    { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
+    { header: '생성 일자', accessor: 'creationDate', clickable: false },
+    { header: '최근 업데이트', accessor: 'lastUpdate', clickable: false },
+    { header: '', accessor: 'icon3', clickable: false },
+    { header: '연결 대상', accessor: 'connectionTarget', clickable: false },
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '유형', accessor: 'type', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
+  ];
+
+  const storageData = [
+    {
+      alias: 'aa',
+      icon1: '',
+      icon2: '',
+      virtualSize: '<1 GiB',
+      actualSize: '<1 GiB',
+      allocationPolicy: '씬 프로비저닝',
+      storageDomain: 'hosted_storage',
+      creationDate: '2024. 4. 26. PM 3:19:39',
+      lastUpdate: '2024. 4. 26. PM 3:19:45',
+      icon3: <i className="fa fa-chevron-left"></i>,
+      connectionTarget: '',
+      status: 'OK',
+      type: '이미지',
+      description: 'testa',
+    },
+  ];
+  //권한
+  const permissionColumns = [
+    { header: '', accessor: 'icon', clickable: false },
+    { header: '사용자', accessor: 'user', clickable: false },
+    { header: '인증 공급자', accessor: 'authProvider', clickable: false },
+    { header: '네임스페이스', accessor: 'namespace', clickable: false },
+    { header: '역할', accessor: 'role', clickable: false },
+    { header: '생성일', accessor: 'createdDate', clickable: false },
+    { header: 'Inherited From', accessor: 'inheritedFrom', clickable: false },
+  ];
+
+  const permissionData = [
+    {
+      icon: <i className="fa fa-user"></i>,
+      user: 'ovirtmgmt',
+      authProvider: '',
+      namespace: '*',
+      role: 'SuperUser',
+      createdDate: '2023.12.29 AM 11:40:58',
+      inheritedFrom: '(시스템)',
+    },
+  ];
+
+  //
   const [activeTab, setActiveTab] = useState('general');
 
   const handleTabClick = (tab) => {
@@ -126,24 +202,7 @@ const popupItems = [
           <div id="detail_machine_outer">
 
           <div className="pregroup_content">
-              <table className="empty_table">
-                <thead>
-                  <tr>
-                    <th>이름</th>
-                    <th>클러스터</th>
-                    <th>볼륨 유형</th>
-                    <th>브릭</th>
-                    <th>정보</th>
-                    <th>사용한 공간</th>
-                    <th>작업</th>
-                    <th>스냅샷 수</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <span className="empty_content">표시할 항복이 없습니다</span>
-                  <tr></tr>
-                </tbody>
-              </table>
+          <Table columns={vmColumns} data={vmData} onRowClick={() => console.log('Row clicked')} />
             </div>
           </div>
         )}
@@ -152,10 +211,6 @@ const popupItems = [
         <div id="detail_disk_outer">
        
             <div className="pregroup_content">
-            
-            
-
-            
             <div className="application_content_header">
                 <button><i className="fa fa-chevron-left"></i></button>
                 <div>1-1</div>
@@ -163,44 +218,7 @@ const popupItems = [
                 <button><i className="fa fa-ellipsis-v"></i></button>
             </div>
             <div className="table_outer2">
-                <table>
-                <thead>
-                    <tr>
-                    <th>별칭</th>
-                    <th><i className="fa fa-chevron-left"></i></th>
-                    <th><i className="fa fa-chevron-left"></i></th>
-                    <th>가상 크기</th>
-                    <th>실제 크기</th>
-                    <th>할당 정책</th>
-                    <th>스토리지 도메인</th>
-                    <th>생성 일자</th>
-                    <th>최근 업데이트</th>
-                    <th></th>
-                    <th>연결 대상</th>
-                    <th>상태</th>
-                    <th>유형</th>
-                    <th>설명</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                    <td>aa</td>
-                    <td></td>
-                    <td></td>
-                    <td>&lt;1 GiB</td>
-                    <td>&lt;1 GiB</td>
-                    <td>씬 프로비저닝</td>
-                    <td>hosted_storage</td>
-                    <td>2024. 4. 26. PM 3:19:39</td>
-                    <td>2024. 4. 26. PM 3:19:45</td>
-                    <td><i className="fa fa-chevron-left"></i></td>
-                    <td></td>
-                    <td>OK</td>
-                    <td>이미지</td>
-                    <td>testa</td>
-                    </tr>
-                </tbody>
-                </table>
+            <Table columns={storageColumns} data={storageData} onRowClick={() => console.log('Row clicked')} />
             </div>
             </div>
        </div>
@@ -231,30 +249,7 @@ const popupItems = [
                 </div>
               </div>
               <div className="table_outer2">
-                <table style={{ marginTop: 0 }}>
-                  <thead>
-                    <tr>
-                      <th></th>
-                      <th>사용자</th>
-                      <th>인증 공급자</th>
-                      <th>네임스페이스</th>
-                      <th>역할</th>
-                      <th>생성일</th>
-                      <th>Inherited From</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><i className="fa fa-user"></i></td>
-                      <td>ovirtmgmt</td>
-                      <td></td>
-                      <td>*</td>
-                      <td>SuperUser</td>
-                      <td>2023.12.29 AM 11:40:58</td>
-                      <td>(시스템)</td>
-                    </tr>
-                  </tbody>
-                </table>
+              <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
               </div>
             </div>
         </div>
