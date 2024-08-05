@@ -373,8 +373,13 @@
     font-size: 0.4rem;
     font-weight: 600;
 }
-
-#section,#storage_section,#network_section,#setting_section,#detail_section{
+#section{
+    background-color: #ffffff;
+    border-radius: 5px;
+    width: 100%;
+    position: relative;
+}
+#storage_section,#network_section,#setting_section,#detail_section{
     background-color: #ffffff;
     border-radius: 5px;
     width: 96%;

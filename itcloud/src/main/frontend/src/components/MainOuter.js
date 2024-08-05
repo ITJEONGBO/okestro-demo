@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import HostDetail from '../detail/HostDetail';
+import Cluster from './Computing/Cluster';  // Cluster 컴포넌트 임포트
+import Host from './Computing/Host';  // Host 컴포넌트 임포트
 import './MainOuter.css';
 
 function MainOuter({ children }) {
     const [selected, setSelected] = useState('dashboard');
-    const [asidePopupVisible, setAsidePopupVisible] = useState(false);
+    const [selectedDiv, setSelectedDiv] = useState('data_center'); // 기본적으로 데이터센터가 선택된 상태
+
+    const [asidePopupVisible, setAsidePopupVisible] = useState(true); // 데이터센터 기본 선택
     const [asidePopupBackgroundColor, setAsidePopupBackgroundColor] = useState({
         dashboard: '',
         computing: '',
         storage: '',
         network: '',
-        setting: ''
+        setting: '',
+        default: 'rgb(218, 236, 245)' // 데이터센터 기본 선택 색상 설정
     });
 
     const [isSecondVisibleStorage, setIsSecondVisibleStorage] = useState(false);
@@ -26,11 +31,14 @@ function MainOuter({ children }) {
     const [activeSettingForm, setActiveSettingForm] = useState('part');
     const [settingPopupOpen, setSettingPopupOpen] = useState(false);
 
-    const [isSecondVisible, setIsSecondVisible] = useState(false);
+    const [isSecondVisible, setIsSecondVisible] = useState(true); // 데이터센터 기본 선택
     const [isThirdVisible, setIsThirdVisible] = useState(false);
     const [isLastVisible, setIsLastVisible] = useState(false);
     
     const [sectionContent, setSectionContent] = useState('default');
+    const [activeSection, setActiveSection] = useState('general'); // 추가된 상태
+
+    const navigate = useNavigate(); // useNavigate 훅 추가
 
     useEffect(() => {
         function adjustFontSize() {
@@ -52,18 +60,21 @@ function MainOuter({ children }) {
         setSectionContent('default'); 
         toggleAsidePopup(id);
     };
+
     const toggleAsidePopup = (id) => {
         const newBackgroundColor = {
             dashboard: '',
             computing: '',
             storage: '',
             network: '',
-            setting: ''
+            setting: '',
+            default: ''
         };
 
         if (id === 'computing') {
             setAsidePopupVisible(!asidePopupVisible || selected !== 'computing');
             newBackgroundColor.computing = 'rgb(218, 236, 245)';
+            navigate(`/computing/general`); // navigate 추가
         } else if (id === 'storage') {
             setAsidePopupVisible(!asidePopupVisible || selected !== 'storage');
             newBackgroundColor.storage = 'rgb(218, 236, 245)';
@@ -81,29 +92,54 @@ function MainOuter({ children }) {
     };
 
     const handleFirstClick = () => {
-        setIsSecondVisible(!isSecondVisible);
-        if (isSecondVisible) {
-            setIsThirdVisible(false);
-            setIsLastVisible(false);
-        }
+        setSelectedDiv('data_center');
+        navigate(`/computing/general`); // navigate 추가
+    };
+
+    const handleFirstDivClick = () => {
+        setSelectedDiv('data_center');
     };
     
     const handleSecondClick = () => {
-        setIsThirdVisible(!isThirdVisible);
-        if (isThirdVisible) {
-            setIsLastVisible(false);
-        }
+        setSelectedDiv('cluster');
+        setSectionContent('cluster');
+        navigate(`/computing/application`);
+    };
+
+    const handleSecondDivClick = () => {
+        setSelectedDiv('cluster');
     };
     
     const handleThirdClick = () => {
-        setIsLastVisible(!isLastVisible);
+        setSelectedDiv('host');
+        setSectionContent('host');
+    };
+    
+
+    const handleThirdDivClick = () => {
+        setSelectedDiv('host');
     };
     
     const handleFirstClickStorage = () => {
         setIsSecondVisibleStorage(!isSecondVisibleStorage);
         setIsLastVisibleStorage(false);
     };
-
+    //
+    const onFirstIconClick = (e) => {
+        e.stopPropagation(); // 이벤트 버블링 방지
+        setIsSecondVisible(!isSecondVisible);
+    };
+    
+    const onSecondIconClick = (e) => {
+        e.stopPropagation();
+        setIsThirdVisible(!isThirdVisible);
+    };
+    
+    const onThirdIconClick = (e) => {
+        e.stopPropagation();
+        setIsLastVisible(!isLastVisible);
+    };
+    //
     const handleSecondClickStorage = () => {
         setIsLastVisibleStorage(!isLastVisibleStorage);
     };
@@ -179,7 +215,7 @@ function MainOuter({ children }) {
                                 <i className="fa fa-th-large"></i>
                             </div>
                         </Link>
-                        <Link to='/computing' className="link-no-underline">
+                        <Link to='/computing/general' className="link-no-underline">
                             <div
                                 id="aside_popup_machine_btn"
                                 className={getClassNames('computing')}
@@ -196,7 +232,7 @@ function MainOuter({ children }) {
                                 onClick={() => handleClick('network')}
                                 style={{ backgroundColor: asidePopupBackgroundColor.network }}
                             >
-                                <i className="fa fa-database"></i>
+                                <i className="fa fa-server"></i>
                             </div>
                         </Link>
                         <Link to='/storage' className="link-no-underline">
@@ -206,7 +242,7 @@ function MainOuter({ children }) {
                                 onClick={() => handleClick('storage')}
                                 style={{ backgroundColor: asidePopupBackgroundColor.storage }}
                             >
-                                <i className="fa fa-server"></i>
+                                <i className="fa fa-database"></i>
                             </div>
                         </Link>
                         
@@ -221,21 +257,35 @@ function MainOuter({ children }) {
                     <button id='aside_popup_btn' onClick={handleAsidePopupBtnClick}><i className="fa fa-chevron-left"></i></button>
                     {selected === 'computing' && (
                     <div id="virtual_machine_chart">
-                        <div className="aside_popup_content" id="aside_popup_first" onClick={handleFirstClick}>
-                            <i className={`fa fa-chevron-${isSecondVisible ? 'down' : 'right'}`}></i>
+                        <div 
+                            className="aside_popup_content" 
+                            id="aside_popup_first" 
+                            style={{ backgroundColor: selectedDiv === 'data_center' ? 'rgb(218, 236, 245)' : '' }} 
+                            onClick={handleFirstDivClick}
+                        >
+                            <i 
+                                className={`fa fa-chevron-${isSecondVisible ? 'down' : 'right'}`} 
+                                onClick={handleFirstClick}
+                            ></i>
                             <i className="fa fa-building-o"></i>
                             <span>data_center</span>
                         </div>
                         {isSecondVisible && (
-                            <div className="aside_popup_content" id="aside_popup_second" onClick={handleSecondClick}>
-                                <i className={`fa fa-chevron-${isThirdVisible ? 'down' : 'right'}`}></i>
+                            <div className="aside_popup_content" id="aside_popup_second" 
+                                style={{ backgroundColor: selectedDiv === 'cluster' ? 'rgb(218, 236, 245)' : '' }} 
+                                onClick={handleSecondClick}>
+                                <i className={`fa fa-chevron-${isThirdVisible ? 'down' : 'right'}`} 
+                                onClick={onSecondIconClick}></i>
                                 <i className="fa fa-building-o"></i>
                                 <span>클러스터</span>
                             </div>
                         )}
                         {isThirdVisible && (
-                            <div className="aside_popup_content" id="aside_popup_third" onClick={handleThirdClick}>
-                                <i className={`fa fa-chevron-${isLastVisible ? 'down' : 'right'}`}></i>
+                            <div className="aside_popup_content" id="aside_popup_third" 
+                                style={{ backgroundColor: selectedDiv === 'host' ? 'rgb(218, 236, 245)' : '' }} 
+                                onClick={handleThirdClick}>
+                                <i className={`fa fa-chevron-${isLastVisible ? 'down' : 'right'}`} 
+                                onClick={onThirdIconClick}></i>
                                 <i className="fa fa-building-o"></i>
                                 <span>호스트</span>
                             </div>
@@ -374,10 +424,12 @@ function MainOuter({ children }) {
                     )}
                 </div>
             </div>
-            {sectionContent === 'default' ? children : (
+            {sectionContent === 'default' ? React.cloneElement(children, { activeSection, setActiveSection }) : (
                 <div id="detail_section">
                     {/* Add the content for the detailed section here */}
                     {sectionContent === 'detail1' && <HostDetail />}
+                    {sectionContent === 'cluster' && <Cluster />}
+                    {sectionContent === 'host' && <Host />}
                     {/* {sectionContent === 'detail2' && <div>Detail Page 2 Content</div>}
                     {sectionContent === 'detail3' && <div>Detail Page 3 Content</div>} */}
                 </div>
