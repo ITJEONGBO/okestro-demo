@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import HostDetail from '../detail/HostDetail';
-import Cluster from './Computing/Cluster';  // Cluster 컴포넌트 임포트
-import Host from './Computing/Host';  // Host 컴포넌트 임포트
 import './MainOuter.css';
+import Cluster from './Computing/Cluster';
+import Host from './Computing/Host';
+import Vm from './Computing/Vm';
 
 function MainOuter({ children }) {
     const [selected, setSelected] = useState('dashboard');
     const [selectedDiv, setSelectedDiv] = useState('data_center'); // 기본적으로 데이터센터가 선택된 상태
-
     const [asidePopupVisible, setAsidePopupVisible] = useState(true); // 데이터센터 기본 선택
     const [asidePopupBackgroundColor, setAsidePopupBackgroundColor] = useState({
         dashboard: '',
@@ -124,7 +124,7 @@ function MainOuter({ children }) {
         setIsSecondVisibleStorage(!isSecondVisibleStorage);
         setIsLastVisibleStorage(false);
     };
-    //
+    
     const onFirstIconClick = (e) => {
         e.stopPropagation(); // 이벤트 버블링 방지
         setIsSecondVisible(!isSecondVisible);
@@ -139,7 +139,7 @@ function MainOuter({ children }) {
         e.stopPropagation();
         setIsLastVisible(!isLastVisible);
     };
-    //
+    
     const handleSecondClickStorage = () => {
         setIsLastVisibleStorage(!isLastVisibleStorage);
     };
@@ -196,8 +196,15 @@ function MainOuter({ children }) {
         setSettingPopupOpen(false);
     };
 
-    const handleDetailClick = (content) => {
+    const handleDetailClick = (content, target) => {
         setSectionContent(content);
+        setSelectedDetail(target);
+    };
+    const [selectedDetail, setSelectedDetail] = useState(null);
+    const handleDivClick = (target) => {
+        setSectionContent('vm');
+    setSelectedDetail(target);
+    navigate('/computing/vm'); // Vm 컴포넌트로 이동
     };
 
     return (
@@ -255,6 +262,9 @@ function MainOuter({ children }) {
                 </div>
                 <div id="aside_popup" style={{ display: asidePopupVisible ? 'block' : 'none' }}>
                     <button id='aside_popup_btn' onClick={handleAsidePopupBtnClick}><i className="fa fa-chevron-left"></i></button>
+
+
+                     {/*가상머신 aside */}
                     {selected === 'computing' && (
                     <div id="virtual_machine_chart">
                         <div 
@@ -293,49 +303,38 @@ function MainOuter({ children }) {
                         {isLastVisible && (
                             <div id="aside_popup_last_machine">
                                 <div
-                                    onClick={() => handleDetailClick('detail1')}
-                                    onContextMenu={(e) => handleContextMenu(e, '192.168.0.80')}
-                                    onMouseEnter={() => handleMouseEnter('192.168.0.80')}
-                                    onMouseLeave={handleMouseLeave}
-                                    style={{
-                                        backgroundColor: contextMenuTarget === '192.168.0.80' ? '#e6eefa' : (hoverTarget === '192.168.0.80' ? '#e6eefa' : 'transparent')
-                                    }}
-                                >
-                                    <i></i>
-                                    <i className="fa fa-microchip"></i>
-                                    <span>192.168.0.80</span>
-                                </div>
-                                <div
-                                    onClick={() => handleDetailClick('detail1')}
-                                    onContextMenu={(e) => handleContextMenu(e, 'HostedEngine')}
-                                    onMouseEnter={() => handleMouseEnter('HostedEngine')}
-                                    onMouseLeave={handleMouseLeave}
-                                    style={{
-                                        backgroundColor: contextMenuTarget === 'HostedEngine' ? '#e6eefa' : (hoverTarget === 'HostedEngine' ? '#e6eefa' : 'transparent')
-                                    }}
-                                >
-                                    <i></i>
-                                    <i className="fa fa-microchip"></i>
-                                    <span>HostedEngine</span>
-                                </div>
-                                <div
-                                    onClick={() => handleDetailClick('detail1')}
-                                    onContextMenu={(e) => handleContextMenu(e, 'on20-ap01')}
-                                    onMouseEnter={() => handleMouseEnter('on20-ap01')}
-                                    onMouseLeave={handleMouseLeave}
-                                    style={{
-                                        backgroundColor: contextMenuTarget === 'on20-ap01' ? '#e6eefa' : (hoverTarget === 'on20-ap01' ? '#e6eefa' : 'transparent')
-                                    }}
-                                >
-                                    <i></i>
-                                    <i className="fa fa-microchip"></i>
-                                    <span>on20-ap01</span>
-                                </div>
+    onClick={() => handleDetailClick('detail1', '192.168.0.80')}
+    onContextMenu={(e) => handleContextMenu(e, '192.168.0.80')}
+    onMouseEnter={() => handleMouseEnter('192.168.0.80')}
+    onMouseLeave={handleMouseLeave}
+    style={{
+        backgroundColor: selectedDetail === '192.168.0.80' ? 'rgb(218, 236, 245)' : (contextMenuTarget === '192.168.0.80' ? '#e6eefa' : (hoverTarget === '192.168.0.80' ? '#e6eefa' : 'transparent'))
+    }}
+>
+    <i></i>
+    <i className="fa fa-user"></i>
+    <span>192.168.0.80</span>
+</div>
+<div
+    onClick={() => handleDivClick('HostedEngine')}
+    onContextMenu={(e) => handleContextMenu(e, 'HostedEngine')}
+    onMouseEnter={() => handleMouseEnter('HostedEngine')}
+    onMouseLeave={handleMouseLeave}
+    style={{
+        backgroundColor: selectedDetail === 'HostedEngine' ? 'rgb(218, 236, 245)' : (contextMenuTarget === 'HostedEngine' ? '#e6eefa' : (hoverTarget === 'HostedEngine' ? '#e6eefa' : 'transparent'))
+    }}
+>
+    <i></i>
+    <i className="fa fa-microchip"></i>
+    <span>HostedEngine</span>
+</div>
+
                         </div>
                         )}
                     </div>
                     )}
-
+                    
+                    {/*스토리지 aside */}
                     {selected === 'storage' && (
                         <div id="storage_chart">
                             <div className="aside_popup_content" id="aside_popup_first2" onClick={handleFirstClickStorage}>
@@ -346,7 +345,7 @@ function MainOuter({ children }) {
                             <div className="aside_popup_content" id="aside_popup_second2" style={{ display: isSecondVisibleStorage ? 'block' : 'none' }} onClick={handleSecondClickStorage}>
                                 <i className="fa fa-chevron-down"></i>
                                 <i className="fa fa-building-o"></i>
-                                <span>Default</span>
+                                <span>스토리지 도메인</span>
                             </div>
                             <div id="aside_popup_last_storage" style={{ display: isLastVisibleStorage ? 'block' : 'none' }}>
                                 <div
@@ -359,7 +358,7 @@ function MainOuter({ children }) {
                                 >
                                     <i></i>
                                     <i className="fa fa-microchip"></i>
-                                    <span>192.168.0.80</span>
+                                    <span>디스크 이름</span>
                                 </div>
                                 <div
                                     onContextMenu={(e) => handleContextMenu(e, 'HostedEngine')}
@@ -371,7 +370,7 @@ function MainOuter({ children }) {
                                 >
                                     <i></i>
                                     <i className="fa fa-microchip"></i>
-                                    <span>HostedEngine</span>
+                                    <span>디스크 이름</span>
                                 </div>
                                 <div
                                     onContextMenu={(e) => handleContextMenu(e, 'on20-ap01')}
@@ -383,11 +382,13 @@ function MainOuter({ children }) {
                                 >
                                     <i></i>
                                     <i className="fa fa-microchip"></i>
-                                    <span>on20-ap01</span>
+                                    <span>디스크 이름</span>
                                 </div>
                             </div>
                         </div>
                     )}
+
+                    {/*네트우 ㅓ크 aside */}
                     {selected === 'network' && (
                         <div id="network_chart">
                             <div className="aside_popup_content" id="aside_popup_first3" onClick={handleFirstClickNetwork}>
@@ -430,6 +431,7 @@ function MainOuter({ children }) {
                     {sectionContent === 'detail1' && <HostDetail />}
                     {sectionContent === 'cluster' && <Cluster />}
                     {sectionContent === 'host' && <Host />}
+                    {sectionContent === 'vm' && <Vm />}
                     {/* {sectionContent === 'detail2' && <div>Detail Page 2 Content</div>}
                     {sectionContent === 'detail3' && <div>Detail Page 3 Content</div>} */}
                 </div>

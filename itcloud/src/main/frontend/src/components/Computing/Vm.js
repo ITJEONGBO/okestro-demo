@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
-import { Table } from '../components/table/Table';
-import HeaderButton from '../components/button/HeaderButton';
+import { Table } from '../table/Table';
+import HeaderButton from '../button/HeaderButton';
 
 // 네트워크 인터페이스 섹션
 const NetworkSection = () => {
@@ -1367,7 +1367,7 @@ const popupItems = [
   'OVA로 내보내기',
 ];
 //
-const ComputingDetail = () => {
+const Vm = () => {
   const { section } = useParams();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState(section || 'general');
@@ -1707,4 +1707,4 @@ const ComputingDetail = () => {
   );
 };
 
-export default ComputingDetail;
+export default Vm;

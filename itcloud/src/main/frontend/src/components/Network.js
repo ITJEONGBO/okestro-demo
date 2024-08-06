@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import NetworkDetail from '../detail/NetworkDetail';
 import './Network.css';
-import { Table, Table1, TableRs } from './table/Table';
+import { Table} from './table/Table';
 import HeaderButton from './button/HeaderButton';
 
 // React Modal 설정
@@ -112,16 +112,20 @@ const Network = () => {
 
     // 테이블 데이터
     const data = [
-        { name: 'ovirtmgmt', description: 'Management Network' },
-        { name: 'example1', description: 'Example Description 1' },
-        { name: 'example2', description: 'Example Description 2' },
+        { name: 'ovirtmgmt', description: 'Management Network', dataCenter: 'DC1', provider: 'Provider1', portSeparation: '아니요' },
+        { name: 'example1', description: 'Example Description 1', dataCenter: 'DC2', provider: 'Provider2', portSeparation: '아니요' },
+        { name: 'example2', description: 'Example Description 2', dataCenter: 'DC3', provider: 'Provider3', portSeparation: '아니요' },
         // 필요한 만큼 데이터 추가
     ];
 
     const columns = [
         { header: '이름', accessor: 'name', clickable: true },
         { header: '설명', accessor: 'description', clickable: false },
+        { header: '데이터센터', accessor: 'dataCenter', clickable: false },
+        { header: '공급자', accessor: 'provider', clickable: false },
+        { header: '포트분리', accessor: 'portSeparation', clickable: false },
     ];
+    
       // Button and popup items for the SectionHeader
   const sectionHeaderButtons = [
     { id: 'network_first_edit_btn', label: '편집', onClick: () => {} },
@@ -144,17 +148,13 @@ const Network = () => {
             {showNetworkSection ? ( // 꼭 div 하나로 감싸주기
                 <div>
                      <HeaderButton
-            title="Default"
+            title="네트워크"
             buttons={sectionHeaderButtons}
             popupItems={sectionHeaderPopupItems}
           />
 
                     <div className="content_outer">
-                        <div className="content_header">
-                            <div className="content_header_left">
-                                <div className="active">논리 네트워크</div>
-                            </div>
-                        </div>
+                        
 
                         <div className="storage_domain_content" style={{ padding: '0.5rem 0.3rem' }}>
                             <div className="content_header_right">

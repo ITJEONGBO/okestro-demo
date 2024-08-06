@@ -63,26 +63,26 @@ const Host = () => {
                     <tr>
                       <th>상태</th>
                       <th>이름</th>
-                      <th>코멘트</th>
+                     
                       <th>호환 버전</th>
                       <th>설명</th>
                       <th>클러스터 CPU 유형</th>
                       <th>호스트 수</th>
                       <th>가상 머신 수</th>
-                      <th>업그레이드 상태</th>
+                      
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
                       <td></td>
                       <td>Default</td>
-                      <td></td>
+                      
                       <td>4.7</td>
                       <td>The derault server cluster</td>
                       <td>Secure Intel Cascadelak</td>
                       <td>2</td>
                       <td>7</td>
-                      <td></td>
+                     
                     </tr>
                   </tbody>
                 </table>

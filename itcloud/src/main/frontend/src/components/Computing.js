@@ -4,7 +4,7 @@ import Modal from 'react-modal';
 
 import HeaderButton from './button/HeaderButton';
 import NavButton from './navigation/NavButton';
-import ComputingDetail from '../detail/ComputingDetail';
+import ComputingDetail from './Computing/Vm';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -291,26 +291,11 @@ const Computing = () => {
   };
 
   const sectionHeaderButtons = [
-    { id: 'edit_btn', label: '편집', onClick: () => {} },
-    { id: 'run_btn', label: '실행', icon: 'fa-play', onClick: () => {} },
-    { id: 'pause_btn', label: '일시중지', icon: 'fa-pause', onClick: () => {} },
-    { id: 'stop_btn', label: '종료', icon: 'fa-stop', onClick: () => {} },
-    { id: 'reboot_btn', label: '재부팅', icon: 'fa-repeat', onClick: () => {} },
-    { id: 'console_btn', label: '콘솔', icon: 'fa-desktop', onClick: () => {} },
-    { id: 'snapshot_btn', label: '스냅샷 생성', onClick: () => {} },
-    { id: 'migration_btn', label: '마이그레이션', onClick: openModal },
+
   ];
   
   const sectionHeaderPopupItems = [
-    '가져오기',
-    '가상 머신 복제',
-    '삭제',
-    '마이그레이션 취소',
-    '변환 취소',
-    '템플릿 생성',
-    '도메인으로 내보내기',
-    'Export to Data Domain',
-    'OVA로 내보내기',
+
   ];
 
   const navSections = [
@@ -414,6 +399,8 @@ const Computing = () => {
         )}
       </div>
 
+
+      {/*나중에 지우기 */}
       <Modal
         isOpen={isModalOpen}
         onRequestClose={closeModal}

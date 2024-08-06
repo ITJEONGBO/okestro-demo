@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import NavButton from '../components/navigation/NavButton';
-import HeaderButton from '../components/button/HeaderButton';
-import { Table } from '../components/table/Table';
+import NavButton from '../navigation/NavButton';
+import HeaderButton from '../button/HeaderButton';
+import { Table } from '../table/Table';
 
-function HostDetail() {
+function ClusterName() {
      // 가상머신 테이블컴포넌트
      const columns = [
         { header: '', accessor: 'icon', clickable: false },
@@ -151,10 +151,6 @@ function HostDetail() {
     const buttons = [
         { id: 'edit_btn', label: '편집', onClick: () => console.log('Edit button clicked') },
         { id: 'delete_btn', label: '삭제', onClick: () => console.log('Delete button clicked') },
-        { id: 'manage_btn', label: '관리', onClick: () => console.log('Manage button clicked') },
-        { id: 'install_btn', label: '설치', onClick: () => console.log('Install button clicked') },
-        { id: 'host_console_btn', label: '호스트 콘솔', onClick: () => console.log('Host Console button clicked') },
-        { id: 'copy_network_btn', label: '호스트 네트워크 복사', onClick: () => console.log('Copy Host Network button clicked') },
       ];
     
       const popupItems = []; // 현재 팝업 아이템이 없으므로 빈 배열로 설정
@@ -162,25 +158,26 @@ function HostDetail() {
     // nav컴포넌트
     const sections = [
         { id: 'general', label: '일반' },
-        { id: 'machine', label: '가상머신' },
-        { id: 'networkinterface', label: '네트워크 인터페이스' },
-        { id: 'hostdevice', label: '호스트 장치' },
+        { id: 'logical_network', label: '논리 네트워크' },
+        { id: 'host', label: '호스트' },
+        { id: 'virtual_machine', label: '가상 머신' },
+        { id: 'affinity_group', label: '선호도 그룹' },
+        { id: 'affinity_label', label: '선호도 레이블' },
         { id: 'permission', label: '권한' },
-        { id: 'lable', label: '선호도 레이블' },
         { id: 'event', label: '이벤트' }
-      ];
-
+    ];
+    
       
     return (
         <div id='host_detail_section'>
              <HeaderButton
-      title="호스트"
-      subtitle="192.168.0.80"
-      additionalText="목록이름"
-      buttons={buttons}
-      popupItems={popupItems}
-      uploadOptions={uploadOptions}
-    />
+                title="클러스터"
+                subtitle="Default"
+                additionalText="목록이름"
+                buttons={buttons}
+                popupItems={popupItems}
+                uploadOptions={uploadOptions}
+            />
 
 
 
@@ -241,8 +238,8 @@ function HostDetail() {
                     </div>
                 </div>
                 )}
-                {/* 가상머신 */}
-                {activeTab === 'machine' && (
+                {/* 논리 네트워크 */}
+                {activeTab === 'logical_network' && (
                     
                 <div className="storage_right_outer">
                     <div className="storage_domain_content">
@@ -269,8 +266,8 @@ function HostDetail() {
                     </div>
             </div>
                 )}
-                {/* 네트워크 인터페이스 */}
-                {activeTab === 'networkinterface' && (
+                {/* 호스트*/}
+                {activeTab === 'host' && (
                 <div className="host_detail_outer">
                     <div className="pregroup_content">
                         <div className="host_detail_network">
@@ -282,8 +279,8 @@ function HostDetail() {
                     </div>
                 </div>
                 )}
-                {/* 호스트 장치 */}
-                {activeTab === 'hostdevice' && (
+                {/*가상 머신*/}
+                {activeTab === 'virtual_machine' && (
                 <div className="host_detail_outer">
             
                 <div className="pregroup_content">
@@ -307,8 +304,8 @@ function HostDetail() {
                 </div>
                 )}
                
-                {/* 권한 */}
-                {activeTab === 'permission' && (
+                {/* 선호도 그룹 */}
+                {activeTab === 'affinity_group' && (
                 <div className="storage_right_outer">
                     <div className="storage_domain_content">
                         <div className="content_header_right">
@@ -336,7 +333,7 @@ function HostDetail() {
                 )}
              
                 {/* 선호도 레이블 */}
-                {activeTab === 'lable' && (
+                {activeTab === 'affinity_label' && (
                     <div id="detail_rent_outer">
                         <div className="pregroup_content">
                             <div className="content_header_right">
@@ -356,8 +353,8 @@ function HostDetail() {
                 </div>
                 )}
           
-                {/* 이벤트 */}
-                {activeTab === 'event' && (
+                {/* 권한*/}
+                {activeTab === 'permission' && (
                 <div className="host_detail_outer">
                     <div className="pregroup_content">
                     <div className="application_content_header">
@@ -374,7 +371,23 @@ function HostDetail() {
                 
                 )}
 
+                {/*이벤트*/}
+                {activeTab === 'event' && (
+                <div className="host_detail_outer">
+                    <div className="pregroup_content">
+                    <div className="application_content_header">
+                        <button><i className="fa fa-chevron-left"></i></button>
+                        <div>1-1</div>
+                        <button><i className="fa fa-chevron-right"></i></button>
+                        <button><i className="fa fa-ellipsis-v"></i></button>
+                    </div>
+                    
+                    <Table columns={storageColumns} data={storageData} onRowClick={() => console.log('Row clicked')} />
+                    
+                    </div>
+                </div>
                 
+                )}
             </div>
 
 
@@ -382,6 +395,7 @@ function HostDetail() {
 
         </div>
     );
+
 }
 
-export default HostDetail;
+export default ClusterName;

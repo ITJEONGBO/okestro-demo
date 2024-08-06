@@ -1,26 +1,24 @@
-import React, {  useState } from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
 import HeaderButton from '../button/HeaderButton';
-
+import ClusterName from './ClusterName';
 
 // React Modal 설정
 Modal.setAppElement('#root');
 
 const Cluster = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showClusterName, setShowClusterName] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-
- 
 
   const sectionHeaderButtons = [
     { id: 'new_btn', label: '새로 만들기', onClick: () => {} },
     { id: 'edit_btn', label: '편집', icon: 'fa-pencil', onClick: () => {} },
     { id: 'upgrade_btn', label: '업그레이드', icon: 'fa-arrow-up', onClick: () => {} }
   ];
-  
-  
+
   const sectionHeaderPopupItems = [
     '가져오기',
     '가상 머신 복제',
@@ -33,7 +31,9 @@ const Cluster = () => {
     'OVA로 내보내기',
   ];
 
-
+  if (showClusterName) {
+    return <ClusterName />;
+  }
 
   return (
     <div id="section">
@@ -46,46 +46,43 @@ const Cluster = () => {
         togglePopup={() => {}}
       />
       <div className="content_outer">
-
-          <div id="application_outer">
-            <div div className="pregroup_content">
-              
-              <div className="section_table_outer">
-                <button>
-                  <i className="fa fa-refresh"></i>
-                </button>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>상태</th>
-                      <th>이름</th>
-                      <th>코멘트</th>
-                      <th>호환 버전</th>
-                      <th>설명</th>
-                      <th>클러스터 CPU 유형</th>
-                      <th>호스트 수</th>
-                      <th>가상 머신 수</th>
-                      <th>업그레이드 상태</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td></td>
-                      <td>Default</td>
-                      <td></td>
-                      <td>4.7</td>
-                      <td>The derault server cluster</td>
-                      <td>Secure Intel Cascadelak</td>
-                      <td>2</td>
-                      <td>7</td>
-                      <td></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+        <div id="application_outer">
+          <div div className="pregroup_content">
+            <div className="section_table_outer">
+              <button>
+                <i className="fa fa-refresh"></i>
+              </button>
+              <table>
+                <thead>
+                  <tr>
+                    <th>상태</th>
+                    <th>이름</th>
+                    <th>코멘트</th>
+                    <th>호환 버전</th>
+                    <th>설명</th>
+                    <th>클러스터 CPU 유형</th>
+                    <th>호스트 수</th>
+                    <th>가상 머신 수</th>
+                    <th>업그레이드 상태</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr onClick={() => setShowClusterName(true)}>
+                    <td></td>
+                    <td>Default</td>
+                    <td></td>
+                    <td>4.7</td>
+                    <td>The default server cluster</td>
+                    <td>Secure Intel Cascadelake</td>
+                    <td>2</td>
+                    <td>7</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
-       
+        </div>
       </div>
       <Modal
         isOpen={isModalOpen}

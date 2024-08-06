@@ -8,6 +8,10 @@ import MainOuter from './components/MainOuter';
 import Storage from './components/Storage';
 import Network from './components/Network';
 import Setting from './components/Setting';
+import Vm from './components/Computing/Vm';
+import Cluster from './components/Computing/Cluster';
+import ClusterName from './components/Computing/ClusterName';
+
 
 function App() {
     return (
@@ -20,6 +24,9 @@ function App() {
                     <Route path="/storage" element={<Storage />} />
                     <Route path="/network" element={<Network />} />
                     <Route path="/setting" element={<Setting />} />
+                    <Route path="/computing/vm" element={<Vm />} />
+                    <Route path="/" element={<Cluster />} />
+                    <Route path="/cluster-name" element={<ClusterName />} />
                 </Routes>
             </MainOuter>
         </Router>

@@ -4,6 +4,8 @@
     font-weight: normal;
     font-style: normal;
 }
+/*aside(Mainouter.js) 옆에 클릭하면 파란밑줄*/
+
 #root,*{
     margin: 0;
     padding: 0;
@@ -373,13 +375,8 @@
     font-size: 0.4rem;
     font-weight: 600;
 }
-#section{
-    background-color: #ffffff;
-    border-radius: 5px;
-    width: 100%;
-    position: relative;
-}
-#storage_section,#network_section,#setting_section,#detail_section{
+
+#section,#storage_section,#network_section,#setting_section,#detail_section{
     background-color: #ffffff;
     border-radius: 5px;
     width: 96%;
