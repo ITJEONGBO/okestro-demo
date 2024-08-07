@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
-import StorageDetail from '../detail/StorageDetail';
+import StorageDomain from '../detail/StorageDomain';
 import StorageDisk from '../detail/StorageDisk';
 import HeaderButton from './button/HeaderButton';
 import './Storage.css';
@@ -124,7 +124,7 @@ const Storage = () => {
             handlePopupBoxItemClick={handlePopupBoxItemClick}
           />
         ) : (
-          <StorageDetail
+          <StorageDomain
             togglePopupBox={togglePopupBox}
             isPopupBoxVisible={isPopupBoxVisible}
             handlePopupBoxItemClick={handlePopupBoxItemClick}
@@ -133,8 +133,8 @@ const Storage = () => {
       ) : (
         <div>
           <HeaderButton
-            title="데이터 센터"
-            subtitle="Default"
+            title="스토리지"
+            subtitle=""
             buttons={sectionHeaderButtons}
             popupItems={sectionHeaderPopupItems}
           />

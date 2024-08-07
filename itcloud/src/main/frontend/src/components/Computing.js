@@ -4,19 +4,15 @@ import Modal from 'react-modal';
 
 import HeaderButton from './button/HeaderButton';
 import NavButton from './navigation/NavButton';
-import ComputingDetail from './Computing/Vm';
+
+import DataCenterDetail from './Computing/DataCenterDetail';
 
 // React Modal 설정
 Modal.setAppElement('#root');
 
-// 템플릿
 const NetworkSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [visibleDetails, setVisibleDetails] = useState([]);
-  useEffect(() => {
-    setVisibleDetails(Array(3).fill(false)); // 초기 상태: 모든 detail 숨김
-  }, []);
-  // 팝업 열기/닫기 핸들러
+
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
@@ -164,9 +160,10 @@ const NetworkSection = () => {
   );
 };
 
-const SnapshotSection = () => {
+// 데이터센터
+const SnapshotSection = ({ handleRowClick }) => {
   return (
-    <div id="network_outer">
+    <div id="data_center_outer">
       <div className="pregroup_content">
         <div className="content_header_right">
           <button>새로 만들기</button>
@@ -190,7 +187,7 @@ const SnapshotSection = () => {
             <tr>
               <td><i className="fa fa-external-link"></i></td>
               <td></td>
-              <td>Default</td>
+              <td onClick={handleRowClick}>Defaultfasdadsffds</td> {/* 여기를 클릭하면 handleRowClick 호출 */}
               <td></td>
               <td>공유됨</td>
               <td>Up</td>
@@ -207,7 +204,7 @@ const SnapshotSection = () => {
 const ApplicationSection = () => {
   return (
     <div id="application_outer">
-      <div div className="pregroup_content">
+      <div className="pregroup_content">
         <div className="content_header_right">
           <button>새로 만들기</button>
           <button>편집</button>
@@ -254,13 +251,13 @@ const ApplicationSection = () => {
 const Computing = () => {
   const { section } = useParams();
   const navigate = useNavigate();
-  const [activeSection, setActiveSection] = useState('snapshot');  // 기본 섹션을 'snapshot'으로 설정
+  const [activeSection, setActiveSection] = useState('snapshot');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showDetail, setShowDetail] = useState(false);  // 추가된 상태
+  const [sectionContent, setSectionContent] = useState('default');
 
   useEffect(() => {
     navigate(`/computing/${activeSection}`);
-  }, [activeSection, navigate, showDetail]);
+  }, [activeSection, navigate]);
 
   const handleSectionClick = (section) => {
     setActiveSection(section);
@@ -280,22 +277,16 @@ const Computing = () => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
-
-  const togglePopup = () => {
-    setIsPopupVisible(!isPopupVisible);
-  };
-
   const handleRowClick = () => {
-    setShowDetail(true);  // detail 표시 설정
+    setSectionContent('detail');  // detail 페이지로 이동
   };
 
   const sectionHeaderButtons = [
-
+    // 여기에 필요한 버튼들을 추가합니다.
   ];
-  
-  const sectionHeaderPopupItems = [
 
+  const sectionHeaderPopupItems = [
+    // 여기에 필요한 팝업 아이템들을 추가합니다.
   ];
 
   const navSections = [
@@ -304,31 +295,33 @@ const Computing = () => {
     { id: 'network', label: '템플릿' },
   ];
 
-  if (showDetail) {
-    return <ComputingDetail />;  // detail 표시
-  }
-
   return (
     <div id="section">
-      <HeaderButton
-        title="데이터 센터"
-        subtitle="on20-ap01"
-        buttons={sectionHeaderButtons}
-        popupItems={sectionHeaderPopupItems}
-        openModal={openModal}
-        togglePopup={togglePopup}
-      />
-      <div className="content_outer">
-        <NavButton
-          sections={navSections}
-          activeSection={activeSection}
-          handleSectionClick={handleSectionClick}
-        />
+      {sectionContent === 'default' ? (
+        <>
+          <HeaderButton
+            title="데이터 센터"
+            subtitle="on20-ap01"
+            buttons={sectionHeaderButtons}
+            popupItems={sectionHeaderPopupItems}
+            openModal={openModal}
+            togglePopup={() => {}}
+          />
+          <div className="content_outer">
+            <NavButton
+              sections={navSections}
+              activeSection={activeSection}
+              handleSectionClick={handleSectionClick}
+            />
 
-        {activeSection === 'snapshot' && <SnapshotSection />}
-        {activeSection === 'application' && <ApplicationSection />}
-        {activeSection === 'network' && <NetworkSection />}
-      </div>
+            {activeSection === 'snapshot' && <SnapshotSection handleRowClick={handleRowClick} />}
+            {activeSection === 'application' && <ApplicationSection />}
+            {activeSection === 'network' && <NetworkSection />}
+          </div>
+        </>
+      ) : (
+        <DataCenterDetail />
+      )}
 
       <div className="footer_outer">
         <div className="footer">
@@ -359,7 +352,7 @@ const Computing = () => {
           <div className="footer_content" style={{ display: 'block' }}>
             <div className="footer_nav">
               <div>
-                <div >작업이름</div>
+                <div>작업이름</div>
                 <div><i className="fa fa-filter"></i></div>
               </div>
               <div>
@@ -399,8 +392,6 @@ const Computing = () => {
         )}
       </div>
 
-
-      {/*나중에 지우기 */}
       <Modal
         isOpen={isModalOpen}
         onRequestClose={closeModal}

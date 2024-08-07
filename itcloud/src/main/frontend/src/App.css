@@ -1216,7 +1216,7 @@
 .storage_right_outer,
 #storage_logic_outer,
 #detail_datacenter_outer,
-#detail_machine_outer,
+.detail_machine_outer,
 #detail_template_outer,
 #detail_disk_outer,
 #detail_snapshot_outer,
@@ -1236,6 +1236,7 @@
 #detail_cluster_outer,
 #detail_host_outer,
 #detail_virtual_outer,
+#detail_template_outer2,
 #detail_permission_outer
 
 {
@@ -1257,7 +1258,7 @@
 #network_content_outer{
     width: 100%;
 }
-#detail_machine_outer,#detail_template_outer{
+.detail_machine_outer,#detail_template_outer{
     padding: 1.4rem 0;
 }
 .table_outer2{
@@ -2019,27 +2020,7 @@ input[disabled] {
     padding: 1.2rem 0.3rem;
     
 }
-.application_content_header{
-    display: flex;
-    font-size: 0.34rem;
-    margin-bottom: 0.3rem;
-}
-.application_content_header>div,.application_content_header>button{
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-}
-.application_content_header>div{
-    padding: 0 0.3%;
-}
-.application_content_header>button{
-    padding: 0.35%;
-    cursor: pointer;
-    border: 1px solid #14417c;
-    border-radius: 3px;
-    color: rgb(10, 55, 107);
-    font-weight: 600;
-}
+
 
 #application_content table,.pregroup_content table {
     width: 100%;

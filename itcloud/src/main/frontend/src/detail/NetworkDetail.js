@@ -6,37 +6,7 @@ import { Table } from '../components/table/Table';
 
 function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   // 테이블컴포넌트
-  // 일반
-  const generalColumns = [
-    { header: 'ID', accessor: 'id', clickable: false },
-    { header: '설명', accessor: 'description', clickable: false },
-    { header: '상태', accessor: 'status', clickable: false },
-    { header: '업타임', accessor: 'uptime', clickable: false },
-    { header: '템플릿', accessor: 'template', clickable: false },
-    { header: '운영 시스템', accessor: 'os', clickable: false },
-    { header: '펌웨어/장치의 유형', accessor: 'firmware', clickable: false },
-    { header: '우선 순위', accessor: 'priority', clickable: false },
-    { header: '최적화 옵션', accessor: 'optimization', clickable: false },
-  ];
 
-  const generalData = [
-    {
-      id: 'on20-ap01',
-      description: '',
-      status: '실행 중',
-      uptime: '11 days',
-      template: 'Blank',
-      os: 'Linux',
-      firmware: (
-        <>
-          BIOS의 Q35 칩셋{' '}
-          <i className="fa fa-ban" style={{ marginLeft: '13%', color: 'orange' }}></i>
-        </>
-      ),
-      priority: '높음',
-      optimization: '서버',
-    },
-  ];
   //vnic
   const vnicColumns = [
     { header: '이름', accessor: 'name', clickable: false },
@@ -47,6 +17,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
     { header: '네트워크 필터', accessor: 'networkFilter', clickable: false },
     { header: '포트 미러링', accessor: 'portMirroring', clickable: false },
     { header: '통과', accessor: 'passthrough', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
   ];
 
   const vnicData = [
@@ -59,6 +30,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
       networkFilter: 'wdsm-no-mac-spoofing',
       portMirroring: '',
       passthrough: '아니요',
+      description: ''
     },
   ];
   //클러스터
@@ -163,8 +135,8 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
     { header: 'vNIC Tx', accessor: 'vnicTx', clickable: false },
     { header: '총 Rx', accessor: 'totalRx', clickable: false },
     { header: '총 Tx', accessor: 'totalTx', clickable: false },
-    { header: '설명', accessor: 'description', clickable: false },
-    { header: '', accessor: 'empty', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false }
+   
   ];
 
   const vmData = [
@@ -179,8 +151,8 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
       vnicTx: '1',
       totalRx: '5,353,174,284',
       totalTx: '5,353,174,284',
-      description: 'Hosted engine VM',
-      empty: '',
+      description: 'Hosted engine VM'
+  
     },
   ];
   //템플릿
@@ -260,7 +232,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
     <div className="content_detail_section">
       <HeaderButton
       title="네트워크"
-      subtitle="논리네트워크"
+      subtitle="ovirtmgmt"
       buttons={buttons}
       popupItems={popupItems}
     />
@@ -276,11 +248,52 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
 
         {activeTab === 'general' && (
           <div className="section_content_outer">
-            <div className="table_container_left">
-            
-            <Table columns={generalColumns} data={generalData} onRowClick={() => console.log('Row clicked')} />
-            </div>
+          <div className="table_container_left">
+            <table className="table">
+              <tbody>
+                <tr>
+                  <th>ID:</th>
+                  <td>on20-ap01</td>
+                </tr>
+                <tr>
+                  <th>설명:</th>
+                  <td></td>
+                </tr>
+                <tr>
+                  <th>상태:</th>
+                  <td>실행 중</td>
+                </tr>
+                <tr>
+                  <th>업타임:</th>
+                  <td>11 days</td>
+                </tr>
+                <tr>
+                  <th>템플릿:</th>
+                  <td>Blank</td>
+                </tr>
+                <tr>
+                  <th>운영 시스템:</th>
+                  <td>Linux</td>
+                </tr>
+                <tr>
+                  <th>펌웨어/장치의 유형:</th>
+                  <td>
+                    BIOS의 Q35 칩셋{' '}
+                    <i className="fa fa-ban" style={{ marginLeft: '13%', color: 'orange' }}></i>
+                  </td>
+                </tr>
+                <tr>
+                  <th>우선 순위:</th>
+                  <td>높음</td>
+                </tr>
+                <tr>
+                  <th>최적화 옵션:</th>
+                  <td>서버</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
+        </div>
         )}
 
         {activeTab === 'vNIC_profile' && (
@@ -292,12 +305,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                     <button onClick={() => openPopup('vnic_eidt_popup')}>편집</button>
                     <button>제거</button>
                 </div>
-                <div className="application_content_header">
-                    <button><i className="fa fa-chevron-left"></i></button>
-                    <div>1-1</div>
-                    <button><i className="fa fa-chevron-right"></i></button>
-                    <button><i className="fa fa-ellipsis-v"></i></button>
-                </div>
+              
 
                 <div className="table_outer2">
                 <Table columns={vnicColumns} data={vnicData} onRowClick={() => console.log('Row clicked')} />
@@ -314,12 +322,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
             <div className="content_header_right">
                 <button onClick={() => openPopup('cluster_network_popup')}>네트워크 관리</button>
             </div>
-            <div className="application_content_header">
-                <button><i className="fa fa-chevron-left"></i></button>
-                <div>1-1</div>
-                <button><i className="fa fa-chevron-right"></i></button>
-                <button><i className="fa fa-ellipsis-v"></i></button>
-            </div>
+          
             <div className="table_outer2">
             <Table columns={clusterColumns} data={clusterData} onRowClick={() => console.log('Row clicked')} />
             </div>
@@ -340,12 +343,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                   <button>연결됨</button>
                   <button>연결 해제</button>
                 </div>
-                <div className="application_content_header">
-                    <button><i className="fa fa-chevron-left"></i></button>
-                    <div>1-1</div>
-                    <button><i className="fa fa-chevron-right"></i></button>
-                    <button><i className="fa fa-ellipsis-v"></i></button>
-                </div>
+                
             
             <div className="table_outer2">
             <Table columns={hostColumns} data={hostData} onRowClick={() => console.log('Row clicked')} />
@@ -366,12 +364,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                   <button>실행중</button>
                   <button>정지중</button>
                 </div>
-              <div className="application_content_header">
-                  <button><i className="fa fa-chevron-left"></i></button>
-                  <div>1-1</div>
-                  <button><i className="fa fa-chevron-right"></i></button>
-                  <button><i className="fa fa-ellipsis-v"></i></button>
-              </div>
+             
             <div className="table_outer2">
               <Table columns={vmColumns} data={vmData} onRowClick={() => console.log('Row clicked')} />
             </div>
@@ -381,19 +374,15 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
         )}
 
         {activeTab === 'template' && (
-        <div id="detail_template_outer">
+        <div id="detail_template_outer2">
             <div className="pregroup_content">
             <div className="content_header_right">
                 <button>제거</button>
             </div>
-            <div className="application_content_header">
-                  <button><i className="fa fa-chevron-left"></i></button>
-                  <div>1-1</div>
-                  <button><i className="fa fa-chevron-right"></i></button>
-                  <button><i className="fa fa-ellipsis-v"></i></button>
-              </div>
+            
+
             <div className="table_outer2">
-            <Table columns={templateColumns} data={templateData} onRowClick={() => console.log('Row clicked')} />
+              <Table columns={templateColumns} data={templateData} onRowClick={() => console.log('Row clicked')} />
             </div>
             </div>
         </div>
@@ -413,14 +402,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                   <button>Direct</button>
                 </div>
               </div>
-              <div>
-                <div className="application_content_header">
-                  <button><i className="fa fa-chevron-left"></i></button>
-                  <div>1-3</div>
-                  <button><i className="fa fa-chevron-right"></i></button>
-                  <button><i className="fa fa-ellipsis-v"></i></button>
-                </div>
-              </div>
+              
               <div className="table_outer2">
               <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
               </div>

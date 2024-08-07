@@ -1,23 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Modal from 'react-modal';
 import HostDetail from '../detail/HostDetail';
 import './MainOuter.css';
 import Cluster from './Computing/Cluster';
 import Host from './Computing/Host';
 import Vm from './Computing/Vm';
+import Computing from './Computing';
+import Dashboard from './Dashboard'; // Dashboard 컴포넌트를 import
 
 function MainOuter({ children }) {
     const [selected, setSelected] = useState('dashboard');
-    const [selectedDiv, setSelectedDiv] = useState('data_center'); // 기본적으로 데이터센터가 선택된 상태
-    const [asidePopupVisible, setAsidePopupVisible] = useState(true); // 데이터센터 기본 선택
+    const [selectedDiv, setSelectedDiv] = useState('data_center');
+    const [asidePopupVisible, setAsidePopupVisible] = useState(true);
     const [asidePopupBackgroundColor, setAsidePopupBackgroundColor] = useState({
         dashboard: '',
         computing: '',
         storage: '',
         network: '',
         setting: '',
-        default: 'rgb(218, 236, 245)' // 데이터센터 기본 선택 색상 설정
+        default: 'rgb(218, 236, 245)'
     });
 
     const [isSecondVisibleStorage, setIsSecondVisibleStorage] = useState(false);
@@ -31,14 +33,15 @@ function MainOuter({ children }) {
     const [activeSettingForm, setActiveSettingForm] = useState('part');
     const [settingPopupOpen, setSettingPopupOpen] = useState(false);
 
-    const [isSecondVisible, setIsSecondVisible] = useState(true); // 데이터센터 기본 선택
+    const [isSecondVisible, setIsSecondVisible] = useState(false);
     const [isThirdVisible, setIsThirdVisible] = useState(false);
     const [isLastVisible, setIsLastVisible] = useState(false);
-    
-    const [sectionContent, setSectionContent] = useState('default');
-    const [activeSection, setActiveSection] = useState('general'); // 추가된 상태
 
-    const navigate = useNavigate(); // useNavigate 훅 추가
+    const [sectionContent, setSectionContent] = useState('default');
+    const [activeSection, setActiveSection] = useState('general');
+
+    const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         function adjustFontSize() {
@@ -50,15 +53,54 @@ function MainOuter({ children }) {
         window.addEventListener('resize', adjustFontSize);
         adjustFontSize();
 
+        if (location.pathname.includes('/computing')) {
+            setSelected('computing');
+            setAsidePopupVisible(true);
+            setAsidePopupBackgroundColor(prevState => ({
+                ...prevState,
+                computing: 'rgb(218, 236, 245)'
+            }));
+        } else if (location.pathname.includes('/storage')) {
+            setSelected('storage');
+            setAsidePopupVisible(true);
+            setAsidePopupBackgroundColor(prevState => ({
+                ...prevState,
+                storage: 'rgb(218, 236, 245)'
+            }));
+        } else if (location.pathname.includes('/network')) {
+            setSelected('network');
+            setAsidePopupVisible(true);
+            setAsidePopupBackgroundColor(prevState => ({
+                ...prevState,
+                network: 'rgb(218, 236, 245)'
+            }));
+        } else if (location.pathname.includes('/setting')) {
+            setSelected('setting');
+            setAsidePopupVisible(true);
+            setAsidePopupBackgroundColor(prevState => ({
+                ...prevState,
+                setting: 'rgb(218, 236, 245)'
+            }));
+        } else {
+            setSelected('dashboard');
+            setAsidePopupVisible(false); // Dashboard일 때는 aside_popup을 숨김
+            setAsidePopupBackgroundColor(prevState => ({
+                ...prevState,
+                dashboard: 'rgb(218, 236, 245)'
+            }));
+        }
+
         return () => {
             window.removeEventListener('resize', adjustFontSize);
         };
-    }, []);
+    }, [location]);
 
     const handleClick = (id) => {
         setSelected(id);
         setSectionContent('default'); 
         toggleAsidePopup(id);
+        setSelectedDiv(null);  // 중복 선택 방지
+        setSelectedDetail(null);  // 내부 아이템 배경색 제거
     };
 
     const toggleAsidePopup = (id) => {
@@ -72,17 +114,17 @@ function MainOuter({ children }) {
         };
 
         if (id === 'computing') {
-            setAsidePopupVisible(!asidePopupVisible || selected !== 'computing');
+            setAsidePopupVisible(true);
             newBackgroundColor.computing = 'rgb(218, 236, 245)';
-            navigate(`/computing/general`); // navigate 추가
+            navigate(`/computing/general`);
         } else if (id === 'storage') {
-            setAsidePopupVisible(!asidePopupVisible || selected !== 'storage');
+            setAsidePopupVisible(true);
             newBackgroundColor.storage = 'rgb(218, 236, 245)';
         } else if (id === 'network') {
-            setAsidePopupVisible(!asidePopupVisible || selected !== 'network');
+            setAsidePopupVisible(true);
             newBackgroundColor.network = 'rgb(218, 236, 245)';
         } else if (id === 'setting') {
-            setAsidePopupVisible(!asidePopupVisible || selected !== 'setting');
+            setAsidePopupVisible(true);
             newBackgroundColor.setting = 'rgb(218, 236, 245)';
         } else {
             setAsidePopupVisible(false);
@@ -91,53 +133,43 @@ function MainOuter({ children }) {
         setAsidePopupBackgroundColor(newBackgroundColor);
     };
 
-    const handleFirstClick = () => {
-        setSelectedDiv('data_center');
-        navigate(`/computing/general`); // navigate 추가
+    const handleFirstClick = (e) => {
+        e.stopPropagation();
+        setIsSecondVisible(!isSecondVisible);
     };
 
     const handleFirstDivClick = () => {
         setSelectedDiv('data_center');
+        setSectionContent('computing');
+        navigate('/computing/general');
     };
     
-    const handleSecondClick = () => {
+    const handleSecondClick = (e) => {
+        e.stopPropagation();
         setSelectedDiv('cluster');
-        setSectionContent('cluster');
-        navigate(`/computing/application`);
+        setIsThirdVisible(!isThirdVisible);
     };
 
     const handleSecondDivClick = () => {
         setSelectedDiv('cluster');
+        setSectionContent('cluster');
+        navigate(`/computing/application`);
     };
     
-    const handleThirdClick = () => {
-        setSelectedDiv('host');
-        setSectionContent('host');
+    const handleThirdClick = (e) => {
+        e.stopPropagation();
+        setIsLastVisible(!isLastVisible);
     };
-    
 
     const handleThirdDivClick = () => {
         setSelectedDiv('host');
+        setSelectedDetail(null);  // 호스트 내부 아이템 선택 해제
+        setSectionContent('host');
     };
     
     const handleFirstClickStorage = () => {
         setIsSecondVisibleStorage(!isSecondVisibleStorage);
         setIsLastVisibleStorage(false);
-    };
-    
-    const onFirstIconClick = (e) => {
-        e.stopPropagation(); // 이벤트 버블링 방지
-        setIsSecondVisible(!isSecondVisible);
-    };
-    
-    const onSecondIconClick = (e) => {
-        e.stopPropagation();
-        setIsThirdVisible(!isThirdVisible);
-    };
-    
-    const onThirdIconClick = (e) => {
-        e.stopPropagation();
-        setIsLastVisible(!isLastVisible);
     };
     
     const handleSecondClickStorage = () => {
@@ -198,13 +230,27 @@ function MainOuter({ children }) {
 
     const handleDetailClick = (content, target) => {
         setSectionContent(content);
-        setSelectedDetail(target);
+        setSelectedDetail(target); 
     };
+
     const [selectedDetail, setSelectedDetail] = useState(null);
     const handleDivClick = (target) => {
         setSectionContent('vm');
-    setSelectedDetail(target);
-    navigate('/computing/vm'); // Vm 컴포넌트로 이동
+        setSelectedDetail(target); 
+        navigate('/computing/vm');
+    };
+
+    const getBackgroundColor = (target) => {
+        if (selectedDetail === target) {
+            return 'rgb(218, 236, 245)';
+        }
+        if (contextMenuTarget === target) {
+            return '#e6eefa';
+        }
+        if (hoverTarget === target) {
+            return '#e6eefa';
+        }
+        return 'transparent';
     };
 
     return (
@@ -252,7 +298,6 @@ function MainOuter({ children }) {
                                 <i className="fa fa-database"></i>
                             </div>
                         </Link>
-                        
                     </div>
                     <Link to='/setting' className="link-no-underline">
                         <div id="setting_icon" style={{ backgroundColor: asidePopupBackgroundColor.setting }} onClick={() => handleClick('setting')}>
@@ -263,8 +308,6 @@ function MainOuter({ children }) {
                 <div id="aside_popup" style={{ display: asidePopupVisible ? 'block' : 'none' }}>
                     <button id='aside_popup_btn' onClick={handleAsidePopupBtnClick}><i className="fa fa-chevron-left"></i></button>
 
-
-                     {/*가상머신 aside */}
                     {selected === 'computing' && (
                     <div id="virtual_machine_chart">
                         <div 
@@ -281,60 +324,66 @@ function MainOuter({ children }) {
                             <span>data_center</span>
                         </div>
                         {isSecondVisible && (
-                            <div className="aside_popup_content" id="aside_popup_second" 
+                            <div 
+                                className="aside_popup_content" 
+                                id="aside_popup_second" 
                                 style={{ backgroundColor: selectedDiv === 'cluster' ? 'rgb(218, 236, 245)' : '' }} 
-                                onClick={handleSecondClick}>
+                                onClick={handleSecondDivClick}
+                            >
                                 <i className={`fa fa-chevron-${isThirdVisible ? 'down' : 'right'}`} 
-                                onClick={onSecondIconClick}></i>
+                                   onClick={handleSecondClick}
+                                ></i>
                                 <i className="fa fa-building-o"></i>
                                 <span>클러스터</span>
                             </div>
                         )}
                         {isThirdVisible && (
-                            <div className="aside_popup_content" id="aside_popup_third" 
+                            <div 
+                                className="aside_popup_content" 
+                                id="aside_popup_third" 
                                 style={{ backgroundColor: selectedDiv === 'host' ? 'rgb(218, 236, 245)' : '' }} 
-                                onClick={handleThirdClick}>
+                                onClick={handleThirdDivClick}
+                            >
                                 <i className={`fa fa-chevron-${isLastVisible ? 'down' : 'right'}`} 
-                                onClick={onThirdIconClick}></i>
+                                   onClick={handleThirdClick}
+                                ></i>
                                 <i className="fa fa-building-o"></i>
                                 <span>호스트</span>
                             </div>
                         )}
                         {isLastVisible && (
                             <div id="aside_popup_last_machine">
-                                <div
-    onClick={() => handleDetailClick('detail1', '192.168.0.80')}
-    onContextMenu={(e) => handleContextMenu(e, '192.168.0.80')}
-    onMouseEnter={() => handleMouseEnter('192.168.0.80')}
-    onMouseLeave={handleMouseLeave}
-    style={{
-        backgroundColor: selectedDetail === '192.168.0.80' ? 'rgb(218, 236, 245)' : (contextMenuTarget === '192.168.0.80' ? '#e6eefa' : (hoverTarget === '192.168.0.80' ? '#e6eefa' : 'transparent'))
-    }}
->
-    <i></i>
-    <i className="fa fa-user"></i>
-    <span>192.168.0.80</span>
-</div>
-<div
-    onClick={() => handleDivClick('HostedEngine')}
-    onContextMenu={(e) => handleContextMenu(e, 'HostedEngine')}
-    onMouseEnter={() => handleMouseEnter('HostedEngine')}
-    onMouseLeave={handleMouseLeave}
-    style={{
-        backgroundColor: selectedDetail === 'HostedEngine' ? 'rgb(218, 236, 245)' : (contextMenuTarget === 'HostedEngine' ? '#e6eefa' : (hoverTarget === 'HostedEngine' ? '#e6eefa' : 'transparent'))
-    }}
->
-    <i></i>
-    <i className="fa fa-microchip"></i>
-    <span>HostedEngine</span>
-</div>
-
+                            <div
+                                onClick={() => handleDetailClick('detail1', '192.168.0.80')}
+                                onContextMenu={(e) => handleContextMenu(e, '192.168.0.80')}
+                                onMouseEnter={() => handleMouseEnter('192.168.0.80')}
+                                onMouseLeave={handleMouseLeave}
+                                style={{
+                                    backgroundColor: selectedDiv === 'host' ? getBackgroundColor('192.168.0.80') : 'transparent'
+                                }}
+                            >
+                                <i></i>
+                                <i className="fa fa-user"></i>
+                                <span>192.168.0.80</span>
+                            </div>
+                            <div
+                                onClick={() => handleDivClick('HostedEngine')}
+                                onContextMenu={(e) => handleContextMenu(e, 'HostedEngine')}
+                                onMouseEnter={() => handleMouseEnter('HostedEngine')}
+                                onMouseLeave={handleMouseLeave}
+                                style={{
+                                    backgroundColor: selectedDiv === 'host' ? getBackgroundColor('HostedEngine') : 'transparent'
+                                }}
+                            >
+                                <i></i>
+                                <i className="fa fa-microchip"></i>
+                                <span>HostedEngine</span>
+                            </div>
                         </div>
                         )}
                     </div>
                     )}
                     
-                    {/*스토리지 aside */}
                     {selected === 'storage' && (
                         <div id="storage_chart">
                             <div className="aside_popup_content" id="aside_popup_first2" onClick={handleFirstClickStorage}>
@@ -388,7 +437,6 @@ function MainOuter({ children }) {
                         </div>
                     )}
 
-                    {/*네트우 ㅓ크 aside */}
                     {selected === 'network' && (
                         <div id="network_chart">
                             <div className="aside_popup_content" id="aside_popup_first3" onClick={handleFirstClickNetwork}>
@@ -426,15 +474,13 @@ function MainOuter({ children }) {
                 </div>
             </div>
             {sectionContent === 'default' ? React.cloneElement(children, { activeSection, setActiveSection }) : (
-                <div id="detail_section">
-                    {/* Add the content for the detailed section here */}
+                    < >
                     {sectionContent === 'detail1' && <HostDetail />}
                     {sectionContent === 'cluster' && <Cluster />}
                     {sectionContent === 'host' && <Host />}
                     {sectionContent === 'vm' && <Vm />}
-                    {/* {sectionContent === 'detail2' && <div>Detail Page 2 Content</div>}
-                    {sectionContent === 'detail3' && <div>Detail Page 3 Content</div>} */}
-                </div>
+                    {sectionContent === 'computing' && <Computing />}
+                    </>
             )}
             <div id="context_menu"
                  style={{
@@ -451,7 +497,6 @@ function MainOuter({ children }) {
                 <div>Connections</div>
             </div>
 
-            {/* 세팅설정 팝업 */}
             <Modal
                 isOpen={settingPopupOpen}
                 onRequestClose={closeSettingPopup}
@@ -774,7 +819,6 @@ function MainOuter({ children }) {
                 </div>
             </Modal>
 
-            {/* 역할(새로 만들기) 팝업 */}
             <Modal
                 isOpen={activePopup === 'newRole'}
                 onRequestClose={closePopup}
@@ -855,7 +899,6 @@ function MainOuter({ children }) {
                 </div>
             </Modal>
 
-            {/* 시스템권한(추가) 팝업 */}
             <Modal
                 isOpen={activePopup === 'addSystemRole'}
                 onRequestClose={closePopup}
@@ -935,7 +978,6 @@ function MainOuter({ children }) {
                 </div>
             </Modal>
 
-            {/* 스케쥴링정책(새로 만들기) 팝업 */}
             <Modal
                 isOpen={activePopup === 'newSchedule'}
                 onRequestClose={closePopup}
@@ -1021,7 +1063,6 @@ function MainOuter({ children }) {
 
             </Modal>
 
-            {/* MAC주소 풀(새로만들기)팝업 */}
             <Modal
                 isOpen={activePopup === 'macNew'}
                 onRequestClose={closePopup}
@@ -1081,7 +1122,6 @@ function MainOuter({ children }) {
 
             </Modal>
 
-            {/* MAC주소 풀(편집)팝업 */}
             <Modal
                 isOpen={activePopup === 'macEdit'}
                 onRequestClose={closePopup}

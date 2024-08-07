@@ -19,7 +19,7 @@ const HeaderButton = ({ title, subtitle, buttons, popupItems }) => {
       <div className="section_header_left">
         <div>{title}</div>
         <div>{subtitle}</div>
-        <button><i className="fa fa-exchange"></i></button>
+ 
       </div>
       <div className="section_header_right">
         <div className="article_nav">

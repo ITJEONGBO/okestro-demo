@@ -254,14 +254,7 @@ function ClusterName() {
                             <button>Direct</button>
                             </div>
                         </div>
-                        <div>
-                            <div className="application_content_header">
-                            <button><i className="fa fa-chevron-left"></i></button>
-                            <div>1-2</div>
-                            <button><i className="fa fa-chevron-right"></i></button>
-                            <button><i className="fa fa-ellipsis-v"></i></button>
-                            </div>
-                        </div>
+                        
                         <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
                     </div>
             </div>

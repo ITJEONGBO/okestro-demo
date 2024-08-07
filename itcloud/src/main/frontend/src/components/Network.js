@@ -163,14 +163,7 @@ const Network = () => {
                                 <button>편집</button>
                                 <button>삭제</button>
                             </div>
-                            <div>
-                                <div className="application_content_header">
-                                    <button><i className="fa fa-chevron-left"></i></button>
-                                    <div>1-2</div>
-                                    <button><i className="fa fa-chevron-right"></i></button>
-                                    <button><i className="fa fa-ellipsis-v"></i></button>
-                                </div>
-                            </div>
+                            
                             <Table columns={columns} data={data} onRowClick={handleNetworkNameClick} />
                         </div>
                     </div>

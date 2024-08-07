@@ -10,51 +10,43 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
   const vmColumns = [
     { header: '이름', accessor: 'name', clickable: false },
     { header: '클러스터', accessor: 'cluster', clickable: false },
-    { header: '볼륨 유형', accessor: 'volumeType', clickable: false },
-    { header: '브릭', accessor: 'brick', clickable: false },
-    { header: '정보', accessor: 'info', clickable: false },
-    { header: '사용한 공간', accessor: 'usedSpace', clickable: false },
-    { header: '작업', accessor: 'operation', clickable: false },
-    { header: '스냅샷 수', accessor: 'snapshotCount', clickable: false },
+    { header: 'IP 주소', accessor: 'ipAddress', clickable: false },
+    { header: 'FQDN', accessor: 'fqdn', clickable: false },
+    { header: '메모리', accessor: 'memory', clickable: false },
+    { header: 'CPU', accessor: 'cpu', clickable: false },
+    { header: '네트워크', accessor: 'network', clickable: false },
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '업타임', accessor: 'uptime', clickable: false },
   ];
+  
 
   const vmData = [];
 
   //스토리지
   const storageColumns = [
-    { header: '별칭', accessor: 'alias', clickable: false },
-    { header: <i className="fa fa-chevron-left"></i>, accessor: 'icon1', clickable: false },
-    { header: <i className="fa fa-chevron-left"></i>, accessor: 'icon2', clickable: false },
-    { header: '가상 크기', accessor: 'virtualSize', clickable: false },
-    { header: '실제 크기', accessor: 'actualSize', clickable: false },
-    { header: '할당 정책', accessor: 'allocationPolicy', clickable: false },
-    { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
-    { header: '생성 일자', accessor: 'creationDate', clickable: false },
-    { header: '최근 업데이트', accessor: 'lastUpdate', clickable: false },
-    { header: '', accessor: 'icon3', clickable: false },
-    { header: '연결 대상', accessor: 'connectionTarget', clickable: false },
+    { header: '', accessor: 'icon1', clickable: false },
+    { header: '', accessor: 'icon2', clickable: false },
+    { header: '도메인 이름', accessor: 'domainName', clickable: false },
+    { header: '도메인 유형', accessor: 'domainType', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },
-    { header: '유형', accessor: 'type', clickable: false },
+    { header: '여유 공간 (GiB)', accessor: 'freeSpace', clickable: false },
+    { header: '사용된 공간 (GiB)', accessor: 'usedSpace', clickable: false },
+    { header: '전체 공간 (GiB)', accessor: 'totalSpace', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ];
-
   const storageData = [
     {
-      alias: 'aa',
-      icon1: '',
-      icon2: '',
-      virtualSize: '<1 GiB',
-      actualSize: '<1 GiB',
-      allocationPolicy: '씬 프로비저닝',
-      storageDomain: 'hosted_storage',
-      creationDate: '2024. 4. 26. PM 3:19:39',
-      lastUpdate: '2024. 4. 26. PM 3:19:45',
-      icon3: <i className="fa fa-chevron-left"></i>,
-      connectionTarget: '',
-      status: 'OK',
-      type: '이미지',
-      description: 'testa',
+      icon1: <i className="fa fa-icon1"></i>,
+      icon2: <i className="fa fa-icon2"></i>,
+      domainName: 'hosted_storage',
+      domainType: '데이터 (마스터)',
+      status: '활성화',
+      freeSpace: '83 GiB',
+      usedSpace: '16 GiB',
+      totalSpace: '99 GiB',
+      description: '',
     },
+    // 추가 데이터
   ];
   //권한
   const permissionColumns = [
@@ -78,7 +70,6 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
       inheritedFrom: '(시스템)',
     },
   ];
-
   //
   const [activeTab, setActiveTab] = useState('general');
 
@@ -199,7 +190,7 @@ const popupItems = [
 
 
         {activeTab === 'machine' && (
-          <div id="detail_machine_outer">
+          <div className="detail_machine_outer">
 
           <div className="pregroup_content">
           <Table columns={vmColumns} data={vmData} onRowClick={() => console.log('Row clicked')} />
@@ -208,26 +199,21 @@ const popupItems = [
         )}
 
         {activeTab === 'storage' && (
-        <div id="detail_disk_outer">
+        <div className="detail_machine_outer">
        
             <div className="pregroup_content">
-            <div className="application_content_header">
-                <button><i className="fa fa-chevron-left"></i></button>
-                <div>1-1</div>
-                <button><i className="fa fa-chevron-right"></i></button>
-                <button><i className="fa fa-ellipsis-v"></i></button>
-            </div>
-            <div className="table_outer2">
-            <Table columns={storageColumns} data={storageData} onRowClick={() => console.log('Row clicked')} />
-            </div>
+           
+              
+              <Table columns={storageColumns} data={storageData} onRowClick={() => console.log('Row clicked')} />
+              
             </div>
        </div>
        
         )}
 
 
-        {activeTab === 'permission' && (
-        <div id="detail_right_outer">
+      {activeTab === 'permission' && (
+        <div id="detail_permission_outer">
             <div className="pregroup_content">
               <div className="content_header_right">
                 <button>추가</button>
@@ -240,14 +226,7 @@ const popupItems = [
                   <button>Direct</button>
                 </div>
               </div>
-              <div>
-                <div className="application_content_header">
-                  <button><i className="fa fa-chevron-left"></i></button>
-                  <div>1-3</div>
-                  <button><i className="fa fa-chevron-right"></i></button>
-                  <button><i className="fa fa-ellipsis-v"></i></button>
-                </div>
-              </div>
+              
               <div className="table_outer2">
               <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
               </div>
