@@ -155,17 +155,19 @@ const Network = () => {
 
                     <div className="content_outer">
                         
-
-                        <div className="storage_domain_content" style={{ padding: '0.5rem 0.3rem' }}>
-                            <div className="content_header_right">
-                                <button id="network_new_btn" onClick={() => openPopup('newNetwork')}>새로 만들기</button>
-                                <button id="network_bring_btn" onClick={() => openPopup('getNetwork')}>가져오기</button>
-                                <button>편집</button>
-                                <button>삭제</button>
-                            </div>
+                        <div className='empty_nav_outer'>
                             
-                            <Table columns={columns} data={data} onRowClick={handleNetworkNameClick} />
+                                <div className="content_header_right">
+                                    <button id="network_new_btn" onClick={() => openPopup('newNetwork')}>새로 만들기</button>
+                                    <button id="network_bring_btn" onClick={() => openPopup('getNetwork')}>가져오기</button>
+                                    <button>편집</button>
+                                    <button>삭제</button>
+                                </div>
+                            <div className="section_table_outer">
+                                <Table columns={columns} data={data} onRowClick={handleNetworkNameClick} />
+                            </div>
                         </div>
+                        
                     </div>
                 </div>
             ) : (

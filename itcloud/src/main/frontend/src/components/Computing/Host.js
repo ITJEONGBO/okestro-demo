@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import HeaderButton from '../button/HeaderButton';
+import { Table } from '../table/Table';
 
 
 // React Modal 설정
@@ -12,6 +13,7 @@ const Host = () => {
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
 
 
   const sectionHeaderButtons = [
@@ -37,7 +39,31 @@ const Host = () => {
     'OVA로 내보내기',
   ];
 
-
+  //테이블 컴포넌트
+  const onRowClick = (row) => {
+    console.log('Row clicked:', row);
+  };
+  const columns = [
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '이름', accessor: 'name', clickable: true },
+    { header: '호환 버전', accessor: 'version', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
+    { header: '클러스터 CPU 유형', accessor: 'cpuType', clickable: false },
+    { header: '호스트 수', accessor: 'hostCount', clickable: false },
+    { header: '가상 머신 수', accessor: 'vmCount', clickable: false },
+  ];
+  
+  const data = [
+    {
+      status: '',
+      name: '192.168.0.80',
+      version: '4.7',
+      description: 'The default server cluster',
+      cpuType: 'Secure Intel Cascadelak',
+      hostCount: 2,
+      vmCount: 7,
+    },
+  ];
 
   return (
     <div id="section">
@@ -50,46 +76,14 @@ const Host = () => {
         togglePopup={() => {}}
       />
       <div className="content_outer">
-
-          <div id="application_outer">
-            <div div className="pregroup_content">
-              
-              <div className="section_table_outer">
-                <button>
-                  <i className="fa fa-refresh"></i>
-                </button>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>상태</th>
-                      <th>이름</th>
-                     
-                      <th>호환 버전</th>
-                      <th>설명</th>
-                      <th>클러스터 CPU 유형</th>
-                      <th>호스트 수</th>
-                      <th>가상 머신 수</th>
-                      
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td></td>
-                      <td>Default</td>
-                      
-                      <td>4.7</td>
-                      <td>The derault server cluster</td>
-                      <td>Secure Intel Cascadelak</td>
-                      <td>2</td>
-                      <td>7</td>
-                     
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+          <div className='empty_nav_outer'>
+            <div className="section_table_outer">
+              <button>
+                <i className="fa fa-refresh"></i>
+              </button>
+              <Table columns={columns} data={data} onRowClick={onRowClick} />
             </div>
-          </div>
-        
+        </div>
       </div>
       <Modal
         isOpen={isModalOpen}

@@ -40,10 +40,10 @@ const DataCenterDetail = () => {
 
 
   return (
-    <div id="section">
+    <>
       <HeaderButton
         title="데이터센터 "
-        subtitle="defaulfasfsfdsdsafsdt"
+        subtitle="detail"
         buttons={sectionHeaderButtons}
         popupItems={sectionHeaderPopupItems}
         openModal={openModal}
@@ -51,7 +51,7 @@ const DataCenterDetail = () => {
       />
       <div className="content_outer">
 
-          <div id="application_outer">
+          <div className="empty_nav_outer">
             <div div className="pregroup_content">
               
               <div className="section_table_outer">
@@ -127,7 +127,7 @@ const DataCenterDetail = () => {
           </div>
         </div>
       </Modal>
-    </div>
+    </>
   );
 };
 

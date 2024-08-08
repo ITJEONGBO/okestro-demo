@@ -1217,6 +1217,7 @@
 #storage_logic_outer,
 #detail_datacenter_outer,
 .detail_machine_outer,
+
 #detail_template_outer,
 #detail_disk_outer,
 #detail_snapshot_outer,
@@ -1237,8 +1238,9 @@
 #detail_host_outer,
 #detail_virtual_outer,
 #detail_template_outer2,
-#detail_permission_outer
-
+#detail_permission_outer,
+/*컴퓨팅 테이블아우터*/
+.computing_table_outer
 {
     width: 100%;
     display: flex;
@@ -1267,7 +1269,7 @@
 
 .content_header {
     border-right: 1px solid #dddddd;
-    margin-right: 1%;
+ 
     width: 12%;
 }
 
@@ -1897,7 +1899,7 @@ input[disabled] {
     border-bottom: 1px solid rgb(190, 190, 190);
 }
 /*스냅샷*/
-#snapshot_content_outer,#network_content_outer,.pregroup_content{
+#snapshot_content_outer,#network_content_outer{
     padding: 0.5rem 0.3rem 0 0;
 }
 .pregroup_content i{
@@ -2910,7 +2912,6 @@ form>div
     position: relative;
 }
 .section_content_outer{
-    padding: 0.5rem 0.3rem;
     width: 89%;
 }
 .section_option{
@@ -2934,6 +2935,7 @@ form>div
 .search_box{
     width: 20%;
     display: flex;
+    margin-bottom: 0.15rem;
 }
 .search_box input{
     height: 3.1vh;
@@ -2987,8 +2989,9 @@ form>div
 }
 .section_table_outer>button{
     padding: 0.07rem 0.1rem;
-    margin-bottom: 0.1rem;
+    margin-bottom: 0.13rem;
     cursor: pointer;
+    display: flex;
 }
 /*스토리지 도메인버튼*/
 .storage_domain_content,
@@ -4252,6 +4255,95 @@ box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
     width: 40%;
     justify-content: space-between;
 }
+
+
+/*hostDetail.js*/
+.host_content_outer{
+    width: 100%;
+    padding: 0.2rem 0;
+}
+.host_tables{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+.host_table{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 0.27rem;
+}
+.host_table tbody{
+    width: 100%;
+}
+.host_table th{
+    text-align: left ;
+    width: 60%;
+}
+.host_table tr{
+    width: 100%;
+
+}
+.host_table_explain{
+    font-size: 0.33rem;
+    margin-bottom: 0.5rem;
+}
+.host_table_explain>p{
+    font-weight: 600;
+}
+.host_table_explain span{
+    text-decoration: underline;
+}
+.host_btn_outer{
+    width: 100%;
+    padding: 0.5rem 0.3rem 0.5rem 0;
+}
+.host_empty_outer{
+    width: 100%;
+    padding: 1rem 0;
+}
+.host_filter_btns{
+    display: flex;
+    font-size: 0.34rem;
+    margin-bottom: 0.3rem;
+    height: 3.3vh;
+}
+.host_filter_btns>span{
+    margin-right: 0.2rem;
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.host_filter_btns>div{
+
+    display: flex;
+    justify-content: space-between;
+}
+.host_filter_btns button {
+    padding: 0 0.13rem;
+    cursor: pointer;
+    border: 1px solid #14417c;
+    border-radius: 3px;
+    color: rgb(10, 55, 107);
+    font-weight: 600;
+}
+/*끝*/
+/*Cluster.js / Host.js / *Network.js*/
+.empty_nav_outer{
+    width: 100%;
+    padding: 0.6rem 0.3rem;
+}
+/*끝*/
+/*Network.js*/
+
+
+/*끝*/
+
+
+
+
+
+
 /*반응형*/
 @media (max-width:1390px) {
 

@@ -169,7 +169,7 @@ function ClusterName() {
     
       
     return (
-        <div id='host_detail_section'>
+        <div id='section'>
              <HeaderButton
                 title="클러스터"
                 subtitle="Default"

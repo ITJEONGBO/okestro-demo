@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import './StorageDomain.css';
+
 import NavButton from '../components/navigation/NavButton';
 import HeaderButton from '../components/button/HeaderButton';
 import { Table } from '../components/table/Table';
@@ -174,9 +174,9 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
           activeSection={activeTab} 
           handleSectionClick={handleTabClick} 
         />
-
+        <div className="host_btn_outer">
         {activeTab === 'general' && (
-          <div className="section_content_outer">
+
             <div className="table_container_left">
             <table className="table">
               <tbody>
@@ -227,8 +227,8 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
               </tbody>
             </table>
 
-            </div>
-          </div>
+            </div> 
+        
         )}
 
         {activeTab === 'datacenter' && (
@@ -348,14 +348,6 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                 )}
             </div>
             
-
-            
-            <div className="application_content_header">
-                <button><i className="fa fa-chevron-left"></i></button>
-                <div>1-1</div>
-                <button><i className="fa fa-chevron-right"></i></button>
-                <button><i className="fa fa-ellipsis-v"></i></button>
-            </div>
             <div className="table_outer2">
                 <table>
                 <thead>
@@ -416,16 +408,12 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         )}
 
         {activeTab === 'event' && (
-        <div className="detail_machine_outer">
+        <div className="host_empty_outer">
             <div className="pregroup_content">
-              
-              
-              <div className="table_outer2">
                 <Table columns={eventColumns} data={eventData} onRowClick={() => console.log('Row clicked')} />
-              </div>
             </div>
         </div>
-          
+  
         )}
 
       {activeTab === 'permission' && (
@@ -449,6 +437,8 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
             </div>
         </div>
         )}
+      </div>
+
       </div>
     </div>
   );

@@ -131,7 +131,7 @@ const popupItems = [
     };
   }, [isUploadOptionBoxVisible]);
   return (
-    <div className="content_detail_section">
+    <div>
       <HeaderButton
       title="스토리지"
       subtitle="디스크"
@@ -147,9 +147,9 @@ const popupItems = [
                 activeSection={activeTab} 
                 handleSectionClick={handleTabClick} 
             />
-
+      <div className="host_btn_outer">
         {activeTab === 'general' && (
-          <div className="section_content_outer">
+
             <div className="table_container_left">
               <table className="table">
                 <tbody>
@@ -185,27 +185,26 @@ const popupItems = [
                 </tbody>
               </table>
             </div>
-          </div>
+         
+
+
+            
         )}
 
 
         {activeTab === 'machine' && (
-          <div className="detail_machine_outer">
-
-          <div className="pregroup_content">
-          <Table columns={vmColumns} data={vmData} onRowClick={() => console.log('Row clicked')} />
+          <div className="host_empty_outer">
+            <div className="pregroup_content">
+              <Table columns={vmColumns} data={vmData} onRowClick={() => console.log('Row clicked')} />
             </div>
           </div>
         )}
 
         {activeTab === 'storage' && (
-        <div className="detail_machine_outer">
-       
+
+        <div className="host_empty_outer">
             <div className="pregroup_content">
-           
-              
               <Table columns={storageColumns} data={storageData} onRowClick={() => console.log('Row clicked')} />
-              
             </div>
        </div>
        
@@ -213,27 +212,28 @@ const popupItems = [
 
 
       {activeTab === 'permission' && (
-        <div id="detail_permission_outer">
-            <div className="pregroup_content">
+        <>
               <div className="content_header_right">
                 <button>추가</button>
                 <button>제거</button>
               </div>
-              <div className="storage_right_btns">
-                <span>Permission Filters:</span>
-                <div>
-                  <button>All</button>
-                  <button>Direct</button>
-                </div>
-              </div>
               
-              <div className="table_outer2">
-              <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
+              <div className="section_table_outer">
+                <div className="storage_right_btns">
+                  <span>Permission Filters:</span>
+                  <div>
+                    <button>All</button>
+                    <button>Direct</button>
+                  </div>
+                </div>
+                <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
               </div>
-            </div>
-        </div>
+        </>
         )}
       </div>
+
+
+    </div>
     </div>
   );
 }

@@ -4,13 +4,100 @@ import Modal from 'react-modal';
 
 import HeaderButton from './button/HeaderButton';
 import NavButton from './navigation/NavButton';
-
 import DataCenterDetail from './Computing/DataCenterDetail';
 
 // React Modal 설정
 Modal.setAppElement('#root');
 
-const NetworkSection = () => {
+// 데이터센터
+const DatacenterSection = ({ handleRowClick }) => {
+  return (
+    <div className="computing_table_outer">
+      <div className="pregroup_content">
+        <div className="content_header_right">
+          <button>새로 만들기</button>
+          <button>편집</button>
+          <button>삭제</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th></th>
+              <th>이름</th>
+              <th>코멘트</th>
+              <th>스토리지 유형</th>
+              <th>상태</th>
+              <th>호환 버전</th>
+              <th>설명</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><i className="fa fa-external-link"></i></td>
+              <td></td>
+              <td onClick={handleRowClick}>Defaultfasdadsffds</td> {/* 여기를 클릭하면 handleRowClick 호출 */}
+              <td></td>
+              <td>공유됨</td>
+              <td>Up</td>
+              <td>4.7</td>
+              <td>The default Data Center</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+//클러스터
+const ClusterSection = () => {
+  return (
+    <div id="application_outer">
+      <div className="pregroup_content">
+        <div className="content_header_right">
+          <button>새로 만들기</button>
+          <button>편집</button>
+          <button>업그레이드</button>
+        </div>
+        <div className="section_table_outer">
+          <button>
+            <i className="fa fa-refresh"></i>
+          </button>
+          <table>
+            <thead>
+              <tr>
+                <th>상태</th>
+                <th>이름</th>
+                <th>코멘트</th>
+                <th>호환 버전</th>
+                <th>설명</th>
+                <th>클러스터 CPU 유형</th>
+                <th>호스트 수</th>
+                <th>가상 머신 수</th>
+                <th>업그레이드 상태</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td></td>
+                <td>Default</td>
+                <td></td>
+                <td>4.7</td>
+                <td>The derault server cluster</td>
+                <td>Secure Intel Cascadelak</td>
+                <td>2</td>
+                <td>7</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+// 템플릿섹션
+const TemplateSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
@@ -160,98 +247,14 @@ const NetworkSection = () => {
   );
 };
 
-// 데이터센터
-const SnapshotSection = ({ handleRowClick }) => {
-  return (
-    <div id="data_center_outer">
-      <div className="pregroup_content">
-        <div className="content_header_right">
-          <button>새로 만들기</button>
-          <button>편집</button>
-          <button>삭제</button>
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th></th>
-              <th>이름</th>
-              <th>코멘트</th>
-              <th>스토리지 유형</th>
-              <th>상태</th>
-              <th>호환 버전</th>
-              <th>설명</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><i className="fa fa-external-link"></i></td>
-              <td></td>
-              <td onClick={handleRowClick}>Defaultfasdadsffds</td> {/* 여기를 클릭하면 handleRowClick 호출 */}
-              <td></td>
-              <td>공유됨</td>
-              <td>Up</td>
-              <td>4.7</td>
-              <td>The default Data Center</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
 
-const ApplicationSection = () => {
-  return (
-    <div id="application_outer">
-      <div className="pregroup_content">
-        <div className="content_header_right">
-          <button>새로 만들기</button>
-          <button>편집</button>
-          <button>업그레이드</button>
-        </div>
-        <div className="section_table_outer">
-          <button>
-            <i className="fa fa-refresh"></i>
-          </button>
-          <table>
-            <thead>
-              <tr>
-                <th>상태</th>
-                <th>이름</th>
-                <th>코멘트</th>
-                <th>호환 버전</th>
-                <th>설명</th>
-                <th>클러스터 CPU 유형</th>
-                <th>호스트 수</th>
-                <th>가상 머신 수</th>
-                <th>업그레이드 상태</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td></td>
-                <td>Default</td>
-                <td></td>
-                <td>4.7</td>
-                <td>The derault server cluster</td>
-                <td>Secure Intel Cascadelak</td>
-                <td>2</td>
-                <td>7</td>
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-};
+
+
 
 const Computing = () => {
   const { section } = useParams();
   const navigate = useNavigate();
-  const [activeSection, setActiveSection] = useState('snapshot');
+  const [activeSection, setActiveSection] = useState('datacenter');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sectionContent, setSectionContent] = useState('default');
 
@@ -290,9 +293,9 @@ const Computing = () => {
   ];
 
   const navSections = [
-    { id: 'snapshot', label: '데이터 센터' },
-    { id: 'application', label: '클러스터' },
-    { id: 'network', label: '템플릿' },
+    { id: 'datacenter', label: '데이터 센터' },
+    { id: 'cluster', label: '클러스터' },
+    { id: 'template', label: '템플릿' },
   ];
 
   return (
@@ -314,9 +317,9 @@ const Computing = () => {
               handleSectionClick={handleSectionClick}
             />
 
-            {activeSection === 'snapshot' && <SnapshotSection handleRowClick={handleRowClick} />}
-            {activeSection === 'application' && <ApplicationSection />}
-            {activeSection === 'network' && <NetworkSection />}
+            {activeSection === 'datacenter' && <DatacenterSection handleRowClick={handleRowClick} />}
+            {activeSection === 'cluster' && <ClusterSection />}
+            {activeSection === 'template' && <TemplateSection />}
           </div>
         </>
       ) : (

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Modal from 'react-modal';
-import HostDetail from '../detail/HostDetail';
+import HostDetail from './Computing/HostDetail';
 import './MainOuter.css';
 import Cluster from './Computing/Cluster';
 import Host from './Computing/Host';
@@ -49,47 +49,42 @@ function MainOuter({ children }) {
             const fontSize = width / 40;
             document.documentElement.style.fontSize = fontSize + 'px';
         }
-
+    
         window.addEventListener('resize', adjustFontSize);
         adjustFontSize();
-
+    
         if (location.pathname.includes('/computing')) {
             setSelected('computing');
-            setAsidePopupVisible(true);
             setAsidePopupBackgroundColor(prevState => ({
                 ...prevState,
                 computing: 'rgb(218, 236, 245)'
             }));
         } else if (location.pathname.includes('/storage')) {
             setSelected('storage');
-            setAsidePopupVisible(true);
             setAsidePopupBackgroundColor(prevState => ({
                 ...prevState,
                 storage: 'rgb(218, 236, 245)'
             }));
         } else if (location.pathname.includes('/network')) {
             setSelected('network');
-            setAsidePopupVisible(true);
             setAsidePopupBackgroundColor(prevState => ({
                 ...prevState,
                 network: 'rgb(218, 236, 245)'
             }));
         } else if (location.pathname.includes('/setting')) {
             setSelected('setting');
-            setAsidePopupVisible(true);
             setAsidePopupBackgroundColor(prevState => ({
                 ...prevState,
                 setting: 'rgb(218, 236, 245)'
             }));
         } else {
             setSelected('dashboard');
-            setAsidePopupVisible(false); // Dashboard일 때는 aside_popup을 숨김
             setAsidePopupBackgroundColor(prevState => ({
                 ...prevState,
                 dashboard: 'rgb(218, 236, 245)'
             }));
         }
-
+    
         return () => {
             window.removeEventListener('resize', adjustFontSize);
         };
@@ -98,7 +93,7 @@ function MainOuter({ children }) {
     const handleClick = (id) => {
         setSelected(id);
         setSectionContent('default'); 
-        toggleAsidePopup(id);
+        toggleAsidePopup(id)
         setSelectedDiv(null);  // 중복 선택 방지
         setSelectedDetail(null);  // 내부 아이템 배경색 제거
     };
@@ -106,11 +101,11 @@ function MainOuter({ children }) {
     const toggleAsidePopup = (id) => {
         const newBackgroundColor = {
             dashboard: '',
-            computing: '',
-            storage: '',
-            network: '',
-            setting: '',
-            default: ''
+        computing: '',
+        storage: '',
+        network: '',
+        setting: '',
+        default: ''
         };
 
         if (id === 'computing') {
@@ -129,7 +124,7 @@ function MainOuter({ children }) {
         } else {
             setAsidePopupVisible(false);
         }
-
+    
         setAsidePopupBackgroundColor(newBackgroundColor);
     };
 

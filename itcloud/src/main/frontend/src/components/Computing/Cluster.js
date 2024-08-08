@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import HeaderButton from '../button/HeaderButton';
 import ClusterName from './ClusterName';
+import { Table } from '../table/Table';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -35,6 +36,36 @@ const Cluster = () => {
     return <ClusterName />;
   }
 
+  // 테이블 컴포넌트
+  const columns = [
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '이름', accessor: 'name', clickable: true },
+    { header: '코멘트', accessor: 'comment', clickable: false },
+    { header: '호환 버전', accessor: 'version', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
+    { header: '클러스터 CPU 유형', accessor: 'cpuType', clickable: false },
+    { header: '호스트 수', accessor: 'hostCount', clickable: false },
+    { header: '가상 머신 수', accessor: 'vmCount', clickable: false },
+    { header: '업그레이드 상태', accessor: 'upgradeStatus', clickable: false },
+  ];
+
+  const data = [
+    {
+      status: '',
+      name: 'Default',
+      comment: '',
+      version: '4.7',
+      description: 'The default server cluster',
+      cpuType: 'Secure Intel Cascadelake',
+      hostCount: 2,
+      vmCount: 7,
+      upgradeStatus: '',
+    },
+  ];
+  const handleRowClick = () => {
+    setShowClusterName(true);
+  };
+  
   return (
     <div id="section">
       <HeaderButton
@@ -46,43 +77,16 @@ const Cluster = () => {
         togglePopup={() => {}}
       />
       <div className="content_outer">
-        <div id="application_outer">
-          <div div className="pregroup_content">
+
+        <div className='empty_nav_outer'>
             <div className="section_table_outer">
               <button>
                 <i className="fa fa-refresh"></i>
               </button>
-              <table>
-                <thead>
-                  <tr>
-                    <th>상태</th>
-                    <th>이름</th>
-                    <th>코멘트</th>
-                    <th>호환 버전</th>
-                    <th>설명</th>
-                    <th>클러스터 CPU 유형</th>
-                    <th>호스트 수</th>
-                    <th>가상 머신 수</th>
-                    <th>업그레이드 상태</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr onClick={() => setShowClusterName(true)}>
-                    <td></td>
-                    <td>Default</td>
-                    <td></td>
-                    <td>4.7</td>
-                    <td>The default server cluster</td>
-                    <td>Secure Intel Cascadelake</td>
-                    <td>2</td>
-                    <td>7</td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
+              <Table columns={columns} data={data} onRowClick={handleRowClick} />
             </div>
-          </div>
         </div>
+        
       </div>
       <Modal
         isOpen={isModalOpen}

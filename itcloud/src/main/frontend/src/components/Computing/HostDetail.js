@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import NavButton from '../components/navigation/NavButton';
-import HeaderButton from '../components/button/HeaderButton';
-import { Table } from '../components/table/Table';
+import NavButton from '../navigation/NavButton';
+import HeaderButton from '../button/HeaderButton';
+import { Table } from '../table/Table';
 
 function HostDetail() {
-     // 가상머신 테이블컴포넌트
+    //테이블컴포넌트
+     // 가상머신 
      const columns = [
         { header: '이름', accessor: 'name', clickable: false },
         { header: '클러스터', accessor: 'cluster', clickable: false },
@@ -56,7 +57,7 @@ function HostDetail() {
         },
       ];
       
-   // 호스트장치 테이블 컴포넌트
+   // 호스트장치
    const volumeColumns = [
     { header: '이름', accessor: 'name', clickable: false },
     { header: '기능', accessor: 'function', clickable: false },
@@ -83,7 +84,7 @@ function HostDetail() {
     },
   ];
 
-    // 권한 테이블 컴포넌트
+    // 권한
     const permissionColumns = [
         { header: '', accessor: 'icon', clickable: false },
         { header: '사용자', accessor: 'user', clickable: false },
@@ -105,7 +106,7 @@ function HostDetail() {
           inheritedFrom: '(시스템)',
         },
       ];
-      //선호도 레이블 테이블 컴포넌트
+      //선호도 레이블
       const memberColumns = [
         { header: '이름', accessor: 'name', clickable: false },
         { header: '가상머신 멤버', accessor: 'vmMember', clickable: false },
@@ -195,158 +196,137 @@ function HostDetail() {
                     activeSection={activeTab} 
                     handleSectionClick={handleTabClick} 
                 />
-
+                <div className="host_btn_outer">
                 {/* 일반 */}
                 {activeTab === 'general' && (
-                <div className="section_content_outer">
-                    <div className="table_container_left">
-                        <table className="table">
-                            <tbody>
-                            <tr>
-                                <th>ID:</th>
-                                <td>on20-ap01</td>
-                            </tr>
-                            <tr>
-                                <th>설명:</th>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th>상태:</th>
-                                <td>실행 중</td>
-                            </tr>
-                            <tr>
-                                <th>업타임:</th>
-                                <td>11 days</td>
-                            </tr>
-                            <tr>
-                                <th>템플릿:</th>
-                                <td>Blank</td>
-                            </tr>
-                            <tr>
-                                <th>운영 시스템:</th>
-                                <td>Linux</td>
-                            </tr>
-                            <tr>
-                                <th>펌웨어/장치의 유형:</th>
-                                <td>
-                                BIOS의 Q35 칩셋{' '}
-                                <i className="fa fa-ban" style={{ marginLeft: '13%', color: 'orange' }}></i>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>우선 순위:</th>
-                                <td>높음</td>
-                            </tr>
-                            <tr>
-                                <th>최적화 옵션:</th>
-                                <td>서버</td>
-                            </tr>
-                            </tbody>
-                        </table>
+                <div className="host_content_outer">
+                    <div className="host_tables">
+                        <div className="table_container_left">
+                            <table className="host_table">
+                                <tbody>
+                                    <tr>
+                                    <th>호스트이름/IP:</th>
+                                    <td>host01.ititinfo.com</td>
+                                    </tr>
+                                    <tr>
+                                    <th>SPM 우선순위:</th>
+                                    <td>중간</td>
+                                    </tr>
+                                    <tr>
+                                    <th>활성 가상 머신:</th>
+                                    <td>1</td>
+                                    </tr>
+                                    <tr>
+                                    <th>논리 CPU 코어 수:</th>
+                                    <td>8</td>
+                                    </tr>
+                                    <tr>
+                                    <th>온라인 논리 CPU 코어 수:</th>
+                                    <td>0, 1, 2, 3, 4, 5, 6, 7</td>
+                                    </tr>
+                                    <tr>
+                                    <th>부팅 시간:</th>
+                                    <td>2024. 7. 2. AM 10:12:36</td>
+                                    </tr>
+                                    <tr>
+                                    <th>Hosted Engine HA:</th>
+                                    <td>활성 (접속: 3400)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="table_container_center">
+                            <table className="host_table">
+                                <tbody>
+                                    <tr>
+                                    <th>iSCSI 개시자 이름:</th>
+                                    <td>iqn.1994-05.com.redhat:d33a11d7f51b</td>
+                                    </tr>
+                                    <tr>
+                                    <th>Kdump Integration Status:</th>
+                                    <td>비활성화됨</td>
+                                    </tr>
+                                    <tr>
+                                    <th>물리적 메모리:</th>
+                                    <td>19743 MB 한계, 15794 MB 사용됨, 3949 MB 사용가능</td>
+                                    </tr>
+                                    <tr>
+                                    <th>Swap 크기:</th>
+                                    <td>10063 MB 한계, 0 MB 사용됨, 10063 MB 사용가능</td>
+                                    </tr>
+                                    <tr>
+                                    <th>공유 메모리:</th>
+                                    <td>9%</td>
+                                    </tr>
+                                    <tr>
+                                    <th>장치 통과:</th>
+                                    <td>비활성화됨</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <div className="table_container_right">
+                            <table className="host_table">
+                                <tbody>
+                                    <tr>
+                                    <th>새로운 가상 머신의 스케줄링을 위한 최대 여유 메모리:</th>
+                                    <td>2837 MB</td>
+                                    </tr>
+                                    <tr>
+                                    <th>메모리 페이지 공유:</th>
+                                    <td>활성</td>
+                                    </tr>
+                                    <tr>
+                                    <th>자동으로 페이지를 크게:</th>
+                                    <td>항상</td>
+                                    </tr>
+                                    <tr>
+                                    <th>Huge Pages (size: free/total):</th>
+                                    <td>2048: 0/0, 1048576: 0/0</td>
+                                    </tr>
+                                    <tr>
+                                    <th>SELinux 모드:</th>
+                                    <td>강제 적용</td>
+                                    </tr>
+                                    <tr>
+                                    <th>클러스터 호환 버전:</th>
+                                    <td>4.2,4.3,4.4,4.5,4.6,4.7</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
                     </div>
-                    <div className="table_container_left">
-                        <table className="table">
-                            <tbody>
-                            <tr>
-                                <th>ID:</th>
-                                <td>on20-ap01</td>
-                            </tr>
-                            <tr>
-                                <th>설명:</th>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th>상태:</th>
-                                <td>실행 중</td>
-                            </tr>
-                            <tr>
-                                <th>업타임:</th>
-                                <td>11 days</td>
-                            </tr>
-                            <tr>
-                                <th>템플릿:</th>
-                                <td>Blank</td>
-                            </tr>
-                            <tr>
-                                <th>운영 시스템:</th>
-                                <td>Linux</td>
-                            </tr>
-                            <tr>
-                                <th>펌웨어/장치의 유형:</th>
-                                <td>
-                                BIOS의 Q35 칩셋{' '}
-                                <i className="fa fa-ban" style={{ marginLeft: '13%', color: 'orange' }}></i>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>우선 순위:</th>
-                                <td>높음</td>
-                            </tr>
-                            <tr>
-                                <th>최적화 옵션:</th>
-                                <td>서버</td>
-                            </tr>
-                            </tbody>
-                        </table>
+                    <div className="host_table_explain">
+                        <p>작업 항목</p>
+                        <div>
+                            <i class="fa fa-exclamation"></i>
+                            이 호스트는 전원 관리가 설정되어 있지 않습니다.
+                            <span> 전원 관리 활성화</span>
+                        </div>
                     </div>
-                    <div className="table_container_left">
-                        <table className="table">
-                            <tbody>
-                            <tr>
-                                <th>ID:</th>
-                                <td>on20-ap01</td>
-                            </tr>
-                            <tr>
-                                <th>설명:</th>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th>상태:</th>
-                                <td>실행 중</td>
-                            </tr>
-                            <tr>
-                                <th>업타임:</th>
-                                <td>11 days</td>
-                            </tr>
-                            <tr>
-                                <th>템플릿:</th>
-                                <td>Blank</td>
-                            </tr>
-                            <tr>
-                                <th>운영 시스템:</th>
-                                <td>Linux</td>
-                            </tr>
-                            <tr>
-                                <th>펌웨어/장치의 유형:</th>
-                                <td>
-                                BIOS의 Q35 칩셋{' '}
-                                <i className="fa fa-ban" style={{ marginLeft: '13%', color: 'orange' }}></i>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>우선 순위:</th>
-                                <td>높음</td>
-                            </tr>
-                            <tr>
-                                <th>최적화 옵션:</th>
-                                <td>서버</td>
-                            </tr>
-                            </tbody>
-                        </table>
+
+                    <div>
+                        <h2>하드웨어</h2>
+                        <div className="host_tables">
+                            
+                        </div>
                     </div>
                 </div>
+               
                 )}
                 {/* 가상머신 */}
                 {activeTab === 'machine' && (
                     
-                <div className="storage_right_outer">
+                <>
                     <div className="storage_domain_content">
                         <div className="content_header_right">
                             <button>추가</button>
                             <button>제거</button>
                         </div>
-                        <div className="storage_right_btns">
-                            <span>Permission Filters:</span>
+                        <div className="host_filter_btns">
+                            <span>가상 머신 필터:</span>
                             <div>
                                 <button>현재 호스트에서 실행 중</button>
                                 <button>현재 호스트에 고정</button>
@@ -356,7 +336,7 @@ function HostDetail() {
                        
                         <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
                     </div>
-            </div>
+            </>
                 )}
                 {/* 네트워크 인터페이스 */}
                 {activeTab === 'networkinterface' && (
@@ -373,53 +353,44 @@ function HostDetail() {
                 )}
                 {/* 호스트 장치 */}
                 {activeTab === 'hostdevice' && (
-                <div className="host_detail_outer">
-            
-                <div className="pregroup_content">
-                <div className="content_header_right">
-                    <button>편집</button>
-                    <button>유지보수</button>
-                    <button>활성</button>
-                    <button>기능을 새로 고침</button>
-                    <button>재시작</button>
-                </div>
-                <div className="application_content_header">
-                    <button><i className="fa fa-chevron-left"></i></button>
-                    <div>1-1</div>
-                    <button><i className="fa fa-chevron-right"></i></button>
-                    <button><i className="fa fa-ellipsis-v"></i></button>
-                </div>
-                
-                <Table columns={volumeColumns} data={volumeData} onRowClick={() => console.log('Row clicked')} />
-                
-                </div>
-                </div>
+                <>
+                    <div className="pregroup_content">
+                        <div className="content_header_right">
+                            <button>편집</button>
+                            <button>유지보수</button>
+                            <button>활성</button>
+                            <button>기능을 새로 고침</button>
+                            <button>재시작</button>
+                        </div>
+                        <Table columns={volumeColumns} data={volumeData} onRowClick={() => console.log('Row clicked')} />
+                    </div>
+                </>
                 )}
                
                 {/* 권한 */}
                 {activeTab === 'permission' && (
-                <div className="storage_right_outer">
+                <>
                     <div className="storage_domain_content">
                         <div className="content_header_right">
                             <button>추가</button>
                             <button>제거</button>
                         </div>
-                        <div className="storage_right_btns">
+                        <div className="host_filter_btns">
                             <span>Permission Filters:</span>
                             <div>
-                            <button>All</button>
-                            <button>Direct</button>
+                                <button>All</button>
+                                <button>Direct</button>
                             </div>
                         </div>
                         
                         <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
                     </div>
-                </div>
+                </>
                 )}
              
                 {/* 선호도 레이블 */}
                 {activeTab === 'lable' && (
-                    <div id="detail_rent_outer">
+                    <>
                         <div className="pregroup_content">
                             <div className="content_header_right">
                                 <button>새로 만들기</button>
@@ -428,16 +399,16 @@ function HostDetail() {
                             <Table columns={memberColumns} data={memberData} onRowClick={() => console.log('Row clicked')} />
                             
                         </div>
-                </div>
+                </>
                 )}
           
                 {/* 이벤트 */}
                 {activeTab === 'event' && (
-                <div className="detail_machine_outer">
+                <div className="host_empty_outer">
                     <div className="pregroup_content">
                   
                     
-                    <Table columns={eventColumns} data={eventData} onRowClick={() => console.log('Row clicked')} />
+                        <Table columns={eventColumns} data={eventData} onRowClick={() => console.log('Row clicked')} />
                     
                     </div>
                 </div>
@@ -446,7 +417,7 @@ function HostDetail() {
 
                 
             </div>
-
+            </div>
 
 
 
