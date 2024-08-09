@@ -4,7 +4,7 @@ import Modal from 'react-modal';
 import { Table } from '../table/Table';
 import HeaderButton from '../button/HeaderButton';
 
-// 네트워크 인터페이스 섹션
+// 네트워크 인터페이스
 const NetworkSection = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [visibleDetails, setVisibleDetails] = useState([]);
@@ -192,7 +192,7 @@ const NetworkSection = () => {
 
   
 
-// 디스크 섹션
+// 디스크
 const DiskSection = () => {
   const [isNewDiskModalOpen, setIsNewDiskModalOpen] = useState(false);
   const [isJoinDiskModalOpen, setIsJoinDiskModalOpen] = useState(false);
@@ -258,13 +258,7 @@ const DiskSection = () => {
                       </div>
                   </button>
               </div>
-              <div className="disk_content_header">
-                  <span>디스크 유형:</span>
-                  <button>모두</button>
-                  <button>이미지</button>
-                  <button>직접 LUN</button>
-                  <button>관리되는 블록</button>
-              </div>
+             
               <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
           </div>
 
@@ -770,12 +764,6 @@ const ApplicationSection = () => {
   return (
     <div id="application_outer">
       <div id="application_content">
-        <div className="application_content_header">
-          <button><i className="fa fa-chevron-left"></i></button>
-          <div>1-2</div>
-          <button><i className="fa fa-chevron-right"></i></button>
-          <button><i className="fa fa-ellipsis-v"></i></button>
-        </div>
         <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
       </div>
     </div>
@@ -852,12 +840,7 @@ const PregroupSection = () => {
           <button>편집</button>
           <button>제거</button>
         </div>
-        <div className="application_content_header">
-          <button><i className="fa fa-chevron-left"></i></button>
-          <div>1-2</div>
-          <button><i className="fa fa-chevron-right"></i></button>
-          <button><i className="fa fa-ellipsis-v"></i></button>
-        </div>
+        
         
         <Table columns={columns} data={data} onRowClick={handleRowClick} />
       </div>
@@ -1001,12 +984,7 @@ const PregroupLabelSection = () => {
           <button>편집</button>
           <button>제거</button>
         </div>
-        <div className="application_content_header">
-          <button><i className="fa fa-chevron-left"></i></button>
-          <div>1-2</div>
-          <button><i className="fa fa-chevron-right"></i></button>
-          <button><i className="fa fa-ellipsis-v"></i></button>
-        </div>
+        
         
         <Table columns={columns} data={data} onRowClick={handleRowClick} />
       </div>
@@ -1317,12 +1295,7 @@ const EventSection = () => {
           <button>편집</button>
           <button>제거</button>
         </div>
-        <div className="application_content_header">
-          <button><i className="fa fa-chevron-left"></i></button>
-          <div>1-2</div>
-          <button><i className="fa fa-chevron-right"></i></button>
-          <button><i className="fa fa-ellipsis-v"></i></button>
-        </div>
+        
         <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
       </div>
     </div>

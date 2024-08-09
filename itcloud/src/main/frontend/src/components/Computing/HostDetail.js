@@ -4,6 +4,8 @@ import HeaderButton from '../button/HeaderButton';
 import { Table } from '../table/Table';
 
 function HostDetail() {
+  //클릭한 이름 받아오기
+
     //테이블컴포넌트
      // 가상머신 
      const columns = [
@@ -84,6 +86,38 @@ function HostDetail() {
     },
   ];
 
+  // 네트워크인터페이스 박스열고닫기
+  const [visibleBoxes, setVisibleBoxes] = useState([]);
+
+  const toggleHiddenBox = (index) => {
+    setVisibleBoxes((prevVisibleBoxes) => {
+      if (prevVisibleBoxes.includes(index)) {
+        return prevVisibleBoxes.filter((i) => i !== index); // 이미 열려 있으면 닫기
+      } else {
+        return [...prevVisibleBoxes, index]; // 아니면 열기
+      }
+    });
+  };
+  // 네트워크 테이블 컴포넌트
+  const networkcolumns = [
+    { header: '', accessor: 'icon' },
+    { header: '관리되지 않음', accessor: 'unmanaged' },
+    { header: 'VLAN', accessor: 'vlan' },
+    { header: '네트워크 이름', accessor: 'networkName', clickable: true },
+    { header: 'IPv4 주소', accessor: 'ipv4' },
+    { header: 'IPv6 주소', accessor: 'ipv6' }
+  ];
+  
+  const networkdata = [
+    {
+      icon: <i className="fa fa-university"></i>,
+      unmanaged: <i className="fa fa-wrench"></i>,
+      vlan: 'VLAN',
+      networkName: 'ovirtmgmt',
+      ipv4: '192.168.0.81',
+      ipv6: ''
+    }
+  ];
     // 권한
     const permissionColumns = [
         { header: '', accessor: 'icon', clickable: false },
@@ -158,9 +192,7 @@ function HostDetail() {
         { id: 'edit_btn', label: '편집', onClick: () => console.log('Edit button clicked') },
         { id: 'delete_btn', label: '삭제', onClick: () => console.log('Delete button clicked') },
         { id: 'manage_btn', label: '관리', onClick: () => console.log('Manage button clicked') },
-        { id: 'install_btn', label: '설치', onClick: () => console.log('Install button clicked') },
-        { id: 'host_console_btn', label: '호스트 콘솔', onClick: () => console.log('Host Console button clicked') },
-        { id: 'copy_network_btn', label: '호스트 네트워크 복사', onClick: () => console.log('Copy Host Network button clicked') },
+        { id: 'install_btn', label: '설치', onClick: () => console.log('Install button clicked') }
       ];
     
       const popupItems = []; // 현재 팝업 아이템이 없으므로 빈 배열로 설정
@@ -181,7 +213,7 @@ function HostDetail() {
         <div id='section'>
              <HeaderButton
       title="호스트"
-      subtitle="192.168.0.80"
+      subtitle="이름 {name} "
       additionalText="목록이름"
       buttons={buttons}
       popupItems={popupItems}
@@ -200,127 +232,233 @@ function HostDetail() {
                 {/* 일반 */}
                 {activeTab === 'general' && (
                 <div className="host_content_outer">
+
                     <div className="host_tables">
+
                         <div className="table_container_left">
+                            <h2 style={{color:'white',border:'none'}}>하드웨어</h2>
                             <table className="host_table">
-                                <tbody>
-                                    <tr>
-                                    <th>호스트이름/IP:</th>
-                                    <td>host01.ititinfo.com</td>
-                                    </tr>
-                                    <tr>
-                                    <th>SPM 우선순위:</th>
-                                    <td>중간</td>
-                                    </tr>
-                                    <tr>
-                                    <th>활성 가상 머신:</th>
+                              <tbody>
+                                  <tr>
+                                      <th>호스트이름/IP:</th>
+                                      <td>host01.ititinfo.com</td>
+                                  </tr>
+                                  <tr>
+                                      <th>SPM 우선순위:</th>
+                                      <td>중간</td>
+                                  </tr>
+                                  <tr>
+                                      <th>활성 가상 머신:</th>
+                                      <td>1</td>
+                                  </tr>
+                                  <tr>
+                                      <th>논리 CPU 코어 수:</th>
+                                      <td>8</td>
+                                  </tr>
+                                  <tr>
+                                      <th>온라인 논리 CPU 코어 수:</th>
+                                      <td>0, 1, 2, 3, 4, 5, 6, 7</td>
+                                  </tr>
+                                  <tr>
+                                      <th>부팅 시간:</th>
+                                      <td>2024. 7. 2. AM 10:12:36</td>
+                                  </tr>
+                                  <tr>
+                                      <th>Hosted Engine HA:</th>
+                                      <td>활성 (접속: 3400)</td>
+                                  </tr>
+                                  <tr>
+                                      <th>iSCSI 개시자 이름:</th>
+                                      <td>iqn.1994-05.com.redhat:d33a11d7f51b</td>
+                                  </tr>
+                                  <tr>
+                                      <th>Kdump Integration Status:</th>
+                                      <td>비활성화됨</td>
+                                  </tr>
+                                  <tr>
+                                      <th>물리적 메모리:</th>
+                                      <td>19743 MB 한계, 15794 MB 사용됨, 3949 MB 사용가능</td>
+                                  </tr>
+                                  <tr>
+                                      <th>Swap 크기:</th>
+                                      <td>10063 MB 한계, 0 MB 사용됨, 10063 MB 사용가능</td>
+                                  </tr>
+                                  <tr>
+                                      <th>공유 메모리:</th>
+                                      <td>9%</td>
+                                  </tr>
+                                  <tr>
+                                      <th>장치 통과:</th>
+                                      <td>비활성화됨</td>
+                                  </tr>
+                                  <tr>
+                                      <th>새로운 가상 머신의 스케줄링을 위한 최대 여유 메모리:</th>
+                                      <td>2837 MB</td>
+                                  </tr>
+                                  <tr>
+                                      <th>메모리 페이지 공유:</th>
+                                      <td>활성</td>
+                                  </tr>
+                                  <tr>
+                                      <th>자동으로 페이지를 크게:</th>
+                                      <td>항상</td>
+                                  </tr>
+                                  <tr>
+                                      <th>Huge Pages (size: free/total):</th>
+                                      <td>2048: 0/0, 1048576: 0/0</td>
+                                  </tr>
+                                  <tr>
+                                      <th>SELinux 모드:</th>
+                                      <td>강제 적용</td>
+                                  </tr>
+                                  <tr>
+                                      <th>클러스터 호환 버전:</th>
+                                      <td>4.2, 4.3, 4.4, 4.5, 4.6, 4.7</td>
+                                  </tr>
+                                  <tr>
+                                      <th><i className="fa fa-exclamation"></i></th>
+                                      <td>이 호스트는 전원 관리가 설정되어 있지 않습니다.</td>
+                                  </tr>
+                              </tbody>
+                            </table>
+                        </div>
+
+                        <div className="table_container_left">
+                            <h2>하드웨어</h2>
+                            <table className="host_table">
+                              <tbody>
+                                <tr>
+                                    <th>제조사:</th>
+                                    <td>Intel(R) Xeon(R) Gold 6354 CPU @ 3.00GHz</td>
+                                </tr>
+                                <tr>
+                                    <th>버전:</th>
                                     <td>1</td>
-                                    </tr>
-                                    <tr>
-                                    <th>논리 CPU 코어 수:</th>
+                                </tr>
+                                <tr>
+                                    <th>CPU 모델:</th>
+                                    <td>Intel(R) Xeon(R) Gold 6354 CPU @ 3.00GHz</td>
+                                </tr>
+                                <tr>
+                                    <th>소켓당 CPU 코어:</th>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <th>제품군:</th>
+                                    <td>Secure Intel Cascadelake Server Family</td>
+                                </tr>
+                                <tr>
+                                    <th>UUID:</th>
+                                    <td>Secure Intel Cascadelake Server Family</td>
+                                </tr>
+                                <tr>
+                                    <th>CPU 유형:</th>
+                                    <td>Secure Intel Cascadelake Server Family</td>
+                                </tr>
+                                <tr>
+                                    <th>코어당 CPU의 스레드:</th>
+                                    <td>1 (SMT 사용안함)</td>
+                                </tr>
+                                <tr>
+                                    <th>제품 이름:</th>
+                                    <td>Secure Intel Cascadelake Server Family</td>
+                                </tr>
+                                <tr>
+                                    <th>일련 번호:</th>
+                                    <td>Secure Intel Cascadelake Server Family</td>
+                                </tr>
+                                <tr>
+                                    <th>CPU 소켓:</th>
                                     <td>8</td>
-                                    </tr>
-                                    <tr>
-                                    <th>온라인 논리 CPU 코어 수:</th>
-                                    <td>0, 1, 2, 3, 4, 5, 6, 7</td>
-                                    </tr>
-                                    <tr>
-                                    <th>부팅 시간:</th>
-                                    <td>2024. 7. 2. AM 10:12:36</td>
-                                    </tr>
-                                    <tr>
-                                    <th>Hosted Engine HA:</th>
-                                    <td>활성 (접속: 3400)</td>
-                                    </tr>
-                                </tbody>
+                                </tr>
+                                <tr>
+                                    <th>TSC 주파수:</th>
+                                    <td>2992968000 (스케일링 비활성화)</td>
+                                </tr>
+                            </tbody>
+
                             </table>
                         </div>
-                        <div className="table_container_center">
+
+
+                        <div  className="table_container_left">
+                            <h2>소프트웨어</h2>
                             <table className="host_table">
-                                <tbody>
-                                    <tr>
-                                    <th>iSCSI 개시자 이름:</th>
-                                    <td>iqn.1994-05.com.redhat:d33a11d7f51b</td>
-                                    </tr>
-                                    <tr>
-                                    <th>Kdump Integration Status:</th>
-                                    <td>비활성화됨</td>
-                                    </tr>
-                                    <tr>
-                                    <th>물리적 메모리:</th>
-                                    <td>19743 MB 한계, 15794 MB 사용됨, 3949 MB 사용가능</td>
-                                    </tr>
-                                    <tr>
-                                    <th>Swap 크기:</th>
-                                    <td>10063 MB 한계, 0 MB 사용됨, 10063 MB 사용가능</td>
-                                    </tr>
-                                    <tr>
-                                    <th>공유 메모리:</th>
-                                    <td>9%</td>
-                                    </tr>
-                                    <tr>
-                                    <th>장치 통과:</th>
-                                    <td>비활성화됨</td>
-                                    </tr>
-                                </tbody>
+                              <tbody>
+                                <tr>
+                                  <th>OS 버전:</th>
+                                  <td>RHEL - 9.1.2206.0 - 23.el9</td>
+                                </tr>
+                                <tr>
+                                  <th>OS 정보:</th>
+                                  <td>oVirt Node 4.5.5</td>
+                                </tr>
+                                <tr>
+                                  <th>커널 버전:</th>
+                                  <td>5.14.0 - 388.el9.x86_64</td>
+                                </tr>
+                                <tr>
+                                  <th>KVM 버전:</th>
+                                  <td>8.1.0 - 4.el9</td>
+                                </tr>
+                                <tr>
+                                  <th>LIBVIRT 버전:</th>
+                                  <td>libvirt-9.5.0-6.el9</td>
+                                </tr>
+                                <tr>
+                                  <th>VDSM 버전:</th>
+                                  <td>vdsm-4.50.5-1.1.el9</td>
+                                </tr>
+                                <tr>
+                                  <th>SPICE 버전:</th>
+                                  <td></td>
+                                </tr>
+                                <tr>
+                                  <th>GlusterFS 버전:</th>
+                                  <td>glusterfs-10.5-1.el9s</td>
+                                </tr>
+                                <tr>
+                                  <th>CEPH 버전:</th>
+                                  <td>librbd1-16.2.14-1.el9</td>
+                                </tr>
+                                <tr>
+                                  <th>Open vSwitch 버전:</th>
+                                  <td>openvswitch-2.17-1.el9</td>
+                                </tr>
+                                <tr>
+                                  <th>Nmstate 버전:</th>
+                                  <td>nmstate-2.2-19.1.el9</td>
+                                </tr>
+                                <tr>
+                                  <th>커널 기능:</th>
+                                  <td>
+                                    MDS: (Not affected), L1TF: (Not affected), SRBDS: (Not affected), MELTDOWN: (Not affected), RETBLEED: (Not affected), SPECTRE_V1: (Mitigation: usercopy/swapgs barriers and __user pointer sanitization), SPECTRE_V2: (Mitigation: Enhanced / Automatic IBRS, IBPB: conditional, RSB filling, PBRSE-eIBRS: SW sequence), ITLB_MULTIHIT: (KVM: Mitigation: Split huge pages), MMIO_STALE_DATA: (Vulnerable: Clear CPU buffers attempted, no microcode; SMT Host state unknown), TSX_ASYNC_ABORT: (Not affected), SPEC_STORE_BYPASS: (Mitigation: Speculative Store Bypass disabled via prctl), GATHER_DATA_SAMPLING: (Unknown: Dependent on hypervisor status), SPEC_RSTACK_OVERFLOW: (Not affected)
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <th>VNC 암호화:</th>
+                                  <td>비활성화됨</td>
+                                </tr>
+                                <tr>
+                                  <th>OVN configured:</th>
+                                  <td>예</td>
+                                </tr>
+                              </tbody>
                             </table>
 
                         </div>
-                        <div className="table_container_right">
-                            <table className="host_table">
-                                <tbody>
-                                    <tr>
-                                    <th>새로운 가상 머신의 스케줄링을 위한 최대 여유 메모리:</th>
-                                    <td>2837 MB</td>
-                                    </tr>
-                                    <tr>
-                                    <th>메모리 페이지 공유:</th>
-                                    <td>활성</td>
-                                    </tr>
-                                    <tr>
-                                    <th>자동으로 페이지를 크게:</th>
-                                    <td>항상</td>
-                                    </tr>
-                                    <tr>
-                                    <th>Huge Pages (size: free/total):</th>
-                                    <td>2048: 0/0, 1048576: 0/0</td>
-                                    </tr>
-                                    <tr>
-                                    <th>SELinux 모드:</th>
-                                    <td>강제 적용</td>
-                                    </tr>
-                                    <tr>
-                                    <th>클러스터 호환 버전:</th>
-                                    <td>4.2,4.3,4.4,4.5,4.6,4.7</td>
-                                    </tr>
-                                </tbody>
-                            </table>
 
-                        </div>
                     </div>
-                    <div className="host_table_explain">
-                        <p>작업 항목</p>
-                        <div>
-                            <i class="fa fa-exclamation"></i>
-                            이 호스트는 전원 관리가 설정되어 있지 않습니다.
-                            <span> 전원 관리 활성화</span>
-                        </div>
-                    </div>
+                   
 
-                    <div>
-                        <h2>하드웨어</h2>
-                        <div className="host_tables">
-                            
-                        </div>
-                    </div>
+                    
                 </div>
                
                 )}
                 {/* 가상머신 */}
                 {activeTab === 'machine' && (
-                    
                 <>
-                    <div className="storage_domain_content">
+                    
                         <div className="content_header_right">
                             <button>추가</button>
                             <button>제거</button>
@@ -333,28 +471,86 @@ function HostDetail() {
                                 <button>모두</button>
                             </div>
                         </div>
-                       
-                        <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
-                    </div>
-            </>
+
+                        <div className="section_table_outer">
+                          <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
+                        </div>
+              </>
                 )}
+             
                 {/* 네트워크 인터페이스 */}
                 {activeTab === 'networkinterface' && (
-                <div className="host_detail_outer">
-                    <div className="pregroup_content">
-                        <div className="host_detail_network">
-                            <button><i className="fa fa-chevron-left"></i></button>
-                            <div>1-1</div>
-                            <button><i className="fa fa-chevron-right"></i></button>
-                            <button><i className="fa fa-ellipsis-v"></i></button>
+                <>
+                  <div className="content_header_right">
+                    <button>VF 보기</button>
+                    <button>모두 확장</button>
+                    <button>호스트 네트워크 설정</button>
+                    <button>네트워크 설정 저장</button>
+                    <button>모든 네트워크 동기화</button>
+                  </div>
+
+                  {[0, 1].map((index) => (
+                    <div className='host_network_boxs' key={index}>
+                      <div
+                        className='host_network_firstbox'
+                        onClick={() => toggleHiddenBox(index)}
+                      >
+                        <div>
+                          <i className="fa fa-arrow-circle-o-up"></i>
+                          <i className="fa fa-film"></i>
+                          <span>ens192</span>
                         </div>
+                        <div className='firstbox_flex'>
+                          <div>
+                            <div>MAC</div>
+                            <span>00:4234324</span>
+                          </div>
+                        </div>
+                        <div className='firstbox_flex'>
+                          <div>
+                            <div>Rx 속도(mbps)</div>
+                            <span>103</span>
+                          </div>
+                          <div>
+                            <div>총 Rx(바이트)</div>
+                            <span>42,214,343,32,522</span>
+                          </div>
+                        </div>
+                        <div className='firstbox_flex'>
+                          <div>
+                            <div>Rx 속도(mbps)</div>
+                            <span>103</span>
+                          </div>
+                          <div>
+                            <div>총 Rx(바이트)</div>
+                            <span>42,214,343,32,522</span>
+                          </div>
+                        </div>
+                        <div>
+                          <i className="fa fa-film"></i>
+                          <span>Mbps</span>
+                        </div>
+                        <div>
+                          <i className="fa fa-film"></i>
+                          <span>0 Pkts</span>
+                        </div>
+                      </div>
+                      <div
+                        className='host_network_hiddenbox'
+                        style={{ display: visibleBoxes.includes(index) ? 'block' : 'none' }}
+                      >
+                         <div className="section_table_outer">
+                          <Table columns={networkcolumns} data={networkdata} onRowClick={() => console.log('Row clicked')} />
+                        </div>
+                      </div>
                     </div>
-                </div>
+                  ))}
+                </>
                 )}
                 {/* 호스트 장치 */}
                 {activeTab === 'hostdevice' && (
                 <>
-                    <div className="pregroup_content">
+                   
                         <div className="content_header_right">
                             <button>편집</button>
                             <button>유지보수</button>
@@ -362,55 +558,54 @@ function HostDetail() {
                             <button>기능을 새로 고침</button>
                             <button>재시작</button>
                         </div>
-                        <Table columns={volumeColumns} data={volumeData} onRowClick={() => console.log('Row clicked')} />
-                    </div>
+                        <div className="section_table_outer">
+                          <Table columns={volumeColumns} data={volumeData} onRowClick={() => console.log('Row clicked')} />
+                        </div>
                 </>
                 )}
                
                 {/* 권한 */}
                 {activeTab === 'permission' && (
                 <>
-                    <div className="storage_domain_content">
-                        <div className="content_header_right">
-                            <button>추가</button>
-                            <button>제거</button>
-                        </div>
-                        <div className="host_filter_btns">
-                            <span>Permission Filters:</span>
-                            <div>
-                                <button>All</button>
-                                <button>Direct</button>
-                            </div>
-                        </div>
-                        
-                        <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
-                    </div>
+
+                  <div className="content_header_right">
+                      <button>추가</button>
+                      <button>제거</button>
+                  </div>
+                  <div className="host_filter_btns">
+                      <span>Permission Filters:</span>
+                      <div>
+                          <button>All</button>
+                          <button>Direct</button>
+                      </div>
+                  </div>
+                  <div className="section_table_outer">
+                    <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
+                  </div>
+                   
                 </>
                 )}
              
                 {/* 선호도 레이블 */}
                 {activeTab === 'lable' && (
                     <>
-                        <div className="pregroup_content">
-                            <div className="content_header_right">
-                                <button>새로 만들기</button>
-                                <button>편집</button>
-                            </div>
-                            <Table columns={memberColumns} data={memberData} onRowClick={() => console.log('Row clicked')} />
-                            
-                        </div>
+                      <div className="content_header_right">
+                          <button>새로 만들기</button>
+                          <button>편집</button>
+                      </div>
+                      <div className="section_table_outer">
+                        <Table columns={memberColumns} data={memberData} onRowClick={() => console.log('Row clicked')} />
+                      </div>        
                 </>
                 )}
           
                 {/* 이벤트 */}
                 {activeTab === 'event' && (
                 <div className="host_empty_outer">
-                    <div className="pregroup_content">
-                  
-                    
+                   <div className="section_table_outer">
                         <Table columns={eventColumns} data={eventData} onRowClick={() => console.log('Row clicked')} />
-                    
                     </div>
+                    
                 </div>
                 
                 )}

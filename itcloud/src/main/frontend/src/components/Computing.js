@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 
 import HeaderButton from './button/HeaderButton';
-import NavButton from './navigation/NavButton';
 import DataCenterDetail from './Computing/DataCenterDetail';
 
 // React Modal 설정
@@ -12,240 +11,243 @@ Modal.setAppElement('#root');
 // 데이터센터
 const DatacenterSection = ({ handleRowClick }) => {
   return (
-    <div className="computing_table_outer">
-      <div className="pregroup_content">
+    <div className="empty_nav_outer">
+
         <div className="content_header_right">
           <button>새로 만들기</button>
           <button>편집</button>
           <button>삭제</button>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th></th>
-              <th>이름</th>
-              <th>코멘트</th>
-              <th>스토리지 유형</th>
-              <th>상태</th>
-              <th>호환 버전</th>
-              <th>설명</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><i className="fa fa-external-link"></i></td>
-              <td></td>
-              <td onClick={handleRowClick}>Defaultfasdadsffds</td> {/* 여기를 클릭하면 handleRowClick 호출 */}
-              <td></td>
-              <td>공유됨</td>
-              <td>Up</td>
-              <td>4.7</td>
-              <td>The default Data Center</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
-//클러스터
-const ClusterSection = () => {
-  return (
-    <div id="application_outer">
-      <div className="pregroup_content">
-        <div className="content_header_right">
-          <button>새로 만들기</button>
-          <button>편집</button>
-          <button>업그레이드</button>
-        </div>
-        <div className="section_table_outer">
-          <button>
-            <i className="fa fa-refresh"></i>
-          </button>
+        
+        <div className='section_table_outer'>
           <table>
             <thead>
               <tr>
-                <th>상태</th>
+                <th></th>
+                <th></th>
                 <th>이름</th>
                 <th>코멘트</th>
+                <th>스토리지 유형</th>
+                <th>상태</th>
                 <th>호환 버전</th>
                 <th>설명</th>
-                <th>클러스터 CPU 유형</th>
-                <th>호스트 수</th>
-                <th>가상 머신 수</th>
-                <th>업그레이드 상태</th>
               </tr>
             </thead>
             <tbody>
               <tr>
+                <td><i className="fa fa-external-link"></i></td>
                 <td></td>
-                <td>Default</td>
+                <td onClick={handleRowClick}>Defaultfasdadsffds</td> {/* 여기를 클릭하면 handleRowClick 호출 */}
                 <td></td>
+                <td>공유됨</td>
+                <td>Up</td>
                 <td>4.7</td>
-                <td>The derault server cluster</td>
-                <td>Secure Intel Cascadelak</td>
-                <td>2</td>
-                <td>7</td>
-                <td></td>
+                <td>The default Data Center</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
-    </div>
   );
 };
-// 템플릿섹션
-const TemplateSection = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+// //클러스터
+// const ClusterSection = () => {
+//   return (
+//     <div id="application_outer">
+//       <div className="pregroup_content">
+//         <div className="content_header_right">
+//           <button>새로 만들기</button>
+//           <button>편집</button>
+//           <button>업그레이드</button>
+//         </div>
+//         <div className="section_table_outer">
+//           <button>
+//             <i className="fa fa-refresh"></i>
+//           </button>
+//           <table>
+//             <thead>
+//               <tr>
+//                 <th>상태</th>
+//                 <th>이름</th>
+//                 <th>코멘트</th>
+//                 <th>호환 버전</th>
+//                 <th>설명</th>
+//                 <th>클러스터 CPU 유형</th>
+//                 <th>호스트 수</th>
+//                 <th>가상 머신 수</th>
+//                 <th>업그레이드 상태</th>
+//               </tr>
+//             </thead>
+//             <tbody>
+//               <tr>
+//                 <td></td>
+//                 <td>Default</td>
+//                 <td></td>
+//                 <td>4.7</td>
+//                 <td>The derault server cluster</td>
+//                 <td>Secure Intel Cascadelak</td>
+//                 <td>2</td>
+//                 <td>7</td>
+//                 <td></td>
+//               </tr>
+//             </tbody>
+//           </table>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+// // 템플릿섹션
+// const TemplateSection = () => {
+//   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  return (
-    <div id="network_outer">
-      <div className="pregroup_content">
-        <div className="content_header_right">
-          <button id="network_popup_new" onClick={openModal}>가져오기</button>
-          <button>편집</button>
-          <button>삭제</button>
-          <button>내보내기</button>
-          <button>새 가상머신</button>
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th>이름</th>
-              <th>버전</th>
-              <th>코멘트</th>
-              <th>생성 일자</th>
-              <th>상태</th>
-              <th>보관</th>
-              <th>클러스터</th>
-              <th>데이터 센터</th>
-              <th>설명</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Blank</td>
-              <td></td>
-              <td></td>
-              <td>2008.4.1.AM</td>
-              <td>OK</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>설명</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+//   const openModal = () => setIsModalOpen(true);
+//   const closeModal = () => setIsModalOpen(false);
 
-      <Modal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
-        contentLabel="새로만들기"
-        className="network_popup"
-        overlayClassName="network_popup_outer"
-        shouldCloseOnOverlayClick={false}
-      >
-        <div className="network_popup_header">
-          <h1>네트워크 인터페이스 수정</h1>
-          <button onClick={closeModal}><i className="fa fa-times"></i></button>
-        </div>
-        <div className="network_popup_content">
-          <div className="input_box">
-            <span>이름</span>
-            <input type="text"/>
-          </div>
-          <div className="select_box">
-            <label htmlFor="profile">프로파일</label>
-            <select id="profile">
-              <option value="test02">ovirtmgmt/ovirtmgmt</option>
-            </select>
-          </div>
-          <div className="select_box">
-            <label htmlFor="type" style={{ color: 'gray' }}>유형</label>
-            <select id="type" disabled>
-              <option value="test02">VirtIO</option>
-            </select>
-          </div>
-          <div className="select_box2" style={{ marginBottom: '2%' }}>
-            <div>
-              <input type="checkbox" id="custom_mac_box" disabled/>
-              <label htmlFor="custom_mac_box" style={{ color: 'gray' }}>
-                사용자 지정 MAC 주소
-              </label>
-            </div>
-            <div>
-              <select id="mac_address" disabled>
-                <option value="test02">VirtIO</option>
-              </select>
-            </div>
-          </div>
-          <div className="plug_radio_btn">
-            <span>링크 상태</span>
-            <div>
-              <div className="radio_outer">
-                <div>
-                  <input type="radio" name="status" id="status_up"/>
-                  <img src=".//img/스크린샷 2024-05-24 150455.png" alt="status_up"/>
-                  <label htmlFor="status_up">Up</label>
-                </div>
-                <div>
-                  <input type="radio" name="status" id="status_down"/>
-                  <img src=".//img/Down.png" alt="status_down"/>
-                  <label htmlFor="status_down">Down</label>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="plug_radio_btn">
-            <span>카드 상태</span>
-            <div>
-              <div className="radio_outer">
-                <div>
-                  <input type="radio" name="connection_status" id="connected"/>
-                  <img src=".//img/연결됨.png" alt="connected"/>
-                  <label htmlFor="connected">연결됨</label>
-                </div>
-                <div>
-                  <input type="radio" name="connection_status" id="disconnected"/>
-                  <img src=".//img/분리.png" alt="disconnected"/>
-                  <label htmlFor="disconnected">분리</label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="network_parameter_outer">
-          <span>네트워크 필터 매개변수</span>
-          <div>
-            <div>
-              <span>이름</span>
-              <input type="text"/>
-            </div>
-            <div>
-              <span>값</span>
-              <input type="text"/>
-            </div>
-            <div id="buttons">
-              <button>+</button>
-              <button>-</button>
-            </div>
-          </div>
-        </div>
-        <div className="edit_footer">
-          <button style={{ display: 'none' }}></button>
-          <button>OK</button>
-          <button onClick={closeModal}>취소</button>
-        </div>
-      </Modal>
-    </div>
-  );
-};
+//   return (
+//     <div id="network_outer">
+//       <div className="pregroup_content">
+//         <div className="content_header_right">
+//           <button id="network_popup_new" onClick={openModal}>가져오기</button>
+//           <button>편집</button>
+//           <button>삭제</button>
+//           <button>내보내기</button>
+//           <button>새 가상머신</button>
+//         </div>
+//         <table>
+//           <thead>
+//             <tr>
+//               <th>이름</th>
+//               <th>버전</th>
+//               <th>코멘트</th>
+//               <th>생성 일자</th>
+//               <th>상태</th>
+//               <th>보관</th>
+//               <th>클러스터</th>
+//               <th>데이터 센터</th>
+//               <th>설명</th>
+//             </tr>
+//           </thead>
+//           <tbody>
+//             <tr>
+//               <td>Blank</td>
+//               <td></td>
+//               <td></td>
+//               <td>2008.4.1.AM</td>
+//               <td>OK</td>
+//               <td></td>
+//               <td></td>
+//               <td></td>
+//               <td>설명</td>
+//             </tr>
+//           </tbody>
+//         </table>
+//       </div>
+
+//       <Modal
+//         isOpen={isModalOpen}
+//         onRequestClose={closeModal}
+//         contentLabel="새로만들기"
+//         className="network_popup"
+//         overlayClassName="network_popup_outer"
+//         shouldCloseOnOverlayClick={false}
+//       >
+//         <div className="network_popup_header">
+//           <h1>네트워크 인터페이스 수정</h1>
+//           <button onClick={closeModal}><i className="fa fa-times"></i></button>
+//         </div>
+//         <div className="network_popup_content">
+//           <div className="input_box">
+//             <span>이름</span>
+//             <input type="text"/>
+//           </div>
+//           <div className="select_box">
+//             <label htmlFor="profile">프로파일</label>
+//             <select id="profile">
+//               <option value="test02">ovirtmgmt/ovirtmgmt</option>
+//             </select>
+//           </div>
+//           <div className="select_box">
+//             <label htmlFor="type" style={{ color: 'gray' }}>유형</label>
+//             <select id="type" disabled>
+//               <option value="test02">VirtIO</option>
+//             </select>
+//           </div>
+//           <div className="select_box2" style={{ marginBottom: '2%' }}>
+//             <div>
+//               <input type="checkbox" id="custom_mac_box" disabled/>
+//               <label htmlFor="custom_mac_box" style={{ color: 'gray' }}>
+//                 사용자 지정 MAC 주소
+//               </label>
+//             </div>
+//             <div>
+//               <select id="mac_address" disabled>
+//                 <option value="test02">VirtIO</option>
+//               </select>
+//             </div>
+//           </div>
+//           <div className="plug_radio_btn">
+//             <span>링크 상태</span>
+//             <div>
+//               <div className="radio_outer">
+//                 <div>
+//                   <input type="radio" name="status" id="status_up"/>
+//                   <img src=".//img/스크린샷 2024-05-24 150455.png" alt="status_up"/>
+//                   <label htmlFor="status_up">Up</label>
+//                 </div>
+//                 <div>
+//                   <input type="radio" name="status" id="status_down"/>
+//                   <img src=".//img/Down.png" alt="status_down"/>
+//                   <label htmlFor="status_down">Down</label>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//           <div className="plug_radio_btn">
+//             <span>카드 상태</span>
+//             <div>
+//               <div className="radio_outer">
+//                 <div>
+//                   <input type="radio" name="connection_status" id="connected"/>
+//                   <img src=".//img/연결됨.png" alt="connected"/>
+//                   <label htmlFor="connected">연결됨</label>
+//                 </div>
+//                 <div>
+//                   <input type="radio" name="connection_status" id="disconnected"/>
+//                   <img src=".//img/분리.png" alt="disconnected"/>
+//                   <label htmlFor="disconnected">분리</label>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//         <div className="network_parameter_outer">
+//           <span>네트워크 필터 매개변수</span>
+//           <div>
+//             <div>
+//               <span>이름</span>
+//               <input type="text"/>
+//             </div>
+//             <div>
+//               <span>값</span>
+//               <input type="text"/>
+//             </div>
+//             <div id="buttons">
+//               <button>+</button>
+//               <button>-</button>
+//             </div>
+//           </div>
+//         </div>
+//         <div className="edit_footer">
+//           <button style={{ display: 'none' }}></button>
+//           <button>OK</button>
+//           <button onClick={closeModal}>취소</button>
+//         </div>
+//       </Modal>
+//     </div>
+//   );
+// };
 
 
 
@@ -292,11 +294,6 @@ const Computing = () => {
     // 여기에 필요한 팝업 아이템들을 추가합니다.
   ];
 
-  const navSections = [
-    { id: 'datacenter', label: '데이터 센터' },
-    { id: 'cluster', label: '클러스터' },
-    { id: 'template', label: '템플릿' },
-  ];
 
   return (
     <div id="section">
@@ -311,15 +308,7 @@ const Computing = () => {
             togglePopup={() => {}}
           />
           <div className="content_outer">
-            <NavButton
-              sections={navSections}
-              activeSection={activeSection}
-              handleSectionClick={handleSectionClick}
-            />
-
             {activeSection === 'datacenter' && <DatacenterSection handleRowClick={handleRowClick} />}
-            {activeSection === 'cluster' && <ClusterSection />}
-            {activeSection === 'template' && <TemplateSection />}
           </div>
         </>
       ) : (
@@ -395,7 +384,7 @@ const Computing = () => {
         )}
       </div>
 
-      <Modal
+      {/* 마이그레이션 <Modal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
         contentLabel="마이그레이션"
@@ -430,7 +419,7 @@ const Computing = () => {
             <button onClick={closeModal}>취소</button>
           </div>
         </div>
-      </Modal>
+      </Modal> */}
     </div>
   );
 };

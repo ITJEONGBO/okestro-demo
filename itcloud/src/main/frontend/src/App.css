@@ -2697,6 +2697,7 @@ form>div
     cursor: pointer;
     font-size: 0.29rem;
 }
+
 #host_outer,
 #ha_mode_outer,
 #system_outer,
@@ -2968,16 +2969,14 @@ form>div
     
 }
 .section_table_outer th{
-    padding: 0.08rem;
+    padding: 0.04rem;
     text-align: center;
     background-color: #d1e2eb;
 }
 .section_table_outer td{
     padding: 0.02rem 0.1rem ;
 }
-.section_table_outer td:first-child{
-    color:#1ba4e4;
-}
+
 .section_table_outer td:nth-child(2){
     width: 10%;
     overflow: hidden;
@@ -4260,39 +4259,42 @@ box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 /*hostDetail.js*/
 .host_content_outer{
     width: 100%;
-    padding: 0.2rem 0;
+    padding: 0.2rem 0 ;
+
+    height: 100%;
+    overflow-y: auto; /* 세로 스크롤바를 필요할 때 표시합니다 */
 }
 .host_tables{
-    display: flex;
     width: 100%;
     justify-content: space-between;
+    display: flex;
 }
 .host_table{
     display: flex;
     justify-content: space-between;
     width: 100%;
-    font-size: 0.27rem;
+    font-size: 0.3rem;
 }
-.host_table tbody{
-    width: 100%;
-}
+
 .host_table th{
     text-align: left ;
     width: 60%;
+    padding: 0.06rem 0 ;
 }
 .host_table tr{
     width: 100%;
 
 }
-.host_table_explain{
-    font-size: 0.33rem;
-    margin-bottom: 0.5rem;
+.table_container_left{
+    width: 33%;
+    border-right: 1px solid #d1d1d1;
+    padding-right: 0.14rem;
 }
-.host_table_explain>p{
-    font-weight: 600;
-}
-.host_table_explain span{
-    text-decoration: underline;
+.table_container_left>h2{
+    font-size: 0.4rem;
+    color: #0066CC;
+   border-bottom: 1px solid #d1d1d1;
+   padding: 0.1rem 0 ;
 }
 .host_btn_outer{
     width: 100%;
@@ -4326,6 +4328,42 @@ box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
     border-radius: 3px;
     color: rgb(10, 55, 107);
     font-weight: 600;
+}
+
+.host_network_boxs{
+    border: 1px solid black;
+    background-color: rgb(181, 255, 243);
+}
+.host_network_firstbox{
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.37rem;
+    padding: 0 0.2rem;
+    text-align: center;
+    cursor: pointer;
+}
+.host_network_firstbox i{
+    margin-right: 0.3rem;
+    font-size: 0.55rem;
+}
+.host_network_firstbox>div{
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.3rem 0.4rem;
+ 
+}
+.firstbox_flex{
+    display: flex;
+    justify-content: space-between;
+}
+.firstbox_flex>div>div{
+    font-weight: 600;
+}
+.host_network_hiddenbox{
+    background-color: white;
+    padding: 0.2rem;
 }
 /*끝*/
 /*Cluster.js / Host.js / *Network.js*/

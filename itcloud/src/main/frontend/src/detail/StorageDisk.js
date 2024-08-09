@@ -175,15 +175,15 @@ const popupItems = [
                   </tr>
                   <tr>
                     <th>가상 크기:</th>
-                    <td>1 GiB</td>
+                    <td>&lt; 1 GiB</td>
                   </tr>
                   <tr>
                     <th>실제 크기:</th>
-                    <td> 1 GiB</td>
+                    <td>&lt; 1 GiB</td>
                   </tr>
-                  
                 </tbody>
               </table>
+
             </div>
          
 
@@ -194,7 +194,7 @@ const popupItems = [
 
         {activeTab === 'machine' && (
           <div className="host_empty_outer">
-            <div className="pregroup_content">
+            <div className="section_table_outer">
               <Table columns={vmColumns} data={vmData} onRowClick={() => console.log('Row clicked')} />
             </div>
           </div>
@@ -203,7 +203,7 @@ const popupItems = [
         {activeTab === 'storage' && (
 
         <div className="host_empty_outer">
-            <div className="pregroup_content">
+             <div className="section_table_outer">
               <Table columns={storageColumns} data={storageData} onRowClick={() => console.log('Row clicked')} />
             </div>
        </div>

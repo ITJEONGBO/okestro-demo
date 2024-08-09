@@ -690,39 +690,25 @@ class HeatMapChart extends React.Component {
     super(props);
 
     this.state = {
-      series: [{
-        name: 'Metric1',
-        data: generateData(18, { min: 0, max: 90 })
-      },
-      {
-        name: 'Metric2',
-        data: generateData(18, { min: 0, max: 90 })
-      },
-      {
-        name: 'Metric3',
-        data: generateData(18, { min: 0, max: 90 })
-      },
-      {
-        name: 'Metric4',
-        data: generateData(18, { min: 0, max: 90 })
-      },
-      {
-        name: 'Metric5',
-        data: generateData(18, { min: 0, max: 90 })
-      },
-      {
-        name: 'Metric9',
-        data: generateData(18, { min: 0, max: 90 })
-      }],
+      series: [
+        {
+          name: 'Metric1',
+          data: generateData(8, { min: 0, max: 90 }),
+        },
+        {
+          name: 'Metric2',
+          data: generateData(8, { min: 0, max: 90 }),
+        },
+      ],
       options: {
         chart: {
-          height: 140,  // 높이 조정
+          height: 140, // 높이 조정
           type: 'heatmap',
         },
         dataLabels: {
-          enabled: false
+          enabled: false,
         },
-        colors: ["#008FFB"],
+        colors: ['#008FFB'],
       },
     };
   }

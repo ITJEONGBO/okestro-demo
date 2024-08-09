@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-
+import '../App.css';
 import NavButton from '../components/navigation/NavButton';
 import HeaderButton from '../components/button/HeaderButton';
 import { Table } from '../components/table/Table';
@@ -43,6 +43,43 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
       creationDate: '2024.1.19 AM9:21:57',
     },
   ];
+
+  // 디스크
+  const diskcolumns = [
+    { header: '별칭', accessor: 'alias' },
+    { header: '', accessor: 'leftIcon1', clickable: true },
+    { header: '', accessor: 'leftIcon2', clickable: true },
+    { header: '가상 크기', accessor: 'virtualSize' },
+    { header: '실제 크기', accessor: 'actualSize' },
+    { header: '할당 정책', accessor: 'allocationPolicy' },
+    { header: '스토리지 도메인', accessor: 'storageDomain' },
+    { header: '생성 일자', accessor: 'createdDate' },
+    { header: '최근 업데이트', accessor: 'lastUpdated' },
+    { header: '', accessor: 'rightIcon', clickable: true },
+    { header: '연결 대상', accessor: 'connectedTo' },
+    { header: '상태', accessor: 'status' },
+    { header: '유형', accessor: 'type' },
+    { header: '설명', accessor: 'description' },
+  ];
+  const diskdata = [
+    {
+      alias: 'aa',
+      leftIcon1: <i className="fa fa-chevron-left"></i>,
+      leftIcon2: <i className="fa fa-chevron-left"></i>,
+      virtualSize: '<1 GiB',
+      actualSize: '<1 GiB',
+      allocationPolicy: '씬 프로비저닝',
+      storageDomain: 'hosted_storage',
+      createdDate: '2024. 4. 26. PM 3:19:39',
+      lastUpdated: '2024. 4. 26. PM 3:19:45',
+      rightIcon: <i className="fa fa-chevron-left"></i>,
+      connectedTo: '',
+      status: 'OK',
+      type: '이미지',
+      description: 'testa',
+    },
+  ];
+  //
   // 디스크 스냅샷
   const snapshotColumns = [
     { header: '크기', accessor: 'size', clickable: false },
@@ -232,8 +269,8 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         )}
 
         {activeTab === 'datacenter' && (
-          <div id="detail_datacenter_outer">
-            <div className="pregroup_content">
+          <>
+           
               <div className="content_header_right">
                 <button>연결</button>
                 <button>분리</button>
@@ -241,94 +278,112 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                 <button>유지보수</button>
               </div>
               
+              <div className="section_table_outer">
+                <Table columns={dataCenterColumns} data={dataCenterData} onRowClick={() => console.log('Row clicked')} />
+              </div>
 
-              <Table columns={dataCenterColumns} data={dataCenterData} onRowClick={() => console.log('Row clicked')} />
-            </div>
-          </div>
+            {/* <>
+              <div className="content_header_right">
+                <button>추가</button>
+                <button>제거</button>
+              </div>
+              
+              <div className="section_table_outer">
+                <div className="storage_right_btns">
+                  <span>Permission Filters:</span>
+                  <div>
+                    <button>All</button>
+                    <button>Direct</button>
+                  </div>
+                </div>
+                <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
+              </div>
+        </> */}
+          </>
         )}
 
         {/*밑에딸린 박스 수정 */}
         {activeTab === 'machine' && (
-          <div id="detail_machine_outer">
+          <>
+          <div className="host_empty_outer">
+            <div className="section_table_outer">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>별칭</th>
+                      <th>디스크</th>
+                      <th>템플릿</th>
+                      <th>가상 크기</th>
+                      <th>실제 크기</th>
+                      <th>생성 일자</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <i className="fa fa-plus-circle"></i>
+                        <i class="fa fa-minus-circle" style={{display:'none'}}></i>
+                        <i class="fa fa-desktop"></i>
+                        test02
+                      </td>
+                      <td>1</td>
+                      <td>Blank</td>
+                      <td>1 GIB</td>
+                      <td>5 GIB</td>
+                      <td>2024.1.19 AM9:21:57</td>
+                    </tr>
+                  </tbody>
+                  {/*+버튼누르면 밑에 딸려있는것 */}
+                  <tbody className='detail_machine_second'>
+                    <tr>
+                      <td>
+                        <i className="fa fa-plus-circle"></i>
+                        <i class="fa fa-minus-circle" style={{display:'none'}}></i>
+                        <i class="fa fa-desktop"></i>
+                        test02
+                      </td>
+                      <td>1</td>
+                      <td>Blank</td>
+                      <td>1 GIB</td>
+                      <td>5 GIB</td>
+                      <td>2024.1.19 AM9:21:57</td>
+                    </tr>
+                  </tbody>
+                  {/*+버튼누르면 밑에 딸려있는것 마지막 */}
+                  <tbody className='detail_machine_last'>
+                    <tr>
+                      <td>
+                        <i className="fa fa-plus-circle"></i>
+                        <i class="fa fa-minus-circle" style={{display:'none'}}></i>
+                        <i class="fa fa-desktop"></i>
+                        test02
+                      </td>
+                      <td>1</td>
+                      <td>Blank</td>
+                      <td>1 GIB</td>
+                      <td>5 GIB</td>
+                      <td>2024.1.19 AM9:21:57</td>
+                    </tr>
+                  </tbody>
 
-            <div className="pregroup_content">
-              <table>
-                <thead>
-                  <tr>
-                    <th>별칭</th>
-                    <th>디스크</th>
-                    <th>템플릿</th>
-                    <th>가상 크기</th>
-                    <th>실제 크기</th>
-                    <th>생성 일자</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <i className="fa fa-plus-circle"></i>
-                      <i class="fa fa-minus-circle" style={{display:'none'}}></i>
-                      <i class="fa fa-desktop"></i>
-                      test02
-                    </td>
-                    <td>1</td>
-                    <td>Blank</td>
-                    <td>1 GIB</td>
-                    <td>5 GIB</td>
-                    <td>2024.1.19 AM9:21:57</td>
-                  </tr>
-                </tbody>
-                {/*+버튼누르면 밑에 딸려있는것 */}
-                <tbody className='detail_machine_second'>
-                  <tr>
-                    <td>
-                      <i className="fa fa-plus-circle"></i>
-                      <i class="fa fa-minus-circle" style={{display:'none'}}></i>
-                      <i class="fa fa-desktop"></i>
-                      test02
-                    </td>
-                    <td>1</td>
-                    <td>Blank</td>
-                    <td>1 GIB</td>
-                    <td>5 GIB</td>
-                    <td>2024.1.19 AM9:21:57</td>
-                  </tr>
-                </tbody>
-                {/*+버튼누르면 밑에 딸려있는것 마지막 */}
-                <tbody className='detail_machine_last'>
-                  <tr>
-                    <td>
-                      <i className="fa fa-plus-circle"></i>
-                      <i class="fa fa-minus-circle" style={{display:'none'}}></i>
-                      <i class="fa fa-desktop"></i>
-                      test02
-                    </td>
-                    <td>1</td>
-                    <td>Blank</td>
-                    <td>1 GIB</td>
-                    <td>5 GIB</td>
-                    <td>2024.1.19 AM9:21:57</td>
-                  </tr>
-                </tbody>
-
-              </table>
+                </table>
             </div>
           </div>
+          </>
         )}
 
         {activeTab === 'template' && (
-          <div id="detail_template_outer">
-          
-            <div className="pregroup_content">
-            <Table columns={templateColumns} data={templateData} onRowClick={() => console.log('Row clicked')} />
+          <>
+          <div className="host_empty_outer">
+            <div className="section_table_outer">
+              <Table columns={templateColumns} data={templateData} onRowClick={() => console.log('Row clicked')} />
             </div>
-        </div>
+          </div>
+        </>
         )}
 
         {activeTab === 'disk' && (
-        <div id="detail_disk_outer">
-       
-            <div className="pregroup_content">
+        <>
             <div className="content_header_right">
                 <button>이동</button>
                 <button>복사</button>
@@ -348,94 +403,56 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                 )}
             </div>
             
-            <div className="table_outer2">
-                <table>
-                <thead>
-                    <tr>
-                    <th>별칭</th>
-                    <th><i className="fa fa-chevron-left"></i></th>
-                    <th><i className="fa fa-chevron-left"></i></th>
-                    <th>가상 크기</th>
-                    <th>실제 크기</th>
-                    <th>할당 정책</th>
-                    <th>스토리지 도메인</th>
-                    <th>생성 일자</th>
-                    <th>최근 업데이트</th>
-                    <th></th>
-                    <th>연결 대상</th>
-                    <th>상태</th>
-                    <th>유형</th>
-                    <th>설명</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                    <td>aa</td>
-                    <td></td>
-                    <td></td>
-                    <td>&lt;1 GiB</td>
-                    <td>&lt;1 GiB</td>
-                    <td>씬 프로비저닝</td>
-                    <td>hosted_storage</td>
-                    <td>2024. 4. 26. PM 3:19:39</td>
-                    <td>2024. 4. 26. PM 3:19:45</td>
-                    <td><i className="fa fa-chevron-left"></i></td>
-                    <td></td>
-                    <td>OK</td>
-                    <td>이미지</td>
-                    <td>testa</td>
-                    </tr>
-                </tbody>
-                </table>
+            <div className="section_table_outer">
+              <Table columns={diskcolumns} data={diskdata} onRowClick={() => console.log('Row clicked')}/>
             </div>
-            </div>
-       </div>
-       
+       </>
         )}
 
         {activeTab === 'disk_snapshot' && (
-        <div id="detail_snapshot_outer">
-            <div className="pregroup_content">
+        <>
             <div className="content_header_right">
                 <button>제거</button>
             </div>
             
-            <div className="table_outer2">
+            <div className="section_table_outer">
               <Table columns={snapshotColumns} data={snapshotData} onRowClick={() => console.log('Row clicked')} />
             </div>
-            </div>
-        </div>
+        </>
         )}
 
         {activeTab === 'event' && (
+          <>
         <div className="host_empty_outer">
-            <div className="pregroup_content">
+            <div className="section_table_outer">
                 <Table columns={eventColumns} data={eventData} onRowClick={() => console.log('Row clicked')} />
             </div>
         </div>
-  
+        </>
         )}
 
       {activeTab === 'permission' && (
-        <div id="detail_permission_outer">
-            <div className="pregroup_content">
+        <>
+
               <div className="content_header_right">
                 <button>추가</button>
                 <button>제거</button>
               </div>
-              <div className="storage_right_btns">
-                <span>Permission Filters:</span>
-                <div>
-                  <button>All</button>
-                  <button>Direct</button>
+
+              <div className="section_table_outer">
+                <div className="storage_right_btns">
+                  <span>Permission Filters:</span>
+                  <div>
+                    <button>All</button>
+                    <button>Direct</button>
+                  </div>
+                </div>
+                
+                <div className="section_table_outer">
+                <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
                 </div>
               </div>
-              
-              <div className="table_outer2">
-              <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
-              </div>
-            </div>
-        </div>
+        </>
         )}
       </div>
 

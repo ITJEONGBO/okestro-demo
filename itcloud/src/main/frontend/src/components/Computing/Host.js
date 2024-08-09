@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import HeaderButton from '../button/HeaderButton';
 import { Table } from '../table/Table';
+import HostDetail from './HostDetail';
 
 
 // React Modal 설정
@@ -10,7 +11,7 @@ Modal.setAppElement('#root');
 const Host = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [showHostName, setShowHostName] = useState(false);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
@@ -39,10 +40,12 @@ const Host = () => {
     'OVA로 내보내기',
   ];
 
+
+  if (showHostName) {
+    return <HostDetail />;
+  }
   //테이블 컴포넌트
-  const onRowClick = (row) => {
-    console.log('Row clicked:', row);
-  };
+
   const columns = [
     { header: '상태', accessor: 'status', clickable: false },
     { header: '이름', accessor: 'name', clickable: true },
@@ -64,7 +67,9 @@ const Host = () => {
       vmCount: 7,
     },
   ];
-
+  const handleRowClick = () => {
+    setShowHostName(true);
+  };
   return (
     <div id="section">
       <HeaderButton
@@ -81,7 +86,7 @@ const Host = () => {
               <button>
                 <i className="fa fa-refresh"></i>
               </button>
-              <Table columns={columns} data={data} onRowClick={onRowClick} />
+              <Table columns={columns} data={data} onRowClick={handleRowClick} />
             </div>
         </div>
       </div>
