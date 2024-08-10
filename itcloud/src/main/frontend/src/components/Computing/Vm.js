@@ -241,8 +241,7 @@ const DiskSection = () => {
     },
   ];
   return (
-      <div id="disk_outer">
-          <div id="disk_content">
+      <div className="host_btn_outer">
               <div className="content_header_right">
                   <button id="disk_popup_new" onClick={openNewDiskModal}>새로 만들기</button>
                   <button id="join_popup_btn" onClick={openJoinDiskModal}>연결</button>
@@ -258,10 +257,13 @@ const DiskSection = () => {
                       </div>
                   </button>
               </div>
-             
-              <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
-          </div>
 
+              <div className="section_table_outer">
+                <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
+              </div>
+          
+          
+          
           {/* 디스크(새로 만들기) 팝업 */}
           <Modal
               isOpen={isNewDiskModalOpen}
@@ -677,8 +679,8 @@ const DiskSection = () => {
 // 스냅샷
 const SnapshotSection = () => {
   return (
-    <div id="snapshot_outer">
-      <div id="snapshot_content_outer">
+    <div className="host_btn_outer">
+      
         <div className="content_header_right">
           <button className="snap_create_btn">생성</button>
           <button>미리보기</button>
@@ -744,7 +746,7 @@ const SnapshotSection = () => {
             </div>
           </div>
         </div>
-      </div>
+      
     </div>
   );
 };
@@ -762,11 +764,15 @@ const ApplicationSection = () => {
   ];
 
   return (
-    <div id="application_outer">
-      <div id="application_content">
-        <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
+    <div className="host_btn_outer">
+      <div className="host_empty_outer">
+        <div className="section_table_outer">
+          <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
+        </div>
       </div>
     </div>
+
+
   );
 };
 
@@ -833,17 +839,18 @@ const PregroupSection = () => {
   };
 
   return (
-    <div id="pregroup_outer">
-      <div className="pregroup_content">
+    
+      <div className="host_btn_outer">
         <div className="content_header_right">
           <button id="pregroup_create_btn" onClick={openModal}>새로 만들기</button>
           <button>편집</button>
           <button>제거</button>
         </div>
         
-        
-        <Table columns={columns} data={data} onRowClick={handleRowClick} />
-      </div>
+        <div className="section_table_outer">
+          <Table columns={columns} data={data} onRowClick={handleRowClick} />
+        </div>
+     
 
       {/* 선호도 그룹(새로 만들기) */}
       <Modal
@@ -977,17 +984,17 @@ const PregroupLabelSection = () => {
   };
 
   return (
-    <div id="pregroup_lable_outer">
-      <div className="pregroup_content">
+    <div className="host_btn_outer">
+      
         <div className="content_header_right">
           <button id="lable_create_btn" onClick={openModal}>새로 만들기</button>
           <button>편집</button>
           <button>제거</button>
         </div>
         
-        
-        <Table columns={columns} data={data} onRowClick={handleRowClick} />
-      </div>
+        <div className="section_table_outer">
+          <Table columns={columns} data={data} onRowClick={handleRowClick} />
+        </div>
 
       {/* 선호도 레이블(새로 만들기) */}
       <Modal
@@ -1164,20 +1171,23 @@ const PowerSection = () => {
   };
 
   return (
-    <div id="power_outer">
-      <div className="pregroup_content">
+    <div className="host_btn_outer">
+     
         <div className="content_header_right">
           <button onClick={openModal} id="power_add_btn">추가</button>
           <button>제거</button>
         </div>
-        <div className="application_content_header">
-          <span>Permission Filters:</span>
-          <button>All</button>
-          <button>Direct</button>
+        <div className="host_filter_btns">
+            <span>Permission Filters:</span>
+            <div>
+                <button>All</button>
+                <button>Direct</button>
+            </div>
         </div>
-
-        <Table columns={columns} data={data} onRowClick={handleRowClick} />
-      </div>
+        
+        <div className="section_table_outer">
+          <Table columns={columns} data={data} onRowClick={handleRowClick} />
+        </div>
 
       {/* 권한(추가)팝업 */}
       <Modal
@@ -1288,16 +1298,18 @@ const EventSection = () => {
     { icon: <i className="fa fa-check"></i>, time: '2023. 12. 29. PM 12:53:53', message: 'VM on2o-ap01 has been successfully imported from the given configuration.', correlationId: 'ede53bc8-c6...', source: 'oVirt', customEventId: '' }
   ];
   return (
-    <div id="event_outer">
-      <div className="pregroup_content">
+    <div className="host_btn_outer">
+      
         <div className="content_header_right">
           <button>새로 만들기</button>
           <button>편집</button>
           <button>제거</button>
         </div>
         
-        <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
-      </div>
+        <div className="section_table_outer">
+          <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
+        </div>
+      
     </div>
   );
 };
