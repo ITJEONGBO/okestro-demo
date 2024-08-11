@@ -1,0 +1,186 @@
+#section,#storage_section,#network_section,#setting_section,#detail_section{
+    background-color: #ffffff;
+    border-radius: 5px;
+    width: 96%;
+    position: relative;
+}
+#storage_section>div{
+    height: 98%;
+}
+.content_outer{
+    width: 100%;
+    display: flex;
+    height: 88%;
+}
+.host_btn_outer{
+    width: 100%;
+    padding: 0.5rem 0.3rem;
+}
+.content_header_right {  
+    display: flex;
+    margin-bottom: 0.3rem;
+    align-items: center;
+    justify-content: right;
+}
+
+.content_header_right button {
+    margin-right: 0.2rem;
+    font-size: 0.4rem;
+    padding: 0.1rem 0.1rem;
+    cursor: pointer;
+    font-size: 0.3rem;
+    font-weight: 600;
+    border-radius: 3px;
+    border: 1px solid #14417c;
+    border-radius: 3px;
+    color: rgb(10, 55, 107);
+    background: white;
+}
+.content_header_right  i{
+    font-size: 0.3rem;
+    font-weight: 800;
+}
+.section_table_outer{
+    font-size: 0.3rem;
+
+}
+
+.section_table_outer table{
+    width: 100%;
+    border-collapse: collapse;
+}
+.section_table_outer table tbody tr{
+    cursor: pointer; 
+}
+.section_table_outer table tbody tr:hover{
+    background-color: #ebececd8;
+}
+.section_table_outer th,.section_table_outer td{
+    border: 1px solid rgb(204, 204, 204);
+    
+}
+.section_table_outer th{
+    padding: 0.04rem;
+    text-align: center;
+    background-color: #d1e2eb;
+}
+.section_table_outer td{
+    padding: 0.02rem 0.1rem ;
+}
+
+.section_table_outer td:nth-child(2){
+    width: 10%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.section_table_outer td:nth-child(3),.section_table_outer td:nth-child(4){
+    text-align: center;
+}
+.section_table_outer>button{
+    padding: 0.07rem 0.1rem;
+    margin-bottom: 0.13rem;
+    cursor: pointer;
+    display: flex;
+}
+.search_box{
+    width: 20%;
+    display: flex;
+    margin-bottom: 0.15rem;
+}
+.search_box input{
+    height: 3.1vh;
+    width: 92%;
+    outline: none;   
+}
+.search_box>button{
+    height: 3.1vh;
+    width: 10%;
+    cursor: pointer;
+    font-size: 0.3rem;
+}
+.content_header {
+    border-right: 1px solid #dddddd;
+ 
+    width: 12%;
+}
+
+.content_header_left {
+    font-size: 0.65rem;
+    border-radius: 3px;
+    margin-top: 0.2rem;
+}
+
+.content_header_left div {
+    position: relative;
+    font-size: 0.31rem;
+    cursor: pointer;
+    color: black;
+    padding: 0.3rem 0.1rem 0.3rem 0.2rem;
+}
+
+.content_header_left div.active {
+    color: #6999D9;
+    font-weight: 600;
+    background-color: #e6eefa;
+}
+
+.content_header_left div.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 1px;
+    width: 100%;
+    height: 2px;
+    background-color: #6999D9;
+}
+
+.content_header_right {  
+    display: flex;
+    margin-bottom: 0.3rem;
+    align-items: center;
+    justify-content: right;
+}
+
+.content_header_right button {
+    margin-right: 0.2rem;
+    font-size: 0.4rem;
+    padding: 0.1rem 0.1rem;
+    cursor: pointer;
+    font-size: 0.3rem;
+    font-weight: 600;
+    border-radius: 3px;
+    border: 1px solid #14417c;
+    border-radius: 3px;
+    color: rgb(10, 55, 107);
+    background: white;
+}
+.content_header_right  i{
+    font-size: 0.3rem;
+    font-weight: 800;
+}
+.storage_right_btns{
+    display: flex;
+    font-size: 0.34rem;
+    margin-bottom: 0.3rem;
+    height: 3.3vh;
+}
+.storage_right_btns>span{
+    margin-right: 0.2rem;
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.storage_right_btns>div{
+    width: 8%;
+    display: flex;
+    justify-content: space-between;
+}
+.storage_right_btns button{
+    width: 50%;
+    cursor: pointer;
+    border: 1px solid #14417c;
+    border-radius: 3px;
+    color: rgb(10, 55, 107);
+    font-weight: 600;
+}

@@ -3,8 +3,9 @@ import Modal from 'react-modal';
 import NavButton from '../components/navigation/NavButton';
 import HeaderButton from '../components/button/HeaderButton';
 import { Table } from '../components/table/Table';
+import './css/NetworkDetail.css';
 
-function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
+function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   // 테이블컴포넌트
 
   //vnic
@@ -245,7 +246,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                 />
 
 
-
+        <div className="host_btn_outer">
         {activeTab === 'general' && (
           <div className="tables">
           <div className="table_container_center">
@@ -297,9 +298,8 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
         )}
 
         {activeTab === 'vNIC_profile' && (
-        <div id="detail_vnic_outer">
-       
-            <div className="pregroup_content">
+        <>
+
                 <div className="content_header_right">
                     <button onClick={() => openPopup('vnic_new_popup')}>새로 만들기</button>
                     <button onClick={() => openPopup('vnic_eidt_popup')}>편집</button>
@@ -307,35 +307,32 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                 </div>
               
 
-                <div className="table_outer2">
-                <Table columns={vnicColumns} data={vnicData} onRowClick={() => console.log('Row clicked')} />
+                <div className="section_table_outer">
+                  <Table columns={vnicColumns} data={vnicData} onRowClick={() => console.log('Row clicked')} />
                 </div>
-            </div>
-       </div>
+
+       </>
        
         )}
 
         {activeTab === 'cluster' && (
-        <div id="detail_cluster_outer">
-       
-            <div className="pregroup_content">
+        <>
+
             <div className="content_header_right">
                 <button onClick={() => openPopup('cluster_network_popup')}>네트워크 관리</button>
             </div>
           
-            <div className="table_outer2">
-            <Table columns={clusterColumns} data={clusterData} onRowClick={() => console.log('Row clicked')} />
+            <div className="section_table_outer">
+              <Table columns={clusterColumns} data={clusterData} onRowClick={() => console.log('Row clicked')} />
             </div>
 
-            </div>
-       </div>
+          
+       </>
        
         )}
         
         {activeTab === 'host' && (
-        <div id="detail_host_outer">
-       
-            <div className="pregroup_content">
+        <>
             <div className="content_header_right">
                     <button onClick={() => openPopup('host_network_popup')}>호스트 네트워크 설정</button>
                 </div>
@@ -345,18 +342,15 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                 </div>
                 
             
-            <div className="table_outer2">
-            <Table columns={hostColumns} data={hostData} onRowClick={() => console.log('Row clicked')} />
+            <div className="section_table_outer">
+              <Table columns={hostColumns} data={hostData} onRowClick={() => console.log('Row clicked')} />
             </div>
-            </div>
-       </div>
+       </>
        
         )}
 
         {activeTab === 'virtual_machine' && (
-        <div id="detail_virtual_outer">
-       
-            <div className="pregroup_content">
+        <>
               <div className="content_header_right">
                   <button>제거</button>
               </div>
@@ -365,51 +359,54 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                   <button>정지중</button>
                 </div>
              
-            <div className="table_outer2">
+            <div className="section_table_outer">
               <Table columns={vmColumns} data={vmData} onRowClick={() => console.log('Row clicked')} />
             </div>
-            </div>
-       </div>
+            
+       </>
        
         )}
 
         {activeTab === 'template' && (
-        <div id="detail_template_outer2">
-            <div className="pregroup_content">
+        <>
+           
             <div className="content_header_right">
                 <button>제거</button>
             </div>
             
 
-            <div className="table_outer2">
+            <div className="section_table_outer">
               <Table columns={templateColumns} data={templateData} onRowClick={() => console.log('Row clicked')} />
             </div>
-            </div>
-        </div>
+          
+        </>
         )}
 
         {activeTab === 'permission' && (
-        <div id="detail_permission_outer">
-            <div className="pregroup_content">
+        <>
+        
               <div className="content_header_right">
                 <button>추가</button>
                 <button>제거</button>
               </div>
-              <div className="storage_right_btns">
-                <span>Permission Filters:</span>
-                <div>
-                  <button>All</button>
-                  <button>Direct</button>
-                </div>
-              </div>
               
-              <div className="table_outer2">
-              <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
+              <div className="section_table_outer">
+                <div className="storage_right_btns">
+                  <span>Permission Filters:</span>
+                  <div>
+                    <button>All</button>
+                    <button>Direct</button>
+                  </div>
+                </div>
+              
+              <div className="section_table_outer">
+                <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
               </div>
             </div>
-        </div>
+        </>
         )}
 
+        </div>
       </div>
 
       {/*vNIC 프로파일(새로만들기)팝업 */}
@@ -669,4 +666,4 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
   );
 }
 
-export default DomainDetail;
+export default NetworkDetail;

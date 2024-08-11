@@ -8,6 +8,8 @@ import Host from './Computing/Host';
 import Vm from './Computing/Vm';
 import Computing from './Computing';
 import Dashboard from './Dashboard'; // Dashboard 컴포넌트를 import
+import Network from './Network';
+import NetworkDetail from '../detail/NetworkDetail';
 
 function MainOuter({ children }) {
     const [selected, setSelected] = useState('dashboard');
@@ -144,6 +146,7 @@ function MainOuter({ children }) {
         setSelectedDiv('data_center');
         setSectionContent('computing');
         navigate('/computing/general');
+
     };
     
     const handleSecondClick = (e) => {
@@ -190,9 +193,11 @@ function MainOuter({ children }) {
     const handleFirstClickNetwork = () => {
         setIsSecondVisibleNetwork(!isSecondVisibleNetwork);
         setSelectedDiv('default');
+        setSectionContent('network');  // Network.js 컴포넌트로 설정
     };
     const handleSecondDivClickNetwork = () => {
         setSelectedDiv('ovirtmgmt'); // 두 번째 div 클릭 시 'ovirtmgmt'로 설정
+        setSectionContent('networkDetail'); 
     };
 
     const getClassNames = (id) => {
@@ -247,7 +252,30 @@ function MainOuter({ children }) {
         setSectionContent(content);
         setSelectedDetail(target); 
     };
+    const handleFirstIconClickStorage = (e) => {
+        e.stopPropagation(); // 이벤트 버블링을 방지하여 div 클릭 이벤트와 혼동되지 않도록 합니다.
+        setIsSecondVisibleStorage(!isSecondVisibleStorage);
+        setIsLastVisibleStorage(false); // 첫 번째 섹션을 클릭하면 세 번째 섹션을 닫습니다.
+    };
+    
+    const handleSecondIconClickStorage = (e) => {
+        e.stopPropagation();
+        setIsLastVisibleStorage(!isLastVisibleStorage);
+    };
+      // 네트워크 섹션을 클릭하면 Network 컴포넌트로 이동
+      const handleNetworkClick = () => {
+        setSectionContent('network');
+    };
 
+    // 네트워크 상세 항목을 클릭하면 NetworkDetail 컴포넌트로 이동
+    const handleNetworkDetailClick = () => {
+        setSectionContent('networkDetail');
+    };
+    
+    const handleFirstIconClickNetwork = (e) => {
+        e.stopPropagation();
+        setIsSecondVisibleNetwork(!isSecondVisibleNetwork);
+    };
     const [selectedDetail, setSelectedDetail] = useState(null);
     const handleDivClick = (target) => {
         setSectionContent('vm');
@@ -531,6 +559,9 @@ function MainOuter({ children }) {
                     {sectionContent === 'host' && <Host />}
                     {sectionContent === 'vm' && <Vm />}
                     {sectionContent === 'computing' && <Computing />}
+                    {sectionContent === 'network' && <Network />} 
+                    {sectionContent === 'networkDetail' && <NetworkDetail />}  
+
                     </>
             )}
             <div id="context_menu"
@@ -740,7 +771,7 @@ function MainOuter({ children }) {
                             </div>
                         </form>
                     )}
-
+            
                     {activeSettingForm === 'instant' && (
                         <form id="setting_instant_form">
                             <div className="setting_part_nav">

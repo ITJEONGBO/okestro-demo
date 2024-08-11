@@ -176,6 +176,7 @@
 }
 .aside_popup_second_content{
     padding-left: 0.5rem;
+    
 }
 /* 우클릭 메뉴박스*/
 #context_menu {
@@ -1408,9 +1409,9 @@
     width: 100%;
     padding: 1rem 0.3rem;
 }
-.table_container_left,.table_container_center,.table_container_right{
+.table_container_center,.table_container_right{
    /* margin: 20px;*/
-   width: 31%;
+   width: 33%;
 }
 .table {
     border-collapse: collapse;
@@ -4305,7 +4306,7 @@ box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 }
 .host_btn_outer{
     width: 100%;
-    padding: 0.5rem 0.3rem 0.5rem 0;
+    padding: 0.5rem 0.3rem;
 }
 .host_empty_outer{
     width: 100%;

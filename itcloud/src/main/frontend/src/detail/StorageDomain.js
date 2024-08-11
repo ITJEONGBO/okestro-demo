@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import '../App.css';
+import './css/StorageDomain.css';
 import NavButton from '../components/navigation/NavButton';
 import HeaderButton from '../components/button/HeaderButton';
 import { Table } from '../components/table/Table';

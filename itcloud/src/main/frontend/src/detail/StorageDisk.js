@@ -2,7 +2,7 @@ import React, { useState,useEffect } from 'react';
 import NavButton from '../components/navigation/NavButton';
 import HeaderButton from '../components/button/HeaderButton';
 import { Table } from '../components/table/Table';
-
+import './css/StorageDisk.css';
 
 function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   // 테이블 컴포넌트

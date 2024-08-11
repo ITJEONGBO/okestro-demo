@@ -190,8 +190,8 @@ function ClusterName() {
                 <div className="host_btn_outer">
                 {/* 일반 */}
                 {activeTab === 'general' && (
-                <div className="section_content_outer">
-                    <div className="table_container_left">
+                <div className="tables">
+                    <div className="table_container_center">
                     <table className="table">
                         <tbody>
                         <tr>
