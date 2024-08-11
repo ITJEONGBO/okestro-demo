@@ -87,7 +87,38 @@
 }
 
 /*nav*/
+.tables{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1rem 0.3rem;
+}
+.table_container_left,.table_container_center,.table_container_right{
+   /* margin: 20px;*/
+   width: 31%;
+}
+.table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.table th, .table td {
+    padding: 6px;
+    vertical-align: top;
+    border: none; 
+    font-size: 0.32rem;
+}
 
+.table th {
+    text-align: left;
+    font-weight: bold;
+}
+.empty{
+    color: white;
+}
+.table td {
+    text-align: left;
+    color: #757575;
+}
 .article_nav{
     display: flex;
     justify-content: right;
@@ -228,6 +259,10 @@
 #network_content_outer{
     width: 100%;
 }
+.host_btn_outer{
+    width: 100%;
+    padding: 0.5rem 0.3rem 0.5rem 0;
+}
 .pregroup_content,
 #application_content,
 #snapshot_content_outer,
@@ -316,8 +351,133 @@
     background-color: #0066CC;
     color:white
 }
+/*스냅샷*/
+#snapshot_content_outer,#network_content_outer{
+    padding: 0.5rem 0.3rem 0 0;
+}
+.pregroup_content i{
+    margin-right: 0.1rem;
+}
+.snapshot_content{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.34rem;
+    border-bottom: 1px solid rgb(226, 226, 226);
+    padding: 1% 0;
+    cursor: pointer;
+}
+.snapshot_content:hover{
+    background-color: #ebececd8;
+    border-left: 2px solid rgb(161, 161, 161);
+}
+.snapshot_content_left{
+    color: #4F4F4F;
+    width: 15%;
+    display: flex;
+}
+.snapshot_content_left>div{
+    border-radius: 50%;
+    padding: 3%;
+    background-color: #dbdbdb;
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    margin-right: 10%;
+}
+.snapshot_content_left span{
+    font-weight: 600;
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.snapshot_content_left i{
+  margin-top: 1px;
+}
+.snapshot_content_right{
+    color: #4F4F4F;
+    display: flex; 
+    justify-content: right;
+    width: 60%;
+}
+.snapshot_content_right>div{
+    margin-left: 4%;
+    font-size: 0.34rem;
+}
+/**/
+.section_table_outer{
+    font-size: 0.3rem;
+
+}
+
+.section_table_outer table{
+    width: 100%;
+    border-collapse: collapse;
+}
+.section_table_outer table tbody tr{
+    cursor: pointer; 
+}
+.section_table_outer table tbody tr:hover{
+    background-color: #ebececd8;
+}
+.section_table_outer th,.section_table_outer td{
+    border: 1px solid rgb(204, 204, 204);
+    
+}
+.section_table_outer th{
+    padding: 0.04rem;
+    text-align: center;
+    background-color: #d1e2eb;
+}
+.section_table_outer td{
+    padding: 0.02rem 0.1rem ;
+}
+
+.section_table_outer td:nth-child(2){
+    width: 10%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.section_table_outer td:nth-child(3),.section_table_outer td:nth-child(4){
+    text-align: center;
+}
+.section_table_outer>button{
+    padding: 0.07rem 0.1rem;
+    margin-bottom: 0.13rem;
+    cursor: pointer;
+    display: flex;
+}
+.host_empty_outer{
+    width: 100%;
+    padding: 1rem 0;
+}
 #migration_footer>button:last-child{
     color:#0066CC ;
+}
+.content_header_right {  
+    display: flex;
+    margin-bottom: 0.3rem;
+    align-items: center;
+    justify-content: right;
+}
+
+.content_header_right button {
+    margin-right: 0.2rem;
+    font-size: 0.4rem;
+    padding: 0.1rem 0.1rem;
+    cursor: pointer;
+    font-size: 0.3rem;
+    font-weight: 600;
+    border-radius: 3px;
+    border: 1px solid #14417c;
+    border-radius: 3px;
+    color: rgb(10, 55, 107);
+    background: white;
+}
+.content_header_right  i{
+    font-size: 0.3rem;
+    font-weight: 800;
 }
 .domain_header{
     background-color: #ebebeb;

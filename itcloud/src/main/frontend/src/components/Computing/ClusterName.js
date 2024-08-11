@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
 import { Table } from '../table/Table';
-
+import './css/ClusterName.css';
 function ClusterName() {
      // 가상머신 테이블컴포넌트
      const columns = [

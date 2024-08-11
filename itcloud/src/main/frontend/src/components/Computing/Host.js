@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import HeaderButton from '../button/HeaderButton';
 import { Table } from '../table/Table';
 import HostDetail from './HostDetail';
-
+import './css/Host.css';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -90,7 +90,7 @@ const Host = () => {
             </div>
         </div>
       </div>
-      <Modal
+      {/* <Modal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
         contentLabel="마이그레이션"
@@ -125,7 +125,7 @@ const Host = () => {
             <button onClick={closeModal}>취소</button>
           </div>
         </div>
-      </Modal>
+      </Modal> */}
     </div>
   );
 };

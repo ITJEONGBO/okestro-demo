@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import HeaderButton from '../button/HeaderButton';
 import ClusterName from './ClusterName';
 import { Table } from '../table/Table';
-
+import './css/Cluster.css';
 // React Modal 설정
 Modal.setAppElement('#root');
 
@@ -88,7 +88,7 @@ const Cluster = () => {
         </div>
         
       </div>
-      <Modal
+      {/* <Modal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
         contentLabel="마이그레이션"
@@ -123,7 +123,7 @@ const Cluster = () => {
             <button onClick={closeModal}>취소</button>
           </div>
         </div>
-      </Modal>
+      </Modal> */}
     </div>
   );
 };

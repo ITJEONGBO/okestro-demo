@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import HeaderButton from '../button/HeaderButton';
-
+import './css/DataCenterDetail.css';
 
 // React Modal 설정
 Modal.setAppElement('#root');

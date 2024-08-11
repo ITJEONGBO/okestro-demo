@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
-
+import './Computing.css';
 import HeaderButton from './button/HeaderButton';
 import DataCenterDetail from './Computing/DataCenterDetail';
 

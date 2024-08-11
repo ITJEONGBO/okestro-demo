@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
 import { Table } from '../table/Table';
-
+import './css/HostDetail.css';
 function HostDetail() {
   //클릭한 이름 받아오기
 

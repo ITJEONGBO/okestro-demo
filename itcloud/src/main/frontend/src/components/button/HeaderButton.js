@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './Button.css';
 
-
 const HeaderButton = ({ title, subtitle, buttons, popupItems }) => {
   const [isPopupBoxVisible, setIsPopupBoxVisible] = useState(false);
 
@@ -19,7 +18,6 @@ const HeaderButton = ({ title, subtitle, buttons, popupItems }) => {
       <div className="section_header_left">
         <div>{title}</div>
         <div>{subtitle}</div>
- 
       </div>
       <div className="section_header_right">
         <div className="article_nav">
@@ -28,14 +26,16 @@ const HeaderButton = ({ title, subtitle, buttons, popupItems }) => {
               {button.label}
             </button>
           ))}
-          <button id="popup_btn" onClick={togglePopupBox}>
-            <i className="fa fa-ellipsis-v"></i>
-            <div id="popup_box" style={{ display: isPopupBoxVisible ? 'block' : 'none' }}>
-              {popupItems.map((item, index) => (
-                <div key={index} onClick={() => handlePopupBoxItemClick(item)}>{item}</div>
-              ))}
-            </div>
-          </button>
+          {popupItems && popupItems.length > 0 && (
+            <button id="popup_btn" onClick={togglePopupBox}>
+              <i className="fa fa-ellipsis-v"></i>
+              <div id="popup_box" style={{ display: isPopupBoxVisible ? 'block' : 'none' }}>
+                {popupItems.map((item, index) => (
+                  <div key={index} onClick={() => handlePopupBoxItemClick(item)}>{item}</div>
+                ))}
+              </div>
+            </button>
+          )}
         </div>
       </div>
     </div>

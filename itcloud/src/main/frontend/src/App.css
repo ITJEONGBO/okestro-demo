@@ -145,20 +145,24 @@
     cursor: pointer;
     padding: 0.08rem;
 }
-.aside_popup_content i:first-child {
+.aside_popup_content i:first-child,
+.aside_popup_second_content i:first-child,
+.aside_popup_third_content i:first-child
+ {
     font-size: 0.24rem;
     margin-right: 0.27rem;
 }
-.aside_popup_content>span {
+.aside_popup_content>span,
+.aside_popup_second_content>span, 
+.aside_popup_third_content>span
+{
     margin-left: 0.1rem;
 }
 #aside_popup_first,#aside_popup_first2,#aside_popup_first3 {
     padding-left: 0.2rem;
 }
-#aside_popup_second{
-    padding-left: 0.5rem;
-}
-#aside_popup_third{
+
+#aside_popup_third_content{
     padding-left: 0.7rem;
 }
 #aside_popup_last_machine,#aside_popup_last_storage {
@@ -169,6 +173,9 @@
 }
 #aside_popup_last_machine>div span,#aside_popup_last_storage>div span{
     margin-left: 0.1rem;
+}
+.aside_popup_second_content{
+    padding-left: 0.5rem;
 }
 /* 우클릭 메뉴박스*/
 #context_menu {
@@ -4332,7 +4339,7 @@ box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 
 .host_network_boxs{
     border: 1px solid black;
-    background-color: rgb(181, 255, 243);
+    background-color: rgb(229 255 251);
 }
 .host_network_firstbox{
     display: flex;

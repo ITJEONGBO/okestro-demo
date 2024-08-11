@@ -213,8 +213,8 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         />
         <div className="host_btn_outer">
         {activeTab === 'general' && (
-
-            <div className="table_container_left">
+          <div className="tables">
+            <div className="table_container_center">
             <table className="table">
               <tbody>
                 <tr>
@@ -265,7 +265,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
             </table>
 
             </div> 
-        
+          </div> 
         )}
 
         {activeTab === 'datacenter' && (

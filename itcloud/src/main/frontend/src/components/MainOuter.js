@@ -12,7 +12,7 @@ import Dashboard from './Dashboard'; // Dashboard 컴포넌트를 import
 function MainOuter({ children }) {
     const [selected, setSelected] = useState('dashboard');
     const [selectedDiv, setSelectedDiv] = useState('data_center');
-    const [asidePopupVisible, setAsidePopupVisible] = useState(true);
+    const [asidePopupVisible, setAsidePopupVisible] = useState(false);
     const [asidePopupBackgroundColor, setAsidePopupBackgroundColor] = useState({
         dashboard: '',
         computing: '',
@@ -25,6 +25,10 @@ function MainOuter({ children }) {
     const [isSecondVisibleStorage, setIsSecondVisibleStorage] = useState(false);
     const [isLastVisibleStorage, setIsLastVisibleStorage] = useState(false);
     const [isSecondVisibleNetwork, setIsSecondVisibleNetwork] = useState(false);
+    const [isSecondVisible, setIsSecondVisible] = useState(false);
+    const [isThirdVisible, setIsThirdVisible] = useState(false);
+    const [isLastVisible, setIsLastVisible] = useState(false);
+    
     const [contextMenuVisible, setContextMenuVisible] = useState(false);
     const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
     const [contextMenuTarget, setContextMenuTarget] = useState(null);
@@ -32,11 +36,6 @@ function MainOuter({ children }) {
     const [activePopup, setActivePopup] = useState(null);
     const [activeSettingForm, setActiveSettingForm] = useState('part');
     const [settingPopupOpen, setSettingPopupOpen] = useState(false);
-
-    const [isSecondVisible, setIsSecondVisible] = useState(false);
-    const [isThirdVisible, setIsThirdVisible] = useState(false);
-    const [isLastVisible, setIsLastVisible] = useState(false);
-
     const [sectionContent, setSectionContent] = useState('default');
     const [activeSection, setActiveSection] = useState('general');
 
@@ -55,30 +54,38 @@ function MainOuter({ children }) {
     
         if (location.pathname.includes('/computing')) {
             setSelected('computing');
+            setAsidePopupVisible(true);
             setAsidePopupBackgroundColor(prevState => ({
                 ...prevState,
                 computing: 'rgb(218, 236, 245)'
             }));
+            setSelectedDiv('data_center'); // 'computing'의 기본 선택
         } else if (location.pathname.includes('/storage')) {
             setSelected('storage');
+            setAsidePopupVisible(true);
             setAsidePopupBackgroundColor(prevState => ({
                 ...prevState,
                 storage: 'rgb(218, 236, 245)'
             }));
+            setSelectedDiv('data_center'); // 'storage'의 기본 선택
         } else if (location.pathname.includes('/network')) {
             setSelected('network');
+            setAsidePopupVisible(true);
             setAsidePopupBackgroundColor(prevState => ({
                 ...prevState,
                 network: 'rgb(218, 236, 245)'
             }));
+            setSelectedDiv('default'); // 'network'의 기본 선택
         } else if (location.pathname.includes('/setting')) {
             setSelected('setting');
+            setAsidePopupVisible(true);
             setAsidePopupBackgroundColor(prevState => ({
                 ...prevState,
                 setting: 'rgb(218, 236, 245)'
             }));
         } else {
             setSelected('dashboard');
+            setAsidePopupVisible(false);
             setAsidePopupBackgroundColor(prevState => ({
                 ...prevState,
                 dashboard: 'rgb(218, 236, 245)'
@@ -89,7 +96,7 @@ function MainOuter({ children }) {
             window.removeEventListener('resize', adjustFontSize);
         };
     }, [location]);
-
+    
     const handleClick = (id) => {
         setSelected(id);
         setSectionContent('default'); 
@@ -101,11 +108,11 @@ function MainOuter({ children }) {
     const toggleAsidePopup = (id) => {
         const newBackgroundColor = {
             dashboard: '',
-        computing: '',
-        storage: '',
-        network: '',
-        setting: '',
-        default: ''
+            computing: '',
+            storage: '',
+            network: '',
+            setting: '',
+            default: ''
         };
 
         if (id === 'computing') {
@@ -163,16 +170,29 @@ function MainOuter({ children }) {
     };
     
     const handleFirstClickStorage = () => {
+        setSelectedDiv('data_center'); // 첫 번째 div 클릭 시 'data_center'로 설정
         setIsSecondVisibleStorage(!isSecondVisibleStorage);
         setIsLastVisibleStorage(false);
     };
+    const handleSecondDivClickStorage = () => {
+        setSelectedDiv('storage_domain'); // 두 번째 div 클릭 시 'storage_domain'으로 설정
+        setIsLastVisibleStorage(!isLastVisibleStorage);
+    };
     
+    const handleDetailClickStorage = (target) => {
+        setSelectedDiv(target); // 디스크 이름 클릭 시 해당 타겟으로 설정
+    };
+
     const handleSecondClickStorage = () => {
         setIsLastVisibleStorage(!isLastVisibleStorage);
     };
 
     const handleFirstClickNetwork = () => {
         setIsSecondVisibleNetwork(!isSecondVisibleNetwork);
+        setSelectedDiv('default');
+    };
+    const handleSecondDivClickNetwork = () => {
+        setSelectedDiv('ovirtmgmt'); // 두 번째 div 클릭 시 'ovirtmgmt'로 설정
     };
 
     const getClassNames = (id) => {
@@ -304,148 +324,184 @@ function MainOuter({ children }) {
                     <button id='aside_popup_btn' onClick={handleAsidePopupBtnClick}><i className="fa fa-chevron-left"></i></button>
 
                     {selected === 'computing' && (
-                    <div id="virtual_machine_chart">
-                        <div 
-                            className="aside_popup_content" 
-                            id="aside_popup_first" 
-                            style={{ backgroundColor: selectedDiv === 'data_center' ? 'rgb(218, 236, 245)' : '' }} 
-                            onClick={handleFirstDivClick}
-                        >
-                            <i 
-                                className={`fa fa-chevron-${isSecondVisible ? 'down' : 'right'}`} 
-                                onClick={handleFirstClick}
-                            ></i>
-                            <i className="fa fa-building-o"></i>
-                            <span>data_center</span>
-                        </div>
-                        {isSecondVisible && (
-                            <div 
-                                className="aside_popup_content" 
-                                id="aside_popup_second" 
-                                style={{ backgroundColor: selectedDiv === 'cluster' ? 'rgb(218, 236, 245)' : '' }} 
-                                onClick={handleSecondDivClick}
-                            >
-                                <i className={`fa fa-chevron-${isThirdVisible ? 'down' : 'right'}`} 
-                                   onClick={handleSecondClick}
-                                ></i>
-                                <i className="fa fa-building-o"></i>
-                                <span>클러스터</span>
-                            </div>
-                        )}
-                        {isThirdVisible && (
-                            <div 
-                                className="aside_popup_content" 
-                                id="aside_popup_third" 
-                                style={{ backgroundColor: selectedDiv === 'host' ? 'rgb(218, 236, 245)' : '' }} 
-                                onClick={handleThirdDivClick}
-                            >
-                                <i className={`fa fa-chevron-${isLastVisible ? 'down' : 'right'}`} 
-                                   onClick={handleThirdClick}
-                                ></i>
-                                <i className="fa fa-building-o"></i>
-                                <span>호스트</span>
-                            </div>
-                        )}
-                        {isLastVisible && (
-                            <div id="aside_popup_last_machine">
-                            <div
-                                onClick={() => handleDetailClick('detail1', '192.168.0.80')}
-                                onContextMenu={(e) => handleContextMenu(e, '192.168.0.80')}
-                                onMouseEnter={() => handleMouseEnter('192.168.0.80')}
-                                onMouseLeave={handleMouseLeave}
-                                style={{
-                                    backgroundColor: selectedDiv === 'host' ? getBackgroundColor('192.168.0.80') : 'transparent'
-                                }}
-                            >
-                                <i></i>
-                                <i className="fa fa-user"></i>
-                                <span>192.168.0.80</span>
-                            </div>
-                            <div
-                                onClick={() => handleDivClick('HostedEngine')}
-                                onContextMenu={(e) => handleContextMenu(e, 'HostedEngine')}
-                                onMouseEnter={() => handleMouseEnter('HostedEngine')}
-                                onMouseLeave={handleMouseLeave}
-                                style={{
-                                    backgroundColor: selectedDiv === 'host' ? getBackgroundColor('HostedEngine') : 'transparent'
-                                }}
-                            >
-                                <i></i>
-                                <i className="fa fa-microchip"></i>
-                                <span>HostedEngine</span>
-                            </div>
-                        </div>
-                        )}
-                    </div>
-                    )}
+    <div id="virtual_machine_chart">
+        <div 
+            className="aside_popup_content" 
+            id="aside_popup_first" 
+            style={{ backgroundColor: selectedDiv === 'data_center' ? 'rgb(218, 236, 245)' : '' }} 
+            onClick={handleFirstDivClick}
+        >
+            <i 
+                className={`fa fa-chevron-${isSecondVisible ? 'down' : 'right'}`} 
+                onClick={handleFirstClick}
+            ></i>
+            <i className="fa fa-building-o"></i>
+            <span>data_center</span>
+        </div>
+        {isSecondVisible && (
+            <div 
+                className="aside_popup_second_content" 
+                id="aside_popup_second" 
+                style={{ backgroundColor: selectedDiv === 'cluster' ? 'rgb(218, 236, 245)' : '' }} 
+                onClick={handleSecondDivClick}
+            >
+                <i className={`fa fa-chevron-${isThirdVisible ? 'down' : 'right'}`} 
+                    onClick={handleSecondClick}
+                ></i>
+                <i className="fa fa-building-o"></i>
+                <span>클러스터</span>
+            </div>
+        )}
+        {isThirdVisible && (
+            <div 
+                className="aside_popup_third_content" 
+                id="aside_popup_third" 
+                style={{ backgroundColor: selectedDiv === 'host' ? 'rgb(218, 236, 245)' : '' }} 
+                onClick={handleThirdDivClick}
+            >
+                <i className={`fa fa-chevron-${isLastVisible ? 'down' : 'right'}`} 
+                    onClick={handleThirdClick}
+                ></i>
+                <i className="fa fa-building-o"></i>
+                <span>호스트</span>
+            </div>
+        )}
+        {isLastVisible && (
+            <div id="aside_popup_last_machine">
+                <div
+                    onClick={() => handleDetailClick('detail1', '192.168.0.80')}
+                    onContextMenu={(e) => handleContextMenu(e, '192.168.0.80')}
+                    onMouseEnter={() => handleMouseEnter('192.168.0.80')}
+                    onMouseLeave={handleMouseLeave}
+                    style={{
+                        backgroundColor: selectedDiv === '192.168.0.80' ? 'rgb(218, 236, 245)' : (hoverTarget === '192.168.0.80' ? '#e6eefa' : 'transparent')
+                    }}
+                >
+                    <i></i>
+                    <i className="fa fa-user"></i>
+                    <span>192.168.0.80</span>
+                </div>
+                <div
+                    onClick={() => handleDivClick('HostedEngine')}
+                    onContextMenu={(e) => handleContextMenu(e, 'HostedEngine')}
+                    onMouseEnter={() => handleMouseEnter('HostedEngine')}
+                    onMouseLeave={handleMouseLeave}
+                    style={{
+                        backgroundColor: selectedDiv === 'HostedEngine' ? 'rgb(218, 236, 245)' : (hoverTarget === 'HostedEngine' ? '#e6eefa' : 'transparent')
+                    }}
+                >
+                    <i></i>
+                    <i className="fa fa-microchip"></i>
+                    <span>HostedEngine</span>
+                </div>
+            </div>
+        )}
+    </div>
+)}
+
                     
                     {selected === 'storage' && (
-                        <div id="storage_chart">
-                            <div className="aside_popup_content" id="aside_popup_first2" onClick={handleFirstClickStorage}>
-                                <i className="fa fa-chevron-down"></i>
-                                <i className="fa fa-building-o"></i>
-                                <span>data_center</span>
-                            </div>
-                            <div className="aside_popup_content" id="aside_popup_second2" style={{ display: isSecondVisibleStorage ? 'block' : 'none' }} onClick={handleSecondClickStorage}>
-                                <i className="fa fa-chevron-down"></i>
-                                <i className="fa fa-building-o"></i>
-                                <span>스토리지 도메인</span>
-                            </div>
-                            <div id="aside_popup_last_storage" style={{ display: isLastVisibleStorage ? 'block' : 'none' }}>
-                                <div
-                                    onContextMenu={(e) => handleContextMenu(e, '192.168.0.80')}
-                                    onMouseEnter={() => handleMouseEnter('192.168.0.80')}
-                                    onMouseLeave={handleMouseLeave}
-                                    style={{
-                                        backgroundColor: contextMenuTarget === '192.168.0.80' ? '#e6eefa' : (hoverTarget === '192.168.0.80' ? '#e6eefa' : 'transparent')
-                                    }}
-                                >
-                                    <i></i>
-                                    <i className="fa fa-microchip"></i>
-                                    <span>디스크 이름</span>
-                                </div>
-                                <div
-                                    onContextMenu={(e) => handleContextMenu(e, 'HostedEngine')}
-                                    onMouseEnter={() => handleMouseEnter('HostedEngine')}
-                                    onMouseLeave={handleMouseLeave}
-                                    style={{
-                                        backgroundColor: contextMenuTarget === 'HostedEngine' ? '#e6eefa' : (hoverTarget === 'HostedEngine' ? '#e6eefa' : 'transparent')
-                                    }}
-                                >
-                                    <i></i>
-                                    <i className="fa fa-microchip"></i>
-                                    <span>디스크 이름</span>
-                                </div>
-                                <div
-                                    onContextMenu={(e) => handleContextMenu(e, 'on20-ap01')}
-                                    onMouseEnter={() => handleMouseEnter('on20-ap01')}
-                                    onMouseLeave={handleMouseLeave}
-                                    style={{
-                                        backgroundColor: contextMenuTarget === 'on20-ap01' ? '#e6eefa' : (hoverTarget === 'on20-ap01' ? '#e6eefa' : 'transparent')
-                                    }}
-                                >
-                                    <i></i>
-                                    <i className="fa fa-microchip"></i>
-                                    <span>디스크 이름</span>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+    <div id="storage_chart">
+        <div
+            className="aside_popup_content"
+            id="aside_popup_first2"
+            onClick={handleFirstClickStorage}
+            style={{
+                backgroundColor: selectedDiv === 'data_center' ? 'rgb(218, 236, 245)' : '', // 첫 번째 div의 배경색 설정
+            }}
+        >
+            <i className={`fa fa-chevron-${isSecondVisibleStorage ? 'down' : 'right'}`}></i>
+            <i className="fa fa-building-o"></i>
+            <span>data_center</span>
+        </div>
+        {isSecondVisibleStorage && (
+            <div
+                className="aside_popup_second_content"
+                id="aside_popup_second2"
+                onClick={handleSecondDivClickStorage}
+                style={{
+                    backgroundColor: selectedDiv === 'storage_domain' ? 'rgb(218, 236, 245)' : '', // 두 번째 div의 배경색 설정
+                }}
+            >
+                <i className={`fa fa-chevron-${isLastVisibleStorage ? 'down' : 'right'}`}></i>
+                <i className="fa fa-building-o"></i>
+                <span>스토리지 도메인</span>
+            </div>
+        )}
+        {isLastVisibleStorage && (
+            <div id="aside_popup_last_storage">
+                <div
+                    onClick={() => handleDetailClickStorage('192.168.0.80')}
+                    onContextMenu={(e) => handleContextMenu(e, '192.168.0.80')}
+                    onMouseEnter={() => handleMouseEnter('192.168.0.80')}
+                    onMouseLeave={handleMouseLeave}
+                    style={{
+                        backgroundColor: selectedDiv === '192.168.0.80' ? 'rgb(218, 236, 245)' : (hoverTarget === '192.168.0.80' ? '#e6eefa' : 'transparent'), // 첫 번째 디스크 이름의 배경색 설정
+                    }}
+                >
+                    <i className="fa fa-microchip"></i>
+                    <span>디스크 이름</span>
+                </div>
+                <div
+                    onClick={() => handleDetailClickStorage('HostedEngine')}
+                    onContextMenu={(e) => handleContextMenu(e, 'HostedEngine')}
+                    onMouseEnter={() => handleMouseEnter('HostedEngine')}
+                    onMouseLeave={handleMouseLeave}
+                    style={{
+                        backgroundColor: selectedDiv === 'HostedEngine' ? 'rgb(218, 236, 245)' : (hoverTarget === 'HostedEngine' ? '#e6eefa' : 'transparent'), // 두 번째 디스크 이름의 배경색 설정
+                    }}
+                >
+                    <i className="fa fa-microchip"></i>
+                    <span>디스크 이름</span>
+                </div>
+                <div
+                    onClick={() => handleDetailClickStorage('on20-ap01')}
+                    onContextMenu={(e) => handleContextMenu(e, 'on20-ap01')}
+                    onMouseEnter={() => handleMouseEnter('on20-ap01')}
+                    onMouseLeave={handleMouseLeave}
+                    style={{
+                        backgroundColor: selectedDiv === 'on20-ap01' ? 'rgb(218, 236, 245)' : (hoverTarget === 'on20-ap01' ? '#e6eefa' : 'transparent'), // 세 번째 디스크 이름의 배경색 설정
+                    }}
+                >
+                    <i className="fa fa-microchip"></i>
+                    <span>디스크 이름</span>
+                </div>
+            </div>
+        )}
+    </div>
+)}
 
-                    {selected === 'network' && (
-                        <div id="network_chart">
-                            <div className="aside_popup_content" id="aside_popup_first3" onClick={handleFirstClickNetwork}>
-                                <i className="fa fa-chevron-down"></i>
-                                <i className="fa fa-building-o"></i>
-                                <span>Default</span>
-                            </div>
-                            <div className="aside_popup_content" id="aside_popup_second3" style={{ display: isSecondVisibleNetwork ? 'block' : 'none' }}>
-                                <i className="fa fa-chevron-down" style={{ color: 'white' }}></i>
-                                <i className="fa fa-building-o"></i>
-                                <span>ovirtmgmt</span>
-                            </div>
-                        </div>
-                    )}
+{selected === 'network' && (
+    <div id="network_chart">
+        <div
+            className="aside_popup_content"
+            id="aside_popup_first3"
+            onClick={handleFirstClickNetwork}
+            style={{
+                backgroundColor: selectedDiv === 'default' ? 'rgb(218, 236, 245)' : '', // 첫 번째 div의 배경색 설정
+            }}
+        >
+            <i className={`fa fa-chevron-${isSecondVisibleNetwork ? 'down' : 'right'}`}></i>
+            <i className="fa fa-building-o"></i>
+            <span>Default</span>
+        </div>
+        {isSecondVisibleNetwork && (
+            <div
+                className="aside_popup_second_content"
+                id="aside_popup_network_content"
+                onClick={handleSecondDivClickNetwork}
+                style={{
+                    backgroundColor: selectedDiv === 'ovirtmgmt' ? 'rgb(218, 236, 245)' : '', // 두 번째 div의 배경색 설정
+                }}
+            >
+                <i className={`fa fa-chevron-${isSecondVisibleNetwork ? 'down' : 'right'}`} style={{ color: 'white' }}></i>
+                <i className="fa fa-building-o"></i>
+                <span>ovirtmgmt</span>
+            </div>
+        )}
+    </div>
+)}
+
                     {selected === 'setting' && (
                         <div id="setting_chart">
                             <div id="setting_normal_btn">
@@ -469,7 +525,7 @@ function MainOuter({ children }) {
                 </div>
             </div>
             {sectionContent === 'default' ? React.cloneElement(children, { activeSection, setActiveSection }) : (
-                    < >
+                    <>
                     {sectionContent === 'detail1' && <HostDetail />}
                     {sectionContent === 'cluster' && <Cluster />}
                     {sectionContent === 'host' && <Host />}

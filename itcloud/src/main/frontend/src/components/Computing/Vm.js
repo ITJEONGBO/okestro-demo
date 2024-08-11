@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import { Table } from '../table/Table';
 import HeaderButton from '../button/HeaderButton';
-
+import './css/Vm.css';
 // 네트워크 인터페이스
 const NetworkSection = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -1402,7 +1402,7 @@ const Vm = () => {
       default:
         return (
           <div className="tables">
-            <div className="table_container_left">
+            <div className="table_container_center">
               <table className="table">
                 <tbody>
                   <tr>
@@ -1452,7 +1452,7 @@ const Vm = () => {
                 </tbody>
               </table>
             </div>
-            <div id="table_container_center">
+            <div className="table_container_center">
               <table className="table">
                 <tbody>
                   <tr>
@@ -1507,7 +1507,7 @@ const Vm = () => {
                 </tbody>
               </table>
             </div>
-            <div id="table_container_right">
+            <div className="table_container_center">
               <table className="table">
                 <tbody>
                   <tr>
