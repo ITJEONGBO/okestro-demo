@@ -49,6 +49,10 @@
     width: 16%;
     cursor: pointer;
 }
+.box:hover{
+    background-color: #e9fbfc;
+    border-radius: 3px ;
+}
 .box:nth-child(n+1){
     margin: 0 6px;
     padding: 7px 0 0 7px;

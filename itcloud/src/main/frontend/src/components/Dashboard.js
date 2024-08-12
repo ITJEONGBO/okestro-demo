@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
 import ReactApexChart from 'react-apexcharts';
 import axios from 'axios';
 import './Dashboard.css';
+import { useNavigate } from 'react-router-dom';
 
 // cpu, memory api 불러오는 값
 async function getCpuMemory() {
@@ -727,6 +728,7 @@ class HeatMapChart extends React.Component {
 
 //폰트사이즈 조정 
 const Dashboard = () => {
+  const navigate = useNavigate();
     const [data, setData] = useState({
         uptime: 0,
         datacenters: 0,
@@ -802,11 +804,11 @@ const Dashboard = () => {
               <i className="fa fa-arrow-down"> {data.datacentersDown}</i>
             </div>
           </div>
-          <div className="box">
+          <div className="box"  onClick={() => navigate('/cluster')}>
             <span>Cluster</span>
             <h1>{data.clusters}</h1>
           </div>
-          <div className="box">
+          <div className="box" onClick={() => navigate('/host')}> 
             <span>Host</span>
             <h1>{data.hosts}</h1>
             <div className="arrows">
@@ -814,11 +816,13 @@ const Dashboard = () => {
               <i className="fa fa-arrow-down"> {data.hostsDown}</i>
             </div>
           </div>
-          <div className="box">
+          <div className="box" onClick={() => navigate('/storage-domain')}>
             <span>Datastoragedomain</span>
             <h1>{data.storageDomains}</h1>
           </div>
-          <div className="box">
+          
+          {/*수정해야됨 */}
+          <div className="box" onClick={() => navigate('/computing/vm')}> 
             <span>Virtual machine</span>
             <h1>{data.vms}</h1>
             <div className="arrows">

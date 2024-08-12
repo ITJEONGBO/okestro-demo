@@ -131,7 +131,7 @@ const popupItems = [
     };
   }, [isUploadOptionBoxVisible]);
   return (
-    <div>
+    <div  className="content_detail_section">
       <HeaderButton
       title="스토리지"
       subtitle="디스크"

@@ -23,8 +23,6 @@ const Host = () => {
     { id: 'delete_btn', label: '삭제', onClick: () => {} },
     { id: 'manage_btn', label: '관리', onClick: () => {}, hasDropdown: true },
     { id: 'install_btn', label: '설치', onClick: () => {}, hasDropdown: true },
-    { id: 'host_console_btn', label: '호스트 콘솔', onClick: () => {} },
-    { id: 'host_network_copy_btn', label: '호스트 네트워크 복사', onClick: () => {} },
   ];
   
   

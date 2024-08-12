@@ -10,6 +10,9 @@ import Computing from './Computing';
 import Dashboard from './Dashboard'; // Dashboard 컴포넌트를 import
 import Network from './Network';
 import NetworkDetail from '../detail/NetworkDetail';
+import Storage from './Storage'; // Storage.js 파일에서 가져옴
+import StorageDomain from '../detail/StorageDomain'; // StorageDomain.js 파일에서 가져옴
+import StorageDisk from '../detail/StorageDisk'; // StorageDisk.js 파일에서 가져옴
 
 function MainOuter({ children }) {
     const [selected, setSelected] = useState('dashboard');
@@ -155,10 +158,13 @@ function MainOuter({ children }) {
         setIsThirdVisible(!isThirdVisible);
     };
 
-    const handleSecondDivClick = () => {
+    const handleSecondDivClick = (e) => {
+        e.stopPropagation(); // 이벤트 버블링 방지
         setSelectedDiv('cluster');
+        console.log('selectedDiv:', 'cluster'); // 상태 업데이트 확인용 로그
         setSectionContent('cluster');
         navigate(`/computing/application`);
+        
     };
     
     const handleThirdClick = (e) => {
@@ -176,16 +182,30 @@ function MainOuter({ children }) {
         setSelectedDiv('data_center'); // 첫 번째 div 클릭 시 'data_center'로 설정
         setIsSecondVisibleStorage(!isSecondVisibleStorage);
         setIsLastVisibleStorage(false);
+        setSectionContent('storage'); // 섹션 콘텐츠를 Storage로 설정
+        navigate('/storage'); // Storage.js로 이동
     };
     const handleSecondDivClickStorage = () => {
         setSelectedDiv('storage_domain'); // 두 번째 div 클릭 시 'storage_domain'으로 설정
         setIsLastVisibleStorage(!isLastVisibleStorage);
+        setSectionContent('storageDomain'); // 섹션 콘텐츠를 StorageDomain로 설정
+    navigate('/storage/storagedomain'); // StorageDomain.js로 이동
     };
     
-    const handleDetailClickStorage = (target) => {
-        setSelectedDiv(target); // 디스크 이름 클릭 시 해당 타겟으로 설정
+    const handleDetailClickStorage = (diskId) => {
+        setSelectedDiv(diskId); // 선택된 디스크를 설정
+        
+        setSectionContent('storageDisk'); // 섹션 콘텐츠를 StorageDisk로 설정
+        
+        // StorageDisk 팝업을 활성화하고 싶다면 아래 코드를 추가합니다.
+        setActivePopup('StorageDisk'); 
+    
+        navigate(`/storagedisk/${diskId}`); // 해당 디스크의 StorageDisk.js로 이동
     };
+    
 
+
+    
     const handleSecondClickStorage = () => {
         setIsLastVisibleStorage(!isLastVisibleStorage);
     };
@@ -276,6 +296,10 @@ function MainOuter({ children }) {
         e.stopPropagation();
         setIsSecondVisibleNetwork(!isSecondVisibleNetwork);
     };
+    const handleSecondIconClickNetwork = (e) => {
+        e.stopPropagation();
+        setIsSecondVisibleNetwork(!isSecondVisibleNetwork);
+    };
     const [selectedDetail, setSelectedDetail] = useState(null);
     const handleDivClick = (target) => {
         setSectionContent('vm');
@@ -351,34 +375,35 @@ function MainOuter({ children }) {
                 <div id="aside_popup" style={{ display: asidePopupVisible ? 'block' : 'none' }}>
                     <button id='aside_popup_btn' onClick={handleAsidePopupBtnClick}><i className="fa fa-chevron-left"></i></button>
 
+                    {/*가상머신*/} 
                     {selected === 'computing' && (
     <div id="virtual_machine_chart">
-        <div 
-            className="aside_popup_content" 
-            id="aside_popup_first" 
-            style={{ backgroundColor: selectedDiv === 'data_center' ? 'rgb(218, 236, 245)' : '' }} 
-            onClick={handleFirstDivClick}
-        >
-            <i 
-                className={`fa fa-chevron-${isSecondVisible ? 'down' : 'right'}`} 
-                onClick={handleFirstClick}
-            ></i>
-            <i className="fa fa-building-o"></i>
-            <span>data_center</span>
-        </div>
+       <div 
+    className="aside_popup_content" 
+    id="aside_popup_first" 
+    style={{ backgroundColor: selectedDiv === 'data_center' ? 'rgb(218, 236, 245)' : '' }} 
+    onClick={handleFirstDivClick}
+>
+    <i 
+        className={`fa fa-chevron-${isSecondVisible ? 'down' : 'right'}`} 
+        onClick={handleFirstClick}
+    ></i>
+    <i className="fa fa-building-o"></i>
+    <span>data_center</span>
+</div>
         {isSecondVisible && (
-            <div 
-                className="aside_popup_second_content" 
-                id="aside_popup_second" 
-                style={{ backgroundColor: selectedDiv === 'cluster' ? 'rgb(218, 236, 245)' : '' }} 
-                onClick={handleSecondDivClick}
-            >
-                <i className={`fa fa-chevron-${isThirdVisible ? 'down' : 'right'}`} 
-                    onClick={handleSecondClick}
-                ></i>
-                <i className="fa fa-building-o"></i>
-                <span>클러스터</span>
-            </div>
+           <div 
+           className="aside_popup_second_content" 
+           id="aside_popup_second" 
+           style={{ backgroundColor: selectedDiv === 'cluster' ? 'rgb(218, 236, 245)' : '' }} 
+           onClick={handleSecondDivClick}  // 여기서 상태가 변경됨
+       >
+           <i className={`fa fa-chevron-${isThirdVisible ? 'down' : 'right'}`} 
+               onClick={handleSecondClick}
+           ></i>
+           <i className="fa fa-building-o"></i>
+           <span>클러스터</span>
+       </div>
         )}
         {isThirdVisible && (
             <div 
@@ -427,13 +452,13 @@ function MainOuter({ children }) {
     </div>
 )}
 
-                    
+                    {/*스토리지 */} 
                     {selected === 'storage' && (
     <div id="storage_chart">
         <div
             className="aside_popup_content"
             id="aside_popup_first2"
-            onClick={handleFirstClickStorage}
+            onClick={handleFirstClickStorage} // Storage.js로 이동
             style={{
                 backgroundColor: selectedDiv === 'data_center' ? 'rgb(218, 236, 245)' : '', // 첫 번째 div의 배경색 설정
             }}
@@ -446,7 +471,7 @@ function MainOuter({ children }) {
             <div
                 className="aside_popup_second_content"
                 id="aside_popup_second2"
-                onClick={handleSecondDivClickStorage}
+                onClick={handleSecondDivClickStorage} // StorageDomain.js로 이동
                 style={{
                     backgroundColor: selectedDiv === 'storage_domain' ? 'rgb(218, 236, 245)' : '', // 두 번째 div의 배경색 설정
                 }}
@@ -457,9 +482,11 @@ function MainOuter({ children }) {
             </div>
         )}
         {isLastVisibleStorage && (
+          
             <div id="aside_popup_last_storage">
+                
                 <div
-                    onClick={() => handleDetailClickStorage('192.168.0.80')}
+                    onClick={() => handleDetailClickStorage('192.168.0.80')} // 특정 디스크의 StorageDisk.js로 이동
                     onContextMenu={(e) => handleContextMenu(e, '192.168.0.80')}
                     onMouseEnter={() => handleMouseEnter('192.168.0.80')}
                     onMouseLeave={handleMouseLeave}
@@ -468,10 +495,10 @@ function MainOuter({ children }) {
                     }}
                 >
                     <i className="fa fa-microchip"></i>
-                    <span>디스크 이름</span>
+                    <span>he_metadata</span>
                 </div>
                 <div
-                    onClick={() => handleDetailClickStorage('HostedEngine')}
+                    onClick={() => handleDetailClickStorage('HostedEngine')} // 특정 디스크의 StorageDisk.js로 이동
                     onContextMenu={(e) => handleContextMenu(e, 'HostedEngine')}
                     onMouseEnter={() => handleMouseEnter('HostedEngine')}
                     onMouseLeave={handleMouseLeave}
@@ -480,10 +507,10 @@ function MainOuter({ children }) {
                     }}
                 >
                     <i className="fa fa-microchip"></i>
-                    <span>디스크 이름</span>
+                    <span>he_metadata</span>
                 </div>
                 <div
-                    onClick={() => handleDetailClickStorage('on20-ap01')}
+                    onClick={() => handleDetailClickStorage('on20-ap01')} // 특정 디스크의 StorageDisk.js로 이동
                     onContextMenu={(e) => handleContextMenu(e, 'on20-ap01')}
                     onMouseEnter={() => handleMouseEnter('on20-ap01')}
                     onMouseLeave={handleMouseLeave}
@@ -492,24 +519,32 @@ function MainOuter({ children }) {
                     }}
                 >
                     <i className="fa fa-microchip"></i>
-                    <span>디스크 이름</span>
+                    <span>he_metadata</span>
                 </div>
             </div>
+          
         )}
     </div>
 )}
-
+{/*네트워크 */} 
 {selected === 'network' && (
     <div id="network_chart">
         <div
             className="aside_popup_content"
             id="aside_popup_first3"
-            onClick={handleFirstClickNetwork}
+            onClick={() => {
+                setSelectedDiv('default');
+                setSectionContent('network');
+                navigate('/network'); // Network.js로 이동
+            }}
             style={{
                 backgroundColor: selectedDiv === 'default' ? 'rgb(218, 236, 245)' : '', // 첫 번째 div의 배경색 설정
             }}
         >
-            <i className={`fa fa-chevron-${isSecondVisibleNetwork ? 'down' : 'right'}`}></i>
+            <i 
+                className={`fa fa-chevron-${isSecondVisibleNetwork ? 'down' : 'right'}`}
+                onClick={handleFirstIconClickNetwork} // 아이콘 클릭 시 섹션을 접고 펼치기
+            ></i>
             <i className="fa fa-building-o"></i>
             <span>Default</span>
         </div>
@@ -517,13 +552,17 @@ function MainOuter({ children }) {
             <div
                 className="aside_popup_second_content"
                 id="aside_popup_network_content"
-                onClick={handleSecondDivClickNetwork}
+                onClick={() => {
+                    setSelectedDiv('ovirtmgmt');
+                    setSectionContent('networkDetail');
+                    navigate('/network/ovirtmgmt'); // NetworkDetail.js로 이동
+                }}
                 style={{
-                    backgroundColor: selectedDiv === 'ovirtmgmt' ? 'rgb(218, 236, 245)' : '', // 두 번째 div의 배경색 설정
+                    backgroundColor: selectedDiv === 'ovirtmgmt' ? 'rgb(218, 236, 245)' : '',
+                    paddingLeft: '0.85rem' // 두 번째 div의 배경색 설정
                 }}
             >
-                <i className={`fa fa-chevron-${isSecondVisibleNetwork ? 'down' : 'right'}`} style={{ color: 'white' }}></i>
-                <i className="fa fa-building-o"></i>
+                <i className="fa fa-building-o" style={{ fontSize: '0.34rem', marginRight: '0.05rem' }}></i>
                 <span>ovirtmgmt</span>
             </div>
         )}
@@ -561,7 +600,9 @@ function MainOuter({ children }) {
                     {sectionContent === 'computing' && <Computing />}
                     {sectionContent === 'network' && <Network />} 
                     {sectionContent === 'networkDetail' && <NetworkDetail />}  
-
+                    {sectionContent === 'storage' && <Storage />} 
+                    {sectionContent === 'storageDomain' && <StorageDomain />} 
+                    {sectionContent === 'storageDisk' && <StorageDisk />} 
                     </>
             )}
             <div id="context_menu"

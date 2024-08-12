@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.css';
+// import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import Header from './components/Header';
@@ -13,6 +13,8 @@ import Cluster from './components/Computing/Cluster';
 import ClusterName from './components/Computing/ClusterName';
 import Host from './components/Computing/Host';
 import HostDetail from './components/Computing/HostDetail';
+import NetworkDetail from './detail/NetworkDetail';
+import StorageDomain from './detail/StorageDomain';
 
 
 function App() {
@@ -27,10 +29,12 @@ function App() {
                     <Route path="/network" element={<Network />} />
                     <Route path="/setting" element={<Setting />} />
                     <Route path="/computing/vm" element={<Vm />} />
-                    <Route path="/" element={<Cluster />} />
+                    <Route path="/cluster" element={<Cluster />} />
                     <Route path="/cluster-name" element={<ClusterName />} />
                     <Route path="/host" element={<Host />} />
                     <Route path="/host-detail/:name" element={<HostDetail />} />
+                    <Route path="/network-detail" element={<NetworkDetail />} />
+                    <Route path="/storage-domain" element={<StorageDomain />} />
                 </Routes>
             </MainOuter>
         </Router>
