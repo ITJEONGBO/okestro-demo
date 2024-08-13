@@ -56,3 +56,92 @@
     cursor: pointer;
     display: flex;
 }
+/*새로만들기 팝업*/
+.host_new_outer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.host_new_popup {
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 81%;
+    width: 47%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+.host_edit_footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: white; /* 필요에 따라 배경색을 설정 */
+    border-top: 1px solid #cecece;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 1.3%;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* 옵션: 그림자 추가 */
+}
+
+.host_edit_footer button {
+    padding: 1% 2%;
+    margin-left: 10px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    font-size: 0.3rem;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+
+.host_edit_footer button:first-child,.host_edit_footer button:nth-child(3){
+    background-color: rgb(218, 218, 218);
+    border: 1px solid rgb(122, 122, 122);
+}
+.host_edit_footer button:nth-child(2){
+    background-color:#6e9cd8;
+    color: white;
+    border: 1px solid #295b9c;
+
+}
+
+
+.edit_first_content{
+    border-bottom: 1px solid #cecece;
+}
+.edit_first_content>div:first-child{
+    padding: 3% 2% 5% 2%;
+}
+.edit_first_content>div{
+    display: flex;
+    justify-content: space-between;
+    padding: 1.2% 2%;
+}
+.edit_first_content>div:first-child{
+    position: relative;
+}
+.edit_first_content>div>div{
+    position: absolute;
+    top: 62%;
+    right: 32.5%;
+    font-style: italic;
+}
+
+
+.edit_first_content input{
+    width: 47%;
+    height: 3.5vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+}
