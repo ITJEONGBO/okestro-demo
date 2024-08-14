@@ -372,7 +372,7 @@ const Host = () => {
                     커널 부트 매개 변수 설정을 변경하면..
                   </div>
                 </div>
-                <div>
+                <div style={{marginBottom:'0'}}>
                   <i class="fa fa-exclamation-triangle"></i>
                   <div>
                     커널 부트 매개 변수 설정을 변경하면..
@@ -380,8 +380,8 @@ const Host = () => {
                 </div>
               </div>
 
-              <div>
-                <div>
+              <div className='kernel_second_content'>
+                <div >
                   <input type="checkbox" id="host_device_passthrough" name="host_device_passthrough" />
                   <label htmlFor="host_device_passthrough">호스트 장치 통과 & SR-IOV</label>
                   <i className="fa fa-info-circle" style={{ color: '#1ba4e4' }}></i>
@@ -411,22 +411,24 @@ const Host = () => {
                   <label htmlFor="fips_mode">FIPS 모드</label>
                   <i className="fa fa-info-circle" style={{ color: '#1ba4e4' }}></i>
                 </div>
-                <div>
-                  <input type="checkbox" id="smt_usage" name="smt_usage" />
-                  <label htmlFor="smt_usage">SMT 사용안함</label>
-                  <i className="fa fa-info-circle" style={{ color: '#1ba4e4' }}></i>
-                </div>
+                
               </div>
 
               
-                <div>
-                  <input type="checkbox" id="smt_usage" name="smt_usage" />
-                  <label htmlFor="smt_usage">SMT 사용안함</label>
-                  <i className="fa fa-info-circle" style={{ color: '#1ba4e4' }}></i>
-                  <input type="text" id="smt_usage" name="smt_usage" />
+                <div className='host_text_checkbox_box' style={{padding:'0 0.5rem'}}>
+                  <div>
+                    <input type="checkbox" id="smt_usage" name="smt_usage" />
+                    <label htmlFor="smt_usage">SMT 사용안함</label>
+                    <i className="fa fa-info-circle" style={{ color: '#1ba4e4' }}></i>
+                  </div>
+                  <div>
+                    <input type="text" id="smt_usage" name="smt_usage" />
+                  </div>
                 </div>
 
-                <button>재설정</button>
+                <div  className='kernel_reset_btn'>
+                  <button>재설정</button>
+                </div>
               
             </div>
 
@@ -435,7 +437,7 @@ const Host = () => {
               id="호스트엔진_섹션"
               style={{ display: 활성화된섹션 === '호스트엔진_섹션' ? 'block' : 'none' }}
             >
-              <div id="host_policy">
+              <div className="host_policy">
                   <label htmlFor="host_action">호스트 연관 전처리 작업 선택</label>
                   <select id="host_action">
                       <option value="none">없음</option>
@@ -450,8 +452,34 @@ const Host = () => {
               id="선호도_섹션"
               style={{ display: 활성화된섹션 === '선호도_섹션' ? 'block' : 'none' }}
             >
-              <div>
-                
+              <div className="preference_outer">
+                <div className="preference_content">
+                  <label htmlFor="preference_group">선호도 그룹을 선택하십시오</label>
+                    <div>
+                      <select id="preference_group">
+                        <option value="none"></option>
+                      </select>
+                      <button>추가</button>
+                    </div>
+                </div>
+                <div className="preference_noncontent">
+                  <div>선택된 선호도 그룹</div>
+                  <div>선택된 선호도 그룹이 없습니다</div>
+                </div>
+                <div className="preference_content">
+                  <label htmlFor="preference_label">선호도 레이블 선택</label>
+                  <div>
+                    <select id="preference_label">
+                      <option value="none"></option>
+                    </select>
+                    <button>추가</button>
+                  </div>
+                </div>
+                <div className="preference_noncontent">
+                  <div>선택한 선호도 레이블</div>
+                  <div>선호도 레이블이 선택되어있지 않습니다</div>
+                </div>
+
               </div>
             </div>
 
