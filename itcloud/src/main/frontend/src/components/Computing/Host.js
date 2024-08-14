@@ -225,8 +225,8 @@ const Host = () => {
         </div>
     </div>
 
-    <div>
-      <div>
+    <div className='host_checkboxs'>
+      <div className='host_checkbox'>
           <input type="checkbox" id="memory_balloon" name="memory_balloon" />
           <label htmlFor="headless_mode">헤드리스 모드</label>
       </div>
@@ -237,22 +237,25 @@ const Host = () => {
       </div>
     </div>
 
-    <div>
-      <div>
-          <label htmlFor="name2">이름</label>
-          <input type="text" id="name2" />
+    <div className='host_checkboxs'>
+      <div className='host_textbox'>
+          <label htmlFor="user_name">사용자 이름</label>
+          <input type="text" id="user_name" />
       </div>
 
-      <div>
-          <input type="radio" id="radio1" name="name_option" />
-          <label htmlFor="radio1">옵션 1</label>
+      <div className='host_text_raido_box'>
+          <div>
+            <input type="radio" id="password" name="name_option" />
+            <label htmlFor="password">암호</label>
+          </div>
           <input type="text" id="radio1_name" />
       </div>
 
-      <div>
-          <input type="radio" id="radio2" name="name_option" />
-          <label htmlFor="radio2">옵션 2</label>
+      <div className='host_radiobox'>
+          <input type="radio" id="ssh_key" name="name_option" />
+          <label htmlFor="ssh_key">SSH 공개키</label>
       </div>
+
     </div>
 
 </div>{/*일반섹션끝 */}
@@ -263,33 +266,35 @@ const Host = () => {
               style={{ display: 활성화된섹션 === '전원관리_섹션' ? 'block' : 'none' }}
             >
               
-            <div>
-            <div>
-                <input type="checkbox" id="enable_forwarding" name="enable_forwarding" />
-                <label htmlFor="enable_forwarding">전송 관리 활성</label>
-            </div>
-            <div>
-                <input type="checkbox" id="kdump_usage" name="kdump_usage" checked />
-                <label htmlFor="kdump_usage">Kdump 통합</label>
-            </div>
-            <div>
-                <input type="checkbox" id="disable_forwarding_policy" name="disable_forwarding_policy" />
-                <label htmlFor="disable_forwarding_policy">전송 관리 정책 제어를 비활성화</label>
-            </div>
+            <div className='host_checkboxs'>
+              <div className='host_checkbox'>
+                  <input type="checkbox" id="enable_forwarding" name="enable_forwarding" />
+                  <label htmlFor="enable_forwarding">전송 관리 활성</label>
+              </div>
+              <div className='host_checkbox'>
+                  <input type="checkbox" id="kdump_usage" name="kdump_usage" checked />
+                  <label htmlFor="kdump_usage">Kdump 통합</label>
+              </div>
+              <div className='host_checkbox'>
+                  <input type="checkbox" id="disable_forwarding_policy" name="disable_forwarding_policy" />
+                  <label htmlFor="disable_forwarding_policy">전송 관리 정책 제어를 비활성화</label>
+              </div>
 
 
-              <span>순서대로 정렬된 에이전트</span>
+              <span className='sorted_agents'>순서대로 정렬된 에이전트</span>
             </div>
-
-            <div>
+            
+            
+            <div className='addFence_agent'>
               <span>펜스 에이전트 추가</span>
               <button>+</button>
             </div>
 
-            <div>
+            <div className='advanced_objec_add'>
               <button>+</button>
               <span>고급 매개 변수</span>
             </div>
+            
 
             </div>
 
@@ -298,21 +303,21 @@ const Host = () => {
               id="SPM"
               style={{ display: 활성화된섹션 === 'SPM' ? 'block' : 'none' }}
             >
-              <div>
+              <div className='host_spm'>
                 <span>SPM 우선순위</span>
-                <div>
+                <div className='host_radiobox'>
                   <input type="radio" id="none" name="priority_option" />
                   <label htmlFor="none">없음</label>
               </div>
-              <div>
+              <div className='host_radiobox'>
                   <input type="radio" id="low" name="priority_option" />
                   <label htmlFor="low">낮음</label>
               </div>
-              <div>
+              <div className='host_radiobox'>
                   <input type="radio" id="standard" name="priority_option" checked />
                   <label htmlFor="standard">표준</label>
               </div>
-              <div>
+              <div className='host_radiobox'>
                   <input type="radio" id="high" name="priority_option" />
                   <label htmlFor="high">높음</label>
               </div>
@@ -326,24 +331,27 @@ const Host = () => {
               id="콘솔및GPU_섹션"
               style={{ display: 활성화된섹션 === '콘솔및GPU_섹션' ? 'block' : 'none' }}
             >
-              <div>
+              <div className='host_text_checkbox_box'>
                 <div>
                   <input type="checkbox" id="headless_mode_info" name="headless_mode_info" />
                   <label htmlFor="headless_mode_info">헤드리스 모드 정보</label>
                   <i className="fa fa-info-circle" style={{ color: '#1ba4e4' }}></i>
                 </div>
+                <div>
+                  <input type="text"></input>
+                </div>
               </div>
 
-              <div>
+              <div className='host_cpu_radio'>
                   <div>
                     <span>vGPU 배지</span>
                     <i className="fa fa-info-circle" style={{ color: '#1ba4e4' }}></i>
                   </div>
-                  <div>
+                  <div className='host_radiobox'>
                       <input type="radio" id="integrated" name="distribution_option" checked />
                       <label htmlFor="integrated">통합</label>
                   </div>
-                  <div>
+                  <div className='host_radiobox'>
                       <input type="radio" id="distributed" name="distribution_option" />
                       <label htmlFor="distributed">분산</label>
                   </div>
@@ -356,16 +364,16 @@ const Host = () => {
               id="커널_섹션"
               style={{ display: 활성화된섹션 === '커널_섹션' ? 'block' : 'none' }}
             >
-              <div>
-                <div>커널 부트 매개변수</div>
+              <div className='kernel_first_content'>
+                <span>커널 부트 매개변수</span>
                 <div>
-                  <i className="fa fa-info-circle"></i>
+                  <i class="fa fa-exclamation-triangle"></i>
                   <div>
                     커널 부트 매개 변수 설정을 변경하면..
                   </div>
                 </div>
                 <div>
-                  <i className="fa fa-info-circle"></i>
+                  <i class="fa fa-exclamation-triangle"></i>
                   <div>
                     커널 부트 매개 변수 설정을 변경하면..
                   </div>
