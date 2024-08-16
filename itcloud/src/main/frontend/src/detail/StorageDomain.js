@@ -1,9 +1,8 @@
 import React, { useState,useEffect } from 'react';
-import './css/StorageDomain.css';
 import NavButton from '../components/navigation/NavButton';
 import HeaderButton from '../components/button/HeaderButton';
 import { Table } from '../components/table/Table';
-
+import './css/StorageDomain.css';
 function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   // 테이블컴포넌트
   // 데이터센터

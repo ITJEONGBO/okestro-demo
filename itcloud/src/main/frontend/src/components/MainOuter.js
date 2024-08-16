@@ -17,7 +17,7 @@ import StorageDisk from '../detail/StorageDisk'; // StorageDisk.js 파일에서 
 function MainOuter({ children }) {
     const [selected, setSelected] = useState('dashboard');
     const [selectedDiv, setSelectedDiv] = useState('data_center');
-    const [asidePopupVisible, setAsidePopupVisible] = useState(false);
+    const [asidePopupVisible, setAsidePopupVisible] = useState(true);
     const [asidePopupBackgroundColor, setAsidePopupBackgroundColor] = useState({
         dashboard: '',
         computing: '',
@@ -105,7 +105,7 @@ function MainOuter({ children }) {
     const handleClick = (id) => {
         setSelected(id);
         setSectionContent('default'); 
-        toggleAsidePopup(id)
+        toggleAsidePopup(id);
         setSelectedDiv(null);  // 중복 선택 방지
         setSelectedDetail(null);  // 내부 아이템 배경색 제거
     };
@@ -121,20 +121,18 @@ function MainOuter({ children }) {
         };
 
         if (id === 'computing') {
-            setAsidePopupVisible(true);
             newBackgroundColor.computing = 'rgb(218, 236, 245)';
             navigate(`/computing/general`);
+            
         } else if (id === 'storage') {
-            setAsidePopupVisible(true);
             newBackgroundColor.storage = 'rgb(218, 236, 245)';
+            
         } else if (id === 'network') {
-            setAsidePopupVisible(true);
             newBackgroundColor.network = 'rgb(218, 236, 245)';
         } else if (id === 'setting') {
-            setAsidePopupVisible(true);
             newBackgroundColor.setting = 'rgb(218, 236, 245)';
-        } else {
-            setAsidePopupVisible(false);
+        }else {
+            setAsidePopupVisible(false);  // 이 부분을 제거하여 다른 버튼을 클릭해도 aside_popup이 닫히지 않게 함
         }
     
         setAsidePopupBackgroundColor(newBackgroundColor);
@@ -159,12 +157,10 @@ function MainOuter({ children }) {
     };
 
     const handleSecondDivClick = (e) => {
-        e.stopPropagation(); // 이벤트 버블링 방지
+        e.stopPropagation();
         setSelectedDiv('cluster');
-        console.log('selectedDiv:', 'cluster'); // 상태 업데이트 확인용 로그
         setSectionContent('cluster');
-        navigate(`/computing/application`);
-        
+        navigate('/cluster');  // 클러스터 경로로 이동
     };
     
     const handleThirdClick = (e) => {
@@ -391,20 +387,20 @@ function MainOuter({ children }) {
     <i className="fa fa-building-o"></i>
     <span>data_center</span>
 </div>
-        {isSecondVisible && (
-           <div 
-           className="aside_popup_second_content" 
-           id="aside_popup_second" 
-           style={{ backgroundColor: selectedDiv === 'cluster' ? 'rgb(218, 236, 245)' : '' }} 
-           onClick={handleSecondDivClick}  // 여기서 상태가 변경됨
-       >
-           <i className={`fa fa-chevron-${isThirdVisible ? 'down' : 'right'}`} 
-               onClick={handleSecondClick}
-           ></i>
-           <i className="fa fa-building-o"></i>
-           <span>클러스터</span>
-       </div>
-        )}
+{isSecondVisible && (
+   <div 
+       className="aside_popup_second_content" 
+       id="aside_popup_second" 
+       style={{ backgroundColor: selectedDiv === 'cluster' ? 'rgb(218, 236, 245)' : '' }} 
+       onClick={handleSecondDivClick}  // 여기서 상태가 변경됨
+   >
+       <i className={`fa fa-chevron-${isThirdVisible ? 'down' : 'right'}`} 
+           onClick={handleSecondClick}
+       ></i>
+       <i className="fa fa-building-o"></i>
+       <span>클러스터</span>
+   </div>
+)}
         {isThirdVisible && (
             <div 
                 className="aside_popup_third_content" 

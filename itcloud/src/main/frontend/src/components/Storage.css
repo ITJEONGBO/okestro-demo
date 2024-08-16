@@ -184,3 +184,266 @@
     color: rgb(10, 55, 107);
     font-weight: 600;
 }
+    /*도메인(새로운 도메인)*/
+    .storage_domain_new_outer{
+        display: none;
+        position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    .storage_domain_new_popup{
+        border: 1px solid #dfdddd;
+        position: absolute;
+        box-sizing: border-box;
+        border-radius: 4px;
+        background: #fff;
+        top: 50%;
+        height: 91%;
+        width: 58%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+    }
+    .storage_domain_new_first{
+        display: flex;
+        padding: 0.4rem;
+        font-size: 0.32rem;
+        justify-content: space-between;
+        border-bottom: 1px solid #dfdddd;
+    }
+    .storage_domain_new_first>div{
+        width: 48%;
+    
+    }
+    .domain_new_select{
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.3rem;
+    }
+    .domain_new_select select, 
+    .domain_new_select input,
+    .storage_domain_new_second input
+    {
+        width: 56%;
+        height: 3.3vh;
+        padding: 0 3px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 0.29rem;
+        outline: none;
+        border: 1px solid  rgb(206, 206, 206);
+    }
+    .storage_domain_new_second{
+        padding: 0.4rem;
+        font-size: 0.32rem;
+        overflow-y: auto;
+        height: 54vh;
+        overflow-x: hidden;
+    }
+    /* 번짐 효과를 위한 CSS */
+    input[type="text"]:focus {
+        box-shadow: 0 0 8px rgba(22, 90, 190, 0.8); /* 파란색 번짐 효과 */
+        outline: none; /* 기본 아웃라인 제거 */
+      }
+    input[type="checkbox"]{
+        cursor: pointer;
+    }
+    .storage_domain_new_second i{
+        margin-right: 0.08rem;
+    }
+    
+    .storage_domain_new_second>div:first-child{
+        display: flex;
+        justify-content: space-between;
+    }
+    .storage_domain_new_second>div{
+        margin-bottom: 0.2rem;
+    }
+    #domain_hidden_box_btn,#domain_hidden_box_btn2{
+        cursor: pointer;   
+    }
+        /*히든박스*/
+    #domain_hidden_box{
+        font-size: 0.3rem;
+        margin-top: 0.2rem;
+    }
+    #domain_hidden_box>span{
+        color: red;
+    }
+    .hidden_checkbox{
+        display: flex;
+        
+    }
+    .hidden_checkbox input{
+        text-align: left;
+        width: 1.5%;
+        margin-right: 0.1rem;
+    }
+    .hidden_checkbox label{
+    display: flex; /* Flexbox 설정 추가 */
+        justify-content: center; /* 수평 가운데 정렬 */
+        align-items: center; /* 수직 가운데 정렬 */
+    }
+        /*도메인(도메인 가져오기)*/
+    .storage_domain_get_outer{
+        display: none;
+        position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    .storage_domain_get_popup{
+        border: 1px solid #dfdddd;
+        position: absolute;
+        box-sizing: border-box;
+        border-radius: 4px;
+        background: #fff;
+        top: 50%;
+        height: 91%;
+        width: 58%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+    }
+        /*도메인(도메인 관리)*/
+    .storage_domain_administer_outer{
+        display: none;
+        position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    .storage_domain_administer_popup{
+        border: 1px solid #dfdddd;
+        position: absolute;
+        box-sizing: border-box;
+        border-radius: 4px;
+        background: #fff;
+        top: 50%;
+        height: 91%;
+        width: 58%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+    }
+    /*볼륨 새로만들기*/
+     /*볼륨(새로 만들기*/
+
+      
+     .Overlay {
+        /* 오버레이 스타일 */
+        background-color: rgba(116, 115, 115, 0.555); /* 회색 배경 */
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+.storage_volume_new_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 79%;
+    width: 51%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+.volume_first_content{
+    padding: 0.4rem;
+    font-size: 0.33rem;
+    border-bottom: 1px solid #dfdddd ;
+}
+.volume_second_content,.volume_third_content{
+    padding: 0.4rem;
+    font-size: 0.33rem;
+}
+.volume_second_content>div{
+    margin-bottom: 0.3rem;
+}
+.volume_second_content button{
+    padding: 0.13rem;
+    cursor: pointer;
+}
+.volume_checkboxs{
+    display: flex;
+
+    width: 56%;
+}
+.volume_checkbox{
+    display: flex;
+}
+.volume_checkbox>label{
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    margin-left: 0.2rem;
+}
+.volume_third_content>h2{
+    font-size: 0.4rem;
+    margin-bottom: 0.2rem;
+}
+.volume_third_content>div{
+    margin-bottom: 0.15rem;
+}
+.disabled_button{
+    color: #d82626;
+    background-color: #eeeeee;
+    cursor: no-drop;
+    
+}
+    /*볼륨(스냅샷)*/
+.storage_volume_snap_outer{
+    display: none;
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.storage_volume_snap_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 65%;
+    width: 51%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+.volume_snap_first_content{
+    font-size: 0.33rem;
+    padding: 0.4rem;
+}
+.volume_snap_first_content>h2{
+    font-size: 0.4rem;
+}
+.volume_snap_table{
+    border: 1px solid rgb(185, 185, 185);
+    height: 25vh;
+}
+.volume_snap_table table{
+    border-collapse: collapse;
+    width: 100%;
+}
+.volume_snap_table thead>tr{
+    background-color:#dadada;
+}
+.volume_snap_table th,.volume_snap_table td{
+    padding: 0.05rem;
+    text-align: left;
+}
