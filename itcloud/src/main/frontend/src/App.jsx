@@ -32,7 +32,7 @@ function App() {
                     <Route path="/cluster-name" element={<ClusterName />} />
                     <Route path="/host" element={<Host />} />
                     <Route path="/host-detail/:name" element={<HostDetail />} />
-                    <Route path="/network-detail" element={<NetworkDetail />} />
+                    <Route path="/network/:name" element={<NetworkDetail />} /> 
                     <Route path="/storage-domain" element={<StorageDomain />} />
                     <Route path="/storage-disk" element={<StorageDisk />} />
                 </Routes>

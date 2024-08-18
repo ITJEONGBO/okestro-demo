@@ -16,10 +16,10 @@ const Network = () => {
     const navigate = useNavigate(); // useNavigate 훅 초기화
 
     // 테이블 행 클릭 시 NetworkDetail로 이동
-    const handleNetworkNameClick = () => {
-        navigate('/network-detail'); // navigate를 사용해 /network-detail로 이동
+    const handleNetworkNameClick = (row) => {
+        navigate(`/network/${row.name}`); // name 값을 URL로 전달하여 상세 페이지로 이동
     };
-
+    
     // 폰트 사이즈 조절
     useEffect(() => {
         function adjustFontSize() {
@@ -75,7 +75,7 @@ const Network = () => {
         { header: '공급자', accessor: 'provider', clickable: false },
         { header: '포트분리', accessor: 'portSeparation', clickable: false },
     ];
-    
+
     const sectionHeaderButtons = [
         { id: 'network_first_edit_btn', label: '편집', onClick: () => {} },
         { label: '삭제', onClick: () => {} },

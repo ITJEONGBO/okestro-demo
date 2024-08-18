@@ -12,12 +12,9 @@ const Table = ({ columns, data, onRowClick }) => {
       </thead>
       <tbody>
         {data.map((row, rowIndex) => (
-          <tr key={rowIndex}>
+          <tr key={rowIndex} onClick={() => onRowClick(row)}> {/* 전체 행에 클릭 이벤트 할당 */}
             {columns.map((column, colIndex) => (
-              <td
-                key={colIndex}
-                onClick={column.clickable ? () => onRowClick({ accessor: column.accessor, row }) : null}
-              >
+              <td key={colIndex}>
                 {row[column.accessor]}
               </td>
             ))}
@@ -28,12 +25,4 @@ const Table = ({ columns, data, onRowClick }) => {
   );
 };
 
-const Table1 = ({ columns, data, onRowClick }) => {
-  return <div></div>;
-};
-
-const TableRs = ({ data }) => {
-  return <div></div>;
-};
-
-export { Table, Table1, TableRs };
+export { Table };

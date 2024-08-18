@@ -4,10 +4,11 @@ import NavButton from '../components/navigation/NavButton';
 import HeaderButton from '../components/button/HeaderButton';
 import { Table } from '../components/table/Table';
 import './css/NetworkDetail.css';
+import { useParams } from 'react-router-dom';
 
 function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   // 테이블컴포넌트
-
+  const { name } = useParams(); // useParams로 URL에서 name을 가져옴
   //vnic
   const vnicColumns = [
     { header: '이름', accessor: 'name', clickable: false },
@@ -23,7 +24,7 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
 
   const vnicData = [
     {
-      name: 'ovirtmgmt',
+      name: name,
       network: 'ovirtmgmt',
       dataCenter: 'Default',
       compatVersion: '4.7',
@@ -233,7 +234,7 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     <div className="content_detail_section">
       <HeaderButton
       title="네트워크"
-      subtitle="ovirtmgmt"
+      subtitle={name} // 여기서도 네트워크 이름을 표시
       buttons={buttons}
       popupItems={popupItems}
     />
@@ -254,7 +255,7 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
               <tbody>
                 <tr>
                   <th>ID:</th>
-                  <td>on20-ap01</td>
+                  <td>{name}</td>
                 </tr>
                 <tr>
                   <th>설명:</th>
