@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
-import StorageDomain from '../detail/StorageDomain';
-import StorageDisk from '../detail/StorageDisk';
+import { useNavigate } from 'react-router-dom';
 import HeaderButton from './button/HeaderButton';
-import './Storage.css';
 import NavButton from './navigation/NavButton';
 import { Table } from './table/Table';
+import './Storage.css';
 
 Modal.setAppElement('#root'); // React 16 이상에서는 필수
 
 const Storage = () => {
+  const navigate = useNavigate();
+
   // 테이블 컴포넌트
-  //디스크
   const columns = [
     { header: '별칭', accessor: 'alias', clickable: true },
     { header: 'ID', accessor: 'id', clickable: false },
@@ -63,13 +63,12 @@ const Storage = () => {
       description: '',
     },
   ];
+
   const handleRowClick = (row) => {
-    if (row.alias === 'he_metadata') {
-      handleDomainNameClick();
+    if (row.row.alias === 'he_metadata') {
+      navigate('/storage-disk');
     }
   };
-  //
-  //도메인
 
   // 이벤트
   const eventcolumns = [
@@ -80,6 +79,7 @@ const Storage = () => {
     { header: '소스', accessor: 'source', clickable: false },
     { header: '사용자 지정 이벤트 ID', accessor: 'customEventId', clickable: false }
   ];
+
   const eventdata = [
     { icon: <i className="fa fa-check"></i>, time: '2024. 1. 17. PM 3:14:39', message: "Snapshot 'on2o-ap01-Snapshot-2024_01_17' creation for 'VM on2o-ap01' has been completed.", correlationId: '4b4b417a-c...', source: 'oVirt', customEventId: '' },
     { icon: <i className="fa fa-check"></i>, time: '2024. 1. 17. PM 3:14:21', message: "Snapshot 'on2o-ap01-Snapshot-2024_01_17' creation for 'VM on2o-ap01' was initiated by admin@intern...", correlationId: '4b4b417a-c...', source: 'oVirt', customEventId: '' },
@@ -110,9 +110,7 @@ const Storage = () => {
 
   // State for active section
   const [activeSection, setActiveSection] = useState('disk');
-  const [showStorageSection, setShowStorageSection] = useState(true);
 
-  // Footer state
   const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
   const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
   const [activeTab, setActiveTab] = useState('img');
@@ -129,14 +127,11 @@ const Storage = () => {
     setActiveSection(section);
   };
 
-  // 세부페이지
   const handleDomainNameClick = () => {
     if (activeSection === 'disk') {
-      setShowStorageSection(false);
-      setActivePopup('StorageDisk');
+      navigate('/storage-disk');
     } else if (activeSection === 'domain') {
-      setShowStorageSection(false);
-      setActivePopup('StorageDetail');
+      navigate('/storage-domain');
     }
   };
 
@@ -189,6 +184,7 @@ const Storage = () => {
     'Export to Data Domai',
     'OVA로 내보내기',
   ];
+
   const navSections = [
     { id: 'disk', label: '디스크' },
     { id: 'domain', label: '도메인' },
@@ -199,312 +195,272 @@ const Storage = () => {
     { id: 'right', label: '권한' },
     { id: 'event', label: '이벤트' },
   ];
+
   return (
     <div id="storage_section">
-      {!showStorageSection ? (
-        activePopup === 'StorageDisk' ? (
-          <StorageDisk
-            togglePopupBox={togglePopupBox}
-            isPopupBoxVisible={isPopupBoxVisible}
-            handlePopupBoxItemClick={handlePopupBoxItemClick}
+      <div>
+        <HeaderButton
+          title="스토리지"
+          subtitle=""
+          buttons={sectionHeaderButtons}
+          popupItems={sectionHeaderPopupItems}
+        />
+        
+        <div className="content_outer">
+          <NavButton
+            sections={navSections}
+            activeSection={activeSection}
+            handleSectionClick={handleSectionClick}
           />
-        ) : (
-          <StorageDomain
-            togglePopupBox={togglePopupBox}
-            isPopupBoxVisible={isPopupBoxVisible}
-            handlePopupBoxItemClick={handlePopupBoxItemClick}
-          />
-        )
-      ) : (
-        <div>
-          <HeaderButton
-            title="스토리지"
-            subtitle=""
-            buttons={sectionHeaderButtons}
-            popupItems={sectionHeaderPopupItems}
-          />
-          
-          <div className="content_outer">
-            <NavButton
-              sections={navSections}
-              activeSection={activeSection}
-              handleSectionClick={handleSectionClick}
-            />
-            <div className="host_btn_outer">
+          <div className="host_btn_outer">
+            {activeSection === 'disk' && (
+              <>
+                <div className="content_header_right">
+                  <button id="storage_disk_new_btn" onClick={() => openPopup('newDisk')}>새로 만들기</button>
+                  <button>수정</button>
+                  <button>제거</button>
+                  <button>이동</button>
+                  <button>복사</button>
+                  <button id="storage_disk_upload" onClick={() => openPopup('uploadDisk')}>업로드</button>
+                  <button>다운로드</button>
+                  <button className="content_header_popup_btn">
+                    <i className="fa fa-ellipsis-v"></i>
+                    <div className="content_header_popup" style={{ display: 'none' }}>
+                      <div>활성</div>
+                      <div>비활성화</div>
+                      <div>이동</div>
+                      <div>LUN 새로고침</div>
+                    </div>
+                  </button>
+                </div>
 
-              {/*디스크 */}
-              {activeSection === 'disk' && (
-                <>
+                <div className="section_table_outer">
+                  <button>
+                    <i className="fa fa-refresh"></i>
+                  </button>
+                  <Table columns={columns} data={data} onRowClick={handleRowClick} />
+                </div>
+              </>
+            )}
+            {activeSection === 'domain' && (
+              <>
+                <div className="content_header_right">
+                  <button id="new_domain_btn" onClick={() => openPopup('newDomain')}>새로운 도메인</button>
+                  <button id="get_domain_btn" onClick={() => openPopup('getDomain')}>도메인 가져오기</button>
+                  <button id="administer_domain_btn" onClick={() => openPopup('manageDomain')}>도메인 관리</button>
+                  <button>삭제</button>
+                  <button>Connections</button>
+                  <button className="content_header_popup_btn">
+                    <i className="fa fa-ellipsis-v"></i>
+                    <div className="content_header_popup" style={{ display: 'none' }}>
+                      <div>활성</div>
+                      <div>비활성화</div>
+                      <div>이동</div>
+                      <div>LUN 새로고침</div>
+                    </div>
+                  </button>
+                </div>
 
-                  <div className="content_header_right">
-                    <button id="storage_disk_new_btn" onClick={() => openPopup('newDisk')}>새로 만들기</button>
-                    <button>수정</button>
-                    <button>제거</button>
-                    <button>이동</button>
-                    <button>복사</button>
-                    <button id="storage_disk_upload" onClick={() => openPopup('uploadDisk')}>업로드</button>
-                    <button>다운로드</button>
-                    <button className="content_header_popup_btn">
-                      <i className="fa fa-ellipsis-v"></i>
-                      <div className="content_header_popup" style={{ display: 'none' }}>
-                        <div>활성</div>
-                        <div>비활성화</div>
-                        <div>이동</div>
-                        <div>LUN 새로고침</div>
+                <div className="section_table_outer">
+                  <div className="search_box">
+                    <input type="text" />
+                    <button><i className="fa fa-search"></i></button>
+                  </div>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>상태</th>
+                        <th></th>
+                        <th onClick={handleDomainNameClick}>도메인 이름</th>
+                        <th>코멘트</th>
+                        <th>도메인 유형</th>
+                        <th>스토리지 유형</th>
+                        <th>포맷</th>
+                        <th>데이터 센터간 상태</th>
+                        <th>전체 공간(GB)</th>
+                        <th>여유 공간(GB)</th>
+                        <th>확보된 여유 공간(GB)</th>
+                        <th>설명</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i></td>
+                        <td><i className="fa fa-glass"></i></td>
+                        <td onClick={handleDomainNameClick}>ddddddd</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+            {activeSection === 'volume' && (
+              <>
+                <div className="content_header_right">
+                  <button id="storage_volume_new_btn" onClick={() => openPopup('newVolume')}>새로 만들기</button>
+                  <button>삭제</button>
+                  <button>시작</button>
+                  <button className="disabled_button">중지</button>
+                  <button>프로파일링</button>
+                  <button style={{ border: 'none' }}>
+                    <button id="storage_volume_snap_btn" style={{ margin: 0 }} onClick={() => openPopup('volumeSnap')}>스냅샷</button>
+                    <button id="storage_volume_option_boxbtn">
+                      <i className="fa fa-chevron-down"></i>
+                      <div className="storage_volume_option_box" style={{ display: 'none' }}>
+                        <div>새로 만들기</div>
+                        <div>스케줄 편집</div>
+                        <div>옵션 - 클러스터</div>
+                        <div>옵션 - 볼륨</div>
                       </div>
                     </button>
+                  </button>
+                  <button>지역 복제</button>
+                  <button className="content_header_popup_btn">
+                    <i className="fa fa-ellipsis-v"></i>
+                    <div className="content_header_popup" style={{ display: 'none' }}>
+                      <div>활성</div>
+                      <div>비활성화</div>
+                      <div>이동</div>
+                      <div>LUN 새로고침</div>
+                    </div>
+                  </button>
+                </div>
+
+                <div className="section_table_outer">
+                  <div className="search_box">
+                    <input type="text" />
+                    <button><i className="fa fa-search"></i></button>
                   </div>
-
-                  <div className="section_table_outer">
-                    <button>
-                      <i className="fa fa-refresh"></i>
-                    </button>
-                    <Table columns={columns} data={data} onRowClick={() => handleRowClick(data[0])} />
-                  </div>
-               
-                </>
-              )}
-              {activeSection === 'domain' && (
-                <>
-
-                    <div className="content_header_right">
-                      <button id="new_domain_btn" onClick={() => openPopup('newDomain')}>새로운 도메인</button>
-                      <button id="get_domain_btn" onClick={() => openPopup('getDomain')}>도메인 가져오기</button>
-                      <button id="administer_domain_btn" onClick={() => openPopup('manageDomain')}>도메인 관리</button>
-                      <button>삭제</button>
-                      <button>Connections</button>
-                      <button className="content_header_popup_btn">
-                        <i className="fa fa-ellipsis-v"></i>
-                        <div className="content_header_popup" style={{ display: 'none' }}>
-                          <div>활성</div>
-                          <div>비활성화</div>
-                          <div>이동</div>
-                          <div>LUN 새로고침</div>
-                        </div>
-                      </button>
-                    </div>
-
-                    <div className="section_table_outer">
-                      <div className="search_box">
-                        <input type="text" />
-                        <button><i className="fa fa-search"></i></button>
-                      </div>
-                      <table>
-                        <thead>
-                          <tr>
-                            <th>상태</th>
-                            <th></th>
-                            <th onClick={handleDomainNameClick}>도메인 이름</th>
-                            <th>코멘트</th>
-                            <th>도메인 유형</th>
-                            <th>스토리지 유형</th>
-                            <th>포맷</th>
-                            <th>데이터 센터간 상태</th>
-                            <th>전체 공간(GB)</th>
-                            <th>여유 공간(GB)</th>
-                            <th>확보된 여유 공간(GB)</th>
-                            <th>설명</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td><i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i></td>
-                            <td><i className="fa fa-glass"></i></td>
-                            <td onClick={handleDomainNameClick}>ddddddd</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                          </tr>
-                          <tr>
-                            <td><i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i></td>
-                            <td><i className="fa fa-glass"></i></td>
-                            <td onClick={handleDomainNameClick}>dddd</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                          </tr>
-                          <tr>
-                            <td><i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i></td>
-                            <td><i className="fa fa-glass"></i></td>
-                            <td onClick={handleDomainNameClick}>ddddd</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                </>
-              )}
-              {activeSection === 'volume' && (
-                <>
-                    <div className="content_header_right">
-                      <button id="storage_volume_new_btn" onClick={() => openPopup('newVolume')}>새로 만들기</button>
-                      <button>삭제</button>
-                      <button>시작</button>
-                      <button className="disabled_button">중지</button>
-                      <button>프로파일링</button>
-                      <button style={{ border: 'none' }}>
-                        <button id="storage_volume_snap_btn" style={{ margin: 0 }} onClick={() => openPopup('volumeSnap')}>스냅샷</button>
-                        <button id="storage_volume_option_boxbtn">
-                          <i className="fa fa-chevron-down"></i>
-                          <div className="storage_volume_option_box" style={{ display: 'none' }}>
-                            <div>새로 만들기</div>
-                            <div>스케줄 편집</div>
-                            <div>옵션 - 클러스터</div>
-                            <div>옵션 - 볼륨</div>
-                          </div>
-                        </button>
-                      </button>
-                      <button>지역 복제</button>
-                      <button className="content_header_popup_btn">
-                        <i className="fa fa-ellipsis-v"></i>
-                        <div className="content_header_popup" style={{ display: 'none' }}>
-                          <div>활성</div>
-                          <div>비활성화</div>
-                          <div>이동</div>
-                          <div>LUN 새로고침</div>
-                        </div>
-                      </button>
-                    </div>
-
-                    <div className="section_table_outer">
-                      <div className="search_box">
-                        <input type="text" />
-                        <button><i className="fa fa-search"></i></button>
-                      </div>
-                      <div className="empty_table">
-                        <table>
-                          <thead>
-                            <tr>
-                              <th>이름</th>
-                              <th>클러스터</th>
-                              <th>볼륨 유형</th>
-                              <th>브릭</th>
-                              <th>정보</th>
-                              <th>사용한 공간</th>
-                              <th>작업</th>
-                              <th>스냅샷 수</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td colSpan="8" className="empty_content">표시할 항목이 없습니다</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                    </>
-              )}
-              {activeSection === 'storage' && (
-                <>
-                  <div className="section_table_outer">
-                    <div className="content_header_right">
-                      <button>데이터 연결</button>
-                      <button>ISP 연결</button>
-                      <button>내보내기 연결</button>
-                      <button>분리</button>
-                      <button>활성</button>
-                      <button>유지보수</button>
-                    </div>
-                    
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>상태</th>
-                          <th></th>
-                          <th>도메인 이름</th>
-                          <th>코멘트</th>
-                          <th>도메인 유형</th>
-                          <th>스토리지 유형</th>
-                          <th>포맷</th>
-                          <th>데이터 센터간 상태</th>
-                          <th>전체 공간(GB)</th>
-                          <th>여유 공간(GB)</th>
-                          <th>확보된 여유 공간(GB)</th>
-                          <th>설명</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td><i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i></td>
-                          <td><i className="fa fa-glass"></i></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td><i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i></td>
-                          <td><i className="fa fa-glass"></i></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td><i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i></td>
-                          <td><i className="fa fa-glass"></i></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </>
-              )}
-              {activeSection === 'logic_network' && (
-                <>
-                  <div className="section_table_outer">
-                    <div className="content_header_right">
-                      <button>새로만들기</button>
-                      <button>편집</button>
-                      <button>삭제</button>
-                    </div>
-                    
+                  <div className="empty_table">
                     <table>
                       <thead>
                         <tr>
                           <th>이름</th>
+                          <th>클러스터</th>
+                          <th>볼륨 유형</th>
+                          <th>브릭</th>
+                          <th>정보</th>
+                          <th>사용한 공간</th>
+                          <th>작업</th>
+                          <th>스냅샷 수</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td colSpan="8" className="empty_content">표시할 항목이 없습니다</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </>
+            )}
+            {activeSection === 'storage' && (
+              <>
+                <div className="section_table_outer">
+                  <div className="content_header_right">
+                    <button>데이터 연결</button>
+                    <button>ISP 연결</button>
+                    <button>내보내기 연결</button>
+                    <button>분리</button>
+                    <button>활성</button>
+                    <button>유지보수</button>
+                  </div>
+                  
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>상태</th>
+                        <th></th>
+                        <th>도메인 이름</th>
+                        <th>코멘트</th>
+                        <th>도메인 유형</th>
+                        <th>스토리지 유형</th>
+                        <th>포맷</th>
+                        <th>데이터 센터간 상태</th>
+                        <th>전체 공간(GB)</th>
+                        <th>여유 공간(GB)</th>
+                        <th>확보된 여유 공간(GB)</th>
+                        <th>설명</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i></td>
+                        <td><i className="fa fa-glass"></i></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td><i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i></td>
+                        <td><i className="fa fa-glass"></i></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+            {activeSection === 'logic_network' && (
+              <>
+                <div className="section_table_outer">
+                  <div className="content_header_right">
+                    <button>새로만들기</button>
+                    <button>편집</button>
+                    <button>삭제</button>
+                  </div>
+                  
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>이름</th>
+                        <th>설명</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>ovirtmgmt</td>
+                        <td>Management Network</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+            {activeSection === 'cluster' && (
+              <>
+                <div className="host_empty_outer">
+                  <div className="section_table_outer">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>이름</th>
+                          <th>호환 버전</th>
                           <th>설명</th>
                         </tr>
                       </thead>
@@ -512,82 +468,59 @@ const Storage = () => {
                         <tr>
                           <td>ovirtmgmt</td>
                           <td>Management Network</td>
+                          <td>The default server cluster</td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
-                </>
-              )}
-              {activeSection === 'cluster' && (
-                <>
-                  <div className="host_empty_outer">
-                    <div className="section_table_outer">
-                      <table>
-                        <thead>
-                          <tr>
-                            <th>이름</th>
-                            <th>호환 버전</th>
-                            <th>설명</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>ovirtmgmt</td>
-                            <td>Management Network</td>
-                            <td>The default server cluster</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                </div>
+              </>
+            )}
+            {activeSection === 'right' && (
+              <>
+                <div className="content_header_right">
+                  <button>추가</button>
+                  <button>제거</button>
+                </div>
+                <div className="section_table_outer">
+                  <div className="storage_right_btns">
+                    <span>Permission Filters:</span>
+                    <div>
+                      <button>All</button>
+                      <button>Direct</button>
                     </div>
                   </div>
-
-                </>
-              )}
-              {activeSection === 'right' && (
-                <>
-                    <div className="content_header_right">
-                      <button>추가</button>
-                      <button>제거</button>
-                    </div>
-                    <div className="section_table_outer">
-                      <div className="storage_right_btns">
-                        <span>Permission Filters:</span>
-                        <div>
-                          <button>All</button>
-                          <button>Direct</button>
-                        </div>
-                      </div>
-                      
-                      <table>
-                        <thead>
-                          <tr>
-                            <th></th>
-                            <th>사용자</th>
-                            <th>인증 공급자</th>
-                            <th>네임스페이스</th>
-                            <th>역할</th>
-                            <th>생성일</th>
-                            <th>Inherited From</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td><i className="fa fa-user"></i></td>
-                            <td>ovirtmgmt</td>
-                            <td></td>
-                            <td>*</td>
-                            <td>SuperUser</td>
-                            <td>2023.12.29 AM 11:40:58</td>
-                            <td>(시스템)</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                </>
-              )}
-              {activeSection === 'event' && (
-                <>
-                <div className="content_header_right">
+                  
+                  <table>
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>사용자</th>
+                        <th>인증 공급자</th>
+                        <th>네임스페이스</th>
+                        <th>역할</th>
+                        <th>생성일</th>
+                        <th>Inherited From</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><i className="fa fa-user"></i></td>
+                        <td>ovirtmgmt</td>
+                        <td></td>
+                        <td>*</td>
+                        <td>SuperUser</td>
+                        <td>2023.12.29 AM 11:40:58</td>
+                        <td>(시스템)</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+            {activeSection === 'event' && (
+              <>
+              <div className="content_header_right">
                 <button>새로 만들기</button>
                 <button>편집</button>
                 <button>제거</button>
@@ -596,82 +529,80 @@ const Storage = () => {
               <div className="section_table_outer">
                 <Table columns={eventcolumns} data={eventdata} onRowClick={() => console.log('Row clicked')} />
               </div>
-
               </>
-              )}
-            </div>
-          </div>
-          <div className="footer_outer">
-            <div className="footer">
-              <button onClick={toggleFooterContent}>
-                <i className="fa fa-chevron-down"></i>
-              </button>
-              <div>
-                <div
-                  style={{
-                    color: selectedFooterTab === 'recent' ? 'black' : '#4F4F4F',
-                    borderBottom: selectedFooterTab === 'recent' ? '1px solid blue' : 'none',
-                  }}
-                  onClick={() => handleFooterTabClick('recent')}
-                >
-                  최근 작업
-                </div>
-                <div
-                  style={{
-                    color: selectedFooterTab === 'alerts' ? 'black' : '#4F4F4F',
-                    borderBottom: selectedFooterTab === 'alerts' ? '1px solid blue' : 'none',
-                  }}
-                  onClick={() => handleFooterTabClick('alerts')}
-                >
-                  경보
-                </div>
-              </div>
-            </div>
-            {isFooterContentVisible && (
-              <div className="footer_content" style={{ display: 'block' }}>
-                <div className="footer_nav">
-                  <div>
-                    <div>작업이름</div>
-                    <div><i className="fa fa-filter"></i></div>
-                  </div>
-                  <div>
-                    <div>작업이름</div>
-                    <div><i className="fa fa-filter"></i></div>
-                  </div>
-                  <div>
-                    <div>작업이름</div>
-                    <div><i className="fa fa-filter"></i></div>
-                  </div>
-                  <div>
-                    <div>작업이름</div>
-                    <div><i className="fa fa-filter"></i></div>
-                  </div>
-                  <div>
-                    <div>작업이름</div>
-                    <div><i className="fa fa-filter"></i></div>
-                  </div>
-                  <div>
-                    <div>작업이름</div>
-                    <div><i className="fa fa-filter"></i></div>
-                  </div>
-                  <div>
-                    <div>작업이름</div>
-                    <div><i className="fa fa-filter"></i></div>
-                  </div>
-                  <div style={{ borderRight: 'none' }}>
-                    <div>작업이름</div>
-                    <div><i className="fa fa-filter"></i></div>
-                  </div>
-                </div>
-                <div className="footer_img">
-                  <img src="img/화면 캡처 2024-04-30 164511.png" alt="스크린샷" />
-                  <span>항목을 찾지 못했습니다</span>
-                </div>
-              </div>
             )}
           </div>
         </div>
-      )}
+        <div className="footer_outer">
+          <div className="footer">
+            <button onClick={toggleFooterContent}>
+              <i className="fa fa-chevron-down"></i>
+            </button>
+            <div>
+              <div
+                style={{
+                  color: selectedFooterTab === 'recent' ? 'black' : '#4F4F4F',
+                  borderBottom: selectedFooterTab === 'recent' ? '1px solid blue' : 'none',
+                }}
+                onClick={() => handleFooterTabClick('recent')}
+              >
+                최근 작업
+              </div>
+              <div
+                style={{
+                  color: selectedFooterTab === 'alerts' ? 'black' : '#4F4F4F',
+                  borderBottom: selectedFooterTab === 'alerts' ? '1px solid blue' : 'none',
+                }}
+                onClick={() => handleFooterTabClick('alerts')}
+              >
+                경보
+              </div>
+            </div>
+          </div>
+          {isFooterContentVisible && (
+            <div className="footer_content" style={{ display: 'block' }}>
+              <div className="footer_nav">
+                <div>
+                  <div>작업이름</div>
+                  <div><i className="fa fa-filter"></i></div>
+                </div>
+                <div>
+                  <div>작업이름</div>
+                  <div><i className="fa fa-filter"></i></div>
+                </div>
+                <div>
+                  <div>작업이름</div>
+                  <div><i className="fa fa-filter"></i></div>
+                </div>
+                <div>
+                  <div>작업이름</div>
+                  <div><i className="fa fa-filter"></i></div>
+                </div>
+                <div>
+                  <div>작업이름</div>
+                  <div><i className="fa fa-filter"></i></div>
+                </div>
+                <div>
+                  <div>작업이름</div>
+                  <div><i className="fa fa-filter"></i></div>
+                </div>
+                <div>
+                  <div>작업이름</div>
+                  <div><i className="fa fa-filter"></i></div>
+                </div>
+                <div style={{ borderRight: 'none' }}>
+                  <div>작업이름</div>
+                  <div><i className="fa fa-filter"></i></div>
+                </div>
+              </div>
+              <div className="footer_img">
+                <img src="img/화면 캡처 2024-04-30 164511.png" alt="스크린샷" />
+                <span>항목을 찾지 못했습니다</span>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/*디스크(업로드)팝업 */}
       <Modal
@@ -1326,7 +1257,6 @@ const Storage = () => {
                   <input type="checkbox" id="backup_vault"/>
                   <label htmlFor="backup_vault">백업</label>
                 </div>
-
               </div>
             </div>
           </div>
@@ -1484,10 +1414,7 @@ const Storage = () => {
         </div>
       </Modal>
     </div>
-    //스토리지 섹션끝
-
   );
 };
 
 export default Storage;
-

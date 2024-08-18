@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // useNavigate 훅 추가
 import Modal from 'react-modal';
-import NetworkDetail from '../detail/NetworkDetail';
 import './Network.css';
-import { Table} from './table/Table';
+import { Table } from './table/Table'; // 테이블 컴포넌트를 가져옵니다.
 import HeaderButton from './button/HeaderButton';
 
 // React Modal 설정
@@ -13,13 +13,14 @@ const Network = () => {
     const [selectedTab, setSelectedTab] = useState('network_new_common_btn');
     const [activePopup, setActivePopup] = useState(null);
 
-    // 세부페이지이동
-    const [showNetworkSection, setShowNetworkSection] = useState(true);
+    const navigate = useNavigate(); // useNavigate 훅 초기화
+
+    // 테이블 행 클릭 시 NetworkDetail로 이동
     const handleNetworkNameClick = () => {
-        setShowNetworkSection(false);
+        navigate('/network-detail'); // navigate를 사용해 /network-detail로 이동
     };
 
-    // 폰트사이즈 조절
+    // 폰트 사이즈 조절
     useEffect(() => {
         function adjustFontSize() {
             const width = window.innerWidth;
@@ -34,7 +35,6 @@ const Network = () => {
             window.removeEventListener('resize', adjustFontSize);
         };
     }, []);
-
 
     // footer
     const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
@@ -66,7 +66,6 @@ const Network = () => {
         { name: 'ovirtmgmt', description: 'Management Network', dataCenter: 'DC1', provider: 'Provider1', portSeparation: '아니요' },
         { name: 'example1', description: 'Example Description 1', dataCenter: 'DC2', provider: 'Provider2', portSeparation: '아니요' },
         { name: 'example2', description: 'Example Description 2', dataCenter: 'DC3', provider: 'Provider3', portSeparation: '아니요' },
-        // 필요한 만큼 데이터 추가
     ];
 
     const columns = [
@@ -77,53 +76,44 @@ const Network = () => {
         { header: '포트분리', accessor: 'portSeparation', clickable: false },
     ];
     
-      // Button and popup items for the SectionHeader
-  const sectionHeaderButtons = [
-    { id: 'network_first_edit_btn', label: '편집', onClick: () => {} },
-    { label: '삭제', onClick: () => {} },
-  ];
+    const sectionHeaderButtons = [
+        { id: 'network_first_edit_btn', label: '편집', onClick: () => {} },
+        { label: '삭제', onClick: () => {} },
+    ];
 
-  const sectionHeaderPopupItems = [
-    '가져오기',
-    '가상 머신 복제',
-    '삭제',
-    '마이그레이션 취소',
-    '변환 취소',
-    '템플릿 생성',
-    '도메인으로 내보내기',
-    'Export to Data Domai',
-    'OVA로 내보내기',
-  ];
+    const sectionHeaderPopupItems = [
+        '가져오기',
+        '가상 머신 복제',
+        '삭제',
+        '마이그레이션 취소',
+        '변환 취소',
+        '템플릿 생성',
+        '도메인으로 내보내기',
+        'Export to Data Domain',
+        'OVA로 내보내기',
+    ];
+
     return (
         <div id="network_section">
-            {showNetworkSection ? ( // 꼭 div 하나로 감싸주기
-                <div>
-                     <HeaderButton
-            title="네트워크"
-            buttons={sectionHeaderButtons}
-            popupItems={sectionHeaderPopupItems}
-          />
+            <HeaderButton
+                title="네트워크"
+                buttons={sectionHeaderButtons}
+                popupItems={sectionHeaderPopupItems}
+            />
 
-                    <div className="content_outer">
-                        
-                        <div className='empty_nav_outer'>
-                            
-                                <div className="content_header_right">
-                                    <button id="network_new_btn" onClick={() => openPopup('newNetwork')}>새로 만들기</button>
-                                    <button id="network_bring_btn" onClick={() => openPopup('getNetwork')}>가져오기</button>
-                                    <button>편집</button>
-                                    <button>삭제</button>
-                                </div>
-                            <div className="section_table_outer">
-                                <Table columns={columns} data={data} onRowClick={handleNetworkNameClick} />
-                            </div>
-                        </div>
-                        
+            <div className="content_outer">
+                <div className='empty_nav_outer'>
+                    <div className="content_header_right">
+                        <button id="network_new_btn" onClick={() => openPopup('newNetwork')}>새로 만들기</button>
+                        <button id="network_bring_btn" onClick={() => openPopup('getNetwork')}>가져오기</button>
+                        <button>편집</button>
+                        <button>삭제</button>
+                    </div>
+                    <div className="section_table_outer">
+                        <Table columns={columns} data={data} onRowClick={handleNetworkNameClick} />
                     </div>
                 </div>
-            ) : (
-                <NetworkDetail />
-            )}
+            </div>
 
             <div className="footer_outer">
                 <div className="footer">
@@ -152,38 +142,12 @@ const Network = () => {
                 {isFooterContentVisible && (
                     <div className="footer_content" style={{ display: 'block' }}>
                         <div className="footer_nav">
+                            {/* Footer 내용 추가 */}
                             <div>
                                 <div>작업이름</div>
                                 <div><i className="fa fa-filter"></i></div>
                             </div>
-                            <div>
-                                <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
-                            </div>
-                            <div>
-                                <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
-                            </div>
-                            <div>
-                                <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
-                            </div>
-                            <div>
-                                <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
-                            </div>
-                            <div>
-                                <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
-                            </div>
-                            <div>
-                                <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
-                            </div>
-                            <div style={{ borderRight: 'none' }}>
-                                <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
-                            </div>
+                            {/* 여러 항목 추가 가능 */}
                         </div>
                         <div className="footer_img">
                             <img src="img/화면 캡처 2024-04-30 164511.png" alt="스크린샷" />
@@ -193,9 +157,7 @@ const Network = () => {
                 )}
             </div>
 
-         
-
-            {/* 새로만들기 팝업 */}
+            {/* 새로 만들기 팝업 */}
             <Modal
                 isOpen={activePopup === 'newNetwork'}
                 onRequestClose={closePopup}
@@ -332,6 +294,7 @@ const Network = () => {
                             </div>
                         </form>
                     )}
+
                     {/* 클러스터 */}
                     {selectedTab === 'network_new_cluster_btn' && (
                         <form id="network_new_cluster_form">
@@ -420,7 +383,6 @@ const Network = () => {
                                 ]}
                                 data={[
                                     { checkbox: <input type="checkbox" id="provider_network_1" defaultChecked />, name: '디스크 활성화', networkId: '디스크 활성화' },
-                                    // 필요한 만큼 데이터 추가
                                 ]}
                             />
                         </div>
@@ -439,7 +401,6 @@ const Network = () => {
                                 ]}
                                 data={[
                                     { checkbox: <input type="checkbox" id="import_network_1" defaultChecked />, name: '디스크 활성화', networkId: '디스크 활성화', dataCenter: '디스크 활성화', allowAll: '디스크 활성화' },
-                                    // 필요한 만큼 데이터 추가
                                 ]}
                             />
                         </div>

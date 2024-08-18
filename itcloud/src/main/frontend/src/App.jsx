@@ -1,5 +1,4 @@
 import React from 'react';
-// import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import Header from './components/Header';
@@ -15,7 +14,7 @@ import Host from './components/Computing/Host';
 import HostDetail from './components/Computing/HostDetail';
 import NetworkDetail from './detail/NetworkDetail';
 import StorageDomain from './detail/StorageDomain';
-
+import StorageDisk from './detail/StorageDisk';
 
 function App() {
     return (
@@ -35,6 +34,7 @@ function App() {
                     <Route path="/host-detail/:name" element={<HostDetail />} />
                     <Route path="/network-detail" element={<NetworkDetail />} />
                     <Route path="/storage-domain" element={<StorageDomain />} />
+                    <Route path="/storage-disk" element={<StorageDisk />} />
                 </Routes>
             </MainOuter>
         </Router>

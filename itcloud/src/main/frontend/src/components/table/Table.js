@@ -1,6 +1,5 @@
 import React from 'react';
 
-
 const Table = ({ columns, data, onRowClick }) => {
   return (
     <table className="custom-table">
@@ -15,7 +14,10 @@ const Table = ({ columns, data, onRowClick }) => {
         {data.map((row, rowIndex) => (
           <tr key={rowIndex}>
             {columns.map((column, colIndex) => (
-              <td key={colIndex} onClick={column.clickable ? onRowClick : null}>
+              <td
+                key={colIndex}
+                onClick={column.clickable ? () => onRowClick({ accessor: column.accessor, row }) : null}
+              >
                 {row[column.accessor]}
               </td>
             ))}
@@ -27,15 +29,11 @@ const Table = ({ columns, data, onRowClick }) => {
 };
 
 const Table1 = ({ columns, data, onRowClick }) => {
-  return (<div></div>
-  );
+  return <div></div>;
 };
 
-const TableRs = ({data}) => {
-  return (<div></div>
-  );
-}
+const TableRs = ({ data }) => {
+  return <div></div>;
+};
 
-export {
-  Table, Table1, TableRs
-};;
+export { Table, Table1, TableRs };

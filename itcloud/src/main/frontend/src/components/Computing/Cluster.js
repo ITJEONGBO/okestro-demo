@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import HeaderButton from '../button/HeaderButton';
-import ClusterName from './ClusterName';
 import { Table } from '../table/Table';
 import './css/Cluster.css';
-// React Modal 설정
+
 Modal.setAppElement('#root');
 
 const Cluster = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showClusterName, setShowClusterName] = useState(false);
+  const navigate = useNavigate();
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -32,11 +32,6 @@ const Cluster = () => {
     'OVA로 내보내기',
   ];
 
-  if (showClusterName) {
-    return <ClusterName />;
-  }
-
-  // 테이블 컴포넌트
   const columns = [
     { header: '상태', accessor: 'status', clickable: false },
     { header: '이름', accessor: 'name', clickable: true },
@@ -62,10 +57,14 @@ const Cluster = () => {
       upgradeStatus: '',
     },
   ];
-  const handleRowClick = () => {
-    setShowClusterName(true);
+
+  // 이름 열을 클릭했을 때 동작하는 함수
+  const handleRowClick = (row) => {
+    if (row.accessor === 'name') {
+      navigate('/cluster-name'); // 이름 열 클릭 시 /cluster-name으로 이동
+    }
   };
-  
+
   return (
     <div id="section">
       <HeaderButton
@@ -77,53 +76,15 @@ const Cluster = () => {
         togglePopup={() => {}}
       />
       <div className="content_outer">
-
         <div className='empty_nav_outer'>
-            <div className="section_table_outer">
-              <button>
-                <i className="fa fa-refresh"></i>
-              </button>
-              <Table columns={columns} data={data} onRowClick={handleRowClick} />
-            </div>
+          <div className="section_table_outer">
+            <button>
+              <i className="fa fa-refresh"></i>
+            </button>
+            <Table columns={columns} data={data} onRowClick={handleRowClick} />
+          </div>
         </div>
-        
       </div>
-      {/* <Modal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
-        contentLabel="마이그레이션"
-        className="migration_popup"
-        overlayClassName="migration_popup_outer"
-        shouldCloseOnOverlayClick={false}
-      >
-        <div className="domain_header">
-          <h1>가상머신 마이그레이션</h1>
-          <button onClick={closeModal}><i className="fa fa-times"></i></button>
-        </div>
-        <div id="migration_article_outer">
-          <span>1대의 가상 머신이 마이그레이션되는 호스트를 선택하십시오.</span>
-          <div id="migration_article">
-            <div>
-              <div id="migration_dropdown">
-                <label htmlFor="host">대상 호스트 <i className="fa fa-info-circle"></i></label>
-                <select name="host_dropdown" id="host">
-                  <option value="">호스트 자동 선택</option>
-                  <option value="php">PHP</option>
-                  <option value="java">Java</option>
-                </select>
-              </div>
-            </div>
-            <div>
-              <div>가상머신</div>
-              <div>on20-ap02</div>
-            </div>
-          </div>
-          <div id="migration_footer">
-            <button>마이그레이션</button>
-            <button onClick={closeModal}>취소</button>
-          </div>
-        </div>
-      </Modal> */}
     </div>
   );
 };
