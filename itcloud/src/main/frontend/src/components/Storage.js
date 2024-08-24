@@ -39,7 +39,7 @@ const Storage = () => {
       description: '',
     },
     {
-      alias: 'he_metadata',
+      alias: '디스크2',
       id: '289137398279301798',
       icon1: '',
       icon2: <i className="fa fa-glass"></i>,
@@ -51,7 +51,7 @@ const Storage = () => {
       description: '',
     },
     {
-      alias: 'he_metadata',
+      alias: '디스크3',
       id: '289137398279301798',
       icon1: '',
       icon2: <i className="fa fa-glass"></i>,
@@ -65,9 +65,44 @@ const Storage = () => {
   ];
 
   const handleRowClick = (row) => {
-    if (row.row.alias === 'he_metadata') {
-      navigate('/storage-disk');
-    }
+    navigate(`/storage-disk/${row.alias}`);
+};
+  // 도메인 테이블 컴포넌트 
+  const domaincolumns = [
+    { header: '상태', accessor: 'status' },
+    { header: '', accessor: 'icon' },
+    { header: '도메인 이름', accessor: 'domainName' },
+    { header: '코멘트', accessor: 'comment' },
+    { header: '도메인 유형', accessor: 'domainType' },
+    { header: '스토리지 유형', accessor: 'storageType' },
+    { header: '포맷', accessor: 'format' },
+    { header: '데이터 센터간 상태', accessor: 'dataCenterStatus' },
+    { header: '전체 공간(GB)', accessor: 'totalSpace' },
+    { header: '여유 공간(GB)', accessor: 'freeSpace' },
+    { header: '확보된 여유 공간(GB)', accessor: 'reservedSpace' },
+    { header: '설명', accessor: 'description' },
+  ];
+
+  const domaindata = [
+    {
+      status: <i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i>,
+      icon: <i className="fa fa-glass"></i>,
+      domainName: 'ㅇㄻㄹㅇㄻ', // 여기에 도메인 이름을 설정합니다.
+      comment: '',
+      domainType: '',
+      storageType: '',
+      format: '',
+      dataCenterStatus: '',
+      totalSpace: '',
+      freeSpace: '',
+      reservedSpace: '',
+      description: '',
+    },
+  ];
+
+  // 행 클릭 시 도메인 이름을 이용하여 이동하는 함수
+  const handleDomainClick = (row) => {
+    navigate(`/storage-domain/${row.domainName}`);
   };
 
   // 이벤트
@@ -127,13 +162,13 @@ const Storage = () => {
     setActiveSection(section);
   };
 
-  const handleDomainNameClick = () => {
-    if (activeSection === 'disk') {
-      navigate('/storage-disk');
-    } else if (activeSection === 'domain') {
-      navigate('/storage-domain');
-    }
-  };
+  // const handleDomainNameClick = () => {
+  //   if (activeSection === 'disk') {
+  //     navigate('/storage-disk');
+  //   } else if (activeSection === 'domain') {
+  //     navigate('/storage-domain');
+  //   }
+  // };
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -213,7 +248,7 @@ const Storage = () => {
             handleSectionClick={handleSectionClick}
           />
           <div className="host_btn_outer">
-            {activeSection === 'disk' && (
+          {activeSection === 'disk' && (
               <>
                 <div className="content_header_right">
                   <button id="storage_disk_new_btn" onClick={() => openPopup('newDisk')}>새로 만들기</button>
@@ -266,40 +301,8 @@ const Storage = () => {
                     <input type="text" />
                     <button><i className="fa fa-search"></i></button>
                   </div>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>상태</th>
-                        <th></th>
-                        <th onClick={handleDomainNameClick}>도메인 이름</th>
-                        <th>코멘트</th>
-                        <th>도메인 유형</th>
-                        <th>스토리지 유형</th>
-                        <th>포맷</th>
-                        <th>데이터 센터간 상태</th>
-                        <th>전체 공간(GB)</th>
-                        <th>여유 공간(GB)</th>
-                        <th>확보된 여유 공간(GB)</th>
-                        <th>설명</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td><i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i></td>
-                        <td><i className="fa fa-glass"></i></td>
-                        <td onClick={handleDomainNameClick}>ddddddd</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  {/* Table 컴포넌트를 이용하여 테이블을 생성합니다. */}
+                  <Table columns={domaincolumns} data={domaindata} onRowClick={handleDomainClick} />
                 </div>
               </>
             )}

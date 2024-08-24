@@ -3,7 +3,10 @@ import NavButton from '../components/navigation/NavButton';
 import HeaderButton from '../components/button/HeaderButton';
 import { Table } from '../components/table/Table';
 import './css/StorageDomain.css';
+import { useParams } from 'react-router-dom';
+
 function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
+  const { name } = useParams(); // URL에서 name 파라미터를 가져옵니다.
   // 테이블컴포넌트
   // 데이터센터
   const dataCenterColumns = [
@@ -15,7 +18,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   const dataCenterData = [
     {
       icon: <i className="fa fa-exclamation"></i>,
-      name: 'Default',
+      name: name,
       domainStatus: '활성화',
     },
   ];
@@ -197,9 +200,9 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   return (
     <div className="content_detail_section">
       <HeaderButton
-      title="스토리지 > "
-      subtitle="스토리지도메인"
-      additionalText="hosted_storage"
+      title="스토리지도메인 > "
+      subtitle={name}
+     
       buttons={buttons}
       popupItems={popupItems}
     />
@@ -218,7 +221,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
               <tbody>
                 <tr>
                   <th>ID:</th>
-                  <td>213b1a0a-b0c0-4d10-95a4-7aafed4f76b9</td>
+                  <td>{name}</td>
                 </tr>
                 <tr>
                   <th>크기:</th>

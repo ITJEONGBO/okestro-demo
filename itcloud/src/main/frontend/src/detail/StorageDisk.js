@@ -1,10 +1,13 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import NavButton from '../components/navigation/NavButton';
 import HeaderButton from '../components/button/HeaderButton';
 import { Table } from '../components/table/Table';
 import './css/StorageDisk.css';
 
 function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
+  const { name } = useParams(); // URL에서 name 파라미터를 가져옵니다.
+
   // 테이블 컴포넌트
   // 가상머신
   const vmColumns = [
@@ -18,11 +21,10 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
     { header: '상태', accessor: 'status', clickable: false },
     { header: '업타임', accessor: 'uptime', clickable: false },
   ];
-  
 
   const vmData = [];
 
-  //스토리지
+  // 스토리지
   const storageColumns = [
     { header: '', accessor: 'icon1', clickable: false },
     { header: '', accessor: 'icon2', clickable: false },
@@ -34,11 +36,12 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
     { header: '전체 공간 (GiB)', accessor: 'totalSpace', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ];
+
   const storageData = [
     {
       icon1: <i className="fa fa-icon1"></i>,
       icon2: <i className="fa fa-icon2"></i>,
-      domainName: 'hosted_storage',
+      domainName: name,
       domainType: '데이터 (마스터)',
       status: '활성화',
       freeSpace: '83 GiB',
@@ -48,7 +51,8 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
     },
     // 추가 데이터
   ];
-  //권한
+
+  // 권한
   const permissionColumns = [
     { header: '', accessor: 'icon', clickable: false },
     { header: '사용자', accessor: 'user', clickable: false },
@@ -70,50 +74,54 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
       inheritedFrom: '(시스템)',
     },
   ];
-  //
+
   const [activeTab, setActiveTab] = useState('general');
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
- //headerbutton 컴포넌트
- const buttons = [
-  { id: 'edit_btn', label: '수정', onClick: () => console.log('Edit button clicked') },
-  { id: 'remove_btn', label: '제거', onClick: () => console.log('Remove button clicked') },
-  { id: 'move_btn', label: '이동', onClick: () => console.log('Move button clicked') },
-  { id: 'copy_btn', label: '복사', onClick: () => console.log('Copy button clicked') },
-];
 
-const uploadOptions = [
-  '옵션 1',
-  '옵션 2',
-  '옵션 3',
-];
+  // HeaderButton 컴포넌트
+  const buttons = [
+    { id: 'edit_btn', label: '수정', onClick: () => console.log('Edit button clicked') },
+    { id: 'remove_btn', label: '제거', onClick: () => console.log('Remove button clicked') },
+    { id: 'move_btn', label: '이동', onClick: () => console.log('Move button clicked') },
+    { id: 'copy_btn', label: '복사', onClick: () => console.log('Copy button clicked') },
+  ];
 
-const popupItems = [
-  '가져오기',
-  '가상 머신 복제',
-  '삭제',
-  '마이그레이션 취소',
-  '변환 취소',
-  '템플릿 생성',
-  '도메인으로 내보내기',
-  'Export to Data Domai',
-  'OVA로 내보내기',
-];
-  // nav 컴포넌트
+  const uploadOptions = [
+    '옵션 1',
+    '옵션 2',
+    '옵션 3',
+  ];
+
+  const popupItems = [
+    '가져오기',
+    '가상 머신 복제',
+    '삭제',
+    '마이그레이션 취소',
+    '변환 취소',
+    '템플릿 생성',
+    '도메인으로 내보내기',
+    'Export to Data Domai',
+    'OVA로 내보내기',
+  ];
+
+  // Nav 컴포넌트
   const sections = [
     { id: 'general', label: '일반' },
     { id: 'machine', label: '가상머신' },
     { id: 'storage', label: '스토리지' },
     { id: 'permission', label: '권한' },
   ];
+
   // 옵션박스 열고닫기
   const [isUploadOptionBoxVisible, setUploadOptionBoxVisible] = useState(false);
   const toggleUploadOptionBox = () => {
     setUploadOptionBoxVisible(!isUploadOptionBoxVisible);
   };
-  // 바탕클릭하면 옵션박스 닫기
+
+  // 바탕 클릭하면 옵션박스 닫기
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -124,95 +132,88 @@ const popupItems = [
         setUploadOptionBoxVisible(false);
       }
     };
-  
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isUploadOptionBoxVisible]);
+
   return (
-    <div  className="content_detail_section">
+    <div className="content_detail_section">
       <HeaderButton
-      title="스토리지"
-      subtitle="디스크"
-      additionalText="hosted_storage"
-      buttons={buttons}
-      popupItems={popupItems}
-      uploadOptions={uploadOptions}
-    />
+        title="스토리지디스크"
+        subtitle={name}
+        additionalText={name}
+        buttons={buttons}
+        popupItems={popupItems}
+        uploadOptions={uploadOptions}
+      />
 
       <div className="content_outer">
-      <NavButton 
-                sections={sections} 
-                activeSection={activeTab} 
-                handleSectionClick={handleTabClick} 
-            />
-      <div className="host_btn_outer">
-        {activeTab === 'general' && (
-          <div className="tables">
-            <div className="table_container_center">
-              <table className="table">
-                <tbody>
-                  <tr>
-                    <th>별칭:</th>
-                    <td>he_metadata</td>
-                  </tr>
-                  <tr>
-                    <th>설명:</th>
-                    <td>Hosted-Engine metadata disk</td>
-                  </tr>
-                  <tr>
-                    <th>ID:</th>
-                    <td>b7bad714-6d4d-4fbf-83a4-f4b1eff449b3</td>
-                  </tr>
-                  <tr>
-                    <th>디스크 프로파일:</th>
-                    <td>hosted_storage</td>
-                  </tr>
-                  <tr>
-                    <th>삭제 후 초기화:</th>
-                    <td>아니요</td>
-                  </tr>
-                  <tr>
-                    <th>가상 크기:</th>
-                    <td>&lt; 1 GiB</td>
-                  </tr>
-                  <tr>
-                    <th>실제 크기:</th>
-                    <td>&lt; 1 GiB</td>
-                  </tr>
-                </tbody>
-              </table>
-
+        <NavButton 
+          sections={sections} 
+          activeSection={activeTab} 
+          handleSectionClick={handleTabClick} 
+        />
+        <div className="host_btn_outer">
+          {activeTab === 'general' && (
+            <div className="tables">
+              <div className="table_container_center">
+                <table className="table">
+                  <tbody>
+                    <tr>
+                      <th>별칭:</th>
+                      <td>{name}</td>
+                    </tr>
+                    <tr>
+                      <th>설명:</th>
+                      <td>Hosted-Engine metadata disk</td>
+                    </tr>
+                    <tr>
+                      <th>ID:</th>
+                      <td>b7bad714-6d4d-4fbf-83a4-f4b1eff449b3</td>
+                    </tr>
+                    <tr>
+                      <th>디스크 프로파일:</th>
+                      <td>hosted_storage</td>
+                    </tr>
+                    <tr>
+                      <th>삭제 후 초기화:</th>
+                      <td>아니요</td>
+                    </tr>
+                    <tr>
+                      <th>가상 크기:</th>
+                      <td>&lt; 1 GiB</td>
+                    </tr>
+                    <tr>
+                      <th>실제 크기:</th>
+                      <td>&lt; 1 GiB</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-         </div>
+          )}
 
-
-            
-        )}
-
-
-        {activeTab === 'machine' && (
-          <div className="host_empty_outer">
-            <div className="section_table_outer">
-              <Table columns={vmColumns} data={vmData} onRowClick={() => console.log('Row clicked')} />
+          {activeTab === 'machine' && (
+            <div className="host_empty_outer">
+              <div className="section_table_outer">
+                <Table columns={vmColumns} data={vmData} onRowClick={() => console.log('Row clicked')} />
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {activeTab === 'storage' && (
-
-        <div className="host_empty_outer">
-             <div className="section_table_outer">
-              <Table columns={storageColumns} data={storageData} onRowClick={() => console.log('Row clicked')} />
+          {activeTab === 'storage' && (
+            <div className="host_empty_outer">
+              <div className="section_table_outer">
+                <Table columns={storageColumns} data={storageData} onRowClick={() => console.log('Row clicked')} />
+              </div>
             </div>
-       </div>
-       
-        )}
+          )}
 
-
-      {activeTab === 'permission' && (
-        <>
+          {activeTab === 'permission' && (
+            <>
               <div className="content_header_right">
                 <button>추가</button>
                 <button>제거</button>
@@ -228,12 +229,10 @@ const popupItems = [
                 </div>
                 <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
               </div>
-        </>
-        )}
+            </>
+          )}
+        </div>
       </div>
-
-
-    </div>
     </div>
   );
 }

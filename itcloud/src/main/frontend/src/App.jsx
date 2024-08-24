@@ -33,8 +33,8 @@ function App() {
                     <Route path="/host" element={<Host />} />
                     <Route path="/host-detail/:name" element={<HostDetail />} />
                     <Route path="/network/:name" element={<NetworkDetail />} /> 
-                    <Route path="/storage-domain" element={<StorageDomain />} />
-                    <Route path="/storage-disk" element={<StorageDisk />} />
+                    <Route path="/storage-domain/:name" element={<StorageDomain />} />
+                    <Route path="/storage-disk/:name" element={<StorageDisk />} />
                 </Routes>
             </MainOuter>
         </Router>
