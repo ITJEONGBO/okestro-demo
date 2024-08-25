@@ -4,10 +4,12 @@ import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
 import { Table } from '../table/Table';
 import NetworkDetail from '../../detail/NetworkDetail';
+import { useParams } from 'react-router-dom';
 
 import './css/ClusterName.css';
 
 function ClusterName() {
+    const { name } = useParams();
     const navigate = useNavigate();
     const [showNetworkDetail, setShowNetworkDetail] = useState(false);
 
@@ -198,8 +200,8 @@ function ClusterName() {
             ) : (
                 <>
                     <HeaderButton
-                        title="클러스터dddd"
-                        subtitle="Default"
+                        title="클러스터"
+                        subtitle={name}
                         additionalText="목록이름"
                         buttons={buttons}
                         popupItems={popupItems}
@@ -221,7 +223,7 @@ function ClusterName() {
                                             <tbody>
                                                 <tr>
                                                     <th>ID:</th>
-                                                    <td>on20-ap01</td>
+                                                    <td>{name}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>설명:</th>

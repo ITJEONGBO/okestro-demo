@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
+import { useNavigate } from 'react-router-dom';
 import HeaderButton from '../button/HeaderButton';
 import { Table } from '../table/Table';
 import HostDetail from './HostDetail';
@@ -9,6 +10,7 @@ import './css/Host.css';
 Modal.setAppElement('#root');
 
 const Host = () => {
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showHostName, setShowHostName] = useState(false);
   const [활성화된섹션, set활성화된섹션] = useState('일반_섹션'); // 기본 섹션을 '일반_섹션'으로 초기화
@@ -63,13 +65,13 @@ const Host = () => {
     }
   };
 
-  const handleRowClick = () => {
-    setShowHostName(true);
+  const handleRowClick = (row, column) => {
+    if (column.accessor === 'name') {
+      navigate(`/computing/host/${row.name}`); // 해당 이름을 URL로 전달하며 HostDetail로 이동합니다.
+    }
   };
 
-  if (showHostName) {
-    return <HostDetail />;
-  }
+
 
   const columns = [
     { header: '상태', accessor: 'status', clickable: false },

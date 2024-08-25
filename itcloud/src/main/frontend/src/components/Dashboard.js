@@ -804,11 +804,11 @@ const Dashboard = () => {
               <i className="fa fa-arrow-down"> {data.datacentersDown}</i>
             </div>
           </div>
-          <div className="box"  onClick={() => navigate('/cluster')}>
+          <div className="box"  onClick={() => navigate('/computing/cluster')}>
             <span>Cluster</span>
             <h1>{data.clusters}</h1>
           </div>
-          <div className="box" onClick={() => navigate('/host')}> 
+          <div className="box" onClick={() => navigate('/computing/host')}> 
             <span>Host</span>
             <h1>{data.hosts}</h1>
             <div className="arrows">

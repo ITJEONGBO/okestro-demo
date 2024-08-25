@@ -10,6 +10,7 @@ Modal.setAppElement('#root');
 
 // 네트워크 인터페이스
 const NetworkSection = () => {
+  const { name} = useParams(); 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [visibleDetails, setVisibleDetails] = useState([]);
     useEffect(() => {
@@ -58,7 +59,7 @@ const NetworkSection = () => {
       </div>
       <div>
         <div>네트워크 이름</div>
-        <div>ovirtmgmt</div>
+        <div>{name}</div>
       </div>
       <div>
         <div>IPv4</div>
@@ -184,11 +185,6 @@ const NetworkSection = () => {
                 <button  onClick={closeModal}>취소</button>
             </div>
   </Modal>
-
-
-
-
-
     </div>
   );
 };
@@ -1310,6 +1306,7 @@ const EventSection = () => {
 
 //
 const Vm = () => {
+  const { name} = useParams(); 
   const sections = [
     { id: 'general', label: '일반' },
     { id: 'network', label: '네트워크 인터페이스' },
@@ -1346,19 +1343,18 @@ const Vm = () => {
     'Export to Data Domain',
     'OVA로 내보내기',
   ];
-  const { section } = useParams();
+ 
   const navigate = useNavigate();
-  const [activeSection, setActiveSection] = useState(section || 'general');
+  const [activeSection, setActiveSection] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
   const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
 
-  useEffect(() => {
-    navigate(`/computing/${activeSection}`);
-  }, [activeSection, navigate]);
 
-  const handleSectionClick = (section) => {
-    setActiveSection(section);
+
+  const handleSectionClick = (name) => {
+    setActiveSection(name);
+    navigate(`/computing/${name}`);
   };
 
   const toggleFooterContent = () => {
@@ -1455,7 +1451,7 @@ const Vm = () => {
                 <tbody>
                   <tr>
                     <th>이름:</th>
-                    <td>on20-ap01</td>
+                    <td></td>
                   </tr>
                   <tr>
                     <th>설명:</th>
@@ -2365,7 +2361,7 @@ const Vm = () => {
                 </div>
           </div>
       {/* 마이그레이션 팝업 */}
-      {/* <Modal
+      {<Modal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
         contentLabel="마이그레이션"
@@ -2400,7 +2396,7 @@ const Vm = () => {
             <button onClick={closeModal}>취소</button>
           </div>
         </div>
-      </Modal> */}
+      </Modal> }
     </div>
   );
 };

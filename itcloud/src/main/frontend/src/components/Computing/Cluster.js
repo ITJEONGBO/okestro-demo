@@ -59,9 +59,9 @@ const Cluster = () => {
   ];
 
   // 이름 열을 클릭했을 때 동작하는 함수
-  const handleRowClick = (row) => {
-    if (row.accessor === 'name') {
-      navigate('/cluster-name'); // 이름 열 클릭 시 /cluster-name으로 이동
+  const handleRowClick = (row, column) => {
+    if (column.accessor === 'name') {
+      navigate(`/computing/cluster/${row.name}`);
     }
   };
 

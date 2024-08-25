@@ -15,7 +15,8 @@ import HostDetail from './components/Computing/HostDetail';
 import NetworkDetail from './detail/NetworkDetail';
 import StorageDomain from './detail/StorageDomain';
 import StorageDisk from './detail/StorageDisk';
-
+import DataCenterDetail from './components/Computing/DataCenterDetail';
+import './App.css';
 function App() {
     return (
         <Router>
@@ -23,15 +24,16 @@ function App() {
             <MainOuter>
                 <Routes>
                     <Route path="/" element={<Dashboard />} />
-                    <Route path="/computing/*" element={<Computing />} />
+                    <Route path="/computing/datacenter" element={<Computing />} />
+                    <Route path="/computing/datacenter/:name" element={<DataCenterDetail />} />
                     <Route path="/storage" element={<Storage />} />
                     <Route path="/network" element={<Network />} />
                     <Route path="/setting" element={<Setting />} />
-                    <Route path="/computing/vm" element={<Vm />} />
-                    <Route path="/cluster" element={<Cluster />} />
-                    <Route path="/cluster-name" element={<ClusterName />} />
-                    <Route path="/host" element={<Host />} />
-                    <Route path="/host-detail/:name" element={<HostDetail />} />
+                    <Route path="/computing/:name" element={<Vm />} />
+                    <Route path="/computing/host" element={<Host />} />
+                    <Route path="/computing/host/:name" element={<HostDetail />}/>
+                    <Route path="/computing/cluster" element={<Cluster />} />
+                    <Route path="/computing/cluster/:name" element={<ClusterName />} /> 
                     <Route path="/network/:name" element={<NetworkDetail />} /> 
                     <Route path="/storage-domain/:name" element={<StorageDomain />} />
                     <Route path="/storage-disk/:name" element={<StorageDisk />} />

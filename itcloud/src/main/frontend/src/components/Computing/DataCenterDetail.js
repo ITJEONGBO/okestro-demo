@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import HeaderButton from '../button/HeaderButton';
+import { useParams } from 'react-router-dom';
 import './css/DataCenterDetail.css';
 
 // React Modal 설정
 Modal.setAppElement('#root');
 
 const DataCenterDetail = () => {
-
+  const { name } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
@@ -40,10 +41,10 @@ const DataCenterDetail = () => {
 
 
   return (
-    <>
+    <div className="content_detail_section">
       <HeaderButton
         title="데이터센터 "
-        subtitle="detail"
+        subtitle={name}
         buttons={sectionHeaderButtons}
         popupItems={sectionHeaderPopupItems}
         openModal={openModal}
@@ -63,7 +64,6 @@ const DataCenterDetail = () => {
                     <tr>
                       <th>상태</th>
                       <th>이름</th>
-                     
                       <th>호환 버전</th>
                       <th>설명</th>
                       <th>클러스터 CPU 유형</th>
@@ -75,7 +75,7 @@ const DataCenterDetail = () => {
                   <tbody>
                     <tr>
                       <td></td>
-                      <td>Default</td>
+                      <td>{name}</td>
                       
                       <td>4.7</td>
                       <td>The derault server cluster</td>
@@ -127,7 +127,7 @@ const DataCenterDetail = () => {
           </div>
         </div>
       </Modal>
-    </>
+    </div>
   );
 };
 

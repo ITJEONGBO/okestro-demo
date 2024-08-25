@@ -3,7 +3,9 @@ import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
 import { Table } from '../table/Table';
 import './css/HostDetail.css';
+import { useParams } from 'react-router-dom';
 function HostDetail() {
+  const { name } = useParams();
   //클릭한 이름 받아오기
 
     //테이블컴포넌트
@@ -213,7 +215,7 @@ function HostDetail() {
         <div id='section'>
              <HeaderButton
       title="호스트"
-      subtitle="이름 {name} "
+      subtitle={name}
       additionalText="목록이름"
       buttons={buttons}
       popupItems={popupItems}
@@ -241,7 +243,7 @@ function HostDetail() {
                               <tbody>
                                   <tr>
                                       <th>호스트이름/IP:</th>
-                                      <td>host01.ititinfo.com</td>
+                                      <td>{name}</td>
                                   </tr>
                                   <tr>
                                       <th>SPM 우선순위:</th>

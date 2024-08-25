@@ -12,9 +12,9 @@ const Table = ({ columns, data, onRowClick }) => {
       </thead>
       <tbody>
         {data.map((row, rowIndex) => (
-          <tr key={rowIndex} onClick={() => onRowClick(row)}> {/* 전체 행에 클릭 이벤트 할당 */}
+          <tr key={rowIndex}>
             {columns.map((column, colIndex) => (
-              <td key={colIndex}>
+              <td key={colIndex} onClick={() => onRowClick(row, column)}>
                 {row[column.accessor]}
               </td>
             ))}
