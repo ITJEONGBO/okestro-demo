@@ -42,7 +42,7 @@ const Computing = () => {
                 <>
                     <HeaderButton
                         title="데이터 센터"
-                        subtitle="on20-ap01"
+                        subtitle=""
                         buttons={[]} // 기존에 정의된 버튼들을 여기에 추가합니다.
                         popupItems={[]} // 기존에 정의된 팝업 아이템들을 여기에 추가합니다.
                         openModal={openModal}

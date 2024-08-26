@@ -4,6 +4,7 @@ import HeaderButton from '../button/HeaderButton';
 import { Table } from '../table/Table';
 import './css/HostDetail.css';
 import { useParams } from 'react-router-dom';
+import Footer from '../footer/Footer';
 function HostDetail() {
   const { name } = useParams();
   //클릭한 이름 받아오기
@@ -617,7 +618,7 @@ function HostDetail() {
             </div>
 
 
-
+            <Footer/>
         </div>
     );
 }

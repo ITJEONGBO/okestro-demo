@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Header.css';
 
 /**
@@ -7,6 +8,7 @@ import './Header.css';
  * @returns 
  */
 const Header = ({ }) => {
+    const navigate = useNavigate(); 
     useEffect(() => {
         /**
          * @name adjustFontSize
@@ -30,16 +32,17 @@ const Header = ({ }) => {
         };
     }, []);
 
+    const handleTitleClick = () => {
+        navigate('/'); // '/' 경로로 이동
+    };
   return (
     <div id="header">
-        <div id="header_right">
+        <div id="header_right" onClick={handleTitleClick} style={{ cursor: 'pointer' }}>
             <span>Rutil Vm</span>
         </div>
 
         <div id="header_left">
-            <div>
-                <i className="fa fa-hdd-o"></i>
-            </div>
+           
             <div>
                 <i className="fa fa-bell"></i>
             </div>

@@ -4,6 +4,7 @@ import Modal from 'react-modal';
 import HeaderButton from '../button/HeaderButton';
 import { Table } from '../table/Table';
 import './css/Cluster.css';
+import Footer from '../footer/Footer';
 
 Modal.setAppElement('#root');
 
@@ -85,6 +86,7 @@ const Cluster = () => {
           </div>
         </div>
       </div>
+      <Footer/>
     </div>
   );
 };

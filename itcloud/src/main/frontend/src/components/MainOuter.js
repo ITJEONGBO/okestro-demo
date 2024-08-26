@@ -32,12 +32,12 @@ function MainOuter({ children }) {
         default: 'rgb(218, 236, 245)'
     });
 
-
     const [isSecondVisibleStorage, setIsSecondVisibleStorage] = useState(false);
     const [isLastVisibleStorage, setIsLastVisibleStorage] = useState(false);
     const [isSecondVisibleNetwork, setIsSecondVisibleNetwork] = useState(false);
     const [isSecondVisible, setIsSecondVisible] = useState(false);
     const [isThirdVisible, setIsThirdVisible] = useState(false);
+    const [isFourthVisible, setIsFourthVisible] = useState(false);
     const [isLastVisible, setIsLastVisible] = useState(false);
     
     const [contextMenuVisible, setContextMenuVisible] = useState(false);
@@ -49,19 +49,14 @@ function MainOuter({ children }) {
     const [settingPopupOpen, setSettingPopupOpen] = useState(false);
     const [activeSection, setActiveSection] = useState('general');
 
-
-
     useEffect(() => {
         const pathParts = location.pathname.split('/');
         const lastPart = decodeURIComponent(pathParts[pathParts.length - 1]);
     
-        // 선택된 항목에 따라 상태를 업데이트하는 함수
-        const updateSelectedState = (section, div, isSecondVisible = false, isThirdVisible = false, isLastVisible = false) => {
+        const updateSelectedState = (section, div, secondVisible = false, thirdVisible = false, lastVisible = false) => {
             setSelected(section);
             setSelectedDiv(div);
-            setIsSecondVisible(isSecondVisible);
-            setIsThirdVisible(isThirdVisible);
-            setIsLastVisible(isLastVisible);
+    
             setAsidePopupVisible(true);
             setAsidePopupBackgroundColor({
                 dashboard: '',
@@ -74,14 +69,18 @@ function MainOuter({ children }) {
         };
     
         if (location.pathname.includes('/computing')) {
-            if (location.pathname.includes('/computing/cluster')) {
-                updateSelectedState('computing', 'cluster', true);
-            } else if (location.pathname.includes('/computing/host')) {
-                updateSelectedState('computing', 'host', true, true);
+            if (location.pathname.includes('/computing/HostedEngine')) {
+                updateSelectedState('computing', 'HostedEngine', true, true, true);
+            } else if (location.pathname === '/computing/host') {  // 정확히 /computing/host 경로일 때만
+                updateSelectedState('computing', 'host', true, true, true);
+            } else if (location.pathname.includes('/computing/cluster')) {
+                updateSelectedState('computing', 'cluster', true, true);
             } else if (location.pathname.includes('/computing/datacenter')) {
-                updateSelectedState('computing', 'data_center');
+                updateSelectedState('computing', 'data_center', true);
+            } else if (location.pathname.includes('/computing/vmhost-chart')) {
+                updateSelectedState('computing', 'vmhost-chart', true, true, true);
             } else {
-                updateSelectedState('computing', null); // 하위 항목이 선택되면 data_center 선택 해제
+                updateSelectedState('computing', null);
             }
         } else if (location.pathname.includes('/storage')) {
             if (location.pathname.includes('/storage-domain')) {
@@ -115,6 +114,7 @@ function MainOuter({ children }) {
     
     
     
+
     useEffect(() => {
         function adjustFontSize() {
             const width = window.innerWidth;
@@ -124,138 +124,53 @@ function MainOuter({ children }) {
     
         window.addEventListener('resize', adjustFontSize);
         adjustFontSize();
-    
-        const pathParts = location.pathname.split('/');
-        const lastPart = decodeURIComponent(pathParts[pathParts.length - 1]);
-    
-        if (location.pathname.includes('/computing')) {
-            setSelected('computing');
-            setAsidePopupVisible(true);
-            setAsidePopupBackgroundColor({
-                dashboard: '',
-                computing: 'rgb(218, 236, 245)',
-                storage: '',
-                network: '',
-                setting: '',
-                default: ''
-            });
-    
-            if (location.pathname.includes('/computing/cluster')) {
-                setSelectedDiv('cluster');
-                setIsSecondVisible(true);
-            } else if (location.pathname.includes('/computing/host')) {
-                setSelectedDiv('host');
-                setIsSecondVisible(true);
-                setIsThirdVisible(true);
-            } else if (location.pathname.includes('/computing/datacenter')) {
-                setSelectedDiv('data_center');
-            } 
-        } else if (location.pathname.includes('/storage')) {
-            setSelected('storage');
-            setAsidePopupVisible(true);
-            setAsidePopupBackgroundColor({
-                dashboard: '',
-                computing: '',
-                storage: 'rgb(218, 236, 245)',
-                network: '',
-                setting: '',
-                default: ''
-            });
-            if (!selectedDiv) setSelectedDiv('data_center');
-        } else if (location.pathname.includes('/network')) {
-            setSelected('network');
-            setAsidePopupVisible(true);
-            setAsidePopupBackgroundColor({
-                dashboard: '',
-                computing: '',
-                storage: '',
-                network: 'rgb(218, 236, 245)',
-                setting: '',
-                default: ''
-            });
-    
-            // 'network' 경로에 접근했을 때 'default'를 무조건 선택
-            if (location.pathname === '/network' || lastPart === 'network') {
-                setSelectedDiv('default');
-                setIsSecondVisibleNetwork(true);
-            } else {
-                setSelectedDiv(lastPart);
-                setIsSecondVisibleNetwork(true);
-            }
-        } else if (location.pathname.includes('/setting')) {
-            setSelected('setting');
-            setAsidePopupVisible(true);
-            setAsidePopupBackgroundColor({
-                dashboard: '',
-                computing: '',
-                storage: '',
-                network: '',
-                setting: 'rgb(218, 236, 245)',
-                default: ''
-            });
-        } else {
-            setSelected('dashboard');
-            setAsidePopupVisible(false);
-            setAsidePopupBackgroundColor({
-                dashboard: 'rgb(218, 236, 245)',
-                computing: '',
-                storage: '',
-                network: '',
-                setting: '',
-                default: ''
-            });
-        }
-    
+
         return () => {
             window.removeEventListener('resize', adjustFontSize);
         };
-    }, [location, selectedDiv]);
-    
+    }, []);
 
-// 네트워크
+    // 네트워크 섹션에서 사용하는 것과 유사한 로직으로 수정
+    useEffect(() => {
+        const pathParts = location.pathname.split('/');
+        const lastPart = decodeURIComponent(pathParts[pathParts.length - 1]);
 
+        if (location.pathname.includes('/storage-disk')) {
+            setSelected('storage');
+            setSelectedDiv(null); 
+            setSelectedDisk(lastPart);
+        } else if (location.pathname.includes('/storage-domain')) {
+            setSelected('storage');
+            setSelectedDiv('storage_domain');
+            setSelectedDisk(null); 
+        } else if (location.pathname.includes('/storage')) {
+            setSelected('storage');
+            setSelectedDiv('data_center');  
+            setSelectedDisk(null); 
+        }
+    }, [location]);
 
-useEffect(() => {
-    const pathParts = location.pathname.split('/');
-    const lastPart = decodeURIComponent(pathParts[pathParts.length - 1]);
-
-    if (location.pathname.includes('/storage-disk')) {
-        setSelected('storage');
-        setSelectedDiv(null);  // 상위 항목 선택 해제
-        setSelectedDisk(lastPart);  // 디스크 선택
-    } else if (location.pathname.includes('/storage-domain')) {
-        setSelected('storage');
-        setSelectedDiv('storage_domain');  // 도메인 선택
-        setSelectedDisk(null);  // 디스크 선택 해제
-    } else if (location.pathname.includes('/storage')) {
-        setSelected('storage');
-        setSelectedDiv('data_center');  // 데이터 센터 선택
-        setSelectedDisk(null);  // 디스크 선택 해제
-    }
-}, [location]);
-
-
-
-
-const handleDetailClickStorage = (diskName) => {
-    if (selectedDisk !== diskName) {
-        setSelectedDisk(diskName);
-        setSelectedDiv(null);  // 상위 항목 선택 해제
-        navigate(`/storage-disk/${diskName}`);
-    }
-};
+    const handleDetailClickStorage = (diskName) => {
+        if (selectedDisk !== diskName) {
+            setSelectedDisk(diskName);
+            setSelectedDiv(null);
+            navigate(`/storage-disk/${diskName}`);
+        }
+    };
 
     const getDiskDivStyle = (diskName) => {
         return {
             backgroundColor: selectedDisk === diskName ? 'rgb(218, 236, 245)' : 'transparent',
         };
     };
+
     const handleClick = (id) => {
         if (selected === id) return;
         setSelected(id);
         setSelectedDiv(null);
         toggleAsidePopup(id);
     };
+
     const toggleAsidePopup = (id) => {
         const newBackgroundColor = {
             dashboard: '',
@@ -282,6 +197,7 @@ const handleDetailClickStorage = (diskName) => {
         setAsidePopupBackgroundColor(newBackgroundColor);
     };
 
+    // 컴퓨팅부분
     const handleFirstClick = (e) => {
         e.stopPropagation();
         setIsSecondVisible(!isSecondVisible);
@@ -295,33 +211,41 @@ const handleDetailClickStorage = (diskName) => {
     
     const handleSecondClick = (e) => {
         e.stopPropagation();
-        setSelectedDiv('cluster');
         setIsThirdVisible(!isThirdVisible);
     };
 
     const handleSecondDivClick = (e) => {
         e.stopPropagation();
         setSelectedDiv('cluster');
-        setIsThirdVisible(!isThirdVisible);
         navigate('/computing/cluster');
     };
     
     const handleThirdClick = (e) => {
         e.stopPropagation();
-        setIsLastVisible(!isLastVisible);
+        setIsFourthVisible(!isFourthVisible);
     };
 
-    //호스트 버튼(computing/host)
     const handleThirdDivClick = () => {
         setSelectedDiv('host');
-        setIsLastVisible(!isLastVisible);  // 호스트 섹션이 열리거나 닫히도록 설정
-        navigate('/computing/host');  // 호스트 페이지로 이동
+        setIsFourthVisible(!isSecondVisible);
+        navigate('/computing/host');
     };
     
+    const handleFourthClick = (e) => {
+        e.stopPropagation();
+        setIsLastVisible(!isLastVisible);
+    };
+    
+    const handleFourthDivClick = () => {
+        setSelectedDiv('vmhost-chart');
+        navigate('/computing/vmhost-chart');
+    };
+
+    // 스토리지
     const handleFirstDivClickStorage = () => {
         if (selectedDiv !== 'data_center') {
             setSelectedDiv('data_center');
-            setSelectedDisk(null);  // 하위 항목 선택 해제
+            setSelectedDisk(null);
             navigate('/storage');
         }
     };
@@ -329,10 +253,11 @@ const handleDetailClickStorage = (diskName) => {
     const handleSecondDivClickStorage = () => {
         if (selectedDiv !== 'storage_domain') {
             setSelectedDiv('storage_domain');
-            setSelectedDisk(null);  // 하위 항목 선택 해제
+            setSelectedDisk(null);
             navigate('/storage-domain');
         }
     };
+
     const toggleSecondVisibleStorage = (e) => {
         e.stopPropagation();
         setIsSecondVisibleStorage(!isSecondVisibleStorage);
@@ -395,11 +320,13 @@ const handleDetailClickStorage = (diskName) => {
         navigate(`/computing/host/${name}`);
         setSelectedDiv(name);
     };
+
     const handleMicrochipIconClick = (name) => {
+        setSelectedDiv(name);
+   
+        setIsThirdVisible(true);
         navigate(`/computing/${name}`);
-        setSelectedDiv(name); 
     };
-    const [selectedDetail, setSelectedDetail] = useState(null);
 
 
     return (
@@ -465,8 +392,10 @@ const handleDetailClickStorage = (diskName) => {
             id="aside_popup_first" 
             style={{ backgroundColor: selectedDiv === 'data_center' ? 'rgb(218, 236, 245)' : '' }} 
             onClick={() => {
-                setSelectedDiv('data_center');
-                navigate('/computing/datacenter');
+                if (selectedDiv !== 'data_center') {
+                    setSelectedDiv('data_center');
+                    navigate('/computing/datacenter');
+                }
             }}
         >
             <i 
@@ -475,53 +404,86 @@ const handleDetailClickStorage = (diskName) => {
                     e.stopPropagation();
                     setIsSecondVisible(!isSecondVisible);
                     setIsThirdVisible(false); // 하위 항목들 모두 접기
+                    setIsFourthVisible(false); // 하위 항목들 모두 접기
                     setIsLastVisible(false);  // 하위 항목들 모두 접기
                 }}
             ></i>
             <i className="fa fa-building-o"></i>
-            <span>data_center</span>
+            <span>Rutil manager</span>
         </div>
         {isSecondVisible && (
             <div 
                 className="aside_popup_second_content" 
                 id="aside_popup_second" 
-                style={{ backgroundColor: selectedDiv === 'cluster' ? 'rgb(218, 236, 245)' : '' }} 
+                style={{ backgroundColor: selectedDiv === 'cluster' ? 'rgb(218, 236, 245)' : '' }}
                 onClick={() => {
-                    setSelectedDiv('cluster');
-                    navigate('/computing/cluster');
+                    if (selectedDiv !== 'cluster') {
+                        setSelectedDiv('cluster');
+                        navigate('/computing/cluster');
+                    }
                 }}
             >
-                <i className={`fa fa-chevron-${isThirdVisible ? 'down' : 'right'}`} 
+                <i
+                    className={`fa fa-chevron-${isThirdVisible ? 'down' : 'right'}`}
                     onClick={(e) => {
                         e.stopPropagation();
                         setIsThirdVisible(!isThirdVisible);
+                        setIsFourthVisible(false);  // 하위 항목들 모두 접기
                         setIsLastVisible(false);  // 하위 항목들 모두 접기
+                        
                     }}
                 ></i>
                 <i className="fa fa-building-o"></i>
-                <span>클러스터</span>
+                <span>data_center</span>
             </div>
         )}
         {isThirdVisible && (
             <div 
                 className="aside_popup_third_content" 
                 id="aside_popup_third" 
-                style={{ backgroundColor: selectedDiv === 'host' ? 'rgb(218, 236, 245)' : '' }} 
+                style={{ backgroundColor: location.pathname === '/computing/host' ? 'rgb(218, 236, 245)' : '' }} 
                 onClick={() => {
-                    setSelectedDiv('host');
-                    navigate('/computing/host');
+                    if (selectedDiv !== 'host') {
+                        setSelectedDiv('host');
+                        navigate('/computing/host');
+                    }
                 }}
             >
-                <i className={`fa fa-chevron-${isLastVisible ? 'down' : 'right'}`} 
+                <i className={`fa fa-chevron-${isFourthVisible ? 'down' : 'right'}`} 
                     onClick={(e) => {
                         e.stopPropagation();
-                        setIsLastVisible(!isLastVisible);
+                        setIsFourthVisible(!isFourthVisible);
+                        setIsLastVisible(false);  // 하위 항목들 모두 접기
                     }}
                 ></i>
                 <i className="fa fa-building-o"></i>
-                <span>호스트</span>
+                <span>클러스터</span>
             </div>
+        )}  
+
+        {isFourthVisible && (
+            <div 
+            className="aside_popup_fourth_content" 
+            id="aside_popup_fourth" 
+            style={{ backgroundColor: selectedDiv === 'vmhost-chart' ? 'rgb(218, 236, 245)' : '' }} 
+            onClick={() => {
+                if (selectedDiv !== 'vmhost-chart') {
+                    setSelectedDiv('vmhost-chart');
+                    navigate('/computing/vmhost-chart');
+                }
+            }}
+        >
+            <i className={`fa fa-chevron-${isLastVisible ? 'down' : 'right'}`} 
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setIsLastVisible(!isLastVisible);
+                }}
+            ></i>
+            <i className="fa fa-building-o"></i>
+            <span>호스트</span>
+        </div>
         )}
+
         {isLastVisible && (
             <div id="aside_popup_last_machine">
                 <div
@@ -649,7 +611,7 @@ const handleDetailClickStorage = (diskName) => {
                 style={{ backgroundColor: selectedDiv === 'default' ? 'rgb(218, 236, 245)' : '' }}
                 onClick={() => {
                     setSelectedDiv('default');
-                    setIsSecondVisibleNetwork(!isSecondVisibleNetwork);
+                   
                     navigate('/network');
                 }}
             >

@@ -55,7 +55,7 @@
     display: flex;
     justify-content: space-between;
     font-size: 0.5em;
-    min-width: 15%;
+    min-width: 11%;
     align-items: center; /* 세로 중앙 정렬 추가 */
 }
 #header_left span{
@@ -147,14 +147,22 @@
 }
 .aside_popup_content i:first-child,
 .aside_popup_second_content i:first-child,
-.aside_popup_third_content i:first-child
+.aside_popup_third_content i:first-child,
+.aside_popup_fourth_content i:first-child
  {
     font-size: 0.24rem;
     margin-right: 0.27rem;
 }
+.aside_popup_third_content{
+    padding-left: 0.6rem;
+}
+.aside_popup_fourth_content{
+    padding-left: 0.8rem;
+}
 .aside_popup_content>span,
 .aside_popup_second_content>span, 
-.aside_popup_third_content>span
+.aside_popup_third_content>span,
+.aside_popup_fourth_content>span
 {
     margin-left: 0.1rem;
 }
@@ -175,7 +183,7 @@
     margin-left: 0.1rem;
 }
 .aside_popup_second_content{
-    padding-left: 0.5rem;
+    padding-left: 0.4rem;
     
 }
 /* 우클릭 메뉴박스*/
@@ -2908,7 +2916,7 @@ form>div
 
 
 .content_detail_section{
-    width: 100%;
+    width: 96%;
     background: white;
     position: relative;
 }
@@ -4337,7 +4345,9 @@ box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
     color: rgb(10, 55, 107);
     font-weight: 600;
 }
-
+.host_filter_btns button:hover{
+    background-color: #dbdbdb;
+}
 .host_network_boxs{
     border: 1px solid black;
     background-color: rgb(229 255 251);
@@ -4404,3 +4414,5 @@ box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 @media screen and (max-width:482px) {
 
 }
+
+

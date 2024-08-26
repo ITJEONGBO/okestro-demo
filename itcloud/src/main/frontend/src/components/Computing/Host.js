@@ -5,6 +5,7 @@ import HeaderButton from '../button/HeaderButton';
 import { Table } from '../table/Table';
 import HostDetail from './HostDetail';
 import './css/Host.css';
+import Footer from '../footer/Footer';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -494,6 +495,8 @@ const Host = () => {
           <button onClick={closeModal}>취소</button>
         </div>
       </Modal>
+      
+      <Footer/>
     </div>
   );
 };

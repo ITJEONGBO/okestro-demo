@@ -796,7 +796,8 @@ const Dashboard = () => {
       {/* 대시보드 section */}
       <div id="dash_board">
         <div id="dash_boxs">
-          <div className="box">
+
+          <div className="box" onClick={() => navigate('/computing/datacenter')}>
             <span>Datacenter</span>
             <h1>{data.datacenters}</h1>
             <div className="arrows">
@@ -822,7 +823,7 @@ const Dashboard = () => {
           </div>
           
           {/*수정해야됨 */}
-          <div className="box" onClick={() => navigate('/computing/vm')}> 
+          <div className="box" onClick={() => navigate('/computing/vmhost-chart')}> 
             <span>Virtual machine</span>
             <h1>{data.vms}</h1>
             <div className="arrows">

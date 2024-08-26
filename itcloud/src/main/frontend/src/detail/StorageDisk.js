@@ -4,6 +4,7 @@ import NavButton from '../components/navigation/NavButton';
 import HeaderButton from '../components/button/HeaderButton';
 import { Table } from '../components/table/Table';
 import './css/StorageDisk.css';
+import Footer from '../components/footer/Footer';
 
 function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const { name } = useParams(); // URL에서 name 파라미터를 가져옵니다.
@@ -233,6 +234,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
           )}
         </div>
       </div>
+      <Footer/>
     </div>
   );
 }

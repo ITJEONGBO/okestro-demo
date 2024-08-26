@@ -17,6 +17,7 @@ import StorageDomain from './detail/StorageDomain';
 import StorageDisk from './detail/StorageDisk';
 import DataCenterDetail from './components/Computing/DataCenterDetail';
 import './App.css';
+import VmHostChart from './components/Computing/VmHostChart';
 function App() {
     return (
         <Router>
@@ -31,6 +32,7 @@ function App() {
                     <Route path="/setting" element={<Setting />} />
                     <Route path="/computing/:name" element={<Vm />} />
                     <Route path="/computing/host" element={<Host />} />
+                    <Route path="/computing/vmhost-chart" element={<VmHostChart />} />
                     <Route path="/computing/host/:name" element={<HostDetail />}/>
                     <Route path="/computing/cluster" element={<Cluster />} />
                     <Route path="/computing/cluster/:name" element={<ClusterName />} /> 

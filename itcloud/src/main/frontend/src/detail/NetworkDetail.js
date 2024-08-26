@@ -5,6 +5,7 @@ import HeaderButton from '../components/button/HeaderButton';
 import { Table } from '../components/table/Table';
 import './css/NetworkDetail.css';
 import { useParams } from 'react-router-dom';
+import Footer from '../components/footer/Footer';
 
 function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   // 테이블컴포넌트
@@ -663,6 +664,7 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
           </div>
         </div>
       </Modal>
+      <Footer/>
     </div>
   );
 }
