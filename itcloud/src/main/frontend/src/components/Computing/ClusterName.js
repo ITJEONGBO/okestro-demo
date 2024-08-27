@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
 import { Table } from '../table/Table';
-import NetworkDetail from '../../detail/NetworkDetail';
+
 import { useParams } from 'react-router-dom';
 
 import './css/ClusterName.css';
+import NetworkDetail from '../Network/NetworkDetail';
 
 function ClusterName() {
     const { name } = useParams();

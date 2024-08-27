@@ -7,10 +7,10 @@ import './MainOuter.css';
 import Cluster from './Computing/Cluster';
 import Host from './Computing/Host';
 import Vm from './Computing/Vm';
-import Computing from './Computing';
+import Computing from './Computing/Computing';
 import Dashboard from './Dashboard'; // Dashboard 컴포넌트를 import
-import Network from './Network';
-import NetworkDetail from '../detail/NetworkDetail';
+import Network from './Network/Network';
+
 import Storage from './Storage'; // Storage.js 파일에서 가져옴
 import StorageDomain from '../detail/StorageDomain'; // StorageDomain.js 파일에서 가져옴
 import StorageDisk from '../detail/StorageDisk'; // StorageDisk.js 파일에서 가져옴
@@ -487,18 +487,18 @@ function MainOuter({ children }) {
         {isLastVisible && (
             <div id="aside_popup_last_machine">
                 <div
-                    onClick={() => handleUserIconClick('192.168.0.80')}
-                    onContextMenu={(e) => handleContextMenu(e, '192.168.0.80')}
-                    onMouseEnter={() => handleMouseEnter('192.168.0.80')}
+                    onClick={() => handleUserIconClick('host01.ititnfo.com')}
+                    onContextMenu={(e) => handleContextMenu(e, 'host01.ititnfo.com')}
+                    onMouseEnter={() => handleMouseEnter('host01.ititnfo.com')}
                     onMouseLeave={handleMouseLeave}
                     style={{
-                        backgroundColor: location.pathname === '/computing/host/192.168.0.80' ? 'rgb(218, 236, 245)' : 
-                                        selectedDiv === '192.168.0.80' ? 'rgb(218, 236, 245)' : 
-                                        (hoverTarget === '192.168.0.80' ? '#e6eefa' : 'transparent')
+                        backgroundColor: location.pathname === '/computing/host/host01.ititnfo.com' ? 'rgb(218, 236, 245)' : 
+                                        selectedDiv === 'host01.ititnfo.com' ? 'rgb(218, 236, 245)' : 
+                                        (hoverTarget === 'host01.ititnfo.com' ? '#e6eefa' : 'transparent')
                     }}
                 >
                     <i className="fa fa-user"></i>
-                    <span>192.168.0.80</span>
+                    <span>host01.ititnfo.com</span>
                 </div>
                 <div
                     onClick={() => handleMicrochipIconClick('HostedEngine')}
@@ -551,7 +551,7 @@ function MainOuter({ children }) {
                 style={{ backgroundColor: selectedDiv === 'storage_domain' ? 'rgb(218, 236, 245)' : '' }}
                 onClick={() => {
                     setSelectedDiv('storage_domain');
-                    navigate('/storage-domain');
+                    navigate('/storage-domainpart');
                 }}
             >
                 <i

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
-import NavButton from '../components/navigation/NavButton';
-import HeaderButton from '../components/button/HeaderButton';
-import { Table } from '../components/table/Table';
+import NavButton from '../navigation/NavButton';
+import HeaderButton from '../button/HeaderButton';
+import { Table } from '../table/Table';
 import './css/NetworkDetail.css';
 import { useParams } from 'react-router-dom';
-import Footer from '../components/footer/Footer';
+import Footer from '../footer/Footer';
 
 function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   // 테이블컴포넌트
@@ -68,32 +68,40 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   // 클러스터 팝업
   const clusterPopupColumns = [
     { header: '이름', accessor: 'name', clickable: false },
-    { header: '호환 버전', accessor: 'compatVersion', clickable: false },
-    { header: '연결된 네트워크', accessor: 'connectedNetwork', clickable: false },
-    { header: '네트워크 상태', accessor: 'networkStatus', clickable: false },
-    { header: '필수 네트워크', accessor: 'requiredNetwork', clickable: false },
-    { header: '네트워크 역할', accessor: 'networkRole', clickable: false, style: { textAlign: 'center' } },
-    { header: '설명', accessor: 'description', clickable: false },
+    { header: '모두 할당', accessor: 'allAssigned', clickable: false },
+    { header: '모두 필요', accessor: 'allRequired', clickable: false },
+    { header: '가상 머신 네트 관리', accessor: 'vmNetMgmt', clickable: false, style: { textAlign: 'center' } },
+    { header: '네트워크 출력', accessor: 'networkOutput', clickable: false },
+    { header: '마이그레이션 네트워크', accessor: 'migrationNetwork', clickable: false },
+    { header: 'Gluster 네트워크', accessor: 'glusterNetwork', clickable: false },
+    { header: '기본 라우팅', accessor: 'defaultRouting', clickable: false },
   ];
-
+  
   const clusterPopupData = [
     {
       name: 'Default',
-      compatVersion: '4.7',
-      connectedNetwork: <i className="fa fa-chevron-left"></i>,
-      networkStatus: <i className="fa fa-chevron-left"></i>,
-      requiredNetwork: <i className="fa fa-chevron-left"></i>,
-      networkRole: (
+      allAssigned: (
         <>
-          <i className="fa fa-chevron-left"></i>
-          <i className="fa fa-chevron-left"></i>
-          <i className="fa fa-chevron-left"></i>
-          <i className="fa fa-chevron-left"></i>
+          <input type="checkbox" checked /> <label>할당</label>
         </>
       ),
-      description: 'The default server cluster',
+      allRequired: (
+        <>
+          <input type="checkbox" checked/> <label>필요</label>
+        </>
+      ),
+      vmNetMgmt: (
+        <>
+          <i class="fa fa-star" style={{ color: 'green'}}></i>
+        </>
+      ),
+      networkOutput: <input type="checkbox" />,
+      migrationNetwork: <input type="checkbox"/>,
+      glusterNetwork: <input type="checkbox"/>,
+      defaultRouting: <input type="checkbox"/>,
     },
   ];
+  
   // 호스트
   const hostColumns = [
     { header: '', accessor: 'icon', clickable: false },
@@ -603,7 +611,7 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
           </div>
         </div>
       </Modal>
-       {/*클러스터(네트워크 관리)팝업 -> 수정필요*/}
+       {/*클러스터(네트워크 관리)팝업*/}
        <Modal
         isOpen={activePopup === 'cluster_network_popup'}
         onRequestClose={closePopup}
@@ -612,18 +620,16 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         overlayClassName="Overlay"
         shouldCloseOnOverlayClick={false}
       >
-        <div className="vnic_new_content_popup">
+        <div className="manage_network_popup">
           <div className="network_popup_header">
             <h1>네트워크 관리</h1>
             <button onClick={closePopup}><i className="fa fa-times"></i></button>
           </div>
           
-          <div className="table_outer2">
+          <div className="section_table_outer">
             <Table columns={clusterPopupColumns} data={clusterPopupData} onRowClick={() => console.log('Row clicked')} />
-            </div>
+          </div>
           
-
-
           <div className="edit_footer">
             <button style={{ display: 'none' }}></button>
             <button>OK</button>

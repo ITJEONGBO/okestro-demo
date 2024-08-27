@@ -73,9 +73,40 @@
 }
 #header_left > div:hover{
     border-radius: 50%;
-    background-color: #a4d9db;
-
-    
+    background-color: #dadadad8;
+}
+/* Header 아이콘들 */
+.user_btn,.fa-bell-wrapper{
+    position: relative;
+}
+.user_loginbox{
+    position: absolute;
+    background-color: #ffffff;
+    z-index: 3;
+    width: 120%;
+    left: -4%;
+    font-size: 0.3rem;
+    border: 1px solid rgb(204, 204, 204);
+    top: 99%;
+    border-radius: 2px;
+}
+.user_loginbox>div{
+    padding: 0.09rem 0.12rem ;
+}
+.user_loginbox>div:hover{
+    background-color: #ebececd8;
+}
+.bell_box{
+    position: absolute;
+    background-color: #ffffff;
+    z-index: 3;
+    width: 11.65vw;
+    left: -4%;
+    font-size: 0.3rem;
+    border: 1px solid rgb(204, 204, 204);
+    top: 99%;
+    height: 89.9vh;
+    border-radius: 2px;
 }
 /*차트위에 아이콘 제거*/
 .apexcharts-menu-icon,.apexcharts-toolbar>div{
@@ -413,6 +444,7 @@
     display: flex;
     align-items: center; /* 수직 가운데 정렬 추가 */
     color: #0b4db5;
+    padding: 0.12rem 0;
 }
 .section_header_left span,
 .section_header_left div,
@@ -4390,13 +4422,29 @@ box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
     padding: 0.6rem 0.3rem;
 }
 /*끝*/
-/*Network.js*/
 
-
-/*끝*/
-
-
-
+/*클러스터(네트워크 관리)*/
+.manage_network_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 60.4vh;
+    width: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+.manage_network_popup>.section_table_outer{
+    margin-top: 0.2rem;
+}
+.manage_network_popup>.section_table_outer td{
+    text-align: left;
+    
+}
+/**/
 
 
 

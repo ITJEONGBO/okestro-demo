@@ -66,8 +66,10 @@ const Storage = () => {
     },
   ];
 
-  const handleRowClick = (row) => {
-    navigate(`/storage-disk/${row.alias}`);
+  const handleRowClick = (row, column) => {
+    if (column.accessor === 'alias') {  // 'alias' 컬럼만 체크
+        navigate(`/storage-disk/${row.alias}`);
+    }
 };
   // 도메인 테이블 컴포넌트 
   const domaincolumns = [

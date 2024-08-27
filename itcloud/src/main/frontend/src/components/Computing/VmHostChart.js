@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
 import HeaderButton from '../button/HeaderButton';
 import { Table } from '../table/Table';
-import HostDetail from './HostDetail';
 import './css/Host.css';
 import Footer from '../footer/Footer';
 
@@ -13,7 +12,7 @@ Modal.setAppElement('#root');
 const VmHostChart = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [activeChart, setActiveChart] = useState('machine'); // Default to 'machine' chart
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -37,15 +36,11 @@ const VmHostChart = () => {
     'OVA로 내보내기',
   ];
 
-
-
   const handleRowClick = (row, column) => {
     if (column.accessor === 'name') {
       navigate(`/computing/host/${row.name}`); // 해당 이름을 URL로 전달하며 HostDetail로 이동합니다.
     }
   };
-
-
 
   const columns = [
     { header: '상태', accessor: 'status', clickable: false },
@@ -68,6 +63,7 @@ const VmHostChart = () => {
       vmCount: 7,
     },
   ];
+
   const templatedata = [
     {
       status: '',
@@ -94,11 +90,15 @@ const VmHostChart = () => {
         <div className="empty_nav_outer">
           <div className="section_table_outer">
             <div className='host_filter_btns'>
-              <button>가상머신 목록</button>
-              <button>템플릿목록</button>
+              <button onClick={() => setActiveChart('machine')}>가상머신 목록</button>
+              <button onClick={() => setActiveChart('template')}>템플릿목록</button>
             </div>
-            <Table columns={columns} data={data} onRowClick={handleRowClick} />
-            <Table columns={columns} data={templatedata} onRowClick={handleRowClick} />
+            {activeChart === 'machine' && (
+              <Table columns={columns} data={data} onRowClick={handleRowClick} className='machine_chart' />
+            )}
+            {activeChart === 'template' && (
+              <Table columns={columns} data={templatedata} onRowClick={() => {}} className='template_chart' />
+            )}
           </div>
         </div>
       </div>

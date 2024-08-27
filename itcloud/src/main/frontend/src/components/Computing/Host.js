@@ -3,18 +3,14 @@ import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
 import HeaderButton from '../button/HeaderButton';
 import { Table } from '../table/Table';
-import HostDetail from './HostDetail';
-import './css/Host.css';
 import Footer from '../footer/Footer';
 
-// React Modal 설정
 Modal.setAppElement('#root');
 
 const Host = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showHostName, setShowHostName] = useState(false);
-  const [활성화된섹션, set활성화된섹션] = useState('일반_섹션'); // 기본 섹션을 '일반_섹션'으로 초기화
+  const [활성화된섹션, set활성화된섹션] = useState('일반_섹션');
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -40,14 +36,13 @@ const Host = () => {
   ];
 
   useEffect(() => {
-    // "일반" 섹션의 스타일을 기본 선택 상태로 설정
     const 기본섹션 = document.getElementById('일반_섹션_btn');
     if (기본섹션) {
       기본섹션.style.backgroundColor = '#EDEDED';
       기본섹션.style.color = '#1eb8ff';
       기본섹션.style.borderBottom = '1px solid blue';
     }
-  }, []); // 빈 배열을 의존성으로 전달하여 컴포넌트가 마운트될 때만 실행되게 함
+  }, []);
 
   const 섹션변경 = (section) => {
     set활성화된섹션(section);
@@ -68,31 +63,48 @@ const Host = () => {
 
   const handleRowClick = (row, column) => {
     if (column.accessor === 'name') {
-      navigate(`/computing/host/${row.name}`); // 해당 이름을 URL로 전달하며 HostDetail로 이동합니다.
+      navigate(`/computing/host/${row.name}`);
+    } else if (column.accessor === 'cluster') {
+      navigate(`/computing/cluster/${row.cluster}`);
     }
   };
 
-
-
   const columns = [
-    { header: '상태', accessor: 'status', clickable: false },
+    { header: '', accessor: 'iconStatus', clickable: false },
+    { header: '', accessor: 'iconWarning', clickable: false },
+    { header: '', accessor: 'iconSPM', clickable: false },
     { header: '이름', accessor: 'name', clickable: true },
-    { header: '호환 버전', accessor: 'version', clickable: false },
-    { header: '설명', accessor: 'description', clickable: false },
-    { header: '클러스터 CPU 유형', accessor: 'cpuType', clickable: false },
-    { header: '호스트 수', accessor: 'hostCount', clickable: false },
-    { header: '가상 머신 수', accessor: 'vmCount', clickable: false },
+    { header: '코멘트', accessor: 'comment', clickable: false },
+    { header: '호스트 이름/IP', accessor: 'hostname', clickable: false },
+    { header: '클러스터', accessor: 'cluster', clickable: true }, // 클러스터 컬럼에 clickable 추가
+    { header: '데이터 센터', accessor: 'dataCenter', clickable: false },
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '가상 머신', accessor: 'vmCount', clickable: false },
+    { header: '메모리', accessor: 'memoryUsage', clickable: false },
+    { header: 'CPU', accessor: 'cpuUsage', clickable: false },
+    { header: '네트워크', accessor: 'networkUsage', clickable: false },
+    { header: 'SPM', accessor: 'spm', clickable: false },
   ];
 
   const data = [
     {
-      status: '',
-      name: '192.168.0.80',
-      version: '4.7',
-      description: 'The default server cluster',
-      cpuType: 'Secure Intel Cascadelak',
-      hostCount: 2,
-      vmCount: 7,
+      iconStatus: [
+        <i className="fa fa-exclamation-triangle" style={{ color: 'yellowgreen' }} key="icon1"></i>,
+        <i className="fa fa-exclamation-triangle" style={{ color: 'red' }} key="icon2"></i>,
+      ],
+      iconWarning: <i className="fa fa-exclamation-triangle" style={{ color: 'red' }}></i>,
+      iconSPM: <i className="fa fa-crown" style={{ color: 'gold' }}></i>,
+      name: 'host01.ititnfo.com',
+      comment: '192.168.0.80',
+      hostname: 'host01.ititnfo.com',
+      cluster: 'Default',
+      dataCenter: 'Default',
+      status: 'Up',
+      vmCount: 1,
+      memoryUsage: <div style={{ width: '50px', background: 'orange', color: 'white', textAlign: 'center' }}>80%</div>,
+      cpuUsage: <div style={{ width: '50px', background: '#6699ff', color: 'white', textAlign: 'center' }}>6%</div>,
+      networkUsage: <div style={{ width: '50px', background: '#99ccff', color: 'white', textAlign: 'center' }}>0%</div>,
+      spm: 'SPM',
     },
   ];
 

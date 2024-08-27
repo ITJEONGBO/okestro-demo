@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // useNavigate 훅 추가
+import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
-import './Network.css';
-import { Table } from './table/Table'; // 테이블 컴포넌트를 가져옵니다.
-import HeaderButton from './button/HeaderButton';
+import './css/Network.css';
+import { Table } from '../table/Table';
+import HeaderButton from '../button/HeaderButton';
 
-// React Modal 설정
 Modal.setAppElement('#root');
 
 const Network = () => {
@@ -13,13 +12,15 @@ const Network = () => {
     const [selectedTab, setSelectedTab] = useState('network_new_common_btn');
     const [activePopup, setActivePopup] = useState(null);
 
-    const navigate = useNavigate(); // useNavigate 훅 초기화
+    const navigate = useNavigate();
 
-    // 테이블 행 클릭 시 NetworkDetail로 이동
-    const handleNetworkNameClick = (row) => {
-        navigate(`/network/${row.name}`); // name 값을 URL로 전달하여 상세 페이지로 이동
+    // 테이블 행 클릭 시 NetworkDetail로 이동 (name 컬럼만 이동)
+    const handleNetworkNameClick = (row, column) => {
+        if (column.accessor === 'name') {
+            navigate(`/network/${row.name}`); // name 값을 URL로 전달하여 상세 페이지로 이동
+        }
     };
-    
+
     // 폰트 사이즈 조절
     useEffect(() => {
         function adjustFontSize() {
@@ -36,7 +37,6 @@ const Network = () => {
         };
     }, []);
 
-    // footer
     const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
     const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
 

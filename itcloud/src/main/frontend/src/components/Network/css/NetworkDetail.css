@@ -213,6 +213,27 @@
         outline: none;
     }
     /*클러스터(네트워크 관리)*/
+.manage_network_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 60.4vh;
+    width: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+.manage_network_popup>.section_table_outer{
+    margin-top: 0.2rem;
+}
+.manage_network_popup>.section_table_outer td{
+    text-align: left;
+  
+}
+/**/
 .network_popup_table{
     font-size: 0.3rem;
     
