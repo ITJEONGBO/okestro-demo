@@ -93,9 +93,7 @@ subprojects {
     }
 
     val cleanDokkaModuleDocs by tasks.register<Copy>("cleanDokkaModuleDocs") {
-        subprojects {
-            delete(file("${this@subprojects.name}-dokka"))
-        }
+        delete(file("${this@subprojects.name}-dokka"))
     }
 }
 /*

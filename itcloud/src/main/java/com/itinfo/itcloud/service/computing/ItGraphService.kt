@@ -124,6 +124,7 @@ class GraphServiceImpl(
 		val page: Pageable = PageRequest.of(0, 3)
 		val vmSampleHistoryEntities: List<VmSamplesHistoryEntity> = vmSamplesHistoryRepository.findVmMemoryChart(page)
 		return vmSampleHistoryEntities.toVmMemUsageDtos(conn)
+			.filterNotNull()
 	}
 
 	override fun storageChart(): List<UsageDto> {

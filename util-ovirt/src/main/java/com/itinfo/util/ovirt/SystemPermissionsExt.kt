@@ -1,7 +1,9 @@
 package com.itinfo.util.ovirt
 
-import org.ovirt.engine.sdk4.Connection
+import com.itinfo.util.ovirt.error.*
+
 import org.ovirt.engine.sdk4.Error
+import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.services.PermissionService
 import org.ovirt.engine.sdk4.services.SystemPermissionsService
 import org.ovirt.engine.sdk4.types.Permission
@@ -18,7 +20,7 @@ fun Connection.findAllSystemPermissions(follow: String): Result<List<Permission>
 	Term.SYSTEM_PERMISSION.logSuccess("목록조회")
 }.onFailure {
 	Term.SYSTEM_PERMISSION.logFail("목록조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.srvSystemPermission(permissionId: String): PermissionService =
@@ -30,7 +32,7 @@ fun Connection.findSystemPermission(permissionId: String): Result<Permission?> =
 	Term.SYSTEM_PERMISSION.logSuccess("상세조회", permissionId)
 }.onFailure {
 	Term.SYSTEM_PERMISSION.logFail("상세조회", it, permissionId)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.addSystemPermission(permission: Permission): Result<Permission?> = runCatching {
@@ -39,7 +41,7 @@ fun Connection.addSystemPermission(permission: Permission): Result<Permission?> 
 	Term.SYSTEM_PERMISSION.logSuccess("생성", it.id())
 }.onFailure {
 	Term.SYSTEM_PERMISSION.logFail("생성", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.removePermission(permissionId: String): Result<Boolean> = runCatching {
@@ -49,5 +51,5 @@ fun Connection.removePermission(permissionId: String): Result<Boolean> = runCatc
 	Term.SYSTEM_PERMISSION.logSuccess("삭제", permissionId)
 }.onFailure {
 	Term.SYSTEM_PERMISSION.logFail("삭제", it, permissionId)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }

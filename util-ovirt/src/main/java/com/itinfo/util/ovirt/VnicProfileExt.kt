@@ -1,5 +1,8 @@
 package com.itinfo.util.ovirt
 
+import com.itinfo.util.ovirt.error.*
+
+import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.services.VnicProfileService
 import org.ovirt.engine.sdk4.services.VnicProfilesService
@@ -14,7 +17,7 @@ fun Connection.findAllVnicProfiles(): Result<List<VnicProfile>> = runCatching {
 	Term.VNIC_PROFILE.logSuccess("목록조회")
 }.onFailure {
 	Term.VNIC_PROFILE.logFail("목록조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvVnicProfile(vnicProfileId: String): VnicProfileService =
@@ -26,7 +29,7 @@ fun Connection.findVnicProfile(vnicProfileId: String): Result<VnicProfile?> = ru
 	Term.VNIC_PROFILE.logSuccess("상세조회", vnicProfileId)
 }.onFailure {
 	Term.VNIC_PROFILE.logFail("상세조회", it, vnicProfileId)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.updateVnicProfile(vnicProfileId: String, vnicProfile: VnicProfile): Result<VnicProfile?> = runCatching {
@@ -35,7 +38,7 @@ fun Connection.updateVnicProfile(vnicProfileId: String, vnicProfile: VnicProfile
 	Term.VNIC_PROFILE.logSuccess("편집", vnicProfileId)
 }.onFailure {
 	Term.VNIC_PROFILE.logFail("편집", it, vnicProfileId)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.removeVnicProfile(vnicProfileId: String): Result<Boolean> = runCatching {
@@ -45,5 +48,5 @@ fun Connection.removeVnicProfile(vnicProfileId: String): Result<Boolean> = runCa
 	Term.VNIC_PROFILE.logSuccess("삭제", vnicProfileId)
 }.onFailure {
 	Term.VNIC_PROFILE.logFail("삭제", it, vnicProfileId)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }

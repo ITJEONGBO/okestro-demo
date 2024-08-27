@@ -1,5 +1,8 @@
 package com.itinfo.util.ovirt
 
+import com.itinfo.util.ovirt.error.*
+
+import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.services.OpenstackVolumeProviderService
 import org.ovirt.engine.sdk4.services.OpenstackVolumeProvidersService
@@ -14,7 +17,7 @@ fun Connection.findAllOpenStackVolumeProviders(): Result<List<OpenStackVolumePro
 	Term.OPEN_STAK_VOLUME_PROVIDER.logSuccess("목록조회")
 }.onFailure {
 	Term.OPEN_STAK_VOLUME_PROVIDER.logFail("목록조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvOpenStackVolumeProvider(openStackVolumeProviderId: String): OpenstackVolumeProviderService =
@@ -26,5 +29,5 @@ fun Connection.findOpenStackVolumeProvider(openStackVolumeProviderId: String): R
 	Term.OPEN_STAK_VOLUME_PROVIDER.logSuccess("상세조회")
 }.onFailure {
 	Term.OPEN_STAK_VOLUME_PROVIDER.logFail("상세조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }

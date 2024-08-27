@@ -79,7 +79,7 @@ interface ItAffinityService {
 	 * @return 201 / 404
 	 */
 	@Throws(Error::class)
-	fun addAffinityGroup(id: String, cluster: Boolean, agVo: AffinityGroupVo): Res<Boolean>
+	fun addAffinityGroup(id: String, cluster: Boolean, agVo: AffinityGroupVo): Boolean
 	/**
 	 * [ItAffinityService.setAffinityGroup]
 	 * 선호도 그룹 편집창
@@ -97,7 +97,7 @@ interface ItAffinityService {
 	 * TODO:HELP
 	 */
 	@Throws(Error::class)
-	fun editAffinityGroup(agVo: AffinityGroupVo): Res<Boolean>
+	fun editAffinityGroup(agVo: AffinityGroupVo): Boolean
 	/**
 	 * [ItAffinityService.deleteAffinityGroup]
 	 * 선호도 그룹 삭제
@@ -109,7 +109,7 @@ interface ItAffinityService {
 	 * @param agId [String] 해당 선호도 그룹의 ID
 	 */
 	@Throws(Error::class)
-	fun deleteAffinityGroup(id: String, cluster: Boolean, agId: String): Res<Boolean>
+	fun deleteAffinityGroup(id: String, cluster: Boolean, agId: String): Boolean
 
 	/**
 	 * [ItAffinityService.findAllAffinityLabels]
@@ -228,7 +228,7 @@ class AffinityServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun addAffinityGroup(id: String, cluster: Boolean, agVo: AffinityGroupVo): Res<Boolean> {
+	override fun addAffinityGroup(id: String, cluster: Boolean, agVo: AffinityGroupVo): Boolean {
 		log.info("addAffinityGroup ... id: {}, cluster: {}", id, cluster)
 		val clusterId: String =
 			if (cluster) id
@@ -240,7 +240,7 @@ class AffinityServiceImpl(
 
 		val res: Result<AffinityGroup> =
 			conn.addAffinityGroupFromCluster(clusterId, ag.build(), agVo.name)
-		return if (res.isSuccess && res.getOrNull() != null) Res.successResponse() else Res.fail(res.exceptionOrNull())
+		return res.isSuccess
 	}
 
 	@Throws(Error::class)
@@ -259,7 +259,7 @@ class AffinityServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun editAffinityGroup(agVo: AffinityGroupVo): Res<Boolean> {
+	override fun editAffinityGroup(agVo: AffinityGroupVo): Boolean {
 		val agId = agVo.id
 
 		val ag: AffinityGroupBuilder = getAffinityGroupBuilder(agVo)
@@ -269,20 +269,21 @@ class AffinityServiceImpl(
 		editVmLabels(system, ag, agVo)
 		editHostMembers(system, ag, agVo)
 		editVmMembers(system, ag, agVo)
-
-		val res: Result<AffinityGroup> = conn.updateAffinityGroupFromCluster(agVo.clusterId, ag.build(), agVo.name)
-		return if (res.isSuccess && res.getOrNull() != null) Res.successResponse() else Res.fail(res.exceptionOrNull())
+		val res: Result<AffinityGroup> =
+			conn.updateAffinityGroupFromCluster(agVo.clusterId, ag.build(), agVo.name)
+		return res.isSuccess
 	}
 
 	@Throws(Error::class)
-	override fun deleteAffinityGroup(id: String, cluster: Boolean, agId: String): Res<Boolean> {
+	override fun deleteAffinityGroup(id: String, cluster: Boolean, agId: String): Boolean {
 		log.info("deleteAffinityGroup ... id: {}, cluster: {}, agId: {}", id, cluster, agId)
 		val clusterId: String =
 			if (cluster) id
 			else conn.findVm(id).getOrNull()?.cluster()?.id() ?: ""
 
-		val res: Result<Boolean> = conn.removeAffinityGroupFromCluster(clusterId, agId)
-		return if (res.isSuccess) Res.successResponse() else Res.fail(res.exceptionOrNull())
+		val res: Result<Boolean> =
+			conn.removeAffinityGroupFromCluster(clusterId, agId)
+		return res.isSuccess
 	}
 
 	@Throws(Error::class)

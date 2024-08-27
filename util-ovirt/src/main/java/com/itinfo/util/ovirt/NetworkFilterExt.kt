@@ -1,7 +1,9 @@
 package com.itinfo.util.ovirt
 
-import org.ovirt.engine.sdk4.Connection
+import com.itinfo.util.ovirt.error.*
+
 import org.ovirt.engine.sdk4.Error
+import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.services.NetworkFilterService
 import org.ovirt.engine.sdk4.services.NetworkFiltersService
 import org.ovirt.engine.sdk4.types.NetworkFilter
@@ -18,7 +20,7 @@ fun Connection.findAllNetworkFilters(follow: String = ""): Result<List<NetworkFi
 	Term.NETWORK_FILTER.logSuccess("목록조회")
 }.onFailure {
 	Term.NETWORK_FILTER.logFail("목록조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvNetworkFilter(networkFilterId: String): NetworkFilterService =
@@ -30,5 +32,5 @@ fun Connection.findNetworkFilter(networkFilterId: String): Result<NetworkFilter?
 	Term.NETWORK_FILTER.logSuccess("상세조회", networkFilterId)
 }.onFailure {
 	Term.NETWORK_FILTER.logFail("상세조회", it, networkFilterId)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }

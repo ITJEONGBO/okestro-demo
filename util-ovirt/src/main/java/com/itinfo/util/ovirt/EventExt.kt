@@ -1,5 +1,8 @@
 package com.itinfo.util.ovirt
 
+import com.itinfo.util.ovirt.error.*
+
+import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.services.EventService
 import org.ovirt.engine.sdk4.services.EventsService
@@ -21,7 +24,7 @@ fun Connection.findAllEvents(searchQuery: String = "", follow: String = ""): Res
 	Term.EVENT.logSuccess("목록조회")
 }.onFailure {
 	Term.EVENT.logFail("목록조회")
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvEvent(eventId: String): EventService =
@@ -33,5 +36,5 @@ fun Connection.findEvent(eventId: String): Result<Event?> = runCatching {
 	Term.EVENT.logSuccess("상세조회")
 }.onFailure {
 	Term.EVENT.logFail("상세조회")
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }

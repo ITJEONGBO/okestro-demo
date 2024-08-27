@@ -1,5 +1,8 @@
 package com.itinfo.util.ovirt
 
+import com.itinfo.util.ovirt.error.*
+
+import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.services.CpuProfileService
 import org.ovirt.engine.sdk4.services.CpuProfilesService
@@ -14,7 +17,7 @@ fun Connection.findAllCpuProfiles(): Result<List<CpuProfile>> = runCatching {
 	Term.CPU_PROFILE.logSuccess("목록조회")
 }.onFailure {
 	Term.CPU_PROFILE.logFail("목록조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvCpuProfile(cpuProfileId: String): CpuProfileService =
@@ -26,5 +29,5 @@ fun Connection.findCpuProfile(cpuProfileId: String): Result<CpuProfile?> = runCa
 	Term.CPU_PROFILE.logSuccess("상세조회")
 }.onFailure {
 	Term.CPU_PROFILE.logFail("상세조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }

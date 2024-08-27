@@ -1,9 +1,8 @@
 package com.itinfo.util.ovirt
 
-import com.itinfo.util.ovirt.error.ErrorPattern
-import com.itinfo.util.ovirt.error.FailureType
-import com.itinfo.util.ovirt.error.toError
-import com.itinfo.util.ovirt.error.toResult
+import com.itinfo.util.ovirt.error.*
+
+import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.services.AffinityGroupsService
 import org.ovirt.engine.sdk4.services.AffinityGroupService
@@ -24,7 +23,6 @@ import org.ovirt.engine.sdk4.types.Vm
 import org.ovirt.engine.sdk4.types.ExternalProvider
 import org.ovirt.engine.sdk4.types.Network
 import org.ovirt.engine.sdk4.types.Permission
-import kotlin.Error
 
 private fun Connection.srvClusters(): ClustersService =
 	this.systemService.clustersService()
@@ -42,7 +40,7 @@ fun Connection.findAllClusters(searchQuery: String = "", follow: String = ""): R
 	Term.CLUSTER.logSuccess("목록조회")
 }.onFailure {
 	Term.CLUSTER.logFail("목록조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 
@@ -55,7 +53,7 @@ fun Connection.findCluster(clusterId: String): Result<Cluster?> = runCatching {
 	Term.CLUSTER.logSuccess("상세조회")
 }.onFailure {
 	Term.CLUSTER.logFail("상세조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.findClusterName(clusterId: String): Result<String> = runCatching {
@@ -64,7 +62,7 @@ fun Connection.findClusterName(clusterId: String): Result<String> = runCatching 
 	Term.CLUSTER.logSuccess("이름조회")
 }.onFailure {
 	Term.CLUSTER.logFail("이름조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun List<Cluster>.nameDuplicateCluster(clusterName: String, clusterId: String? = null): Boolean =
@@ -84,7 +82,7 @@ fun Connection.addCluster(cluster: Cluster): Result<Cluster?> = runCatching {
 	Term.CLUSTER.logSuccess("생성")
 }.onFailure {
 	Term.CLUSTER.logFail("생성", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.updateCluster(cluster: Cluster): Result<Cluster?> = runCatching {
@@ -100,7 +98,7 @@ fun Connection.updateCluster(cluster: Cluster): Result<Cluster?> = runCatching {
 	Term.CLUSTER.logSuccess("편집")
 }.onFailure {
 	Term.CLUSTER.logFail("편집", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.removeCluster(clusterId: String): Result<Boolean> = runCatching {
@@ -113,7 +111,7 @@ fun Connection.removeCluster(clusterId: String): Result<Boolean> = runCatching {
 	Term.CLUSTER.logSuccess("삭제")
 }.onFailure {
 	Term.CLUSTER.logFail("삭제", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 
@@ -150,7 +148,7 @@ fun Connection.findAllNetworksFromCluster(clusterId: String): Result<List<Networ
 	Term.CLUSTER.logSuccessWithin(Term.NETWORK, "목록조회")
 }.onFailure {
 	Term.CLUSTER.logFailWithin(Term.NETWORK, "목록조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvNetworkFromCluster(clusterId: String, networkId: String): ClusterNetworkService =
@@ -162,7 +160,7 @@ fun Connection.findNetworkFromCluster(clusterId: String, networkId: String): Res
 	Term.CLUSTER.logSuccessWithin(Term.NETWORK, "상세조회")
 }.onFailure {
 	Term.CLUSTER.logFailWithin(Term.NETWORK, "상세조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.addNetworkFromCluster(clusterId: String, network: Network): Result<Network?> = runCatching {
@@ -171,7 +169,7 @@ fun Connection.addNetworkFromCluster(clusterId: String, network: Network): Resul
 	Term.CLUSTER.logSuccessWithin(Term.NETWORK, "생성")
 }.onFailure {
 	Term.CLUSTER.logFailWithin(Term.NETWORK, "생성", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.updateNetworkFromCluster(clusterId: String, network: Network): Result<Network?> = runCatching {
@@ -180,7 +178,7 @@ fun Connection.updateNetworkFromCluster(clusterId: String, network: Network): Re
 	Term.CLUSTER.logSuccessWithin(Term.NETWORK, "편집")
 }.onFailure {
 	Term.CLUSTER.logFailWithin(Term.NETWORK, "편집", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.removeNetworkFromCluster(clusterId: String, networkId: String): Result<Boolean> = runCatching {
@@ -190,7 +188,7 @@ fun Connection.removeNetworkFromCluster(clusterId: String, networkId: String): R
 	Term.CLUSTER.logSuccessWithin(Term.NETWORK, "삭제")
 }.onFailure {
 	Term.CLUSTER.logFailWithin(Term.NETWORK, "삭제", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 /*
@@ -210,7 +208,7 @@ fun Connection.findAllExternalNetworkProviders(clusterId: String): Result<List<E
 	Term.EXTERNAL_NETWORK_PROVIDER.logSuccess("목록조회")
 }.onFailure {
 	Term.EXTERNAL_NETWORK_PROVIDER.logFail("목록조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvAffinityGroupsFromCluster(clusterId: String): AffinityGroupsService =
@@ -224,7 +222,7 @@ fun Connection.findAllAffinityGroupsFromCluster(clusterId: String): Result<List<
 	Term.CLUSTER.logSuccessWithin(Term.AFFINITY_GROUP, "목록조회", clusterId)
 }.onFailure {
 	Term.CLUSTER.logFailWithin(Term.AFFINITY_GROUP, "목록조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvAffinityGroupFromCluster(clusterId: String, agId: String): AffinityGroupService =
@@ -239,7 +237,7 @@ fun Connection.findAffinityGroupFromCluster(clusterId: String, agId: String, fol
 	Term.CLUSTER.logSuccessWithin(Term.AFFINITY_GROUP, "상세조회", clusterId)
 }.onFailure {
 	Term.CLUSTER.logFailWithin(Term.AFFINITY_GROUP, "상세조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.addAffinityGroupFromCluster(
@@ -262,7 +260,7 @@ fun Connection.addAffinityGroupFromCluster(
 	Term.CLUSTER.logSuccessWithin(Term.AFFINITY_GROUP, "생성", clusterId)
 }.onFailure {
 	Term.CLUSTER.logFailWithin(Term.AFFINITY_GROUP, "생성", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.updateAffinityGroupFromCluster(
@@ -284,7 +282,7 @@ fun Connection.updateAffinityGroupFromCluster(
 	Term.CLUSTER.logSuccessWithin(Term.AFFINITY_GROUP, "편집", clusterId)
 }.onFailure {
 	Term.CLUSTER.logFailWithin(Term.AFFINITY_GROUP, "편집", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.removeAffinityGroupFromCluster(
@@ -297,7 +295,7 @@ fun Connection.removeAffinityGroupFromCluster(
 	Term.CLUSTER.logSuccessWithin(Term.AFFINITY_GROUP, "삭제")
 }.onFailure {
 	Term.CLUSTER.logFailWithin(Term.AFFINITY_GROUP, "삭제", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.srvAffinityGroupHostsFromCluster(clusterId: String, agId: String): AffinityGroupHostsService =
@@ -335,6 +333,6 @@ fun Connection.findAllPermissionsFromCluster(clusterId: String): Result<List<Per
 	Term.CLUSTER.logSuccessWithin(Term.PERMISSION, "목록조회")
 }.onFailure {
 	Term.CLUSTER.logFailWithin(Term.PERMISSION, "목록조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 

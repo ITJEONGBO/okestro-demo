@@ -12,7 +12,8 @@ enum class FailureType(
 	ID_NOT_FOUND(404, "ID 없음"),
 	DUPLICATE(409, "이름 중복"),
 	UNPROCESSABLE_CONTENT(422, "다룰 수 없는 컨텐츠"),
-	UNKNOWN(499, "알 수 없는 오류");
+	UNKNOWN(499, "알 수 없는 오류"),
+	INTERNAL_SERVER_ERROR(500, "서버 에러입니다. 서버 팀에 연락주세요!");
 	companion object {
 		private val findMap: MutableMap<Int, FailureType> = ConcurrentHashMap<Int, FailureType>()
 		init {

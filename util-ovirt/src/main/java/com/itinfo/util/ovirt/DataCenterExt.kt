@@ -1,17 +1,12 @@
 package com.itinfo.util.ovirt
 
-import com.itinfo.util.ovirt.error.ErrorPattern
-import com.itinfo.util.ovirt.error.FailureType
-import com.itinfo.util.ovirt.error.toError
-import com.itinfo.util.ovirt.error.toResult
+import com.itinfo.util.ovirt.error.*
+
+import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.services.*
 import org.ovirt.engine.sdk4.types.*
-import kotlin.Error
 
-object DataCenterName {
-	const val KO: String = "클러스터"  //??
-}
 
 fun Connection.srvDataCenters(): DataCentersService =
 	this.systemService.dataCentersService()
@@ -29,7 +24,7 @@ fun Connection.findAllDataCenters(search: String = "", follow: String = ""): Res
 	Term.DATACENTER.logSuccess("목록조회")
 }.onFailure {
 	Term.DATACENTER.logFail("목록조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.srvDataCenter(dataCenterId: String): DataCenterService =
@@ -41,7 +36,7 @@ fun Connection.findDataCenter(dcId: String): Result<DataCenter?> = runCatching {
 	Term.DATACENTER.logSuccess("상세조회")
 }.onFailure {
 	Term.DATACENTER.logFail("상세조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.findDataCenterName(dataCenterId: String): String =
@@ -63,7 +58,7 @@ fun Connection.addDataCenter(dataCenter: DataCenter): Result<DataCenter?> = runC
 	Term.DATACENTER.logSuccess("생성")
 }.onFailure {
 	Term.DATACENTER.logFail("생성", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.updateDataCenter(dataCenter: DataCenter): Result<DataCenter?> = runCatching {
@@ -79,7 +74,7 @@ fun Connection.updateDataCenter(dataCenter: DataCenter): Result<DataCenter?> = r
 	Term.DATACENTER.logSuccess("편집")
 }.onFailure {
 	Term.DATACENTER.logFail("편집", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.removeDataCenter(dataCenterId: String): Result<Boolean> = runCatching {
@@ -93,7 +88,7 @@ fun Connection.removeDataCenter(dataCenterId: String): Result<Boolean> = runCatc
 	Term.DATACENTER.logSuccess("삭제")
 }.onFailure {
 	Term.DATACENTER.logFail("삭제", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 @Throws(InterruptedException::class)
@@ -126,7 +121,7 @@ fun Connection.findAllClustersFromDataCenter(dataCenterId: String): Result<List<
 	Term.DATACENTER.logSuccessWithin(Term.CLUSTER,"목록조회", dataCenterId)
 }.onFailure {
 	Term.DATACENTER.logFailWithin(Term.CLUSTER,"목록조회", it, dataCenterId)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.srvNetworksFromFromDataCenter(dataCenterId: String): DataCenterNetworksService =
@@ -138,7 +133,7 @@ fun Connection.findAllNetworksFromFromDataCenter(dataCenterId: String): Result<L
 	Term.DATACENTER.logSuccessWithin(Term.NETWORK,"목록조회", dataCenterId)
 }.onFailure {
 	Term.DATACENTER.logFailWithin(Term.NETWORK,"목록조회", it, dataCenterId)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.srvAllAttachedStorageDomainsFromDataCenter(dataCenterId: String): AttachedStorageDomainsService =
@@ -151,7 +146,7 @@ fun Connection.findAllAttachedStorageDomainsFromDataCenter(dataCenterId: String)
 	Term.DATACENTER.logSuccessWithin(Term.STORAGE_DOMAIN,"목록조회", dataCenterId)
 }.onFailure {
 	Term.DATACENTER.logFailWithin(Term.STORAGE_DOMAIN,"목록조회", it, dataCenterId)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.srvAttachedStorageDomainFromDataCenter(dataCenterId: String, storageDomainId: String): AttachedStorageDomainService =
@@ -163,38 +158,51 @@ fun Connection.findAllAttachedStorageDomainDisksFromDataCenter(dataCenterId: Str
 	Term.DATACENTER.logSuccessWithin(Term.DISK,"목록조회", dataCenterId)
 }.onFailure {
 	Term.DATACENTER.logFailWithin(Term.DISK,"목록조회", it, dataCenterId)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.findAttachedStorageDomainFromDataCenter(dataCenterId: String, storageDomainId: String): StorageDomain? = try {
+fun Connection.findAttachedStorageDomainFromDataCenter(dataCenterId: String, storageDomainId: String): Result<StorageDomain?> = runCatching {
 	srvAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId).get().send().storageDomain()
-} catch (e: Error) {
-	log.error(e.localizedMessage)
-	null
+}.onSuccess {
+	Term.DATACENTER.logSuccessWithin(Term.STORAGE_DOMAIN,"목록조회", dataCenterId)
+}.onFailure {
+	Term.DATACENTER.logFailWithin(Term.STORAGE_DOMAIN,"목록조회", it, dataCenterId)
+	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.activeAttachedStorageDomainFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean = try {
+fun Connection.activateAttachedStorageDomainFromDataCenter(dataCenterId: String, storageDomainId: String): Result<Boolean> = runCatching {
 	this.srvAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId).activate().send()
 	true
-} catch (e: Error) {
-	log.error(e.localizedMessage)
-	false
+}.onSuccess {
+	Term.DATACENTER.logSuccessWithin(Term.STORAGE_DOMAIN,"활성화", dataCenterId)
+}.onFailure {
+	Term.DATACENTER.logFailWithin(Term.STORAGE_DOMAIN,"활성화", it, dataCenterId)
+	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.deactiveAttachedStorageDomainFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean = try {
+fun Connection.deactivateAttachedStorageDomainFromDataCenter(dataCenterId: String, storageDomainId: String): Result<Boolean> = runCatching {
 	this.srvAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId).deactivate().force(true).send()
 	true
-} catch (e: Error) {
-	log.error(e.localizedMessage)
-	false
+}.onSuccess {
+	Term.DATACENTER.logSuccessWithin(Term.STORAGE_DOMAIN,"비활성화", dataCenterId)
+}.onFailure {
+	Term.DATACENTER.logFailWithin(Term.STORAGE_DOMAIN,"비활성화", it, dataCenterId)
+	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.removeAttachedStorageDomainFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean = try {
+fun Connection.removeAttachedStorageDomainFromDataCenter(dataCenterId: String, storageDomainId: String): Result<Boolean> = runCatching {
 	this.srvAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId).remove().async(true).send()
+	/*
+	// TODO: UNATTACHED 상태확인 체크 기능필요
+	while (storageDomain.status() != StorageDomainStatus.UNATTACHED)
+		storageDomainService.remove().destroy(true).send()
+	*/
 	true
-} catch (e: Error) {
-	log.error(e.localizedMessage)
-	false
+}.onSuccess {
+	Term.DATACENTER.logSuccessWithin(Term.STORAGE_DOMAIN,"삭제", dataCenterId)
+}.onFailure {
+	Term.DATACENTER.logFailWithin(Term.STORAGE_DOMAIN,"삭제", it, dataCenterId)
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvQossFromDataCenter(dataCenterId: String): QossService =

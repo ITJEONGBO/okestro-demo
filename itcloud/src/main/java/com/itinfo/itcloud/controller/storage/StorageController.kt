@@ -17,6 +17,7 @@ import com.itinfo.itcloud.service.storage.ItStorageService
 import io.swagger.annotations.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -34,7 +35,7 @@ class StorageController: BaseController() {
 		notes="데이터센터 밑에 붙어있는 Disk 목록"
 	)
 	@ApiImplicitParams(
-		ApiImplicitParam(name = "dataCenterId", value = "데이터센터 ID", dataTypeClass = String::class, required=true, paramType="path"),
+		ApiImplicitParam(name = "dataCenterId", value = "데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
@@ -43,11 +44,11 @@ class StorageController: BaseController() {
 	@ResponseBody
 	fun disks(
 		@PathVariable("dataCenterId") dataCenterId: String? = null // id=dcId
-	): Res<List<DiskImageVo>> {
+	): ResponseEntity<List<DiskImageVo>> {
 		if (dataCenterId == null)
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/disks ... 데이터센터 밑에 붙어있는 Disk 목록", dataCenterId)
-		return Res.safely { iStorage.findAllDisks(dataCenterId) }
+		return ResponseEntity(iStorage.findAllDisks(dataCenterId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -57,7 +58,7 @@ class StorageController: BaseController() {
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name = "dataCenterId", value = "데이터센터 ID", dataTypeClass = String::class, required=true, paramType="path"),
-		ApiImplicitParam(name = "diskImage", value = "디스크이미지", dataTypeClass = DiskImageVo::class, required=true),
+		ApiImplicitParam(name = "diskImage", value = "디스크이미지", dataTypeClass = DiskImageVo::class, required=true, paramType="body"),
 	)
 	@ApiResponses(
 		ApiResponse(code = 201, message = "CREATED")
@@ -68,13 +69,13 @@ class StorageController: BaseController() {
 	fun addDiskImage(
 		@PathVariable dataCenterId: String? = null,
 		@RequestBody diskImage: DiskImageVo? = null,
-	): Res<DiskImageVo?> {
+	): ResponseEntity<DiskImageVo?> {
 		if (dataCenterId == null)
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		if (diskImage == null)
 			throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
 		log.info("/storages/{}/disks/image ... 새가상 디스크 - 이미지 생성", dataCenterId)
-		return Res.safely { iStorage.addDiskImage(diskImage) }
+		return ResponseEntity(iStorage.addDiskImage(diskImage), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -85,7 +86,7 @@ class StorageController: BaseController() {
 	@ApiImplicitParams(
 		ApiImplicitParam(name = "dataCenterId", value = "데이터센터 ID", dataTypeClass = String::class, required=true, paramType="path"),
 		ApiImplicitParam(name = "diskImageId", value = "디스크이미지 ID", dataTypeClass = String::class, required=true, paramType="path"),
-		ApiImplicitParam(name = "diskImage", value = "디스크이미지", dataTypeClass = DiskImageVo::class, required=true),
+		ApiImplicitParam(name = "diskImage", value = "디스크이미지", dataTypeClass = DiskImageVo::class, required=true, paramType="body"),
 	)
 	@ApiResponses(
 		ApiResponse(code = 201, message = "CREATED")
@@ -97,7 +98,7 @@ class StorageController: BaseController() {
 		@PathVariable dataCenterId: String? = null,
 		@PathVariable diskImageId: String? = null,
 		@RequestBody diskImage: DiskImageVo?
-	): Res<DiskImageVo?> {
+	): ResponseEntity<DiskImageVo?> {
 		if (dataCenterId == null)
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		if (diskImageId == null)
@@ -105,7 +106,7 @@ class StorageController: BaseController() {
 		if (diskImage == null)
 			throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
 		log.info("/storages/{}/disks/image/{} ... 새가상 디스크 - 이미지 수정", dataCenterId, diskImageId)
-		return Res.safely { iStorage.updateDiskImage(diskImage) }
+		return ResponseEntity(iStorage.updateDiskImage(diskImage), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -126,13 +127,13 @@ class StorageController: BaseController() {
 	fun deleteDiskImage(
 		@PathVariable dataCenterId: String? = null,
 		@PathVariable diskImageId: String? = null,
-	): Res<Boolean> {
+	): ResponseEntity<Boolean> {
 		if (dataCenterId == null)
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		if (diskImageId == null)
 			throw ErrorPattern.DISK_IMAGE_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/disks/image/{} ... 새가상 디스크 - 이미지 삭제", dataCenterId, diskImageId)
-		return Res.safely { iStorage.deleteDiskImage(diskImageId) }
+		return ResponseEntity(iStorage.deleteDiskImage(diskImageId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -142,24 +143,24 @@ class StorageController: BaseController() {
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name = "diskId", value = "디스크 ID", dataTypeClass = String::class, required=true, paramType="path"),
-		ApiImplicitParam(name = "diskImage", value = "디스크이미지", dataTypeClass = DiskImageVo::class, required=true),
+		ApiImplicitParam(name = "diskImage", value = "디스크이미지", dataTypeClass = DiskImageVo::class, required=true, paramType="body"),
 	)
 	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
+		ApiResponse(code = 201, message = "CREATED")
 	)
 	@PostMapping("disks/{diskId}/copy")
 	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.CREATED)
 	fun copyDisk(
 		@PathVariable diskId: String? = null,
 		@RequestBody diskImage: DiskImageVo? = null,
-	): Res<Boolean> {
+	): ResponseEntity<Boolean> {
 		if (diskId.isNullOrEmpty())
 			throw ErrorPattern.DISK_ID_NOT_FOUND.toException()
 		if (diskImage == null)
 			throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
 		log.info("/storages/disks/{}/copy ... 디스크 - 복사", diskId)
-		return Res.safely { iStorage.copyDisk(diskImage) }
+		return ResponseEntity(iStorage.copyDisk(diskImage), HttpStatus.CREATED)
 	}
 
 	@ApiOperation(
@@ -169,7 +170,7 @@ class StorageController: BaseController() {
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name = "dataCenterId", value = "데이터센터 ID", dataTypeClass = String::class, required=true, paramType="path"),
-		ApiImplicitParam(name = "diskImage", value = "디스크이미지", dataTypeClass = DiskImageVo::class, required=true),
+		ApiImplicitParam(name = "diskImage", value = "디스크이미지", dataTypeClass = DiskImageVo::class, required=true, paramType="body"),
 	)
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
@@ -182,12 +183,12 @@ class StorageController: BaseController() {
 		@PathVariable dataCenterId: String? = null,
 		@RequestPart file: MultipartFile?,
 		@RequestPart diskImage: DiskImageVo?
-	): Res<Boolean> {
+	): ResponseEntity<Boolean> {
 		if (dataCenterId == null)
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		if (diskImage == null)
 			throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
-		return Res.safely { iStorage.uploadDisk(file, diskImage) }
+		return ResponseEntity(iStorage.uploadDisk(file, diskImage), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -208,7 +209,7 @@ class StorageController: BaseController() {
 	fun disks(
 		@PathVariable dataCenterId: String? = null,
 		@PathVariable diskId: String? = null,
-	): Res<List<DiskImageVo>> {
+	): ResponseEntity<List<DiskImageVo>> {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		if (diskId.isNullOrEmpty())
@@ -216,7 +217,7 @@ class StorageController: BaseController() {
 		// TODO: 파라미터 재정의 필요 id인지 dcID인지
 		// 데이터센터 밑에 붙어있는 디스크
 		log.info("--- Disk 목록")
-		return Res.safely { iStorage.findAllDisks(dataCenterId) }
+		return ResponseEntity(iStorage.findAllDisks(dataCenterId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -235,11 +236,11 @@ class StorageController: BaseController() {
 	@ResponseBody
 	fun findAllStorageDomainsFromDataCenter(
 		@PathVariable dataCenterId: String? = null,
-	): Res<List<StorageDomainVo>> {
+	): ResponseEntity<List<StorageDomainVo>> {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/domains ... Domain(s) 목록", dataCenterId)
-		return Res.safely { iStorage.findAllStorageDomainsFromDataCenter(dataCenterId) }
+		return ResponseEntity(iStorage.findAllStorageDomainsFromDataCenter(dataCenterId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -257,11 +258,11 @@ class StorageController: BaseController() {
 	@ResponseBody
 	fun networks(
 		@PathVariable dataCenterId: String? = null,
-	): Res<List<NetworkVo>> {
+	): ResponseEntity<List<NetworkVo>> {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/networks ... Network(s) 목록", dataCenterId)
-		return Res.safely { iStorage.findAllNetworksFromDataCenter(dataCenterId) }
+		return ResponseEntity(iStorage.findAllNetworksFromDataCenter(dataCenterId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -280,11 +281,11 @@ class StorageController: BaseController() {
 	@ResponseBody
 	fun clusters(
 		@PathVariable("dataCenterId") dataCenterId: String? = null,
-	): Res<List<ClusterVo>> {
+	): ResponseEntity<List<ClusterVo>> {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/clusters ... Cluster(s) 목록", dataCenterId)
-		return Res.safely { iStorage.findClustersInDataCenter(dataCenterId) }
+		return ResponseEntity(iStorage.findClustersInDataCenter(dataCenterId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -303,11 +304,11 @@ class StorageController: BaseController() {
 	@ResponseBody
 	fun permissions(
 		@PathVariable storageDomainId: String? = null,
-	): Res<List<PermissionVo>> {
+	): ResponseEntity<List<PermissionVo>> {
 		if (storageDomainId.isNullOrEmpty())
 			throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/permissions ... Permission(s) 목록", storageDomainId)
-		return Res.safely { iStorage.findAllPermissionsFromStorageDomain(storageDomainId) }
+		return ResponseEntity(iStorage.findAllPermissionsFromStorageDomain(storageDomainId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -326,11 +327,11 @@ class StorageController: BaseController() {
 	@ResponseBody
 	fun events(
 		@PathVariable("storageDomainId") storageDomainId: String? = null
-	): Res<List<EventVo>> {
+	): ResponseEntity<List<EventVo>> {
 		if (storageDomainId.isNullOrEmpty())
 			throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/events ... Event(s) 목록", storageDomainId)
-		return Res.safely { iStorage.findAllEventsFromStorageDomain(storageDomainId) }
+		return ResponseEntity(iStorage.findAllEventsFromStorageDomain(storageDomainId), HttpStatus.OK)
 	}
 	
 	companion object {

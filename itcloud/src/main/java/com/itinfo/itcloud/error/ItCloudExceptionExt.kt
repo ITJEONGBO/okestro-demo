@@ -24,7 +24,6 @@ class InvalidRequestException(
 
 }
 
-
 fun ErrorPattern.toException(): ItCloudException {
 	return when(this) {
 		ErrorPattern.DATACENTER_ID_NOT_FOUND,

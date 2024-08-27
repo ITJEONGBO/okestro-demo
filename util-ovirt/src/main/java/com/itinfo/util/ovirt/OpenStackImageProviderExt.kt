@@ -1,7 +1,9 @@
 package com.itinfo.util.ovirt
 
-import org.ovirt.engine.sdk4.Connection
+import com.itinfo.util.ovirt.error.*
+
 import org.ovirt.engine.sdk4.Error
+import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.services.OpenstackImageProviderService
 import org.ovirt.engine.sdk4.services.OpenstackImageProvidersService
 import org.ovirt.engine.sdk4.types.OpenStackImageProvider
@@ -15,7 +17,7 @@ fun Connection.findAllOpenStackImageProviders(): Result<List<OpenStackImageProvi
 	Term.OPEN_STAK_IMAGE_PROVIDER.logSuccess("목록조회")
 }.onFailure {
 	Term.OPEN_STAK_IMAGE_PROVIDER.logFail("목록조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvOpenStackImageProvider(openStackImageProviderId: String): OpenstackImageProviderService =
@@ -27,5 +29,5 @@ fun Connection.findOpenStackImageProvider(openStackImageProviderId: String): Res
 	Term.OPEN_STAK_IMAGE_PROVIDER.logSuccess("상세조회", openStackImageProviderId)
 }.onFailure {
 	Term.OPEN_STAK_IMAGE_PROVIDER.logFail("상세조회", it, openStackImageProviderId)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }

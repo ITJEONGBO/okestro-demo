@@ -1,5 +1,8 @@
 package com.itinfo.util.ovirt
 
+import com.itinfo.util.ovirt.error.*
+
+import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.services.DiskProfileService
 import org.ovirt.engine.sdk4.services.DiskProfilesService
@@ -14,7 +17,7 @@ fun Connection.findAllDiskProfiles(): Result<List<DiskProfile>> = runCatching {
 	Term.DISK_PROFILE.logSuccess("목록조회")
 }.onFailure {
 	Term.DISK_PROFILE.logFail("목록조회")
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvDiskProfile(diskProfileId: String): DiskProfileService =
@@ -26,5 +29,5 @@ fun Connection.findDiskProfile(diskProfileId: String): Result<DiskProfile?> = ru
 	Term.DISK_PROFILE.logSuccess("상세조회")
 }.onFailure {
 	Term.DISK_PROFILE.logFail("상세조회")
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }

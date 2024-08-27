@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiResponses
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 
 /**
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody
  */
 @Controller
 @Api(tags = ["system"])
+@RequestMapping("/admin/sysprop")
 class SystemPropertiesController {
 	@Autowired private lateinit var sysProp: ItSystemPropertiesService
 
@@ -31,11 +33,11 @@ class SystemPropertiesController {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@GetMapping("/admin/sysprop")
+	@GetMapping()
 	@ResponseBody
-	fun findOne(): Res<SystemPropertiesVo> {
+	fun findOne(): SystemPropertiesVo {
 		log.debug("/admin/sysprop ... ")
-		return Res.safely { sysProp.findOne() }
+		return sysProp.findOne()
 	}
 
 
@@ -47,13 +49,13 @@ class SystemPropertiesController {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@GetMapping("/admin/sysprop/update")
+	@GetMapping("/update")
 	@ResponseBody
-	fun update(): Res<SystemPropertiesVo?> {
+	fun update(): SystemPropertiesVo? {
 		log.debug("/admin/sysprop/update ... ")
 		// 관리-설정-엔진 에서 id, pw, ip를 입력하고 저장을 하면 대시보드 결과가 뜬다.
 		// 이거는 json방식이긴한데.. 일단 나중에
-		return Res.safely { sysProp.update(sysProp.findOne()) }
+		return sysProp.update(sysProp.findOne())
 	}
 	companion object {
 		private val log by LoggerDelegate()

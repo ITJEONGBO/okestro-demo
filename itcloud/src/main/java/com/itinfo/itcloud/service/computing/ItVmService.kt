@@ -185,7 +185,7 @@ interface ItVmService {
 	 * @return CommonVo<[Boolean]> 200(success) 404(fail)
 	 */
     @Throws(Error::class)
-	fun migrate(vmId: String, hostId: String): Res<Boolean>
+	fun migrate(vmId: String, hostId: String): Boolean
 	/**
 	 * [ItVmService.cancelMigration]
 	 * 가상머신 마이그레이션 취소
@@ -204,7 +204,7 @@ interface ItVmService {
 	 * @return CommonVo<[Boolean]> 200(success) 404(fail)
 	 */
     @Throws(Error::class)
-	fun exportOvaVm(vmExportVo: VmExportVo): Res<Boolean> // ova로 내보내기
+	fun exportOvaVm(vmExportVo: VmExportVo): Boolean // ova로 내보내기
 	/**
 	 * [ItVmService.findVm]
 	 * 일반
@@ -542,11 +542,11 @@ class VmServiceImpl(
 		return hosts.fromHostsToIdentifiedVos()
 	}
 
-	override fun migrate(vmId: String, hostId: String): Res<Boolean> {
+	override fun migrate(vmId: String, hostId: String): Boolean {
 		log.info("migrateVm ... ")
 		val res: Result<Boolean> =
 			conn.migrationVm(vmId, hostId)
-		return if (res.isSuccess) Res.successResponse() else Res.fail(res.exceptionOrNull())
+		return res.isSuccess
 	}
 
 	override fun cancelMigration(vmId: String): Boolean {
@@ -557,11 +557,11 @@ class VmServiceImpl(
 	}
 
 
-	override fun exportOvaVm(vmExportVo: VmExportVo): Res<Boolean> {
+	override fun exportOvaVm(vmExportVo: VmExportVo): Boolean {
 		log.info("exportOvaVm ... ")
 		val res: Result<Boolean> =
 			conn.exportVm(vmExportVo.vmVo.id, vmExportVo.hostVo.name, vmExportVo.directory, vmExportVo.fileName)
-		return if (res.isSuccess) Res.successResponse() else Res.fail(res.exceptionOrNull())
+		return res.isSuccess
 	}
 
 	override fun findVm(vmId: String): VmVo? {

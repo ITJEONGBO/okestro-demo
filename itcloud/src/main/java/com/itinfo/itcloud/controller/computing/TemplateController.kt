@@ -6,7 +6,6 @@ import com.itinfo.itcloud.error.toException
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.model.computing.EventVo
 import com.itinfo.itcloud.model.computing.TemplateVo
-import com.itinfo.itcloud.model.response.Res
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.DiskAttachmentVo
 import com.itinfo.itcloud.service.computing.ItTemplateService
@@ -15,6 +14,8 @@ import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
 import io.swagger.annotations.ApiOperation
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -35,9 +36,9 @@ class TemplateController: BaseController() {
 		notes="전체 템플릿 목록을 조회한다"
 	)
 	@ResponseBody
-	fun findAll(): Res<List<TemplateVo>> {
-		log.info("--- templates 목록")
-		return Res.safely { iTemplate.findAll() }
+	fun findAll(): ResponseEntity<List<TemplateVo>> {
+		log.info("--- TemplateController:findAll 목록")
+		return ResponseEntity(iTemplate.findAll(), HttpStatus.OK)
 	}
 
 	@GetMapping("/{templateId}")
@@ -52,11 +53,11 @@ class TemplateController: BaseController() {
 	@ResponseBody
 	fun findOne(
 		@PathVariable templateId: String? = null,
-	): Res<TemplateVo?> {
+	): ResponseEntity<TemplateVo?> {
 		if (templateId.isNullOrEmpty())
 			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
 		log.info("--- template 일반")
-		return Res.safely { iTemplate.findOne(templateId) }
+		return ResponseEntity(iTemplate.findOne(templateId), HttpStatus.OK)
 	}
 
 	@GetMapping("/{templateId}/disks")
@@ -71,11 +72,11 @@ class TemplateController: BaseController() {
 	@ResponseBody
 	fun findAllDisksFromTemplate(
 		@PathVariable templateId: String? = null,
-	): Res<List<DiskAttachmentVo>> {
+	): ResponseEntity<List<DiskAttachmentVo>> {
 		if (templateId.isNullOrEmpty())
 			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
 		log.info("--- template 디스크")
-		return Res.safely { iTemplate.findAllDisksFromTemplate(templateId) }
+		return ResponseEntity(iTemplate.findAllDisksFromTemplate(templateId), HttpStatus.OK)
 	}
 
 	@GetMapping("/{templateId}/permissions")
@@ -90,11 +91,11 @@ class TemplateController: BaseController() {
 	@ResponseBody
 	fun findAllPermissions(
 		@PathVariable templateId: String? = null,
-	): Res<List<PermissionVo>> {
+	): ResponseEntity<List<PermissionVo>> {
 		if (templateId.isNullOrEmpty())
 			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
 		log.info("--- template 권한")
-		return Res.safely { iTemplate.findAllPermissionsFromTemplate(templateId) }
+		return ResponseEntity(iTemplate.findAllPermissionsFromTemplate(templateId), HttpStatus.OK)
 	}
 
 	@GetMapping("/{templateId}/events")
@@ -109,11 +110,11 @@ class TemplateController: BaseController() {
 	@ResponseBody
 	fun findAllEventsFromTemplate(
 		@PathVariable templateId: String? = null,
-	): Res<List<EventVo>> {
+	): ResponseEntity<List<EventVo>> {
 		if (templateId.isNullOrEmpty())
 			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
 		log.info("--- template 이벤트")
-		return Res.safely { iTemplate.findAllEventsFromTemplate(templateId) }
+		return ResponseEntity(iTemplate.findAllEventsFromTemplate(templateId), HttpStatus.OK)
 	}
 /*
 	@GetMapping("/{templateId}/vms")

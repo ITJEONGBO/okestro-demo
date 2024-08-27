@@ -55,7 +55,7 @@ fun VmSamplesHistoryEntity.toVmCpuUsageDto(conn: Connection): UsageDto {
         conn.findVm(this@toVmCpuUsageDto.vmId.toString())
             .getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toException()
     return UsageDto.builder {
-        name { vm?.name() }
+        name { vm.name() }
         cpuPercent { this@toVmCpuUsageDto.cpuUsagePercent }
     }
 }
@@ -63,17 +63,16 @@ fun VmSamplesHistoryEntity.toVmCpuUsageDto(conn: Connection): UsageDto {
 fun List<VmSamplesHistoryEntity>.toVmCpuUsageDtos(conn: Connection): List<UsageDto> =
     this@toVmCpuUsageDtos.map { it.toVmCpuUsageDto(conn) }
 
-fun VmSamplesHistoryEntity.toVmMemUsageDto(conn: Connection): UsageDto {
+fun VmSamplesHistoryEntity.toVmMemUsageDto(conn: Connection): UsageDto? {
     val vm: Vm =
-        conn.findVm(this@toVmMemUsageDto.vmId.toString())
-            .getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toException()
+        conn.findVm(this@toVmMemUsageDto.vmId.toString()).getOrNull() ?: return null
     return UsageDto.builder {
-        name { vm?.name() }
+        name { vm.name() }
         memoryPercent { this@toVmMemUsageDto.memoryUsagePercent }
     }
 }
 
-fun List<VmSamplesHistoryEntity>.toVmMemUsageDtos(conn: Connection): List<UsageDto> =
+fun List<VmSamplesHistoryEntity>.toVmMemUsageDtos(conn: Connection): List<UsageDto?> =
     this@toVmMemUsageDtos.map { it.toVmMemUsageDto(conn) }
 
 fun StorageDomainSamplesHistoryEntity.toStorageChart(conn: Connection): UsageDto {

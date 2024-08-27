@@ -4,6 +4,7 @@ import com.itinfo.common.LoggerDelegate
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.runApplication
+import org.springframework.boot.web.servlet.ServletComponentScan
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.core.SpringVersion
@@ -16,6 +17,7 @@ import java.text.SimpleDateFormat
 	"com.itinfo.itcloud.service",
 	"com.itinfo.itcloud.repository"
 ])
+@ServletComponentScan
 class ItCloudApplication: SpringBootServletInitializer() {
 	override fun configure(builder: SpringApplicationBuilder?): SpringApplicationBuilder {
 		return builder!!.sources(ItCloudApplication::class.java)

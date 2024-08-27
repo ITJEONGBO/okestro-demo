@@ -1,5 +1,8 @@
 package com.itinfo.util.ovirt
 
+import com.itinfo.util.ovirt.error.*
+
+import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.services.OperatingSystemsService
 import org.ovirt.engine.sdk4.types.OperatingSystemInfo
@@ -13,5 +16,5 @@ fun Connection.findAllOperatingSystems(): Result<List<OperatingSystemInfo>> = ru
 	Term.OPERATING_SYSTEM.logSuccess("목록조회")
 }.onFailure {
 	Term.OPERATING_SYSTEM.logFail("목록조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }

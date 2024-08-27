@@ -1,9 +1,9 @@
 package com.itinfo.util.ovirt
 
-import com.itinfo.util.ovirt.error.ErrorPattern
-import com.itinfo.util.ovirt.error.toError
-import org.ovirt.engine.sdk4.Connection
+import com.itinfo.util.ovirt.error.*
+
 import org.ovirt.engine.sdk4.Error
+import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.services.DiskService
 import org.ovirt.engine.sdk4.services.DisksService
 import org.ovirt.engine.sdk4.types.Disk
@@ -22,7 +22,7 @@ fun Connection.findAllDisks(searchQuery: String = ""): Result<List<Disk>> = runC
 	Term.DISK.logSuccess("목록조회")
 }.onFailure {
 	Term.DISK.logFail("목록조회")
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvDisk(diskId: String): DiskService =
@@ -33,7 +33,7 @@ fun Connection.findDisk(diskId: String): Result<Disk?> = runCatching {
 	Term.DISK.logSuccess("상세조회")
 }.onFailure {
 	Term.DISK.logFail("상세조회")
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.addDisk(disk: Disk): Result<Disk?> = runCatching {
@@ -47,7 +47,7 @@ fun Connection.addDisk(disk: Disk): Result<Disk?> = runCatching {
 	Term.DISK.logSuccess("생성")
 }.onFailure {
 	Term.DISK.logFail("생성")
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.updateDisk(disk: Disk): Result<Disk?> = runCatching {
@@ -57,7 +57,7 @@ fun Connection.updateDisk(disk: Disk): Result<Disk?> = runCatching {
 	Term.DISK.logSuccess("편집")
 }.onFailure {
 	Term.DISK.logFail("편집")
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.removeDisk(diskId: String): Result<Boolean> = runCatching {
@@ -72,7 +72,7 @@ fun Connection.removeDisk(diskId: String): Result<Boolean> = runCatching {
 	Term.DISK.logSuccess("삭제")
 }.onFailure {
 	Term.DISK.logFail("삭제")
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 
@@ -108,7 +108,7 @@ fun Connection.moveDisk(diskId: String, domainId: String): Result<Boolean> = run
 	Term.DISK.logSuccess("이동")
 }.onFailure {
 	Term.DISK.logFail("이동")
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.copyDisk(diskId: String, domainId: String): Result<Boolean> = runCatching {
@@ -125,7 +125,7 @@ fun Connection.copyDisk(diskId: String, domainId: String): Result<Boolean> = run
 	Term.DISK.logSuccess("복사")
 }.onFailure {
 	Term.DISK.logFail("복사")
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 

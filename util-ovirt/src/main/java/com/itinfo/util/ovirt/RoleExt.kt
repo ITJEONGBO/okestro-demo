@@ -1,7 +1,9 @@
 package com.itinfo.util.ovirt
 
-import org.ovirt.engine.sdk4.Connection
+import com.itinfo.util.ovirt.error.*
+
 import org.ovirt.engine.sdk4.Error
+import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.services.RoleService
 import org.ovirt.engine.sdk4.services.RolesService
 import org.ovirt.engine.sdk4.types.Role
@@ -18,7 +20,7 @@ fun Connection.findAllRoles(follow: String = ""): Result<List<Role>> = runCatchi
 	Term.ROLE.logSuccess("목록조회")
 }.onFailure {
 	Term.ROLE.logFail("목록조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvRole(roleId: String): RoleService =
@@ -30,5 +32,5 @@ fun Connection.findRole(roleId: String): Result<Role?> = runCatching {
 	Term.ROLE.logSuccess("상세조회")
 }.onFailure {
 	Term.ROLE.logFail("상세조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }

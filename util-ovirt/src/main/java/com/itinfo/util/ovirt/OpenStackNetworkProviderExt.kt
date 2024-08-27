@@ -1,5 +1,8 @@
 package com.itinfo.util.ovirt
 
+import com.itinfo.util.ovirt.error.*
+
+import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.services.OpenstackNetworkProviderService
 import org.ovirt.engine.sdk4.services.OpenstackNetworkProvidersService
@@ -20,7 +23,7 @@ fun Connection.findAllOpenStackNetworkProviders(follow: String = ""): Result<Lis
 	Term.OPEN_STAK_NETWORK_PROVIDER.logSuccess("목록조회")
 }.onFailure {
 	Term.OPEN_STAK_NETWORK_PROVIDER.logFail("목록조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.findExternalProvider(): OpenStackNetworkProvider? =
@@ -35,5 +38,5 @@ fun Connection.findOpenStackNetworkProvider(networkProviderId: String): Result<O
 	Term.OPEN_STAK_NETWORK_PROVIDER.logSuccess("상세조회")
 }.onFailure {
 	Term.OPEN_STAK_NETWORK_PROVIDER.logFail("상세조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }

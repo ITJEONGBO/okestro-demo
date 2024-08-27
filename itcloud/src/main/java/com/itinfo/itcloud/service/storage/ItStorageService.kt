@@ -1,6 +1,7 @@
 package com.itinfo.itcloud.service.storage
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.*
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.setting.PermissionVo
@@ -12,6 +13,7 @@ import com.itinfo.itcloud.model.storage.*
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.itcloud.service.computing.ItDataCenterService
 import com.itinfo.util.ovirt.*
+import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.internal.containers.ImageContainer
 import org.ovirt.engine.sdk4.internal.containers.ImageTransferContainer
@@ -185,7 +187,7 @@ interface ItStorageService {
 	 * @return [Res]<[Boolean]> 성공여부
 	 */
 	@Throws(Error::class)
-	fun remove(storageDomainId: String): Res<Boolean>
+	fun remove(storageDomainId: String): Boolean
 	/**
 	 * [ItStorageService.findAllStorageDomainsFromDataCenter]
 	 * 스토리지 도메인 목록
@@ -488,7 +490,7 @@ class StorageServiceImpl(
 	override fun addDomain(storageDomainVo: StorageDomainVo): Res<Boolean> {
 		val storageDomainsService = system.storageDomainsService()
 		val dataCenterService = system.dataCentersService().dataCenterService(storageDomainVo.dataCenterVo.id)
-
+		// TODO: storageDomain서비스에서 한번 넣고, DataCenter의 attachedStorageDoamin서비스에서 한번 더 생성하는지 모르겠음
 		try {
 			var storageDomain = storageDomainsService.add().storageDomain(storageDomainVo.toStorageDomainBuilder(conn)).send().storageDomain()
 			val storageDomainService = storageDomainsService.storageDomainService(storageDomain.id())
@@ -526,23 +528,13 @@ class StorageServiceImpl(
 	 * @return [Res]<[Boolean]> 성공여부
 	 */
 	@Throws(Error::class)
-	override fun remove(storageDomainId: String): Res<Boolean> {
+	override fun remove(storageDomainId: String): Boolean {
 		log.info("deleteDomain ... domainId: {}", storageDomainId)
-		val storageDomainService = system.storageDomainsService().storageDomainService(storageDomainId)
-		val storageDomain = storageDomainService.get().send().storageDomain()
-		val asdService =
-			conn.srvAttachedStorageDomainFromDataCenter(storageDomain.dataCenters()[0].id(), storageDomainId)
-		try {
-			asdService.remove().async(true).send()
-			do {
-				println("떨어짐")
-			} while (storageDomain.status() != StorageDomainStatus.UNATTACHED)
-			storageDomainService.remove().destroy(true).send()
-			return Res.successResponse()
-		} catch (e: Exception) {
-			log.error("something went WRONG ... reason: {}", e.localizedMessage)
-			return Res.fail(e)
-		}
+		val storageDomain: StorageDomain = conn.findStorageDomain(storageDomainId).getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toException()
+		val dataCenterId: String = storageDomain.dataCenters()[0].id()
+		val res: Result<Boolean> =
+			conn.removeAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId)
+		return res.isSuccess
 	}
 
 	override fun findAllNetworksFromDataCenter(dataCenterId: String): List<NetworkVo> {

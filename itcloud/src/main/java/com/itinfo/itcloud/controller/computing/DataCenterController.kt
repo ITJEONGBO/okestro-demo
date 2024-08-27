@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
@@ -48,7 +49,7 @@ class DataCenterController: BaseController() {
 		notes="데이터센터를 생성한다"
 	)
 	@ApiImplicitParams(
-		ApiImplicitParam(name="dataCenter", value="데이터센터", dataTypeClass=DataCenterVo::class),
+		ApiImplicitParam(name="dataCenter", value="데이터센터", dataTypeClass=DataCenterVo::class, paramType="body"),
 	)
 	@ApiResponses(
 		ApiResponse(code = 201, message = "CREATED")
@@ -58,11 +59,11 @@ class DataCenterController: BaseController() {
 	@ResponseStatus(HttpStatus.CREATED)
 	fun add(
 		@RequestBody dataCenterVo: DataCenterVo?
-	): Res<DataCenterVo?> {
+	): ResponseEntity<DataCenterVo?> {
 		if (dataCenterVo == null)
-			return Res.fail(404, "데이터센터 생성정보 없음")
+			throw ErrorPattern.DATACENTER_VO_INVALID.toException()
 		log.info("/computing/datacenters ... 데이터센터 생성\n{}", dataCenterVo)
-		return Res.safely { iDataCenter.add(dataCenterVo) }
+		return ResponseEntity(iDataCenter.add(dataCenterVo), HttpStatus.CREATED)
 	}
 
 
@@ -79,11 +80,11 @@ class DataCenterController: BaseController() {
 	@ResponseStatus(HttpStatus.OK)
 	fun findOne(
 		@PathVariable dataCenterId: String? = null,
-	): Res<DataCenterVo?> {
+	): ResponseEntity<DataCenterVo?> {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/computing/datacenters/{}/edit ... 데이터센터 편집 창", dataCenterId)
-		return Res.safely { iDataCenter.findOne(dataCenterId) }
+		return ResponseEntity(iDataCenter.findOne(dataCenterId), HttpStatus.OK)
 	}
 
 
@@ -94,7 +95,7 @@ class DataCenterController: BaseController() {
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		ApiImplicitParam(name="dataCenter", value="데이터센터", dataTypeClass=DataCenterVo::class),
+		ApiImplicitParam(name="dataCenter", value="데이터센터", dataTypeClass=DataCenterVo::class, paramType="body"),
 	)
 	@PutMapping("/{dataCenterId}")
 	@ResponseBody
@@ -102,13 +103,13 @@ class DataCenterController: BaseController() {
 	fun editDataCenter(
 		@PathVariable dataCenterId: String? = null,
 		@RequestBody dataCenterVo: DataCenterVo? = null,
-	): Res<DataCenterVo?> {
+	): ResponseEntity<DataCenterVo?> {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		if (dataCenterVo == null)
 			throw ErrorPattern.DATACENTER_VO_INVALID.toException()
 		log.info("/computing/datacenters/{} ... 데이터센터 편집\n{}", dataCenterId, dataCenterVo)
-		return Res.safely { iDataCenter.update(dataCenterVo) }
+		return ResponseEntity(iDataCenter.update(dataCenterVo), HttpStatus.OK)
 	}
 
 
@@ -125,11 +126,11 @@ class DataCenterController: BaseController() {
 	@ResponseStatus(HttpStatus.OK)
 	fun remove(
 		@PathVariable dataCenterId: String? = null,
-	): Res<Boolean> {
+	): ResponseEntity<Boolean> {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/computing/datacenters/{} ... 데이터센터 삭제", dataCenterId)
-		return Res.safely { iDataCenter.remove(dataCenterId) }
+		return ResponseEntity(iDataCenter.remove(dataCenterId), HttpStatus.OK)
 	}
 
 
@@ -146,11 +147,11 @@ class DataCenterController: BaseController() {
 	@ResponseStatus(HttpStatus.OK)
 	fun getEventsByDatacenter(
 		@PathVariable dataCenterId: String? = null,
-	): Res<List<EventVo>> {
+	): ResponseEntity<List<EventVo>> {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/computing/datacenters/{}/events ... 데이터센터 이벤트목록", dataCenterId)
-		return Res.safely { iDataCenter.findAllEventsBy(dataCenterId) }
+		return ResponseEntity(iDataCenter.findAllEventsBy(dataCenterId), HttpStatus.OK)
 	}
 
 	// 대시보드 옆에 트리구조

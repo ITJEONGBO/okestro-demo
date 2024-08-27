@@ -14,6 +14,8 @@ import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
 import io.swagger.annotations.ApiOperation
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
@@ -31,9 +33,9 @@ class HostController {
 	)
 	@GetMapping
 	@ResponseBody
-	fun findAll(): Res<List<HostVo>> {
+	fun findAll(): ResponseEntity<List<HostVo>> {
 		log.info("--- 호스트 목록")
-		return Res.safely { iHost.findAll() }
+		return ResponseEntity(iHost.findAll(), HttpStatus.OK)
 	}
 /*
 	@GetMapping("/settings")
@@ -50,17 +52,17 @@ class HostController {
 		notes="호스트를 생성한다"
 	)
 	@ApiImplicitParams(
-		ApiImplicitParam(name="hostVo", value="호스트", dataTypeClass=HostVo::class)
+		ApiImplicitParam(name="hostVo", value="호스트", dataTypeClass=HostVo::class, paramType="body")
 	)
 	@PostMapping
 	@ResponseBody
 	fun add(
 		@RequestBody hostVo: HostVo?
-	): Res<HostVo?> {
+	): ResponseEntity<HostVo?> {
 		log.info("--- 호스트 생성")
 		if (hostVo == null)
 			throw ErrorPattern.HOST_VO_INVALID.toException()
-		return Res.safely { iHost.add(hostVo)  }
+		return ResponseEntity(iHost.add(hostVo), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -75,11 +77,11 @@ class HostController {
 	@ResponseBody
 	fun getHostCreate(
 		@PathVariable hostId: String? = null,
-	): Res<HostVo?> {
+	): ResponseEntity<HostVo?> {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 수정창")
-		return Res.safely { iHost.findOne(hostId) }
+		return ResponseEntity(iHost.findOne(hostId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -89,18 +91,18 @@ class HostController {
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		ApiImplicitParam(name="host", value="호스트", dataTypeClass=HostVo::class)
+		ApiImplicitParam(name="host", value="호스트", dataTypeClass=HostVo::class, paramType="body")
 	)
 	@PutMapping("/{hostId}")
 	@ResponseBody
 	fun update(
 		@PathVariable hostId: String? = null,
 		@RequestBody host: HostVo? = null
-	): Res<HostVo?> {
+	): ResponseEntity<HostVo?> {
 		if (host == null)
 			throw ErrorPattern.HOST_VO_INVALID.toException()
 		log.info("--- 호스트 편집")
-		return Res.safely { iHost.update(host) }
+		return ResponseEntity(iHost.update(host), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -115,11 +117,11 @@ class HostController {
 	@ResponseBody
 	fun remove(
 		@PathVariable hostId: String? = null,
-	): Res<Boolean> {
+	): ResponseEntity<Boolean> {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 삭제")
-		return Res.safely { iHost.remove(hostId) }
+		return ResponseEntity(iHost.remove(hostId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -134,11 +136,11 @@ class HostController {
 	@ResponseBody
 	fun findOne(
 		@PathVariable hostId: String? = null,
-	): Res<HostVo?> {
+	): ResponseEntity<HostVo?> {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 일반")
-		return Res.safely { iHost.findOne(hostId) }
+		return ResponseEntity(iHost.findOne(hostId), HttpStatus.OK)
 	}
 
 
@@ -154,11 +156,11 @@ class HostController {
 	@ResponseBody
 	fun findAllVmsFromHost(
 		@PathVariable hostId: String? = null,
-	): Res<List<VmVo>> {
+	): ResponseEntity<List<VmVo>> {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 vm")
-		return Res.safely { iHost.findAllVmsFromHost(hostId) }
+		return ResponseEntity(iHost.findAllVmsFromHost(hostId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -173,11 +175,11 @@ class HostController {
 	@ResponseBody
 	fun nic(
 	@PathVariable hostId: String? = null
-	): Res<List<HostNicVo>> {
+	): ResponseEntity<List<HostNicVo>> {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 nic")
-		return Res.safely { iHost.findAllHostNicsFromHost(hostId) }
+		return ResponseEntity(iHost.findAllHostNicsFromHost(hostId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -192,11 +194,11 @@ class HostController {
 	@ResponseBody
 	fun device(
 		@PathVariable hostId: String? = null,
-	): Res<List<HostNicVo>> {
+	): ResponseEntity<List<HostNicVo>> {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 장치")
-		return Res.safely { iHost.findAllHostNicsFromHost(hostId) }
+		return ResponseEntity(iHost.findAllHostNicsFromHost(hostId), HttpStatus.OK)
 	}
 
 
@@ -212,11 +214,11 @@ class HostController {
 	@ResponseBody
 	fun permission(
 		@PathVariable hostId: String? = null
-	): Res<List<PermissionVo>> {
+	): ResponseEntity<List<PermissionVo>> {
 		log.info("--- 호스트 권한")
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		return Res.safely { iHost.findAllPermissionsFromHost(hostId) }
+		return ResponseEntity(iHost.findAllPermissionsFromHost(hostId), HttpStatus.OK)
 	}
 	@ApiOperation(
 		httpMethod="GET",
@@ -230,25 +232,25 @@ class HostController {
 	@ResponseBody
 	fun getAffinitylabels(
 		@PathVariable hostId: String? = null
-	): Res<List<AffinityLabelVo>> {
+	): ResponseEntity<List<AffinityLabelVo>> {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 선호도 레이블")
-		return Res.safely { iHost.findAllAffinityLabelsFromHost(hostId); }
+		return ResponseEntity(iHost.findAllAffinityLabelsFromHost(hostId), HttpStatus.OK)
 	}
 /*
-	@ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class)
+	@ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	@GetMapping("/{hostId}/affinitylabel/settings")
 	@ResponseBody
 	fun setAffinitygroup(
 		@PathVariable hostId: String? = null
-	): Res<AffinityHostVm?> {
+	): ResponseEntity<AffinityHostVm?> {
 		log.info("--- 호스트 선호도 레이블 생성 창");
 		return host.setAffinityDefaultInfo(id, "label");
 	}
 
 
-	@ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class)
+	@ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	@PostMapping("/{id}/affinitylabel")
 	@ResponseBody
 	public CommonVo<Boolean> addAff(
@@ -295,11 +297,11 @@ class HostController {
 	@ResponseBody
 	fun findAllEventsFromHost(
 		@PathVariable hostId: String?
-	): Res<List<EventVo>> {
+	): ResponseEntity<List<EventVo>> {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 이벤트")
-		return Res.safely { iHost.findAllEventsFromHost(hostId) }
+		return ResponseEntity(iHost.findAllEventsFromHost(hostId), HttpStatus.OK)
 	}
 
 	@Autowired private lateinit var iHostOp: ItHostOperationService
@@ -316,11 +318,11 @@ class HostController {
 	@ResponseBody
 	fun deactivate(
 		@PathVariable hostId: String?
-	): Res<Boolean> {
+	): ResponseEntity<Boolean> {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 유지보수")
-		return Res.safely { iHostOp.deactivate(hostId) }
+		return ResponseEntity(iHostOp.deactivate(hostId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -335,11 +337,11 @@ class HostController {
 	@ResponseBody
 	fun activeHost(
 		@PathVariable hostId: String?
-	): Res<Boolean> {
+	): ResponseEntity<Boolean> {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 활성")
-		return Res.safely { iHostOp.activate(hostId) }
+		return ResponseEntity(iHostOp.activate(hostId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -354,11 +356,11 @@ class HostController {
 	@ResponseBody
 	fun refresh(
 		@PathVariable hostId: String?
-	): Res<Boolean> {
+	): ResponseEntity<Boolean> {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 새로고침")
-		return Res.safely { iHostOp.refresh(hostId) }
+		return ResponseEntity(iHostOp.refresh(hostId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -373,11 +375,11 @@ class HostController {
 	@ResponseBody
 	fun reStartHost(
 		@PathVariable hostId: String?
-	): Res<Boolean> {
+	): ResponseEntity<Boolean> {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 ssh 재시작")
-		return Res.safely { iHostOp.restart(hostId) }
+		return ResponseEntity(iHostOp.restart(hostId), HttpStatus.OK)
 	}
 
 	companion object {

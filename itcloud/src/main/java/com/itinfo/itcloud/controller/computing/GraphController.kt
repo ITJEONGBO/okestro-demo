@@ -2,7 +2,6 @@ package com.itinfo.itcloud.controller.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.computing.DashBoardVo
-import com.itinfo.itcloud.model.response.Res
 import com.itinfo.itcloud.repository.dto.HostUsageDto
 import com.itinfo.itcloud.repository.dto.StorageUsageDto
 import com.itinfo.itcloud.repository.dto.UsageDto
@@ -10,13 +9,14 @@ import com.itinfo.itcloud.service.computing.ItGraphService
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
 
 @Controller
 @Api(tags = ["Graph"])
-@ResponseBody
 @RequestMapping("/dashboard")
 class GraphController {
 	@Autowired private lateinit var graph: ItGraphService
@@ -28,9 +28,9 @@ class GraphController {
 	)
 	@GetMapping
 	@ResponseBody
-	fun dashboard(): Res<DashBoardVo> {
+	fun dashboard(): ResponseEntity<DashBoardVo> {
 		log.info("----- 대시보드")
-		return Res.safely { graph.getDashboard() }
+		return ResponseEntity.ok(graph.getDashboard())
 	}
 
 	@ApiOperation(
@@ -40,9 +40,9 @@ class GraphController {
 	)
 	@GetMapping("/cpumemory")
 	@ResponseBody
-	fun totalCpuMemory(): Res<HostUsageDto> {
+	fun totalCpuMemory(): ResponseEntity<HostUsageDto> {
 		log.info("----- cpu, memory")
-		return Res.safely { graph.totalCpuMemory() }
+		return ResponseEntity.ok(graph.totalCpuMemory())
 	}
 
 	@ApiOperation(
@@ -52,9 +52,9 @@ class GraphController {
 	)
 	@GetMapping("/storage")
 	@ResponseBody
-	fun totalStorage(): Res<StorageUsageDto> {
+	fun totalStorage(): ResponseEntity<StorageUsageDto> {
 		log.info("----- storage")
-		return Res.safely { graph.totalStorage() }
+		return ResponseEntity.ok(graph.totalStorage())
 	}
 
 	@ApiOperation(
@@ -64,9 +64,9 @@ class GraphController {
 	)
 	@GetMapping("/vmCpu")
 	@ResponseBody
-	fun vmCpuChart(): Res<List<UsageDto>> {
+	fun vmCpuChart(): ResponseEntity<List<UsageDto>> {
 		log.info("----- vmCpuChart")
-		return Res.safely { graph.vmCpuChart() }
+		return ResponseEntity.ok(graph.vmCpuChart())
 	}
 
 	@ApiOperation(
@@ -76,15 +76,15 @@ class GraphController {
 	)
 	@GetMapping("/vmMemory")
 	@ResponseBody
-	fun vmMemoryChart(): List<UsageDto> {
+	fun vmMemoryChart(): ResponseEntity<List<UsageDto>> {
 		log.info("----- vmMemoryChart")
-		return graph.vmMemoryChart()
+		return ResponseEntity.ok(graph.vmMemoryChart())
 	}
 
-	@GetMapping("/storageMemory")
-	fun storageChart(): List<UsageDto> {
+		@GetMapping("/storageMemory")
+	fun storageChart(): ResponseEntity<List<UsageDto>> {
 		log.info("----- storageChart")
-		return graph.storageChart()
+		return ResponseEntity.ok(graph.storageChart())
 	}
 	
 	companion object {

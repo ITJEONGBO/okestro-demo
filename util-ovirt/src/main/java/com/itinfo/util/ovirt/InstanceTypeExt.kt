@@ -1,12 +1,14 @@
 package com.itinfo.util.ovirt
 
+import com.itinfo.util.ovirt.error.*
+
+import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.services.InstanceTypeNicsService
 import org.ovirt.engine.sdk4.services.InstanceTypeService
 import org.ovirt.engine.sdk4.services.InstanceTypesService
 import org.ovirt.engine.sdk4.types.InstanceType
 import org.ovirt.engine.sdk4.types.Nic
-import kotlin.Error
 
 private fun Connection.srvInstanceTypes(): InstanceTypesService =
 	systemService.instanceTypesService()
@@ -20,7 +22,7 @@ fun Connection.findAllInstanceTypes(searchQuery: String = ""): Result<List<Insta
 	Term.INSTANCE_TYPE.logSuccess("목록조회")
 }.onFailure {
 	Term.INSTANCE_TYPE.logFail("목록조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvInstanceType(instanceTypeId: String): InstanceTypeService =
@@ -32,7 +34,7 @@ fun Connection.findInstanceType(instanceTypeId: String): Result<InstanceType> = 
 	Term.INSTANCE_TYPE.logSuccess("상세조회", instanceTypeId)
 }.onFailure {
 	Term.INSTANCE_TYPE.logFail("상세조회", it, instanceTypeId)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.addInstanceType(instanceType: InstanceType): Result<InstanceType?> = runCatching {
@@ -41,7 +43,7 @@ fun Connection.addInstanceType(instanceType: InstanceType): Result<InstanceType?
 	Term.INSTANCE_TYPE.logSuccess("생성", it.id())
 }.onFailure {
 	Term.INSTANCE_TYPE.logFail("생성", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.updateInstanceType(instanceType: InstanceType): Result<InstanceType?> = runCatching {
@@ -50,7 +52,7 @@ fun Connection.updateInstanceType(instanceType: InstanceType): Result<InstanceTy
 	Term.INSTANCE_TYPE.logSuccess("편집", it.id())
 }.onFailure {
 	Term.INSTANCE_TYPE.logFail("편집", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.removeInstanceType(instanceTypeId: String): Result<Boolean> = runCatching {
@@ -60,7 +62,7 @@ fun Connection.removeInstanceType(instanceTypeId: String): Result<Boolean> = run
 	Term.INSTANCE_TYPE.logSuccess("제거", instanceTypeId)
 }.onFailure {
 	Term.INSTANCE_TYPE.logFail("제거", it, instanceTypeId)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 
@@ -73,5 +75,5 @@ fun Connection.addNicForInstanceType(instanceTypeId: String, nic: Nic): Result<N
 	Term.INSTANCE_TYPE.logSuccessWithin(Term.NIC, "생성", instanceTypeId)
 }.onFailure {
 	Term.INSTANCE_TYPE.logFailWithin(Term.NIC, "생성", it, instanceTypeId)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }

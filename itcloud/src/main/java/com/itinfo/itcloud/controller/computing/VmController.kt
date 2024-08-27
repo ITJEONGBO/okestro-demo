@@ -18,6 +18,7 @@ import io.swagger.annotations.ApiImplicitParams
 import io.swagger.annotations.ApiOperation
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
@@ -36,9 +37,9 @@ class VmController: BaseController() {
 	@GetMapping
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun vms(): Res<List<VmVo>> {
+	fun vms(): ResponseEntity<List<VmVo>> {
 		log.info("--- 가상머신 목록")
-		return Res.safely { iVm.findAll() }
+		return ResponseEntity(iVm.findAll(), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -49,10 +50,10 @@ class VmController: BaseController() {
 	@GetMapping("/settings/vnic")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun setVnic(): Res<List<VnicProfileVo>> {
+	fun setVnic(): ResponseEntity<List<VnicProfileVo>> {
 		log.info("--- 가상머신 생성 창 - vnic")
 //		return vmService.setVnic();
-		return Res.safely { listOf() }
+		return ResponseEntity(listOf(), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -61,18 +62,18 @@ class VmController: BaseController() {
 		notes="가상머신을 생성한다"
 	)
 	@ApiImplicitParams(
-		ApiImplicitParam(name="vm", value="가상머신", dataTypeClass=VmVo::class),
+		ApiImplicitParam(name="vm", value="가상머신", dataTypeClass=VmVo::class, paramType="body"),
 	)
 	@PostMapping
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	fun add(
 		@RequestBody vm: VmVo? = null,
-	): Res<VmVo?> {
+	): ResponseEntity<VmVo?> {
 		if (vm == null)
 			throw ErrorPattern.VM_VO_INVALID.toException()
 		log.info("--- 가상머신 생성")
-		return Res.safely { iVm.add(vm) }
+		return ResponseEntity(iVm.add(vm), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -89,11 +90,11 @@ class VmController: BaseController() {
 	)
 	fun getVmCreate(
 		@PathVariable vmId: String? = null,
-	): Res<VmVo?> {
+	): ResponseEntity<VmVo?> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("--- 가상머신 편집 창")
-		return Res.safely { iVm.findOne(vmId) }
+		return ResponseEntity(iVm.findOne(vmId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -103,7 +104,7 @@ class VmController: BaseController() {
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		ApiImplicitParam(name="vm", value="가상머신", dataTypeClass=VmVo::class),
+		ApiImplicitParam(name="vm", value="가상머신", dataTypeClass=VmVo::class, paramType="body"),
 	)
 	@PutMapping("/{vmId}")
 	@ResponseBody
@@ -113,13 +114,13 @@ class VmController: BaseController() {
 	fun update(
 		@PathVariable vmId: String?,
 		@RequestBody vm: VmVo?
-	): Res<VmVo?> {
+	): ResponseEntity<VmVo?> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		if (vm == null)
 			throw ErrorPattern.VM_VO_INVALID.toException()
 		log.info("--- 가상머신 편집")
-		return Res.safely { iVm.update(vm) }
+		return ResponseEntity(iVm.update(vm), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -137,10 +138,10 @@ class VmController: BaseController() {
 	)
 	fun remove(
 		@PathVariable vmId: String? = null,
-	): Res<Boolean> {
+	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		return Res.safely { iVm.remove(vmId, true) }
+		return ResponseEntity(iVm.remove(vmId, true), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -156,10 +157,10 @@ class VmController: BaseController() {
 	@ResponseStatus(HttpStatus.OK)
 	fun vm(
 		@PathVariable vmId: String? = null,
-	): Res<VmVo?> {
+	): ResponseEntity<VmVo?> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		return Res.safely { iVm.findOne(vmId) }
+		return ResponseEntity(iVm.findOne(vmId), HttpStatus.OK)
 	}
 
 
@@ -177,11 +178,11 @@ class VmController: BaseController() {
 	@ResponseStatus(HttpStatus.OK)
 	fun disk(
 		@PathVariable vmId: String? = null,
-	): Res<List<DiskAttachmentVo>> {
+	): ResponseEntity<List<DiskAttachmentVo>> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("----- vm disk 일반 불러오기: $vmId")
-		return Res.safely { iVmDisk.findAllDisksFromVm(vmId) }
+		return ResponseEntity(iVmDisk.findAllDisksFromVm(vmId), HttpStatus.OK)
 	}
 
 
@@ -198,11 +199,11 @@ class VmController: BaseController() {
 	@ResponseBody
 	fun snapshot(
 		@PathVariable vmId: String? = null,
-	): Res<List<SnapshotVo>> {
+	): ResponseEntity<List<SnapshotVo>> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("----- vm snapshot 불러오기: $vmId")
-		return Res.safely { iVmSnapshot.findAllSnapshotsFromVm(vmId) }
+		return ResponseEntity(iVmSnapshot.findAllSnapshotsFromVm(vmId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -217,11 +218,11 @@ class VmController: BaseController() {
 	@ResponseBody
 	fun app(
 		@PathVariable vmId: String? = null,
-	): List<IdentifiedVo> {
+	): ResponseEntity<List<IdentifiedVo>> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("----- vm app 불러오기: $vmId")
-		return iVm.findAllApplicationsByVm(vmId)
+		return ResponseEntity(iVm.findAllApplicationsByVm(vmId), HttpStatus.OK)
 	}
 	//region: affinity
 
@@ -239,11 +240,11 @@ class VmController: BaseController() {
 	@ResponseBody
 	fun findAllGroupsForVm(
 		@PathVariable vmId: String? = null,
-	): Res<List<AffinityGroupVo>> {
+	): ResponseEntity<List<AffinityGroupVo>> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("----- vm affGroup 불러오기: $vmId")
-		return Res.safely { iAffinity.findAllGroupsForVm(vmId) }
+		return ResponseEntity(iAffinity.findAllGroupsForVm(vmId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -258,11 +259,11 @@ class VmController: BaseController() {
 	@ResponseBody
 	fun findAllLabelsForVm(
 		@PathVariable vmId: String? = null,
-	): Res<List<AffinityLabelVo>> {
+	): ResponseEntity<List<AffinityLabelVo>> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("----- vm affLabel 불러오기: {}", vmId)
-		return Res.safely { iAffinity.findAllLabelsForVm(vmId) }
+		return ResponseEntity(iAffinity.findAllLabelsForVm(vmId), HttpStatus.OK)
 	}
 	//endregion
 
@@ -277,11 +278,11 @@ class VmController: BaseController() {
 	@ResponseBody
 	fun guest(
 		@PathVariable vmId: String? = null,
-	): Res<GuestInfoVo?> {
+	): ResponseEntity<GuestInfoVo?> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("----- vm disk 일반 불러오기: {}", vmId)
-		return Res.safely { iVm.findAllGuestFromVm(vmId) }
+		return ResponseEntity(iVm.findAllGuestFromVm(vmId), HttpStatus.OK)
 	}
 
 	@GetMapping("/{vmId}/permissions")
@@ -296,11 +297,11 @@ class VmController: BaseController() {
 	@ResponseBody
 	fun permission(
 		@PathVariable vmId: String? = null,
-	): Res<List<PermissionVo>> {
+	): ResponseEntity<List<PermissionVo>> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("----- vm event 일반 불러오기: {}", vmId)
-		return Res.safely {  iVm.findAllPermissionsFromVm(vmId) }
+		return ResponseEntity(iVm.findAllPermissionsFromVm(vmId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -315,11 +316,11 @@ class VmController: BaseController() {
 	@ResponseBody
 	fun event(
 		@PathVariable vmId: String? = null,
-	): Res<List<EventVo>> {
+	): ResponseEntity<List<EventVo>> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("----- vm event 일반 불러오기: $vmId")
-		return Res.safely { iVm.findAllEventsFromVm(vmId) }
+		return ResponseEntity(iVm.findAllEventsFromVm(vmId), HttpStatus.OK)
 	}
 
 
@@ -329,20 +330,20 @@ class VmController: BaseController() {
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		// ApiImplicitParam(name="console", value="콘솔", dataTypeClass=ConsoleVo::class),
+		// ApiImplicitParam(name="console", value="콘솔", dataTypeClass=ConsoleVo::class, paramType="body"),
 	)
 	@PostMapping("/{vmId}/console")
 	@ResponseStatus(HttpStatus.OK)
 	fun console(
 		@PathVariable vmId: String? = null,
 		// @RequestBody console: ConsoleVo? = null,
-	): Res<ConsoleVo?> {
+	): ResponseEntity<ConsoleVo?> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 //		if (console == null)
 //			throw ErrorPattern.CONSOLE_VO_INVALID.toException()
 		log.info("--- 가상머신 콘솔")
-		return Res.safely { iVm.findConsole(vmId) }
+		return ResponseEntity(iVm.findConsole(vmId), HttpStatus.OK)
 	}
 
 	@GetMapping("/console/vncView")
@@ -362,10 +363,10 @@ class VmController: BaseController() {
 	)
 	fun start(
 		@PathVariable vmId: String? = null,
-	): Res<Boolean> {
+	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		return Res.safely { iVmOp.start(vmId) }
+		return ResponseEntity(iVmOp.start(vmId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -378,10 +379,10 @@ class VmController: BaseController() {
 	)
 	fun pause(
 		@PathVariable vmId: String? = null,
-	): Res<Boolean> {
+	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		return Res.safely { iVmOp.pause(vmId) }
+		return ResponseEntity(iVmOp.pause(vmId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -394,10 +395,10 @@ class VmController: BaseController() {
 	)
 	fun powerOff(
 		@PathVariable vmId: String? = null,
-	): Res<Boolean> {
+	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		return Res.safely { iVmOp.powerOff(vmId) }
+		return ResponseEntity(iVmOp.powerOff(vmId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -410,10 +411,10 @@ class VmController: BaseController() {
 	)
 	fun shutdown(
 		@PathVariable vmId: String? = null,
-	): Res<Boolean> {
+	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		return Res.safely { iVmOp.shutdown(vmId) }
+		return ResponseEntity(iVmOp.shutdown(vmId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -426,10 +427,10 @@ class VmController: BaseController() {
 	)
 	fun reboot(
 		@PathVariable vmId: String? = null,
-	): Res<Boolean> {
+	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		return Res.safely { iVmOp.reboot(vmId) }
+		return ResponseEntity(iVmOp.reboot(vmId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -442,10 +443,10 @@ class VmController: BaseController() {
 	)
 	fun reset(
 		@PathVariable vmId: String? = null,
-	): Res<Boolean> {
+	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		return Res.safely { iVmOp.reset(vmId) }
+		return ResponseEntity(iVmOp.reset(vmId), HttpStatus.OK)
 	}
 	//endregion
 
@@ -459,11 +460,11 @@ class VmController: BaseController() {
 	@ResponseBody
 	fun findAllNicsFromVm(
 		@PathVariable vmId: String? = null,
-	): Res<List<NicVo>> {
+	): ResponseEntity<List<NicVo>> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("----- vm nic 일반 불러오기: $vmId")
-		return Res.safely { vmNic.findAllNicsFromVm(vmId) }
+		return ResponseEntity(vmNic.findAllNicsFromVm(vmId), HttpStatus.OK)
 	}
 
 	@ApiOperation(value = "가상머신 네트워크 인터페이스 목록", notes = "선택된 가상머신의 네트워크 인터페이스 목록을 조회한다")
@@ -475,12 +476,12 @@ class VmController: BaseController() {
 	fun findNicFromVm(
 		@PathVariable vmId: String? = null,
 		@PathVariable nicId: String? = null,
-	): Res<NicVo?> {
+	): ResponseEntity<NicVo?> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		if (nicId.isNullOrEmpty())
 			throw ErrorPattern.NIC_ID_NOT_FOUND.toException()
-		return Res.safely { vmNic.findOneNicFromVm(vmId, nicId) }
+		return ResponseEntity(vmNic.findOneNicFromVm(vmId, nicId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -490,19 +491,19 @@ class VmController: BaseController() {
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		ApiImplicitParam(name="nic", value="네트워크 인터페이스 컨트롤러", dataTypeClass=NicVo::class),
+		ApiImplicitParam(name="nic", value="네트워크 인터페이스 컨트롤러", dataTypeClass=NicVo::class, paramType="body"),
 	)
 	@PostMapping("/{vmId}/nics/{nicId}")
 	@ResponseBody
 	fun addNicFromVm(
 		@PathVariable vmId: String? = null,
 		@PathVariable nic: NicVo? = null,
-	): Res<NicVo?> {
+	): ResponseEntity<NicVo?> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		if (nic == null)
 			throw ErrorPattern.NIC_VO_INVALID.toException()
-		return Res.safely { vmNic.addNicFromVm(vmId, nic) }
+		return ResponseEntity(vmNic.addNicFromVm(vmId, nic), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -513,7 +514,7 @@ class VmController: BaseController() {
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
 		ApiImplicitParam(name="nicId", value="네트워크 인터페이스 컨트롤러 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		ApiImplicitParam(name="nic", value="네트워크 인터페이스 컨트롤러", dataTypeClass=NicVo::class),
+		ApiImplicitParam(name="nic", value="네트워크 인터페이스 컨트롤러", dataTypeClass=NicVo::class, paramType="body"),
 	)
 	@PutMapping("/{vmId}/nics/{nicId}")
 	@ResponseBody
@@ -521,14 +522,14 @@ class VmController: BaseController() {
 		@PathVariable vmId: String? = null,
 		@PathVariable nicId: String? = null,
 		@PathVariable nic: NicVo? = null,
-	): Res<NicVo?> {
+	): ResponseEntity<NicVo?> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		if (nicId.isNullOrEmpty())
 			throw ErrorPattern.NIC_ID_NOT_FOUND.toException()
 		if (nic == null)
 			throw ErrorPattern.NIC_VO_INVALID.toException()
-		return Res.safely { vmNic.updateFromVm(vmId, nic) }
+		return ResponseEntity(vmNic.updateFromVm(vmId, nic), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -545,12 +546,12 @@ class VmController: BaseController() {
 	fun removeNicFromVm(
 		@PathVariable vmId: String? = null,
 		@PathVariable nicId: String? = null,
-	): Res<Boolean> {
+	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		if (nicId.isNullOrEmpty())
 			throw ErrorPattern.NIC_ID_NOT_FOUND.toException()
-		return Res.safely { vmNic.removeNicFromVm(vmId, nicId) }
+		return ResponseEntity(vmNic.removeNicFromVm(vmId, nicId), HttpStatus.OK)
 	}
 
 	companion object {

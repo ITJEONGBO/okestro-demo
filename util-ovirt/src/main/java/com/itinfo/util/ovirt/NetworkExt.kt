@@ -1,13 +1,12 @@
 package com.itinfo.util.ovirt
 
-import com.itinfo.util.ovirt.error.ErrorPattern
-import com.itinfo.util.ovirt.error.FailureType
-import com.itinfo.util.ovirt.error.toError
-import com.itinfo.util.ovirt.error.toResult
+import com.itinfo.util.ovirt.error.*
+
+import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.services.*
 import org.ovirt.engine.sdk4.types.*
-import kotlin.Error
+
 
 private fun Connection.srvNetworks(): NetworksService =
 	this.systemService.networksService()
@@ -21,7 +20,7 @@ fun Connection.findAllNetworks(follow: String = ""): Result<List<Network>> = run
 	Term.NETWORK.logSuccess("목록조회")
 }.onFailure {
 	Term.NETWORK.logFail("목록조회", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.srvNetwork(networkId: String): NetworkService =
@@ -36,7 +35,7 @@ fun Connection.findNetwork(networkId: String, follow: String = ""): Result<Netwo
 	Term.NETWORK.logSuccess("상세조회", networkId)
 }.onFailure {
 	Term.NETWORK.logFail("상세조회", it, networkId)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 
@@ -50,7 +49,7 @@ fun Connection.addNetwork(network: Network): Result<Network?> = runCatching {
 	Term.NETWORK.logSuccess("생성")
 }.onFailure {
 	Term.NETWORK.logFail("생성", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.addVnicProfileFromNetwork(networkId: String, vnicProfile: VnicProfile): Result<VnicProfile> = runCatching {
@@ -66,7 +65,7 @@ fun Connection.addVnicProfileFromNetwork(networkId: String, vnicProfile: VnicPro
 	log.info("VnicProfile 생성 완료 ... {}", vnicProfile.name())
 } .onFailure {
 	log.error("VnicProfile 생성 실패... {}", it.localizedMessage)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.removeVnicProfileFromNetwork(networkId: String, vnicProfileId: String): Result<Boolean> = runCatching {
@@ -76,7 +75,7 @@ fun Connection.removeVnicProfileFromNetwork(networkId: String, vnicProfileId: St
 	log.info("VnicProfile 삭제 완료 ... {}", vnicProfileId)
 }.onFailure {
 	log.info("VnicProfile 삭제 실패 ... 이유: {}", it.localizedMessage)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.updateNetwork(network: Network): Result<Network?> = runCatching {
@@ -87,7 +86,7 @@ fun Connection.updateNetwork(network: Network): Result<Network?> = runCatching {
 	Term.NETWORK.logSuccess("편집", it.id())
 }.onFailure {
 	Term.NETWORK.logFail("편집", it)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.removeNetwork(networkId: String): Result<Boolean> = runCatching {
@@ -104,7 +103,7 @@ fun Connection.removeNetwork(networkId: String): Result<Boolean> = runCatching {
 	Term.NETWORK.logSuccess("삭제", networkId)
 }.onFailure {
 	Term.NETWORK.logFail("삭제", it, networkId)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 private fun Connection.srvNetworkLabelsFromNetwork(networkId: String): NetworkLabelsService =
 	this.srvNetwork(networkId).networkLabelsService()
@@ -115,7 +114,7 @@ fun Connection.findAllNetworkLabelsFromNetwork(networkId: String): Result<List<N
 	log.info("{} 내 {} 목록조회 완료 ... {}", Term.NETWORK, Term.NETWORK_LABEL, networkId)
 }.onFailure {
 	log.info("{} 내 {} 목록조회 실패 ... 이유: {}", Term.NETWORK, Term.NETWORK_LABEL, it.localizedMessage)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.addNetworkLabelFromNetwork(networkId: String, networkLabel: NetworkLabel): Result<NetworkLabel> = runCatching {
@@ -124,7 +123,7 @@ fun Connection.addNetworkLabelFromNetwork(networkId: String, networkLabel: Netwo
 	log.info("{} 내 {} 생성 완료 ... {}", Term.NETWORK, Term.NETWORK_LABEL, networkLabel.name())
 } .onFailure {
 	log.error("{} 내 {} 생성 실패... {}", Term.NETWORK, Term.NETWORK_LABEL, it.localizedMessage)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvNetworkLabelFromNetwork(networkId: String, networkLabelId: String): NetworkLabelService =
@@ -150,7 +149,7 @@ fun Connection.findAllVnicProfilesFromNetwork(networkId: String, follow: String 
 	Term.NETWORK.logSuccessWithin(Term.VNIC_PROFILE, "목록조회", networkId)
 }.onFailure {
 	Term.NETWORK.logFailWithin(Term.VNIC_PROFILE, "목록조회", it, networkId)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvVnicProfileFromNetwork(networkId: String, vnicProfileId: String): AssignedVnicProfileService =
@@ -162,7 +161,7 @@ fun Connection.findVnicProfileFromNetwork(networkId: String, vnicProfileId: Stri
 	Term.NETWORK.logSuccessWithin(Term.VNIC_PROFILE, "상세조회", networkId)
 }.onFailure {
 	Term.NETWORK.logFailWithin(Term.VNIC_PROFILE, "상세조회", it, networkId)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvPermissionsFromNetwork(networkId: String): AssignedPermissionsService =
@@ -177,5 +176,5 @@ fun Connection.findAllPermissionsFromNetwork(networkId: String, follow: String =
 	Term.NETWORK.logSuccessWithin(Term.PERMISSION, "목록조회", networkId)
 }.onFailure {
 	Term.NETWORK.logFailWithin(Term.PERMISSION, "목록조회", it, networkId)
-	throw it
+	throw if (it is Error) it.toItCloudException() else it
 }
