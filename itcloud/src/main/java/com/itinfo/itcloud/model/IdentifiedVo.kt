@@ -1,9 +1,9 @@
 package com.itinfo.itcloud.model
 
+import com.itinfo.itcloud.model.network.VnicProfileVo
 import org.ovirt.engine.sdk4.types.*
 import org.slf4j.LoggerFactory
 import java.io.Serializable
-import javax.xml.crypto.Data
 
 private val log = LoggerFactory.getLogger(IdentifiedVo::class.java)
 
@@ -38,13 +38,70 @@ fun DataCenter.fromDataCenterToIdentifiedVo(): IdentifiedVo = IdentifiedVo.build
 fun List<DataCenter>.fromDataCentersToIdentifiedVos(): List<IdentifiedVo> =
 	this@fromDataCentersToIdentifiedVos.map { it.fromDataCenterToIdentifiedVo() }
 
-// 선호도 그룹, 레이블 때문에 잇음
+fun Cluster.fromClusterToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
+	id { id() }
+	name { if (namePresent()) name() else "" }
+}
+fun List<Cluster>.fromClustersToIdentifiedVos(): List<IdentifiedVo> =
+	this@fromClustersToIdentifiedVos.map { it.fromClusterToIdentifiedVo() }
+
 fun Host.fromHostToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
 	id { id() }
 	name { if (namePresent()) name() else "" }
 }
 fun List<Host>.fromHostsToIdentifiedVos(): List<IdentifiedVo> =
 	this@fromHostsToIdentifiedVos.map { it.fromHostToIdentifiedVo() }
+
+fun Vm.fromVmToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
+	id { id() }
+	name { if (namePresent()) name() else "" }
+}
+fun List<Vm>.fromVmsToIdentifiedVos(): List<IdentifiedVo> =
+	this@fromVmsToIdentifiedVos.map { it.fromVmToIdentifiedVo() }
+
+fun Template.fromTemplateToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
+	id { id() }
+	name { if (namePresent()) name() else "" }
+}
+fun List<Template>.fromTemplatesToIdentifiedVos(): List<IdentifiedVo> =
+	this@fromTemplatesToIdentifiedVos.map { it.fromTemplateToIdentifiedVo() }
+
+fun Network.fromNetworkToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
+	id { id() }
+	name { if (namePresent()) name() else "" }
+}
+fun List<Network>.fromNetworksToIdentifiedVos(): List<IdentifiedVo> =
+	this@fromNetworksToIdentifiedVos.map { it.fromNetworkToIdentifiedVo() }
+
+fun NetworkFilter.fromNetworkFilterToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
+	id { id() }
+	name { if (namePresent()) name() else "" }
+}
+fun List<NetworkFilter>.fromNetworkFiltersToIdentifiedVos(): List<IdentifiedVo> =
+	this@fromNetworkFiltersToIdentifiedVos.map { it.fromNetworkFilterToIdentifiedVo() }
+
+fun VnicProfile.fromVnicProfileToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
+	id { id() }
+	name { if (namePresent()) name() else "" }
+}
+fun List<VnicProfile>.fromVnicProfilesToIdentifiedVos(): List<IdentifiedVo> =
+	this@fromVnicProfilesToIdentifiedVos.map { it.fromVnicProfileToIdentifiedVo() }
+
+
+fun StorageDomain.fromStorageDomainToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
+	id { id() }
+	name { if (namePresent()) name() else "" }
+}
+fun List<StorageDomain>.fromStorageDomainsToIdentifiedVos(): List<IdentifiedVo> =
+	this@fromStorageDomainsToIdentifiedVos.map { it.fromStorageDomainToIdentifiedVo() }
+
+fun Disk.fromDiskToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
+	id { id() }
+	name { if (namePresent()) name() else "" }
+}
+fun List<Disk>.fromDisksToIdentifiedVos(): List<IdentifiedVo> =
+	this@fromDisksToIdentifiedVos.map { it.fromDiskToIdentifiedVo() }
+
 
 fun AffinityGroup.fromAffinityGroupToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
 	id { id() }
@@ -60,20 +117,9 @@ fun AffinityLabel.fromAffinityLabelToIdentifiedVo(): IdentifiedVo = IdentifiedVo
 fun List<AffinityLabel>.fromAffinityLabelsToIdentifiedVos(): List<IdentifiedVo> =
 	this@fromAffinityLabelsToIdentifiedVos.map { it.fromAffinityLabelToIdentifiedVo() }
 
-fun Vm.fromVmToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
-	id { id() }
-	name { if (namePresent()) name() else "" }
-}
-fun List<Vm>.fromVmsToIdentifiedVos(): List<IdentifiedVo> =
-	this@fromVmsToIdentifiedVos.map { it.fromVmToIdentifiedVo() }
-
-
-
-
 fun Application.fromApplicationToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
 	id { id() }
 	name { if (namePresent()) name() else "" }
 }
-
 fun List<Application>.fromApplicationsToIdentifiedVos(): List<IdentifiedVo> =
 	this@fromApplicationsToIdentifiedVos.map { it.fromApplicationToIdentifiedVo() }

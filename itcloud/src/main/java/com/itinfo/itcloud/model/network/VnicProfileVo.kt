@@ -1,8 +1,8 @@
 package com.itinfo.itcloud.model.network
 
+import com.itinfo.itcloud.model.*
 import com.itinfo.itcloud.model.computing.DataCenterVo
 import com.itinfo.itcloud.model.computing.toDataCenterIdName
-import com.itinfo.itcloud.model.gson
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.VnicProfileBuilder
@@ -39,9 +39,9 @@ class VnicProfileVo(
 	val passThrough: VnicPassThroughMode = VnicPassThroughMode.DISABLED,
 	val migration: Boolean = false,
 	val portMirroring: Boolean = false,
-	val networkFilterVo: NetworkFilterVo =  NetworkFilterVo(),
-	val dataCenterVo: DataCenterVo = DataCenterVo(),
-	val networkVo: NetworkVo = NetworkVo(),
+	val networkFilterVo: IdentifiedVo =  IdentifiedVo(),
+	val dataCenterVo: IdentifiedVo = IdentifiedVo(),
+	val networkVo: IdentifiedVo = IdentifiedVo(),
 ) : Serializable {
 	override fun toString(): String =
 		gson.toJson(this)
@@ -53,9 +53,9 @@ class VnicProfileVo(
 		private var bPassThrough: VnicPassThroughMode = VnicPassThroughMode.DISABLED;fun passThrough(block: () -> VnicPassThroughMode) { bPassThrough = block() ?: VnicPassThroughMode.DISABLED }
 		private var bMigration: Boolean = false;fun migration(block: () -> Boolean?) { bMigration = block() ?: false }
 		private var bPortMirroring: Boolean = false;fun portMirroring(block: () -> Boolean?) { bPortMirroring = block() ?: false }
-		private var bNetworkFilterVo: NetworkFilterVo = NetworkFilterVo();fun networkFilterVo(block: () -> NetworkFilterVo?) { bNetworkFilterVo = block() ?: NetworkFilterVo() }
-		private var bDataCenterVo: DataCenterVo = DataCenterVo();fun dataCenterVo(block: () -> DataCenterVo?) { bDataCenterVo = block() ?: DataCenterVo() }
-		private var bNetworkVo: NetworkVo = NetworkVo();fun networkVo(block: () -> NetworkVo?) { bNetworkVo = block() ?: NetworkVo() }
+		private var bNetworkFilterVo: IdentifiedVo = IdentifiedVo();fun networkFilterVo(block: () -> IdentifiedVo?) { bNetworkFilterVo = block() ?: IdentifiedVo() }
+		private var bDataCenterVo: IdentifiedVo = IdentifiedVo();fun dataCenterVo(block: () -> IdentifiedVo?) { bDataCenterVo = block() ?: IdentifiedVo() }
+		private var bNetworkVo: IdentifiedVo = IdentifiedVo();fun networkVo(block: () -> IdentifiedVo?) { bNetworkVo = block() ?: IdentifiedVo() }
 
 		fun build(): VnicProfileVo = VnicProfileVo(bId, bName, bDescription, bPassThrough, bMigration, bPortMirroring, bNetworkFilterVo, bDataCenterVo, bNetworkVo)
 	}
@@ -75,7 +75,6 @@ fun List<VnicProfile>.toVnicProfileIdNames(): List<VnicProfileVo> =
 
 
 fun VnicProfile.toVnicProfileVo(conn: Connection): VnicProfileVo {
-	log.debug("VnicProfile.toVnicProfileVo ... ")
 	val network: Network? =
 		conn.findNetwork(this@toVnicProfileVo.network().id())
 			.getOrNull()
@@ -95,9 +94,9 @@ fun VnicProfile.toVnicProfileVo(conn: Connection): VnicProfileVo {
 //		passThrough { this@toVnicProfileVo.passThrough().mode().findVnicPass() }
 		portMirroring { this@toVnicProfileVo.portMirroring() }
 		migration { if(this@toVnicProfileVo.migratablePresent()) this@toVnicProfileVo.migratable() else null }
-		networkFilterVo { networkFilter?.toNetworkFilterVo() }
-		dataCenterVo { dataCenter?.toDataCenterIdName() }
-		networkVo { network?.toNetworkIdName() }
+		networkFilterVo { networkFilter?.fromNetworkFilterToIdentifiedVo() }
+		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
+		networkVo { network?.fromNetworkToIdentifiedVo() }
 	}
 }
 
@@ -139,7 +138,7 @@ fun Nic.toVnicProfileVoFromNic(conn: Connection): VnicProfileVo {
 	return VnicProfileVo.builder {
 		id { vnicProfile?.id() }
 		name { vnicProfile?.name() }
-		networkVo { network?.toNetworkVo(conn) }
+		networkVo { network?.fromNetworkToIdentifiedVo() }
 	}
 }
 

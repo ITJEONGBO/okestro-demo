@@ -55,3 +55,13 @@ fun Network.toUsageVo(): UsageVo {
     }
 }
 
+fun List<NetworkUsage>.toUsagesVo(): UsageVo{
+    return UsageVo.builder {
+        vm { this@toUsagesVo.contains(NetworkUsage.VM) }
+        display { this@toUsagesVo.contains(NetworkUsage.DISPLAY) }
+        migration { this@toUsagesVo.contains(NetworkUsage.MIGRATION) }
+        management { this@toUsagesVo.contains(NetworkUsage.MANAGEMENT) }
+        defaultRoute { this@toUsagesVo.contains(NetworkUsage.DEFAULT_ROUTE) }
+        gluster { this@toUsagesVo.contains(NetworkUsage.GLUSTER) }
+    }
+}

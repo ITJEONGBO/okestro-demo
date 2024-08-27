@@ -65,7 +65,7 @@ interface ItClusterService {
 	fun add(clusterVo: ClusterVo): ClusterVo?
 	/**
 	 * [ItClusterService.update]
-	 * 클러스터 정보
+	 * 클러스터 편집
 	 *
 	 * @param clusterVo [ClusterVo] 클러스터
 	 * @return [ClusterVo]? 클러스터
@@ -250,11 +250,11 @@ class ClusterServiceImpl(
 	@Throws(Error::class)
 	override fun findAllNetworksFromDataCenter(dataCenterId: String): List<NetworkVo> {
 		log.info("findAllNetworksFromDataCenter ... dataCenterId: {}", dataCenterId)
-		conn.findDataCenter(dataCenterId).getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toException()
+		conn.findDataCenter(dataCenterId).getOrNull()
+			?: throw ErrorPattern.DATACENTER_NOT_FOUND.toException()
 		val res: List<Network> =
 			conn.findAllNetworksFromFromDataCenter(dataCenterId)
 				.getOrDefault(listOf())
-				.filter { !it.externalProviderPresent() }
 		return res.toNetworkVos(conn)
 	}
 
@@ -292,7 +292,7 @@ class ClusterServiceImpl(
 		val res: List<Network> =
 			conn.findAllNetworksFromCluster(clusterId)
 				.getOrDefault(listOf())
-		return res.toNetworkVos(conn)
+		return res.toClusterNetworkVos(conn)
 	}
 
 	@Throws(Error::class)
@@ -304,11 +304,10 @@ class ClusterServiceImpl(
 	override fun findAllManageNetworkByCluster(clusterId: String): List<NetworkVo>? {
 		log.info("getUsagesByNetwork ... networkId: {}", clusterId)
 		conn.findCluster(clusterId).getOrNull() ?: ErrorPattern.CLUSTER_NOT_FOUND.toException()
-
 		val res: List<Network> =
 			conn.findAllNetworksFromCluster(clusterId)
 				.getOrDefault(listOf())
-		return res.toClusterNetworkVos() // TODO: 모두 할당? 모두 필요?
+		return res.toNetworkVos(conn) // TODO: 모두 할당? 모두 필요?
 	}
 
 	@Throws(Error::class)

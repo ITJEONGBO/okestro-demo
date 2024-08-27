@@ -5,6 +5,7 @@ import com.itinfo.util.ovirt.findAllHosts
 import com.itinfo.util.ovirt.findAllVms
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.types.Cluster
+import org.ovirt.engine.sdk4.types.Host
 import java.io.Serializable
 
 class SizeVo (
@@ -56,3 +57,17 @@ fun Cluster.findVmCntFromCluster(conn: Connection): SizeVo {
     }
 }
 
+fun Host.findVmCntFromHost(conn: Connection): SizeVo {
+    val allCnt: Int = conn.findAllVms()
+        .getOrDefault(listOf())
+        .count { it.host().id().equals(this@findVmCntFromHost.id()) }
+    val upCnt: Int = conn.findAllVms("status=up")
+        .getOrDefault(listOf())
+        .count { it.host().id().equals(this@findVmCntFromHost.id()) }
+
+    return SizeVo.builder {
+        allCnt { allCnt }
+        upCnt { upCnt }
+        downCnt { allCnt - upCnt }
+    }
+}

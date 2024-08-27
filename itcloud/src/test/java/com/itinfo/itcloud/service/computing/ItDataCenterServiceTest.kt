@@ -6,7 +6,10 @@ import com.itinfo.itcloud.model.computing.EventVo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.MethodOrderer
+import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestMethodOrder
 import org.ovirt.engine.sdk4.types.QuotaModeType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -50,7 +53,7 @@ class ItDataCenterServiceTest {
 	/**
 	 * [should_findOne]
 	 * [ItDataCenterService.findOne]에 대한 단위테스트
-	 * 
+	 *
 	 * @see ItDataCenterService.findOne
 	 **/
 	@Test
@@ -66,7 +69,7 @@ class ItDataCenterServiceTest {
 	/**
 	 * [should_add_update_and_delete_datacenter]
 	 * [ItDataCenterService.add], [ItDataCenterService.update]] [ItDataCenterService.remove]에 대한 단위테스트
-	 * 
+	 *
 	 * @see ItDataCenterService.add
 	 * @see ItDataCenterService.update
 	 * @see ItDataCenterService.remove
@@ -130,19 +133,52 @@ class ItDataCenterServiceTest {
 	}
 
 	/**
-	 * [should_add_fail_datacenter]
+	 * [should_add_success_datacenter]
 	 * [ItDataCenterService.add]에 대한 단위테스트
 	 *
-	 * 데이터센터 이름 중복으로 생성 불가
+	 * 성공
+	 * @see ItDataCenterService.add
+	 */
+	@Test
+	fun should_add_success_datacenter(){
+		log.debug("should_add_success_datacenter ... ")
+
+		val dcAdd: DataCenterVo = DataCenterVo.builder {
+			name { "testDc1" }
+			description { "testDescriptionDc" }
+			storageType { false }
+			version { "4.7" }
+			quotaMode { QuotaModeType.DISABLED }
+			comment { "testCommentDc" }
+		}
+
+		val addResult: DataCenterVo? =
+			service.add(dcAdd)
+
+		assertThat(addResult, `is`(not(nullValue())))
+		assertThat(addResult?.id, `is`(not(nullValue())))
+		assertThat(addResult?.id, `is`(dcAdd.id))
+		assertThat(addResult?.name, `is`(dcAdd.name))
+		assertThat(addResult?.description, `is`(dcAdd.description))
+		assertThat(addResult?.storageType, `is`(dcAdd.storageType))
+		assertThat(addResult?.version, `is`(dcAdd.version))
+		assertThat(addResult?.quotaMode, `is`(dcAdd.quotaMode))
+		assertThat(addResult?.comment, `is`(dcAdd.comment))
+	}
+
+	/**
+	 * [should_add_failure_datacenter]
+	 * [ItDataCenterService.add]에 대한 단위테스트
+	 *
+	 * 실패: 데이터센터 이름 중복으로 생성 불가
 	 * @see ItDataCenterService.add
 	 **/
 	@Test
-	fun should_add_fail_datacenter() {
-		log.debug("should_add_fail_and_delete_datacenter ... ")
-		assertThat(service, `is`(not(nullValue())))
+	fun should_add_failure_datacenter() {
+		log.debug("should_add_failure_datacenter ... ")
 
 		val dcAdd: DataCenterVo = DataCenterVo.builder {
-			name { "test" }
+			name { "Default" } // 기본 생성되는 데이터센터 명 (무조건 중복)
 			description { "testDescription" }
 			storageType { false }
 			version { "4.7" }
@@ -154,24 +190,61 @@ class ItDataCenterServiceTest {
 			service.add(dcAdd)
 
 		assertThat(addResult, `is`(nullValue()))
-		assertThat(addResult?.id, `is`(nullValue())) // 여기서 검증이 애매
+		// id가 null 인경우, 여기서 검증이 애매
+		assertThat(addResult?.id, `is`(nullValue()))
 	}
 
 	/**
-	 * [should_getEvent]
+	 * [should_update_success_datacenter]
+	 * [ItDataCenterService.update]에 대한 단위테스트
+	 *
+	 * 성공
+	 * 미완
+	 * @see ItDataCenterService.update
+	 */
+	@Test
+	fun should_update_success_datacenter(){
+		log.debug("should_update_success_datacenter ... ")
+
+		val dcEdit: DataCenterVo = DataCenterVo.builder {
+//			id { }
+			name { "testDc2" }
+			description { "testDescriptionDc2" }
+			storageType { false }
+			version { "4.7" }
+			quotaMode { QuotaModeType.DISABLED }
+			comment { "testCommentDc2" }
+		}
+
+		val updateResult: DataCenterVo? =
+			service.update(dcEdit)
+
+		assertThat(updateResult, `is`(not(nullValue())))
+		assertThat(updateResult?.id, `is`(not(nullValue())))
+		assertThat(updateResult?.name, `is`(dcEdit.name))
+		assertThat(updateResult?.description, `is`(dcEdit.description))
+		assertThat(updateResult?.storageType, `is`(dcEdit.storageType))
+		assertThat(updateResult?.version, `is`(dcEdit.version))
+		assertThat(updateResult?.quotaMode, `is`(dcEdit.quotaMode))
+		assertThat(updateResult?.comment, `is`(dcEdit.comment))
+	}
+
+
+
+	/**
+	 * [should_findAllEventsBy]
 	 * [ItDataCenterService.findAllEventsBy]에 대한 단위테스트
 	 *
 	 * @see ItDataCenterService.findAllEventsBy
 	 **/
 	@Test
-	fun should_getEvent() {
-		log.debug("should_getEvent ... ")
+	fun should_findAllEventsBy() {
+		log.debug("should_findAllEventsBy ... ")
 		val result: List<EventVo> =
 			service.findAllEventsBy(dataCenterId)
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(110))
 	}
-
 
 	companion object {
 		private val log by LoggerDelegate()
