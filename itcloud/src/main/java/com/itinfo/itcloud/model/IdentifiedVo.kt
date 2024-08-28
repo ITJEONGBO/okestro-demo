@@ -1,6 +1,5 @@
 package com.itinfo.itcloud.model
 
-import com.itinfo.itcloud.model.network.VnicProfileVo
 import org.ovirt.engine.sdk4.types.*
 import org.slf4j.LoggerFactory
 import java.io.Serializable
@@ -80,12 +79,26 @@ fun NetworkFilter.fromNetworkFilterToIdentifiedVo(): IdentifiedVo = IdentifiedVo
 fun List<NetworkFilter>.fromNetworkFiltersToIdentifiedVos(): List<IdentifiedVo> =
 	this@fromNetworkFiltersToIdentifiedVos.map { it.fromNetworkFilterToIdentifiedVo() }
 
+fun HostNic.fromHostNicToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
+	id { id() }
+	name { if (namePresent()) name() else "" }
+}
+fun List<HostNic>.fromHostNicsToIdentifiedVos(): List<IdentifiedVo> =
+	this@fromHostNicsToIdentifiedVos.map { it.fromHostNicToIdentifiedVo() }
+
 fun VnicProfile.fromVnicProfileToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
 	id { id() }
 	name { if (namePresent()) name() else "" }
 }
 fun List<VnicProfile>.fromVnicProfilesToIdentifiedVos(): List<IdentifiedVo> =
 	this@fromVnicProfilesToIdentifiedVos.map { it.fromVnicProfileToIdentifiedVo() }
+
+fun CpuProfile.fromCpuProfileToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
+	id { id() }
+	name { if (namePresent()) name() else "" }
+}
+fun List<CpuProfile>.fromCpuProfilesToIdentifiedVos(): List<IdentifiedVo> =
+	this@fromCpuProfilesToIdentifiedVos.map { it.fromCpuProfileToIdentifiedVo() }
 
 
 fun StorageDomain.fromStorageDomainToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {

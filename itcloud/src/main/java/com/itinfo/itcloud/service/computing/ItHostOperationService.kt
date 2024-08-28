@@ -82,8 +82,12 @@ class HostOperationServiceImpl: BaseService(), ItHostOperationService {
     @Throws(UnknownHostException::class, Error::class)
     override fun restart(hostId: String): Boolean {
         log.info("reStartHost ... ")
+    // TODO: Host 이름, PW 입력문제
+        val userName = ""
+        val hostPw: String = "adminRoot!@#"
+
         val res: Result<Boolean> =
-            conn.restartHost(hostId)
+            conn.restartHost(hostId, hostPw)
         return res.isSuccess
     }
 

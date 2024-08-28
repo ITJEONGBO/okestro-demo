@@ -89,13 +89,13 @@ fun Connection.removeHost(hostId: String): Result<Boolean> = runCatching {
 	val host: Host =
 		this.findHost(hostId).getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
 	val hostStatus = host.status()
-	if (hostStatus == HostStatus.MAINTENANCE) {
-		srvHost(hostId).remove().send()
-		this.expectHostDeleted(hostId) /*(true)*/
-	} else {
+	if (hostStatus != HostStatus.MAINTENANCE) {
 		log.warn("{} 삭제 실패... {} 가 유지관리 상태가 아님 ", Term.HOST.desc, hostId)
-		false
+		throw throw ErrorPattern.HOST_NOT_MAINTENANCE.toError()
 	}
+
+	srvHost(hostId).remove().send()
+	this.expectHostDeleted(hostId) /*(true)*/
 }.onSuccess {
 	Term.HOST.logSuccess("삭제", hostId)
 }.onFailure {
@@ -167,14 +167,14 @@ fun Connection.refreshHost(hostId: String): Result<Boolean> = runCatching {
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.restartHost(hostId: String): Result<Boolean> = runCatching {
+fun Connection.restartHost(hostId: String, hostPw: String): Result<Boolean> = runCatching {
 	val host: Host = this.findHost(hostId).getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
 	val address: InetAddress = InetAddress.getByName(host.address())
-	if (address.rebootHostViaSSH("root", "adminRoot!@#", 22).isFailure)
+	if (address.rebootHostViaSSH("root", hostPw, 22).isFailure)
 		return Result.failure(Error("SSH를 통한 호스트 재부팅 실패"))
 
 	Thread.sleep(60000) // 60초 대기, 재부팅 시간 고려
-	if (this@restartHost.expectHostStatus(host.id(), HostStatus.UP, 900000, 3000)) {
+	if (this@restartHost.expectHostStatus(host.id(), HostStatus.UP)) {
 		true
 	} else {
 		log.error("재부팅 전환 시간 초과")
@@ -213,6 +213,7 @@ fun InetAddress.rebootHostViaSSH(username: String, password: String, port: Int):
 	channel.disconnect()
 	session.disconnect()
 	val exitStatus = channel.exitStatus
+	log.debug("rebootHostViaSSH")
 	return Result.success(exitStatus == 0)
 }.onSuccess {
 
@@ -263,10 +264,10 @@ fun Connection.expectHostStatus(hostId: String, expectStatus: HostStatus, interv
 		val status = currentHost?.status()
 
 		if (status == expectStatus) {
-			log.info("호스트 생성 완료 ... {}", expectStatus)
+			log.info("호스트 완료 ... {}", expectStatus)
 			return true
 		} else if (System.currentTimeMillis() - startTime > timeout) {
-			log.error("호스트 생성 시간 초과: {}", currentHost?.name());
+			log.error("호스트 시간 초과: {}", currentHost?.name());
 			return false
 		}
 

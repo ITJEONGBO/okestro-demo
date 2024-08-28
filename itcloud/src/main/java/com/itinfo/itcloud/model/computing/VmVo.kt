@@ -54,15 +54,15 @@ private val log = LoggerFactory.getLogger(VmVo::class.java)
  * @property hostEngineVm [Boolean] 금장/은장 vm().origin() == "managed_hosted_engine"
  * @property placement [String] 호스트에 부탁? 여부 ( 호스트에 고정, 호스트에서 실행중, 호스트에서 고정 및 실행)
  * @property hostVo [HostVo]  실행 호스트 정보 (현재 실행되고 있는 호스트의 정보)
- * @property snapshotVos List<[SnapshotVo]>
+ * @property snapshotVos List<[IdentifiedVo]>
 // * @property diskAttachmentVos List<[DiskAttachmentVo]> // 출력용
- * @property nicVos List<[NicVo]>
+ * @property nicVos List<[IdentifiedVo]>
  *
  *
  * <일반>
- * @property dataCenterVo [DataCenterVo]	따지고보면 생성창에서 보여주는 역할만 하는거 같음
- * @property clusterVo [ClusterVo]
- * @property templateVo [TemplateVo]
+ * @property dataCenterVo [IdentifiedVo]	따지고보면 생성창에서 보여주는 역할만 하는거 같음
+ * @property clusterVo [IdentifiedVo]
+ * @property templateVo [IdentifiedVo]
  *
  * @property description [String] 설명
  * @property comment [String]
@@ -114,7 +114,7 @@ private val log = LoggerFactory.getLogger(VmVo::class.java)
  *
  * <고가용성>
  * @property ha [Boolean]  					고가용성
- * @property storageDomainVo [StorageDomainVo] 가상 머신 임대 대상 스토리지 도메인
+ * @property storageDomainVo [IdentifiedVo] 가상 머신 임대 대상 스토리지 도메인
  * @property resumeOperation [String]		재개 동작
  * @property priority [Int]					(true/false는 프론트에서)고가용성 HighAvailability 우선순위 (낮음:1, 중간:50, 높음:100 )
  * @property watchDogModel [String]			워치독 모델 WatchdogModel.I6300ESB
@@ -124,7 +124,7 @@ private val log = LoggerFactory.getLogger(VmVo::class.java)
  * AutoPinningPolicy(adjust, disabled, existing)
  * CpuPinningPolicy(dedicated, manual(안됨), none, resize_and_pin_numa);
  * CpuShare(비활성화, 비활성화됨(0), 낮음(512), 중간(1024), 높음(2048), 사용자 지정)
- * @property cpuProfileVo [CpuProfileVo] 			CPU 프로파일
+ * @property cpuProfileVo [IdentifiedVo] 			CPU 프로파일
  * @property cpuShare [Int] 				CPU 공유
  * @property cpuPinningPolicy [String] 		CPU Pinning Policy
  * // @property cpuPinningTopology [String]	피닝 토폴로지  // ????
@@ -139,7 +139,7 @@ private val log = LoggerFactory.getLogger(VmVo::class.java)
  * @property firstDevice [String]
  * @property secDevice [String]
  * @property deviceList List<[String]>
- * @property connVo [DiskImageVo] cd/dvd 연결되면 뜰 iso id (사실 디스크 id)
+ * @property connVo [IdentifiedVo] cd/dvd 연결되면 뜰 iso id (사실 디스크 id)
  * @property bootingMenu [Boolean]
  *
  */
@@ -159,11 +159,11 @@ class VmVo (
     val ipv6: String = "",
     val hostEngineVm: Boolean = false,
     val placement: String = "",
-    val hostVo: HostVo = HostVo(),
-    val snapshotVos: List<SnapshotVo> = listOf(),
-    val nicVos: List<NicVo> = listOf(),
-    val dataCenterVo: DataCenterVo = DataCenterVo(),
-    val clusterVo: ClusterVo = ClusterVo(),
+    val hostVo: IdentifiedVo = IdentifiedVo(),
+    val snapshotVos: List<IdentifiedVo> = listOf(),
+    val nicVos: List<IdentifiedVo> = listOf(),
+    val dataCenterVo: IdentifiedVo = IdentifiedVo(),
+    val clusterVo: IdentifiedVo = IdentifiedVo(),
 //    val templateVo: TemplateVo = TemplateVo(),
     val description: String = "",
     val comment: String = "",
@@ -195,18 +195,18 @@ class VmVo (
     val monitor: Int = 0,
     val usb: Boolean = false,
     val hostInCluster: Boolean = false,
-    val hostVos: List<HostVo> = listOf(),
+    val hostVos: List<IdentifiedVo> = listOf(),
     val migrationMode: String = "",
     val migrationPolicy: String = "",
     val migrationEncrypt: InheritableBoolean = InheritableBoolean.INHERIT,
     val parallelMigration: String = "",
     val ha: Boolean = false,
-    val storageDomainVo: StorageDomainVo = StorageDomainVo(),
+    val storageDomainVo: IdentifiedVo = IdentifiedVo(),
     val resumeOperation: String = "",
     val priority: Int = 0,
     val watchDogModel: String = "",
     val watchDogAction: WatchdogAction = WatchdogAction.NONE,
-    val cpuProfileVo: CpuProfileVo = CpuProfileVo(),
+    val cpuProfileVo: IdentifiedVo = IdentifiedVo(),
     val cpuShare: Int = 0,
     val cpuPinningPolicy: String = "",
     val memoryBalloon: Boolean = false,
@@ -217,7 +217,7 @@ class VmVo (
     val firstDevice: String = "",
     val secDevice: String = "",
     val deviceList: List<String> = listOf(),
-    val connVo: DiskImageVo = DiskImageVo(),
+    val connVo: IdentifiedVo = IdentifiedVo(),
     val bootingMenu: Boolean = false
 ): Serializable {
     override fun toString(): String =
@@ -242,12 +242,12 @@ class VmVo (
         private var bIpv6: String = ""; fun ipv6(block: () -> String?) { bIpv6 = block() ?: "" }
         private var bHostEngineVm: Boolean = false; fun hostEngineVm(block: () -> Boolean?) { bHostEngineVm = block() ?: false }
         private var bPlacement: String = ""; fun placement(block: () -> String?) { bPlacement = block() ?: "" }
-        private var bHostVo: HostVo = HostVo(); fun hostVo(block: () -> HostVo?) { bHostVo = block() ?: HostVo() }
-        private var bSnapshotVos: List<SnapshotVo> = listOf(); fun snapshotVos(block: () -> List<SnapshotVo>?) { bSnapshotVos = block() ?: listOf() }
-        private var bNicVos: List<NicVo> = listOf(); fun nicVos(block: () -> List<NicVo>?) { bNicVos = block() ?: listOf() }
-        private var bDataCenterVo: DataCenterVo = DataCenterVo(); fun dataCenterVo(block: () -> DataCenterVo?) { bDataCenterVo = block() ?: DataCenterVo() }
-        private var bClusterVo: ClusterVo = ClusterVo(); fun clusterVo(block: () -> ClusterVo?) { bClusterVo = block() ?: ClusterVo() }
-//        private var bTemplateVo: TemplateVo = TemplateVo(); fun templateVo(block: () -> TemplateVo?) { bTemplateVo = block() ?: TemplateVo() }
+        private var bHostVo: IdentifiedVo = IdentifiedVo(); fun hostVo(block: () -> IdentifiedVo?) { bHostVo = block() ?: IdentifiedVo() }
+        private var bSnapshotVos: List<IdentifiedVo> = listOf(); fun snapshotVos(block: () -> List<IdentifiedVo>?) { bSnapshotVos = block() ?: listOf() }
+        private var bNicVos: List<IdentifiedVo> = listOf(); fun nicVos(block: () -> List<IdentifiedVo>?) { bNicVos = block() ?: listOf() }
+        private var bDataCenterVo: IdentifiedVo = IdentifiedVo(); fun dataCenterVo(block: () -> IdentifiedVo?) { bDataCenterVo = block() ?: IdentifiedVo() }
+        private var bClusterVo: IdentifiedVo = IdentifiedVo(); fun clusterVo(block: () -> IdentifiedVo?) { bClusterVo = block() ?: IdentifiedVo() }
+//        private var bTemplateVo: IdentifiedVo = IdentifiedVo(); fun templateVo(block: () -> TemplateVo?) { bTemplateVo = block() ?: TemplateVo() }
         private var bDescription: String = ""; fun description(block: () -> String?) { bDescription = block() ?: "" }
         private var bComment: String = ""; fun comment(block: () -> String?) { bComment = block() ?: "" }
         private var bOsSystem: String = ""; fun osSystem(block: () -> String?) { bOsSystem = block() ?: "" }
@@ -278,18 +278,18 @@ class VmVo (
         private var bMonitor: Int = 0; fun monitor(block: () -> Int?) { bMonitor = block() ?: 0 }
         private var bUsb: Boolean = false; fun usb(block: () -> Boolean?) { bUsb = block() ?: false }
         private var bHostInCluster: Boolean = false; fun hostInCluster(block: () -> Boolean?) { bHostInCluster = block() ?: false }
-        private var bHostVos: List<HostVo> = listOf(); fun hostVos(block: () -> List<HostVo>?) { bHostVos = block() ?: listOf() }
+        private var bHostVos: List<IdentifiedVo> = listOf(); fun hostVos(block: () -> List<IdentifiedVo>?) { bHostVos = block() ?: listOf() }
         private var bMigrationMode: String = ""; fun migrationMode(block: () -> String?) { bMigrationMode = block() ?: "" }
         private var bMigrationPolicy: String = ""; fun migrationPolicy(block: () -> String?) { bMigrationPolicy = block() ?: "" }
         private var bMigrationEncrypt: InheritableBoolean = InheritableBoolean.INHERIT; fun migrationEncrypt(block: () -> InheritableBoolean?) { bMigrationEncrypt = block() ?: InheritableBoolean.INHERIT }
         private var bParallelMigration: String = ""; fun parallelMigration(block: () -> String?) { bParallelMigration = block() ?: "" }
         private var bHa: Boolean = false; fun ha(block: () -> Boolean?) { bHa = block() ?: false }
-        private var bStorageDomainVo: StorageDomainVo = StorageDomainVo(); fun storageDomainVo(block: () -> StorageDomainVo?) { bStorageDomainVo = block() ?: StorageDomainVo() }
+        private var bStorageDomainVo: IdentifiedVo = IdentifiedVo(); fun storageDomainVo(block: () -> IdentifiedVo?) { bStorageDomainVo = block() ?: IdentifiedVo() }
         private var bResumeOperation: String = ""; fun resumeOperation(block: () -> String?) { bResumeOperation = block() ?: "" }
         private var bPriority: Int = 0; fun priority(block: () -> Int?) { bPriority = block() ?: 0 }
         private var bWatchDogModel: String = ""; fun watchDogModel(block: () -> String?) { bWatchDogModel = block() ?: "" }
         private var bWatchDogAction: WatchdogAction = WatchdogAction.NONE; fun watchDogAction(block: () -> WatchdogAction?) { bWatchDogAction = block() ?: WatchdogAction.NONE }
-        private var bCpuProfileVo: CpuProfileVo = CpuProfileVo(); fun cpuProfileVo(block: () -> CpuProfileVo?) { bCpuProfileVo = block() ?: CpuProfileVo() }
+        private var bCpuProfileVo: IdentifiedVo = IdentifiedVo(); fun cpuProfileVo(block: () -> IdentifiedVo?) { bCpuProfileVo = block() ?: IdentifiedVo() }
         private var bCpuShare: Int = 0; fun cpuShare(block: () -> Int?) { bCpuShare = block() ?: 0 }
         private var bCpuPinningPolicy: String = ""; fun cpuPinningPolicy(block: () -> String?) { bCpuPinningPolicy = block() ?: "" }
         private var bMemoryBalloon: Boolean = false; fun memoryBalloon(block: () -> Boolean?) { bMemoryBalloon = block() ?: false }
@@ -300,7 +300,7 @@ class VmVo (
         private var bFirstDevice: String = ""; fun firstDevice(block: () -> String?) { bFirstDevice = block() ?: "" }
         private var bSecDevice: String = ""; fun secDevice(block: () -> String?) { bSecDevice = block() ?: "" }
         private var bDeviceList: List<String> = listOf(); fun deviceList(block: () -> List<String>?) { bDeviceList = block() ?: listOf() }
-        private var bConnVo: DiskImageVo = DiskImageVo(); fun connVo(block: () -> DiskImageVo?) { bConnVo = block() ?: DiskImageVo() }
+        private var bConnVo: IdentifiedVo = IdentifiedVo(); fun connVo(block: () -> IdentifiedVo?) { bConnVo = block() ?: IdentifiedVo() }
         private var bBootingMenu: Boolean = false; fun bootingMenu(block: () -> Boolean?) { bBootingMenu = block() ?: false }
         fun build(): VmVo = VmVo(bId, bName, bStatus, bUpTime, bMemoryInstalled, bMemoryUsed, bMemoryBuffered, bMemoryCached, bMemoryFree, bMemoryUnused, bFqdn, bIpv4, bIpv6, bHostEngineVm, bPlacement, bHostVo, bSnapshotVos, bNicVos, bDataCenterVo, bClusterVo, /*bTemplateVo,*/ bDescription, bComment, bOsSystem, bChipsetFirmwareType, bOptimizeOption, bStateless, bStartPaused, bDeleteProtected, bDiskAttachmentVos, bVnicProfileVos, bMemorySize, bMemoryMax, bMemoryActual, bCpuArc, bCpuTopologyCnt, bCpuTopologyCore, bCpuTopologySocket, bCpuTopologyThread, /*bUserEmulation, bUserCpu, bUserVersion,*/ bInstanceType, bTimeOffset, bCloudInit, bHostName, bTimeStandard, bScript, bMonitor, bUsb, bHostInCluster, bHostVos, bMigrationMode, bMigrationPolicy, bMigrationEncrypt, bParallelMigration, bHa, bStorageDomainVo, bResumeOperation, bPriority, bWatchDogModel, bWatchDogAction, bCpuProfileVo, bCpuShare, bCpuPinningPolicy, bMemoryBalloon, bIoThreadCnt, bMultiQue, bVirtSCSIEnable, bVirtIoCnt, bFirstDevice, bSecDevice, bDeviceList, bConnVo, bBootingMenu)
     }
@@ -356,11 +356,11 @@ fun Vm.toVmVo(conn: Connection): VmVo {
         ipv6 { this@toVmVo.findVmIp(conn, "v6") }
         hostEngineVm { this@toVmVo.origin() == "managed_hosted_engine" } // 엔진여부
 //        placement { this@toVmVo. }
-        hostVo { host?.toHostVo(conn) }
+        hostVo { host?.fromHostToIdentifiedVo() }
 //        snapshotVos { this@toVmVo. }
 //        nicVos { this@toVmVo.nics() }
-        dataCenterVo { dataCenter?.toDataCenterIdName() }
-        clusterVo { cluster?.toClusterIdName() }
+        dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
+        clusterVo { cluster?.fromClusterToIdentifiedVo() }
 //        templateVo { this@toVmVo. }
         description { this@toVmVo.description() }
         comment { this@toVmVo.comment() }
@@ -409,12 +409,12 @@ fun Vm.toVmVo(conn: Connection): VmVo {
         migrationEncrypt { this@toVmVo.migration().encrypted() }
 //        parallelMigration { this@toVmVo. }
         ha { this@toVmVo.highAvailability().enabled() }
-        storageDomainVo { if (this@toVmVo.leasePresent()) conn.findStorageDomain(this@toVmVo.lease().storageDomain().id()).getOrNull()?.toStorageDomainVo(conn) else null }
+        storageDomainVo { if (this@toVmVo.leasePresent()) conn.findStorageDomain(this@toVmVo.lease().storageDomain().id()).getOrNull()?.fromStorageDomainToIdentifiedVo() else null }
         resumeOperation { this@toVmVo.storageErrorResumeBehaviour().value() }
         priority { this@toVmVo.highAvailability().priorityAsInteger() }
 //        watchDogModel { WatchdogAction.NONE }
         watchDogAction { WatchdogAction.NONE }
-        cpuProfileVo { conn.findCpuProfile(this@toVmVo.cpuProfile().id()).getOrNull()?.toCpuProfileVo() }
+        cpuProfileVo { conn.findCpuProfile(this@toVmVo.cpuProfile().id()).getOrNull()?.fromCpuProfileToIdentifiedVo() }
         cpuShare { this@toVmVo.cpuSharesAsInteger() }
         cpuPinningPolicy { this@toVmVo.cpuPinningPolicy().value() }
         memoryBalloon { this@toVmVo.memoryPolicy().ballooning() }
@@ -430,7 +430,7 @@ fun Vm.toVmVo(conn: Connection): VmVo {
                 null
         }
 //        deviceList { this@toVmVo. }
-        connVo { disk?.toDiskIdName() } //?
+        connVo { disk?.fromDiskToIdentifiedVo() } //?
 //        bootingMenu { this@toVmVo. }
     }
 }
@@ -479,9 +479,9 @@ fun Vm.toVmVoInfo(conn: Connection/*, graph: ItGraphService*/): VmVo {
         ipv4 { this@toVmVoInfo.findVmIp(conn, "v4") }
         ipv6 { this@toVmVoInfo.findVmIp(conn, "v6") }
         fqdn { this@toVmVoInfo.fqdn() }
-        hostVo { host?.toHostVo(conn) }
-        clusterVo { cluster?.toClusterVo(conn) }
-        dataCenterVo { dataCenter?.toDataCenterVoInfo() } // 메모리, cpu, 네트워크
+        hostVo { host?.fromHostToIdentifiedVo() }
+        clusterVo { cluster?.fromClusterToIdentifiedVo() }
+        dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() } // 메모리, cpu, 네트워크
 //        templateName { template?.name() }
     }
 }
@@ -711,13 +711,14 @@ fun Vm.toVmInit(conn: Connection): VmVo {
 fun Vm.toVmHost(conn: Connection): VmVo {
 	return VmVo.builder {
 		hostInCluster { !this@toVmHost.placementPolicy().hostsPresent() } // 클러스터내 호스트(t)인지 특정호스트(f)인지
-		hostVos {
-			if (this@toVmHost.placementPolicy().hostsPresent())
-				this@toVmHost.placementPolicy().hosts().map { host: Host ->
-					conn.findHost(host.id()).getOrNull()?.toHostIdName() ?: HostVo.builder {  }
-				}
-			else listOf()
-		}
+        //TODO
+//		hostVos {
+//			if (this@toVmHost.placementPolicy().hostsPresent())
+//				this@toVmHost.placementPolicy().hosts().map { host ->
+//					conn.findHost(host.id()).getOrNull()?.fromHostToIdentifiedVo() ?: HostVo.builder {  }
+//				}
+//			else listOf()
+//		}
 		migrationMode { this@toVmHost.placementPolicy().affinity().value() }
 		migrationEncrypt { this@toVmHost.migration().encrypted() }
 	}
@@ -738,7 +739,7 @@ fun Vm.toVmHa(conn: Connection): VmVo {
 		storageDomainVo {
             if (this@toVmHa.leasePresent())
                 conn.findStorageDomain(this@toVmHa.lease().storageDomain().id())
-                    .getOrNull()?.toStorageDomainIdName()
+                    .getOrNull()?.fromStorageDomainToIdentifiedVo()
             else null
         }
 		resumeOperation { this@toVmHa.storageErrorResumeBehaviour().value() } // 워치독?
@@ -755,7 +756,7 @@ fun Vm.toVmHa(conn: Connection): VmVo {
  */
 fun Vm.toVmResource(conn: Connection): VmVo {
 	return VmVo.builder {
-        cpuProfileVo { conn.findCpuProfile(this@toVmResource.cpuProfile().id()).getOrNull()?.toCpuProfileVo() }
+        cpuProfileVo { conn.findCpuProfile(this@toVmResource.cpuProfile().id()).getOrNull()?.fromCpuProfileToIdentifiedVo() }
 		cpuShare { this@toVmResource.cpuSharesAsInteger() }
 		cpuPinningPolicy { this@toVmResource.cpuPinningPolicy().value() }
 		memoryBalloon { this@toVmResource.memoryPolicy().ballooning() }
@@ -785,7 +786,7 @@ fun Vm.toVmBoot(conn: Connection): VmVo {
 			else
 				null
 		}
-        connVo { disk?.toDiskIdName() }
+        connVo { disk?.fromDiskToIdentifiedVo() }
 //		connId { cdromFileId }
 //		connName { disk?.name() }
 	}
@@ -806,8 +807,8 @@ fun Vm.toVmVoFromHost(conn: Connection/*, graph: ItGraphService*/): VmVo {
     return VmVo.builder {
         id { this@toVmVoFromHost.id() }
         name { this@toVmVoFromHost.name() }
-        clusterVo { cluster?.toClusterVo(conn) }
-        hostVo { host?.toHostVo(conn) }
+        clusterVo { cluster?.fromClusterToIdentifiedVo() }
+        hostVo { host?.fromHostToIdentifiedVo() }
         hostEngineVm { this@toVmVoFromHost.origin().equals("managed_hosted_engine") }
         status { this@toVmVoFromHost.status() }
         fqdn { this@toVmVoFromHost.fqdn() }

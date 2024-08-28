@@ -1,7 +1,8 @@
 package com.itinfo.itcloud.model.computing
 
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.model.*
 import com.itinfo.itcloud.model.network.HostNicVo
+import com.itinfo.itcloud.model.network.toHostNicVos
 import com.itinfo.itcloud.ovirtDf
 import com.itinfo.itcloud.repository.dto.UsageDto
 import com.itinfo.util.ovirt.*
@@ -43,6 +44,7 @@ private val log = LoggerFactory.getLogger(HostVo::class.java)
  * @property vmTotalCnt [Int] summary
  * @property vmActiveCnt [Int] summary
  * @property vmMigratingCnt [Int] summary
+ * 전원관리는 항상 비활성상태
  * <statistics>
  * @property memoryTotal [BigInteger]
  * @property memoryUsed [BigInteger]
@@ -105,10 +107,10 @@ class HostVo (
     val bootingTime: String = "",
     val hostHwVo: HostHwVo = HostHwVo(),
     val hostSwVo: HostSwVo = HostSwVo(),
-    val clusterVo: ClusterVo = ClusterVo(),
-    val dataCenterVo: DataCenterVo = DataCenterVo(),
-    val hostNicVos: List<HostNicVo> = listOf(),
-    val vmVos: List<VmVo> = listOf()
+    val clusterVo: IdentifiedVo = IdentifiedVo(),
+    val dataCenterVo: IdentifiedVo = IdentifiedVo(),
+    val hostNicVos: List<IdentifiedVo> = listOf(),
+    val vmVos: List<IdentifiedVo> = listOf()
 ): Serializable{
     override fun toString(): String = gson.toJson(this)
 
@@ -152,10 +154,10 @@ class HostVo (
         private var bBootingTime: String = ""; fun bootingTime (block: () -> String?) { bBootingTime = block() ?: ""}
         private var bHostHwVo: HostHwVo = HostHwVo(); fun hostHwVo(block: () -> HostHwVo?) { bHostHwVo = block() ?: HostHwVo() }
         private var bHostSwVo: HostSwVo = HostSwVo(); fun hostSwVo(block: () -> HostSwVo?) { bHostSwVo = block() ?: HostSwVo()}
-        private var bClusterVo: ClusterVo = ClusterVo(); fun clusterVo(block: () -> ClusterVo?) { bClusterVo = block() ?: ClusterVo() }
-        private var bDataCenterVo: DataCenterVo = DataCenterVo(); fun dataCenterVo(block: () -> DataCenterVo?) { bDataCenterVo = block() ?: DataCenterVo() }
-        private var bHostNicVos: List<HostNicVo> = listOf(); fun hostNicVos(block: () -> List<HostNicVo>?) { bHostNicVos = block() ?: listOf() }
-        private var bVmVos: List<VmVo> = listOf(); fun vmVos(block: () -> List<VmVo>?) { bVmVos = block() ?: listOf() }
+        private var bClusterVo: IdentifiedVo = IdentifiedVo(); fun clusterVo(block: () -> IdentifiedVo?) { bClusterVo = block() ?: IdentifiedVo() }
+        private var bDataCenterVo: IdentifiedVo = IdentifiedVo(); fun dataCenterVo(block: () -> IdentifiedVo?) { bDataCenterVo = block() ?: IdentifiedVo() }
+        private var bHostNicVos: List<IdentifiedVo> = listOf(); fun hostNicVos(block: () -> List<IdentifiedVo>?) { bHostNicVos = block() ?: listOf() }
+        private var bVmVos: List<IdentifiedVo> = listOf(); fun vmVos(block: () -> List<IdentifiedVo>?) { bVmVos = block() ?: listOf() }
 
         fun build(): HostVo = HostVo(bId, bName, bComment, bAddress, bDevicePassThrough, bHostedActive, bHostedScore, bIscsi, bKdump, bKsm, bSeLinux, bHostedEngine, bSpmPriority, bSpmStatus, bSshFingerPrint, bSshPort, bSshPublicKey, bSshName, bSshPassWord, bStatus, bTransparentPage, bVmTotalCnt, bVmActiveCnt, bVmMigratingCnt, bMemoryTotal, bMemoryUsed, bMemoryFree, bMemoryMax, bMemoryShared, bSwapTotal, bSwapUsed, bSwapFree, bHugePage2048Free, bHugePage2048Total, bHugePage1048576Free, bHugePage1048576Total, bBootingTime, bHostHwVo, bHostSwVo, bClusterVo, bDataCenterVo, bHostNicVos, bVmVos)
     }
@@ -189,7 +191,7 @@ fun Host.toHostVo(conn: Connection): HostVo {
         conn.findAllVms()
             .getOrDefault(listOf())
             .filter { it.hostPresent() && it.host().id() == this@toHostVo.id() }
-    val nics: List<HostNic> =
+    val hostNics: List<HostNic> =
         conn.findAllNicsFromHost(this@toHostVo.id())
             .getOrDefault(listOf())
 
@@ -199,13 +201,13 @@ fun Host.toHostVo(conn: Connection): HostVo {
         comment { this@toHostVo.comment() }
         address { this@toHostVo.address() }
         devicePassThrough { this@toHostVo.devicePassthrough().enabled() }
-        hostedActive { this@toHostVo.hostedEngine().active() }
-        hostedScore { this@toHostVo.hostedEngine().scoreAsInteger() }
-        iscsi { this@toHostVo.iscsi().initiator() }
+        hostedActive { if(this@toHostVo.hostedEnginePresent()) this@toHostVo.hostedEngine().active() else false }
+        hostedScore { if(this@toHostVo.hostedEnginePresent()) this@toHostVo.hostedEngine().scoreAsInteger() else 0 }
+        iscsi { if(this@toHostVo.iscsiPresent()) this@toHostVo.iscsi().initiator() else "" }
         kdump { this@toHostVo.kdumpStatus() }
         ksm { this@toHostVo.ksm().enabled() }
         seLinux { this@toHostVo.seLinux().mode() }
-//        hostedEngine { this@toHostVo.spm().status().equals(SpmStatus.SPM) } 다시 알아보기 (우선순위 숫자에 따라 다른건지?)
+//        hostedEngine { this@toHostVo.spm().status().equals(SpmStatus.SPM) } //다시 알아보기 (우선순위 숫자에 따라 다른건지?)
         spmPriority { this@toHostVo.spm().priorityAsInteger() }
         spmStatus { this@toHostVo.spm().status() }
         sshFingerPrint { this@toHostVo.ssh().fingerprint() }
@@ -231,10 +233,10 @@ fun Host.toHostVo(conn: Connection): HostVo {
         bootingTime { ovirtDf.format(Date(statistics.findBootTime())) }
         hostHwVo { this@toHostVo.toHostHwVo() }
 //        hostSwVo { this@toHostVo.toHostSwVo() }
-        clusterVo { cluster?.toClusterIdName() }
-        dataCenterVo { dataCenter?.toDataCenterIdName() }
-//        hostNicVos { hostNics.toHostNicVos(conn) }
-        vmVos { vms.toVmIdNames() }
+        clusterVo { cluster?.fromClusterToIdentifiedVo() }
+        dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
+        hostNicVos { hostNics.fromHostNicsToIdentifiedVos() }
+        vmVos { vms.fromVmsToIdentifiedVos() }
     }
 }
 
@@ -252,11 +254,11 @@ fun HostVo.toHostBuilder(): HostBuilder {
         .rootPassword(this@toHostBuilder.sshPassWord)
         .powerManagement(PowerManagementBuilder().enabled(false)) // 전원관리 비활성화 (기본)
         .spm(SpmBuilder().priority(this@toHostBuilder.spmPriority))
-        .hostedEngine(
+        /*.hostedEngine(
             HostedEngineBuilder()
                 // .active() // 호스트 엔진 배치 작업(없음, 배포)
                 .build()
-        )
+        )*/
 }
 
 fun HostVo.toAddHostBuilder(): Host =

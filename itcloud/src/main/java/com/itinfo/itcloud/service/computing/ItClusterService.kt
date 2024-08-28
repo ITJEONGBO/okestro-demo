@@ -142,14 +142,14 @@ interface ItClusterService {
 
 	// 선호도 그룹
 	/**
-	 * [ItClusterService.getAffinityGroupsByCluster]
+	 * [ItClusterService.findAllAffinityGroupsByCluster]
 	 * 클러스터 선호도그룹
 	 *
 	 * @param clusterId [String] 클러스터 아이디
 	 * @return List<[AffinityGroupVo]>? 클러스터 선호도그룹 목록
 	 */
 	@Throws(Error::class)
-	fun getAffinityGroupsByCluster(clusterId: String): List<AffinityGroupVo>?
+	fun findAllAffinityGroupsByCluster(clusterId: String): List<AffinityGroupVo>?
 	/**
 	 * [ItClusterService.addAffinityGroupByCluster]
 	 * 클러스터 선호도그룹 생성
@@ -353,8 +353,8 @@ class ClusterServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun getAffinityGroupsByCluster(clusterId: String): List<AffinityGroupVo>? {
-		log.info("getAffinityGroupsByCluster ... clusterId: {}", clusterId)
+	override fun findAllAffinityGroupsByCluster(clusterId: String): List<AffinityGroupVo>? {
+		log.info("findAllAffinityGroupsByCluster ... clusterId: {}", clusterId)
 		conn.findCluster(clusterId).getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
 		val res: List<AffinityGroup> =
 			conn.findAllAffinityGroupsFromCluster(clusterId)

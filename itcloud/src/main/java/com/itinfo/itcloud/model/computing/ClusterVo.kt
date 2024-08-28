@@ -48,14 +48,14 @@ private val log = LoggerFactory.getLogger(ClusterVo::class.java)
  * @property threadsAsCores [Boolean]
  * @property version [String]
  * @property virtService [Boolean] virt 서비스 활성화
- * @property networkProvider [Boolean] 네트워크 공급자 여부
- * @property dataCenterVo [DataCenterVo]
- * @property networkVo [NetworkVo] // 관리네트워크
+ * @property networkProvider [Boolean] 네트워크 공급자 여부 (clusters/id/externalnetworkproviders 에 포함되는지)
+ * @property dataCenterVo [IdentifiedVo]
+ * @property networkVo [IdentifiedVo] // 관리네트워크
  * @property hostSizeVo [SizeVo]
  * @property vmSizeVo [SizeVo]
- * @property hostVos List<[HostVo]>
- * @property networkVos List<[NetworkVo]>
- * @property templateVos List<[TemplateVo]>
+ * @property hostVos List<[IdentifiedVo]>
+ * @property networkVos List<[IdentifiedVo]>
+ * @property templateVos List<[IdentifiedVo]>
  **/
 class ClusterVo(
     val id: String = "",
@@ -145,7 +145,6 @@ fun List<Cluster>.toClusterIdNames(): List<ClusterVo> =
 	this@toClusterIdNames.map { it.toClusterIdName() }
 
 
-// TODO ERROR
 fun Cluster.toClusterVo(conn: Connection): ClusterVo {
 	val dataCenter: DataCenter? =
 		conn.findDataCenter(this@toClusterVo.dataCenter().id())
@@ -197,9 +196,9 @@ fun Cluster.toClusterVo(conn: Connection): ClusterVo {
 		encrypted { this@toClusterVo.migration().encrypted() }
 		switchType { this@toClusterVo.switchType() }
 		threadsAsCores { this@toClusterVo.threadsAsCores() }
-		version { this@toClusterVo.version().fullVersion() }
+		version { this@toClusterVo.version().major().toString() + "." + this@toClusterVo.version().minor() }
 		virtService { this@toClusterVo.virtService() }
-		networkProvider { this@toClusterVo.externalNetworkProvidersPresent() }
+		networkProvider { this@toClusterVo.externalNetworkProviders().size != 0 } // 0이 아니라면 네트워크 공급자 존재
 		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
 		networkVo { manageNetworkVo }
 		hostSizeVo { this@toClusterVo.findHostCntFromCluster(conn) }
@@ -242,8 +241,7 @@ fun ClusterVo.toClusterBuilder(conn: Connection): ClusterBuilder {
 
 	val clusterBuilder = ClusterBuilder()
 	clusterBuilder
-//		.dataCenter(DataCenterBuilder().id(this@toClusterBuilder.dataCenterVo.id).build()) // 필수
-		.id(this@toClusterBuilder.id)
+		.dataCenter(DataCenterBuilder().id(this@toClusterBuilder.dataCenterVo.id).build()) // 필수
 		.name(this@toClusterBuilder.name) // 필수
 		.cpu(CpuBuilder().architecture(this@toClusterBuilder.cpuArc).type(this@toClusterBuilder.cpuType)) // 필수
 		.description(this@toClusterBuilder.description)

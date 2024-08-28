@@ -30,7 +30,7 @@ class ItDataCenterServiceTest {
 
 	@BeforeEach
 	fun setup() {
-		dataCenterId = "ae1d4138-f642-11ee-9c1b-00163e4b3128"
+		dataCenterId = "6cde7270-6459-11ef-8be2-00163e5d06468"
 	}
 
 	/**
@@ -228,6 +228,26 @@ class ItDataCenterServiceTest {
 		assertThat(updateResult?.version, `is`(dcEdit.version))
 		assertThat(updateResult?.quotaMode, `is`(dcEdit.quotaMode))
 		assertThat(updateResult?.comment, `is`(dcEdit.comment))
+	}
+
+/**
+	 * [should_remove_success_datacenter]
+	 * [ItDataCenterService.remove]에 대한 단위테스트
+	 *
+	 * 성공
+	 * 미완
+	 * @see ItDataCenterService.remove
+	 */
+	@Test
+	fun should_remove_success_datacenter(){
+		log.debug("should_remove_success_datacenter ... ")
+
+		val dataCenterId = ""
+		val removeResult: Boolean =
+			service.remove(dataCenterId)
+
+		assertThat(removeResult, `is`(not(nullValue())))
+		assertThat(removeResult, `is`(true))
 	}
 
 
