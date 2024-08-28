@@ -192,7 +192,7 @@ fun Connection.restartHost(hostId: String, hostPw: String): Result<Boolean> = ru
  * host SSH 관리 - 재시작 부분
  */
 fun InetAddress.rebootHostViaSSH(username: String, password: String, port: Int): Result<Boolean> = runCatching {
-	var channel: ChannelExec? = null
+
 	log.debug("ssh 시작")
 
 	// SSH 세션 생성 및 연결
@@ -201,7 +201,7 @@ fun InetAddress.rebootHostViaSSH(username: String, password: String, port: Int):
 	session.setConfig("StrictHostKeyChecking", "no") // 호스트 키 확인을 건너뛰기 위해 설정
 	session.connect()
 
-	channel = session.openChannel("exec") as ChannelExec // SSH 채널 열기
+	val channel: ChannelExec = session.openChannel("exec") as ChannelExec // SSH 채널 열기
 	channel.setCommand("sudo reboot") // 재부팅 명령 실행
 	channel.connect()
 

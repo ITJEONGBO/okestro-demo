@@ -8,7 +8,6 @@ import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.NicVo
 import com.itinfo.itcloud.model.network.VnicProfileVo
-import com.itinfo.itcloud.model.response.Res
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.DiskAttachmentVo
 import com.itinfo.itcloud.service.computing.*
@@ -24,7 +23,7 @@ import org.springframework.web.bind.annotation.*
 
 @Controller
 @Api(tags = ["Computing-Vm"])
-@RequestMapping("/computing/vms")
+@RequestMapping("/api/v1/computing/vms")
 class VmController: BaseController() {
 
 	@Autowired private lateinit var iVm: ItVmService

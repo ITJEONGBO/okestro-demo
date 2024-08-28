@@ -7,7 +7,6 @@ import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.model.computing.ClusterVo
 import com.itinfo.itcloud.model.computing.HostVo
 import com.itinfo.itcloud.model.setting.PermissionVo
-import com.itinfo.itcloud.model.response.Res
 import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.network.VnicProfileVo
 import com.itinfo.itcloud.model.network.NetworkVmVo
@@ -22,7 +21,7 @@ import org.springframework.web.bind.annotation.*
 
 @Controller
 @Api(tags = ["Network"])
-@RequestMapping("/networks")
+@RequestMapping("/api/v1/networks")
 class NetworkController: BaseController() {
 	@Autowired private lateinit var iNetwork: ItNetworkService
 

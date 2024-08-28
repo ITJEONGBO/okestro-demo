@@ -142,9 +142,9 @@ putModules.finalizedBy(placeOutputToDocker)
 val openBrowser = task("openBrowser") {
     description = "open browser to the running application"
     doLast {
-        val port: Int = 8080
-        val contextName = ""
-        val url: URL = URL("http://localhost:$port/$contextName")
+        val port = 8443
+        val contextName = "swagger-ui/"
+        val url: URL = URL("https://localhost:$port/$contextName")
         Desktop.getDesktop().browse(url.toURI())
     }
 }

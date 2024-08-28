@@ -5,7 +5,7 @@ import com.itinfo.common.LoggerDelegate
 import io.swagger.annotations.Api
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
-
+import org.springframework.web.bind.annotation.RequestMapping
 
 /**
  * [DashboardController]
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping
  */
 @Controller
 @Api(tags = ["dashboard"])
+@RequestMapping("/api/v1")
 class DashboardController: BaseController() {
 	@GetMapping("/vnc")
 	fun vnc(): String {

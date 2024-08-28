@@ -4,7 +4,6 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.HostNicVo
-import com.itinfo.itcloud.model.response.Res
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.service.computing.ItHostOperationService
 import com.itinfo.itcloud.service.computing.ItHostService
@@ -22,7 +21,7 @@ import org.springframework.web.bind.annotation.*
 
 @Controller
 @Api(tags = ["Computing-Host"])
-@RequestMapping("/computing/hosts")
+@RequestMapping("/api/v1/computing/hosts")
 class HostController {
 	@Autowired private lateinit var iHost: ItHostService
 

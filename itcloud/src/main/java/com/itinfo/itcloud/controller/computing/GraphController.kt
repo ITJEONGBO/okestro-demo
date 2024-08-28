@@ -9,15 +9,13 @@ import com.itinfo.itcloud.service.computing.ItGraphService
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
-
 @Controller
 @Api(tags = ["Graph"])
-@RequestMapping("/dashboard")
+@RequestMapping("/api/v1/dashboard")
 class GraphController {
 	@Autowired private lateinit var graph: ItGraphService
 

@@ -1,40 +1,9 @@
 import React, { useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
 import ReactApexChart from 'react-apexcharts';
-import axios from 'axios';
+import ApiManager from '../api/ApiManager';
 import './Dashboard.css';
 import { useNavigate } from 'react-router-dom';
-
-// cpu, memory api 불러오는 값
-async function getCpuMemory() {
-    const cpuMemory = await axios.get('/dashboard/cpumemory');
-    return cpuMemory.data;
-}
-
-// storage api 불러오는 값
-async function getStorage() {
-    const storage = await axios.get('/dashboard/storage');
-    return storage.data;
-}
-
-// vmCpu api 불러오는 값
-async function getVmCpu() {
-    const vmCpu = await axios.get('/dashboard/vmCpu');
-    return vmCpu.data;
-}
-
-// vmMemory api 불러오는 값
-async function getVmMemory() {
-    const vmMemory = await axios.get('/dashboard/vmMemory');
-    return vmMemory.data;
-}
-
-// vmMemory api 불러오는 값
-async function getStorageMemory() {
-    const storageMemory = await axios.get('/dashboard/storageMemory');
-    return storageMemory.data;
-}
-
 
 // 도넛
 const CpuApexChart = ({ cpu }) => {
@@ -368,9 +337,9 @@ const CpuBarChart = () => {
   useEffect(() => {
       async function fetchData() {
         try {
-          const data = await getVmCpu();
-          const names = data.map(item => item.name);
-          const cpuPercents = data.map(item => item.cpuPercent);
+          const data = await ApiManager.getVmCpu();
+          const names = data?.body?.map(item => item.name) ?? [];
+          const cpuPercents = data?.body?.map(item => item.cpuPercent) ?? [];
 
           setSeries([{ data: cpuPercents }]);
           setOptions(prevOptions => ({
@@ -475,9 +444,9 @@ const MemoryBarChart = () => {
   useEffect(() => {
       async function fetchData() {
         try {
-          const data = await getVmMemory();
-          const names = data.map(item => item.name);
-          const memoryPercent = data.map(item => item.memoryPercent);
+          const data = await ApiManager.getVmMemory();
+          const names = data?.body?.map(item => item.name) ?? [];
+          const memoryPercent = data?.body?.map(item => item.memoryPercent) ?? [];
 
           setSeries([{ data: memoryPercent }]);
           setOptions(prevOptions => ({
@@ -583,9 +552,9 @@ const StorageBarChart = () => {
   useEffect(() => {
       async function fetchData() {
         try {
-          const data = await getStorageMemory();
-          const names = data.map(item => item.name);
-          const memoryPercent = data.map(item => item.memoryPercent);
+          const data = await ApiManager.getStorageMemory();
+          const names = data?.body?.map(item => item.name) ?? [];
+          const memoryPercent = data?.body?.map(item => item.memoryPercent) ?? [];
 
           setSeries([{ data: memoryPercent }]);
           setOptions(prevOptions => ({
@@ -599,7 +568,6 @@ const StorageBarChart = () => {
           console.error('Error fetching data:', error);
         }
       }
-
       fetchData();
     }, []);
 
@@ -761,21 +729,20 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-        try {
-          const response = await axios.get('/dashboard');
-          setData(response.data);
+      try {
+        const dashboardRes = await ApiManager.getDashboard();
+        setData(dashboardRes);
 
-          const memorys = await getCpuMemory();
-          setMemoryGb(memorys);
+        const memorys = await ApiManager.getCpuMemory();
+        setMemoryGb(memorys);
 
-          const storages = await getStorage();
-          setStorageGb(storages);
+        const storages = await ApiManager.getStorage();
+        setStorageGb(storages);
 
-
-        } catch (error) {
-          console.error('Error fetching dashboard data:', error);
-        }
-      };
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      }
+    };
 
     fetchData();
 

@@ -20,7 +20,6 @@ class BeanConfig: HikariConfig() {
 		return EntityManagerFactoryBuilder(HibernateJpaVendorAdapter(), hashMapOf<String,Any>(), null)
 	}
 
-
 	companion object {
 		private val log by LoggerDelegate()
 	}

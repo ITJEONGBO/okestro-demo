@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*
 
 @Controller
 @Api(tags = ["Computing-Cluster"])
-@RequestMapping("/computing/clusters")
+@RequestMapping("/api/v1/computing/clusters")
 class ClusterController: BaseController() {
 	@Autowired private lateinit var iCluster: ItClusterService
 	@Autowired private lateinit var iAffinity: ItAffinityService

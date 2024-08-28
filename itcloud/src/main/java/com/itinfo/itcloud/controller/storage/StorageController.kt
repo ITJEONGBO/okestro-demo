@@ -9,7 +9,6 @@ import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.computing.ClusterVo
 import com.itinfo.itcloud.model.computing.EventVo
 import com.itinfo.itcloud.model.setting.PermissionVo
-import com.itinfo.itcloud.model.response.Res
 import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.storage.DiskImageVo
 import com.itinfo.itcloud.model.storage.StorageDomainVo
@@ -25,7 +24,7 @@ import java.io.IOException
 
 @Controller
 @Api(tags = ["Storage"])
-@RequestMapping("/storages/{dataCenterId}")
+@RequestMapping("/api/v1/storages/{dataCenterId}")
 class StorageController: BaseController() {
 	@Autowired private lateinit var iStorage: ItStorageService
 

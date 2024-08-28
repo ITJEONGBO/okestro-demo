@@ -6,7 +6,6 @@ import com.itinfo.itcloud.error.toException
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.model.computing.DataCenterVo
 import com.itinfo.itcloud.model.computing.EventVo
-import com.itinfo.itcloud.model.response.Res
 import com.itinfo.itcloud.service.computing.ItDataCenterService
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
@@ -22,7 +21,7 @@ import org.springframework.web.bind.annotation.*
 
 @Controller
 @Api(tags = ["Computing-DataCenter"])
-@RequestMapping("/computing/datacenters")
+@RequestMapping("/api/v1/computing/datacenters")
 class DataCenterController: BaseController() {
 	@Autowired private lateinit var iDataCenter: ItDataCenterService
 /*

@@ -1,7 +1,6 @@
 package com.itinfo.itcloud.configuration
 
 import com.itinfo.common.LoggerDelegate
-import org.springframework.stereotype.Component
 import org.springframework.web.util.ContentCachingRequestWrapper
 import org.springframework.web.util.ContentCachingResponseWrapper
 import java.nio.charset.StandardCharsets
@@ -16,7 +15,7 @@ import javax.servlet.http.HttpServletResponse
 
 // @Component
 @WebFilter(urlPatterns=[
-	"/*"
+	"/api/v1/**",
 ])
 class GlobalFilter: Filter {
 	override fun doFilter(
@@ -29,11 +28,17 @@ class GlobalFilter: Filter {
 			log.debug("doFilterInternal ... req&res ALL NULL!")
 			return
 		}
+		val req = request as HttpServletRequest
+		val path = req.requestURI.substring(req.contextPath.length)
 
 		val requestWrapper = ContentCachingRequestWrapper(request as HttpServletRequest)
 		val responseWrapper = ContentCachingResponseWrapper(response as HttpServletResponse)
 
 		//region: 전처리
+		if (path.startsWith("/resources/")) {
+		} else {
+			// request.getRequestDispatcher("/app$path").forward(request, response); // Goes to your controller.
+		}
 		filterChain?.doFilter(requestWrapper, responseWrapper)
 		// doFilter가 실행이 되면서 실내 내부 Spring 안으로 들어가서야
 		// writeToCache 메소드가 실행이 되서 request의 내용이

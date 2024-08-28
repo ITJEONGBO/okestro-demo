@@ -64,13 +64,19 @@ class WebMvcConfig : WebMvcConfigurer {
 
 	override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
 		log.info("addResourceHandlers ...")
-		registry.addResourceHandler("/css/**").addResourceLocations("classpath:static/css/")
+		// registry.addResourceHandler("/css/**").addResourceLocations("classpath:static/static/css/")
+		// registry.addResourceHandler("/js/**").addResourceLocations("classpath:static/static/js/")
 		// registry.addResourceHandler("/externlib/**").addResourceLocations("classpath:static/externlib/")
-		registry.addResourceHandler("/images/**").addResourceLocations("classpath:static/images/")
-		registry.addResourceHandler("/images_old/**").addResourceLocations("classpath:static/images_old/")
-		registry.addResourceHandler("/fonts/**").addResourceLocations("classpath:static/fonts/")
-		registry.addResourceHandler("/js/**").addResourceLocations("classpath:static/js/")
-		registry.addResourceHandler("/vendors/**").addResourceLocations("classpath:static/vendors/")
+		registry.addResourceHandler("/").addResourceLocations("classpath:/static/").resourceChain(false) // index.html
+		registry.addResourceHandler("/**").addResourceLocations("classpath:/META-INF/resources/",
+				"classpath:/resources/",
+				"classpath:/static/",
+				"classpath:/public/"
+		)
+		registry.addResourceHandler("/images/**").addResourceLocations("classpath:/static/images/")
+		registry.addResourceHandler("/images_old/**").addResourceLocations("classpath:/static/images_old/")
+		registry.addResourceHandler("/fonts/**").addResourceLocations("classpath:/static/fonts/")
+		registry.addResourceHandler("/vendors/**").addResourceLocations("classpath:/static/vendors/")
 		// SwaggerConfig
 		registry.addResourceHandler("/v2/api-docs/**").addResourceLocations("classpath:/META-INF/resources/")
 		registry.addResourceHandler("/swagger-ui.html**").addResourceLocations("classpath:/META-INF/resources/")

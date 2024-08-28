@@ -1,7 +1,6 @@
 package com.itinfo.itcloud.controller.admin
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.itcloud.model.response.Res
 import com.itinfo.itcloud.service.admin.ItSystemPropertiesService
 import com.itinfo.util.model.SystemPropertiesVo
 
@@ -22,7 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody
  */
 @Controller
 @Api(tags = ["system"])
-@RequestMapping("/admin/sysprop")
+@RequestMapping("/api/v1/admin/sysprop")
 class SystemPropertiesController {
 	@Autowired private lateinit var sysProp: ItSystemPropertiesService
 

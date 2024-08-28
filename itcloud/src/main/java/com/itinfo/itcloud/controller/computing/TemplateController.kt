@@ -22,10 +22,9 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 
-
 @Controller
 @Api(tags = ["Computing-Template"])
-@RequestMapping("/computing/templates")
+@RequestMapping("/api/v1/computing/templates")
 class TemplateController: BaseController() {
 	@Autowired private lateinit var iTemplate: ItTemplateService
 

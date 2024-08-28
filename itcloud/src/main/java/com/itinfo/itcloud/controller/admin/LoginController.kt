@@ -1,19 +1,18 @@
 package com.itinfo.itcloud.controller.admin
 
 import com.itinfo.common.LoggerDelegate
+
 import com.itinfo.itcloud.ovirt.ConnectionService
 import com.itinfo.itcloud.service.admin.ItSystemPropertiesService
 import com.itinfo.itcloud.service.admin.ItUserService
 import io.swagger.annotations.Api
 import org.springframework.beans.factory.annotation.Autowired
-
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.ResponseBody
+import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller
 @Api(tags = ["login"])
+@RequestMapping("/api/v1")
 class LoginController {
 	@Autowired private lateinit var ovirtConnection: ConnectionService
 	@Autowired private lateinit var systemPropertyService: ItSystemPropertiesService

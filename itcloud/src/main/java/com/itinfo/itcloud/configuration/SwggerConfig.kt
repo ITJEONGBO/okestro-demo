@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpMethod
-import org.springframework.web.servlet.config.annotation.EnableWebMvc
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration
 import springfox.documentation.builders.PathSelectors
 import springfox.documentation.builders.RequestHandlerSelectors
@@ -16,7 +15,7 @@ import springfox.documentation.spi.service.contexts.SecurityContext
 import springfox.documentation.spring.web.plugins.Docket
 
 
-@EnableWebMvc
+// @EnableWebMvc
 @Configuration
 @Import(BeanValidatorPluginsConfiguration::class)
 class SwaggerConfig {
@@ -25,8 +24,8 @@ class SwaggerConfig {
         log.debug("... api")
         return Docket(DocumentationType.SWAGGER_2)
             // .ignoredParameterTypes(AutheticationPrincipal::class)
-            .consumes(getConsumeContentTypes())
-            .produces(getProduceContentTypes())
+            // .consumes(getConsumeContentTypes())
+            // .produces(getProduceContentTypes())
             .useDefaultResponseMessages(false)
             .globalResponses(HttpMethod.POST, arrayList) // getArrayList()함수에서 정의한 응답메시지 사용
             .select()
@@ -42,7 +41,7 @@ class SwaggerConfig {
             "RutilVM API",
             "0.0.2",
             "Terms of service",
-            Contact("chlee", "github.com/ITJEONGBO", "chanhi2000@gmail.com"),
+            Contact("ititcloud", "https://github.com/ITJEONGBO", "itcloud@ititinfo.com"),
             "Apache 2.0", "http://www.apache.org/licenses/LICENSE-2.0", emptyList()
         )
     }
