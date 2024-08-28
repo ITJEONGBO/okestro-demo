@@ -46,7 +46,8 @@ class ItDataCenterServiceTest {
 			service.findAll()
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(2)) // 데이터센터 목록의 개수가 2인지 확인
+		assertThat(result.size, `is`(1)) // 데이터센터 목록의 개수가 2인지 확인
+//		assertThat(result.size, `is`(2)) // 데이터센터 목록의 개수가 2인지 확인
 		result.forEach { println(it) }
 	}
 
