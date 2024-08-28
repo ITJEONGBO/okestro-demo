@@ -14,7 +14,11 @@ const Table = ({ columns, data, onRowClick }) => {
         {data.map((row, rowIndex) => (
           <tr key={rowIndex}>
             {columns.map((column, colIndex) => (
-              <td key={colIndex} onClick={() => onRowClick(row, column)}>
+              <td
+                key={colIndex}
+                onClick={() => onRowClick(row, column)}
+          
+              >
                 {row[column.accessor]}
               </td>
             ))}

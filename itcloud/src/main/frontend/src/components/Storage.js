@@ -29,7 +29,16 @@ const Storage = () => {
 
   const data = [
     {
-      alias: 'he_metadata',
+      alias: (
+        <span
+          style={{ color: 'blue', cursor: 'pointer' }}
+          onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
+          onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
+        >
+          he_metadata
+        </span>
+
+      ),
       id: '289137398279301798',
       icon1: '',
       icon2: <i className="fa fa-glass"></i>,
@@ -41,7 +50,15 @@ const Storage = () => {
       description: '',
     },
     {
-      alias: '디스크2',
+      alias: (
+        <span
+          style={{ color: 'blue', cursor: 'pointer'}}
+          onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
+          onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
+        >
+          디스크2
+        </span>
+      ),
       id: '289137398279301798',
       icon1: '',
       icon2: <i className="fa fa-glass"></i>,
@@ -53,7 +70,15 @@ const Storage = () => {
       description: '',
     },
     {
-      alias: '디스크3',
+      alias: (
+        <span
+          style={{ color: 'blue', cursor: 'pointer'}}
+          onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
+          onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
+        >
+          디스크3
+        </span>
+      ),
       id: '289137398279301798',
       icon1: '',
       icon2: <i className="fa fa-glass"></i>,
@@ -66,9 +91,10 @@ const Storage = () => {
     },
   ];
 
+
   const handleRowClick = (row, column) => {
     if (column.accessor === 'alias') {  // 'alias' 컬럼만 체크
-        navigate(`/storage-disk/${row.alias}`);
+        navigate(`/storage-disk/${row.alias.props.children}`);
     }
 };
   // 도메인 테이블 컴포넌트 
@@ -91,7 +117,15 @@ const Storage = () => {
     {
       status: <i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i>,
       icon: <i className="fa fa-glass"></i>,
-      domainName: 'ㅇㄻㄹㅇㄻ', // 여기에 도메인 이름을 설정합니다.
+      domainName: (
+        <span
+          style={{ color: 'blue', cursor: 'pointer'}}
+          onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
+          onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
+        >
+          ㅇㄻㄹㅇㄻ
+        </span>
+      ),
       comment: '',
       domainType: '',
       storageType: '',
@@ -106,7 +140,7 @@ const Storage = () => {
 
   // 행 클릭 시 도메인 이름을 이용하여 이동하는 함수
   const handleDomainClick = (row) => {
-    navigate(`/storage-domain/${row.domainName}`);
+    navigate(`/storage-domain/${row.domainName.props.children}`);
   };
 
   // 이벤트

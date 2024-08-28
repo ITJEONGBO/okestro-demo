@@ -65,7 +65,7 @@ const Host = () => {
     if (column.accessor === 'name') {
       navigate(`/computing/host/${row.name}`);
     } else if (column.accessor === 'cluster') {
-      navigate(`/computing/cluster/${row.cluster}`);
+      navigate(`/computing/cluster/${row.cluster.props.children}`);
     }
   };
 
@@ -96,8 +96,14 @@ const Host = () => {
       iconSPM: <i className="fa fa-crown" style={{ color: 'gold' }}></i>,
       name: 'host01.ititnfo.com',
       comment: '192.168.0.80',
-      hostname: 'host01.ititnfo.com',
-      cluster: 'Default',
+      hostname: 'host01.ititinfo.com',
+      cluster: (<span
+        style={{ color: 'blue', cursor: 'pointer'}}
+        onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
+        onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
+      > Default
+        </span>
+        ),
       dataCenter: 'Default',
       status: 'Up',
       vmCount: 1,
@@ -214,31 +220,31 @@ const Host = () => {
               id="일반_섹션"
               style={{ display: 활성화된섹션 === '일반_섹션' ? 'block' : 'none' }}
             >
-<div className="edit_first_content">
-        <div>
-            <label htmlFor="cluster">클러스터</label>
-            <select id="cluster">
-                <option value="default">Default</option>
-            </select>
-            <div>데이터센터 Default</div>
-        </div>
-        <div>
-            <label htmlFor="name1">이름</label>
-            <input type="text" id="name1" />
-        </div>
-        <div>
-            <label htmlFor="comment">코멘트</label>
-            <input type="text" id="comment" />
-        </div>
-        <div>
-            <label htmlFor="hostname">호스트이름/IP</label>
-            <input type="text" id="hostname" />
-        </div>
-        <div>
-            <label htmlFor="ssh_port">SSH 포트</label>
-            <input type="text" id="ssh_port" value="22" />
-        </div>
-    </div>
+          <div className="edit_first_content">
+                  <div>
+                      <label htmlFor="cluster">클러스터</label>
+                      <select id="cluster">
+                          <option value="default">Default</option>
+                      </select>
+                      <div>데이터센터 Default</div>
+                  </div>
+                  <div>
+                      <label htmlFor="name1">이름</label>
+                      <input type="text" id="name1" />
+                  </div>
+                  <div>
+                      <label htmlFor="comment">코멘트</label>
+                      <input type="text" id="comment" />
+                  </div>
+                  <div>
+                      <label htmlFor="hostname">호스트이름/IP</label>
+                      <input type="text" id="hostname" />
+                  </div>
+                  <div>
+                      <label htmlFor="ssh_port">SSH 포트</label>
+                      <input type="text" id="ssh_port" value="22" />
+                  </div>
+              </div>
 
     <div className='host_checkboxs'>
       <div className='host_checkbox'>

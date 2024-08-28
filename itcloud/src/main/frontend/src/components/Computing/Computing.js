@@ -34,18 +34,18 @@ const Computing = () => {
     const closeModal = () => setIsModalOpen(false);
 
     const handleNameClick = (name) => {
-        // 클릭된 이름을 URL 파라미터로 전달하여 DataCenterDetail 페이지로 이동
         navigate(`/computing/datacenter/${name}`);
     };
 
     const sectionHeaderButtons = [
-        { id: 'new_btn', label: '새로 만들기', onClick: () => {} },
+        { id: 'new_btn', label: '새로 만들기', onClick: openModal }, // 여기서 openModal 연결
         { id: 'edit_btn', label: '편집', onClick: () => {} },
         { id: 'delete_btn', label: '삭제', onClick: () => {} },
     ];
+
     const columns = [
-        { header: '', accessor: 'iconStatus' }, // 상태 아이콘 컬럼
-        { header: '이름', accessor: 'name', clickable: true },  // name 컬럼을 클릭 가능하게 설정
+        { header: '', accessor: 'iconStatus' }, 
+        { header: '이름', accessor: 'name', clickable: true }, 
         { header: '코멘트', accessor: 'comment' },
         { header: '스토리지 유형', accessor: 'storageType' },
         { header: '상태', accessor: 'status' },
@@ -55,15 +55,16 @@ const Computing = () => {
     
     const data = [
         {
-            iconStatus: <i className="fa fa-exclamation-triangle" style={{ color: 'yellowgreen' }}></i>, // 상태 아이콘 추가
-            name: '이름데이터',  // 이름 수정
-            comment: '',  // 코멘트 값은 비어 있음
-            storageType: '공유됨',  // 스토리지 유형
-            status: 'Up',  // 상태
-            compatVersion: '4.7',  // 호환 버전
-            description: 'The default Data Center',  // 설명
+            iconStatus: <i className="fa fa-exclamation-triangle" style={{ color: 'yellowgreen' }}></i>,
+            name: '이름데이터',  
+            comment: '',
+            storageType: '공유됨',
+            status: 'Up',
+            compatVersion: '4.7',
+            description: 'The default Data Center',
         },
     ];
+    
     return (
         <div id="section">
             {sectionContent === 'default' ? (
@@ -107,12 +108,46 @@ const Computing = () => {
                 overlayClassName="Overlay"
                 shouldCloseOnOverlayClick={false}
             >
-                {/* 모달 창 내용 그대로 유지 */}
-                <div className="network_new_popup">
+                <div className="datacenter_new_popup">
                     <div className="network_popup_header">
-                        <h1>새 데이터 센터 만들기</h1>
+                        <h1>새로운 데이터 센터</h1>
                         <button onClick={closeModal}><i className="fa fa-times"></i></button>
                     </div>
+
+                    <div className="datacenter_new_content">
+                        <div>
+                            <label htmlFor="name1">이름</label>
+                            <input type="text" id="name1" />
+                        </div>
+                        <div>
+                            <label htmlFor="comment">설명</label>
+                            <input type="text" id="comment" />
+                        </div>
+                        <div>
+                            <label htmlFor="cluster">클러스터</label>
+                            <select id="cluster">
+                                <option value="공유됨">공유됨</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label htmlFor="cluster">호환버전</label>
+                            <select id="cluster">
+                                <option value="4.7">4.7</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label htmlFor="cluster">쿼터 모드</label>
+                            <select id="cluster">
+                                <option value="비활성화됨">비활성화됨</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label htmlFor="comment">코멘트</label>
+                            <input type="text" id="comment" />
+                        </div>
+                       
+                    </div>
+
                     <div className="edit_footer">
                         <button style={{ display: 'none' }}></button>
                         <button>OK</button>

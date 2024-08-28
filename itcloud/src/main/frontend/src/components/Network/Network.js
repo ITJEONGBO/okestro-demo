@@ -17,7 +17,7 @@ const Network = () => {
     // 테이블 행 클릭 시 NetworkDetail로 이동 (name 컬럼만 이동)
     const handleNetworkNameClick = (row, column) => {
         if (column.accessor === 'name') {
-            navigate(`/network/${row.name}`); // name 값을 URL로 전달하여 상세 페이지로 이동
+            navigate(`/network/${row.name.props.children}`); // name 값을 URL로 전달하여 상세 페이지로 이동
         }
     };
 
@@ -63,9 +63,27 @@ const Network = () => {
 
     // 테이블 데이터
     const data = [
-        { name: 'ovirtmgmt', description: 'Management Network', dataCenter: 'DC1', provider: 'Provider1', portSeparation: '아니요' },
-        { name: 'example1', description: 'Example Description 1', dataCenter: 'DC2', provider: 'Provider2', portSeparation: '아니요' },
-        { name: 'example2', description: 'Example Description 2', dataCenter: 'DC3', provider: 'Provider3', portSeparation: '아니요' },
+        { name: (
+            <span
+            style={{ color: 'blue', cursor: 'pointer'}}
+            onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
+            onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
+          >
+            ovirtmgmt
+          </span>
+        ), 
+        description: 'Management Network', dataCenter: 'DC1', provider: 'Provider1', portSeparation: '아니요' },
+        { name: (
+            <span
+            style={{ color: 'blue', cursor: 'pointer'}}
+            onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
+            onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
+          >
+            example1
+          </span>
+        ), 
+        description: 'Example Description 1', dataCenter: 'DC2', provider: 'Provider2', portSeparation: '아니요' },
+        
     ];
 
     const columns = [

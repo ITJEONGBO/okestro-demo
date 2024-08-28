@@ -2626,6 +2626,7 @@ form>div
 }
 .edit_first_content{
     border-bottom: 1px solid #cecece;
+    font-size: 0.32rem;
 }
 .edit_first_content>div:first-child{
     padding: 3% 2% 5% 2%;
@@ -2634,6 +2635,7 @@ form>div
     display: flex;
     justify-content: space-between;
     padding: 1.2% 2%;
+
 }
 .edit_first_content>div:first-child{
     position: relative;
@@ -2644,7 +2646,6 @@ form>div
     right: 32.5%;
     font-style: italic;
 }
-
 
 .edit_first_content select{
     width: 47%;
@@ -4423,6 +4424,27 @@ box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 }
 /*끝*/
 
+
+/**/
+
+
+
+/*반응형*/
+@media (max-width:1390px) {
+
+}
+
+@media screen and (max-width:820px) {
+
+}
+@media screen and (max-width:768px) {
+
+}
+@media screen and (max-width:482px) {
+
+}
+
+
 /*클러스터(네트워크 관리)*/
 .manage_network_popup{
     border: 1px solid #dfdddd;
@@ -4444,23 +4466,45 @@ box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
     text-align: left;
     
 }
-/**/
+/* Computing.css */
 
 
+.datacenter_new_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    width: 28%;
+    height: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
 
-/*반응형*/
-@media (max-width:1390px) {
+.datacenter_new_content{
+
+    font-size: 0.32rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 76%;
+    padding: 0.2rem 0 ;
+}
+
+.datacenter_new_content>div{
+    display: flex;
+    justify-content: space-between;
+    padding: 1.2% 2%;
 
 }
 
-@media screen and (max-width:820px) {
 
+.datacenter_new_content select,.datacenter_new_content input{
+    width: 47%;
+    height: 3.3vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
 }
-@media screen and (max-width:768px) {
-
-}
-@media screen and (max-width:482px) {
-
-}
-
-
