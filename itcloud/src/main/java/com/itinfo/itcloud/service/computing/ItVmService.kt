@@ -160,18 +160,18 @@ interface ItVmService {
 	 *
 	 * @param vmId [String] 가상머신 id
 	 * @param disk [Boolean] disk 삭제여부, disk가 true면 디스크 삭제하라는 말
-	 * // detachOnly => true==가상머신만 삭제/ false==디스크삭제
+	 * // detachOnly => true==가상머신만 삭제/ false==가상머신+디스크 삭제
 	 * @return CommonVo<[Boolean]> 200(success) 404(fail)
 	 */
 	@Throws(Error::class)
 	fun remove(vmId: String, disk: Boolean): Boolean
 	// 스냅샷 생성은 스냅샷에서 api로 연결
+
 	/**
 	 * [ItVmService.migrateHostList]
 	 * 마이그레이션 할 수 있는 호스트 목록
 	 *
 	 * @param vmId [String] 가상머신 id
-	 * @param disk [Boolean] 가상머신에 붙어있는 디스크 같이 삭제할지
 	 * @return List<[IdentifiedVo]>
 	 */
     @Throws(Error::class)

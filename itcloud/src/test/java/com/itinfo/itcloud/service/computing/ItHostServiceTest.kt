@@ -30,7 +30,7 @@ class ItHostServiceTest {
 	private lateinit var dataCenterId: String
 	private lateinit var clusterId: String // Default
 	private lateinit var networkId: String // ovirtmgmt(dc: Default)
-	private lateinit var hostId: String // host02.ititinfo.local
+	private lateinit var host02: String // host02.ititinfo.local
 	private lateinit var host01: String // host01
 
 	@BeforeEach
@@ -38,7 +38,7 @@ class ItHostServiceTest {
 		dataCenterId = "6cde7270-6459-11ef-8be2-00163e5d0646"
 		clusterId = "6ce0356a-6459-11ef-a03a-00163e5d0646"
 		networkId = "00000000-0000-0000-0000-000000000009"
-		hostId = "789b78c4-3fcf-4f19-9b69-d382aa66c12f"
+		host02 = "789b78c4-3fcf-4f19-9b69-d382aa66c12f"
 		host01 = "c36563e3-83eb-49c7-91c0-fc4b197387b2"
 	}
 
@@ -70,7 +70,7 @@ class ItHostServiceTest {
 	fun should_findOne() {
 		log.debug("should_findOne ...")
 		val result: HostVo? =
-			service.findOne(hostId)
+			service.findOne(host02)
 
 		assertThat(result, `is`(not(nullValue())))
 		println(result)
@@ -164,7 +164,7 @@ class ItHostServiceTest {
 	fun should_findAllVmsFromHost() {
 		log.debug("should_findAllVmsFromHost ...")
 		val result: List<VmVo> =
-			service.findAllVmsFromHost(hostId)
+			service.findAllVmsFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(1))
@@ -181,7 +181,7 @@ class ItHostServiceTest {
 	fun should_findAllHostNicsFromHost() {
 		log.debug("should_findAllHostNicsFromHost ...")
 		val result: List<HostNicVo> =
-			service.findAllHostNicsFromHost(hostId)
+			service.findAllHostNicsFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(1))
@@ -198,7 +198,7 @@ class ItHostServiceTest {
 	fun should_findAllHostDevicesFromHost() {
 		log.debug("should_findAllHostDevicesFromHost ...")
 		val result: List<HostDeviceVo> =
-			service.findAllHostDevicesFromHost(hostId)
+			service.findAllHostDevicesFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(1))
@@ -215,7 +215,7 @@ class ItHostServiceTest {
 	fun should_findAllPermissionsFromHost() {
 		log.debug("should_findAllPermissionsFromHost ...")
 		val result: List<PermissionVo> =
-			service.findAllPermissionsFromHost(hostId)
+			service.findAllPermissionsFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(3))
@@ -232,7 +232,7 @@ class ItHostServiceTest {
 	fun should_findAllAffinityLabelsFromHost() {
 		log.debug("should_findAllAffinityLabelsFromHost ...")
 		val result: List<AffinityLabelVo> =
-			service.findAllAffinityLabelsFromHost(hostId)
+			service.findAllAffinityLabelsFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(0))
@@ -249,7 +249,7 @@ class ItHostServiceTest {
 	fun should_findAllEventsFromHost() {
 		log.debug("should_findAllEventsFromHost ...")
 		val result: List<EventVo> =
-			service.findAllEventsFromHost(hostId)
+			service.findAllEventsFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(197)) // ?
