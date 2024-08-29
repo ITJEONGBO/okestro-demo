@@ -5,6 +5,7 @@ import './css/Computing.css';
 import HeaderButton from '../button/HeaderButton';
 import Footer from '../footer/Footer';
 import { Table } from '../table/Table';
+import ApiManager from '../../api/ApiManager';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -12,6 +13,7 @@ Modal.setAppElement('#root');
 const Computing = () => {
     const { section } = useParams();
     const navigate = useNavigate();
+    const [datacenters, setDatacenters] = useState([]);
     const [activeSection, setActiveSection] = useState('datacenter');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
@@ -20,8 +22,20 @@ const Computing = () => {
 
     useEffect(() => {
         navigate(`/computing/${activeSection}`);
+        if (activeSection == 'datacenter') {
+            
+        }
     }, [activeSection, navigate]);
-
+    
+    useEffect(() => {
+        async function fetchData() {
+            console.log('fetching!!!')
+            const res = await ApiManager.findAllDataCenters();
+            setDatacenters(res);
+        }
+        fetchData()
+    }, [])
+    
     const toggleFooterContent = () => {
         setFooterContentVisibility(!isFooterContentVisible);
     };
@@ -53,18 +67,6 @@ const Computing = () => {
         { header: '설명', accessor: 'description' },
     ];
     
-    const data = [
-        {
-            iconStatus: <i className="fa fa-exclamation-triangle" style={{ color: 'yellowgreen' }}></i>,
-            name: '이름데이터',  
-            comment: '',
-            storageType: '공유됨',
-            status: 'Up',
-            compatVersion: '4.7',
-            description: 'The default Data Center',
-        },
-    ];
-    
     return (
         <div id="section">
             {sectionContent === 'default' ? (
@@ -85,7 +87,7 @@ const Computing = () => {
                                 </button>
                                 <Table
                                     columns={columns}
-                                    data={data}
+                                    data={datacenters}
                                     onRowClick={(row, column) => {
                                         if (column.accessor === 'name') {
                                             handleNameClick(row.name);

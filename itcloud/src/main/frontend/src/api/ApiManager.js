@@ -1,46 +1,64 @@
 import ENDPOINTS from "./Endpoints"
+import DEFAULT_VALUES from "./DefaultValues"
 import axios from 'axios';
 
 axios.defaults.baseURL = 'https://' + window.location.hostname + ":" + 8443
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
-const makeAPICall = async (url) => {
+/**
+ * @name makeAPICall
+ * @description axios API 호출
+ * 
+ * @param {string} url 주소
+ * @param {*} defaultValues 기본값
+ * @returns 결과값
+ */
+const makeAPICall = async (url, defaultValues) => {
   try {
     const res = await axios.get(url)
     return res.data?.body
   } catch(e) {
     console.error(`Error fetching '${url}':`, e);
-    return {};
+    return defaultValues;
   }
 }
 
 const ApiManager = {
+  //region: Dashboard
   /**
    * @name ApiManager.getDashboard
    * @description cpu, memory api 불러오는 값
    * 
    * @returns 
+   * 
+   * @see Dashboard.js (components)
    */
-  getDashboard: async () => makeAPICall(ENDPOINTS.GET_DASHBOARD()),
+  getDashboard: async () => makeAPICall(ENDPOINTS.GET_DASHBOARD(), DEFAULT_VALUES.GET_DASHBOARD),
   /**
    * @name ApiManager.getCpuMemory
    * @description cpu, memory api 불러오는 값
    * 
    * @returns 
+   * 
+   * @see Dashboard.js (components)
    */
-  getCpuMemory: async () => makeAPICall(ENDPOINTS.GET_CPU_MEMERY()),
+  getCpuMemory: async () => makeAPICall(ENDPOINTS.GET_CPU_MEMERY(), DEFAULT_VALUES.GET_CPU_MEMERY),
   /**
    * @name ApiManager.getStorage
    * @description storage 불러오는 값
    * 
    * @returns 
+   * 
+   * @see Dashboard.js (components)
    */
-  getStorage: async () => makeAPICall(ENDPOINTS.GET_STORAGE()),
+  getStorage: async () => makeAPICall(ENDPOINTS.GET_STORAGE(), DEFAULT_VALUES.GET_STORAGE),
   /**
    * @name ApiManager.getVmCpu
    * @description vmCpu 불러오는 값
    * 
    * @returns 
+   * 
+   * @see Dashboard.js (components)
    */
   getVmCpu: async () => makeAPICall(ENDPOINTS.GET_VM_CPU()),
   /**
@@ -48,6 +66,8 @@ const ApiManager = {
    * @description vmMemory 불러오는 값
    * 
    * @returns 
+   * 
+   * @see Dashboard.js (components)
    */
   getVmMemory: async () => makeAPICall(ENDPOINTS.GET_VM_MEMORY()),
   /**
@@ -55,8 +75,27 @@ const ApiManager = {
    * @description storageMemory 불러오는 값
    * 
    * @returns 
+   * 
+   * @see Dashboard.js (components)
    */
   getStorageMemory: async () => makeAPICall(ENDPOINTS.GET_STORAGE_MEMROY()),
+  //endregion: Dashboard
+
+  //region: DataCenter
+  /**
+   * @name ApiManager.findAllDataCenters
+   * @description datacenter 목록 
+   * @todo 백엔드 구현필요!
+   * 
+   * @returns 
+   * 
+   * @see Computing.js (components/Computing)
+   */
+  findAllDataCenters: async () => makeAPICall(ENDPOINTS.FIND_ALL_DATA_CENTERS(), DEFAULT_VALUES.FIND_ALL_DATA_CENTERS),
+  //endregion: DataCenter
+  /**
+   * 
+   */
 }
 
 export default ApiManager

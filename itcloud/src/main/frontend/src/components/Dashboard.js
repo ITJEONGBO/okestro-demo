@@ -1,12 +1,14 @@
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import ReactApexChart from 'react-apexcharts';
-import ApiManager from '../api/ApiManager';
-import './Dashboard.css';
 import { useNavigate } from 'react-router-dom';
+import ApiManager from '../api/ApiManager';
+import DEFAULT_VALUES from '../api/DefaultValues';
+import './Dashboard.css';
 
-// 도넛
+//region: CpuApexChart
 const CpuApexChart = ({ cpu }) => {
+    // 도넛
     const [series, setSeries] = useState([0]);
     const [chartOptions, setChartOptions] = useState({
       chart: {
@@ -89,7 +91,9 @@ const CpuApexChart = ({ cpu }) => {
     </div>
   );
 }
+//endregion: CpuApexChart
 
+//region: MemoryApexChart
 const MemoryApexChart = ({ memory }) => {
     const [series, setSeries] = useState([0]);
     const [chartOptions, setChartOptions] = useState({
@@ -173,8 +177,10 @@ const MemoryApexChart = ({ memory }) => {
     </div>
   );
 }
+//endregion: MemoryApexChart
 
 
+//region: StorageApexChart
 const StorageApexChart = ({ storage }) => {
     const [series, setSeries] = useState([0]);
     const [chartOptions, setChartOptions] = useState({
@@ -258,10 +264,11 @@ const StorageApexChart = ({ storage }) => {
     </div>
   );
 }
+//endregion: StorageApexChart
 
-
-// CPU 막대그래프
+//region: CpuBarChart 
 const CpuBarChart = () => {
+  // CPU 막대그래프
   const [series, setSeries] = useState([{
     data: [] // 막대 값
   }]);
@@ -336,24 +343,19 @@ const CpuBarChart = () => {
 
   useEffect(() => {
       async function fetchData() {
-        try {
-          const data = await ApiManager.getVmCpu();
-          const names = data?.map(item => item.name) ?? [];
-          const cpuPercents = data?.map(item => item.cpuPercent) ?? [];
+        const data = await ApiManager.getVmCpu();
+        const names = data?.map(item => item.name) ?? [];
+        const cpuPercents = data?.map(item => item.cpuPercent) ?? [];
 
-          setSeries([{ data: cpuPercents }]);
-          setOptions(prevOptions => ({
-            ...prevOptions,
-            xaxis: {
-              ...prevOptions.xaxis,
-              categories: names,
-            }
-          }));
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
+        setSeries([{ data: cpuPercents }]);
+        setOptions(prevOptions => ({
+          ...prevOptions,
+          xaxis: {
+            ...prevOptions.xaxis,
+            categories: names,
+          }
+        }));
       }
-
       fetchData();
     }, []);
 
@@ -366,8 +368,9 @@ const CpuBarChart = () => {
     </div>
   );
 }
+//endregion: CpuBarChart
 
-
+//region: MemoryBarChart
 const MemoryBarChart = () => {
   const [series, setSeries] = useState([{
     data: [] // 막대 값
@@ -473,9 +476,10 @@ const MemoryBarChart = () => {
     </div>
   );
 }
+//endregion: MemoryBarChart
 
 
-
+//region: StorageBarChart
 const StorageBarChart = () => {
   const [series, setSeries] = useState([{
     data: [] // 막대 값
@@ -551,22 +555,18 @@ const StorageBarChart = () => {
 
   useEffect(() => {
       async function fetchData() {
-        try {
-          const data = await ApiManager.getStorageMemory();
-          const names = data?.map(item => item.name) ?? [];
-          const memoryPercent = data?.map(item => item.memoryPercent) ?? [];
+        const data = await ApiManager.getStorageMemory();
+        const names = data?.map(item => item.name) ?? [];
+        const memoryPercent = data?.map(item => item.memoryPercent) ?? [];
 
-          setSeries([{ data: memoryPercent }]);
-          setOptions(prevOptions => ({
-            ...prevOptions,
-            xaxis: {
-              ...prevOptions.xaxis,
-              categories: names,
-            }
-          }));
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
+        setSeries([{ data: memoryPercent }]);
+        setOptions(prevOptions => ({
+          ...prevOptions,
+          xaxis: {
+            ...prevOptions.xaxis,
+            categories: names,
+          }
+        }));
       }
       fetchData();
     }, []);
@@ -580,13 +580,11 @@ const StorageBarChart = () => {
     </div>
   );
 }
+//endregion: StorageBarChart
 
-
-
-
-
-//물결그래프
+//region: AreaChart
 const AreaChart = () => {
+  // 물결그래프
   const [series, setSeries] = useState([{
     name: 'series1',
     data: [31, 40, 28, 51, 42, 109, 100] // 물결그래프 값
@@ -638,7 +636,7 @@ const AreaChart = () => {
     </div>
   );
 }
-
+//endregion: AreaChart
 
 // 바둑판
 function generateData(count, yrange) {
@@ -654,6 +652,7 @@ function generateData(count, yrange) {
   return series;
 }
 
+//regino: HeatMapChart
 class HeatMapChart extends React.Component {
   constructor(props) {
     super(props);
@@ -693,57 +692,28 @@ class HeatMapChart extends React.Component {
     );
   }
 }
+//endregion: HeatMapChart
 
-//폰트사이즈 조정 
+
+//region: Dashboard
 const Dashboard = () => {
+//폰트사이즈 조정 
   const navigate = useNavigate();
-    const [data, setData] = useState({
-        uptime: 0,
-        datacenters: 0,
-        datacentersUp: 0,
-        datacentersDown: 0,
-        clusters: 0,
-        hosts: 0,
-        hostsUp: 0,
-        hostsDown: 0,
-        vms: 0,
-        vmsUp: 0,
-        vmsDown: 0,
-        storageDomains: 0,
-      });
-
-    const [memoryGb, setMemoryGb] = useState({
-        totalCpuUsagePercent: 0,
-        totalMemoryUsagePercent: 0,
-        totalMemoryGB: 0,
-        usedMemoryGB: 0,
-        freeMemoryGB: 0
-    });
-
-    const [storageGb, setStorageGb] = useState({
-        usedPercent: 0,
-        totalGB: 0,
-        usedGB: 0,
-        freeGB: 0
-    });
+  const [data, setData] = useState(() => DEFAULT_VALUES.GET_DASHBOARD);
+  const [memoryGb, setMemoryGb] = useState(() => DEFAULT_VALUES.GET_CPU_MEMERY);
+  const [storageGb, setStorageGb] = useState(() => DEFAULT_VALUES.GET_STORAGE);
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const dashboardRes = await ApiManager.getDashboard();
-        setData(dashboardRes);
+      const dashboardRes = await ApiManager.getDashboard();
+      setData(dashboardRes);
 
-        const memorys = await ApiManager.getCpuMemory();
-        setMemoryGb(memorys);
+      const memorys = await ApiManager.getCpuMemory();
+      setMemoryGb(memorys);
 
-        const storages = await ApiManager.getStorage();
-        setStorageGb(storages);
-
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
-      }
+      const storages = await ApiManager.getStorage();
+      setStorageGb(storages);
     };
-
     fetchData();
 
     function adjustFontSize() {
@@ -885,6 +855,7 @@ const Dashboard = () => {
     </>
   );
 };
+//endregion: Dashboard
 
 document.addEventListener('DOMContentLoaded', function() {
   const domContainer = document.querySelector('#app');
