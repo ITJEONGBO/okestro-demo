@@ -1,11 +1,17 @@
 package com.itinfo.itcloud.model.network
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.computing.findVmIp
+import com.itinfo.itcloud.model.fromNetworkToIdentifiedVo
+import com.itinfo.itcloud.model.fromVnicProfileToIdentifiedVo
 import com.itinfo.itcloud.model.gson
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
+import org.ovirt.engine.sdk4.builders.MacBuilder
+import org.ovirt.engine.sdk4.builders.NicBuilder
+import org.ovirt.engine.sdk4.builders.VnicProfileBuilder
 import org.ovirt.engine.sdk4.types.*
 import java.io.Serializable
 import java.math.BigInteger
@@ -19,8 +25,8 @@ import java.math.BigInteger
  * @property name [String]				
  * @property interface_ [NicInterface]		유형  NicInterface
  * @property macAddress [String]
- * @property linked [Boolean]		링크상태 t(up)/f(down)
- * @property plugged [Boolean]		연결상태 t(up)/f(down)
+ * @property linked [Boolean]		링크상태(link state) t(up)/f(down) -> nic 상태도 같이 변함
+ * @property plugged [Boolean]		연결상태(card status) t(up)/f(down)
  * @property synced [Boolean]		동기화
  *
  * @property status [NicStatus]  링크상태인줄 알았는데 ?
@@ -29,9 +35,10 @@ import java.math.BigInteger
  * @property ipv6 [String]
  * @property guestInterfaceName [String]
  *
- * @property networkVo [NetworkVo]
- * @property vnicProfileVo [VnicProfileVo]
- * @property vmVo [VmVo]
+ * @property networkVo [IdentifiedVo]
+ * @property vnicProfileVo [IdentifiedVo]
+ * @property vmVo [IdentifiedVo]
+ * @property networkFilterVos List[IdentifiedVo]
  *
  * nic.statistics
  * @property speed [BigInteger] mbps
@@ -56,9 +63,9 @@ class NicVo(
 	val ipv6: String = "",
 	val guestInterfaceName: String = "",
 
-	val networkVo: NetworkVo = NetworkVo(),
-	val vnicProfileVo: VnicProfileVo = VnicProfileVo(),
-	val vmVo: VmVo = VmVo(),
+	val networkVo: IdentifiedVo = IdentifiedVo(),
+	val vnicProfileVo: IdentifiedVo = IdentifiedVo(),
+	val vmVo: IdentifiedVo = IdentifiedVo(),
 	val networkFilterVos: List<NetworkFilterVo> = listOf(),
 
 	val speed: BigInteger = BigInteger.ZERO,
@@ -84,9 +91,9 @@ class NicVo(
 		private var bIpv4: String = "";fun ipv4(block: () -> String?) { bIpv4 = block() ?: "" }
 		private var bIpv6: String = "";fun ipv6(block: () -> String?) { bIpv6 = block() ?: "" }
 		private var bGuestInterfaceName: String = "";fun guestInterfaceName(block: () -> String?) { bGuestInterfaceName = block() ?: "" }
-		private var bNetworkVo: NetworkVo = NetworkVo();fun networkVo(block: () -> NetworkVo?) { bNetworkVo = block() ?: NetworkVo() }
-		private var bVnicProfileVo: VnicProfileVo = VnicProfileVo();fun vnicProfileVo(block: () -> VnicProfileVo?) { bVnicProfileVo = block() ?: VnicProfileVo()}
-		private var bVmVo: VmVo = VmVo(); fun vmVo(block: () -> VmVo?) { bVmVo = block() ?: VmVo() }
+		private var bNetworkVo: IdentifiedVo = IdentifiedVo();fun networkVo(block: () -> IdentifiedVo?) { bNetworkVo = block() ?: IdentifiedVo() }
+		private var bVnicProfileVo: IdentifiedVo = IdentifiedVo();fun vnicProfileVo(block: () -> IdentifiedVo?) { bVnicProfileVo = block() ?: IdentifiedVo()}
+		private var bVmVo: IdentifiedVo = IdentifiedVo(); fun vmVo(block: () -> IdentifiedVo?) { bVmVo = block() ?: IdentifiedVo() }
 		private var bNetworkFilterVos: List<NetworkFilterVo> = listOf(); fun networkFilterVos(block: () -> List<NetworkFilterVo>?) { bNetworkFilterVos = block() ?: listOf() }
 		private var bSpeed: BigInteger = BigInteger.ZERO;fun speed(block: () -> BigInteger?) { bSpeed = block() ?: BigInteger.ZERO }
 		private var bRxSpeed: BigInteger = BigInteger.ZERO;fun rxSpeed(block: () -> BigInteger?) { bRxSpeed = block() ?: BigInteger.ZERO }
@@ -152,7 +159,6 @@ fun Nic.toNicVoFromVm(conn: Connection, vmId: String): NicVo {
 		conn.findAllReportedDeviceFromVmNic(vm.id(), vmNicId)
 			.getOrDefault(listOf())
 
-
 	val networkFilterParameters: List<NetworkFilterParameter> =
 		conn.findAllNicNetworkFilterParametersFromVm(vmId, vmNicId)
 			.getOrDefault(listOf())
@@ -160,11 +166,12 @@ fun Nic.toNicVoFromVm(conn: Connection, vmId: String): NicVo {
 	return NicVo.builder {
         id { this@toNicVoFromVm.id() }
         name { this@toNicVoFromVm.name() }
-        networkVo { network?.toNetworkVo(conn) }
-        vnicProfileVo { vnicProfile?.toVnicProfileVo(conn) }
+        networkVo { network?.fromNetworkToIdentifiedVo() }
+        vnicProfileVo { vnicProfile?.fromVnicProfileToIdentifiedVo() }
         plugged { this@toNicVoFromVm.plugged() }
         synced { this@toNicVoFromVm.synced() }
         linked { this@toNicVoFromVm.linked() }
+		status { if(this@toNicVoFromVm.linked()) NicStatus.UP else NicStatus.DOWN }
         interface_ { this@toNicVoFromVm.interface_() }
         macAddress { if (this@toNicVoFromVm.macPresent()) this@toNicVoFromVm.mac().address() else null }
         ipv4 { vm.findVmIp(conn, "v4") }
@@ -181,9 +188,9 @@ fun Nic.toNicVoFromVm(conn: Connection, vmId: String): NicVo {
 //		}
     }
 }
-
 fun List<Nic>.toNicVosFromVm(conn: Connection, vmId: String): List<NicVo> =
 	this@toNicVosFromVm.map { it.toNicVoFromVm(conn, vmId) }
+
 
 fun Nic.toNicVoFromTemplate(conn: Connection): NicVo {
 	val vnicProfile: VnicProfile? =
@@ -199,11 +206,32 @@ fun Nic.toNicVoFromTemplate(conn: Connection): NicVo {
 		name { this@toNicVoFromTemplate.name() }
 		linked { this@toNicVoFromTemplate.linked() }
 		plugged { this@toNicVoFromTemplate.plugged() } // 연결됨
-		networkVo { network?.toNetworkVo(conn) }
-		vnicProfileVo { vnicProfile?.toVnicProfileVo(conn) }
+		networkVo { network?.fromNetworkToIdentifiedVo() }
+		vnicProfileVo { vnicProfile?.fromVnicProfileToIdentifiedVo() }
 		interface_ { this@toNicVoFromTemplate.interface_() }
 	}
 }
 
 fun List<Nic>.toNicVosFromTemplate(conn: Connection): List<NicVo> =
 	this@toNicVosFromTemplate.map { it.toNicVoFromTemplate(conn) }
+
+
+fun NicVo.toNicBuilder(): NicBuilder {
+	val nicBuilder: NicBuilder = NicBuilder()
+	nicBuilder
+		.name(this@toNicBuilder.name)
+		.vnicProfile(VnicProfileBuilder().id(this@toNicBuilder.vnicProfileVo.id))
+		.interface_(this@toNicBuilder.interface_)
+		.linked(this@toNicBuilder.linked)
+		.plugged(this@toNicBuilder.plugged)
+	if (this@toNicBuilder.macAddress.isNotEmpty())
+		nicBuilder.mac(MacBuilder().address(this@toNicBuilder.macAddress).build())
+	return nicBuilder
+}
+
+fun NicVo.toAddNicBuilder(): Nic =
+	this@toAddNicBuilder.toNicBuilder().build()
+
+fun NicVo.toEditNicBuilder(): Nic =
+	this@toEditNicBuilder.toNicBuilder().id(this@toEditNicBuilder.id).build()
+

@@ -50,7 +50,7 @@ fun Connection.findHostName(hostId: String): String =
 fun List<Host>.nameDuplicateHost(hostName: String, hostId: String? = null): Boolean =
 	this.filter { it.id() != hostId }.any { it.name() == hostName }
 
-fun Connection.addHost(host: Host, deployHostedEngine: Boolean): Result<Host?> = runCatching {
+fun Connection.addHost(host: Host, deployHostedEngine: Boolean = false): Result<Host?> = runCatching {
 	if(this.findAllHosts()
 			.getOrDefault(listOf())
 			.nameDuplicateHost(host.name())) {

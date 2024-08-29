@@ -10,6 +10,8 @@ import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.model.storage.*
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.*
+import com.itinfo.util.ovirt.error.ErrorPattern
+import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.types.*
 import org.springframework.stereotype.Service
@@ -24,6 +26,15 @@ interface ItVmService {
 	 */
 	@Throws(Error::class)
 	fun findAll(): List<VmVo>
+	/**
+	 * [ItVmService.findOne]
+	 * 가상머신 정보, 편집
+	 *
+	 * @param vmId [String] 가상머신 id
+	 * @return [VmVo]
+	 */
+	@Throws(Error::class)
+	fun findOne(vmId: String): VmVo?
 	/**
 	 * [ItVmService.findAllClustersBy]
 	 * 가상머신 생성 - 클러스터 목록
@@ -100,13 +111,13 @@ interface ItVmService {
     @Throws(Error::class)
 	fun findAllCpuProfilesBy(clusterId: String): List<CpuProfileVo>
 	/**
-	 * [ItVmService.findAllIsosBy]
+	 * [ItVmService.findAllISOsBy]
 	 * 가상머신 생성 - 부트 옵션 - 생성 시 필요한 CD/DVD 연결할 ISO 목록 (디스크이미지)
 	 *
-	 * @return List<[DiskImageVo]> ISO 목록
+	 * @return List<[IdentifiedVo]> ISO 목록
 	 */
     @Throws(Error::class)
-	fun findAllIsosBy(): List<DiskImageVo>
+	fun findAllISOsBy(): List<IdentifiedVo>
 
 	// 선호도 그룹/레이블은 나중구현 가능
 	/**
@@ -136,15 +147,6 @@ interface ItVmService {
 	 */
 	@Throws(Error::class)
 	fun add(vmVo: VmVo): VmVo?
-	/**
-	 * [ItVmService.findOne]
-	 * 가상머신 편집 창
-	 *
-	 * @param vmId [String] 가상머신 id
-	 * @return [VmVo] 가상머신 정보
-	 */
-	@Throws(Error::class)
-	fun findOne(vmId: String): VmVo?
 	/**
 	 * [ItVmService.update]
 	 * 가상머신 편집
@@ -205,18 +207,11 @@ interface ItVmService {
 	 */
     @Throws(Error::class)
 	fun exportOvaVm(vmExportVo: VmExportVo): Boolean // ova로 내보내기
-	/**
-	 * [ItVmService.findVm]
-	 * 일반
-	 *
-	 * @param vmId [String] 가상머신 id
-	 * @return [VmVo]
-	 */
-	@Throws(Error::class)
-	fun findVm(vmId: String): VmVo?
+	// 네트워크 인터페이스, 디스크, 스냅샷은 따른 서비스로
 	/**
 	 * [ItVmService.findAllApplicationsByVm]
 	 *
+	 * @param vmId [String] 가상머신 id
 	 */
 	@Throws(Error::class)
 	fun findAllApplicationsByVm(vmId: String): List<IdentifiedVo>
@@ -257,31 +252,39 @@ class VmServiceImpl(
 	@Throws(Error::class)
 	override fun findAll(): List<VmVo> {
 		log.info("findAll ... ")
-		val vms: List<Vm> =
+		val res: List<Vm> =
 			conn.findAllVms()
 				.getOrDefault(listOf())
-		return vms.toVmVos(conn)
+		return res.toVmVos(conn)
+	}
+
+	override fun findOne(vmId: String): VmVo? {
+		log.info("getVmDetail ... ")
+		val res: Vm =
+			conn.findVm(vmId).getOrNull()
+				?: throw ErrorPattern.VM_NOT_FOUND.toError()
+		return res.toVmVo(conn)
 	}
 
 	@Deprecated("ClusterService에 있는 내용과 비슷함")
 	@Throws(Error::class)
 	override fun findAllClustersBy(): List<ClusterVo> {
 		log.info("findAllClusters ... ")
-		val clusters: List<Cluster> =
+		val res: List<Cluster> =
 			conn.findAllClusters()
 				.getOrDefault(listOf())
 				.filter { it.dataCenterPresent() && it.cpuPresent() }
-		return clusters.toClusterVos(conn)
+		return res.toClusterVos(conn)
 	}
 
 	@Deprecated("ItTemplateService.findAll 내용 같음")
 	@Throws(Error::class)
 	override fun findAllTemplatesBy(): List<TemplateVo> {
 		log.info("getTemplates ... ")
-		val templates: List<Template> =
+		val res: List<Template> =
 			conn.findAllTemplates()
 				.getOrDefault(listOf())
-		return templates.toTemplateVos(conn)
+		return res.toTemplateVos(conn)
 	}
 
 	override fun findAllDiskImagesBy(): List<DiskImageVo> {
@@ -294,20 +297,20 @@ class VmServiceImpl(
 						.getOrDefault(listOf())
 				}.map { it.id() }
 
-		val disks: List<Disk> =
+		val res: List<Disk> =
 			conn.findAllDisks()
 				.getOrDefault(listOf())
 				.filter {
 					(it.storageType() == DiskStorageType.IMAGE || it.storageType() == DiskStorageType.LUN) &&
 					(it.contentType() == DiskContentType.DATA) && !attDiskIds.contains(it.id())
 				}
-		return disks.toDiskImageVos(conn)
+		return res.toDiskImageVos(conn)
 	}
 
 	@Deprecated("ItStorageService.findAllStorageDomainsFromDataCenter 내용과 비슷함")
 	override fun findAllStorageDomainsBy(dataCenterId: String): List<StorageDomainVo> {
 		log.info("findAllStorageDomainsBy ... ")
-		val storageDomains: List<StorageDomain> =
+		val res: List<StorageDomain> =
 			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
 				.getOrDefault(listOf())
 
@@ -315,18 +318,17 @@ class VmServiceImpl(
 //			conn.findAllStorageDomains()
 //				.getOrDefault(listOf())
 //				.filter { !it.dataCentersPresent() }
-
-		return storageDomains.toStorageDomainIdNames()
+		return res.toStorageDomainIdNames()
 	}
 
 	@Deprecated("ItStorageService.findOneDiskProfile 내용과 비슷함")
 	@Throws(Error::class)
 	override fun findAllDiskProfilesBy(storageDomainId: String) : List<DiskProfileVo> {
 		log.info("findAllDiskProfilesBy ... domainId: $storageDomainId")
-		val diskProfiles: List<DiskProfile> =
+		val res: List<DiskProfile> =
 			conn.findAllDiskProfilesFromStorageDomain(storageDomainId)
 				.getOrDefault(listOf())
-		return diskProfiles.toDiskProfileVos()
+		return res.toDiskProfileVos()
 	}
 
 
@@ -334,98 +336,80 @@ class VmServiceImpl(
 		log.info("findAllVnicProfiles ... clusterId: {}", clusterId)
 		val cluster: Cluster =
 			conn.findCluster(clusterId)
-				.getOrNull() ?: run {
-			log.warn("setVnicList ... 찾을 수 없는")
-			return listOf()
-		}
+				.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toError()
 
 		// 데이터 센터가 같아야함
-		val vnicProfiles: List<VnicProfile> =
+		val res: List<VnicProfile> =
 			conn.findAllVnicProfiles()
 				.getOrDefault(listOf())
 				.filter { vNic: VnicProfile ->
 					val network: Network? = conn.findNetwork(vNic.network().id()).getOrNull()
 					network?.dataCenter()?.id() == cluster.dataCenter().id()
 				}
-
-		return vnicProfiles.toVnicProfileVos(conn)
+		return res.toVnicProfileVos(conn)
 	}
 
 	@Deprecated("사용안할듯")
 	override fun findAllHostsBy(clusterId: String): List<HostVo> {
-		log.info("setHostList ... clusterId: {}", clusterId)
-		if (conn.findCluster(clusterId).getOrNull() == null) {
-			log.warn("setHostList ... 클러스터 없음")
-			return listOf()
-		}
-
-		val hosts: List<Host> =
+		log.info("findAllHostsBy ... clusterId: {}", clusterId)
+		conn.findCluster(clusterId).getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toError()
+		val res: List<Host> =
 			conn.findAllHosts()
 				.getOrDefault(listOf())
 				.filter { it.cluster().id() == clusterId }
-
-		return hosts.toHostIdNames()
+		return res.toHostIdNames()
 	}
 
 	override fun findAllCpuProfilesBy(clusterId: String): List<CpuProfileVo> {
 		log.info("findAllCpuProfilesBy ... clusterId: {}", clusterId)
-		if (conn.findCluster(clusterId).getOrNull() == null) {
-			log.warn("setCpuProfileList ... 클러스터 없음")
-			return listOf()
-		}
-
-		val cpuProfiles: List<CpuProfile> =
+		conn.findCluster(clusterId).getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toError()
+		val res: List<CpuProfile> =
 			conn.findAllCpuProfiles()
 				.getOrDefault(listOf())
 				.filter { it.cluster().id() == clusterId }
-
-		return cpuProfiles.toCpuProfileVos()
+		return res.toCpuProfileVos()
 	}
 
-	override fun findAllIsosBy(): List<DiskImageVo> {
-		log.info("setIsoImage ... ")
-		val disks: List<Disk> =
+	override fun findAllISOsBy(): List<IdentifiedVo> {
+		log.info("findAllISOsBy ... ")
+		val res: List<Disk> =
 			conn.findAllDisks().getOrDefault(listOf())
 				.filter { it.contentType() == DiskContentType.ISO }
-
-		return disks.toDiskIdNames()
+		return res.fromDisksToIdentifiedVos()
 	}
 
 	override fun findAllAffinityGroupsBy(clusterId: String): List<IdentifiedVo> {
-		log.info("setAgList ... ")
-		if (conn.findCluster(clusterId).getOrNull() == null) {
-			log.warn("setAgList ... 클러스터 없음")
-			return listOf()
-		}
-
-		val affinityGroups: List<AffinityGroup> =
+		log.info("findAllAffinityGroupsBy ... ")
+		conn.findCluster(clusterId).getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toError()
+		val res: List<AffinityGroup> =
 			conn.findAllAffinityGroupsFromCluster(clusterId)
 				.getOrDefault(listOf())
-
-		return affinityGroups.fromAffinityGroupsToIdentifiedVos()
+		return res.fromAffinityGroupsToIdentifiedVos()
 	}
 
 	override fun findAllAffinityLabelsBy(): List<IdentifiedVo> {
-		log.info("setAlList ... ")
-		val affinityLabels: List<AffinityLabel> =
+		log.info("findAllAffinityLabelsBy ... ")
+		val res: List<AffinityLabel> =
 			conn.findAllAffinityLabels()
 				.getOrDefault(listOf())
-		return affinityLabels.fromAffinityLabelsToIdentifiedVos()
+		return res.fromAffinityLabelsToIdentifiedVos()
 	}
 
 	override fun add(vmVo: VmVo): VmVo? {
 		log.info("addVm ... ")
 
 		// TODO: 파라미터에 대한 처리 내용 검토 필요
-		val result: Vm? = conn.addVm(
+		val res: Vm =
+			conn.addVm(
 				vmVo.toAddVmBuilder(conn),
 				vmVo.vnicProfileVos.map { it.id },
 				vmVo.diskAttachmentVos.map { it.id },
 				// vmVo.diskImages.toAddDiskBuilders(conn),
 				//
 			)
-			.getOrNull()
-		return result?.toVmVo(conn)
+			.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+		return res.toVmVo(conn)
+
 		// 가상머신 만들고 nic 붙이고 disk 붙이는 식
 /*
 		try {
@@ -465,18 +449,12 @@ class VmServiceImpl(
 */
 	}
 
-	override fun findOne(vmId: String): VmVo? {
-		log.info("getVm ... id: {}", vmId)
-		val vm: Vm? = conn.findVm(vmId).getOrNull()
-		log.info("가상머신 조회")
-		return vm?.toVmVo(conn)
-	}
-
 	override fun update(vmVo: VmVo): VmVo? {
 		log.info("update ... ")
-		val vm: Vm? =
+		val res: Vm =
 			conn.updateVm(vmVo.toEditVmBuilder(conn))
-				.getOrNull()
+				.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+		return res.toVmVo(conn)
 		// 가상머신 만들고 nic 붙이고 disk 붙이는 식
 		/*
 		//		try{
@@ -507,27 +485,26 @@ class VmServiceImpl(
 		//			return CommonVo.failResponse("가상머신 수정 실패");
 		//		}
 		*/
-		return vm?.toVmVo(conn)
+
 	}
 
 	override fun remove(vmId: String, disk: Boolean): Boolean {
 		log.info("deleteVm ...  vmName: {}", conn.findVmName(vmId))
-		val result: Result<Boolean> =
+		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
+		val res: Result<Boolean> =
 			conn.removeVm(vmId, disk)
-		return result.isSuccess
+		return res.isSuccess
 	}
 
 	override fun migrateHostList(vmId: String): List<IdentifiedVo> {
 		log.info("migrateHostList ... vmId: {}", vmId)
-		val vm: Vm = conn.findVm(vmId).getOrNull() ?: run {
-			log.warn("migrateHostList ... 가상머신 없음")
-			return listOf()
-		}
+		val vm: Vm =
+			conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
 
-		val hosts: List<Host> =
+		val res: List<Host> =
 			conn.findAllHosts()
 				.getOrDefault(listOf())
-				.filter { it.cluster().id() == vm.cluster().id() && it.id() != vm.host().id() }
+				.filter { host -> host.cluster().id() == vm.cluster().id() && host.id() != vm.host().id() }
 //		if (vm.placementPolicy().hostsPresent()){
 //			log.info("가상머신 특정 호스트 마이그레이션 목록");
 //			return vm.placementPolicy().hosts().stream() // 특정호스트
@@ -537,13 +514,14 @@ class VmServiceImpl(
 //						return IdentifiedVo.builder().id(it.id()).name(host1.name()).build();
 //				}
 //		}
-		log.info("가상머신 클러스터 내 호스트 마이그레이션 목록")
 		// 이건 클러스터 내 호스트 이야기
-		return hosts.fromHostsToIdentifiedVos()
+		return res.fromHostsToIdentifiedVos()
 	}
 
 	override fun migrate(vmId: String, hostId: String): Boolean {
 		log.info("migrateVm ... ")
+		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
+		conn.findHost(hostId).getOrNull()?: throw ErrorPattern.HOST_NOT_FOUND.toError()
 		val res: Result<Boolean> =
 			conn.migrationVm(vmId, hostId)
 		return res.isSuccess
@@ -551,88 +529,73 @@ class VmServiceImpl(
 
 	override fun cancelMigration(vmId: String): Boolean {
 		log.info("migrateCancelVm ... ")
+		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
 		val res: Result<Boolean> =
 			conn.cancelMigrationVm(vmId)
 		return res.isSuccess
 	}
 
-
 	override fun exportOvaVm(vmExportVo: VmExportVo): Boolean {
 		log.info("exportOvaVm ... ")
 		val res: Result<Boolean> =
-			conn.exportVm(vmExportVo.vmVo.id, vmExportVo.hostVo.name, vmExportVo.directory, vmExportVo.fileName)
+			conn.exportVm(
+				vmExportVo.vmVo.id,
+				vmExportVo.hostVo.name,
+				vmExportVo.directory,
+				vmExportVo.fileName
+			)
 		return res.isSuccess
 	}
 
-	override fun findVm(vmId: String): VmVo? {
-		log.info("getVmDetail ... ")
-		val vm: Vm = conn.findVm(vmId).getOrNull() ?: run {
-			log.error("getVmDetail ... 찾을 수 없는 VM")
-			return null
-		}
-
-		log.info("가상머신 상세정보")
-		return vm.toVmVo(conn)
-	}
 
 	override fun findAllApplicationsByVm(vmId: String): List<IdentifiedVo> {
 		log.info("getApplicationsByVm ... vmId: {}", vmId)
-		val apps: List<Application> =
+		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
+		val res: List<Application> =
 			conn.findAllApplicationsFromVm(vmId)
 				.getOrDefault(listOf())
-		return apps.fromApplicationsToIdentifiedVos()
+		return res.fromApplicationsToIdentifiedVos()
 	}
 
 	override fun findAllGuestFromVm(vmId: String): GuestInfoVo? {
 		log.info("findAllGuestByVm ... vmId: {}", vmId)
-		val vm: Vm = conn.findVm(vmId).getOrNull() ?: run {
-			log.error("getGuestByVm ... 찾을 수 없는 VM")
-			return null
-		}
-
-		if (!vm.guestOperatingSystemPresent()) {
+		val res: Vm =
+			conn.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+		if (!res.guestOperatingSystemPresent()) {
 			log.warn("게스트 운영 체제 정보가 없습니다.")
 			return null
 		}
-
-		return vm.toGuestInfoVo()
+		return res.toGuestInfoVo()
 	}
 
 	override fun findAllPermissionsFromVm(vmId: String): List<PermissionVo> {
 		log.info("getPermissionsByVm ... vmId: {}", vmId)
-		val permissions: List<Permission> =
+		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
+		val res: List<Permission> =
 			conn.findAllAssignedPermissionsFromVm(vmId)
 				.getOrDefault(listOf())
-		return permissions.toPermissionVos(conn)
+		return res.toPermissionVos(conn)
 	}
 
 	override fun findAllEventsFromVm(vmId: String): List<EventVo> {
 		log.info("getEventsByVm ... vmId: {}", vmId)
-		val vm: Vm = conn.findVm(vmId).getOrNull() ?: run {
-			log.error("getEventsByVm ... 찾을 수 없는 VM")
-			return listOf()
-		}
-
-		val events: List<Event> =
+		val vm: Vm =
+			conn.findVm(vmId).getOrNull()?:throw ErrorPattern.VM_NOT_FOUND.toError()
+		val res: List<Event> =
 			conn.findAllEvents()
 				.getOrDefault(listOf())
 				.filter { it.vmPresent() && it.vm().name() == vm.name() }
-		return events.toEventVos()
+		return res.toEventVos()
 	}
 
 	override fun findConsole(vmId: String): ConsoleVo? {
 		log.info("getConsole ... vmId: {}", vmId)
-		val vm: Vm = conn.findVm(vmId).getOrNull() ?: run {
-			log.error("getConsole ... 찾을 수 없는 VM")
-			return null
-		}
-		return vm.toConsoleVo(conn, systemPropertiesVo)
+		val res: Vm =
+			conn.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+		return res.toConsoleVo(conn, systemPropertiesVo)
 	}
 
 	// region: 생성
-
-
-
 	/**
 	 * 가상머신 생성 - 인스턴스 이미지 [ 연결 / 생성 ]
 	 * 디스크 여러개 가능 (연결+생성, 연결+연결, 생성+생성)

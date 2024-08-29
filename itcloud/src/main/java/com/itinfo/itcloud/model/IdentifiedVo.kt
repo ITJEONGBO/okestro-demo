@@ -30,6 +30,7 @@ open class IdentifiedVo(
 	}
 }
 
+
 fun DataCenter.fromDataCenterToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
 	id { id() }
 	name { if (namePresent()) name() else "" }
@@ -114,6 +115,14 @@ fun Disk.fromDiskToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
 }
 fun List<Disk>.fromDisksToIdentifiedVos(): List<IdentifiedVo> =
 	this@fromDisksToIdentifiedVos.map { it.fromDiskToIdentifiedVo() }
+
+fun DiskProfile.fromDiskProfileToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
+	id { id() }
+	name { if (namePresent()) name() else "" }
+}
+fun List<DiskProfile>.fromDiskProfilesToIdentifiedVos(): List<IdentifiedVo> =
+	this@fromDiskProfilesToIdentifiedVos.map { it.fromDiskProfileToIdentifiedVo() }
+
 
 
 fun AffinityGroup.fromAffinityGroupToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {

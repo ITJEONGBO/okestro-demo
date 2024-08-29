@@ -102,10 +102,10 @@ class ItStorageServiceTest {
 	@Test
 	@DisplayName("디스크 이미지 생성")
 	fun should_addDiskImage() {
-		val storageDomainVo = StorageDomainVo.builder {
+		val storageDomainVo = IdentifiedVo.builder {
 			id { domainId }
 		}
-		val diskProfileVo = DiskProfileVo.builder {
+		val diskProfileVo = IdentifiedVo.builder {
 			id { diskProfile }
 		}
 
@@ -193,7 +193,7 @@ class ItStorageServiceTest {
 		val diskId = "f89493dd-51f8-44bd-9bfb-4687f43c822c"
 		val domainId = "12d17014-a612-4b6e-a512-6ec4e1aadba6"
 
-		val storageDomainVo = StorageDomainVo.builder {
+		val storageDomainVo = IdentifiedVo.builder {
 			id { domainId }
 		}
 
@@ -230,10 +230,10 @@ class ItStorageServiceTest {
 		IOUtils.copy(inputStream, outputStream)
 		val multipartFile: MultipartFile = CommonsMultipartFile(fileItem)
 
-		val storageDomainVo = StorageDomainVo.builder {
+		val storageDomainVo = IdentifiedVo.builder {
 			id { domainId }
 		}
-		val diskProfileVo = DiskProfileVo.builder {
+		val diskProfileVo = IdentifiedVo.builder {
 			id { diskProfile }
 		}
 

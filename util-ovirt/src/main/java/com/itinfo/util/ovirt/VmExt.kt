@@ -315,12 +315,9 @@ fun Connection.exportVm(vmId: String,
 						directory: String,
 						fileName: String): Result<Boolean> = runCatching {
 	this@exportVm.srvVm(vmId).exportToPathOnHost()
-//		.storageDomain(new StorageDomainBuilder().name(vmExportVo.getDomainName()))
-//		.exclusive(vmExportVo.isExclusive())
-//		.discardSnapshots(vmExportVo.isDiscardSnapshot())
 		.host(HostBuilder().name(hostName))
 		.directory(directory)
-		.filename(fileName)
+		.filename("$fileName.ova")
 		.send()
 	true
 }.onSuccess {
@@ -335,26 +332,15 @@ fun Connection.migrationVm(vmId: String, hostId: String): Result<Boolean> = runC
 	val vm: Vm = this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 	val host: Host = this.findHost(hostId).getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
 	this.srvVm(vmId).migrate().host(host).send()
-	var result = false
-	val startTime = System.currentTimeMillis()
-	while (true) {
-		if (vm.hostPresent() && vm.host().id() == host.id()) {
-			result = true
-			break
-		} else if (System.currentTimeMillis() - startTime > 90000L) {
-			log.error("가상머신 마이그레이션 전환 시간 초과")
-			return Result.failure(Error("가상머신 마이그레이션 전환 시간 초과"))
-		}
-		log.info("가상머신 마이그레이션 진행중: {}", vm.name())
-		Thread.sleep(1000)
-	}
-	result
+
+//	val startTime = System.currentTimeMillis()
+	val updatedVm: Vm = this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	return@runCatching updatedVm.host().id() == host.id()
 }.onSuccess {
 	Term.VM.logSuccess("마이그레이션", vmId)
 }.onFailure {
 	Term.VM.logFail("마이그레이션", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
 
 fun Connection.cancelMigrationVm(vmId: String): Result<Boolean> = runCatching {
@@ -806,7 +792,7 @@ fun List<Vm>.nameDuplicateVm(name: String, id: String? = null): Boolean =
  * @throws InterruptedException
  */
 @Throws(InterruptedException::class)
-fun Connection.expectVmStatus(vmId: String, expectStatus: VmStatus, timeout: Long = 90000L, interval: Long = 1000L): Boolean {
+fun Connection.expectVmStatus(vmId: String, expectStatus: VmStatus, interval: Long = 1000L, timeout: Long = 90000L): Boolean {
 	val startTime = System.currentTimeMillis()
 	while (true) {
 		val currentVm: Vm? = this.findVm(vmId).getOrNull()

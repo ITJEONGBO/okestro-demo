@@ -46,7 +46,7 @@ interface ItVmNicService {
 	 *
 	 * @param vmId [String] 가상머신 id
 	 * @param nicVo [NicVo]
-	 * @return CommonVo<[Boolean]> 201(create) 404(fail)
+	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
 	fun addNicFromVm(vmId: String, nicVo: NicVo): NicVo? // nic 추가
@@ -78,43 +78,41 @@ class VmNicServiceImpl(
 	@Throws(Error::class)
 	override fun findAllNicsFromVm(vmId: String): List<NicVo> {
 		log.info("findAllFromVm ... vmId: {}", vmId)
-		val nics: List<Nic> =
+		val res: List<Nic> =
 			conn.findAllNicsFromVm(vmId)
 				.getOrDefault(listOf())
-		return nics.toNicVosFromVm(conn, vmId)
+		return res.toNicVosFromVm(conn, vmId)
 	}
 
 	@Throws(Error::class)
 	override fun findOneNicFromVm(vmId: String, nicId: String): NicVo? {
 		log.info("findOneNicFromVm ... vmId: {}, nicId: {}", vmId, nicId)
-		val nic: Nic =
-			conn.findNicFromVm(vmId, nicId)
-				.getOrNull() ?: run {
-				log.error("setEditNic ... 찾을 수 없는 Nic")
-				return null
-			}
-		return nic.toNicVoFromVm(conn, vmId)
+		conn.findVm(vmId).getOrNull()?:throw ErrorPattern.VM_NOT_FOUND.toError()
+		val res: Nic =
+			conn.findNicFromVm(vmId, nicId).getOrNull() ?:throw ErrorPattern.NIC_NOT_FOUND.toError()
+		return res.toNicVoFromVm(conn, vmId)
 	}
 
 	@Throws(Error::class)
 	override fun addNicFromVm(vmId: String, nicVo: NicVo): NicVo? {
 		log.info("addNic ... ")
-		val nicBuilder = NicBuilder()
-			.name(nicVo.name)
-			.vnicProfile(VnicProfileBuilder().id(nicVo.vnicProfileVo.id).build())
-			.interface_(nicVo.interface_)
-			.linked(nicVo.linked)
-			.plugged(nicVo.plugged)
+		conn.findVm(vmId).getOrNull()?:throw ErrorPattern.VM_NOT_FOUND.toError()
+		val nic: Nic =
+			conn.addNicFromVm(vmId, nicVo.toAddNicBuilder())
+				.getOrNull() ?: throw ErrorPattern.NIC_NOT_FOUND.toError()
+		return nic.toNicVoFromVm(conn, vmId)
 
-		if (nicVo.macAddress.isNotEmpty()) {
-			nicBuilder.mac(MacBuilder().address(nicVo.macAddress).build())
-		}
+//		val nicBuilder = NicBuilder()
+//			.name(nicVo.name)
+//			.vnicProfile(VnicProfileBuilder().id(nicVo.vnicProfileVo.id).build())
+//			.interface_(nicVo.interface_)
+//			.linked(nicVo.linked)
+//			.plugged(nicVo.plugged)
+//		if (nicVo.macAddress.isNotEmpty()) {
+//			nicBuilder.mac(MacBuilder().address(nicVo.macAddress).build())
+//		}
 
-		val nic: Nic = conn.addNicFromVm(vmId, nicBuilder.build()).getOrNull() ?: run {
-			return null
-		}
-
-// 네트워크 필터 매개변수 (네트워크 필터랑 다른거 같음)
+// 		네트워크 필터 매개변수 (네트워크 필터랑 다른거 같음)
 //		val nfps: List<NetworkFilterParameter> =
 //			nicVo.nfpVos.map { nFVo: NetworkFilterParameterVo ->
 //				NetworkFilterParameterBuilder()
@@ -125,13 +123,9 @@ class VmNicServiceImpl(
 //			}
 //		for (np in nfps)
 //			conn.addNicNetworkFilterParameterFromVm(vmId, nic.id(), np)
-
 //		val nfps: List<NetworkFilterParameter> = nicVo.nfpVos.ttoNetworkFilterParameters()
 //		for (np in nfps)
 //			conn.addNicNetworkFilterParameterFromVm(vmId, nic.id(), np)
-
-		log.info("네트워크 필터 생성 완료")
-		return nic.toNicVoFromVm(conn, vmId)
 	}
 
 	@Throws(Error::class)

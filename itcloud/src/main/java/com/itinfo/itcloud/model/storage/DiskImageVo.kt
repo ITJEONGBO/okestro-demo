@@ -1,10 +1,10 @@
 package com.itinfo.itcloud.model.storage
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.model.*
 import com.itinfo.itcloud.model.computing.DataCenterVo
 import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.computing.toDataCenterIdName
-import com.itinfo.itcloud.model.gson
 import com.itinfo.util.ovirt.findDataCenter
 import com.itinfo.util.ovirt.findDiskProfile
 import com.itinfo.util.ovirt.findStorageDomain
@@ -26,10 +26,10 @@ import java.math.BigInteger
  * @property appendSize [Int] 확장크기
  * @property alias [String] 별칭(이름과 같음)
  * @property description [String] 설명
- * @property dataCenterVo [DataCenterVo] <스토리지-디스크-생성>
- * @property storageDomainVo [StorageDomainVo] 스토리지 도메인
+ * @property dataCenterVo [IdentifiedVo] <스토리지-디스크-생성>
+ * @property storageDomainVo [IdentifiedVo] 스토리지 도메인
  * @property sparse [Boolean] 할당 정책 (씬 true, 사전할당 false)
- * @property diskProfileVo [DiskProfileVo] 디스크 프로파일 (스토리지-디스크프로파일)
+ * @property diskProfileVo [IdentifiedVo] 디스크 프로파일 (스토리지-디스크프로파일)
  * @property wipeAfterDelete [Boolean] 삭제 후 초기화
  * @property sharable [Boolean] 공유가능 (공유가능 o 이라면 증분백업 안됨 FRONT에서 막기?)
  * @property backup [Boolean] 증분 백업 사용 (기본이 true)
@@ -40,9 +40,9 @@ import java.math.BigInteger
  * @property contentType [DiskContentType]
  * @property storageType [DiskStorageType] 유형
  * @property createDate [String] 생성일자
- * @property connectVm [VmVo] 연결대상
+ * @property connectVm [IdentifiedVo] 연결대상
  *
- * @property diskProfileVos List<[DiskProfileVo]> 디스크 프로파일 목록
+ * @property diskProfileVos List<[IdentifiedVo]> 디스크 프로파일 목록
  */
 open class DiskImageVo(
 	val id: String = "",
@@ -50,10 +50,10 @@ open class DiskImageVo(
 	val appendSize: Int = 0,
 	val alias: String = "",
 	val description: String = "",
-	val dataCenterVo: DataCenterVo = DataCenterVo(),
-	val storageDomainVo: StorageDomainVo = StorageDomainVo(),
+	val dataCenterVo: IdentifiedVo = IdentifiedVo(),
+	val storageDomainVo: IdentifiedVo = IdentifiedVo(),
 	val sparse: Boolean = false,
-	val diskProfileVo: DiskProfileVo = DiskProfileVo(),
+	val diskProfileVo: IdentifiedVo = IdentifiedVo(),
 	val wipeAfterDelete: Boolean = false,
 	val sharable: Boolean = false,
 	val backup: Boolean = false,
@@ -61,12 +61,12 @@ open class DiskImageVo(
 	val virtualSize: Int = 0,
 	val actualSize: Int = 0,
 	val status: DiskStatus = DiskStatus.LOCKED,
-	val contentType: DiskContentType = DiskContentType.DATA,
+	val contentType: DiskContentType = DiskContentType.DATA, // unknown
 	val storageType: DiskStorageType = DiskStorageType.IMAGE,
 	val createDate: String = "",
-	val connectVm: VmVo = VmVo(),
+	val connectVm: IdentifiedVo = IdentifiedVo(),
 
-	val diskProfileVos: List<DiskProfileVo> = listOf()
+	val diskProfileVos: List<IdentifiedVo> = listOf()
 ): Serializable {
 	override fun toString(): String =
 		gson.toJson(this)
@@ -77,10 +77,10 @@ open class DiskImageVo(
 		private var bAppendSize: Int = 0;fun appendSize(block: () -> Int?) { bAppendSize = block() ?: 0 }
 		private var bAlias: String = "";fun alias(block: () -> String?) { bAlias = block() ?: "" }
 		private var bDescription: String = "";fun description(block: () -> String?) { bDescription = block() ?: "" }
-		private var bDataCenterVo: DataCenterVo = DataCenterVo();fun dataCenterVo(block: () -> DataCenterVo?) { bDataCenterVo = block() ?: DataCenterVo() }
-		private var bStorageDomainVo: StorageDomainVo = StorageDomainVo();fun storageDomainVo(block: () -> StorageDomainVo?) { bStorageDomainVo = block() ?: StorageDomainVo() }
+		private var bDataCenterVo: IdentifiedVo = IdentifiedVo();fun dataCenterVo(block: () -> IdentifiedVo?) { bDataCenterVo = block() ?: IdentifiedVo() }
+		private var bStorageDomainVo: IdentifiedVo = IdentifiedVo();fun storageDomainVo(block: () -> IdentifiedVo?) { bStorageDomainVo = block() ?: IdentifiedVo() }
 		private var bSparse: Boolean = false;fun sparse(block: () -> Boolean?) { bSparse = block() ?: false }
-		private var bDiskProfileVo: DiskProfileVo = DiskProfileVo();fun diskProfileVo(block: () -> DiskProfileVo?) { bDiskProfileVo = block() ?: DiskProfileVo() }
+		private var bDiskProfileVo: IdentifiedVo = IdentifiedVo();fun diskProfileVo(block: () -> IdentifiedVo?) { bDiskProfileVo = block() ?: IdentifiedVo() }
 		private var bWipeAfterDelete: Boolean = false;fun wipeAfterDelete(block: () -> Boolean?) { bWipeAfterDelete = block() ?: false }
 		private var bSharable: Boolean = false;fun sharable(block: () -> Boolean?) { bSharable = block() ?: false }
 		private var bBackup: Boolean = false;fun backup(block: () -> Boolean?) { bBackup = block() ?: false }
@@ -90,8 +90,8 @@ open class DiskImageVo(
 		private var bContentType: DiskContentType = DiskContentType.DATA;fun contentType(block: () -> DiskContentType?) { bContentType = block() ?: DiskContentType.DATA }
 		private var bStorageType: DiskStorageType = DiskStorageType.IMAGE;fun storageType(block: () -> DiskStorageType?) { bStorageType = block() ?: DiskStorageType.IMAGE }
 		private var bCreateDate: String = "";fun createDate(block: () -> String?) { bCreateDate = block() ?: "" }
-		private var bConnectVm: VmVo = VmVo();fun connectVm(block: () -> VmVo?) { bConnectVm = block() ?: VmVo() }
-		private var bDiskProfileVos: List<DiskProfileVo> = listOf();fun diskProfileVos(block: () -> List<DiskProfileVo>?) { bDiskProfileVos = block() ?: listOf() }
+		private var bConnectVm: IdentifiedVo = IdentifiedVo();fun connectVm(block: () -> IdentifiedVo?) { bConnectVm = block() ?: IdentifiedVo() }
+		private var bDiskProfileVos: List<IdentifiedVo> = listOf();fun diskProfileVos(block: () -> List<IdentifiedVo>?) { bDiskProfileVos = block() ?: listOf() }
 
         fun build(): DiskImageVo = DiskImageVo(bId, bSize, bAppendSize, bAlias, bDescription, bDataCenterVo, bStorageDomainVo, bSparse, bDiskProfileVo, bWipeAfterDelete, bSharable, bBackup, bVirtualSize, bActualSize, bStatus, bContentType, bStorageType, bCreateDate, bConnectVm, bDiskProfileVos)
 	}
@@ -128,10 +128,10 @@ fun Disk.toDiskImageVo(conn: Connection): DiskImageVo {
 		size { (this@toDiskImageVo.provisionedSizeAsLong() / 1073741824).toInt() } // 1024^3
 		alias { this@toDiskImageVo.alias() }
 		description { this@toDiskImageVo.description() }
-		dataCenterVo { dataCenter?.toDataCenterIdName() }
-		storageDomainVo { storageDomain?.toStorageDomainIdName() }
+		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
+		storageDomainVo { storageDomain?.fromStorageDomainToIdentifiedVo() }
 		sparse { this@toDiskImageVo.sparse() }
-		diskProfileVo { diskProfile?.toDiskProfileVo() }
+		diskProfileVo { diskProfile?.fromDiskProfileToIdentifiedVo() }
 		wipeAfterDelete { this@toDiskImageVo.wipeAfterDelete() }
 		sharable { this@toDiskImageVo.shareable() }
 		backup { this@toDiskImageVo.backup() == DiskBackup.INCREMENTAL }

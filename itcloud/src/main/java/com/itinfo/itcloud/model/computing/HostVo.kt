@@ -246,7 +246,7 @@ fun List<Host>.toHostVos(conn: Connection): List<HostVo> =
 
 fun HostVo.toHostBuilder(): HostBuilder {
     return HostBuilder()
-        .cluster(ClusterBuilder().id(this@toHostBuilder.id))
+        .cluster(ClusterBuilder().id(this@toHostBuilder.clusterVo.id))
         .name(this@toHostBuilder.name)
         .comment(this@toHostBuilder.comment)
         .address(this@toHostBuilder.address)
