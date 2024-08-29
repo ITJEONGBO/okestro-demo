@@ -4508,3 +4508,23 @@ box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
     cursor: pointer;
     font-size: 0.29rem;
 }
+.content_header_right>button:last-child{
+    margin-right: 0;
+}
+.network_edit_popup form{
+    height: 67vh;
+    overflow-y: auto;
+    overflow-x: hidden; 
+}
+.network_edit_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 80%;
+    width: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}

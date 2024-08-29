@@ -130,14 +130,14 @@ const Computing = () => {
                             </select>
                         </div>
                         <div>
-                            <label htmlFor="cluster">호환버전</label>
-                            <select id="cluster">
+                            <label htmlFor="compatibility">호환버전</label>
+                            <select id="compatibility">
                                 <option value="4.7">4.7</option>
                             </select>
                         </div>
                         <div>
-                            <label htmlFor="cluster">쿼터 모드</label>
-                            <select id="cluster">
+                            <label htmlFor="quota_mode">쿼터 모드</label>
+                            <select id="quota_mode">
                                 <option value="비활성화됨">비활성화됨</option>
                             </select>
                         </div>

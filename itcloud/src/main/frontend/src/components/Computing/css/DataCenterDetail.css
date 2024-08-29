@@ -138,3 +138,6 @@
 #migration_footer>button:last-child{
     color:#0066CC ;
 }
+.content_header_right>button:last-child{
+    margin-right: 0;
+}

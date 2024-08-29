@@ -284,23 +284,6 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                 <Table columns={dataCenterColumns} data={dataCenterData} onRowClick={() => console.log('Row clicked')} />
               </div>
 
-            {/* <>
-              <div className="content_header_right">
-                <button>추가</button>
-                <button>제거</button>
-              </div>
-              
-              <div className="section_table_outer">
-                <div className="storage_right_btns">
-                  <span>Permission Filters:</span>
-                  <div>
-                    <button>All</button>
-                    <button>Direct</button>
-                  </div>
-                </div>
-                <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
-              </div>
-        </> */}
           </>
         )}
 
