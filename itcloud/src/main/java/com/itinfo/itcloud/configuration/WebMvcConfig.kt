@@ -10,6 +10,10 @@ import org.springframework.stereotype.Component
 import org.springframework.stereotype.Controller
 import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.servlet.resource.PathResourceResolver
@@ -42,6 +46,27 @@ class WebMvcConfig : WebMvcConfigurer {
 		return MappingJackson2JsonView().apply {
 			contentType = "application/json;charset=UTF-8"
 		}
+	}
+
+	@Bean
+	fun corsConfigurationSource(): CorsConfigurationSource {
+		// 요거 작동 안됨
+		log.info("... corsConfigurationSource")
+		val config = CorsConfiguration().apply {
+			allowCredentials = true
+			addAllowedOrigin(URL_REACT_DEV) // 리엑트 돌릴 때
+			allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+			allowedHeaders = listOf("*")
+			exposedHeaders = listOf("*")
+		}
+		return UrlBasedCorsConfigurationSource().apply {
+			registerCorsConfiguration("/**", config)
+		}
+	}
+
+	override fun addCorsMappings(registry: CorsRegistry) {
+		registry.addMapping("/**").allowedOrigins(URL_REACT_DEV)
+		super.addCorsMappings(registry)
 	}
 
 //	@Bean
@@ -89,6 +114,7 @@ class WebMvcConfig : WebMvcConfigurer {
 		super.addResourceHandlers(registry)
 	}
 
+
 	private fun serveDirectory(registry: ResourceHandlerRegistry, endpoint: String, location: String) {
 		// implementation will come here
 		// 1
@@ -117,6 +143,7 @@ class WebMvcConfig : WebMvcConfigurer {
 	}
 
 	companion object {
+		const val URL_REACT_DEV = "http://localhost:3000"
 		private val log by LoggerDelegate()
 	}
 }

@@ -338,8 +338,8 @@ const CpuBarChart = () => {
       async function fetchData() {
         try {
           const data = await ApiManager.getVmCpu();
-          const names = data?.body?.map(item => item.name) ?? [];
-          const cpuPercents = data?.body?.map(item => item.cpuPercent) ?? [];
+          const names = data?.map(item => item.name) ?? [];
+          const cpuPercents = data?.map(item => item.cpuPercent) ?? [];
 
           setSeries([{ data: cpuPercents }]);
           setOptions(prevOptions => ({
@@ -445,8 +445,8 @@ const MemoryBarChart = () => {
       async function fetchData() {
         try {
           const data = await ApiManager.getVmMemory();
-          const names = data?.body?.map(item => item.name) ?? [];
-          const memoryPercent = data?.body?.map(item => item.memoryPercent) ?? [];
+          const names = data?.map(item => item.name) ?? [];
+          const memoryPercent = data?.map(item => item.memoryPercent) ?? [];
 
           setSeries([{ data: memoryPercent }]);
           setOptions(prevOptions => ({
@@ -553,8 +553,8 @@ const StorageBarChart = () => {
       async function fetchData() {
         try {
           const data = await ApiManager.getStorageMemory();
-          const names = data?.body?.map(item => item.name) ?? [];
-          const memoryPercent = data?.body?.map(item => item.memoryPercent) ?? [];
+          const names = data?.map(item => item.name) ?? [];
+          const memoryPercent = data?.map(item => item.memoryPercent) ?? [];
 
           setSeries([{ data: memoryPercent }]);
           setOptions(prevOptions => ({
