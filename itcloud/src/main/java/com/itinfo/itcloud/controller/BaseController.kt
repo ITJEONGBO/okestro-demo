@@ -12,9 +12,17 @@ import com.itinfo.util.ovirt.error.ItCloudException
 import org.ovirt.engine.sdk4.Error
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
+
+@Controller
+class RootController: BaseController() {
+	@RequestMapping("/")
+	fun root(): String = "forward:index.html" // root로 강제 매핑
+}
 
 @ControllerAdvice
 class BaseController(
