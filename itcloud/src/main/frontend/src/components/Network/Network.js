@@ -21,7 +21,10 @@ const Network = () => {
     // 테이블 행 클릭 시 NetworkDetail로 이동 (name 컬럼만 이동)
     const handleNetworkNameClick = (row, column) => {
         if (column.accessor === 'name') {
-            navigate(`/network/${row.name.props.children}`); // name 값을 URL로 전달하여 상세 페이지로 이동
+            navigate(`/network/${row.name.props.children}`);
+        }
+        if (column.accessor === 'dataCenter') {
+            navigate(`/computing/cluster/${row.name.props.children}`); 
         }
     };
 
@@ -100,6 +103,7 @@ const Network = () => {
         setSelectedTab(tab);
     };
 
+
     const sectionHeaderButtons = [
 
     ];
@@ -114,6 +118,7 @@ const Network = () => {
         '도메인으로 내보내기',
         'Export to Data Domain',
         'OVA로 내보내기',
+
     ];
 
     return (
@@ -126,14 +131,10 @@ const Network = () => {
 
             <div className="content_outer">
                 <div className='empty_nav_outer'>
-                    <div className="content_header_right">
-                        <button id="network_new_btn" onClick={() => openPopup('newNetwork')}>새로 만들기</button>
-                        <button id="network_bring_btn" onClick={() => openPopup('getNetwork')}>가져오기</button>
-                        <button onClick={() => openPopup('editNetwork')}>편집</button>
-                        <button>삭제</button>
-                    </div>
                     <div className="section_table_outer">
+
                         <Table columns={TableColumnsInfo.NETWORKS} data={data} onRowClick={handleNetworkNameClick} />
+
                     </div>
                 </div>
             </div>

@@ -754,7 +754,7 @@ const Dashboard = () => {
               <i className="fa fa-arrow-down"> {data.hostsDown}</i>
             </div>
           </div>
-          <div className="box" onClick={() => navigate('/storage-domain')}>
+          <div className="box" onClick={() => navigate('/storage-domainpart')}>
             <span>Datastoragedomain</span>
             <h1>{data.storageDomains}</h1>
           </div>

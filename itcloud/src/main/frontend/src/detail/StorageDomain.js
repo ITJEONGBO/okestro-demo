@@ -1,19 +1,58 @@
 import React, { useState,useEffect } from 'react';
+
 import { useParams } from 'react-router-dom';
+
+import Modal from 'react-modal';
+
 import NavButton from '../components/navigation/NavButton';
 import HeaderButton from '../components/button/HeaderButton';
 import Table from '../components/table/Table';
 import TableColumnsInfo from '../components/table/TableColumnsInfo';
 import './css/StorageDomain.css';
 
+import { useNavigate } from 'react-router-dom';
+//import { useParams } from 'react-router-dom';
+
+
 function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
-  const { name } = useParams(); // URL에서 name 파라미터를 가져옵니다.
+  const { name } = useParams();
+  const navigate = useNavigate();
+    //클릭한 이름 받아오기
+    const handlePermissionFilterClick = (filter) => {
+      setActivePermissionFilter(filter);
+    };
+    const [activePopup, setActivePopup] = useState(null); // modal
+    const [activePermissionFilter, setActivePermissionFilter] = useState('all');
+    const openModal = (popupType) => setActivePopup(popupType);
+    const closeModal = () => setActivePopup(null);
+    const [isDomainHiddenBoxVisible, setDomainHiddenBoxVisible] = useState(false);
+    const toggleDomainHiddenBox = () => {
+      setDomainHiddenBoxVisible(!isDomainHiddenBoxVisible);
+    };
+    const [isDomainHiddenBox2Visible, setDomainHiddenBox2Visible] = useState(false);
+    const toggleDomainHiddenBox2 = () => {
+      setDomainHiddenBox2Visible(!isDomainHiddenBox2Visible);
+    };
+
+    const handleRowClick = (row, column) => {
+      if (column.accessor === 'domainName') {
+        navigate(`/storage-domain/${row.domainName.props.children}`);  
+      }
+    };
   // 테이블컴포넌트
   // 데이터센터
   const dataCenterData = [
     {
       icon: <i className="fa fa-exclamation"></i>,
-      name: name,
+      name: (
+        <span
+          style={{ color: 'blue', cursor: 'pointer'}}
+          onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
+          onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
+        >  
+          ㅁㅎㅇㅁㄹㄹ
+        </span>
+      ),
       domainStatus: '활성화',
     },
   ];
@@ -103,6 +142,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     },
   ];
 
+
   //권한
   const permissionData = [
     {
@@ -115,6 +155,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
       inheritedFrom: '(시스템)',
     },
   ];
+
   //
   const [activeTab, setActiveTab] = useState('general');
 
@@ -129,10 +170,11 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   };
   //headerbutton 컴포넌트
   const buttons = [
-    { id: 'manage_domain_btn', label: '도메인 관리', onClick: () => console.log('Manage Domain button clicked') },
+    { id: 'manage_domain_btn', label: '도메인 관리', onClick: () => openModal('manageDomain') },
     { id: 'delete_btn', label: '삭제', onClick: () => console.log('Delete button clicked') },
     { id: 'connections_btn', label: 'Connections', onClick: () => console.log('Connections button clicked') },
-  ];
+];
+
 
   const popupItems = [
     '가져오기',
@@ -193,7 +235,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         <div className="host_btn_outer">
         {activeTab === 'general' && (
           <div className="tables">
-            <div className="table_container_center">
+            <div className="table_storage_domain_detail">
             <table className="table">
               <tbody>
                 <tr>
@@ -258,7 +300,9 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
               </div>
               
               <div className="section_table_outer">
+
                 <Table columns={TableColumnsInfo.STORAGE_DOMAIN_FROM_DATACENTER} data={dataCenterData} onRowClick={() => console.log('Row clicked')} />
+
               </div>
 
           </>
@@ -393,8 +437,40 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         </>
         )}
 
-      {activeTab === 'permission' && (
-        <>
+                {/* 권한 */}
+                {activeTab === 'permission' && (
+  <>
+    <div className="content_header_right">
+      <button>추가</button>
+      <button>제거</button>
+    </div>
+    <div className="host_filter_btns">
+      <span>Permission Filters:</span>
+      <div>
+        <button
+          className={activePermissionFilter === 'all' ? 'active' : ''}
+          onClick={() => handlePermissionFilterClick('all')}
+        >
+          All
+        </button>
+        <button
+          className={activePermissionFilter === 'direct' ? 'active' : ''}
+          onClick={() => handlePermissionFilterClick('direct')}
+        >
+          Direct
+        </button>
+      </div>
+    </div>
+    <div className="section_table_outer">
+      <Table
+
+        data={activePermissionFilter === 'all' ? permissionData : []}
+        onRowClick={() => console.log('Row clicked')}
+      />
+    </div>
+  </>
+)}
+
 
               <div className="content_header_right">
                 <button>추가</button>
@@ -414,11 +490,141 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                 <Table columns={TableColumnsInfo.PERMISSIONS} data={permissionData} onRowClick={() => console.log('Row clicked')} />
                 </div>
               </div>
-        </>
-        )}
+        
+
       </div>
 
       </div>
+              {/*도메인(도메인 관리)팝업 */}
+              <Modal
+    isOpen={activePopup === 'manageDomain'}
+    onRequestClose={closeModal}
+    contentLabel="도메인 관리"
+    className="Modal"
+    overlayClassName="Overlay"
+    shouldCloseOnOverlayClick={false}
+      >
+        <div className="storage_domain_administer_popup">
+          <div className="network_popup_header">
+            <h1>도메인 관리</h1>
+            <button onClick={closeModal}><i className="fa fa-times"></i></button>
+          </div>
+
+          <div className="storage_domain_new_first">
+            <div className="domain_new_left">
+              <div className="domain_new_select">
+                <label htmlFor="data_hub_location">데이터 센터</label>
+                <select id="data_hub_location">
+                  <option value="linux">Default(VS)</option>
+                </select>
+              </div>
+              <div className="domain_new_select">
+                <label htmlFor="domain_feature_set">도메인 기능</label>
+                <select id="domain_feature_set">
+                  <option value="linux">데이터</option>
+                </select>
+              </div>
+              <div className="domain_new_select">
+                <label htmlFor="storage_option_type">스토리지 유형</label>
+                <select id="storage_option_type">
+                  <option value="linux">NFS</option>
+                </select>
+              </div>
+              <div className="domain_new_select" style={{ marginBottom: 0 }}>
+                <label htmlFor="host_identifier">호스트</label>
+                <select id="host_identifier">
+                  <option value="linux">host02.ititinfo.com</option>
+                </select>
+              </div>
+            </div>
+            <div className="domain_new_right">
+              <div className="domain_new_select">
+                <label>이름</label>
+                <input type="text" />
+              </div>
+              <div className="domain_new_select">
+                <label>설명</label>
+                <input type="text" />
+              </div>
+              <div className="domain_new_select">
+                <label>코멘트</label>
+                <input type="text" />
+              </div>
+            </div>
+          </div>
+
+          <div className="storage_domain_new_second">
+            <div>
+              <label htmlFor="data_hub">내보내기 경로</label>
+              <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />
+            </div>
+
+            <div>
+              <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn" onClick={toggleDomainHiddenBox}></i>
+              <span>사용자 정의 연결 매개 변수</span>
+              <div id="domain_hidden_box" style={{ display: isDomainHiddenBoxVisible ? 'block' : 'none' }}>
+                <span>아래 필드에서 기본값을 변경하지 않을 것을 권장합니다.</span>
+                <div className="domain_new_select">
+                  <label htmlFor="nfs_version">NFS 버전</label>
+                  <select id="nfs_version" disabled style={{cursor:'no-drop'}}>
+                    <option value="host02_ititinfo_com" >자동 협상(기본)</option>
+                  </select>
+                </div>
+                <div className="domain_new_select">
+                  <label htmlFor="data_hub">재전송(#)</label>
+                  <input type="text" />
+                </div>
+                <div className="domain_new_select">
+                  <label htmlFor="data_hub">제한 시간(데시세컨드)</label>
+                  <input type="text" />
+                </div>
+                <div className="domain_new_select">
+                  <label htmlFor="data_hub">추가 마운트 옵션</label>
+                  <input type="text" />
+                </div>
+              </div>
+            </div>
+            <div>
+              <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn2" onClick={toggleDomainHiddenBox2}></i>
+              <span>고급 매개 변수</span>
+              <div id="domain_hidden_box2" style={{ display: isDomainHiddenBox2Visible ? 'block' : 'none' }}>
+                <div className="domain_new_select">
+                  <label>디스크 공간 부족 경고 표시(%)</label>
+                  <input type="text" />
+                </div>
+                <div className="domain_new_select">
+                  <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+                  <input type="text" />
+                </div>
+                <div className="domain_new_select">
+                  <label>디스크 공간 부족 경고 표시(%)</label>
+                  <input type="text" />
+                </div>
+                <div className="domain_new_select">
+                  <label htmlFor="format_type_selector" style={{ color: 'gray' }}>포맷</label>
+                  <select id="format_type_selector" disabled>
+                    <option value="linux">V5</option>
+                  </select>
+                </div>
+                <div className="hidden_checkbox">
+                  <input type="checkbox" id="reset_after_deletion"/>
+                  <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
+                </div>
+                <div className="hidden_checkbox">
+                  <input type="checkbox" id="backup_vault"/>
+                  <label htmlFor="backup_vault">백업</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="edit_footer">
+            <button style={{ display: 'none' }}></button>
+            <button>OK</button>
+            <button onClick={closeModal}>취소</button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

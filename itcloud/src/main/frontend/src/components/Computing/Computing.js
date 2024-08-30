@@ -58,6 +58,7 @@ const Computing = () => {
         { id: 'delete_btn', label: '삭제', onClick: () => {} },
     ];
 
+
     return (
         <div id="section">
             {sectionContent === 'default' ? (

@@ -13,6 +13,14 @@ Modal.setAppElement('#root'); // React 16 이상에서는 필수
 
 const Storage = () => {
   const navigate = useNavigate();
+  
+  // State for managing the active permission filter
+  const [activePermissionFilter, setActivePermissionFilter] = useState('all');
+  
+  // Function to handle filter changes
+  const handlePermissionFilterClick = (filter) => {
+    setActivePermissionFilter(filter);
+  };
 
   // 테이블 컴포넌트
   const columns = [
@@ -38,7 +46,6 @@ const Storage = () => {
         >
           he_metadata
         </span>
-
       ),
       id: '289137398279301798',
       icon1: '',
@@ -92,7 +99,6 @@ const Storage = () => {
     },
   ];
 
-
   const handleRowClick = (row, column) => {
     if (column.accessor === 'alias') {  // 'alias' 컬럼만 체크
         navigate(`/storage-disk/${row.alias.props.children}`);
@@ -100,6 +106,7 @@ const Storage = () => {
   };
 
   // 도메인 테이블 컴포넌트 
+
   const domaindata = [
     {
       status: <i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i>,
@@ -125,12 +132,35 @@ const Storage = () => {
     },
   ];
 
+  // 권한 테이블 컴포넌트
+  const permissionColumns = [
+    { header: '', accessor: 'icon', clickable: false },
+    { header: '사용자', accessor: 'user', clickable: false },
+    { header: '인증 공급자', accessor: 'authProvider', clickable: false },
+    { header: '네임스페이스', accessor: 'namespace', clickable: false },
+    { header: '역할', accessor: 'role', clickable: false },
+    { header: '생성일', accessor: 'createdDate', clickable: false },
+    { header: 'Inherited From', accessor: 'inheritedFrom', clickable: false },
+  ];
+
+  const permissionData = [
+    {
+      icon: <i className="fa fa-user"></i>,
+      user: 'ovirtmgmt',
+      authProvider: '',
+      namespace: '*',
+      role: 'SuperUser',
+      createdDate: '2023.12.29 AM 11:40:58',
+      inheritedFrom: '(시스템)',
+    },
+  ];
+
   // 행 클릭 시 도메인 이름을 이용하여 이동하는 함수
   const handleDomainClick = (row) => {
     navigate(`/storage-domain/${row.domainName.props.children}`);
   };
 
-  // 이벤트
+  // 이벤트 테이블 컴포넌트
   const eventcolumns = [
     { header: '', accessor: 'icon', clickable: false },
     { header: '시간', accessor: 'time', clickable: false },
@@ -186,14 +216,6 @@ const Storage = () => {
   const handleSectionClick = (section) => {
     setActiveSection(section);
   };
-
-  // const handleDomainNameClick = () => {
-  //   if (activeSection === 'disk') {
-  //     navigate('/storage-disk');
-  //   } else if (activeSection === 'domain') {
-  //     navigate('/storage-domain');
-  //   }
-  // };
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -252,7 +274,7 @@ const Storage = () => {
     { id: 'storage', label: '스토리지' },
     { id: 'logic_network', label: '논리 네트워크' },
     { id: 'cluster', label: '클러스터' },
-    { id: 'right', label: '권한' },
+    { id: 'Permission', label: '권한' },
     { id: 'event', label: '이벤트' },
   ];
 
@@ -273,7 +295,7 @@ const Storage = () => {
             handleSectionClick={handleSectionClick}
           />
           <div className="host_btn_outer">
-          {activeSection === 'disk' && (
+            {activeSection === 'disk' && (
               <>
                 <div className="content_header_right">
                   <button id="storage_disk_new_btn" onClick={() => openPopup('newDisk')}>새로 만들기</button>
@@ -434,7 +456,6 @@ const Storage = () => {
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td></td>
                       </tr>
                       <tr>
                         <td><i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i></td>
@@ -504,45 +525,36 @@ const Storage = () => {
                 </div>
               </>
             )}
-            {activeSection === 'right' && (
+            {/* 권한 섹션 */}
+            {activeSection === 'Permission' && (
               <>
                 <div className="content_header_right">
                   <button>추가</button>
                   <button>제거</button>
                 </div>
-                <div className="section_table_outer">
-                  <div className="storage_right_btns">
-                    <span>Permission Filters:</span>
-                    <div>
-                      <button>All</button>
-                      <button>Direct</button>
-                    </div>
+                <div className="host_filter_btns">
+                  <span>Permission Filters:</span>
+                  <div>
+                    <button
+                      className={activePermissionFilter === 'all' ? 'active' : ''}
+                      onClick={() => handlePermissionFilterClick('all')}
+                    >
+                      All
+                    </button>
+                    <button
+                      className={activePermissionFilter === 'direct' ? 'active' : ''}
+                      onClick={() => handlePermissionFilterClick('direct')}
+                    >
+                      Direct
+                    </button>
                   </div>
-                  
-                  <table>
-                    <thead>
-                      <tr>
-                        <th></th>
-                        <th>사용자</th>
-                        <th>인증 공급자</th>
-                        <th>네임스페이스</th>
-                        <th>역할</th>
-                        <th>생성일</th>
-                        <th>Inherited From</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td><i className="fa fa-user"></i></td>
-                        <td>ovirtmgmt</td>
-                        <td></td>
-                        <td>*</td>
-                        <td>SuperUser</td>
-                        <td>2023.12.29 AM 11:40:58</td>
-                        <td>(시스템)</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                </div>
+                <div className="section_table_outer">
+                  <Table
+                    columns={permissionColumns}
+                    data={activePermissionFilter === 'all' ? permissionData : []}
+                    onRowClick={() => console.log('Row clicked')}
+                  />
                 </div>
               </>
             )}

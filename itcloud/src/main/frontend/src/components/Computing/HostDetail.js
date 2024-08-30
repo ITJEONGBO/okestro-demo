@@ -9,7 +9,10 @@ import './css/HostDetail.css';
 function HostDetail() {
   const { name } = useParams();
   //클릭한 이름 받아오기
-
+  const handlePermissionFilterClick = (filter) => {
+    setActivePermissionFilter(filter);
+  };
+  const [activePermissionFilter, setActivePermissionFilter] = useState('all');
     //테이블컴포넌트
      // 가상머신 
       const data = [
@@ -111,6 +114,7 @@ function HostDetail() {
     }
   ];
     // 권한
+
       const permissionData = [
         {
           icon: <i className="fa fa-user"></i>,
@@ -123,6 +127,7 @@ function HostDetail() {
         },
       ];
  
+
       //선호도 레이블
       const memberData = [
         {
@@ -533,8 +538,37 @@ function HostDetail() {
                
                 {/* 권한 */}
                 {activeTab === 'permission' && (
-                <>
+  <>
+    <div className="content_header_right">
+      <button>추가</button>
+      <button>제거</button>
+    </div>
+    <div className="host_filter_btns">
+      <span>Permission Filters:</span>
+      <div>
+        <button
+          className={activePermissionFilter === 'all' ? 'active' : ''}
+          onClick={() => handlePermissionFilterClick('all')}
+        >
+          All
+        </button>
+        <button
+          className={activePermissionFilter === 'direct' ? 'active' : ''}
+          onClick={() => handlePermissionFilterClick('direct')}
+        >
+          Direct
+        </button>
+      </div>
+    </div>
+    <div className="section_table_outer">
+      <Table
 
+        data={activePermissionFilter === 'all' ? permissionData : []}
+        onRowClick={() => console.log('Row clicked')}
+      />
+    </div>
+  </>
+)}
                   <div className="content_header_right">
                       <button>추가</button>
                       <button>제거</button>
@@ -550,8 +584,9 @@ function HostDetail() {
                     <Table columns={TableColumnsInfo.PERMISSIONS} data={permissionData} onRowClick={() => console.log('Row clicked')} />
                   </div>
                    
-                </>
-                )}
+
+
+
              
                 {/* 선호도 레이블 */}
                 {activeTab === 'lable' && (

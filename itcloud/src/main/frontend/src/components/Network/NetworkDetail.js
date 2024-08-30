@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+
 import { useParams } from 'react-router-dom';
+
 import Modal from 'react-modal';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
@@ -9,8 +11,10 @@ import Footer from '../footer/Footer';
 import './css/NetworkDetail.css';
 
 function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
+
   // 테이블컴포넌트
   const { name } = useParams(); // useParams로 URL에서 name을 가져옴
+
 
   const vnicData = [
     {
@@ -22,29 +26,35 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
       networkFilter: 'wdsm-no-mac-spoofing',
       portMirroring: '',
       passthrough: '아니요',
+      overProfile: '',
       description: ''
     },
   ];
+  
   //클러스터
+
   const clusterData = [
     {
-      name: 'Default',
-      compatVersion: '4.7',
-      connectedNetwork: <i className="fa fa-chevron-left"></i>,
-      networkStatus: <i className="fa fa-chevron-left"></i>,
-      requiredNetwork: <i className="fa fa-chevron-left"></i>,
-      networkRole: (
-        <>
-          <i className="fa fa-chevron-left"></i>
-          <i className="fa fa-chevron-left"></i>
-          <i className="fa fa-chevron-left"></i>
-          <i className="fa fa-chevron-left"></i>
-        </>
+      name: (
+        <span
+            style={{ color: 'blue', cursor: 'pointer'}}
+            onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
+            onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
+          >
+            Default
+          </span>
       ),
+      compatVersion: '4.7',
+      connectedNetwork: <input type="checkbox" />,
+      networkStatus: <i className="fa fa-chevron-left"></i>,
+      requiredNetwork: <input type="checkbox" />,
+      networkRole: '',
       description: 'The default server cluster',
     },
   ];
+
   // 클러스터 팝업
+
   const clusterPopupData = [
     {
       name: 'Default',
@@ -71,24 +81,28 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   ];
   
   // 호스트
+
+
   const hostData = [
     {
-      icon: <i className="fa fa-chevron-left"></i>,
-      name: 'host01.ititinfo.com',
-      cluster: 'Default',
-      dataCenter: 'Default',
-      networkDeviceStatus: <i className="fa fa-chevron-left"></i>,
+      icon: '',
+      name: '',
+      cluster: '',
+      dataCenter: '',
+      networkDeviceStatus: '',
       async: '',
-      networkDevice: 'ens192',
-      speed: '10000',
-      rx: '118',
-      tx: '1',
-      totalRx: '25,353,174,284,042',
-      totalTx: '77,967,054,294',
+      networkDevice: '',
+      speed: '',
+      rx: '',
+      tx: '',
+      totalRx: '',
+      totalTx: '',
     },
   ];
+
   
   //가상머신
+
   const vmData = [
     {
       icon: <i className="fa fa-chevron-left"></i>,
@@ -107,6 +121,8 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   ];
 
   //템플릿
+
+
   const templateData = [
     {
       name: 'test02',
@@ -116,6 +132,7 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
       vnic: 'nic1',
     },
   ];
+
 
   //권한
   const permissionData = [
@@ -129,17 +146,20 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
       inheritedFrom: '(시스템)',
     },
   ];
+
   // 
   const [activeTab, setActiveTab] = useState('general');
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
+
   //headerbutton 컴포넌트
   const buttons = [
     { id: 'edit_btn', label: '편집', onClick: () => console.log('Edit button clicked') },
     { id: 'delete_btn', label: '삭제', onClick: () => console.log('Delete button clicked') },
   ];
   const popupItems = ['Option 1', 'Option 2', 'Option 3'];
+
   
    // 모달 관련 상태 및 함수
    const [activePopup, setActivePopup] = useState(null);
@@ -183,44 +203,33 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
           <div className="table_container_center">
             <table className="table">
               <tbody>
+              <tr>
+                  <th>이름</th>
+                  <td>{name}</td>
+                </tr>
                 <tr>
                   <th>ID:</th>
-                  <td>{name}</td>
+                  <td>6772b35f-e688-439a-ac98-9d71d4ef421d</td>
                 </tr>
                 <tr>
                   <th>설명:</th>
                   <td></td>
                 </tr>
                 <tr>
-                  <th>상태:</th>
-                  <td>실행 중</td>
+                  <th>VDSM 이름:</th>
+                  <td>{name}</td>
                 </tr>
                 <tr>
-                  <th>업타임:</th>
-                  <td>11 days</td>
+                  <th>가상 머신 네트워크:</th>
+                  <td>true</td>
                 </tr>
                 <tr>
-                  <th>템플릿:</th>
-                  <td>Blank</td>
+                  <th>VLAN 태그:</th>
+                  <td>없음</td>
                 </tr>
                 <tr>
-                  <th>운영 시스템:</th>
-                  <td>Linux</td>
-                </tr>
-                <tr>
-                  <th>펌웨어/장치의 유형:</th>
-                  <td>
-                    BIOS의 Q35 칩셋{' '}
-                    <i className="fa fa-ban" style={{ marginLeft: '13%', color: 'orange' }}></i>
-                  </td>
-                </tr>
-                <tr>
-                  <th>우선 순위:</th>
-                  <td>높음</td>
-                </tr>
-                <tr>
-                  <th>최적화 옵션:</th>
-                  <td>서버</td>
+                  <th>MTU:</th>
+                  <td>기본값 (1500)</td>
                 </tr>
               </tbody>
             </table>
@@ -239,7 +248,9 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
               
 
                 <div className="section_table_outer">
+
                   <Table columns={TableColumnsInfo.VNIC_PROFILES} data={vnicData} onRowClick={() => console.log('Row clicked')} />
+
                 </div>
 
        </>
@@ -248,13 +259,14 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
 
         {activeTab === 'cluster' && (
         <>
-
             <div className="content_header_right">
                 <button onClick={() => openPopup('cluster_network_popup')}>네트워크 관리</button>
             </div>
           
             <div className="section_table_outer">
+
               <Table columns={TableColumnsInfo.CLUSTERS} data={clusterData} onRowClick={() => console.log('Row clicked')} />
+
             </div>
        </>
        
@@ -264,13 +276,19 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         <>
             <div className="content_header_right">
                     <button onClick={() => openPopup('host_network_popup')}>호스트 네트워크 설정</button>
-                </div>
-                <div className="application_content_header">
-                  <button>연결됨</button>
-                  <button>연결 해제</button>
-                </div>
-                
-            
+            </div>
+            <div className="host_filter_btns">
+              <button
+                 
+              >
+                  연결됨
+              </button>
+              <button
+                  
+              >
+                  연결 해제
+              </button>
+            </div>
             <div className="section_table_outer">
               <Table columns={TableColumnsInfo.HOSTS} data={hostData} onRowClick={() => console.log('Row clicked')} />
             </div>
@@ -283,11 +301,18 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
               <div className="content_header_right">
                   <button>제거</button>
               </div>
-              <div className="application_content_header">
-                  <button>실행중</button>
-                  <button>정지중</button>
-                </div>
-             
+              <div className="host_filter_btns">
+                <button
+              
+                >
+                    실행중
+                </button>
+                <button
+                
+                >
+                    정지중
+                </button>
+            </div>
             <div className="section_table_outer">
               <Table columns={TableColumnsInfo.VMS} data={vmData} onRowClick={() => console.log('Row clicked')} />
             </div>
@@ -310,6 +335,7 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         )}
 
         {activeTab === 'permission' && (
+
         <>
               <div className="content_header_right">
                 <button>추가</button>
@@ -327,9 +353,16 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
               
               <div className="section_table_outer">
                 <Table columns={TableColumnsInfo.PERMISSIONS} data={permissionData} onRowClick={() => console.log('Row clicked')} />
+
               </div>
             </div>
-        </>
+            <div className="section_table_outer">
+              <Table
+               
+                onRowClick={() => console.log('Row clicked')}
+              />
+            </div>
+          </>
         )}
 
         </div>

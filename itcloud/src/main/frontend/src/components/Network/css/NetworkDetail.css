@@ -297,3 +297,34 @@
     border: 1px solid #295b9c;
 
 }
+.host_filter_btns{
+    display: flex;
+    font-size: 0.34rem;
+    margin-bottom: 0.3rem;
+    height: 3.3vh;
+}
+.host_filter_btns>span{
+    margin-right: 0.2rem;
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.host_filter_btns>div{
+
+    display: flex;
+    justify-content: space-between;
+}
+.host_filter_btns button {
+    padding: 0 0.13rem;
+    cursor: pointer;
+    border: 1px solid #14417c;
+    border-radius: 3px;
+    color: rgb(10, 55, 107);
+    font-weight: 600;
+}
+.host_filter_btns button:hover{
+    background-color: #eceaea;
+}
+.host_filter_btns button.active {
+    background-color: #dbdbdb;
+  }

@@ -46,7 +46,7 @@
     box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.13);
 }
 #dash_boxs>.box{
-    width: 16%;
+    width: 17%;
     cursor: pointer;
 }
 .box:hover{
@@ -54,12 +54,12 @@
     border-radius: 3px ;
 }
 .box:nth-child(n+1){
-    margin: 0 6px;
+
     padding: 7px 0 0 7px;
     border-right: 2px solid #5e95a745;
 }
 .box:nth-child(n+4){
-    margin: 0 6px;
+
     padding: 7px 0 0 7px;
 
     border-right: 2px solid #5e95a745;

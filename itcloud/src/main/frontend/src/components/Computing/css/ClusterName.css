@@ -86,17 +86,7 @@
 .section_content_outer{
     width: 89%;
 }
-.table_container_left{
-    width: 33%;
-    border-right: 1px solid #d1d1d1;
-    padding-right: 0.14rem;
-}
-.table_container_left>h2{
-    font-size: 0.4rem;
-    color: #0066CC;
-   border-bottom: 1px solid #d1d1d1;
-   padding: 0.1rem 0 ;
-}
+
 .table {
     border-collapse: collapse;
     width: 100%;
@@ -111,6 +101,11 @@
 .table th {
     text-align: left;
     font-weight: bold;
+    width: 38%;
+}
+.cluster_general{
+    display: flex;
+    padding: 0.2rem;
 }
 .empty{
     color: white;

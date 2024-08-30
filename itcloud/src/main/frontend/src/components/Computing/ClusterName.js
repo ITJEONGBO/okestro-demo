@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
+
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
+
 import './css/ClusterName.css';
 import NetworkDetail from '../Network/NetworkDetail';
 
@@ -11,6 +13,10 @@ function ClusterName() {
     const { name } = useParams();
     const navigate = useNavigate();
     const [showNetworkDetail, setShowNetworkDetail] = useState(false);
+    const handlePermissionFilterClick = (filter) => {
+        setActivePermissionFilter(filter);
+      };
+      const [activePermissionFilter, setActivePermissionFilter] = useState('all');
 
     const handleRowClick = (row, column) => {
         console.log('Clicked column:', column);
@@ -21,69 +27,102 @@ function ClusterName() {
         }
     };
 
+
     // 논리 네트워크 테이블 컴포넌트
+
     const data = [
         {
-            icon: <i className="fa fa-user"></i>,
-            user: 'ovirtmgmt',
-            authProvider: '',
-            namespace: '*',
-            role: 'SuperUser',
-            createdDate: '2023.12.29 AM 11:40:58',
-            inheritedFrom: '(시스템)',
+            name: (
+                <span>
+                    <i className="fa fa-caret-up" style={{ color: '#00FF00' }}></i> ovirtmgmt
+                </span>
+            ),
+            status: '가동 중',
+            role: (
+                <span>
+                    <i className="fa fa-crown"></i>
+                    <i className="fa fa-link" style={{ marginLeft: '5px' }}></i>
+                    <i className="fa fa-exclamation-triangle" style={{ color: 'red', marginLeft: '5px' }}></i>
+                </span>
+            ),
+            description: 'Management Network',
         },
     ];
+    
+
 
     // 호스트 테이블 컴포넌트
+
     const hostData = [
         {
-            icon: <i className="fa fa-exclamation-triangle" style={{ color: 'red' }}></i>,  // 예시 이모티콘
+            icon: '',  // 예시 이모티콘
             name: 'host01.ititinfo.com',
             hostNameIP: 'host01.ititinfo.com',
             status: 'Up',
             loading: '1 대의 가상머신',
             displayAddress: '아니요',
-        },
+        }
     ];
 
-    // 호스트장치 테이블 컴포넌트
-    const volumeColumns = [
-        { header: '별칭', accessor: 'alias', clickable: false },
-        { header: <i className="fa fa-chevron-left"></i>, accessor: 'icon1', clickable: false },
-        { header: <i className="fa fa-chevron-left"></i>, accessor: 'icon2', clickable: false },
-        { header: '가상 크기', accessor: 'virtualSize', clickable: false },
-        { header: '실제 크기', accessor: 'actualSize', clickable: false },
-        { header: '할당 정책', accessor: 'allocationPolicy', clickable: false },
-        { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
-        { header: '생성 일자', accessor: 'creationDate', clickable: false },
-        { header: '최근 업데이트', accessor: 'lastUpdate', clickable: false },
-        { header: '', accessor: 'icon3', clickable: false },
-        { header: '연결 대상', accessor: 'connectionTarget', clickable: false },
+    // 가상머신
+    const vmColumns = [
+        { header: '이름', accessor: 'name', clickable: false },
         { header: '상태', accessor: 'status', clickable: false },
-        { header: '유형', accessor: 'type', clickable: false },
-        { header: '설명', accessor: 'description', clickable: false },
+        { header: '업타임', accessor: 'uptime', clickable: false },
+        { header: 'CPU', accessor: 'cpu', clickable: false },
+        { header: '메모리', accessor: 'memory', clickable: false },
+        { header: '네트워크', accessor: 'network', clickable: false },
+        { header: 'IP 주소', accessor: 'ipAddress', clickable: false },
+    ];
+    const vmData = [
+        {
+            name: 'vm01',
+            status: '실행 중',
+            uptime: '12 days',
+            cpu: '2 vCPU',
+            memory: '4 GiB',
+            network: 'virtio',
+            ipAddress: '192.168.0.101',
+        }
     ];
 
-    const volumeData = [
+    // 선호도 그룹
+    const affinityColumns = [
+        { header: '상태', accessor: 'status', clickable: false },
+        { header: '이름', accessor: 'name', clickable: false },
+        { header: '설명', accessor: 'description', clickable: false },
+        { header: '우선 순위', accessor: 'priority', clickable: false },
+        { header: '가상 머신 측 극성', accessor: 'vmConfig', clickable: false },
+        { header: '가상 머신 강제 적용', accessor: 'vmEnforce', clickable: false },
+        { header: '호스트 측 극성', accessor: 'hostConfig', clickable: false },
+        { header: '호스트 강제 적용', accessor: 'hostEnforce', clickable: false },
+        { header: '가상머신 멤버', accessor: 'vmMember', clickable: false },
+        { header: '가상 머신 레이블', accessor: 'vmLabel', clickable: false },
+        { header: '호스트 멤버', accessor: 'hostMember', clickable: false },
+        { header: '호스트 레이블', accessor: 'hostLabel', clickable: false },
+    ];
+    const affinityData = [
         {
-            alias: 'aa',
-            icon1: '',
-            icon2: '',
-            virtualSize: '<1 GiB',
-            actualSize: '<1 GiB',
-            allocationPolicy: '씬 프로비저닝',
-            storageDomain: 'hosted_storage',
-            creationDate: '2024. 4. 26. PM 3:19:39',
-            lastUpdate: '2024. 4. 26. PM 3:19:45',
-            icon3: <i className="fa fa-chevron-left"></i>,
-            connectionTarget: '',
-            status: '잠김',
-            type: '이미지',
-            description: 'testa',
+            status: '',
+            name: '',
+            description: '',
+            priority: '',
+            vmConfig: '',
+            vmEnforce: '',
+            hostConfig: '',
+            hostEnforce: '',
+            vmMember: '',
+            hostMember: '',
+            vmLabel: '',
+            hostLabel: '',
+            colSpan: 12,
+            style: { textAlign: 'center' },
+            noItemsText: '표시할 항목이 없습니다',
         },
     ];
 
     // 권한 테이블 컴포넌트
+
     const permissionData = [
         {
             icon: <i className="fa fa-user"></i>,
@@ -95,6 +134,7 @@ function ClusterName() {
             inheritedFrom: '(시스템)',
         },
     ];
+
 
     // 선호도 레이블 테이블 컴포넌트
     const memberData = [
@@ -109,6 +149,7 @@ function ClusterName() {
     ];
 
     // 이벤트 테이블 컴포넌트
+
     const storageData = [
         {
             icon: <i className="fa fa-check-circle" style={{ color: 'green' }}></i>,  // 상태 아이콘
@@ -130,10 +171,14 @@ function ClusterName() {
     // HeaderButton 컴포넌트
     const buttons = [
         { id: 'edit_btn', label: '편집', onClick: () => console.log('Edit button clicked') },
-        { id: 'delete_btn', label: '삭제', onClick: () => console.log('Delete button clicked') },
+        { id: 'delete_btn', label: '업그레이드', onClick: () => console.log('Delete button clicked') },
     ];
 
-    const popupItems = []; // 현재 팝업 아이템이 없으므로 빈 배열로 설정
+    const popupItems = [
+        '삭제',
+        '가이드',
+        '에뮬레이션된 시스템 재설정',
+    ]; 
     const uploadOptions = []; // 현재 업로드 옵션이 없으므로 빈 배열로 설정
 
     // nav 컴포넌트
@@ -172,7 +217,7 @@ function ClusterName() {
                         <div className="host_btn_outer">
                             {/* 일반 */}
                             {activeTab === 'general' && (
-                                <div className="tables">
+                                <div className="cluster_general">
                                     <div className="table_container_center">
                                         <table className="table">
                                             <tbody>
@@ -185,35 +230,69 @@ function ClusterName() {
                                                     <td></td>
                                                 </tr>
                                                 <tr>
-                                                    <th>상태:</th>
-                                                    <td>실행 중</td>
+                                                    <th>데이터센터:</th>
+                                                    <td>Default</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>업타임:</th>
-                                                    <td>11 days</td>
+                                                    <th>호환버전:</th>
+                                                    <td>4.7</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>템플릿:</th>
-                                                    <td>Blank</td>
+                                                    <th>클러스터 노드 유형:</th>
+                                                    <td>Virt</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>운영 시스템:</th>
-                                                    <td>Linux</td>
+                                                    <th>클러스터 ID:</th>
+                                                    <td>f0adf4f6-274b-4533-b6b3-6a683b062c9a</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>펌웨어/장치의 유형:</th>
+                                                    <th>클러스터 CPU 유형:</th>
                                                     <td>
-                                                        BIOS의 Q35 칩셋{' '}
+                                                         Intel Nehalem Family
                                                         <i className="fa fa-ban" style={{ marginLeft: '13%', color: 'orange' }}></i>
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <th>우선 순위:</th>
-                                                    <td>높음</td>
+                                                    <th>스레드를 CPU 로 사용:</th>
+                                                    <td>아니요</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>최적화 옵션:</th>
-                                                    <td>서버</td>
+                                                    <th>최대 메모리 오버 커밋:</th>
+                                                    <td>100%</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>복구 정책:</th>
+                                                    <td>예</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>칩셋/펌웨어 유형:</th>
+                                                    <td>UEFI의 Q35 칩셋</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div className="table_container_center">
+                                        <table className="table">
+                                            <tbody>
+                                                <tr>
+                                                    <th>에뮬레이션된 시스템:</th>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>가상 머신 수:</th>
+                                                    <td>0</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>총 볼륨 수:</th>
+                                                    <td>해당 없음</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Up 상태의 볼륨 수:</th>
+                                                    <td>해당 없음</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Down 상태의 볼륨 수:</th>
+                                                    <td>해당 없음</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -223,6 +302,7 @@ function ClusterName() {
                             {/* 논리 네트워크 */}
                             {activeTab === 'logical_network' && (
                                 <>
+
                                     <div className="content_header_right">
                                         <button>추가</button>
                                         <button>제거</button>
@@ -238,6 +318,7 @@ function ClusterName() {
                                         <Table columns={TableColumnsInfo.LUNS} data={data} onRowClick={handleRowClick} />
                                     </div>
                                 </>
+
                             )}
                             {/* 호스트 */}
                             {activeTab === 'host' && (
@@ -253,38 +334,28 @@ function ClusterName() {
                             )}
                             {/* 가상 머신 */}
                             {activeTab === 'virtual_machine' && (
-                                <>
-                                    <div className="content_header_right">
-                                        <button>편집</button>
-                                        <button>유지보수</button>
-                                        <button>활성</button>
-                                        <button>기능을 새로 고침</button>
-                                        <button>재시작</button>
-                                    </div>
-    
+                                <div className="host_empty_outer">
                                     <div className="section_table_outer">
-                                        <Table columns={TableColumnsInfo.VOLUMES_FROM_CLUSTER} data={volumeData} onRowClick={() => console.log('Row clicked')} />
+
+                                        <Table columns={TableColumnsInfo.VOLUMES_FROM_CLUSTER}  onRowClick={() => console.log('Row clicked')} />
+
                                     </div>
-                                </>
+                                </div>
                             )}
     
                             {/* 선호도 그룹 */}
                             {activeTab === 'affinity_group' && (
                                 <>
                                     <div className="content_header_right">
-                                        <button>추가</button>
+                                        <button>새로 만들기</button>
+                                        <button>편집</button>
                                         <button>제거</button>
-                                    </div>
-                                    <div className="host_filter_btns">
-                                        <span>Permission Filters:</span>
-                                        <div>
-                                            <button>All</button>
-                                            <button>Direct</button>
-                                        </div>
                                     </div>
     
                                     <div className="section_table_outer">
+
                                         <Table columns={TableColumnsInfo.PERMISSIONS} data={permissionData} onRowClick={() => console.log('Row clicked')} />
+
                                     </div>
                                 </>
                             )}
@@ -295,6 +366,7 @@ function ClusterName() {
                                     <div className="content_header_right">
                                         <button>새로 만들기</button>
                                         <button>편집</button>
+                                        <button>제거</button>
                                     </div>
     
                                     <div className="section_table_outer">
@@ -303,15 +375,41 @@ function ClusterName() {
                                 </>
                             )}
     
-                            {/* 권한 */}
-                            {activeTab === 'permission' && (
-                                <div className="host_empty_outer">
-                                    <div className="section_table_outer">
-                                        <Table columns={TableColumnsInfo.PERMISSIONS} data={storageData} onRowClick={() => console.log('Row clicked')} />
-                                    </div>
-                                </div>
-                            )}
-    
+
+{/* 권한 */}
+{activeTab === 'permission' && (
+    <div className="host_empty_outer">
+        <div className="section_table_outer">
+            <Table columns={TableColumnsInfo.PERMISSIONS} data={storageData} onRowClick={() => console.log('Row clicked')} />
+        </div>
+        <div className="host_filter_btns">
+            <span>Permission Filters:</span>
+            <div>
+                <button
+                    className={activePermissionFilter === 'all' ? 'active' : ''}
+                    onClick={() => handlePermissionFilterClick('all')}
+                >
+                    All
+                </button>
+                <button
+                    className={activePermissionFilter === 'direct' ? 'active' : ''}
+                    onClick={() => handlePermissionFilterClick('direct')}
+                >
+                    Direct
+                </button>
+            </div>
+        </div>
+        <div className="section_table_outer">
+            <Table
+              
+                data={activePermissionFilter === 'all' ? permissionData : []}
+                onRowClick={() => console.log('Row clicked')}
+            />
+        </div>
+    </div>
+)}
+
+
                             {/* 이벤트 */}
                             {activeTab === 'event' && (
                                 <div className="host_empty_outer">

@@ -10,6 +10,11 @@ import Footer from '../components/footer/Footer';
 function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const { name } = useParams(); // URL에서 name 파라미터를 가져옵니다.
 
+  const handlePermissionFilterClick = (filter) => {
+    setActivePermissionFilter(filter);
+  };
+  const [activePermissionFilter, setActivePermissionFilter] = useState('all');
+
   // 테이블 컴포넌트
   // 가상머신
   const vmData = [];
@@ -30,6 +35,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
     // 추가 데이터
   ];
 
+
   // 권한
   const permissionData = [
     {
@@ -42,6 +48,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
       inheritedFrom: '(시스템)',
     },
   ];
+
 
   const [activeTab, setActiveTab] = useState('general');
 
@@ -180,6 +187,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
             </div>
           )}
 
+
           {activeTab === 'permission' && (
             <>
               <div className="content_header_right">
@@ -199,6 +207,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
               </div>
             </>
           )}
+
         </div>
       </div>
       <Footer/>

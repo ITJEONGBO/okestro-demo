@@ -91,8 +91,18 @@ const VmHostChart = () => {
         <div className="empty_nav_outer">
           <div className="section_table_outer">
             <div className='host_filter_btns'>
-              <button onClick={() => setActiveChart('machine')}>가상머신 목록</button>
-              <button onClick={() => setActiveChart('template')}>템플릿목록</button>
+              <button
+                onClick={() => setActiveChart('machine')}
+                className={activeChart === 'machine' ? 'active' : ''}
+              >
+                가상머신 목록
+              </button>
+              <button
+                onClick={() => setActiveChart('template')}
+                className={activeChart === 'template' ? 'active' : ''}
+              >
+                템플릿목록
+              </button>
             </div>
             {activeChart === 'machine' && (
               <Table columns={columns} data={data} onRowClick={handleRowClick} className='machine_chart' />

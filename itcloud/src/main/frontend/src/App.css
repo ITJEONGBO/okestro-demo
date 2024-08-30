@@ -79,6 +79,7 @@
 .user_btn,.fa-bell-wrapper{
     position: relative;
 }
+
 .user_loginbox{
     position: absolute;
     background-color: #ffffff;
@@ -275,16 +276,16 @@
     box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.13);
 }
 #dash_boxs>.box{
-    width: 16%;
+    width: 17%;
     cursor: pointer;
 }
 .box:nth-child(n+1){
-    margin: 0 6px;
+
     padding: 7px 0 0 7px;
     border-right: 2px solid #5e95a745;
 }
 .box:nth-child(n+4){
-    margin: 0 6px;
+
     padding: 7px 0 0 7px;
 
     border-right: 2px solid #5e95a745;
@@ -1447,7 +1448,7 @@
     display: flex;
     justify-content: space-between;
     width: 100%;
-    padding: 1rem 0.3rem;
+    padding: 0.1rem 0.3rem;
 }
 .table_container_center,.table_container_right{
    /* margin: 20px;*/
@@ -1467,6 +1468,7 @@
 .table th {
     text-align: left;
     font-weight: bold;
+    width: 38%;
 }
 .empty{
     color: white;
@@ -4337,7 +4339,8 @@ box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 .table_container_left{
     width: 33%;
     border-right: 1px solid #d1d1d1;
-    padding-right: 0.14rem;
+    /* padding-right: 0.14rem; */
+    padding: 0.4rem 0.2rem;
 }
 .table_container_left>h2{
     font-size: 0.4rem;
@@ -4379,8 +4382,11 @@ box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
     font-weight: 600;
 }
 .host_filter_btns button:hover{
-    background-color: #dbdbdb;
+    background-color: #eceaea;
 }
+.host_filter_btns button.active {
+    background-color: #dbdbdb;
+  }
 .host_network_boxs{
     border: 1px solid black;
     background-color: rgb(229 255 251);
@@ -4527,4 +4533,13 @@ box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+
+  
+.cluster_general{
+    display: flex;
+    padding: 0.2rem;
+}
+.table_storage_domain_detail{
+    width: 58%;
 }
