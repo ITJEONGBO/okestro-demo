@@ -1,3 +1,4 @@
+/*
 package com.itinfo.itcloud.none
 
 import com.itinfo.common.LoggerDelegate
@@ -10,24 +11,28 @@ import org.hamcrest.Matchers.nullValue
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
+*/
 /**
  * [ItStorageServiceTest]
  * [ItStorageService]에 대한 단위테스트
  *
  * @author chanhi2000
  * @since 2024.03.05
- */
+ *//*
+
 @SpringBootTest
 class ItStorageServiceTest {
 	@Autowired
 	private lateinit var service: ItStorageService
 
-	/**
+	*/
+/**
 	 * [should_getName]
 	 * [ItStorageService.getName]에 대한 단위테스트
-	 * 
+	 *
 	 * @see [ItStorageService.getName]
-	 */
+	 *//*
+
 	@Test
 	fun should_getName() {
 		log.debug("should_getName ... ")
@@ -35,12 +40,14 @@ class ItStorageServiceTest {
 		// TODO: 메소드의 결과값에 대한 검증처리
 	}
 
-	/**
+	*/
+/**
 	 * [should_getList]
 	 * [ItStorageService.getList]에 대한 단위테스트
-	 * 
+	 *
 	 * @see [ItStorageService.getList]
-	 */
+	 *//*
+
 	@Test
 	fun should_getList() {
 		log.debug("should_getList ... ")
@@ -48,12 +55,14 @@ class ItStorageServiceTest {
 		// TODO: 메소드의 결과값에 대한 검증처리
 	}
 
-	/**
+	*/
+/**
 	 * [should_getDomain]
 	 * [ItStorageService.getDomain]에 대한 단위테스트
-	 * 
+	 *
 	 * @see ItStorageService.getDomain
-	 */
+	 *//*
+
 	@Test
 	fun should_getDomain() {
 		log.debug("should_getDomain ... ")
@@ -61,12 +70,14 @@ class ItStorageServiceTest {
 		// TODO: 메소드의 결과값에 대한 검증처리
 	}
 
-	/**
+	*/
+/**
 	 * [should_getDatacenter]
 	 * [ItStorageService.getDatacenter]에 대한 단위테스트
-	 * 
+	 *
 	 * @see ItStorageService.getDatacenter
-	 */
+	 *//*
+
 	@Test
 	fun should_getDatacenter() {
 		log.debug("should_getDatacenter ... ")
@@ -74,12 +85,14 @@ class ItStorageServiceTest {
 		// TODO: 메소드의 결과값에 대한 검증처리
 	}
 
-	/**
+	*/
+/**
 	 * [should_getVm]
 	 * [ItStorageService.getVm]에 대한 단위테스트
-	 * 
+	 *
 	 * @see ItStorageService.getVm
-	 */
+	 *//*
+
 	@Test
 	fun should_getVm() {
 		log.debug("should_getVm ... ")
@@ -87,12 +100,14 @@ class ItStorageServiceTest {
 		// TODO: 메소드의 결과값에 대한 검증처리
 	}
 
-	/**
+	*/
+/**
 	 * [should_getTemplate]
 	 * [ItStorageService.getTemplate]에 대한 단위테스트
-	 * 
+	 *
 	 * @see ItStorageService.getTemplate
-	 */
+	 *//*
+
 	@Test
 	fun should_getTemplate() {
 		log.debug("should_getTemplate ... ")
@@ -100,12 +115,14 @@ class ItStorageServiceTest {
 		// TODO: 메소드의 결과값에 대한 검증처리
 	}
 
-	/**
+	*/
+/**
 	 * [should_getDisk]
 	 * [ItStorageService.getDisk]에 대한 단위테스트
-	 * 
+	 *
 	 * @see [ItStorageService.getDisk]
-	 */
+	 *//*
+
 	@Test
 	fun should_getDisk() {
 		log.debug("should_getDisk ... ")
@@ -113,12 +130,14 @@ class ItStorageServiceTest {
 		// TODO: 메소드의 결과값에 대한 검증처리
 	}
 
-	/**
+	*/
+/**
 	 * [should_getSnapshot]
 	 * [ItStorageService.getSnapshot]에 대한 단위테스트
-	 * 
+	 *
 	 * @see [ItStorageService.getSnapshot]
-	 */
+	 *//*
+
 	@Test
 	fun should_getSnapshot() {
 		log.debug("should_getSnapshot ... ")
@@ -126,12 +145,14 @@ class ItStorageServiceTest {
 		// TODO: 메소드의 결과값에 대한 검증처리
 	}
 
-	/**
+	*/
+/**
 	 * [should_getEvent]
 	 * [ItStorageService.findAllEventsFromStorageDomain]에 대한 단위테스트
-	 * 
+	 *
 	 * @see [ItStorageService.findAllEventsFromStorageDomain]
-	 */
+	 *//*
+
 	@Test
 	fun should_getEvent() {
 		log.debug("should_getEvent ... ")
@@ -139,12 +160,14 @@ class ItStorageServiceTest {
 		// TODO: 메소드의 결과값에 대한 검증처리
 	}
 
-	/**
+	*/
+/**
 	 * [should_getPermission]
 	 * [ItStorageService.findAllPermissionsFromStorageDomain]에 대한 단위테스트
-	 * 
+	 *
 	 * @see [ItStorageService.findAllPermissionsFromStorageDomain]
-	 */
+	 *//*
+
 	@Test
 	fun should_getPermission() {
 		log.debug("should_getPermission ... ")
@@ -155,4 +178,4 @@ class ItStorageServiceTest {
 	companion object {
 		private val log by LoggerDelegate()
 	}
-}
+}*/

@@ -502,7 +502,7 @@ class VmController: BaseController() {
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		if (nic == null)
 			throw ErrorPattern.NIC_VO_INVALID.toException()
-		return ResponseEntity(vmNic.addNicFromVm(vmId, nic), HttpStatus.OK)
+		return ResponseEntity(vmNic.addFromVm(vmId, nic), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -550,7 +550,7 @@ class VmController: BaseController() {
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		if (nicId.isNullOrEmpty())
 			throw ErrorPattern.NIC_ID_NOT_FOUND.toException()
-		return ResponseEntity(vmNic.removeNicFromVm(vmId, nicId), HttpStatus.OK)
+		return ResponseEntity(vmNic.removeFromVm(vmId, nicId), HttpStatus.OK)
 	}
 
 	companion object {

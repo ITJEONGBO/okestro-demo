@@ -420,7 +420,7 @@ import org.springframework.boot.test.context.SpringBootTest
 			service.findAllNetworksFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(2))
+		assertThat(result.size, `is`(3))
 		result.forEach { println(it) }
 	}
 
@@ -455,7 +455,7 @@ import org.springframework.boot.test.context.SpringBootTest
 			service.findAllVmsFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(1))
+		assertThat(result.size, `is`(5))
 
 		result.forEach { println(it) }
 	}

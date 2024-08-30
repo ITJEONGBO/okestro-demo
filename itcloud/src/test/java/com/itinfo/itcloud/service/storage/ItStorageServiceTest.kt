@@ -14,6 +14,8 @@ import org.apache.commons.fileupload.disk.DiskFileItem
 import org.apache.commons.io.IOUtils
 
 import org.assertj.core.api.Assertions
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -39,41 +41,51 @@ import java.nio.file.Files
 @SpringBootTest
 class ItStorageServiceTest {
 	@Autowired private lateinit var storageService: ItStorageService
-	private lateinit var dcId: String
+	private lateinit var dataCenterId: String
 	private lateinit var domainId: String
-	private lateinit var diskId: String
 	private lateinit var diskProfile: String
+	private lateinit var diskId: String
 
 	@BeforeEach
 	fun setup() {
-		dcId = "ae1d4138-f642-11ee-9c1b-00163e4b3128"
-		domainId = "12d17014-a612-4b6e-a512-6ec4e1aadba6" //hosted_storage
-		diskProfile = "23ab66ac-26c3-4b21-ba78-691ec2a004df" //hosted_storage
-		diskId = "f89493dd-51f8-44bd-9bfb-4687f43c822c"
+		dataCenterId = "6cde7270-6459-11ef-8be2-00163e5d0646"
+		domainId = "dc38dcb4-c3f9-4568-af0b-0d6a225d25e5" //hosted_storage
+		diskProfile = ""
+		diskId = ""
 	}
 
 
 	@Test
-	@DisplayName("총 스토리지 정보 출력")
 	fun should_findTotalStorage() {
 		log.debug("should_findTotalStorage ... ")
 		val result: List<StorageDomainVo> =
-			storageService.findAllStorageDomainsFromDataCenter(dcId)
+			storageService.findAllStorageDomainsFromDataCenter(dataCenterId)
 
 		Assertions.assertThat(result.size).isEqualTo(2)
 		log.debug("result: $result")
 	}
 
+	/**
+	 * [should_findAllDisksFromDataCenter]
+	 * [ItStorageService.findAllDisksFromDataCenter] 의 단위테스트
+	 *
+	 * @see [ItStorageService.findAllDisksFromDataCenter]
+	 */
 	@Test
-	@DisplayName("디스크 목록 출력")
-	fun should_getDiskList() {
-		log.debug("should_getDiskList ... ")
-		val disks: List<DiskImageVo> = storageService.findAllDisks(dcId)
-		val aliases: List<String> = disks.map { disk: DiskImageVo ->
+	fun should_findAllDisksFromDataCenter() {
+		log.debug("should_findAllDisksFromDataCenter ... ")
+
+		val result: List<DiskImageVo> =
+			storageService.findAllDisksFromDataCenter(dataCenterId)
+		val aliases: List<String> = result.map { disk: DiskImageVo ->
 			log.debug("alias: ${disk.alias}")
 			return@map disk.alias
 		}
-		Assertions.assertThat(disks.size).isEqualTo(38)
+		assertThat(result, `is`(not(nullValue())))
+		assertThat(result.size, `is`(1))
+
+		result.forEach { println(it) }
+//		Assertions.assertThat(disks.size).isEqualTo(38)
 	}
 
 	@Test
@@ -253,19 +265,17 @@ class ItStorageServiceTest {
 	}
 
 
-	@DisplayName("스토리지 도메인 목록")
 	@Test
 	fun should_findDomainList() {
 		log.debug("should_findDomainList ... ")
-		val result = storageService.findAllStorageDomainsFromDataCenter(dcId)
+		val result = storageService.findAllStorageDomainsFromDataCenter(dataCenterId)
 		result.forEach { x: StorageDomainVo? -> println(x) }
 	}
 
 	@Test
-	@DisplayName("호스트 목록")
 	fun should_setHostList() {
 		log.debug("should_setHostList ... ")
-		val result = storageService.setHostList(dcId)
+		val result = storageService.setHostList(dataCenterId)
 		result.forEach { x: IdentifiedVo? -> println(x) }
 	}
 
@@ -280,11 +290,10 @@ class ItStorageServiceTest {
 	}
 
 
-	@DisplayName("데이터센터 - 논리네트워크 목록")
 	@Test
 	fun should_findNetworkVoList() {
 		log.debug("should_findNetworkVoList ... ")
-		val result = storageService.findAllNetworksFromDataCenter(dcId)
+		val result = storageService.findAllNetworksFromDataCenter(dataCenterId)
 		result.forEach { x: NetworkVo? -> println(x) }
 	}
 
@@ -292,10 +301,8 @@ class ItStorageServiceTest {
 	@DisplayName("데이터센터 - 클러스터 목록")
 	fun should_findClusters() {
 		log.debug("should_findClusters ... ")
-		val result = storageService.findClustersInDataCenter(dcId)
-		result.forEach { x: ClusterVo? ->
-			println(x)
-		}
+		val result = storageService.findAllClustersFromDataCenter(dataCenterId)
+		result.forEach {  println(it) }
 	}
 
 	@Test

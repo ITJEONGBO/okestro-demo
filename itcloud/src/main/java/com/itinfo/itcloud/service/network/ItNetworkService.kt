@@ -5,6 +5,7 @@ import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.error.ItemNotFoundException
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.computing.*
+import com.itinfo.itcloud.model.fromNetworksToIdentifiedVos
 import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
@@ -44,6 +45,15 @@ interface ItNetworkService {
 	@Deprecated("[ItDataCenterService.findAll] 과 내용 비슷함")
 	@Throws(Error::class)
 	fun findAllDatCentersFromNetwork(): List<DataCenterVo>
+	/**
+	 * [ItNetworkService.findAllClustersFromDataCenter]
+	 * 네트워크 생성- 클러스터 목록 (연결, 필수)
+	 *
+	 * @param dataCenterId [String]
+	 * @return List<[ClusterVo]>
+	 */
+	@Deprecated("[ItStorageService.findAllClustersFromDataCenter] 와 내용 같음")
+	fun findAllClustersFromDataCenter(dataCenterId: String): List<ClusterVo>
 	/**
 	 * [ItNetworkService.add]
 	 * 네트워크 생성
@@ -183,13 +193,19 @@ class NetworkServiceImpl(
 		return dataCenters.toDataCenterIdNames()
 	}
 
+	@Deprecated("[ItStorageService.findAllClustersFromDataCenter] 와 내용 같음")
+	@Throws(Error::class)
+	override fun findAllClustersFromDataCenter(dataCenterId: String): List<ClusterVo> {
+		TODO("Not yet implemented")
+	}
+
 	// 새 논리 네트워크 추가
 	// 필요 name, datacenter_id
 	@Throws(Error::class)
 	override fun add(networkVo: NetworkVo): NetworkVo? {
 		log.info("addNetwork ... ")
 		val res: Network =
-			conn.addNetwork(networkVo.toNetworkBuilder(conn).build())
+			conn.addNetwork(networkVo.toAddNetworkBuilder(conn))
 				.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
 		return res.toNetworkVo(conn)
 		// 클러스터 연결, 필수 선택
@@ -244,46 +260,6 @@ class NetworkServiceImpl(
 			conn.updateNetwork(networkVo.toEditNetworkBuilder(conn))
 				.getOrNull()?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
 		return res.toNetworkVo(conn)
-		/*val dataCenter: DataCenter =
-			conn.findDataCenter(networkVo.dataCenterVo.id)
-				.getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toError()
-		val network: Network =
-			conn.findNetwork(networkVo.id)
-				.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
-		val res: Result<Network?> =
-			conn.updateNetwork(networkVo.id, network)
-
-		val networkService = system.networksService().networkService(networkVo.id)
-		try {
-			val networkBuilder = NetworkBuilder()
-				.id(networkVo.id)
-				.name(networkVo.name)
-				.description(networkVo.description)
-				.comment(networkVo.comment)
-				.usages(if (networkVo.usageVo.vm) NetworkUsage.VM else NetworkUsage.DEFAULT_ROUTE)
-				// .dnsResolverConfiguration()   // TODO:HELP DNS 구현안됨
-				.mtu(networkVo.mtu)
-				.stp(networkVo.stp)
-//				.vlan(VlanBuilder().id(ncVo.vlan))
-				// .externalProvider(ncVo.getExternalProvider() ? system.openstackNetworkProvidersService().list().send().providers().get(0) : null)  // 수정불가
-				.dataCenter(dataCenter)
-
-			// 외부 공급자 처리시 레이블 생성 안됨
-//			if (ncVo.label.isNotEmpty()) {
-//				val nlsService = system.networksService().networkService(ncVo.id).networkLabelsService()
-//				if (nlsService.list().send().labels()[0].idPresent()) {
-//					nlsService.labelService(nlsService.list().send().labels()[0].id()).remove().send()
-//				}
-//				nlsService.add().label(NetworkLabelBuilder().id(ncVo.label)).send() // 그리고 다시 생성
-//			}
-
-			networkService.update().network(networkBuilder.build()).send()
-			log.info("네트워크 편집 완료")
-			return true
-		} catch (e: Exception) {
-			log.error("네트워크 편집에러 ... 이유: {}", e.localizedMessage)
-			return false
-		}*/
 	}
 
 	@Throws(Error::class)
@@ -328,22 +304,23 @@ class NetworkServiceImpl(
 			conn.findAllOpenStackNetworkProviders("networks")
 				.getOrDefault(listOf())
 				.firstOrNull()
-		val networks: List<Network> =
-			conn.findAllNetworks()
-				.getOrDefault(listOf())
-				.filter { it.externalProviderPresent() }
-		networks.map { it.name() }.forEach { log.debug("nw's name {}", it) }
 		return osProvider?.toOpenStackNetworkVoIdName()
 	}
 
 	@Throws(Error::class)
 	override fun findAllExternalNetworkFromNetworkProvider(providerId: String): List<NetworkVo> {
-		TODO("Not yet implemented")
+		log.info("findAllExternalNetworkFromNetworkProvider ... ")
+		val res: List<Network> =
+			conn.findAllNetworks()
+				.getOrDefault(listOf())
+				.filter { it.externalProviderPresent() }
+		return res.toNetworkVos(conn)
 	}
 
 	@Throws(Error::class)
 	override fun importNetwork(): Boolean {
 		log.info("importNetwork ... ")
+		//TODO
 		// 그냥 있는거 가져오기
 		val osProvider: OpenStackProvider? =
 			conn.findAllOpenStackNetworkProviders("network")
@@ -355,9 +332,7 @@ class NetworkServiceImpl(
 	@Throws(Error::class)
 	override fun findAllVnicProfilesFromNetwork(networkId: String): List<VnicProfileVo> {
 		log.info("findAllVnicProfilesFromNetwork ... networkId: {}", networkId)
-		log.info("findAllVnicProfilesFromNetwork ... ")
 		conn.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
-
 		val res: List<VnicProfile> =
 			conn.findAllVnicProfilesFromNetwork(networkId)
 				.getOrDefault(listOf())
@@ -368,7 +343,8 @@ class NetworkServiceImpl(
 	override fun findAllClustersFromNetwork(networkId: String): List<ClusterVo> {
 		log.info("findAllClustersFromNetwork ... networkId: {}", networkId)
 		conn.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
-		val clusters: List<Cluster> =
+		// TODO
+		val res: List<Cluster> =
 			conn.findAllClusters(follow = "networks")
 				.getOrDefault(listOf())
 				.filter {
@@ -376,18 +352,19 @@ class NetworkServiceImpl(
 						.getOrDefault(listOf())
 						.any { n -> n.id() == networkId }
 				}
-		return clusters.toClusterVos(conn)
+		return res.toClusterVos(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findAllHostsFromNetwork(networkId: String): List<HostVo> {
-		log.info("getHost ... ")
+		log.info("findAllHostsFromNetwork ... ")
+		// TODO Attached / Unattahed 구분해야하는건지 보기
 		conn.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
-		val hosts =
+		val res: List<Host> =
 			conn.findAllHosts(follow = "nics")
 				.getOrDefault(listOf())
 				.filter { it.nics().first().networkPresent() && it.nics().first().network().id() == networkId }
-		return hosts.toHostVos(conn) //TODO
+		return res.toHostVos(conn) //TODO
 
 		/*return hosts.flatMap { host ->
 			val naList: List<NetworkAttachment> = conn.findAllNetworkAttachmentsFromHost(host.id())
@@ -417,6 +394,25 @@ class NetworkServiceImpl(
 	}
 
 	@Throws(Error::class)
+//	override fun findAllVmsFromNetwork(networkId: String): List<NetworkVmVo> {
+//		log.info("getVmsByNetwork ... networkId: {}", networkId)
+//		conn.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
+//		val vms: List<Vm> =
+//			conn.findAllVms(follow = "reporteddevices,nics.vnicprofile")
+//				.getOrDefault(listOf())
+//				.filter { it.nics().any { nic -> nic.vnicProfile().network().id() == networkId } }
+//
+//		// TODO?
+//		return vms.flatMap {
+//				it.nics().map { nic ->
+//					val statistics: List<Statistic> =
+//						conn.findAllStatisticsFromVmNic(it.id(), nic.id())
+//							.getOrDefault(listOf())
+//					it.toNetworkVmVo(conn, nic, statistics)
+//				}
+//			}
+//	}
+
 	override fun findAllVmsFromNetwork(networkId: String): List<NetworkVmVo> {
 		log.info("getVmsByNetwork ... networkId: {}", networkId)
 		conn.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
@@ -428,18 +424,19 @@ class NetworkServiceImpl(
 
 		// TODO?
 		return vms.flatMap {
-				it.nics().map { nic ->
-					val statistics: List<Statistic> =
-						conn.findAllStatisticsFromVmNic(it.id(), nic.id())
-							.getOrDefault(listOf())
-					it.toNetworkVmVo(conn, nic, statistics)
-				}
+			it.nics().map { nic ->
+				val statistics: List<Statistic> =
+					conn.findAllStatisticsFromVmNic(it.id(), nic.id())
+						.getOrDefault(listOf())
+				it.toNetworkVmVo(conn, nic, statistics)
 			}
+		}
 	}
 
 	@Throws(Error::class)
 	override fun findAllTemplatesFromNetwork(networkId: String): List<NetworkTemplateVo> {
 		log.info("findTemplatesByNetwork ... network: {}", networkId)
+		// TODO?
 		conn.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
 		val templates: List<Template> =
 			conn.findAllTemplates(follow = "nics.vnicprofile")

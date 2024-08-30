@@ -47,7 +47,7 @@ class StorageController: BaseController() {
 		if (dataCenterId == null)
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/disks ... 데이터센터 밑에 붙어있는 Disk 목록", dataCenterId)
-		return ResponseEntity(iStorage.findAllDisks(dataCenterId), HttpStatus.OK)
+		return ResponseEntity(iStorage.findAllDisksFromDataCenter(dataCenterId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -216,7 +216,7 @@ class StorageController: BaseController() {
 		// TODO: 파라미터 재정의 필요 id인지 dcID인지
 		// 데이터센터 밑에 붙어있는 디스크
 		log.info("--- Disk 목록")
-		return ResponseEntity(iStorage.findAllDisks(dataCenterId), HttpStatus.OK)
+		return ResponseEntity(iStorage.findAllDisksFromDataCenter(dataCenterId), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -284,7 +284,7 @@ class StorageController: BaseController() {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/clusters ... Cluster(s) 목록", dataCenterId)
-		return ResponseEntity(iStorage.findClustersInDataCenter(dataCenterId), HttpStatus.OK)
+		return ResponseEntity(iStorage.findAllClustersFromDataCenter(dataCenterId), HttpStatus.OK)
 	}
 
 	@ApiOperation(

@@ -89,7 +89,7 @@ fun Connection.stopVm(vmId: String): Result<Boolean> = runCatching {
 
 fun Connection.suspendVm(vmId: String): Result<Boolean> = runCatching {
 	log.debug("Connection.suspendVm ... ")
-	/*val vm: Vm = */this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 	this.srvVm(vmId).suspend().send()
 	if (!this@suspendVm.expectVmStatus(vmId, VmStatus.PAUSED)) {
 		return Result.failure(Error("가상머신 일시정지 시간 초과"))
@@ -167,7 +167,7 @@ fun Connection.addDisksFromVm(vmId: String, diskIds: List<String> = listOf(), di
 		d.getOrNull()?.let { diskAttachments.add(DiskAttachmentBuilder().id(disked.id()).build()) }
 	}
 
-	val res: List<Result<Boolean>> = this@addDisksFromVm.addMultipleDiskAttachmentsToVm(vm.id(), diskAttachments)
+	val res: List<Result<DiskAttachment>> = this@addDisksFromVm.addMultipleDiskAttachmentsToVm(vm.id(), diskAttachments)
 	val finalRes: Boolean = res.all { it.isSuccess }
 	// this.addDiskAttachmentsToVm(vm.id(), diskAttachments)
 	finalRes
@@ -178,10 +178,11 @@ fun Connection.addDisksFromVm(vmId: String, diskIds: List<String> = listOf(), di
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.addDiskAttachmentToVm(vmId: String, diskAttachment: DiskAttachment): Result<Boolean> = runCatching {
-	this.srvAllDiskAttachmentsFromVm(vmId).add().attachment(diskAttachment).send()
+fun Connection.addDiskAttachmentToVm(vmId: String, diskAttachment: DiskAttachment): Result<DiskAttachment> = runCatching {
+	val diskAttachAdded: DiskAttachment =
+		this.srvAllDiskAttachmentsFromVm(vmId).add().attachment(diskAttachment).send().attachment()
 	log.info("디스크 붙이기 성공")
-	true
+	diskAttachAdded
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.DISK, "붙이기", vmId)
 }.onFailure {
@@ -189,7 +190,7 @@ fun Connection.addDiskAttachmentToVm(vmId: String, diskAttachment: DiskAttachmen
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.addMultipleDiskAttachmentsToVm(vmId: String, diskAttachments: List<DiskAttachment>): List<Result<Boolean>> =
+fun Connection.addMultipleDiskAttachmentsToVm(vmId: String, diskAttachments: List<DiskAttachment>): List<Result<DiskAttachment>> =
 	diskAttachments.map { this@addMultipleDiskAttachmentsToVm.addDiskAttachmentToVm(vmId, it) }
 
 fun Connection.addDiskAttachmentsToVm(vmId: String, disks: MutableList<Disk>): Result<Boolean> = runCatching {
@@ -283,7 +284,6 @@ fun Connection.removeVm(vmId: String, detachOnly: Boolean = false): Result<Boole
 }.onFailure {
 	Term.VM.logFail("삭제", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
 
 @Throws(InterruptedException::class)
@@ -412,8 +412,9 @@ fun Connection.findAllNicsFromVm(vmId: String, follow: String = ""): Result<List
 }.onFailure {
 	Term.VM.logFailWithin(Term.NIC, "목록조회", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
+
+
 
 fun Connection.srvNicFromVm(vmId: String, nicId: String): VmNicService =
 	this.srvNicsFromVm(vmId).nicService(nicId)
@@ -429,14 +430,15 @@ fun Connection.findNicFromVm(vmId: String, nicId: String): Result<Nic?> = runCat
 }
 
 fun Connection.addNicFromVm(vmId: String, nic: Nic): Result<Nic?> = runCatching {
-	val nics: List<Nic> = this.findAllNicsFromVm(vmId)
-		.getOrDefault(listOf())
-	val hasDuplicateName = nics.any { it.name() == nic.name() } // nic 이름 중복 검사
-	if (hasDuplicateName)
-		return FailureType.DUPLICATE.toResult(nic.id())
+	if (this.findAllNicsFromVm(vmId)
+			.getOrDefault(listOf())
+			.nameDuplicateVmNic(nic.name())) {
+		return FailureType.DUPLICATE.toResult(Term.NIC.desc)
+	}
 
 	if (nic.macPresent() && nic.mac().addressPresent() && nic.mac().address().isNotEmpty()) {
-		val hasDuplicateMac = nics.any { it.mac().address() == nic.mac().address() }
+		val hasDuplicateMac = findAllNicsFromVm(vmId)
+			.getOrDefault(listOf()).any { it.mac().address() == nic.mac().address() }
 		if (hasDuplicateMac)
 			return FailureType.DUPLICATE.toResult("mac 주소")
 	}
@@ -446,7 +448,6 @@ fun Connection.addNicFromVm(vmId: String, nic: Nic): Result<Nic?> = runCatching 
 }.onFailure {
 	Term.VM.logFailWithin(Term.NIC, "생성", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
 
 fun Connection.addVnicsFromVm(vmId: String, vnicProfileIds: List<String>): Result<Boolean> = runCatching {
@@ -465,19 +466,15 @@ fun Connection.addVnicsFromVm(vmId: String, vnicProfileIds: List<String>): Resul
 }.onFailure {
 	Term.VM.logFailWithin(Term.NIC, "생성 여러개", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
 
-fun Connection.updateNicFromVm(vmId: String, nicId: String, nic: Nic): Result<Nic?> = runCatching {
-	val hasDuplicateName = this.findAllNicsFromVm(vmId)
-		.getOrDefault(listOf())
-		.filter { it.id() != vmId }
-		.any { it.name() == nic.name() }
-
-	if (hasDuplicateName)
-		return FailureType.DUPLICATE.toResult(nic.name())
-
-	srvNicFromVm(vmId, nicId).update().nic(nic).send().nic()
+fun Connection.updateNicFromVm(vmId: String, nic: Nic): Result<Nic?> = runCatching {
+	if (this.findAllNicsFromVm(vmId)
+			.getOrDefault(listOf())
+			.nameDuplicateVmNic(nic.name(), nic.id())) {
+		return FailureType.DUPLICATE.toResult(Term.NIC.desc)
+	}
+	srvNicFromVm(vmId, nic.id()).update().nic(nic).send().nic()
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.NIC, "편집", vmId)
 }.onFailure {
@@ -487,10 +484,8 @@ fun Connection.updateNicFromVm(vmId: String, nicId: String, nic: Nic): Result<Ni
 }
 
 fun Connection.removeNicFromVm(vmId: String, nicId: String): Result<Boolean> = runCatching {
-	val nic: Nic = this@removeNicFromVm.findNicFromVm(vmId, nicId).getOrNull() ?: run {
-		log.warn("nic 없음")
-		return Result.failure(Error("nic 없음"))
-	}
+	val nic: Nic = this@removeNicFromVm.findNicFromVm(vmId, nicId)
+		.getOrNull() ?: throw ErrorPattern.NIC_NOT_FOUND.toError()
 
 	if (nic.plugged()) {
 		log.error("nic가 plug된 상태")
@@ -503,8 +498,11 @@ fun Connection.removeNicFromVm(vmId: String, nicId: String): Result<Boolean> = r
 }.onFailure {
 	Term.VM.logFailWithin(Term.NIC, "제거", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
+
+fun List<Nic>.nameDuplicateVmNic(name: String, id: String? = null): Boolean =
+	this.filter { it.id() != id }.any { it.name() == name }
+
 
 private fun Connection.srvAllDiskAttachmentsFromVm(vmId: String): DiskAttachmentsService =
 	this.srvVm(vmId).diskAttachmentsService()
@@ -516,21 +514,23 @@ fun Connection.findAllDiskAttachmentsFromVm(vmId: String): Result<List<DiskAttac
 }.onFailure {
 	Term.VM.logFailWithin(Term.DISK_ATTACHMENT, "목록조회", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
 
-private fun Connection.srvDiskAttachmentFromVm(vmId: String, diskId: String): DiskAttachmentService =
-	this.srvVm(vmId).diskAttachmentsService().attachmentService(diskId)
+fun Connection.srvDiskAttachmentFromVm(vmId: String, diskAttachmentId: String): DiskAttachmentService =
+	this.srvVm(vmId).diskAttachmentsService().attachmentService(diskAttachmentId)
 
-fun Connection.findDiskAttachmentFromVm(vmId: String, diskId: String): Result<DiskAttachment?> = runCatching {
-	this.srvDiskAttachmentFromVm(vmId, diskId).get().send().attachment()
+fun Connection.findDiskAttachmentFromVm(vmId: String, diskAttachmentId: String): Result<DiskAttachment?> = runCatching {
+	this.srvDiskAttachmentFromVm(vmId, diskAttachmentId).get().send().attachment()
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.DISK_ATTACHMENT, "상세조회", vmId)
 }.onFailure {
 	Term.VM.logFailWithin(Term.DISK_ATTACHMENT, "상세조회", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
+
+
+
+
 
 private fun Connection.srvSnapshotsFromVm(vmId: String): SnapshotsService =
 	this.srvVm(vmId).snapshotsService()

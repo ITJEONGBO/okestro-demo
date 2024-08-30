@@ -56,6 +56,8 @@ private val log = LoggerFactory.getLogger(ClusterVo::class.java)
  * @property hostVos List<[IdentifiedVo]>
  * @property networkVos List<[IdentifiedVo]>
  * @property templateVos List<[IdentifiedVo]>
+ *
+ * @property networkPropertyVo [NetworkPropertyVo]
  **/
 class ClusterVo(
     val id: String = "",
@@ -90,6 +92,8 @@ class ClusterVo(
     val hostVos: List<IdentifiedVo> = listOf(),
     val networkVos: List<IdentifiedVo> = listOf(), // 관리네트워크가 핵심, 다른 네트워크 존재가능
     val templateVos: List<IdentifiedVo> = listOf(),
+	val networkPropertyVo: NetworkPropertyVo = NetworkPropertyVo(),
+
 ): Serializable {
 	override fun toString(): String =
 		gson.toJson(this)
@@ -127,8 +131,9 @@ class ClusterVo(
 		private var bHostVos: List<IdentifiedVo> = listOf();fun hostVos(block: () -> List<IdentifiedVo>?) { bHostVos = block() ?: listOf() }
 		private var bNetworkVos: List<IdentifiedVo> = listOf();fun networkVos(block: () -> List<IdentifiedVo>?) { bNetworkVos = block() ?: listOf() }
 		private var bTemplateVos: List<IdentifiedVo> = listOf();fun templateVos(block: () -> List<IdentifiedVo>?) { bTemplateVos = block() ?: listOf() }
+		private var bNetworkPropertyVo: NetworkPropertyVo = NetworkPropertyVo();fun networkPropertyVo(block: () -> NetworkPropertyVo?) { bNetworkPropertyVo = block() ?: NetworkPropertyVo() }
 
-		fun build(): ClusterVo = ClusterVo(bId, bName, bDescription, bComment, bIsConnected, bBallooningEnabled, bBiosType, bCpuArc, bCpuType, bErrorHandling, bFipsMode, bFirewallType, bGlusterService, bHaReservation, bLogMaxMemory, bLogMaxMemoryType, bMemoryOverCommit, bMigrationPolicy, bBandwidth, bEncrypted, bSwitchType, bThreadsAsCores, bVersion, bVirtService, bNetworkProvider, bDataCenterVo, bNetworkVo, bHostSizeVo, bVmSizeVo, bHostVos, bNetworkVos, bTemplateVos)
+		fun build(): ClusterVo = ClusterVo(bId, bName, bDescription, bComment, bIsConnected, bBallooningEnabled, bBiosType, bCpuArc, bCpuType, bErrorHandling, bFipsMode, bFirewallType, bGlusterService, bHaReservation, bLogMaxMemory, bLogMaxMemoryType, bMemoryOverCommit, bMigrationPolicy, bBandwidth, bEncrypted, bSwitchType, bThreadsAsCores, bVersion, bVirtService, bNetworkProvider, bDataCenterVo, bNetworkVo, bHostSizeVo, bVmSizeVo, bHostVos, bNetworkVos, bTemplateVos, bNetworkPropertyVo)
 	}
 
 	companion object {
@@ -162,9 +167,15 @@ fun Cluster.toClusterVo(conn: Connection): ClusterVo {
 			.getOrDefault(listOf())
 	val networkVos: List<IdentifiedVo> =
 		networks.fromNetworksToIdentifiedVos()
+
 	val manageNetworkVo: IdentifiedVo =
 		networks.first { it.usages().contains(NetworkUsage.MANAGEMENT) }
 			.fromNetworkToIdentifiedVo()
+
+//	val networkPropertyVo: NetworkPropertyVo = NetworkPropertyVo.builder {
+//		attached {  }
+//		required {  }
+//	}
 
 	val templates: List<Template> =
 		conn.findAllTemplates()

@@ -184,7 +184,6 @@ fun Nic.toNicVoFromVm(conn: Connection, vmId: String): NicVo {
         rxTotalError { statistics.findSpeed("errors.total.rx") }
 //        stop { statistics.findSpeed("errors.total.tx") }
 //        guestInterfaceName {
-//
 //		}
     }
 }

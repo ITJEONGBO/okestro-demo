@@ -40,7 +40,6 @@ fun Connection.findNetwork(networkId: String, follow: String = ""): Result<Netwo
 
 
 fun Connection.addNetwork(network: Network): Result<Network?> = runCatching {
-
 	val networkAdded: Network =
 		this.srvNetworks().add().network(network).send().network()
 

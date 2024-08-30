@@ -17,6 +17,7 @@ private val log = LoggerFactory.getLogger(UsageVo::class.java)
  * @property gluster
  * @property defaultRoute
  */
+// TODO cluster network에서 usage는 따로 처리해야할듯요
 class UsageVo (
     val vm: Boolean = false,
     val management: Boolean = false,

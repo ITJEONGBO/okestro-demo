@@ -17,7 +17,6 @@ import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.internal.containers.ImageContainer
 import org.ovirt.engine.sdk4.internal.containers.ImageTransferContainer
 import org.ovirt.engine.sdk4.services.*
-import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.types.DataCenter
 import org.ovirt.engine.sdk4.types.DataCenterStatus
 import org.ovirt.engine.sdk4.types.StorageDomain
@@ -45,17 +44,27 @@ import java.net.URL
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import javax.net.ssl.*
+import kotlin.Error
 
 interface ItStorageService {
 	/**
-	 * [ItStorageService.findAllDisks]
+	 * [ItStorageService.findAllDisksFromDataCenter]
 	 * 디스크 목록
 	 *
 	 * @param dataCenterId [String] 데이터센터 아이디 밑에 있는 디스크들
 	 * @return List<[DiskImageVo]> 디스크 정보 목록
 	 */
 	@Throws(Error::class)
-	fun findAllDisks(dataCenterId: String): List<DiskImageVo>
+	fun findAllDisksFromDataCenter(dataCenterId: String): List<DiskImageVo>
+	/**
+	 * [ItStorageService.findOneDisk]
+	 * 디스크 이미지 수정 창 & 디스크 이동 창
+	 *
+	 * @param diskId [String] 디스크 id
+	 * @return [DiskImageVo]
+	 */
+	@Throws(Error::class)
+	fun findOneDisk(diskId: String): DiskImageVo?
 	/**
 	 * [ItStorageService.findAllDataCenters]
 	 * 디스크 생성 - 이미지 DC List
@@ -97,15 +106,7 @@ interface ItStorageService {
 	 */
 	@Throws(Error::class)
 	fun addDiskImage(image: DiskImageVo): DiskImageVo?
-	/**
-	 * [ItStorageService.findOneDisk]
-	 * 디스크 이미지 수정 창 & 디스크 이동 창
-	 *
-	 * @param diskId [String] 디스크 id
-	 * @return [DiskImageVo]
-	 */
-	@Throws(Error::class)
-	fun findOneDisk(diskId: String): DiskImageVo?
+
 	/**
 	 * [ItStorageService.updateDiskImage]
 	 * 디스트 이미지 수정
@@ -205,14 +206,14 @@ interface ItStorageService {
 	@Throws(Error::class)
 	fun findAllNetworksFromDataCenter(dataCenterId: String): List<NetworkVo>
 	/**
-	 * [ItStorageService.findClustersInDataCenter]
+	 * [ItStorageService.findAllClustersFromDataCenter]
 	 * 데이터센터 밑에 클러스터 목록
 	 *
 	 * @param dataCenterId [String] 데이터센터ID
 	 * @return List<[ClusterVo]> 클러스터 목록
 	 */
 	@Throws(Error::class)
-	fun findClustersInDataCenter(dataCenterId: String): List<ClusterVo>
+	fun findAllClustersFromDataCenter(dataCenterId: String): List<ClusterVo>
 	/**
 	 * [ItStorageService.findAllPermissionsFromStorageDomain]
 	 * 데이터센터 - 권한
@@ -250,8 +251,14 @@ class StorageServiceImpl(
 ): BaseService(), ItStorageService {
 
 	@Throws(Error::class)
-	override fun findAllDisks(dataCenterId: String): List<DiskImageVo> {
-		log.info("findDisks ... dataCenterId: {}", dataCenterId)
+	override fun findAllDisksFromDataCenter(dataCenterId: String): List<DiskImageVo> {
+		log.info("findAllDisksFromDataCenter ... dataCenterId: {}", dataCenterId)
+		/**
+		 * TODO 변수로 domainId를 넣어야됨 (바뀐사항)
+		 * DataCenter
+		 *   -> StorageDomains
+		 *   	=> Disks
+		 */
 		val storageDomains: List<StorageDomain> =
 			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
 				.getOrDefault(listOf())
@@ -270,6 +277,14 @@ class StorageServiceImpl(
 				disk.toDiskImageVo(conn)
 			}
 		}
+	}
+
+	@Throws(Error::class)
+	override fun findOneDisk(diskId: String): DiskImageVo? {
+		log.info("getDiskImage ... diskId: $diskId")
+		val disk: Disk? = conn.findDisk(diskId)
+			.getOrNull()
+		return disk?.toDiskImageVo(conn)
 	}
 
 	@Throws(Error::class)
@@ -317,12 +332,6 @@ class StorageServiceImpl(
 		return res?.toDiskImageVo(conn)
 	}
 
-	override fun findOneDisk(diskId: String): DiskImageVo? {
-		log.info("getDiskImage ... diskId: $diskId")
-		val disk: Disk? = conn.findDisk(diskId)
-			.getOrNull()
-		return disk?.toDiskImageVo(conn)
-	}
 
 	@Throws(Error::class)
 	override fun updateDiskImage(image: DiskImageVo): DiskImageVo? {
@@ -540,10 +549,10 @@ class StorageServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findClustersInDataCenter(dcId: String): List<ClusterVo> {
-		log.info("findClustersInDc ... dcId: {}", dcId)
+	override fun findAllClustersFromDataCenter(dataCenterId: String): List<ClusterVo> {
+		log.info("findAllClustersFromDataCenter ... dataCenterId: {}", dataCenterId)
 		val clusters: List<Cluster> =
-			conn.findAllClustersFromDataCenter(dcId).
+			conn.findAllClustersFromDataCenter(dataCenterId).
 				getOrDefault(listOf())
 		return clusters.toClusterVos(conn)
 	}

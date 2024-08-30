@@ -39,7 +39,7 @@ interface ItVmNicService {
 	@Throws(Error::class)
 	fun findOneNicFromVm(vmId: String, nicId: String): NicVo?
 	/**
-	 * [ItVmNicService.addNicFromVm]
+	 * [ItVmNicService.addFromVm]
 	 * 가상머신 - 새 네트워크 인터페이스
 	 * 생성창은 필요없음, 왜냐면 프로파일 리스트만 가지고 오면됨
 	 * public List<VnicProfileVo> setVnic(String clusterId) {} 사용하면 됨
@@ -49,7 +49,7 @@ interface ItVmNicService {
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun addNicFromVm(vmId: String, nicVo: NicVo): NicVo? // nic 추가
+	fun addFromVm(vmId: String, nicVo: NicVo): NicVo? // nic 추가
 	/**
 	 * [ItVmNicService.updateFromVm]
 	 *
@@ -60,14 +60,14 @@ interface ItVmNicService {
 	@Throws(Error::class)
 	fun updateFromVm(vmId: String, nicVo: NicVo): NicVo? // nic 수정
 	/**
-	 * [ItVmNicService.removeNicFromVm]
+	 * [ItVmNicService.removeFromVm]
 	 *
 	 * @param vmId [String] 가상머신 id
 	 * @param nicId [String] nic id
 	 * @return [Boolean] 200(success) 404(fail)
 	 */
 	@Throws(Error::class)
-	fun removeNicFromVm(vmId: String, nicId: String): Boolean // nic 삭제
+	fun removeFromVm(vmId: String, nicId: String): Boolean // nic 삭제
 }
 
 @Service
@@ -94,23 +94,13 @@ class VmNicServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun addNicFromVm(vmId: String, nicVo: NicVo): NicVo? {
-		log.info("addNic ... ")
+	override fun addFromVm(vmId: String, nicVo: NicVo): NicVo? {
+		log.info("addFromVm ... ")
 		conn.findVm(vmId).getOrNull()?:throw ErrorPattern.VM_NOT_FOUND.toError()
 		val nic: Nic =
 			conn.addNicFromVm(vmId, nicVo.toAddNicBuilder())
 				.getOrNull() ?: throw ErrorPattern.NIC_NOT_FOUND.toError()
 		return nic.toNicVoFromVm(conn, vmId)
-
-//		val nicBuilder = NicBuilder()
-//			.name(nicVo.name)
-//			.vnicProfile(VnicProfileBuilder().id(nicVo.vnicProfileVo.id).build())
-//			.interface_(nicVo.interface_)
-//			.linked(nicVo.linked)
-//			.plugged(nicVo.plugged)
-//		if (nicVo.macAddress.isNotEmpty()) {
-//			nicBuilder.mac(MacBuilder().address(nicVo.macAddress).build())
-//		}
 
 // 		네트워크 필터 매개변수 (네트워크 필터랑 다른거 같음)
 //		val nfps: List<NetworkFilterParameter> =
@@ -130,38 +120,17 @@ class VmNicServiceImpl(
 
 	@Throws(Error::class)
 	override fun updateFromVm(vmId: String, nicVo: NicVo): NicVo? {
-		log.info("editNic ... ")
-		val nicBuilder = NicBuilder()
-			.name(nicVo.name)
-			.vnicProfile(VnicProfileBuilder().id(nicVo.vnicProfileVo.id))
-			.interface_(nicVo.interface_)
-			.linked(nicVo.linked)
-			.plugged(nicVo.plugged)
-
-		val nic: Nic = conn.updateNicFromVm(vmId, nicVo.id, nicBuilder.build()).getOrNull() ?: run {
-			return null
-		}
-//		val nfps: List<NetworkFilterParameter> =
-//			nicVo.nfpVos.map { nFVo: NetworkFilterParameterVo ->
-//				NetworkFilterParameterBuilder()
-//					.name(nFVo.name)
-//					.value(nFVo.value)
-//					.nic(nic)
-//					.build()
-//			}
-//		for (np in nfps)
-//			conn.addNicNetworkFilterParameterFromVm(vmId, nic.id(), np)
-		val nfps: List<NetworkFilterParameter> = nicVo.networkFilterVos.toNetworkFilterParameters(nic)
-		for (np in nfps)
-			conn.addNicNetworkFilterParameterFromVm(vmId, nic.id(), np)
-
-		log.info("nic 편집 성공")
+		log.info("updateFromVm ... ")
+		conn.findVm(vmId).getOrNull()?:throw ErrorPattern.VM_NOT_FOUND.toError()
+		val nic: Nic =
+			conn.updateNicFromVm(vmId, nicVo.toEditNicBuilder())
+				.getOrNull() ?: throw ErrorPattern.NIC_NOT_FOUND.toError()
 		return nic.toNicVoFromVm(conn, vmId)
 	}
 
 	@Throws(Error::class)
-	override fun removeNicFromVm(vmId: String, nicId: String): Boolean {
-		log.info("deleteNic ... ")
+	override fun removeFromVm(vmId: String, nicId: String): Boolean {
+		log.info("removeNicFromVm ... ")
 		conn.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 		conn.findNicFromVm(vmId, nicId).getOrNull() ?: throw ErrorPattern.NIC_NOT_FOUND.toError()
 		val res: Result<Boolean> =

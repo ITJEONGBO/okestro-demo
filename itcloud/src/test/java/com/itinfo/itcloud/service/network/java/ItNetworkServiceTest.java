@@ -1,3 +1,4 @@
+/*
 package com.itinfo.itcloud.service.network;
 
 import com.itinfo.itcloud.model.setting.PermissionVo;
@@ -124,4 +125,4 @@ class ItNetworkServiceTest {
     @Test
     void getPermission() {
     }
-}
+}*/

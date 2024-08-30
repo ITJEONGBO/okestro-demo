@@ -2,91 +2,144 @@ package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.response.Res
-import com.itinfo.itcloud.model.storage.DiskAttachmentVo
-import com.itinfo.itcloud.model.storage.DiskImageVo
-import com.itinfo.itcloud.model.storage.toDiskAttachmentVos
+import com.itinfo.itcloud.model.storage.*
 import com.itinfo.itcloud.service.BaseService
-import com.itinfo.util.ovirt.findAllDiskAttachmentsFromVm
+import com.itinfo.itcloud.service.storage.ItStorageService
+import com.itinfo.util.ovirt.*
+import com.itinfo.util.ovirt.error.ErrorPattern
+import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.types.DiskAttachment
 import org.springframework.stereotype.Service
 
 interface ItVmDiskService {
+	/**
+	 * [ItVmDiskService.findAllDisksFromVm]
+	 * 가상머신 디스크 목록
+	 *
+	 * @param vmId [String] 가상머신 id
+	 * @return List<[DiskAttachmentVo]>
+	 */
 	fun findAllDisksFromVm(vmId: String): List<DiskAttachmentVo>
-	fun deleteDisk(diskAttachmentId: String, type: Boolean): Res<Boolean> // 디스크 삭제
-	fun activeDisk(diskAttachmentId: String): Res<Boolean> // 디스크 활성화
-	fun deactivateDisk(diskAttachmentId: String): Res<Boolean> // 디스크 비활성화
+	/**
+	 * [ItVmDiskService.findOneDiskFromVm]
+	 * 가상머신 디스크
+	 *
+	 * @param vmId [String] 가상머신 id
+	 * @param diskAttachmentId [String] 디스크 id
+	 * @return [DiskAttachmentVo]
+	 */
+	fun findOneDiskFromVm(vmId: String, diskAttachmentId: String): DiskAttachmentVo
+	/**
+	 * [ItVmDiskService.addDiskFromVm]
+	 * 가상머신 디스크 생성
+	 *
+	 * @param vmId [String] 가상머신 id
+	 * @param diskAttachmentVo [DiskAttachmentVo] 가상머신 id
+	 * @return [Boolean]
+	 */
+	fun addDiskFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo?
+	/**
+	 * [ItVmDiskService.updateDiskFromVm]
+	 * 가상머신 디스크 생성
+	 *
+	 * @param vmId [String] 가상머신 id
+	 * @param diskAttachmentVo [DiskAttachmentVo] 가상머신 id
+	 * @return [Boolean]
+	 */
+	fun updateDiskFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo?
+	/**
+	 * [ItVmDiskService.removeDiskFromVm]
+	 * 가상머신 디스크 삭제
+	 *
+	 * @param vmId [String] 가상머신 id
+	 * @param diskAttachmentId [String] 가상머신 디스크
+	 * @param type [Boolean] 가상머신 디스크
+	 * @return [Boolean]
+	 */
+	fun removeDiskFromVm(vmId: String, diskAttachmentId: String, type: Boolean): Res<Boolean>
+	/**
+	 * [ItVmDiskService.activeDiskFromVm]
+	 * 가상머신 디스크 활성화
+	 *
+	 * @param diskAttachmentId [String] 가상머신 id
+	 * @return [Boolean]
+	 */
+	fun activeDiskFromVm(diskAttachmentId: String): Res<Boolean>
+	/**
+	 * [ItVmDiskService.deactivateDiskFromVm]
+	 * 가상머신 디스크 비활성화
+	 *
+	 * @param diskAttachmentId [String] 가상머신 id
+	 * @return [Boolean]
+	 */
+	fun deactivateDiskFromVm(diskAttachmentId: String): Res<Boolean>
 	fun setDiskMove(diskAttachmentId: String): DiskImageVo // 디스크 이동창
-	fun moveDisk(diskAttachmentId: String, diskVo: DiskImageVo): Res<Boolean> // 디스크 스토리지 이동
+	/**
+	 * [ItVmDiskService.moveDiskFromVm]
+	 * 가상머신 디스크 스토리지 이동
+	 *
+	 * @param diskAttachmentId [String] 가상머신 id
+	 * @param diskVo [DiskImageVo] 디스크 이미지
+	 * @return [Boolean]
+	 */
+	fun moveDiskFromVm(diskAttachmentId: String, diskVo: DiskImageVo): Res<Boolean>
 }
 
 @Service
 class VmDiskService(
-
+	private val itStorageService: ItStorageService
 ): BaseService(), ItVmDiskService {
+
 	override fun findAllDisksFromVm(vmId: String): List<DiskAttachmentVo> {
 		log.debug("findAllDisksFromVm ... vmId: {}", vmId)
-		val diskAtts: List<DiskAttachment> =
+		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
+		val res: List<DiskAttachment> =
 			conn.findAllDiskAttachmentsFromVm(vmId)
 				.getOrDefault(listOf())
-		return diskAtts.toDiskAttachmentVos(conn)
+		return res.toDiskAttachmentVos(conn)
 	}
 
-	override fun deleteDisk(diskAttachmentId: String, type: Boolean): Res<Boolean> {
-		log.debug("deleteDisk ... diskAttachmentId: {}", diskAttachmentId)
-		// TODO:
-/*
+	override fun findOneDiskFromVm(vmId: String, diskAttachmentId: String): DiskAttachmentVo {
+		log.debug("findOneDiskFromVm ... vmId: {}", vmId)
+		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
+		val res: DiskAttachment =
+			conn.findDiskAttachmentFromVm(vmId, diskAttachmentId)
+				.getOrNull() ?: throw ErrorPattern.DISK_ATTACHMENT_NOT_FOUND.toError()
+		return res.toDiskAttachmentVo(conn)
+	}
 
-		DiskAttachmentService daService = getSystem().vmsService().vmService(id).diskAttachmentsService().attachmentService(daId)
-		daService.remove().send();
+	override fun addDiskFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo? {
+		log.debug("addDiskFromVm ... vmId: {}", vmId)
+		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
 
-		DiskAttachment da = getSystem().vmsService().vmService(id).diskAttachmentsService().attachmentService(daId).get().send().attachment();
-		Vm vm = getSystem().vmsService().vmService(id).get().send().vm();
+		// 디스크 생성
+		val diskImageVo: DiskImageVo? =
+			itStorageService.addDiskImage(diskAttachmentVo.diskImageVo)
 
-		try{
-			// 가상머신이 연결되어잇는지, down 상태인지
-			if(vm.status() == VmStatus.DOWN) {
-				if(type) {   // 완전삭제
-					DiskService diskService = getSystem().disksService().diskService(da.disk().id());
-					Disk disk = getSystem().disksService().diskService(da.disk().id()).get().send().disk();
-					diskService.remove().send();
+		diskAttachmentVo.toDiskAttachmentBuilder(conn, diskAttachmentVo)
 
-					do {
-						log.info("디스크 완전 삭제");
-					} while (!disk.idPresent());
-
-					log.info("성공: 디스크 삭제");
-					return Res.successResponse();
-				}else {
-					DiskAttachmentService daService = getSystem().vmsService().vmService(id).diskAttachmentsService().attachmentService(daId);
-					daService.remove().send();
-
-					do {
-						log.info("디스크 삭제");
-					} while (da.disk().id().isEmpty());
-
-					log.info("디스크 삭제");
-					return Res.successResponse();
-				}
-			}else{
-				log.error("실패: 가상머신이 Down이 아님");
-				return Res.failResponse("가상머신이 Down이 아님");
-			}
-		}catch (Exception e){
-			log.error("실패: 새 가상 디스크 (이미지) 수정");
-			e.printStackTrace();
-			return Res.failResponse(e.getMessage());
-		}
-*/
+		/**
+		 * 가상머신에서 디스크 생성과정은
+		 * 디스크를 만들고, 해당 디스크를 diskattachment를 이용해서 붙이는거
+		 * 그러니까
+		 * DIsk Add 하고 나온 disk id를 가지고 diskAttchment 하기
+		 */
 		TODO("Not yet implemented")
 	}
 
-	override fun activeDisk(diskAttachmentId: String): Res<Boolean> {
-		log.debug("activeDisk ... diskAttachmentId: {}", diskAttachmentId)
+	override fun updateDiskFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo? {
 		TODO("Not yet implemented")
 	}
 
-	override fun deactivateDisk(diskAttachmentId: String): Res<Boolean> {
-		log.debug("deactivateDisk ... diskAttachmentId: {}", diskAttachmentId)
+	override fun removeDiskFromVm(vmId: String, diskAttachmentId: String, type: Boolean): Res<Boolean> {
+		TODO("Not yet implemented")
+	}
+
+	override fun activeDiskFromVm(diskAttachmentId: String): Res<Boolean> {
+		TODO("Not yet implemented")
+	}
+
+	override fun deactivateDiskFromVm(diskAttachmentId: String): Res<Boolean> {
 		TODO("Not yet implemented")
 	}
 
@@ -95,8 +148,7 @@ class VmDiskService(
 		TODO("Not yet implemented")
 	}
 
-	override fun moveDisk(diskAttachmentId: String, diskVo: DiskImageVo): Res<Boolean> {
-		log.debug("moveDisk ... diskAttachmentId: {}", diskAttachmentId)
+	override fun moveDiskFromVm(diskAttachmentId: String, diskVo: DiskImageVo): Res<Boolean> {
 		TODO("Not yet implemented")
 	}
 

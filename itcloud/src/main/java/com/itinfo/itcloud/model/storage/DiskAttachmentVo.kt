@@ -1,8 +1,12 @@
 package com.itinfo.itcloud.model.storage
 
+import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.computing.toVmVo
+import com.itinfo.itcloud.model.fromVmToIdentifiedVo
 import com.itinfo.itcloud.model.gson
+import com.itinfo.util.ovirt.error.ErrorPattern
+import com.itinfo.util.ovirt.error.toError
 import com.itinfo.util.ovirt.findDisk
 import com.itinfo.util.ovirt.findVm
 import org.slf4j.LoggerFactory
@@ -29,7 +33,7 @@ private val log = LoggerFactory.getLogger(DiskAttachmentVo::class.java)
  * @property logicalName [String]  논리적 이름 (보통 없음)
  *
  * @property diskImageVo [DiskImageVo] 디스크 이미지 생성
- * @property vmVo [VmVo] 가상머신
+ * @property IdentifiedVo [IdentifiedVo] 가상머신
  */
 class DiskAttachmentVo(
 	val id: String = "",
@@ -40,7 +44,7 @@ class DiskAttachmentVo(
 	val interface_: DiskInterface = DiskInterface.VIRTIO,
 	val logicalName: String = "",
 	val diskImageVo: DiskImageVo = DiskImageVo(),
-	val vmVo: VmVo = VmVo()
+	val vmVo: IdentifiedVo = IdentifiedVo()
 ): Serializable {
 	override fun toString(): String =
 		gson.toJson(this)
@@ -54,7 +58,7 @@ class DiskAttachmentVo(
 		private var bInterface_: DiskInterface = DiskInterface.VIRTIO;fun interface_(block: () -> DiskInterface?) { bInterface_ = (block() ?: DiskInterface.VIRTIO) }
 		private var bLogicalName: String = "";fun logicalName(block: () -> String?) { bLogicalName = block() ?: "" }
 		private var bDiskImageVo: DiskImageVo = DiskImageVo();fun diskImageVo(block: () -> DiskImageVo?) { bDiskImageVo = block() ?: DiskImageVo() }
-		private var bVmVo: VmVo = VmVo();fun vmVo(block: () -> VmVo?) { bVmVo = block() ?: VmVo() }
+		private var bVmVo: IdentifiedVo = IdentifiedVo();fun vmVo(block: () -> IdentifiedVo?) { bVmVo = block() ?: IdentifiedVo() }
 		fun build(): DiskAttachmentVo = DiskAttachmentVo(bId, bActive, bBootable, bReadOnly, bPassDiscard, bInterface_, bLogicalName, bDiskImageVo, bVmVo)
 	}
 	
@@ -76,12 +80,11 @@ fun DiskAttachment.toDiskAttachmentVo(conn: Connection): DiskAttachmentVo {
 		active { this@toDiskAttachmentVo.active() }
 		bootable { this@toDiskAttachmentVo.bootable() }
 		readOnly { this@toDiskAttachmentVo.readOnly() }
-//		passDiscard { this@toDiskAttachmentVo.passDiscard() }
+		passDiscard { this@toDiskAttachmentVo.passDiscard() }
 		interface_ { this@toDiskAttachmentVo.interface_() }
 		logicalName { this@toDiskAttachmentVo.logicalName() }
 		diskImageVo { disk?.toDiskImageVo(conn) }
-		vmVo { vm?.toVmVo(conn) }
-//		vmVo { this@toDiskAttachmentVo.vm().toVmVo(conn) }
+		vmVo { vm?.fromVmToIdentifiedVo() }
 	}
 }
 
@@ -90,14 +93,13 @@ fun List<DiskAttachment>.toDiskAttachmentVos(conn: Connection): List<DiskAttachm
 
 
 
-fun DiskAttachmentVo.toDiskAttachmentBuilder(conn: Connection, disk: Disk): DiskAttachment {
-	val diskAdd: Disk? =
-		conn.findDisk(disk.id()).getOrNull()
-
+fun DiskAttachmentVo.toDiskAttachmentBuilder(conn: Connection, diskAttachmentVo: DiskAttachmentVo): DiskAttachment {
+	val diskAdd: Disk =
+		conn.findDisk(diskAttachmentVo.diskImageVo.id).getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
 	return DiskAttachmentBuilder()
 		.active(this@toDiskAttachmentBuilder.active)
 		.bootable(this@toDiskAttachmentBuilder.bootable)
-//		.passDiscard(this@toDiskAttachmentBuilder.passDiscard)
+		.passDiscard(this@toDiskAttachmentBuilder.passDiscard)
 		.readOnly(this@toDiskAttachmentBuilder.readOnly)
 		.interface_(this@toDiskAttachmentBuilder.interface_)
 		.logicalName(this@toDiskAttachmentBuilder.logicalName)
