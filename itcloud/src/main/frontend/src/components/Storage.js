@@ -3,9 +3,10 @@ import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
 import HeaderButton from './button/HeaderButton';
 import NavButton from './navigation/NavButton';
-import { Table, TableColumnsInfo } from './table/Table';
-import './Storage.css';
+import Table from '../components/table/Table';
+import TableColumnsInfo from '../components/table/TableColumnsInfo';
 import Footer from './footer/Footer';
+import './Storage.css';
 
 
 Modal.setAppElement('#root'); // React 16 이상에서는 필수

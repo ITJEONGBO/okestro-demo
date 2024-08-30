@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import HeaderButton from './button/HeaderButton';
-import { Table, TableColumnsInfo } from './table/Table';
+import Table from '../components/table/Table';
+import TableColumnsInfo from '../components/table/TableColumnsInfo';
 import Footer from './footer/Footer';
 import ApiManager from '../api/ApiManager';
 

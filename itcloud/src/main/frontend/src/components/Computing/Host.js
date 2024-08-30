@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
 import HeaderButton from '../button/HeaderButton';
-import { Table, TableColumnsInfo } from '../table/Table';
+import Table from '../table/Table';
+import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
 
 Modal.setAppElement('#root');

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import NavButton from '../components/navigation/NavButton';
 import HeaderButton from '../components/button/HeaderButton';
-import { Table, TableColumnsInfo } from '../components/table/Table';
+import Table from '../components/table/Table';
+import TableColumnsInfo from '../components/table/TableColumnsInfo';
 import './css/StorageDisk.css';
 import Footer from '../components/footer/Footer';
 

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
-import { Table, TableColumnsInfo } from '../table/Table';
+import Table from '../table/Table';
+import TableColumnsInfo from '../table/TableColumnsInfo';
 import HeaderButton from '../button/HeaderButton';
-import './css/Network.css';
 import ApiManager from '../../api/ApiManager';
+import './css/Network.css';
 
 Modal.setAppElement('#root');
 

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
-import { Table } from '../table/Table';
+import Table from '../table/Table';
+import TableColumnsInfo from '../table/TableColumnsInfo';
 import HeaderButton from '../button/HeaderButton';
 import './css/Vm.css';
 

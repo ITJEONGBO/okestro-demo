@@ -4,7 +4,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
 import Footer from '../footer/Footer';
-import { Table, TableColumnsInfo } from '../table/Table';
+import Table from '../table/Table';
+import TableColumnsInfo from '../table/TableColumnsInfo';
 import './css/DataCenterDetail.css';
 
 // React Modal 설정

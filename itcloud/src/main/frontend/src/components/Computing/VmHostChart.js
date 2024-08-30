@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
 import HeaderButton from '../button/HeaderButton';
-import { Table } from '../table/Table';
+import Table from '../table/Table';
+import TableColumnsInfo from '../table/TableColumnsInfo';
 import './css/Host.css';
 import Footer from '../footer/Footer';
 

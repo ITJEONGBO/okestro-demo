@@ -2,19 +2,14 @@ import React, { useState,useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import NavButton from '../components/navigation/NavButton';
 import HeaderButton from '../components/button/HeaderButton';
-import { Table, TableColumnsInfo } from '../components/table/Table';
+import Table from '../components/table/Table';
+import TableColumnsInfo from '../components/table/TableColumnsInfo';
 import './css/StorageDomain.css';
 
 function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const { name } = useParams(); // URL에서 name 파라미터를 가져옵니다.
   // 테이블컴포넌트
   // 데이터센터
-  const dataCenterColumns = [
-    { header: '', accessor: 'icon', clickable: false, style: { textAlign: 'center' } },
-    { header: '이름', accessor: 'name', clickable: false },
-    { header: '데이터 센터 내의 도메인 상태', accessor: 'domainStatus', clickable: false },
-  ];
-
   const dataCenterData = [
     {
       icon: <i className="fa fa-exclamation"></i>,

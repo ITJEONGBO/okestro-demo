@@ -3,7 +3,8 @@ import { useParams } from 'react-router-dom';
 import Modal from 'react-modal';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
-import { Table, TableColumnsInfo } from '../table/Table';
+import Table from '../table/Table';
+import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
 import './css/NetworkDetail.css';
 

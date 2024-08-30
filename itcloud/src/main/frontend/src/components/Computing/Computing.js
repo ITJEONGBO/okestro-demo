@@ -4,9 +4,9 @@ import Modal from 'react-modal';
 import './css/Computing.css';
 import HeaderButton from '../button/HeaderButton';
 import Footer from '../footer/Footer';
-import { Table } from '../table/Table';
-import ApiManager from '../../api/ApiManager';
+import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
+import ApiManager from '../../api/ApiManager';
 
 // React Modal 설정
 Modal.setAppElement('#root');

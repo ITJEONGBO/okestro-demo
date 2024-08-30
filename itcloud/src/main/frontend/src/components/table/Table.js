@@ -1,5 +1,3 @@
-import TableColumnsInfo from './TableColumnsInfo';
-
 const Table = ({ columns, data, onRowClick }) => {
   return (
     <table className="custom-table">
@@ -29,4 +27,4 @@ const Table = ({ columns, data, onRowClick }) => {
   );
 };
 
-export { Table, TableColumnsInfo };
+export default Table

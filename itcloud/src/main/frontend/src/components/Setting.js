@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './Setting.css';
-import { Table, TableColumnsInfo } from './table/Table';
+import Table from '../components/table/Table';
+import TableColumnsInfo from '../components/table/TableColumnsInfo';
 
 const Setting = ({ }) => {
     //테이블 컴포넌트
