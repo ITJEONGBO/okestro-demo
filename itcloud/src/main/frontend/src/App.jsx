@@ -15,10 +15,11 @@ import HostDetail from './components/Computing/HostDetail';
 import StorageDomain from './detail/StorageDomain';
 import StorageDisk from './detail/StorageDisk';
 import DataCenterDetail from './components/Computing/DataCenterDetail';
-import './App.css';
 import VmHostChart from './components/Computing/VmHostChart';
 import DomainParts from './components/DomainPart';
 import NetworkDetail from './components/Network/NetworkDetail';
+import './App.css';
+
 function App() {
     return (
         <Router>

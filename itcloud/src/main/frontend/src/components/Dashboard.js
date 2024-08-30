@@ -857,9 +857,4 @@ const Dashboard = () => {
 };
 //endregion: Dashboard
 
-document.addEventListener('DOMContentLoaded', function() {
-  const domContainer = document.querySelector('#app');
-  ReactDOM.render(<Dashboard />, domContainer);
-});
-
 export default Dashboard;
