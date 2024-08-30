@@ -51,6 +51,9 @@ enum class ErrorPattern(
 	CONSOLE_ID_NOT_FOUND("CONSOLE-E001", Term.CONSOLE, FailureType.ID_NOT_FOUND),
 	CONSOLE_NOT_FOUND("CONSOLE-E002", Term.CONSOLE, FailureType.NOT_FOUND),
 	CONSOLE_VO_INVALID("CONSOLE-E003", Term.CONSOLE, FailureType.BAD_REQUEST),
+	TICKET_ID_NOT_FOUND("TICKET-E001", Term.TICKET, FailureType.ID_NOT_FOUND),
+	TICKET_NOT_FOUND("TICKET-E002", Term.TICKET, FailureType.NOT_FOUND),
+	TICKET_VO_INVALID("TICKET-E003", Term.TICKET, FailureType.BAD_REQUEST),
 	UNKNOWN("UNKNOWN-E001", Term.UNKNOWN, FailureType.UNKNOWN)
 	;
 
@@ -77,7 +80,8 @@ fun ErrorPattern.toError(): Error {
 		ErrorPattern.VM_ID_NOT_FOUND,
 		ErrorPattern.VNIC_PROFILE_ID_NOT_FOUND,
 		ErrorPattern.TEMPLATE_ID_NOT_FOUND,
-		ErrorPattern.CONSOLE_ID_NOT_FOUND, -> Error("[${code}] ${term.desc} ${failureType.message}")
+		ErrorPattern.CONSOLE_ID_NOT_FOUND,
+		ErrorPattern.TICKET_ID_NOT_FOUND, -> Error("[${code}] ${term.desc} ${failureType.message}")
 		ErrorPattern.DATACENTER_NOT_FOUND,
 		ErrorPattern.CLUSTER_NOT_FOUND,
 		ErrorPattern.STORAGE_DOMAIN_NOT_FOUND,
@@ -90,7 +94,8 @@ fun ErrorPattern.toError(): Error {
 		ErrorPattern.VM_NOT_FOUND,
 		ErrorPattern.VNIC_PROFILE_NOT_FOUND,
 		ErrorPattern.TEMPLATE_NOT_FOUND,
-		ErrorPattern.CONSOLE_NOT_FOUND, -> Error("[${code}] ${failureType.message} ${term.desc}")
+		ErrorPattern.CONSOLE_NOT_FOUND,
+		ErrorPattern.TICKET_NOT_FOUND,-> Error("[${code}] ${failureType.message} ${term.desc}")
 		ErrorPattern.DATACENTER_VO_INVALID,
 		ErrorPattern.CLUSTER_VO_INVALID,
 		ErrorPattern.STORAGE_DOMAIN_VO_INVALID,
@@ -103,7 +108,8 @@ fun ErrorPattern.toError(): Error {
 		ErrorPattern.VM_VO_INVALID,
 		ErrorPattern.VNIC_PROFILE_VO_INVALID,
 		ErrorPattern.TEMPLATE_VO_INVALID,
-		ErrorPattern.CONSOLE_VO_INVALID, -> Error("[${code}] ${term.desc} ${failureType.message}")
+		ErrorPattern.CONSOLE_VO_INVALID,
+		ErrorPattern.TICKET_VO_INVALID, -> Error("[${code}] ${term.desc} ${failureType.message}")
 		else -> Error(failureType.message)
 	}
 }

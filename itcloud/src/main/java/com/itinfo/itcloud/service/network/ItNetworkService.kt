@@ -356,10 +356,8 @@ class NetworkServiceImpl(
 	override fun findAllVnicProfilesFromNetwork(networkId: String): List<VnicProfileVo> {
 		log.info("findAllVnicProfilesFromNetwork ... networkId: {}", networkId)
 		log.info("findAllVnicProfilesFromNetwork ... ")
-		if (conn.findNetwork(networkId).getOrNull() == null) {
-			log.warn("getVnicByNetwork ... 네트워크 없음")
-			return listOf()
-		}
+		conn.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
+
 		val res: List<VnicProfile> =
 			conn.findAllVnicProfilesFromNetwork(networkId)
 				.getOrDefault(listOf())
@@ -422,6 +420,7 @@ class NetworkServiceImpl(
 	override fun findAllVmsFromNetwork(networkId: String): List<NetworkVmVo> {
 		log.info("getVmsByNetwork ... networkId: {}", networkId)
 		conn.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
+
 		val vms: List<Vm> =
 			conn.findAllVms(follow = "reporteddevices,nics.vnicprofile")
 				.getOrDefault(listOf())

@@ -192,9 +192,7 @@ fun Connection.restartHost(hostId: String, hostPw: String): Result<Boolean> = ru
  * host SSH 관리 - 재시작 부분
  */
 fun InetAddress.rebootHostViaSSH(username: String, password: String, port: Int): Result<Boolean> = runCatching {
-
 	log.debug("ssh 시작")
-
 	// SSH 세션 생성 및 연결
 	val session: com.jcraft.jsch.Session = JSch().getSession(username, hostAddress, port)
 	session.setPassword(password)
@@ -221,7 +219,6 @@ fun InetAddress.rebootHostViaSSH(username: String, password: String, port: Int):
 	log.error(it.localizedMessage)
 	throw if (it is Error) it.toItCloudException() else it
 }
-
 
 
 fun Connection.findPowerManagementFromHost(hostId: String, fenceType: FenceType): Result<PowerManagement?> = runCatching {
@@ -382,38 +379,44 @@ fun Connection.updateNetworkAttachmentFromHost(hostId: String, networkAttachment
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.removeNetworkAttachmentFromHost(hostId: String, networkAttachmentId: String): Boolean = try {
+fun Connection.removeNetworkAttachmentFromHost(hostId: String, networkAttachmentId: String): Result<Boolean> = runCatching {
 	this.srvNetworkAttachmentFromHost(hostId, networkAttachmentId).remove().send()
 	this.srvHost(hostId).commitNetConfig().send()
 	true
-} catch (e: Error) {
-	log.error(e.localizedMessage)
-	false
+}.onSuccess {
+	Term.HOST.logSuccessWithin(Term.NETWORK_ATTACHMENT, "제거", hostId)
+}.onFailure {
+	Term.HOST.logFailWithin(Term.NETWORK_ATTACHMENT, "제거", it, hostId)
+	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.removeBondsFromHost(hostId: String, hostNics: List<HostNic> = listOf()): Boolean = try {
+fun Connection.removeBondsFromHost(hostId: String, hostNics: List<HostNic> = listOf()): Result<Boolean> = runCatching {
 	this.srvHost(hostId).setupNetworks().removedBonds(hostNics).send()
 	this.srvHost(hostId).commitNetConfig().send()
 	true
-} catch (e: Error) {
-	log.error(e.localizedMessage)
-	false
+}.onSuccess {
+	Term.HOST.logSuccessWithin(Term.BOND, "제거", hostId)
+}.onFailure {
+	Term.HOST.logFailWithin(Term.BOND, "제거", it, hostId)
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.setupNetworksFromHost(
 	hostId: String,
 	hostNics: HostNic,
 	networkAttachments: List<NetworkAttachment> = listOf()
-): Boolean = try {
+): Result<Boolean> = runCatching {
 	if (networkAttachments.isEmpty())
 		this.srvHost(hostId).setupNetworks().modifiedBonds(hostNics).send()
 	else
 		this.srvHost(hostId).setupNetworks().modifiedBonds(hostNics).modifiedNetworkAttachments(networkAttachments).send()
 	this.srvHost(hostId).commitNetConfig().send()
 	true
-} catch (e: Error) {
-	log.error(e.localizedMessage)
-	false
+}.onSuccess {
+	Term.HOST.logSuccessWithin(Term.BOND, "설정", hostId)
+}.onFailure {
+	Term.HOST.logFailWithin(Term.BOND, "설정", it, hostId)
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvFenceAgentsFromHost(hostId: String): FenceAgentsService =

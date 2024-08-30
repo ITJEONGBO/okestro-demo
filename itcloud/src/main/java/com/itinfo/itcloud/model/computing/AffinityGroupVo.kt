@@ -127,18 +127,18 @@ fun List<AffinityGroup>.toAffinityGroupVos(conn: Connection, clusterId: String =
 // 선호도 그룹 편집창 - host/vm 레이블, host/vm 아이디,이름 출력만
 fun AffinityGroup.setEdit(conn: Connection, type: String): List<IdentifiedVo> =
 	when (type) {
-		"hostLabels" -> conn.findAllAffinityGroupHostLabelsFromCluster(this.cluster().id(), this.id()).map { label: AffinityLabel ->
-			label.fromAffinityLabelToIdentifiedVo()
-		}
-		"vmLabels" -> conn.findAllAffinityGroupVmLabelsFromCluster(this.cluster().id(), this.id()).map { label: AffinityLabel ->
-			label.fromAffinityLabelToIdentifiedVo()
-		}
-		"hosts" -> conn.findAllAffinityGroupHostsFromCluster(this.cluster().id(), this.id()).map { host: Host ->
-			host.fromHostToIdentifiedVo()
-		}
-		"vms" -> conn.findAllAffinityGroupVmsFromCluster(this.cluster().id(), this.id()).map { vm: Vm ->
-			vm.fromVmToIdentifiedVo()
-		}
+		"hostLabels" -> conn.findAllAffinityGroupHostLabelsFromCluster(this.cluster().id(), this.id())
+			.getOrDefault(listOf())
+			.fromAffinityLabelsToIdentifiedVos()
+		"vmLabels" -> conn.findAllAffinityGroupVmLabelsFromCluster(this.cluster().id(), this.id())
+			.getOrDefault(listOf())
+			.fromAffinityLabelsToIdentifiedVos()
+		"hosts" -> conn.findAllAffinityGroupHostsFromCluster(this.cluster().id(), this.id())
+			.getOrDefault(listOf())
+			.fromHostsToIdentifiedVos()
+		"vms" -> conn.findAllAffinityGroupVmsFromCluster(this.cluster().id(), this.id())
+			.getOrDefault(listOf())
+			.fromVmsToIdentifiedVos()
 		else -> listOf()
 	}
 

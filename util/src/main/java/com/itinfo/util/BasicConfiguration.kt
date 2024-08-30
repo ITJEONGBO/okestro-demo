@@ -84,14 +84,12 @@ class BasicConfiguration {
 		get() = globalProp?.get(PNAME_ITCLOUD_VERSION).toString()
 	val itcloudReleaseDate: String
 		get() = globalProp?.get(PNAME_ITCLOUD_RELEASE_DATE).toString()
-
 	val postgresDriverClassname: String
 		get() = databaseProp?.get(PNAME_POSTGRES_DRIVER_CLASS_NAME).toString()
-
 	val postgresProtocol: String
 		get() = databaseProp?.get(PNAME_POSTGRES_JDBC_PROTOCOL).toString()
 	val postgresUrl: String
-		get() = databaseProp?.get(PNAME_POSTGRES_JDBC_URL).toString() ?: "localhost"
+		get() = databaseProp?.get(PNAME_POSTGRES_JDBC_URL).toString()
 	val postgresPort: Int
 		get() = databaseProp?.get(PNAME_POSTGRES_JDBC_PORT).toString().toIntOrNull() ?: 5432
 	val postgresDataSourceDb: String
@@ -126,7 +124,7 @@ class BasicConfiguration {
 	val deeplearningUri: String
 		get() = globalProp?.get(PNAME_SYSETM_DEEPLEARNING_URI).toString()
 	val symphonyPowerControl: Boolean
-		get() = globalProp?.get(PNAME_SYSETM_SYMPHONY_POWER_CONTROL).toString().toBoolean() ?: false
+		get() = globalProp?.get(PNAME_SYSETM_SYMPHONY_POWER_CONTROL).toString().toBoolean()
 	val loginLimit: Int
 		get() = globalProp?.get(PNAME_SYSETM_LOGIN_LIMIT).toString().toIntOrNull() ?: 5
 	val systemProperties: SystemPropertiesVo

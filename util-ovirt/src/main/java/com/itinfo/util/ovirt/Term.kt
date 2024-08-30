@@ -15,9 +15,11 @@ enum class Term(
 	NETWORK_ATTACHMENT("네트워크 결합"),
 	NETWORK_FILTER("네트워크 필터"),
 	EXTERNAL_NETWORK_PROVIDER("외부 네트워크 공급자"),
+	BOND("(네트워크) 본드"),
 	NIC("네트워크 인터페이스 컨트롤러"),
 	VM("가상머신"),
 	CONSOLE("콘솔"),
+	TICKET("티켓"),
 	SNAPSHOT("스냅샷"),
 	VNIC("가상머신 NIC"),
 	VNIC_PROFILE("가상머신 NIC 프로필"),
@@ -53,6 +55,9 @@ enum class Term(
 	STATISTIC("통계"),
 	INSTANCE_TYPE("인스턴스 유형"),
 	EVENT("이벤트"),
+	QOS("통신 서비스 품질"),
+	QUOTA("할당량"),
+	CLUSTER_QUOTA_LIMIT("클러스터 제한 할당량"),
 	UNKNOWN("알 수 없음")
 	;
 }

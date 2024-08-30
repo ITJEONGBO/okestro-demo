@@ -11,7 +11,6 @@ import com.itinfo.itcloud.model.network.toNetworkVos
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.model.storage.*
 import com.itinfo.itcloud.service.BaseService
-import com.itinfo.itcloud.service.computing.ItDataCenterService
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.builders.*
@@ -23,7 +22,6 @@ import org.ovirt.engine.sdk4.types.DataCenter
 import org.ovirt.engine.sdk4.types.DataCenterStatus
 import org.ovirt.engine.sdk4.types.StorageDomain
 import org.ovirt.engine.sdk4.types.StorageDomainStatus
-import org.ovirt.engine.sdk4.types.StorageType
 import org.ovirt.engine.sdk4.types.Disk
 import org.ovirt.engine.sdk4.types.DiskStatus
 import org.ovirt.engine.sdk4.types.DiskProfile
@@ -289,12 +287,8 @@ class StorageServiceImpl(
 	@Throws(Error::class)
 	override fun setDomainList(dataCenterId: String, diskId: String): List<StorageDomainVo> {
 		log.info("setDomainList ... dataCenterId: $dataCenterId, diskId: $diskId")
-		val disk: Disk =
-			conn.findDisk(diskId)
-				.getOrNull() ?: run {
-			log.warn("setDomainList ... 디스크 없음")
-			return listOf()
-		}
+		val disk: Disk = conn.findDisk(diskId)
+			.getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toException()
 
 		val storageDomains: List<StorageDomain> =
 			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)

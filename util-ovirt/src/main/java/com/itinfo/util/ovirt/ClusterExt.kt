@@ -301,26 +301,50 @@ fun Connection.removeAffinityGroupFromCluster(
 fun Connection.srvAffinityGroupHostsFromCluster(clusterId: String, agId: String): AffinityGroupHostsService =
 	this.srvAffinityGroupFromCluster(clusterId, agId).hostsService()
 
-fun Connection.findAllAffinityGroupHostsFromCluster(clusterId: String, agId: String): List<Host> =
+fun Connection.findAllAffinityGroupHostsFromCluster(clusterId: String, agId: String): Result<List<Host>> = runCatching {
 	this.srvAffinityGroupHostsFromCluster(clusterId, agId).list().send().hosts()
+}.onSuccess {
+	Term.CLUSTER.logSuccessWithin(Term.AFFINITY_GROUP, "호스트 목록조회", clusterId)
+}.onFailure {
+	Term.CLUSTER.logFailWithin(Term.AFFINITY_GROUP, "호스트 목록조회", it, clusterId)
+	throw if (it is Error) it.toItCloudException() else it
+}
 
 fun Connection.srvAffinityGroupHostLabelsFromCluster(clusterId: String, agId: String): AffinityGroupHostLabelsService =
 	this.srvAffinityGroupFromCluster(clusterId, agId).hostLabelsService()
 
-fun Connection.findAllAffinityGroupHostLabelsFromCluster(clusterId: String, agId: String): List<AffinityLabel> =
+fun Connection.findAllAffinityGroupHostLabelsFromCluster(clusterId: String, agId: String): Result<List<AffinityLabel>> = runCatching {
 	this.srvAffinityGroupHostLabelsFromCluster(clusterId, agId).list().send().labels()
+}.onSuccess {
+	Term.CLUSTER.logSuccessWithin(Term.AFFINITY_GROUP, "호스트 상세조회", clusterId)
+}.onFailure {
+	Term.CLUSTER.logFailWithin(Term.AFFINITY_GROUP, "호스트 상세조회", it, clusterId)
+	throw if (it is Error) it.toItCloudException() else it
+}
 
 fun Connection.srvAffinityGroupVmsFromCluster(clusterId: String, agId: String): AffinityGroupVmsService =
 	this.srvAffinityGroupFromCluster(clusterId, agId).vmsService()
 
-fun Connection.findAllAffinityGroupVmsFromCluster(clusterId: String, agId: String): List<Vm> =
+fun Connection.findAllAffinityGroupVmsFromCluster(clusterId: String, agId: String): Result<List<Vm>> = runCatching {
 	this.srvAffinityGroupVmsFromCluster(clusterId, agId).list().send().vms()
+}.onSuccess {
+	Term.CLUSTER.logSuccessWithin(Term.AFFINITY_GROUP, "가상머신 목록조회", clusterId)
+}.onFailure {
+	Term.CLUSTER.logFailWithin(Term.AFFINITY_GROUP, "가상머신 목록조회", it, clusterId)
+	throw if (it is Error) it.toItCloudException() else it
+}
 
 fun Connection.srvAffinityGroupVmLabelsFromCluster(clusterId: String, agId: String): AffinityGroupVmLabelsService =
 	this.srvAffinityGroupFromCluster(clusterId, agId).vmLabelsService()
 
-fun Connection.findAllAffinityGroupVmLabelsFromCluster(clusterId: String, agId: String): List<AffinityLabel> =
+fun Connection.findAllAffinityGroupVmLabelsFromCluster(clusterId: String, agId: String): Result<List<AffinityLabel>> = runCatching {
 	this.srvAffinityGroupVmLabelsFromCluster(clusterId, agId).list().send().labels()
+}.onSuccess {
+	Term.CLUSTER.logSuccessWithin(Term.AFFINITY_GROUP, "가상머신레이블 목록조회", clusterId)
+}.onFailure {
+	Term.CLUSTER.logFailWithin(Term.AFFINITY_GROUP, "가상머신레이블 목록조회", it, clusterId)
+	throw if (it is Error) it.toItCloudException() else it
+}
 
 fun Connection.findAllPermissionsFromCluster(clusterId: String): Result<List<Permission>> = runCatching {
 	if (this@findAllPermissionsFromCluster.findCluster(clusterId).getOrNull() == null) {

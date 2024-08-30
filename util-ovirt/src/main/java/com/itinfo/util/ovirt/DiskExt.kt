@@ -37,7 +37,7 @@ fun Connection.findDisk(diskId: String): Result<Disk?> = runCatching {
 }
 
 fun Connection.addDisk(disk: Disk): Result<Disk?> = runCatching {
-	val diskAdded: Disk = this.srvAllDisks().add().disk(disk).send().disk() ?: return Result.failure(Error("디스크 생성 실패 ..."))
+	val diskAdded: Disk = this.srvAllDisks().add().disk(disk).send().disk() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
 	if (expectDiskStatus(diskAdded.id())) {
 		log.error("디스크 생성 실패 ... 시간초과")
 		return Result.failure(Error("디스크 생성 실패 ... 시간초과"))

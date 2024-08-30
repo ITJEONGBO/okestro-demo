@@ -172,13 +172,10 @@ fun Connection.addDisksFromVm(vmId: String, diskIds: List<String> = listOf(), di
 	// this.addDiskAttachmentsToVm(vm.id(), diskAttachments)
 	finalRes
 }.onSuccess {
-	log.info("가상머신 디스크 생성 성공")
-}.onSuccess {
 	Term.VM.logSuccessWithin(Term.DISK, "생성", vmId)
 }.onFailure {
 	Term.VM.logFailWithin(Term.DISK,"생성", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
 
 fun Connection.addDiskAttachmentToVm(vmId: String, diskAttachment: DiskAttachment): Result<Boolean> = runCatching {
@@ -190,7 +187,6 @@ fun Connection.addDiskAttachmentToVm(vmId: String, diskAttachment: DiskAttachmen
 }.onFailure {
 	Term.VM.logFailWithin(Term.DISK,"붙이기", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
 
 fun Connection.addMultipleDiskAttachmentsToVm(vmId: String, diskAttachments: List<DiskAttachment>): List<Result<Boolean>> =
@@ -207,7 +203,6 @@ fun Connection.addDiskAttachmentsToVm(vmId: String, disks: MutableList<Disk>): R
 }.onFailure {
 	log.error("vm 디스크 붙이기 실패 ... 이유: {}", it.localizedMessage)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
 
 fun Connection.bootableDiskExist(vmId: String): Boolean =
@@ -329,7 +324,7 @@ fun Connection.exportVm(vmId: String,
 }
 
 fun Connection.migrationVm(vmId: String, hostId: String): Result<Boolean> = runCatching {
-	val vm: Vm = this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 	val host: Host = this.findHost(hostId).getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
 	this.srvVm(vmId).migrate().host(host).send()
 
@@ -610,15 +605,16 @@ fun Connection.commitSnapshotFromVm(vmId: String): Result<Boolean> = runCatching
 }.onFailure {
 	Term.VM.logFailWithin(Term.SNAPSHOT, "커밋", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
 
-fun Connection.previewSnapshotFromVm(vmId: String, snapshot: Snapshot, restoreMemory: Boolean): Boolean = try {
+fun Connection.previewSnapshotFromVm(vmId: String, snapshot: Snapshot, restoreMemory: Boolean): Result<Boolean> = runCatching {
 	this.srvVm(vmId).previewSnapshot().restoreMemory(restoreMemory).snapshot(snapshot).send()
 	true
-} catch (e: Error) {
-	log.error(e.localizedMessage)
-	false
+}.onSuccess {
+	Term.VM.logSuccessWithin(Term.SNAPSHOT, "미리보기", vmId)
+}.onFailure {
+	Term.VM.logFailWithin(Term.SNAPSHOT, "미리보기", it, vmId)
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvSnapshotDisksFromVm(vmId: String, snapshotId: String): SnapshotDisksService =
@@ -644,7 +640,6 @@ fun Connection.findAllSnapshotNicsFromVm(vmId: String, snapshotId: String): Resu
 }.onFailure {
 	Term.VM.logFailWithin(Term.SNAPSHOT, "NIC 목록조회", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
 
 private fun Connection.srvVmGraphicsConsolesFromVm(vmId: String): VmGraphicsConsolesService =
@@ -656,11 +651,13 @@ fun Connection.findAllVmGraphicsConsolesFromVm(vmId: String): List<GraphicsConso
 private fun Connection.srvVmGraphicsConsoleFromVm(vmId: String, graphicsConsoleId: String): VmGraphicsConsoleService =
 	this.srvVmGraphicsConsolesFromVm(vmId).consoleService(graphicsConsoleId)
 
-fun Connection.findTicketFromVmGraphicsConsole(vmId: String, graphicsConsoleId: String): Ticket? = try {
+fun Connection.findTicketFromVmGraphicsConsole(vmId: String, graphicsConsoleId: String): Result<Ticket?> = runCatching {
 	this.srvVmGraphicsConsoleFromVm(vmId, graphicsConsoleId).ticket().send().ticket()
-} catch (e: Error) {
-	log.error(e.localizedMessage)
-	null
+}.onSuccess {
+	Term.CONSOLE.logSuccessWithin(Term.TICKET, "상세조회", vmId)
+}.onFailure {
+	Term.CONSOLE.logFailWithin(Term.TICKET, "상세조회", it, vmId)
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvStatisticsFromVm(vmId: String): StatisticsService =

@@ -66,7 +66,9 @@ fun Vm.toConsoleVo(conn: Connection, systemPropertiesVo: SystemPropertiesVo): Co
 		conn.findAllVmGraphicsConsolesFromVm(this@toConsoleVo.id())
 			.firstOrNull() ?: throw ErrorPattern.CONSOLE_NOT_FOUND.toException()
 	val graphicsConsoleId: String = console.id()
-	val ticket: Ticket? = conn.findTicketFromVmGraphicsConsole(this@toConsoleVo.id(), graphicsConsoleId)
+	val ticket: Ticket =
+		conn.findTicketFromVmGraphicsConsole(this@toConsoleVo.id(), graphicsConsoleId)
+			.getOrNull() ?: throw ErrorPattern.TICKET_NOT_FOUND.toException()
 
 	return ConsoleVo.builder {
 		hostAddress { systemPropertiesVo.vncIp }
@@ -74,7 +76,7 @@ fun Vm.toConsoleVo(conn: Connection, systemPropertiesVo: SystemPropertiesVo): Co
 		address { if (this@toConsoleVo.displayPresent()) this@toConsoleVo.display().address() else null }
 		port { if (this@toConsoleVo.displayPresent()) this@toConsoleVo.display().port().toInt().toString() else null }
 		tlsPort { (if (console.tlsPort() != null) console.tlsPort().toInt() else null).toString() }
-		password { ticket?.value() }
+		password { ticket.value() }
 		type { GraphicsType.VNC }
 	}
 }
