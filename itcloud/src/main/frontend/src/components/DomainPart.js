@@ -1,38 +1,22 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import HeaderButton from './button/HeaderButton';
-import { Table } from './table/Table';
+import { Table, TableColumnsInfo } from './table/Table';
 import Footer from './footer/Footer';
-import { useParams } from 'react-router-dom';
+import ApiManager from '../api/ApiManager';
 
 Modal.setAppElement('#root');
 
 const DomainParts = () => {
-    const { name } = useParams();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
-
+  const { name } = useParams();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  // 도메인 테이블 컴포넌트 
-  const domaincolumns = [
-    { header: '상태', accessor: 'status' },
-    { header: '', accessor: 'icon' },
-    { header: '도메인 이름', accessor: 'domainName' },
-    { header: '코멘트', accessor: 'comment' },
-    { header: '도메인 유형', accessor: 'domainType' },
-    { header: '스토리지 유형', accessor: 'storageType' },
-    { header: '포맷', accessor: 'format' },
-    { header: '데이터 센터간 상태', accessor: 'dataCenterStatus' },
-    { header: '전체 공간(GB)', accessor: 'totalSpace' },
-    { header: '여유 공간(GB)', accessor: 'freeSpace' },
-    { header: '확보된 여유 공간(GB)', accessor: 'reservedSpace' },
-    { header: '설명', accessor: 'description' },
-  ];
-
-  const domaindata = [
+  const [data, setData] = useState([
     {
       status: <i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i>,
       icon: <i className="fa fa-glass"></i>,
@@ -47,7 +31,33 @@ const DomainParts = () => {
       reservedSpace: '',
       description: '',
     },
-  ];
+  ])
+
+  useEffect(() => {
+    const fetchData = async () => {
+        const res = await ApiManager.findAllStorageDomains() ?? []
+        const items = res.map((e) => toTableItemPredicate(e))
+        setData(items)
+    }
+    fetchData()
+  }, [])
+
+  const toTableItemPredicate = (e) => {
+    return {
+      status: <i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i>,
+      icon: <i className="fa fa-glass"></i>,
+      domainName: 'ㅁㅎㅇㅁㄹㄹ', // 여기에 도메인 이름을 설정합니다.
+      comment: '',
+      domainType: '',
+      storageType: '',
+      format: '',
+      dataCenterStatus: '',
+      totalSpace: '',
+      freeSpace: '',
+      reservedSpace: '',
+      description: '',
+    }
+  }
 
   // 이름 열을 클릭했을 때 동작하는 함수
   // 행 클릭 시 도메인 이름을 이용하여 이동하는 함수
@@ -89,7 +99,7 @@ const DomainParts = () => {
                     <input type="text" />
                     <button><i className="fa fa-search"></i></button>
                   </div>
-                  <Table columns={domaincolumns} data={domaindata} onRowClick={handleDomainClick} />
+                  <Table columns={TableColumnsInfo.STORAGE_DOMAINS} data={data} onRowClick={handleDomainClick} />
                 </div>
             </div>
         </div>

@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
 import HeaderButton from './button/HeaderButton';
 import NavButton from './navigation/NavButton';
-import { Table } from './table/Table';
+import { Table, TableColumnsInfo } from './table/Table';
 import './Storage.css';
 import Footer from './footer/Footer';
 
@@ -96,23 +96,9 @@ const Storage = () => {
     if (column.accessor === 'alias') {  // 'alias' 컬럼만 체크
         navigate(`/storage-disk/${row.alias.props.children}`);
     }
-};
-  // 도메인 테이블 컴포넌트 
-  const domaincolumns = [
-    { header: '상태', accessor: 'status' },
-    { header: '', accessor: 'icon' },
-    { header: '도메인 이름', accessor: 'domainName' },
-    { header: '코멘트', accessor: 'comment' },
-    { header: '도메인 유형', accessor: 'domainType' },
-    { header: '스토리지 유형', accessor: 'storageType' },
-    { header: '포맷', accessor: 'format' },
-    { header: '데이터 센터간 상태', accessor: 'dataCenterStatus' },
-    { header: '전체 공간(GB)', accessor: 'totalSpace' },
-    { header: '여유 공간(GB)', accessor: 'freeSpace' },
-    { header: '확보된 여유 공간(GB)', accessor: 'reservedSpace' },
-    { header: '설명', accessor: 'description' },
-  ];
+  };
 
+  // 도메인 테이블 컴포넌트 
   const domaindata = [
     {
       status: <i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i>,
@@ -311,7 +297,7 @@ const Storage = () => {
                   <button>
                     <i className="fa fa-refresh"></i>
                   </button>
-                  <Table columns={columns} data={data} onRowClick={handleRowClick} />
+                  <Table columns={TableColumnsInfo.STORAGES} data={data} onRowClick={handleRowClick} />
                 </div>
               </>
             )}
@@ -340,7 +326,7 @@ const Storage = () => {
                     <button><i className="fa fa-search"></i></button>
                   </div>
                   {/* Table 컴포넌트를 이용하여 테이블을 생성합니다. */}
-                  <Table columns={domaincolumns} data={domaindata} onRowClick={handleDomainClick} />
+                  <Table columns={TableColumnsInfo.STORAGE_DOMAINS} data={domaindata} onRowClick={handleDomainClick} />
                 </div>
               </>
             )}
@@ -568,7 +554,7 @@ const Storage = () => {
               </div>
               
               <div className="section_table_outer">
-                <Table columns={eventcolumns} data={eventdata} onRowClick={() => console.log('Row clicked')} />
+                <Table columns={TableColumnsInfo.EVENTS} data={eventdata} onRowClick={() => console.log('Row clicked')} />
               </div>
               </>
             )}

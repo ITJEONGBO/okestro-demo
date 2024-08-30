@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
-import './css/Network.css';
-import { Table } from '../table/Table';
+import { Table, TableColumnsInfo } from '../table/Table';
 import HeaderButton from '../button/HeaderButton';
+import './css/Network.css';
+import ApiManager from '../../api/ApiManager';
 
 Modal.setAppElement('#root');
 
 const Network = () => {
+    // 테이블 데이터
+    const [data, setData] = useState([]);
     const [activeSection, setActiveSection] = useState('common_outer');
     const [selectedTab, setSelectedTab] = useState('network_new_common_btn');
     const [activePopup, setActivePopup] = useState(null);
@@ -37,6 +40,41 @@ const Network = () => {
         };
     }, []);
 
+    useEffect(() => {
+        const fetchData = async () => {
+            const res = await ApiManager.findAllNetworks()
+            const items = res.map((e) => toTableItemPredicate(e))
+            setData(items)
+        }
+        fetchData()
+    }, [])
+
+    /**
+     * @name toTableItemPredicate
+     * @description
+     * 
+     * @see ApiManager (api)
+     * @see  (api)
+     */
+    const toTableItemPredicate = (e) => {
+        return {
+            id: e?.id ?? '',
+            name: (
+                <span
+                  style={{ color: 'blue', cursor: 'pointer'}}
+                  onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
+                  onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
+                >
+                    {e?.name ?? ''}
+                </span>
+            ),
+            description: e?.description ?? '',
+            dataCenter: e?.dataCenterVo?.name ?? '', 
+            provider: 'Provider1',  // TODO: 제공자 뭐 넣어줘야 되지?
+            portSeparation: (e?.portIsolation == true) ? '예' : '아니요',
+        }
+    }
+
     const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
     const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
 
@@ -60,39 +98,6 @@ const Network = () => {
     const handleTabClick = (tab) => {
         setSelectedTab(tab);
     };
-
-    // 테이블 데이터
-    const data = [
-        { name: (
-            <span
-            style={{ color: 'blue', cursor: 'pointer'}}
-            onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
-            onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
-          >
-            ovirtmgmt
-          </span>
-        ), 
-        description: 'Management Network', dataCenter: 'DC1', provider: 'Provider1', portSeparation: '아니요' },
-        { name: (
-            <span
-            style={{ color: 'blue', cursor: 'pointer'}}
-            onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
-            onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
-          >
-            example1
-          </span>
-        ), 
-        description: 'Example Description 1', dataCenter: 'DC2', provider: 'Provider2', portSeparation: '아니요' },
-        
-    ];
-
-    const columns = [
-        { header: '이름', accessor: 'name', clickable: true },
-        { header: '설명', accessor: 'description', clickable: false },
-        { header: '데이터센터', accessor: 'dataCenter', clickable: false },
-        { header: '공급자', accessor: 'provider', clickable: false },
-        { header: '포트분리', accessor: 'portSeparation', clickable: false },
-    ];
 
     const sectionHeaderButtons = [
 
@@ -127,7 +132,7 @@ const Network = () => {
                         <button>삭제</button>
                     </div>
                     <div className="section_table_outer">
-                        <Table columns={columns} data={data} onRowClick={handleNetworkNameClick} />
+                        <Table columns={TableColumnsInfo.NETWORKS} data={data} onRowClick={handleNetworkNameClick} />
                     </div>
                 </div>
             </div>

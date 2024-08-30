@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
-import HeaderButton from '../button/HeaderButton';
-import { useParams} from 'react-router-dom';
-import './css/DataCenterDetail.css';
+import { useParams, useNavigate } from 'react-router-dom';
 import NavButton from '../navigation/NavButton';
-import { Table } from '../table/Table';
-import { useNavigate } from 'react-router-dom';
+import HeaderButton from '../button/HeaderButton';
 import Footer from '../footer/Footer';
+import { Table, TableColumnsInfo } from '../table/Table';
+import './css/DataCenterDetail.css';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -54,17 +53,6 @@ const DataCenterDetail = () => {
 
   // 테이블 컴포넌트
   // 스토리지
-  const storagecolumns = [
-    { header: '', accessor: 'icon' }, // 이모티콘을 표시할 열
-    { header: '', accessor: 'icon2' }, // 이모티콘을 표시할 열
-    { header: '도메인 이름', accessor: 'domainName' },
-    { header: '도메인 유형', accessor: 'domainType' },
-    { header: '상태', accessor: 'status' },
-    { header: '여유 공간 (GiB)', accessor: 'freeSpace' },
-    { header: '사용된 공간', accessor: 'usedSpace' },
-    { header: '전체 공간 (GiB)', accessor: 'totalSpace' },
-    { header: '설명', accessor: 'description' },
-  ];
   const storagedata = [
     {
       icon: '👑', // 이모티콘 추가
@@ -88,10 +76,6 @@ const DataCenterDetail = () => {
   ];
 
   // 논리네트워크
-  const logicalcolumns = [
-    { header: '이름', accessor: 'logicalName' },
-    { header: '설명', accessor: 'description' },
-  ];
   const logicaldata = [
     {
       logicalName: (
@@ -108,11 +92,6 @@ const DataCenterDetail = () => {
   ];
 
   //클러스터
-  const clustercolumns = [
-    { header: '이름', accessor: 'clusterName' },
-    { header: '호환 버전', accessor: 'version' },  // 호환 버전 열 추가
-    { header: '설명', accessor: 'description' }
-  ];
   const clusterdata = [
     {
       clusterName: (
@@ -130,11 +109,6 @@ const DataCenterDetail = () => {
   ];
 
   //Qos
-  const Qoscolumns = [
-    { header: '이름', accessor: 'QosName' },
-    { header: '호환 버전', accessor: 'version' },
-    { header: '설명', accessor: 'description' }
-  ];
   const Qosdata = [
     {
       QosName: 'dd',  
@@ -144,15 +118,6 @@ const DataCenterDetail = () => {
   ];
 
   //권한
-  const permissionColumns = [
-    { header: '', accessor: 'icon', clickable: false },
-    { header: '사용자', accessor: 'user', clickable: false },
-    { header: '인증 공급자', accessor: 'authProvider', clickable: false },
-    { header: '네임스페이스', accessor: 'namespace', clickable: false },
-    { header: '역할', accessor: 'role', clickable: false },
-    { header: '생성일', accessor: 'createdDate', clickable: false },
-    { header: 'Inherited From', accessor: 'inheritedFrom', clickable: false },
-  ];
   const permissionData = [
     {
       icon: <i className="fa fa-user"></i>,
@@ -166,14 +131,6 @@ const DataCenterDetail = () => {
   ];
 
   // 이벤트
-  const eventColumns = [
-    { header: '', accessor: 'statusIcon', clickable: false },
-    { header: '시간', accessor: 'time', clickable: false },
-    { header: '메시지', accessor: 'message', clickable: false },
-    { header: '상관 관계 ID', accessor: 'correlationId', clickable: false },
-    { header: '소스', accessor: 'source', clickable: false },
-    { header: '사용자 지정 이벤트 ID', accessor: 'customEventId', clickable: false },
-  ];
   const eventData = [
     {
       statusIcon: <i className="fa fa-check" style={{ color: 'green' }}></i>,
@@ -232,9 +189,8 @@ const DataCenterDetail = () => {
                 <button>
                   <i className="fa fa-refresh"></i>
                 </button>
-                <Table columns={storagecolumns} data={storagedata} onRowClick={handleRowClick} />
+                <Table columns={TableColumnsInfo.STORAGES_FROM_DATACENTER} data={storagedata} onRowClick={handleRowClick} />
               </div>
-
             </>
           )}
           {activeTab === 'logical_network' && (
@@ -245,7 +201,7 @@ const DataCenterDetail = () => {
                   <button>삭제</button>
                 </div>
                 <div className="section_table_outer">
-                  <Table columns={logicalcolumns} data={logicaldata} onRowClick={handleRowClick} />
+                  <Table columns={TableColumnsInfo.LUN_SIMPLE} data={logicaldata} onRowClick={handleRowClick} />
                 </div>
               </>
           )}
@@ -253,7 +209,7 @@ const DataCenterDetail = () => {
               <>
               <div className="host_empty_outer">
                 <div className="section_table_outer">
-                  <Table columns={clustercolumns} data={clusterdata} onRowClick={handleRowClick} />
+                  <Table columns={TableColumnsInfo.CLUSTERS_FROM_DATACENTER} data={clusterdata} onRowClick={handleRowClick} />
                 </div>
               </div>
             </>
@@ -262,7 +218,7 @@ const DataCenterDetail = () => {
               <>
               <div className="host_empty_outer">
                 <div className="section_table_outer">
-                  <Table columns={Qoscolumns} data={Qosdata} onRowClick={handleRowClick} />
+                  <Table columns={TableColumnsInfo.QOSS_FROM_DATACENTER} data={Qosdata} onRowClick={handleRowClick} />
                 </div>
               </div>
             </>
@@ -285,7 +241,7 @@ const DataCenterDetail = () => {
                 </div>
                 
                 <div className="section_table_outer">
-                <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
+                <Table columns={TableColumnsInfo.PERMISSIONS} data={permissionData} onRowClick={() => console.log('Row clicked')} />
                 </div>
               </div>
         </>
@@ -294,7 +250,7 @@ const DataCenterDetail = () => {
           <>
         <div className="host_empty_outer">
             <div className="section_table_outer">
-                <Table columns={eventColumns} data={eventData} onRowClick={() => console.log('Row clicked')} />
+                <Table columns={TableColumnsInfo.EVENTS} data={eventData} onRowClick={() => console.log('Row clicked')} />
             </div>
         </div>
         </>

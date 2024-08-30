@@ -1,19 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import './Setting.css';
-import { Table } from './table/Table';
+import { Table, TableColumnsInfo } from './table/Table';
 
 const Setting = ({ }) => {
     //테이블 컴포넌트
-    const sessionColumns = [
-      { header: '세션 DB ID', accessor: 'sessionId', clickable: false },
-      { header: '사용자 이름', accessor: 'username', clickable: false },
-      { header: '인증 공급자', accessor: 'authProvider', clickable: false },
-      { header: '사용자 ID', accessor: 'userId', clickable: false },
-      { header: '소스 IP', accessor: 'sourceIp', clickable: false },
-      { header: '세션 시작 시간', accessor: 'sessionStartTime', clickable: false },
-      { header: '마지막 세션 활성', accessor: 'lastSessionActive', clickable: false },
-    ];
-  
     const sessionData = [
       {
         sessionId: '3204',
@@ -107,7 +97,7 @@ const Setting = ({ }) => {
                 <button>세션종료</button>
               </div>
             </div>
-            <Table columns={sessionColumns} data={sessionData} onRowClick={() => console.log('Row clicked')} />
+            <Table columns={TableColumnsInfo.SESSIONS} data={sessionData} onRowClick={() => console.log('Row clicked')} />
           </div>
         </div>
   

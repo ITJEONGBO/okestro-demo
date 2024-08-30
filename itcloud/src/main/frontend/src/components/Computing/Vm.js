@@ -11,27 +11,29 @@ Modal.setAppElement('#root');
 // 네트워크 인터페이스
 const NetworkSection = () => {
   const { name} = useParams(); 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [visibleDetails, setVisibleDetails] = useState([]);
-    useEffect(() => {
-      setVisibleDetails(Array(3).fill(false)); // 초기 상태: 모든 detail 숨김
-    }, []);
-    // 팝업 열기/닫기 핸들러
-    const openModal = () => setIsModalOpen(true);
-    const closeModal = () => setIsModalOpen(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [visibleDetails, setVisibleDetails] = useState([]);
+  useEffect(() => {
+    setVisibleDetails(Array(3).fill(false)); // 초기 상태: 모든 detail 숨김
+  }, []);
+    
+  // 팝업 열기/닫기 핸들러
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
   
-    //table반복
-    useEffect(() => {
-      const container = document.getElementById("network_content_outer");
-      const originalContent = document.querySelector('.network_content');
-      
-  
-      for (let i = 0; i < 3; i++) {
-        const clone = originalContent.cloneNode(true);
-        container.appendChild(clone);
-      }
-    }, []);
-   const toggleDetails = (index) => {
+  //table반복
+  useEffect(() => {
+    const container = document.getElementById("network_content_outer");
+    const originalContent = document.querySelector('.network_content');
+    
+
+    for (let i = 0; i < 3; i++) {
+      const clone = originalContent.cloneNode(true);
+      container.appendChild(clone);
+    }
+  }, []);
+
+  const toggleDetails = (index) => {
     setVisibleDetails((prevDetails) => {
       const newDetails = [...prevDetails];
       newDetails[index] = !newDetails[index];
@@ -189,8 +191,6 @@ const NetworkSection = () => {
   );
 };
 
-
-  
 
 // 디스크
 const DiskSection = () => {

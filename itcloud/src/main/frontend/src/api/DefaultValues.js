@@ -40,6 +40,48 @@ const DEFAULT_VALUES = {
           description: 'The default Data Center',
       },
   ],
+  FIND_ALL_CLUSTERS: [
+    {
+      status: '',
+      name: 'Default',
+      comment: '',
+      version: '4.7',
+      description: 'The default server cluster',
+      cpuType: 'Secure Intel Cascadelake',
+      hostCount: 2,
+      vmCount: 7,
+      upgradeStatus: '',
+    },
+  ],
+  FIND_ALL_NETWORKS: [
+    { 
+      name: 'ovirtmgmt', 
+      description: 'Management Network', 
+      dataCenter: 'DC1', 
+      provider: 'Provider1', 
+      portSeparation: '아니요' 
+    }, { 
+      name: 'example1', 
+      description: 'Example Description 1', 
+      dataCenter: 'DC2', 
+      provider: 'Provider2', 
+      portSeparation: '아니요' 
+    },
+  ],
+  FIND_ALL_STORAGE_DOMAINS: [
+    {
+      domainName: 'ㅁㅎㅇㅁㄹㄹ', // 여기에 도메인 이름을 설정합니다.
+      comment: '',
+      domainType: '',
+      storageType: '',
+      format: '',
+      dataCenterStatus: '',
+      totalSpace: '',
+      freeSpace: '',
+      reservedSpace: '',
+      description: '',
+    }
+  ]
 }
 
 export default DEFAULT_VALUES

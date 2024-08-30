@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import TableColumnsInfo from './TableColumnsInfo';
 
 const Table = ({ columns, data, onRowClick }) => {
   return (
@@ -29,4 +29,4 @@ const Table = ({ columns, data, onRowClick }) => {
   );
 };
 
-export { Table };
+export { Table, TableColumnsInfo };

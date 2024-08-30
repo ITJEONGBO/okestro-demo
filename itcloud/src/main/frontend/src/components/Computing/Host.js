@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
 import HeaderButton from '../button/HeaderButton';
-import { Table } from '../table/Table';
+import { Table, TableColumnsInfo } from '../table/Table';
 import Footer from '../footer/Footer';
 
 Modal.setAppElement('#root');
@@ -130,7 +130,7 @@ const Host = () => {
             <button>
               <i className="fa fa-refresh"></i>
             </button>
-            <Table columns={columns} data={data} onRowClick={handleRowClick} />
+            <Table columns={TableColumnsInfo.HOSTS_ALT} data={data} onRowClick={handleRowClick} />
           </div>
         </div>
       </div>

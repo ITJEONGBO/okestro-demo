@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
-import { Table } from '../table/Table';
+import { Table, TableColumnsInfo } from '../table/Table';
 
 import { useParams } from 'react-router-dom';
 
@@ -24,16 +24,6 @@ function ClusterName() {
     };
 
     // 논리 네트워크 테이블 컴포넌트
-    const columns = [
-        { header: '', accessor: 'icon', clickable: false },
-        { header: '사용자', accessor: 'user', clickable: true },
-        { header: '인증 공급자', accessor: 'authProvider', clickable: false },
-        { header: '네임스페이스', accessor: 'namespace', clickable: false },
-        { header: '역할', accessor: 'role', clickable: false },
-        { header: '생성일', accessor: 'createdDate', clickable: false },
-        { header: 'Inherited From', accessor: 'inheritedFrom', clickable: false },
-    ];
-
     const data = [
         {
             icon: <i className="fa fa-user"></i>,
@@ -47,15 +37,6 @@ function ClusterName() {
     ];
 
     // 호스트 테이블 컴포넌트
-    const hostColumns = [
-        { header: '', accessor: 'icon', clickable: false },  // 이모티콘 칸
-        { header: '이름', accessor: 'name', clickable: false },
-        { header: '호스트이름/IP', accessor: 'hostNameIP', clickable: false },
-        { header: '상태', accessor: 'status', clickable: false },
-        { header: '불러오기', accessor: 'loading', clickable: false },
-        { header: '디스플레이 주소 덮어쓰기', accessor: 'displayAddress', clickable: false }
-    ];
-
     const hostData = [
         {
             icon: <i className="fa fa-exclamation-triangle" style={{ color: 'red' }}></i>,  // 예시 이모티콘
@@ -105,16 +86,6 @@ function ClusterName() {
     ];
 
     // 권한 테이블 컴포넌트
-    const permissionColumns = [
-        { header: '', accessor: 'icon', clickable: false },
-        { header: '사용자', accessor: 'user', clickable: false },
-        { header: '인증 공급자', accessor: 'authProvider', clickable: false },
-        { header: '네임스페이스', accessor: 'namespace', clickable: false },
-        { header: '역할', accessor: 'role', clickable: false },
-        { header: '생성일', accessor: 'createdDate', clickable: false },
-        { header: 'Inherited From', accessor: 'inheritedFrom', clickable: false },
-    ];
-
     const permissionData = [
         {
             icon: <i className="fa fa-user"></i>,
@@ -128,12 +99,6 @@ function ClusterName() {
     ];
 
     // 선호도 레이블 테이블 컴포넌트
-    const memberColumns = [
-        { header: '이름', accessor: 'name', clickable: false },
-        { header: '가상머신 멤버', accessor: 'vmMember', clickable: false },
-        { header: '호스트 멤버', accessor: 'hostMember', clickable: false },
-    ];
-
     const memberData = [
         {
             name: '',
@@ -146,15 +111,6 @@ function ClusterName() {
     ];
 
     // 이벤트 테이블 컴포넌트
-    const storageColumns = [
-        { header: '', accessor: 'icon', clickable: false },  // 이모티콘 또는 상태 아이콘 칸
-        { header: '시간', accessor: 'time', clickable: false },
-        { header: '메시지', accessor: 'message', clickable: false },
-        { header: '상관 관계 ID', accessor: 'correlationId', clickable: false },
-        { header: '소스', accessor: 'source', clickable: false },
-        { header: '사용자 지정 이벤트 ID', accessor: 'userEventId', clickable: false },
-    ];
-
     const storageData = [
         {
             icon: <i className="fa fa-check-circle" style={{ color: 'green' }}></i>,  // 상태 아이콘
@@ -281,7 +237,7 @@ function ClusterName() {
                                         </div>
                                     </div>
                                     <div className="section_table_outer">
-                                        <Table columns={columns} data={data} onRowClick={handleRowClick} />
+                                        <Table columns={TableColumnsInfo.LUNS} data={data} onRowClick={handleRowClick} />
                                     </div>
                                 </>
                             )}
@@ -293,7 +249,7 @@ function ClusterName() {
                                     </div>
     
                                     <div className="section_table_outer">
-                                        <Table columns={hostColumns} data={hostData} onRowClick={() => console.log('Row clicked')} />
+                                        <Table columns={TableColumnsInfo.HOSTS_FROM_CLUSTER} data={hostData} onRowClick={() => console.log('Row clicked')} />
                                     </div>
                                 </>
                             )}
@@ -309,7 +265,7 @@ function ClusterName() {
                                     </div>
     
                                     <div className="section_table_outer">
-                                        <Table columns={volumeColumns} data={volumeData} onRowClick={() => console.log('Row clicked')} />
+                                        <Table columns={TableColumnsInfo.VOLUMES_FROM_CLUSTER} data={volumeData} onRowClick={() => console.log('Row clicked')} />
                                     </div>
                                 </>
                             )}
@@ -330,7 +286,7 @@ function ClusterName() {
                                     </div>
     
                                     <div className="section_table_outer">
-                                        <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
+                                        <Table columns={TableColumnsInfo.PERMISSIONS} data={permissionData} onRowClick={() => console.log('Row clicked')} />
                                     </div>
                                 </>
                             )}
@@ -344,7 +300,7 @@ function ClusterName() {
                                     </div>
     
                                     <div className="section_table_outer">
-                                        <Table columns={memberColumns} data={memberData} onRowClick={() => console.log('Row clicked')} />
+                                        <Table columns={TableColumnsInfo.AFFINITY_LABELS} data={memberData} onRowClick={() => console.log('Row clicked')} />
                                     </div>
                                 </>
                             )}
@@ -353,7 +309,7 @@ function ClusterName() {
                             {activeTab === 'permission' && (
                                 <div className="host_empty_outer">
                                     <div className="section_table_outer">
-                                        <Table columns={storageColumns} data={storageData} onRowClick={() => console.log('Row clicked')} />
+                                        <Table columns={TableColumnsInfo.PERMISSIONS} data={storageData} onRowClick={() => console.log('Row clicked')} />
                                     </div>
                                 </div>
                             )}
@@ -362,7 +318,7 @@ function ClusterName() {
                             {activeTab === 'event' && (
                                 <div className="host_empty_outer">
                                     <div className="section_table_outer">
-                                        <Table columns={storageColumns} data={storageData} onRowClick={() => console.log('Row clicked')} />
+                                        <Table columns={TableColumnsInfo.EVENTS} data={storageData} onRowClick={() => console.log('Row clicked')} />
                                     </div>
                                 </div>
                             )}

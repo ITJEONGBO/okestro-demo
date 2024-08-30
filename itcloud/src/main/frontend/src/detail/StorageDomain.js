@@ -1,9 +1,9 @@
 import React, { useState,useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import NavButton from '../components/navigation/NavButton';
 import HeaderButton from '../components/button/HeaderButton';
-import { Table } from '../components/table/Table';
+import { Table, TableColumnsInfo } from '../components/table/Table';
 import './css/StorageDomain.css';
-import { useParams } from 'react-router-dom';
 
 function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const { name } = useParams(); // URL에서 name 파라미터를 가져옵니다.
@@ -97,15 +97,6 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   const snapshotData = [];
 
   // 이벤트
-  const eventColumns = [
-    { header: '', accessor: 'statusIcon', clickable: false },
-    { header: '시간', accessor: 'time', clickable: false },
-    { header: '메시지', accessor: 'message', clickable: false },
-    { header: '상관 관계 ID', accessor: 'correlationId', clickable: false },
-    { header: '소스', accessor: 'source', clickable: false },
-    { header: '사용자 지정 이벤트 ID', accessor: 'customEventId', clickable: false },
-  ];
-  
   const eventData = [
     {
       statusIcon: <i className="fa fa-check" style={{ color: 'green' }}></i>,
@@ -116,17 +107,8 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
       customEventId: '',
     },
   ];
-  //권한
-  const permissionColumns = [
-    { header: '', accessor: 'icon', clickable: false },
-    { header: '사용자', accessor: 'user', clickable: false },
-    { header: '인증 공급자', accessor: 'authProvider', clickable: false },
-    { header: '네임스페이스', accessor: 'namespace', clickable: false },
-    { header: '역할', accessor: 'role', clickable: false },
-    { header: '생성일', accessor: 'createdDate', clickable: false },
-    { header: 'Inherited From', accessor: 'inheritedFrom', clickable: false },
-  ];
 
+  //권한
   const permissionData = [
     {
       icon: <i className="fa fa-user"></i>,
@@ -281,7 +263,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
               </div>
               
               <div className="section_table_outer">
-                <Table columns={dataCenterColumns} data={dataCenterData} onRowClick={() => console.log('Row clicked')} />
+                <Table columns={TableColumnsInfo.STORAGE_DOMAIN_FROM_DATACENTER} data={dataCenterData} onRowClick={() => console.log('Row clicked')} />
               </div>
 
           </>
@@ -410,7 +392,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
           <>
         <div className="host_empty_outer">
             <div className="section_table_outer">
-                <Table columns={eventColumns} data={eventData} onRowClick={() => console.log('Row clicked')} />
+                <Table columns={TableColumnsInfo.EVENTS} data={eventData} onRowClick={() => console.log('Row clicked')} />
             </div>
         </div>
         </>
@@ -434,7 +416,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                 </div>
                 
                 <div className="section_table_outer">
-                <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
+                <Table columns={TableColumnsInfo.PERMISSIONS} data={permissionData} onRowClick={() => console.log('Row clicked')} />
                 </div>
               </div>
         </>

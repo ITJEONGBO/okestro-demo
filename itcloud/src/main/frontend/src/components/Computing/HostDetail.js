@@ -1,28 +1,16 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
-import { Table } from '../table/Table';
-import './css/HostDetail.css';
-import { useParams } from 'react-router-dom';
 import Footer from '../footer/Footer';
+import { Table, TableColumnsInfo } from '../table/Table';
+import './css/HostDetail.css';
 function HostDetail() {
   const { name } = useParams();
   //클릭한 이름 받아오기
 
     //테이블컴포넌트
      // 가상머신 
-     const columns = [
-        { header: '이름', accessor: 'name', clickable: false },
-        { header: '클러스터', accessor: 'cluster', clickable: false },
-        { header: 'IP 주소', accessor: 'ipAddress', clickable: false },
-        { header: 'FQDN', accessor: 'fqdn', clickable: false },
-        { header: '메모리', accessor: 'memory', clickable: false },
-        { header: 'CPU', accessor: 'cpu', clickable: false },
-        { header: '네트워크', accessor: 'network', clickable: false },
-        { header: '상태', accessor: 'status', clickable: false },
-        { header: '업타임', accessor: 'uptime', clickable: false },
-      ];
-      
       const data = [
         {
           name: (
@@ -122,16 +110,6 @@ function HostDetail() {
     }
   ];
     // 권한
-    const permissionColumns = [
-        { header: '', accessor: 'icon', clickable: false },
-        { header: '사용자', accessor: 'user', clickable: false },
-        { header: '인증 공급자', accessor: 'authProvider', clickable: false },
-        { header: '네임스페이스', accessor: 'namespace', clickable: false },
-        { header: '역할', accessor: 'role', clickable: false },
-        { header: '생성일', accessor: 'createdDate', clickable: false },
-        { header: 'Inherited From', accessor: 'inheritedFrom', clickable: false },
-      ];
-    
       const permissionData = [
         {
           icon: <i className="fa fa-user"></i>,
@@ -143,13 +121,8 @@ function HostDetail() {
           inheritedFrom: '(시스템)',
         },
       ];
+ 
       //선호도 레이블
-      const memberColumns = [
-        { header: '이름', accessor: 'name', clickable: false },
-        { header: '가상머신 멤버', accessor: 'vmMember', clickable: false },
-        { header: '호스트 멤버', accessor: 'hostMember', clickable: false },
-      ];
-    
       const memberData = [
         {
           name: '',
@@ -162,15 +135,6 @@ function HostDetail() {
       ];
 
       // 이벤트
-      const eventColumns = [
-        { header: '', accessor: 'icon', clickable: false },
-        { header: '시간', accessor: 'time', clickable: false },
-        { header: '메세지', accessor: 'message', clickable: false },
-        { header: '상관 관계 ID', accessor: 'correlationId', clickable: false },
-        { header: '소스', accessor: 'source', clickable: false },
-        { header: '사용자 지정 이벤트 ID', accessor: 'userEventId', clickable: false },
-      ];
-      
       const eventData = [
         {
           icon: <i className="fa fa-check-circle" style={{ color: 'green' }}></i>,
@@ -184,7 +148,6 @@ function HostDetail() {
       
     //
     const [activeTab, setActiveTab] = useState('general');
-
     const handleTabClick = (tab) => {
         setActiveTab(tab);
     };
@@ -476,7 +439,7 @@ function HostDetail() {
                         </div>
 
                         <div className="section_table_outer">
-                          <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
+                          <Table columns={TableColumnsInfo.VMS_FROM_HOST} data={data} onRowClick={() => console.log('Row clicked')} />
                         </div>
               </>
                 )}
@@ -543,7 +506,7 @@ function HostDetail() {
                         style={{ display: visibleBoxes.includes(index) ? 'block' : 'none' }}
                       >
                          <div className="section_table_outer">
-                          <Table columns={networkcolumns} data={networkdata} onRowClick={() => console.log('Row clicked')} />
+                          <Table columns={TableColumnsInfo.NETWORKS_FROM_HOST} data={networkdata} onRowClick={() => console.log('Row clicked')} />
                         </div>
                       </div>
                     </div>
@@ -562,7 +525,7 @@ function HostDetail() {
                             <button>재시작</button>
                         </div>
                         <div className="section_table_outer">
-                          <Table columns={volumeColumns} data={volumeData} onRowClick={() => console.log('Row clicked')} />
+                          <Table columns={TableColumnsInfo.VOLUMES_FROM_HOST} data={volumeData} onRowClick={() => console.log('Row clicked')} />
                         </div>
                 </>
                 )}
@@ -583,7 +546,7 @@ function HostDetail() {
                       </div>
                   </div>
                   <div className="section_table_outer">
-                    <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
+                    <Table columns={TableColumnsInfo.PERMISSIONS} data={permissionData} onRowClick={() => console.log('Row clicked')} />
                   </div>
                    
                 </>
@@ -597,7 +560,7 @@ function HostDetail() {
                           <button>편집</button>
                       </div>
                       <div className="section_table_outer">
-                        <Table columns={memberColumns} data={memberData} onRowClick={() => console.log('Row clicked')} />
+                        <Table columns={TableColumnsInfo.AFFINITY_LABELS} data={memberData} onRowClick={() => console.log('Row clicked')} />
                       </div>        
                 </>
                 )}
@@ -606,7 +569,7 @@ function HostDetail() {
                 {activeTab === 'event' && (
                 <div className="host_empty_outer">
                    <div className="section_table_outer">
-                        <Table columns={eventColumns} data={eventData} onRowClick={() => console.log('Row clicked')} />
+                        <Table columns={TableColumnsInfo.EVENTS} data={eventData} onRowClick={() => console.log('Row clicked')} />
                     </div>
                     
                 </div>

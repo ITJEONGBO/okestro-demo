@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import NavButton from '../components/navigation/NavButton';
 import HeaderButton from '../components/button/HeaderButton';
-import { Table } from '../components/table/Table';
+import { Table, TableColumnsInfo } from '../components/table/Table';
 import './css/StorageDisk.css';
 import Footer from '../components/footer/Footer';
 
@@ -11,33 +11,9 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
 
   // 테이블 컴포넌트
   // 가상머신
-  const vmColumns = [
-    { header: '이름', accessor: 'name', clickable: false },
-    { header: '클러스터', accessor: 'cluster', clickable: false },
-    { header: 'IP 주소', accessor: 'ipAddress', clickable: false },
-    { header: 'FQDN', accessor: 'fqdn', clickable: false },
-    { header: '메모리', accessor: 'memory', clickable: false },
-    { header: 'CPU', accessor: 'cpu', clickable: false },
-    { header: '네트워크', accessor: 'network', clickable: false },
-    { header: '상태', accessor: 'status', clickable: false },
-    { header: '업타임', accessor: 'uptime', clickable: false },
-  ];
-
   const vmData = [];
 
   // 스토리지
-  const storageColumns = [
-    { header: '', accessor: 'icon1', clickable: false },
-    { header: '', accessor: 'icon2', clickable: false },
-    { header: '도메인 이름', accessor: 'domainName', clickable: false },
-    { header: '도메인 유형', accessor: 'domainType', clickable: false },
-    { header: '상태', accessor: 'status', clickable: false },
-    { header: '여유 공간 (GiB)', accessor: 'freeSpace', clickable: false },
-    { header: '사용된 공간 (GiB)', accessor: 'usedSpace', clickable: false },
-    { header: '전체 공간 (GiB)', accessor: 'totalSpace', clickable: false },
-    { header: '설명', accessor: 'description', clickable: false },
-  ];
-
   const storageData = [
     {
       icon1: <i className="fa fa-icon1"></i>,
@@ -54,16 +30,6 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
   ];
 
   // 권한
-  const permissionColumns = [
-    { header: '', accessor: 'icon', clickable: false },
-    { header: '사용자', accessor: 'user', clickable: false },
-    { header: '인증 공급자', accessor: 'authProvider', clickable: false },
-    { header: '네임스페이스', accessor: 'namespace', clickable: false },
-    { header: '역할', accessor: 'role', clickable: false },
-    { header: '생성일', accessor: 'createdDate', clickable: false },
-    { header: 'Inherited From', accessor: 'inheritedFrom', clickable: false },
-  ];
-
   const permissionData = [
     {
       icon: <i className="fa fa-user"></i>,
@@ -200,7 +166,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
           {activeTab === 'machine' && (
             <div className="host_empty_outer">
               <div className="section_table_outer">
-                <Table columns={vmColumns} data={vmData} onRowClick={() => console.log('Row clicked')} />
+                <Table columns={TableColumnsInfo.VMS_FROM_DISK} data={vmData} onRowClick={() => console.log('Row clicked')} />
               </div>
             </div>
           )}
@@ -208,7 +174,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
           {activeTab === 'storage' && (
             <div className="host_empty_outer">
               <div className="section_table_outer">
-                <Table columns={storageColumns} data={storageData} onRowClick={() => console.log('Row clicked')} />
+                <Table columns={TableColumnsInfo.STORAGES_FROM_DISK} data={storageData} onRowClick={() => console.log('Row clicked')} />
               </div>
             </div>
           )}
@@ -228,7 +194,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
                     <button>Direct</button>
                   </div>
                 </div>
-                <Table columns={permissionColumns} data={permissionData} onRowClick={() => console.log('Row clicked')} />
+                <Table columns={TableColumnsInfo.PERMISSIONS} data={permissionData} onRowClick={() => console.log('Row clicked')} />
               </div>
             </>
           )}

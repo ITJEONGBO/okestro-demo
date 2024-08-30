@@ -92,10 +92,25 @@ const ApiManager = {
    * @see Computing.js (components/Computing)
    */
   findAllDataCenters: async () => makeAPICall(ENDPOINTS.FIND_ALL_DATA_CENTERS(), DEFAULT_VALUES.FIND_ALL_DATA_CENTERS),
+  /**
+   * @name findAllClustersFromDataCenter
+   * @description
+   * 
+   * @returns 
+   */
+  findAllClusters: async () => makeAPICall(ENDPOINTS.FIND_ALL_CLUSTERS(), DEFAULT_VALUES.FIND_ALL_CLUSTERS),
   //endregion: DataCenter
+
+  //region: Network
   /**
    * 
    */
+  findAllNetworks: async () => makeAPICall(ENDPOINTS.FIND_ALL_NETWORKS(), DEFAULT_VALUES.FIND_ALL_NETWORKS),
+  //endregion: Network
+  
+  //region: StorageDomain
+  findAllStorageDomains: async () => makeAPICall(ENDPOINTS.FIND_ALL_STORAGE_DOMAINS(), DEFAULT_VALUES.FIND_ALL_STORAGE_DOMAINS),
+  //endregion: StorageDomain
 }
 
 export default ApiManager

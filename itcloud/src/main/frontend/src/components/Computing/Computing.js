@@ -6,6 +6,7 @@ import HeaderButton from '../button/HeaderButton';
 import Footer from '../footer/Footer';
 import { Table } from '../table/Table';
 import ApiManager from '../../api/ApiManager';
+import TableColumnsInfo from '../table/TableColumnsInfo';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -57,16 +58,6 @@ const Computing = () => {
         { id: 'delete_btn', label: '삭제', onClick: () => {} },
     ];
 
-    const columns = [
-        { header: '', accessor: 'iconStatus' }, 
-        { header: '이름', accessor: 'name', clickable: true }, 
-        { header: '코멘트', accessor: 'comment' },
-        { header: '스토리지 유형', accessor: 'storageType' },
-        { header: '상태', accessor: 'status' },
-        { header: '호환 버전', accessor: 'compatVersion' },
-        { header: '설명', accessor: 'description' },
-    ];
-    
     return (
         <div id="section">
             {sectionContent === 'default' ? (
@@ -86,7 +77,7 @@ const Computing = () => {
                                     <i className="fa fa-refresh"></i>
                                 </button>
                                 <Table
-                                    columns={columns}
+                                    columns={TableColumnsInfo.DATACENTERS}
                                     data={datacenters}
                                     onRowClick={(row, column) => {
                                         if (column.accessor === 'name') {

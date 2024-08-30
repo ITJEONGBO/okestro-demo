@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import HeaderButton from '../button/HeaderButton';
-import { Table } from '../table/Table';
-import './css/Cluster.css';
+import { Table, TableColumnsInfo } from '../table/Table';
 import Footer from '../footer/Footer';
+import './css/Cluster.css';
+import DEFAULT_VALUES from '../../api/DefaultValues';
+import ApiManager from '../../api/ApiManager';
 
 Modal.setAppElement('#root');
 
 const Cluster = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -33,31 +35,28 @@ const Cluster = () => {
     'OVA로 내보내기',
   ];
 
-  const columns = [
-    { header: '상태', accessor: 'status', clickable: false },
-    { header: '이름', accessor: 'name', clickable: true },
-    { header: '코멘트', accessor: 'comment', clickable: false },
-    { header: '호환 버전', accessor: 'version', clickable: false },
-    { header: '설명', accessor: 'description', clickable: false },
-    { header: '클러스터 CPU 유형', accessor: 'cpuType', clickable: false },
-    { header: '호스트 수', accessor: 'hostCount', clickable: false },
-    { header: '가상 머신 수', accessor: 'vmCount', clickable: false },
-    { header: '업그레이드 상태', accessor: 'upgradeStatus', clickable: false },
-  ];
-
-  const data = [
-    {
+  const [data, setData] = useState(DEFAULT_VALUES.FIND_ALL_CLUSTERS);
+  useEffect(() => {
+    const fetchData = async () => {
+        const res = await ApiManager.findAllClusters()
+        const items = res.map((e) => toTableItemPredicate(e))
+        setData(items)
+    }
+    fetchData()
+  }, [])
+  const toTableItemPredicate = (e) => {
+    return {
       status: '',
-      name: 'Default',
-      comment: '',
-      version: '4.7',
-      description: 'The default server cluster',
-      cpuType: 'Secure Intel Cascadelake',
-      hostCount: 2,
-      vmCount: 7,
-      upgradeStatus: '',
-    },
-  ];
+      name: e?.name ?? '',
+      comment: e?.comment ?? '',
+      version: e?.version ?? '0.0',
+      description: e?.description ?? '설명없음',
+      cpuType: e?.cpuType ?? 'CPU 정보 없음',
+      hostCount: e?.hostSizeVo?.allCnt ?? 0,
+      vmCount: e?.vmSizeVo?.allCnt ?? 0,
+      upgradeStatus: '', // TODO: 무슨 정보 넣지?
+    }
+  }
 
   // 이름 열을 클릭했을 때 동작하는 함수
   const handleRowClick = (row, column) => {
@@ -82,7 +81,7 @@ const Cluster = () => {
             <button>
               <i className="fa fa-refresh"></i>
             </button>
-            <Table columns={columns} data={data} onRowClick={handleRowClick} />
+            <Table columns={TableColumnsInfo.CLUSTERS_ALT} data={data} onRowClick={handleRowClick} />
           </div>
         </div>
       </div>
