@@ -356,12 +356,7 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
 
               </div>
             </div>
-            <div className="section_table_outer">
-              <Table
-               
-                onRowClick={() => console.log('Row clicked')}
-              />
-            </div>
+            
           </>
         )}
 

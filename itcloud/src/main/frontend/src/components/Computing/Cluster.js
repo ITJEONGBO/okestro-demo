@@ -13,6 +13,7 @@ Modal.setAppElement('#root');
 
 const Cluster = () => {
   const navigate = useNavigate();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => setIsModalOpen(true);

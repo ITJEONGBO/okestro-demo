@@ -282,6 +282,15 @@ const TableColumnsInfo = {
     { header: '소스', accessor: 'source', clickable: false },
     { header: '사용자 지정 이벤트 ID', accessor: 'customEventId', clickable: false }
   ],
+  // 클러스터 수정해야됨
+  CLUSTERS_ALT:[
+    { header: '', accessor: 'icon', clickable: false },
+    { header: '시간', accessor: 'time', clickable: false },
+    { header: '메세지', accessor: 'message', clickable: false },
+    { header: '상관 관계 ID', accessor: 'correlationId', clickable: false },
+    { header: '소스', accessor: 'source', clickable: false },
+    { header: '사용자 지정 이벤트 ID', accessor: 'customEventId', clickable: false }
+  ]
 }
 
 export default TableColumnsInfo
