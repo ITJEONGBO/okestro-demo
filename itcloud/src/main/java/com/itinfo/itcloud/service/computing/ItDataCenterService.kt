@@ -95,7 +95,6 @@ class DataCenterServiceImpl(
 			conn.findAllDataCenters()
 				.getOrDefault(listOf())
 		return dataCenters.toDataCenterVos(conn) // java.lang.StackOverflowError
-//		return dataCenters.toDataCenterVoInfos()
 	}
 
 	@Throws(Error::class)

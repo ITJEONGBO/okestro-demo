@@ -15,7 +15,7 @@ private val log = LoggerFactory.getLogger(IdentifiedVo::class.java)
  */
 open class IdentifiedVo(
 	val id: String = "",
-	val name: String = ""
+	val name: String = "",
 ): Serializable {
 	override fun toString(): String =
 		gson.toJson(this)

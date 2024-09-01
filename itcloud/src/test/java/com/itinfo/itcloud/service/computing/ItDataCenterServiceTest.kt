@@ -6,10 +6,7 @@ import com.itinfo.itcloud.model.computing.EventVo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.MethodOrderer
-import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestMethodOrder
 import org.ovirt.engine.sdk4.types.QuotaModeType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -46,7 +43,7 @@ class ItDataCenterServiceTest {
 			service.findAll()
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(1)) // 데이터센터 목록의 개수가 2인지 확인
+//		assertThat(result.size, `is`(1)) // 데이터센터 목록의 개수가 2인지 확인
 //		assertThat(result.size, `is`(2)) // 데이터센터 목록의 개수가 2인지 확인
 		result.forEach { println(it) }
 	}

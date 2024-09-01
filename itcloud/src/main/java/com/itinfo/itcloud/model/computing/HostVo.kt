@@ -109,7 +109,8 @@ class HostVo (
     val hostSwVo: HostSwVo = HostSwVo(),
     val clusterVo: IdentifiedVo = IdentifiedVo(),
     val dataCenterVo: IdentifiedVo = IdentifiedVo(),
-    val hostNicVos: List<IdentifiedVo> = listOf(),
+    val hostNicVos: List<HostNicVo> = listOf(),
+//    val hostNicVos: List<IdentifiedVo> = listOf(),
     val vmVos: List<IdentifiedVo> = listOf()
 ): Serializable{
     override fun toString(): String = gson.toJson(this)
@@ -156,7 +157,8 @@ class HostVo (
         private var bHostSwVo: HostSwVo = HostSwVo(); fun hostSwVo(block: () -> HostSwVo?) { bHostSwVo = block() ?: HostSwVo()}
         private var bClusterVo: IdentifiedVo = IdentifiedVo(); fun clusterVo(block: () -> IdentifiedVo?) { bClusterVo = block() ?: IdentifiedVo() }
         private var bDataCenterVo: IdentifiedVo = IdentifiedVo(); fun dataCenterVo(block: () -> IdentifiedVo?) { bDataCenterVo = block() ?: IdentifiedVo() }
-        private var bHostNicVos: List<IdentifiedVo> = listOf(); fun hostNicVos(block: () -> List<IdentifiedVo>?) { bHostNicVos = block() ?: listOf() }
+//        private var bHostNicVos: List<IdentifiedVo> = listOf(); fun hostNicVos(block: () -> List<IdentifiedVo>?) { bHostNicVos = block() ?: listOf() }
+        private var bHostNicVos: List<HostNicVo> = listOf(); fun hostNicVos(block: () -> List<HostNicVo>?) { bHostNicVos = block() ?: listOf() }
         private var bVmVos: List<IdentifiedVo> = listOf(); fun vmVos(block: () -> List<IdentifiedVo>?) { bVmVos = block() ?: listOf() }
 
         fun build(): HostVo = HostVo(bId, bName, bComment, bAddress, bDevicePassThrough, bHostedActive, bHostedScore, bIscsi, bKdump, bKsm, bSeLinux, bHostedEngine, bSpmPriority, bSpmStatus, bSshFingerPrint, bSshPort, bSshPublicKey, bSshName, bSshPassWord, bStatus, bTransparentPage, bVmTotalCnt, bVmActiveCnt, bVmMigratingCnt, bMemoryTotal, bMemoryUsed, bMemoryFree, bMemoryMax, bMemoryShared, bSwapTotal, bSwapUsed, bSwapFree, bHugePage2048Free, bHugePage2048Total, bHugePage1048576Free, bHugePage1048576Total, bBootingTime, bHostHwVo, bHostSwVo, bClusterVo, bDataCenterVo, bHostNicVos, bVmVos)
@@ -235,7 +237,8 @@ fun Host.toHostVo(conn: Connection): HostVo {
 //        hostSwVo { this@toHostVo.toHostSwVo() }
         clusterVo { cluster?.fromClusterToIdentifiedVo() }
         dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
-        hostNicVos { hostNics.fromHostNicsToIdentifiedVos() }
+//        hostNicVos { hostNics.fromHostNicsToIdentifiedVos() }
+        hostNicVos { hostNics.toHostNicVos(conn) }
         vmVos { vms.fromVmsToIdentifiedVos() }
     }
 }

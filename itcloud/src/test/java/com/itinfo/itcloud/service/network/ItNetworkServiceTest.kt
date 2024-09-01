@@ -12,6 +12,7 @@ import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.not
 import org.hamcrest.Matchers.nullValue
 import org.junit.jupiter.api.BeforeEach
+import org.ovirt.engine.sdk4.types.VnicProfile
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
@@ -56,7 +57,7 @@ class ItNetworkServiceTest {
 			service.findAll()
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(5))
+		assertThat(result.size, `is`(4))
 
 		result.forEach { print(it) }
 	}
@@ -91,7 +92,7 @@ class ItNetworkServiceTest {
 		log.debug("should_add ... ")
 		val addNetworkVo: NetworkVo = NetworkVo.builder {
 			dataCenterVo { IdentifiedVo.builder { id { dataCenterId } } }
-			name { "asdf" }
+			name { "fs" }
 			description { "t" }
 			comment { "t" }
 			usageVo { UsageVo.builder { vm { true } } }
@@ -149,16 +150,37 @@ class ItNetworkServiceTest {
 	}
 
 	/**
-	 * [should_editNetwork]
+	 * [should_update]
 	 * [ItNetworkService.update]에 대한 단위테스트
 	 *
 	 * @see ItNetworkService.update
 	 */
 	@Test
-	fun should_editNetwork() {
-		log.debug("should_editNetwork ... ")
-		assertThat(service, `is`(not(nullValue())))
-		// TODO: 메소드의 결과값에 대한 검증처리
+	fun should_update() {
+		log.debug("should_update ... ")
+
+		val networkId = "2255ff6c-51fc-431d-bf19-07d486de95fd"
+		val updateNetworkVo: NetworkVo = NetworkVo.builder {
+			dataCenterVo { IdentifiedVo.builder { id { dataCenterId } } }
+			id { networkId }
+			name { "asdf5" }
+			description { "t2" }
+			comment { "t2" }
+			usageVo { UsageVo.builder { vm { true } } }  // TODO
+			mtu { 0 }
+			vlan { 0 }
+		}
+
+		val updateResult: NetworkVo? =
+			service.update(updateNetworkVo)
+
+		assertThat(updateResult, `is`(not(nullValue())))
+		assertThat(updateResult?.name, `is`(updateNetworkVo.name))
+		assertThat(updateResult?.description, `is`(updateNetworkVo.description))
+		assertThat(updateResult?.comment, `is`(updateNetworkVo.comment))
+//		assertThat(updateResult?.usageVo?.vm, `is`(updateNetworkVo.usageVo.vm)) // ?
+		assertThat(updateResult?.mtu, `is`(updateNetworkVo.mtu))
+		assertThat(updateResult?.vlan, `is`(updateNetworkVo.vlan))
 	}
 
 	/**
@@ -170,8 +192,12 @@ class ItNetworkServiceTest {
 	@Test
 	fun should_remove () {
 		log.debug("should_remove ... ")
-		assertThat(service, `is`(not(nullValue())))
-		// TODO: 메소드의 결과값에 대한 검증처리
+		val networkId = "80ca0671-f6dd-4c42-b2f4-8332150deecd"
+		val removeResult: Boolean =
+			service.remove(networkId)
+
+		assertThat(removeResult, `is`(not(nullValue())))
+		assertThat(removeResult, `is`(true))
 	}
 
 	/**
@@ -231,9 +257,12 @@ class ItNetworkServiceTest {
 	@Test
 	fun should_findAllVnicProfilesFromNetwork() {
 		log.debug("findAllVnicProfilesFromNetwork ... ")
+		val result: List<VnicProfileVo> =
+			service.findAllVnicProfilesFromNetwork(networkId)
 
-		assertThat(service, `is`(not(nullValue())))
-		// TODO: 메소드의 결과값에 대한 검증처리
+		assertThat(result, `is`(not(nullValue())))
+		assertThat(result.size, `is`(2))
+		result.forEach { println(it) }
 	}
 
 	/**

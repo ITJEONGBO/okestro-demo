@@ -91,13 +91,16 @@ fun Connection.updateNetwork(network: Network): Result<Network?> = runCatching {
 fun Connection.removeNetwork(networkId: String): Result<Boolean> = runCatching {
 	val network: Network =
 		this.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
-	if(network.status() == NetworkStatus.NON_OPERATIONAL){
-		this.srvNetwork(networkId).remove().send()
-		true
-	}else {
-		log.warn("{} 삭제 실패... {} 가 OPERATIONAL 상태 ", Term.NETWORK.desc, networkId)
-		false
-	}
+	this.srvNetwork(networkId).remove().send()
+	true
+// 단순 네트워크에서 네트워크 삭제할때는 네트워크 상태 필요없음
+//	if(network.status() == NetworkStatus.NON_OPERATIONAL){
+//		this.srvNetwork(networkId).remove().send()
+//		true
+//	}else {
+//		log.warn("{} 삭제 실패... {} 가 OPERATIONAL 상태 ", Term.NETWORK.desc, networkId)
+//		throw ErrorPattern.NETWORK_OPERATIONAL_ERROR.toError()
+//	}
 }.onSuccess {
 	Term.NETWORK.logSuccess("삭제", networkId)
 }.onFailure {

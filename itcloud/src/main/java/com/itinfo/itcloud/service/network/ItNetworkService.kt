@@ -269,32 +269,6 @@ class NetworkServiceImpl(
 		val res: Result<Boolean> =
 			conn.removeNetwork(networkId)
 		return res.isSuccess
-
-		/*val networkService = system.networksService().networkService(networkId)
-		val clusterList: List<Cluster> =
-			conn.findAllClusters()
-				.getOrDefault(listOf())
-		// 네트워크가 비가동 중인지 확인
-		val canDelete = clusterList
-			.flatMap { conn.findAllNetworksFromCluster(it.id()).getOrDefault(listOf()) }
-			.filter { it.id() == networkId }
-			.filterNot { it.status() == NetworkStatus.OPERATIONAL }
-			.isEmpty()
-		// .noneMatch(network -> network.status().equals(NetworkStatus.OPERATIONAL));
-
-		if (!canDelete) { // 삭제 가능한 경우 네트워크를 삭제하고 성공 응답을 반환합니다
-			log.error("network 삭제 실패 ... ")
-			// return Res.fail(404, "network 삭제 실패")
-			return false
-		}
-		try {
-			networkService.remove().send()
-			log.info("network 삭제 성공")
-			return true
-		} catch (e: Exception) {
-			log.error("network 삭제 실패 ... 이유: {}", e.localizedMessage)
-			return false
-		}*/
 	}
 
 	@Throws(Error::class)
@@ -320,12 +294,12 @@ class NetworkServiceImpl(
 	@Throws(Error::class)
 	override fun importNetwork(): Boolean {
 		log.info("importNetwork ... ")
-		//TODO
 		// 그냥 있는거 가져오기
 		val osProvider: OpenStackProvider? =
 			conn.findAllOpenStackNetworkProviders("network")
 				.getOrDefault(listOf())
 				.firstOrNull()
+		// openstack import
 		return true // TODO: 데이터 필요할 경우 return 정하기
 	}
 
@@ -365,32 +339,6 @@ class NetworkServiceImpl(
 				.getOrDefault(listOf())
 				.filter { it.nics().first().networkPresent() && it.nics().first().network().id() == networkId }
 		return res.toHostVos(conn) //TODO
-
-		/*return hosts.flatMap { host ->
-			val naList: List<NetworkAttachment> = conn.findAllNetworkAttachmentsFromHost(host.id())
-			val cluster: Cluster? = conn.findCluster(host.cluster().id())
-			val nicList: List<HostNic> = conn.findAllNicsFromHost(host.id())
-
-			naList.filter { it.networkPresent() && it.network().id() == networkId }
-				.map { n: NetworkAttachment ->
-				log.debug("nicList.size: {}", nicList.size)
-				val hostNic: HostNic = nicList.first()
-				val statistics: List<Statistic> = conn.findAllStatisticsFromHostNic(host.id(), hostNic.id())
-				NetworkHostVo.builder {
-					hostId { host.id() }
-					hostName { host.name() }
-					hostStatus { host.status() }
-					clusterName { cluster?.name() }
-					datacenterName { cluster?.dataCenter()?.let { conn.findDataCenterName(it.id()) } }
-					networkStatus { hostNic.status() }
-					networkDevice { hostNic.name() }
-					speed { hostNic.speed() }
-					rxSpeed { statistics.findSpeed("data.current.rx.bps") }
-					txSpeed { statistics.findSpeed( "data.current.tx.bps") }
-					rxTotalSpeed { statistics.findSpeed( "data.total.rx") }
-					txTotalSpeed { statistics.findSpeed( "data.total.tx") }
-				}*/
-				// TODO: 이게 맞는지...
 	}
 
 	@Throws(Error::class)
@@ -412,7 +360,6 @@ class NetworkServiceImpl(
 //				}
 //			}
 //	}
-
 	override fun findAllVmsFromNetwork(networkId: String): List<NetworkVmVo> {
 		log.info("getVmsByNetwork ... networkId: {}", networkId)
 		conn.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
