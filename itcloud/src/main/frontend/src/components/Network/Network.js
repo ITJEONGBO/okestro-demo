@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAllNetworks } from '../../api/RQHook';
 import Modal from 'react-modal';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
@@ -9,20 +10,68 @@ import './css/Network.css';
 
 Modal.setAppElement('#root');
 
-const Network = () => {
+const Network = ({ }) => {
     // 테이블 데이터
+    /*
     const [data, setData] = useState([]);
+    useEffect(() => {
+        const fetchData = async () => {
+            const res = await ApiManager.findAllNetworks()
+            const items = res.map((e) => toTableItemPredicate(e))
+            setData(items)
+        }
+        fetchData()
+    }, [])
+    */
+    const [shouldRefresh, setShouldRefresh] = useState(false);
+    /**
+     * @name toTableItemPredicate
+     * @description
+     * 
+     * @see ApiManager (api)
+     * @see  (api)
+     */
+    const toTableItemPredicate = (e) => {
+        return {
+            id: e?.id ?? '',
+            name: e?.name ?? '',
+            description: e?.description ?? '',
+            dataCenter: e?.dataCenterVo?.name ?? '', 
+            provider: 'Provider1',  // TODO: 제공자 뭐 넣어줘야 되지?
+            portSeparation: (e?.portIsolation == true) ? '예' : '아니요',
+        }
+    }
+    const { 
+      data,
+      status,
+      isRefetching,
+      refetch, 
+      isError, 
+      error, 
+      isLoading
+    } = useAllNetworks(toTableItemPredicate)
+
+    useEffect(() => {
+      refetch()
+    }, [setShouldRefresh, refetch])
+
     const [activeSection, setActiveSection] = useState('common_outer');
     const [selectedTab, setSelectedTab] = useState('network_new_common_btn');
     const [activePopup, setActivePopup] = useState(null);
-
     const navigate = useNavigate();
 
     // 테이블 행 클릭 시 NetworkDetail로 이동 (name 컬럼만 이동)
     const handleNetworkNameClick = (row, column) => {
+        console.log(`handleNetworkNameClick ... id: ${row.id}`)
         if (column.accessor === 'name') {
-            navigate(`/network/${row.name.props.children}`);
+            navigate(
+              `/networks/${row.id}`, 
+              { state: { name: row.name } }
+            );
+            // navigate(`/network/${row.id}`, { state: { id: row.id, name: row.name } });
         }
+            
+        
         if (column.accessor === 'dataCenter') {
             navigate(`/computing/cluster/${row.name.props.children}`); 
         }
@@ -43,41 +92,6 @@ const Network = () => {
             window.removeEventListener('resize', adjustFontSize);
         };
     }, []);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const res = await ApiManager.findAllNetworks()
-            const items = res.map((e) => toTableItemPredicate(e))
-            setData(items)
-        }
-        fetchData()
-    }, [])
-
-    /**
-     * @name toTableItemPredicate
-     * @description
-     * 
-     * @see ApiManager (api)
-     * @see  (api)
-     */
-    const toTableItemPredicate = (e) => {
-        return {
-            id: e?.id ?? '',
-            name: (
-                <span
-                  style={{ color: 'blue', cursor: 'pointer'}}
-                  onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
-                  onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
-                >
-                    {e?.name ?? ''}
-                </span>
-            ),
-            description: e?.description ?? '',
-            dataCenter: e?.dataCenterVo?.name ?? '', 
-            provider: 'Provider1',  // TODO: 제공자 뭐 넣어줘야 되지?
-            portSeparation: (e?.portIsolation == true) ? '예' : '아니요',
-        }
-    }
 
     const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
     const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
@@ -132,9 +146,12 @@ const Network = () => {
             <div className="content_outer">
                 <div className='empty_nav_outer'>
                     <div className="section_table_outer">
-
-                        <Table columns={TableColumnsInfo.NETWORKS} data={data} onRowClick={handleNetworkNameClick} />
-
+                        <Table 
+                          columns={TableColumnsInfo.NETWORKS} 
+                          data={data} 
+                          onRowClick={handleNetworkNameClick} 
+                          shouldHighlight1stCol={true}
+                        />
                     </div>
                 </div>
             </div>

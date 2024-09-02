@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 import Dashboard from './components/Dashboard';
 import Header from './components/Header/Header';
 import Computing from './components/Computing/Computing';
@@ -21,30 +23,33 @@ import NetworkDetail from './components/Network/NetworkDetail';
 import './App.css';
 
 function App() {
+    const queryClient = new QueryClient()
     return (
-        <Router>
-            <Header />
-            <MainOuter>
-                <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/computing/datacenter" element={<Computing />} />
-                    <Route path="/computing/datacenter/:name" element={<DataCenterDetail />} />
-                    <Route path="/storage" element={<Storage />} />
-                    <Route path="/network" element={<Network />} />
-                    <Route path="/setting" element={<Setting />} />
-                    <Route path="/computing/:name" element={<Vm />} />
-                    <Route path="/computing/host" element={<Host />} />
-                    <Route path="/computing/vmhost-chart" element={<VmHostChart />} />
-                    <Route path="/computing/host/:name" element={<HostDetail />}/>
-                    <Route path="/computing/cluster" element={<Cluster />} />
-                    <Route path="/computing/cluster/:name" element={<ClusterName />} /> 
-                    <Route path="/network/:name" element={<NetworkDetail />} /> 
-                    <Route path="/storage-domain/:name" element={<StorageDomain />} />
-                    <Route path="/storage-domainpart" element={<DomainParts />} />
-                    <Route path="/storage-disk/:name" element={<StorageDisk />} />
-                </Routes>
-            </MainOuter>
-        </Router>
+        <QueryClientProvider client={queryClient}>
+            <Router>
+                <Header />
+                <MainOuter>
+                    <Routes>
+                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/computing/datacenter" element={<Computing />} />
+                        <Route path="/computing/datacenter/:name" element={<DataCenterDetail />} />
+                        <Route path="/storage" element={<Storage />} />
+                        <Route path="/setting" element={<Setting />} />
+                        <Route path="/computing/:name" element={<Vm />} />
+                        <Route path="/computing/host" element={<Host />} />
+                        <Route path="/computing/vmhost-chart" element={<VmHostChart />} />
+                        <Route path="/computing/host/:name" element={<HostDetail />}/>
+                        <Route path="/computing/cluster" element={<Cluster />} />
+                        <Route path="/computing/cluster/:name" element={<ClusterName />} /> 
+                        <Route path="/networks" element={<Network />} />
+                        <Route path="/networks/:id" element={<NetworkDetail />} /> 
+                        <Route path="/storage-domain/:name" element={<StorageDomain />} />
+                        <Route path="/storage-domainpart" element={<DomainParts />} />
+                        <Route path="/storage-disk/:name" element={<StorageDisk />} />
+                    </Routes>
+                </MainOuter>
+            </Router>
+        </QueryClientProvider>
     );
 }
 

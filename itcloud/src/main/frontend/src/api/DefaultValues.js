@@ -1,4 +1,9 @@
 const DEFAULT_VALUES = {
+  FIND_ALL_TREE_NAVIGATIONS: {
+    "type": "DATACENTER",
+    "id": "32cfa74b-9adc-40cc-a2a1-0ada699b714c",
+    "name": "de",
+  },
   GET_DASHBOARD: {
       uptime: 0,
       datacenters: 0,
@@ -43,24 +48,26 @@ const DEFAULT_VALUES = {
   FIND_ALL_CLUSTERS: [
     {
       status: '',
-      name: 'Default',
+      name: 'Cluster1',
       comment: '',
-      version: '4.7',
-      description: 'The default server cluster',
-      cpuType: 'Secure Intel Cascadelake',
-      hostCount: 2,
-      vmCount: 7,
-      upgradeStatus: '',
-    },
+      version: '4.6',
+      description: 'This is the first cluster',
+      cpuType: 'Intel Xeon',
+      hostCount: 5,
+      vmCount: 10,
+      upgradeStatus: 'Up to date',
+    }
   ],
   FIND_ALL_NETWORKS: [
     { 
+      id: '40dc4bc6-9016-4a90-ae86-f3d36095a29f',
       name: 'ovirtmgmt', 
       description: 'Management Network', 
       dataCenter: 'DC1', 
       provider: 'Provider1', 
       portSeparation: '아니요' 
     }, { 
+      id: '40dc4bc6-9016-4a90-ae86-f3d36095a29f',
       name: 'example1', 
       description: 'Example Description 1', 
       dataCenter: 'DC2', 
@@ -68,6 +75,29 @@ const DEFAULT_VALUES = {
       portSeparation: '아니요' 
     },
   ],
+  FIND_NETWORK_BY_ID: { 
+    id: '40dc4bc6-9016-4a90-ae86-f3d36095a29f',
+    name: 'ovirtmgmt', 
+    description: 'Management Network', 
+    dataCenter: 'DC1', 
+    provider: 'Provider1', 
+    portSeparation: '아니요',
+    vnicProfileVos: [
+      {
+        id: '531162db-c6c3-40b2-a9a7-c9d91d7200fc',
+        name: 'VNIC 가짜',
+        network: 'ovirtmgmt',
+        dataCenter: 'Default',
+        compatVersion: '4.7',
+        qosName: '',
+        networkFilter: 'wdsm-no-mac-spoofing',
+        portMirroring: '',
+        passthrough: '아니요',
+        overProfile: '',
+        description: ''
+      }
+    ],
+  },
   FIND_ALL_STORAGE_DOMAINS: [
     {
       domainName: 'ㅁㅎㅇㅁㄹㄹ', // 여기에 도메인 이름을 설정합니다.
@@ -80,6 +110,28 @@ const DEFAULT_VALUES = {
       freeSpace: '',
       reservedSpace: '',
       description: '',
+    }
+  ],
+  FIND_ALL_VNIC_PROFILES_FROM_NETWORK: [
+    {
+      "id": "531162db-c6c3-40b2-a9a7-c9d91d7200fc",
+      "name": "ovirtmgmt",
+      "description": "",
+      "passThrough": "DISABLED",
+      "migration": false,
+      "portMirroring": false,
+      "networkFilterVo": {
+        "id": "d2370ab4-fee3-11e9-a310-8c1645ce738e",
+        "name": "vdsm-no-mac-spoofing"
+      },
+      "dataCenterVo": {
+        "id": "32cfa74b-9adc-40cc-a2a1-0ada699b714c",
+        "name": "de"
+      },
+      "networkVo": {
+        "id": "40dc4bc6-9016-4a90-ae86-f3d36095a29f",
+        "name": "ovirtmgmt"
+      }
     }
   ]
 }

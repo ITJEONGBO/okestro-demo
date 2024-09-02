@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
 import ReactApexChart from 'react-apexcharts';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import ApiManager from '../api/ApiManager';
 import DEFAULT_VALUES from '../api/DefaultValues';

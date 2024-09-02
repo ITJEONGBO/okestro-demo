@@ -73,7 +73,7 @@ fun InetAddress.changePwHostViaSSH(hostname: String, password: String, port: Int
 	session.setPassword(password)
 	session.setConfig("StrictHostKeyChecking", "no") // 호스트 키 확인을 건너뛰기 위해 설정
 	session.connect()
-
+	
 	val channel: ChannelExec = session.openChannel("exec") as ChannelExec // SSH 채널 열기
 //	val command = "echo -e \"$newPw\n$newPw\" | ovirt-aaa-jdbc-tool user password-reset $username"
 //	channel.setCommand(command)

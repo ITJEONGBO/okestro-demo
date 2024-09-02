@@ -24,6 +24,18 @@ const makeAPICall = async (url, defaultValues) => {
 }
 
 const ApiManager = {
+  //region: TreeNavigation
+  /**
+   * @name ApiManager.findAllTreeNaviations
+   * @description cpu, memory api 불러오는 값
+   * 
+   * @returns 
+   * 
+   * @see Dashboard.js (components)
+   */
+  findAllTreeNaviations: async (type = "none") => makeAPICall(ENDPOINTS.FIND_ALL_TREE_NAVIGATIONS(type). DEFAULT_VALUES.FIND_ALL_TREE_NAVIGATIONS),
+  //endregion
+
   //region: Dashboard
   /**
    * @name ApiManager.getDashboard
@@ -106,6 +118,8 @@ const ApiManager = {
    * 
    */
   findAllNetworks: async () => makeAPICall(ENDPOINTS.FIND_ALL_NETWORKS(), DEFAULT_VALUES.FIND_ALL_NETWORKS),
+  findNetworkById: async (networkId) => makeAPICall(ENDPOINTS.FIND_NETWORK_BY_ID(networkId), DEFAULT_VALUES.FIND_NETWORK_BY_ID),
+  findAllVnicProfilesFromNetwork: async (networkId) => makeAPICall(ENDPOINTS.FIND_ALL_VNIC_PROFILES_FROM_NETWORK(networkId), DEFAULT_VALUES.FIND_ALL_VNIC_PROFILES_FROM_NETWORK),
   //endregion: Network
   
   //region: StorageDomain

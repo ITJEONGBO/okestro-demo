@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import Modal from 'react-modal';
 import './css/Computing.css';
 import HeaderButton from '../button/HeaderButton';
@@ -14,7 +15,33 @@ Modal.setAppElement('#root');
 const Computing = () => {
     const { section } = useParams();
     const navigate = useNavigate();
+    /* 
     const [datacenters, setDatacenters] = useState([]);
+    useEffect(() => {
+        async function fetchData() {
+            console.log('fetching!!!')
+            const res = await ApiManager.findAllDataCenters();
+            setDatacenters(res);
+        }
+        fetchData()
+    }, [])
+    */
+    const { 
+      datacenters,
+      status,
+      isRefetching,
+      refetch, 
+      isError, 
+      error, 
+      isLoading
+    } = useQuery({
+      queryKey: ['allDataCenters'],
+      queryFn: async () => {
+        const res = await ApiManager.findAllDataCenters()
+        return res ?? []
+      }
+    })
+  
     const [activeSection, setActiveSection] = useState('datacenter');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
@@ -27,15 +54,7 @@ const Computing = () => {
             
         }
     }, [activeSection, navigate]);
-    
-    useEffect(() => {
-        async function fetchData() {
-            console.log('fetching!!!')
-            const res = await ApiManager.findAllDataCenters();
-            setDatacenters(res);
-        }
-        fetchData()
-    }, [])
+
     
     const toggleFooterContent = () => {
         setFooterContentVisibility(!isFooterContentVisible);

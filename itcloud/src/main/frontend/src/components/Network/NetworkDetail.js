@@ -1,46 +1,81 @@
-import React, { useState } from 'react';
-
-import { useParams } from 'react-router-dom';
-
+import React, { useState, useEffect } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
 import Modal from 'react-modal';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
+import NetworkDetailGeneral from './NetworkDetailGeneral';
 import './css/NetworkDetail.css';
 import Permission from '../Modal/Permission';
+import { useNetworkById, useAllVnicProfilesFromNetwork } from '../../api/RQHook';
 
-function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
-
+const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) => {
   // 테이블컴포넌트
-  const { name } = useParams(); // useParams로 URL에서 name을 가져옴
-
   const [activePermissionFilter, setActivePermissionFilter] = useState('all');
   const handlePermissionFilterClick = (filter) => {
     setActivePermissionFilter(filter);
   };
 
+  const location = useLocation();
+  const locationState = location.state  
+  const { id } = useParams(); // useParams로 URL에서 name을 가져옴
+  const [shouldRefresh, setShouldRefresh] = useState(false);
+  const { 
+    data: network,
+    status: networkStatus,
+    isRefetching: isNetworkRefetching,
+    refetch: networkRefetch, 
+    isError: isNetworkError,
+    error: networkError, 
+    isLoading: isNetworkLoaindg,
+  } = useNetworkById(id);
+  useEffect(() => {
+    networkRefetch()
+  }, [setShouldRefresh, networkRefetch])
   
-  const vnicData = [
-    {
-      name: name,
-      network: 'ovirtmgmt',
-      dataCenter: 'Default',
-      compatVersion: '4.7',
-      qosName: '',
-      networkFilter: 'wdsm-no-mac-spoofing',
-      portMirroring: '',
-      passthrough: '아니요',
-      overProfile: '',
-      description: ''
-    },
-  ];
-  
-  //클러스터
+  const { 
+    data: vnicProfiles,
+    status: vnicProfilesStatus,
+    isRefetching: isvnicProfilesRefetching,
+    refetch: vnicProfilesRefetch,
+    isError, 
+    error, 
+    isLoading
+  } = useAllVnicProfilesFromNetwork(network?.id, toTableItemPredicateVnicProfiles)
+  useEffect(() => {
+    vnicProfilesRefetch()
+  }, [setShouldRefresh, vnicProfilesRefetch])
 
+  function toTableItemPredicateVnicProfiles(e) {
+    return {
+        id: e?.id ?? '없음',
+        name: e?.name ?? '없음',
+        description: (e?.description == '') ? '없음' : (e?.description ?? '없음'),
+        network: e?.networkVo?.name ?? '없음',
+        /*    
+        networkId: e?.networkVo?.id ?? '없음',
+        networkName: e?.networkVo?.name ?? '없음',
+        */
+        dataCenter: e?.dataCenterVo?.name ?? '없음',
+        /*
+        dataCenterId: e?.dataCenterVo?.id ?? '없음',
+        dataCenterName: e?.dataCenterVo?.name ?? '없음',
+        */
+        networkFilter: e?.networkFilterVo?.name ?? '없음',
+        /*
+        networkFilterId: e?.networkFilterVo?.id ?? '없음',
+        networkFilterName: e?.networkFilterVo?.name ?? '없음',
+        */
+        passthrough: e?.passThrough ?? '없음',
+    }
+  }
+
+  //클러스터
   const clusterData = [
     {
+      id: id,
       name: (
         <span
             style={{ color: 'blue', cursor: 'pointer'}}
@@ -63,6 +98,7 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
 
   const clusterPopupData = [
     {
+      id: id,
       name: 'Default',
       allAssigned: (
         <>
@@ -87,8 +123,6 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   ];
   
   // 호스트
-
-
   const hostData = [
     {
       icon: '',
@@ -108,7 +142,6 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
 
   
   //가상머신
-
   const vmData = [
     {
       icon: <i className="fa fa-chevron-left"></i>,
@@ -127,8 +160,6 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   ];
 
   //템플릿
-
-
   const templateData = [
     {
       name: 'test02',
@@ -165,18 +196,13 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     { id: 'delete_btn', label: '삭제', onClick: () => console.log('Delete button clicked') },
   ];
   const popupItems = ['Option 1', 'Option 2', 'Option 3'];
-
   
-   // 모달 관련 상태 및 함수
-   const [activePopup, setActivePopup] = useState(null);
+  // 모달 관련 상태 및 함수
+  const [activePopup, setActivePopup] = useState(null);
 
-   const openPopup = (popupType) => {
-     setActivePopup(popupType);
-   };
- 
-   const closePopup = () => {
-     setActivePopup(null);
-   };
+  const openPopup = (popupType) => setActivePopup(popupType);
+  const closePopup = () => setActivePopup(null);
+
   const sections = [
     { id: 'general', label: '일반' },
     { id: 'vNIC_profile', label: 'vNIC 프로파일' },
@@ -191,7 +217,7 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     <div className="content_detail_section">
       <HeaderButton
         title="네트워크"
-        subtitle={name} // 여기서도 네트워크 이름을 표시
+        subtitle={locationState?.name} // 여기서도 네트워크 이름을 표시
         buttons={buttons}
         popupItems={popupItems}
       />
@@ -204,63 +230,26 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
       />
 
       <div className="host_btn_outer">
-        {activeTab === 'general' && (
-          <div className="tables">
-          <div className="table_container_center">
-            <table className="table">
-              <tbody>
-              <tr>
-                  <th>이름</th>
-                  <td>{name}</td>
-                </tr>
-                <tr>
-                  <th>ID:</th>
-                  <td>6772b35f-e688-439a-ac98-9d71d4ef421d</td>
-                </tr>
-                <tr>
-                  <th>설명:</th>
-                  <td></td>
-                </tr>
-                <tr>
-                  <th>VDSM 이름:</th>
-                  <td>{name}</td>
-                </tr>
-                <tr>
-                  <th>가상 머신 네트워크:</th>
-                  <td>true</td>
-                </tr>
-                <tr>
-                  <th>VLAN 태그:</th>
-                  <td>없음</td>
-                </tr>
-                <tr>
-                  <th>MTU:</th>
-                  <td>기본값 (1500)</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        )}
-
-        {activeTab === 'vNIC_profile' && (
+        {
+          activeTab === 'general' && <NetworkDetailGeneral network={network} />
+        }
+        {
+          activeTab === 'vNIC_profile' && (
         <>
-
-                <div className="content_header_right">
-                    <button onClick={() => openPopup('vnic_new_popup')}>새로 만들기</button>
-                    <button onClick={() => openPopup('vnic_eidt_popup')}>편집</button>
-                    <button>제거</button>
-                </div>
-              
-
-                <div className="section_table_outer">
-
-                  <Table columns={TableColumnsInfo.VNIC_PROFILES} data={vnicData} onRowClick={() => console.log('Row clicked')} />
-
-                </div>
-
+          <div className="content_header_right">
+              <button onClick={() => openPopup('vnic_new_popup')}>새로 만들기</button>
+              <button onClick={() => openPopup('vnic_eidt_popup')}>편집</button>
+              <button>제거</button>
+          </div>
+          <div className="section_table_outer">
+            {/* vNIC 프로파일 */}
+            <Table
+              columns={TableColumnsInfo.VNIC_PROFILES} 
+              data={vnicProfiles}
+              onRowClick={() => console.log('Row clicked')} 
+            />
+          </div>
        </>
-       
         )}
 
         {activeTab === 'cluster' && (
@@ -270,9 +259,7 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
             </div>
           
             <div className="section_table_outer">
-
               <Table columns={TableColumnsInfo.CLUSTERS} data={clusterData} onRowClick={() => console.log('Row clicked')} />
-
             </div>
        </>
        
@@ -591,7 +578,11 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
           </div>
           
           <div className="section_table_outer">
-            <Table columns={TableColumnsInfo.CLUSTERS_POPUP} data={clusterPopupData} onRowClick={() => console.log('Row clicked')} />
+            <Table 
+              columns={TableColumnsInfo.CLUSTERS_POPUP} 
+              data={clusterPopupData} 
+              onRowClick={() => console.log('Row clicked')} 
+            />
           </div>
           
           <div className="edit_footer">

@@ -217,6 +217,68 @@ https://github.com/Gaia3D/mago3d 참고
 
 ---
 
+## Troubleshooting
+
+### admin 계정 잠김
+
+ssh로 해당 서버 접근하여 아래 커맨드 실행
+
+```sh
+ssh root@192.168.0.70 -p 22
+# ...
+# root@192.168.0.70's password:
+# Web console: https://ovirt.ititinfo.local:9090/ or https://192.168.0.70:9090/
+# 
+# Last login: Mon Sep  2 11:08:15 2024 from 192.168.0.218
+sudo ovirt-aaa-jdbc-tool user show admin # admin 계정 확인
+#
+# Picked up JAVA_TOOL_OPTIONS: -Dcom.redhat.fips=false
+# -- User admin(<고유아이디>) --
+# Namespace: *
+# Name: admin
+# ID: <고유아이디>
+# Display Name:
+# Email: admin@localhost
+# First Name: admin
+# Last Name:
+# Department:
+# Title:
+# Description:
+# Account Disabled: false
+# Account Locked: false
+# Account Unlocked At: 2024-09-02 02:45:20Z
+# Account Valid From: 2024-08-27 09:48:37Z
+# Account Valid To: 2224-08-27 09:48:37Z
+# Account Without Password: false
+# Last successful Login At: 2024-09-02 02:45:31Z
+# Last unsuccessful Login At: 2024-09-02 02:44:51Z
+# Password Valid To: 2025-03-01 01:07:15Z
+#
+sudo ovirt-aaa-jdbc-tool user password-reset admin --password-valid-to="2029-12-31 23:59:59Z"
+#
+# Picked up JAVA_TOOL_OPTIONS: -Dcom.redhat.fips=false
+# Password:
+# Reenter password:
+# new password already used 
+# 
+# >>> 비밀번호 변경실패... 이미 사용했던 비밀번호
+# 
+sudo ovirt-aaa-jdbc-tool user password-reset admin --password-valid-to="2029-12-31 23:59:59Z" --force # 강제 변경
+# 
+# Picked up JAVA_TOOL_OPTIONS: -Dcom.redhat.fips=false
+# Password:
+# Reenter password:
+# updating user admin...
+# user updated successfully
+#
+# >>> 비밀번호 변경성공!
+# 
+sudo ovirt-aaa-jdbc-tool user unlock admin # admin 계정 잠금 풀기
+# Picked up JAVA_TOOL_OPTIONS: -Dcom.redhat.fips=false
+# updating user admin...
+# user updated successfully
+```
+
 ## Swagger 3 
 
 - 접속URL: `/swagger-ui/`

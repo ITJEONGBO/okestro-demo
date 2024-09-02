@@ -342,7 +342,7 @@ const MainOuter = ({ children }) => {
                                 <i className="fa fa-desktop"></i>
                             </div>
                         </Link>
-                        <Link to='/network' className="link-no-underline">
+                        <Link to='/networks' className="link-no-underline">
                             <div
                                 id="aside_popup_network_btn"
                                 className={getClassNames('network')}

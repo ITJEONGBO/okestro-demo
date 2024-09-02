@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import Modal from 'react-modal';
 import HeaderButton from './button/HeaderButton';
 import Table from '../components/table/Table';
@@ -17,6 +18,7 @@ const DomainParts = () => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
+  /*
   const [data, setData] = useState([
     {
       status: <i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i>,
@@ -33,7 +35,6 @@ const DomainParts = () => {
       description: '',
     },
   ])
-
   useEffect(() => {
     const fetchData = async () => {
         const res = await ApiManager.findAllStorageDomains() ?? []
@@ -42,6 +43,24 @@ const DomainParts = () => {
     }
     fetchData()
   }, [])
+  */
+  const { 
+    data,
+    status,
+    isRefetching,
+    refetch, 
+    isError, 
+    error, 
+    isLoading
+  } = useQuery({
+    queryKey: ['allStorageDomains'],
+    queryFn: async () => {
+      const res = await ApiManager.findAllStorageDomains()
+      return res?.map((e) => toTableItemPredicate(e)) ?? []
+    },
+    refetchOnMount: false,
+
+  })
 
   const toTableItemPredicate = (e) => {
     return {
