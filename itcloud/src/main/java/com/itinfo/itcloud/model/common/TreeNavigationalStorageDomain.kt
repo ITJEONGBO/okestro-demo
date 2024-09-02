@@ -34,9 +34,9 @@ fun StorageDomain.toNavigationalWithStorageDomains(conn: Connection): TreeNaviga
     return TreeNavigationalStorageDomain.builder {
         id { this@toNavigationalWithStorageDomains.id() }
         name { this@toNavigationalWithStorageDomains.name() }
-        disks { disks.toTreeNavigationals() }
+        disks { disks.fromDisksToTreeNavigationals() }
     }
 }
 
-fun List<StorageDomain>.toTreeNavigationals(conn: Connection): List<TreeNavigationalStorageDomain> =
-    this@toTreeNavigationals.map { it.toNavigationalWithStorageDomains(conn) }
+fun List<StorageDomain>.fromDisksToTreeNavigationals(conn: Connection): List<TreeNavigationalStorageDomain> =
+    this@fromDisksToTreeNavigationals.map { it.toNavigationalWithStorageDomains(conn) }

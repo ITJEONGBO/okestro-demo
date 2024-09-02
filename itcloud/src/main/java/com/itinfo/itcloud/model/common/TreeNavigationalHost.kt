@@ -40,9 +40,9 @@ fun Host.toNavigationalWithStorageDomains(conn: Connection): TreeNavigationalHos
     return TreeNavigationalHost.builder {
         id { this@toNavigationalWithStorageDomains.id() }
         name { this@toNavigationalWithStorageDomains.name() }
-        vms { vms.toTreeNavigationals() }
+        vms { vms.fromVmsToTreeNavigationals() }
     }
 }
 
-fun List<Host>.toTreeNavigationals(conn: Connection): List<TreeNavigationalHost> =
-    this@toTreeNavigationals.map { it.toNavigationalWithStorageDomains(conn) }
+fun List<Host>.fromDisksToTreeNavigationals(conn: Connection): List<TreeNavigationalHost> =
+    this@fromDisksToTreeNavigationals.map { it.toNavigationalWithStorageDomains(conn) }

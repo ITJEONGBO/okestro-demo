@@ -26,18 +26,18 @@ class TreeNavigationalCluster (
     }
 }
 
-fun Cluster.toNavigationalWithStorageDomains(conn: Connection): TreeNavigationalCluster {
+fun Cluster.toNavigational(conn: Connection): TreeNavigationalCluster {
     val hosts: List<Host> =
         conn.findAllHosts()
             .getOrDefault(listOf())
-            .filter { it.cluster().id() == this@toNavigationalWithStorageDomains.id() }
+            .filter { it.cluster().id() == this@toNavigational.id() }
 
     return TreeNavigationalCluster.builder {
-        id { this@toNavigationalWithStorageDomains.id() }
-        name { this@toNavigationalWithStorageDomains.name() }
-        hosts { hosts.toDashHosts(conn) }
+        id { this@toNavigational.id() }
+        name { this@toNavigational.name() }
+        hosts { hosts.fromDisksToTreeNavigationals(conn) }
     }
 }
 
-fun List<Cluster>.toDashClusters(conn: Connection): List<TreeNavigationalCluster> =
-    this@toDashClusters.map { it.toDashCluster(conn) }
+fun List<Cluster>.toNavigationals(conn: Connection): List<TreeNavigationalCluster> =
+    this@toNavigationals.map { it.toNavigational(conn) }

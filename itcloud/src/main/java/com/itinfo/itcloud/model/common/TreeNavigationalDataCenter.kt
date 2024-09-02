@@ -42,7 +42,7 @@ fun DataCenter.toNavigationalWithClusters(conn: Connection): TreeNavigationalDat
     return TreeNavigationalDataCenter.builder {
         id { this@toNavigationalWithClusters.id() }
         name { this@toNavigationalWithClusters.name() }
-        clusters { clusters.toDashClusters(conn) }
+        clusters { clusters.toNavigationals(conn) }
     }
 }
 
@@ -57,7 +57,7 @@ fun DataCenter.toNavigationalWithNetworks(conn: Connection): TreeNavigationalDat
     return TreeNavigationalDataCenter.builder {
         id { this@toNavigationalWithNetworks.id() }
         name { this@toNavigationalWithNetworks.name() }
-        networks { networks.toTreeNavigationals() }
+        networks { networks.fromNetworksToTreeNavigationals() }
     }
 }
 
@@ -72,7 +72,7 @@ fun DataCenter.toNavigationalWithStorageDomains(conn: Connection): TreeNavigatio
     return TreeNavigationalDataCenter.builder {
         id { this@toNavigationalWithStorageDomains.id() }
         name { this@toNavigationalWithStorageDomains.name() }
-        storageDomains { storageDomains.toTreeNavigationals(conn) }
+        storageDomains { storageDomains.fromDisksToTreeNavigationals(conn) }
     }
 }
 fun List<DataCenter>.toNavigationalsWithStorageDomains(conn: Connection): List<TreeNavigationalDataCenter> =

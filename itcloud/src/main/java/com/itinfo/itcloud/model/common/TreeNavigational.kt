@@ -47,8 +47,8 @@ fun Disk.toNavigationalWithStorageDomains(): TreeNavigational = TreeNavigational
 	id { this@toNavigationalWithStorageDomains.id() }
 	name { this@toNavigationalWithStorageDomains.name() }
 }
-fun List<Disk>.toTreeNavigationals(): List<TreeNavigational> =
-	this@toTreeNavigationals.map { it.toNavigationalWithStorageDomains() }
+fun List<Disk>.fromDisksToTreeNavigationals(): List<TreeNavigational> =
+	this@fromDisksToTreeNavigationals.map { it.toNavigationalWithStorageDomains() }
 //endregion
 
 //region: Vm
@@ -58,19 +58,19 @@ fun Vm.toNavigationalWithStorageDomains(): TreeNavigational = TreeNavigational.b
 	name { this@toNavigationalWithStorageDomains.name() }
 }
 
-fun List<Vm>.toTreeNavigationals(): List<TreeNavigational> =
-	this@toTreeNavigationals.map { it.toNavigationalWithStorageDomains() }
+fun List<Vm>.fromVmsToTreeNavigationals(): List<TreeNavigational> =
+	this@fromVmsToTreeNavigationals.map { it.toNavigationalWithStorageDomains() }
 //endregion
 
 //region: Template
-fun Template.toNavigationalWithStorageDomains(): TreeNavigational = TreeNavigational.builder {
+fun Template.fromTemplateToTreeNavigational(): TreeNavigational = TreeNavigational.builder {
 	type { TreeNavigationalType.TEMPLATE }
-	id { this@toNavigationalWithStorageDomains.id() }
-	name { this@toNavigationalWithStorageDomains.name() }
+	id { this@fromTemplateToTreeNavigational.id() }
+	name { this@fromTemplateToTreeNavigational.name() }
 }
 
-fun List<Template>.toTreeNavigationals(): List<TreeNavigational> =
-	this@toTreeNavigationals.map { it.toNavigationalWithStorageDomains() }
+fun List<Template>.fromTemplateToTreeNavigationals(): List<TreeNavigational> =
+	this@fromTemplateToTreeNavigationals.map { it.fromTemplateToTreeNavigational() }
 //endregion
 
 //region: Network
@@ -79,6 +79,6 @@ fun Network.toNavigationalWithStorageDomains(): TreeNavigational = TreeNavigatio
 	id { this@toNavigationalWithStorageDomains.id() }
 	name { this@toNavigationalWithStorageDomains.name() }
 }
-fun List<Network>.toTreeNavigationals(): List<TreeNavigational> =
-	this@toTreeNavigationals.map { it.toNavigationalWithStorageDomains() }
+fun List<Network>.fromNetworksToTreeNavigationals(): List<TreeNavigational> =
+	this@fromNetworksToTreeNavigationals.map { it.toNavigationalWithStorageDomains() }
 //endregion

@@ -1,11 +1,9 @@
 package com.itinfo.itcloud.controller.common
 
+import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.common.TreeNavigationalDataCenter
 import com.itinfo.itcloud.service.common.ItTreeNavigationService
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiResponse
-import io.swagger.annotations.ApiResponses
+import io.swagger.annotations.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -27,6 +25,9 @@ class NavigationController {
 		httpMethod="GET",
 		value="컴퓨팅 목록이 담긴 네비게이션 정보조회",
 		notes="컴퓨팅 목록이 담긴 네비게이션 목록을 조회한다")
+	@ApiImplicitParams(
+		ApiImplicitParam(name="typeId", value="유형 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
@@ -36,6 +37,7 @@ class NavigationController {
 	fun findDcNavigationals(
 		@PathVariable typeId: String = "none"
 	): ResponseEntity<List<TreeNavigationalDataCenter>> {
+		log.info("//api/v1/navigation/{} ... 컴퓨팅 목록이 담긴 네비게이션 정보조회", typeId)
 		val res: List<TreeNavigationalDataCenter> = when(typeId) {
 			"cluster", "clusters" -> treeNavigation.findAllNavigationalsWithClusters() // 클러스터
 			"network", "networks" -> treeNavigation.findAllNavigationalsWithNetworks() // 네트워크
@@ -43,5 +45,9 @@ class NavigationController {
 			else -> listOf()
 		}
 		return ResponseEntity(res, HttpStatus.OK)
+	}
+
+	companion object {
+		private val log by LoggerDelegate()
 	}
 }
