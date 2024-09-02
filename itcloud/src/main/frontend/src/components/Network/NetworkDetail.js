@@ -9,13 +9,19 @@ import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
 import './css/NetworkDetail.css';
+import Permission from '../Modal/Permission';
 
 function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
 
   // 테이블컴포넌트
   const { name } = useParams(); // useParams로 URL에서 name을 가져옴
 
+  const [activePermissionFilter, setActivePermissionFilter] = useState('all');
+  const handlePermissionFilterClick = (filter) => {
+    setActivePermissionFilter(filter);
+  };
 
+  
   const vnicData = [
     {
       name: name,
@@ -338,24 +344,38 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
 
         <>
               <div className="content_header_right">
-                <button>추가</button>
+                <button onClick={() => openPopup('permission')}>추가</button>
                 <button>제거</button>
               </div>
               
-              <div className="section_table_outer">
-                <div className="storage_right_btns">
+     
+                <div className="host_filter_btns">
                   <span>Permission Filters:</span>
                   <div>
-                    <button>All</button>
-                    <button>Direct</button>
+                    <button
+                      className={activePermissionFilter === 'all' ? 'active' : ''}
+                      onClick={() => handlePermissionFilterClick('all')}
+                    >
+                      All
+                    </button>
+                    <button
+                      className={activePermissionFilter === 'direct' ? 'active' : ''}
+                      onClick={() => handlePermissionFilterClick('direct')}
+                    >
+                      Direct
+                    </button>
                   </div>
                 </div>
               
               <div className="section_table_outer">
-                <Table columns={TableColumnsInfo.PERMISSIONS} data={permissionData} onRowClick={() => console.log('Row clicked')} />
+              <Table
+                    columns={TableColumnsInfo.PERMISSIONS}
+                    data={activePermissionFilter === 'all' ? permissionData : []}
+                    onRowClick={() => console.log('Row clicked')}
+                  />
 
               </div>
-            </div>
+     
             
           </>
         )}
@@ -615,6 +635,9 @@ function NetworkDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         </div>
       </Modal>
       <Footer/>
+
+       {/* 모달 컴포넌트 */}
+       <Permission isOpen={activePopup === 'permission'} onRequestClose={closePopup} />
     </div>
   );
 }

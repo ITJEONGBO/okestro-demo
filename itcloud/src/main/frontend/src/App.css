@@ -2114,12 +2114,12 @@ input[disabled] {
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 69%;
-    width: 43%;
+    height: 63%;
+    width: 41%;
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-    z-index: 1001; /* 추가 */
+    z-index: 1001;
 }
 #pregroup_create_content{
     padding: 0 0.2rem;
@@ -2145,7 +2145,7 @@ input[disabled] {
     width: 55%;
 }
 .pregroup_create_select>div:first-child{
-    width: 50%;
+    width: 60%;
 }
 .pregroup_create_select select{
     width: 100%;
@@ -2157,7 +2157,7 @@ input[disabled] {
     outline: none;
 } 
 .pregroup_create_buttons{
-    padding: 3.4%;
+    padding:0 3.4%;
     display: flex;
     justify-content: space-between;
 }

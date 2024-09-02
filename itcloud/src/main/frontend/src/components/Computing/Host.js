@@ -70,22 +70,7 @@ const Host = () => {
     }
   };
 
-  const columns = [
-    { header: '', accessor: 'iconStatus', clickable: false },
-    { header: '', accessor: 'iconWarning', clickable: false },
-    { header: '', accessor: 'iconSPM', clickable: false },
-    { header: '이름', accessor: 'name', clickable: true },
-    { header: '코멘트', accessor: 'comment', clickable: false },
-    { header: '호스트 이름/IP', accessor: 'hostname', clickable: false },
-    { header: '클러스터', accessor: 'cluster', clickable: true }, // 클러스터 컬럼에 clickable 추가
-    { header: '데이터 센터', accessor: 'dataCenter', clickable: false },
-    { header: '상태', accessor: 'status', clickable: false },
-    { header: '가상 머신', accessor: 'vmCount', clickable: false },
-    { header: '메모리', accessor: 'memoryUsage', clickable: false },
-    { header: 'CPU', accessor: 'cpuUsage', clickable: false },
-    { header: '네트워크', accessor: 'networkUsage', clickable: false },
-    { header: 'SPM', accessor: 'spm', clickable: false },
-  ];
+
 
   const data = [
     {
@@ -118,8 +103,8 @@ const Host = () => {
   return (
     <div id="section">
       <HeaderButton
-        title="컴퓨팅 > "
-        subtitle="호스트"
+        title="Cluster > "
+        subtitle="Host"
         buttons={섹션헤더버튼들}
         popupItems={섹션헤더팝업아이템들}
         openModal={openModal}

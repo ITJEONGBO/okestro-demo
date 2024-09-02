@@ -11,6 +11,7 @@ import TableColumnsInfo from '../components/table/TableColumnsInfo';
 import './css/StorageDomain.css';
 
 import { useNavigate } from 'react-router-dom';
+import Permission from '../components/Modal/Permission';
 //import { useParams } from 'react-router-dom';
 
 
@@ -39,20 +40,14 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         navigate(`/storage-domain/${row.domainName.props.children}`);  
       }
     };
+
+    
   // 테이블컴포넌트
   // 데이터센터
   const dataCenterData = [
     {
       icon: <i className="fa fa-exclamation"></i>,
-      name: (
-        <span
-          style={{ color: 'blue', cursor: 'pointer'}}
-          onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
-          onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
-        >  
-          ㅁㅎㅇㅁㄹㄹ
-        </span>
-      ),
+      name: name,
       domainStatus: '활성화',
     },
   ];
@@ -439,57 +434,40 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
 
                 {/* 권한 */}
                 {activeTab === 'permission' && (
-  <>
-    <div className="content_header_right">
-      <button>추가</button>
-      <button>제거</button>
-    </div>
-    <div className="host_filter_btns">
-      <span>Permission Filters:</span>
-      <div>
-        <button
-          className={activePermissionFilter === 'all' ? 'active' : ''}
-          onClick={() => handlePermissionFilterClick('all')}
-        >
-          All
-        </button>
-        <button
-          className={activePermissionFilter === 'direct' ? 'active' : ''}
-          onClick={() => handlePermissionFilterClick('direct')}
-        >
-          Direct
-        </button>
-      </div>
-    </div>
-    <div className="section_table_outer">
-      <Table
-
-        data={activePermissionFilter === 'all' ? permissionData : []}
-        onRowClick={() => console.log('Row clicked')}
-      />
-    </div>
-  </>
+              <>
+              <div className="content_header_right">
+              <button onClick={() => openModal('permission')}>추가</button>
+                <button>제거</button>
+              </div>
+              <div className="host_filter_btns">
+                <span>Permission Filters:</span>
+                <div>
+                  <button
+                    className={activePermissionFilter === 'all' ? 'active' : ''}
+                    onClick={() => handlePermissionFilterClick('all')}
+                  >
+                    All
+                  </button>
+                  <button
+                    className={activePermissionFilter === 'direct' ? 'active' : ''}
+                    onClick={() => handlePermissionFilterClick('direct')}
+                  >
+                    Direct
+                  </button>
+                </div>
+              </div>
+              <div className="section_table_outer">
+                <Table
+                  columns={TableColumnsInfo.PERMISSIONS}
+                  data={activePermissionFilter === 'all' ? permissionData : []}
+                  onRowClick={() => console.log('Row clicked')}
+                />
+              </div>
+            </>
 )}
 
 
-              <div className="content_header_right">
-                <button>추가</button>
-                <button>제거</button>
-              </div>
 
-              <div className="section_table_outer">
-                <div className="storage_right_btns">
-                  <span>Permission Filters:</span>
-                  <div>
-                    <button>All</button>
-                    <button>Direct</button>
-                  </div>
-                </div>
-                
-                <div className="section_table_outer">
-                <Table columns={TableColumnsInfo.PERMISSIONS} data={permissionData} onRowClick={() => console.log('Row clicked')} />
-                </div>
-              </div>
         
 
       </div>
@@ -625,6 +603,10 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
           </div>
         </div>
       </Modal>
+
+      
+      {/* 모달 컴포넌트 */}
+      <Permission isOpen={activePopup === 'permission'} onRequestClose={closeModal} />
     </div>
   );
 }

@@ -7,6 +7,7 @@ import Footer from '../footer/Footer';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import './css/DataCenterDetail.css';
+import Permission from '../Modal/Permission';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -14,18 +15,35 @@ Modal.setAppElement('#root');
 const DataCenterDetail = () => {
   const { name } = useParams();
   const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [inputName, setInputName] = useState(name); // 상태로 관리
+  const [activePermissionFilter, setActivePermissionFilter] = useState('all');
+  const [isModalOpen, setIsModalOpen] = useState({
+    edit: false,
+    permission: false,
+  });
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const handleOpenModal = (type) => {
+    setIsModalOpen((prev) => ({ ...prev, [type]: true }));
+  };
 
+  const handleCloseModal = (type) => {
+    setIsModalOpen((prev) => ({ ...prev, [type]: false }));
+  };
+
+  const handlePermissionFilterClick = (filter) => {
+    setActivePermissionFilter(filter);
+  };
+
+  const [inputName, setInputName] = useState(name); // 데이터 센터 이름 관리 상태
+
+  const handleInputChange = (event) => {
+    setInputName(event.target.value); // input의 값을 상태로 업데이트
+  };
 
   const sectionHeaderButtons = [
-    { id: 'edit_btn', label: '편집', onClick: openModal},
+    { id: 'edit_btn', label: '편집', onClick: () => handleOpenModal('edit') },
     { id: 'delete_btn', label: '삭제', onClick: () => {} },
   ];
-  
+
   const sectionHeaderPopupItems = [
     '강제 제거',
     '가이드',
@@ -34,13 +52,10 @@ const DataCenterDetail = () => {
   ];
 
   const [activeTab, setActiveTab] = useState('storage');
+
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
-  const handleInputChange = (event) => {
-    setInputName(event.target.value); // input의 값을 상태로 업데이트
-  };
-
 
   // Nav 컴포넌트
   const sections = [
@@ -52,12 +67,11 @@ const DataCenterDetail = () => {
     { id: 'event', label: '이벤트' }
   ];
 
-  // 테이블 컴포넌트
-  // 스토리지
+  // 테이블 컴포넌트 데이터
   const storagedata = [
     {
-      icon: '👑', // 이모티콘 추가
-      icon2: '👑', // 이모티콘 추가
+      icon: '👑', 
+      icon2: '👑',
       domainName: (
         <span
           style={{ color: 'blue', cursor: 'pointer'}}
@@ -76,7 +90,6 @@ const DataCenterDetail = () => {
     },
   ];
 
-  // 논리네트워크
   const logicaldata = [
     {
       logicalName: (
@@ -92,7 +105,6 @@ const DataCenterDetail = () => {
     },
   ];
 
-  //클러스터
   const clusterdata = [
     {
       clusterName: (
@@ -109,7 +121,6 @@ const DataCenterDetail = () => {
     },
   ];
 
-  //Qos
   const Qosdata = [
     {
       QosName: 'dd',  
@@ -118,7 +129,6 @@ const DataCenterDetail = () => {
     },
   ];
 
-  //권한
   const permissionData = [
     {
       icon: <i className="fa fa-user"></i>,
@@ -131,7 +141,6 @@ const DataCenterDetail = () => {
     },
   ];
 
-  // 이벤트
   const eventData = [
     {
       statusIcon: <i className="fa fa-check" style={{ color: 'green' }}></i>,
@@ -165,8 +174,6 @@ const DataCenterDetail = () => {
         subtitle={name}
         buttons={sectionHeaderButtons}
         popupItems={sectionHeaderPopupItems}
-        openModal={openModal}
-        togglePopup={() => {}}
       />
       <div className="content_outer">
         <NavButton 
@@ -175,17 +182,17 @@ const DataCenterDetail = () => {
           handleSectionClick={handleTabClick} 
         />
 
-          <div className="empty_nav_outer">
+        <div className="empty_nav_outer">
           {activeTab === 'storage' && (
             <>
-                <div className="content_header_right">
-                  <button>데이터 연결</button>
-                  <button>ISP 연결</button>
-                  <button>내보내기 연결</button>
-                  <button>분리</button>
-                  <button>활성</button>
-                  <button>유지보수</button>
-                </div>
+              <div className="content_header_right">
+                <button>데이터 연결</button>
+                <button>ISP 연결</button>
+                <button>내보내기 연결</button>
+                <button>분리</button>
+                <button>활성</button>
+                <button>유지보수</button>
+              </div>
               <div className="section_table_outer">
                 <button>
                   <i className="fa fa-refresh"></i>
@@ -195,131 +202,141 @@ const DataCenterDetail = () => {
             </>
           )}
           {activeTab === 'logical_network' && (
-                <>
-                <div className="content_header_right">
-                  <button>새로 만들기</button>
-                  <button>편집</button>
-                  <button>삭제</button>
-                </div>
-                <div className="section_table_outer">
-                  <Table columns={TableColumnsInfo.LUN_SIMPLE} data={logicaldata} onRowClick={handleRowClick} />
-                </div>
-              </>
+            <>
+              <div className="content_header_right">
+                <button>새로 만들기</button>
+                <button>편집</button>
+                <button>삭제</button>
+              </div>
+              <div className="section_table_outer">
+                <Table columns={TableColumnsInfo.LUN_SIMPLE} data={logicaldata} onRowClick={handleRowClick} />
+              </div>
+            </>
           )}
           {activeTab === 'cluster' && (
-              <>
+            <>
               <div className="host_empty_outer">
                 <div className="section_table_outer">
                   <Table columns={TableColumnsInfo.CLUSTERS_FROM_DATACENTER} data={clusterdata} onRowClick={handleRowClick} />
                 </div>
               </div>
             </>
-        )}
+          )}
           {activeTab === 'Qos' && (
-              <>
+            <>
               <div className="host_empty_outer">
                 <div className="section_table_outer">
                   <Table columns={TableColumnsInfo.QOSS_FROM_DATACENTER} data={Qosdata} onRowClick={handleRowClick} />
                 </div>
               </div>
             </>
-        )}
-        {activeTab === 'permission' && (
-        <>
-
-              <div className="content_header_right">
-                <button>추가</button>
-                <button>제거</button>
-              </div>
-
-              <div className="section_table_outer">
-                <div className="storage_right_btns">
-                  <span>Permission Filters:</span>
-                  <div>
-                    <button>All</button>
-                    <button>Direct</button>
-                  </div>
-                </div>
-                
-                <div className="section_table_outer">
-                <Table columns={TableColumnsInfo.PERMISSIONS} data={permissionData} onRowClick={() => console.log('Row clicked')} />
-                </div>
-              </div>
-        </>
-        )}
-        {activeTab === 'event' && (
-          <>
-        <div className="host_empty_outer">
-            <div className="section_table_outer">
-                <Table columns={TableColumnsInfo.EVENTS} data={eventData} onRowClick={() => console.log('Row clicked')} />
+          )}
+          {activeTab === 'permission' && (
+            <>
+            <div className="content_header_right">
+              <button onClick={() => handleOpenModal('permission')}>추가</button> {/* 추가 버튼 */}
+              <button>제거</button>
             </div>
+            <div className="host_filter_btns">
+              <span>Permission Filters:</span>
+              <div>
+                <button
+                  className={activePermissionFilter === 'all' ? 'active' : ''}
+                  onClick={() => handlePermissionFilterClick('all')}
+                >
+                  All
+                </button>
+                <button
+                  className={activePermissionFilter === 'direct' ? 'active' : ''}
+                  onClick={() => handlePermissionFilterClick('direct')}
+                >
+                  Direct
+                </button>
+              </div>
+            </div>
+            <div className="section_table_outer">
+              <Table
+                columns={TableColumnsInfo.PERMISSIONS}
+                data={activePermissionFilter === 'all' ? permissionData : []}
+                onRowClick={() => console.log('Row clicked')}
+              />
+            </div>
+          </>
+          )}
+          {activeTab === 'event' && (
+            <>
+              <div className="host_empty_outer">
+                <div className="section_table_outer">
+                  <Table columns={TableColumnsInfo.EVENTS} data={eventData} onRowClick={() => console.log('Row clicked')} />
+                </div>
+              </div>
+            </>
+          )}
         </div>
-        </>
-        )}
-
-          </div>
         
       </div>
-        <Footer/>
-        <Modal
-                isOpen={isModalOpen}
-                onRequestClose={closeModal}
-                contentLabel="새로 만들기"
-                className="Modal"
-                overlayClassName="Overlay"
-                shouldCloseOnOverlayClick={false}
-            >
-                <div className="datacenter_new_popup">
-                    <div className="network_popup_header">
-                        <h1>새로운 데이터 센터</h1>
-                        <button onClick={closeModal}><i className="fa fa-times"></i></button>
-                    </div>
+      <Footer/>
 
-                    <div className="datacenter_new_content">
-                        <div>
-                            <label htmlFor="name1">이름</label>
-                            <input type="text" id="name1" value={inputName} onChange={handleInputChange}/>
-                        </div>
-                        <div>
-                            <label htmlFor="comment">설명</label>
-                            <input type="text" id="comment" />
-                        </div>
-                        <div>
-                            <label htmlFor="cluster">클러스터</label>
-                            <select id="cluster">
-                                <option value="공유됨">공유됨</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label htmlFor="compatibility">호환버전</label>
-                            <select id="compatibility">
-                                <option value="4.7">4.7</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label htmlFor="quota_mode">쿼터 모드</label>
-                            <select id="quota_mode">
-                                <option value="비활성화됨">비활성화됨</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label htmlFor="comment">코멘트</label>
-                            <input type="text" id="comment" />
-                        </div>
-                       
-                    </div>
+      {/* 데이터 센터 편집 모달 */}
+      <Modal
+        isOpen={isModalOpen.edit}
+        onRequestClose={() => handleCloseModal('edit')}
+        contentLabel="새로 만들기"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="datacenter_new_popup">
+          <div className="network_popup_header">
+            <h1>새로운 데이터 센터</h1>
+            <button onClick={() => handleCloseModal('edit')}><i className="fa fa-times"></i></button>
+          </div>
 
-                    <div className="edit_footer">
-                        <button style={{ display: 'none' }}></button>
-                        <button>OK</button>
-                        <button onClick={closeModal}>취소</button>
-                    </div>
-                </div>
-        </Modal>
+          <div className="datacenter_new_content">
+            <div>
+              <label htmlFor="name1">이름</label>
+              <input type="text" id="name1" value={inputName} onChange={handleInputChange}/>
+            </div>
+            <div>
+              <label htmlFor="comment">설명</label>
+              <input type="text" id="comment" />
+            </div>
+            <div>
+              <label htmlFor="cluster">클러스터</label>
+              <select id="cluster">
+                <option value="공유됨">공유됨</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="compatibility">호환버전</label>
+              <select id="compatibility">
+                <option value="4.7">4.7</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="quota_mode">쿼터 모드</label>
+              <select id="quota_mode">
+                <option value="비활성화됨">비활성화됨</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="comment">코멘트</label>
+              <input type="text" id="comment" />
+            </div>
+          </div>
+
+          <div className="edit_footer">
+            <button style={{ display: 'none' }}></button>
+            <button>OK</button>
+            <button onClick={() => handleCloseModal('edit')}>취소</button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Permission 모달 컴포넌트 */}
+      <Permission isOpen={isModalOpen.permission} onRequestClose={() => handleCloseModal('permission')} />
     </div>
   );
 };
 
 export default DataCenterDetail;
-
-

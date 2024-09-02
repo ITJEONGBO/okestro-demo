@@ -54,19 +54,7 @@ function HostDetail() {
         },
       ];
       
-   // 호스트장치
-   const volumeColumns = [
-    { header: '이름', accessor: 'name', clickable: false },
-    { header: '기능', accessor: 'function', clickable: false },
-    { header: '벤더', accessor: 'vendor', clickable: false },
-    { header: '제품', accessor: 'product', clickable: false },
-    { header: '드라이버', accessor: 'driver', clickable: false },
-    { header: '현재 사용중', accessor: 'currentlyUsed', clickable: false },
-    { header: '가상 머신에 연결됨', accessor: 'connectedToVM', clickable: false },
-    { header: 'IOMMU 그룹', accessor: 'iommuGroup', clickable: false },
-    { header: 'Mdev 유형', accessor: 'mdevType', clickable: false },
-  ];
-  
+
   const volumeData = [
     {
       name: 'block_sda',
@@ -93,15 +81,7 @@ function HostDetail() {
       }
     });
   };
-  // 네트워크 테이블 컴포넌트
-  const networkcolumns = [
-    { header: '', accessor: 'icon' },
-    { header: '관리되지 않음', accessor: 'unmanaged' },
-    { header: 'VLAN', accessor: 'vlan' },
-    { header: '네트워크 이름', accessor: 'networkName', clickable: true },
-    { header: 'IPv4 주소', accessor: 'ipv4' },
-    { header: 'IPv6 주소', accessor: 'ipv6' }
-  ];
+
   
   const networkdata = [
     {
@@ -538,52 +518,38 @@ function HostDetail() {
                
                 {/* 권한 */}
                 {activeTab === 'permission' && (
-  <>
-    <div className="content_header_right">
-      <button>추가</button>
-      <button>제거</button>
-    </div>
-    <div className="host_filter_btns">
-      <span>Permission Filters:</span>
-      <div>
-        <button
-          className={activePermissionFilter === 'all' ? 'active' : ''}
-          onClick={() => handlePermissionFilterClick('all')}
-        >
-          All
-        </button>
-        <button
-          className={activePermissionFilter === 'direct' ? 'active' : ''}
-          onClick={() => handlePermissionFilterClick('direct')}
-        >
-          Direct
-        </button>
-      </div>
-    </div>
-    <div className="section_table_outer">
-      <Table
-
-        data={activePermissionFilter === 'all' ? permissionData : []}
-        onRowClick={() => console.log('Row clicked')}
-      />
-    </div>
-  </>
+              <>
+              <div className="content_header_right">
+                <button>추가</button>
+                <button>제거</button>
+              </div>
+              <div className="host_filter_btns">
+                <span>Permission Filters:</span>
+                <div>
+                  <button
+                    className={activePermissionFilter === 'all' ? 'active' : ''}
+                    onClick={() => handlePermissionFilterClick('all')}
+                  >
+                    All
+                  </button>
+                  <button
+                    className={activePermissionFilter === 'direct' ? 'active' : ''}
+                    onClick={() => handlePermissionFilterClick('direct')}
+                  >
+                    Direct
+                  </button>
+                </div>
+              </div>
+              <div className="section_table_outer">
+                <Table
+                  columns={TableColumnsInfo.PERMISSIONS}
+                  data={activePermissionFilter === 'all' ? permissionData : []}
+                  onRowClick={() => console.log('Row clicked')}
+                />
+              </div>
+            </>
 )}
-                  <div className="content_header_right">
-                      <button>추가</button>
-                      <button>제거</button>
-                  </div>
-                  <div className="host_filter_btns">
-                      <span>Permission Filters:</span>
-                      <div>
-                          <button>All</button>
-                          <button>Direct</button>
-                      </div>
-                  </div>
-                  <div className="section_table_outer">
-                    <Table columns={TableColumnsInfo.PERMISSIONS} data={permissionData} onRowClick={() => console.log('Row clicked')} />
-                  </div>
-                   
+
 
 
 
@@ -618,6 +584,7 @@ function HostDetail() {
 
 
             <Footer/>
+            
         </div>
     );
 }

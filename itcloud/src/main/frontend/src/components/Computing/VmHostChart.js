@@ -80,8 +80,8 @@ const VmHostChart = () => {
   return (
     <div id="section">
       <HeaderButton
-        title="가상머신/템플릿 목록"
-        subtitle=""
+        title="Host > "
+        subtitle="Virtual Machine"
         buttons={섹션헤더버튼들}
         popupItems={섹션헤더팝업아이템들}
         openModal={openModal}

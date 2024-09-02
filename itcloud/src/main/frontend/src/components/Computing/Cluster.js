@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import HeaderButton from '../button/HeaderButton';
@@ -6,8 +6,6 @@ import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
 import './css/Cluster.css';
-import DEFAULT_VALUES from '../../api/DefaultValues';
-import ApiManager from '../../api/ApiManager';
 
 Modal.setAppElement('#root');
 
@@ -37,48 +35,48 @@ const Cluster = () => {
     'OVA로 내보내기',
   ];
 
-  const [data, setData] = useState(DEFAULT_VALUES.FIND_ALL_CLUSTERS);
-  useEffect(() => {
-    const fetchData = async () => {
-        const res = await ApiManager.findAllClusters()
-        const items = res.map((e) => toTableItemPredicate(e))
-        setData(items)
-    }
-    fetchData()
-  }, [])
-  const toTableItemPredicate = (e) => {
-    return {
+  const initialData = [
+    {
       status: '',
-      name: e?.name ?? '',
-      comment: e?.comment ?? '',
-      version: e?.version ?? '0.0',
-      description: e?.description ?? '설명없음',
-      cpuType: e?.cpuType ?? 'CPU 정보 없음',
-      hostCount: e?.hostSizeVo?.allCnt ?? 0,
-      vmCount: e?.vmSizeVo?.allCnt ?? 0,
-      upgradeStatus: '', // TODO: 무슨 정보 넣지?
+      name: (
+        <span
+          style={{ color: 'blue', cursor: 'pointer'}}
+          onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
+          onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
+        >
+          Cluster1
+        </span>
+      ),
+      comment: '',
+      version: '4.6',
+      description: 'This is the first cluster',
+      cpuType: 'Intel Xeon',
+      hostCount: 5,
+      vmCount: 10,
+      upgradeStatus: 'Up to date'
     }
-  }
+  ];
+  
 
-  // 이름 열을 클릭했을 때 동작하는 함수
+  const [data, setData] = useState(initialData);
+
   const handleRowClick = (row, column) => {
     if (column.accessor === 'name') {
-      navigate(`/computing/cluster/${row.name}`);
+      navigate(`/computing/cluster/${row.name.props.children}`);
     }
   };
-
   return (
     <div id="section">
       <HeaderButton
-        title="컴퓨팅 > "
-        subtitle="클러스터"
+        title="DataCenter > "
+        subtitle="Cluster"
         buttons={sectionHeaderButtons}
         popupItems={sectionHeaderPopupItems}
         openModal={openModal}
         togglePopup={() => {}}
       />
       <div className="content_outer">
-        <div className='empty_nav_outer'>
+        <div className="empty_nav_outer">
           <div className="section_table_outer">
             <button>
               <i className="fa fa-refresh"></i>
@@ -87,7 +85,7 @@ const Cluster = () => {
           </div>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 };

@@ -7,6 +7,7 @@ import Table from '../components/table/Table';
 import TableColumnsInfo from '../components/table/TableColumnsInfo';
 import Footer from './footer/Footer';
 import './Storage.css';
+import Permission from './Modal/Permission';
 
 
 Modal.setAppElement('#root'); // React 16 이상에서는 필수
@@ -117,17 +118,6 @@ const Storage = () => {
       reservedSpace: '',
       description: '',
     },
-  ];
-
-  // 권한 테이블 컴포넌트
-  const permissionColumns = [
-    { header: '', accessor: 'icon', clickable: false },
-    { header: '사용자', accessor: 'user', clickable: false },
-    { header: '인증 공급자', accessor: 'authProvider', clickable: false },
-    { header: '네임스페이스', accessor: 'namespace', clickable: false },
-    { header: '역할', accessor: 'role', clickable: false },
-    { header: '생성일', accessor: 'createdDate', clickable: false },
-    { header: 'Inherited From', accessor: 'inheritedFrom', clickable: false },
   ];
 
   const permissionData = [
@@ -502,11 +492,12 @@ const Storage = () => {
                 </div>
               </>
             )}
+
             {/* 권한 섹션 */}
             {activeSection === 'Permission' && (
               <>
                 <div className="content_header_right">
-                  <button>추가</button>
+                  <button  onClick={() => openPopup('permission')}>추가</button>
                   <button>제거</button>
                 </div>
                 <div className="host_filter_btns">
@@ -528,7 +519,7 @@ const Storage = () => {
                 </div>
                 <div className="section_table_outer">
                   <Table
-                    columns={permissionColumns}
+                    columns={TableColumnsInfo.PERMISSIONS}
                     data={activePermissionFilter === 'all' ? permissionData : []}
                     onRowClick={() => console.log('Row clicked')}
                   />
@@ -1363,6 +1354,9 @@ const Storage = () => {
           </div>
         </div>
       </Modal>
+
+      {/* 모달 컴포넌트 */}
+      <Permission isOpen={activePopup === 'permission'} onRequestClose={closePopup} />
     </div>
   );
 };

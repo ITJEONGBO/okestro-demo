@@ -5,38 +5,51 @@ import HeaderButton from '../button/HeaderButton';
 
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
-
+import AffinityGroupModal from '../Modal/AffinityGroupModal';
 import './css/ClusterName.css';
 import NetworkDetail from '../Network/NetworkDetail';
+import Permission from '../Modal/Permission';
 
 function ClusterName() {
     const { name } = useParams();
     const navigate = useNavigate();
     const [showNetworkDetail, setShowNetworkDetail] = useState(false);
+
     const handlePermissionFilterClick = (filter) => {
         setActivePermissionFilter(filter);
       };
       const [activePermissionFilter, setActivePermissionFilter] = useState('all');
-
-    const handleRowClick = (row, column) => {
-        console.log('Clicked column:', column);
-        if (column && column.accessor === 'user') {
-            alert('dfadf');
-            setShowNetworkDetail(true);
-            navigate('/network-detail'); // 이 부분이 중요한 부분입니다.
+      const handleRowClick = (row, column) => {
+        if (column.accessor === 'name') {
+          navigate(`/network/${row.name.props.children}`);  
         }
     };
+    const [isPermissionModalOpen, setIsPermissionModalOpen] = useState(false); // 권한 모달 상태
+    const [isAffinityGroupModalOpen, setIsAffinityGroupModalOpen] = useState(false); // 선호도 그룹 모달 상태
+    
+    // 권한 모달 핸들러
+    const openPermissionModal = () => setIsPermissionModalOpen(true);
+    const closePermissionModal = () => setIsPermissionModalOpen(false);
+    
+    // 선호도 그룹 모달 핸들러
+    const openAffinityGroupModal = () => setIsAffinityGroupModalOpen(true);
+    const closeAffinityGroupModal = () => setIsAffinityGroupModalOpen(false);
+
 
 
     // 논리 네트워크 테이블 컴포넌트
-
     const data = [
         {
-            name: (
-                <span>
-                    <i className="fa fa-caret-up" style={{ color: '#00FF00' }}></i> ovirtmgmt
+            name: 
+            (
+                <span
+                  style={{ color: 'blue', cursor: 'pointer'}}
+                  onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
+                  onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
+                >
+                ovirtmgmt
                 </span>
-            ),
+              ),
             status: '가동 중',
             role: (
                 <span>
@@ -51,8 +64,7 @@ function ClusterName() {
     
 
 
-    // 호스트 테이블 컴포넌트
-
+    // 호스트
     const hostData = [
         {
             icon: '',  // 예시 이모티콘
@@ -64,16 +76,7 @@ function ClusterName() {
         }
     ];
 
-    // 가상머신
-    const vmColumns = [
-        { header: '이름', accessor: 'name', clickable: false },
-        { header: '상태', accessor: 'status', clickable: false },
-        { header: '업타임', accessor: 'uptime', clickable: false },
-        { header: 'CPU', accessor: 'cpu', clickable: false },
-        { header: '메모리', accessor: 'memory', clickable: false },
-        { header: '네트워크', accessor: 'network', clickable: false },
-        { header: 'IP 주소', accessor: 'ipAddress', clickable: false },
-    ];
+    // 가상머신 
     const vmData = [
         {
             name: 'vm01',
@@ -87,20 +90,6 @@ function ClusterName() {
     ];
 
     // 선호도 그룹
-    const affinityColumns = [
-        { header: '상태', accessor: 'status', clickable: false },
-        { header: '이름', accessor: 'name', clickable: false },
-        { header: '설명', accessor: 'description', clickable: false },
-        { header: '우선 순위', accessor: 'priority', clickable: false },
-        { header: '가상 머신 측 극성', accessor: 'vmConfig', clickable: false },
-        { header: '가상 머신 강제 적용', accessor: 'vmEnforce', clickable: false },
-        { header: '호스트 측 극성', accessor: 'hostConfig', clickable: false },
-        { header: '호스트 강제 적용', accessor: 'hostEnforce', clickable: false },
-        { header: '가상머신 멤버', accessor: 'vmMember', clickable: false },
-        { header: '가상 머신 레이블', accessor: 'vmLabel', clickable: false },
-        { header: '호스트 멤버', accessor: 'hostMember', clickable: false },
-        { header: '호스트 레이블', accessor: 'hostLabel', clickable: false },
-    ];
     const affinityData = [
         {
             status: '',
@@ -120,23 +109,7 @@ function ClusterName() {
             noItemsText: '표시할 항목이 없습니다',
         },
     ];
-
-    // 권한 테이블 컴포넌트
-
-    const permissionData = [
-        {
-            icon: <i className="fa fa-user"></i>,
-            user: 'ovirtmgmt',
-            authProvider: '',
-            namespace: '*',
-            role: 'SuperUser',
-            createdDate: '2023.12.29 AM 11:40:58',
-            inheritedFrom: '(시스템)',
-        },
-    ];
-
-
-    // 선호도 레이블 테이블 컴포넌트
+    // 선호도 레이블
     const memberData = [
         {
             name: '',
@@ -147,9 +120,20 @@ function ClusterName() {
             noItemsText: '표시할 항목이 없습니다',
         },
     ];
+    //권한
+    const permissionData = [
+        {
+          icon: <i className="fa fa-user"></i>,
+          user: 'ovirtmgmt',
+          authProvider: '',
+          namespace: '*',
+          role: 'SuperUser',
+          createdDate: '2023.12.29 AM 11:40:58',
+          inheritedFrom: '(시스템)'
+        },
+      ];
 
     // 이벤트 테이블 컴포넌트
-
     const storageData = [
         {
             icon: <i className="fa fa-check-circle" style={{ color: 'green' }}></i>,  // 상태 아이콘
@@ -303,17 +287,13 @@ function ClusterName() {
                             {activeTab === 'logical_network' && (
                                 <>
 
-                                    <div className="content_header_right">
-                                        <button>추가</button>
-                                        <button>제거</button>
-                                    </div>
-                                    <div className="host_filter_btns">
-                                        <span>Permission Filters:</span>
-                                        <div>
-                                            <button>All</button>
-                                            <button>Direct</button>
-                                        </div>
-                                    </div>
+                                <div className="content_header_right">
+                                    <button>네트워크 추가</button>
+                                    <button>네트워크 관리</button>
+                                    <button>디스플레이로 설정</button>
+                                    <button>모든 네트워크 동기화</button>
+                                </div>
+
                                     <div className="section_table_outer">
                                         <Table columns={TableColumnsInfo.LUNS} data={data} onRowClick={handleRowClick} />
                                     </div>
@@ -337,7 +317,7 @@ function ClusterName() {
                                 <div className="host_empty_outer">
                                     <div className="section_table_outer">
 
-                                        <Table columns={TableColumnsInfo.VOLUMES_FROM_CLUSTER}  onRowClick={() => console.log('Row clicked')} />
+                                        <Table columns={TableColumnsInfo.CLUSTER_VM} data={vmData} onRowClick={() => console.log('Row clicked')} />
 
                                     </div>
                                 </div>
@@ -347,14 +327,14 @@ function ClusterName() {
                             {activeTab === 'affinity_group' && (
                                 <>
                                     <div className="content_header_right">
-                                        <button>새로 만들기</button>
+                                        <button onClick={openAffinityGroupModal}>새로 만들기</button>
                                         <button>편집</button>
                                         <button>제거</button>
                                     </div>
     
                                     <div className="section_table_outer">
 
-                                        <Table columns={TableColumnsInfo.PERMISSIONS} data={permissionData} onRowClick={() => console.log('Row clicked')} />
+                                        <Table columns={TableColumnsInfo.AFFINITY_GROUP} data={affinityData} onRowClick={() => console.log('Row clicked')} />
 
                                     </div>
                                 </>
@@ -376,38 +356,39 @@ function ClusterName() {
                             )}
     
 
-{/* 권한 */}
-{activeTab === 'permission' && (
-    <div className="host_empty_outer">
-        <div className="section_table_outer">
-            <Table columns={TableColumnsInfo.PERMISSIONS} data={storageData} onRowClick={() => console.log('Row clicked')} />
-        </div>
-        <div className="host_filter_btns">
-            <span>Permission Filters:</span>
-            <div>
-                <button
-                    className={activePermissionFilter === 'all' ? 'active' : ''}
-                    onClick={() => handlePermissionFilterClick('all')}
-                >
-                    All
-                </button>
-                <button
-                    className={activePermissionFilter === 'direct' ? 'active' : ''}
-                    onClick={() => handlePermissionFilterClick('direct')}
-                >
-                    Direct
-                </button>
-            </div>
-        </div>
-        <div className="section_table_outer">
-            <Table
-              
-                data={activePermissionFilter === 'all' ? permissionData : []}
-                onRowClick={() => console.log('Row clicked')}
-            />
-        </div>
-    </div>
-)}
+                            {/* 권한 */}
+                            {activeTab === 'permission' && (
+                                <>
+                                <div className="content_header_right">
+                                <button onClick={openPermissionModal}>추가</button> {/* 추가 버튼 */}
+                                <button>제거</button>
+                                </div>
+                                <div className="host_filter_btns">
+                                <span>Permission Filters:</span>
+                                <div>
+                                    <button
+                                    className={activePermissionFilter === 'all' ? 'active' : ''}
+                                    onClick={() => handlePermissionFilterClick('all')}
+                                    >
+                                    All
+                                    </button>
+                                    <button
+                                    className={activePermissionFilter === 'direct' ? 'active' : ''}
+                                    onClick={() => handlePermissionFilterClick('direct')}
+                                    >
+                                    Direct
+                                    </button>
+                                </div>
+                                </div>
+                                <div className="section_table_outer">
+                                <Table
+                                    columns={TableColumnsInfo.PERMISSIONS}
+                                    data={activePermissionFilter === 'all' ? permissionData : []}
+                                    onRowClick={() => console.log('Row clicked')}
+                                />
+                                </div>
+                                </>
+                            )}
 
 
                             {/* 이벤트 */}
@@ -422,7 +403,15 @@ function ClusterName() {
                     </div>
                 </>
             )}
+             {/* 새로 만들기 팝업 */}
+
+            {/* 선호도 그룹 모달 컴포넌트 */}
+            <AffinityGroupModal isOpen={isAffinityGroupModalOpen} onRequestClose={closeAffinityGroupModal} />
+            {/* 권한 모달 컴포넌트 */}
+            <Permission isOpen={isPermissionModalOpen} onRequestClose={closePermissionModal} />
         </div>
+
+    
     );
 }
 

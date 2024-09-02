@@ -4,59 +4,34 @@ import NavButton from '../components/navigation/NavButton';
 import HeaderButton from '../components/button/HeaderButton';
 import Table from '../components/table/Table';
 import TableColumnsInfo from '../components/table/TableColumnsInfo';
-import './css/StorageDisk.css';
 import Footer from '../components/footer/Footer';
 
+import './css/StorageDisk.css';
+import Permission from '../components/Modal/Permission';
+
 function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
-  const { name } = useParams(); // URL에서 name 파라미터를 가져옵니다.
+  const { name } = useParams();
+
+  const [activePermissionFilter, setActivePermissionFilter] = useState('all');
+  const [activeTab, setActiveTab] = useState('general');
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 추가
 
   const handlePermissionFilterClick = (filter) => {
     setActivePermissionFilter(filter);
   };
-  const [activePermissionFilter, setActivePermissionFilter] = useState('all');
-
-  // 테이블 컴포넌트
-  // 가상머신
-  const vmData = [];
-
-  // 스토리지
-  const storageData = [
-    {
-      icon1: <i className="fa fa-icon1"></i>,
-      icon2: <i className="fa fa-icon2"></i>,
-      domainName: name,
-      domainType: '데이터 (마스터)',
-      status: '활성화',
-      freeSpace: '83 GiB',
-      usedSpace: '16 GiB',
-      totalSpace: '99 GiB',
-      description: '',
-    },
-    // 추가 데이터
-  ];
-
-
-  // 권한
-  const permissionData = [
-    {
-      icon: <i className="fa fa-user"></i>,
-      user: 'ovirtmgmt',
-      authProvider: '',
-      namespace: '*',
-      role: 'SuperUser',
-      createdDate: '2023.12.29 AM 11:40:58',
-      inheritedFrom: '(시스템)',
-    },
-  ];
-
-
-  const [activeTab, setActiveTab] = useState('general');
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
-  // HeaderButton 컴포넌트
+  const handleOpenModal = () => {
+    setIsModalOpen(true); // 모달 열기
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false); // 모달 닫기
+  };
+
   const buttons = [
     { id: 'edit_btn', label: '수정', onClick: () => console.log('Edit button clicked') },
     { id: 'remove_btn', label: '제거', onClick: () => console.log('Remove button clicked') },
@@ -78,11 +53,10 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
     '변환 취소',
     '템플릿 생성',
     '도메인으로 내보내기',
-    'Export to Data Domai',
+    'Export to Data Domain',
     'OVA로 내보내기',
   ];
 
-  // Nav 컴포넌트
   const sections = [
     { id: 'general', label: '일반' },
     { id: 'machine', label: '가상머신' },
@@ -90,29 +64,48 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
     { id: 'permission', label: '권한' },
   ];
 
-  // 옵션박스 열고닫기
-  const [isUploadOptionBoxVisible, setUploadOptionBoxVisible] = useState(false);
-  const toggleUploadOptionBox = () => {
-    setUploadOptionBoxVisible(!isUploadOptionBoxVisible);
-  };
+  const vmData = [];
+  const storageData = [
+    {
+      icon1: <i className="fa fa-icon1"></i>,
+      icon2: <i className="fa fa-icon2"></i>,
+      domainName: name,
+      domainType: '데이터 (마스터)',
+      status: '활성화',
+      freeSpace: '83 GiB',
+      usedSpace: '16 GiB',
+      totalSpace: '99 GiB',
+      description: '',
+    },
+  ];
 
-  // 바탕 클릭하면 옵션박스 닫기
+  const permissionData = [
+    {
+      icon: <i className="fa fa-user"></i>,
+      user: 'ovirtmgmt',
+      authProvider: '',
+      namespace: '*',
+      role: 'SuperUser',
+      createdDate: '2023.12.29 AM 11:40:58',
+      inheritedFrom: '(시스템)',
+    },
+  ];
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
-        isUploadOptionBoxVisible &&
         !event.target.closest('.upload_option_box') &&
         !event.target.closest('.upload_option_boxbtn')
       ) {
-        setUploadOptionBoxVisible(false);
+        // 여기에 원래 setUploadOptionBoxVisible(false) 관련 코드가 있었다면 삭제합니다.
       }
     };
-
+  
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isUploadOptionBoxVisible]);
+  }, []);
 
   return (
     <div className="content_detail_section">
@@ -187,30 +180,45 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
             </div>
           )}
 
-
           {activeTab === 'permission' && (
             <>
               <div className="content_header_right">
-                <button>추가</button>
+                <button onClick={handleOpenModal}>추가</button> {/* 추가 버튼 */}
                 <button>제거</button>
               </div>
-              
-              <div className="section_table_outer">
-                <div className="storage_right_btns">
-                  <span>Permission Filters:</span>
-                  <div>
-                    <button>All</button>
-                    <button>Direct</button>
-                  </div>
+              <div className="host_filter_btns">
+                <span>Permission Filters:</span>
+                <div>
+                  <button
+                    className={activePermissionFilter === 'all' ? 'active' : ''}
+                    onClick={() => handlePermissionFilterClick('all')}
+                  >
+                    All
+                  </button>
+                  <button
+                    className={activePermissionFilter === 'direct' ? 'active' : ''}
+                    onClick={() => handlePermissionFilterClick('direct')}
+                  >
+                    Direct
+                  </button>
                 </div>
-                <Table columns={TableColumnsInfo.PERMISSIONS} data={permissionData} onRowClick={() => console.log('Row clicked')} />
+              </div>
+              <div className="section_table_outer">
+                <Table
+                  columns={TableColumnsInfo.PERMISSIONS}
+                  data={activePermissionFilter === 'all' ? permissionData : []}
+                  onRowClick={() => console.log('Row clicked')}
+                />
               </div>
             </>
           )}
-
         </div>
       </div>
+      
       <Footer/>
+
+      {/* 모달 컴포넌트 */}
+      <Permission isOpen={isModalOpen} onRequestClose={handleCloseModal} />
     </div>
   );
 }

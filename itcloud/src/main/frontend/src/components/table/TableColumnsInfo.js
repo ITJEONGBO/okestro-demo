@@ -43,13 +43,10 @@ const TableColumnsInfo = {
     { header: 'IPv6 주소', accessor: 'ipv6' }
   ],
   LUNS: [
-    { header: '', accessor: 'icon', clickable: false },
-    { header: '사용자', accessor: 'user', clickable: true },
-    { header: '인증 공급자', accessor: 'authProvider', clickable: false },
-    { header: '네임스페이스', accessor: 'namespace', clickable: false },
+    { header: '이름', accessor: 'name', clickable: true },
+    { header: '상태', accessor: 'status', clickable: false },
     { header: '역할', accessor: 'role', clickable: false },
-    { header: '생성일', accessor: 'createdDate', clickable: false },
-    { header: 'Inherited From', accessor: 'inheritedFrom', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false }
   ],
   LUN_SIMPLE: [
     { header: '이름', accessor: 'logicalName' },
@@ -129,6 +126,15 @@ const TableColumnsInfo = {
     { header: '상태', accessor: 'status', clickable: false },
     { header: '유형', accessor: 'type', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
+  ],
+  CLUSTER_VM:[
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '업타임', accessor: 'uptime', clickable: false },
+    { header: 'CPU', accessor: 'cpu', clickable: false },
+    { header: '메모리', accessor: 'memory', clickable: false },
+    { header: '네트워크', accessor: 'network', clickable: false },
+    { header: 'IP 주소', accessor: 'ipAddress', clickable: false },
   ],
   VNIC_PROFILES: [
     { header: '이름', accessor: 'name', clickable: false },
@@ -251,6 +257,7 @@ const TableColumnsInfo = {
     { header: '클러스터', accessor: 'cluster', clickable: false },
     { header: 'vNIC', accessor: 'vnic', clickable: false },
   ],
+  
   PERMISSIONS: [
     { header: '', accessor: 'icon', clickable: false },
     { header: '사용자', accessor: 'user', clickable: false },
@@ -259,6 +266,20 @@ const TableColumnsInfo = {
     { header: '역할', accessor: 'role', clickable: false },
     { header: '생성일', accessor: 'createdDate', clickable: false },
     { header: 'Inherited From', accessor: 'inheritedFrom', clickable: false },
+  ],
+  AFFINITY_GROUP:[
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
+    { header: '우선 순위', accessor: 'priority', clickable: false },
+    { header: '가상 머신 측 극성', accessor: 'vmConfig', clickable: false },
+    { header: '가상 머신 강제 적용', accessor: 'vmEnforce', clickable: false },
+    { header: '호스트 측 극성', accessor: 'hostConfig', clickable: false },
+    { header: '호스트 강제 적용', accessor: 'hostEnforce', clickable: false },
+    { header: '가상머신 멤버', accessor: 'vmMember', clickable: false },
+    { header: '가상 머신 레이블', accessor: 'vmLabel', clickable: false },
+    { header: '호스트 멤버', accessor: 'hostMember', clickable: false },
+    { header: '호스트 레이블', accessor: 'hostLabel', clickable: false },
   ],
   AFFINITY_LABELS: [
     { header: '이름', accessor: 'name', clickable: false },
@@ -282,15 +303,7 @@ const TableColumnsInfo = {
     { header: '소스', accessor: 'source', clickable: false },
     { header: '사용자 지정 이벤트 ID', accessor: 'customEventId', clickable: false }
   ],
-  // 클러스터 수정해야됨
-  CLUSTERS_ALT:[
-    { header: '', accessor: 'icon', clickable: false },
-    { header: '시간', accessor: 'time', clickable: false },
-    { header: '메세지', accessor: 'message', clickable: false },
-    { header: '상관 관계 ID', accessor: 'correlationId', clickable: false },
-    { header: '소스', accessor: 'source', clickable: false },
-    { header: '사용자 지정 이벤트 ID', accessor: 'customEventId', clickable: false }
-  ]
+
 }
 
 export default TableColumnsInfo
