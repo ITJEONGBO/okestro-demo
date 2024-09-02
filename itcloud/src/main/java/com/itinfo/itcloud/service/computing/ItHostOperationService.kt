@@ -92,5 +92,6 @@ class HostOperationServiceImpl: BaseService(), ItHostOperationService {
     }
 
     companion object {
-        private val log by LoggerDelegate()   }
+        private val log by LoggerDelegate()
+    }
 }

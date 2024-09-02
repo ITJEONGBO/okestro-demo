@@ -1,12 +1,11 @@
 package com.itinfo.itcloud.model.computing
 
 import com.itinfo.itcloud.model.*
-import com.itinfo.itcloud.model.network.NicVo
-import com.itinfo.itcloud.model.network.VnicProfileVo
-import com.itinfo.itcloud.model.network.toVnicProfileVos
-import com.itinfo.itcloud.model.network.toVnicProfileVosFromNic
+import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.model.storage.*
 import com.itinfo.util.ovirt.*
+import com.itinfo.util.ovirt.error.ErrorPattern
+import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.BiosBuilder
 import org.ovirt.engine.sdk4.builders.BootBuilder
@@ -56,7 +55,7 @@ private val log = LoggerFactory.getLogger(VmVo::class.java)
  * @property hostVo [HostVo]  실행 호스트 정보 (현재 실행되고 있는 호스트의 정보)
  * @property snapshotVos List<[IdentifiedVo]>
 // * @property diskAttachmentVos List<[DiskAttachmentVo]> // 출력용
- * @property nicVos List<[IdentifiedVo]>
+ * @property nicVos List<[NicVo]>
  *
  *
  * <일반>
@@ -161,7 +160,7 @@ class VmVo (
     val placement: String = "",
     val hostVo: IdentifiedVo = IdentifiedVo(),
     val snapshotVos: List<IdentifiedVo> = listOf(),
-    val nicVos: List<IdentifiedVo> = listOf(),
+    val nicVos: List<NicVo> = listOf(),
     val dataCenterVo: IdentifiedVo = IdentifiedVo(),
     val clusterVo: IdentifiedVo = IdentifiedVo(),
 //    val templateVo: TemplateVo = TemplateVo(),
@@ -244,7 +243,7 @@ class VmVo (
         private var bPlacement: String = ""; fun placement(block: () -> String?) { bPlacement = block() ?: "" }
         private var bHostVo: IdentifiedVo = IdentifiedVo(); fun hostVo(block: () -> IdentifiedVo?) { bHostVo = block() ?: IdentifiedVo() }
         private var bSnapshotVos: List<IdentifiedVo> = listOf(); fun snapshotVos(block: () -> List<IdentifiedVo>?) { bSnapshotVos = block() ?: listOf() }
-        private var bNicVos: List<IdentifiedVo> = listOf(); fun nicVos(block: () -> List<IdentifiedVo>?) { bNicVos = block() ?: listOf() }
+        private var bNicVos: List<NicVo> = listOf(); fun nicVos(block: () -> List<NicVo>?) { bNicVos = block() ?: listOf() }
         private var bDataCenterVo: IdentifiedVo = IdentifiedVo(); fun dataCenterVo(block: () -> IdentifiedVo?) { bDataCenterVo = block() ?: IdentifiedVo() }
         private var bClusterVo: IdentifiedVo = IdentifiedVo(); fun clusterVo(block: () -> IdentifiedVo?) { bClusterVo = block() ?: IdentifiedVo() }
 //        private var bTemplateVo: IdentifiedVo = IdentifiedVo(); fun templateVo(block: () -> TemplateVo?) { bTemplateVo = block() ?: TemplateVo() }
@@ -325,7 +324,7 @@ fun List<Vm>.toVmIdNames(): List<VmVo> =
 fun Vm.toVmVo(conn: Connection): VmVo {
     val cluster: Cluster? = conn.findCluster(this@toVmVo.cluster().id()).getOrNull()
     val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let { conn.findDataCenter(it).getOrNull() }
-    val vmNic: Nic? = conn.findAllNicsFromVm(this@toVmVo.id()).getOrNull()?.firstOrNull()
+    val vmNic: List<Nic> = conn.findAllNicsFromVm(this@toVmVo.id()).getOrDefault(listOf())
     val host: Host? =
         if (this@toVmVo.hostPresent())
             conn.findHost(this@toVmVo.host().id()).getOrNull()
@@ -358,7 +357,7 @@ fun Vm.toVmVo(conn: Connection): VmVo {
 //        placement { this@toVmVo. }
         hostVo { host?.fromHostToIdentifiedVo() }
 //        snapshotVos { this@toVmVo. }
-//        nicVos { this@toVmVo.nics() }
+        nicVos { vmNic.toNicIdNames() }
         dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
         clusterVo { cluster?.fromClusterToIdentifiedVo() }
 //        templateVo { this@toVmVo. }
@@ -794,10 +793,6 @@ fun Vm.toVmBoot(conn: Connection): VmVo {
 
 
 
-
-
-
-
 fun Vm.toVmVoFromHost(conn: Connection/*, graph: ItGraphService*/): VmVo {
     val host: Host? = conn.findHost(this@toVmVoFromHost.host().id()).getOrNull()
     val nic: Nic? = conn.findAllNicsFromVm(this@toVmVoFromHost.id()).getOrDefault(listOf()).firstOrNull()
@@ -821,6 +816,29 @@ fun Vm.toVmVoFromHost(conn: Connection/*, graph: ItGraphService*/): VmVo {
 
 fun List<Vm>.toVmVosFromHost(conn: Connection): List<VmVo> =
     this@toVmVosFromHost.map { it.toVmVoFromHost(conn) }
+
+fun Vm.toVmVoFromNetwork(conn: Connection): VmVo {
+    val cluster: Cluster =
+        conn.findCluster(this@toVmVoFromNetwork.cluster().id())
+            .getOrNull() ?: throw ErrorPattern.VM_ID_NOT_FOUND.toError()
+    val vmNic: List<Nic> =
+        conn.findAllNicsFromVm(this@toVmVoFromNetwork.id()).getOrDefault(listOf())
+
+    return VmVo.builder {
+        id { this@toVmVoFromNetwork.id() }
+        name { this@toVmVoFromNetwork.name() }
+        status { this@toVmVoFromNetwork.status() }
+        fqdn { this@toVmVoFromNetwork.fqdn() }
+        description { this@toVmVoFromNetwork.description() }
+        clusterVo { cluster.fromClusterToIdentifiedVo() }
+        nicVos { vmNic.toNicVosFromVm(conn, this@toVmVoFromNetwork.id()) }
+    }
+}
+
+fun List<Vm>.toVmVoFromNetworks(conn: Connection): List<VmVo> =
+    this@toVmVoFromNetworks.map { it.toVmVoFromNetwork(conn) }
+
+
 
 
 /**

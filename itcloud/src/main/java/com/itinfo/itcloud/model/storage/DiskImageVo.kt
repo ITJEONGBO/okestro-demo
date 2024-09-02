@@ -156,14 +156,12 @@ fun DiskImageVo.toDiskBuilder(): DiskBuilder {
 	return DiskBuilder()
 		.alias(this@toDiskBuilder.alias)
 		.description(this@toDiskBuilder.description)
-//		.provisionedSize( BigInteger.valueOf(this@toDiskBuilder.size.toLong()).multiply(BigInteger.valueOf(1024).pow(3)) )
 		.provisionedSize(BigInteger.valueOf((this@toDiskBuilder.size + this@toDiskBuilder.appendSize).toLong()).multiply(BigInteger.valueOf(1024).pow(3)) ) // 값 받은 것을 byte로 변환하여 준다
 		.wipeAfterDelete(this@toDiskBuilder.wipeAfterDelete)
 		.shareable(this@toDiskBuilder.sharable)
 		.backup(if (this@toDiskBuilder.backup) DiskBackup.INCREMENTAL else DiskBackup.NONE)
 		.format(if (this@toDiskBuilder.backup) DiskFormat.COW else DiskFormat.RAW)
 		.storageDomain(StorageDomainBuilder().id(this@toDiskBuilder.storageDomainVo.id).build())
-//		.storageDomains(new StorageDomain[]{new StorageDomainBuilder().id(vDiskVo.getVDiskImageVo().getStorageDomainId()).build()})
 		.sparse(this@toDiskBuilder.sparse)
 		.diskProfile(DiskProfileBuilder().id(this@toDiskBuilder.diskProfileVo.id)) // 없어도 상관없음
 }

@@ -50,7 +50,7 @@ import java.math.BigInteger
  * @property txTotalError [BigInteger] byte
  *
  */
-class NicVo(
+class NicVo (
 	val id: String = "",
 	val name: String = "",
 	val interface_: NicInterface = NicInterface.VIRTIO,
@@ -113,25 +113,12 @@ class NicVo(
 	}
 }
 
-
-//fun HostNic.toNicVoFromHost(conn: Connection, hostNicStatics: List<Statistic>): NicVo {
-//	val bps: BigInteger = BigInteger.valueOf(1024).pow(2)
-//	return NicVo.builder {
-//        status { this@toNicVoFromHost.status() }
-//        name { this@toNicVoFromHost.name() }
-//        networkVo { conn.findNetwork(this@toNicVoFromHost.network().id()).getOrNull()?.toNetworkVo(conn) }
-//        macAddress { if (this@toNicVoFromHost.macPresent()) this@toNicVoFromHost.mac().address() else "" }
-//        ipv4 { this@toNicVoFromHost.ip().address() }
-//        ipv6 { if (this@toNicVoFromHost.ipv6().addressPresent()) this@toNicVoFromHost.ipv6().address() else null }
-//        speed { this@toNicVoFromHost.speed().divide(BigInteger.valueOf(1024 * 1024)) }
-//        rxSpeed { hostNicStatics.findSpeed("data.current.rx.bps").divide(bps) }
-//        txSpeed { hostNicStatics.findSpeed("data.current.tx.bps").divide(bps) }
-//        rxTotalSpeed { hostNicStatics.findSpeed("data.total.rx") }
-//        txTotalSpeed { hostNicStatics.findSpeed("data.total.tx") }
-//        stop { hostNicStatics.findSpeed("errors.total.rx").divide(bps) }
-//    }
-//}
-
+fun Nic.toNicIdName(): NicVo = NicVo.builder {
+	id { this@toNicIdName.id()}
+	name { this@toNicIdName.name() }
+}
+fun List<Nic>.toNicIdNames(): List<NicVo> =
+	this@toNicIdNames.map { it.toNicIdName() }
 
 fun Nic.toNicVoFromVm(conn: Connection, vmId: String): NicVo {
 	val vm: Vm = conn.findVm(vmId).getOrNull() ?: run {

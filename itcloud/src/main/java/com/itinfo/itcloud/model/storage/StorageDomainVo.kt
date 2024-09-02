@@ -1,7 +1,10 @@
 package com.itinfo.itcloud.model.storage
 
+import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.DataCenterVo
 import com.itinfo.itcloud.model.computing.HostVo
+import com.itinfo.itcloud.model.fromDataCenterToIdentifiedVo
+import com.itinfo.itcloud.model.fromDiskProfilesToIdentifiedVos
 import com.itinfo.itcloud.model.gson
 import com.itinfo.itcloud.service.storage.StorageServiceImpl
 import com.itinfo.util.ovirt.*
@@ -71,10 +74,10 @@ class StorageDomainVo(
 	val storageType: StorageType = StorageType.NFS,
 	val backup: Boolean = false,
 	val logicalUnitId: String = "",
-	val dataCenterVo: DataCenterVo = DataCenterVo(),
-	val hostVo: HostVo = HostVo(),
+	val dataCenterVo: IdentifiedVo = IdentifiedVo(),
+	val hostVo: IdentifiedVo = IdentifiedVo(),
 	val diskImageVos: List<DiskImageVo> = listOf(),
-	val diskProfileVos: List<DiskProfileVo> = listOf(),
+	val diskProfileVos: List<IdentifiedVo> = listOf(),
 ): Serializable {
 	override fun toString(): String =
 		gson.toJson(this)
@@ -102,10 +105,10 @@ class StorageDomainVo(
 		private var bStorageType: StorageType = StorageType.NFS;fun storageType(block: () -> StorageType?) { bStorageType = block() ?: StorageType.NFS }
 		private var bBackup: Boolean = false;fun backup(block: () -> Boolean?) { bBackup = block() ?: false }
 		private var bLogicalUnitId: String = "";fun logicalUnitId(block: () -> String?) { bLogicalUnitId = block() ?: "" }
-		private var bDataCenterVo: DataCenterVo = DataCenterVo();fun dataCenterVo(block: () -> DataCenterVo?) { bDataCenterVo = block() ?: DataCenterVo() }
-		private var bHostVo: HostVo = HostVo();fun hostVo(block: () -> HostVo?) { bHostVo = block() ?: HostVo() }
+		private var bDataCenterVo: IdentifiedVo = IdentifiedVo();fun dataCenterVo(block: () -> IdentifiedVo?) { bDataCenterVo = block() ?: IdentifiedVo() }
+		private var bHostVo: IdentifiedVo = IdentifiedVo();fun hostVo(block: () -> IdentifiedVo?) { bHostVo = block() ?: IdentifiedVo() }
 		private var bDiskImageVos: List<DiskImageVo> = listOf();fun diskImageVos(block: () -> List<DiskImageVo>?) { bDiskImageVos = block() ?: listOf() }
-		private var bProfileVos: List<DiskProfileVo> = listOf();fun profileVos(block: () -> List<DiskProfileVo>?) { bProfileVos = block() ?: listOf() }
+		private var bProfileVos: List<IdentifiedVo> = listOf();fun profileVos(block: () -> List<IdentifiedVo>?) { bProfileVos = block() ?: listOf() }
 
 		fun build(): StorageDomainVo = StorageDomainVo(bId, bName, bDescription, bComment, bActive, bStatus, bDomainType, bDomainTypeMaster, bAvailableSize, bUsedSize, bCommitedSize, bDiskSize, bOverCommit, bImageCnt, bNfsVersion, bWarning, bStoragePath, bStorageAddress, bBlockSize, bFormat, bStorageType, bBackup, bLogicalUnitId, bDataCenterVo, bHostVo, bDiskImageVos, bProfileVos)
 	}
@@ -127,10 +130,17 @@ fun List<StorageDomain>.toStorageDomainIdNames(): List<StorageDomainVo> =
 fun StorageDomain.toStorageDomainVo(conn: Connection, isActive: Boolean = false): StorageDomainVo {
 	log.debug("StorageDomain.toStorageDomainVo ... ")
 	val diskProfiles: List<DiskProfile> =
-		conn.findAllDiskProfilesFromStorageDomain(this@toStorageDomainVo.id()).getOrDefault(listOf())
-	val disks: List<Disk> = conn.findAllDisks().getOrDefault(listOf()).filter {
-		it.storageDomainsPresent() && it.storageDomains().first().id() == this@toStorageDomainVo.id()
+		conn.findAllDiskProfilesFromStorageDomain(this@toStorageDomainVo.id())
+			.getOrDefault(listOf())
+	val disks: List<Disk> =
+		conn.findAllDisks()
+			.getOrDefault(listOf())
+			.filter { it.storageDomainsPresent() && it.storageDomains().first().id() == this@toStorageDomainVo.id()
 	}
+	val dataCenter: DataCenter? =
+		conn.findDataCenter(this@toStorageDomainVo.dataCenters().first().id())
+			.getOrNull()
+
 	return StorageDomainVo.builder {
 		id { this@toStorageDomainVo.id() }
 		name { this@toStorageDomainVo.name() }
@@ -144,19 +154,19 @@ fun StorageDomain.toStorageDomainVo(conn: Connection, isActive: Boolean = false)
 		format { this@toStorageDomainVo.storageFormat() }
 		usedSize { this@toStorageDomainVo.used() }
 		availableSize { this@toStorageDomainVo.available() }
-		profileVos { diskProfiles.toDiskProfileVos()  }
-		diskSize { this@toStorageDomainVo.available().add(this@toStorageDomainVo.used()) }
+		profileVos { diskProfiles.fromDiskProfilesToIdentifiedVos()  }
 		diskSize {
-			// TODO: 이거 처리 어떻게 해야하는지 확립필요
-			if (this@toStorageDomainVo.usedPresent()) this@toStorageDomainVo.used().add(this@toStorageDomainVo.available())
-			else this@toStorageDomainVo.available().add(this@toStorageDomainVo.available())
+//			 TODO: 이거 처리 어떻게 해야하는지 확립필요
+			if (this@toStorageDomainVo.availablePresent()) this@toStorageDomainVo.available().add(this@toStorageDomainVo.used())
+			else BigInteger.ZERO
 		}
 		diskImageVos { disks.toDiskImageVos(conn) }
+		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
 	}
 }
-
 fun List<StorageDomain>.toStorageDomainVos(conn: Connection): List<StorageDomainVo> =
 	this@toStorageDomainVos.map { it.toStorageDomainVo(conn) }
+
 
 // TODO: 스토리지 도메인 묶는 작업 못함
 fun DiskAttachment.toStorageDomainVo(conn: Connection): StorageDomainVo? {

@@ -6,6 +6,7 @@ import com.itinfo.itcloud.error.toException
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.model.computing.ClusterVo
 import com.itinfo.itcloud.model.computing.HostVo
+import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.network.VnicProfileVo
@@ -371,7 +372,7 @@ class NetworkController: BaseController() {
 	@ResponseBody
 	fun findAllVmsFromNetwork(
 		@PathVariable networkId: String? = null,
-	): ResponseEntity<List<NetworkVmVo>> {
+	): ResponseEntity<List<VmVo>> {
 		if (networkId.isNullOrEmpty())
 			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
 		log.info("--- Network 가상머신")

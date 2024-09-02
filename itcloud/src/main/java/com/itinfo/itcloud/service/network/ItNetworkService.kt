@@ -141,7 +141,7 @@ interface ItNetworkService {
 	 * @return List<[NetworkVmVo]>
 	 */
 	@Throws(Error::class)
-	fun findAllVmsFromNetwork(networkId: String): List<NetworkVmVo>
+	fun findAllVmsFromNetwork(networkId: String): List<VmVo>
 	/**
 	 * [ItNetworkService.findAllTemplatesFromNetwork]
 	 *
@@ -342,25 +342,9 @@ class NetworkServiceImpl(
 	}
 
 	@Throws(Error::class)
-//	override fun findAllVmsFromNetwork(networkId: String): List<NetworkVmVo> {
-//		log.info("getVmsByNetwork ... networkId: {}", networkId)
-//		conn.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
-//		val vms: List<Vm> =
-//			conn.findAllVms(follow = "reporteddevices,nics.vnicprofile")
-//				.getOrDefault(listOf())
-//				.filter { it.nics().any { nic -> nic.vnicProfile().network().id() == networkId } }
-//
-//		// TODO?
-//		return vms.flatMap {
-//				it.nics().map { nic ->
-//					val statistics: List<Statistic> =
-//						conn.findAllStatisticsFromVmNic(it.id(), nic.id())
-//							.getOrDefault(listOf())
-//					it.toNetworkVmVo(conn, nic, statistics)
-//				}
-//			}
-//	}
-	override fun findAllVmsFromNetwork(networkId: String): List<NetworkVmVo> {
+	override fun findAllVmsFromNetwork(networkId: String): List<VmVo> {
+		// TODO VmVo가 가지고 있는 nicVo가 나옴 (vm -nics)
+		//  근데 ovirt에서는 Nic가 우선  (nic - vm)
 		log.info("getVmsByNetwork ... networkId: {}", networkId)
 		conn.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
 
@@ -368,16 +352,7 @@ class NetworkServiceImpl(
 			conn.findAllVms(follow = "reporteddevices,nics.vnicprofile")
 				.getOrDefault(listOf())
 				.filter { it.nics().any { nic -> nic.vnicProfile().network().id() == networkId } }
-
-		// TODO?
-		return vms.flatMap {
-			it.nics().map { nic ->
-				val statistics: List<Statistic> =
-					conn.findAllStatisticsFromVmNic(it.id(), nic.id())
-						.getOrDefault(listOf())
-				it.toNetworkVmVo(conn, nic, statistics)
-			}
-		}
+		return vms.toVmVoFromNetworks(conn)
 	}
 
 	@Throws(Error::class)

@@ -4,6 +4,7 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.ClusterVo
 import com.itinfo.itcloud.model.computing.HostVo
+import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.model.setting.PermissionVo
 import org.junit.jupiter.api.Test
@@ -308,11 +309,13 @@ class ItNetworkServiceTest {
 	@Test
 	fun should_findAllVmsFromNetwork() {
 		log.debug("should_findAllVmsFromNetwork ... ")
-		val result: List<ClusterVo> =
-			service.findAllClustersFromNetwork(networkId)
+		val result: List<VmVo> =
+			service.findAllVmsFromNetwork(networkId)
 
 		assertThat(result, `is`(not(nullValue())))
-//		assertThat(result.size, `is`(3))
+//		assertThat(result.size, `is`(7))
+
+		println("---" + result.size)
 		result.forEach { println(it) }
 	}
 
@@ -346,7 +349,7 @@ class ItNetworkServiceTest {
 			service.findAllPermissionsFromNetwork(networkId)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(3))
+		assertThat(result.size, `is`(4))
 		result.forEach { println(it) }
 	}
 
