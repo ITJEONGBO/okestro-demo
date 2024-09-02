@@ -141,7 +141,7 @@ const TableColumnsInfo = {
     { header: '통과', accessor: 'passthrough', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],
-  CLUSTERS_1: [
+  CLUSTERS_ALT: [
     { header: '상태', accessor: 'status', clickable: false },
     { header: '이름', accessor: 'name', clickable: true },
     { header: '코멘트', accessor: 'comment', clickable: false },

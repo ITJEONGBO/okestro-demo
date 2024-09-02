@@ -14,6 +14,7 @@ import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.service.computing.ItAffinityService
 import com.itinfo.itcloud.service.computing.ItClusterService
 import io.swagger.annotations.*
+import io.swagger.v3.oas.annotations.Operation
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

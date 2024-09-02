@@ -23,19 +23,6 @@ const Storage = () => {
   };
 
   // 테이블 컴포넌트
-  const columns = [
-    { header: '별칭', accessor: 'alias', clickable: true },
-    { header: 'ID', accessor: 'id', clickable: false },
-    { header: '', accessor: 'icon1', clickable: false },
-    { header: '', accessor: 'icon2', clickable: false },
-    { header: '연결 대상', accessor: 'connectionTarget', clickable: false },
-    { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
-    { header: '가상 크기', accessor: 'virtualSize', clickable: false },
-    { header: '상태', accessor: 'status', clickable: false },
-    { header: '유형', accessor: 'type', clickable: false },
-    { header: '설명', accessor: 'description', clickable: false },
-  ];
-
   const data = [
     {
       alias: (
@@ -159,16 +146,6 @@ const Storage = () => {
   const handleDomainClick = (row) => {
     navigate(`/storage-domain/${row.domainName.props.children}`);
   };
-
-  // 이벤트 테이블 컴포넌트
-  const eventcolumns = [
-    { header: '', accessor: 'icon', clickable: false },
-    { header: '시간', accessor: 'time', clickable: false },
-    { header: '메세지', accessor: 'message', clickable: false },
-    { header: '상관 관계 ID', accessor: 'correlationId', clickable: false },
-    { header: '소스', accessor: 'source', clickable: false },
-    { header: '사용자 지정 이벤트 ID', accessor: 'customEventId', clickable: false }
-  ];
 
   const eventdata = [
     { icon: <i className="fa fa-check"></i>, time: '2024. 1. 17. PM 3:14:39', message: "Snapshot 'on2o-ap01-Snapshot-2024_01_17' creation for 'VM on2o-ap01' has been completed.", correlationId: '4b4b417a-c...', source: 'oVirt', customEventId: '' },

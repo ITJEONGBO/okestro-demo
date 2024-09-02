@@ -1,21 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Modal from 'react-modal';
-import HostDetail from './Computing/HostDetail';
 import './MainOuter.css';
 
-import Cluster from './Computing/Cluster';
-import Host from './Computing/Host';
-import Vm from './Computing/Vm';
-import Computing from './Computing/Computing';
-import Dashboard from './Dashboard'; // Dashboard 컴포넌트를 import
-import Network from './Network/Network';
-
-import Storage from './Storage'; // Storage.js 파일에서 가져옴
-import StorageDomain from '../detail/StorageDomain'; // StorageDomain.js 파일에서 가져옴
-import StorageDisk from '../detail/StorageDisk'; // StorageDisk.js 파일에서 가져옴
-
-function MainOuter({ children }) {
+const MainOuter = ({ children }) => {
     const [selected, setSelected] = useState('dashboard');
     const [selectedDiv, setSelectedDiv] = useState('data_center');
     const [selectedDisk, setSelectedDisk] = useState(null);
