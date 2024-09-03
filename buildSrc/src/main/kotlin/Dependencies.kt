@@ -30,6 +30,11 @@ object Dependencies {
 //        "org.springframework.security:spring-security-taglibs:${Versions.springSecurity}",
 //        "org.springframework.security:spring-security-web:${Versions.springSecurity}",
     )
+    val jwt = listOf(
+        "io.jsonwebtoken:jjwt-api:${Versions.jwt}",
+        "io.jsonwebtoken:jjwt-impl:${Versions.jwt}",
+        "io.jsonwebtoken:jjwt-jackson:${Versions.jwt}",
+    )
     val springBoot = listOf(
         "org.springframework.boot:spring-boot-starter:${Versions.springBoot}",
         "org.springframework.boot:spring-boot-starter-jdbc:${Versions.springBoot}",

@@ -36,7 +36,6 @@ class SystemPropertyServiceImpl: ItSystemPropertiesService {
 
 	override fun update(sysprop: SystemPropertiesVo): SystemPropertiesVo? {
 		log.info("update ... ")
-		// TODO:
 		return null
 	}
 

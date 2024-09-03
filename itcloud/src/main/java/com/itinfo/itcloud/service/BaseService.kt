@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 
 open class BaseService {
 	@Autowired protected lateinit var admin: AdminConnectionService
-	@Autowired private lateinit var systemProperties: ItSystemPropertiesService
+	@Autowired private lateinit var sysProps: ItSystemPropertiesService
 
 	open val conn: Connection
 		get() = admin.getConnection()
@@ -18,7 +18,7 @@ open class BaseService {
 		get() = conn.systemService()
 
 	open val systemPropertiesVo: SystemPropertiesVo
-		get() = systemProperties.findOne()
+		get() = sysProps.findOne()
 
 	companion object {
 	}

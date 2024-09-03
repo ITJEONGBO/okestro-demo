@@ -14,6 +14,7 @@ object Versions {
     const val spring = "5.3.20"
     const val springSecurity = "5.7.1"
     const val springBoot = "2.7.0"
+    const val jwt = "0.11.5"
     const val jackson = "2.13.3"
     const val swagger2 = "2.9.2"
     const val swagger3 = "3.0.0"

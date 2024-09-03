@@ -49,6 +49,7 @@ dependencies {
     developmentOnly(Dependencies.springBootDevtools)
     implementation(Dependencies.spring)
     implementation(Dependencies.springSecurity)
+    implementation(Dependencies.jwt)
     implementation(Dependencies.swagger3)
     implementation(Dependencies.qemu)
     implementation(Dependencies.tiles)
@@ -165,7 +166,7 @@ val frontendDir = "src/main/frontend"
 
 tasks.processResources {
     if (!skipNpm) {
-        dependsOn("copyReactBuildFiles")
+        // dependsOn("copyReactBuildFiles")
     }
 }
 

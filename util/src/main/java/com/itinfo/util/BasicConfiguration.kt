@@ -27,6 +27,9 @@ class BasicConfiguration {
 		private const val PNAME_ITCLOUD_VERSION = "itcloud.version"
 		private const val PNAME_ITCLOUD_RELEASE_DATE = "itcloud.release-date"
 
+		private const val PNAME_JWT_SECRET_KEY = "jwt.secret-key"
+		private const val PNAME_JWT_EXPIRATION_TIME = "jwt.expiration-time"
+
 		private const val PROP_DATABASE_FULL_PATH = "properties/database.properties"
 		private const val PNAME_POSTGRES_DRIVER_CLASS_NAME = "postgres.driverClassName"
 		private const val PNAME_POSTGRES_JDBC_PROTOCOL = "postgres.jdbc.protocol"
@@ -84,6 +87,10 @@ class BasicConfiguration {
 		get() = globalProp?.get(PNAME_ITCLOUD_VERSION).toString()
 	val itcloudReleaseDate: String
 		get() = globalProp?.get(PNAME_ITCLOUD_RELEASE_DATE).toString()
+	val jwtSecretKey: String
+		get() = globalProp?.get(PNAME_JWT_SECRET_KEY).toString()
+	val jwtExpirationTime: Long
+		get() = globalProp?.get(PNAME_JWT_EXPIRATION_TIME).toString().toLongOrNull() ?: 360000L
 	val postgresDriverClassname: String
 		get() = databaseProp?.get(PNAME_POSTGRES_DRIVER_CLASS_NAME).toString()
 	val postgresProtocol: String
@@ -134,6 +141,8 @@ class BasicConfiguration {
 			ip { ovirtIp }
 			vncIp { ovirtVncIp }
 			vncPort { "$ovirtVncPort" }
+			jwtSecretKey { jwtSecretKey }
+			jwtExpirationTime { jwtExpirationTime }
 			cpuThreshold { ovirtThresholdCpu }
 			memoryThreshold { ovirtThresholdMemory }
 			grafanaUri { ovirtGrafanaUri }
