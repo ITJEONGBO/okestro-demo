@@ -8,19 +8,18 @@ import com.itinfo.itcloud.model.response.Res
 import com.itinfo.itcloud.model.response.toRes
 import com.itinfo.util.ovirt.error.FailureType
 import com.itinfo.util.ovirt.error.ItCloudException
+import io.swagger.annotations.Api
 
 import org.ovirt.engine.sdk4.Error
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.ControllerAdvice
-import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.bind.annotation.*
 
 @Controller
+@Api(tags=["Root"])
 class RootController: BaseController() {
-	@RequestMapping("/")
+	@GetMapping("/")
 	fun root(): String = "forward:index.html" // root로 강제 매핑
 }
 

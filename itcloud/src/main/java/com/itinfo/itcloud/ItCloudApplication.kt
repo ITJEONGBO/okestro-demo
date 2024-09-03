@@ -56,3 +56,5 @@ fun doSleep(timeInMilli: Long = DEFAULT_TIME_SLEEP_IN_MILLI) {
 
 fun doLongSleep() =
 	doSleep(DEFAULT_TIME_LONG_SLEEP_IN_MILLI)
+
+data class ItCloudOutput(val o: String = "")

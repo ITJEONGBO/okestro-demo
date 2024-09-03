@@ -14,7 +14,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
 @Controller
-@Api(tags = ["Graph"])
+@Api(tags = ["Computing", "Graph"])
 @RequestMapping("/api/v1/dashboard")
 class GraphController {
 	@Autowired private lateinit var graph: ItGraphService
@@ -79,7 +79,7 @@ class GraphController {
 		return ResponseEntity.ok(graph.vmMemoryChart())
 	}
 
-		@GetMapping("/storageMemory")
+	@GetMapping("/storageMemory")
 	fun storageChart(): ResponseEntity<List<UsageDto>> {
 		log.info("----- storageChart")
 		return ResponseEntity.ok(graph.storageChart())

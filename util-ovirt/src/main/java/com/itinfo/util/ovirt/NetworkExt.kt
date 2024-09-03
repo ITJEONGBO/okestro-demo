@@ -89,8 +89,7 @@ fun Connection.updateNetwork(network: Network): Result<Network?> = runCatching {
 }
 
 fun Connection.removeNetwork(networkId: String): Result<Boolean> = runCatching {
-	val network: Network =
-		this.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
+	this.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
 	this.srvNetwork(networkId).remove().send()
 	true
 // 단순 네트워크에서 네트워크 삭제할때는 네트워크 상태 필요없음
@@ -131,12 +130,14 @@ fun Connection.addNetworkLabelFromNetwork(networkId: String, networkLabel: Netwo
 private fun Connection.srvNetworkLabelFromNetwork(networkId: String, networkLabelId: String): NetworkLabelService =
 	this.srvNetworkLabelsFromNetwork(networkId).labelService(networkLabelId)
 
-fun Connection.removeNetworkLabelFromNetwork(networkId: String, networkLabelId: String): Boolean = try {
+fun Connection.removeNetworkLabelFromNetwork(networkId: String, networkLabelId: String): Result<Boolean> = runCatching {
 	this.srvNetworkLabelFromNetwork(networkId, networkLabelId).remove().send()
 	true
-} catch (e: Error) {
-	log.error(e.localizedMessage)
-	false
+}.onSuccess {
+	Term.NETWORK.logSuccessWithin(Term.NETWORK_LABEL, "삭제", networkId)
+}.onFailure {
+	Term.NETWORK.logFailWithin(Term.NETWORK_LABEL, "삭제", it, networkId)
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 private fun Connection.srvVnicProfilesFromNetwork(networkId: String): AssignedVnicProfilesService =

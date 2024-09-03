@@ -6,10 +6,8 @@ import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.error.IdNotFoundException
 import com.itinfo.itcloud.error.InvalidRequestException
 import com.itinfo.itcloud.error.toException
-import com.itinfo.itcloud.model.computing.ClusterVo
 import com.itinfo.itcloud.model.computing.EventVo
 import com.itinfo.itcloud.model.setting.PermissionVo
-import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.storage.DiskImageVo
 import com.itinfo.itcloud.model.storage.StorageDomainVo
 import com.itinfo.itcloud.service.storage.ItStorageService
@@ -49,7 +47,7 @@ class StorageController: BaseController() {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/domains ... Domain(s) 목록", dataCenterId)
-		return ResponseEntity(iStorage.findAllStorageDomainsFromDataCenter(dataCenterId), HttpStatus.OK)
+		return ResponseEntity.ok(iStorage.findAllStorageDomainsFromDataCenter(dataCenterId))
 	}
 
 
@@ -72,7 +70,7 @@ class StorageController: BaseController() {
 		if (storageDomainId == null)
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/disks ... 스토리지 도메인 밑에 붙어있는 Disk 목록", storageDomainId)
-		return ResponseEntity(iStorage.findAllDisksFromStorageDomain(storageDomainId), HttpStatus.OK)
+		return ResponseEntity.ok(iStorage.findAllDisksFromStorageDomain(storageDomainId))
 	}
 
 
@@ -100,7 +98,7 @@ class StorageController: BaseController() {
 		if (diskImage == null)
 			throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
 		log.info("/storages/{}/disks/image ... 새가상 디스크 - 이미지 생성", dataCenterId)
-		return ResponseEntity(iStorage.addDisk(diskImage), HttpStatus.OK)
+		return ResponseEntity.ok(iStorage.addDisk(diskImage))
 	}
 
 	@ApiOperation(
@@ -131,7 +129,7 @@ class StorageController: BaseController() {
 		if (diskImage == null)
 			throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
 		log.info("/storages/{}/disks/image/{} ... 새가상 디스크 - 이미지 수정", dataCenterId, diskImageId)
-		return ResponseEntity(iStorage.updateDisk(diskImage), HttpStatus.OK)
+		return ResponseEntity.ok(iStorage.updateDisk(diskImage))
 	}
 
 	@ApiOperation(
@@ -158,7 +156,7 @@ class StorageController: BaseController() {
 		if (diskImageId == null)
 			throw ErrorPattern.DISK_IMAGE_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/disks/image/{} ... 새가상 디스크 - 이미지 삭제", dataCenterId, diskImageId)
-		return ResponseEntity(iStorage.moveDisk(diskImageId, storageDomainId = ""), HttpStatus.OK)
+		return ResponseEntity.ok(iStorage.moveDisk(diskImageId, storageDomainId = ""))
 	}
 
 	@ApiOperation(
@@ -180,10 +178,8 @@ class StorageController: BaseController() {
 		@PathVariable diskId: String? = null,
 		@RequestBody diskImage: DiskImageVo? = null,
 	): ResponseEntity<Boolean> {
-		if (diskId.isNullOrEmpty())
-			throw ErrorPattern.DISK_ID_NOT_FOUND.toException()
-		if (diskImage == null)
-			throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
+		if (diskId.isNullOrEmpty()) throw ErrorPattern.DISK_ID_NOT_FOUND.toException()
+		if (diskImage == null)  throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
 		log.info("/storages/disks/{}/copy ... 디스크 - 복사", diskId)
 		return ResponseEntity(iStorage.copyDisk(diskImage), HttpStatus.CREATED)
 	}
@@ -213,7 +209,7 @@ class StorageController: BaseController() {
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		if (diskImage == null)
 			throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
-		return ResponseEntity(iStorage.uploadDisk(file, diskImage), HttpStatus.OK)
+		return ResponseEntity.ok(iStorage.uploadDisk(file, diskImage))
 	}
 
 //	@ApiOperation(
@@ -242,7 +238,7 @@ class StorageController: BaseController() {
 //		// TODO: 파라미터 재정의 필요 id인지 dcID인지
 //		// 데이터센터 밑에 붙어있는 디스크
 //		log.info("--- Disk 목록")
-//		return ResponseEntity(iStorage.findAllDisksFromDataCenter(dataCenterId), HttpStatus.OK)
+//		return ResponseEntity.ok(iStorage.findAllDisksFromDataCenter(dataCenterId))
 //	}
 
 
@@ -265,7 +261,7 @@ class StorageController: BaseController() {
 //		if (dataCenterId.isNullOrEmpty())
 //			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 //		log.info("/storages/{}/networks ... Network(s) 목록", dataCenterId)
-//		return ResponseEntity(iStorage.findAllNetworksFromDataCenter(dataCenterId), HttpStatus.OK)
+//		return ResponseEntity.ok(iStorage.findAllNetworksFromDataCenter(dataCenterId))
 //	}
 
 //	@ApiOperation(
@@ -288,7 +284,7 @@ class StorageController: BaseController() {
 //		if (dataCenterId.isNullOrEmpty())
 //			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 //		log.info("/storages/{}/clusters ... Cluster(s) 목록", dataCenterId)
-//		return ResponseEntity(iStorage.findAllClustersFromDataCenter(dataCenterId), HttpStatus.OK)
+//		return ResponseEntity.ok(iStorage.findAllClustersFromDataCenter(dataCenterId))
 //	}
 
 	@ApiOperation(
@@ -311,7 +307,7 @@ class StorageController: BaseController() {
 		if (storageDomainId.isNullOrEmpty())
 			throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/permissions ... Permission(s) 목록", storageDomainId)
-		return ResponseEntity(iStorage.findAllPermissionsFromStorageDomain(storageDomainId), HttpStatus.OK)
+		return ResponseEntity.ok(iStorage.findAllPermissionsFromStorageDomain(storageDomainId))
 	}
 
 	@ApiOperation(
@@ -334,7 +330,7 @@ class StorageController: BaseController() {
 		if (storageDomainId.isNullOrEmpty())
 			throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/events ... Event(s) 목록", storageDomainId)
-		return ResponseEntity(iStorage.findAllEventsFromStorageDomain(storageDomainId), HttpStatus.OK)
+		return ResponseEntity.ok(iStorage.findAllEventsFromStorageDomain(storageDomainId))
 	}
 	
 	companion object {

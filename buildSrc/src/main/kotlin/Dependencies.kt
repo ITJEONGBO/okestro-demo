@@ -32,6 +32,8 @@ object Dependencies {
     )
     val jwt = listOf(
         "io.jsonwebtoken:jjwt-api:${Versions.jwt}",
+    )
+    val jwtRuntime = listOf(
         "io.jsonwebtoken:jjwt-impl:${Versions.jwt}",
         "io.jsonwebtoken:jjwt-jackson:${Versions.jwt}",
     )
@@ -164,6 +166,12 @@ fun DependencyHandler.kapt(list: List<String>) {
 fun DependencyHandler.implementation(list: List<String>) {
     list.forEach { dependency ->
         add("implementation", dependency)
+    }
+}
+
+fun DependencyHandler.runtimeOnly(list: List<String>) {
+    list.forEach { dependency ->
+        add("runtimeOnly", dependency)
     }
 }
 

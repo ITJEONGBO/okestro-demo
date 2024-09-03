@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.configuration
+package com.itinfo.itcloud.filter
 
 import com.itinfo.common.LoggerDelegate
 import org.springframework.web.util.ContentCachingRequestWrapper

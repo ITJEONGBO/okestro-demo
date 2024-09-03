@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.service.computing
 
-import com.itinfo.itcloud.ItCloudApplication.Companion.log
+import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.storage.DiskAttachmentVo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
@@ -64,8 +64,10 @@ class ItVmDiskServiceTest {
             service.findOneDiskFromVm(vmId, diskAttachmentId)
 
         assertThat(result, `is`(not(nullValue())))
-        print(result)
+        log.debug("result: {}", result)
     }
 
-
+    companion object {
+        private val log by LoggerDelegate()
+    }
 }

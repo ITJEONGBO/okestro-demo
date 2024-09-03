@@ -4,13 +4,12 @@ import com.itinfo.common.LoggerDelegate
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
-
 import springfox.documentation.builders.PathSelectors
 import springfox.documentation.builders.RequestHandlerSelectors
 import springfox.documentation.builders.ResponseBuilder
-import springfox.documentation.service.Response
 import springfox.documentation.service.ApiInfo
 import springfox.documentation.service.Contact
+import springfox.documentation.service.Response
 import springfox.documentation.spi.DocumentationType
 import springfox.documentation.spring.web.plugins.Docket
 
@@ -22,8 +21,10 @@ class SwaggerConfig {
 	fun api(): Docket {
 		log.debug("... api")
 		return Docket(DocumentationType.SWAGGER_2)
-			.apiInfo(apiInfo())
+			.consumes(getConsumeContentTypes())
+			.produces(getProduceContentTypes())
 			.useDefaultResponseMessages(false)
+			.apiInfo(apiInfo())
 			.globalResponses(HttpMethod.POST, arrayList) // getArrayList()함수에서 정의한 응답메시지 사용
 			.select()
 			.apis(RequestHandlerSelectors.basePackage("com.itinfo.controller"))
@@ -41,6 +42,15 @@ class SwaggerConfig {
 			"Apache 2.0", "http://www.apache.org/licenses/LICENSE-2.0", emptyList()
 		)
 	}
+
+	private fun getConsumeContentTypes(): Set<String> = hashSetOf(
+		"application/json;charset=UTF-8",
+		"application/x-www-form-urlencoded"
+	)
+
+	private fun getProduceContentTypes(): Set<String> = hashSetOf(
+		"application/json;charset=UTF-8"
+	)
 
 	private val arrayList: List<Response>
 		get() = arrayListOf(

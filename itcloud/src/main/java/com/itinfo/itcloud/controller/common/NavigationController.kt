@@ -44,7 +44,7 @@ class NavigationController {
 			"storagedomain", "storagedomains" -> treeNavigation.findAllNavigationalsWithStorageDomains() // 스토리지 도메인
 			else -> listOf()
 		}
-		return ResponseEntity(res, HttpStatus.OK)
+		return ResponseEntity.ok(res)
 	}
 
 	companion object {

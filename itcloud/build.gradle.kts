@@ -50,6 +50,7 @@ dependencies {
     implementation(Dependencies.spring)
     implementation(Dependencies.springSecurity)
     implementation(Dependencies.jwt)
+    runtimeOnly(Dependencies.jwtRuntime)
     implementation(Dependencies.swagger3)
     implementation(Dependencies.qemu)
     implementation(Dependencies.tiles)

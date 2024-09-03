@@ -13,14 +13,13 @@ import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
 import io.swagger.annotations.ApiOperation
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
 
 @Controller
-@Api(tags = ["Computing-Host"])
+@Api(tags = ["Computing", "Host"])
 @RequestMapping("/api/v1/computing/hosts")
 class HostController {
 	@Autowired private lateinit var iHost: ItHostService
@@ -34,7 +33,7 @@ class HostController {
 	@ResponseBody
 	fun findAll(): ResponseEntity<List<HostVo>> {
 		log.info("--- 호스트 목록")
-		return ResponseEntity(iHost.findAll(), HttpStatus.OK)
+		return ResponseEntity.ok(iHost.findAll())
 	}
 /*
 	@GetMapping("/settings")
@@ -61,7 +60,7 @@ class HostController {
 		log.info("--- 호스트 생성")
 		if (hostVo == null)
 			throw ErrorPattern.HOST_VO_INVALID.toException()
-		return ResponseEntity(iHost.add(hostVo), HttpStatus.OK)
+		return ResponseEntity.ok(iHost.add(hostVo))
 	}
 
 	@ApiOperation(
@@ -80,7 +79,7 @@ class HostController {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 수정창")
-		return ResponseEntity(iHost.findOne(hostId), HttpStatus.OK)
+		return ResponseEntity.ok(iHost.findOne(hostId))
 	}
 
 	@ApiOperation(
@@ -101,7 +100,7 @@ class HostController {
 		if (host == null)
 			throw ErrorPattern.HOST_VO_INVALID.toException()
 		log.info("--- 호스트 편집")
-		return ResponseEntity(iHost.update(host), HttpStatus.OK)
+		return ResponseEntity.ok(iHost.update(host))
 	}
 
 	@ApiOperation(
@@ -120,7 +119,7 @@ class HostController {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 삭제")
-		return ResponseEntity(iHost.remove(hostId), HttpStatus.OK)
+		return ResponseEntity.ok(iHost.remove(hostId))
 	}
 
 	@ApiOperation(
@@ -139,7 +138,7 @@ class HostController {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 일반")
-		return ResponseEntity(iHost.findOne(hostId), HttpStatus.OK)
+		return ResponseEntity.ok(iHost.findOne(hostId))
 	}
 
 
@@ -159,7 +158,7 @@ class HostController {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 vm")
-		return ResponseEntity(iHost.findAllVmsFromHost(hostId), HttpStatus.OK)
+		return ResponseEntity.ok(iHost.findAllVmsFromHost(hostId))
 	}
 
 	@ApiOperation(
@@ -178,7 +177,7 @@ class HostController {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 nic")
-		return ResponseEntity(iHost.findAllHostNicsFromHost(hostId), HttpStatus.OK)
+		return ResponseEntity.ok(iHost.findAllHostNicsFromHost(hostId))
 	}
 
 	@ApiOperation(
@@ -197,7 +196,7 @@ class HostController {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 장치")
-		return ResponseEntity(iHost.findAllHostNicsFromHost(hostId), HttpStatus.OK)
+		return ResponseEntity.ok(iHost.findAllHostNicsFromHost(hostId))
 	}
 
 
@@ -217,7 +216,7 @@ class HostController {
 		log.info("--- 호스트 권한")
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		return ResponseEntity(iHost.findAllPermissionsFromHost(hostId), HttpStatus.OK)
+		return ResponseEntity.ok(iHost.findAllPermissionsFromHost(hostId))
 	}
 	@ApiOperation(
 		httpMethod="GET",
@@ -235,7 +234,7 @@ class HostController {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 선호도 레이블")
-		return ResponseEntity(iHost.findAllAffinityLabelsFromHost(hostId), HttpStatus.OK)
+		return ResponseEntity.ok(iHost.findAllAffinityLabelsFromHost(hostId))
 	}
 /*
 	@ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -300,7 +299,7 @@ class HostController {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 이벤트")
-		return ResponseEntity(iHost.findAllEventsFromHost(hostId), HttpStatus.OK)
+		return ResponseEntity.ok(iHost.findAllEventsFromHost(hostId))
 	}
 
 	@Autowired private lateinit var iHostOp: ItHostOperationService
@@ -321,7 +320,7 @@ class HostController {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 유지보수")
-		return ResponseEntity(iHostOp.deactivate(hostId), HttpStatus.OK)
+		return ResponseEntity.ok(iHostOp.deactivate(hostId))
 	}
 
 	@ApiOperation(
@@ -340,7 +339,7 @@ class HostController {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 활성")
-		return ResponseEntity(iHostOp.activate(hostId), HttpStatus.OK)
+		return ResponseEntity.ok(iHostOp.activate(hostId))
 	}
 
 	@ApiOperation(
@@ -359,7 +358,7 @@ class HostController {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 새로고침")
-		return ResponseEntity(iHostOp.refresh(hostId), HttpStatus.OK)
+		return ResponseEntity.ok(iHostOp.refresh(hostId))
 	}
 
 	@ApiOperation(
@@ -378,7 +377,7 @@ class HostController {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("--- 호스트 ssh 재시작")
-		return ResponseEntity(iHostOp.restart(hostId), HttpStatus.OK)
+		return ResponseEntity.ok(iHostOp.restart(hostId))
 	}
 
 	companion object {

@@ -21,7 +21,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
 @Controller
-@Api(tags = ["Computing-Cluster"])
+@Api(tags = ["Computing", "Cluster"])
 @RequestMapping("/api/v1/computing/clusters")
 class ClusterController: BaseController() {
 	@Autowired private lateinit var iCluster: ItClusterService
@@ -39,7 +39,7 @@ class ClusterController: BaseController() {
 	@ResponseStatus(HttpStatus.OK)
 	fun findAll(): ResponseEntity<List<ClusterVo>> {
 		log.info("/computing/clusters ... 클러스터 목록")
-		return ResponseEntity(iCluster.findAll(), HttpStatus.OK)
+		return ResponseEntity.ok(iCluster.findAll())
 	}
 
 	@ApiOperation(
@@ -56,7 +56,7 @@ class ClusterController: BaseController() {
 	// TODO: 데이터센터와의 관계 확인 후 이동
 	fun findAllDataCentersFromCluster(): ResponseEntity<List<DataCenterVo>> {
 		log.info("/computing/clusters/settings ... 클러스터 생성 창: 데이터센터 목록")
-		return ResponseEntity(iCluster.findAllDataCentersFromCluster(), HttpStatus.OK)
+		return ResponseEntity.ok(iCluster.findAllDataCentersFromCluster())
 	}
 
 	@ApiOperation(
@@ -81,7 +81,7 @@ class ClusterController: BaseController() {
 		if (clusterId == null)
 			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
 		log.info("/computing/clusters/settings/{} ... 클러스터 생성 창: 네트워크 목록", clusterId)
-		return ResponseEntity(iCluster.findAllNetworksFromDataCenter(clusterId), HttpStatus.OK)
+		return ResponseEntity.ok(iCluster.findAllNetworksFromDataCenter(clusterId))
 	}
 
 	@ApiOperation(
@@ -105,7 +105,7 @@ class ClusterController: BaseController() {
 		if (cluster == null)
 			throw ErrorPattern.CLUSTER_VO_INVALID.toException()
 		log.info("/computing/clusters ... 클러스터 생성\n{}", cluster)
-		return ResponseEntity(iCluster.add(cluster), HttpStatus.OK)
+		return ResponseEntity.ok(iCluster.add(cluster))
 	}
 	
 
@@ -126,7 +126,7 @@ class ClusterController: BaseController() {
 		if (clusterId.isNullOrEmpty())
 			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
 		log.info("/computing/clusters/{}/edit ... 클러스터 편집 창", clusterId)
-		return ResponseEntity(iCluster.findOne(clusterId), HttpStatus.OK)
+		return ResponseEntity.ok(iCluster.findOne(clusterId))
 	}
 
 	@ApiOperation(
@@ -149,7 +149,7 @@ class ClusterController: BaseController() {
 		if (clusterVo == null)
 			throw ErrorPattern.CLUSTER_VO_INVALID.toException()
 		log.info("/computing/clusters/{} ... 클러스터 편집\n{}", clusterId, clusterVo)
-		return ResponseEntity(iCluster.update(clusterVo), HttpStatus.OK)
+		return ResponseEntity.ok(iCluster.update(clusterVo))
 	}
 
 
@@ -170,7 +170,7 @@ class ClusterController: BaseController() {
 		if (clusterId.isNullOrEmpty())
 			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
 		log.info("/computing/clusters/{} ... 클러스터 삭제", clusterId)
-		return ResponseEntity(iCluster.remove(clusterId), HttpStatus.OK)
+		return ResponseEntity.ok(iCluster.remove(clusterId))
 	}
 
 	@ApiOperation(
@@ -190,7 +190,7 @@ class ClusterController: BaseController() {
 		if (clusterId.isNullOrEmpty())
 			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
 		log.info("/computing/clusters/{} ... 클러스터 상세정보", clusterId)
-		return ResponseEntity(iCluster.findOne(clusterId), HttpStatus.OK)
+		return ResponseEntity.ok(iCluster.findOne(clusterId))
 	}
 
 	@ApiOperation(
@@ -210,7 +210,7 @@ class ClusterController: BaseController() {
 		if (clusterId.isNullOrEmpty())
 			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
 		log.info("--- 클러스터 네트워크 목록")
-		return ResponseEntity(iCluster.findAllNetworksFromCluster(clusterId), HttpStatus.OK)
+		return ResponseEntity.ok(iCluster.findAllNetworksFromCluster(clusterId))
 	}
 
 	@ApiOperation(
@@ -230,7 +230,7 @@ class ClusterController: BaseController() {
 		if (clusterId.isNullOrEmpty())
 			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
 		log.info("--- 클러스터 내 호스트 목록")
-		return ResponseEntity(iCluster.findAllHostsFromCluster(clusterId), HttpStatus.OK)
+		return ResponseEntity.ok(iCluster.findAllHostsFromCluster(clusterId))
 	}
 
 
@@ -251,7 +251,7 @@ class ClusterController: BaseController() {
 		if (clusterId.isNullOrEmpty())
 			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
 		log.info("--- 클러스터 가상머신 목록")
-		return ResponseEntity(iCluster.findAllVmsFromCluster(clusterId), HttpStatus.OK)
+		return ResponseEntity.ok(iCluster.findAllVmsFromCluster(clusterId))
 	}
 
 /*
@@ -367,7 +367,7 @@ class ClusterController: BaseController() {
 		if (clusterId.isNullOrEmpty())
 			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
 		log.info("--- 클러스터 권한")
-		return ResponseEntity(iCluster.findAllPermissionsFromCluster(clusterId), HttpStatus.OK)
+		return ResponseEntity.ok(iCluster.findAllPermissionsFromCluster(clusterId))
 	}
 
 
@@ -384,7 +384,7 @@ class ClusterController: BaseController() {
 	@ResponseStatus(HttpStatus.OK)
 	fun event(@PathVariable clusterId: String): ResponseEntity<List<EventVo>> {
 		log.info("--- 클러스터 이벤트")
-		return ResponseEntity(iCluster.findAllEventsFromCluster(clusterId), HttpStatus.OK)
+		return ResponseEntity.ok(iCluster.findAllEventsFromCluster(clusterId))
 	}
 
 	companion object {

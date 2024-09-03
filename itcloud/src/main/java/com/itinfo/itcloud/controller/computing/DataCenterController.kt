@@ -20,7 +20,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
 @Controller
-@Api(tags = ["Computing-DataCenter"])
+@Api(tags = ["Computing", "DataCenter"])
 @RequestMapping("/api/v1/computing/datacenters")
 class DataCenterController: BaseController() {
 	@Autowired private lateinit var iDataCenter: ItDataCenterService
@@ -83,7 +83,7 @@ class DataCenterController: BaseController() {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/computing/datacenters/{}/edit ... 데이터센터 편집 창", dataCenterId)
-		return ResponseEntity(iDataCenter.findOne(dataCenterId), HttpStatus.OK)
+		return ResponseEntity.ok(iDataCenter.findOne(dataCenterId))
 	}
 
 
@@ -108,7 +108,7 @@ class DataCenterController: BaseController() {
 		if (dataCenterVo == null)
 			throw ErrorPattern.DATACENTER_VO_INVALID.toException()
 		log.info("/computing/datacenters/{} ... 데이터센터 편집\n{}", dataCenterId, dataCenterVo)
-		return ResponseEntity(iDataCenter.update(dataCenterVo), HttpStatus.OK)
+		return ResponseEntity.ok(iDataCenter.update(dataCenterVo))
 	}
 
 
@@ -129,7 +129,7 @@ class DataCenterController: BaseController() {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/computing/datacenters/{} ... 데이터센터 삭제", dataCenterId)
-		return ResponseEntity(iDataCenter.remove(dataCenterId), HttpStatus.OK)
+		return ResponseEntity.ok(iDataCenter.remove(dataCenterId))
 	}
 
 
@@ -150,7 +150,7 @@ class DataCenterController: BaseController() {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/computing/datacenters/{}/events ... 데이터센터 이벤트목록", dataCenterId)
-		return ResponseEntity(iDataCenter.findAllEventsBy(dataCenterId), HttpStatus.OK)
+		return ResponseEntity.ok(iDataCenter.findAllEventsBy(dataCenterId))
 	}
 
 	// 대시보드 옆에 트리구조

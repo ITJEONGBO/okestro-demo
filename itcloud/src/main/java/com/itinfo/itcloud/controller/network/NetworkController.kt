@@ -38,8 +38,8 @@ class NetworkController: BaseController() {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	fun networks(): ResponseEntity<List<NetworkVo>> {
-		log.info("/networks ... 네트워크 목록")
-		return ResponseEntity(iNetwork.findAll(), HttpStatus.OK)
+		log.info("GET /api/v1/networks ... 네트워크 목록")
+		return ResponseEntity.ok(iNetwork.findAll())
 	}
 
 
@@ -63,7 +63,7 @@ class NetworkController: BaseController() {
 		if (network == null)
 			throw ErrorPattern.NETWORK_VO_INVALID.toException()
 		log.info("/networks ... 네트워크 생성")
-		return ResponseEntity(iNetwork.add(network), HttpStatus.OK)
+		return ResponseEntity.ok(iNetwork.add(network))
 	}
 
 
@@ -82,10 +82,9 @@ class NetworkController: BaseController() {
 	fun setEditNetwork(
 		@PathVariable networkId: String? = null,
 	): ResponseEntity<NetworkVo?> {
-		log.info("/networks/{}/edit ... Network 편집 창", networkId)
-		if (networkId.isNullOrEmpty())
-			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-		return ResponseEntity(iNetwork.findOne(networkId), HttpStatus.OK)
+		log.info("GET /api/v1/networks/{}/edit ... Network 편집 창", networkId)
+		if (networkId.isNullOrEmpty()) throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
+		return ResponseEntity.ok(iNetwork.findOne(networkId))
 	}
 
 	@ApiOperation(
@@ -108,7 +107,7 @@ class NetworkController: BaseController() {
 			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
 		if (networkVo == null)
 			throw ErrorPattern.NETWORK_VO_INVALID.toException()
-		return ResponseEntity(iNetwork.update(networkVo), HttpStatus.OK)
+		return ResponseEntity.ok(iNetwork.update(networkVo))
 	}
 
 	@ApiOperation(
@@ -128,7 +127,7 @@ class NetworkController: BaseController() {
 		if (networkId.isNullOrEmpty())
 			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
 		log.info("/networks/{} ... Network 삭제", networkId)
-		return ResponseEntity(iNetwork.remove(networkId), HttpStatus.OK)
+		return ResponseEntity.ok(iNetwork.remove(networkId))
 	}
 
 	@ApiOperation(
@@ -140,7 +139,7 @@ class NetworkController: BaseController() {
 	@ResponseBody
 	fun setImportNetwork(): ResponseEntity<OpenStackNetworkVo?> {
 		log.info("--- Network 가져오기 창(openstack networkProvider 목록)")
-		return ResponseEntity(iNetwork.findAllNetworkProviderFromNetwork(), HttpStatus.OK)
+		return ResponseEntity.ok(iNetwork.findAllNetworkProviderFromNetwork())
 	}
 
 	// TODO: 정리필요
@@ -148,7 +147,7 @@ class NetworkController: BaseController() {
 	@PostMapping("/import")
 	fun importNw(): ResponseEntity<Boolean> {
 		log.info("--- Network 가져오기")
-		return ResponseEntity(iNetwork.importNetwork(), HttpStatus.OK)
+		return ResponseEntity.ok(iNetwork.importNetwork())
 	}
 
 	@ApiOperation(
@@ -167,7 +166,7 @@ class NetworkController: BaseController() {
 		if (networkId.isNullOrEmpty())
 			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
 		log.info("--- Network 일반")
-		return ResponseEntity(iNetwork.findOne(networkId), HttpStatus.OK)
+		return ResponseEntity.ok(iNetwork.findOne(networkId))
 	}
 
 
@@ -188,7 +187,7 @@ class NetworkController: BaseController() {
 		if (networkId.isNullOrEmpty())
 			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
 		log.info("--- Network vnic 프로파일")
-		return ResponseEntity(iNetwork.findAllVnicProfilesFromNetwork(networkId), HttpStatus.OK)
+		return ResponseEntity.ok(iNetwork.findAllVnicProfilesFromNetwork(networkId))
 	}
 
 //	// vnic 생성 창
@@ -203,7 +202,7 @@ class NetworkController: BaseController() {
 //		if (networkId.isNullOrEmpty())
 //			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
 //		log.info("--- Network vnic 프로파일 생성창")
-//		return ResponseEntity(iVnicProfile.findOneVnicProfile(networkId) }
+//		return ResponseEntity.ok(iVnicProfile.findOneVnicProfile(networkId) }
 //	}
 //
 //	// vnic 생성
@@ -222,7 +221,7 @@ class NetworkController: BaseController() {
 //			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
 //		if (vnicProfile == null)
 //			throw ErrorPattern.VNIC_PROFILE_VO_INVALID.toException()
-//		return ResponseEntity(iVnicProfile.addVnicProfileByNetwork(networkId, vnicProfile) }
+//		return ResponseEntity.ok(iVnicProfile.addVnicProfileByNetwork(networkId, vnicProfile) }
 //	}
 //
 //	// vnic 편집 창
@@ -264,7 +263,7 @@ class NetworkController: BaseController() {
 //			throw ErrorPattern.VNIC_PROFILE_ID_NOT_FOUND.toException()
 //		if (vnicProfile == null)
 //			throw ErrorPattern.VNIC_PROFILE_VO_INVALID.toException()
-//		return ResponseEntity(iVnicProfile.updateVnicProfileFromNetwork(networkId, vnicProfileId, vnicProfile) }
+//		return ResponseEntity.ok(iVnicProfile.updateVnicProfileFromNetwork(networkId, vnicProfileId, vnicProfile) }
 //	}
 //
 //	// vnic 삭제
@@ -283,9 +282,8 @@ class NetworkController: BaseController() {
 //		if (vnicProfileId.isNullOrEmpty())
 //			throw ErrorPattern.VNIC_PROFILE_ID_NOT_FOUND.toException()
 //		log.info("--- Network vnic프로파일 삭제")
-//		return ResponseEntity(iVnicProfile.deleteVnicProfileByNetwork(networkId, vnicProfileId) }
+//		return ResponseEntity.ok(iVnicProfile.deleteVnicProfileByNetwork(networkId, vnicProfileId) }
 //	}
-
 	// endregion
 
 
@@ -303,7 +301,7 @@ class NetworkController: BaseController() {
 		log.info("--- Network 클러스터")
 		if (networkId.isNullOrEmpty())
 			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-		return ResponseEntity(iNetwork.findAllClustersFromNetwork(networkId), HttpStatus.OK)
+		return ResponseEntity.ok(iNetwork.findAllClustersFromNetwork(networkId))
 	}
 
 	// 클러스터 네트워크 관리창
@@ -322,7 +320,7 @@ class NetworkController: BaseController() {
 //			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
 //		if (clusterId.isNullOrEmpty())
 //			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
-//		return ResponseEntity(iNetwork.getUsage(networkId, clusterId) }
+//		return ResponseEntity.ok(iNetwork.getUsage(networkId, clusterId) }
 //	}
 
 	@ApiOperation(value = "네트워크 호스트 목록", notes = "선택된 네트워크의 호스트 목록을 조회한다")
@@ -337,7 +335,7 @@ class NetworkController: BaseController() {
 		log.info("--- Network 호스트")
 		if (networkId.isNullOrEmpty())
 			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-		return ResponseEntity(iNetwork.findAllHostsFromNetwork(networkId), HttpStatus.OK)
+		return ResponseEntity.ok(iNetwork.findAllHostsFromNetwork(networkId))
 	}
 
 	@GetMapping("/{networkId}/vms")
@@ -352,7 +350,7 @@ class NetworkController: BaseController() {
 		if (networkId.isNullOrEmpty())
 			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
 		log.info("--- Network 가상머신")
-		return ResponseEntity(iNetwork.findAllVmsFromNetwork(networkId), HttpStatus.OK)
+		return ResponseEntity.ok(iNetwork.findAllVmsFromNetwork(networkId))
 	}
 
 	// 가상머신 nic 제거
@@ -376,7 +374,7 @@ class NetworkController: BaseController() {
 		if (nicId.isNullOrEmpty())
 			throw ErrorPattern.NIC_ID_NOT_FOUND.toException()
 		log.info("--- Network 가상머신 nic 제거")
-		return ResponseEntity(iNetwork.deleteVmNicFromNetwork(/* networkId, */vmId, nicId) }
+		return ResponseEntity.ok(iNetwork.deleteVmNicFromNetwork(/* networkId, */vmId, nicId) }
 	}
 */
 	@ApiOperation(value = "네트워크 템플릿 목록", notes = "선택된 네트워크의 템플릿 목록을 조회한다")
@@ -391,7 +389,7 @@ class NetworkController: BaseController() {
 		if (networkId.isNullOrEmpty())
 			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
 		log.info("--- Network 템플릿")
-		return ResponseEntity(iNetwork.findAllTemplatesFromNetwork(networkId), HttpStatus.OK)
+		return ResponseEntity.ok(iNetwork.findAllTemplatesFromNetwork(networkId))
 	}
 /*
 	@ApiOperation(value = "템플릿 제거", notes = "선택된 네트워크의 템플릿 제거한다")
@@ -414,7 +412,7 @@ class NetworkController: BaseController() {
 		if (nicId.isNullOrEmpty())
 			throw ErrorPattern.NIC_ID_NOT_FOUND.toException()
 		log.info("--- Network 템플릿 nic 제거")
-		return ResponseEntity(iNetwork.deleteTemplateNicFromNetwork(templateId, nicId) }
+		return ResponseEntity.ok(iNetwork.deleteTemplateNicFromNetwork(templateId, nicId) }
 	}
 */
 	@ApiOperation(value = "네트워크 권한 목록", notes = "선택된 네트워크의 권한 목록을 조회한다")
@@ -429,7 +427,7 @@ class NetworkController: BaseController() {
 		if (networkId.isNullOrEmpty())
 			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
 		log.info("--- Network 권한")
-		return ResponseEntity(iNetwork.findAllPermissionsFromNetwork(networkId), HttpStatus.OK)
+		return ResponseEntity.ok(iNetwork.findAllPermissionsFromNetwork(networkId))
 	}
 
 	companion object {

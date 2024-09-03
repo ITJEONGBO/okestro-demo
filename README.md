@@ -287,6 +287,9 @@ sudo ovirt-aaa-jdbc-tool user unlock admin # admin 계정 잠금 풀기
 
 ## Dependencies 주입
 
+https://medium.com/@tericcabrel/implement-jwt-authentication-in-a-spring-boot-3-application-5839e4fd8fac
+https://hoestory.tistory.com/70
+
 | isChecked | full artifact name (w version) |
 | :---: | :--- |
 | ✅ | `org.aspectj:aspectjrt:1.6.10` |

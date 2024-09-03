@@ -26,7 +26,7 @@ class OvirtUser(
 
 	val uuid: String,
 	val name: String,
-	val password: String,
+	var password: String,
 	val passwordValidTo: LocalDateTime,
 	val loginAllowed: String,
 	val nopasswd: Int,

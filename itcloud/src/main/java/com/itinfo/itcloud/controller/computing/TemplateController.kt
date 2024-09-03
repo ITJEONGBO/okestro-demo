@@ -14,7 +14,6 @@ import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
 import io.swagger.annotations.ApiOperation
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
@@ -23,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 
 @Controller
-@Api(tags = ["Computing-Template"])
+@Api(tags = ["Computing", "Template"])
 @RequestMapping("/api/v1/computing/templates")
 class TemplateController: BaseController() {
 	@Autowired private lateinit var iTemplate: ItTemplateService
@@ -37,7 +36,7 @@ class TemplateController: BaseController() {
 	@ResponseBody
 	fun findAll(): ResponseEntity<List<TemplateVo>> {
 		log.info("--- TemplateController:findAll 목록")
-		return ResponseEntity(iTemplate.findAll(), HttpStatus.OK)
+		return ResponseEntity.ok(iTemplate.findAll())
 	}
 
 	@GetMapping("/{templateId}")
@@ -56,7 +55,7 @@ class TemplateController: BaseController() {
 		if (templateId.isNullOrEmpty())
 			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
 		log.info("--- template 일반")
-		return ResponseEntity(iTemplate.findOne(templateId), HttpStatus.OK)
+		return ResponseEntity.ok(iTemplate.findOne(templateId))
 	}
 
 	@GetMapping("/{templateId}/disks")
@@ -75,7 +74,7 @@ class TemplateController: BaseController() {
 		if (templateId.isNullOrEmpty())
 			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
 		log.info("--- template 디스크")
-		return ResponseEntity(iTemplate.findAllDisksFromTemplate(templateId), HttpStatus.OK)
+		return ResponseEntity.ok(iTemplate.findAllDisksFromTemplate(templateId))
 	}
 
 	@GetMapping("/{templateId}/permissions")
@@ -94,7 +93,7 @@ class TemplateController: BaseController() {
 		if (templateId.isNullOrEmpty())
 			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
 		log.info("--- template 권한")
-		return ResponseEntity(iTemplate.findAllPermissionsFromTemplate(templateId), HttpStatus.OK)
+		return ResponseEntity.ok(iTemplate.findAllPermissionsFromTemplate(templateId))
 	}
 
 	@GetMapping("/{templateId}/events")
@@ -113,7 +112,7 @@ class TemplateController: BaseController() {
 		if (templateId.isNullOrEmpty())
 			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
 		log.info("--- template 이벤트")
-		return ResponseEntity(iTemplate.findAllEventsFromTemplate(templateId), HttpStatus.OK)
+		return ResponseEntity.ok(iTemplate.findAllEventsFromTemplate(templateId))
 	}
 /*
 	@GetMapping("/{templateId}/vms")

@@ -146,14 +146,27 @@ fun Connection.copyDisk(diskId: String, diskAlias:String, domainId: String): Res
 private fun Connection.srvAllImageTransfer(): ImageTransfersService =
 	systemService.imageTransfersService()
 
-private fun Connection.findAllImageTransfers(): List<ImageTransfer> =
+private fun Connection.findAllImageTransfers(): Result<List<ImageTransfer>> = runCatching {
 	this.srvAllImageTransfer().list().send().imageTransfer()
+}.onSuccess {
+	Term.IMAGE_TRANSFER.logSuccess("목록조회")
+}.onFailure {
+	Term.IMAGE_TRANSFER.logFail("목록조회")
+	throw if (it is Error) it.toItCloudException() else it
+}
+
 
 private fun Connection.srvImageTransfer(imageId: String): ImageTransferService =
 	this.srvAllImageTransfer().imageTransferService(imageId)
 
-private fun Connection.findImageTransfer(imageId: String): ImageTransfer =
+private fun Connection.findImageTransfer(imageId: String): Result<ImageTransfer?> = runCatching {
 	this.srvImageTransfer(imageId).get().send().imageTransfer()
+}.onSuccess {
+	Term.IMAGE_TRANSFER.logSuccess("상세조회")
+}.onFailure {
+	Term.IMAGE_TRANSFER.logFail("상세조회")
+	throw if (it is Error) it.toItCloudException() else it
+}
 
 private fun Connection.addImageTransfer(imageTransferContainer: ImageTransferContainer): Result<ImageTransfer?> = runCatching {
 	this.srvAllImageTransfer().add().imageTransfer(imageTransferContainer).send().imageTransfer()
@@ -163,7 +176,6 @@ private fun Connection.addImageTransfer(imageTransferContainer: ImageTransferCon
 	Term.IMAGE_TRANSFER.logFail("업로드")
 	throw if (it is Error) it.toItCloudException() else it
 }
-
 
 fun Connection.uploadDisk(/*file: MultipartFile?, */disk: Disk): Result<Boolean> = runCatching {
 	// 디스크 생성
@@ -191,9 +203,7 @@ fun Connection.uploadDisk(/*file: MultipartFile?, */disk: Disk): Result<Boolean>
 
 	val transferUrl = imageTransfer.transferUrl()
 	if(transferUrl != null) this.srvImageTransfer(imageTransfer.id()) // imageSend
-	else throw ErrorPattern.UNKNOWN.toError() // 추가해야함
-
-
+	else throw ErrorPattern.REQUIRED_VALUE_EMPTY.toError()
 	true
 }.onSuccess {
 	Term.DISK.logSuccess("파일 업로드")

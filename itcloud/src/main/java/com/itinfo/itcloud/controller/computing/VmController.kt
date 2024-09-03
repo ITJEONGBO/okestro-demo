@@ -22,10 +22,9 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
 @Controller
-@Api(tags = ["Computing-Vm"])
+@Api(tags = ["Computing", "Vm"])
 @RequestMapping("/api/v1/computing/vms")
 class VmController: BaseController() {
-
 	@Autowired private lateinit var iVm: ItVmService
 	@Autowired private lateinit var idiskVm: ItVmDiskService
 
@@ -38,7 +37,7 @@ class VmController: BaseController() {
 	@ResponseStatus(HttpStatus.OK)
 	fun vms(): ResponseEntity<List<VmVo>> {
 		log.info("--- 가상머신 목록")
-		return ResponseEntity(iVm.findAll(), HttpStatus.OK)
+		return ResponseEntity.ok(iVm.findAll())
 	}
 
 	@ApiOperation(
@@ -52,7 +51,7 @@ class VmController: BaseController() {
 	fun setVnic(): ResponseEntity<List<VnicProfileVo>> {
 		log.info("--- 가상머신 생성 창 - vnic")
 //		return vmService.setVnic();
-		return ResponseEntity(listOf(), HttpStatus.OK)
+		return ResponseEntity.ok(listOf())
 	}
 
 	@ApiOperation(
@@ -72,7 +71,7 @@ class VmController: BaseController() {
 		if (vm == null)
 			throw ErrorPattern.VM_VO_INVALID.toException()
 		log.info("--- 가상머신 생성")
-		return ResponseEntity(iVm.add(vm), HttpStatus.OK)
+		return ResponseEntity.ok(iVm.add(vm))
 	}
 
 	@ApiOperation(
@@ -93,7 +92,7 @@ class VmController: BaseController() {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("--- 가상머신 편집 창")
-		return ResponseEntity(iVm.findOne(vmId), HttpStatus.OK)
+		return ResponseEntity.ok(iVm.findOne(vmId))
 	}
 
 	@ApiOperation(
@@ -119,7 +118,7 @@ class VmController: BaseController() {
 		if (vm == null)
 			throw ErrorPattern.VM_VO_INVALID.toException()
 		log.info("--- 가상머신 편집")
-		return ResponseEntity(iVm.update(vm), HttpStatus.OK)
+		return ResponseEntity.ok(iVm.update(vm))
 	}
 
 	@ApiOperation(
@@ -140,7 +139,7 @@ class VmController: BaseController() {
 	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		return ResponseEntity(iVm.remove(vmId, true), HttpStatus.OK)
+		return ResponseEntity.ok(iVm.remove(vmId, true))
 	}
 
 	@ApiOperation(
@@ -159,7 +158,7 @@ class VmController: BaseController() {
 	): ResponseEntity<VmVo?> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		return ResponseEntity(iVm.findOne(vmId), HttpStatus.OK)
+		return ResponseEntity.ok(iVm.findOne(vmId))
 	}
 
 
@@ -181,7 +180,7 @@ class VmController: BaseController() {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("----- vm disk 일반 불러오기: $vmId")
-		return ResponseEntity(iVmDisk.findAllDisksFromVm(vmId), HttpStatus.OK)
+		return ResponseEntity.ok(iVmDisk.findAllDisksFromVm(vmId))
 	}
 
 
@@ -202,7 +201,7 @@ class VmController: BaseController() {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("----- vm snapshot 불러오기: $vmId")
-		return ResponseEntity(iVmSnapshot.findAllSnapshotsFromVm(vmId), HttpStatus.OK)
+		return ResponseEntity.ok(iVmSnapshot.findAllSnapshotsFromVm(vmId))
 	}
 
 	@ApiOperation(
@@ -221,7 +220,7 @@ class VmController: BaseController() {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("----- vm app 불러오기: $vmId")
-		return ResponseEntity(iVm.findAllApplicationsByVm(vmId), HttpStatus.OK)
+		return ResponseEntity.ok(iVm.findAllApplicationsByVm(vmId))
 	}
 	//region: affinity
 
@@ -243,7 +242,7 @@ class VmController: BaseController() {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("----- vm affGroup 불러오기: $vmId")
-		return ResponseEntity(iAffinity.findAllGroupsForVm(vmId), HttpStatus.OK)
+		return ResponseEntity.ok(iAffinity.findAllGroupsForVm(vmId))
 	}
 
 	@ApiOperation(
@@ -262,7 +261,7 @@ class VmController: BaseController() {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("----- vm affLabel 불러오기: {}", vmId)
-		return ResponseEntity(iAffinity.findAllLabelsForVm(vmId), HttpStatus.OK)
+		return ResponseEntity.ok(iAffinity.findAllLabelsForVm(vmId))
 	}
 	//endregion
 
@@ -281,7 +280,7 @@ class VmController: BaseController() {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("----- vm disk 일반 불러오기: {}", vmId)
-		return ResponseEntity(iVm.findAllGuestFromVm(vmId), HttpStatus.OK)
+		return ResponseEntity.ok(iVm.findAllGuestFromVm(vmId))
 	}
 
 	@GetMapping("/{vmId}/permissions")
@@ -300,7 +299,7 @@ class VmController: BaseController() {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("----- vm event 일반 불러오기: {}", vmId)
-		return ResponseEntity(iVm.findAllPermissionsFromVm(vmId), HttpStatus.OK)
+		return ResponseEntity.ok(iVm.findAllPermissionsFromVm(vmId))
 	}
 
 	@ApiOperation(
@@ -319,7 +318,7 @@ class VmController: BaseController() {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("----- vm event 일반 불러오기: $vmId")
-		return ResponseEntity(iVm.findAllEventsFromVm(vmId), HttpStatus.OK)
+		return ResponseEntity.ok(iVm.findAllEventsFromVm(vmId))
 	}
 
 
@@ -342,7 +341,7 @@ class VmController: BaseController() {
 //		if (console == null)
 //			throw ErrorPattern.CONSOLE_VO_INVALID.toException()
 		log.info("--- 가상머신 콘솔")
-		return ResponseEntity(iVm.findConsole(vmId), HttpStatus.OK)
+		return ResponseEntity.ok(iVm.findConsole(vmId))
 	}
 
 	@GetMapping("/console/vncView")
@@ -365,7 +364,7 @@ class VmController: BaseController() {
 	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		return ResponseEntity(iVmOp.start(vmId), HttpStatus.OK)
+		return ResponseEntity.ok(iVmOp.start(vmId))
 	}
 
 	@ApiOperation(
@@ -381,7 +380,7 @@ class VmController: BaseController() {
 	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		return ResponseEntity(iVmOp.pause(vmId), HttpStatus.OK)
+		return ResponseEntity.ok(iVmOp.pause(vmId))
 	}
 
 	@ApiOperation(
@@ -397,7 +396,7 @@ class VmController: BaseController() {
 	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		return ResponseEntity(iVmOp.powerOff(vmId), HttpStatus.OK)
+		return ResponseEntity.ok(iVmOp.powerOff(vmId))
 	}
 
 	@ApiOperation(
@@ -413,7 +412,7 @@ class VmController: BaseController() {
 	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		return ResponseEntity(iVmOp.shutdown(vmId), HttpStatus.OK)
+		return ResponseEntity.ok(iVmOp.shutdown(vmId))
 	}
 
 	@ApiOperation(
@@ -429,7 +428,7 @@ class VmController: BaseController() {
 	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		return ResponseEntity(iVmOp.reboot(vmId), HttpStatus.OK)
+		return ResponseEntity.ok(iVmOp.reboot(vmId))
 	}
 
 	@ApiOperation(
@@ -445,7 +444,7 @@ class VmController: BaseController() {
 	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		return ResponseEntity(iVmOp.reset(vmId), HttpStatus.OK)
+		return ResponseEntity.ok(iVmOp.reset(vmId))
 	}
 	//endregion
 
@@ -463,7 +462,7 @@ class VmController: BaseController() {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("----- vm nic 일반 불러오기: $vmId")
-		return ResponseEntity(vmNic.findAllNicsFromVm(vmId), HttpStatus.OK)
+		return ResponseEntity.ok(vmNic.findAllNicsFromVm(vmId))
 	}
 
 	@ApiOperation(value = "가상머신 네트워크 인터페이스 목록", notes = "선택된 가상머신의 네트워크 인터페이스 목록을 조회한다")
@@ -480,7 +479,7 @@ class VmController: BaseController() {
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		if (nicId.isNullOrEmpty())
 			throw ErrorPattern.NIC_ID_NOT_FOUND.toException()
-		return ResponseEntity(vmNic.findOneNicFromVm(vmId, nicId), HttpStatus.OK)
+		return ResponseEntity.ok(vmNic.findOneNicFromVm(vmId, nicId))
 	}
 
 	@ApiOperation(
@@ -498,11 +497,9 @@ class VmController: BaseController() {
 		@PathVariable vmId: String? = null,
 		@PathVariable nic: NicVo? = null,
 	): ResponseEntity<NicVo?> {
-		if (vmId.isNullOrEmpty())
-			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		if (nic == null)
-			throw ErrorPattern.NIC_VO_INVALID.toException()
-		return ResponseEntity(vmNic.addFromVm(vmId, nic), HttpStatus.OK)
+		if (vmId.isNullOrEmpty())   throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		if (nic == null)            throw ErrorPattern.NIC_VO_INVALID.toException()
+		return ResponseEntity.ok(vmNic.addFromVm(vmId, nic))
 	}
 
 	@ApiOperation(
@@ -522,13 +519,10 @@ class VmController: BaseController() {
 		@PathVariable nicId: String? = null,
 		@PathVariable nic: NicVo? = null,
 	): ResponseEntity<NicVo?> {
-		if (vmId.isNullOrEmpty())
-			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		if (nicId.isNullOrEmpty())
-			throw ErrorPattern.NIC_ID_NOT_FOUND.toException()
-		if (nic == null)
-			throw ErrorPattern.NIC_VO_INVALID.toException()
-		return ResponseEntity(vmNic.updateFromVm(vmId, nic), HttpStatus.OK)
+		if (vmId.isNullOrEmpty())   throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		if (nicId.isNullOrEmpty())  throw ErrorPattern.NIC_ID_NOT_FOUND.toException()
+		if (nic == null)            throw ErrorPattern.NIC_VO_INVALID.toException()
+		return ResponseEntity.ok(vmNic.updateFromVm(vmId, nic))
 	}
 
 	@ApiOperation(
@@ -546,11 +540,9 @@ class VmController: BaseController() {
 		@PathVariable vmId: String? = null,
 		@PathVariable nicId: String? = null,
 	): ResponseEntity<Boolean> {
-		if (vmId.isNullOrEmpty())
-			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		if (nicId.isNullOrEmpty())
-			throw ErrorPattern.NIC_ID_NOT_FOUND.toException()
-		return ResponseEntity(vmNic.removeFromVm(vmId, nicId), HttpStatus.OK)
+		if (vmId.isNullOrEmpty())   throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		if (nicId.isNullOrEmpty())  throw ErrorPattern.NIC_ID_NOT_FOUND.toException()
+		return ResponseEntity.ok(vmNic.removeFromVm(vmId, nicId))
 	}
 
 	companion object {

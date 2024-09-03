@@ -9,19 +9,21 @@ import com.itinfo.itcloud.aaarepository.entity.OvirtUser
 import com.itinfo.itcloud.aaarepository.entity.UserDetail
 import com.itinfo.itcloud.aaarepository.entity.toUserVo
 import com.itinfo.itcloud.aaarepository.entity.toUserVos
-import com.itinfo.itcloud.model.auth.user2Add
 import com.itinfo.itcloud.model.setting.toAddUserBuilder
 import com.itinfo.itcloud.model.setting.toUserVo
+import com.itinfo.itcloud.ovirt.hashPassword
+
+import com.itinfo.itcloud.ovirt.validatePassword
 import com.itinfo.itcloud.service.BaseService
-import com.itinfo.util.BasicConfiguration
 import com.itinfo.util.ovirt.addUser
-import com.itinfo.util.ovirt.changeUserPw
 import com.itinfo.util.ovirt.error.ErrorPattern
+import com.itinfo.util.ovirt.error.ItCloudException
 import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.types.User
 import org.postgresql.util.PSQLException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 interface ItOvirtUserService {
 	/*
@@ -34,7 +36,12 @@ interface ItOvirtUserService {
 	fun findAll(): List<UserVo>
 
 	@Throws(PSQLException::class)
-	fun findByName(name: String): UserVo?
+	fun findOne(username: String): OvirtUser
+
+	@Throws(PSQLException::class)
+	fun findFullDetailByName(username: String): UserVo?
+
+	fun findEncryptedValue(input: String): String
 
 	@Throws(PSQLException::class)
 	fun authenticateUser(username: String, password: String): Boolean
@@ -54,7 +61,7 @@ interface ItOvirtUserService {
 	 * @param userVo [UserVo]
 	 * @return userVo [UserVo]
 	 */
-	fun changePwUser(userVo: UserVo): Boolean
+	fun changePassword(username: String, currentPassword: String, newPassword: String): OvirtUser
 }
 
 @Service
@@ -67,7 +74,8 @@ class OvirtUserServiceImpl(
 	@Throws(PSQLException::class)
 	override fun findAll(): List<UserVo> {
 		log.info("findAll ... ")
-		val res: List<OvirtUser> = ovirtUsers.findAll()
+		val res: List<OvirtUser> =
+			ovirtUsers.findAll()
 		if (res.isEmpty()) return listOf()
 
 		val userDetails: List<UserDetail> =
@@ -76,31 +84,34 @@ class OvirtUserServiceImpl(
 		return res.toUserVos(userDetails)
 	}
 
-	@Throws(PSQLException::class)
-	override fun findByName(name: String): UserVo? {
-		log.info("findByName ... name: {}", name)
-		val oUser: OvirtUser =
-			ovirtUsers.findByName(name) ?: throw ErrorPattern.OVIRTUSER_NOT_FOUND.toException()
+	@Throws(ItCloudException::class)
+	override fun findOne(username: String): OvirtUser =
+		ovirtUsers.findByName(username)
+			?: throw ErrorPattern.OVIRTUSER_NOT_FOUND.toException()
+
+	@Throws(ItCloudException::class, PSQLException::class)
+	override fun findFullDetailByName(username: String): UserVo? {
+		log.info("findByName ... name: {}", username)
+		val oUser: OvirtUser = findOne(username)
 		log.debug("itemFound: {}", oUser)
 		val oUserDetail: UserDetail =
-			userDetails.findByExternalId(oUser.uuid) ?: throw ErrorPattern.OVIRTUSER_NOT_FOUND.toException()
+			userDetails.findByExternalId(oUser.uuid) ?:
+			throw ErrorPattern.OVIRTUSER_NOT_FOUND.toException()
 		log.debug("detailFound: {}", oUserDetail)
 		return oUser.toUserVo(oUserDetail) // USERS.retrieveUser
 	}
 
+	override fun findEncryptedValue(input: String): String =
+		input.hashPassword()
+
+	@Throws(PSQLException::class)
 	override fun authenticateUser(username: String, password: String): Boolean {
-		TODO("Not yet implemented")
+		log.info("authenticateUser ... username: {}, password: {}", username, password)
+		if (username.isEmpty()) throw ErrorPattern.OVIRTUSER_ID_NOT_FOUND.toException()
+		if (password.isEmpty()) throw ErrorPattern.REQUIRED_VALUE_EMPTY.toException()
+		val user: OvirtUser = findOne(username)
+		return password.validatePassword(user.password)
 	}
-
-	/*
-	override fun login(loginDTO: LoginDTO?): String {
-		return userDAO.login(loginDTO)
-	}
-
-	override fun logout(httpSession: HttpSession) {
-		httpSession.invalidate() // 세션 초기화
-	}
-	*/
 
 	override fun addUser(userVo: com.itinfo.itcloud.model.setting.UserVo): com.itinfo.itcloud.model.setting.UserVo {
 		log.info("addUser ... ")
@@ -110,21 +121,18 @@ class OvirtUserServiceImpl(
 		return res.toUserVo()
 	}
 
-	// TODO 비번 변경 실패
-	override fun changePwUser(userVo: UserVo): Boolean {
-		log.info("changePwUser")
-		log.debug(BasicConfiguration.getInstance().ovirtIp.toString())
-		log.debug("--- ${userVo.password}")
-		val res: Result<Boolean> =
-			conn.changeUserPw(
-				BasicConfiguration.getInstance().ovirtIp,
-				"adminRoot!@#",
-				userVo.username,
-				userVo.password
-			)
-		return res.isSuccess
-	}
+	@Transactional("aaaTransactionManager")
+	override fun changePassword(username: String, currentPassword: String, newPassword: String): OvirtUser {
+		log.info("changePassword ... username: {}", username)
+		val user: OvirtUser = findOne(username)
 
+		if (!authenticateUser(username, currentPassword))
+			throw ErrorPattern.OVIRTUSER_AUTH_INVALID.toException()
+
+		user.password = newPassword.hashPassword()
+		val userUpdated: OvirtUser = ovirtUsers.save(user)
+		return userUpdated
+	}
 
 	companion object {
 		private val log by LoggerDelegate()

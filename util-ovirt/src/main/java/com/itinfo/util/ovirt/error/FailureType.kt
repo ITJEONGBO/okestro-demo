@@ -8,8 +8,11 @@ enum class FailureType(
 	val message: String,
 ) {
 	BAD_REQUEST(400, "요청 불량"),
+	UNAUTHORIZED(401, "비인증된 접근"),
+	FORBIDDEN(403, "불허용 요청"),
 	NOT_FOUND(404, "찾을 수 없는"),
 	ID_NOT_FOUND(404, "ID 없음"),
+	REQUIRED_VALUE_EMPTY(404, "값 없음"),
 	DUPLICATE(409, "이름 중복"),
 	UNPROCESSABLE_CONTENT(422, "다룰 수 없는 컨텐츠"),
 	UNKNOWN(499, "알 수 없는 오류"),
@@ -26,7 +29,7 @@ enum class FailureType(
 fun FailureType.toError(target: String): Error {
 	log.error("toError ... target: {}", this@toError.message)
 	return when(this@toError) {
-		FailureType.NOT_FOUND -> Error("${this@toError.message} $target")
+		FailureType.NOT_FOUND, FailureType.UNAUTHORIZED -> Error("${this@toError.message} $target")
 		FailureType.DUPLICATE, FailureType.UNPROCESSABLE_CONTENT -> Error("$target ${this@toError.message}")
 		else -> Error(this@toError.message)
 	}

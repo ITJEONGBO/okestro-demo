@@ -1,7 +1,6 @@
 package com.itinfo.util.ovirt.error
 
 import com.itinfo.util.ovirt.Term
-import org.apache.http.HttpStatus
 import org.ovirt.engine.sdk4.Error
 import java.util.concurrent.ConcurrentHashMap
 
@@ -13,6 +12,8 @@ enum class ErrorPattern(
 	OVIRTUSER_ID_NOT_FOUND("OVIRTUSER-E001", Term.OVIRT_USER, FailureType.ID_NOT_FOUND),
 	OVIRTUSER_NOT_FOUND("OVIRTUSER-E002", Term.OVIRT_USER, FailureType.NOT_FOUND),
 	OVIRTUSER_VO_INVALID("OVIRTUSER-E003", Term.OVIRT_USER, FailureType.BAD_REQUEST),
+	OVIRTUSER_AUTH_INVALID("OVIRTUSER-E004", Term.OVIRT_USER, FailureType.UNAUTHORIZED),
+	REQUIRED_VALUE_EMPTY("OVIRTUSER-E005", Term.OVIRT_USER, FailureType.REQUIRED_VALUE_EMPTY),
 	DATACENTER_ID_NOT_FOUND("DATACENTER-E001", Term.DATACENTER, FailureType.ID_NOT_FOUND),
 	DATACENTER_NOT_FOUND("DATACENTER-E002", Term.DATACENTER, FailureType.NOT_FOUND),
 	DATACENTER_VO_INVALID("DATACENTER-E003", Term.DATACENTER, FailureType.BAD_REQUEST),
@@ -76,6 +77,7 @@ fun ErrorPattern.toError(): Error {
 	return when(this) {
 		ErrorPattern.OVIRTUSER_ID_NOT_FOUND,
 		ErrorPattern.DATACENTER_ID_NOT_FOUND,
+		ErrorPattern.REQUIRED_VALUE_EMPTY,
 		ErrorPattern.CLUSTER_ID_NOT_FOUND,
 		ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND,
 		ErrorPattern.HOST_ID_NOT_FOUND,
@@ -105,6 +107,7 @@ fun ErrorPattern.toError(): Error {
 		ErrorPattern.CONSOLE_NOT_FOUND,
 		ErrorPattern.TICKET_NOT_FOUND,-> Error("[${code}] ${failureType.message} ${term.desc}")
 		ErrorPattern.OVIRTUSER_VO_INVALID,
+		ErrorPattern.OVIRTUSER_AUTH_INVALID,
 		ErrorPattern.DATACENTER_VO_INVALID,
 		ErrorPattern.CLUSTER_VO_INVALID,
 		ErrorPattern.STORAGE_DOMAIN_VO_INVALID,
