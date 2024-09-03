@@ -4,7 +4,7 @@ import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.fromDataCenterToIdentifiedVo
 import com.itinfo.itcloud.model.fromVnicProfilesToIdentifiedVos
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.DataCenterBuilder

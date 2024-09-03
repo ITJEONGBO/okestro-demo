@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.model.common
 
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.findAllAttachedStorageDomainsFromDataCenter
 import com.itinfo.util.ovirt.findAllClustersFromDataCenter
 import com.itinfo.util.ovirt.findAllNetworksFromFromDataCenter

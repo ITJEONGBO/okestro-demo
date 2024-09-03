@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.model.computing
 
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.ovirtDf
 import org.ovirt.engine.sdk4.types.Event
 import org.ovirt.engine.sdk4.types.LogSeverity

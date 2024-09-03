@@ -1,7 +1,7 @@
 package com.itinfo.itcloud.model.network
 
 import com.itinfo.itcloud.model.computing.ClusterVo
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import java.io.Serializable
 
 /**

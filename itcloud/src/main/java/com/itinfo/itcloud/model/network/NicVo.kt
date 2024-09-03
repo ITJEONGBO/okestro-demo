@@ -6,7 +6,7 @@ import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.computing.findVmIp
 import com.itinfo.itcloud.model.fromNetworkToIdentifiedVo
 import com.itinfo.itcloud.model.fromVnicProfileToIdentifiedVo
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.MacBuilder

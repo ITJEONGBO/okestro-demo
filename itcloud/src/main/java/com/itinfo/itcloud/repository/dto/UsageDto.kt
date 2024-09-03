@@ -2,7 +2,7 @@ package com.itinfo.itcloud.repository.dto
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.error.toException
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.repository.entity.HostSamplesHistoryEntity
 import com.itinfo.itcloud.repository.entity.StorageDomainSamplesHistoryEntity
 import com.itinfo.itcloud.repository.entity.VmSamplesHistoryEntity

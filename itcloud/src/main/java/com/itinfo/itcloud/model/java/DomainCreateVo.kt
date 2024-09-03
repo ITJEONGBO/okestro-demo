@@ -2,7 +2,7 @@
 package com.itinfo.itcloud.model.storage
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import java.io.Serializable
 import org.ovirt.engine.sdk4.types.StorageDomainType
 import org.ovirt.engine.sdk4.types.StorageType

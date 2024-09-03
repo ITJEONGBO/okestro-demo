@@ -48,7 +48,7 @@ dependencies {
     annotationProcessor(Dependencies.springBootAnnotation)
     developmentOnly(Dependencies.springBootDevtools)
     implementation(Dependencies.spring)
-//    implementation(Dependencies.springSecurity)
+    implementation(Dependencies.springSecurity)
     implementation(Dependencies.swagger3)
     implementation(Dependencies.qemu)
     implementation(Dependencies.tiles)

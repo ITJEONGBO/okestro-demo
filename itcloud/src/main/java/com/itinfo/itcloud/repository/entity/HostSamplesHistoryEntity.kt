@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.repository.entity
 
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.repository.dto.HostUsageDto
 import com.itinfo.itcloud.repository.dto.UsageDto
 import org.hibernate.annotations.Type

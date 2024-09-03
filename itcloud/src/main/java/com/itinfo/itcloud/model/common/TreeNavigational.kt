@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.model.common
 
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.Term
 import org.ovirt.engine.sdk4.types.Disk
 import org.ovirt.engine.sdk4.types.Network

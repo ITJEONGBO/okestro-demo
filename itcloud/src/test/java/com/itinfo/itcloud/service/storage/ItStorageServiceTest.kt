@@ -321,7 +321,7 @@ class ItStorageServiceTest {
 	@Test
 	fun should_setHostList() {
 		log.debug("should_setHostList ... ")
-		val result = service.setHostList(dataCenterId)
+		val result = service.findAllHostsFromDataCenter(dataCenterId)
 		result.forEach { x: IdentifiedVo? -> println(x) }
 	}
 

@@ -13,7 +13,6 @@ import com.itinfo.itcloud.model.storage.*
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
-import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.internal.containers.ImageContainer
 import org.ovirt.engine.sdk4.internal.containers.ImageTransferContainer

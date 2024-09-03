@@ -4,7 +4,7 @@ import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.computing.toVmVo
 import com.itinfo.itcloud.model.fromVmToIdentifiedVo
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.util.ovirt.error.toError
 import com.itinfo.util.ovirt.findDisk

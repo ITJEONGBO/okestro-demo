@@ -5,7 +5,6 @@ import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.error.ItemNotFoundException
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.computing.*
-import com.itinfo.itcloud.model.fromNetworksToIdentifiedVos
 import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos

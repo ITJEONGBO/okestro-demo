@@ -2,7 +2,7 @@ package com.itinfo.itcloud.model.computing
 
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.fromApplicationsToIdentifiedVos
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.network.NicVo
 import com.itinfo.itcloud.model.network.toNicVosFromVm
 import com.itinfo.itcloud.ovirtDf

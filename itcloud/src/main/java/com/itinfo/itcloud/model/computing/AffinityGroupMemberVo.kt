@@ -4,7 +4,7 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.fromHostsToIdentifiedVos
 import com.itinfo.itcloud.model.fromVmsToIdentifiedVos
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 
 import com.itinfo.util.ovirt.findAllHostsFromAffinityLabel
 import com.itinfo.util.ovirt.findAllVmsFromAffinityLabel

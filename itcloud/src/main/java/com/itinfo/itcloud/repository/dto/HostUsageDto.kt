@@ -1,7 +1,7 @@
 package com.itinfo.itcloud.repository.dto
 
 import com.itinfo.itcloud.GB
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.repository.entity.HostSamplesHistoryEntity
 import com.itinfo.util.ovirt.findAllHosts
 import com.itinfo.util.ovirt.findAllStatisticsFromHost

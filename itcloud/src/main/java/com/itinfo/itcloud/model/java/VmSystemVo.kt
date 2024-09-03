@@ -2,7 +2,7 @@ package com.itinfo.itcloud.model.java/*
 package com.itinfo.itcloud.model.create
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.types.Vm

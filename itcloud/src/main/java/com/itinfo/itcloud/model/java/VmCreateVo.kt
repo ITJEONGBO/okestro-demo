@@ -3,7 +3,7 @@ package com.itinfo.itcloud.model.create
 
 import com.itinfo.itcloud.model.Os
 import com.itinfo.itcloud.model.computing.*
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.findBios
 import com.itinfo.util.ovirt.findVmType
 import com.itinfo.itcloud.model.network.NicVo

@@ -4,7 +4,7 @@ package com.itinfo.itcloud.model.create
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.computing.ClusterVo
 import com.itinfo.itcloud.model.computing.CpuProfileVo
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.storage.DiskVo
 import org.slf4j.LoggerFactory
 import java.io.Serializable

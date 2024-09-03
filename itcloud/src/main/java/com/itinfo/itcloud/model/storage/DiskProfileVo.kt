@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.model.storage
 
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import org.ovirt.engine.sdk4.types.DiskProfile
 import org.slf4j.LoggerFactory
 import java.io.Serializable

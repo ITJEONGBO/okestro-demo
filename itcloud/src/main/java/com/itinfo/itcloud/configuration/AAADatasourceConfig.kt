@@ -25,7 +25,7 @@ import javax.sql.DataSource
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-	basePackages=["com.itinfo.itcloud.dao.aaa"],
+	basePackages=["com.itinfo.itcloud.aaarepository"],
 	entityManagerFactoryRef = "aaaEntityManager",
 	transactionManagerRef = "aaaTransactionManager"
 )
@@ -56,7 +56,7 @@ class AAADatasourceConfig {
 	fun aaaEntityManager(builder: EntityManagerFactoryBuilder): LocalContainerEntityManagerFactoryBean {
 		log.debug("... aaaEntityManager")
 		return builder.dataSource(aaaDataSource())
-			.packages("com.itinfo.dao.aaa")
+			.packages("com.itinfo.itcloud.aaarepository.entity")
 			.build().apply {
 				setJpaProperties(Properties().apply {
 					put("hibernate.physical_naming_strategy", CamelCaseToUnderscoresNamingStrategy::class.java.canonicalName)

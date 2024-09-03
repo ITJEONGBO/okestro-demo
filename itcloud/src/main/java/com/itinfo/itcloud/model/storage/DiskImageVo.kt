@@ -1,10 +1,8 @@
 package com.itinfo.itcloud.model.storage
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.*
-import com.itinfo.itcloud.model.computing.DataCenterVo
-import com.itinfo.itcloud.model.computing.VmVo
-import com.itinfo.itcloud.model.computing.toDataCenterIdName
 import com.itinfo.util.ovirt.findDataCenter
 import com.itinfo.util.ovirt.findDiskProfile
 import com.itinfo.util.ovirt.findStorageDomain

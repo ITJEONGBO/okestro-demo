@@ -1,7 +1,7 @@
 /*
 package com.itinfo.itcloud.model.network
 
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.types.OpenStackNetworkProvider
 import org.slf4j.LoggerFactory

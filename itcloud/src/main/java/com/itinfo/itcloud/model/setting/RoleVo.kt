@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.model.setting
 
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import org.slf4j.LoggerFactory
 import java.io.Serializable
 
@@ -36,6 +36,6 @@ class RoleVo(
 	}
 
 	companion object {
-		inline fun builder(block: RoleVo.Builder.() -> Unit): RoleVo = RoleVo.Builder().apply(block).build()
+		inline fun builder(block: Builder.() -> Unit): RoleVo = Builder().apply(block).build()
 	}
 }

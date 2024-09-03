@@ -1,7 +1,7 @@
 /*
 package com.itinfo.itcloud.model.storage
 
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.findDisk
 import com.itinfo.util.ovirt.findStorageType
 import com.itinfo.util.ovirt.findVm

@@ -1,7 +1,7 @@
 package com.itinfo.itcloud.model.computing
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.findAllAffinityLabelsFromVm
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.types.AffinityLabel

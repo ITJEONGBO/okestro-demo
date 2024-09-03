@@ -1,10 +1,7 @@
 package com.itinfo.itcloud.model.computing
 
+import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.*
-import com.itinfo.itcloud.model.network.NetworkVo
-import com.itinfo.itcloud.model.network.toNetworkVos
-import com.itinfo.itcloud.model.storage.StorageDomainVo
-import com.itinfo.itcloud.model.storage.toStorageDomainVos
 import com.itinfo.util.ovirt.findAllClusters
 import com.itinfo.util.ovirt.findAllNetworks
 import com.itinfo.util.ovirt.findAllStorageDomains

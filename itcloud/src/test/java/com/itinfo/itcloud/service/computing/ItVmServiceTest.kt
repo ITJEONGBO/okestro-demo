@@ -6,7 +6,6 @@ import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.VnicProfileVo
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.DiskImageVo
-import com.itinfo.itcloud.service.computing.ItHostServiceTest.Companion
 import org.junit.jupiter.api.Test
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`

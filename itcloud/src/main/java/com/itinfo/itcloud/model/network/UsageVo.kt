@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.model.network
 
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import org.ovirt.engine.sdk4.types.Network
 import org.ovirt.engine.sdk4.types.NetworkUsage
 import org.slf4j.LoggerFactory

@@ -10,7 +10,6 @@ import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.network.VnicProfileVo
-import com.itinfo.itcloud.model.network.NetworkVmVo
 import com.itinfo.itcloud.model.network.NetworkTemplateVo
 import com.itinfo.itcloud.service.network.ItNetworkService
 import io.swagger.annotations.*

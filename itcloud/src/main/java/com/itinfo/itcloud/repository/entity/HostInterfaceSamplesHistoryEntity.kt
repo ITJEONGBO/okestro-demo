@@ -1,7 +1,7 @@
 package com.itinfo.itcloud.repository.entity
 
 import com.itinfo.itcloud.model.computing.HostSwVo
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import org.slf4j.LoggerFactory
 import java.io.Serializable
 import javax.persistence.Column

@@ -2,7 +2,7 @@ package com.itinfo.itcloud.model.java/*
 package com.itinfo.itcloud.model.network.java
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.computing.ClusterVo;
 import com.itinfo.itcloud.model.computing.DataCenterVo;
 import com.itinfo.util.ovirt.findAllClustersFromDataCenter

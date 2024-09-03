@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.model.response
 
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import io.swagger.annotations.ApiModelProperty
 import java.io.Serializable
 

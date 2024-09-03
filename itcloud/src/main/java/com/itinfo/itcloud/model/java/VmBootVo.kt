@@ -2,7 +2,7 @@ package com.itinfo.itcloud.model.java/*
 package com.itinfo.itcloud.model.create;
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.findAllDisks
 import com.itinfo.util.ovirt.findAllVmCdromsFromVm
 import org.ovirt.engine.sdk4.Connection

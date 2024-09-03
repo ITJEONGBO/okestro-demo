@@ -3,13 +3,11 @@ package com.itinfo.itcloud.service.computing
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.HostNicVo
-import com.itinfo.itcloud.model.network.NicVo
 import com.itinfo.itcloud.model.network.toHostNicVos
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.repository.*
 import com.itinfo.itcloud.service.BaseService
-import com.itinfo.itcloud.service.computing.HostOperationServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.util.ovirt.error.toError

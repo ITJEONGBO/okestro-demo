@@ -1,9 +1,8 @@
 package com.itinfo.itcloud.model.setting
 
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
-import org.ovirt.engine.sdk4.services.SystemService
 import org.ovirt.engine.sdk4.types.Group
 import org.ovirt.engine.sdk4.types.Permission
 import org.ovirt.engine.sdk4.types.Role
@@ -49,7 +48,7 @@ class PermissionVo (
     }
 
     companion object {
-        inline fun builder(block: PermissionVo.Builder.() -> Unit): PermissionVo = PermissionVo.Builder().apply(block).build()
+        inline fun builder(block: Builder.() -> Unit): PermissionVo = Builder().apply(block).build()
     }
 }
 

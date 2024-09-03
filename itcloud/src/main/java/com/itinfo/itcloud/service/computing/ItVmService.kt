@@ -3,7 +3,6 @@ package com.itinfo.itcloud.service.computing
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.*
 import com.itinfo.itcloud.model.computing.*
-import com.itinfo.itcloud.model.response.Res
 import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos

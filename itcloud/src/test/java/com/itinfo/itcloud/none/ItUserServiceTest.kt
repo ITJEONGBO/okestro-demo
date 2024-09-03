@@ -35,23 +35,6 @@ class ItUserServiceTest {
 		assertThat(result.userName, `is`(userVo.userName+"@internal-authz"))
 	}
 
-	@Test
-	fun test_change_password_user(){
-		val userVo: UserVo =
-			UserVo.builder {
-				userName { "rutil" }
-				password { "rutil" }
-			}
-
-		val result: Boolean =
-			service.changePwUser(userVo)
-
-		assertThat(result, `is`(not(nullValue())))
-		assertThat(result, `is`(true))
-	}
-
-
-
 	companion object {
 		private val log by LoggerDelegate()
 	}

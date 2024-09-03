@@ -1,12 +1,11 @@
 package com.itinfo.itcloud.model.computing
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.*
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.types.AffinityGroup
-import org.ovirt.engine.sdk4.types.AffinityLabel
-import org.ovirt.engine.sdk4.types.Host
 import org.ovirt.engine.sdk4.types.Vm
 import java.io.Serializable
 

@@ -3,6 +3,7 @@ package com.itinfo.util.ovirt
 enum class Term(
 	val desc: String
 ) {
+	OVIRT_USER("ovirt 사용자"),
 	DATACENTER("데이터센터"),
 	STORAGE("스토리지"),
 	STORAGE_DOMAIN("스토리지 도메인"),

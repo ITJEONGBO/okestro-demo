@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.model.computing
 
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.util.ovirt.error.toError
 import com.itinfo.util.ovirt.findDisk

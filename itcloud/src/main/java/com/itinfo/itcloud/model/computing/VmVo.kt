@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.model.computing
 
+import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.*
 import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.model.storage.*

@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.model.setting
 
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import org.ovirt.engine.sdk4.builders.DomainBuilder
 import org.ovirt.engine.sdk4.builders.UserBuilder
 import org.ovirt.engine.sdk4.types.User

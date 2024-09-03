@@ -2,7 +2,7 @@ package com.itinfo.itcloud.model.network
 
 import com.itinfo.itcloud.model.computing.HostVo
 import com.itinfo.itcloud.model.computing.toHostIdName
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.types.*

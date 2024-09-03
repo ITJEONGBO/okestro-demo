@@ -6,7 +6,6 @@ import com.itinfo.dao.gson
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.security.web.authentication.WebAuthenticationDetails
 
 class CustomUserDetails(
 	val userid: String = "",
@@ -25,11 +24,12 @@ class CustomUserDetails(
 	override fun isCredentialsNonExpired(): Boolean = true
 	override fun isEnabled(): Boolean = true
 
-	override fun toString(): String = gson.toJson(this)
+	override fun toString(): String =
+		gson.toJson(this)
 	class Builder {
 		private var bUserid: String = "";fun userid(block: () -> String?) { bUserid = block() ?: "" }
 		private var bPasswd: String = "";fun passwd(block: () -> String?) { bPasswd = block() ?: "" }
-		// private var bAuthorities: Collection<GrantedAuthority> = setOf();fun authorities(block: () -> Collection<GrantedAuthority>?) { bAuthorities = block() ?: setOf() }
+	//  private var bAuthorities: Collection<GrantedAuthority> = setOf();fun authorities(block: () -> Collection<GrantedAuthority>?) { bAuthorities = block() ?: setOf() }
 		private var bUrl: String = "";fun url(block: () -> String?) { bUrl = block() ?: "" }
 		fun build(): CustomUserDetails = CustomUserDetails(bUserid, bPasswd, bUrl)
 	}
@@ -37,5 +37,4 @@ class CustomUserDetails(
 		@JvmStatic inline fun custerUserDetails(block: Builder.() -> Unit): CustomUserDetails = Builder().apply(block).build()
 		private val log by LoggerDelegate()
 	}
-
 }

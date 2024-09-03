@@ -1,8 +1,8 @@
 package com.itinfo.itcloud.model.network
 
+import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.*
 import com.itinfo.itcloud.model.computing.DataCenterVo
-import com.itinfo.itcloud.model.computing.toDataCenterIdName
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.VnicProfileBuilder

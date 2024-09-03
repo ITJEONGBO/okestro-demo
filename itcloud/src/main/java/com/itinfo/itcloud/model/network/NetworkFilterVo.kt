@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.model.network
 
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import org.ovirt.engine.sdk4.builders.NetworkFilterParameterBuilder
 import org.ovirt.engine.sdk4.types.NetworkFilter
 import org.ovirt.engine.sdk4.types.NetworkFilterParameter

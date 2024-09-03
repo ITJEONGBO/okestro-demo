@@ -61,7 +61,7 @@ npm build # React 앱 빌드
 > # - staging
 > #
 > # 스프링부트 프로젝트 실행 (개발)
-> ./gradlew itcloud:bootRun -Pprofile=staging
+> ./gradlew itcloud:bootRun -Pprofile=staging -PskipNpm=true
 > 
 > # 아티팩트 생성 (운영)
 > ./gradlew itcloud:bootJar -Pprofile=staging -PskipNpm=true

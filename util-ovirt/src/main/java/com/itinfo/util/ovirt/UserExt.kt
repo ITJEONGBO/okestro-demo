@@ -77,7 +77,7 @@ fun InetAddress.changePwHostViaSSH(hostname: String, password: String, port: Int
 	val channel: ChannelExec = session.openChannel("exec") as ChannelExec // SSH 채널 열기
 //	val command = "echo -e \"$newPw\n$newPw\" | ovirt-aaa-jdbc-tool user password-reset $username"
 //	channel.setCommand(command)
-	channel.setCommand("ovirt-aaa-jdbc-tool user password-reset $username")
+	channel.setCommand("ovirt-aaa-jdbc-tool user password-reset $username --password-valid-to=\"2029-12-31 23:59:59Z\" --force")
 	Thread.sleep(1000)
 	channel.setCommand(newPw)
 	Thread.sleep(1000)

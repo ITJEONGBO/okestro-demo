@@ -1,7 +1,7 @@
 package com.itinfo.itcloud.model.network
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.findCluster
 import com.itinfo.util.ovirt.findClusterName
 import com.itinfo.util.ovirt.findSpeed

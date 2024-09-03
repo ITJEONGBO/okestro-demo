@@ -2,7 +2,7 @@ package com.itinfo.itcloud.model.computing
 
 
 import com.itinfo.itcloud.model.IdentifiedVo
-import com.itinfo.itcloud.model.gson
+import com.itinfo.itcloud.gson
 import org.slf4j.LoggerFactory
 import java.io.Serializable
 
