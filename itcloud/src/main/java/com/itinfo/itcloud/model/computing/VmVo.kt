@@ -66,7 +66,7 @@ private val log = LoggerFactory.getLogger(VmVo::class.java)
  *
  * @property description [String] 설명
  * @property comment [String]
- * @property osSystem [String]
+ * @property osSystem [String]  // TODO model-OS
  * @property chipsetFirmwareType [String] bios.type
  * @property optimizeOption [String]        최적화 옵션
  * @property stateless [Boolean]			상태 비저장
@@ -371,7 +371,7 @@ fun Vm.toVmVo(conn: Connection): VmVo {
         startPaused { this@toVmVo.startPaused() }
         deleteProtected { this@toVmVo.deleteProtected() }
         diskAttachmentVos { this@toVmVo.diskAttachments().toDiskAttachmentVos(conn) }
-        vnicProfileVos { this@toVmVo.nics().toVnicProfileVosFromNic(conn) } // TODO
+        vnicProfileVos { this@toVmVo.nics().toVnicProfileVosFromNic(conn) }
         memorySize { this@toVmVo.memory() }
 //        memoryMax { this@toVmVo. }
         memoryActual { this@toVmVo.memoryPolicy().guaranteed() }
@@ -420,7 +420,6 @@ fun Vm.toVmVo(conn: Connection): VmVo {
         memoryBalloon { this@toVmVo.memoryPolicy().ballooning() }
         ioThreadCnt  { if (this@toVmVo.io().threadsPresent()) this@toVmVo.io().threadsAsInteger() else 0 }
         multiQue { this@toVmVo.multiQueuesEnabled() }
-//		virtSCSIEnable { this@toVmVo.virtioScsiMultiQueuesEnabled() } // TODO:HELP virtio-scsi 활성화
 //        virtIoCnt { this@toVmVo. }
         firstDevice { this@toVmVo.os().boot().devices().first().value() }
         secDevice {

@@ -150,8 +150,7 @@ public class ClusterServiceImpl implements ItClusterService {
                     .logMaxMemoryUsedThresholdType(LogMaxMemoryUsedThresholdType.valueOf(cVo.getLogMaxType()))
                     .virtService(cVo.isVirtService())
                     .glusterService(cVo.isGlusterService())
-                    .errorHandling(new ErrorHandlingBuilder().onError(cVo.getRecoveryPolicy()))
-                    // TODO: 마이그레이션 정책 관련 설정 값 조회 기능 존재여부 확인필요
+                    // HELP: 마이그레이션 정책 관련 설정 값 조회 기능 존재여부 확인필요
                     .migration(
                         new MigrationOptionsBuilder()
                             .bandwidth(new MigrationBandwidthBuilder().assignmentMethod(cVo.getBandwidth()))
@@ -412,7 +411,7 @@ public class ClusterServiceImpl implements ItClusterService {
         OpenStackNetworkProvider openStackNetworkProvider = system.openstackNetworkProvidersService().list().send().providers().get(0);
         String dcId = system.clustersService().clusterService(id).get().send().cluster().dataCenter().id();
 
-        // TODO:HELP  외부 공급자 설정할 때 물리적 네트워크에 연결하는 거 구현해야함, & 외부 공급자 설정 시 클러스터에서 모두필요 항목은 사라져야됨 (프론트)
+        // HELP  외부 공급자 설정할 때 물리적 네트워크에 연결하는 거 구현해야함, & 외부 공급자 설정 시 클러스터에서 모두필요 항목은 사라져야됨 (프론트)
         try {
             if(networkNameDuplicate(system, ncVo.getName(), dcId)){
                 log.error("네트워크 이름 중복");
@@ -508,7 +507,7 @@ public class ClusterServiceImpl implements ItClusterService {
                 .collect(Collectors.toList());
     }
 
-    // TODO:HELP  관리기능 애매
+    // HELP  관리기능 애매
     */
 /**
      * 클러스터 네트워크 관리

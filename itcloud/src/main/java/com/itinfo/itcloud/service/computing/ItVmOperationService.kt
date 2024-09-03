@@ -98,7 +98,7 @@ interface ItVmOperationService {
 	@Throws(Error::class)
 	fun cancelMigration(vmId: String): Boolean
 	/**
-	 * TODO:HELP
+	 * TODO: 가상머신 내보내기 (기본 내보내기 기능 실행시, 해당 host?vm? 내부에 파일이 생성됨)
 	 * [ItVmOperationService.exportOvaVm]
 	 * ova 창 = setHostList(String clusterId)
 	 *

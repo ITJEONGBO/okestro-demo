@@ -63,7 +63,7 @@ interface ItVmService {
 	 * [ItVmService.findAllStorageDomainsBy]
 	 * 가상머신 생성 - 인스턴스 이미지 - 생성 -> 생성 시 필요한 스토리지 도메인
 	 * 가상머신 생성 - 고가용성 - 임대 대상 스토리지 도메인 목록
-	 * TODO 데이터센터 id가 있어야되는거 같긴함, 근데 애매한부분
+	 * HELP 데이터센터 id가 있어야되는거 같긴함, 근데 애매한부분
 	 *
 	 * @param dataCenterId [String] 데이터센터 id (클러스터가 가지고 있는 데이터센터 id)
 	 * @return List<[StorageDomainVo]> 스토리지 도메인 목록
@@ -197,7 +197,7 @@ interface ItVmService {
     @Throws(Error::class)
 	fun cancelMigration(vmId: String): Boolean
 	/**
-	 * TODO:HELP
+	 * TODO: 내보내기 창, 그와 별개로 vm operation과 겹치는 내용 삭제 바람
 	 * [ItVmService.exportOvaVm]
 	 * ova 창 = setHostList(String clusterId)
 	 *

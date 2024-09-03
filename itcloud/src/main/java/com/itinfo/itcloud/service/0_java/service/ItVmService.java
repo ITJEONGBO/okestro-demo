@@ -1,5 +1,3 @@
-// TODO: 확인 후 삭제
-// TODO: 카테고리 별 분리
 /*
 public interface ItVmService {
     // 디스크

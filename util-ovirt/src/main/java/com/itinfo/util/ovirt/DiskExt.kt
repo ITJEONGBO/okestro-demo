@@ -175,40 +175,40 @@ fun Connection.uploadDisk(file: MultipartFile?, disk: Disk): Result<Boolean> = r
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.imageSend(file: MultipartFile, imageTransferService: ImageTransferService): Boolean {
-	System.setProperty("sun.net.http.allowRestrictedHeaders", "true")
-
-	val url = URL(imageTransferService.get().send().imageTransfer().transferUrl())
-	val httpsConn: HttpsURLConnection = url.openConnection() as HttpsURLConnection
-	httpsConn.requestMethod = "PUT"
-	httpsConn.setRequestProperty("Content-Length", file.size.toString())
-	httpsConn.setFixedLengthStreamingMode(file.size) // 메모리 사용 최적화
-	httpsConn.doOutput = true // 서버에 데이터를 보낼수 있게 설정
-	httpsConn.connect()
-
-	// 버퍼 크기 설정 (128KB)
-	val bufferSize = 131072
-		BufferedInputStream(file.inputStream, bufferSize).use { bufferedInputStream ->
-			BufferedOutputStream(
-				httpsConn.outputStream, bufferSize
-			).use { bufferedOutputStream ->
-				val buffer = ByteArray(bufferSize)
-				var bytesRead: Int
-				while ((bufferedInputStream.read(buffer).also { bytesRead = it }) != -1) {
-					bufferedOutputStream.write(buffer, 0, bytesRead)
-				}
-				bufferedOutputStream.flush()
-				imageTransferService.finalize_().send() // image 전송 완료
-				httpsConn.disconnect()
-
-				val imageTransfer = imageTransferService.get().send().imageTransfer()
-				log.debug("phase() : {}", imageTransfer.phase())
-				return true
-			}
-		}
-			httpsConn?.disconnect()
-
-}
+//fun Connection.imageSend(file: MultipartFile, imageTransferService: ImageTransferService): Boolean {
+//	System.setProperty("sun.net.http.allowRestrictedHeaders", "true")
+//
+//	val url = URL(imageTransferService.get().send().imageTransfer().transferUrl())
+//	val httpsConn: HttpsURLConnection = url.openConnection() as HttpsURLConnection
+//	httpsConn.requestMethod = "PUT"
+//	httpsConn.setRequestProperty("Content-Length", file.size.toString())
+//	httpsConn.setFixedLengthStreamingMode(file.size) // 메모리 사용 최적화
+//	httpsConn.doOutput = true // 서버에 데이터를 보낼수 있게 설정
+//	httpsConn.connect()
+//
+//	// 버퍼 크기 설정 (128KB)
+//	val bufferSize = 131072
+//		BufferedInputStream(file.inputStream, bufferSize).use { bufferedInputStream ->
+//			BufferedOutputStream(
+//				httpsConn.outputStream, bufferSize
+//			).use { bufferedOutputStream ->
+//				val buffer = ByteArray(bufferSize)
+//				var bytesRead: Int
+//				while ((bufferedInputStream.read(buffer).also { bytesRead = it }) != -1) {
+//					bufferedOutputStream.write(buffer, 0, bytesRead)
+//				}
+//				bufferedOutputStream.flush()
+//				imageTransferService.finalize_().send() // image 전송 완료
+//				httpsConn.disconnect()
+//
+//				val imageTransfer = imageTransferService.get().send().imageTransfer()
+//				log.debug("phase() : {}", imageTransfer.phase())
+//				return true
+//			}
+//		}
+//			httpsConn?.disconnect()
+//
+//}
 
 
 /**

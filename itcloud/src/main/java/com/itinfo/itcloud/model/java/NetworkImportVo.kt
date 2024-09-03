@@ -27,7 +27,7 @@ private val log = LoggerFactory.getLogger(NetworkImportVo::class.java)
 class NetworkImportVo(
 	val id: String = "",
 	val name: String = "",
-	val openstackVos: List<OpenStackNetworkVo> = listOf(), // TODO
+	val openstackVos: List<OpenStackNetworkVo> = listOf(),
 ) : Serializable {
 	override fun toString(): String =
 		gson.toJson(this)

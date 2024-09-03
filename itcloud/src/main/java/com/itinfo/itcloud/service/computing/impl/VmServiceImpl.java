@@ -842,7 +842,7 @@ public class VmServiceImpl extends BaseService implements ItVmService {
                 .ioThread(vm.io().threadsPresent())
                 .ioThreadCnt(vm.io().threadsPresent() ? vm.io().threadsAsInteger() : 0)
                 .multiQue(vm.multiQueuesEnabled())
-//                .virtSCSIEnable(vm.virtioScsiMultiQueuesEnabled()) // TODO:HELP virtio-scsi 활성화
+//                .virtSCSIEnable(vm.virtioScsiMultiQueuesEnabled()) // HELP virtio-scsi 활성화
                 // virtio-scsi multi queues
                 .build();
     }
@@ -1227,7 +1227,7 @@ public class VmServiceImpl extends BaseService implements ItVmService {
 
 
     // ova 창 = setHostList(String clusterId)
-    // TODO:HELP
+    // HELP
     @Override
     public Res<Boolean> exportOvaVm(VmExportVo vmExportVo) {
         
@@ -1482,7 +1482,7 @@ public class VmServiceImpl extends BaseService implements ItVmService {
 
                 Nic nic = vmNicService.update().nic(nicBuilder).send().nic();
 
-                // TODO:HELP
+                // HELP
                 // 수정창에 nf List가 뜰 예정(id)
                 // 추가되면 추가해야하고 삭제되면 삭제해야함
                 if (nicVo.getNfVoList() != null) {
@@ -1599,7 +1599,7 @@ public class VmServiceImpl extends BaseService implements ItVmService {
 
                 return Res.successResponse();
             } else {
-                // TODO:HELP boolean type으로 활성화/비활성화?
+                // HELP boolean type으로 활성화/비활성화?
                 return Res.failResponse("이미 활성화가 되어있음");
             }
         }catch (Exception e){
@@ -1621,7 +1621,7 @@ public class VmServiceImpl extends BaseService implements ItVmService {
 
                 return Res.successResponse();
             } else {
-                // TODO:HELP boolean type으로 활성화/비활성화?
+                // HELP boolean type으로 활성화/비활성화?
                 return Res.failResponse("이미 비활성화가 되어있음");
             }
         }catch (Exception e){

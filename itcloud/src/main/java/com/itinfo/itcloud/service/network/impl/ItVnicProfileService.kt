@@ -105,7 +105,7 @@ class VnicProfileServiceImpl(
 		val network: Network =
 			conn.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
 		val vnicProfileId: String = network.vnicProfiles().firstOrNull()?.id() ?: throw ErrorPattern.VNIC_PROFILE_ID_NOT_FOUND.toError()
-		// TODO: 이렇게 찾아야 하는게 맞는지 모르겠음 ...
+		// HELP: 이렇게 찾아야 하는게 맞는지 모르겠음 ...
 		val vnicProfile: VnicProfile =
 			conn.findVnicProfileFromNetwork(networkId, vnicProfileId)
 				.getOrNull() ?: throw ErrorPattern.VNIC_PROFILE_NOT_FOUND.toError()

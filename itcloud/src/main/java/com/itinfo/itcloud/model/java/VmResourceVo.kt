@@ -98,7 +98,7 @@ fun Vm.toVmResourceVo(conn: Connection): VmResourceVo {
 		ioThread { this@toVmResourceVo.io().threadsPresent() }
 		ioThreadCnt  { if (this@toVmResourceVo.io().threadsPresent()) this@toVmResourceVo.io().threadsAsInteger() else 0 }
 		multiQue { this@toVmResourceVo.multiQueuesEnabled() }
-//		virtSCSIEnable { this@toVmResourceVo.virtioScsiMultiQueuesEnabled() } // TODO:HELP virtio-scsi 활성화
+//		virtSCSIEnable { this@toVmResourceVo.virtioScsiMultiQueuesEnabled() }
 		// virtio-scsi multi queues
 	}
 }*/

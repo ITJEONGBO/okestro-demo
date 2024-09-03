@@ -258,11 +258,11 @@ class HostServiceImpl(
 			conn.findHost(hostId)
 				.getOrNull()?: throw ErrorPattern.HOST_NOT_FOUND.toError()
 
+		// TODO 호스트 이벤트 불러오기 애매 + power management 처리
 		val res: List<Event> =
 			conn.findAllEvents("host.name= ${host.name()}")
 				.getOrDefault(listOf())
 				.filter {
-					//TODO
 					!(
 					  it.severity().value() == "alert" &&
 					  it.description().contains("Failed to verify Power Management configuration for Host")

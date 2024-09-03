@@ -36,6 +36,7 @@ private val log = LoggerFactory.getLogger(SnapshotDiskVo::class.java)
  * @property description [String]
  */
 // TODO 삭제해야함
+@Deprecated("삭제해야함")
 class SnapshotDiskVo (
     val id: String = "",
     val daId: String = "",

@@ -53,7 +53,6 @@ class VmInitVo(
  * @param system
  *
  * @return
- * TODO: 함수명 toVmInitVo로 변경
  *//*
 
 fun Vm.toVmInitVo(conn: Connection): VmInitVo {

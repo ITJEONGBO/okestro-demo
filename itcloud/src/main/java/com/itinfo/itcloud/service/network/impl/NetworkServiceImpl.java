@@ -27,8 +27,8 @@ public class NetworkServiceImpl extends BaseService implements ItNetworkService 
         NetworksService networksService = getSystem().networksService();
         OpenStackNetworkProvider openStackNetworkProvider = getSystem().openstackNetworkProvidersService().list().send().providers().get(0);
 
-        // TODO
-        //  외부 공급자 설정할 때 물리적 네트워크에 연결하는 거 구현해야함, & 외부 공급자 설정 시 클러스터에서 모두필요 항목은 사라져야됨 (프론트)
+        //
+        // HELP 외부 공급자 설정할 때 물리적 네트워크에 연결하는 거 구현해야함, & 외부 공급자 설정 시 클러스터에서 모두필요 항목은 사라져야됨 (프론트)
         try {
             Network network =
                     networksService.add()
@@ -44,7 +44,7 @@ public class NetworkServiceImpl extends BaseService implements ItNetworkService 
                                             .mtu(ncVo.getMtu())
                                             .stp(ncVo.getStp()) // ?
                                             .externalProvider(ncVo.getExternalProvider() ?  openStackNetworkProvider : null)
-                                            // TODO 물리적네트워크
+                                            // 물리적네트워크
 //                                            .externalProviderPhysicalNetwork(new NetworkBuilder().externalProviderPhysicalNetwork())
                             )
                             .send().network();
@@ -96,7 +96,7 @@ public class NetworkServiceImpl extends BaseService implements ItNetworkService 
 
     // 네트워크 수정
     // 중복이름 : dc 다르면 중복명 가능
-    // TODO 문제있음
+    // 문제있음
     @Override
     public CommonVo<Boolean> editNetwork(NetworkCreateVo ncVo) {
         DataCenter dataCenter = getSystem().dataCentersService().dataCenterService(ncVo.getDatacenterId()).get().send().dataCenter();
@@ -110,7 +110,7 @@ public class NetworkServiceImpl extends BaseService implements ItNetworkService 
                     .description(ncVo.getDescription())
                     .comment(ncVo.getComment())
                     .usages(ncVo.getUsageVm() ? NetworkUsage.VM : NetworkUsage.DEFAULT_ROUTE)
-//                    .dnsResolverConfiguration()   // TODO:HELP DNS 구현안됨
+//                    .dnsResolverConfiguration()   // HELP DNS 구현안됨
                     .mtu(ncVo.getMtu())
                     .stp(ncVo.getStp())
                     .vlan(ncVo.getVlan() != null ? new VlanBuilder().id(ncVo.getVlan()) : null)
@@ -210,7 +210,7 @@ public class NetworkServiceImpl extends BaseService implements ItNetworkService 
     }
 
     // vnic 생성 창
-    // TODO qos는 제외항목, 네트워크필터도 vdsm으로 고정
+    // HELP qos는 제외항목, 네트워크필터도 vdsm으로 고정
     //  통과 기능 활성화시 네트워크필터 기능 삭제, 마이그레이션 버튼 활성화, 페일오버 활성화, 포트미러링 비활성화
     //  사용자정의 속성 애매
     @Override

@@ -159,7 +159,6 @@ public class AffinityServiceImpl implements ItAffinityService {
 
 
 	// 선호도 그룹 수정
-	// TODO:HELP
 	@Override
 	public CommonVo<Boolean> editAffinityGroup(AffinityGroupVo agVo) {
 		Connection conn = admin.getConnection();
@@ -222,7 +221,6 @@ public class AffinityServiceImpl implements ItAffinityService {
 
 	// 클러스터에서 선호도 레이블 목록 출력  // 호스트 id
 	// 호스트 본인의 id가 있어야 출력됨
-	// TODO
 	@Override
 	public List<AffinityLabelVo> getAffinityLabels(){
 		Connection conn = admin.getConnection();
@@ -565,7 +563,6 @@ public class AffinityServiceImpl implements ItAffinityService {
 
 				for (AffinityLabel al : hostLabelList) {
 					System.out.println(al.id() + ":" + al.name());
-					// TODO: 지워지지 않음, issue에 올려서 로그 기록 확인 필요
 					agHostLabelsService.labelService(al.id()).remove().send();
 				}
 				return CommonVo.successResponse();

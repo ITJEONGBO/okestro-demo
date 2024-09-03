@@ -55,7 +55,7 @@ fun AffinityLabel.toAffinityGroupMemberVo(conn: Connection): AffinityGroupMember
 		conn.findAllVmsFromAffinityLabel(this.id())
 			.getOrDefault(listOf())
 
-	// TODO: IdentifiedVo로 하지 않는다면 보정필요
+	// TODO: 나올 방법 고민, IdentifiedVo로 하지 않는다면 보정필요
 	return AffinityGroupMemberVo.builder {
 		hostMembers { hosts.fromHostsToIdentifiedVos() }
 		vmMembers { vms.fromVmsToIdentifiedVos() }

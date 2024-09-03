@@ -200,6 +200,7 @@ class NetworkServiceImpl(
 
 	// 새 논리 네트워크 추가
 	// 필요 name, datacenter_id
+	// TODO 중복이름 : dc 다르면 중복명 가능
 	@Throws(Error::class)
 	override fun add(networkVo: NetworkVo): NetworkVo? {
 		log.info("addNetwork ... ")
@@ -208,6 +209,8 @@ class NetworkServiceImpl(
 				.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
 		return res.toNetworkVo(conn)
 		// 클러스터 연결, 필수 선택
+
+		// TODO vnic 생성 창/ qos는 제외항목, 네트워크필터도 vdsm으로 고정
 /*
 		// 기본생성되는 vnicprofile 삭제
 		val vnicProfile: VnicProfile =

@@ -167,7 +167,7 @@ fun Network.toVnicCreateVo(conn: Connection): VnicProfileVo {
 		networkName { this@toVnicCreateVo.name() }
 //		nfVo(NetworkFilterVo.builder().build())
 		// 프론트에서 네트워크 기본값 지정
-		migration { true } // TODO 기본값?
+		migration { true }
 	}
 }
 

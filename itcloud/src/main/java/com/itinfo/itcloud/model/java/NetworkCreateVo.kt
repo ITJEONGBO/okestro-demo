@@ -123,7 +123,7 @@ fun Network.toNetworkCreateVo(conn: Connection, networkId: String): NetworkCreat
 		externalProvider {
 			this@toNetworkCreateVo.externalProviderPresent()
 		}
-		// physicalNw { }     // TODO:HELP 물리적 네트워크
+		// physicalNw { }     // TODO 물리적 네트워크
 	}
 }
 

@@ -11,6 +11,7 @@ import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.network.VnicProfileVo
 import com.itinfo.itcloud.model.network.NetworkTemplateVo
+import com.itinfo.itcloud.model.network.OpenStackNetworkVo
 import com.itinfo.itcloud.service.network.ItNetworkService
 import io.swagger.annotations.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -40,24 +41,7 @@ class NetworkController: BaseController() {
 		log.info("/networks ... 네트워크 목록")
 		return ResponseEntity(iNetwork.findAll(), HttpStatus.OK)
 	}
-/*
-	@ApiOperation(
-		httpMethod="GET",
-		value="/networks/settings",
-		notes = "네트워크 생성시 필요한 내용을 조회한다"
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/settings")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	// TODO: 지울지 말지 고민 후 제거
-	fun setDcCluster(): ResponseEntity<List<NetworkDcClusterVo>> {
-		log.info("/networks/settings ... 네트워크 생성 창")
-		return ResponseEntity(iNetwork.findAllNetworkDcClusters() }
-	}
-*/
+
 
 	@ApiOperation(
 		httpMethod="POST",
@@ -147,24 +131,18 @@ class NetworkController: BaseController() {
 		return ResponseEntity(iNetwork.remove(networkId), HttpStatus.OK)
 	}
 
-	// TODO: 정리필요
-/*
 	@ApiOperation(
 		httpMethod="PUT",
 		value="/networks/import/settings",
 		notes="네트워크 가져오기 창"
 	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
 	@GetMapping("/import/settings")
 	@ResponseBody
-	fun setImportNetwork(): ResponseEntity<NetworkImportVo?> {
-		// TODO:HELP
-		log.info("--- Network 가져오기 창")
-		return ResponseEntity(iNetwork.findAllExternalNetworkFromNetworkProvider() }
+	fun setImportNetwork(): ResponseEntity<OpenStackNetworkVo?> {
+		log.info("--- Network 가져오기 창(openstack networkProvider 목록)")
+		return ResponseEntity(iNetwork.findAllNetworkProviderFromNetwork(), HttpStatus.OK)
 	}
-*/
+
 	// TODO: 정리필요
 	// 네트워크 가져오기
 	@PostMapping("/import")
@@ -214,7 +192,6 @@ class NetworkController: BaseController() {
 	}
 
 //	// vnic 생성 창
-//	// TODO:HELP
 //	@ApiImplicitParams(
 //		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
 //	)
@@ -400,7 +377,6 @@ class NetworkController: BaseController() {
 			throw ErrorPattern.NIC_ID_NOT_FOUND.toException()
 		log.info("--- Network 가상머신 nic 제거")
 		return ResponseEntity(iNetwork.deleteVmNicFromNetwork(/* networkId, */vmId, nicId) }
-		// TODO: 네트워크ID가 필요없다면 재외필요
 	}
 */
 	@ApiOperation(value = "네트워크 템플릿 목록", notes = "선택된 네트워크의 템플릿 목록을 조회한다")

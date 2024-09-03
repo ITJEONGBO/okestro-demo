@@ -89,7 +89,6 @@ class VmSystemVo(
  * @param conn [Connection]
  *
  * @return
- * TODO: 함수명 toVmSystemVo로 변경
  *//*
 
 fun Vm.toVmSystemVo(conn: Connection): VmSystemVo {

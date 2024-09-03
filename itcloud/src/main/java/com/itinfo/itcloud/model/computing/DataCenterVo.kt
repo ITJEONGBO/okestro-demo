@@ -82,7 +82,6 @@ fun DataCenter.toDataCenterIdName(): DataCenterVo = DataCenterVo.builder {
 fun List<DataCenter>.toDataCenterIdNames(): List<DataCenterVo> =
 	this@toDataCenterIdNames.map { it.toDataCenterIdName() }
 
-// TODO ERROR
 fun DataCenter.toDataCenterVo(
 	conn: Connection?,
 	findNetworks: Boolean = true,

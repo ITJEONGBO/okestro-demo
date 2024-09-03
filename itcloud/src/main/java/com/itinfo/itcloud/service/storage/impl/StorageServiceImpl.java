@@ -64,7 +64,7 @@ public class StorageServiceImpl extends BaseService implements ItStorageService 
                                     .status(disk.status())
                                     .storageType(disk.storageType().value())
                                     .virtualSize(disk.provisionedSize())
-//                                    .connection(String.valueOf(isAttached)) // TODO:HELP 연결대상 쉽지않음
+//                                    .connection(String.valueOf(isAttached)) // HELP 연결대상 쉽지않음
                                     .domainVo(DomainVo.builder().id(sd.id()).name(sd.name()).build())
                                     .build();
                         })
@@ -254,7 +254,7 @@ public class StorageServiceImpl extends BaseService implements ItStorageService 
             // 가상머신이 연결되어잇는지, down 상태인지
             diskService.remove().send();
 
-            // TODO:HELP 디스크 삭제 여부확인
+            // :HELP 디스크 삭제 여부확인
 
             log.info("성공: 디스크 삭제");
             return Res.successResponse();

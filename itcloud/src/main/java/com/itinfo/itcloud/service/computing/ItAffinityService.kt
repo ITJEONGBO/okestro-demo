@@ -94,7 +94,7 @@ interface ItAffinityService {
 	/**
 	 * [ItAffinityService.editAffinityGroup]
 	 * 선호도 그룹 편집
-	 * TODO:HELP
+	 * TODO 나중
 	 */
 	@Throws(Error::class)
 	fun editAffinityGroup(agVo: AffinityGroupVo): Boolean
@@ -116,7 +116,6 @@ interface ItAffinityService {
 	 * 선호도 레이블 목록 - 클러스터, 호스트, 가상머신
 	 * 클러스터에서 선호도 레이블 목록 출력
 	 * 호스트 본인의 id가 있어야 출력됨
-	 * TODO
 	 */
 	@Throws(Error::class)
 	fun findAllAffinityLabels(): List<AffinityLabelVo>
