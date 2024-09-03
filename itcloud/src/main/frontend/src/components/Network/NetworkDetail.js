@@ -76,15 +76,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   const clusterData = [
     {
       id: id,
-      name: (
-        <span
-            style={{ color: 'blue', cursor: 'pointer'}}
-            onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
-            onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
-          >
-            Default
-          </span>
-      ),
+      name: 'Default',
       compatVersion: '4.7',
       connectedNetwork: <input type="checkbox" />,
       networkStatus: <i className="fa fa-chevron-left"></i>,
@@ -259,7 +251,12 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
             </div>
           
             <div className="section_table_outer">
-              <Table columns={TableColumnsInfo.CLUSTERS} data={clusterData} onRowClick={() => console.log('Row clicked')} />
+              <Table 
+                columns={TableColumnsInfo.CLUSTERS} 
+                data={clusterData} 
+                onRowClick={() => console.log('Row clicked')}
+                shouldHighlight1stCol={true}
+              />
             </div>
        </>
        

@@ -15,6 +15,17 @@ Modal.setAppElement('#root'); // React 16 이상에서는 필수
 const Storage = () => {
   const navigate = useNavigate();
   
+  /* 
+    const [storageData, setStorageData] = useState([]);
+    useEffect(() => {
+        async function fetchData() {
+            const res = await ApiManager.findAllStorage();
+            setStorageData(res);
+        }
+        fetchData()
+    }, [])
+    */
+
   // State for managing the active permission filter
   const [activePermissionFilter, setActivePermissionFilter] = useState('all');
   

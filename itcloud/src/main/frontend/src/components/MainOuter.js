@@ -78,8 +78,8 @@ const MainOuter = ({ children }) => {
             } else {
                 updateSelectedState('storage', 'data_center');
             }
-        } else if (location.pathname.includes('/network')) {
-            if (location.pathname === '/network' || lastPart === 'network') {
+        } else if (location.pathname.includes('/networks')) {
+            if (location.pathname === '/networks' || lastPart === 'network') {
                 updateSelectedState('network', 'default', true);
             } else {
                 updateSelectedState('network', lastPart, true);
@@ -600,7 +600,7 @@ const MainOuter = ({ children }) => {
                 onClick={() => {
                     setSelectedDiv('default');
                    
-                    navigate('/network');
+                    navigate('/networks');
                 }}
             >
             <i
@@ -624,7 +624,7 @@ const MainOuter = ({ children }) => {
                     }}
                     onClick={() => {
                         setSelectedDiv('ovirtmgmt');
-                        navigate('/network/ovirtmgmt');
+                        navigate('/networks/ovirtmgmt');
                     }}
                 >
                     <i className="fa fa-building-o" style={{ fontSize: '0.34rem', marginRight: '0.05rem' }}></i>
@@ -640,7 +640,7 @@ const MainOuter = ({ children }) => {
                     }}
                     onClick={() => {
                         setSelectedDiv('example1');
-                        navigate('/network/example1');
+                        navigate('/networks/example1');
                     }}
                 >
                     <i className="fa fa-building-o" style={{ fontSize: '0.34rem', marginRight: '0.05rem' }}></i>
@@ -656,7 +656,7 @@ const MainOuter = ({ children }) => {
                     }}
                     onClick={() => {
                         setSelectedDiv('example2');
-                        navigate('/network/example2');
+                        navigate('/networks/example2');
                     }}
                 >
                     <i className="fa fa-building-o" style={{ fontSize: '0.34rem', marginRight: '0.05rem' }}></i>

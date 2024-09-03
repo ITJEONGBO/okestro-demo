@@ -42,3 +42,12 @@ export const useAllVnicProfilesFromNetwork = (networkId, mapPredicate) => useQue
     return res?.map((e) => mapPredicate(e)) ?? []
   }
 })
+
+export const useFindAllStorage = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['allStorages'],
+  queryFn: async () => {
+    const res = await ApiManager.findAllStorage();
+    return res?.map((e) => mapPredicate(e)) ?? [];
+  }
+});

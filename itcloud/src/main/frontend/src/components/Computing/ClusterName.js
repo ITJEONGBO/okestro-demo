@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
 
@@ -13,6 +13,9 @@ import Permission from '../Modal/Permission';
 function ClusterName() {
     const { name } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
+    const locationState = location.state  
+
     const [showNetworkDetail, setShowNetworkDetail] = useState(false);
 
     const handlePermissionFilterClick = (filter) => {
@@ -34,8 +37,6 @@ function ClusterName() {
     // 선호도 그룹 모달 핸들러
     const openAffinityGroupModal = () => setIsAffinityGroupModalOpen(true);
     const closeAffinityGroupModal = () => setIsAffinityGroupModalOpen(false);
-
-
 
     // 논리 네트워크 테이블 컴포넌트
     const data = [

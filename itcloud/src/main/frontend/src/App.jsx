@@ -42,7 +42,7 @@ function App() {
                         <Route path="/computing/cluster" element={<Cluster />} />
                         <Route path="/computing/cluster/:name" element={<ClusterName />} /> 
                         <Route path="/networks" element={<Network />} />
-                        <Route path="/networks/:id" element={<NetworkDetail />} /> 
+                        <Route path="/networks/:name" element={<NetworkDetail />} /> 
                         <Route path="/storage-domain/:name" element={<StorageDomain />} />
                         <Route path="/storage-domainpart" element={<DomainParts />} />
                         <Route path="/storage-disk/:name" element={<StorageDisk />} />

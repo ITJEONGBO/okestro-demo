@@ -123,6 +123,7 @@ const ApiManager = {
   //endregion: Network
   
   //region: StorageDomain
+  findAllStorage: async () => makeAPICall(ENDPOINTS.FIND_ALL_STORAGE(), DEFAULT_VALUES.FIND_ALL_STORAGE),
   findAllStorageDomains: async () => makeAPICall(ENDPOINTS.FIND_ALL_STORAGE_DOMAINS(), DEFAULT_VALUES.FIND_ALL_STORAGE_DOMAINS),
   //endregion: StorageDomain
 }

@@ -34,10 +34,11 @@ const DEFAULT_VALUES = {
   GET_VM_CPU: () =>         `/api/v1/dashboard/vmCpu`,
   GET_VM_MEMORY: () =>      `/api/v1/dashboard/vmMemory`,
   GET_STORAGE_MEMROY: () => `/api/v1/dashboard/storageMemory`,
+  // 컴퓨팅
   FIND_ALL_DATA_CENTERS: [
       {
           iconStatus: <i className="fa fa-exclamation-triangle" style={{ color: 'yellowgreen' }}></i>, // TODO: raw 값만 부여하도록 구현
-          name: '이름데이터 (샘플값입니다.)',  
+          name: '샘플값입니다',
           comment: '(샘플값입니다.)',
           storageType: '공유됨',
           status: 'Up',
@@ -45,6 +46,8 @@ const DEFAULT_VALUES = {
           description: 'The default Data Center',
       },
   ],
+
+  // 클러스터
   FIND_ALL_CLUSTERS: [
     {
       status: '',
@@ -58,6 +61,7 @@ const DEFAULT_VALUES = {
       upgradeStatus: 'Up to date',
     }
   ],
+  // 네트워크
   FIND_ALL_NETWORKS: [
     { 
       id: '40dc4bc6-9016-4a90-ae86-f3d36095a29f',
@@ -73,8 +77,16 @@ const DEFAULT_VALUES = {
       dataCenter: 'DC2', 
       provider: 'Provider2', 
       portSeparation: '아니요' 
+    },{ 
+      id: '40dc4bc6-9016-4a90-ae86-f3d36095a29f',
+      name: 'example2', 
+      description: 'Example Description 1', 
+      dataCenter: 'DC2', 
+      provider: 'Provider2', 
+      portSeparation: '아니요' 
     },
   ],
+  // 네트워크 세부
   FIND_NETWORK_BY_ID: { 
     id: '40dc4bc6-9016-4a90-ae86-f3d36095a29f',
     name: 'ovirtmgmt', 
@@ -98,20 +110,38 @@ const DEFAULT_VALUES = {
       }
     ],
   },
+  // 스토리지 
+  FIND_ALL_STORAGE: [  
+    { 
+      alias: 'he_metadata',
+      id: '289137398279301798',
+      icon1: '',
+      icon2: <i className="fa fa-glass"></i>,
+      connectionTarget: 'on20-ap01',
+      storageDomain: 'VirtIO-SCSI',
+      virtualSize: '/dev/sda',
+      status: 'OK',
+      type: '이미지',
+      description: '',
+    }
+  ],
+  // 스토리지 도메인
   FIND_ALL_STORAGE_DOMAINS: [
     {
       domainName: 'ㅁㅎㅇㅁㄹㄹ', // 여기에 도메인 이름을 설정합니다.
       comment: '',
-      domainType: '',
+      domainType: '',                
       storageType: '',
       format: '',
-      dataCenterStatus: '',
+      dataCenterStatus: '', 
       totalSpace: '',
       freeSpace: '',
       reservedSpace: '',
       description: '',
     }
   ],
+
+  //??                    
   FIND_ALL_VNIC_PROFILES_FROM_NETWORK: [
     {
       "id": "531162db-c6c3-40b2-a9a7-c9d91d7200fc",
