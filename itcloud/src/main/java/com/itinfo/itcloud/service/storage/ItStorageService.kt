@@ -11,6 +11,7 @@ import com.itinfo.itcloud.model.storage.*
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
+import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.internal.containers.ImageContainer
 import org.ovirt.engine.sdk4.internal.containers.ImageTransferContainer
@@ -513,27 +514,21 @@ class StorageServiceImpl(
 	//		   파일 크기가 자동으로 디스크 옵션에 추가, 파일 명칭이 파일의 이름으로 지정됨 (+설명)
 	// 디스크 이미지 업로드
 	// required: provisioned_size, alias, description, wipe_after_delete, shareable, backup, disk_profile.
-	//
+	@Throws(Error::class, IOException::class)
 	override fun uploadDisk(file: MultipartFile, image: DiskImageVo): Boolean {
 		log.info("uploadDisk ... ")
-		if(file.isEmpty) throw ErrorPattern.FILE_NOT_FOUND.toError()
+		if (file.isEmpty) throw ErrorPattern.FILE_NOT_FOUND.toError()
 
-		val res: Res<Boolean> =
-			conn.uploadDisk(file, image.toUploadDiskBuilder(file.size))
-				.getOrNull()
-
+//		val res: Res<Boolean> =
+//			conn.uploadDisk(file, image.toUploadDiskBuilder(file.size))
+//				.getOrNull()
+//		return res.isSuccess
+		TODO("Not yet implemented")
+	}
 
 //		val disksService = system.disksService()
 //		val imageTransfersService = system.imageTransfersService() // 이미지 추가를 위한 서비스
-//		try {
-//			log.debug(
-//				"Total Memory : {}, Free Memory : {}, Max Memory : {}",
-//				Runtime.getRuntime().totalMemory(),
-//				Runtime.getRuntime().freeMemory(),
-//				Runtime.getRuntime().maxMemory()
-//			)
-//			log.info("파일: {}, size: {}, 타입: {}", file?.originalFilename, file?.size, file?.contentType)
-//
+//		try {//
 //			// 우선 입력된 디스크 정보를 바탕으로 디스크 추가
 //			val disk = disksService.add().disk(file?.let { createDisk(image, it.size) }).send().disk()
 //			val diskService = disksService.diskService(disk.id())
@@ -612,13 +607,10 @@ class StorageServiceImpl(
 //			.format(DiskFormat.RAW) // 이미지 업로드는 raw형식만 가능
 //			.contentType(DiskContentType.ISO) // iso 업로드
 //			.build()
-//	}
-
-
 	/**
 	 * [StorageServiceImpl.imageSend]
 	 * 디스크 이미지 전송
-	 * 
+	 *
 	 * @param imageTransferService [ImageTransferService]
 	 * @param file [MultipartFile]
 	 */
@@ -671,6 +663,9 @@ class StorageServiceImpl(
 			httpsConn?.disconnect()
 		}
 	}
+
+
+//	}
 
 
 	/**

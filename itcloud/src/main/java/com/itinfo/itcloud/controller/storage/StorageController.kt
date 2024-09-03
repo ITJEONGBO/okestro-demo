@@ -206,7 +206,7 @@ class StorageController: BaseController() {
 	@Throws(IdNotFoundException::class, InvalidRequestException::class, IOException::class)
 	fun uploadDisk(
 		@PathVariable dataCenterId: String? = null,
-		@RequestPart file: MultipartFile?,
+		@RequestPart file: MultipartFile,
 		@RequestPart diskImage: DiskImageVo?
 	): ResponseEntity<Boolean> {
 		if (dataCenterId == null)

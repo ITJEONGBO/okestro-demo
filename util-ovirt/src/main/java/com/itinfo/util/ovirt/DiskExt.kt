@@ -12,7 +12,6 @@ import org.ovirt.engine.sdk4.services.ImageTransferService
 import org.ovirt.engine.sdk4.services.ImageTransfersService
 import org.ovirt.engine.sdk4.types.*
 import org.springframework.web.multipart.MultipartFile
-import sun.net.www.protocol.http.HttpURLConnection
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.net.URL
@@ -143,7 +142,7 @@ private fun Connection.srvImageTransfer(imageId: String): ImageTransferService =
 	srvAllImageTransfer().imageTransferService(imageId)
 
 
-fun Connection.uploadDisk(file: MultipartFile, disk: Disk): Result<Boolean> = runCatching {
+fun Connection.uploadDisk(file: MultipartFile?, disk: Disk): Result<Boolean> = runCatching {
 	val diskUpload: Disk =
 		this.addDisk(disk).getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
 

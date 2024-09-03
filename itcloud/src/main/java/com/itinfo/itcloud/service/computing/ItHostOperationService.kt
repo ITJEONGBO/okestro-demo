@@ -84,8 +84,7 @@ class HostOperationServiceImpl: BaseService(), ItHostOperationService {
         log.info("reStartHost ... ")
     // TODO: Host 이름, PW 입력문제
         val userName = ""
-        val hostPw: String = "adminRoot!@#"
-
+        val hostPw: String = "adminRoot!@#" // TODO: sysprop 값 저장
         val res: Result<Boolean> =
             conn.restartHost(hostId, hostPw)
         return res.isSuccess
