@@ -25,6 +25,7 @@ const ENDPOINTS = {
   //endregion: Network
 
   //region: StorageDomain
+  // FIND_ALL_STORAGE: () =>      `/api/v1/networks`,
   FIND_ALL_STORAGE_DOMAINS: async () => `/api/v1/storages`, // TODO: 구현필요
   //endregion: StorageDomain
 }

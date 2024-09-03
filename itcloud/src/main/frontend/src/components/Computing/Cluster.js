@@ -58,12 +58,14 @@ const Cluster = () => {
   } = useAllClusters(toTableItemPredicate);
 
   function toTableItemPredicate(e) {
+    //CLUSTERS_ALT
     return {
-      status: '',
+      id: e?.id ?? '',
       name: e?.name ?? '',
       comment: e?.comment ?? '',
-      version: e?.version ?? '0.0',
       description: e?.description ?? '설명없음',
+      status: '',
+      version: e?.version ?? '0.0',
       cpuType: e?.cpuType ?? 'CPU 정보 없음',
       hostCount: e?.hostSizeVo?.allCnt ?? 0,
       vmCount: e?.vmSizeVo?.allCnt ?? 0,
@@ -73,9 +75,12 @@ const Cluster = () => {
   
   const handleRowClick = (row, column) => {
     if (column.accessor === 'name') {
-      navigate(`/computing/cluster/${row.id}`);
+      navigate(
+        `/computing/cluster/${row.id}`,
+        { state: { name: row.name } }
+      );
     }
-  }
+  };
 
   return (
     <div id="section">
