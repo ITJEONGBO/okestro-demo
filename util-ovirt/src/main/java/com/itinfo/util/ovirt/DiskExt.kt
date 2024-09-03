@@ -11,11 +11,6 @@ import org.ovirt.engine.sdk4.services.DisksService
 import org.ovirt.engine.sdk4.services.ImageTransferService
 import org.ovirt.engine.sdk4.services.ImageTransfersService
 import org.ovirt.engine.sdk4.types.*
-import org.springframework.web.multipart.MultipartFile
-import java.io.BufferedInputStream
-import java.io.BufferedOutputStream
-import java.net.URL
-import javax.net.ssl.HttpsURLConnection
 
 private fun Connection.srvAllDisks(): DisksService =
 	systemService.disksService()
@@ -138,11 +133,26 @@ fun Connection.copyDisk(diskId: String, domainId: String): Result<Boolean> = run
 private fun Connection.srvAllImageTransfer(): ImageTransfersService =
 	systemService.imageTransfersService()
 
+private fun Connection.findAllImageTransfers(): List<ImageTransfer> =
+	this.srvAllImageTransfer().list().send().imageTransfer()
+
 private fun Connection.srvImageTransfer(imageId: String): ImageTransferService =
-	srvAllImageTransfer().imageTransferService(imageId)
+	this.srvAllImageTransfer().imageTransferService(imageId)
+
+private fun Connection.findImageTransfer(imageId: String): ImageTransfer =
+	this.srvImageTransfer(imageId).get().send().imageTransfer()
+
+private fun Connection.addImageTransfer(imageTransferContainer: ImageTransferContainer): Result<ImageTransfer?> = runCatching {
+	this.srvAllImageTransfer().add().imageTransfer(imageTransferContainer).send().imageTransfer()
+}.onSuccess {
+	Term.IMAGE_TRANSFER.logSuccess("업로드")
+}.onFailure {
+	Term.IMAGE_TRANSFER.logFail("업로드")
+	throw if (it is Error) it.toItCloudException() else it
+}
 
 
-fun Connection.uploadDisk(file: MultipartFile?, disk: Disk): Result<Boolean> = runCatching {
+fun Connection.uploadDisk(/*file: MultipartFile?, */disk: Disk): Result<Boolean> = runCatching {
 	val diskUpload: Disk =
 		this.addDisk(disk).getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
 
@@ -154,16 +164,19 @@ fun Connection.uploadDisk(file: MultipartFile?, disk: Disk): Result<Boolean> = r
 	imageTransferContainer.image(imageContainer)
 
 	val imageTransfer: ImageTransfer =
-		this.srvAllImageTransfer().add().imageTransfer(imageTransferContainer).send().imageTransfer()
+		addImageTransfer(imageTransferContainer)
+			.getOrNull() ?: throw ErrorPattern.IMAGE_TRANSFER_NOT_FOUND.toError()
 
 	while(imageTransfer.phasePresent() && imageTransfer.phase() == ImageTransferPhase.INITIALIZING){
 		log.debug("이미지 업로드 상태확인 ... ${imageTransfer.phase()} ")
 		Thread.sleep(1000)
 	}
 
-	val imageTransferService = this.srvImageTransfer(imageTransfer.id())
+	this.srvImageTransfer(imageTransfer.id())
 	val transferUrl = imageTransfer.transferUrl()
 	if(transferUrl == null || transferUrl.isEmpty()) throw ErrorPattern.UNKNOWN.toError() // 추가해야함
+
+
 
 
 

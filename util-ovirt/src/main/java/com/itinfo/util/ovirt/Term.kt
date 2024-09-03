@@ -11,6 +11,7 @@ enum class Term(
 	DISK_IMAGE("디스크 이미지"),
 	DISK_PROFILE("디스크 프로필"),
 	DISK_SNAPSHOT("디스크 스냅샷"),
+	IMAGE_TRANSFER("이미지 업로드"),
 	NETWORK("네트워크"),
 	NETWORK_LABEL("네트워크 레이블"),
 	NETWORK_ATTACHMENT("네트워크 결합"),
