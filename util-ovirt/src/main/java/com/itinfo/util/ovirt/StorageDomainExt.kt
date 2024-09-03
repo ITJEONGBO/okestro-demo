@@ -45,7 +45,10 @@ fun Connection.findStorageDomainName(storageDomainId: String): String
 	= this.findStorageDomain(storageDomainId).getOrNull()?.name() ?: ""
 
 fun Connection.addStorageDomain(storageDomain: StorageDomain): Result<StorageDomain?> = runCatching {
+
 	this.srvStorageDomains().add().storageDomain(storageDomain).send().storageDomain()
+
+
 }.onSuccess {
 	Term.STORAGE_DOMAIN.logSuccess("생성")
 }.onFailure {

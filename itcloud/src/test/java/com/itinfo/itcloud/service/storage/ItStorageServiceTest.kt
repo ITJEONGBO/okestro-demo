@@ -3,6 +3,7 @@ package com.itinfo.itcloud.service.storage
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.DataCenterVo
+import com.itinfo.itcloud.model.computing.EventVo
 import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.storage.DiskImageVo
 import com.itinfo.itcloud.model.storage.DiskProfileVo
@@ -62,7 +63,7 @@ class ItStorageServiceTest {
 	fun should_findAllFromDataCenter() {
 		log.debug("should_findAllFromDataCenter ... ")
 		val result: List<StorageDomainVo> =
-			service.findAllFromDataCenter(dataCenterId)
+			service.findAllStorageDomainsFromDataCenter(dataCenterId)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(2))
@@ -80,7 +81,7 @@ class ItStorageServiceTest {
 	fun should_findOne() {
 		log.debug("should_findOne ... ")
 		val result: StorageDomainVo =
-			service.findOne(domainId)
+			service.findStorageDomain(domainId)
 
 		assertThat(result, `is`(not(nullValue())))
 		println(result)
@@ -97,6 +98,24 @@ class ItStorageServiceTest {
 		log.debug("should_findAllDisksFromStorageDomain ... ")
 		val result: List<DiskImageVo> =
 			service.findAllDisksFromStorageDomain(domainId)
+
+		assertThat(result, `is`(not(nullValue())))
+		assertThat(result.size, `is`(14))
+
+		result.forEach { println(it) }
+	}
+
+	/**
+	 * [should_findAllDisksFromDataCenter]
+	 * [ItStorageService.findAllDisksFromDataCenter] 의 단위테스트
+	 *
+	 * @see [ItStorageService.findAllDisksFromDataCenter]
+	 */
+	@Test
+	fun should_findAllDisksFromDataCenter() {
+		log.debug("should_findAllDisksFromDataCenter ... ")
+		val result: List<DiskImageVo> =
+			service.findAllDisksFromStorageDomain(dataCenterId)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(14))
@@ -182,7 +201,7 @@ class ItStorageServiceTest {
 			}
 
 		val addResult: DiskImageVo? =
-			service.addDiskImage(addDisk)
+			service.addDisk(addDisk)
 
 		assertThat(addResult, `is`(not(nullValue())))
 		assertThat(addResult?.alias, `is`(addDisk.alias))
@@ -217,7 +236,7 @@ class ItStorageServiceTest {
 			}
 
 		val updateResult: DiskImageVo? =
-			service.updateDiskImage(updateDisk)
+			service.updateDisk(updateDisk)
 
 		assertThat(updateResult, `is`(not(nullValue())))
 		assertThat(updateResult?.alias, `is`(updateDisk.alias))
@@ -236,7 +255,7 @@ class ItStorageServiceTest {
 	fun should_deleteDisk() {
 		val diskId = "b0ded29b-04fc-451b-a7a4-bfd436f47890"
 		val result: Boolean =
-			service.deleteDiskImage(diskId)
+			service.removeDisk(diskId)
 
 		assertThat(result, `is`((nullValue())))
 		assertThat(result, `is`(true))
@@ -314,7 +333,8 @@ class ItStorageServiceTest {
 				backup { false }
 			}
 
-		val result = service.uploadDisk(multipartFile, iVo)
+		val result =
+			service.uploadDisk(multipartFile, iVo)
 	}
 
 
@@ -337,20 +357,6 @@ class ItStorageServiceTest {
 
 
 	@Test
-	fun should_findNetworkVoList() {
-		log.debug("should_findNetworkVoList ... ")
-		val result = service.findAllNetworksFromDataCenter(dataCenterId)
-		result.forEach { x: NetworkVo? -> println(x) }
-	}
-
-	@Test
-	fun should_findClusters() {
-		log.debug("should_findClusters ... ")
-		val result = service.findAllClustersFromDataCenter(dataCenterId)
-		result.forEach {  println(it) }
-	}
-
-	@Test
 	fun should_findPermission() {
 		log.debug("should_findPermission ... ")
 		
@@ -358,8 +364,14 @@ class ItStorageServiceTest {
 
 	@Test
 	fun findEvent() {
-		log.debug("should_findEvent ... ")
-	
+		log.debug("findEvent ... ")
+		val result: List<EventVo> =
+			service.findAllEventsFromStorageDomain(domainId)
+
+		assertThat(result, `is`(not(nullValue())))
+		assertThat(result.size, `is`(33))
+		println(result.size)
+		result.forEach { println(it) }
 	}
 	
 	companion object {

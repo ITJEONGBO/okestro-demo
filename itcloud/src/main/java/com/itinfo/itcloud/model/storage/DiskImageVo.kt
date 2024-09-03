@@ -154,7 +154,6 @@ fun DiskImageVo.toDiskBuilder(): DiskBuilder {
 	return DiskBuilder()
 		.alias(this@toDiskBuilder.alias)
 		.description(this@toDiskBuilder.description)
-		.provisionedSize(BigInteger.valueOf((this@toDiskBuilder.size + this@toDiskBuilder.appendSize).toLong()).multiply(BigInteger.valueOf(1024).pow(3)) ) // 값 받은 것을 byte로 변환하여 준다
 		.wipeAfterDelete(this@toDiskBuilder.wipeAfterDelete)
 		.shareable(this@toDiskBuilder.sharable)
 		.backup(if (this@toDiskBuilder.backup) DiskBackup.INCREMENTAL else DiskBackup.NONE)
@@ -165,9 +164,20 @@ fun DiskImageVo.toDiskBuilder(): DiskBuilder {
 }
 
 fun DiskImageVo.toAddDiskBuilder(): Disk =
-	this@toAddDiskBuilder.toDiskBuilder().build()
+	this@toAddDiskBuilder.toDiskBuilder()
+		.provisionedSize(BigInteger.valueOf(this@toAddDiskBuilder.size.toLong() * 1024 * 1024 * 1024))
+		.build()
 
 fun DiskImageVo.toEditDiskBuilder(): Disk =
-	this@toEditDiskBuilder.toDiskBuilder().id(this@toEditDiskBuilder.id).build()
+	this@toEditDiskBuilder.toDiskBuilder()
+		.id(this@toEditDiskBuilder.id)
+		.provisionedSize((this@toEditDiskBuilder.size + this@toEditDiskBuilder.appendSize).toLong() * 1024 * 1024 *1024 )
+		.build()
 
-
+fun DiskImageVo.toUploadDiskBuilder(fileSize: Long): Disk =
+	this@toUploadDiskBuilder.toDiskBuilder()
+		.provisionedSize(fileSize)
+		.backup(DiskBackup.NONE) // 증분백업 되지 않음
+		.format(DiskFormat.RAW) // 이미지 업로드는 raw 형식만 가능 +front 처리?
+		.contentType(DiskContentType.ISO) // iso 업로드
+		.build()

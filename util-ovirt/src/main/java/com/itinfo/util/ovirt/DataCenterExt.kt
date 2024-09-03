@@ -141,7 +141,7 @@ fun Connection.srvAllAttachedStorageDomainsFromDataCenter(dataCenterId: String):
 
 fun Connection.findAllAttachedStorageDomainsFromDataCenter(dataCenterId: String): Result<List<StorageDomain>> = runCatching {
 	this.findDataCenter(dataCenterId).getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toError()
-	this.srvAllAttachedStorageDomainsFromDataCenter(dataCenterId).list().send().storageDomains()
+	this.srvAllAttachedStorageDomainsFromDataCenter(dataCenterId).list().follow("disks").send().storageDomains()
 }.onSuccess {
 	Term.DATACENTER.logSuccessWithin(Term.STORAGE_DOMAIN,"목록조회", dataCenterId)
 }.onFailure {

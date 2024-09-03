@@ -212,3 +212,7 @@ fun StorageDomainVo.toStorageDomainBuilder(conn: Connection): StorageDomainBuild
 			)
 	}
 }
+
+fun StorageDomainVo.toAddStorageDomainBuilder(conn: Connection): StorageDomain =
+	this@toAddStorageDomainBuilder.toStorageDomainBuilder(conn).build()
+

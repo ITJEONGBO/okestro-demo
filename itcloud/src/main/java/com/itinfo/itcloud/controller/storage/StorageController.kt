@@ -49,7 +49,7 @@ class StorageController: BaseController() {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/domains ... Domain(s) 목록", dataCenterId)
-		return ResponseEntity(iStorage.findAllFromDataCenter(dataCenterId), HttpStatus.OK)
+		return ResponseEntity(iStorage.findAllStorageDomainsFromDataCenter(dataCenterId), HttpStatus.OK)
 	}
 
 
@@ -100,7 +100,7 @@ class StorageController: BaseController() {
 		if (diskImage == null)
 			throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
 		log.info("/storages/{}/disks/image ... 새가상 디스크 - 이미지 생성", dataCenterId)
-		return ResponseEntity(iStorage.addDiskImage(diskImage), HttpStatus.OK)
+		return ResponseEntity(iStorage.addDisk(diskImage), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -131,7 +131,7 @@ class StorageController: BaseController() {
 		if (diskImage == null)
 			throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
 		log.info("/storages/{}/disks/image/{} ... 새가상 디스크 - 이미지 수정", dataCenterId, diskImageId)
-		return ResponseEntity(iStorage.updateDiskImage(diskImage), HttpStatus.OK)
+		return ResponseEntity(iStorage.updateDisk(diskImage), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -158,7 +158,7 @@ class StorageController: BaseController() {
 		if (diskImageId == null)
 			throw ErrorPattern.DISK_IMAGE_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/disks/image/{} ... 새가상 디스크 - 이미지 삭제", dataCenterId, diskImageId)
-		return ResponseEntity(iStorage.deleteDiskImage(diskImageId), HttpStatus.OK)
+		return ResponseEntity(iStorage.moveDisk(diskImageId, storageDomainId = ""), HttpStatus.OK)
 	}
 
 	@ApiOperation(
@@ -246,50 +246,50 @@ class StorageController: BaseController() {
 //	}
 
 
-	@ApiOperation(
-		httpMethod="GET",
-		value="/{dataCenterId}/networks",
-		notes="Network(s) 목록")
-	@ApiImplicitParams(
-		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{dataCenterId}/networks")
-	@ResponseStatus(HttpStatus.OK)
-	@ResponseBody
-	fun networks(
-		@PathVariable dataCenterId: String? = null,
-	): ResponseEntity<List<NetworkVo>> {
-		if (dataCenterId.isNullOrEmpty())
-			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-		log.info("/storages/{}/networks ... Network(s) 목록", dataCenterId)
-		return ResponseEntity(iStorage.findAllNetworksFromDataCenter(dataCenterId), HttpStatus.OK)
-	}
+//	@ApiOperation(
+//		httpMethod="GET",
+//		value="/{dataCenterId}/networks",
+//		notes="Network(s) 목록")
+//	@ApiImplicitParams(
+//		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+//	)
+//	@ApiResponses(
+//		ApiResponse(code = 200, message = "OK")
+//	)
+//	@GetMapping("/{dataCenterId}/networks")
+//	@ResponseStatus(HttpStatus.OK)
+//	@ResponseBody
+//	fun networks(
+//		@PathVariable dataCenterId: String? = null,
+//	): ResponseEntity<List<NetworkVo>> {
+//		if (dataCenterId.isNullOrEmpty())
+//			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
+//		log.info("/storages/{}/networks ... Network(s) 목록", dataCenterId)
+//		return ResponseEntity(iStorage.findAllNetworksFromDataCenter(dataCenterId), HttpStatus.OK)
+//	}
 
-	@ApiOperation(
-		httpMethod="GET",
-		value="/{dataCenterId}/clusters",
-		notes="Cluster(s) 목록"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{dataCenterId}/clusters")
-	@ResponseStatus(HttpStatus.OK)
-	@ResponseBody
-	fun clusters(
-		@PathVariable("dataCenterId") dataCenterId: String? = null,
-	): ResponseEntity<List<ClusterVo>> {
-		if (dataCenterId.isNullOrEmpty())
-			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-		log.info("/storages/{}/clusters ... Cluster(s) 목록", dataCenterId)
-		return ResponseEntity(iStorage.findAllClustersFromDataCenter(dataCenterId), HttpStatus.OK)
-	}
+//	@ApiOperation(
+//		httpMethod="GET",
+//		value="/{dataCenterId}/clusters",
+//		notes="Cluster(s) 목록"
+//	)
+//	@ApiImplicitParams(
+//		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+//	)
+//	@ApiResponses(
+//		ApiResponse(code = 200, message = "OK")
+//	)
+//	@GetMapping("/{dataCenterId}/clusters")
+//	@ResponseStatus(HttpStatus.OK)
+//	@ResponseBody
+//	fun clusters(
+//		@PathVariable("dataCenterId") dataCenterId: String? = null,
+//	): ResponseEntity<List<ClusterVo>> {
+//		if (dataCenterId.isNullOrEmpty())
+//			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
+//		log.info("/storages/{}/clusters ... Cluster(s) 목록", dataCenterId)
+//		return ResponseEntity(iStorage.findAllClustersFromDataCenter(dataCenterId), HttpStatus.OK)
+//	}
 
 	@ApiOperation(
 		httpMethod="GET",

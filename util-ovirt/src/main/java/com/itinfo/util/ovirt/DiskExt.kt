@@ -4,11 +4,19 @@ import com.itinfo.util.ovirt.error.*
 
 import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.Connection
+import org.ovirt.engine.sdk4.internal.containers.ImageContainer
+import org.ovirt.engine.sdk4.internal.containers.ImageTransferContainer
 import org.ovirt.engine.sdk4.services.DiskService
 import org.ovirt.engine.sdk4.services.DisksService
-import org.ovirt.engine.sdk4.types.Disk
-import org.ovirt.engine.sdk4.types.DiskStatus
-import org.ovirt.engine.sdk4.types.StorageDomain
+import org.ovirt.engine.sdk4.services.ImageTransferService
+import org.ovirt.engine.sdk4.services.ImageTransfersService
+import org.ovirt.engine.sdk4.types.*
+import org.springframework.web.multipart.MultipartFile
+import sun.net.www.protocol.http.HttpURLConnection
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
+import java.net.URL
+import javax.net.ssl.HttpsURLConnection
 
 private fun Connection.srvAllDisks(): DisksService =
 	systemService.disksService()
@@ -112,11 +120,11 @@ fun Connection.moveDisk(diskId: String, domainId: String): Result<Boolean> = run
 }
 
 fun Connection.copyDisk(diskId: String, domainId: String): Result<Boolean> = runCatching {
-	val disk: Disk = this@copyDisk.findDisk(diskId).getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
-	val storageDomain: StorageDomain = this@copyDisk.findStorageDomain(domainId).getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
+	val disk: Disk = this.findDisk(diskId).getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
+	val storageDomain: StorageDomain = this.findStorageDomain(domainId).getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
 	this.srvDisk(diskId).copy().disk(disk).storageDomain(storageDomain).send() // 복사된 디스크가 같은 ID를 가질까?
 
-	if (!this@copyDisk.expectDiskStatus(disk.id())) {
+	if (!expectDiskStatus(disk.id())) {
 		log.error("디스크 복사 실패 ... 시간 초과")
 		return Result.failure(Error("시간 초과"))
 	}
@@ -128,12 +136,87 @@ fun Connection.copyDisk(diskId: String, domainId: String): Result<Boolean> = run
 	throw if (it is Error) it.toItCloudException() else it
 }
 
+private fun Connection.srvAllImageTransfer(): ImageTransfersService =
+	systemService.imageTransfersService()
+
+private fun Connection.srvImageTransfer(imageId: String): ImageTransferService =
+	srvAllImageTransfer().imageTransferService(imageId)
+
+
+fun Connection.uploadDisk(file: MultipartFile, disk: Disk): Result<Boolean> = runCatching {
+	val diskUpload: Disk =
+		this.addDisk(disk).getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
+
+	val imageContainer = ImageContainer()
+	imageContainer.id(diskUpload.id())
+
+	val imageTransferContainer = ImageTransferContainer()
+	imageTransferContainer.direction(ImageTransferDirection.UPLOAD)
+	imageTransferContainer.image(imageContainer)
+
+	val imageTransfer: ImageTransfer =
+		this.srvAllImageTransfer().add().imageTransfer(imageTransferContainer).send().imageTransfer()
+
+	while(imageTransfer.phasePresent() && imageTransfer.phase() == ImageTransferPhase.INITIALIZING){
+		log.debug("이미지 업로드 상태확인 ... ${imageTransfer.phase()} ")
+		Thread.sleep(1000)
+	}
+
+	val imageTransferService = this.srvImageTransfer(imageTransfer.id())
+	val transferUrl = imageTransfer.transferUrl()
+	if(transferUrl == null || transferUrl.isEmpty()) throw ErrorPattern.UNKNOWN.toError() // 추가해야함
+
+
+
+	true
+}.onSuccess {
+	Term.DISK.logSuccess("파일 업로드")
+}.onFailure {
+	Term.DISK.logFail("파일 업로드")
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.imageSend(file: MultipartFile, imageTransferService: ImageTransferService): Boolean {
+	System.setProperty("sun.net.http.allowRestrictedHeaders", "true")
+
+	val url = URL(imageTransferService.get().send().imageTransfer().transferUrl())
+	val httpsConn: HttpsURLConnection = url.openConnection() as HttpsURLConnection
+	httpsConn.requestMethod = "PUT"
+	httpsConn.setRequestProperty("Content-Length", file.size.toString())
+	httpsConn.setFixedLengthStreamingMode(file.size) // 메모리 사용 최적화
+	httpsConn.doOutput = true // 서버에 데이터를 보낼수 있게 설정
+	httpsConn.connect()
+
+	// 버퍼 크기 설정 (128KB)
+	val bufferSize = 131072
+		BufferedInputStream(file.inputStream, bufferSize).use { bufferedInputStream ->
+			BufferedOutputStream(
+				httpsConn.outputStream, bufferSize
+			).use { bufferedOutputStream ->
+				val buffer = ByteArray(bufferSize)
+				var bytesRead: Int
+				while ((bufferedInputStream.read(buffer).also { bytesRead = it }) != -1) {
+					bufferedOutputStream.write(buffer, 0, bytesRead)
+				}
+				bufferedOutputStream.flush()
+				imageTransferService.finalize_().send() // image 전송 완료
+				httpsConn.disconnect()
+
+				val imageTransfer = imageTransferService.get().send().imageTransfer()
+				log.debug("phase() : {}", imageTransfer.phase())
+				return true
+			}
+		}
+			httpsConn?.disconnect()
+
+}
+
 
 /**
  * [Connection.expectDiskStatus]
  * 가상머신 생성 - 디스크 생성 상태확인
  *
- * @param diskService
+ * @param diskId
  * @param expectStatus
  * @param interval
  * @param timeout

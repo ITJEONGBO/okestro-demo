@@ -6,8 +6,6 @@ import com.itinfo.itcloud.model.*
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.response.Res
-import com.itinfo.itcloud.model.network.NetworkVo
-import com.itinfo.itcloud.model.network.toNetworkVos
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.model.storage.*
 import com.itinfo.itcloud.service.BaseService
@@ -27,9 +25,7 @@ import org.ovirt.engine.sdk4.types.DiskProfile
 import org.ovirt.engine.sdk4.types.DiskContentType
 import org.ovirt.engine.sdk4.types.DiskBackup
 import org.ovirt.engine.sdk4.types.DiskFormat
-import org.ovirt.engine.sdk4.types.Cluster
 import org.ovirt.engine.sdk4.types.Permission
-import org.ovirt.engine.sdk4.types.Network
 import org.ovirt.engine.sdk4.types.Host
 import org.ovirt.engine.sdk4.types.Event
 import org.ovirt.engine.sdk4.types.ImageTransferDirection
@@ -48,134 +44,27 @@ import kotlin.Error
 
 interface ItStorageService {
 	/**
-	 * [ItStorageService.findAllFromDataCenter]
-	 * 스토리지 도메인 목록
+	 * [ItStorageService.findAllStorageDomainsFromDataCenter]
+	 * 데이터센터 - 스토리지 도메인 목록
+	 *
+	 * 디스크 이미지 생성창
+	 * 디스크 생성 - 이미지 도메인 목록
+	 * 디스크 복사
 	 *
 	 * @param dataCenterId [String] 데이터센터 밑에 있는 도메인 목록
 	 * @return List<[StorageDomainVo]> 스토리지 도메인 목록
 	 */
 	@Throws(Error::class)
-	fun findAllFromDataCenter(dataCenterId: String): List<StorageDomainVo>
+	fun findAllStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo>
 	/**
-	 * [ItStorageService.findOne]
-	 * 스토리지 도메인
+	 * [ItStorageService.findStorageDomain]
+	 * 데이터센터 - 스토리지 도메인 정보
 	 *
 	 * @param storageDomainId [String]
 	 * @return [StorageDomainVo]
 	 */
 	@Throws(Error::class)
-	fun findOne(storageDomainId: String): StorageDomainVo
-	/**
-	 * [ItStorageService.findAllDisksFromStorageDomain]
-	 * 디스크 목록
-	 *
-	 * @param storageDomainId [String] 데이터센터 아이디 밑에 있는 디스크들
-	 * @return List<[DiskImageVo]> 디스크 정보 목록
-	 */
-	@Throws(Error::class)
-	fun findAllDisksFromStorageDomain(storageDomainId: String): List<DiskImageVo>
-
-	/**
-	 * [ItStorageService.findOneDisk]
-	 * 디스크 이미지 수정 창 & 디스크 이동 창
-	 *
-	 * @param diskId [String] 디스크 id
-	 * @return [DiskImageVo]
-	 */
-	@Throws(Error::class)
-	fun findOneDisk(diskId: String): DiskImageVo?
-	/**
-	 * [ItStorageService.findAllDataCenters]
-	 * 디스크 생성 - 이미지 DataCenter List
-	 *
-	 * @return List<[DataCenterVo]> ?
-	 */
-	@Deprecated("[ItDataCenterService.findAll]와 같은 코드")
-	@Throws(Error::class)
-	fun findAllDataCenters(): List<DataCenterVo>
-	/**
-	 * [ItStorageService.findAllStorageDomainsfromDataCenter]
-	 * 디스크 이미지 생성창
-	 * 디스크 생성 - 이미지 도메인 목록
-	 *
-	 * @param dataCenterId [String]
-	 * @return [List]<[StorageDomainVo]> 스토리지 도메인 목록
-	 */
-	@Throws(Error::class)
-	fun findAllStorageDomainsfromDataCenter(dataCenterId: String): List<StorageDomainVo>
-	/**
-	 * [ItStorageService.findAllDiskProfilesFromStorageDomain]
-	 * 디스크 생성 - 이미지프로파일 목록
-	 *
-	 * @param storageDomainId [String]
-	 * @return [List]<[DiskProfileVo]> 디스크 프로파일 목록
-	 */
-	@Throws(Error::class)
-	fun findAllDiskProfilesFromStorageDomain(storageDomainId: String): List<DiskProfileVo>
-	/**
-	 * [ItStorageService.addDiskImage]
-	 * 디스크 생성 (이미지)
-	 * 가상 디스크 생성 - Lun, 관리되는 블록 제외
-	 * ovirt에서 dc정보는 스토리지 도메인을 파악하기 위해있음
-	 *
-	 * @param image [DiskImageVo] 이미지 객체
-	 * @return [Res]<[Boolean]> 201 (create), 404(fail)
-	 */
-	@Throws(Error::class)
-	fun addDiskImage(image: DiskImageVo): DiskImageVo?
-
-	/**
-	 * [ItStorageService.updateDiskImage]
-	 * 디스트 이미지 수정
-	 *
-	 * @param image [DiskImageVo] 이미지 생성
-	 * @return [DiskImageVo]
-	 */
-	@Throws(Error::class)
-	fun updateDiskImage(image: DiskImageVo): DiskImageVo?
-	/**
-	 * [ItStorageService.deleteDiskImage]
-	 * 디스크 삭제
-	 *
-	 * @param diskId [String] 디스크ID
-	 * @return [Res]<[Boolean]> 성공여부
-	 */
-	@Throws(Error::class)
-	fun deleteDiskImage(diskId: String): Boolean
-	// TODO: 디스크 이동/복사 창은 setDiskImage()/setDomainList()/setDiskProfile 사용예정
-	/**
-	 * [ItStorageService.moveDisk]
-	 * 디스크 이동
-	 *
-	 * @param diskId [String] 디스크 아이디
-	 * @param storageDomainId [String] 도메인 아이디
-	 * @return [Res]<[Boolean]> 성공여부
-	 * - 200(success)
-	 * - 404(fail)
-	 */
-	@Throws(Error::class)
-	fun moveDisk(diskId: String, storageDomainId: String): Boolean
-	/**
-	 * [ItStorageService.copyDisk]
-	 * 디스크 복사
-	 *
-	 * @param diskImageVo [DiskImageVo] 디스크 객체
-	 * @return 200(success) 404(fail)
-	 */
-	@Throws(Error::class)
-	fun copyDisk(diskImageVo: DiskImageVo): Boolean
-	/**
-	 * [ItStorageService.uploadDisk]
-	 * 디스크 이미지 업로드
-	 * required: provisioned_size, alias, description, wipe_after_delete, shareable, backup, disk_profile.
-	 * @param file [MultipartFile] 업로드 할 파일
-	 * @param image [DiskImageVo] 이미지 객체
-	 *
-	 * @return [Res]<[Boolean]> 성공여부
-	 * @throws IOException
-	 */
-	@Throws(Error::class, IOException::class)
-	fun uploadDisk(file: MultipartFile?, image: DiskImageVo): Boolean
+	fun findStorageDomain(storageDomainId: String): StorageDomainVo
 	/**
 	 * [ItStorageService.findAllHostsFromDataCenter]
 	 * 도메인 생성 - 호스트 목록
@@ -189,42 +78,32 @@ interface ItStorageService {
 	 * [ItStorageService.addDomain]
 	 * 도메인 생성
 	 *
-	 * @param storageDomainVo [StorageDomainVo] 도메인 생성 Form
-	 * @return [Res]<[Boolean]> 성공여부
+	 * @param storageDomainVo [StorageDomainVo]
+	 * @return [StorageDomainVo]
 	 */
 	@Throws(Error::class)
-	fun addDomain(storageDomainVo: StorageDomainVo): Res<Boolean>
+	fun addDomain(storageDomainVo: StorageDomainVo): StorageDomainVo
 	/**
-	 * [ItStorageService.remove]
+	 * [ItStorageService.removeDomain]
 	 * 도메인 삭제
 	 *
 	 * @param storageDomainId [String] 도메인ID
-	 * @return [Res]<[Boolean]> 성공여부
+	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun remove(storageDomainId: String): Boolean
-
+	fun removeDomain(storageDomainId: String): Boolean
 	/**
-	 * [ItStorageService.findAllNetworksFromDataCenter]
-	 * 데이터센터 밑에 있는 네트워크 목록
+	 * [ItStorageService.findAllDisksFromStorageDomain]
+	 * 스토리지 도메인 - 디스크 목록
 	 *
-	 * @param dataCenterId [String] 데이터센터ID
-	 * @return List<[NetworkVo]> 네트워크 목록
+	 * @param storageDomainId [String] 스토리지 도메인 아이디 밑에 있는 디스크들
+	 * @return List<[DiskImageVo]> 디스크 정보 목록
 	 */
 	@Throws(Error::class)
-	fun findAllNetworksFromDataCenter(dataCenterId: String): List<NetworkVo>
-	/**
-	 * [ItStorageService.findAllClustersFromDataCenter]
-	 * 데이터센터 밑에 클러스터 목록
-	 *
-	 * @param dataCenterId [String] 데이터센터ID
-	 * @return List<[ClusterVo]> 클러스터 목록
-	 */
-	@Throws(Error::class)
-	fun findAllClustersFromDataCenter(dataCenterId: String): List<ClusterVo>
+	fun findAllDisksFromStorageDomain(storageDomainId: String): List<DiskImageVo>
 	/**
 	 * [ItStorageService.findAllPermissionsFromStorageDomain]
-	 * 데이터센터 - 권한
+	 * 스토리지도메인 - 권한
 	 *
 	 * @param storageDomainId [String] 도메인 ID
 	 * @return List<[PermissionVo]> 권한 목록
@@ -233,13 +112,173 @@ interface ItStorageService {
 	fun findAllPermissionsFromStorageDomain(storageDomainId: String): List<PermissionVo>
 	/**
 	 * [ItStorageService.findAllEventsFromStorageDomain]
-	 * 이벤트 목록
+	 * 스토리지도메인 - 이벤트
 	 *
 	 * @param storageDomainId [String] 도메인 ID
 	 * @return List<[EventVo]>
 	 */
 	@Throws(Error::class)
 	fun findAllEventsFromStorageDomain(storageDomainId: String): List<EventVo>
+
+	/**
+	 * [ItStorageService.findDisk]
+	 * 디스크 정보
+	 *
+	 * @param diskId [String] 디스크 id
+	 * @return [DiskImageVo]
+	 */
+	@Throws(Error::class)
+	fun findDisk(diskId: String): DiskImageVo?
+	/**
+	 * [ItStorageService.findAllDataCenters]
+	 * 디스크 생성 - 이미지 DataCenter List
+	 *
+	 * @return List<[DataCenterVo]>
+	 */
+	@Deprecated("[ItDataCenterService.findAll]와 같은 코드")
+	@Throws(Error::class)
+	fun findAllDataCenters(): List<DataCenterVo>
+	/**
+	 * [ItStorageService.findAllStorageDomainsfromDataCenter]
+	 * 디스크 이미지 생성창
+	 * 디스크 생성 - 이미지 도메인 목록
+	 * 디스크 복사
+	 *
+	 * @param dataCenterId [String]
+	 * @return [List]<[StorageDomainVo]> 스토리지 도메인 목록
+	 */
+	@Deprecated("[ItStorageService.findAllStorageDomainsfromDataCenter] 겹침")
+	@Throws(Error::class)
+	fun findAllStorageDomainsfromDataCenter(dataCenterId: String): List<StorageDomainVo>
+	/**
+	 * [ItStorageService.findAllDiskProfilesFromStorageDomain]
+	 * 디스크 생성 - 이미지프로파일 목록
+	 * 디스크 복사
+	 *
+	 * @param storageDomainId [String]
+	 * @return [List]<[DiskProfileVo]> 디스크 프로파일 목록
+	 */
+	@Throws(Error::class)
+	fun findAllDiskProfilesFromStorageDomain(storageDomainId: String): List<DiskProfileVo>
+	/**
+	 * [ItStorageService.addDisk]
+	 * 디스크 생성 (이미지)
+	 * 가상 디스크 생성 - Lun, 관리되는 블록 제외
+	 * ovirt에서 dc정보는 스토리지 도메인을 파악하기 위해있음
+	 *
+	 * @param image [DiskImageVo] 이미지 객체
+	 * @return [Res]<[Boolean]> 201 (create), 404(fail)
+	 */
+	@Throws(Error::class)
+	fun addDisk(image: DiskImageVo): DiskImageVo?
+	/**
+	 * [ItStorageService.updateDisk]
+	 * 디스트 수정
+	 *
+	 * @param image [DiskImageVo] 이미지 생성
+	 * @return [DiskImageVo]
+	 */
+	@Throws(Error::class)
+	fun updateDisk(image: DiskImageVo): DiskImageVo?
+	/**
+	 * [ItStorageService.removeDisk]
+	 * 디스크 삭제
+	 *
+	 * @param diskId [String] 디스크 ID
+	 * @return [Boolean] 성공여부
+	 */
+	@Throws(Error::class)
+	fun removeDisk(diskId: String): Boolean
+	/**
+	 * [ItStorageService.findAllStorageDomainsFromDisk]
+	 * 디스크 삭제
+	 * TODO 디스크 이동시 대상은 디스크가 가지고 있는 스토리지 도메인은 목록에서 제외
+	 *
+	 * @param diskId [String] 디스크 ID
+	 * @return List<[StorageDomainVo]> 성공여부
+	 */
+	@Throws(Error::class)
+	fun findAllStorageDomainsFromDisk(diskId: String): List<StorageDomainVo>
+	/**
+	 * [ItStorageService.moveDisk]
+	 * 디스크 이동
+	 *
+	 * @param diskId [String] 디스크 아이디
+	 * @param storageDomainId [String] 도메인 아이디
+	 * @return [Boolean] 성공여부
+	 */
+	@Throws(Error::class)
+	fun moveDisk(diskId: String, storageDomainId: String): Boolean
+	/**
+	 * [ItStorageService.copyDisk]
+	 * 디스크 복사
+	 *
+	 * @param diskImageVo [DiskImageVo] 디스크 객체
+	 * @return [Boolean]
+	 */
+	@Throws(Error::class)
+	fun copyDisk(diskImageVo: DiskImageVo): Boolean
+	/**
+	 * [ItStorageService.uploadDisk]
+	 * 디스크 이미지 업로드
+	 * required: provisioned_size, alias, description, wipe_after_delete, shareable, backup, disk_profile.
+	 * @param file [MultipartFile] 업로드 할 파일
+	 * @param image [DiskImageVo] 이미지 객체
+	 *
+	 * @return [Boolean] 성공여부
+	 * @throws IOException
+	 */
+	@Throws(Error::class, IOException::class)
+	fun uploadDisk(file: MultipartFile, image: DiskImageVo): Boolean
+
+	/**
+	 * [ItStorageService.findAllVmsFromDisk]
+	 * 스토리지도메인 - 가상머신
+	 *
+	 * @param diskId [String] 도메인 ID
+	 * @return List<[VmVo]> 가상머신
+	 */
+	@Throws(Error::class)
+	fun findAllVmsFromDisk(diskId: String): List<VmVo>
+	/**
+	 * [ItStorageService.findAllPermissionsFromDisk]
+	 * 스토리지도메인 - 권한
+	 *
+	 * @param diskId [String] 도메인 ID
+	 * @return List<[PermissionVo]> 권한 목록
+	 */
+	@Throws(Error::class)
+	fun findAllPermissionsFromDisk(diskId: String): List<PermissionVo>
+
+//	/**
+//	 * [ItStorageService.findAllDisksFromDataCenter]
+//	 * 데이터센터 스토리지도메인 - 디스크 목록
+//	 *
+//	 * @param dataCenterId [String] 데이터센터 아이디 밑에 있는 디스크들
+//	 * @return List<[DiskImageVo]> 디스크 정보 목록
+//	 */
+//	@Throws(Error::class)
+//	fun findAllDisksFromDataCenter(dataCenterId: String): List<DiskImageVo>
+//	/**
+//	 * [ItStorageService.findAllNetworksFromDataCenter]
+//	 * 데이터센터 밑에 있는 네트워크 목록
+//	 *
+//	 * @param dataCenterId [String] 데이터센터 ID
+//	 * @return List<[NetworkVo]> 네트워크 목록
+//	 *//*
+//	@Throws(Error::class)
+//	fun findAllNetworksFromDataCenter(dataCenterId: String): List<NetworkVo>
+//	*//**
+//	 * [ItStorageService.findAllClustersFromDataCenter]
+//	 * 데이터센터 밑에 클러스터 목록
+//	 *
+//	 * @param dataCenterId [String] 데이터센터ID
+//	 * @return List<[ClusterVo]> 클러스터 목록
+//	 *//*
+//	@Throws(Error::class)
+//	fun findAllClustersFromDataCenter(dataCenterId: String): List<ClusterVo>
+//*/
+
 //region:나중
 /*
 	LunCreateVo setDiskLun(String dcId);	 // 디스크-lun: 생성 창
@@ -259,8 +298,9 @@ class StorageServiceImpl(
 ): BaseService(), ItStorageService {
 
 	@Throws(Error::class)
-	override fun findAllFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
-		log.debug("findAllFromDataCenter ... dcId: $dataCenterId")
+	override fun findAllStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
+		log.debug("findAllStorageDomainsFromDataCenter ... dcId: $dataCenterId")
+		conn.findDataCenter(dataCenterId).getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toError()
 		val res: List<StorageDomain> =
 			conn.findAllStorageDomains()
 				.getOrDefault(listOf())
@@ -268,187 +308,15 @@ class StorageServiceImpl(
 		return res.toStorageDomainVos(conn)
 	}
 
-	override fun findOne(storageDomainId: String): StorageDomainVo {
-		TODO("Not yet implemented")
-	}
-
 	@Throws(Error::class)
-	override fun findAllDisksFromStorageDomain(storageDomainId: String): List<DiskImageVo> {
-		log.info("findAllDisksFromDataCenter ... dataCenterId: {}", storageDomainId)
-		val disks: List<Disk> =
-			conn.findAllDisksFromStorageDomain(storageDomainId)
-				.getOrDefault(listOf())
-		return disks.toDiskImageVos(conn)
+	override fun findStorageDomain(storageDomainId: String): StorageDomainVo {
+		log.info("findStorageDomain... ")
+		val res: StorageDomain =
+			conn.findStorageDomain(storageDomainId)
+				.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toError()
+		return res.toStorageDomainVo(conn)
 	}
 
-	@Throws(Error::class)
-	override fun findOneDisk(diskId: String): DiskImageVo? {
-		log.info("getDiskImage ... diskId: $diskId")
-		val disk: Disk? = conn.findDisk(diskId)
-			.getOrNull()
-		return disk?.toDiskImageVo(conn)
-	}
-
-	@Deprecated("[ItDataCenterService.findAll]와 같은 코드")
-	@Throws(Error::class)
-	override fun findAllDataCenters(): List<DataCenterVo> {
-		log.info("setDatacenterList ... ")
-		val dataCentersUp: List<DataCenter> =
-			conn.findAllDataCenters()
-				.getOrDefault(listOf())
-				.filter { it.status() == DataCenterStatus.UP }
-
-		return dataCentersUp.toDataCenterIdNames()
-	}
-
-	@Throws(Error::class)
-	override fun findAllStorageDomainsfromDataCenter(dataCenterId: String): List<StorageDomainVo> {
-		log.info("findAllStorageDomainsfromDataCenter ... dataCenterId: $dataCenterId")
-		val storageDomains: List<StorageDomain> =
-			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
-				.getOrDefault(listOf())
-		return storageDomains.toStorageDomainIdNames()
-	}
-
-	@Throws(Error::class)
-	override fun findAllDiskProfilesFromStorageDomain(storageDomainId: String): List<DiskProfileVo> {
-		log.info("findAllDiskProfilesFromStorageDomain ... domainId: $storageDomainId")
-		val diskProfiles: List<DiskProfile> =
-			conn.findAllDiskProfilesFromStorageDomain(storageDomainId)
-				.getOrDefault(listOf())
-		return diskProfiles.toDiskProfileVos()
-	}
-
-	@Throws(Error::class)
-	override fun addDiskImage(image: DiskImageVo): DiskImageVo? {
-		log.info("addDiskImage ... image: $image")
-		val res: Disk? =
-			conn.addDisk(image.toAddDiskBuilder())
-				.getOrNull()
-		return res?.toDiskImageVo(conn)
-	}
-
-
-	@Throws(Error::class)
-	override fun updateDiskImage(image: DiskImageVo): DiskImageVo? {
-		log.info("updateDiskImage ... image: $image")
-		val res: Disk? =
-			conn.updateDisk(image.toEditDiskBuilder())
-				.getOrNull()
-		return res?.toDiskImageVo(conn)
-	}
-
-	@Throws(Error::class)
-	override fun deleteDiskImage(diskId: String): Boolean {
-		log.info("deleteDiskImage ... diskId: $diskId")
-		val result: Result<Boolean> =
-			conn.removeDisk(diskId)
-		return result.isSuccess
-	}
-
-	@Throws(Error::class)
-	override fun moveDisk(diskId: String, storageDomainId: String): Boolean {
-		log.info("moveDisk ... diskId: $diskId, storageDomainId: $storageDomainId")
-		val result: Result<Boolean> =
-			conn.moveDisk(diskId, storageDomainId)
-		return result.isSuccess
-	}
-
-
-	@Throws(Error::class)
-	override fun copyDisk(diskVo: DiskImageVo): Boolean {
-		log.info("copyDisk ... diskVo: $diskVo")
-		val result: Result<Boolean> =
-			conn.copyDisk(diskVo.id, diskVo.storageDomainVo.id)
-		return result.isSuccess
-	}
-
-
-	// (화면표시) 파일 선택시 파일에 있는 포맷, 컨텐츠(파일 확장자로 칭하는건지), 크기 출력
-	//		   파일 크기가 자동으로 디스크 옵션에 추가, 파일 명칭이 파일의 이름으로 지정됨 (+설명)
-	/**
-	 * [ItStorageService.uploadDisk]
-	 * 디스크 이미지 업로드
-	 * required: provisioned_size, alias, description, wipe_after_delete, shareable, backup, disk_profile.
-	 * @param file [MultipartFile] 업로드 할 파일
-	 * @param image [DiskImageVo] 이미지 객체
-	 * 
-	 * @return [Res]<[Boolean]> 성공여부
-	 * @throws IOException
-	 */
-	@Throws(Error::class, IOException::class)
-	override fun uploadDisk(file: MultipartFile?, image: DiskImageVo): Boolean {
-		val disksService = system.disksService()
-		val imageTransfersService = system.imageTransfersService() // 이미지 추가를 위한 서비스
-
-		if (file?.isEmpty == true)
-			throw IOException("파일이 없습니다.")
-		
-		try {
-			log.debug(
-				"Total Memory : {}, Free Memory : {}, Max Memory : {}",
-				Runtime.getRuntime().totalMemory(),
-				Runtime.getRuntime().freeMemory(),
-				Runtime.getRuntime().maxMemory()
-			)
-			log.info("파일: {}, size: {}, 타입: {}", file?.originalFilename, file?.size, file?.contentType)
-
-			// 우선 입력된 디스크 정보를 바탕으로 디스크 추가
-			val disk = disksService.add().disk(file?.let { createDisk(image, it.size) }).send().disk()
-			val diskService = disksService.diskService(disk.id())
-
-			// 디스크 ok 상태여야 이미지 업로드 가능
-			if (conn.expectDiskStatus(disk.id(), DiskStatus.OK, 30000)) {
-				log.info("디스크 생성 성공")
-			} else {
-				log.error("디스크 대기시간 초과")
-				return false
-			}
-
-			// 이미지를 저장하거나 관리하는 컨테이너,.이미지의 생성, 삭제, 수정 등의 작업을 지원
-			val imageContainer = ImageContainer()
-			imageContainer.id(disk.id())
-
-			// 이미지 전송 작업(업로드나 다운로드)을 관리하는 컨테이너. 전송 상태, 진행률, 오류 처리 등의 기능을 포함.
-			val imageTransferContainer = ImageTransferContainer()
-			imageTransferContainer.direction(ImageTransferDirection.UPLOAD)
-			imageTransferContainer.image(imageContainer)
-
-			// 이미지 전송
-			val imageTransfer = imageTransfersService.add().imageTransfer(imageTransferContainer).send().imageTransfer()
-			while (imageTransfer.phase() == ImageTransferPhase.INITIALIZING) {
-				log.debug("이미지 업로드 가능상태 확인 {}", imageTransfer.phase())
-				Thread.sleep(1000)
-			}
-
-			val imageTransferService = imageTransfersService.imageTransferService(imageTransfer.id())
-
-			val transferUrl = imageTransfer.transferUrl()
-			if (transferUrl == null || transferUrl.isEmpty()) {
-				log.warn("transferUrl 없음")
-				return false
-			} else {
-				log.debug("imageTransfer.transferUrl(): {}", transferUrl)
-				if (file != null) {
-					imageSend(imageTransferService, file)
-				}
-			}
-			return true
-		} catch (e: Exception) {
-			log.error("이미지 업로드 실패 ... reason: {}", e.localizedMessage)
-			return false
-		}
-	}
-
-
-	// 도메인 생성 창 - datacenter List, host List
-	/**
-	 * [ItStorageService.findAllHostsFromDataCenter]
-	 * 도메인 생성 창
-	 * 
-	 * @param dataCenterId [String] 데이터센터 밑에 있는 호스트
-	 * @return 호스트 목록
-	 */
 	@Throws(Error::class)
 	override fun findAllHostsFromDataCenter(dataCenterId: String): List<IdentifiedVo> {
 		log.debug("setHostList ... dataCenterId: $dataCenterId")
@@ -462,81 +330,74 @@ class StorageServiceImpl(
 		return hosts.fromHostsToIdentifiedVos()
 	}
 
+
 	// requires: name, type, host, and storage attributes. Identify the host attribute with the id or name attributes.
 	// To add a new storage domain with specified name, type, storage.type, storage.address, and storage.path,
 	// and using a host with an id 123, send a request like this
-
 	@Throws(Error::class)
-	override fun addDomain(storageDomainVo: StorageDomainVo): Res<Boolean> {
-		val storageDomainsService = system.storageDomainsService()
-		val dataCenterService = system.dataCentersService().dataCenterService(storageDomainVo.dataCenterVo.id)
-		// TODO: storageDomain서비스에서 한번 넣고, DataCenter의 attachedStorageDoamin서비스에서 한번 더 생성하는지 모르겠음
-		try {
-			var storageDomain = storageDomainsService.add().storageDomain(storageDomainVo.toStorageDomainBuilder(conn)).send().storageDomain()
-			val storageDomainService = storageDomainsService.storageDomainService(storageDomain.id())
-
-			do {
-				Thread.sleep(2000L)
-				storageDomain = storageDomainService.get().send().storageDomain()
-			} while (storageDomain.status() != StorageDomainStatus.UNATTACHED)
-
-			val asdsService = dataCenterService.storageDomainsService()
-			val asdService = asdsService.storageDomainService(storageDomain.id())
-			try {
-				asdsService.add().storageDomain(StorageDomainBuilder().id(storageDomain.id())).send()
-//					.dataCenter(new DataCenterBuilder().id(dcVo.getDatacenterId()).build())
-			} catch (var18: java.lang.Exception) {
-				var18.printStackTrace()
-			}
-			do {
-				Thread.sleep(2000L)
-				storageDomain = asdService.get().send().storageDomain()
-			} while (storageDomain.status() != StorageDomainStatus.ACTIVE)
-
-			return Res.successResponse()
-		} catch (e: Exception) {
-			log.error(e.message)
-			return Res.fail(e)
-		}
+	override fun addDomain(storageDomainVo: StorageDomainVo): StorageDomainVo {
+		log.info("addDomain ... ")
+		val res: StorageDomain =
+			conn.addStorageDomain(storageDomainVo.toAddStorageDomainBuilder(conn))
+				.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_VO_INVALID.toError()
+		return res.toStorageDomainVo(conn)
 	}
 
-	/**
-	 * [ItStorageService.remove]
-	 * 도메인 삭제
-	 * 
-	 * @param storageDomainId [String] 도메인ID
-	 * @return [Res]<[Boolean]> 성공여부
-	 */
+//		val storageDomainsService = system.storageDomainsService()
+//		val dataCenterService = system.dataCentersService().dataCenterService(storageDomainVo.dataCenterVo.id)
+//		// TODO: storageDomain서비스에서 한번 넣고, DataCenter의 attachedStorageDoamin서비스에서 한번 더 생성하는지 모르겠음
+//		try {
+//			var storageDomain = storageDomainsService.add().storageDomain(storageDomainVo.toStorageDomainBuilder(conn)).send().storageDomain()
+//			val storageDomainService = storageDomainsService.storageDomainService(storageDomain.id())
+//
+//			do {
+//				Thread.sleep(2000L)
+//				storageDomain = storageDomainService.get().send().storageDomain()
+//			} while (storageDomain.status() != StorageDomainStatus.UNATTACHED)
+//
+//			val asdsService = dataCenterService.storageDomainsService()
+//			val asdService = asdsService.storageDomainService(storageDomain.id())
+//			try {
+//				asdsService.add().storageDomain(StorageDomainBuilder().id(storageDomain.id())).send()
+////					.dataCenter(new DataCenterBuilder().id(dcVo.getDatacenterId()).build())
+//			} catch (var18: java.lang.Exception) {
+//				var18.printStackTrace()
+//			}
+//			do {
+//				Thread.sleep(2000L)
+//				storageDomain = asdService.get().send().storageDomain()
+//			} while (storageDomain.status() != StorageDomainStatus.ACTIVE)
+//
+//			return true
+//		}
+
+
 	@Throws(Error::class)
-	override fun remove(storageDomainId: String): Boolean {
+	override fun removeDomain(storageDomainId: String): Boolean {
 		log.info("deleteDomain ... domainId: {}", storageDomainId)
-		val storageDomain: StorageDomain = conn.findStorageDomain(storageDomainId).getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toException()
+		val storageDomain: StorageDomain =
+			conn.findStorageDomain(storageDomainId)
+				.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toException()
 		val dataCenterId: String = storageDomain.dataCenters()[0].id()
 		val res: Result<Boolean> =
 			conn.removeAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId)
 		return res.isSuccess
 	}
 
-	override fun findAllNetworksFromDataCenter(dataCenterId: String): List<NetworkVo> {
-		log.info("findNetworksInDc ... dcId: {}", dataCenterId)
-		val networks: List<Network> =
-			conn.findAllNetworksFromFromDataCenter(dataCenterId)
-				.getOrDefault(listOf())
-		return networks.toNetworkVos(conn)
-	}
-
 	@Throws(Error::class)
-	override fun findAllClustersFromDataCenter(dataCenterId: String): List<ClusterVo> {
-		log.info("findAllClustersFromDataCenter ... dataCenterId: {}", dataCenterId)
-		val clusters: List<Cluster> =
-			conn.findAllClustersFromDataCenter(dataCenterId).
-				getOrDefault(listOf())
-		return clusters.toClusterVos(conn)
+	override fun findAllDisksFromStorageDomain(storageDomainId: String): List<DiskImageVo> {
+		log.info("findAllDisksFromStorageDomain ... storageDomainId: {}", storageDomainId)
+		conn.findStorageDomain(storageDomainId).getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toException()
+		val disks: List<Disk> =
+			conn.findAllDisksFromStorageDomain(storageDomainId)
+				.getOrDefault(listOf())
+		return disks.toDiskImageVos(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findAllPermissionsFromStorageDomain(storageDomainId: String): List<PermissionVo> {
 		log.info("findPermissions ... storageDomainId: {}", storageDomainId)
+		conn.findStorageDomain(storageDomainId).getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toException()
 		val permissionList: List<Permission> =
 			conn.findAllPermissionsFromStorageDomain(storageDomainId)
 				.getOrDefault(listOf())
@@ -546,53 +407,212 @@ class StorageServiceImpl(
 	@Throws(Error::class)
 	override fun findAllEventsFromStorageDomain(storageDomainId: String): List<EventVo> {
 		log.info("findAllEventsFromStorageDomain ... storageDomainId: {}", storageDomainId)
+		val storageDomain: StorageDomain =
+			conn.findStorageDomain(storageDomainId).getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toError()
 		val events: List<Event> =
 			conn.findAllEvents()
 				.getOrDefault(listOf())
-		// TODO: 뭐해야 하는지 작성
-/*
-		return eventList.filter { event ->
-				event.dataCenterPresent() &&
-				(event.dataCenter().idPresent() && event.dataCenter().id().equals(id) || (event.dataCenter().namePresent() && event.dataCenter().name().equals(dcName)) )
-		}.map { event ->
-			EventVo.builder()
-							.severity(TypeExtKt.findLogSeverity(event.severity()))   //상태
-							.time(sdf.format(event.time()))
-							.message(event.description())
-							.relationId(event.correlationIdPresent() ? event.correlationId() : null)
-							.source(event.origin())
-							.build()
-		}
-*/
+				.filter {event ->
+					event.storageDomainPresent() &&
+						(event.storageDomain().idPresent() && event.storageDomain().id().equals(storageDomainId) || (event.storageDomain().namePresent() && event.storageDomain().name().equals(storageDomain.name())) )
+				}
 		return events.toEventVos()
 	}
 
 
-
-
-	/**
-	 * [StorageServiceImpl.createDisk]
-	 * 디스크 생성
-	 *
-	 * @param image [DiskImageVo]
-	 * @param fileSize [Long]
-	 * @return [Disk]
-	 */
-	private fun createDisk(image: DiskImageVo, fileSize: Long): Disk {
-		log.debug("createDisk ... ")
-		return DiskBuilder()
-			.provisionedSize(fileSize)
-			.alias(image.alias)
-			.description(image.description)
-			.storageDomains(*arrayOf(StorageDomainBuilder().id(image.storageDomainVo.id).build()))
-			.diskProfile(DiskProfileBuilder().id(image.diskProfileVo.id).build())
-			.wipeAfterDelete(image.wipeAfterDelete)
-			.shareable(image.sharable)
-			.backup(DiskBackup.NONE) // 증분백업 되지 않음
-			.format(DiskFormat.RAW) // 이미지 업로드는 raw형식만 가능
-			.contentType(DiskContentType.ISO) // iso 업로드
-			.build()
+	@Throws(Error::class)
+	override fun findDisk(diskId: String): DiskImageVo? {
+		log.info("findDisk ... diskId: $diskId")
+		val disk: Disk =
+			conn.findDisk(diskId)
+				.getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toException()
+		return disk.toDiskImageVo(conn)
 	}
+
+	@Deprecated("[ItDataCenterService.findAll]와 같은 코드")
+	@Throws(Error::class)
+	override fun findAllDataCenters(): List<DataCenterVo> {
+		log.info("findAllDataCenters ... ")
+		val dataCentersUp: List<DataCenter> =
+			conn.findAllDataCenters()
+				.getOrDefault(listOf())
+				.filter { it.status() == DataCenterStatus.UP }
+		return dataCentersUp.toDataCenterIdNames()
+	}
+
+	@Deprecated("[ItStorageService.findAllStorageDomainsfromDataCenter] 겹침")
+	@Throws(Error::class)
+	override fun findAllStorageDomainsfromDataCenter(dataCenterId: String): List<StorageDomainVo> {
+		log.info("findAllStorageDomainsfromDataCenter ... dataCenterId: $dataCenterId")
+
+		val storageDomains: List<StorageDomain> =
+			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
+				.getOrDefault(listOf())
+		return storageDomains.toStorageDomainIdNames()
+	}
+
+	@Throws(Error::class)
+	override fun findAllDiskProfilesFromStorageDomain(storageDomainId: String): List<DiskProfileVo> {
+		log.info("findAllDiskProfilesFromStorageDomain ... domainId: $storageDomainId")
+		val res: List<DiskProfile> =
+			conn.findAllDiskProfilesFromStorageDomain(storageDomainId)
+				.getOrDefault(listOf())
+		return res.toDiskProfileVos()
+	}
+
+	@Throws(Error::class)
+	override fun addDisk(image: DiskImageVo): DiskImageVo? {
+		log.info("addDisk ... image: $image")
+		val res: Disk =
+			conn.addDisk(image.toAddDiskBuilder())
+				.getOrNull() ?: throw ErrorPattern.DISK_VO_INVALID.toError()
+		return res.toDiskImageVo(conn)
+	}
+
+
+	@Throws(Error::class)
+	override fun updateDisk(image: DiskImageVo): DiskImageVo? {
+		log.info("updateDisk ... image: $image")
+		val res: Disk =
+			conn.updateDisk(image.toEditDiskBuilder())
+				.getOrNull() ?: throw ErrorPattern.DISK_VO_INVALID.toError()
+		return res.toDiskImageVo(conn)
+	}
+
+	@Throws(Error::class)
+	override fun removeDisk(diskId: String): Boolean {
+		log.info("removeDisk ... diskId: $diskId")
+		val res: Result<Boolean> =
+			conn.removeDisk(diskId)
+		return res.isSuccess
+	}
+
+	override fun findAllStorageDomainsFromDisk(diskId: String): List<StorageDomainVo> {
+		TODO("Not yet implemented")
+	}
+
+	@Throws(Error::class)
+	override fun moveDisk(diskId: String, storageDomainId: String): Boolean {
+		log.info("moveDisk ... diskId: $diskId, storageDomainId: $storageDomainId")
+		val res: Result<Boolean> =
+			conn.moveDisk(diskId, storageDomainId)
+		return res.isSuccess
+	}
+
+
+	@Throws(Error::class)
+	override fun copyDisk(diskImageVo: DiskImageVo): Boolean {
+		log.info("copyDisk ... diskVo: $diskImageVo")
+		val res: Result<Boolean> =
+			conn.copyDisk(diskImageVo.id, diskImageVo.storageDomainVo.id)
+		return res.isSuccess
+	}
+
+
+	// (화면표시) 파일 선택시 파일에 있는 포맷, 컨텐츠(파일 확장자로 칭하는건지), 크기 출력
+	//		   파일 크기가 자동으로 디스크 옵션에 추가, 파일 명칭이 파일의 이름으로 지정됨 (+설명)
+	// 디스크 이미지 업로드
+	// required: provisioned_size, alias, description, wipe_after_delete, shareable, backup, disk_profile.
+	//
+	override fun uploadDisk(file: MultipartFile, image: DiskImageVo): Boolean {
+		log.info("uploadDisk ... ")
+		if(file.isEmpty) throw ErrorPattern.FILE_NOT_FOUND.toError()
+
+		val res: Res<Boolean> =
+			conn.uploadDisk(file, image.toUploadDiskBuilder(file.size))
+				.getOrNull()
+
+
+//		val disksService = system.disksService()
+//		val imageTransfersService = system.imageTransfersService() // 이미지 추가를 위한 서비스
+//		try {
+//			log.debug(
+//				"Total Memory : {}, Free Memory : {}, Max Memory : {}",
+//				Runtime.getRuntime().totalMemory(),
+//				Runtime.getRuntime().freeMemory(),
+//				Runtime.getRuntime().maxMemory()
+//			)
+//			log.info("파일: {}, size: {}, 타입: {}", file?.originalFilename, file?.size, file?.contentType)
+//
+//			// 우선 입력된 디스크 정보를 바탕으로 디스크 추가
+//			val disk = disksService.add().disk(file?.let { createDisk(image, it.size) }).send().disk()
+//			val diskService = disksService.diskService(disk.id())
+//
+//			// 디스크 ok 상태여야 이미지 업로드 가능
+//			if (conn.expectDiskStatus(disk.id(), DiskStatus.OK, 30000)) {
+//				log.info("디스크 생성 성공")
+//			} else {
+//				log.error("디스크 대기시간 초과")
+//				return false
+//			}
+//
+//			// 이미지를 저장하거나 관리하는 컨테이너,.이미지의 생성, 삭제, 수정 등의 작업을 지원
+//			val imageContainer = ImageContainer()
+//			imageContainer.id(disk.id())
+//
+//			// 이미지 전송 작업(업로드나 다운로드)을 관리하는 컨테이너. 전송 상태, 진행률, 오류 처리 등의 기능을 포함.
+//			val imageTransferContainer = ImageTransferContainer()
+//			imageTransferContainer.direction(ImageTransferDirection.UPLOAD)
+//			imageTransferContainer.image(imageContainer)
+//
+//			// 이미지 전송
+//			val imageTransfer = imageTransfersService.add().imageTransfer(imageTransferContainer).send().imageTransfer()
+//			while (imageTransfer.phase() == ImageTransferPhase.INITIALIZING) {
+//				log.debug("이미지 업로드 가능상태 확인 {}", imageTransfer.phase())
+//				Thread.sleep(1000)
+//			}
+//
+//			val imageTransferService = imageTransfersService.imageTransferService(imageTransfer.id())
+//
+//			val transferUrl = imageTransfer.transferUrl()
+//			if (transferUrl == null || transferUrl.isEmpty()) {
+//				log.warn("transferUrl 없음")
+//				return false
+//			} else {
+//				log.debug("imageTransfer.transferUrl(): {}", transferUrl)
+//				if (file != null) {
+//					imageSend(imageTransferService, file)
+//				}
+//			}
+//			return true
+//		} catch (e: Exception) {
+//			log.error("이미지 업로드 실패 ... reason: {}", e.localizedMessage)
+//			return false
+//		}
+//	}
+
+	override fun findAllVmsFromDisk(diskId: String): List<VmVo> {
+		TODO("Not yet implemented")
+	}
+
+	override fun findAllPermissionsFromDisk(diskId: String): List<PermissionVo> {
+		TODO("Not yet implemented")
+	}
+
+
+//	/**
+//	 * [StorageServiceImpl.createDisk]
+//	 * 디스크 생성
+//	 *
+//	 * @param image [DiskImageVo]
+//	 * @param fileSize [Long]
+//	 * @return [Disk]
+//	 */
+//	private fun createDisk(image: DiskImageVo, fileSize: Long): Disk {
+//		log.debug("createDisk ... ")
+//		return DiskBuilder()
+//			.provisionedSize(fileSize)
+//			.alias(image.alias)
+//			.description(image.description)
+//			.storageDomains(*arrayOf(StorageDomainBuilder().id(image.storageDomainVo.id).build()))
+//			.diskProfile(DiskProfileBuilder().id(image.diskProfileVo.id).build())
+//			.wipeAfterDelete(image.wipeAfterDelete)
+//			.shareable(image.sharable)
+//			.backup(DiskBackup.NONE) // 증분백업 되지 않음
+//			.format(DiskFormat.RAW) // 이미지 업로드는 raw형식만 가능
+//			.contentType(DiskContentType.ISO) // iso 업로드
+//			.build()
+//	}
 
 
 	/**
@@ -676,6 +696,58 @@ class StorageServiceImpl(
 			log.error("something went WRONG ... reason: ${e.localizedMessage}")
 		}
 	}
+
+
+
+
+
+//	@Throws(Error::class)
+//	override fun findAllDisksFromDataCenter(dataCenterId: String): List<DiskImageVo> {
+//		log.info("findAllDisksFromDataCenter ... dataCenterId: {}", dataCenterId)
+//		conn.findDataCenter(dataCenterId).getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toError()
+//
+//		val storageDomains: List<StorageDomain> =
+//			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
+//				.getOrDefault(listOf())
+//
+//		val disks: List<Disk> = storageDomains.flatMap { sd ->
+//			conn.findAllAttachedStorageDomainDisksFromDataCenter(dataCenterId, sd.id())
+//				.getOrDefault(listOf())
+//		}
+//		return disks.toDiskImageVos(conn)
+//		// 연결대상때문에 필요한듯 == vm의 diskattachment에 disk id가 같은지 비교. 근데 전체 vms를 다 뒤져야함 => 복잡
+//		return storageDomains.flatMap { sd ->
+//			conn.findAllAttachedStorageDomainDisksFromDataCenter(dataCenterId, sd.id())
+//				.getOrDefault(listOf())
+////				.map { disk ->
+////					val isAttached = conn.findAllVms()
+////						.getOrDefault(listOf())
+////						.any {
+////							conn.findAllDiskAttachmentsFromVm(it.id())
+////								.getOrDefault(listOf())
+////								.any { d -> d.id() == disk.id() }
+////						}
+////					disk.toDiskImageVo(conn)
+////				}
+//		}
+//	}
+	//	override fun findAllNetworksFromDataCenter(dataCenterId: String): List<NetworkVo> {
+//		log.info("findNetworksInDc ... dcId: {}", dataCenterId)
+//		val networks: List<Network> =
+//			conn.findAllNetworksFromFromDataCenter(dataCenterId)
+//				.getOrDefault(listOf())
+//		return networks.toNetworkVos(conn)
+//	}
+//
+//	@Throws(Error::class)
+//	override fun findAllClustersFromDataCenter(dataCenterId: String): List<ClusterVo> {
+//		log.info("findAllClustersFromDataCenter ... dataCenterId: {}", dataCenterId)
+//		val clusters: List<Cluster> =
+//			conn.findAllClustersFromDataCenter(dataCenterId).
+//				getOrDefault(listOf())
+//		return clusters.toClusterVos(conn)
+//	}
+
 
 // region: 나중
 /*

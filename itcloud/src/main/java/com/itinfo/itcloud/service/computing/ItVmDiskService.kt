@@ -114,7 +114,7 @@ class VmDiskService(
 
 		// 디스크 생성
 		val diskImageVo: DiskImageVo? =
-			itStorageService.addDiskImage(diskAttachmentVo.diskImageVo)
+			itStorageService.addDisk(diskAttachmentVo.diskImageVo)
 
 		diskAttachmentVo.toDiskAttachmentBuilder(conn, diskAttachmentVo)
 
