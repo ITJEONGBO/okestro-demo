@@ -61,6 +61,7 @@
     padding-top: 0.1rem;
 }
 #aside_popup_btn{
+    font-size: 0.4rem;
     position: absolute;
     right: 0;
     border: 1px solid gray;

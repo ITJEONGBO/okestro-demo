@@ -731,8 +731,8 @@ const Dashboard = () => {
   return (
     <>
       {/* 대시보드 section */}
-      <div id="dash_board">
-        <div id="dash_boxs">
+      <div className="dash_board">
+        <div className="dash_boxs">
 
           <div className="box" onClick={() => navigate('/computing/datacenter')}>
             <span>Datacenter</span>
@@ -778,7 +778,7 @@ const Dashboard = () => {
           </div>
         </div> {/* boxs 끝 */}
 
-        <div id="dash_section">
+        <div className="dash_section">
           <div className="dash_section_contents">
             <h1>CPU</h1>
             <div className="graphs">
@@ -837,7 +837,7 @@ const Dashboard = () => {
           </div>
         </div> {/* dash section 끝 */}
         
-        <div id="bar">
+        <div className="bar">
           <div>
             <span>CPU(시간 경과에 따른 CPU사용량)</span>
             <div><HeatMapChart /></div>

@@ -30,12 +30,12 @@
 }
 
 /*section(중간)*/
-#dash_board{
+.dash_board{
     border-radius: 5px;
     width: 96%;
 }
 
-#dash_boxs{
+.dash_boxs{
     padding: 0.23rem 0.2rem;
     display: flex;
     justify-content: space-between;
@@ -45,7 +45,7 @@
     background-color: #fafaff;
     box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.13);
 }
-#dash_boxs>.box{
+.dash_boxs>.box{
     width: 17%;
     cursor: pointer;
 }
@@ -103,10 +103,9 @@
     margin-top: 2px;
 }
 /*박스끝*/
-/*박스끝*/
 
 
-#dash_section{
+.dash_section{
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -182,7 +181,7 @@
 }
 
 /*bar*/
-#bar{
+.bar{
     display: flex;
     height: 22.4%;
     border-radius: 3px;
@@ -190,10 +189,10 @@
     justify-content: space-between;
     background-color: rgb(255, 255, 255);
 }
-#bar>div{
+.bar>div{
     width: 33%;
 }
-#bar span{
+.bar span{
     font-size: 0.4rem;
     font-weight: 600;
 }

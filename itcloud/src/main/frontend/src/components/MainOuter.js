@@ -370,7 +370,7 @@ const MainOuter = ({ children }) => {
                     </Link>
                 </div>
                 <div id="aside_popup" style={{ display: asidePopupVisible ? 'block' : 'none' }}>
-                    <button id='aside_popup_btn' onClick={handleAsidePopupBtnClick}><i className="fa fa-chevron-left"></i></button>
+                    <button id='aside_popup_btn' onClick={handleAsidePopupBtnClick}><i className="fa fa-chevron-left" cla></i></button>
 
                     {/*가상머신*/} 
                     {selected === 'computing' && (

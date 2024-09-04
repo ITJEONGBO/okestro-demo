@@ -65,12 +65,12 @@ const Header = () => {
     }, [isLoginBoxVisible, isBellActive]);
 
     return (
-        <div id="header">
-            <div id="header_right" onClick={handleTitleClick} style={{ cursor: 'pointer' }}>
+        <div className="header">
+            <div className="header_right" onClick={handleTitleClick} style={{ cursor: 'pointer' }}>
                 <span>Rutil Vm</span>
             </div>
 
-            <div id="header_left">
+            <div className="header_left">
                 {/*알림 */}
                 <div 
                     className="fa-bell-wrapper" 

@@ -4,9 +4,9 @@
     font-weight: normal;
     font-style: normal;
 }
-/* @tailwind base;
+@tailwind base;
 @tailwind components;
-@tailwind utilities; */
+@tailwind utilities;
 /*aside(Mainouter.js) 옆에 클릭하면 파란밑줄*/
 
 #root,*{
@@ -27,98 +27,6 @@
     text-rendering: optimizeLegibility;
 }
 
-#header {
-    height: 5%;
-    margin: 0 auto;
-    border-radius: 5px;
-    padding: 0 1%;
-    background-color: #ffffff;
-    display: flex;
-    justify-content: space-between;
-    align-items: center; /* 세로 중앙 정렬 추가 */
-    margin-bottom: 0.6%;
-    box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.13);
-}
-
-#header_right {
-    font-size: 0.4rem;
-    display: flex;
-    align-items: center; /* 세로 중앙 정렬 추가 */
-}
-
-#header_right > span {
-    color: rgb(0, 0, 0);
-    font-weight: 600;
-    cursor: pointer;
-}
-#header_right > span:hover{
-    color: #5dcbf7;
-}
-#header_left {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.5em;
-    min-width: 11%;
-    align-items: center; /* 세로 중앙 정렬 추가 */
-}
-#header_left span{
-    font-size: 0.4rem;
-}
-#header_left > div{
-    padding: 0 0.1rem;
-    cursor: pointer;
-    color: rgb(0, 0, 0);
-}
-#header_left > div > i {
-    
-    font-size: 1.2em;
-    cursor: pointer;
-}
-#header_left > div:hover{
-    border-radius: 50%;
-    background-color: #dadadad8;
-}
-/* Header 아이콘들 */
-.user_btn,.fa-bell-wrapper{
-    position: relative;
-}
-
-.user_loginbox{
-    position: absolute;
-    background-color: #ffffff;
-    z-index: 3;
-    width: 120%;
-    left: -4%;
-    font-size: 0.3rem;
-    border: 1px solid rgb(204, 204, 204);
-    top: 99%;
-    border-radius: 2px;
-}
-.user_loginbox>div{
-    padding: 0.09rem 0.12rem ;
-}
-.user_loginbox>div:hover{
-    background-color: #ebececd8;
-}
-.bell_box{
-    position: absolute;
-    background-color: #ffffff;
-    z-index: 3;
-    width: 11.65vw;
-    left: -4%;
-    font-size: 0.3rem;
-    border: 1px solid rgb(204, 204, 204);
-    top: 99%;
-    height: 89.9vh;
-    border-radius: 2px;
-}
-/*차트위에 아이콘 제거*/
-.apexcharts-menu-icon,.apexcharts-toolbar>div{
-    display: none;
-}
-.apexcharts-legend.apx-legend-position-bottom.apexcharts-align-center, .apexcharts-legend.apx-legend-position-top.apexcharts-align-center {
-    display: none;
-}
 
 #main_outer{
     height: 88vh;
@@ -169,17 +77,7 @@
     cursor: pointer;
     padding-top: 0.1rem;
 }
-#aside_popup_btn{
-    position: absolute;
-    right: 0;
-    border: 1px solid gray;
-    border-right: none;
-    top: 47%;
-    color: #407885;
-    height: 5%;
-    cursor: pointer;
-    padding: 0.08rem;
-}
+
 .aside_popup_content i:first-child,
 .aside_popup_second_content i:first-child,
 .aside_popup_third_content i:first-child,
@@ -262,170 +160,6 @@
 }
 
 /*section(중간)*/
-
-#dash_board{
-    border-radius: 5px;
-    width: 96%;
-}
-
-#dash_boxs{
-    padding: 0.23rem 0.2rem;
-    display: flex;
-    justify-content: space-between;
-    min-height: 15%;
-    border-radius: 5px;
-    margin-bottom: 0.14rem;
-    background-color: #fafaff;
-    box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.13);
-}
-#dash_boxs>.box{
-    width: 17%;
-    cursor: pointer;
-}
-.box:nth-child(n+1){
-
-    padding: 7px 0 0 7px;
-    border-right: 2px solid #5e95a745;
-}
-.box:nth-child(n+4){
-
-    padding: 7px 0 0 7px;
-
-    border-right: 2px solid #5e95a745;
-}
-.box:last-child{
-    border-right: none;
-}
-.box>span{
-    display: block;
-    font-size: 0.4rem;
-    font-weight: 600;
-    width: 90%;
-    color: #1190c3;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-   
-}
-
-.box>h1{
-    font-size: 0.5rem;
-    line-height: 27px;
-    font-weight: 600;
-    text-align: left;
-    margin-left: 4px;
-    color: #1190c3;
-}
-.arrows{
-    height: 24px;
-    margin-top: 6px;
-    text-align: right;
-    margin-top: 0.1rem;
-    margin-right: 0.5rem;
-    font-size: 16px;
-}
-.arrows>i:first-child{
-    color: #ff8417;
-}
-.arrows>i:last-child{
-    color: #4d4d4d;
-    margin-top: 2px;
-}
-
-/*박스끝*/
-
-
-#dash_section{
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    height: 61%;
-    background-color: #ffffff;
-    padding: 0 0.2rem;
-    margin-bottom: 0.14rem;
-    border-radius: 5px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-}
-.dash_section_contents{
-    width: 33.3%;
-}
-.dash_section_contents>h1{
-    padding: 0.1rem;
-    font-size: 0.45rem;
-    margin-top: 5px;
-    color: #1a74e7;
-    font-weight: 800;
-    
-}
-.graphs{
-    width: 93%;
-    display: flex;
-    justify-content: space-between;
-}
-
-/*도넛*/
-.graph-wrap{
-    display:flex;
-    gap: 50px;
-}
-.circle-graph {
-    position:relative;
-    margin-left: 3vw;
-    
-}
-.circle-graph > strong {
-    position:absolute; 
-    color: rgb(0, 0, 0);
-    font-weight: 400;
-    top:46%; 
-    left:50%; 
-    transform:translate(-50%, -50%);
-    font-size:0.6rem;
-}
-
-/*도넛css끝*/
-.dash_section_contents>span{
-    display: block;
-    font-size: 0.33rem;
-    width: 44%;
-    color: #000000;
-    text-align: center;
-    padding: 0.18rem 0.04rem;
-    margin-left: 0.2rem;
-    margin-bottom: 0.4rem;
-    font-weight: 600;
-    border-radius: 3px;
-    background: #E9F1F7;
-}
-.wave_graph>h2{
-    font-size: 0.37rem;
-    margin-left: 9px;
-    margin-bottom: 5px;
-    color: #000000;
-}
-/*물결그래프*/
-
-#line_chart_wave{
-    width: 100%;
-}
-
-/*bar*/
-#bar{
-    display: flex;
-    height: 22.4%;
-    border-radius: 3px;
-    font-size: 0.34rem;
-    justify-content: space-between;
-    background-color: rgb(255, 255, 255);
-}
-#bar>div{
-    width: 33%;
-}
-#bar span{
-    font-size: 0.4rem;
-    font-weight: 600;
-}
 
 #section,#storage_section,#network_section,#setting_section,#detail_section{
     background-color: #ffffff;
@@ -2333,91 +2067,7 @@ input[disabled] {
     border-bottom: 1px solid rgb(223, 223, 223);
 }
 
- /*footer*/
- .footer_outer {
-    font-size: 0.34rem;
-    width: 100%;
-    left: 0;
-    max-height: 30%;
-    position: absolute;
-    bottom: 0;
-
-}
-.footer{
-    height: 4.3vh;
-    display: flex;
-    border-top: 1px solid #ebebeb;
-    background: white;
-}
-.footer>button{
-    height: 4.3vh;
-    width: 2%;
-    color: rgb(10, 55, 107);
-    cursor: pointer;
-    background-color: white;
-    border: 1px solid #295b9c;
-    border-radius: 3px;
-    
-}
-.footer>button>i{
-    font-size: 0.3rem;
-    display: block; 
-    margin: 0 auto; 
-    text-align: center;
-}
-.footer>div{
-    display: flex;
-}
-.footer>div>div{
-    font-weight: 600;
-    display: block;
-    cursor: pointer;
-    margin-top: 8px;
-}
-.footer>div>div:first-child{
-    margin: 8px 30px 0 15px;
-    border-bottom: 2px solid #6999D9;
-    color: black;
-}
-.footer>div>div:nth-child(2){
-    color: #4F4F4F;
-}
-.footer_content{
-    height: 100%;
-    display: none;
-    background: white;
-}
-.footer_nav{
-    display: flex;
-    width: 100%;
-    padding: 5px 3px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-    margin-bottom: 18px;
-}
-.footer_nav>div{
-    display: flex;
-    width: 15%;
-    justify-content: space-between;
-    border-right: 1px solid #4F4F4F;
-    padding: 2px 5px;
-    color: #4F4F4F;
-}
-.footer_img{
-
-    width: 11%;
-    margin: 0 auto;
-}
-.footer_img>img{
-    margin: 0 auto;
-    display: block;
-}
-.footer_img>span{
-    text-align: center;
-    display: block;
-    font-size: 0.33rem;
-    margin-top: 3px;
-}
-
+ 
 /*편집팝업*/
 /*템플릿 생성*/
 

@@ -19,7 +19,7 @@
     text-rendering: optimizeLegibility;
 }
 
-#header {
+.header {
     height: 5%;
     margin: 0 auto;
     border-radius: 5px;
@@ -32,41 +32,41 @@
     box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.13);
 }
 
-#header_right {
+.header_right {
     font-size: 0.4rem;
     display: flex;
     align-items: center; /* 세로 중앙 정렬 추가 */
 }
 
-#header_right > span {
+.header_right > span {
     color: rgb(0, 0, 0);
     font-weight: 600;
     cursor: pointer;
 }
-#header_right > span:hover{
+.header_right > span:hover{
     color: #5dcbf7;
 }
-#header_left {
+.header_left {
     display: flex;
     justify-content: space-between;
     font-size: 0.5em;
     min-width: 11%;
     align-items: center; /* 세로 중앙 정렬 추가 */
 }
-#header_left span{
+.header_left span{
     font-size: 0.4rem;
 }
-#header_left > div{
+.header_left > div{
     padding: 0 0.1rem;
     cursor: pointer;
     color: rgb(0, 0, 0);
 }
-#header_left > div > i {
+.header_left > div > i {
     
     font-size: 1.2em;
     cursor: pointer;
 }
-#header_left > div:hover{
+.header_left > div:hover{
     border-radius: 50%;
     background-color: #a4d9db;
 }
@@ -74,6 +74,40 @@
 .user_btn,.fa-bell-wrapper{
     position: relative;
 }
+.user_loginbox{
+    position: absolute;
+    background-color: #ffffff;
+    z-index: 3;
+    width: 120%;
+    left: -4%;
+    font-size: 0.3rem;
+    border: 1px solid rgb(204, 204, 204);
+    top: 99%;
+    border-radius: 2px;
+}
+.user_loginbox>div{
+    padding: 0.09rem 0.12rem ;
+}
+.user_loginbox>div:hover{
+    background-color: #ebececd8;
+}
+.bell_box{
+    position: absolute;
+    background-color: #ffffff;
+    z-index: 3;
+    width: 11.65vw;
+    left: -4%;
+    font-size: 0.3rem;
+    border: 1px solid rgb(204, 204, 204);
+    top: 99%;
+    height: 89.9vh;
+    border-radius: 2px;
+}
+/* Header 아이콘들 */
+.user_btn,.fa-bell-wrapper{
+    position: relative;
+}
+
 .user_loginbox{
     position: absolute;
     background-color: #ffffff;
