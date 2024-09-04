@@ -15,6 +15,7 @@ const ENDPOINTS = {
   //region: DataCenter
   FIND_ALL_DATA_CENTERS: () =>  `/api/v1/computing/datacenters`,
   FIND_ALL_CLUSTERS: () =>      `/api/v1/computing/clusters`,
+  FIND_CLUSTERS_BY_ID: (clusterID) =>  `/api/v1/networks/${clusterID}`, 
   FIND_ALL_CLUSTERS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/clusters`,
   //endregion: DataCenter
 
@@ -25,7 +26,6 @@ const ENDPOINTS = {
   //endregion: Network
 
   //region: StorageDomain
-  // FIND_ALL_STORAGE: () =>      `/api/v1/networks`,
   FIND_ALL_STORAGE_DOMAINS: async () => `/api/v1/storages`, // TODO: 구현필요
   //endregion: StorageDomain
 }

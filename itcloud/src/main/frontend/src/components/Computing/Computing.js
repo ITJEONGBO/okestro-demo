@@ -68,7 +68,7 @@ const Computing = () => {
     const closeModal = () => setIsModalOpen(false);
 
     const handleNameClick = (name) => {
-        navigate(`/computing/datacenter/${name}`);
+        navigate(`/computing/datacenters/${name}`);
     };
 
     const sectionHeaderButtons = [

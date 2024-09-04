@@ -1,4 +1,7 @@
+
 const NetworkDetailGeneral = ({ network }) => {
+
+
   return (
     <div className="host_btn_outer">
       <div className="tables">

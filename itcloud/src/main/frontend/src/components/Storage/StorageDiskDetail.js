@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import NavButton from '../components/navigation/NavButton';
-import HeaderButton from '../components/button/HeaderButton';
-import Table from '../components/table/Table';
-import TableColumnsInfo from '../components/table/TableColumnsInfo';
-import Footer from '../components/footer/Footer';
+import NavButton from '../navigation/NavButton';
+import HeaderButton from '../button/HeaderButton';
+import Table from '../table/Table';
+import TableColumnsInfo from '../table/TableColumnsInfo';
+import Footer from '../footer/Footer';
 
-import './css/StorageDisk.css';
-import Permission from '../components/Modal/Permission';
+import './css/StorageDiskDetail.css';
+import Permission from '../Modal/Permission';
 
 function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const { name } = useParams();
@@ -110,7 +110,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
   return (
     <div className="content_detail_section">
       <HeaderButton
-        title="스토리지디스크"
+        title="디스크"
         subtitle={name}
         additionalText={name}
         buttons={buttons}

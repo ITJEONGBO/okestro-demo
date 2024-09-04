@@ -17,9 +17,10 @@ const Network = ({ }) => {
     const [data, setData] = useState([]);
     useEffect(() => {
         const fetchData = async () => {
-            const res = await ApiManager.findAllNetworks()
-            const items = res.map((e) => toTableItemPredicate(e))
-            setData(items)
+            const res = await ApiManager.findAllNetworks() //직접 호출하여 네트워크 데이터를 가져오기
+            
+            const items = res.map((e) => toTableItemPredicate(e)) 
+            setData(items) // toTableItemPredicate로 변환한 후 setData로 상태에 저장
         }
         fetchData()
     }, [])

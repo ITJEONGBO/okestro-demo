@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import {useParams, useNavigate, useLocation } from 'react-router-dom';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
 
@@ -11,10 +11,11 @@ import NetworkDetail from '../Network/NetworkDetail';
 import Permission from '../Modal/Permission';
 
 function ClusterName() {
-    const { name } = useParams();
+    const { id } = useParams();
+ 
     const navigate = useNavigate();
     const location = useLocation();
-    const locationState = location.state  
+    const locationState = location.state; 
 
     const [showNetworkDetail, setShowNetworkDetail] = useState(false);
 
@@ -24,7 +25,7 @@ function ClusterName() {
       const [activePermissionFilter, setActivePermissionFilter] = useState('all');
       const handleRowClick = (row, column) => {
         if (column.accessor === 'name') {
-          navigate(`/network/${row.name.props.children}`);  
+          navigate(`/networks/${row.name.props.children}`);  
         }
     };
     const [isPermissionModalOpen, setIsPermissionModalOpen] = useState(false); // 권한 모달 상태
@@ -186,7 +187,7 @@ function ClusterName() {
                 <>
                     <HeaderButton
                         title="클러스터"
-                        subtitle={name}
+                        subtitle={locationState?.name}
                         additionalText="목록이름"
                         buttons={buttons}
                         popupItems={popupItems}
@@ -208,7 +209,7 @@ function ClusterName() {
                                             <tbody>
                                                 <tr>
                                                     <th>ID:</th>
-                                                    <td>{name}</td>
+                                                    <td>{id}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>설명:</th>

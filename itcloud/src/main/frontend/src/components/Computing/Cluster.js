@@ -48,7 +48,7 @@ const Cluster = () => {
   }, [])
   */
   const { 
-    data: clusters,
+    data: clusters, 
     status: clustersStatus,
     isRefetching: isClustersRefetching,
     refetch: refetchClusters, 
@@ -74,9 +74,10 @@ const Cluster = () => {
   };
   
   const handleRowClick = (row, column) => {
+    console.log(`handleRowClick ... id: ${row.id}`)
     if (column.accessor === 'name') {
       navigate(
-        `/computing/cluster/${row.id}`,
+        `/computing/clusters/${row.id}`,
         { state: { name: row.name } }
       );
     }

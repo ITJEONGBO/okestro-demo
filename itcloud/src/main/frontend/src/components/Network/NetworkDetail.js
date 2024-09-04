@@ -22,6 +22,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   const locationState = location.state  
   const { id } = useParams(); // useParams로 URL에서 name을 가져옴
   const [shouldRefresh, setShouldRefresh] = useState(false);
+
   const { 
     data: network,
     status: networkStatus,

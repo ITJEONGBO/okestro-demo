@@ -61,6 +61,17 @@ const DEFAULT_VALUES = {
       upgradeStatus: 'Up to date',
     }
   ],
+   //클러스터세부
+  FIND_CLUSTERS_BY_ID:{
+    id: '40dc4bc6-9016-4a90-ae86-f3d36095a29f',
+    name: 'ovirtmgmt', 
+    description: 'Management Network', 
+    dataCenter: 'DC1', 
+    provider: 'Provider1', 
+    portSeparation: '아니요',
+    vnicProfileVos: '',
+  },
+
   // 네트워크
   FIND_ALL_NETWORKS: [
     { 
@@ -110,21 +121,7 @@ const DEFAULT_VALUES = {
       }
     ],
   },
-  // 스토리지 
-  FIND_ALL_STORAGE: [  
-    { 
-      alias: 'he_metadata',
-      id: '289137398279301798',
-      icon1: '',
-      icon2: <i className="fa fa-glass"></i>,
-      connectionTarget: 'on20-ap01',
-      storageDomain: 'VirtIO-SCSI',
-      virtualSize: '/dev/sda',
-      status: 'OK',
-      type: '이미지',
-      description: '',
-    }
-  ],
+
   // 스토리지 도메인
   FIND_ALL_STORAGE_DOMAINS: [
     {

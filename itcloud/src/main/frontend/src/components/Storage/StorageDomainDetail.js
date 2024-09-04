@@ -4,14 +4,14 @@ import { useParams } from 'react-router-dom';
 
 import Modal from 'react-modal';
 
-import NavButton from '../components/navigation/NavButton';
-import HeaderButton from '../components/button/HeaderButton';
-import Table from '../components/table/Table';
-import TableColumnsInfo from '../components/table/TableColumnsInfo';
-import './css/StorageDomain.css';
+import NavButton from '../navigation/NavButton';
+import HeaderButton from '../button/HeaderButton';
+import Table from '../table/Table';
+import TableColumnsInfo from '../table/TableColumnsInfo';
+import './css/StorageDomainDetail.css';
 
 import { useNavigate } from 'react-router-dom';
-import Permission from '../components/Modal/Permission';
+import Permission from '../Modal/Permission';
 //import { useParams } from 'react-router-dom';
 
 

@@ -6,7 +6,7 @@ import Dashboard from './components/Dashboard';
 import Header from './components/Header/Header';
 import Computing from './components/Computing/Computing';
 import MainOuter from './components/MainOuter';
-import Storage from './components/Storage';
+import Storage from './components/Storage/Storage';
 import Network from './components/Network/Network';
 import Setting from './components/Setting';
 import Vm from './components/Computing/Vm';
@@ -14,13 +14,13 @@ import Cluster from './components/Computing/Cluster';
 import ClusterName from './components/Computing/ClusterName';
 import Host from './components/Computing/Host';
 import HostDetail from './components/Computing/HostDetail';
-import StorageDomain from './detail/StorageDomain';
-import StorageDisk from './detail/StorageDisk';
+import StorageDomainDetail from './components/Storage/StorageDomainDetail';
+import StorageDiskDetail from './components/Storage/StorageDiskDetail';
 import DataCenterDetail from './components/Computing/DataCenterDetail';
 import VmHostChart from './components/Computing/VmHostChart';
-import DomainParts from './components/DomainPart';
 import NetworkDetail from './components/Network/NetworkDetail';
 import './App.css';
+import DomainParts from './components/Storage/StorageDomainPart';
 
 function App() {
     const queryClient = new QueryClient()
@@ -39,13 +39,13 @@ function App() {
                         <Route path="/computing/host" element={<Host />} />
                         <Route path="/computing/vmhost-chart" element={<VmHostChart />} />
                         <Route path="/computing/host/:name" element={<HostDetail />}/>
-                        <Route path="/computing/cluster" element={<Cluster />} />
-                        <Route path="/computing/cluster/:name" element={<ClusterName />} /> 
+                        <Route path="/computing/clusters" element={<Cluster />} />
+                        <Route path="/computing/clusters/:id" element={<ClusterName />} /> 
                         <Route path="/networks" element={<Network />} />
-                        <Route path="/networks/:name" element={<NetworkDetail />} /> 
-                        <Route path="/storage-domain/:name" element={<StorageDomain />} />
+                        <Route path="/networks/:id" element={<NetworkDetail />} /> 
+                        <Route path="/storage-domain/:name" element={<StorageDomainDetail />} />
                         <Route path="/storage-domainpart" element={<DomainParts />} />
-                        <Route path="/storage-disk/:name" element={<StorageDisk />} />
+                        <Route path="/storage-disk/:name" element={<StorageDiskDetail />} />
                     </Routes>
                 </MainOuter>
             </Router>

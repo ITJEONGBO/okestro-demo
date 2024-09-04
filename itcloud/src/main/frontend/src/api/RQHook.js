@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import ApiManager from "./ApiManager";
 
+//클러스터 목록
 export const useAllClusters = (mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['allClusters'],
@@ -10,7 +11,19 @@ export const useAllClusters = (mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []
   }
 })
+// 클러스터 세부정보
+export const useClusterById = (clusterId) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['clusterById'],
+  queryFn: async () => {
+    console.log(`useClusterById ... ${clusterId}`)
+    const res = await ApiManager.findAllClusterById(clusterId)
+    // setShouldRefresh(prevValue => false)
+    return res ?? {}
+  }
+})
 
+//네트워크 목록
 export const useAllNetworks = (mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['allNetworks'],
@@ -21,6 +34,7 @@ export const useAllNetworks = (mapPredicate) => useQuery({
   }
 })
 
+// 네트워크 세부정보
 export const useNetworkById = (networkId) => useQuery({
   refetchOnWindowFocus: true,
   queryKey: ['networkById'],
@@ -31,6 +45,8 @@ export const useNetworkById = (networkId) => useQuery({
     return res ?? {}
   }
 })
+
+ 
 
 export const useAllVnicProfilesFromNetwork = (networkId, mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -43,11 +59,4 @@ export const useAllVnicProfilesFromNetwork = (networkId, mapPredicate) => useQue
   }
 })
 
-export const useFindAllStorage = (mapPredicate) => useQuery({
-  refetchOnWindowFocus: true,
-  queryKey: ['allStorages'],
-  queryFn: async () => {
-    const res = await ApiManager.findAllStorage();
-    return res?.map((e) => mapPredicate(e)) ?? [];
-  }
-});
+

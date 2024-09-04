@@ -4,6 +4,9 @@
     font-weight: normal;
     font-style: normal;
 }
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
 /*aside(Mainouter.js) 옆에 클릭하면 파란밑줄*/
 
 #root,*{

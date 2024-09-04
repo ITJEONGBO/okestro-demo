@@ -61,7 +61,7 @@ const MainOuter = ({ children }) => {
                 updateSelectedState('computing', 'HostedEngine', true, true, true);
             } else if (location.pathname === '/computing/host') {  // 정확히 /computing/host 경로일 때만
                 updateSelectedState('computing', 'host', true, true, true);
-            } else if (location.pathname.includes('/computing/cluster')) {
+            } else if (location.pathname.includes('/computing/clusters')) {
                 updateSelectedState('computing', 'cluster', true, true);
             } else if (location.pathname.includes('/computing/datacenter')) {
                 updateSelectedState('computing', 'data_center', true);
@@ -205,7 +205,7 @@ const MainOuter = ({ children }) => {
     const handleSecondDivClick = (e) => {
         e.stopPropagation();
         setSelectedDiv('cluster');
-        navigate('/computing/cluster');
+        navigate('/computing/clusters');
     };
     
     const handleThirdClick = (e) => {
@@ -407,7 +407,7 @@ const MainOuter = ({ children }) => {
                 onClick={() => {
                     if (selectedDiv !== 'cluster') {
                         setSelectedDiv('cluster');
-                        navigate('/computing/cluster');
+                        navigate('/computing/clusters');
                     }
                 }}
             >

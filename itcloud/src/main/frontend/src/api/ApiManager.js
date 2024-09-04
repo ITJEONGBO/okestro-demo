@@ -113,6 +113,14 @@ const ApiManager = {
   findAllClusters: async () => makeAPICall(ENDPOINTS.FIND_ALL_CLUSTERS(), DEFAULT_VALUES.FIND_ALL_CLUSTERS),
   //endregion: DataCenter
 
+  //region : Cluster
+  /**
+   * 
+   * @returns 
+   * 
+  //  */
+  findAllClusterById: async (clusterId) => makeAPICall(ENDPOINTS.FIND_CLUSTERS_BY_ID(clusterId), DEFAULT_VALUES.FIND_CLUSTERS_BY_ID),
+
   //region: Network
   /**
    * 
@@ -123,7 +131,6 @@ const ApiManager = {
   //endregion: Network
   
   //region: StorageDomain
-  findAllStorage: async () => makeAPICall(ENDPOINTS.FIND_ALL_STORAGE(), DEFAULT_VALUES.FIND_ALL_STORAGE),
   findAllStorageDomains: async () => makeAPICall(ENDPOINTS.FIND_ALL_STORAGE_DOMAINS(), DEFAULT_VALUES.FIND_ALL_STORAGE_DOMAINS),
   //endregion: StorageDomain
 }
