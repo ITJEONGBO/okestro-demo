@@ -58,11 +58,8 @@ fun Connection.startVm(vmId: String): Result<Boolean> = runCatching {
 	log.debug("Connection.startVm ... ")
 	val vm: Vm = this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 	this.srvVm(vmId).start().useCloudInit(vm.initializationPresent()).send()
-	if (!this@startVm.expectVmStatus(vmId, VmStatus.UP)) {
-		log.error("가상머신 시작 시간 초과: {}", vm.name())
-		return Result.failure(Error("가상머신 시작 시간 초과"))
-	}
-	return Result.success(true)
+
+	this@startVm.expectVmStatus(vmId, VmStatus.UP)
 }.onSuccess {
 	Term.VM.logSuccess("시작", vmId)
 }.onFailure {
@@ -73,12 +70,10 @@ fun Connection.startVm(vmId: String): Result<Boolean> = runCatching {
 
 fun Connection.stopVm(vmId: String): Result<Boolean> = runCatching {
 	log.debug("Connection.stopVm ... ")
-	/*val vm: Vm = */this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 	this.srvVm(vmId).stop().send()
-	if (!this@stopVm.expectVmStatus(vmId, VmStatus.DOWN)) {
-		return Result.failure(Error("가상머신 전원끄기 시간 초과"))
-	}
-	return Result.success(true)
+
+	this@stopVm.expectVmStatus(vmId, VmStatus.DOWN)
 }.onSuccess {
 	Term.VM.logSuccess("전원끄기", vmId)
 }.onFailure {
@@ -91,16 +86,13 @@ fun Connection.suspendVm(vmId: String): Result<Boolean> = runCatching {
 	log.debug("Connection.suspendVm ... ")
 	this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 	this.srvVm(vmId).suspend().send()
-	if (!this@suspendVm.expectVmStatus(vmId, VmStatus.PAUSED)) {
-		return Result.failure(Error("가상머신 일시정지 시간 초과"))
-	}
-	true
+
+	this@suspendVm.expectVmStatus(vmId, VmStatus.SUSPENDED)
 }.onSuccess {
 	Term.VM.logSuccess("일시정지", vmId)
 }.onFailure {
 	Term.VM.logFail("일시정지", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
 
 fun Connection.shutdownVm(vmId: String): Result<Boolean> = runCatching {
@@ -108,10 +100,11 @@ fun Connection.shutdownVm(vmId: String): Result<Boolean> = runCatching {
 	/*val vm: Vm = */this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 	this.srvVm(vmId).shutdown().send()
 	// TODO: 종료되지 않고 다시 올라올때가 잇음, expectVmStatus대신 다른 함수 써야 할지 확인 필요
-	if (!this@shutdownVm.expectVmStatus(vmId, VmStatus.DOWN)) {
-		return Result.failure(Error("종료 시간 초과"))
-	}
-	return Result.success(true)
+//	if (!this@shutdownVm.expectVmStatus(vmId, VmStatus.DOWN)) {
+//		return Result.failure(Error("종료 시간 초과"))
+//	}
+//	return Result.success(true)
+	this@shutdownVm.expectVmStatus(vmId, VmStatus.DOWN)
 }.onSuccess {
 	Term.VM.logSuccess("종료", vmId)
 }.onFailure {
@@ -124,12 +117,12 @@ fun Connection.rebootVm(vmId: String): Result<Boolean> = runCatching {
 	log.debug("Connection.rebootVm ... ")
 	val vm: Vm = this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 	this.srvVm(vmId).reboot().send()
-	if (!this@rebootVm.expectVmStatus(vmId, VmStatus.UP)) {
-		log.error("가상머신 재부팅 시간 초과: {}", vm.name())
-		return Result.failure(Error("가상머신 재부팅 시간 초과"))
-	}
-	log.info("가상머신 재부팅: {}", vm.name())
-	return Result.success(true)
+//	if (!this@rebootVm.expectVmStatus(vmId, VmStatus.UP)) {
+//		log.error("가상머신 재부팅 시간 초과: {}", vm.name())
+//		return Result.failure(Error("가상머신 재부팅 시간 초과"))
+//	}
+//	return Result.success(true)
+	this@rebootVm.expectVmStatus(vmId, VmStatus.UP)
 }.onSuccess {
 	Term.VM.logSuccess("재부팅", vmId)
 }.onFailure {
@@ -141,17 +134,17 @@ fun Connection.rebootVm(vmId: String): Result<Boolean> = runCatching {
 fun Connection.resetVm(vmId: String): Result<Boolean> = runCatching {
 	val vm: Vm = this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 	this.srvVm(vmId).reset().send()
-	if (!this@resetVm.expectVmStatus(vmId, VmStatus.UP)) {
-		log.error("가상머신 재설정 시간 초과: {}", vm.name())
-		return Result.failure(Error("가상머신 재설정 시간 초과"))
-	}
-	return Result.success(true)
+//	if (!this@resetVm.expectVmStatus(vmId, VmStatus.UP)) {
+//		log.error("가상머신 재설정 시간 초과: {}", vm.name())
+//		return Result.failure(Error("가상머신 재설정 시간 초과"))
+//	}
+//	return Result.success(true)
+	this@resetVm.expectVmStatus(vmId, VmStatus.UP)
 }.onSuccess {
 	Term.VM.logSuccess("재설정", vmId)
 }.onFailure {
 	Term.VM.logFail("재설정", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
 
 
@@ -528,7 +521,22 @@ fun Connection.findDiskAttachmentFromVm(vmId: String, diskAttachmentId: String):
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-
+fun Connection.findAllVmsFromDisk(diskId: String): Result<List<Vm>> = runCatching {
+	val vms: List<Vm> =
+		this.findAllVms(follow = "diskattachments")
+			.getOrDefault(listOf())
+			.filter { vm ->
+				vm.diskAttachments().any { diskAttachment ->
+					diskAttachment.disk().id() == diskId
+				}
+			}
+	vms
+}.onSuccess {
+	Term.VM.logSuccessWithin(Term.VM, "목록조회", diskId)
+}.onFailure {
+	Term.VM.logFailWithin(Term.VM, "목록조회", it, diskId)
+	throw if (it is Error) it.toItCloudException() else it
+}
 
 
 

@@ -6,6 +6,7 @@ import com.itinfo.itcloud.model.computing.HostVo
 import com.itinfo.itcloud.model.fromDataCenterToIdentifiedVo
 import com.itinfo.itcloud.model.fromDiskProfilesToIdentifiedVos
 import com.itinfo.itcloud.gson
+import com.itinfo.itcloud.model.computing.toDataCenterIdName
 import com.itinfo.itcloud.service.storage.StorageServiceImpl
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
@@ -45,10 +46,10 @@ private val log = LoggerFactory.getLogger(StorageDomainVo::class.java)
  * @property storageType [StorageType] 스토리지 유형 
  * @property backup [Boolean]
  * @property logicalUnitId [String]
- * @property dataCenterVo [DataCenterVo]
- * @property hostVo [HostVo]
+ * @property dataCenterVo [IdentifiedVo]
+ * @property hostVo [IdentifiedVo]
  * @property diskImageVos List<[DiskImageVo]>
- * @property diskProfileVos List<[DiskProfileVo]>
+ * @property diskProfileVos List<[IdentifiedVo]>
  */
 class StorageDomainVo(
 	val id: String = "",
@@ -127,7 +128,7 @@ fun List<StorageDomain>.toStorageDomainIdNames(): List<StorageDomainVo> =
 	this@toStorageDomainIdNames.map { it.toStorageDomainIdName() }
 
 
-fun StorageDomain.toStorageDomainVo(conn: Connection, isActive: Boolean = false): StorageDomainVo {
+fun StorageDomain.toStorageDomainVo(conn: Connection): StorageDomainVo {
 	log.debug("StorageDomain.toStorageDomainVo ... ")
 	val diskProfiles: List<DiskProfile> =
 		conn.findAllDiskProfilesFromStorageDomain(this@toStorageDomainVo.id())
@@ -138,19 +139,20 @@ fun StorageDomain.toStorageDomainVo(conn: Connection, isActive: Boolean = false)
 			.filter { it.storageDomainsPresent() && it.storageDomains().first().id() == this@toStorageDomainVo.id()
 	}
 	val dataCenter: DataCenter? =
-		conn.findDataCenter(this@toStorageDomainVo.dataCenters().first().id())
-			.getOrNull()
+		if(this@toStorageDomainVo.dataCentersPresent()) conn.findDataCenter(this@toStorageDomainVo.dataCenters().first().id()).getOrNull()
+		else null
+
 
 	return StorageDomainVo.builder {
 		id { this@toStorageDomainVo.id() }
 		name { this@toStorageDomainVo.name() }
-		active { isActive }
+//		active { isActive }
 		description { this@toStorageDomainVo.description() }
 		status { this@toStorageDomainVo.status() }
 		comment { this@toStorageDomainVo.comment() }
 		domainType { this@toStorageDomainVo.type() }
-		domainTypeMaster { this@toStorageDomainVo.master() }
-		storageType { this@toStorageDomainVo.storage().type() }
+		domainTypeMaster { if(this@toStorageDomainVo.masterPresent()) this@toStorageDomainVo.master() else false}
+		storageType { if(this@toStorageDomainVo.storagePresent()) this@toStorageDomainVo.storage().type() else null }
 		format { this@toStorageDomainVo.storageFormat() }
 		usedSize { this@toStorageDomainVo.used() }
 		availableSize { this@toStorageDomainVo.available() }

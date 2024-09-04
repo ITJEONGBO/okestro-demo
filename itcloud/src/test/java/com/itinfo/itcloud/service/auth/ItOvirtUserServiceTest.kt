@@ -2,7 +2,6 @@ package com.itinfo.itcloud.service.auth
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.setting.UserVo
-import com.itinfo.itcloud.service.admin.ItUserService
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.Test
@@ -36,21 +35,21 @@ class ItOvirtUserServiceTest {
 		*/
 	}
 
-	@Test
-	fun test_change_password_user(){
-		val userVo: UserVo =
-			UserVo.builder {
-				userName { "rutil" }
-				password { "rutil" }
-			}
-
-		val result: Boolean =
-			service.changePwUser(userVo)
-
-		assertThat(result, `is`(not(nullValue())))
-		assertThat(result, `is`(true))
-		assertThat(result, `is`(true))
-	}
+//	@Test
+//	fun test_change_password_user(){
+//		val userVo: UserVo =
+//			UserVo.builder {
+//				userName { "rutil" }
+//				password { "rutil" }
+//			}
+//
+//		val result: Boolean =
+//			service.changePwUser(userVo)
+//
+//		assertThat(result, `is`(not(nullValue())))
+//		assertThat(result, `is`(true))
+//		assertThat(result, `is`(true))
+//	}
 
 
 

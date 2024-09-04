@@ -6,7 +6,10 @@ import com.itinfo.itcloud.model.computing.VmExportVo
 import com.itinfo.itcloud.model.fromHostsToIdentifiedVos
 import com.itinfo.itcloud.model.response.Res
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.computing.VmServiceImpl.Companion
 import com.itinfo.util.ovirt.*
+import com.itinfo.util.ovirt.error.ErrorPattern
+import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.types.Host
 import org.ovirt.engine.sdk4.types.Vm
@@ -95,6 +98,7 @@ interface ItVmOperationService {
 	 * @param vmId [String] 가상머신 id
 	 * @return [Boolean]
 	 */
+	@Deprecated("마이그레이션 중에 취소하는 기능인데 마이그레이션이 빨리 되어서 필요없는 기능")
 	@Throws(Error::class)
 	fun cancelMigration(vmId: String): Boolean
 	/**
@@ -163,15 +167,13 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 	@Throws(Error::class)
 	override fun migrateHostList(vmId: String): List<IdentifiedVo> {
 		log.info("migrateHostList ... vmId: {}", vmId)
-		val vm: Vm = conn.findVm(vmId).getOrNull() ?: run {
-			log.warn("migrateHostList ... 가상머신 없음")
-			return listOf()
-		}
+		val vm: Vm =
+			conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
 
-		val hosts: List<Host> =
+		val res: List<Host> =
 			conn.findAllHosts()
 				.getOrDefault(listOf())
-				.filter { it.cluster().id() == vm.cluster().id() && it.id() != vm.host().id() }
+				.filter { host -> host.cluster().id() == vm.cluster().id() && host.id() != vm.host().id() }
 //		if (vm.placementPolicy().hostsPresent()){
 //			log.info("가상머신 특정 호스트 마이그레이션 목록");
 //			return vm.placementPolicy().hosts().stream() // 특정호스트
@@ -182,20 +184,24 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 //				}
 //		}
 		// 이건 클러스터 내 호스트 이야기
-		return hosts.fromHostsToIdentifiedVos()
+		return res.fromHostsToIdentifiedVos()
 	}
 
 	@Throws(Error::class)
 	override fun migrate(vmId: String, hostId: String): Boolean {
 		log.info("migrateVm ... ")
+		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
+		conn.findHost(hostId).getOrNull()?: throw ErrorPattern.HOST_NOT_FOUND.toError()
 		val res: Result<Boolean> =
 			conn.migrationVm(vmId, hostId)
 		return res.isSuccess
 	}
 
+	@Deprecated("마이그레이션 중에 취소하는 기능인데 마이그레이션이 빨리 되어서 필요없는 기능")
 	@Throws(Error::class)
 	override fun cancelMigration(vmId: String): Boolean {
 		log.info("migrateCancelVm ... ")
+		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
 		val res: Result<Boolean> =
 			conn.cancelMigrationVm(vmId)
 		return res.isSuccess
@@ -205,10 +211,14 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 	override fun exportOvaVm(vmExportVo: VmExportVo): Boolean {
 		log.info("exportOvaVm ... ")
 		val res: Result<Boolean> =
-			conn.exportVm(vmExportVo.vmVo.id, vmExportVo.hostVo.name, vmExportVo.directory, vmExportVo.fileName)
+			conn.exportVm(
+				vmExportVo.vmVo.id,
+				vmExportVo.hostVo.name,
+				vmExportVo.directory,
+				vmExportVo.fileName
+			)
 		return res.isSuccess
 	}
-
 
 	companion object {
 		private val log by LoggerDelegate()

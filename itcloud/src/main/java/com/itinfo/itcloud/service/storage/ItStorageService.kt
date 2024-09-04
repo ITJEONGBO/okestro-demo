@@ -13,24 +13,16 @@ import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.builders.*
-import org.ovirt.engine.sdk4.internal.containers.ImageContainer
-import org.ovirt.engine.sdk4.internal.containers.ImageTransferContainer
 import org.ovirt.engine.sdk4.services.*
 import org.ovirt.engine.sdk4.types.DataCenter
 import org.ovirt.engine.sdk4.types.DataCenterStatus
 import org.ovirt.engine.sdk4.types.StorageDomain
-import org.ovirt.engine.sdk4.types.StorageDomainStatus
 import org.ovirt.engine.sdk4.types.Disk
-import org.ovirt.engine.sdk4.types.DiskStatus
 import org.ovirt.engine.sdk4.types.DiskProfile
-import org.ovirt.engine.sdk4.types.DiskContentType
-import org.ovirt.engine.sdk4.types.DiskBackup
-import org.ovirt.engine.sdk4.types.DiskFormat
 import org.ovirt.engine.sdk4.types.Permission
 import org.ovirt.engine.sdk4.types.Host
 import org.ovirt.engine.sdk4.types.Event
-import org.ovirt.engine.sdk4.types.ImageTransferDirection
-import org.ovirt.engine.sdk4.types.ImageTransferPhase
+import org.ovirt.engine.sdk4.types.Vm
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 
@@ -129,7 +121,7 @@ interface ItStorageService {
 	 * @return [DiskImageVo]
 	 */
 	@Throws(Error::class)
-	fun findDisk(diskId: String): DiskImageVo?
+	fun findDisk(diskId: String): DiskImageVo
 	/**
 	 * [ItStorageService.findAllDataCenters]
 	 * 디스크 생성 - 이미지 DataCenter List
@@ -144,6 +136,7 @@ interface ItStorageService {
 	 * 디스크 이미지 생성창
 	 * 디스크 생성 - 이미지 도메인 목록
 	 * 디스크 복사
+	 * 단순 데이터센터 내부에있는 스토리지 도메인을 선택하기 위해 존재
 	 *
 	 * @param dataCenterId [String]
 	 * @return [List]<[StorageDomainVo]> 스토리지 도메인 목록
@@ -192,8 +185,9 @@ interface ItStorageService {
 	fun removeDisk(diskId: String): Boolean
 	/**
 	 * [ItStorageService.findAllStorageDomainsFromDisk]
-	 * 디스크 삭제
+	 * 디스크 이동- 창
 	 * TODO 디스크 이동시 대상은 디스크가 가지고 있는 스토리지 도메인은 목록에서 제외
+	 * ItStorageService.findAllStorageDomainsFromDataCenter 에서 disk가 가지고있는 스토리지도메인은 제외
 	 *
 	 * @param diskId [String] 디스크 ID
 	 * @return List<[StorageDomainVo]> 성공여부
@@ -422,7 +416,7 @@ class StorageServiceImpl(
 
 
 	@Throws(Error::class)
-	override fun findDisk(diskId: String): DiskImageVo? {
+	override fun findDisk(diskId: String): DiskImageVo {
 		log.info("findDisk ... diskId: $diskId")
 		val disk: Disk =
 			conn.findDisk(diskId)
@@ -441,10 +435,10 @@ class StorageServiceImpl(
 		return dataCentersUp.toDataCenterIdNames()
 	}
 
-	@Deprecated("[ItStorageService.findAllStorageDomainsfromDataCenter] 겹침")
+	@Deprecated("[ItStorageService.findAllStorageDomainsFromDataCenter] 겹침")
 	@Throws(Error::class)
 	override fun findAllStorageDomainsfromDataCenter(dataCenterId: String): List<StorageDomainVo> {
-		log.info("findAllStorageDomainsfromDataCenter ... dataCenterId: $dataCenterId")
+		log.info("findAllStorageDomainsFromDataCenter ... dataCenterId: $dataCenterId")
 
 		val storageDomains: List<StorageDomain> =
 			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
@@ -489,7 +483,11 @@ class StorageServiceImpl(
 	}
 
 	override fun findAllStorageDomainsFromDisk(diskId: String): List<StorageDomainVo> {
-		TODO("Not yet implemented")
+		log.info("findAllStorageDomainsFromDisk ... diskId: $diskId")
+		val res: List<StorageDomain> =
+			conn.findAllStorageDomainsFromDisk(diskId)
+				.getOrDefault(listOf())
+		return res.toStorageDomainVos(conn)
 	}
 
 	@Throws(Error::class)
@@ -505,7 +503,7 @@ class StorageServiceImpl(
 	override fun copyDisk(diskImageVo: DiskImageVo): Boolean {
 		log.info("copyDisk ... diskVo: $diskImageVo")
 		val res: Result<Boolean> =
-			conn.copyDisk(diskImageVo.id, diskImageVo.storageDomainVo.id)
+			conn.copyDisk(diskImageVo.id, diskImageVo.alias, diskImageVo.storageDomainVo.id)
 		return res.isSuccess
 	}
 
@@ -526,99 +524,115 @@ class StorageServiceImpl(
 		TODO("Not yet implemented")
 	}
 
-//		val disksService = system.disksService()
-//		val imageTransfersService = system.imageTransfersService() // 이미지 추가를 위한 서비스
-//		try {//
-//			// 우선 입력된 디스크 정보를 바탕으로 디스크 추가
-//			val disk = disksService.add().disk(file?.let { createDisk(image, it.size) }).send().disk()
-//			val diskService = disksService.diskService(disk.id())
-//
-//			// 디스크 ok 상태여야 이미지 업로드 가능
-//			if (conn.expectDiskStatus(disk.id(), DiskStatus.OK, 30000)) {
-//				log.info("디스크 생성 성공")
-//			} else {
-//				log.error("디스크 대기시간 초과")
-//				return false
-//			}
-//
-//			// 이미지를 저장하거나 관리하는 컨테이너,.이미지의 생성, 삭제, 수정 등의 작업을 지원
-//			val imageContainer = ImageContainer()
-//			imageContainer.id(disk.id())
-//
-//			// 이미지 전송 작업(업로드나 다운로드)을 관리하는 컨테이너. 전송 상태, 진행률, 오류 처리 등의 기능을 포함.
-//			val imageTransferContainer = ImageTransferContainer()
-//			imageTransferContainer.direction(ImageTransferDirection.UPLOAD)
-//			imageTransferContainer.image(imageContainer)
-//
-//			// 이미지 전송
-//			val imageTransfer = imageTransfersService.add().imageTransfer(imageTransferContainer).send().imageTransfer()
-//			while (imageTransfer.phase() == ImageTransferPhase.INITIALIZING) {
-//				log.debug("이미지 업로드 가능상태 확인 {}", imageTransfer.phase())
-//				Thread.sleep(1000)
-//			}
-//
-//			val imageTransferService = imageTransfersService.imageTransferService(imageTransfer.id())
-//
-//			val transferUrl = imageTransfer.transferUrl()
-//			if (transferUrl == null || transferUrl.isEmpty()) {
-//				log.warn("transferUrl 없음")
-//				return false
-//			} else {
-//				log.debug("imageTransfer.transferUrl(): {}", transferUrl)
-//				if (file != null) {
-//					imageSend(imageTransferService, file)
-//				}
-//			}
-//			return true
-//		} catch (e: Exception) {
-//			log.error("이미지 업로드 실패 ... reason: {}", e.localizedMessage)
-//			return false
-//		}
-//	}
 
 	override fun findAllVmsFromDisk(diskId: String): List<VmVo> {
-		TODO("Not yet implemented")
+		log.info("findAllVmsFromDisk ... ")
+		val res: List<Vm> =
+			conn.findAllVmsFromDisk(diskId)
+				.getOrDefault(listOf())
+		return res.toVmVoInfos(conn)
 	}
 
 	override fun findAllPermissionsFromDisk(diskId: String): List<PermissionVo> {
-		TODO("Not yet implemented")
+		log.info("findAllPermissionsFromDisk ... diskId: {}", diskId)
+		conn.findDisk(diskId).getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toException()
+		val permissionList: List<Permission> =
+			conn.findAllPermissionsFromDisk(diskId)
+				.getOrDefault(listOf())
+		return permissionList.toPermissionVos(conn)
 	}
 
 
-//	/**
-//	 * [StorageServiceImpl.createDisk]
-//	 * 디스크 생성
-//	 *
-//	 * @param image [DiskImageVo]
-//	 * @param fileSize [Long]
-//	 * @return [Disk]
-//	 */
-//	private fun createDisk(image: DiskImageVo, fileSize: Long): Disk {
-//		log.debug("createDisk ... ")
-//		return DiskBuilder()
-//			.provisionedSize(fileSize)
-//			.alias(image.alias)
-//			.description(image.description)
-//			.storageDomains(*arrayOf(StorageDomainBuilder().id(image.storageDomainVo.id).build()))
-//			.diskProfile(DiskProfileBuilder().id(image.diskProfileVo.id).build())
-//			.wipeAfterDelete(image.wipeAfterDelete)
-//			.shareable(image.sharable)
-//			.backup(DiskBackup.NONE) // 증분백업 되지 않음
-//			.format(DiskFormat.RAW) // 이미지 업로드는 raw형식만 가능
-//			.contentType(DiskContentType.ISO) // iso 업로드
-//			.build()
-	/**
+    // uploadImage
+    /*
+    val disksService = system.disksService()
+    val imageTransfersService = system.imageTransfersService() // 이미지 추가를 위한 서비스
+    try {//
+        // 우선 입력된 디스크 정보를 바탕으로 디스크 추가
+        val disk = disksService.add().disk(file?.let { createDisk(image, it.size) }).send().disk()
+        val diskService = disksService.diskService(disk.id())
+
+        // 디스크 ok 상태여야 이미지 업로드 가능
+        if (conn.expectDiskStatus(disk.id(), DiskStatus.OK, 30000)) {
+            log.info("디스크 생성 성공")
+        } else {
+            log.error("디스크 대기시간 초과")
+            return false
+        }
+
+        // 이미지를 저장하거나 관리하는 컨테이너,.이미지의 생성, 삭제, 수정 등의 작업을 지원
+        val imageContainer = ImageContainer()
+        imageContainer.id(disk.id())
+
+        // 이미지 전송 작업(업로드나 다운로드)을 관리하는 컨테이너. 전송 상태, 진행률, 오류 처리 등의 기능을 포함.
+        val imageTransferContainer = ImageTransferContainer()
+        imageTransferContainer.direction(ImageTransferDirection.UPLOAD)
+        imageTransferContainer.image(imageContainer)
+
+        // 이미지 전송
+        val imageTransfer = imageTransfersService.add().imageTransfer(imageTransferContainer).send().imageTransfer()
+        while (imageTransfer.phase() == ImageTransferPhase.INITIALIZING) {
+            log.debug("이미지 업로드 가능상태 확인 {}", imageTransfer.phase())
+            Thread.sleep(1000)
+        }
+
+        val imageTransferService = imageTransfersService.imageTransferService(imageTransfer.id())
+
+        val transferUrl = imageTransfer.transferUrl()
+        if (transferUrl == null || transferUrl.isEmpty()) {
+            log.warn("transferUrl 없음")
+            return false
+        } else {
+            log.debug("imageTransfer.transferUrl(): {}", transferUrl)
+            if (file != null) {
+                imageSend(imageTransferService, file)
+            }
+        }
+        return true
+    } catch (e: Exception) {
+        log.error("이미지 업로드 실패 ... reason: {}", e.localizedMessage)
+        return false
+    }
+}
+
+
+*//**
+ * [StorageServiceImpl.createDisk]
+ * 디스크 생성
+ *
+ * @param image [DiskImageVo]
+ * @param fileSize [Long]
+ * @return [Disk]
+ *//*
+
+private fun createDisk(image: DiskImageVo, fileSize: Long): Disk {
+    log.debug("createDisk ... ")
+    return DiskBuilder()
+        .provisionedSize(fileSize)
+        .alias(image.alias)
+        .description(image.description)
+        .storageDomains(*arrayOf(StorageDomainBuilder().id(image.storageDomainVo.id).build()))
+        .diskProfile(DiskProfileBuilder().id(image.diskProfileVo.id).build())
+        .wipeAfterDelete(image.wipeAfterDelete)
+        .shareable(image.sharable)
+        .backup(DiskBackup.NONE) // 증분백업 되지 않음
+        .format(DiskFormat.RAW) // 이미지 업로드는 raw형식만 가능
+        .contentType(DiskContentType.ISO) // iso 업로드
+        .build()
+        }
+
+	*//**
 	 * [StorageServiceImpl.imageSend]
 	 * 디스크 이미지 전송
 	 *
 	 * @param imageTransferService [ImageTransferService]
 	 * @param file [MultipartFile]
-	 */
+	 *//*
 	private fun imageSend(imageTransferService: ImageTransferService, file: MultipartFile): Boolean {
 		log.debug("imageSend ... ")
 		var httpsConn: HttpsURLConnection? = null
 		try {
-			disableSSLVerification()
+//			disableSSLVerification()
 			// 자바에서 HTTP 요청을 보낼 때 기본적으로 제한된 헤더를 사용자 코드에서 설정할 수 있도록 허용하는 설정
 			System.setProperty("sun.net.http.allowRestrictedHeaders", "true")
 
@@ -663,15 +677,10 @@ class StorageServiceImpl(
 			httpsConn?.disconnect()
 		}
 	}
-
-
-//	}
-
-
-	/**
+	*//**
 	 * [StorageServiceImpl.disableSSLVerification]
 	 * SSL 인증서를 검증하지 않도록 설정하는 메서드
-	 */
+	 *//*
 	private fun disableSSLVerification() {
 		log.debug("disableSSLVerification ... ")
 		try {
@@ -692,7 +701,7 @@ class StorageServiceImpl(
 		}
 	}
 
-
+*/
 
 
 

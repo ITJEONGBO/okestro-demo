@@ -56,8 +56,8 @@ open class DiskImageVo(
 	val sharable: Boolean = false,
 	val backup: Boolean = false,
 
-	val virtualSize: Int = 0,
-	val actualSize: Int = 0,
+	val virtualSize: BigInteger = BigInteger.ZERO,
+	val actualSize: BigInteger = BigInteger.ZERO,
 	val status: DiskStatus = DiskStatus.LOCKED,
 	val contentType: DiskContentType = DiskContentType.DATA, // unknown
 	val storageType: DiskStorageType = DiskStorageType.IMAGE,
@@ -82,8 +82,8 @@ open class DiskImageVo(
 		private var bWipeAfterDelete: Boolean = false;fun wipeAfterDelete(block: () -> Boolean?) { bWipeAfterDelete = block() ?: false }
 		private var bSharable: Boolean = false;fun sharable(block: () -> Boolean?) { bSharable = block() ?: false }
 		private var bBackup: Boolean = false;fun backup(block: () -> Boolean?) { bBackup = block() ?: false }
-		private var bVirtualSize: Int = 0;fun virtualSize(block: () -> Int?) { bVirtualSize = block() ?: 0 }
-		private var bActualSize: Int = 0;fun actualSize(block: () -> Int?) { bActualSize = block() ?: 0 }
+		private var bVirtualSize: BigInteger = BigInteger.ZERO;fun virtualSize(block: () -> BigInteger?) { bVirtualSize = block() ?: BigInteger.ZERO }
+		private var bActualSize: BigInteger = BigInteger.ZERO;fun actualSize(block: () -> BigInteger?) { bActualSize = block() ?: BigInteger.ZERO }
 		private var bStatus: DiskStatus = DiskStatus.LOCKED;fun status(block: () -> DiskStatus?) { bStatus = block() ?: DiskStatus.LOCKED }
 		private var bContentType: DiskContentType = DiskContentType.DATA;fun contentType(block: () -> DiskContentType?) { bContentType = block() ?: DiskContentType.DATA }
 		private var bStorageType: DiskStorageType = DiskStorageType.IMAGE;fun storageType(block: () -> DiskStorageType?) { bStorageType = block() ?: DiskStorageType.IMAGE }
@@ -114,9 +114,9 @@ fun Disk.toDiskImageVo(conn: Connection): DiskImageVo {
 			.getOrNull()
 
 	val dataCenter: DataCenter? =
-		storageDomain?.dataCenters()?.first()?.let {
-			conn.findDataCenter(it.id()).getOrNull()
-		}
+		if(storageDomain?.dataCentersPresent() == true) conn.findDataCenter(storageDomain.dataCenters().first().id()).getOrNull()
+		else null
+
 	val diskProfile: DiskProfile? =
 		conn.findDiskProfile(this@toDiskImageVo.diskProfile().id())
 			.getOrNull()
@@ -134,7 +134,7 @@ fun Disk.toDiskImageVo(conn: Connection): DiskImageVo {
 		sharable { this@toDiskImageVo.shareable() }
 		backup { this@toDiskImageVo.backup() == DiskBackup.INCREMENTAL }
 //		virtualSize
-		actualSize { this@toDiskImageVo.actualSize().toInt() }
+		actualSize { this@toDiskImageVo.actualSize() }
 		status { this@toDiskImageVo.status() }
 		contentType { this@toDiskImageVo.contentType() }
 		storageType { this@toDiskImageVo.storageType() }
@@ -158,13 +158,13 @@ fun DiskImageVo.toDiskBuilder(): DiskBuilder {
 		.shareable(this@toDiskBuilder.sharable)
 		.backup(if (this@toDiskBuilder.backup) DiskBackup.INCREMENTAL else DiskBackup.NONE)
 		.format(if (this@toDiskBuilder.backup) DiskFormat.COW else DiskFormat.RAW)
-		.storageDomain(StorageDomainBuilder().id(this@toDiskBuilder.storageDomainVo.id).build())
 		.sparse(this@toDiskBuilder.sparse)
 		.diskProfile(DiskProfileBuilder().id(this@toDiskBuilder.diskProfileVo.id)) // 없어도 상관없음
 }
 
 fun DiskImageVo.toAddDiskBuilder(): Disk =
 	this@toAddDiskBuilder.toDiskBuilder()
+		.storageDomains(*arrayOf(StorageDomainBuilder().id(this@toAddDiskBuilder.storageDomainVo.id).build()))
 		.provisionedSize(BigInteger.valueOf(this@toAddDiskBuilder.size.toLong() * 1024 * 1024 * 1024))
 		.build()
 

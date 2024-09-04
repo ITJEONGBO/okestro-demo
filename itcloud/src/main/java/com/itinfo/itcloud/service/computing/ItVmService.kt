@@ -166,47 +166,11 @@ interface ItVmService {
 	 */
 	@Throws(Error::class)
 	fun remove(vmId: String, disk: Boolean): Boolean
+
 	// 스냅샷 생성은 스냅샷에서 api로 연결
 
-	/**
-	 * [ItVmService.migrateHostList]
-	 * 마이그레이션 할 수 있는 호스트 목록
-	 *
-	 * @param vmId [String] 가상머신 id
-	 * @return List<[IdentifiedVo]>
-	 */
-    @Throws(Error::class)
-	fun migrateHostList(vmId: String): List<IdentifiedVo>
-	/**
-	 * [ItVmService.migrate]
-	 * 가상머신 마이그레이션
-	 *
-	 * @param vmId [String] 가상머신 id
-	 * @param hostId [String] 마이그레이션할 호스트 id
-	 * @return CommonVo<[Boolean]> 200(success) 404(fail)
-	 */
-    @Throws(Error::class)
-	fun migrate(vmId: String, hostId: String): Boolean
-	/**
-	 * [ItVmService.cancelMigration]
-	 * 가상머신 마이그레이션 취소
-	 *
-	 * @param vmId [String] 가상머신 id
-	 * @return CommonVo<[Boolean]> 200(success) 404(fail)
-	 */
-    @Throws(Error::class)
-	fun cancelMigration(vmId: String): Boolean
-	/**
-	 * TODO: 내보내기 창, 그와 별개로 vm operation과 겹치는 내용 삭제 바람
-	 * [ItVmService.exportOvaVm]
-	 * ova 창 = setHostList(String clusterId)
-	 *
-	 * @param vmExportVo [VmExportVo]
-	 * @return CommonVo<[Boolean]> 200(success) 404(fail)
-	 */
-    @Throws(Error::class)
-	fun exportOvaVm(vmExportVo: VmExportVo): Boolean // ova로 내보내기
 	// 네트워크 인터페이스, 디스크, 스냅샷은 따른 서비스로
+
 	/**
 	 * [ItVmService.findAllApplicationsByVm]
 	 *
@@ -492,57 +456,6 @@ class VmServiceImpl(
 		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
 		val res: Result<Boolean> =
 			conn.removeVm(vmId, disk)
-		return res.isSuccess
-	}
-
-	override fun migrateHostList(vmId: String): List<IdentifiedVo> {
-		log.info("migrateHostList ... vmId: {}", vmId)
-		val vm: Vm =
-			conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
-
-		val res: List<Host> =
-			conn.findAllHosts()
-				.getOrDefault(listOf())
-				.filter { host -> host.cluster().id() == vm.cluster().id() && host.id() != vm.host().id() }
-//		if (vm.placementPolicy().hostsPresent()){
-//			log.info("가상머신 특정 호스트 마이그레이션 목록");
-//			return vm.placementPolicy().hosts().stream() // 특정호스트
-//				.filter(host -> !host.id().equals(vm.host().id()))
-//				.map {
-//						Host host1 = system.hostsService().hostService(it.id()).get().send().host();
-//						return IdentifiedVo.builder().id(it.id()).name(host1.name()).build();
-//				}
-//		}
-		// 이건 클러스터 내 호스트 이야기
-		return res.fromHostsToIdentifiedVos()
-	}
-
-	override fun migrate(vmId: String, hostId: String): Boolean {
-		log.info("migrateVm ... ")
-		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
-		conn.findHost(hostId).getOrNull()?: throw ErrorPattern.HOST_NOT_FOUND.toError()
-		val res: Result<Boolean> =
-			conn.migrationVm(vmId, hostId)
-		return res.isSuccess
-	}
-
-	override fun cancelMigration(vmId: String): Boolean {
-		log.info("migrateCancelVm ... ")
-		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
-		val res: Result<Boolean> =
-			conn.cancelMigrationVm(vmId)
-		return res.isSuccess
-	}
-
-	override fun exportOvaVm(vmExportVo: VmExportVo): Boolean {
-		log.info("exportOvaVm ... ")
-		val res: Result<Boolean> =
-			conn.exportVm(
-				vmExportVo.vmVo.id,
-				vmExportVo.hostVo.name,
-				vmExportVo.directory,
-				vmExportVo.fileName
-			)
 		return res.isSuccess
 	}
 

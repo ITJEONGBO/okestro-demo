@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.service.computing
 
-import com.itinfo.itcloud.ItCloudApplication.Companion.log
+import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.network.NicVo
 import org.hamcrest.MatcherAssert.assertThat
@@ -144,4 +144,7 @@ class ItVmNicServiceTest {
         assertThat(removeResult, `is`(true))
     }
 
+    companion object {
+        private val log by LoggerDelegate()
+    }
 }

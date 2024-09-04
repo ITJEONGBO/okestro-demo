@@ -41,9 +41,9 @@ interface ItOvirtUserService {
 
 	/**
 	 * [ItOvirtUserService.addUser]
-	 *
 	 * ovirt 계정생성은 cli 로 해야함
-	 * ovirt 내에서 추가하는 함수
+	 * ovirt 에서 사용자 추가하는 함수
+	 * => ovirt-설정-사용자-add-add_user_and_group
 	 * @param userVo [UserVo]
 	 * @return userVo [UserVo]
 	 */

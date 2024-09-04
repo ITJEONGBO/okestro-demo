@@ -4,12 +4,10 @@ import com.itinfo.util.ovirt.error.*
 
 import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.Connection
+import org.ovirt.engine.sdk4.builders.DiskBuilder
 import org.ovirt.engine.sdk4.internal.containers.ImageContainer
 import org.ovirt.engine.sdk4.internal.containers.ImageTransferContainer
-import org.ovirt.engine.sdk4.services.DiskService
-import org.ovirt.engine.sdk4.services.DisksService
-import org.ovirt.engine.sdk4.services.ImageTransferService
-import org.ovirt.engine.sdk4.services.ImageTransfersService
+import org.ovirt.engine.sdk4.services.*
 import org.ovirt.engine.sdk4.types.*
 
 private fun Connection.srvAllDisks(): DisksService =
@@ -38,12 +36,24 @@ fun Connection.findDisk(diskId: String): Result<Disk?> = runCatching {
 	throw if (it is Error) it.toItCloudException() else it
 }
 
+fun Connection.findAllStorageDomainsFromDisk(diskId: String): Result<List<StorageDomain>> = runCatching {
+	val disk: Disk =
+		this.findDisk(diskId)
+			.getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
+	val storageDomains: List<StorageDomain> =
+		disk.storageDomains()
+
+	storageDomains
+}.onSuccess {
+	Term.DISK.logSuccess("{} 목록조회", Term.STORAGE_DOMAIN.desc)
+}.onFailure {
+	Term.DISK.logFail("목록조회")
+	throw if (it is Error) it.toItCloudException() else it
+}
+
 fun Connection.addDisk(disk: Disk): Result<Disk?> = runCatching {
-	val diskAdded: Disk = this.srvAllDisks().add().disk(disk).send().disk() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
-	if (expectDiskStatus(diskAdded.id())) {
-		log.error("디스크 생성 실패 ... 시간초과")
-		return Result.failure(Error("디스크 생성 실패 ... 시간초과"))
-	}
+	val diskAdded: Disk =
+		this.srvAllDisks().add().disk(disk).send().disk() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
 	diskAdded
 }.onSuccess {
 	Term.DISK.logSuccess("생성")
@@ -63,13 +73,9 @@ fun Connection.updateDisk(disk: Disk): Result<Disk?> = runCatching {
 }
 
 fun Connection.removeDisk(diskId: String): Result<Boolean> = runCatching {
-	val disk: Disk = this@removeDisk.findDisk(diskId).getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
+	this@removeDisk.findDisk(diskId).getOrNull() ?: throw ErrorPattern.DISK_ID_NOT_FOUND.toError()
 	this.srvDisk(diskId).remove().send()
-	val result: Boolean =
-		this.findAllDisks()
-			.getOrDefault(listOf())
-			.isDiskDeleted(disk)
-	result
+	this.expectDiskDeleted(diskId)
 }.onSuccess {
 	Term.DISK.logSuccess("삭제")
 }.onFailure {
@@ -77,20 +83,20 @@ fun Connection.removeDisk(diskId: String): Result<Boolean> = runCatching {
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-
-fun List<Disk>.isDiskDeleted(removeDisk: Disk, interval: Long = 1000L, timeout: Long = 60000L): Boolean {
-	log.debug("isHostDeleted ... ")
+fun Connection.expectDiskDeleted(diskId: String, interval: Long = 1000L, timeout: Long = 60000L): Boolean {
 	val startTime = System.currentTimeMillis()
 	while (true) {
-		val diskExists = this@isDiskDeleted.any { it.id() == removeDisk.id() }
-		if (!diskExists) {// !(매치되는것이 있다)
-			log.info("디스크 {} 삭제", removeDisk.name())
+		val disks: List<Disk> =
+			this.findAllDisks().getOrDefault(listOf())
+		val diskToRemove: Disk? = disks.firstOrNull() {it.id() == diskId}
+		if (diskToRemove == null) { // !(매치되는것이 있다)
+			Term.DISK.logSuccess("삭제")
 			return true
 		} else if (System.currentTimeMillis() - startTime > timeout) {
-			log.error("디스크 {} 삭제 시간 초과", removeDisk.name())
+			log.error("{} {} 삭제 실패 ... 시간 초과", Term.DISK.desc, diskToRemove)
 			return false
 		}
-		log.debug("디스크 삭제 진행중 ... ")
+		log.debug("{} 삭제 진행중 ... ", Term.DISK.desc)
 		Thread.sleep(interval)
 	}
 }
@@ -113,10 +119,17 @@ fun Connection.moveDisk(diskId: String, domainId: String): Result<Boolean> = run
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.copyDisk(diskId: String, domainId: String): Result<Boolean> = runCatching {
-	val disk: Disk = this.findDisk(diskId).getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
-	val storageDomain: StorageDomain = this.findStorageDomain(domainId).getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
-	this.srvDisk(diskId).copy().disk(disk).storageDomain(storageDomain).send() // 복사된 디스크가 같은 ID를 가질까?
+fun Connection.copyDisk(diskId: String, diskAlias:String, domainId: String): Result<Boolean> = runCatching {
+	val disk: Disk =
+		this.findDisk(diskId)
+			.getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
+	val storageDomain: StorageDomain =
+		this.findStorageDomain(domainId)
+			.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
+
+	this.srvDisk(diskId).copy().disk(DiskBuilder().id(diskId).alias(diskAlias)).storageDomain(storageDomain).send()
+	// 복사된 디스크가 같은 ID를 가질까? => x
+	// 근데 복사시 복사대상이 되는 디스크도 같이 Lock 걸리고 같이 잠김
 
 	if (!expectDiskStatus(disk.id())) {
 		log.error("디스크 복사 실패 ... 시간 초과")
@@ -153,8 +166,12 @@ private fun Connection.addImageTransfer(imageTransferContainer: ImageTransferCon
 
 
 fun Connection.uploadDisk(/*file: MultipartFile?, */disk: Disk): Result<Boolean> = runCatching {
+	// 디스크 생성
 	val diskUpload: Disk =
-		this.addDisk(disk).getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
+		this.addDisk(disk)
+			.getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
+
+	this.expectDiskStatus(diskUpload.id())
 
 	val imageContainer = ImageContainer()
 	imageContainer.id(diskUpload.id())
@@ -168,16 +185,13 @@ fun Connection.uploadDisk(/*file: MultipartFile?, */disk: Disk): Result<Boolean>
 			.getOrNull() ?: throw ErrorPattern.IMAGE_TRANSFER_NOT_FOUND.toError()
 
 	while(imageTransfer.phasePresent() && imageTransfer.phase() == ImageTransferPhase.INITIALIZING){
-		log.debug("이미지 업로드 상태확인 ... ${imageTransfer.phase()} ")
+		log.debug("이미지 업로드 상태확인 ... {}", imageTransfer.phase())
 		Thread.sleep(1000)
 	}
 
-	this.srvImageTransfer(imageTransfer.id())
 	val transferUrl = imageTransfer.transferUrl()
-	if(transferUrl == null || transferUrl.isEmpty()) throw ErrorPattern.UNKNOWN.toError() // 추가해야함
-
-
-
+	if(transferUrl != null) this.srvImageTransfer(imageTransfer.id()) // imageSend
+	else throw ErrorPattern.UNKNOWN.toError() // 추가해야함
 
 
 	true
@@ -187,41 +201,6 @@ fun Connection.uploadDisk(/*file: MultipartFile?, */disk: Disk): Result<Boolean>
 	Term.DISK.logFail("파일 업로드")
 	throw if (it is Error) it.toItCloudException() else it
 }
-
-//fun Connection.imageSend(file: MultipartFile, imageTransferService: ImageTransferService): Boolean {
-//	System.setProperty("sun.net.http.allowRestrictedHeaders", "true")
-//
-//	val url = URL(imageTransferService.get().send().imageTransfer().transferUrl())
-//	val httpsConn: HttpsURLConnection = url.openConnection() as HttpsURLConnection
-//	httpsConn.requestMethod = "PUT"
-//	httpsConn.setRequestProperty("Content-Length", file.size.toString())
-//	httpsConn.setFixedLengthStreamingMode(file.size) // 메모리 사용 최적화
-//	httpsConn.doOutput = true // 서버에 데이터를 보낼수 있게 설정
-//	httpsConn.connect()
-//
-//	// 버퍼 크기 설정 (128KB)
-//	val bufferSize = 131072
-//		BufferedInputStream(file.inputStream, bufferSize).use { bufferedInputStream ->
-//			BufferedOutputStream(
-//				httpsConn.outputStream, bufferSize
-//			).use { bufferedOutputStream ->
-//				val buffer = ByteArray(bufferSize)
-//				var bytesRead: Int
-//				while ((bufferedInputStream.read(buffer).also { bytesRead = it }) != -1) {
-//					bufferedOutputStream.write(buffer, 0, bytesRead)
-//				}
-//				bufferedOutputStream.flush()
-//				imageTransferService.finalize_().send() // image 전송 완료
-//				httpsConn.disconnect()
-//
-//				val imageTransfer = imageTransferService.get().send().imageTransfer()
-//				log.debug("phase() : {}", imageTransfer.phase())
-//				return true
-//			}
-//		}
-//			httpsConn?.disconnect()
-//
-//}
 
 
 /**
@@ -236,7 +215,7 @@ fun Connection.uploadDisk(/*file: MultipartFile?, */disk: Disk): Result<Boolean>
  * @throws InterruptedException
  */
 @Throws(InterruptedException::class)
-fun Connection.expectDiskStatus(diskId: String, expectStatus: DiskStatus = DiskStatus.OK, timeout: Long = 90000L, interval: Long = 1000L): Boolean {
+fun Connection.expectDiskStatus(diskId: String, expectStatus: DiskStatus = DiskStatus.OK, timeout: Long = 60000L, interval: Long = 1000L): Boolean {
 	val startTime = System.currentTimeMillis()
 	while (true) {
 		val disk: Disk? = this@expectDiskStatus.findDisk(diskId).getOrNull()
@@ -249,4 +228,16 @@ fun Connection.expectDiskStatus(diskId: String, expectStatus: DiskStatus = DiskS
 		log.info("디스크 상태: {}", status)
 		Thread.sleep(interval)
 	}
+}
+
+private fun Connection.srvPermissionsFromDisk(diskId: String): AssignedPermissionsService =
+	this.srvDisk(diskId).permissionsService()
+
+fun Connection.findAllPermissionsFromDisk(diskId: String): Result<List<Permission>> = runCatching {
+	this.srvPermissionsFromDisk(diskId).list().send().permissions()
+}.onSuccess {
+	Term.DISK.logSuccessWithin(Term.PERMISSION, "목록조회", diskId)
+}.onFailure {
+	Term.DISK.logFailWithin(Term.PERMISSION, "목록조회", it, diskId)
+	throw if (it is Error) it.toItCloudException() else it
 }

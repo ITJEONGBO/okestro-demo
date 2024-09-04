@@ -116,7 +116,7 @@ fun Connection.removeCluster(clusterId: String): Result<Boolean> = runCatching {
 
 
 @Throws(InterruptedException::class)
-fun Connection.expectClusterDeleted(clusterId: String, timeout: Long = 60000L, interval: Long = 1000L): Boolean {
+fun Connection.expectClusterDeleted(clusterId: String, interval: Long = 1000L, timeout: Long = 60000L): Boolean {
 	val startTime = System.currentTimeMillis()
 	while (true) {
 		val clusters: List<Cluster> =

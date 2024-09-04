@@ -180,8 +180,6 @@ public class StorageServiceImpl extends BaseService implements ItStorageService 
             // 기본 설정 크기, 데이터센터, 스토리지 도메인, 할당정책은 변경 불가능
         }
     }
-
-
     */
 /**
      * 디스크 이미지 수정 창 & 디스크 이동 창

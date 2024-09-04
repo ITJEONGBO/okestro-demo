@@ -36,7 +36,6 @@ open class DiskProfileVo(
 }
 
 fun DiskProfile.toDiskProfileVo(): DiskProfileVo {
-	log.debug("DiskProfile.toDiskProfileVo ... ")
 	return DiskProfileVo.builder {
 		id { this@toDiskProfileVo.id() }
 		name { if(this@toDiskProfileVo.namePresent()) this@toDiskProfileVo.name() else "" }
