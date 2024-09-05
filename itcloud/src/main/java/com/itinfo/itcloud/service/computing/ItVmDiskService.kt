@@ -1,6 +1,7 @@
 package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.response.Res
 import com.itinfo.itcloud.model.storage.*
 import com.itinfo.itcloud.service.BaseService
@@ -29,6 +30,8 @@ interface ItVmDiskService {
 	 * @return [DiskAttachmentVo]
 	 */
 	fun findOneDiskFromVm(vmId: String, diskAttachmentId: String): DiskAttachmentVo
+
+	fun adddiskattach(vmVo: VmVo): List<DiskAttachmentVo>
 	/**
 	 * [ItVmDiskService.addDiskFromVm]
 	 * 가상머신 디스크 생성
@@ -108,6 +111,16 @@ class VmDiskService(
 		return res.toDiskAttachmentVo(conn)
 	}
 
+
+	override fun adddiskattach(vmVo: VmVo): List<DiskAttachmentVo> {
+		val res: List<DiskAttachment> =
+			conn.addMultipleDiskAttachmentsToVm(vmVo.id, vmVo.diskAttachmentVos.toDiskAttachmentBuildersToVm())
+				.getOrDefault(listOf())
+
+		return res.toDiskAttachmentVos(conn)
+	}
+
+
 	override fun addDiskFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo? {
 		log.debug("addDiskFromVm ... vmId: {}", vmId)
 		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
@@ -116,7 +129,7 @@ class VmDiskService(
 		val diskImageVo: DiskImageVo? =
 			itStorageService.addDisk(diskAttachmentVo.diskImageVo)
 
-		diskAttachmentVo.toDiskAttachmentBuilder(conn, diskAttachmentVo)
+		diskAttachmentVo.toDiskAttachmentBuilder(conn)
 
 		/**
 		 * 가상머신에서 디스크 생성과정은

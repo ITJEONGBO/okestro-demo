@@ -32,17 +32,47 @@ interface ItOvirtUserService {
 	fun logout(httpSession: HttpSession)
 	fun allUsers(): List<UserVO>
 	*/
+
+	/**
+	 * [ItOvirtUserService.findAll]
+	 * 모든 사용자 조회
+	 *
+	 * @return List<[UserVo]>
+	 */
 	@Throws(PSQLException::class)
 	fun findAll(): List<UserVo>
-
+	/**
+	 * [ItOvirtUserService.findOne]
+	 * 특정 사용자 조회
+	 *
+	 * @param username [String]
+	 * @return [OvirtUser]
+	 */
 	@Throws(PSQLException::class)
 	fun findOne(username: String): OvirtUser
-
+	/**
+	 * [ItOvirtUserService.findAll]
+	 *
+	 * @param username [String]
+	 * @return [UserVo]
+	 */
 	@Throws(PSQLException::class)
 	fun findFullDetailByName(username: String): UserVo?
-
+	/**
+	 * [ItOvirtUserService.findEncryptedValue]
+	 * DB 비밀번호 암호문에서 base64로 디코딩한 값 출력
+	 *
+	 * @param input [String]
+	 * @return [String]
+	 */
 	fun findEncryptedValue(input: String): String
-
+	/**
+	 * [ItOvirtUserService.authenticateUser]
+	 *
+	 * @param username [String]
+	 * @param password [String]
+	 * @return List<[UserVo]>
+	 */
 	@Throws(PSQLException::class)
 	fun authenticateUser(username: String, password: String): Boolean
 
@@ -51,6 +81,9 @@ interface ItOvirtUserService {
 	 * ovirt 계정생성은 cli 로 해야함
 	 * ovirt 에서 사용자 추가하는 함수
 	 * => ovirt-설정-사용자-add-add_user_and_group
+	 *
+	 * cli로 계정생성할 때 필요한 정보는
+	 * userName, firstName, password-valid-to(기본은 1970)
 	 * @param userVo [UserVo]
 	 * @return userVo [UserVo]
 	 */

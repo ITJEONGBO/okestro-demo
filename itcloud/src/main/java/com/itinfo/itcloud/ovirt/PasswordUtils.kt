@@ -173,6 +173,7 @@ object EnvelopePBE {
 				password.toCharArray(), salt, map[ITERATIONS_KEY]!!.toInt(), salt.size * 8
 			)
 		)
+		// DB에 저장된 비번을 decode, secret에 있는 값과 새 비번을 변경하고 암호화된 값과 비교 ?
 		return Base64.decodeBase64(map[SECRET_KEY]).contentEquals(secretGenerated.encoded)
 	}
 

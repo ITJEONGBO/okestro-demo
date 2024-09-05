@@ -492,8 +492,8 @@ fun List<Vm>.toVmVoInfos(conn: Connection/*, graph: ItGraphService*/): List<VmVo
 // region: VmBuilder
 
 fun VmVo.toVmBuilder(conn: Connection): VmBuilder {
-    val vmBuilder: VmBuilder = VmBuilder()
-    this.toVmInitBuilder(vmBuilder)
+    val vmBuilder = VmBuilder()
+    this.toVmInfoBuilder(vmBuilder)
     this.toVmSystemBuilder(vmBuilder, conn)
     this.toVmInitBuilder(vmBuilder)
     this.toVmHostBuilder(vmBuilder)

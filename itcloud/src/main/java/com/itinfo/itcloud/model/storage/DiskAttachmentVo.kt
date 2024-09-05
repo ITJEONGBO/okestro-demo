@@ -93,9 +93,9 @@ fun List<DiskAttachment>.toDiskAttachmentVos(conn: Connection): List<DiskAttachm
 
 
 
-fun DiskAttachmentVo.toDiskAttachmentBuilder(conn: Connection, diskAttachmentVo: DiskAttachmentVo): DiskAttachment {
+fun DiskAttachmentVo.toDiskAttachmentBuilder(conn: Connection): DiskAttachment {
 	val diskAdd: Disk =
-		conn.findDisk(diskAttachmentVo.diskImageVo.id).getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
+		conn.findDisk(this@toDiskAttachmentBuilder.diskImageVo.id).getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
 	return DiskAttachmentBuilder()
 		.active(this@toDiskAttachmentBuilder.active)
 		.bootable(this@toDiskAttachmentBuilder.bootable)
@@ -106,3 +106,19 @@ fun DiskAttachmentVo.toDiskAttachmentBuilder(conn: Connection, diskAttachmentVo:
 		.disk(diskAdd)
 		.build()
 }
+fun List<DiskAttachmentVo>.toDiskAttachmentsBuilder(conn: Connection): List<DiskAttachment> =
+	this@toDiskAttachmentsBuilder.map { it.toDiskAttachmentBuilder(conn) }
+
+
+fun DiskAttachmentVo.toDiskAttachmentBuilderToVm(): DiskAttachment = DiskAttachmentBuilder()
+		.active(this@toDiskAttachmentBuilderToVm.active)
+		.bootable(this@toDiskAttachmentBuilderToVm.bootable)
+		.passDiscard(this@toDiskAttachmentBuilderToVm.passDiscard)
+		.readOnly(this@toDiskAttachmentBuilderToVm.readOnly)
+		.interface_(this@toDiskAttachmentBuilderToVm.interface_)
+		.logicalName(this@toDiskAttachmentBuilderToVm.logicalName)
+		.disk(this@toDiskAttachmentBuilderToVm.diskImageVo.toAddDiskBuilder())
+		.build()
+
+fun List<DiskAttachmentVo>.toDiskAttachmentBuildersToVm(): List<DiskAttachment> =
+	this@toDiskAttachmentBuildersToVm.map { it.toDiskAttachmentBuilderToVm() }

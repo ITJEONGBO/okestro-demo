@@ -150,8 +150,17 @@ fun Connection.resetVm(vmId: String): Result<Boolean> = runCatching {
 
 fun Connection.addDisksFromVm(vmId: String, diskIds: List<String> = listOf(), disks: List<Disk> = listOf()): Result<Boolean> = runCatching {
 	log.debug("Connection.addDisksFromVm ... ")
-	val vm: Vm = this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
-	val disk: List<Disk> = diskIds.mapNotNull { this.findDisk(it).getOrNull() } // 왜 또 조회하는지?
+	val vm: Vm =
+		this.findVm(vmId)
+			.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+
+	// disk 생성되는 방법이 두가지
+	// 생성과 연결, 생성의 경우 id가 없음/연결의 경우 id가 있음
+	// 먼저 해야하는건 (생성) disk 객체에 든
+
+
+	val disk: List<Disk> =
+		diskIds.mapNotNull { this.findDisk(it).getOrNull() } // 왜 또 조회하는지?
 	val diskAttachments: MutableList<DiskAttachment> = mutableListOf()
 
 	// 생성
@@ -160,10 +169,13 @@ fun Connection.addDisksFromVm(vmId: String, diskIds: List<String> = listOf(), di
 		d.getOrNull()?.let { diskAttachments.add(DiskAttachmentBuilder().id(disked.id()).build()) }
 	}
 
-	val res: List<Result<DiskAttachment>> = this@addDisksFromVm.addMultipleDiskAttachmentsToVm(vm.id(), diskAttachments)
-	val finalRes: Boolean = res.all { it.isSuccess }
-	// this.addDiskAttachmentsToVm(vm.id(), diskAttachments)
-	finalRes
+	val res: List<DiskAttachment> =
+		this@addDisksFromVm.addMultipleDiskAttachmentsToVm(vm.id(), diskAttachments)
+			.getOrDefault(listOf())
+//	val finalRes: Boolean = res.all { it.isSuccess }
+//
+//	finalRes
+	true
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.DISK, "생성", vmId)
 }.onFailure {
@@ -183,10 +195,20 @@ fun Connection.addDiskAttachmentToVm(vmId: String, diskAttachment: DiskAttachmen
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.addMultipleDiskAttachmentsToVm(vmId: String, diskAttachments: List<DiskAttachment>): List<Result<DiskAttachment>> =
-	diskAttachments.map { this@addMultipleDiskAttachmentsToVm.addDiskAttachmentToVm(vmId, it) }
+fun Connection.addMultipleDiskAttachmentsToVm(vmId: String, diskAttachments: List<DiskAttachment>): Result<List<DiskAttachment>> = runCatching {
+	val attachedDisks = diskAttachments.map { diskAttachment ->
+		this.addDiskAttachmentToVm(vmId, diskAttachment).getOrThrow()
+	}
+	log.info("여러 디스크 붙이기 성공")
+	attachedDisks
+}.onSuccess {
+	Term.VM.logSuccessWithin(Term.DISK, "여러 개 붙이기", vmId)
+}.onFailure {
+	Term.VM.logFailWithin(Term.DISK, "여러 개 붙이기", it, vmId)
+	throw if (it is Error) it.toItCloudException() else it
+}
 
-fun Connection.addDiskAttachmentsToVm(vmId: String, disks: MutableList<Disk>): Result<Boolean> = runCatching {
+fun Connection.addDiskAttachmentsToVm(vmId: String, disks: List<Disk>): Result<Boolean> = runCatching {
 	val diskAttach: List<DiskAttachmentBuilder> = disks.map {
 		DiskAttachmentBuilder().id(it.id())
 	}
@@ -204,12 +226,13 @@ fun Connection.bootableDiskExist(vmId: String): Boolean =
 		.getOrDefault(listOf())
 		.any { it.bootable() }
 
-fun Connection.addVm(vm: Vm,
-					 vnicProfileIds: List<String> = listOf(),
-					 diskIds: List<String> = listOf(),
-					 disks: List<Disk> = listOf(),
-					 bootId: String = ""): Result<Vm?> = runCatching {
-	// TODO: 파라미터에 대한 처리 내용 검토 필요
+fun Connection.addVm(
+	vm: Vm,
+	vnicProfileIds: List<String> = listOf(),
+	diskIds: List<String> = listOf(),
+	disks: List<Disk> = listOf(),
+	bootId: String = ""
+): Result<Vm?> = runCatching {
 	if (this.findAllVms()
 			.getOrDefault(listOf())
 			.nameDuplicateVm(vm.name())) {
@@ -220,7 +243,7 @@ fun Connection.addVm(vm: Vm,
 
 	// vnic 생성
 	if (vnicProfileIds.isNotEmpty()) {
-			this.addVnicsFromVm(vmAdded.id(), vnicProfileIds)
+			this.addNicsFromVm(vmAdded.id(), vnicProfileIds)
 	}
 	// disk 연결, 생성
 	// disk id -> diskattachment.add.disk(conn.finddisk(diskId))
@@ -423,16 +446,13 @@ fun Connection.findNicFromVm(vmId: String, nicId: String): Result<Nic?> = runCat
 }
 
 fun Connection.addNicFromVm(vmId: String, nic: Nic): Result<Nic?> = runCatching {
-	if (this.findAllNicsFromVm(vmId)
-			.getOrDefault(listOf())
-			.nameDuplicateVmNic(nic.name())) {
+	val existingNics = this.findAllNicsFromVm(vmId).getOrDefault(listOf())
+	if (existingNics.nameDuplicateVmNic(nic.name())) {
 		return FailureType.DUPLICATE.toResult(Term.NIC.desc)
 	}
 
 	if (nic.macPresent() && nic.mac().addressPresent() && nic.mac().address().isNotEmpty()) {
-		val hasDuplicateMac = findAllNicsFromVm(vmId)
-			.getOrDefault(listOf()).any { it.mac().address() == nic.mac().address() }
-		if (hasDuplicateMac)
+		if (existingNics.any { it.mac().address() == nic.mac().address() })
 			return FailureType.DUPLICATE.toResult("mac 주소")
 	}
 	srvNicsFromVm(vmId).add().nic(nic).send().nic()
@@ -443,17 +463,21 @@ fun Connection.addNicFromVm(vmId: String, nic: Nic): Result<Nic?> = runCatching 
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.addVnicsFromVm(vmId: String, vnicProfileIds: List<String>): Result<Boolean> = runCatching {
-	// 연결할때 문제생길거같음
-	// nic를 생성하는건데 vnicProfile id값만 있으면 됨
-	val nics: List<NicBuilder> = vnicProfileIds.map {
-		NicBuilder()
-			.name("nic" + (vnicProfileIds.indexOf(it)+1))
-			.vnicProfile(VnicProfileBuilder().id(it).build())
+fun Connection.addNicsFromVm(vmId: String, vnicProfileIds: List<String>): Result<Boolean> = runCatching {
+	val nics = vnicProfileIds.mapIndexed { index, profileId ->
+		NicBuilder().name("nic${index + 1}")
+			.vnicProfile(VnicProfileBuilder().id(profileId).build())
+			.build()
 	}
-	for (n in nics) { addNicFromVm(vmId, n.build()) }
-	log.info("vnic 생성 성공")
-	true
+
+	val results = nics.map { addNicFromVm(vmId, it) }
+	val allSuccessful = results.all { it.isSuccess }
+
+	if (!allSuccessful) {
+		val failedResults = results.filter { it.isFailure }
+		log.warn("일부 NIC 생성 실패: ${failedResults.size}개")
+	}
+	allSuccessful
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.NIC, "생성 여러개", vmId)
 }.onFailure {

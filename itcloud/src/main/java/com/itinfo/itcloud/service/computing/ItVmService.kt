@@ -365,10 +365,8 @@ class VmServiceImpl(
 		val res: Vm =
 			conn.addVm(
 				vmVo.toAddVmBuilder(conn),
-				vmVo.vnicProfileVos.map { it.id },
-				vmVo.diskAttachmentVos.map { it.id },
-				// vmVo.diskImages.toAddDiskBuilders(conn),
-				//
+				vmVo.vnicProfileVos.map { vnicProfileVo ->  vnicProfileVo.id },
+				vmVo.diskAttachmentVos.map { diskAttachmentVo ->  diskAttachmentVo.id },
 			)
 			.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 		return res.toVmVo(conn)
