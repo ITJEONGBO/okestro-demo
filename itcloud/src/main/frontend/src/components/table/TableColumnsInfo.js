@@ -160,7 +160,7 @@ const TableColumnsInfo = {
   ],
   CLUSTERS: [
     { header: '이름', accessor: 'name', clickable: false },
-    { header: '호환 버전', accessor: 'compatVersion', clickable: false },
+    { header: '호환 버전', accessor: 'version', clickable: false },
     { header: '연결된 네트워크', accessor: 'connectedNetwork', clickable: false },
     { header: '네트워크 상태', accessor: 'networkStatus', clickable: false },
     { header: '필수 네트워크', accessor: 'requiredNetwork', clickable: false },
@@ -220,6 +220,7 @@ const TableColumnsInfo = {
     { header: '이름', accessor: 'name', clickable: false },
     { header: '클러스터', accessor: 'cluster', clickable: false },
     { header: 'IP 주소', accessor: 'ipAddress', clickable: false },
+    { header: 'FQDN', accessor: 'fqdn', clickable: false },
     { header: 'vNIC 상태', accessor: 'vnicStatus', clickable: false },
     { header: 'vNIC', accessor: 'vnic', clickable: false },
     { header: 'vNIC Rx', accessor: 'vnicRx', clickable: false },
@@ -252,19 +253,19 @@ const TableColumnsInfo = {
   ],
   TEMPLATES: [
     { header: '이름', accessor: 'name', clickable: false },
-    { header: '버전', accessor: 'version', clickable: false },
+    { header: '버전', accessor: 'nicId', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },
-    { header: '클러스터', accessor: 'cluster', clickable: false },
-    { header: 'vNIC', accessor: 'vnic', clickable: false },
+    { header: '클러스터', accessor: 'clusterName', clickable: false },
+    { header: 'vNic', accessor: 'nicName', clickable: false },
   ],
   
   PERMISSIONS: [
     { header: '', accessor: 'icon', clickable: false },
     { header: '사용자', accessor: 'user', clickable: false },
-    { header: '인증 공급자', accessor: 'authProvider', clickable: false },
-    { header: '네임스페이스', accessor: 'namespace', clickable: false },
+    { header: '인증 공급자', accessor: 'provider', clickable: false },
+    { header: '네임스페이스', accessor: 'nameSpace', clickable: false },
     { header: '역할', accessor: 'role', clickable: false },
-    { header: '생성일', accessor: 'createdDate', clickable: false },
+    { header: '생성일', accessor: 'createDate', clickable: false },
     { header: 'Inherited From', accessor: 'inheritedFrom', clickable: false },
   ],
   AFFINITY_GROUP:[

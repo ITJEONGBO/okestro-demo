@@ -74,9 +74,10 @@ const Network = ({ }) => {
         }
             
         
-        if (column.accessor === 'dataCenter') {
-            navigate(`/computing/cluster/${row.name.props.children}`); 
-        }
+        // 
+        // if (column.accessor === 'dataCenter') {
+        //     navigate(`/computing/clusters/${row.name.props.children}`); 
+        // }
     };
 
     // 폰트 사이즈 조절
@@ -124,18 +125,7 @@ const Network = ({ }) => {
 
     ];
 
-    const sectionHeaderPopupItems = [
-        '가져오기',
-        '가상 머신 복제',
-        '삭제',
-        '마이그레이션 취소',
-        '변환 취소',
-        '템플릿 생성',
-        '도메인으로 내보내기',
-        'Export to Data Domain',
-        'OVA로 내보내기',
 
-    ];
 
     return (
         <div id="network_section">

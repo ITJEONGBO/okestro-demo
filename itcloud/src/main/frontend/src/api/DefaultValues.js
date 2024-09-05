@@ -61,18 +61,41 @@ const DEFAULT_VALUES = {
       upgradeStatus: 'Up to date',
     }
   ],
-   //클러스터세부
-  FIND_CLUSTERS_BY_ID:{
-    id: '40dc4bc6-9016-4a90-ae86-f3d36095a29f',
-    name: 'ovirtmgmt', 
-    description: 'Management Network', 
-    dataCenter: 'DC1', 
-    provider: 'Provider1', 
-    portSeparation: '아니요',
-    vnicProfileVos: '',
-  },
+   //클러스터세부(일반)
+  FIND_CLUSTERS_BY_ID:[
+    {
+      id: '40dc4bc6-9016-4a90-ae86-f3d36095a29f',
+      name: 'ovirtmgmt', 
+      description: 'Management Network', 
+      dataCenter: 'DC1', 
+      provider: 'Provider1', 
+      portSeparation: '아니요',
+      vnicProfileVos: '',
+    }
+  ],
+  //클러스터 논리네트워크
+  FIND_LOGICAL_NETWORK_FROM_CLUSTER:[
 
-  // 네트워크
+  ],
+  // 클러스터 호스트 
+  FIND_HOST_FROM_CLUSTER:[
+
+  ],
+  // 클러스터 가상머신
+
+
+  // 클러스터 선호도 그룹
+
+  // 클러스터 선호도 레이블 
+
+  // 클러스터 선호도 그룹
+  
+  // 클러스터 권한 
+
+  // 클러스터 이벤트
+
+
+  // 네트워크목록 나열
   FIND_ALL_NETWORKS: [
     { 
       id: '40dc4bc6-9016-4a90-ae86-f3d36095a29f',
@@ -81,23 +104,9 @@ const DEFAULT_VALUES = {
       dataCenter: 'DC1', 
       provider: 'Provider1', 
       portSeparation: '아니요' 
-    }, { 
-      id: '40dc4bc6-9016-4a90-ae86-f3d36095a29f',
-      name: 'example1', 
-      description: 'Example Description 1', 
-      dataCenter: 'DC2', 
-      provider: 'Provider2', 
-      portSeparation: '아니요' 
-    },{ 
-      id: '40dc4bc6-9016-4a90-ae86-f3d36095a29f',
-      name: 'example2', 
-      description: 'Example Description 1', 
-      dataCenter: 'DC2', 
-      provider: 'Provider2', 
-      portSeparation: '아니요' 
-    },
+    }
   ],
-  // 네트워크 세부
+  // 네트워크 세부(일반)
   FIND_NETWORK_BY_ID: { 
     id: '40dc4bc6-9016-4a90-ae86-f3d36095a29f',
     name: 'ovirtmgmt', 
@@ -121,46 +130,119 @@ const DEFAULT_VALUES = {
       }
     ],
   },
-
-  // 스토리지 도메인
-  FIND_ALL_STORAGE_DOMAINS: [
-    {
-      domainName: 'ㅁㅎㅇㅁㄹㄹ', // 여기에 도메인 이름을 설정합니다.
-      comment: '',
-      domainType: '',                
-      storageType: '',
-      format: '',
-      dataCenterStatus: '', 
-      totalSpace: '',
-      freeSpace: '',
-      reservedSpace: '',
-      description: '',
-    }
-  ],
-
-  //??                    
+  // 네트워크 vnic                   
   FIND_ALL_VNIC_PROFILES_FROM_NETWORK: [
     {
-      "id": "531162db-c6c3-40b2-a9a7-c9d91d7200fc",
-      "name": "ovirtmgmt",
-      "description": "",
-      "passThrough": "DISABLED",
-      "migration": false,
-      "portMirroring": false,
-      "networkFilterVo": {
-        "id": "d2370ab4-fee3-11e9-a310-8c1645ce738e",
-        "name": "vdsm-no-mac-spoofing"
+      id: "531162db-c6c3-40b2-a9a7-c9d91d7200fc",
+      name: "ovirtmgmt",
+      description: "",
+      passThrough: "DISABLED",
+      migration: false,
+      portMirroring: false,
+      networkFilterVo: {
+        id: "d2370ab4-fee3-11e9-a310-8c1645ce738e",
+        name: "vdsm-no-mac-spoofing"
       },
-      "dataCenterVo": {
+      dataCenterVo: {
         "id": "32cfa74b-9adc-40cc-a2a1-0ada699b714c",
         "name": "de"
       },
-      "networkVo": {
+      networkVo: {
         "id": "40dc4bc6-9016-4a90-ae86-f3d36095a29f",
         "name": "ovirtmgmt"
       }
     }
-  ]
+  ],
+  // 네트워크 클러스터
+  FIND_ALL_CLUSTERS_FROM_NETWORK:[
+    {
+      id: "temp-id",
+      name: "Default",
+      version: "4.7",
+      connectedNetwork: <input type="checkbox" />,
+      networkStatus: <i className="fa fa-chevron-left"></i>,
+      requiredNetwork: <input type="checkbox" />,
+      networkRole: "Admin",
+      description: "The default server cluster",
+    },
+  ],
+  // 네트워크 호스트
+  FIND_ALL_HOST_FROM_NETWORK:[
+    {
+      icon: '',
+      name: '',
+      cluster: '',
+      dataCenter: '',
+      networkDeviceStatus: '',
+      async: '',
+      networkDevice: '',
+      speed: '',
+      rx: '',
+      tx: '',
+      totalRx: '',
+      totalTx: '',
+    },
+  ],
+  // 네트워크 가상머신
+  FIND_ALL_VM_FROM_NETWORK:[
+    {
+      icon: <i className="fa fa-chevron-left"></i>,
+      name: 'HostedEngine',
+      cluster: 'Default',
+      ipAddress: '192.168.0.08 fe80::2342',
+      fqdn: 'ovirt.ititinfo.com',
+      vnicStatus: <i className="fa fa-chevron-left"></i>,
+      vnic: 'vnet0',
+      vnicRx: '1',
+      vnicTx: '1',
+      totalRx: '5,353,174,284',
+      totalTx: '5,353,174,284',
+      description: 'Hosted engine VM'
+    }
+  ],
+  // 네트워크 템플릿
+  FIND_ALL_TEMPLATE_FROM_NETWORK:[
+    {
+      name: 'test02',
+      nicId: '1',
+      status: 'OK',
+      clusterName: 'Default',
+      nicName: 'nic1',
+    }
+  ],
+  // 네트워크 권한
+  FIND_ALL_PERMISSION_FROM_NETWORK:[
+    {
+      icon: <i className="fa fa-user"></i>,
+      user: 'ovirtmgmt',
+      provider: '',
+      nameSpace: '*',
+      role: 'SuperUser',
+      createDate: '2023.12.29 AM 11:40:58',
+      inheritedFrom: '(시스템)',
+    }
+  ],
+
+
+// ----------------------스토리지    
+      // 스토리지 도메인
+    FIND_ALL_STORAGE_DOMAINS: [
+      {
+        domainName: 'ㅁㅎㅇㅁㄹㄹ', // 여기에 도메인 이름을 설정합니다.
+        comment: '',
+        domainType: '',                
+        storageType: '',
+        format: '',
+        dataCenterStatus: '', 
+        totalSpace: '',
+        freeSpace: '',
+        reservedSpace: '',
+        description: '',
+      }
+    ],
+
+
+
 }
 
 export default DEFAULT_VALUES

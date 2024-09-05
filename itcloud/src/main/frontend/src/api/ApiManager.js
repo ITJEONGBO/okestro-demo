@@ -128,6 +128,11 @@ const ApiManager = {
   findAllNetworks: async () => makeAPICall(ENDPOINTS.FIND_ALL_NETWORKS(), DEFAULT_VALUES.FIND_ALL_NETWORKS),
   findNetworkById: async (networkId) => makeAPICall(ENDPOINTS.FIND_NETWORK_BY_ID(networkId), DEFAULT_VALUES.FIND_NETWORK_BY_ID),
   findAllVnicProfilesFromNetwork: async (networkId) => makeAPICall(ENDPOINTS.FIND_ALL_VNIC_PROFILES_FROM_NETWORK(networkId), DEFAULT_VALUES.FIND_ALL_VNIC_PROFILES_FROM_NETWORK),
+  findAllClustersFromNetwork : async (networkId) => makeAPICall(ENDPOINTS.FIND_ALL_CLUSTERS_FROM_NETWORK(networkId), DEFAULT_VALUES.FIND_ALL_CLUSTERS_FROM_NETWORK),
+  findAllHostsFromNetwork : async (networkId) => makeAPICall(ENDPOINTS.FIND_ALL_HOST_FROM_NETWORK(networkId), DEFAULT_VALUES.FIND_ALL_HOST_FROM_NETWORK),
+  findAllVMFromNetwork : async (networkId) => makeAPICall(ENDPOINTS.FIND_ALL_VM_NETWORK(networkId), DEFAULT_VALUES.FIND_ALL_VM_FROM_NETWORK),
+  findAllTemplateFromNetwork : async (networkId) => makeAPICall(ENDPOINTS.FIND_ALL_TEMPLATE_NETWORK(networkId), DEFAULT_VALUES.FIND_ALL_TEMPLATE_FROM_NETWORK),
+  findAllPermissionFromNetwork : async (networkId) => makeAPICall(ENDPOINTS.FIND_ALL_PERMISSION_NETWORK(networkId), DEFAULT_VALUES.FIND_ALL_PERMISSION_FROM_NETWORK),
   //endregion: Network
   
   //region: StorageDomain

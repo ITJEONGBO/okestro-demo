@@ -9,7 +9,7 @@ import Footer from '../footer/Footer';
 import NetworkDetailGeneral from './NetworkDetailGeneral';
 import './css/NetworkDetail.css';
 import Permission from '../Modal/Permission';
-import { useNetworkById, useAllVnicProfilesFromNetwork } from '../../api/RQHook';
+import { useNetworkById, useAllVnicProfilesFromNetwork, useAllClustersFromNetwork, useAllHostsFromNetwork, useAllVmsFromNetwork, useAllTemplateFromNetwork, useAllPermissionFromNetwork } from '../../api/RQHook';
 
 const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) => {
   // 테이블컴포넌트
@@ -49,6 +49,40 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     vnicProfilesRefetch()
   }, [setShouldRefresh, vnicProfilesRefetch])
 
+  const { 
+    data: clusters, 
+    status: clustersStatus, 
+    isLoading: isClustersLoading, 
+    isError: isClustersError 
+  } = useAllClustersFromNetwork(network?.id, toTableItemPredicateClusters);
+  const { 
+    data: hosts, 
+    status: hostsStatus, 
+    isLoading: isHostsLoading, 
+    isError: isHostsError 
+  } = useAllHostsFromNetwork(network?.id, toTableItemPredicateHosts);  
+
+  const { 
+    data: vms, 
+    status: vmsStatus, 
+    isLoading: isVmsLoading, 
+    isError: isVmsError 
+  } = useAllVmsFromNetwork(network?.id, toTableItemPredicateVms);
+  const { 
+    data: templates, 
+    status: templatesStatus, 
+    isLoading: isTemplatesLoading, 
+    isError: isTemplatesError 
+  } = useAllTemplateFromNetwork(network?.id, toTableItemPredicateTemplates);
+  const { 
+    data: permissions, 
+    status: permissionsStatus, 
+    isLoading: isPermissionsLoading, 
+    isError: isPermissionsError 
+  } = useAllPermissionFromNetwork(network?.id, toTableItemPredicatePermissions);
+
+
+  // 함수들
   function toTableItemPredicateVnicProfiles(e) {
     return {
         id: e?.id ?? '없음',
@@ -72,23 +106,72 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         passthrough: e?.passThrough ?? '없음',
     }
   }
-
-  //클러스터
-  const clusterData = [
-    {
-      id: id,
-      name: 'Default',
-      compatVersion: '4.7',
-      connectedNetwork: <input type="checkbox" />,
+  function toTableItemPredicateClusters(cluster) {
+    return {
+      id: cluster?.id ?? '없음',
+      name: cluster?.name ?? '없음',
+      description: cluster?.description ?? '없음',
+      version: cluster?.version ?? '없음',
+      connectedNetwork: cluster?.connected ? <input type="checkbox" checked /> : <input type="checkbox" />,
       networkStatus: <i className="fa fa-chevron-left"></i>,
-      requiredNetwork: <input type="checkbox" />,
-      networkRole: '',
-      description: 'The default server cluster',
-    },
-  ];
+      requiredNetwork: cluster?.requiredNetwork ? <input type="checkbox" checked /> : <input type="checkbox" />,
+      networkRole: cluster?.networkRole ?? '',
+    };
+  }
 
-  // 클러스터 팝업
-
+  function toTableItemPredicateHosts(host) {
+    return {
+      id: host?.id ?? '',               
+      name: host?.name ?? 'Unknown',           
+      cluster: host?.clusterVo?.name ?? 'N/A',
+      dataCenter: host?.dataCenterVo?.name ?? 'N/A',
+      networkDeviceStatus: host?.hostNicVos?.[0]?.status ?? 'Unknown', 
+      networkDevice: host?.hostNicVos?.[0]?.name ?? 'N/A', 
+      speed: host?.hostNicVos?.[0]?.speed ?? 'N/A', 
+      rx: host?.hostNicVos?.[0]?.rxSpeed ?? 'N/A', 
+      tx: host?.hostNicVos?.[0]?.txSpeed ?? 'N/A', 
+      totalRx: host?.hostNicVos?.[0]?.rxTotalSpeed ?? 'N/A', 
+      totalTx: host?.hostNicVos?.[0]?.txTotalSpeed ?? 'N/A', 
+    };
+  }
+  function toTableItemPredicateVms(vm) {
+    return {
+      id: vm?.id ?? '없음',  // 가상 머신 ID
+      icon: <i className="fa fa-chevron-left"></i>,  // 가상 머신 아이콘
+      name: vm?.name ?? '없음',  // 가상 머신 이름
+      cluster: vm?.cluster ?? '없음',  // 클러스터 이름
+      ipAddress: vm?.ipAddress ?? '없음',  // IP 주소
+      fqdn:  vm?.fqdn ?? '',
+      vnicStatus: <i className="fa fa-chevron-left"></i>,  // vNIC 상태 아이콘
+      vnic: vm?.vnic ?? '없음',  // vNIC 이름
+      vnicRx: vm?.vnicRx ?? '없음',  // vNIC 수신 속도
+      vnicTx: vm?.vnicTx ?? '없음',  // vNIC 송신 속도
+      totalRx: vm?.totalRx ?? '없음',  // 총 수신 데이터
+      totalTx: vm?.totalTx ?? '없음',  // 총 송신 데이터
+      description: vm?.description ?? '없음'  // 가상 머신 설명
+    };
+  }
+  function toTableItemPredicateTemplates(template) {
+    return {
+      name: template?.name ?? '없음',  // 템플릿 이름
+      nicId: template?.nicId ?? '없음',  // 템플릿 버전
+      status: template?.status ?? '없음',  // 템플릿 상태
+      clusterName: template?.clusterName ?? '없음',  // 클러스터 이름
+      nicName: template?.nicName ?? '없음',  // vNIC 이름
+    };
+  }
+  function toTableItemPredicatePermissions(permission) {
+    return {
+      icon: <i className="fa fa-user"></i>,  // 사용자 아이콘
+      user: permission?.user ?? '없음',  // 사용자 이름
+      provider: permission?.provider ?? '없음',  // 인증 제공자
+      nameSpace: permission?.nameSpace ?? '없음',  // 네임스페이스
+      role: permission?.role ?? '없음',  // 역할
+      createDate: permission?.createDate ?? '없음',  // 생성 날짜
+      inheritedFrom: permission?.inheritedFrom ?? '없음',  // 상속된 위치
+    };
+  }
+  // 클러스터 팝업(보류)
   const clusterPopupData = [
     {
       id: id,
@@ -115,67 +198,6 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     },
   ];
   
-  // 호스트
-  const hostData = [
-    {
-      icon: '',
-      name: '',
-      cluster: '',
-      dataCenter: '',
-      networkDeviceStatus: '',
-      async: '',
-      networkDevice: '',
-      speed: '',
-      rx: '',
-      tx: '',
-      totalRx: '',
-      totalTx: '',
-    },
-  ];
-
-  
-  //가상머신
-  const vmData = [
-    {
-      icon: <i className="fa fa-chevron-left"></i>,
-      name: 'HostedEngine',
-      cluster: 'Default',
-      ipAddress: '192.168.0.08 fe80::2342',
-      vnicStatus: <i className="fa fa-chevron-left"></i>,
-      vnic: 'vnet0',
-      vnicRx: '1',
-      vnicTx: '1',
-      totalRx: '5,353,174,284',
-      totalTx: '5,353,174,284',
-      description: 'Hosted engine VM'
-  
-    },
-  ];
-
-  //템플릿
-  const templateData = [
-    {
-      name: 'test02',
-      version: '1',
-      status: 'OK',
-      cluster: 'Default',
-      vnic: 'nic1',
-    },
-  ];
-
-
-  //권한
-  const permissionData = [
-    {
-      icon: <i className="fa fa-user"></i>,
-      user: 'ovirtmgmt',
-      authProvider: '',
-      namespace: '*',
-      role: 'SuperUser',
-      createdDate: '2023.12.29 AM 11:40:58',
-      inheritedFrom: '(시스템)',
-    },
-  ];
 
   // 
   const [activeTab, setActiveTab] = useState('general');
@@ -254,9 +276,8 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
             <div className="section_table_outer">
               <Table 
                 columns={TableColumnsInfo.CLUSTERS} 
-                data={clusterData} 
+                data={clusters} 
                 onRowClick={() => console.log('Row clicked')}
-                shouldHighlight1stCol={true}
               />
             </div>
        </>
@@ -281,7 +302,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
               </button>
             </div>
             <div className="section_table_outer">
-              <Table columns={TableColumnsInfo.HOSTS} data={hostData} onRowClick={() => console.log('Row clicked')} />
+              <Table columns={TableColumnsInfo.HOSTS} data={hosts} onRowClick={() => console.log('Row clicked')} />
             </div>
        </>
        
@@ -305,11 +326,9 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                 </button>
             </div>
             <div className="section_table_outer">
-              <Table columns={TableColumnsInfo.VMS} data={vmData} onRowClick={() => console.log('Row clicked')} />
-            </div>
-            
+              <Table columns={TableColumnsInfo.VMS} data={vms} onRowClick={() => console.log('Row clicked')} />
+            </div>   
        </>
-       
         )}
 
         {activeTab === 'template' && (
@@ -319,7 +338,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
             </div>
 
             <div className="section_table_outer">
-              <Table columns={TableColumnsInfo.TEMPLATES} data={templateData} onRowClick={() => console.log('Row clicked')} />
+              <Table columns={TableColumnsInfo.TEMPLATES} data={templates} onRowClick={() => console.log('Row clicked')} />
             </div>
           
         </>
@@ -355,7 +374,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
               <div className="section_table_outer">
               <Table
                     columns={TableColumnsInfo.PERMISSIONS}
-                    data={activePermissionFilter === 'all' ? permissionData : []}
+                    data={permissions}
                     onRowClick={() => console.log('Row clicked')}
                   />
 
