@@ -7,5 +7,6 @@ import java.util.UUID
 
 @Repository
 interface UserDetailRepository: JpaRepository<UserDetail, UUID> {
-	fun findByExternalId(externalId: String): UserDetail?
+	fun findByExternalId(externalId: String?): UserDetail?
+	fun findByName(name: String?): UserDetail?
 }

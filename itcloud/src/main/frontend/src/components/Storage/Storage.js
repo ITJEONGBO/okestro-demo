@@ -13,20 +13,6 @@ Modal.setAppElement('#root'); // React 16 이상에서는 필수
 
 const Storage = () => {
   const navigate = useNavigate();
-  
-  /* 
-    const [storageData, setStorageData] = useState([]);
-    useEffect(() => {
-        async function fetchData() {
-            const res = await ApiManager.findAllStorage();
-            setStorageData(res);
-        }
-        fetchData()
-    }, [])
-    */
-
-
-
   // 테이블 컴포넌트
   const data = [
     {
@@ -98,7 +84,6 @@ const Storage = () => {
   };
 
   // 도메인 테이블 컴포넌트 
-
   const domaindata = [
     {
       status: <i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i>,
@@ -147,7 +132,6 @@ const Storage = () => {
 
   // State for active section
   const [activeSection, setActiveSection] = useState('disk');
-
   const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
   const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
   const [activeTab, setActiveTab] = useState('img');
@@ -214,8 +198,6 @@ const Storage = () => {
     'OVA로 내보내기',
   ];
 
-
-
   return (
     <div id="storage_section">
       <div>
@@ -253,7 +235,11 @@ const Storage = () => {
                     <button><i className="fa fa-search"></i></button>
                   </div>
                   {/* Table 컴포넌트를 이용하여 테이블을 생성합니다. */}
-                  <Table columns={TableColumnsInfo.STORAGE_DOMAINS} data={domaindata} onRowClick={handleDomainClick} />
+                  <Table 
+                    columns={TableColumnsInfo.STORAGE_DOMAINS} 
+                    data={domaindata} 
+                    onRowClick={handleDomainClick} 
+                  />
                 </div>
               </>
         

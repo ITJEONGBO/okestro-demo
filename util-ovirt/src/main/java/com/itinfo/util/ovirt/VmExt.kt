@@ -115,7 +115,7 @@ fun Connection.shutdownVm(vmId: String): Result<Boolean> = runCatching {
 
 fun Connection.rebootVm(vmId: String): Result<Boolean> = runCatching {
 	log.debug("Connection.rebootVm ... ")
-	val vm: Vm = this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 	this.srvVm(vmId).reboot().send()
 //	if (!this@rebootVm.expectVmStatus(vmId, VmStatus.UP)) {
 //		log.error("가상머신 재부팅 시간 초과: {}", vm.name())
@@ -132,7 +132,7 @@ fun Connection.rebootVm(vmId: String): Result<Boolean> = runCatching {
 }
 
 fun Connection.resetVm(vmId: String): Result<Boolean> = runCatching {
-	val vm: Vm = this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 	this.srvVm(vmId).reset().send()
 //	if (!this@resetVm.expectVmStatus(vmId, VmStatus.UP)) {
 //		log.error("가상머신 재설정 시간 초과: {}", vm.name())

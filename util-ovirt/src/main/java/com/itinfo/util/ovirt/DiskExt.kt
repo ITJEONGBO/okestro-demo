@@ -203,7 +203,7 @@ fun Connection.uploadDisk(/*file: MultipartFile?, */disk: Disk): Result<Boolean>
 
 	val transferUrl = imageTransfer.transferUrl()
 	if(transferUrl != null) this.srvImageTransfer(imageTransfer.id()) // imageSend
-	else throw ErrorPattern.REQUIRED_VALUE_EMPTY.toError()
+	else throw ErrorPattern.OVIRTUSER_REQUIRED_VALUE_EMPTY.toError()
 	true
 }.onSuccess {
 	Term.DISK.logSuccess("파일 업로드")

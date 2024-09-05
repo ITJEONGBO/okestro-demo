@@ -25,8 +25,8 @@ const ENDPOINTS = {
   FIND_ALL_VNIC_PROFILES_FROM_NETWORK: (networkId) =>  `/api/v1/networks/${networkId}/vnics`, // vnics
   FIND_ALL_CLUSTERS_FROM_NETWORK:(networkId) => `/api/v1/networks/${networkId}/clusters`,
   FIND_ALL_HOST_FROM_NETWORK:(networkId) => `​/api​/v1​/networks​/${networkId}​/hosts`,
-  FIND_ALL_VM_NETWORK:(networkId) => `/api/v1/networks/${networkId}/vms`,
-  FIND_ALL_TEMPLATE_NETWORK:(networkId) => `/api/v1/networks/${networkId}/templates`,
+  FIND_ALL_VMS_FROM_NETWORK:(networkId) => `/api/v1/networks/${networkId}/vms`,
+  FIND_ALL_TEMPLATES_NETWORK:(networkId) => `/api/v1/networks/${networkId}/templates`,
   FIND_ALL_PERMISSION_NETWORK:(networkId) => `/api/v1/networks/${networkId}/permissions`,
   //endregion: Network
 

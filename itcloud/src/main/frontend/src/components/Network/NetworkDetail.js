@@ -9,7 +9,15 @@ import Footer from '../footer/Footer';
 import NetworkDetailGeneral from './NetworkDetailGeneral';
 import './css/NetworkDetail.css';
 import Permission from '../Modal/Permission';
-import { useNetworkById, useAllVnicProfilesFromNetwork, useAllClustersFromNetwork, useAllHostsFromNetwork, useAllVmsFromNetwork, useAllTemplateFromNetwork, useAllPermissionFromNetwork } from '../../api/RQHook';
+import { 
+  useNetworkById, 
+  useAllVnicProfilesFromNetwork, 
+  useAllClustersFromNetwork, 
+  useAllHostsFromNetwork, 
+  useAllVmsFromNetwork, 
+  useAllTemplatesFromNetwork, 
+  useAllPermissionsFromNetwork 
+} from '../../api/RQHook';
 
 const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) => {
   // 테이블컴포넌트
@@ -61,7 +69,6 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     isLoading: isHostsLoading, 
     isError: isHostsError 
   } = useAllHostsFromNetwork(network?.id, toTableItemPredicateHosts);  
-
   const { 
     data: vms, 
     status: vmsStatus, 
@@ -73,13 +80,13 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     status: templatesStatus, 
     isLoading: isTemplatesLoading, 
     isError: isTemplatesError 
-  } = useAllTemplateFromNetwork(network?.id, toTableItemPredicateTemplates);
+  } = useAllTemplatesFromNetwork(network?.id, toTableItemPredicateTemplates);
   const { 
     data: permissions, 
     status: permissionsStatus, 
     isLoading: isPermissionsLoading, 
     isError: isPermissionsError 
-  } = useAllPermissionFromNetwork(network?.id, toTableItemPredicatePermissions);
+  } = useAllPermissionsFromNetwork(network?.id, toTableItemPredicatePermissions);
 
 
   // 함수들

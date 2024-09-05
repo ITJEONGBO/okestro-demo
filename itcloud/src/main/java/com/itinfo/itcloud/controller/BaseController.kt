@@ -11,6 +11,7 @@ import com.itinfo.util.ovirt.error.ItCloudException
 import io.swagger.annotations.Api
 
 import org.ovirt.engine.sdk4.Error
+import org.postgresql.util.PSQLException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -27,7 +28,7 @@ class RootController: BaseController() {
 class BaseController(
 
 ) {
-	@ExceptionHandler(InvalidRequestException::class)
+	@ExceptionHandler(InvalidRequestException::class, PSQLException::class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	fun handleInvalidRequest(e: Throwable): ResponseEntity<Res<Any?>> {
 		log.error("handleInvalidRequest ... e: {}", e::class.simpleName)

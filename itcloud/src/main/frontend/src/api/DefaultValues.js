@@ -184,7 +184,7 @@ const DEFAULT_VALUES = {
     },
   ],
   // 네트워크 가상머신
-  FIND_ALL_VM_FROM_NETWORK:[
+  FIND_ALL_VMS_FROM_NETWORK:[
     {
       icon: <i className="fa fa-chevron-left"></i>,
       name: 'HostedEngine',
@@ -201,7 +201,7 @@ const DEFAULT_VALUES = {
     }
   ],
   // 네트워크 템플릿
-  FIND_ALL_TEMPLATE_FROM_NETWORK:[
+  FIND_ALL_TEMPLATES_FROM_NETWORK:[
     {
       name: 'test02',
       nicId: '1',

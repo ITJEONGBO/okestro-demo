@@ -9,16 +9,12 @@ import com.itinfo.itcloud.model.auth.UserVo
 
 import com.itinfo.itcloud.service.auth.ItOvirtUserService
 import com.itinfo.util.ovirt.error.ErrorPattern
+import com.sun.org.apache.xpath.internal.operations.Bool
 import io.swagger.annotations.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.*
 
 @Controller
 @Api(tags = ["Login"])
@@ -42,6 +38,13 @@ class LoginController: BaseController() {
 	}
 */
 
+	@GetMapping("users")
+	fun findAll(): ResponseEntity<List<UserVo>> {
+		log.info("findAll ... ")
+		val res: List<UserVo> = ovirtUser.findAll()
+		return ResponseEntity.ok(res)
+	}
+
 	@ApiOperation(
 		httpMethod="GET",
 		value="아이디/비밀번호 검증 (테스트용)",
@@ -55,19 +58,49 @@ class LoginController: BaseController() {
 		ApiResponse(code = 404, message = "찾을 수 없는 사용자")
 	)
 	@GetMapping("users/{username}/{password}")
-	fun validateUser(
+	fun validate(
 		@PathVariable username: String = "",
 		@PathVariable password: String = ""
 	): ResponseEntity<Boolean> {
-		log.info("findPasswordEncrypted ... username: {}, password: {}", username, password)
-		val res: Boolean = ovirtUser.authenticateUser(username, password)
+		log.info("validate ... username: {}, password: {}", username, password)
+		if (username.isEmpty()) throw ErrorPattern.OVIRTUSER_ID_NOT_FOUND.toException()
+		if (password.isEmpty()) throw ErrorPattern.OVIRTUSER_REQUIRED_VALUE_EMPTY.toException()
+		val res: Boolean = ovirtUser.authenticate(username, password)
 		return ResponseEntity.ok(res)
 	}
 
 	@ApiOperation(
-		httpMethod="GET",
+		httpMethod="POST",
+		value="계정생성 (테스트용)",
+		notes="사용자의 계정정보를 생성한다."
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="username", value="ovirt 사용자 ID", dataTypeClass=String::class, required=true, paramType="query"),
+		ApiImplicitParam(name="password", value="ovirt 사용자 비밀번호", dataTypeClass=String::class, required=true, paramType="query"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "성공"),
+		ApiResponse(code = 401, message = "인증 불량"),
+		ApiResponse(code = 403, message = "중복된 ID의 사용자")
+	)
+	@PostMapping("users")
+	fun add(
+		@RequestParam(required=true) username: String = "",
+		@RequestParam(required=true) password: String? = null,
+	):  ResponseEntity<UserVo?> {
+		log.info("add ... username: {}", username)
+		if (username.isEmpty())					throw ErrorPattern.OVIRTUSER_REQUIRED_VALUE_EMPTY.toException()
+		if (password.isNullOrEmpty())	        throw ErrorPattern.OVIRTUSER_REQUIRED_VALUE_EMPTY.toException()
+		val res: UserVo? = ovirtUser.add(username, password)
+		return ResponseEntity.ok(res)
+	}
+
+
+	@ApiOperation(
+		httpMethod="PUT",
 		value="비밀번호 변경",
-		notes="비밀번호 변경")
+		notes="비밀번호 변경"
+	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="username", value="ovirt 사용자 ID", dataTypeClass=String::class, required=true, paramType="path"),
 		ApiImplicitParam(name="currentPassword", value="ovirt 사용자 기존 비밀번호", dataTypeClass=String::class, required=true, paramType="query"),
@@ -85,21 +118,34 @@ class LoginController: BaseController() {
 		@RequestParam(required=true) newPassword: String? = null,
 	):  ResponseEntity<OvirtUser> {
 		log.info("changePassword ... username: {}", username)
-		if (username.isEmpty()) throw ErrorPattern.OVIRTUSER_ID_NOT_FOUND.toException()
-		if (currentPassword.isNullOrEmpty()) throw ErrorPattern.REQUIRED_VALUE_EMPTY.toException()
-		if (newPassword.isNullOrEmpty()) throw ErrorPattern.REQUIRED_VALUE_EMPTY.toException()
+		if (username.isEmpty())					throw ErrorPattern.OVIRTUSER_ID_NOT_FOUND.toException()
+		if (currentPassword.isNullOrEmpty())	throw ErrorPattern.OVIRTUSER_REQUIRED_VALUE_EMPTY.toException()
+		if (newPassword.isNullOrEmpty())		throw ErrorPattern.OVIRTUSER_REQUIRED_VALUE_EMPTY.toException()
 		val res: OvirtUser = ovirtUser.changePassword(username, currentPassword, newPassword)
 		return ResponseEntity.ok(res)
 	}
 
-
-	@GetMapping("users")
-	fun findAllOvirtUsers(): ResponseEntity<List<UserVo>> {
-		log.info("findAllOvirtUsers ... ")
-		val res: List<UserVo> = ovirtUser.findAll()
+	@ApiOperation(
+		httpMethod="DELETE",
+		value="사용자 삭제",
+		notes="사용자 삭제"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="username", value="ovirt 사용자 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "성공"),
+		ApiResponse(code = 401, message = "인증 불량"),
+		ApiResponse(code = 404, message = "찾을 수 없는 사용자")
+	)
+	@DeleteMapping("users/{username}")
+	fun remove(
+		@PathVariable username: String = ""
+	): ResponseEntity<Boolean> {
+		log.info("remove ... username: {}", username)
+		val res: Boolean = ovirtUser.remove(username)
 		return ResponseEntity.ok(res)
 	}
-
 
 	@GetMapping("password/{input}")
 	fun spitPasswordEncoded(

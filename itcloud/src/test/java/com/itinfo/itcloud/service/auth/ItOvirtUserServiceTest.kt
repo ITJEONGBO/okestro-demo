@@ -3,8 +3,6 @@ package com.itinfo.itcloud.service.auth
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.aaarepository.entity.OvirtUser
 import com.itinfo.itcloud.model.auth.UserVo
-import com.itinfo.itcloud.ovirt.hashPassword
-import com.itinfo.itcloud.ovirt.validatePassword
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.Test
@@ -106,7 +104,7 @@ class ItOvirtUserServiceTest {
 		assertThat(userAfter.password, `is`(not(nullValue())))
 		assertThat(userAfter.passwordValidTo, `is`(not(nullValue())))
 
-		val isPwValid: Boolean = ovirtUser.authenticateUser(username, newPw)
+		val isPwValid: Boolean = ovirtUser.authenticate(username, newPw)
 		assertThat(isPwValid, `is`(true))
 	}
 

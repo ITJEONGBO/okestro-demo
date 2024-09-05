@@ -5,13 +5,8 @@ const Footer = () => {
   const [isFooterContentVisible, setIsFooterContentVisible] = useState(false);
   const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
 
-  const toggleFooterContent = () => {
-    setIsFooterContentVisible(!isFooterContentVisible);
-  };
-
-  const handleFooterTabClick = (tab) => {
-    setSelectedFooterTab(tab);
-  };
+  const toggleFooterContent = () => setIsFooterContentVisible(!isFooterContentVisible);
+  const handleFooterTabClick = (tab) => setSelectedFooterTab(tab);
 
   return (
     <div className="footer_outer">

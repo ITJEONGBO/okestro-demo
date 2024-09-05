@@ -29,24 +29,24 @@ function App() {
             <Router>
                 <Header />
                 <MainOuter>
-                    <Routes>
-                        <Route path="/" element={<Dashboard />} />
-                        <Route path="/computing/datacenter" element={<Computing />} />
-                        <Route path="/computing/datacenter/:name" element={<DataCenterDetail />} />
-                        <Route path="/storage" element={<Storage />} />
-                        <Route path="/setting" element={<Setting />} />
-                        <Route path="/computing/:name" element={<Vm />} />
-                        <Route path="/computing/host" element={<Host />} />
-                        <Route path="/computing/vmhost-chart" element={<VmHostChart />} />
-                        <Route path="/computing/host/:name" element={<HostDetail />}/>
-                        <Route path="/computing/clusters" element={<Cluster />} />
-                        <Route path="/computing/clusters/:id" element={<ClusterName />} /> 
-                        <Route path="/networks" element={<Network />} />
-                        <Route path="/networks/:id" element={<NetworkDetail />} /> 
-                        <Route path="/storage-domain/:name" element={<StorageDomainDetail />} />
-                        <Route path="/storage-domainpart" element={<DomainParts />} />
-                        <Route path="/storage-disk/:name" element={<StorageDiskDetail />} />
-                    </Routes>
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/computing/datacenter" element={<Computing />} />
+                    <Route path="/computing/datacenter/:name" element={<DataCenterDetail />} />
+                    <Route path="/storage" element={<Storage />} />
+                    <Route path="/setting" element={<Setting />} />
+                    <Route path="/computing/:name" element={<Vm />} />
+                    <Route path="/computing/host" element={<Host />} />
+                    <Route path="/computing/vmhost-chart" element={<VmHostChart />} />
+                    <Route path="/computing/host/:name" element={<HostDetail />}/>
+                    <Route path="/computing/clusters" element={<Cluster />} />
+                    <Route path="/computing/clusters/:id" element={<ClusterName />} /> 
+                    <Route path="/networks" element={<Network />} />
+                    <Route path="/networks/:id" element={<NetworkDetail />} /> 
+                    <Route path="/storage-domain/:name" element={<StorageDomainDetail />} />
+                    <Route path="/storage-domainpart" element={<DomainParts />} />
+                    <Route path="/storage-disk/:name" element={<StorageDiskDetail />} />
+                  </Routes>
                 </MainOuter>
             </Router>
         </QueryClientProvider>
