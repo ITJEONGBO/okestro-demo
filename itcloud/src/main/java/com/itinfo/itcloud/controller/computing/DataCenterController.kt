@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/computing/datacenters")
 class DataCenterController: BaseController() {
 	@Autowired private lateinit var iDataCenter: ItDataCenterService
-/*
+
 	@ApiOperation(
 		httpMethod="GET",
 		value="/computing/datacenters",
@@ -36,11 +36,10 @@ class DataCenterController: BaseController() {
 	@GetMapping
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun datacenters(): List<DataCenterVo> {
+	fun datacenters(): ResponseEntity<List<DataCenterVo?>> {
 		log.info("/computing/datacenters ... 데이터센터 목록")
-		return dcService.get
+		return ResponseEntity.ok(iDataCenter.findAll())
 	}
-*/
 
 	@ApiOperation(
 		httpMethod="POST",

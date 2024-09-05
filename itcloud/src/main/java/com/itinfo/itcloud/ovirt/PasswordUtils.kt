@@ -45,6 +45,10 @@ fun String.decodeBase64(): String {
 	log.debug("... decodeBase64('$this')=$result")
 	return result
 }
+
+/**
+ * [String.validatePassword]
+ */
 fun String.validatePassword(encrypted: String): Boolean {
 	// val pwEncrypted = EnvelopePBE.encode(this).also { log.debug("pwEncrypted: $it") }
 	// val result: Boolean = pwEncrypted.toCharArray().validatePassword(encrypted)
@@ -151,7 +155,8 @@ object EnvelopePBE {
 
 	@Throws(IOException::class, GeneralSecurityException::class)
 	fun check(blob: String, password: String): Boolean {
-		val map: Map<String, String> = getEncryptionMap(blob)
+		// blob= 암호화된 비밀번호, password= 입력된 비밀번호
+		val map: Map<String, String> = getEncryptionMap(blob) // 받아온 비밀번호를 디코딩한 후에 map에 가져오기
 		if (map.isEmpty()) {
 			log.warn("Invalid format of previous password. Cannot check equality of previous and new password.")
 			return false

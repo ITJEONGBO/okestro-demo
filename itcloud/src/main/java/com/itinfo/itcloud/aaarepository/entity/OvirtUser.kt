@@ -48,7 +48,7 @@ class OvirtUser(
 		gson.toJson(this)
 }
 
-fun OvirtUser.toUserVo(userDetail: UserDetail?): UserVo = UserVo.userVo {
+fun OvirtUser.toUserVo(userDetail: UserDetail?): UserVo = UserVo.builder {
 	username { this@toUserVo.name }
 	password { this@toUserVo.password }
 	firstName { userDetail?.name }

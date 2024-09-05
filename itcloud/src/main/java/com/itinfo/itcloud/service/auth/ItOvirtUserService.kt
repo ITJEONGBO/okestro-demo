@@ -9,8 +9,8 @@ import com.itinfo.itcloud.aaarepository.entity.OvirtUser
 import com.itinfo.itcloud.aaarepository.entity.UserDetail
 import com.itinfo.itcloud.aaarepository.entity.toUserVo
 import com.itinfo.itcloud.aaarepository.entity.toUserVos
-import com.itinfo.itcloud.model.setting.toAddUserBuilder
-import com.itinfo.itcloud.model.setting.toUserVo
+import com.itinfo.itcloud.model.auth.toUserVo
+import com.itinfo.itcloud.model.auth.user2Add
 import com.itinfo.itcloud.ovirt.hashPassword
 
 import com.itinfo.itcloud.ovirt.validatePassword
@@ -54,12 +54,14 @@ interface ItOvirtUserService {
 	 * @param userVo [UserVo]
 	 * @return userVo [UserVo]
 	 */
-	fun addUser(userVo: com.itinfo.itcloud.model.setting.UserVo): com.itinfo.itcloud.model.setting.UserVo
+	fun addUser(userVo: UserVo): UserVo
 	/**
-	 * [ItOvirtUserService.changePwUser]
+	 * [ItOvirtUserService.changePassword]
 	 *
-	 * @param userVo [UserVo]
-	 * @return userVo [UserVo]
+	 * @param username [String]
+	 * @param currentPassword [String]
+	 * @param newPassword [String]
+	 * @return [OvirtUser]
 	 */
 	fun changePassword(username: String, currentPassword: String, newPassword: String): OvirtUser
 }
@@ -113,10 +115,10 @@ class OvirtUserServiceImpl(
 		return password.validatePassword(user.password)
 	}
 
-	override fun addUser(userVo: com.itinfo.itcloud.model.setting.UserVo): com.itinfo.itcloud.model.setting.UserVo {
+	override fun addUser(userVo: UserVo): UserVo {
 		log.info("addUser ... ")
 		val res: User =
-			conn.addUser(userVo.toAddUserBuilder())
+			conn.addUser(userVo.user2Add())
 				.getOrNull() ?: throw ErrorPattern.UNKNOWN.toError()
 		return res.toUserVo()
 	}

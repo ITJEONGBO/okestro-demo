@@ -43,7 +43,7 @@ class UserVo(
 		fun build(): UserVo = UserVo(bUsername, bPassword, bAdministrative, bFirstName, bLastName, bNamespace, bEmail, bAuthProvider, bPrincipal)
 	}
 	companion object {
-		@JvmStatic inline fun userVo(block: Builder.() -> Unit): UserVo = Builder().apply(block).build()
+		@JvmStatic inline fun builder(block: Builder.() -> Unit): UserVo = Builder().apply(block).build()
 	}
 }
 
@@ -62,3 +62,8 @@ fun UserVo.permission2Add(): Permission = Builders.permission()
 	.role(Builders.role().id(roleId))
 	.user(Builders.user().id(username))
 	.build()
+
+fun User.toUserVo(): UserVo = UserVo.builder {
+	username { this@toUserVo.userName() }
+	lastName { this@toUserVo.lastName() }
+}

@@ -118,8 +118,8 @@ fun Disk.toDiskImageVo(conn: Connection): DiskImageVo {
 		else null
 
 	val diskProfile: DiskProfile? =
-		conn.findDiskProfile(this@toDiskImageVo.diskProfile().id())
-			.getOrNull()
+		if(this@toDiskImageVo.diskProfilePresent()) conn.findDiskProfile(this@toDiskImageVo.diskProfile().id()).getOrNull()
+		else null
 
 	return DiskImageVo.builder {
 		id { this@toDiskImageVo.id() }

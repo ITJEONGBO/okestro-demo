@@ -29,7 +29,8 @@ class StorageController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="/{dcId}/domains",
+		value="/domains",
+//		value="/{dataCenterId}/domains",
 		notes="Domain(s) 목록"
 	)
 	@ApiImplicitParams(
@@ -38,7 +39,7 @@ class StorageController: BaseController() {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@GetMapping("/{dataCenterId}/domains")
+	@GetMapping("/domains")
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
 	fun findAllStorageDomainsFromDataCenter(
@@ -62,7 +63,7 @@ class StorageController: BaseController() {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@GetMapping("/disks")
+	@GetMapping("/{storageDomainId}/disks")
 	@ResponseBody
 	fun disks(
 		@PathVariable("storageDomainId") storageDomainId: String? = null // id=dcId
@@ -114,7 +115,7 @@ class StorageController: BaseController() {
 	@ApiResponses(
 		ApiResponse(code = 201, message = "CREATED")
 	)
-	@PutMapping("/{dataCenterId}/disks/image/{diskImageId}")
+	@PutMapping("/disks/image/{diskImageId}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	fun editDiskImage(
@@ -144,7 +145,7 @@ class StorageController: BaseController() {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@DeleteMapping("/{dataCenterId}/disks/image/{diskImageId}")
+	@DeleteMapping("/disks/image/{diskImageId}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	fun deleteDiskImage(
@@ -196,7 +197,7 @@ class StorageController: BaseController() {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@PostMapping("/{dataCenterId}/disks/upload")
+	@PostMapping("/disks/upload")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	@Throws(IdNotFoundException::class, InvalidRequestException::class, IOException::class)
