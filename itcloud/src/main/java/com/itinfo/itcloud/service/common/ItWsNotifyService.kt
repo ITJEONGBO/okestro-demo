@@ -6,11 +6,13 @@ import com.itinfo.itcloud.service.BaseService
 import com.itinfo.itcloud.socket.WSMessage
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.simp.SimpMessagingTemplate
+import org.springframework.stereotype.Service
 
 interface ItWsNotifyService {
 	fun notify(wsMessage: WSMessage)
 }
 
+@Service
 class NotifyServiceImpl(
 
 ): BaseService(), ItWsNotifyService {
