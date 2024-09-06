@@ -9,12 +9,14 @@ import com.itinfo.itcloud.aaarepository.entity.OvirtUser
 import com.itinfo.itcloud.aaarepository.entity.UserDetail
 import com.itinfo.itcloud.aaarepository.entity.toUserVo
 import com.itinfo.itcloud.aaarepository.entity.toUserVos
+import com.itinfo.itcloud.model.auth.toUserVo
 import com.itinfo.itcloud.ovirt.hashPassword
-
 import com.itinfo.itcloud.ovirt.validatePassword
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.util.ovirt.error.ItCloudException
+import com.itinfo.util.ovirt.findUser
+import org.ovirt.engine.sdk4.types.User
 import org.postgresql.util.PSQLException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -23,13 +25,6 @@ import java.time.LocalDateTime
 import java.util.*
 
 interface ItOvirtUserService {
-	/*
-	fun getTestValue(): Int
-	fun login(loginDTO: LoginDTO): String
-	fun logout(httpSession: HttpSession)
-	fun allUsers(): List<UserVO>
-	*/
-
 	/**
 	 * [ItOvirtUserService.findAll]
 	 * 모든 사용자 조회
@@ -46,7 +41,15 @@ interface ItOvirtUserService {
 	 * @return [OvirtUser]
 	 */
 	@Throws(PSQLException::class)
-	fun findOne(username: String): OvirtUser?
+	fun findOneAAA(username: String): OvirtUser
+	/**
+	 * [ItOvirtUserService.findAll]
+	 *
+	 * @param username [String]
+	 * @return [UserVo]
+	 */
+	@Throws(PSQLException::class)
+	fun findOne(username: String): UserVo?
 	/**
 	 * [ItOvirtUserService.findAll]
 	 *
@@ -65,22 +68,17 @@ interface ItOvirtUserService {
 	fun findEncryptedValue(input: String): String
 	/**
 	 * [ItOvirtUserService.authenticate]
-	 *
+	 * 암호화 된 값 변환 (oVirt 비밀번호)
 	 * @param username [String]
 	 * @param password [String]
 	 * @return List<[UserVo]>
 	 */
 	@Throws(PSQLException::class)
 	fun authenticate(username: String, password: String): Boolean
-
 	/**
 	 * [ItOvirtUserService.add]
-	 * ovirt 계정생성은 cli 로 해야함
-	 * ovirt 에서 사용자 추가하는 함수
-	 * => ovirt-설정-사용자-add-add_user_and_group
+	 * 사용자 생성
 	 *
-	 * cli로 계정생성할 때 필요한 정보는
-	 * userName, firstName, password-valid-to(기본은 1970)
 	 * @param username [String]
 	 * @param password [String]
 	 * @param surname [String]
@@ -88,7 +86,19 @@ interface ItOvirtUserService {
 	@Throws(PSQLException::class)
 	fun add(username: String, password: String, surname: String = ""): UserVo?
 	/**
+	 * [ItOvirtUserService.update]
+	 * 사용자 변경
+	 *
+	 * @param username [String]
+	 * @param password [String]
+	 * @param surname [String]
+
+	@Throws(PSQLException::class)
+	fun update(username: String, password: String, surname: String = ""): UserVo?
+	*/
+	/**
 	 * [ItOvirtUserService.changePassword]
+	 * 사용자 비밀변호 변경
 	 *
 	 * @param username [String]
 	 * @param currentPassword [String]
@@ -97,7 +107,13 @@ interface ItOvirtUserService {
 	 */
 	@Throws(PSQLException::class)
 	fun changePassword(username: String, currentPassword: String, newPassword: String): OvirtUser
-
+	/**
+	 * [ItOvirtUserService.remove]
+	 * 사용자 삭제
+	 *
+	 * @param username [String]
+	 * @return [Boolean]
+	 */
 	@Throws(PSQLException::class)
 	fun remove(username: String, shouldDeleteAdminByForce: Boolean = false): Boolean
 }
@@ -123,14 +139,20 @@ class OvirtUserServiceImpl(
 	}
 
 	@Throws(ItCloudException::class)
-	override fun findOne(username: String): OvirtUser =
-		ovirtUsers.findByName(username)
-			?: throw ErrorPattern.OVIRTUSER_NOT_FOUND.toException()
+	override fun findOne(username: String): UserVo? {
+		val res: User = conn.findUser(username).getOrNull() ?: throw ErrorPattern.OVIRTUSER_NOT_FOUND.toException()
+		return res.toUserVo()
+	}
+
+	@Throws(ItCloudException::class)
+	override fun findOneAAA(username: String): OvirtUser =
+		ovirtUsers.findByName(username) ?: throw ErrorPattern.OVIRTUSER_NOT_FOUND.toException()
+
 
 	@Throws(ItCloudException::class, PSQLException::class)
 	override fun findFullDetailByName(username: String): UserVo? {
 		log.info("findByName ... name: {}", username)
-		val oUser: OvirtUser = findOne(username)
+		val oUser: OvirtUser = findOneAAA(username)
 		log.debug("itemFound: {}", oUser)
 		val oUserDetail: UserDetail =
 			userDetails.findByName(username) ?: throw ErrorPattern.OVIRTUSER_NOT_FOUND.toException()
@@ -144,17 +166,24 @@ class OvirtUserServiceImpl(
 	@Throws(PSQLException::class)
 	override fun authenticate(username: String, password: String): Boolean {
 		log.info("authenticateUser ... username: {}, password: {}", username, password)
-		val user: OvirtUser = findOne(username)
+		val user: OvirtUser = findOneAAA(username)
+		val res = password.validatePassword(user.password)
+		if (!res) { // 로그인 실패 처리 기록
+			user.consecutiveFailures += 1
+			ovirtUsers.save(user)
+		}
 		return password.validatePassword(user.password)
 	}
 
 	@Transactional("aaaTransactionManager")
 	override fun add(username: String, password: String, surname: String): UserVo? {
-		log.info("addUser ... username: {}", username)
-		log.debug("addUser ... password: {}", password)
+		log.info("add ... username: {}", username)
+		log.debug("add ... password: {}", password)
+		// Step 1: 중복 사용자 존재유무
 		if (ovirtUsers.findByName(username) != null)
 			throw ErrorPattern.OVIRTUSER_DUPLICATE.toException()
 
+		// Step 2: 사용자 기본정보 생성
 		val uuid: UUID = UUID.randomUUID()
 		val user2Add = OvirtUser.builder {
 			uuid { uuid.toString() }
@@ -163,26 +192,27 @@ class OvirtUserServiceImpl(
 		}
 		val resUserAdded: OvirtUser = ovirtUsers.save(user2Add)
 
-		val resUserDetailAdded: UserDetail = userDetails.save(UserDetail.builder {
+		// Step 3: 사용자 상세정보 생성
+		val resUserDetail2Add = UserDetail.builder {
 			name { username }
 			surname { surname }
 			username { username }
 			createDate { LocalDateTime.now() }
+			externalId { uuid.toString() }
 			/* note { } */
-		})
+		}
+		val resUserDetailAdded: UserDetail = userDetails.save(resUserDetail2Add)
+
+		// STEP 4: 권한 등록
+		// addPermission(uuid.toString())
 		return resUserAdded.toUserVo(resUserDetailAdded)
-		/*
-		val res: User =
-			conn.addUser(userVo.user2Add())
-				.getOrNull() ?: throw ErrorPattern.UNKNOWN.toError()
-		return res.toUserVo()
-		*/
+
 	}
 
 	@Transactional("aaaTransactionManager")
 	override fun changePassword(username: String, currentPassword: String, newPassword: String): OvirtUser {
 		log.info("changePassword ... username: {}", username)
-		val user: OvirtUser = findOne(username)
+		val user: OvirtUser = findOneAAA(username)
 
 		if (!authenticate(username, currentPassword))
 			throw ErrorPattern.OVIRTUSER_AUTH_INVALID.toException()
@@ -195,10 +225,10 @@ class OvirtUserServiceImpl(
 	@Transactional("aaaTransactionManager")
 	override fun remove(username: String, shouldDeleteAdminByForce: Boolean): Boolean {
 		log.info("remove ... username: {}", username)
-		val user2Remove: OvirtUser = findOne(username)
+		val user2Remove: OvirtUser = findOneAAA(username)
 		ovirtUsers.delete(user2Remove)
 		val userDetail2Remove: UserDetail =
-			userDetails.findByName(username) ?: throw ErrorPattern.OVIRTUSER_NOT_FOUND.toException()
+			userDetails.findByExternalId(user2Remove.uuid.toString()) ?: throw ErrorPattern.OVIRTUSER_NOT_FOUND.toException()
 		userDetails.delete(userDetail2Remove)
 		return true
 	}

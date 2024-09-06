@@ -10,10 +10,10 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 @Configuration
 @EnableWebSocketMessageBroker
-@EnableScheduling
 class WebSocketNotifyConfig(
 
 ): WebSocketMessageBrokerConfigurer {
+
 
 	override fun configureMessageBroker(registry: MessageBrokerRegistry) {
 		registry.enableSimpleBroker("/topic")
@@ -23,7 +23,7 @@ class WebSocketNotifyConfig(
 	override fun registerStompEndpoints(registry: StompEndpointRegistry) {
 		// super.registerStompEndpoints(registry)
 		registry.addEndpoint("/ws")
-			.setAllowedOrigins("*")
+			.setAllowedOrigins("http://localhost:3000")
 			.withSockJS()
 		/*
 		npm i sockjs-client

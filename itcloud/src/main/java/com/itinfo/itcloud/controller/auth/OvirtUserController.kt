@@ -6,10 +6,11 @@ import com.itinfo.itcloud.aaarepository.entity.OvirtUser
 import com.itinfo.itcloud.controller.BaseController
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.auth.UserVo
+import com.itinfo.itcloud.model.setting.PermissionVo
 
 import com.itinfo.itcloud.service.auth.ItOvirtUserService
+import com.itinfo.itcloud.service.auth.ItPermissionService
 import com.itinfo.util.ovirt.error.ErrorPattern
-
 import io.swagger.annotations.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -17,12 +18,11 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
 @Controller
-@Api(tags = ["Login"])
-@RequestMapping("/api/v1/auth/")
-class LoginController: BaseController() {
+@Api(tags = ["User"])
+@RequestMapping("/api/v1/auth/users")
+class OvirtUserController: BaseController() {
 	@Autowired private lateinit var ovirtUser: ItOvirtUserService
-	// name이 null이면 login이 나오는데 로그인이 되지 않으면 이상한 페이지가 뜸
-	// login_check 명으로 dashboard가 뜸
+	@Autowired private lateinit var permission: ItPermissionService
 /*
 	@PostMapping
 	fun login_check(loginDTO: LoginDTO, model: Model?, httpServletRequest: HttpServletRequest?): String {
@@ -37,11 +37,30 @@ class LoginController: BaseController() {
 		}
 	}
 */
-
-	@GetMapping("users")
+	@ApiOperation(
+		httpMethod="GET",
+		value="사용자 목록조회 (테스트용)",
+		notes="사용자 목록조회를 한다.")
+	@ApiImplicitParams(
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "성공"),
+		ApiResponse(code = 404, message = "찾을 수 없는 사용자")
+	)
+	@GetMapping
 	fun findAll(): ResponseEntity<List<UserVo>> {
 		log.info("findAll ... ")
 		val res: List<UserVo> = ovirtUser.findAll()
+		return ResponseEntity.ok(res)
+	}
+
+	@GetMapping("/{username}")
+	fun findOne(
+		@PathVariable username: String = "",
+	): ResponseEntity<UserVo?> {
+		log.info("findOne ... username: {}", username)
+		// val res: UserVo? = ovirtUser.findOne(username) // 안됨
+		val res: UserVo? = ovirtUser.findFullDetailByName(username)
 		return ResponseEntity.ok(res)
 	}
 
@@ -57,7 +76,7 @@ class LoginController: BaseController() {
 		ApiResponse(code = 200, message = "성공"),
 		ApiResponse(code = 404, message = "찾을 수 없는 사용자")
 	)
-	@GetMapping("users/{username}/{password}")
+	@GetMapping("/{username}/{password}")
 	fun validate(
 		@PathVariable username: String = "",
 		@PathVariable password: String = ""
@@ -83,7 +102,7 @@ class LoginController: BaseController() {
 		ApiResponse(code = 401, message = "인증 불량"),
 		ApiResponse(code = 403, message = "중복된 ID의 사용자")
 	)
-	@PostMapping("users")
+	@PostMapping
 	fun add(
 		@RequestParam(required=true) username: String = "",
 		@RequestParam(required=true) password: String? = null,
@@ -94,7 +113,53 @@ class LoginController: BaseController() {
 		val res: UserVo? = ovirtUser.add(username, password)
 		return ResponseEntity.ok(res)
 	}
+	@ApiOperation(
+		httpMethod="GET",
+		value="사용자 권한목록 조회",
+		notes="사용자의 권한목록을 조회한다."
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="username", value="ovirt 사용자 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "성공"),
+	)
+	@GetMapping("/{username}/permissions")
+	fun findAllPermissionsFromUser(
+		@PathVariable(required=true) username: String = "",
+	): ResponseEntity<List<PermissionVo>> {
+		log.info("findAllPermissions ... uuid: {}", username)
+		if (username.isEmpty())					throw ErrorPattern.OVIRTUSER_ID_NOT_FOUND.toException()
+		val res: List<PermissionVo> = permission.findAllFromUser(username)
+		return ResponseEntity.ok(res)
+	}
 
+
+	@ApiOperation(
+		httpMethod="POST",
+		value="사용자 권한등록 (테스트용)",
+		notes="사용자의 권한를 등록한다."
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="username", value="ovirt 사용자 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="permissionName", value="사용자 권한", dataTypeClass=String::class, required=true, paramType="query", defaultValue="SuperUser"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "성공"),
+		ApiResponse(code = 401, message = "인증 불량"),
+		ApiResponse(code = 403, message = "중복된 ID의 사용자")
+	)
+	@PostMapping("users/{username}/permissions")
+	fun addPermission(
+		@PathVariable(required=true) username: String = "",
+		@RequestParam(required=false) permissionName: String? = "SuperUser",
+	): ResponseEntity<PermissionVo?> {
+		log.info("addPermission ... uuid: {}", username)
+		if (username.isEmpty())					throw ErrorPattern.OVIRTUSER_ID_NOT_FOUND.toException()
+		if (permissionName.isNullOrEmpty())	    throw ErrorPattern.OVIRTUSER_REQUIRED_VALUE_EMPTY.toException()
+		val res: PermissionVo? = permission.addFromUser(username, permissionName)
+		return ResponseEntity.ok(res)
+	}
 
 	@ApiOperation(
 		httpMethod="PUT",
@@ -140,7 +205,7 @@ class LoginController: BaseController() {
 	)
 	@DeleteMapping("users/{username}")
 	fun remove(
-		@PathVariable username: String = ""
+		@PathVariable username: String = "",
 	): ResponseEntity<Boolean> {
 		log.info("remove ... username: {}", username)
 		val res: Boolean = ovirtUser.remove(username)

@@ -10,12 +10,9 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 import java.io.IOException
-import java.math.BigInteger
 import java.nio.charset.Charset
 import java.security.GeneralSecurityException
-import java.security.NoSuchAlgorithmException
 import java.security.SecureRandom
-import java.security.spec.InvalidKeySpecException
 import java.util.*
 import javax.crypto.SecretKey
 import javax.crypto.SecretKeyFactory
@@ -23,12 +20,6 @@ import javax.crypto.spec.PBEKeySpec
 
 private val log: Logger = LoggerFactory.getLogger("com.itinfo.itcloud.security.PasswordUtilsKt")
 
-private const val SALT_BYTES = 24
-private const val HASH_BYTES = 24
-private const val PBKDF2_ITERATIONS = 1000
-private const val ITERATION_INDEX = 0
-private const val SALT_INDEX = 1
-private const val PBKDF2_INDEX = 2
 /**
  * [String.decodeBase64]
  * (로그인 에서) js함수 btoa로 값이 Base64 난독화 된 값을 복호화 한다.
@@ -50,35 +41,13 @@ fun String.decodeBase64(): String {
  * [String.validatePassword]
  */
 fun String.validatePassword(encrypted: String): Boolean {
-	// val pwEncrypted = EnvelopePBE.encode(this).also { log.debug("pwEncrypted: $it") }
-	// val result: Boolean = pwEncrypted.toCharArray().validatePassword(encrypted)
 	val result: Boolean = EnvelopePBE.check(encrypted, this)
 	log.debug("... validatePassword('$this', '$encrypted')=$result")
-	/*
-	val result = try {
-		this.toCharArray().validatePassword(goodHash)
-	} catch (e: Exception) {
-		e.printStackTrace()
-		log.error(e.localizedMessage)
-		false
-	}
-	log.debug("... validatePassword('$this', '$goodHash')=$result")
-	*/
 	return result
 }
 
-@Throws(NoSuchAlgorithmException::class, InvalidKeySpecException::class)
-fun CharArray.validatePassword(goodHash: String): Boolean {
-	log.debug("... validatePassword('{}', '{}')", this, goodHash)
-	val params = goodHash.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-	val iterations = params[ITERATION_INDEX].toInt()
-	val salt = params[SALT_INDEX].fromHex()
-	val hash = params[PBKDF2_INDEX].fromHex()
-	val testHash = this.pbkdf2(salt, iterations, hash.size)
-	return hash.slowEquals(testHash)
-}
-
 // Function to generate a random salt
+private const val SALT_BYTES = 24
 fun generateSalt(): String {
 	val salt = ByteArray(SALT_BYTES)
 	val secureRandom = SecureRandom()
@@ -88,59 +57,6 @@ fun generateSalt(): String {
 
 // Function to hash a password using PBKDF2 with HMAC-SHA-256
 fun String.hashPassword(salt: String = generateSalt()): String = EnvelopePBE.encode(this)
-
-// Function to verify if a provided password matches the stored hash
-fun String.verifyPassword(storedHash: String): Boolean {
-	val hash = this.hashPassword()
-	return hash == storedHash
-}
-
-private fun ByteArray.slowEquals(b: ByteArray): Boolean {
-	log.debug("... slowEquals")
-	var diff = this.size xor b.size
-	var i = 0
-	while (i < this.size && i < b.size) {
-		diff = diff or (this[i].toInt() xor b[i].toInt())
-		i++
-	}
-	return (diff == 0)
-}
-
-@Throws(NoSuchAlgorithmException::class, InvalidKeySpecException::class)
-fun CharArray.createHash(): String {
-	log.info("... createHash('$this')")
-	val random = SecureRandom()
-	val salt = ByteArray(SALT_BYTES)
-	random.nextBytes(salt)
-	val hash = this.pbkdf2(salt, 1000, HASH_BYTES)
-	return "${PBKDF2_ITERATIONS}:${salt.toHex()}:${hash.toHex()}"
-}
-
-@Throws(NoSuchAlgorithmException::class, InvalidKeySpecException::class)
-private fun CharArray.pbkdf2(salt: ByteArray, iterations: Int, bytes: Int): ByteArray {
-	log.info("... pbkdf2('$this')")
-	val spec = PBEKeySpec(this, salt, iterations, bytes * 8)
-	val skf = SecretKeyFactory.getInstance(Settings.NAME_PBE_ALGORITHM)
-	return skf.generateSecret(spec).encoded
-}
-
-private fun String.fromHex(): ByteArray {
-	log.info("... fromHex('$this'")
-	val binary = ByteArray(this.length / 2)
-	for (i in binary.indices)
-		binary[i] = this.substring(2 * i, 2 * i + 2).toInt(16).toByte()
-	return binary
-}
-
-private fun ByteArray.toHex(): String {
-	log.info("... toHex")
-	val bi = BigInteger(1, this)
-	val hex = bi.toString(16)
-	val paddingLength = this.size * 2 - hex.length
-	if (paddingLength > 0)
-		return String.format("%0${paddingLength}d", 0) + hex
-	return hex
-}
 
 object EnvelopePBE {
 	private const val ARTIFACT_KEY: String = "artifact"

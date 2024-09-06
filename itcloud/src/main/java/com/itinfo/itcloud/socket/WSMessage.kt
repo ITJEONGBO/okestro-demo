@@ -2,9 +2,11 @@ package com.itinfo.itcloud.socket
 
 import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.Term
+import com.itinfo.util.ovirt.error.ErrorPattern
 import org.slf4j.LoggerFactory
 import java.io.Serializable
 import java.time.LocalDateTime
+import java.util.concurrent.ConcurrentHashMap
 
 private val log = LoggerFactory.getLogger(WSMessage::class.java)
 
@@ -14,6 +16,9 @@ class WSMessage(
 	val tag: WSMessageTag? = WSMessageTag.UNKNOWN,
 	val date: LocalDateTime? = LocalDateTime.now(),
 ): Serializable {
+	val symbol: String?
+		get() = tag?.symbol
+
     override fun toString(): String =
         gson.toJson(this)
 
@@ -40,9 +45,19 @@ fun Term.simpleNotify(isSuccess: Boolean = true, title: String = "", content: St
 	}
 }
 
-enum class WSMessageTag {
-	SUCCESS,
-	ERROR,
-	WARNING,
-	UNKNOWN
+enum class WSMessageTag(
+	val symbol: String,
+) {
+	SUCCESS("✅"),
+	ERROR("💀"),
+	WARNING("⚠"),
+	UNKNOWN("💔");
+
+	companion object {
+		private val findMap: MutableMap<String, WSMessageTag> = ConcurrentHashMap<String, WSMessageTag>()
+		init {
+			WSMessageTag.values().forEach { findMap[it.name.lowercase()] = it }
+		}
+		@JvmStatic fun findByCode(name: String): WSMessageTag? = findMap[name.lowercase()]
+	}
 }

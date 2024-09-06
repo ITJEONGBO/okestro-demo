@@ -36,7 +36,7 @@ class OvirtUser(
 	var unlockTime: LocalDateTime,
 	var lastSuccessfulLogin: LocalDateTime,
 	var lastUnsuccessfulLogin: LocalDateTime = DEFAULT_TIME_LOWEST,
-	var consecutiveFailures: Int? = DEFAULT_CONSECUTIVE_FAILURE,
+	var consecutiveFailures: Int = DEFAULT_CONSECUTIVE_FAILURE,
 	val validFrom: LocalDateTime? = DEFAULT_TIME_LOWEST,
 	val validTo: LocalDateTime? = LocalDateTime.now().plusYears(10),
 	// 불가능... 다른 데이터소스에서 찾을수 있는 엔티티

@@ -1,5 +1,6 @@
 package com.itinfo.itcloud.model.auth
 
+import com.itinfo.itcloud.aaarepository.entity.OvirtUser
 import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.security.CustomUserDetails
 import org.ovirt.engine.sdk4.builders.Builders
@@ -54,7 +55,7 @@ fun UserVo.toCustomUserDetails(): CustomUserDetails = CustomUserDetails.custerUs
 
 fun UserVo.user2Add(): User = Builders.user()
 	.principal(principal)
-	.userName("$username@internal@internal-authz")
+	.userName("$username@internal-authz")
 	.domain(Builders.domain().name("internal-authz"))
 	.build()
 

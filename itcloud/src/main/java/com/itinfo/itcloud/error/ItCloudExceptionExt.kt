@@ -27,7 +27,9 @@ class InvalidRequestException(
 fun ErrorPattern.toException(): ItCloudException {
 	return when(this) {
 		ErrorPattern.OVIRTUSER_ID_NOT_FOUND,
+		ErrorPattern.ROLE_ID_NOT_FOUND,
 		ErrorPattern.DATACENTER_ID_NOT_FOUND,
+		ErrorPattern.OVIRTUSER_REQUIRED_VALUE_EMPTY,
 		ErrorPattern.CLUSTER_ID_NOT_FOUND,
 		ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND,
 		ErrorPattern.HOST_ID_NOT_FOUND,
@@ -39,8 +41,10 @@ fun ErrorPattern.toException(): ItCloudException {
 		ErrorPattern.VM_ID_NOT_FOUND,
 		ErrorPattern.VNIC_PROFILE_ID_NOT_FOUND,
 		ErrorPattern.TEMPLATE_ID_NOT_FOUND,
-		ErrorPattern.CONSOLE_ID_NOT_FOUND, -> IdNotFoundException("[${code}] ${term.desc} ${failureType.message}")
+		ErrorPattern.CONSOLE_ID_NOT_FOUND,
+		ErrorPattern.TICKET_ID_NOT_FOUND, -> IdNotFoundException("[${code}] ${term.desc} ${failureType.message}")
 		ErrorPattern.OVIRTUSER_NOT_FOUND,
+		ErrorPattern.ROLE_NOT_FOUND,
 		ErrorPattern.DATACENTER_NOT_FOUND,
 		ErrorPattern.CLUSTER_NOT_FOUND,
 		ErrorPattern.STORAGE_DOMAIN_NOT_FOUND,
@@ -53,8 +57,11 @@ fun ErrorPattern.toException(): ItCloudException {
 		ErrorPattern.VM_NOT_FOUND,
 		ErrorPattern.VNIC_PROFILE_NOT_FOUND,
 		ErrorPattern.TEMPLATE_NOT_FOUND,
-		ErrorPattern.CONSOLE_NOT_FOUND, -> ItemNotFoundException("[${code}] ${failureType.message} ${term.desc}")
+		ErrorPattern.CONSOLE_NOT_FOUND,
+		ErrorPattern.TICKET_NOT_FOUND,-> ItemNotFoundException("[${code}] ${failureType.message} ${term.desc}")
 		ErrorPattern.OVIRTUSER_VO_INVALID,
+		ErrorPattern.OVIRTUSER_AUTH_INVALID,
+		ErrorPattern.ROLE_VO_INVALID,
 		ErrorPattern.DATACENTER_VO_INVALID,
 		ErrorPattern.CLUSTER_VO_INVALID,
 		ErrorPattern.STORAGE_DOMAIN_VO_INVALID,
@@ -67,7 +74,8 @@ fun ErrorPattern.toException(): ItCloudException {
 		ErrorPattern.VM_VO_INVALID,
 		ErrorPattern.VNIC_PROFILE_VO_INVALID,
 		ErrorPattern.TEMPLATE_VO_INVALID,
-		ErrorPattern.CONSOLE_VO_INVALID, -> InvalidRequestException("[${code}] ${term.desc} ${failureType.message}")
+		ErrorPattern.CONSOLE_VO_INVALID,
+		ErrorPattern.TICKET_VO_INVALID, -> InvalidRequestException("[${code}] ${term.desc} ${failureType.message}")
 		else -> ItCloudException(failureType.message)
 	}
 }

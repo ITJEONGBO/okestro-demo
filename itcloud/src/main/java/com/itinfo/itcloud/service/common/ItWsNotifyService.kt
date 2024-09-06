@@ -19,11 +19,11 @@ class NotifyServiceImpl(
 	@Autowired private lateinit var msgTemplate: SimpMessagingTemplate
 
 	override fun notify(wsMessage: WSMessage) {
-		sendMessage(gson.toJson(wsMessage))
+		sendMessage(wsMessage)
 	}
 
-	private fun sendMessage(msg: String, destination: String = "/topic/public") {
-		log.debug("sendMessage('$destination', '$msg') ...",)
+	private fun sendMessage(msg: WSMessage, destination: String = "/topic/public") {
+		log.debug("sendMessage('{}', '{}') ...",msg, destination)
 		if (destination.contains("reload")) {
 			msgTemplate.convertAndSend(destination, "")
 			return

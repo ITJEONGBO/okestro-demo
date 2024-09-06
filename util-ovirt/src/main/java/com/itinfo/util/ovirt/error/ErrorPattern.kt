@@ -15,6 +15,9 @@ enum class ErrorPattern(
 	OVIRTUSER_AUTH_INVALID("OVIRTUSER-E004", Term.OVIRT_USER, FailureType.UNAUTHORIZED),
 	OVIRTUSER_DUPLICATE("OVIRTUSER-E005", Term.OVIRT_USER, FailureType.UNAUTHORIZED),
 	OVIRTUSER_REQUIRED_VALUE_EMPTY("OVIRTUSER-E006", Term.OVIRT_USER, FailureType.REQUIRED_VALUE_EMPTY),
+	ROLE_ID_NOT_FOUND("ROLE-E001", Term.ROLE, FailureType.NOT_FOUND),
+	ROLE_NOT_FOUND("ROLE-E002", Term.ROLE, FailureType.NOT_FOUND),
+	ROLE_VO_INVALID("ROLE-E003", Term.ROLE, FailureType.BAD_REQUEST),
 	DATACENTER_ID_NOT_FOUND("DATACENTER-E001", Term.DATACENTER, FailureType.ID_NOT_FOUND),
 	DATACENTER_NOT_FOUND("DATACENTER-E002", Term.DATACENTER, FailureType.NOT_FOUND),
 	DATACENTER_VO_INVALID("DATACENTER-E003", Term.DATACENTER, FailureType.BAD_REQUEST),
@@ -77,6 +80,7 @@ enum class ErrorPattern(
 fun ErrorPattern.toError(): Error {
 	return when(this) {
 		ErrorPattern.OVIRTUSER_ID_NOT_FOUND,
+		ErrorPattern.ROLE_ID_NOT_FOUND,
 		ErrorPattern.DATACENTER_ID_NOT_FOUND,
 		ErrorPattern.OVIRTUSER_REQUIRED_VALUE_EMPTY,
 		ErrorPattern.CLUSTER_ID_NOT_FOUND,
@@ -93,6 +97,7 @@ fun ErrorPattern.toError(): Error {
 		ErrorPattern.CONSOLE_ID_NOT_FOUND,
 		ErrorPattern.TICKET_ID_NOT_FOUND, -> Error("[${code}] ${term.desc} ${failureType.message}")
 		ErrorPattern.OVIRTUSER_NOT_FOUND,
+		ErrorPattern.ROLE_NOT_FOUND,
 		ErrorPattern.DATACENTER_NOT_FOUND,
 		ErrorPattern.CLUSTER_NOT_FOUND,
 		ErrorPattern.STORAGE_DOMAIN_NOT_FOUND,
@@ -109,6 +114,7 @@ fun ErrorPattern.toError(): Error {
 		ErrorPattern.TICKET_NOT_FOUND,-> Error("[${code}] ${failureType.message} ${term.desc}")
 		ErrorPattern.OVIRTUSER_VO_INVALID,
 		ErrorPattern.OVIRTUSER_AUTH_INVALID,
+		ErrorPattern.ROLE_VO_INVALID,
 		ErrorPattern.DATACENTER_VO_INVALID,
 		ErrorPattern.CLUSTER_VO_INVALID,
 		ErrorPattern.STORAGE_DOMAIN_VO_INVALID,

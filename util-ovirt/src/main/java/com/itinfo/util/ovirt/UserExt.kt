@@ -1,17 +1,13 @@
 package com.itinfo.util.ovirt
 
 import com.itinfo.util.ovirt.error.*
-import com.jcraft.jsch.ChannelExec
-import com.jcraft.jsch.JSch
 
 import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.Connection
-import org.ovirt.engine.sdk4.services.UserService
-import org.ovirt.engine.sdk4.services.UsersService
-import org.ovirt.engine.sdk4.types.Host
-import org.ovirt.engine.sdk4.types.HostStatus
+import org.ovirt.engine.sdk4.services.*
+import org.ovirt.engine.sdk4.types.Permission
+import org.ovirt.engine.sdk4.types.Role
 import org.ovirt.engine.sdk4.types.User
-import java.net.InetAddress
 
 private fun Connection.srvUsers(): UsersService =
 	systemService().usersService()
@@ -49,56 +45,70 @@ fun Connection.addUser(user: User): Result<User?> = runCatching {
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.changeUserPw(hostIp: String, hostPw: String, username: String, newPw: String): Result<Boolean> = runCatching {
-	val address: InetAddress = InetAddress.getByName(hostIp)
-	if (address.changePwHostViaSSH("root", hostPw, 22, username, newPw).isFailure)
-		return Result.failure(Error("SSH 실패"))
-	true
+fun Connection.srvAssignedPermissionsFromUser(userId: String): AssignedPermissionsService =
+	this.srvUser(userId).permissionsService()
+
+fun Connection.findAllAssignedPermissionsFromUser(userId: String): Result<List<Permission>> = runCatching {
+	this.srvAssignedPermissionsFromUser(userId).list().send().permissions()
 }.onSuccess {
-	Term.USER.logSuccess("비밀번호 변경 성공")
+	Term.USER.logSuccessWithin(Term.PERMISSION, "목록조회", userId)
 }.onFailure {
-	Term.USER.logFail("비밀번호 변경 실패", it)
+	Term.USER.logFailWithin(Term.PERMISSION, "목록조회", it, userId)
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-/**
- * [InetAddress.changePwHostViaSSH]
- * host SSH 관리 - 비밀번호 변경
- * TODO 비번 보안문제?
- */
-fun InetAddress.changePwHostViaSSH(hostname: String, password: String, port: Int, username: String, newPw: String): Result<Boolean> = runCatching {
-	log.debug("ssh 시작")
-	// SSH 세션 생성 및 연결
-	val session: com.jcraft.jsch.Session = JSch().getSession(hostname, hostAddress, port)
-	session.setPassword(password)
-	session.setConfig("StrictHostKeyChecking", "no") // 호스트 키 확인을 건너뛰기 위해 설정
-	session.connect()
-	
-	val channel: ChannelExec = session.openChannel("exec") as ChannelExec // SSH 채널 열기
-//	val command = "echo -e \"$newPw\n$newPw\" | ovirt-aaa-jdbc-tool user password-reset $username"
-//	channel.setCommand(command)
-	channel.setCommand("ovirt-aaa-jdbc-tool user password-reset $username --password-valid-to=\"2029-12-31 23:59:59Z\" --force")
-	Thread.sleep(1000)
-	channel.setCommand(newPw)
-	Thread.sleep(1000)
-	channel.setCommand(newPw)
-	Thread.sleep(1000)
-
-	channel.connect()
-
-	// 명령 실행 완료 대기
-	while (!channel.isClosed) {
-		Thread.sleep(100)
-	}
-
-	channel.disconnect()
-	session.disconnect()
-	val exitStatus = channel.exitStatus
-	log.debug("changePwHostViaSSH 완료, exit status: $exitStatus")
-	return Result.success(exitStatus == 0)
+fun Connection.addPermissionFromUser(userId: String, permission: Permission): Result<Permission?> = runCatching {
+	this.srvAssignedPermissionsFromUser(userId).add().permission(permission).send().permission()
 }.onSuccess {
-
+	Term.USER.logSuccessWithin(Term.PERMISSION, "생성", userId)
 }.onFailure {
-	log.error(it.localizedMessage)
+	Term.USER.logFailWithin(Term.PERMISSION, "생성", it, userId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.srvAssignedPermissionFromUser(userId: String, permissionId: String): PermissionService =
+	this.srvAssignedPermissionsFromUser(userId).permissionService(permissionId)
+
+fun Connection.findAssignedPermissionFromUser(userId: String, permissionId: String): Result<Permission?> = runCatching {
+	this.srvAssignedPermissionFromUser(userId, permissionId).get().send().permission()
+}.onSuccess {
+	Term.USER.logSuccessWithin(Term.PERMISSION, "상세조회", userId)
+}.onFailure {
+	Term.USER.logFailWithin(Term.PERMISSION, "상세조회", it, userId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.removeAssignedPermissionFromUser(userId: String, permissionId: String): Result<Boolean> = runCatching {
+	this.srvAssignedPermissionFromUser(userId, permissionId).remove().send()
+	true
+}.onSuccess {
+	Term.USER.logSuccessWithin(Term.PERMISSION, "삭제", userId)
+}.onFailure {
+	Term.USER.logFailWithin(Term.PERMISSION, "삭제", it, userId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+
+fun Connection.srvAssignedRolesFromUser(userId: String): AssignedRolesService =
+	this.srvUser(userId).rolesService()
+
+fun Connection.findAllAssignedRolesFromUser(userId: String): Result<List<Role>> = runCatching {
+	this.srvAssignedRolesFromUser(userId).list().send().roles()
+}.onSuccess {
+	Term.USER.logSuccessWithin(Term.ROLE, "목록조회", userId)
+}.onFailure {
+	Term.USER.logFailWithin(Term.ROLE, "목록조회", it, userId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.srvAssignedRoleFromUser(userId: String, roleId: String): RoleService =
+	this.srvAssignedRolesFromUser(userId).roleService(roleId)
+
+fun Connection.findAssignedRoleFromUser(userId: String, roleId: String): Result<Role?> = runCatching {
+	this.srvAssignedRoleFromUser(userId, roleId).get().send().role()
+}.onSuccess {
+	Term.USER.logSuccessWithin(Term.PERMISSION, "상세조회", userId)
+}.onFailure {
+	Term.USER.logFailWithin(Term.PERMISSION, "상세조회", it, userId)
 	throw if (it is Error) it.toItCloudException() else it
 }
