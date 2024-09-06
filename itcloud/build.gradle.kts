@@ -167,7 +167,7 @@ val frontendDir = "src/main/frontend"
 
 tasks.processResources {
     if (!skipNpm) {
-        // dependsOn("copyReactBuildFiles")
+        dependsOn("copyReactBuildFiles")
     }
 }
 

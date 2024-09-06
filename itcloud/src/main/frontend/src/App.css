@@ -4196,7 +4196,7 @@ box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 .table_storage_domain_detail{
     width: 58%;
 }
-// 이벤트 테이블
+/* 이벤트 테이블 */
 .event_table_outer{
     width: 100%;
     height: 100%;
