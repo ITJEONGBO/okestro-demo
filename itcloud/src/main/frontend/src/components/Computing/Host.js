@@ -5,6 +5,7 @@ import HeaderButton from '../button/HeaderButton';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
+import { useAllHosts } from '../../api/RQHook';
 
 Modal.setAppElement('#root');
 
@@ -36,6 +37,39 @@ const Host = () => {
     'OVA로 내보내기',
   ];
 
+  const { 
+    data: hosts, 
+    status: hostsStatus,
+    isRefetching: isHostsRefetching,
+    refetch: refetchHosts, 
+    isError: isHostsError, 
+    error: hostsError, 
+    isLoading: isHostsLoading,
+  } = useAllHosts(toTableItemPredicateHosts);
+  
+  function toTableItemPredicateHosts(host) {
+    return {
+      id: host?.id ?? '',
+      iconStatus: host?.iconStatus ?? '',                   //아이콘
+      iconWarning: host?.iconWarning ?? '',                 //아이콘
+      iconSPM: host?.iconSPM ?? '',                          //아이콘
+      name: host?.name ?? 'Unknown',                         
+      comment: host?.comment ?? 'No comment',                
+      address: host?.address ?? 'Unknown',                
+      cluster: host?.cluster ?? 'Unknown',                   
+      dataCenter: host?.dataCenter ?? 'Unknown',            
+      status: host?.status ?? 'Unknown',                     
+      vmCount: host?.vmCount ?? 0,                           
+      memoryUsage: host?.memoryUsage ?? '',                  
+      cpuUsage: host?.cpuUsage ?? '',                        
+      networkUsage: host?.networkUsage ?? '',                
+      spmStatus: host?.spmStatus ?? '',                               
+    };
+  }
+
+
+
+
   useEffect(() => {
     const 기본섹션 = document.getElementById('일반_섹션_btn');
     if (기본섹션) {
@@ -64,42 +98,15 @@ const Host = () => {
 
   const handleRowClick = (row, column) => {
     if (column.accessor === 'name') {
-      navigate(`/computing/host/${row.name}`);
-    } else if (column.accessor === 'cluster') {
-      navigate(`/computing/cluster/${row.cluster.props.children}`);
+      navigate(       
+        `/computing/host/${row.id}`,
+        { state: { name: row.name } });
     }
   };
 
-
-
-  const data = [
-    {
-      iconStatus: [
-        <i className="fa fa-exclamation-triangle" style={{ color: 'yellowgreen' }} key="icon1"></i>,
-        <i className="fa fa-exclamation-triangle" style={{ color: 'red' }} key="icon2"></i>,
-      ],
-      iconWarning: <i className="fa fa-exclamation-triangle" style={{ color: 'red' }}></i>,
-      iconSPM: <i className="fa fa-crown" style={{ color: 'gold' }}></i>,
-      name: 'host01.ititnfo.com',
-      comment: '192.168.0.80',
-      hostname: 'host01.ititinfo.com',
-      cluster: (<span
-        style={{ color: 'blue', cursor: 'pointer'}}
-        onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
-        onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
-      > Default
-        </span>
-        ),
-      dataCenter: 'Default',
-      status: 'Up',
-      vmCount: 1,
-      memoryUsage: <div style={{ width: '50px', background: 'orange', color: 'white', textAlign: 'center' }}>80%</div>,
-      cpuUsage: <div style={{ width: '50px', background: '#6699ff', color: 'white', textAlign: 'center' }}>6%</div>,
-      networkUsage: <div style={{ width: '50px', background: '#99ccff', color: 'white', textAlign: 'center' }}>0%</div>,
-      spm: 'SPM',
-    },
-  ];
-
+  // else if (column.accessor === 'cluster') {
+  //   navigate(`/computing/cluster/${row.cluster.props.children}`);
+  // }
   return (
     <div id="section">
       <HeaderButton
@@ -113,10 +120,10 @@ const Host = () => {
       <div className="content_outer">
         <div className="empty_nav_outer">
           <div className="section_table_outer">
-            <button>
+            <button onClick={() => window.location.reload()}>
               <i className="fa fa-refresh"></i>
             </button>
-            <Table columns={TableColumnsInfo.HOSTS_ALT} data={data} onRowClick={handleRowClick} />
+            <Table columns={TableColumnsInfo.HOSTS_ALT} data={hosts} onRowClick={handleRowClick} />
           </div>
         </div>
       </div>

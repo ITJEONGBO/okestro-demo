@@ -4,9 +4,9 @@
     font-weight: normal;
     font-style: normal;
 }
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities; */
 /*aside(Mainouter.js) 옆에 클릭하면 파란밑줄*/
 
 #root,*{
@@ -4195,4 +4195,15 @@ box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 }
 .table_storage_domain_detail{
     width: 58%;
+}
+// 이벤트 테이블
+.event_table_outer{
+    width: 100%;
+    height: 100%;
+    border: 1px solid black;
+}
+.event_table_outer>.section_table_outer{
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
 }

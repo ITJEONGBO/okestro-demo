@@ -38,7 +38,7 @@ function App() {
                     <Route path="/computing/:name" element={<Vm />} />
                     <Route path="/computing/host" element={<Host />} />
                     <Route path="/computing/vmhost-chart" element={<VmHostChart />} />
-                    <Route path="/computing/host/:name" element={<HostDetail />}/>
+                    <Route path="/computing/host/:id" element={<HostDetail />}/>
                     <Route path="/computing/clusters" element={<Cluster />} />
                     <Route path="/computing/clusters/:id" element={<ClusterName />} /> 
                     <Route path="/networks" element={<Network />} />

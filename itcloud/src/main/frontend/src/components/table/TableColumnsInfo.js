@@ -128,13 +128,14 @@ const TableColumnsInfo = {
     { header: '설명', accessor: 'description', clickable: false },
   ],
   CLUSTER_VM:[
+    { header: '아이콘', accessor: 'icon', clickable: false },
     { header: '이름', accessor: 'name', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },
-    { header: '업타임', accessor: 'uptime', clickable: false },
+    { header: '업타임', accessor: 'upTime', clickable: false },
     { header: 'CPU', accessor: 'cpu', clickable: false },
     { header: '메모리', accessor: 'memory', clickable: false },
     { header: '네트워크', accessor: 'network', clickable: false },
-    { header: 'IP 주소', accessor: 'ipAddress', clickable: false },
+    { header: 'IP 주소', accessor: 'ipv4', clickable: false },
   ],
   VNIC_PROFILES: [
     { header: '이름', accessor: 'name', clickable: false },
@@ -197,7 +198,7 @@ const TableColumnsInfo = {
     { header: '', accessor: 'iconSPM', clickable: false },
     { header: '이름', accessor: 'name', clickable: true },
     { header: '코멘트', accessor: 'comment', clickable: false },
-    { header: '호스트 이름/IP', accessor: 'hostname', clickable: false },
+    { header: '호스트 이름/IP', accessor: 'address', clickable: false },
     { header: '클러스터', accessor: 'cluster', clickable: true }, // 클러스터 컬럼에 clickable 추가
     { header: '데이터 센터', accessor: 'dataCenter', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },
@@ -205,7 +206,7 @@ const TableColumnsInfo = {
     { header: '메모리', accessor: 'memoryUsage', clickable: false },
     { header: 'CPU', accessor: 'cpuUsage', clickable: false },
     { header: '네트워크', accessor: 'networkUsage', clickable: false },
-    { header: 'SPM', accessor: 'spm', clickable: false },
+    { header: 'SPM', accessor: 'spmStatus', clickable: false },
   ],
   HOSTS_FROM_CLUSTER: [
     { header: '', accessor: 'icon', clickable: false },  // 이모티콘 칸
@@ -214,6 +215,30 @@ const TableColumnsInfo = {
     { header: '상태', accessor: 'status', clickable: false },
     { header: '불러오기', accessor: 'loading', clickable: false },
     { header: '디스플레이 주소 덮어쓰기', accessor: 'displayAddress', clickable: false }
+  ],
+  VM_CHART:[
+    { header: '', accessor: 'icon', clickable: false },  // 이모티콘 칸
+    { header: '이름', accessor: 'name', clickable: true },
+    { header: '코멘트', accessor: 'comment', clickable: false },
+    { header: '호스트', accessor: 'host', clickable: true },
+    { header: 'IP주소', accessor: 'ipv4', clickable: false },
+    { header: 'FQDN', accessor: 'fqdn', clickable: false },
+    { header: '클러스터', accessor: 'cluster', clickable: true },
+    { header: '데이터센터', accessor: 'datacenter', clickable: true },
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '업타임', accessor: 'upTime', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
+  ],
+  TEMPLATE_CHART:[
+    { header: '이름', accessor: 'name', clickable: true },
+    { header: '호환 버전', accessor: 'version', clickable: false },
+    { header: '코멘트', accessor: 'comment', clickable: false },
+    { header: '생성일자', accessor: 'status', clickable: false },
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '보관', accessor: 'status', clickable: false },
+    { header: '클러스터', accessor: 'status', clickable: false },
+    { header: '데이터센터', accessor: 'status', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
   ],
   VMS: [
     { header: '', accessor: 'icon', clickable: false, style: { textAlign: 'center' } },
@@ -299,7 +324,7 @@ const TableColumnsInfo = {
   EVENTS: [
     { header: '', accessor: 'icon', clickable: false },
     { header: '시간', accessor: 'time', clickable: false },
-    { header: '메세지', accessor: 'message', clickable: false },
+    { header: '메세지', accessor: 'description', clickable: false },
     { header: '상관 관계 ID', accessor: 'correlationId', clickable: false },
     { header: '소스', accessor: 'source', clickable: false },
     { header: '사용자 지정 이벤트 ID', accessor: 'customEventId', clickable: false }

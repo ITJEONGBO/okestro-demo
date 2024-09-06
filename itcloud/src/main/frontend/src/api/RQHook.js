@@ -16,8 +16,7 @@ export const useAllTreeNavigations = (type = "none", mapPredicate = null) => use
 });
 //endregion
 
-/* ----------------컴퓨팅--------------------- */
-//region: Cluster
+//region: Cluster ----------------클러스터---------------------
 /**
  * @name useAllClusters
  * @description 클러스터 목록조회 useQuery훅
@@ -33,6 +32,7 @@ export const useAllClusters = (mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []
   }
 })
+
 /**
  * @name useClusterById
  * @description 클러스터 상세조회 useQuery훅
@@ -50,10 +50,158 @@ export const useClusterById = (clusterId) => useQuery({
     return res ?? {}
   }
 })
+/**
+ * @name useLogicalFromCluster
+ * @description 클러스터 내 논리네트워크 목록조회 useQuery훅
+ * 
+ * @param {string} clusterId 클러스터ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.useLogicalFromCluster
+ */
+export const useLogicalFromCluster = (clusterId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['logicalFromCluster', clusterId], 
+  queryFn: async () => {
+    console.log(`useLogicalFromCluster ... ${clusterId}`);
+    const res = await ApiManager.findLogicalFromCluster(clusterId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  }
+})
+/**
+ * @name useHostFromCluster
+ * @description 클러스터 내 호스트 목록조회 useQuery훅
+ * 
+ * @param {string} clusterId 클러스터ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.useHostFromCluster
+ */
+export const useHostFromCluster = (clusterId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['hostsFromCluster', clusterId], 
+  queryFn: async () => {
+    console.log(`useHostFromCluster ... ${clusterId}`);
+    const res = await ApiManager.findHostFromCluster(clusterId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  }
+})
+/**
+ * @name useVMFromCluster
+ * @description 클러스터 내 가상머신 목록조회 useQuery훅
+ * 
+ * @param {string} clusterId 클러스터ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.useVMFromCluster
+ */
+export const useVMFromCluster = (clusterId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['vmsFromCluster', clusterId], 
+  queryFn: async () => {
+    console.log(`useVMFromCluster ... ${clusterId}`);
+    const res = await ApiManager.findVMFromCluster(clusterId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  }
+})
+/**
+ * @name usePermissionFromCluster
+ * @description 클러스터 내 권한 목록조회 useQuery훅
+ * 
+ * @param {string} clusterId 클러스터ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.usePermissionFromCluster
+ */
+export const usePermissionFromCluster = (clusterId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['permissionsFromCluster', clusterId], 
+  queryFn: async () => {
+    console.log(`usePermissionromCluster ... ${clusterId}`);
+    const res = await ApiManager.findPermissionsFromCluster(clusterId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  }
+})
+/**
+ * @name useEventFromCluster
+ * @description 클러스터 내 이벤트 목록조회 useQuery훅
+ * 
+ * @param {string} clusterId 클러스터ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.useEventFromCluster
+ */
+export const useEventFromCluster = (clusterId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['eventsFromCluster', clusterId], 
+  queryFn: async () => {
+    console.log(`useEventFromCluster ... ${clusterId}`);
+    const res = await ApiManager.findEventFromCluster(clusterId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  }
+})
 //endregion: Cluster
 
-/* -----------------네트워크--------------------- */
-//region: Network
+//region: Host ----------------호스트---------------------
+/**
+ * @name useAllHosts
+ * @description 호스트 목록조회 useQuery훅
+ * 
+ * @param {function} mapPredicate 객체 변형 처리
+ */
+export const useAllHosts = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['allHosts'],
+  queryFn: async () => {
+    const res = await ApiManager.findAllHosts()
+    // setShouldRefresh(prevValue => false)
+    return res?.map((e) => mapPredicate(e)) ?? []
+  }
+})
+
+//endregion: Host
+
+//region: VM/TEMPLATE ----------------가상머신/템플릿---------------------
+/**
+ * @name useAllVMs
+ * @description 가상머신 목록조회 useQuery훅
+ * 
+ * @param {function} mapPredicate 객체 변형 처리
+ */
+export const useAllVMs = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['allVMs'],
+  queryFn: async () => {
+    const res = await ApiManager.findAllVMs()
+    // setShouldRefresh(prevValue => false)
+    return res?.map((e) => mapPredicate(e)) ?? []
+  }
+})
+
+/**
+ * @name useAllTemplates
+ * @description 템플릿 목록조회 useQuery훅
+ * 
+ * @param {function} mapPredicate 객체 변형 처리
+ */
+export const useAllTemplates = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['allTemplates'],
+  queryFn: async () => {
+    const res = await ApiManager.findAllTemplates()
+    // setShouldRefresh(prevValue => false)
+    return res?.map((e) => mapPredicate(e)) ?? []
+  }
+})
+//endregion: VM/TEMPLATE
+
+
+//region: Network -----------------네트워크---------------------
 /**
  * @name useAllNetworks
  * @description 네트워크 목로조회 useQuery훅

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {useParams, useNavigate, useLocation } from 'react-router-dom';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
@@ -9,6 +9,7 @@ import AffinityGroupModal from '../Modal/AffinityGroupModal';
 import './css/ClusterName.css';
 import NetworkDetail from '../Network/NetworkDetail';
 import Permission from '../Modal/Permission';
+import { useClusterById, useEventFromCluster, useHostFromCluster, useLogicalFromCluster, usePermissionFromCluster, usePermissionromCluster, useVMFromCluster } from '../../api/RQHook';
 
 function ClusterName() {
     const { id } = useParams();
@@ -16,7 +17,7 @@ function ClusterName() {
     const navigate = useNavigate();
     const location = useLocation();
     const locationState = location.state; 
-
+    const [shouldRefresh, setShouldRefresh] = useState(false);
     const [showNetworkDetail, setShowNetworkDetail] = useState(false);
 
     const handlePermissionFilterClick = (filter) => {
@@ -39,57 +40,118 @@ function ClusterName() {
     const openAffinityGroupModal = () => setIsAffinityGroupModalOpen(true);
     const closeAffinityGroupModal = () => setIsAffinityGroupModalOpen(false);
 
-    // 논리 네트워크 테이블 컴포넌트
-    const data = [
-        {
-            name: 
-            (
-                <span
-                  style={{ color: 'blue', cursor: 'pointer'}}
-                  onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
-                  onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
-                >
-                ovirtmgmt
-                </span>
-              ),
-            status: '가동 중',
-            role: (
-                <span>
-                    <i className="fa fa-crown"></i>
-                    <i className="fa fa-link" style={{ marginLeft: '5px' }}></i>
-                    <i className="fa fa-exclamation-triangle" style={{ color: 'red', marginLeft: '5px' }}></i>
-                </span>
-            ),
-            description: 'Management Network',
-        },
-    ];
-    
+    const { 
+        data: cluster,
+        status: networkStatus,
+        isRefetching: isNetworkRefetching,
+        refetch: clusterRefetch, 
+        isError: isNetworkError,
+        error: networkError, 
+        isLoading: isNetworkLoading,
+      } = useClusterById(id);
+      
+      useEffect(() => {
+        clusterRefetch();  // 함수 이름을 일치시킴
+      }, [setShouldRefresh, clusterRefetch]);
 
+    // 논리네트워크
+    const { 
+        data: networks, 
+        status: networksStatus, 
+        isLoading: isNetworksLoading, 
+        isError: isNetworksError 
+      } = useLogicalFromCluster(cluster?.id, toTableItemPredicateLogicalNetworks);
+      
+      function toTableItemPredicateLogicalNetworks(network) {
+        return {
+          name: network?.name ?? 'Unknown',            
+          status: network?.status ?? 'Unknown',       
+          role: network?.role ? <i className="fa fa-crown"></i> : '', 
+          description: network?.description ?? 'No description', 
+        };
+      }
+      
 
     // 호스트
-    const hostData = [
-        {
-            icon: '',  // 예시 이모티콘
-            name: 'host01.ititinfo.com',
-            hostNameIP: 'host01.ititinfo.com',
-            status: 'Up',
-            loading: '1 대의 가상머신',
-            displayAddress: '아니요',
-        }
-    ];
+    const { 
+        data: hosts, 
+        status: hostsStatus, 
+        isLoading: isHostsLoading, 
+        isError: isHostsError 
+      } = useHostFromCluster(cluster?.id, toTableItemPredicateHosts);
+      
+      function toTableItemPredicateHosts(host) {
+        return {
+          icon: '', 
+          name: host?.name ?? 'Unknown',  // 호스트 이름, 없으면 'Unknown'
+          hostNameIP: host?.name ?? 'Unknown',
+          status: host?.status ?? 'Unknown',  
+          loading: `${host?.vmCount ?? 0} 대의 가상머신`, // 0으로 기본값 설정
+          displayAddress: host?.displayAddress ?? '아니요',
+        };
+      }
+    // 가상머신
+    const { 
+        data: vms, 
+        status: vmsStatus, 
+        isLoading: isVmsLoading, 
+        isError: isVmsError 
+      } = useVMFromCluster(cluster?.id, toTableItemPredicateVms);
+      
+      function toTableItemPredicateVms(vm) {
+        const statusIcon = vm?.status === 'DOWN' 
+            ? <i class="fa fa-chevron-down text-red-500"></i>
+            : vm?.status === 'UP' || vm?.status === '실행 중'
+            ? <i class="fa fa-chevron-up text-green-500"></i>
+            : ''; // 기본값
+        return {
+          icon: statusIcon,      
+          name: vm?.name ?? 'Unknown',               
+          status: vm?.status ?? 'Unknown',           
+          upTime: vm?.upTime ?? '',             
+          cpu: vm?.cpu ?? '',                    
+          memory: vm?.memory ?? '',              
+          network: vm?.network ?? '',             
+          ipv4: vm?.ipv4 ?? '',         
+        };
+      }
+    // 권한
+    const { 
+        data: permissions, 
+        status: permissionsStatus, 
+        isLoading: isPermissionsLoading, 
+        isError: isPermissionsError 
+      } = usePermissionFromCluster(cluster?.id, toTableItemPredicatePermissions);
 
-    // 가상머신 
-    const vmData = [
-        {
-            name: 'vm01',
-            status: '실행 중',
-            uptime: '12 days',
-            cpu: '2 vCPU',
-            memory: '4 GiB',
-            network: 'virtio',
-            ipAddress: '192.168.0.101',
-        }
-    ];
+      function toTableItemPredicatePermissions(permission) {
+        return {
+          icon: <i className="fa fa-user"></i>,  
+          user: permission?.user ?? '없음',  
+          provider: permission?.provider ?? '없음',  
+          nameSpace: permission?.nameSpace ?? '없음', 
+          role: permission?.role ?? '없음',  
+          createDate: permission?.createDate ?? '없음',  
+          inheritedFrom: permission?.inheritedFrom ?? '없음', 
+        };
+      }
+    // 이벤트
+    const { 
+        data: events, 
+        status: eventsStatus, 
+        isLoading: isEventsLoading, 
+        isError: isEventsError 
+      } = useEventFromCluster(cluster?.id, toTableItemPredicateEvents);
+
+    function toTableItemPredicateEvents(event) {
+        return {
+          icon: '',                      
+          time: event?.time ?? '',                
+          description: event?.description ?? 'No message', 
+          correlationId: event?.correlationId ?? '',
+          source: event?.source ?? 'ovirt',     
+          userEventId: event?.userEventId ?? '',   
+        };
+      }
 
     // 선호도 그룹
     const affinityData = [
@@ -122,30 +184,7 @@ function ClusterName() {
             noItemsText: '표시할 항목이 없습니다',
         },
     ];
-    //권한
-    const permissionData = [
-        {
-          icon: <i className="fa fa-user"></i>,
-          user: 'ovirtmgmt',
-          authProvider: '',
-          namespace: '*',
-          role: 'SuperUser',
-          createdDate: '2023.12.29 AM 11:40:58',
-          inheritedFrom: '(시스템)'
-        },
-      ];
 
-    // 이벤트 테이블 컴포넌트
-    const storageData = [
-        {
-            icon: <i className="fa fa-check-circle" style={{ color: 'green' }}></i>,  // 상태 아이콘
-            time: '2024. 8. 12. PM 12:24:11',
-            message: 'Check for update of host host02.ititinfo.com. Delete yum_updates file from host.',
-            correlationId: '',
-            source: 'oVirt',
-            userEventId: '',
-        },
-    ];
 
     const [activeTab, setActiveTab] = useState('general');
 
@@ -297,7 +336,7 @@ function ClusterName() {
                                 </div>
 
                                     <div className="section_table_outer">
-                                        <Table columns={TableColumnsInfo.LUNS} data={data} onRowClick={handleRowClick} />
+                                        <Table columns={TableColumnsInfo.LUNS} data={networks} onRowClick={handleRowClick} />
                                     </div>
                                 </>
 
@@ -310,7 +349,7 @@ function ClusterName() {
                                     </div>
     
                                     <div className="section_table_outer">
-                                        <Table columns={TableColumnsInfo.HOSTS_FROM_CLUSTER} data={hostData} onRowClick={() => console.log('Row clicked')} />
+                                        <Table columns={TableColumnsInfo.HOSTS_FROM_CLUSTER} data={hosts} onRowClick={() => console.log('Row clicked')} />
                                     </div>
                                 </>
                             )}
@@ -319,7 +358,7 @@ function ClusterName() {
                                 <div className="host_empty_outer">
                                     <div className="section_table_outer">
 
-                                        <Table columns={TableColumnsInfo.CLUSTER_VM} data={vmData} onRowClick={() => console.log('Row clicked')} />
+                                        <Table columns={TableColumnsInfo.CLUSTER_VM} data={vms} onRowClick={() => console.log('Row clicked')} />
 
                                     </div>
                                 </div>
@@ -385,7 +424,7 @@ function ClusterName() {
                                 <div className="section_table_outer">
                                 <Table
                                     columns={TableColumnsInfo.PERMISSIONS}
-                                    data={activePermissionFilter === 'all' ? permissionData : []}
+                                    data={permissions}
                                     onRowClick={() => console.log('Row clicked')}
                                 />
                                 </div>
@@ -395,9 +434,9 @@ function ClusterName() {
 
                             {/* 이벤트 */}
                             {activeTab === 'event' && (
-                                <div className="host_empty_outer">
+                                <div className="event_table_outer">
                                     <div className="section_table_outer">
-                                        <Table columns={TableColumnsInfo.EVENTS} data={storageData} onRowClick={() => console.log('Row clicked')} />
+                                        <Table columns={TableColumnsInfo.EVENTS} data={events} onRowClick={() => console.log('Row clicked')} />
                                     </div>
                                 </div>
                             )}

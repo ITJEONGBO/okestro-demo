@@ -6,6 +6,7 @@ import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import './css/Host.css';
 import Footer from '../footer/Footer';
+import { useAllTemplates, useAllVMs } from '../../api/RQHook';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -43,39 +44,55 @@ const VmHostChart = () => {
     }
   };
 
-  const columns = [
-    { header: '상태', accessor: 'status', clickable: false },
-    { header: '이름', accessor: 'name', clickable: true },
-    { header: '호환 버전', accessor: 'version', clickable: false },
-    { header: '설명', accessor: 'description', clickable: false },
-    { header: '클러스터 CPU 유형', accessor: 'cpuType', clickable: false },
-    { header: '호스트 수', accessor: 'hostCount', clickable: false },
-    { header: '가상 머신 수', accessor: 'vmCount', clickable: false },
-  ];
+  const { 
+    data: vms, 
+    status: vmsStatus,
+    isRefetching: isVMsRefetching,
+    refetch: refetchVMs, 
+    isError: isVMsError, 
+    error: vmsError, 
+    isLoading: isVMsLoading,
+  } = useAllVMs(toTableItemPredicateVMs);
+  
+  function toTableItemPredicateVMs(vm) {
+    return {
+      icon: '',                                   
+      name: vm?.name ?? 'Unknown',               
+      comment: vm?.comment ?? '',                 
+      host: vm?.host ?? 'Unknown',           
+      ipv4: vm?.ipv4 ?? 'Unknown',              
+      fqdn: vm?.fqdn ?? '',                      
+      cluster: vm?.cluster ?? 'Unknown',          
+      datacenter: vm?.datacenter ?? 'Unknown',
+      status: vm?.status ?? 'Unknown',             
+      upTime: vm?.upTime ?? '',                    
+      description: vm?.description ?? 'No description',  
+    };
+  }
+  
+  const { 
+    data: templates, 
+    status: templatesStatus,
+    isRefetching: isTemplatesRefetching,
+    refetch: refetchTemplates, 
+    isError: isTemplatesError, 
+    error: templatesError, 
+    isLoading: isTemplatesLoading,
+  } = useAllTemplates(toTableItemPredicateTemplates);
+  
+  function toTableItemPredicateTemplates(template) {
+    return {
+      status: template?.status ?? 'Unknown',                // 템플릿 상태
+      name: template?.name ?? 'Unknown',                    // 템플릿 이름
+      version: template?.version ?? 'N/A',                  // 템플릿 버전 정보
+      description: template?.description ?? 'No description',// 템플릿 설명
+      cpuType: template?.cpuType ?? 'CPU 정보 없음',         // CPU 유형 정보
+      hostCount: template?.hostCount ?? 0,                  // 템플릿에 연결된 호스트 수
+      vmCount: template?.vmCount ?? 0,                      // 템플릿에 연결된 VM 수
+    };
+  }
+  
 
-  const data = [
-    {
-      status: '',
-      name: '192.168.0.80',
-      version: '4.7',
-      description: 'The default server cluster',
-      cpuType: 'Secure Intel Cascadelak',
-      hostCount: 2,
-      vmCount: 7,
-    },
-  ];
-
-  const templatedata = [
-    {
-      status: '',
-      name: '템플릿1',
-      version: '4.7',
-      description: 'The default server cluster',
-      cpuType: 'Secure Intel Cascadelak',
-      hostCount: 2,
-      vmCount: 7,
-    },
-  ];
 
   return (
     <div id="section">
@@ -105,10 +122,10 @@ const VmHostChart = () => {
               </button>
             </div>
             {activeChart === 'machine' && (
-              <Table columns={columns} data={data} onRowClick={handleRowClick} className='machine_chart' />
+              <Table columns={TableColumnsInfo.VM_CHART} data={vms} onRowClick={handleRowClick} className='machine_chart' />
             )}
             {activeChart === 'template' && (
-              <Table columns={columns} data={templatedata} onRowClick={() => {}} className='template_chart' />
+              <Table columns={TableColumnsInfo.TEMPLATE_CHART} data={templates} onRowClick={() => {}} className='template_chart' />
             )}
           </div>
         </div>

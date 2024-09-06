@@ -9,7 +9,7 @@ import com.itinfo.itcloud.model.auth.UserVo
 
 import com.itinfo.itcloud.service.auth.ItOvirtUserService
 import com.itinfo.util.ovirt.error.ErrorPattern
-import com.sun.org.apache.xpath.internal.operations.Bool
+
 import io.swagger.annotations.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity

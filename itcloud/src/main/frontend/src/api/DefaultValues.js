@@ -46,8 +46,7 @@ const DEFAULT_VALUES = {
           description: 'The default Data Center',
       },
   ],
-
-  // 클러스터
+//region:Cluster------ 클러스터
   FIND_ALL_CLUSTERS: [
     {
       status: '',
@@ -75,26 +74,54 @@ const DEFAULT_VALUES = {
   ],
   //클러스터 논리네트워크
   FIND_LOGICAL_NETWORK_FROM_CLUSTER:[
-
+    {
+      name:'ovirtmgmt',
+      status: '가동 중',
+      role: <i className="fa fa-crown"></i>,
+      description: 'Management Network',
+    },
   ],
   // 클러스터 호스트 
   FIND_HOST_FROM_CLUSTER:[
-
+    {
+      icon: '',  
+      name: 'host01.ititinfo.com',
+      hostNameIP: 'host01.ititinfo.com',
+      status: 'Up',
+      loading: '1 대의 가상머신',
+      displayAddress: '아니요',
+    }
   ],
   // 클러스터 가상머신
-
+  FIND_VM_FROM_CLUSTER:[
+    {
+      name: 'vm01',
+      status: '실행 중',
+      upTime: '12 days',
+      cpu: '2 vCPU',
+      memory: '4 GiB',
+      network: 'virtio',
+      ipv4: '192.168.0.101',
+    }
+  ],
 
   // 클러스터 선호도 그룹
 
   // 클러스터 선호도 레이블 
 
-  // 클러스터 선호도 그룹
-  
-  // 클러스터 권한 
+  // 이벤트
+  FIND_EVENT_FROM_CLUSTER:[
+    {
+      icon: <i className="fa fa-check-circle" style={{ color: 'green' }}></i>,  // 상태 아이콘
+      time: '2024. 8. 12. PM 12:24:11',
+      description: 'Check for update of host host02.ititinfo.com. Delete yum_updates file from host.',
+      correlationId: '',
+      source: 'oVirt',
+      userEventId: '',
+  },
+  ],
 
-  // 클러스터 이벤트
-
-
+//region: Network------네트워크-----------
   // 네트워크목록 나열
   FIND_ALL_NETWORKS: [
     { 
@@ -210,8 +237,8 @@ const DEFAULT_VALUES = {
       nicName: 'nic1',
     }
   ],
-  // 네트워크 권한
-  FIND_ALL_PERMISSION_FROM_NETWORK:[
+  // 권한
+  FIND_ALL_PERMISSION:[
     {
       icon: <i className="fa fa-user"></i>,
       user: 'ovirtmgmt',
@@ -222,9 +249,56 @@ const DEFAULT_VALUES = {
       inheritedFrom: '(시스템)',
     }
   ],
-
-
-// ----------------------스토리지    
+//region: Host------호스트-----------
+FIND_ALL_HOSTS:[
+  {
+    iconStatus: [
+      <i className="fa fa-exclamation-triangle" style={{ color: 'yellowgreen' }} key="icon1"></i>,
+      <i className="fa fa-exclamation-triangle" style={{ color: 'red' }} key="icon2"></i>,
+    ],
+    iconWarning: <i className="fa fa-exclamation-triangle" style={{ color: 'red' }}></i>,
+    iconSPM: <i className="fa fa-crown" style={{ color: 'gold' }}></i>,
+    name: 'host01.ititnfo.com',
+    comment: '192.168.0.80',
+    address: 'host01.ititinfo.com',
+    cluster: 'Default',
+    dataCenter: 'Default',
+    status: 'Up',
+    vmCount: 1,
+    memoryUsage: <div style={{ width: '50px', background: 'orange', color: 'white', textAlign: 'center' }}>80%</div>,
+    cpuUsage: <div style={{ width: '50px', background: '#6699ff', color: 'white', textAlign: 'center' }}>6%</div>,
+    networkUsage: <div style={{ width: '50px', background: '#99ccff', color: 'white', textAlign: 'center' }}>0%</div>,
+    spmStatus: 'SPM',
+  },
+],
+//region: Vm/Template------가상머신,템플릿-----------
+FIND_ALL_VMS:[
+  {
+    icon: '',                              
+    name: '192.168.0.80',                     
+    comment: '',                            
+    host: 'Host1',                             
+    ipv4: '192.168.0.80',                       
+    fqdn: 'vm01.ititinfo.com',                 
+    cluster: 'Cluster1',                       
+    datacenter: 'DataCenter1',                 
+    status: 'Up',                               
+    upTime: '24h',                            
+    description: 'The default server cluster',  
+  },
+],
+FIND_ALL_TEMPLATES:[
+  {
+    status: '',
+    name: '템플릿1',
+    version: '4.7',
+    description: 'The default server cluster',
+    cpuType: 'Secure Intel Cascadelak',
+    hostCount: 2,
+    vmCount: 7,
+  },
+],
+//region: Storage ----------------------스토리지    
       // 스토리지 도메인
     FIND_ALL_STORAGE_DOMAINS: [
       {
