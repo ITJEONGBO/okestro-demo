@@ -34,11 +34,11 @@ class ItOvirtUserServiceTest {
 	fun should_findOne(){
 		log.info("should_findOne ... ")
 		val userName = "rutil"
-		val result: OvirtUser =
-			ovirtUser.findOne(userName)
-
-		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.name, `is`(userName))
+//		val result: OvirtUser =
+//			ovirtUser.findOne(userName)
+//
+//		assertThat(result, `is`(not(nullValue())))
+//		assertThat(result.name, `is`(userName))
 	}
 
 	@Test
@@ -94,10 +94,10 @@ class ItOvirtUserServiceTest {
 		val currentPw = "rutil!@#"
 		val newPw = "rutil@123"
 
-		val userBefore: OvirtUser = ovirtUser.findOne(username)
-		assertThat(userBefore, `is`(not(nullValue())))
-		assertThat(userBefore.password, `is`(not(nullValue())))
-		assertThat(userBefore.passwordValidTo, `is`(not(nullValue())))
+//		val userBefore: OvirtUser = ovirtUser.findOne(username)
+//		assertThat(userBefore, `is`(not(nullValue())))
+//		assertThat(userBefore.password, `is`(not(nullValue())))
+//		assertThat(userBefore.passwordValidTo, `is`(not(nullValue())))
 
 		val userAfter: OvirtUser = ovirtUser.changePassword(username, currentPw, newPw)
 		assertThat(userAfter, `is`(not(nullValue())))

@@ -5,13 +5,16 @@ import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.computing.toVmVo
 import com.itinfo.itcloud.model.fromVmToIdentifiedVo
 import com.itinfo.itcloud.gson
+import com.itinfo.util.ovirt.addDisk
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.util.ovirt.error.toError
 import com.itinfo.util.ovirt.findDisk
 import com.itinfo.util.ovirt.findVm
+import com.itinfo.util.ovirt.moveDisk
 import org.slf4j.LoggerFactory
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.DiskAttachmentBuilder
+import org.ovirt.engine.sdk4.builders.DiskBuilder
 import org.ovirt.engine.sdk4.types.Disk
 import org.ovirt.engine.sdk4.types.DiskAttachment
 import org.ovirt.engine.sdk4.types.DiskInterface
@@ -74,7 +77,6 @@ fun DiskAttachment.toDiskAttachmentVo(conn: Connection): DiskAttachmentVo {
 	val vm: Vm? =
 		conn.findVm(this@toDiskAttachmentVo.vm().id())
 			.getOrNull()
-
 	return DiskAttachmentVo.builder {
 		id { this@toDiskAttachmentVo.id() }
 		active { this@toDiskAttachmentVo.active() }
@@ -87,38 +89,52 @@ fun DiskAttachment.toDiskAttachmentVo(conn: Connection): DiskAttachmentVo {
 		vmVo { vm?.fromVmToIdentifiedVo() }
 	}
 }
-
 fun List<DiskAttachment>.toDiskAttachmentVos(conn: Connection): List<DiskAttachmentVo> =
 	this@toDiskAttachmentVos.map { it.toDiskAttachmentVo(conn) }
 
+/**
+ * DiskAttachmentBuilder
+ */
+fun DiskAttachmentVo.toDiskAttachment(): DiskAttachmentBuilder =
+	DiskAttachmentBuilder()
+		.active(this@toDiskAttachment.active)
+		.bootable(this@toDiskAttachment.bootable)
+		.passDiscard(this@toDiskAttachment.passDiscard)
+		.readOnly(this@toDiskAttachment.readOnly)
+		.interface_(this@toDiskAttachment.interface_)
+		.logicalName(this@toDiskAttachment.logicalName)
 
-
-fun DiskAttachmentVo.toDiskAttachmentBuilder(conn: Connection): DiskAttachment {
-	val diskAdd: Disk =
-		conn.findDisk(this@toDiskAttachmentBuilder.diskImageVo.id).getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
-	return DiskAttachmentBuilder()
-		.active(this@toDiskAttachmentBuilder.active)
-		.bootable(this@toDiskAttachmentBuilder.bootable)
-		.passDiscard(this@toDiskAttachmentBuilder.passDiscard)
-		.readOnly(this@toDiskAttachmentBuilder.readOnly)
-		.interface_(this@toDiskAttachmentBuilder.interface_)
-		.logicalName(this@toDiskAttachmentBuilder.logicalName)
-		.disk(diskAdd)
+/**
+ * DiskAttachmentBuilder 에서 디스크를 생성해서 붙이는 방식
+ */
+fun DiskAttachmentVo.toAddDisk(): DiskAttachment =
+	this@toAddDisk.toDiskAttachment()
+		.disk(this@toAddDisk.diskImageVo.toAddDiskBuilder())
 		.build()
+
+/**
+ * DiskAttachmentBuilder 에서 생성된 디스크를 연결해서 붙이는 방식
+ */
+fun DiskAttachmentVo.toAttachDisk(): DiskAttachment =
+	this@toAttachDisk.toDiskAttachment()
+		.disk(DiskBuilder().id(this@toAttachDisk.diskImageVo.id))
+		.build()
+
+/**
+ * 생성과 연결될 DiskAttachment 를 목록으로 내보낸다
+ */
+fun List<DiskAttachmentVo>.toDiskAttachmentList(): List<DiskAttachment> {
+	val diskAttachmentList = mutableListOf<DiskAttachment>()
+	this.forEach { diskAttachmentVo ->
+//		val diskAttachmentBuilder = diskAttachmentVo.toDiskAttachment()
+		if (diskAttachmentVo.diskImageVo.id.isEmpty()) {
+			diskAttachmentList.add(diskAttachmentVo.toAddDisk())
+		} else {
+			diskAttachmentList.add(diskAttachmentVo.toAttachDisk())
+		}
+	}
+	return diskAttachmentList
 }
-fun List<DiskAttachmentVo>.toDiskAttachmentsBuilder(conn: Connection): List<DiskAttachment> =
-	this@toDiskAttachmentsBuilder.map { it.toDiskAttachmentBuilder(conn) }
 
 
-fun DiskAttachmentVo.toDiskAttachmentBuilderToVm(): DiskAttachment = DiskAttachmentBuilder()
-		.active(this@toDiskAttachmentBuilderToVm.active)
-		.bootable(this@toDiskAttachmentBuilderToVm.bootable)
-		.passDiscard(this@toDiskAttachmentBuilderToVm.passDiscard)
-		.readOnly(this@toDiskAttachmentBuilderToVm.readOnly)
-		.interface_(this@toDiskAttachmentBuilderToVm.interface_)
-		.logicalName(this@toDiskAttachmentBuilderToVm.logicalName)
-		.disk(this@toDiskAttachmentBuilderToVm.diskImageVo.toAddDiskBuilder())
-		.build()
 
-fun List<DiskAttachmentVo>.toDiskAttachmentBuildersToVm(): List<DiskAttachment> =
-	this@toDiskAttachmentBuildersToVm.map { it.toDiskAttachmentBuilderToVm() }

@@ -5,17 +5,10 @@ import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.storage.DiskAttachmentVo
 import com.itinfo.itcloud.model.storage.DiskImageVo
-import com.itinfo.itcloud.model.storage.toDiskAttachmentVo
-import com.itinfo.itcloud.model.storage.toDiskImageVo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.ovirt.engine.sdk4.builders.DiskAttachmentBuilder
-import org.ovirt.engine.sdk4.builders.DiskBuilder
-import org.ovirt.engine.sdk4.builders.StorageDomainBuilder
-import org.ovirt.engine.sdk4.types.DiskAttachment
-import org.ovirt.engine.sdk4.types.DiskBackup
 import org.ovirt.engine.sdk4.types.DiskInterface
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -44,17 +37,17 @@ class ItVmDiskServiceTest {
     }
 
     /**
-     * [should_addDisk]
-     * [ItVmDiskService.addDiskFromVm]에 대한 단위테스트
+     * [should_addDisks]
+     * [ItVmDiskService.addDisksFromVm]에 대한 단위테스트
      *
-     * @see [ItVmDiskService.addDiskFromVm]
+     * @see [ItVmDiskService.addDisksFromVm]
      */
     @Test
-    fun should_addDisk(){
-        log.debug("should_addDisk")
+    fun should_addDisks(){
+        log.debug("should_addDisks")
         val diskattaches: MutableList<DiskAttachmentVo> = mutableListOf()
 
-        val diskAttachVo: DiskAttachmentVo =
+        val diskAttachVo1: DiskAttachmentVo =
             DiskAttachmentVo.builder {
                 diskImageVo {
                     DiskImageVo.builder {
@@ -71,8 +64,48 @@ class ItVmDiskServiceTest {
                 bootable { false }
                 readOnly { false }
             }
+        val diskAttachVo2: DiskAttachmentVo =
+            DiskAttachmentVo.builder {
+                diskImageVo {
+                    DiskImageVo.builder {
+                        id { "4f0816d6-3a05-4235-b0b5-9c03f6f35dcc" }
+                    }
+                }
+                bootable { false }
+                readOnly { false }
+            }
+        val diskAttachVo3: DiskAttachmentVo =
+            DiskAttachmentVo.builder {
+                diskImageVo {
+                    DiskImageVo.builder {
+                        id { "09dc8bf0-7563-414d-a100-faa863ce2949" }
+                    }
+                }
+                bootable { false }
+                readOnly { false }
+            }
+        val diskAttachVo4: DiskAttachmentVo =
+            DiskAttachmentVo.builder {
+                diskImageVo {
+                    DiskImageVo.builder {
+                        size { 2 }
+                        alias { "vm01-1_disk02" }
+                        description { "test" }
+                        interface_ { DiskInterface.VIRTIO_SCSI }
+                        storageDomainVo { IdentifiedVo.builder { id { "dc38dcb4-c3f9-4568-af0b-0d6a225d25e5" } } }
+                        backup { false }
+                        active { true }
+                        diskProfileVo {IdentifiedVo.builder { id { "df3d6b80-5326-4855-96a4-455147016fc7" } }}
+                    }
+                }
+                bootable { false }
+                readOnly { false }
+            }
 
-        diskattaches.add(diskAttachVo)
+        diskattaches.add(diskAttachVo1)
+        diskattaches.add(diskAttachVo2)
+        diskattaches.add(diskAttachVo3)
+        diskattaches.add(diskAttachVo4)
 
         val vmVo: VmVo = VmVo.builder {
             id { vm01_1 }
@@ -80,12 +113,51 @@ class ItVmDiskServiceTest {
         }
 
         val result: List<DiskAttachmentVo> =
-            service.adddiskattach(vmVo)
+            service.addDisksFromVm(vmVo)
 
         assertThat(result, `is`(not(nullValue())))
-        assertThat(result.size, `is`(1))
+        assertThat(result.size, `is`(4))
 
         result.forEach { println(it) }
+    }
+
+    /**
+     * [should_addDisk]
+     * [ItVmDiskService.addDiskFromVm]에 대한 단위테스트
+     *
+     * @see [ItVmDiskService.addDiskFromVm]
+     */
+    @Test
+    fun should_addDisk() {
+        log.debug("should_addDisk")
+        val diskAttachVo: DiskAttachmentVo =
+            DiskAttachmentVo.builder {
+                diskImageVo {
+                    DiskImageVo.builder {
+                        size { 2 }
+                        alias { "vm01-1_disk03" }
+                        description { "testone" }
+                        interface_ { DiskInterface.VIRTIO_SCSI }
+                        storageDomainVo { IdentifiedVo.builder { id { "dc38dcb4-c3f9-4568-af0b-0d6a225d25e5" } } }
+                        backup { false }
+                        active { true }
+                        diskProfileVo {IdentifiedVo.builder { id { "df3d6b80-5326-4855-96a4-455147016fc7" } }}
+                    }
+                }
+                bootable { false }
+                readOnly { false }
+            }
+        val vmVo: VmVo = VmVo.builder {
+            id { vm01_1 }
+            diskAttachmentVo { diskAttachVo }
+        }
+
+        val result: DiskAttachmentVo =
+            service.addDiskFromVm(vmVo)
+
+        assertThat(result, `is`(not(nullValue())))
+
+        println(result)
     }
 
     /**

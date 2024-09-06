@@ -148,33 +148,16 @@ fun Connection.resetVm(vmId: String): Result<Boolean> = runCatching {
 }
 
 
-fun Connection.addDisksFromVm(vmId: String, diskIds: List<String> = listOf(), disks: List<Disk> = listOf()): Result<Boolean> = runCatching {
+fun Connection.addDiskAttachmentFromVm(vmId: String, diskAttachments: List<DiskAttachment>): Result<Boolean> = runCatching {
 	log.debug("Connection.addDisksFromVm ... ")
 	val vm: Vm =
 		this.findVm(vmId)
 			.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 
-	// disk 생성되는 방법이 두가지
-	// 생성과 연결, 생성의 경우 id가 없음/연결의 경우 id가 있음
-	// 먼저 해야하는건 (생성) disk 객체에 든
-
-
-	val disk: List<Disk> =
-		diskIds.mapNotNull { this.findDisk(it).getOrNull() } // 왜 또 조회하는지?
-	val diskAttachments: MutableList<DiskAttachment> = mutableListOf()
-
-	// 생성
-	for (disked in disks) {
-		val d: Result<Disk?> = this.addDisk(disked)
-		d.getOrNull()?.let { diskAttachments.add(DiskAttachmentBuilder().id(disked.id()).build()) }
-	}
-
 	val res: List<DiskAttachment> =
-		this@addDisksFromVm.addMultipleDiskAttachmentsToVm(vm.id(), diskAttachments)
+		this@addDiskAttachmentFromVm.addMultipleDiskAttachmentsToVm(vm.id(), diskAttachments)
 			.getOrDefault(listOf())
-//	val finalRes: Boolean = res.all { it.isSuccess }
-//
-//	finalRes
+
 	true
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.DISK, "생성", vmId)
@@ -195,8 +178,9 @@ fun Connection.addDiskAttachmentToVm(vmId: String, diskAttachment: DiskAttachmen
 	throw if (it is Error) it.toItCloudException() else it
 }
 
+
 fun Connection.addMultipleDiskAttachmentsToVm(vmId: String, diskAttachments: List<DiskAttachment>): Result<List<DiskAttachment>> = runCatching {
-	val attachedDisks = diskAttachments.map { diskAttachment ->
+	val attachedDisks: List<DiskAttachment> = diskAttachments.map { diskAttachment ->
 		this.addDiskAttachmentToVm(vmId, diskAttachment).getOrThrow()
 	}
 	log.info("여러 디스크 붙이기 성공")
@@ -205,19 +189,6 @@ fun Connection.addMultipleDiskAttachmentsToVm(vmId: String, diskAttachments: Lis
 	Term.VM.logSuccessWithin(Term.DISK, "여러 개 붙이기", vmId)
 }.onFailure {
 	Term.VM.logFailWithin(Term.DISK, "여러 개 붙이기", it, vmId)
-	throw if (it is Error) it.toItCloudException() else it
-}
-
-fun Connection.addDiskAttachmentsToVm(vmId: String, disks: List<Disk>): Result<Boolean> = runCatching {
-	val diskAttach: List<DiskAttachmentBuilder> = disks.map {
-		DiskAttachmentBuilder().id(it.id())
-	}
-
-	for(attach in diskAttach) { this.addDiskAttachmentToVm(vmId, attach.build())	}
-	log.info("가상머신 디스크 붙이기 성공")
-	true
-}.onFailure {
-	log.error("vm 디스크 붙이기 실패 ... 이유: {}", it.localizedMessage)
 	throw if (it is Error) it.toItCloudException() else it
 }
 
@@ -245,12 +216,7 @@ fun Connection.addVm(
 	if (vnicProfileIds.isNotEmpty()) {
 			this.addNicsFromVm(vmAdded.id(), vnicProfileIds)
 	}
-	// disk 연결, 생성
-	// disk id -> diskattachment.add.disk(conn.finddisk(diskId))
-	// disk -> diskBuilder().build() -> diskattachment.add.disk(disk)
-	if (diskIds.isNotEmpty() || disks.isNotEmpty()){
-		this.addDisksFromVm(vmAdded.id(), diskIds, disks)
-	}
+
 
 	// cdroms
 	if (bootId.isNotEmpty()) {

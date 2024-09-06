@@ -1,12 +1,27 @@
 package com.itinfo.itcloud.controller
 
+import com.itinfo.itcloud.socket.WSMessage
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.messaging.converter.MappingJackson2MessageConverter
+import org.springframework.messaging.simp.stomp.StompFrameHandler
+import org.springframework.messaging.simp.stomp.StompHeaders
+import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter
+import org.springframework.web.socket.WebSocketHttpHeaders
+import org.springframework.web.socket.client.standard.StandardWebSocketClient
 import org.springframework.web.socket.messaging.WebSocketStompClient
+import java.lang.reflect.Type
+import java.util.concurrent.BlockingQueue
+import java.util.concurrent.LinkedBlockingDeque
+import java.util.concurrent.TimeUnit
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class NotifyControllerTest {
-	@Autowired
-	lateinit var restTemplate: TestRestTemplate
+	@Autowired lateinit var restTemplate: TestRestTemplate
 
 	private val url = "ws://localhost:8080/ws"
 

@@ -99,6 +99,12 @@ open class DiskImageVo(
 	}
 }
 
+//fun Disk.toDiskId(): DiskImageVo = DiskImageVo.builder {
+//	id { this@toDiskId.id() }
+//}
+//fun List<Disk>.toDiskIds(): List<DiskImageVo> =
+//	this@toDiskIds.map { it.toDiskId() }
+
 fun Disk.toDiskIdName(): DiskImageVo = DiskImageVo.builder {
 	id { this@toDiskIdName.id() }
 	alias() { this@toDiskIdName.alias() }
@@ -159,7 +165,7 @@ fun DiskImageVo.toDiskBuilder(): DiskBuilder {
 		.backup(if (this@toDiskBuilder.backup) DiskBackup.INCREMENTAL else DiskBackup.NONE)
 		.format(if (this@toDiskBuilder.backup) DiskFormat.COW else DiskFormat.RAW)
 		.sparse(this@toDiskBuilder.sparse)
-		.diskProfile(DiskProfileBuilder().id(this@toDiskBuilder.diskProfileVo.id)) // 없어도 상관없음
+		.diskProfile(DiskProfileBuilder().id(this@toDiskBuilder.diskProfileVo.id))
 }
 
 fun DiskImageVo.toAddDiskBuilder(): Disk =
@@ -181,3 +187,5 @@ fun DiskImageVo.toUploadDiskBuilder(fileSize: Long): Disk =
 		.format(DiskFormat.RAW) // 이미지 업로드는 raw 형식만 가능 +front 처리?
 		.contentType(DiskContentType.ISO) // iso 업로드
 		.build()
+
+
