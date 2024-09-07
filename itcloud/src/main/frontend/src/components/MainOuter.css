@@ -469,8 +469,7 @@
         box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
     }
 
-    //----??
-        /*설정(사용자)*/
+    /*설정(사용자)*/
     .setting_user_buttons{
         display: flex;
         font-size: 0.36rem;
