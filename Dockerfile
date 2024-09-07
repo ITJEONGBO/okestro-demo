@@ -5,8 +5,8 @@ WORKDIR /usr/src/app
 
 COPY itcloud/src/main/frontend ./
 
-RUN npm i
-RUN npm run-script build
+RUN npm install
+RUN npm run build
 
 # ------------------------------
 # Stage 2: Build the application using Gradle
@@ -35,7 +35,8 @@ COPY buildSrc /home/gradle/project/buildSrc
 COPY itcloud /home/gradle/project/itcloud
 
 # Copy the node build results to path (ONLY when skipNpm=true)
-COPY --from=build-fe /usr/src/app/build /home/bradle/project/itcloud/src/main/resources/static
+COPY --from=build-fe /usr/src/app/build /home/gradle/project/itcloud/src/main/resources/static
+RUN ls /home/gradle/project/itcloud/src/main/resources/static
 
 # Build the application
 RUN ./gradlew itcloud:bootJar -Pprofile=prd -PskipNpm=true --parallel
@@ -49,14 +50,14 @@ LABEL maintainer="Chan Hee Lee <chanhi2000@gmail.com>"
 LABEL description="Rutil"
 LABEL version="0.1.0"
 LABEL vcs-url="https://github.com/ITJEONGBO/okestro-demo"
-LABEL build-date="2024-09-06"
-LABEL commit-hash="e98554c467428d924e13a625f27b7d697bc2dff1"
+LABEL build-date="2024-09-09"
+LABEL commit-hash="05f9e12ee27c1532623112d1df92004226d0d347"
 LABEL license="Apache-2.0"
 LABEL environment="production"
 LABEL app-name="itcloud"
 
 ENV ITCLOUD_VERSION=0.1.0
-ENV ITCLOUD_RELEASE_DATE=2024-07-08
+ENV ITCLOUD_RELEASE_DATE=2024-09-09
 ENV ITCLOUD_PORT_HTTP=8080
 ENV ITCLOUD_PORT_HTTPS=8443
 ENV ITCLOUD_OVIRT_IP=192.168.0.70
@@ -73,9 +74,9 @@ ENV POSTGRES_JDBC_URL=192.168.0.70
 ENV POSTGRES_JDBC_PORT=5432
 ENV POSTGRES_DATASOURCE_JDBC_ID=rutil
 ENV POSTGRES_DATASOURCE_JDBC_PW=rutil1!
-ENV POSTGRES_JDBC_URL_ENGINE=jdbc:postgresql://$POSTGRES_JDBC_URL:$POSTGRES_JDBC_PORT/ovirt_engine_history
-ENV POSTGRES_JDBC_URL_HISTORY=jdbc:postgresql://$POSTGRES_JDBC_URL:$POSTGRES_JDBC_PORT/engine?currentSchema=public
-ENV POSTGRES_JDBC_URL_AAA=jdbc:postgresql://$POSTGRES_JDBC_URL:$POSTGRES_JDBC_PORT/engine?currentSchema=aaa_jdbc
+ENV POSTGRES_JDBC_URL_ENGINE="jdbc:postgresql://$POSTGRES_JDBC_URL:$POSTGRES_JDBC_PORT/ovirt_engine_history"
+ENV POSTGRES_JDBC_URL_HISTORY="jdbc:postgresql://$POSTGRES_JDBC_URL:$POSTGRES_JDBC_PORT/engine?currentSchema=public"
+ENV POSTGRES_JDBC_URL_AAA="jdbc:postgresql://$POSTGRES_JDBC_URL:$POSTGRES_JDBC_PORT/engine?currentSchema=aaa_jdbc"
 RUN echo "================== database.properties =================="
 RUN echo ""
 RUN echo ""
@@ -115,21 +116,19 @@ COPY --from=build /home/gradle/project/itcloud/build/libs/*.jar app.jar
 EXPOSE 8080
 EXPOSE 8443
 
-ENTRYPOINT [
-  "java", "-jar", "app.jar", 
-  "--server.ssl.enabled=${ITCLOUD_SSL_ENABLED}", 
-  "--server.ssl.key-store-password=${SSL_KEY_STORE_PASSWORD}", 
-  "--server.ssl.key-alias=${ITCLOUD_SSL_ALIAS}",
-
-  "--spring.datasource.engine.url=${POSTGRES_JDBC_URL_ENGINE}",
-  "--spring.datasource.engine.username:${POSTGRES_DATASOURCE_JDBC_ID}",
-  "--spring.datasource.engine.password:${POSTGRES_DATASOURCE_JDBC_PW}",
-
-  "--spring.datasource.history.url=${POSTGRES_JDBC_URL_HISTORY}",
-  "--spring.datasource.history.username=${POSTGRES_DATASOURCE_JDBC_ID}",
-  "--spring.datasource.history.password=${POSTGRES_DATASOURCE_JDBC_PW}",
-
-  "--spring.datasource.aaa.url=${POSTGRES_JDBC_URL_AAA}",
-  "--spring.datasource.aaa.username=${POSTGRES_DATASOURCE_JDBC_ID}",
-  "--spring.datasource.aaa.password=${POSTGRES_DATASOURCE_JDBC_PW}",
+# ENTRYPOINT [ "java", "-jar", "app.jar"]
+ENTRYPOINT [ "java", "-jar", "app.jar" ]
+CMD [\
+#  "--server.ssl.enabled=${ITCLOUD_SSL_ENABLED}", \
+#  "--server.ssl.key-store-password=${ITCLOUD_SSL_PASSWORD}", \
+#  "--server.ssl.key-alias=${ITCLOUD_SSL_ALIAS}", \
+  "--spring.datasource.engine.url=${POSTGRES_JDBC_URL_ENGINE}", \
+  "--spring.datasource.engine.username:${POSTGRES_DATASOURCE_JDBC_ID}", \
+  "--spring.datasource.engine.password:${POSTGRES_DATASOURCE_JDBC_PW}", \
+  "--spring.datasource.history.url=${POSTGRES_JDBC_URL_HISTORY}", \
+  "--spring.datasource.history.username=${POSTGRES_DATASOURCE_JDBC_ID}", \
+  "--spring.datasource.history.password=${POSTGRES_DATASOURCE_JDBC_PW}", \
+  "--spring.datasource.aaa.url=${POSTGRES_JDBC_URL_AAA}", \
+  "--spring.datasource.aaa.username=${POSTGRES_DATASOURCE_JDBC_ID}", \
+  "--spring.datasource.aaa.password=${POSTGRES_DATASOURCE_JDBC_PW}" \
 ]
