@@ -104,30 +104,34 @@ jobs:
           name: itcloud-artifact
           path: .
 
-      - name: Set up OpenVPN
+      - name: Install OpenVPN
         run: |
-          echo "${{ secrets.OVPN_CONFIG }}" > client.ovpn
-          echo "${{ secrets.OVPN_PASS }}" > pass.txt
-          sudo apt-get update
-          sudo apt-get install -y openvpn-systemd-resolved
-          sleep 30
+          sudo apt update
+          sudo apt install -y openvpn openvpn-systemd-resolved
+      
+      - name: Wait for VPN to establish
+        run: sleep 30
 
-      - name: Connect to VPN
+      - name: Connect on OpenVPN
         uses: "kota65535/github-openvpn-connect-action@v2"
         with:
           config_file: .github/workflows/client.ovpn
           username: ${{ secrets.OVPN_USERNAME }}
           password: ${{ secrets.OVPN_PASSWORD }}
+      
+      - name: Verify VPN connection
+        run: |
+          curl -v ${{ secrets.SERVER_IP }}
 
       - name: Set up SSH
-        uses: appleboy/ssh-action@master
-        with: 
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            echo "hello world"
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PASSPHRASE }}" > ~/.ssh/id_rsa_passphrase
+          chmod 600 ~/.ssh/id_rsa_passphrase
+          echo -e "Host ${{ secrets.SERVER_IP }}\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+          echo -e "IdentityFile ~/.ssh/id_rsa\n\tIdentitiesOnly yes\n\tAddKeysToAgent yes\n\tIdentityFile ~/.ssh/id_rsa_passphrase" >> ~/.ssh/config
 
       - name: Transfer Docker image tarball using scp
         run: |
