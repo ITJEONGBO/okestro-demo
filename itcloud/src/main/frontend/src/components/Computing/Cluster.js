@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import HeaderButton from '../button/HeaderButton';
@@ -12,7 +12,7 @@ Modal.setAppElement('#root');
 
 const Cluster = () => {
   const navigate = useNavigate();
-
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
@@ -55,9 +55,7 @@ const Cluster = () => {
     isError: isClustersError, 
     error: clustersError, 
     isLoading: isClustersLoading,
-  } = useAllClusters(toTableItemPredicate);
-
-  function toTableItemPredicate(e) {
+  } = useAllClusters((e) => {
     //CLUSTERS_ALT
     return {
       id: e?.id ?? '',
@@ -71,8 +69,8 @@ const Cluster = () => {
       vmCount: e?.vmSizeVo?.allCnt ?? 0,
       upgradeStatus: '', // TODO: 무슨 정보 넣지?
     }
-  };
-  
+  });
+
   const handleRowClick = (row, column) => {
     console.log(`handleRowClick ... id: ${row.id}`)
     if (column.accessor === 'name') {

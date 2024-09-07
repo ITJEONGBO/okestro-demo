@@ -8,6 +8,7 @@ import HeaderButton from '../button/HeaderButton';
 import ApiManager from '../../api/ApiManager';
 import './css/Network.css';
 import Footer from '../footer/Footer';
+import { toast } from 'react-hot-toast';
 
 Modal.setAppElement('#root');
 
@@ -44,18 +45,17 @@ const Network = ({ }) => {
         }
     }
     const { 
-      data,
-      status,
-      isRefetching,
-      refetch, 
-      isError, 
-      error, 
-      isLoading
+      data: data,
+      status: networksStatus,
+      isRefetching: isNetworksRefetching,
+      refetch: networksRefetch, 
+      isError: isNetworksError, 
+      error: networksError, 
+      isLoading: isNetworksLoading,
     } = useAllNetworks(toTableItemPredicate)
-
     useEffect(() => {
-      refetch()
-    }, [setShouldRefresh, refetch])
+        networksRefetch()
+    }, [setShouldRefresh, networksRefetch])
 
     const [activeSection, setActiveSection] = useState('common_outer');
     const [selectedTab, setSelectedTab] = useState('network_new_common_btn');

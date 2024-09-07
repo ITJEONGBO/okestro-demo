@@ -1,6 +1,7 @@
 import ENDPOINTS from "./Endpoints"
 import DEFAULT_VALUES from "./DefaultValues"
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 axios.defaults.baseURL = 'https://' + window.location.hostname + ":" + 8443
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
@@ -19,6 +20,7 @@ const makeAPICall = async (url, defaultValues) => {
     return res.data?.body
   } catch(e) {
     console.error(`Error fetching '${url}':`, e);
+    toast.error(`Error fetching '${url}'\n${e.message}`)
     return defaultValues;
   }
 }

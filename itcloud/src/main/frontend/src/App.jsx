@@ -100,7 +100,7 @@ function App() {
       <Toaster 
         position="top-center"
         reverseOrder={false}    
-        gutter={8} 
+        gutter={4} 
       />
     </QueryClientProvider>
   );
