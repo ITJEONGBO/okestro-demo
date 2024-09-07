@@ -26,119 +26,127 @@
 
     text-rendering: optimizeLegibility;
 }
-
-
-#main_outer{
-    height: 88vh;
-    display: flex;
-    justify-content: space-between;
+//-----중복
+.content_outer{
     width: 100%;
+    display: flex;
+    height: 88%;
 }
-#aside_outer {
-    width: 3%;
+.empty_nav_outer{
+    width: 100%;
+    padding: 0.6rem 0.3rem;
+}
+.section_table_outer{
+    font-size: 0.3rem;
+
+}
+
+.section_table_outer table{
+    width: 100%;
+    border-collapse: collapse;
+}
+.section_table_outer table tbody tr{
+    cursor: pointer; 
+}
+.section_table_outer table tbody tr:hover{
+    background-color: #ebececd8;
+}
+.section_table_outer th,.section_table_outer td{
+    border: 1px solid rgb(204, 204, 204);
+    
+}
+.section_table_outer th{
+    padding: 0.04rem;
+    text-align: center;
+    background-color: #d1e2eb;
+}
+.section_table_outer td{
+    padding: 0.02rem 0.1rem ;
+}
+
+.section_table_outer td:nth-child(2){
+    width: 10%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.section_table_outer td:nth-child(3),.section_table_outer td:nth-child(4){
+    text-align: center;
+}
+.section_table_outer>button{
+    padding: 0.07rem 0.1rem;
+    margin-bottom: 0.13rem;
+    cursor: pointer;
     display: flex;
 }
-#aside {
-    width: 3vw;
-    height: 100%;
-    background-color: #ffffff;
-    border-radius: 5px;
-    box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.13);
-    border-right: 1px solid rgb(219 219 219);
+
+.edit_first_content{
+    border-bottom: 1px solid #cecece;
+    font-size: 0.32rem;
+}
+.edit_first_content>div:first-child{
+    padding: 3% 2% 5% 2%;
+}
+.edit_first_content>div{
     display: flex;
-    flex-direction: column; /* 컬럼 방향으로 요소 정렬 */
     justify-content: space-between;
+    padding: 1.2% 2%;
+
 }
+.edit_first_content>div:first-child{
+    position: relative;
+}
+.edit_first_content>div>div{
+    position: absolute;
+    top: 62%;
+    right: 32.5%;
+    font-style: italic;
+}
+
+.edit_first_content select{
+    width: 47%;
+    height: 3.3vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+}
+
+.content_header_right {  
+    display: flex;
+    margin-bottom: 0.3rem;
+    align-items: center;
+    justify-content: right;
+}
+
+.content_header_right button {
+    margin-right: 0.2rem;
+    font-size: 0.4rem;
+    padding: 0.1rem 0.1rem;
+    cursor: pointer;
+    font-size: 0.3rem;
+    font-weight: 600;
+    border-radius: 3px;
+    border: 1px solid #14417c;
+    border-radius: 3px;
+    color: rgb(10, 55, 107);
+    background: white;
+}
+.content_header_right  i{
+    font-size: 0.3rem;
+    font-weight: 800;
+}
+//// 중복끝
+
 .link-no-underline {
     text-decoration: none;
     color: inherit; /* 필요에 따라 색상을 설정하세요 */
   }
-#aside>#nav div, #setting_icon {
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-    padding:  0.5rem 0;
-    font-size: 0.6rem;
-    color: rgb(105, 105, 105);
-    cursor: pointer;
-}
-#aside>#nav>div:hover, #setting_icon:hover {
-    color: black;
-}
-#aside_popup {
-    width: 78%;
-    background-color: white;
-    display: none;
-    position: relative;
-}
-#aside_popup>div>div {
-    color: rgb(145, 150, 155);
-    font-size: 0.35rem;
-    cursor: pointer;
-    padding-top: 0.1rem;
-}
 
-.aside_popup_content i:first-child,
-.aside_popup_second_content i:first-child,
-.aside_popup_third_content i:first-child,
-.aside_popup_fourth_content i:first-child
- {
-    font-size: 0.24rem;
-    margin-right: 0.27rem;
-}
-.aside_popup_third_content{
-    padding-left: 0.6rem;
-}
-.aside_popup_fourth_content{
-    padding-left: 0.8rem;
-}
-.aside_popup_content>span,
-.aside_popup_second_content>span, 
-.aside_popup_third_content>span,
-.aside_popup_fourth_content>span
-{
-    margin-left: 0.1rem;
-}
-#aside_popup_first,#aside_popup_first2,#aside_popup_first3 {
-    padding-left: 0.2rem;
-}
 
-#aside_popup_third_content{
-    padding-left: 0.7rem;
-}
-#aside_popup_last_machine,#aside_popup_last_storage {
-    padding-left: 1.4rem;
-}
-#aside_popup_last_machine>div:hover,#aside_popup_last_storage>div:hover{
-    background-color: #e6eefa;
-}
-#aside_popup_last_machine>div span,#aside_popup_last_storage>div span{
-    margin-left: 0.1rem;
-}
-.aside_popup_second_content{
-    padding-left: 0.4rem;
-    
-}
-/* 우클릭 메뉴박스*/
-#context_menu {
-    position: absolute;
-    display: none;
-    background-color: white;
-    border: 1px solid #ccc;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    border-radius: 3px;
-}
-#context_menu div {
-    font-size: 0.3rem;
-    cursor: pointer;
-    text-align: left;
-    padding:0.03rem 0.2rem 0.03rem 0.2rem;
-    border-bottom: 1px solid rgb(226, 226, 226);
-}
-#context_menu div:hover {
-    background-color: #e6eefa;
-}
+
+
+
 /* 스토리지 우클릭 메뉴박스*/
 #storage_context_menu {
     position: absolute;
@@ -981,7 +989,7 @@
     border: 1px solid gray;
 }
 
-/*content_outer*/
+
 .content_outer,
 .content_outerd,
 .sto_content_outer,
@@ -1055,7 +1063,6 @@
 
 .content_header {
     border-right: 1px solid #dddddd;
- 
     width: 12%;
 }
 
@@ -1089,30 +1096,7 @@
     background-color: #6999D9;
 }
 
-.content_header_right {  
-    display: flex;
-    margin-bottom: 0.3rem;
-    align-items: center;
-    justify-content: right;
-}
 
-.content_header_right button {
-    margin-right: 0.2rem;
-    font-size: 0.4rem;
-    padding: 0.1rem 0.1rem;
-    cursor: pointer;
-    font-size: 0.3rem;
-    font-weight: 600;
-    border-radius: 3px;
-    border: 1px solid #14417c;
-    border-radius: 3px;
-    color: rgb(10, 55, 107);
-    background: white;
-}
-.content_header_right  i{
-    font-size: 0.3rem;
-    font-weight: 800;
-}
 /*storage_volume_option_box*/
 .storage_volume_option_boxbtn,.upload_option_boxbtn{
     position: relative;
@@ -2279,37 +2263,7 @@ form>div
     font-size: 0.32rem;
 
 }
-.edit_first_content{
-    border-bottom: 1px solid #cecece;
-    font-size: 0.32rem;
-}
-.edit_first_content>div:first-child{
-    padding: 3% 2% 5% 2%;
-}
-.edit_first_content>div{
-    display: flex;
-    justify-content: space-between;
-    padding: 1.2% 2%;
 
-}
-.edit_first_content>div:first-child{
-    position: relative;
-}
-.edit_first_content>div>div{
-    position: absolute;
-    top: 62%;
-    right: 32.5%;
-    font-style: italic;
-}
-
-.edit_first_content select{
-    width: 47%;
-    height: 3.3vh;
-    padding: 0 3px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
-}
 .edit_second_content>div,#host_third_content>div{
     display: flex;
     justify-content: space-between;
@@ -3176,312 +3130,10 @@ display: flex; /* Flexbox 설정 추가 */
     background: #e4e4e4;
     color: #449bff;
 }
-.setting_buttons{
-    display: flex;
-}
-.setting_buttons div,.setting_user_buttons>div{
-    padding: 0.07rem;
-    cursor: pointer;
-    border: 1px solid black;
-    border-radius: 3px;
-    font-size: 0.3rem;
-    margin-left: 0.1rem;
-}
-.radio_toolbar{
-    display: flex;
-    width: 37%;
-    justify-content: space-between;
-}
-.setting_part_table_outer{
-    height: 53vh;
-    border: 1px solid black;
-    border-radius: 2px;
-}
-.setting_part_table_outer>div:first-child{
-    padding: 0.2rem 0;
-    background-color: rgb(223, 223, 223);
-    margin-bottom: 0;
-}
-#setting_part_form tbody td:first-child,#setting_part_form tbody td:nth-child(2){
-    text-align: center;
-}
-    /*역할(새로만들기) 팝업*/
-.setting_part_new_outer{
-    display: none;
-    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
-.setting_part_new_popup{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    z-index: 3;
-    height: 63%;
-    width: 44%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-}
-.set_part_text{
-    border-bottom: 1px solid gray;
-    font-size: 0.34rem;
-    padding: 0.1rem 0.4rem;
-}
-.set_part_text>div{
-    display: flex;
-    
-}
-.set_part_text>div:first-child{
-    margin-bottom: 0.4rem;
-    justify-content: space-between;
-    width: 60%;
-}
-.set_part_text>div:first-child input{
-    width: 100%;
-    height: 3.3vh;
-    padding: 0 3px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
-    outline: none;
-    border: 1px solid  rgb(206, 206, 206);
-}
-.set_part_text>div:nth-child(3){
-    margin-bottom: 0.3rem;
-}
-.set_part_text>span,.set_part_checkboxs>span{
-    margin-bottom: 0.1rem;
-    display: block;
-}
-.set_part_checkboxs{
-    font-size: 0.34rem;
-    padding: 0.1rem 0.4rem;
-}
-.set_part_buttons{
-    display: flex;
-    width: 26%;
-    justify-content: space-between;
-    margin-bottom: 0.4rem;
-}
-.set_part_buttons>div{
-    border: 1px solid black;
-    border-radius: 2px;
-    padding: 0.1rem;
-    cursor: pointer;
-}
-.checkbox_toolbar>div{
-    margin-bottom: 0.25rem;
-    font-weight: 600;
-}
-    /*설정(설정->시스템권한)*/
-#setting_system_form,
-#setting_schedule_form,
-#setting_instant_form,
-#setting_mac_form
-{
-    padding-top: 1rem;
-}
-#setting_system_form tbody td:first-child,
-#setting_schedule_form tbody td:first-child,
-#setting_mac_form tbody td:first-child
-{
-    text-align: center;
-}
-    /*설정(설정->시스템권한->추가 팝업)*/
-.setting_system_new_outer{
-    display: none;
-    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
-.setting_system_new_popup{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 77%;
-    width: 60%;
-    z-index: 3;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-}
-    /*설정(설정->스케줄링 정책)*/
-#setting_schedule_form .setting_part_nav,
-#setting_instant_form .setting_part_nav,
-#setting_mac_form .setting_part_nav
-{
-    display: flex;
-    justify-content: right;
-}
-    /*설정(설정->스케줄링 정책->새로만들기 팝업)*/
-.setting_schedule_new_outer{
-    display: none;
-    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
-.setting_schedule_new_popup{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 85%;
-    width: 61%;
-    z-index: 3;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-}
-.set_schedule_contents{
-    display: flex;
-    justify-content: space-between;
-    padding: 0 0.4rem;
-    font-size: 0.34rem;
-    height: 57%;
-}
-.set_schedule_contents_left,.set_schedule_contents_right{
-    width: 47%;
-}
-.set_schedule_contents_left>div{
-    height: 50%; 
-}
-.set_schedule_contents_left h1{
-    font-size: 0.4rem;
-}
-.set_schedule_contents_left>div>div:nth-child(3){
-    height: 66%;
-    margin-top: 0.1rem;
-    border-radius: 2px;
-    background-color: #ccc;
-}
-.set_schedule_contents_right>div{
-    padding-top: 0.6rem;
-    height: 45%;
-    width: 100%;
-}
-.set_schedule_contents_right span{
-    text-align: center;
-    display: block;
-    margin-bottom: 0.1rem;
-}
-.schedule_boxs{
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
-    height: 80%;
-}
-.schedule_boxs>div{
-    border: 1px solid black;
-    font-size: 0.3rem;
-    margin-bottom: 0.04rem;
-    padding: 0.1rem;
-}
-.set_schedule_balance{
-    padding: 0 0.4rem;
-}
-.set_schedule_balance label{
-    font-weight: 600;
-    font-size: 0.4rem;
-    display: block;
-}
-.set_schedule_balance select{
-    width: 47%;
-    height: 3.3vh;
-    padding: 0 3px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
-    outline: none;
-    border: 1px solid  rgb(206, 206, 206);
-}
-    /*설정(설정->MAC주소 풀)*/
-#setting_mac_form .setting_part_table_outer{
-    height: 27vh;
-}
-    /*설정(설정->MAC주소 풀->새로만들기)팝업*/
-.setting_mac_new_outer{
-    display: none;
-    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
-.setting_mac_new_popup{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 46%;
-    width: 47%;
-    z-index: 3;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-}
-.setting_mac_textboxs{
-    padding: 0.4rem;
-    font-size: 0.36rem;
-}
-.setting_mac_textboxs>div{
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.3rem;
-}
-.setting_mac_textboxs input{
-    width: 47%;
-    height: 3.3vh;
-    padding: 0 3px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
-    outline: none;
-    border: 1px solid  rgb(206, 206, 206);
-}
-.setting_mac_checkbox{
-    padding: 0 0.4rem;
-    font-size: 0.36rem;
-    margin-bottom: 0.4rem;
-}
-    /*설정(설정->MAC주소 풀->편집)팝업*/
-.setting_mac_edit_outer{
-    display: none;
-    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
-.setting_mac_edit_popup{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 55%;
-    width: 90%;
-    z-index: 3;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-}
+
+
+
+
     /*설정(사용자)*/
 .setting_user_buttons{
     display: flex;
@@ -4077,10 +3729,7 @@ box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 }
 /*끝*/
 /*Cluster.js / Host.js / *Network.js*/
-.empty_nav_outer{
-    width: 100%;
-    padding: 0.6rem 0.3rem;
-}
+
 /*끝*/
 
 

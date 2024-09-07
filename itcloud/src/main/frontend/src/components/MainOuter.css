@@ -1,9 +1,4 @@
-#main_outer{
-    height: 88vh;
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-}
+
 .apexcharts-menu-icon,.apexcharts-toolbar>div{
     display: none;
 }
@@ -473,6 +468,8 @@
         transform: translate(-50%, -50%);
         box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
     }
+
+    //----??
         /*설정(사용자)*/
     .setting_user_buttons{
         display: flex;

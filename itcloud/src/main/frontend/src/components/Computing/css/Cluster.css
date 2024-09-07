@@ -4,55 +4,5 @@
     width: 96%;
     position: relative;
 }
-.content_outer{
-    width: 100%;
-    display: flex;
-    height: 88%;
-}
-.empty_nav_outer{
-    width: 100%;
-    padding: 0.6rem 0.3rem;
-}
-.section_table_outer{
-    font-size: 0.3rem;
 
-}
 
-.section_table_outer table{
-    width: 100%;
-    border-collapse: collapse;
-}
-.section_table_outer table tbody tr{
-    cursor: pointer; 
-}
-.section_table_outer table tbody tr:hover{
-    background-color: #ebececd8;
-}
-.section_table_outer th,.section_table_outer td{
-    border: 1px solid rgb(204, 204, 204);
-    
-}
-.section_table_outer th{
-    padding: 0.04rem;
-    text-align: center;
-    background-color: #d1e2eb;
-}
-.section_table_outer td{
-    padding: 0.02rem 0.1rem ;
-}
-
-.section_table_outer td:nth-child(2){
-    width: 10%;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-.section_table_outer td:nth-child(3),.section_table_outer td:nth-child(4){
-    text-align: center;
-}
-.section_table_outer>button{
-    padding: 0.07rem 0.1rem;
-    margin-bottom: 0.13rem;
-    cursor: pointer;
-    display: flex;
-}
