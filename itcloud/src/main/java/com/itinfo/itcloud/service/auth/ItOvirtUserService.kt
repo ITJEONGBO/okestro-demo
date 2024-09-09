@@ -34,7 +34,7 @@ interface ItOvirtUserService {
 	@Throws(PSQLException::class)
 	fun findAll(): List<UserVo>
 	/**
-	 * [ItOvirtUserService.findOne]
+	 * [ItOvirtUserService.findOneAAA]
 	 * 특정 사용자 조회
 	 *
 	 * @param username [String]
@@ -43,7 +43,7 @@ interface ItOvirtUserService {
 	@Throws(PSQLException::class)
 	fun findOneAAA(username: String): OvirtUser
 	/**
-	 * [ItOvirtUserService.findAll]
+	 * [ItOvirtUserService.findOne]
 	 *
 	 * @param username [String]
 	 * @return [UserVo]
@@ -51,7 +51,7 @@ interface ItOvirtUserService {
 	@Throws(PSQLException::class)
 	fun findOne(username: String): UserVo?
 	/**
-	 * [ItOvirtUserService.findAll]
+	 * [ItOvirtUserService.findFullDetailByName]
 	 *
 	 * @param username [String]
 	 * @return [UserVo]
@@ -69,6 +69,7 @@ interface ItOvirtUserService {
 	/**
 	 * [ItOvirtUserService.authenticate]
 	 * 암호화 된 값 변환 (oVirt 비밀번호)
+	 *
 	 * @param username [String]
 	 * @param password [String]
 	 * @return List<[UserVo]>

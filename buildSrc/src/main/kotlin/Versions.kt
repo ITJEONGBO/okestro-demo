@@ -9,7 +9,7 @@ object Versions {
     const val kotlinDsl = "2.1.7"
 
     const val tomcatPlugin = "2.5"
-    const val tomcatEmbedded = "9.0.63"
+    const val tomcatEmbedded = "9.0.63" // 변환할 버전 10.1.25
 
     const val spring = "5.3.20"
     const val springSecurity = "5.7.1"

@@ -35,17 +35,20 @@ const DEFAULT_VALUES = {
   GET_VM_MEMORY: () =>      `/api/v1/dashboard/vmMemory`,
   GET_STORAGE_MEMROY: () => `/api/v1/dashboard/storageMemory`,
   // 컴퓨팅
-  FIND_ALL_DATA_CENTERS: [
-      {
-          iconStatus: <i className="fa fa-exclamation-triangle" style={{ color: 'yellowgreen' }}></i>, // TODO: raw 값만 부여하도록 구현
-          name: '샘플값입니다',
-          comment: '(샘플값입니다.)',
-          storageType: '공유됨',
-          status: 'Up',
-          compatVersion: '4.7',
-          description: 'The default Data Center',
-      },
-  ],
+   FIND_ALL_DATA_CENTERS: [
+        {
+            iconStatus: <i className="fa fa-exclamation-triangle" style={{ color: 'yellowgreen' }}></i>, // TODO: raw 값만 부여하도록 구현
+            name: '샘플값입니다',
+            comment: '(샘플값입니다.)',
+            name: 'DataCenter1',
+            comment: '',
+            storageType: '공유됨',
+            status: 'Up',
+            compatVersion: '4.7',
+            version: '4.7',
+            description: 'The default Data Center',
+        },
+   ],
 //region:Cluster------ 클러스터
   FIND_ALL_CLUSTERS: [
     {

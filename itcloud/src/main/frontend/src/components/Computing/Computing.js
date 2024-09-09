@@ -1,68 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
-import './css/Computing.css';
 import HeaderButton from '../button/HeaderButton';
-import Footer from '../footer/Footer';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
-import ApiManager from '../../api/ApiManager';
+import Footer from '../footer/Footer';
+import './css/Computing.css';
+import { useAllDataCenters } from '../../api/RQHook';
 
 // React Modal 설정
 Modal.setAppElement('#root');
 
 const Computing = () => {
-    const { section } = useParams();
     const navigate = useNavigate();
-    /* 
-    const [datacenters, setDatacenters] = useState([]);
-    useEffect(() => {
-        async function fetchData() {
-            console.log('fetching!!!')
-            const res = await ApiManager.findAllDataCenters();
-            setDatacenters(res);
-        }
-        fetchData()
-    }, [])
-    */
-    const { 
-      datacenters,
-      status,
-      isRefetching,
-      refetch, 
-      isError, 
-      error, 
-      isLoading
-    } = useQuery({
-      queryKey: ['allDataCenters'],
-      queryFn: async () => {
-        const res = await ApiManager.findAllDataCenters()
-        return res ?? []
-      }
-    })
-  
-    const [activeSection, setActiveSection] = useState('datacenter');
+
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
-    const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
-    const [sectionContent, setSectionContent] = useState('default');
-
-    useEffect(() => {
-        navigate(`/computing/${activeSection}`);
-        if (activeSection == 'datacenter') {
-            
-        }
-    }, [activeSection, navigate]);
-
-    
-    const toggleFooterContent = () => {
-        setFooterContentVisibility(!isFooterContentVisible);
-    };
-
-    const handleFooterTabClick = (tab) => {
-        setSelectedFooterTab(tab);
-    };
 
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
@@ -77,39 +29,73 @@ const Computing = () => {
         { id: 'delete_btn', label: '삭제', onClick: () => {} },
     ];
 
+    /*
+    const [datacenters, setDatacenters] = useState([]);
+    useEffect(() => {
+        async function fetchData() {
+            console.log('fetching!!!')
+            const res = await ApiManager.findAllDataCenters();
+            setDatacenters(res);
+        }
+        fetchData()
+    }, [])
+    */
+    const {
+      data: datacenters,
+      status: datacenterStatus,
+      isRefetching: isDatacentersRefetching,
+      refetch: refetchDatacenters,
+      isError: isDatacentersError,
+      error: datacenterError,
+      isLoading: isDatacentersLoading
+    } = useAllDataCenters((e) => {
+        //DATACENTERS
+        return {
+          iconStatus: e?.iconStatus ?? '',
+          name: e?.name ?? '',
+          comment: e?.comment ?? '',
+          storageType: e?.storageType ?? '',
+          status: e?.status ?? '정보 없음',
+          compatVersion: e?.version ?? '0.0',
+          description: e?.description ?? '설명없음',
+        }
+    });
+
+    const handleRowClick = (row, column) => {
+        console.log(`handleRowClick ... id: ${row.id}`)
+        if (column.accessor === 'name') {
+          navigate(
+            `/computing/datacenters/${row.id}`,
+            { state: { name: row.name } }
+          );
+        }
+    };
 
     return (
         <div id="section">
-            {sectionContent === 'default' ? (
-                <>
-                    <HeaderButton
-                        title="데이터 센터"
-                        subtitle=""
-                        buttons={sectionHeaderButtons}
-                        popupItems={[]}
-                        openModal={openModal}
-                        togglePopup={() => {}}
-                    />
-                    <div className="content_outer">
-                        <div className="empty_nav_outer">
-                            <div className='section_table_outer'>
-                                <button>
-                                    <i className="fa fa-refresh"></i>
-                                </button>
-                                <Table
-                                    columns={TableColumnsInfo.DATACENTERS}
-                                    data={datacenters}
-                                    onRowClick={(row, column) => {
-                                        if (column.accessor === 'name') {
-                                            handleNameClick(row.name);
-                                        }
-                                    }}
-                                />
-                            </div>
-                        </div>
+            <HeaderButton
+                title="데이터 센터"
+                subtitle=""
+                buttons={sectionHeaderButtons}
+                popupItems={[]}
+                openModal={openModal}
+                togglePopup={() => {}}
+            />
+            <div className="content_outer">
+                <div className="empty_nav_outer">
+                    <div className='section_table_outer'>
+                        <button>
+                            <i className="fa fa-refresh"></i>
+                        </button>
+                        <Table
+                            columns={TableColumnsInfo.DATACENTERS}
+                            data={datacenters}
+                            onRowClick={handleRowClick}
+                            shouldHighlight1stCol={true}
+                        />
                     </div>
-                </>
-            ) : null}
+                </div>
+            </div>
 
            <Footer/>
 

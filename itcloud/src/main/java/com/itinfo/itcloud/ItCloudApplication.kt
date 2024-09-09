@@ -16,7 +16,7 @@ import java.time.LocalDateTime
 
 private val log = LoggerFactory.getLogger(ItCloudApplication::class.java)
 
-@SpringBootApplication(scanBasePackages = ["com.itinfo.itcloud.jsp"])
+@SpringBootApplication()
 @ComponentScan(basePackages = [
 	"com.itinfo.itcloud.configuration",
 	// "com.itinfo.security",

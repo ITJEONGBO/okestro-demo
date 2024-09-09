@@ -99,8 +99,7 @@ const ApiManager = {
   /**
    * @name ApiManager.findAllDataCenters
    * @description datacenter 목록 
-   * @todo 백엔드 구현필요!
-   * 
+   *
    * @returns 
    * 
    * @see Computing.js (components/Computing)
