@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
-import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import ApiManager from '../api/ApiManager';
 import DEFAULT_VALUES from '../api/DefaultValues';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
 import './Dashboard.css';
 
 //region: CpuApexChart
@@ -738,8 +739,8 @@ const Dashboard = () => {
             <span>Datacenter</span>
             <h1>{data.datacenters}</h1>
             <div className="arrows">
-              <i className="fa fa-arrow-up"> {data.datacentersUp}</i> &nbsp;
-              <i className="fa fa-arrow-down"> {data.datacentersDown}</i>
+              <FontAwesomeIcon icon={faArrowUp} fixedWidth/> {data.datacentersUp}&nbsp;
+              <FontAwesomeIcon icon={faArrowDown} fixedWidth/> {data.datacentersDown}
             </div>
           </div>
           <div className="box"  onClick={() => navigate('/computing/cluster')}>
@@ -750,8 +751,8 @@ const Dashboard = () => {
             <span>Host</span>
             <h1>{data.hosts}</h1>
             <div className="arrows">
-              <i className="fa fa-arrow-up"> {data.hostsUp}</i> &nbsp;
-              <i className="fa fa-arrow-down"> {data.hostsDown}</i>
+              <FontAwesomeIcon icon={faArrowUp} fixedWidth/> {data.hostsUp} &nbsp;
+              <FontAwesomeIcon icon={faArrowDown} fixedWidth/> {data.hostsDown}
             </div>
           </div>
           <div className="box" onClick={() => navigate('/storage-domainpart')}>
@@ -764,16 +765,16 @@ const Dashboard = () => {
             <span>Virtual machine</span>
             <h1>{data.vms}</h1>
             <div className="arrows">
-              <i className="fa fa-arrow-up"> {data.vmsUp}</i> &nbsp;
-              <i className="fa fa-arrow-down"> {data.vmsDown}</i>
+              <FontAwesomeIcon icon={faArrowUp} fixedWidth/> {data.vmsUp} &nbsp;
+              <FontAwesomeIcon icon={faArrowDown} fixedWidth/> {data.vmsDown}
             </div>
           </div>
           <div className="box">
             <span>Event</span>
             <h1>0</h1>
             <div className="arrows">
-              <i className="fa fa-arrow-up"> 1</i> &nbsp;
-              <i className="fa fa-arrow-down"> 1</i>
+              <FontAwesomeIcon icon={faArrowUp} fixedWidth/> 1 &nbsp;
+              <FontAwesomeIcon icon={faArrowDown} fixedWidth/> 1
             </div>
           </div>
         </div> {/* boxs 끝 */}

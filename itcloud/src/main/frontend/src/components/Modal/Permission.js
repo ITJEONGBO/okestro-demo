@@ -1,6 +1,10 @@
 import React from 'react';
 import Modal from 'react-modal';
 import Table from '../table/Table';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faTimes
+} from '@fortawesome/free-solid-svg-icons'
 
 const Permission = ({ isOpen, onRequestClose }) => {
   return (
@@ -14,7 +18,7 @@ const Permission = ({ isOpen, onRequestClose }) => {
     >
       <div className="network_popup_header">
         <h1>사용자에게 권한 추가</h1>
-        <button onClick={onRequestClose}><i className="fa fa-times"></i></button>
+        <button onClick={onRequestClose}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
       </div>
 
       <div className="power_radio_group">

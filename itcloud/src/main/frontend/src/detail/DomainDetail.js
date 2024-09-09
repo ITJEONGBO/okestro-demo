@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import NavButton from '../components/navigation/NavButton';
-
+import {
+  faExchange, faBan, faChevronLeft, faChevronRight, faEllipsisV
+  , faUser, faTimes, faInfoCircle,
+} from '@fortawesome/free-solid-svg-icons'
 function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const [activeTab, setActiveTab] = useState('general');
 
@@ -38,7 +41,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
           <span>논리네트워크</span>
           <div>hosted_storage</div>
           <button>
-            <i className="fa fa-exchange"></i>
+            <FontAwesomeIcon icon={faExchange} fixedWidth/>
           </button>
         </div>
 
@@ -92,7 +95,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                     <th>펌웨어/장치의 유형:</th>
                     <td>
                       BIOS의 Q35 칩셋{' '}
-                      <i className="fa fa-ban" style={{ marginLeft: '13%', color: 'orange' }}></i>
+                      <FontAwesomeIcon icon={faBan} style={{ marginLeft: '13%', color: 'orange' }}fixedWidth/>
                     </td>
                   </tr>
                   <tr>
@@ -119,10 +122,10 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                     <button>제거</button>
                 </div>
                 <div className="application_content_header">
-                    <button><i className="fa fa-chevron-left"></i></button>
+                    <button><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
                     <div>1-1</div>
-                    <button><i className="fa fa-chevron-right"></i></button>
-                    <button><i className="fa fa-ellipsis-v"></i></button>
+                    <button><FontAwesomeIcon icon={faChevronRight} fixedWidth/></button>
+                    <button><FontAwesomeIcon icon={faEllipsisV} fixedWidth/></button>
                 </div>
 
                 <div className="table_outer2">
@@ -166,10 +169,10 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                 <button onClick={() => openPopup('cluster_network_popup')}>네트워크 관리</button>
             </div>
             <div className="application_content_header">
-                <button><i className="fa fa-chevron-left"></i></button>
+                <button><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
                 <div>1-1</div>
-                <button><i className="fa fa-chevron-right"></i></button>
-                <button><i className="fa fa-ellipsis-v"></i></button>
+                <button><FontAwesomeIcon icon={faChevronRight} fixedWidth/></button>
+                <button><FontAwesomeIcon icon={faEllipsisV} fixedWidth/></button>
             </div>
             <div className="table_outer2">
                 <table>
@@ -188,14 +191,14 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                     <tr>
                         <td>Default</td>
                         <td>4.7</td>
-                        <td><i className="fa fa-chevron-left"></i></td>
-                        <td><i className="fa fa-chevron-left"></i></td>
-                        <td ><i className="fa fa-chevron-left"></i></td>
+                        <td><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></td>
+                        <td><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></td>
+                        <td ><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></td>
                         <td style={{ textAlign: 'center' }}>
-                            <i className="fa fa-chevron-left"></i>
-                            <i className="fa fa-chevron-left"></i>
-                            <i className="fa fa-chevron-left"></i>
-                            <i className="fa fa-chevron-left"></i>
+                            <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>
+                            <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>
+                            <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>
+                            <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>
                         </td>
                         <td>The default server cluster</td>
                     </tr>
@@ -220,10 +223,10 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                   <button>연결 해제</button>
                 </div>
                 <div className="application_content_header">
-                    <button><i className="fa fa-chevron-left"></i></button>
+                    <button><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
                     <div>1-1</div>
-                    <button><i className="fa fa-chevron-right"></i></button>
-                    <button><i className="fa fa-ellipsis-v"></i></button>
+                    <button><FontAwesomeIcon icon={faChevronRight} fixedWidth/></button>
+                    <button><FontAwesomeIcon icon={faEllipsisV} fixedWidth/></button>
                 </div>
             
             <div className="table_outer2">
@@ -246,11 +249,11 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                   </thead>
                   <tbody>
                       <tr>
-                        <td><i className="fa fa-chevron-left"></i></td> 
+                        <td><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></td> 
                         <td>host01.ititinfo.com</td>
                         <td>Default</td>
                         <td>Default</td>
-                        <td><i className="fa fa-chevron-left"></i></td>
+                        <td><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></td>
                         <td></td>
                         <td>ens192</td>
                         <td>10000</td>
@@ -279,10 +282,10 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                   <button>정지중</button>
                 </div>
               <div className="application_content_header">
-                  <button><i className="fa fa-chevron-left"></i></button>
+                  <button><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
                   <div>1-1</div>
-                  <button><i className="fa fa-chevron-right"></i></button>
-                  <button><i className="fa fa-ellipsis-v"></i></button>
+                  <button><FontAwesomeIcon icon={faChevronRight} fixedWidth/></button>
+                  <button><FontAwesomeIcon icon={faEllipsisV} fixedWidth/></button>
               </div>
             <div className="table_outer2">
                 <table>
@@ -305,11 +308,11 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                 </thead>
                 <tbody>
                   <tr>
-                    <td style={{ textAlign: 'center' }}><i className="fa fa-chevron-left"></i></td> 
+                    <td style={{ textAlign: 'center' }}><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></td> 
                     <td>HostedEngine</td>
                     <td>Default</td>
                     <td>192.168.0.08 fe80::2342</td>
-                    <td><i className="fa fa-chevron-left"></i></td>
+                    <td><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></td>
                     <td>vnet0</td>
                     <td>1</td>
                     <td>1</td>
@@ -333,10 +336,10 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                 <button>제거</button>
             </div>
             <div className="application_content_header">
-                  <button><i className="fa fa-chevron-left"></i></button>
+                  <button><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
                   <div>1-1</div>
-                  <button><i className="fa fa-chevron-right"></i></button>
-                  <button><i className="fa fa-ellipsis-v"></i></button>
+                  <button><FontAwesomeIcon icon={faChevronRight} fixedWidth/></button>
+                  <button><FontAwesomeIcon icon={faEllipsisV} fixedWidth/></button>
               </div>
             <div className="table_outer2">
                 <table>
@@ -383,10 +386,10 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
               </div>
               <div>
                 <div className="application_content_header">
-                  <button><i className="fa fa-chevron-left"></i></button>
+                  <button><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
                   <div>1-3</div>
-                  <button><i className="fa fa-chevron-right"></i></button>
-                  <button><i className="fa fa-ellipsis-v"></i></button>
+                  <button><FontAwesomeIcon icon={faChevronRight} fixedWidth/></button>
+                  <button><FontAwesomeIcon icon={faEllipsisV} fixedWidth/></button>
                 </div>
               </div>
               <div className="table_outer2">
@@ -404,7 +407,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                   </thead>
                   <tbody>
                     <tr>
-                      <td><i className="fa fa-user"></i></td>
+                      <td><FontAwesomeIcon icon={faUser} fixedWidth/></td>
                       <td>ovirtmgmt</td>
                       <td></td>
                       <td>*</td>
@@ -433,7 +436,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
         <div className="vnic_new_content_popup">
           <div className="network_popup_header">
             <h1>가상 머신 인터페이스 프로파일</h1>
-            <button onClick={closePopup}><i className="fa fa-times"></i></button>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
           
           <div className="vnic_new_content">
@@ -531,7 +534,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
         <div className="vnic_new_content_popup">
           <div className="network_popup_header">
             <h1>가상 머신 인터페이스 프로파일</h1>
-            <button onClick={closePopup}><i className="fa fa-times"></i></button>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
           
           <div className="vnic_new_content">
@@ -625,7 +628,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
         <div className="net_keeper_popup">
           <div className="network_popup_header">
             <h1>네트워크 관리</h1>
-            <button onClick={closePopup}><i className="fa fa-times"></i></button>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
           
           <div className="network_popup_table">
@@ -658,7 +661,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                               <label htmlFor="network_settings">네트워크 설정 저장</label>
                             </div>
                           </td>
-                          <td style={{textAlign:'center'}}><i class="fa fa-caret-up" style={{ fontSize:'0.5rem',color:'greenyellow'}}></i></td>
+                          <td style={{textAlign:'center'}}><i class="fa-solid fa-caret-up" style={{ fontSize:'0.5rem',color:'greenyellow'}}fixedWidth/></td>
                           <td>
                             <div className="vnic_new_checkbox">
                               <input type="checkbox" id="network_settings" disabled checked />
@@ -715,12 +718,12 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
         <div className="vnic_new_content_popup">
           <div className="network_popup_header">
             <h1>호스트 host01.ititinfo.com 네트워크 설정</h1>
-            <button onClick={closePopup}><i className="fa fa-times"></i></button>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
           
           <div className="host_network_contents_outer">
             <div className="host_network_header">
-              <i class="fa fa-long-arrow-right"></i>
+              <i class="fa-solid fa-long-arrow-right" fixedWidth/>
               <span>드래그하여 변경</span>
             </div>
             <div className="host_network_top">
@@ -731,23 +734,23 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                 </div>
                 <div className="interface_logical_icon">
                   <div>
-                    <i class="fa fa-circle" style={{ fontSize:'0.1rem',color:'greenyellow', border: '1px solid white'}}></i>
-                    <i class="fa fa-desktop"></i>
+                    <i class="fa-solid fa-circle" style={{ fontSize:'0.1rem',color:'greenyellow', border: '1px solid white'}}fixedWidth/>
+                    <i class="fa-solid fa-desktop" fixedWidth/>
                     <div>ens192</div>
                   </div>
                   <div>
-                    <i class="fa fa-arrows-h"></i>
+                    <i class="fa-solid fa-arrows-h" fixedWidth/>
                   </div>
                   <div>
-                    <i class="fa fa-caret-up" style={{ fontSize:'0.5rem',color:'greenyellow'}}></i>
+                    <i class="fa-solid fa-caret-up" style={{ fontSize:'0.5rem',color:'greenyellow'}}fixedWidth/>
                     <div style={{fontWeight:'600'}}>ovirtmgmt</div>
                     <div>
-                      <button><i class="fa fa-check-square-o"></i></button>
-                      <button><i class="fa fa-check-square-o"></i></button>
-                      <button><i class="fa fa-check-square-o"></i></button>
-                      <button><i class="fa fa-check-square-o"></i></button>
-                      <button><i class="fa fa-check-square-o"></i></button>
-                      <button style={{border:'none'}}><i class="fa fa-check-square-o"></i></button>
+                      <button><i class="fa-solid fa-check-square-o" fixedWidth/></button>
+                      <button><i class="fa-solid fa-check-square-o" fixedWidth/></button>
+                      <button><i class="fa-solid fa-check-square-o" fixedWidth/></button>
+                      <button><i class="fa-solid fa-check-square-o" fixedWidth/></button>
+                      <button><i class="fa-solid fa-check-square-o" fixedWidth/></button>
+                      <button style={{border:'none'}}><i class="fa-solid fa-check-square-o" fixedWidth/></button>
                     </div>
                   </div>
                 </div>
@@ -765,7 +768,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                 </div>
                 <div className="external_logical">
                   <div>외부 논리적 네트워크</div>
-                  <i class="fa fa-info-circle"></i>
+                  <FontAwesomeIcon icon={faInfoCircle} fixedWidth/>
                 </div>
               </div>
             </div>
@@ -775,14 +778,14 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
                   <input type="checkbox" id="host_engine_connection" checked />
                   <label htmlFor="host_engine_connection">호스트와 Engine간의 연결을 확인</label>
                 </div>
-                <i className="fa fa-info-circle"></i>
+                <FontAwesomeIcon icon={faInfoCircle} fixedWidth/>
               </div>
               <div>
                 <div className="vnic_new_checkbox">
                   <input type="checkbox" id="network_settings" disabled checked />
                   <label htmlFor="network_settings">네트워크 설정 저장</label>
                 </div>
-                <i className="fa fa-info-circle"></i>
+                <FontAwesomeIcon icon={faInfoCircle} fixedWidth/>
               </div>
             </div>
           </div>
@@ -809,7 +812,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
         <div className="vnic_new_content_popup">
           <div className="network_popup_header">
             <h1>사용자에게 권한 추가</h1>
-            <button onClick={closePopup}><i className="fa fa-times"></i></button>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
 
           <div className="power_radio_group">

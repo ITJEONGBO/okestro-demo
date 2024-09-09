@@ -3,6 +3,12 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Modal from 'react-modal';
 import { useAllTreeNavigations, } from '../api/RQHook';
 import './MainOuter.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+    faThLarge, faDesktop, faServer, faDatabase, faCog
+    , faBuilding, faUser, faMicrochip, faChevronLeft, faChevronRight
+    , faTimes, faEllipsisV, faHeart, faInfoCircle
+} from '@fortawesome/free-solid-svg-icons'
 
 const MainOuter = ({ children }) => {
   const [selected, setSelected] = useState('dashboard');
@@ -340,7 +346,7 @@ const MainOuter = ({ children }) => {
                             onClick={() => handleClick('dashboard')}
                             style={{ backgroundColor: asidePopupBackgroundColor.dashboard }}
                         >
-                            <i className="fa fa-th-large"></i>
+                            <FontAwesomeIcon icon={faThLarge} fixedWidth/>
                         </div>
                     </Link>
                     <Link to='/computing/datacenter' className="link-no-underline">
@@ -350,7 +356,7 @@ const MainOuter = ({ children }) => {
                             onClick={() => handleClick('computing')}
                             style={{ backgroundColor: asidePopupBackgroundColor.computing }}
                         >
-                            <i className="fa fa-desktop"></i>
+                            <FontAwesomeIcon icon={faDesktop} fixedWidth/>
                         </div>
                     </Link>
                     <Link to='/networks' className="link-no-underline">
@@ -360,7 +366,7 @@ const MainOuter = ({ children }) => {
                             onClick={() => handleClick('network')}
                             style={{ backgroundColor: asidePopupBackgroundColor.network }}
                         >
-                            <i className="fa fa-server"></i>
+                           <FontAwesomeIcon icon={faServer} fixedWidth/>
                         </div>
                     </Link>
                     <Link to='/storage' className="link-no-underline">
@@ -370,18 +376,18 @@ const MainOuter = ({ children }) => {
                             onClick={() => handleClick('storage')}
                             style={{ backgroundColor: asidePopupBackgroundColor.storage }}
                         >
-                            <i className="fa fa-database"></i>
+                           <FontAwesomeIcon icon={faDatabase} fixedWidth/>
                         </div>
                     </Link>
                 </div>
                 <Link to='/setting' className="link-no-underline">
                     <div id="setting_icon" style={{ backgroundColor: asidePopupBackgroundColor.setting }} onClick={() => handleClick('setting')}>
-                        <i className="fa fa-cog"></i>
+                       <FontAwesomeIcon icon={faCog} fixedWidth/>
                     </div>
                 </Link>
             </div>
             <div id="aside_popup" style={{ display: asidePopupVisible ? 'block' : 'none' }}>
-                <button id='aside_popup_btn' onClick={handleAsidePopupBtnClick}><i className="fa fa-chevron-left" cla></i></button>
+                <button id='aside_popup_btn' onClick={handleAsidePopupBtnClick}><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
 
                 {/*가상머신*/} 
                 {selected === 'computing' && (
@@ -406,8 +412,8 @@ const MainOuter = ({ children }) => {
                 setIsFourthVisible(false); // 하위 항목들 모두 접기
                 setIsLastVisible(false);  // 하위 항목들 모두 접기
             }}
-        ></i>
-        <i className="fa fa-building-o"></i>
+        fixedWidth/>
+        <FontAwesomeIcon icon={faBuilding} fixedWidth/>
         <span>Rutil manager</span>
     </div>
     {isSecondVisible && (
@@ -431,8 +437,8 @@ const MainOuter = ({ children }) => {
                     setIsLastVisible(false);  // 하위 항목들 모두 접기
                     
                 }}
-            ></i>
-            <i className="fa fa-building-o"></i>
+            fixedWidth/>
+            <FontAwesomeIcon icon={faBuilding} fixedWidth/>
             <span>data_center</span>
         </div>
     )}
@@ -454,8 +460,8 @@ const MainOuter = ({ children }) => {
                     setIsFourthVisible(!isFourthVisible);
                     setIsLastVisible(false);  // 하위 항목들 모두 접기
                 }}
-            ></i>
-            <i className="fa fa-building-o"></i>
+            fixedWidth/>
+            <FontAwesomeIcon icon={faBuilding} fixedWidth/>
             <span>클러스터</span>
         </div>
     )}  
@@ -477,8 +483,8 @@ const MainOuter = ({ children }) => {
                 e.stopPropagation();
                 setIsLastVisible(!isLastVisible);
             }}
-        ></i>
-        <i className="fa fa-building-o"></i>
+        fixedWidth/>
+        <FontAwesomeIcon icon={faBuilding} fixedWidth/>
         <span>호스트</span>
     </div>
     )}
@@ -496,7 +502,7 @@ const MainOuter = ({ children }) => {
                                     (hoverTarget === 'host01.ititnfo.com' ? '#e6eefa' : 'transparent')
                 }}
             >
-                <i className="fa fa-user"></i>
+                <FontAwesomeIcon icon={faUser} fixedWidth/>
                 <span>host01.ititnfo.com</span>
             </div>
             <div
@@ -510,7 +516,7 @@ const MainOuter = ({ children }) => {
                                     (hoverTarget === 'HostedEngine' ? '#e6eefa' : 'transparent')
                 }}
             >
-                <i className="fa fa-microchip"></i>
+                <FontAwesomeIcon icon={faMicrochip} fixedWidth/>
                 <span>HostedEngine</span>
             </div>
         </div>
@@ -539,8 +545,8 @@ const MainOuter = ({ children }) => {
                 setIsSecondVisibleStorage(!isSecondVisibleStorage);
                 setIsLastVisibleStorage(false); // 하위 항목들 모두 접기
             }}
-        ></i>
-        <i className="fa fa-building-o"></i>
+        fixedWidth/>
+        <FontAwesomeIcon icon={faBuilding} fixedWidth/>
         <span>data_center</span>
     </div>
     {isSecondVisibleStorage && (
@@ -559,8 +565,8 @@ const MainOuter = ({ children }) => {
                     e.stopPropagation();
                     setIsLastVisibleStorage(!isLastVisibleStorage);
                 }}
-            ></i>
-            <i className="fa fa-building-o"></i>
+            fixedWidth/>
+            <FontAwesomeIcon icon={faBuilding} fixedWidth/>
             <span>도메인</span>
         </div>
     )}
@@ -573,8 +579,8 @@ const MainOuter = ({ children }) => {
                 onMouseLeave={handleMouseLeave}
                 style={getDiskDivStyle('he_metadata')}
             >
-                <i className="fa fa-microchip"></i>
-                <span>he_metadata</span>
+              <FontAwesomeIcon icon={faMicrochip} fixedWidth/>
+              <span>he_metadata</span>
             </div>
             <div
                 onClick={() => handleDetailClickStorage('디스크2')}
@@ -583,8 +589,8 @@ const MainOuter = ({ children }) => {
                 onMouseLeave={handleMouseLeave}
                 style={getDiskDivStyle('디스크2')}
             >
-                <i className="fa fa-microchip"></i>
-                <span>디스크2</span>
+              <FontAwesomeIcon icon={faMicrochip} fixedWidth/>
+              <span>디스크2</span>
             </div>
             <div
                 onClick={() => handleDetailClickStorage('디스크3')}
@@ -593,8 +599,8 @@ const MainOuter = ({ children }) => {
                 onMouseLeave={handleMouseLeave}
                 style={getDiskDivStyle('디스크3')}
             >
-                <i className="fa fa-microchip"></i>
-                <span>디스크3</span>
+              <FontAwesomeIcon icon={faMicrochip} fixedWidth/>
+              <span>디스크3</span>
             </div>
         </div>
     )}
@@ -621,7 +627,7 @@ const MainOuter = ({ children }) => {
                             setIsSecondVisibleNetwork(!isSecondVisibleNetwork);
                           }}>
                         </i>
-                        <i className="fa fa-building-o"></i>
+                        <FontAwesomeIcon icon={faBuilding} fixedWidth />
                         <span>Default</span>
                     </div>
                     {
@@ -639,7 +645,7 @@ const MainOuter = ({ children }) => {
                               navigate(`/networks/${n?.id}`);
                             }}
                           >
-                            <i className="fa fa-building-o" style={{ fontSize: '0.34rem', marginRight: '0.05rem' }}></i>
+                           <FontAwesomeIcon icon={faBuilding} style={{ fontSize: '0.34rem', marginRight: '0.05rem' }}fixedWidth/>
                             <span>{n?.name}</span>
                           </div> */}
                           <div
@@ -654,7 +660,7 @@ const MainOuter = ({ children }) => {
                                 navigate('/networks/example1');
                             }}
                           >
-                            <i className="fa fa-building-o" style={{ fontSize: '0.34rem', marginRight: '0.05rem' }}></i>
+                            <FontAwesomeIcon icon={faBuilding} style={{ fontSize: '0.34rem', marginRight: '0.05rem' }} fixedWidth/>
                             <span>example1</span>
                           </div>
                           <div
@@ -669,7 +675,7 @@ const MainOuter = ({ children }) => {
                                 navigate('/networks/example2');
                             }}
                           >
-                            <i className="fa fa-building-o" style={{ fontSize: '0.34rem', marginRight: '0.05rem' }}></i>
+                            <FontAwesomeIcon icon={faBuilding} style={{ fontSize: '0.34rem', marginRight: '0.05rem' }} fixedWidth/>
                             <span>example2</span>
                           </div>
                         </>
@@ -680,19 +686,19 @@ const MainOuter = ({ children }) => {
                 {selected === 'setting' && (
                     <div id="setting_chart">
                         <div id="setting_normal_btn">
-                            <i className="fa fa-cog"></i>
+                           <FontAwesomeIcon icon={faCog} fixedWidth/>
                             <span>활성 사용자 세션</span>
                         </div>
                         <div id="setting_miniset_btn" onClick={openSettingPopup}>
-                            <i className="fa fa-cog"></i>
+                           <FontAwesomeIcon icon={faCog} fixedWidth/>
                             <span>설정</span>
                         </div>
                         <div id="setting_user_btn">
-                            <i className="fa fa-cog"></i>
+                           <FontAwesomeIcon icon={faCog} fixedWidth/>
                             <span>사용자</span>
                         </div>
                         <div id="setting_account_btn">
-                            <i className="fa fa-cog"></i>
+                           <FontAwesomeIcon icon={faCog} fixedWidth/>
                             <span>계정설정</span>
                         </div>
                     </div>
@@ -734,7 +740,7 @@ const MainOuter = ({ children }) => {
             <div className="setting_setting_popup">
                 <div className="network_popup_header">
                     <h1>설정</h1>
-                    <button onClick={closeSettingPopup}><i className="fa fa-times"></i></button>
+                    <button onClick={closeSettingPopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                 </div>
 
                 <div className="network_new_nav">
@@ -774,10 +780,10 @@ const MainOuter = ({ children }) => {
 
                         <div className="setting_part_table_outer">
                             <div className="application_content_header">
-                                <button><i className="fa fa-chevron-left"></i></button>
+                                <button><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
                                 <div>1-36</div>
-                                <button><i className="fa fa-chevron-right"></i></button>
-                                <button><i className="fa fa-ellipsis-v"></i></button>
+                                <button><FontAwesomeIcon icon={faChevronRight} fixedWidth/></button>
+                                <button><FontAwesomeIcon icon={faEllipsisV} fixedWidth/></button>
                             </div>
 
                             <table className="network_new_cluster_table">
@@ -791,14 +797,14 @@ const MainOuter = ({ children }) => {
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td><i className="fa fa-heart"></i></td>
-                                        <td><i className="fa fa-heart"></i></td>
+                                        <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
+                                        <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
                                         <td>dddddddddddddddddddddd</td>
                                         <td>ddddddddddddddddddddddㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ</td>
                                     </tr>
                                     <tr>
-                                        <td><i className="fa fa-heart"></i></td>
-                                        <td><i className="fa fa-heart"></i></td>
+                                        <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
+                                        <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
                                         <td>dddddddddddddddddddddd</td>
                                         <td>ddddddddddddddddddddddㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ</td>
                                     </tr>
@@ -834,10 +840,10 @@ const MainOuter = ({ children }) => {
 
                         <div className="setting_part_table_outer">
                             <div className="application_content_header">
-                                <button><i className="fa fa-chevron-left"></i></button>
+                                <button><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
                                 <div>1-3</div>
-                                <button><i className="fa fa-chevron-right"></i></button>
-                                <button><i className="fa fa-ellipsis-v"></i></button>
+                                <button><FontAwesomeIcon icon={faChevronRight} fixedWidth/></button>
+                                <button><FontAwesomeIcon icon={faEllipsisV} fixedWidth/></button>
                             </div>
 
                             <table className="network_new_cluster_table">
@@ -852,14 +858,14 @@ const MainOuter = ({ children }) => {
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td><i className="fa fa-heart"></i></td>
+                                        <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
                                         <td>ovirt-administrator</td>
                                         <td></td>
                                         <td>*</td>
                                         <td>SuperUser</td>
                                     </tr>
                                     <tr>
-                                        <td><i className="fa fa-heart"></i></td>
+                                        <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
                                         <td>ovirt-administrator</td>
                                         <td></td>
                                         <td>*</td>
@@ -885,10 +891,10 @@ const MainOuter = ({ children }) => {
 
                         <div className="setting_part_table_outer">
                             <div className="application_content_header">
-                                <button><i className="fa fa-chevron-left"></i></button>
+                                <button><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
                                 <div>1-5</div>
-                                <button><i className="fa fa-chevron-right"></i></button>
-                                <button><i className="fa fa-ellipsis-v"></i></button>
+                                <button><FontAwesomeIcon icon={faChevronRight} fixedWidth/></button>
+                                <button><FontAwesomeIcon icon={faEllipsisV} fixedWidth/></button>
                             </div>
 
                             <table className="network_new_cluster_table">
@@ -901,12 +907,12 @@ const MainOuter = ({ children }) => {
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td><i className="fa fa-heart"></i></td>
+                                        <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
                                         <td>ovirt-administrator</td>
                                         <td>ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ</td>
                                     </tr>
                                     <tr>
-                                        <td><i className="fa fa-heart"></i></td>
+                                        <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
                                         <td>ovirt-administrator</td>
                                         <td></td>
                                     </tr>
@@ -928,10 +934,10 @@ const MainOuter = ({ children }) => {
 
                         <div className="setting_part_table_outer">
                             <div className="application_content_header">
-                                <button><i className="fa fa-chevron-left"></i></button>
+                                <button><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
                                 <div>1-5</div>
-                                <button><i className="fa fa-chevron-right"></i></button>
-                                <button><i className="fa fa-ellipsis-v"></i></button>
+                                <button><FontAwesomeIcon icon={faChevronRight} fixedWidth/></button>
+                                <button><FontAwesomeIcon icon={faEllipsisV} fixedWidth/></button>
                             </div>
 
                             <table className="network_new_cluster_table">
@@ -965,10 +971,10 @@ const MainOuter = ({ children }) => {
 
                         <div className="setting_part_table_outer" style={{ borderBottom: 'none' }}>
                             <div className="application_content_header">
-                                <button><i className="fa fa-chevron-left"></i></button>
+                                <button><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
                                 <div>1-5</div>
-                                <button><i className="fa fa-chevron-right"></i></button>
-                                <button><i className="fa fa-ellipsis-v"></i></button>
+                                <button><FontAwesomeIcon icon={faChevronRight} fixedWidth/></button>
+                                <button><FontAwesomeIcon icon={faEllipsisV} fixedWidth/></button>
                             </div>
 
                             <table className="network_new_cluster_table">
@@ -981,12 +987,12 @@ const MainOuter = ({ children }) => {
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td><i className="fa fa-heart"></i></td>
+                                        <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
                                         <td>ovirt-administrator</td>
                                         <td>ovirt-administrator</td>
                                     </tr>
                                     <tr>
-                                        <td><i className="fa fa-heart"></i></td>
+                                        <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
                                         <td>ovirt-administrator</td>
                                         <td>ovirt-administrator</td>
                                     </tr>
@@ -996,10 +1002,10 @@ const MainOuter = ({ children }) => {
 
                         <div className="setting_part_table_outer">
                             <div className="application_content_header">
-                                <button><i className="fa fa-chevron-left"></i></button>
+                                <button><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
                                 <div>1-5</div>
-                                <button><i className="fa fa-chevron-right"></i></button>
-                                <button><i className="fa fa-ellipsis-v"></i></button>
+                                <button><FontAwesomeIcon icon={faChevronRight} fixedWidth/></button>
+                                <button><FontAwesomeIcon icon={faEllipsisV} fixedWidth/></button>
                             </div>
 
                             <table className="network_new_cluster_table">
@@ -1015,7 +1021,7 @@ const MainOuter = ({ children }) => {
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td><i className="fa fa-heart"></i></td>
+                                        <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
                                         <td>ovirt-administrator</td>
                                         <td>ovirt-administrator</td>
                                         <td>*</td>
@@ -1023,7 +1029,7 @@ const MainOuter = ({ children }) => {
                                         <td>2023.12.29AM11:40:58</td>
                                     </tr>
                                     <tr>
-                                        <td><i className="fa fa-heart"></i></td>
+                                        <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
                                         <td>ovirt-administrator</td>
                                         <td>ovirt-administrator</td>
                                         <td>*</td>
@@ -1056,7 +1062,7 @@ const MainOuter = ({ children }) => {
             <div className="setting_part_new_popup">
                 <div className="network_popup_header">
                     <h1>새 역할</h1>
-                    <button onClick={closePopup}><i className="fa fa-times"></i></button>
+                    <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                 </div>
 
                 <div className="set_part_text">
@@ -1136,7 +1142,7 @@ const MainOuter = ({ children }) => {
             <div className="setting_system_new_popup">
                 <div className="network_popup_header">
                     <h1>사용자에게 권한 추가</h1>
-                    <button onClick={closePopup}><i className="fa fa-times"></i></button>
+                    <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                 </div>
 
                 <div className="power_radio_group">
@@ -1215,7 +1221,7 @@ const MainOuter = ({ children }) => {
             <div className="setting_schedule_new_popup">
                 <div className="network_popup_header">
                     <h1>새 스케줄링 정책</h1>
-                    <button onClick={closePopup}><i className="fa fa-times"></i></button>
+                    <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                 </div>
                 
                 <div className="set_part_text" style={{ borderBottom: 'none' }}>
@@ -1273,7 +1279,7 @@ const MainOuter = ({ children }) => {
 
                 <div className="set_schedule_balance">
                     <label htmlFor="network_port_security">
-                        비활성화된 필터 <i className="fa fa-info-circle" style={{ color: '#1ba4e4' }}></i>
+                        비활성화된 필터<FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }}/>
                     </label>
                     <select>
                         <option value="default">활성화</option>   
@@ -1300,7 +1306,7 @@ const MainOuter = ({ children }) => {
             <div className="setting_mac_new_popup">
                 <div className="network_popup_header">
                     <h1>새 MAC주소 풀</h1>
-                    <button onClick={closePopup}><i className="fa fa-times"></i></button>
+                    <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                 </div>
                 
                 <div className="setting_mac_textboxs">
@@ -1359,7 +1365,7 @@ const MainOuter = ({ children }) => {
             <div className="setting_mac_edit_popup">
                 <div className="network_popup_header">
                     <h1>새 MAC주소 풀</h1>
-                    <button onClick={closePopup}><i className="fa fa-times"></i></button>
+                    <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                 </div>
                 
                 <div className="setting_mac_textboxs">

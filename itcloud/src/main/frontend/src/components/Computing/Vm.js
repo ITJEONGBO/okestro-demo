@@ -4,6 +4,16 @@ import Modal from 'react-modal';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import HeaderButton from '../button/HeaderButton';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faChevronRight, faArrowCircleUp, faPlug, faTimes, faGlassWhiskey
+  , faCaretUp, faEllipsisV, faExternalLink, faEye, faInfoCircle
+  , faCamera, faFilter, faUser, faCheck, faServer
+  , faExclamation, faDesktop, faRepeat, faPlay, faPause
+  , faBan, faTrash, faNewspaper, faStop, faArrowCircleRight
+  , faChevronDown
+} from '@fortawesome/free-solid-svg-icons'
+// import { faUsb } from @fontawesome/
 import './css/Vm.css';
 import Footer from '../footer/Footer';
 
@@ -55,10 +65,10 @@ const NetworkSection = () => {
   <div key={index}>
     <div className="network_content">
       <div>
-        <i className="fa fa-chevron-right" onClick={() => toggleDetails(index)}></i>
-        <i className="fa fa-arrow-circle-o-up" style={{ color: '#21c50b', marginLeft: '0.3rem' }}></i>
-        <i className="fa fa-plug"></i>
-        <i className="fa fa-usb"></i>
+        <FontAwesomeIcon icon={faChevronRight} onClick={() => toggleDetails(index)}fixedWidth/>
+        <FontAwesomeIcon icon={faArrowCircleUp} style={{ color: '#21c50b', marginLeft: '0.3rem' }}fixedWidth/>
+        <FontAwesomeIcon icon={faPlug} fixedWidth/>
+        {/* <FontAwesomeIcon icon={faUsb} fixedWidth/> */}
         <span>nic1</span>
       </div>
       <div>
@@ -95,7 +105,7 @@ const NetworkSection = () => {
       >
                     <div className="network_popup_header">
                 <h1>네트워크 인터페이스 수정</h1>
-                <button  onClick={closeModal}><i className="fa fa-times"></i></button>
+                <button  onClick={closeModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
             </div>
 
             <div className="network_popup_content">
@@ -214,9 +224,9 @@ const DiskSection = () => {
   const columns = [
     { header: '', accessor: 'statusIcon', clickable: false },
     { header: '변경', accessor: 'change', clickable: false },
-    { header: <i className="fa fa-glass"></i>, accessor: 'glass1', clickable: false },
-    { header: <i className="fa fa-glass"></i>, accessor: 'glass2', clickable: false },
-    { header: <i className="fa fa-glass"></i>, accessor: 'glass3', clickable: false },
+    { header: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>, accessor: 'glass1', clickable: false },
+    { header: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>, accessor: 'glass2', clickable: false },
+    { header: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>, accessor: 'glass3', clickable: false },
     { header: '가상 크기', accessor: 'virtualSize', clickable: false },
     { header: '연결 대상', accessor: 'connectionTarget', clickable: false },
     { header: '인터페이스', accessor: 'interface', clickable: false },
@@ -228,11 +238,11 @@ const DiskSection = () => {
 
   const data = [
     {
-      statusIcon: <i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i>,
+      statusIcon: <FontAwesomeIcon icon={faCaretUp} style={{ color: '#1DED00' }}fixedWidth/>,
       change: 'on20-ap01',
-      glass1: <i className="fa fa-glass"></i>,
-      glass2: <i className="fa fa-glass"></i>,
-      glass3: <i className="fa fa-glass"></i>,
+      glass1: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>,
+      glass2: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>,
+      glass3: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>,
       virtualSize: 'on20-ap01',
       connectionTarget: 'VirtIO-SCSI',
       interface: '/dev/sda',
@@ -250,7 +260,7 @@ const DiskSection = () => {
                   <button>수정</button>
                   <button>제거</button>
                   <button className="content_header_popup_btn">
-                      <i className="fa fa-ellipsis-v"></i>
+                      <FontAwesomeIcon icon={faEllipsisV} fixedWidth/>
                       <div className="content_header_popup" style={{ display: 'none' }}>
                           <div>활성</div>
                           <div>비활성화</div>
@@ -277,7 +287,7 @@ const DiskSection = () => {
           >
               <div className="network_popup_header">
                   <h1>새 가상 디스크</h1>
-                  <button onClick={closeNewDiskModal}><i className="fa fa-times"></i></button>
+                  <button onClick={closeNewDiskModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
               </div>
               <div id="disk_new_nav">
                   <div
@@ -568,7 +578,7 @@ const DiskSection = () => {
           >
               <div className="network_popup_header">
                   <h1>가상 디스크 연결</h1>
-                  <button onClick={closeJoinDiskModal}><i className="fa fa-times"></i></button>
+                  <button onClick={closeJoinDiskModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
               </div>
 
               <div id="join_header">
@@ -595,8 +605,8 @@ const DiskSection = () => {
                               <th>스토리지 도메인</th>
                               <th>인터페이스</th>
                               <th>R/O</th>
-                              <th><i className="fa fa-external-link"></i></th>
-                              <th><i className="fa fa-external-link"></i></th>
+                              <th><FontAwesomeIcon icon={faExternalLink} fixedWidth/></th>
+                              <th><FontAwesomeIcon icon={faExternalLink} fixedWidth/></th>
                           </tr>
                           <tr id="join_directlun_th" style={{ display: 'none' }}>
                               <th>별칭</th>
@@ -610,8 +620,8 @@ const DiskSection = () => {
                               <th>시리얼</th>
                               <th>인터페이스</th>
                               <th>R/O</th>
-                              <th><i className="fa fa-external-link"></i></th>
-                              <th><i className="fa fa-external-link"></i></th>
+                              <th><FontAwesomeIcon icon={faExternalLink} fixedWidth/></th>
+                              <th><FontAwesomeIcon icon={faExternalLink} fixedWidth/></th>
                           </tr>
                           <tr id="join_managed_th" style={{ display: 'none' }}>
                               <th>별칭</th>
@@ -621,8 +631,8 @@ const DiskSection = () => {
                               <th>스토리지 도메인</th>
                               <th>인터페이스</th>
                               <th>R/O</th>
-                              <th><i className="fa fa-external-link"></i></th>
-                              <th><i className="fa fa-external-link"></i></th>
+                              <th><FontAwesomeIcon icon={faExternalLink} fixedWidth/></th>
+                              <th><FontAwesomeIcon icon={faExternalLink} fixedWidth/></th>
                           </tr>
                       </thead>
                       <tbody>
@@ -694,57 +704,57 @@ const SnapshotSection = () => {
         </div>
         <div className="snapshot_content">
           <div className="snapshot_content_left">
-            <div><i className="fa fa-camera"></i></div>
+            <div><FontAwesomeIcon icon={faCamera} fixedWidth/></div>
             <span>Active VM</span>
           </div>
           <div className="snapshot_content_right">
             <div>
-              <i className="fa fa-chevron-right"></i>
+              <FontAwesomeIcon icon={faChevronRight} fixedWidth/>
               <span>일반</span>
-              <i className="fa fa-eye"></i>
+              <FontAwesomeIcon icon={faEye} fixedWidth/>
             </div>
             <div>
-              <i className="fa fa-chevron-right"></i>
+              <FontAwesomeIcon icon={faChevronRight} fixedWidth/>
               <span>디스크</span>
-              <i className="fa fa-trash-o"></i>
+              <FontAwesomeIcon icon={faTrash} fixedWidth/>
             </div>
             <div>
-              <i className="fa fa-chevron-right"></i>
+              <FontAwesomeIcon icon={faChevronRight} fixedWidth/>
               <span>네트워크 인터페이스</span>
-              <i className="fa fa-server"></i>
+              <FontAwesomeIcon icon={faServer} fixedWidth/>
             </div>
             <div>
-              <i className="fa fa-chevron-right"></i>
+              <FontAwesomeIcon icon={faChevronRight} fixedWidth/>
               <span>설치된 애플리케이션</span>
-              <i className="fa fa-newspaper-o"></i>
+              <FontAwesomeIcon icon={faNewspaper} fixedWidth/>
             </div>
           </div>
         </div>
         <div className="snapshot_content">
           <div className="snapshot_content_left">
-            <div><i className="fa fa-camera"></i></div>
+            <div><FontAwesomeIcon icon={faCamera} fixedWidth/></div>
             <span>Active VM</span>
           </div>
           <div className="snapshot_content_right">
             <div>
-              <i className="fa fa-chevron-right"></i>
+              <FontAwesomeIcon icon={faChevronRight} fixedWidth/>
               <span>일반</span>
-              <i className="fa fa-eye"></i>
+              <FontAwesomeIcon icon={faEye} fixedWidth/>
             </div>
             <div>
-              <i className="fa fa-chevron-right"></i>
+              <FontAwesomeIcon icon={faChevronRight} fixedWidth/>
               <span>디스크</span>
-              <i className="fa fa-trash-o"></i>
+              <FontAwesomeIcon icon={faTrash} fixedWidth/>
             </div>
             <div>
-              <i className="fa fa-chevron-right"></i>
+              <FontAwesomeIcon icon={faChevronRight} fixedWidth/>
               <span>네트워크 인터페이스</span>
-              <i className="fa fa-server"></i>
+              <FontAwesomeIcon icon={faServer} fixedWidth/>
             </div>
             <div>
-              <i className="fa fa-chevron-right"></i>
+              <FontAwesomeIcon icon={faChevronRight} fixedWidth/>
               <span>설치된 애플리케이션</span>
-              <i className="fa fa-newspaper-o"></i>
+              <FontAwesomeIcon icon={faNewspaper} fixedWidth/>
             </div>
           </div>
         </div>
@@ -805,7 +815,7 @@ const PregroupSection = () => {
   // 테이블 데이터 정의
   const data = [
     {
-      status: <i className="fa fa-exclamation"></i>,
+      status: <FontAwesomeIcon icon={faExclamation} fixedWidth/>,
       name: 'test02',
       description: 'asd',
       priority: '5',
@@ -865,7 +875,7 @@ const PregroupSection = () => {
       >
         <div className="network_popup_header">
           <h1>새 선호도 그룹</h1>
-          <button onClick={closeModal}><i className="fa fa-times"></i></button>
+          <button onClick={closeModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
         </div>
         <div id="pregroup_create_content">
           <div className="snap_create_inputbox">
@@ -879,14 +889,14 @@ const PregroupSection = () => {
           <div className="snap_create_inputbox" style={{ paddingLeft: '0.34rem' }}>
             <div>
               <span>우선 순위</span>
-              <i className="fa fa-info-circle"></i>
+              <FontAwesomeIcon icon={faInfoCircle} fixedWidth/>
             </div>
             <input type="text" />
           </div>
           <div className="snap_create_inputbox" style={{ paddingLeft: '0.34rem' }}>
             <div>
               <label htmlFor="disk_profile">가상 머신 선호도 규칙</label>
-              <i className="fa fa-info-circle"></i>
+              <FontAwesomeIcon icon={faInfoCircle} fixedWidth/>
             </div>
             <div className="pregroup_create_select">
               <div>
@@ -903,7 +913,7 @@ const PregroupSection = () => {
           <div className="snap_create_inputbox" style={{ paddingLeft: '0.34rem' }}>
             <div>
               <label htmlFor="host_preference_rule">호스트 선호도 규칙</label>
-              <i className="fa fa-info-circle"></i>
+              <FontAwesomeIcon icon={faInfoCircle} fixedWidth/>
             </div>
             <div className="pregroup_create_select">
               <div>
@@ -977,8 +987,8 @@ const PregroupLabelSection = () => {
 
   // 테이블 데이터 정의
   const data = [
-    { name: 'test', vmMember: 'HostedEngine', hostMember: 'host02.ititinfo.com', icon: <i className="fa fa-caret-up"></i> },
-    { name: 'test', vmMember: 'HostedEngine', hostMember: 'host02.ititinfo.com', icon: <i className="fa fa-caret-up"></i> },
+    { name: 'test', vmMember: 'HostedEngine', hostMember: 'host02.ititinfo.com', icon: <FontAwesomeIcon icon={faCaretUp} fixedWidth/> },
+    { name: 'test', vmMember: 'HostedEngine', hostMember: 'host02.ititinfo.com', icon: <FontAwesomeIcon icon={faCaretUp} fixedWidth/> },
   ];
 
   const handleRowClick = () => {
@@ -1009,7 +1019,7 @@ const PregroupLabelSection = () => {
       >
         <div className="network_popup_header">
           <h1>새로운 선호도 레이블</h1>
-          <button onClick={closeModal}><i className="fa fa-times"></i></button>
+          <button onClick={closeModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
         </div>
         <div>
           <div className="snap_create_inputbox" style={{ padding: '0.5rem' }}>
@@ -1128,7 +1138,7 @@ const PowerSection = () => {
   // 테이블 데이터 정의
   const data = [
     {
-      icon: <i className="fa fa-user"></i>,
+      icon: <FontAwesomeIcon icon={faUser} fixedWidth/>,
       user: 'ovirt-administrator',
       authProvider: '',
       namespace: '*',
@@ -1137,7 +1147,7 @@ const PowerSection = () => {
       inheritedFrom: '(시스템)',
     },
     {
-      icon: <i className="fa fa-user"></i>,
+      icon: <FontAwesomeIcon icon={faUser} fixedWidth/>,
       user: 'admin (admin)',
       authProvider: 'internal-authz',
       namespace: '*',
@@ -1146,7 +1156,7 @@ const PowerSection = () => {
       inheritedFrom: '(시스템)',
     },
     {
-      icon: <i className="fa fa-user"></i>,
+      icon: <FontAwesomeIcon icon={faUser} fixedWidth/>,
       user: 'Everyone',
       authProvider: '',
       namespace: '*',
@@ -1190,7 +1200,7 @@ const PowerSection = () => {
       >
         <div className="network_popup_header">
           <h1>사용자에게 권한 추가</h1>
-          <button onClick={closeModal}><i className="fa fa-times"></i></button>
+          <button onClick={closeModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
         </div>
 
         <div className="power_radio_group">
@@ -1275,17 +1285,17 @@ const EventSection = () => {
     { header: '사용자 지정 이벤트 ID', accessor: 'customEventId', clickable: false }
   ];
   const data = [
-    { icon: <i className="fa fa-check"></i>, time: '2024. 1. 17. PM 3:14:39', message: "Snapshot 'on2o-ap01-Snapshot-2024_01_17' creation for 'VM on2o-ap01' has been completed.", correlationId: '4b4b417a-c...', source: 'oVirt', customEventId: '' },
-    { icon: <i className="fa fa-check"></i>, time: '2024. 1. 17. PM 3:14:21', message: "Snapshot 'on2o-ap01-Snapshot-2024_01_17' creation for 'VM on2o-ap01' was initiated by admin@intern...", correlationId: '4b4b417a-c...', source: 'oVirt', customEventId: '' },
-    { icon: <i className="fa fa-times"></i>, time: '2024. 1. 5. AM 8:37:54', message: 'Failed to restart VM on2o-ap01 on host host01.ititinfo.com', correlationId: '3400e0dc', source: 'oVirt', customEventId: '' },
-    { icon: <i className="fa fa-times"></i>, time: '2024. 1. 5. PM 8:37:10', message: 'VM on2o-ap01 is down with error. Exit message: VM terminated with error.', correlationId: '3400e0dc', source: 'oVirt', customEventId: '' },
-    { icon: <i className="fa fa-check"></i>, time: '2024. 1. 5. PM 8:34:29', message: 'Trying to restart VM on2o-ap01 on host host01.ititinfo.com', correlationId: '3400e0dc', source: 'oVirt', customEventId: '' },
-    { icon: <i className="fa fa-exclamation"></i>, time: '2024. 1. 5. PM 8:29:10', message: 'VM on2o-ap01 was set to the Unknown status.', correlationId: '3400e0dc', source: 'oVirt', customEventId: '' },
-    { icon: <i className="fa fa-check"></i>, time: '2023. 12. 29. PM 12:55:08', message: 'VM on2o-ap01 started on Host host01.ititinfo.com', correlationId: 'a99b6ae8-8d...', source: 'oVirt', customEventId: '' },
-    { icon: <i className="fa fa-check"></i>, time: '2023. 12. 29. PM 12:54:48', message: 'VM on2o-ap01 was started by admin@internal-authz (Host: host01.ititinfo.com).', correlationId: 'a99b6ae8-8d...', source: 'oVirt', customEventId: '' },
-    { icon: <i className="fa fa-check"></i>, time: '2023. 12. 29. PM 12:54:18', message: 'VM on2o-ap01 configuration was updated by admin@internal-authz.', correlationId: 'e3b8355e-06...', source: 'oVirt', customEventId: '' },
-    { icon: <i className="fa fa-check"></i>, time: '2023. 12. 29. PM 12:54:15', message: 'VM on2o-ap01 configuration was updated by admin@internal-authz.', correlationId: '793fb95e-6df...', source: 'oVirt', customEventId: '' },
-    { icon: <i className="fa fa-check"></i>, time: '2023. 12. 29. PM 12:53:53', message: 'VM on2o-ap01 has been successfully imported from the given configuration.', correlationId: 'ede53bc8-c6...', source: 'oVirt', customEventId: '' }
+    { icon: <FontAwesomeIcon icon={faCheck} fixedWidth/>, time: '2024. 1. 17. PM 3:14:39', message: "Snapshot 'on2o-ap01-Snapshot-2024_01_17' creation for 'VM on2o-ap01' has been completed.", correlationId: '4b4b417a-c...', source: 'oVirt', customEventId: '' },
+    { icon: <FontAwesomeIcon icon={faCheck} fixedWidth/>, time: '2024. 1. 17. PM 3:14:21', message: "Snapshot 'on2o-ap01-Snapshot-2024_01_17' creation for 'VM on2o-ap01' was initiated by admin@intern...", correlationId: '4b4b417a-c...', source: 'oVirt', customEventId: '' },
+    { icon: <FontAwesomeIcon icon={faTimes} fixedWidth/>, time: '2024. 1. 5. AM 8:37:54', message: 'Failed to restart VM on2o-ap01 on host host01.ititinfo.com', correlationId: '3400e0dc', source: 'oVirt', customEventId: '' },
+    { icon: <FontAwesomeIcon icon={faTimes} fixedWidth/>, time: '2024. 1. 5. PM 8:37:10', message: 'VM on2o-ap01 is down with error. Exit message: VM terminated with error.', correlationId: '3400e0dc', source: 'oVirt', customEventId: '' },
+    { icon: <FontAwesomeIcon icon={faCheck} fixedWidth/>, time: '2024. 1. 5. PM 8:34:29', message: 'Trying to restart VM on2o-ap01 on host host01.ititinfo.com', correlationId: '3400e0dc', source: 'oVirt', customEventId: '' },
+    { icon: <FontAwesomeIcon icon={faExclamation} fixedWidth/>, time: '2024. 1. 5. PM 8:29:10', message: 'VM on2o-ap01 was set to the Unknown status.', correlationId: '3400e0dc', source: 'oVirt', customEventId: '' },
+    { icon: <FontAwesomeIcon icon={faCheck} fixedWidth/>, time: '2023. 12. 29. PM 12:55:08', message: 'VM on2o-ap01 started on Host host01.ititinfo.com', correlationId: 'a99b6ae8-8d...', source: 'oVirt', customEventId: '' },
+    { icon: <FontAwesomeIcon icon={faCheck} fixedWidth/>, time: '2023. 12. 29. PM 12:54:48', message: 'VM on2o-ap01 was started by admin@internal-authz (Host: host01.ititinfo.com).', correlationId: 'a99b6ae8-8d...', source: 'oVirt', customEventId: '' },
+    { icon: <FontAwesomeIcon icon={faCheck} fixedWidth/>, time: '2023. 12. 29. PM 12:54:18', message: 'VM on2o-ap01 configuration was updated by admin@internal-authz.', correlationId: 'e3b8355e-06...', source: 'oVirt', customEventId: '' },
+    { icon: <FontAwesomeIcon icon={faCheck} fixedWidth/>, time: '2023. 12. 29. PM 12:54:15', message: 'VM on2o-ap01 configuration was updated by admin@internal-authz.', correlationId: '793fb95e-6df...', source: 'oVirt', customEventId: '' },
+    { icon: <FontAwesomeIcon icon={faCheck} fixedWidth/>, time: '2023. 12. 29. PM 12:53:53', message: 'VM on2o-ap01 has been successfully imported from the given configuration.', correlationId: 'ede53bc8-c6...', source: 'oVirt', customEventId: '' }
   ];
   return (
     <div className="host_empty_outer">
@@ -1320,11 +1330,11 @@ const Vm = () => {
     { id: 'new_btn', label: '새로 만들기'},
     { id: 'edit_btn', label: '편집', onClick: () => showEditPopup() },
     { id: 'delete_btn', label: '삭제'},
-    { id: 'run_btn', label: <><i className="fa fa-play"></i>실행</>, onClick: () => console.log('실행 clicked') },
-    { id: 'pause_btn', label: <><i className="fa fa-pause"></i>일시중지</>, onClick: () => console.log('일시중지 clicked') },
-    { id: 'stop_btn', label: <><i className="fa fa-stop"></i>종료</>, onClick: () => console.log('종료 clicked') },
-    { id: 'reboot_btn', label: <><i className="fa fa-repeat"></i>재부팅</>, onClick: () => console.log('재부팅 clicked') },
-    { id: 'console_btn', label: <><i className="fa fa-desktop"></i>콘솔</>, onClick: () => console.log('콘솔 clicked') },
+    { id: 'run_btn', label: <><FontAwesomeIcon icon={faPlay} fixedWidth/>실행</>, onClick: () => console.log('실행 clicked') },
+    { id: 'pause_btn', label: <><FontAwesomeIcon icon={faPause} fixedWidth/>일시중지</>, onClick: () => console.log('일시중지 clicked') },
+    { id: 'stop_btn', label: <><FontAwesomeIcon icon={faStop} fixedWidth/>종료</>, onClick: () => console.log('종료 clicked') },
+    { id: 'reboot_btn', label: <><FontAwesomeIcon icon={faRepeat} fixedWidth/>재부팅</>, onClick: () => console.log('재부팅 clicked') },
+    { id: 'console_btn', label: <><FontAwesomeIcon icon={faDesktop} fixedWidth/>콘솔</>, onClick: () => console.log('콘솔 clicked') },
     { id: 'snapshot_btn', label: '스냅샷 생성', onClick: () => console.log('스냅샷 생성 clicked') },
     { id: 'migration_btn', label: '마이그레이션', onClick: () => console.log('마이그레이션 clicked') },
   ];
@@ -1475,7 +1485,7 @@ const Vm = () => {
                   </tr>
                   <tr>
                     <th>펌웨어/장치의 유형:</th>
-                    <td>BIOS의 Q35 칩셋 <i className="fa fa-ban" style={{ marginLeft: '13%', color: 'orange' }}></i></td>
+                    <td>BIOS의 Q35 칩셋 <FontAwesomeIcon icon={faBan} style={{ marginLeft: '13%', color: 'orange' }}fixedWidth/></td>
                   </tr>
                   <tr>
                     <th>우선 순위:</th>
@@ -1618,7 +1628,6 @@ const Vm = () => {
         </div>
         {renderSectionContent()}
       </div>
-
 
 
       {/* 편집팝업 */}
@@ -1767,7 +1776,7 @@ const Vm = () => {
                                 <div>
                                     <div>
                                         <label htmlFor="actual_memory">할당할 실제 메모리</label>
-                                        <i className="fa fa-info-circle"></i>
+                                        <FontAwesomeIcon icon={faInfoCircle} fixedWidth/>
                                     </div>
                                     <input type="text" id="actual_memory" value="2048 MB" readOnly />
                                 </div>
@@ -1775,7 +1784,7 @@ const Vm = () => {
                                 <div>
                                     <div>
                                         <label htmlFor="total_cpu">총 가상 CPU</label>
-                                        <i className="fa fa-info-circle"></i>
+                                        <FontAwesomeIcon icon={faInfoCircle} fixedWidth/>
                                     </div>
                                     <input type="text" id="total_cpu" value="1" readOnly />
                                 </div>
@@ -1840,7 +1849,7 @@ const Vm = () => {
                                 <div>
                                     <input type="checkbox" id="memory_balloon" name="memory_balloon" />
                                     <label htmlFor="memory_balloon">헤드리스(headless)모드</label>
-                                    <i className="fa fa-info-circle" style={{ color: '#1ba4e4' }}></i>
+                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }} fixedWidth/>
                                 </div>
                             </div>
 
@@ -2263,7 +2272,7 @@ const Vm = () => {
                                         </div>
                                         <div>
                                             <input type="text" disabled />
-                                            <i className="fa fa-info-circle"></i>
+                                            <FontAwesomeIcon icon={faInfoCircle} fixedWidth/>
                                         </div>
                                     </div>
 
@@ -2295,14 +2304,14 @@ const Vm = () => {
       >
         <div className="domain_header">
           <h1>가상머신 마이그레이션</h1>
-          <button onClick={closeModal}><i className="fa fa-times"></i></button>
+          <button onClick={closeModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
         </div>
         <div id="migration_article_outer">
           <span>1대의 가상 머신이 마이그레이션되는 호스트를 선택하십시오.</span>
           <div id="migration_article">
             <div>
               <div id="migration_dropdown">
-                <label htmlFor="host">대상 호스트 <i className="fa fa-info-circle"></i></label>
+                <label htmlFor="host">대상 호스트 <FontAwesomeIcon icon={faInfoCircle} fixedWidth/></label>
                 <select name="host_dropdown" id="host">
                   <option value="">호스트 자동 선택</option>
                   <option value="php">PHP</option>

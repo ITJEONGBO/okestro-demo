@@ -7,6 +7,10 @@ import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
 import ApiManager from '../../api/ApiManager';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCaretUp, faGlassWhiskey, faEllipsisV, faRefresh, faTimes
+} from '@fortawesome/free-solid-svg-icons'
 
 Modal.setAppElement('#root');
 
@@ -31,8 +35,8 @@ const DomainParts = () => {
   /*
   const [data, setData] = useState([
     {
-      status: <i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i>,
-      icon: <i className="fa fa-glass"></i>,
+      status: <FontAwesomeIcon icon={faCaretUp} style={{ color: '#1DED00' }}fixedWidth/>,
+      icon: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>,
       domainName: 'ㅁㅎㅇㅁㄹㄹ', // 여기에 도메인 이름을 설정합니다.
       comment: '',
       domainType: '',
@@ -74,8 +78,8 @@ const DomainParts = () => {
 
   const toTableItemPredicate = (e) => {
     return {
-      status: <i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i>,
-      icon: <i className="fa fa-glass"></i>,
+      status: <FontAwesomeIcon icon={faCaretUp} style={{ color: '#1DED00' }}fixedWidth/>,
+      icon: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>,
       domainName: 'ㅁㅎㅇㅁㄹㄹ', // 여기에 도메인 이름을 설정합니다.
       comment: '',
       domainType: '',
@@ -117,7 +121,7 @@ const DomainParts = () => {
                   <button id="storage_disk_upload" onClick={() => openPopup('uploadDisk')}>업로드</button>
                   <button>다운로드</button>
                   <button className="content_header_popup_btn">
-                    <i className="fa fa-ellipsis-v"></i>
+                    <FontAwesomeIcon icon={faEllipsisV} fixedWidth/>
                     <div className="content_header_popup" style={{ display: 'none' }}>
                       <div>활성</div>
                       <div>비활성화</div>
@@ -129,7 +133,7 @@ const DomainParts = () => {
 
                 <div className="section_table_outer">
                   <button>
-                    <i className="fa fa-refresh"></i>
+                    <FontAwesomeIcon icon={faRefresh} fixedWidth/>
                   </button>
                   <Table columns={TableColumnsInfo.STORAGES} data={data} onRowClick={handleRowClick} />
                 </div>
@@ -149,7 +153,7 @@ const DomainParts = () => {
         <div className="storage_disk_upload_popup">
           <div className="network_popup_header">
             <h1>이미지 업로드</h1>
-            <button onClick={closePopup}><i className="fa fa-times"></i></button>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
           <div className="storage_upload_first">
             <button>파일 선택</button>
@@ -234,7 +238,7 @@ const DomainParts = () => {
         <div className="storage_disk_new_popup">
           <div className="network_popup_header">
             <h1>새 가상 디스크</h1>
-            <button onClick={closePopup}><i className="fa fa-times"></i></button>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
           <div id="disk_new_nav">
             <div

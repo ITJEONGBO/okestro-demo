@@ -5,8 +5,12 @@ import HeaderButton from '../button/HeaderButton';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
-import './css/Computing.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAllDataCenters } from '../../api/RQHook';
+import {
+  faRefresh, faTimes
+} from '@fortawesome/free-solid-svg-icons'
+import './css/Computing.css';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -84,9 +88,7 @@ const Computing = () => {
             <div className="content_outer">
                 <div className="empty_nav_outer">
                     <div className='section_table_outer'>
-                        <button>
-                            <i className="fa fa-refresh"></i>
-                        </button>
+                        <button><FontAwesomeIcon icon={faRefresh} fixedWidth/></button>
                         <Table
                             columns={TableColumnsInfo.DATACENTERS}
                             data={datacenters}
@@ -110,7 +112,7 @@ const Computing = () => {
                 <div className="datacenter_new_popup">
                     <div className="network_popup_header">
                         <h1 class="text-sm">새로운 데이터 센터</h1>
-                        <button onClick={closeModal}><i className="fa fa-times"></i></button>
+                        <button onClick={closeModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                     </div>
 
                     <div className="datacenter_new_content">

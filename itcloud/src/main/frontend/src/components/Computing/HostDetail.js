@@ -5,7 +5,14 @@ import HeaderButton from '../button/HeaderButton';
 import Footer from '../footer/Footer';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCaretUp, faDesktop, faUniversity, faWrench, faUser
+  , faCheckCircle, faExclamation, faFilm, faArrowCircleUp
+} from '@fortawesome/free-solid-svg-icons'
 import './css/HostDetail.css';
+
+
 function HostDetail() {
   const { name } = useParams();
   //클릭한 이름 받아오기
@@ -19,13 +26,13 @@ function HostDetail() {
         {
           name: (
             <div>
-              <i className="fa fa-caret-up" style={{ color: 'green' }}></i>
+              <FontAwesomeIcon icon={faCaretUp} style={{ color: 'green' }}fixedWidth/>
               HostedEngine
             </div>
           ),
           cluster: (
             <div>
-              <i className="fa fa-desktop"></i>
+              <FontAwesomeIcon icon={faDesktop} fixedWidth/>
               Default
             </div>
           ),
@@ -85,8 +92,8 @@ function HostDetail() {
   
   const networkdata = [
     {
-      icon: <i className="fa fa-university"></i>,
-      unmanaged: <i className="fa fa-wrench"></i>,
+      icon: <FontAwesomeIcon icon={faUniversity} fixedWidth/>,
+      unmanaged: <FontAwesomeIcon icon={faWrench} fixedWidth/>,
       vlan: 'VLAN',
       networkName: 'ovirtmgmt',
       ipv4: '192.168.0.81',
@@ -97,7 +104,7 @@ function HostDetail() {
 
       const permissionData = [
         {
-          icon: <i className="fa fa-user"></i>,
+          icon: <FontAwesomeIcon icon={faUser} fixedWidth/>,
           user: 'ovirtmgmt',
           authProvider: '',
           namespace: '*',
@@ -110,7 +117,7 @@ function HostDetail() {
       // 이벤트
       const eventData = [
         {
-          icon: <i className="fa fa-check-circle" style={{ color: 'green' }}></i>,
+          icon: <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'green' }}fixedWidth/>,
           time: '2024. 8. 7. PM 12:24:14',
           message: 'Check for available updates on host host01.ittinfo.com was completed successfully with message \'no updates available.\'',
           correlationId: '2568d791:c08...',
@@ -254,7 +261,7 @@ function HostDetail() {
                                       <td>4.2, 4.3, 4.4, 4.5, 4.6, 4.7</td>
                                   </tr>
                                   <tr>
-                                      <th><i className="fa fa-exclamation"></i></th>
+                                      <th><FontAwesomeIcon icon={faExclamation} fixedWidth/></th>
                                       <td>이 호스트는 전원 관리가 설정되어 있지 않습니다.</td>
                                   </tr>
                               </tbody>
@@ -438,8 +445,8 @@ function HostDetail() {
                         onClick={() => toggleHiddenBox(index)}
                       >
                         <div>
-                          <i className="fa fa-arrow-circle-o-up"></i>
-                          <i className="fa fa-film"></i>
+                          <FontAwesomeIcon icon={faArrowCircleUp} fixedWidth/>
+                          <FontAwesomeIcon icon={faFilm} fixedWidth/>
                           <span>ens192</span>
                         </div>
                         <div className='firstbox_flex'>
@@ -469,11 +476,11 @@ function HostDetail() {
                           </div>
                         </div>
                         <div>
-                          <i className="fa fa-film"></i>
+                          <FontAwesomeIcon icon={faFilm} fixedWidth/>
                           <span>Mbps</span>
                         </div>
                         <div>
-                          <i className="fa fa-film"></i>
+                          <FontAwesomeIcon icon={faFilm} fixedWidth/>
                           <span>0 Pkts</span>
                         </div>
                       </div>

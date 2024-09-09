@@ -6,10 +6,14 @@ import Modal from 'react-modal';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import AffinityGroupModal from '../Modal/AffinityGroupModal';
-import './css/ClusterName.css';
 import NetworkDetail from '../Network/NetworkDetail';
 import Permission from '../Modal/Permission';
 import { useClusterById, useEventFromCluster, useHostFromCluster, useLogicalFromCluster, usePermissionFromCluster, usePermissionromCluster, useVMFromCluster } from '../../api/RQHook';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faCrown, faUser, faBan
+} from '@fortawesome/free-solid-svg-icons'
+import './css/ClusterName.css';
 
 function ClusterName() {
     const { id } = useParams();
@@ -69,20 +73,18 @@ function ClusterName() {
 
     // 논리네트워크
     const { 
-        data: networks, 
-        status: networksStatus, 
-        isLoading: isNetworksLoading, 
-        isError: isNetworksError 
-      } = useLogicalFromCluster(cluster?.id, toTableItemPredicateLogicalNetworks);
-      
-      function toTableItemPredicateLogicalNetworks(network) {
-        return {
-          name: network?.name ?? 'Unknown',            
-          status: network?.status ?? 'Unknown',       
-          role: network?.role ? <i className="fa fa-crown"></i> : '', 
-          description: network?.description ?? 'No description', 
-        };
-      }
+      data: networks, 
+      status: networksStatus, 
+      isLoading: isNetworksLoading, 
+      isError: isNetworksError 
+    } = useLogicalFromCluster(cluster?.id, (network) => {
+    return {
+        name: network?.name ?? 'Unknown',            
+        status: network?.status ?? 'Unknown',       
+        role: network?.role ? <FontAwesomeIcon icon={faCrown} fixedWidth/> : '', 
+        description: network?.description ?? 'No description', 
+      };
+    });
       
 
     // 호스트
@@ -113,9 +115,9 @@ function ClusterName() {
       
       function toTableItemPredicateVms(vm) {
         const statusIcon = vm?.status === 'DOWN' 
-            ? <i class="fa fa-chevron-down text-red-500"></i>
+            ? <i class="fa-solid fa-chevron-down text-red-500" fixedWidth/>
             : vm?.status === 'UP' || vm?.status === '실행 중'
-            ? <i class="fa fa-chevron-up text-green-500"></i>
+            ? <i class="fa-solid fa-chevron-up text-green-500" fixedWidth/>
             : ''; // 기본값
         return {
           icon: statusIcon,      
@@ -138,7 +140,7 @@ function ClusterName() {
 
       function toTableItemPredicatePermissions(permission) {
         return {
-          icon: <i className="fa fa-user"></i>,  
+          icon: <FontAwesomeIcon icon={faUser} fixedWidth/>, 
           user: permission?.user ?? '없음',  
           provider: permission?.provider ?? '없음',  
           nameSpace: permission?.nameSpace ?? '없음', 
@@ -250,7 +252,7 @@ function ClusterName() {
                                                     <th>클러스터 CPU 유형:</th>
                                                     <td>
                                                          Intel Nehalem Family
-                                                        <i className="fa fa-ban" style={{ marginLeft: '13%', color: 'orange' }}></i>
+                                                        <FontAwesomeIcon icon={faBan} style={{ marginLeft: '13%', color: 'orange' }} fixedWidth/>
                                                     </td>
                                                 </tr>
                                                 <tr>

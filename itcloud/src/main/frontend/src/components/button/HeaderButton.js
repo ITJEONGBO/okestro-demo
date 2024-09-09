@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import './Button.css';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faEllipsisV
+} from '@fortawesome/free-solid-svg-icons'
 const HeaderButton = ({ title, subtitle, buttons, popupItems }) => {
   const [isPopupBoxVisible, setIsPopupBoxVisible] = useState(false);
 
@@ -28,7 +31,7 @@ const HeaderButton = ({ title, subtitle, buttons, popupItems }) => {
           ))}
           {popupItems && popupItems.length > 0 && (
             <button id="popup_btn" onClick={togglePopupBox}>
-              <i className="fa fa-ellipsis-v"></i>
+              <FontAwesomeIcon icon={faEllipsisV} fixedWidth/>
               <div id="popup_box" style={{ display: isPopupBoxVisible ? 'block' : 'none' }}>
                 {popupItems.map((item, index) => (
                   <div key={index} onClick={() => handlePopupBoxItemClick(item)}>{item}</div>

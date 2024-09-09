@@ -5,9 +5,12 @@ import HeaderButton from '../button/HeaderButton';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
-
-import './css/StorageDiskDetail.css';
 import Permission from '../Modal/Permission';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faUser, fa1, fa2
+} from '@fortawesome/free-solid-svg-icons'
+import './css/StorageDiskDetail.css';
 
 function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const { name } = useParams();
@@ -16,21 +19,10 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
   const [activeTab, setActiveTab] = useState('general');
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 추가
 
-  const handlePermissionFilterClick = (filter) => {
-    setActivePermissionFilter(filter);
-  };
-
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-  };
-
-  const handleOpenModal = () => {
-    setIsModalOpen(true); // 모달 열기
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false); // 모달 닫기
-  };
+  const handlePermissionFilterClick = (filter) => setActivePermissionFilter(filter);
+  const handleTabClick = (tab) => setActiveTab(tab);
+  const handleOpenModal = () => setIsModalOpen(true); // 모달 열기
+  const handleCloseModal = () => setIsModalOpen(false); // 모달 닫기
 
   const buttons = [
     { id: 'edit_btn', label: '수정', onClick: () => console.log('Edit button clicked') },
@@ -67,8 +59,8 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
   const vmData = [];
   const storageData = [
     {
-      icon1: <i className="fa fa-icon1"></i>,
-      icon2: <i className="fa fa-icon2"></i>,
+      icon1: <FontAwesomeIcon icon={fa1} fixedWidth/>,
+      icon2: <FontAwesomeIcon icon={fa2} fixedWidth/>,
       domainName: name,
       domainType: '데이터 (마스터)',
       status: '활성화',
@@ -81,7 +73,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
 
   const permissionData = [
     {
-      icon: <i className="fa fa-user"></i>,
+      icon: <FontAwesomeIcon icon={faUser} fixedWidth/>,
       user: 'ovirtmgmt',
       authProvider: '',
       namespace: '*',

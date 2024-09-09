@@ -1,3 +1,7 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faChevronLeft
+} from '@fortawesome/free-solid-svg-icons'
 /**
  * @name TableColumnsInfo
  * @description 테이블 컬럼 정보
@@ -113,8 +117,8 @@ const TableColumnsInfo = {
   ],
   VOLUMES_FROM_CLUSTER: [
     { header: '별칭', accessor: 'alias', clickable: false },
-    { header: <i className="fa fa-chevron-left"></i>, accessor: 'icon1', clickable: false },
-    { header: <i className="fa fa-chevron-left"></i>, accessor: 'icon2', clickable: false },
+    { header: <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>, accessor: 'icon1', clickable: false },
+    { header: <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>, accessor: 'icon2', clickable: false },
     { header: '가상 크기', accessor: 'virtualSize', clickable: false },
     { header: '실제 크기', accessor: 'actualSize', clickable: false },
     { header: '할당 정책', accessor: 'allocationPolicy', clickable: false },

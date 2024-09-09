@@ -6,8 +6,12 @@ import HeaderButton from '../button/HeaderButton';
 import Footer from '../footer/Footer';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
-import './css/DataCenterDetail.css';
 import Permission from '../Modal/Permission';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faUser, faCheck, faRefresh, faTimes
+} from '@fortawesome/free-solid-svg-icons'
+import './css/DataCenterDetail.css';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -131,7 +135,7 @@ const DataCenterDetail = () => {
 
   const permissionData = [
     {
-      icon: <i className="fa fa-user"></i>,
+      icon: <FontAwesomeIcon icon={faUser} fixedWidth/>,
       user: 'ovirtmgmt',
       authProvider: '',
       namespace: '*',
@@ -143,7 +147,7 @@ const DataCenterDetail = () => {
 
   const eventData = [
     {
-      statusIcon: <i className="fa fa-check" style={{ color: 'green' }}></i>,
+      statusIcon: <FontAwesomeIcon icon={faCheck} style={{ color: 'green' }} fixedWidth/>,
       time: '2024. 7. 29. PM 3:31:41',
       message: 'Image Download with disk he_metadata was cancelled.',
       correlationId: '2568d791:c08...',
@@ -194,9 +198,7 @@ const DataCenterDetail = () => {
                 <button>유지보수</button>
               </div>
               <div className="section_table_outer">
-                <button>
-                  <i className="fa fa-refresh"></i>
-                </button>
+                <button><FontAwesomeIcon icon={faRefresh} fixedWidth/></button>
                 <Table columns={TableColumnsInfo.STORAGES_FROM_DATACENTER} data={storagedata} onRowClick={handleRowClick} />
               </div>
             </>
@@ -289,7 +291,7 @@ const DataCenterDetail = () => {
         <div className="datacenter_new_popup">
           <div className="network_popup_header">
             <h1 class="text-sm">새로운 데이터 센터</h1>
-            <button onClick={() => handleCloseModal('edit')}><i className="fa fa-times"></i></button>
+            <button onClick={() => handleCloseModal('edit')}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
 
           <div className="datacenter_new_content">

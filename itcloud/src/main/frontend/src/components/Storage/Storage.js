@@ -7,7 +7,11 @@ import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
 import './css/Storage.css';
 import Permission from '../Modal/Permission';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faGlassWhiskey, faCaretUp, faEllipsisV, faSearch, faChevronCircleRight
+  , faTimes
+} from '@fortawesome/free-solid-svg-icons'
 
 Modal.setAppElement('#root'); // React 16 이상에서는 필수
 
@@ -27,7 +31,7 @@ const Storage = () => {
       ),
       id: '289137398279301798',
       icon1: '',
-      icon2: <i className="fa fa-glass"></i>,
+      icon2: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>,
       connectionTarget: 'on20-ap01',
       storageDomain: 'VirtIO-SCSI',
       virtualSize: '/dev/sda',
@@ -47,7 +51,7 @@ const Storage = () => {
       ),
       id: '289137398279301798',
       icon1: '',
-      icon2: <i className="fa fa-glass"></i>,
+      icon2: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>,
       connectionTarget: 'on20-ap01',
       storageDomain: 'VirtIO-SCSI',
       virtualSize: '/dev/sda',
@@ -67,7 +71,7 @@ const Storage = () => {
       ),
       id: '289137398279301798',
       icon1: '',
-      icon2: <i className="fa fa-glass"></i>,
+      icon2: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>,
       connectionTarget: 'on20-ap01',
       storageDomain: 'VirtIO-SCSI',
       virtualSize: '/dev/sda',
@@ -86,8 +90,8 @@ const Storage = () => {
   // 도메인 테이블 컴포넌트 
   const domaindata = [
     {
-      status: <i className="fa fa-caret-up" style={{ color: '#1DED00' }}></i>,
-      icon: <i className="fa fa-glass"></i>,
+      status: <FontAwesomeIcon icon={faCaretUp} style={{ color: '#1DED00' }}fixedWidth/>,
+      icon: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>,
       domainName: (
         <span
           style={{ color: 'blue', cursor: 'pointer'}}
@@ -219,7 +223,7 @@ const Storage = () => {
                   <button>삭제</button>
                   <button>Connections</button>
                   <button className="content_header_popup_btn">
-                    <i className="fa fa-ellipsis-v"></i>
+                    <FontAwesomeIcon icon={faEllipsisV} fixedWidth/>
                     <div className="content_header_popup" style={{ display: 'none' }}>
                       <div>활성</div>
                       <div>비활성화</div>
@@ -232,7 +236,7 @@ const Storage = () => {
                 <div className="section_table_outer">
                   <div className="search_box">
                     <input type="text" />
-                    <button><i className="fa fa-search"></i></button>
+                    <button><FontAwesomeIcon icon={faSearch} fixedWidth/></button>
                   </div>
                   {/* Table 컴포넌트를 이용하여 테이블을 생성합니다. */}
                   <Table 
@@ -263,7 +267,7 @@ const Storage = () => {
         <div className="storage_domain_new_popup">
           <div className="network_popup_header">
             <h1>새로운 도메인</h1>
-            <button onClick={closePopup}><i className="fa fa-times"></i></button>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
 
           <div className="storage_domain_new_first">
@@ -316,7 +320,7 @@ const Storage = () => {
             </div>
 
             <div>
-              <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn" onClick={toggleDomainHiddenBox}></i>
+              <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn" onClick={toggleDomainHiddenBox}fixedWidth/>
               <span>사용자 정의 연결 매개 변수</span>
               <div id="domain_hidden_box" style={{ display: isDomainHiddenBoxVisible ? 'block' : 'none' }}>
                 <span>아래 필드에서 기본값을 변경하지 않을 것을 권장합니다.</span>
@@ -341,7 +345,7 @@ const Storage = () => {
               </div>
             </div>
             <div>
-              <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn2" onClick={toggleDomainHiddenBox2}></i>
+              <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn2" onClick={toggleDomainHiddenBox2}fixedWidth/>
               <span>고급 매개 변수</span>
               <div id="domain_hidden_box2" style={{ display: isDomainHiddenBox2Visible ? 'block' : 'none' }}>
                 <div className="domain_new_select">
@@ -395,7 +399,7 @@ const Storage = () => {
         <div className="storage_domain_get_popup">
           <div className="network_popup_header">
             <h1>사전 구성된 도메인 가져오기</h1>
-            <button onClick={closePopup}><i className="fa fa-times"></i></button>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
 
           <div className="storage_domain_new_first">
@@ -448,7 +452,7 @@ const Storage = () => {
             </div>
 
             <div>
-              <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn" onClick={toggleDomainHiddenBox}></i>
+              <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn" onClick={toggleDomainHiddenBox}fixedWidth/>
               <span>사용자 정의 연결 매개 변수</span>
               <div id="domain_hidden_box" style={{ display: isDomainHiddenBoxVisible ? 'block' : 'none' }}>
                 <span>아래 필드에서 기본값을 변경하지 않을 것을 권장합니다.</span>
@@ -473,7 +477,7 @@ const Storage = () => {
               </div>
             </div>
             <div>
-              <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn2" onClick={toggleDomainHiddenBox2}></i>
+              <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn2" onClick={toggleDomainHiddenBox2}fixedWidth/>
               <span>고급 매개 변수</span>
                 <div id="domain_hidden_box2" style={{ display: isDomainHiddenBox2Visible ? 'block' : 'none' }}>
                   <div className="domain_new_select">
@@ -530,7 +534,7 @@ const Storage = () => {
         <div className="storage_domain_administer_popup">
           <div className="network_popup_header">
             <h1>도메인 관리</h1>
-            <button onClick={closePopup}><i className="fa fa-times"></i></button>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
 
           <div className="storage_domain_new_first">
@@ -583,7 +587,7 @@ const Storage = () => {
             </div>
 
             <div>
-              <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn" onClick={toggleDomainHiddenBox}></i>
+              <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn" onClick={toggleDomainHiddenBox}fixedWidth/>
               <span>사용자 정의 연결 매개 변수</span>
               <div id="domain_hidden_box" style={{ display: isDomainHiddenBoxVisible ? 'block' : 'none' }}>
                 <span>아래 필드에서 기본값을 변경하지 않을 것을 권장합니다.</span>
@@ -608,7 +612,7 @@ const Storage = () => {
               </div>
             </div>
             <div>
-              <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn2" onClick={toggleDomainHiddenBox2}></i>
+              <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn2" onClick={toggleDomainHiddenBox2}fixedWidth/>
               <span>고급 매개 변수</span>
               <div id="domain_hidden_box2" style={{ display: isDomainHiddenBox2Visible ? 'block' : 'none' }}>
                 <div className="domain_new_select">

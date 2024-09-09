@@ -1,6 +1,10 @@
 // AffinityGroupModal.js
 import React from 'react';
 import Modal from 'react-modal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faTimes, faInfoCircle
+} from '@fortawesome/free-solid-svg-icons'
 
 const AffinityGroupModal = ({ isOpen, onRequestClose }) => {
   return (
@@ -14,7 +18,7 @@ const AffinityGroupModal = ({ isOpen, onRequestClose }) => {
     >
       <div className="network_popup_header">
         <h1>새 선호도 그룹</h1>
-        <button onClick={onRequestClose}><i className="fa fa-times"></i></button>
+        <button onClick={onRequestClose}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
       </div>
       <div id="pregroup_create_content">
         <div className="snap_create_inputbox">
@@ -28,14 +32,14 @@ const AffinityGroupModal = ({ isOpen, onRequestClose }) => {
         <div className="snap_create_inputbox" style={{ paddingLeft: '0.34rem' }}>
           <div>
             <span>우선 순위</span>
-            <i className="fa fa-info-circle"></i>
+            <FontAwesomeIcon icon={faInfoCircle} fixedWidth/>
           </div>
           <input type="text" />
         </div>
         <div className="snap_create_inputbox" style={{ paddingLeft: '0.34rem' }}>
           <div>
             <label htmlFor="disk_profile">가상 머신 선호도 규칙</label>
-            <i className="fa fa-info-circle"></i>
+            <FontAwesomeIcon icon={faInfoCircle} fixedWidth/>
           </div>
           <div className="pregroup_create_select">
             <div>
@@ -52,7 +56,7 @@ const AffinityGroupModal = ({ isOpen, onRequestClose }) => {
         <div className="snap_create_inputbox" style={{ paddingLeft: '0.34rem' }}>
           <div>
             <label htmlFor="host_preference_rule">호스트 선호도 규칙</label>
-            <i className="fa fa-info-circle"></i>
+            <FontAwesomeIcon icon={faInfoCircle} fixedWidth/>
           </div>
           <div className="pregroup_create_select">
             <div>

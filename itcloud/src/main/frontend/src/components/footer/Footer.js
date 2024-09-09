@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import './Footer.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faChevronDown, faFilter
+} from '@fortawesome/free-solid-svg-icons'
 
 const Footer = () => {
   const [isFooterContentVisible, setIsFooterContentVisible] = useState(false);
@@ -12,7 +16,7 @@ const Footer = () => {
     <div className="footer_outer">
       <div className="footer">
         <button onClick={toggleFooterContent}>
-          <i className="fa fa-chevron-down"></i>
+          <FontAwesomeIcon icon={faChevronDown} fixedWidth/>
         </button>
         <div>
           <div
@@ -41,7 +45,7 @@ const Footer = () => {
             {[...Array(8)].map((_, index) => (
               <div key={index} style={index === 7 ? { borderRight: 'none' } : {}}>
                 <div>작업이름</div>
-                <div><i className="fa fa-filter"></i></div>
+                <div><FontAwesomeIcon icon={faFilter} fixedWidth/></div>
               </div>
             ))}
           </div>

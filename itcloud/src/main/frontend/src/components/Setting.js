@@ -2,6 +2,11 @@ import React, { useEffect, useState } from 'react';
 import './Setting.css';
 import Table from '../components/table/Table';
 import TableColumnsInfo from '../components/table/TableColumnsInfo';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faChevronLeft, faChevronRight, faChevronDown, faEllipsisV, faSearch
+  , faFilter
+} from '@fortawesome/free-solid-svg-icons'
 
 const Setting = ({ }) => {
     //테이블 컴포넌트
@@ -87,13 +92,13 @@ const Setting = ({ }) => {
           <div className="storage_domain_content">
             <div>
               <div className="application_content_header">
-                <button><i className="fa fa-chevron-left"></i></button>
+                <button><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
                 <div>1-2</div>
-                <button><i className="fa fa-chevron-right"></i></button>
-                <button><i className="fa fa-ellipsis-v"></i></button>
+                <button><FontAwesomeIcon icon={faChevronRight} fixedWidth/></button>
+                <button><FontAwesomeIcon icon={faEllipsisV} fixedWidth/></button>
                 <div className="search_box">
                   <input type="text" />
-                  <button><i className="fa fa-search"></i></button>
+                  <button><FontAwesomeIcon icon={faSearch} fixedWidth/></button>
                 </div>
                 <button>세션종료</button>
               </div>
@@ -104,7 +109,7 @@ const Setting = ({ }) => {
   
         <div className="footer_outer">
                 <div className="footer">
-                    <button onClick={toggleFooterContent}><i className="fa fa-chevron-down"></i></button>
+                    <button onClick={toggleFooterContent}><FontAwesomeIcon icon={faChevronDown} fixedWidth/></button>
                     <div>
                         <div
                             style={{
@@ -131,35 +136,35 @@ const Setting = ({ }) => {
                         <div className="footer_nav">
                             <div>
                                 <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
+                                <div><FontAwesomeIcon icon={faFilter} fixedWidth/></div>
                             </div>
                             <div>
                                 <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
+                                <div><FontAwesomeIcon icon={faFilter} fixedWidth/></div>
                             </div>
                             <div>
                                 <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
+                                <div><FontAwesomeIcon icon={faFilter} fixedWidth/></div>
                             </div>
                             <div>
                                 <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
+                                <div><FontAwesomeIcon icon={faFilter} fixedWidth/></div>
                             </div>
                             <div>
                                 <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
+                                <div><FontAwesomeIcon icon={faFilter} fixedWidth/></div>
                             </div>
                             <div>
                                 <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
+                                <div><FontAwesomeIcon icon={faFilter} fixedWidth/></div>
                             </div>
                             <div>
                                 <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
+                                <div><FontAwesomeIcon icon={faFilter} fixedWidth/></div>
                             </div>
                             <div style={{ borderRight: 'none' }}>
                                 <div>작업이름</div>
-                                <div><i className="fa fa-filter"></i></div>
+                                <div><FontAwesomeIcon icon={faFilter} fixedWidth/></div>
                             </div>
                         </div>
                         <div className="footer_img">

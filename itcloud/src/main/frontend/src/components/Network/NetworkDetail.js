@@ -18,6 +18,10 @@ import {
   useAllTemplatesFromNetwork, 
   useAllPermissionsFromNetwork 
 } from '../../api/RQHook';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faChevronLeft, faUser, faTimes
+} from '@fortawesome/free-solid-svg-icons'
 
 const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) => {
   // 테이블컴포넌트
@@ -120,7 +124,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
       description: cluster?.description ?? '없음',
       version: cluster?.version ?? '없음',
       connectedNetwork: cluster?.connected ? <input type="checkbox" checked /> : <input type="checkbox" />,
-      networkStatus: <i className="fa fa-chevron-left"></i>,
+      networkStatus: <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>,
       requiredNetwork: cluster?.requiredNetwork ? <input type="checkbox" checked /> : <input type="checkbox" />,
       networkRole: cluster?.networkRole ?? '',
     };
@@ -144,12 +148,12 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   function toTableItemPredicateVms(vm) {
     return {
       id: vm?.id ?? '없음',  // 가상 머신 ID
-      icon: <i className="fa fa-chevron-left"></i>,  // 가상 머신 아이콘
+      icon: <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>,  // 가상 머신 아이콘
       name: vm?.name ?? '없음',  // 가상 머신 이름
       cluster: vm?.cluster ?? '없음',  // 클러스터 이름
       ipAddress: vm?.ipAddress ?? '없음',  // IP 주소
       fqdn:  vm?.fqdn ?? '',
-      vnicStatus: <i className="fa fa-chevron-left"></i>,  // vNIC 상태 아이콘
+      vnicStatus: <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>,  // vNIC 상태 아이콘
       vnic: vm?.vnic ?? '없음',  // vNIC 이름
       vnicRx: vm?.vnicRx ?? '없음',  // vNIC 수신 속도
       vnicTx: vm?.vnicTx ?? '없음',  // vNIC 송신 속도
@@ -169,7 +173,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   }
   function toTableItemPredicatePermissions(permission) {
     return {
-      icon: <i className="fa fa-user"></i>,  // 사용자 아이콘
+      icon: <FontAwesomeIcon icon={faUser} fixedWidth/>,  // 사용자 아이콘
       user: permission?.user ?? '없음',  // 사용자 이름
       provider: permission?.provider ?? '없음',  // 인증 제공자
       nameSpace: permission?.nameSpace ?? '없음',  // 네임스페이스
@@ -195,7 +199,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
       ),
       vmNetMgmt: (
         <>
-          <i class="fa fa-star" style={{ color: 'green'}}></i>
+          <i class="fa-solid fa-star" style={{ color: 'green'}}fixedWidth/>
         </>
       ),
       networkOutput: <input type="checkbox" />,
@@ -518,7 +522,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         <div className="vnic_new_content_popup">
           <div className="network_popup_header">
             <h1>가상 머신 인터페이스 프로파일</h1>
-            <button onClick={closePopup}><i className="fa fa-times"></i></button>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
           
           <div className="vnic_new_content">
@@ -616,7 +620,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         <div className="vnic_new_content_popup">
           <div className="network_popup_header">
             <h1>가상 머신 인터페이스 프로파일</h1>
-            <button onClick={closePopup}><i className="fa fa-times"></i></button>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
           
           <div className="vnic_new_content">
@@ -710,7 +714,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         <div className="manage_network_popup">
           <div className="network_popup_header">
             <h1>네트워크 관리</h1>
-            <button onClick={closePopup}><i className="fa fa-times"></i></button>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
           
           <div className="section_table_outer">
@@ -740,7 +744,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         <div className="vnic_new_content_popup">
           <div className="network_popup_header">
             <h1>호스트 host01.ititinfo.com 네트워크 설정</h1>
-            <button onClick={closePopup}><i className="fa fa-times"></i></button>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
           
           <div className="host_network_contents_outer">

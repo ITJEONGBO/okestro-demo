@@ -1,3 +1,5 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 const DEFAULT_VALUES = {
   FIND_ALL_TREE_NAVIGATIONS: {
     "type": "DATACENTER",
@@ -37,7 +39,7 @@ const DEFAULT_VALUES = {
   // 컴퓨팅
    FIND_ALL_DATA_CENTERS: [
         {
-            iconStatus: <i className="fa fa-exclamation-triangle" style={{ color: 'yellowgreen' }}></i>, // TODO: raw 값만 부여하도록 구현
+            iconStatus: <FontAwesomeIcon icon="fa-solid fa-exclamation-triangle" style={{ color: 'yellowgreen' } }fixedWidth/>, // TODO: raw 값만 부여하도록 구현
             name: '샘플값입니다',
             comment: '(샘플값입니다.)',
             name: 'DataCenter1',
@@ -79,7 +81,7 @@ const DEFAULT_VALUES = {
     {
       name:'ovirtmgmt',
       status: '가동 중',
-      role: <i className="fa fa-crown"></i>,
+      role: <FontAwesomeIcon icon="fa-solid fa-crown" fixedWidth/>,
       description: 'Management Network',
     },
   ],
@@ -114,7 +116,7 @@ const DEFAULT_VALUES = {
   // 이벤트
   FIND_EVENT_FROM_CLUSTER:[
     {
-      icon: <i className="fa fa-check-circle" style={{ color: 'green' }}></i>,  // 상태 아이콘
+      icon: <FontAwesomeIcon icon="fa-solid fa-check-circle" style={{ color: 'green' }}fixedWidth/>,  // 상태 아이콘
       time: '2024. 8. 12. PM 12:24:11',
       description: 'Check for update of host host02.ititinfo.com. Delete yum_updates file from host.',
       correlationId: '',
@@ -189,7 +191,7 @@ const DEFAULT_VALUES = {
       name: "Default",
       version: "4.7",
       connectedNetwork: <input type="checkbox" />,
-      networkStatus: <i className="fa fa-chevron-left"></i>,
+      networkStatus: <FontAwesomeIcon icon="fa-solid fa-chevron-left" fixedWidth/>,
       requiredNetwork: <input type="checkbox" />,
       networkRole: "Admin",
       description: "The default server cluster",
@@ -215,12 +217,12 @@ const DEFAULT_VALUES = {
   // 네트워크 가상머신
   FIND_ALL_VMS_FROM_NETWORK:[
     {
-      icon: <i className="fa fa-chevron-left"></i>,
+      icon: <FontAwesomeIcon icon="fa-solid fa-chevron-left" fixedWidth/>,
       name: 'HostedEngine',
       cluster: 'Default',
       ipAddress: '192.168.0.08 fe80::2342',
       fqdn: 'ovirt.ititinfo.com',
-      vnicStatus: <i className="fa fa-chevron-left"></i>,
+      vnicStatus: <FontAwesomeIcon icon="fa-solid fa-chevron-left" fixedWidth/>,
       vnic: 'vnet0',
       vnicRx: '1',
       vnicTx: '1',
@@ -242,7 +244,7 @@ const DEFAULT_VALUES = {
   // 권한
   FIND_ALL_PERMISSION:[
     {
-      icon: <i className="fa fa-user"></i>,
+      icon: <FontAwesomeIcon icon="fa-solid fa-user" fixedWidth/>,
       user: 'ovirtmgmt',
       provider: '',
       nameSpace: '*',

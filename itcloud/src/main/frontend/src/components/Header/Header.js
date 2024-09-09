@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Header.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faBell, faUser
+} from '@fortawesome/free-solid-svg-icons'
 
 const Header = () => {
     const navigate = useNavigate();
@@ -80,7 +84,7 @@ const Header = () => {
                         borderRadius: '50%'
                     }}
                 >
-                    <i className="fa fa-bell"></i>
+                    <FontAwesomeIcon icon={faBell} fixedWidth/>
                     <div className='bell_box' style={{ display: isBellActive ? 'block' : 'none' }} onClick={stopPropagation}>
                         <div>알림</div>
                     </div>
@@ -95,7 +99,7 @@ const Header = () => {
                         borderRadius: '50%'
                     }}
                 >
-                    <i className="fa fa-user"></i>
+                    <FontAwesomeIcon icon={faUser} fixedWidth/>
                     <span>(user name)</span>
                     <div className='user_loginbox' style={{ display: isLoginBoxVisible ? 'block' : 'none' }} onClick={stopPropagation}>
                         <div>계정설정</div>

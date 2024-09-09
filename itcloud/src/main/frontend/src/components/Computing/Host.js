@@ -6,6 +6,10 @@ import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
 import { useAllHosts } from '../../api/RQHook';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faRefresh, faTimes, faInfoCircle
+} from '@fortawesome/free-solid-svg-icons'
 
 Modal.setAppElement('#root');
 
@@ -110,7 +114,7 @@ const Host = () => {
         <div className="empty_nav_outer">
           <div className="section_table_outer">
             <button onClick={() => window.location.reload()}>
-              <i className="fa fa-refresh"></i>
+              <FontAwesomeIcon icon={faRefresh} fixedWidth/>
             </button>
             <Table columns={TableColumnsInfo.HOSTS_ALT} data={hosts} onRowClick={handleRowClick} />
           </div>
@@ -129,7 +133,7 @@ const Host = () => {
         <div className="domain_header">
           <h1 class="text-sm">새 호스트</h1>
           <button onClick={closeModal}>
-            <i className="fa fa-times"></i>
+            <FontAwesomeIcon icon={faTimes} fixedWidth/>
           </button>
         </div>
 
@@ -210,7 +214,7 @@ const Host = () => {
       <div>
           <input type="checkbox" id="headless_mode_info" name="headless_mode_info" />
           <label htmlFor="headless_mode_info">헤드리스 모드 정보</label>
-          <i className="fa fa-info-circle" style={{ color: '#1ba4e4' }}></i>
+          <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }} fixedWidth/>
       </div>
     </div>
 
@@ -274,7 +278,6 @@ const Host = () => {
             
 
             </div>
-
 
             {/* 호스트 엔진 섹션 */}
             <div

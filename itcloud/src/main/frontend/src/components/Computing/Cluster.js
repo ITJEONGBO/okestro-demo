@@ -5,8 +5,12 @@ import HeaderButton from '../button/HeaderButton';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
-import './css/Cluster.css';
 import { useAllClusters } from '../../api/RQHook';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faRefresh
+} from '@fortawesome/free-solid-svg-icons'
+import './css/Cluster.css';
 
 Modal.setAppElement('#root');
 
@@ -99,7 +103,7 @@ const Cluster = () => {
         <div className="empty_nav_outer">
           <div className="section_table_outer">
             <button>
-              <i className="fa fa-refresh"></i>
+              <FontAwesomeIcon icon={faRefresh} fixedWidth/>
             </button>
             <Table 
               columns={TableColumnsInfo.CLUSTERS_ALT} 

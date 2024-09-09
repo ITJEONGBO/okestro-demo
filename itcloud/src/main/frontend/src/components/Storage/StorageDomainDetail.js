@@ -1,19 +1,18 @@
 import React, { useState,useEffect } from 'react';
-
 import { useParams } from 'react-router-dom';
-
 import Modal from 'react-modal';
-
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
-import './css/StorageDomainDetail.css';
-
 import { useNavigate } from 'react-router-dom';
 import Permission from '../Modal/Permission';
-//import { useParams } from 'react-router-dom';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faExclamation, faPlusCircle, faMinusCircle, faChevronLeft, faCheck
+  , faUser, faTimes, faChevronCircleRight, faDesktop, faAngleDown
+} from '@fortawesome/free-solid-svg-icons'
+import './css/StorageDomainDetail.css';
 
 function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const { name } = useParams();
@@ -46,7 +45,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   // 데이터센터
   const dataCenterData = [
     {
-      icon: <i className="fa fa-exclamation"></i>,
+      icon: <FontAwesomeIcon icon={faExclamation} fixedWidth/>,
       name: name,
       domainStatus: '활성화',
     },
@@ -65,7 +64,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     {
       alias: (
         <>
-          <i className="fa fa-plus-circle"></i> test02
+          <FontAwesomeIcon icon={faPlusCircle} fixedWidth/> test02
         </>
       ),
       disk: '',
@@ -95,15 +94,15 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   const diskdata = [
     {
       alias: 'aa',
-      leftIcon1: <i className="fa fa-chevron-left"></i>,
-      leftIcon2: <i className="fa fa-chevron-left"></i>,
+      leftIcon1: <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>,
+      leftIcon2: <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>,
       virtualSize: '<1 GiB',
       actualSize: '<1 GiB',
       allocationPolicy: '씬 프로비저닝',
       storageDomain: 'hosted_storage',
       createdDate: '2024. 4. 26. PM 3:19:39',
       lastUpdated: '2024. 4. 26. PM 3:19:45',
-      rightIcon: <i className="fa fa-chevron-left"></i>,
+      rightIcon: <FontAwesomeIcon icon={faChevronLeft} fixedWidth/>,
       connectedTo: '',
       status: 'OK',
       type: '이미지',
@@ -128,7 +127,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   // 이벤트
   const eventData = [
     {
-      statusIcon: <i className="fa fa-check" style={{ color: 'green' }}></i>,
+      statusIcon: <FontAwesomeIcon icon={faCheck} style={{ color: 'green' }}fixedWidth/>,
       time: '2024. 7. 29. PM 3:31:41',
       message: 'Image Download with disk he_metadata was cancelled.',
       correlationId: '2568d791:c08...',
@@ -141,7 +140,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   //권한
   const permissionData = [
     {
-      icon: <i className="fa fa-user"></i>,
+      icon: <FontAwesomeIcon icon={faUser} fixedWidth/>,
       user: 'ovirtmgmt',
       authProvider: '',
       namespace: '*',
@@ -322,9 +321,9 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                   <tbody>
                     <tr>
                       <td>
-                        <i className="fa fa-plus-circle"></i>
-                        <i class="fa fa-minus-circle" style={{display:'none'}}></i>
-                        <i class="fa fa-desktop"></i>
+                        <FontAwesomeIcon icon={faPlusCircle} fixedWidth/>
+                        <i class={faMinusCircle} style={{display:'none'}}fixedWidth/>
+                        <i class={faDesktop} fixedWidth/>
                         test02
                       </td>
                       <td>1</td>
@@ -338,9 +337,9 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                   <tbody className='detail_machine_second'>
                     <tr>
                       <td>
-                        <i className="fa fa-plus-circle"></i>
-                        <i class="fa fa-minus-circle" style={{display:'none'}}></i>
-                        <i class="fa fa-desktop"></i>
+                        <FontAwesomeIcon icon={faPlusCircle} fixedWidth/>
+                        <i class={faMinusCircle} style={{display:'none'}}fixedWidth/>
+                        <i class={faDesktop} fixedWidth/>
                         test02
                       </td>
                       <td>1</td>
@@ -354,9 +353,9 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                   <tbody className='detail_machine_last'>
                     <tr>
                       <td>
-                        <i className="fa fa-plus-circle"></i>
-                        <i class="fa fa-minus-circle" style={{display:'none'}}></i>
-                        <i class="fa fa-desktop"></i>
+                        <FontAwesomeIcon icon={faPlusCircle} fixedWidth/>
+                        <i class={faMinusCircle} style={{display:'none'}}fixedWidth/>
+                        <i class={faDesktop} fixedWidth/>
                         test02
                       </td>
                       <td>1</td>
@@ -390,7 +389,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                 <button>복사</button>
                 <button>제거</button>
                 <button className='upload_option_boxbtn'>업로드 
-                  <i class="fa fa-angle-down" onClick={toggleUploadOptionBox}></i>
+                  <i class={faAngleDown} onClick={toggleUploadOptionBox}fixedWidth/>
                 </button>
                 <button>다운로드</button>
                 {/*업로드 버튼 옵션박스 */}
@@ -485,7 +484,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         <div className="storage_domain_administer_popup">
           <div className="network_popup_header">
             <h1>도메인 관리</h1>
-            <button onClick={closeModal}><i className="fa fa-times"></i></button>
+            <button onClick={closeModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
 
           <div className="storage_domain_new_first">
@@ -538,7 +537,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
             </div>
 
             <div>
-              <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn" onClick={toggleDomainHiddenBox}></i>
+              <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn" onClick={toggleDomainHiddenBox}fixedWidth/>
               <span>사용자 정의 연결 매개 변수</span>
               <div id="domain_hidden_box" style={{ display: isDomainHiddenBoxVisible ? 'block' : 'none' }}>
                 <span>아래 필드에서 기본값을 변경하지 않을 것을 권장합니다.</span>
@@ -563,7 +562,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
               </div>
             </div>
             <div>
-              <i className="fa fa-chevron-circle-right" id="domain_hidden_box_btn2" onClick={toggleDomainHiddenBox2}></i>
+              <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn2" onClick={toggleDomainHiddenBox2}fixedWidth/>
               <span>고급 매개 변수</span>
               <div id="domain_hidden_box2" style={{ display: isDomainHiddenBox2Visible ? 'block' : 'none' }}>
                 <div className="domain_new_select">

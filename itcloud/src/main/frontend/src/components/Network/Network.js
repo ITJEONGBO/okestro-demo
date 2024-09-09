@@ -5,13 +5,15 @@ import Modal from 'react-modal';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import HeaderButton from '../button/HeaderButton';
-import ApiManager from '../../api/ApiManager';
 import './css/Network.css';
 import Footer from '../footer/Footer';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faTimes, faInfoCircle
+} from '@fortawesome/free-solid-svg-icons'
 import { toast } from 'react-hot-toast';
 
 Modal.setAppElement('#root');
-
 const Network = ({ }) => {
     // 테이블 데이터
     /*
@@ -129,9 +131,6 @@ const Network = ({ }) => {
         { id: 'delete_btn', label: '삭제', onClick: () => toast('삭제 기능 준비 중...') }, 
     ];
     
-
-
-
     return (
         <div id="network_section">
             <HeaderButton
@@ -167,7 +166,7 @@ const Network = ({ }) => {
                 <div className="network_new_popup">
                     <div className="network_popup_header">
                         <h1 class="text-sm">새 논리적 네트워크</h1>
-                        <button onClick={closePopup}><i className="fa fa-times"></i></button>
+                        <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                     </div>
 
                     <div className="network_new_nav">
@@ -208,7 +207,7 @@ const Network = ({ }) => {
                                 <div className="network_form_group">
                                     <div>
                                         <label htmlFor="name">이름</label>
-                                        <i className="fa fa-info-circle" style={{ color: '#1ba4e4' }}></i>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }}fixedWidth/>
                                     </div>
                                     <input type="text" id="name" />
                                 </div>
@@ -327,7 +326,7 @@ const Network = ({ }) => {
                                 <div>
                                     <input type="checkbox" id="public" disabled />
                                     <label htmlFor="public">공개</label>
-                                    <i className="fa fa-info-circle" style={{ color: 'rgb(83, 163, 255)' }}></i>
+                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/>
                                 </div>
                                 <label htmlFor="qos">QoS</label>
                                 <select id="qos">
@@ -360,7 +359,7 @@ const Network = ({ }) => {
                 <div className="network_bring_popup">
                     <div className="network_popup_header">
                         <h1>네트워크 가져오기</h1>
-                        <button onClick={closePopup}><i className="fa fa-times"></i></button>
+                        <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                     </div>
 
                     <div className="network_form_group">
@@ -424,7 +423,7 @@ const Network = ({ }) => {
                 <div className="network_edit_popup">
                     <div className="network_popup_header">
                         <h1>논리 네트워크 수정</h1>
-                        <button onClick={closePopup}><i className="fa fa-times"></i></button>
+                        <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                     </div>
                     
                     <form id="network_new_common_form">
@@ -438,7 +437,7 @@ const Network = ({ }) => {
                                 <div className="network_form_group">
                                     <div>
                                         <label htmlFor="name">이름</label>
-                                        <i className="fa fa-info-circle" style={{ color: '#1ba4e4' }}></i>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }}fixedWidth/>
                                     </div>
                                     <input type="text" id="name" />
                                 </div>
