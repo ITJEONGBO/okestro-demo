@@ -13,8 +13,11 @@ import com.itinfo.itcloud.service.auth.ItPermissionService
 import com.itinfo.util.ovirt.error.ErrorPattern
 import io.swagger.annotations.*
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
+import org.springframework.util.MultiValueMap
 import org.springframework.web.bind.annotation.*
 
 @Controller
@@ -65,28 +68,30 @@ class OvirtUserController: BaseController() {
 	}
 
 	@ApiOperation(
-		httpMethod="GET",
-		value="아이디/비밀번호 검증 (테스트용)",
+		httpMethod="POST",
+		value="아이디/비밀번호 검증",
 		notes="사용자의 아이디/비밀번호가 맞는지 확인한다.")
 	@ApiImplicitParams(
 		ApiImplicitParam(name="username", value="ovirt 사용자 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		ApiImplicitParam(name="password", value="ovirt 사용자 비밀번호", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="passwordPrompt", value="ovirt 사용자 비밀번호", dataTypeClass=PasswordPrompt::class, required=true, paramType="body"),
 	)
 	@ApiResponses(
 		ApiResponse(code = 200, message = "성공"),
 		ApiResponse(code = 404, message = "찾을 수 없는 사용자")
 	)
-	@GetMapping("/{username}/{password}")
+	@PostMapping("/{username}")
 	fun validate(
 		@PathVariable username: String = "",
-		@PathVariable password: String = ""
+		@RequestBody(required=true) passwordPrompt: PasswordPrompt,
 	): ResponseEntity<Boolean> {
-		log.info("validate ... username: {}, password: {}", username, password)
+		log.info("validate ... username: {}, password: {}", username, passwordPrompt.password)
 		if (username.isEmpty()) throw ErrorPattern.OVIRTUSER_ID_NOT_FOUND.toException()
-		if (password.isEmpty()) throw ErrorPattern.OVIRTUSER_REQUIRED_VALUE_EMPTY.toException()
-		val res: Boolean = ovirtUser.authenticate(username, password)
-		return ResponseEntity.ok(res)
+		if (passwordPrompt.password.isEmpty()) throw ErrorPattern.OVIRTUSER_REQUIRED_VALUE_EMPTY.toException()
+
+		val res: HttpHeaders = ovirtUser.authenticate(username, passwordPrompt.password)
+		return ResponseEntity(res.isNotEmpty(), res, HttpStatus.OK)
 	}
+	data class PasswordPrompt(val password: String = "")
 
 	@ApiOperation(
 		httpMethod="POST",

@@ -35,7 +35,7 @@ class UserDetail(
 	@Column(nullable=true)
 	var note: String? = "",
 	var lastAdminCheckStatus: Boolean = true,
-	var externalId: String, // TODO: 이거 어떻게 생성하는지 확인 필요 ...
+	var externalId: String,
 	@Column(name="_create_date")
 	var createDate: LocalDateTime = LocalDateTime.now(),
 	@Column(name="_update_date", nullable=true)

@@ -130,14 +130,11 @@ npm build # React 앱 빌드
 >   -e ITCLOUD_PORT_HTTP=8080 \
 >   -e ITCLOUD_PORT_HTTPS=8443 \
 >   -e ITCLOUD_OVIRT_IP=192.168.0.70 \
->   -e ITCLOUD_SSL_ENABLED= \
->   -e ITCLOUD_SSL_FILE= \
->   -e ITCLOUD_SSL_PASSWORD= \
->   -e ITCLOUD_SSL_ALIAS= \
 >   -e POSTGRES_JDBC_URL=192.168.0.70 \
->   -e POSTGRES_DATASOURCE_JDBC_ID=<아이디> \
->   -e POSTGRES_DATASOURCE_JDBC_PW=<비밀번호> \
->   -p 8080:8080 -p 8443:8443 \ 
+>   -e POSTGRES_JDBC_PORT=5432 \
+>   -e POSTGRES_DATASOURCE_JDBC_ID=<rutil> \
+>   -e POSTGRES_DATASOURCE_JDBC_PW=<rutil1!> \
+>   -p 8080:8080 -p 8443:8443 \
 >   itinfo/itcloud:0.1.0
 > 
 > # postgres
@@ -148,22 +145,20 @@ npm build # React 앱 빌드
 >   -v where/to/mount:/var/lib/postgresql/data \
 >   postgres:10.12-alpine
 > ```
+
 > *On Windows*
 > 
 > ```batch
-> :: okestro
+> :: iotcloud
 > docker run -d -it --name itcloud ^
->   -p 8080:8080 -p 8443:8443 ^
 >   -e ITCLOUD_PORT_HTTP=8080 ^
 >   -e ITCLOUD_PORT_HTTPS=8443 ^
 >   -e ITCLOUD_OVIRT_IP=192.168.0.70 ^
->   -e ITCLOUD_SSL_ENABLED= ^
->   -e ITCLOUD_SSL_FILE= ^
->   -e ITCLOUD_SSL_PASSWORD= ^
->   -e ITCLOUD_SSL_ALIAS= ^
 >   -e POSTGRES_JDBC_URL=192.168.0.70 ^
->   -e POSTGRES_DATASOURCE_JDBC_ID=<아이디> ^
->   -e POSTGRES_DATASOURCE_JDBC_PW=<비밀번호> ^
+>   -e POSTGRES_JDBC_PORT=5432 ^
+>   -e POSTGRES_DATASOURCE_JDBC_ID=<rutil> ^
+>   -e POSTGRES_DATASOURCE_JDBC_PW=<rutil1!> ^
+>   -p 8080:8080 -p 8443:8443 ^
 >   itinfo/itcloud:0.1.0
 > 
 > :: postgres

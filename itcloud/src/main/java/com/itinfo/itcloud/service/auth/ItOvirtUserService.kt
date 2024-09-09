@@ -1,28 +1,30 @@
 package com.itinfo.itcloud.service.auth
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.aaarepository.OvirtUserRepository
+import com.itinfo.itcloud.aaarepository.RefreshTokenRepository
+import com.itinfo.itcloud.aaarepository.UserDetailRepository
+import com.itinfo.itcloud.aaarepository.dto.TokenDto
+import com.itinfo.itcloud.aaarepository.entity.*
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.auth.UserVo
-import com.itinfo.itcloud.aaarepository.OvirtUserRepository
-import com.itinfo.itcloud.aaarepository.UserDetailRepository
-import com.itinfo.itcloud.aaarepository.entity.OvirtUser
-import com.itinfo.itcloud.aaarepository.entity.UserDetail
-import com.itinfo.itcloud.aaarepository.entity.toUserVo
-import com.itinfo.itcloud.aaarepository.entity.toUserVos
-import com.itinfo.itcloud.model.auth.toUserVo
 import com.itinfo.itcloud.ovirt.hashPassword
 import com.itinfo.itcloud.ovirt.validatePassword
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.util.ovirt.error.ItCloudException
-import com.itinfo.util.ovirt.findUser
-import org.ovirt.engine.sdk4.types.User
 import org.postgresql.util.PSQLException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpHeaders
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.util.LinkedMultiValueMap
+import org.springframework.util.MultiValueMap
+
 import java.time.LocalDateTime
 import java.util.*
+
 
 interface ItOvirtUserService {
 	/**
@@ -46,10 +48,10 @@ interface ItOvirtUserService {
 	 * [ItOvirtUserService.findOne]
 	 *
 	 * @param username [String]
-	 * @return [UserVo]
+	 * @return [UserDetails]
 	 */
 	@Throws(PSQLException::class)
-	fun findOne(username: String): UserVo?
+	fun findOne(username: String): UserDetails?
 	/**
 	 * [ItOvirtUserService.findFullDetailByName]
 	 *
@@ -72,10 +74,10 @@ interface ItOvirtUserService {
 	 *
 	 * @param username [String]
 	 * @param password [String]
-	 * @return List<[UserVo]>
+	 * @return Boolean
 	 */
 	@Throws(PSQLException::class)
-	fun authenticate(username: String, password: String): Boolean
+	fun authenticate(username: String, password: String): HttpHeaders
 	/**
 	 * [ItOvirtUserService.add]
 	 * 사용자 생성
@@ -83,6 +85,7 @@ interface ItOvirtUserService {
 	 * @param username [String]
 	 * @param password [String]
 	 * @param surname [String]
+	 * @return [UserVo]
 	 */
 	@Throws(PSQLException::class)
 	fun add(username: String, password: String, surname: String = ""): UserVo?
@@ -93,7 +96,6 @@ interface ItOvirtUserService {
 	 * @param username [String]
 	 * @param password [String]
 	 * @param surname [String]
-
 	@Throws(PSQLException::class)
 	fun update(username: String, password: String, surname: String = ""): UserVo?
 	*/
@@ -123,8 +125,10 @@ interface ItOvirtUserService {
 class OvirtUserServiceImpl(
 
 ): BaseService(), ItOvirtUserService {
+	@Autowired private lateinit var jwtUtil: JwtUtil
 	@Autowired private lateinit var ovirtUsers: OvirtUserRepository
 	@Autowired private lateinit var userDetails: UserDetailRepository
+	@Autowired private lateinit var refreshTokens: RefreshTokenRepository
 
 	@Throws(PSQLException::class)
 	override fun findAll(): List<UserVo> {
@@ -140,9 +144,9 @@ class OvirtUserServiceImpl(
 	}
 
 	@Throws(ItCloudException::class)
-	override fun findOne(username: String): UserVo? {
-		val res: User = conn.findUser(username).getOrNull() ?: throw ErrorPattern.OVIRTUSER_NOT_FOUND.toException()
-		return res.toUserVo()
+	override fun findOne(username: String): UserDetails? {
+		val res: OvirtUser = findOneAAA(username)
+		return res.toUserDetails()
 	}
 
 	@Throws(ItCloudException::class)
@@ -164,27 +168,15 @@ class OvirtUserServiceImpl(
 	override fun findEncryptedValue(input: String): String =
 		input.hashPassword()
 
-	@Throws(PSQLException::class)
-	override fun authenticate(username: String, password: String): Boolean {
-		log.info("authenticateUser ... username: {}, password: {}", username, password)
-		val user: OvirtUser = findOneAAA(username)
-		val res = password.validatePassword(user.password)
-		if (!res) { // 로그인 실패 처리 기록
-			user.consecutiveFailures += 1
-			ovirtUsers.save(user)
-		}
-		return password.validatePassword(user.password)
-	}
-
 	@Transactional("aaaTransactionManager")
 	override fun add(username: String, password: String, surname: String): UserVo? {
 		log.info("add ... username: {}", username)
 		log.debug("add ... password: {}", password)
-		// Step 1: 중복 사용자 존재유무
+		// STEP 1: 중복 사용자 존재유무
 		if (ovirtUsers.findByName(username) != null)
 			throw ErrorPattern.OVIRTUSER_DUPLICATE.toException()
 
-		// Step 2: 사용자 기본정보 생성
+		// STEP 2: 사용자 기본정보 생성
 		val uuid: UUID = UUID.randomUUID()
 		val user2Add = OvirtUser.builder {
 			uuid { uuid.toString() }
@@ -193,7 +185,7 @@ class OvirtUserServiceImpl(
 		}
 		val resUserAdded: OvirtUser = ovirtUsers.save(user2Add)
 
-		// Step 3: 사용자 상세정보 생성
+		// STEP 3: 사용자 상세정보 생성
 		val resUserDetail2Add = UserDetail.builder {
 			name { username }
 			surname { surname }
@@ -207,7 +199,43 @@ class OvirtUserServiceImpl(
 		// STEP 4: 권한 등록
 		// addPermission(uuid.toString())
 		return resUserAdded.toUserVo(resUserDetailAdded)
+	}
 
+	@Throws(PSQLException::class)
+	@Transactional("aaaTransactionManager")
+	override fun authenticate(username: String, password: String): HttpHeaders {
+		log.info("authenticate ... username: {}", username)
+		log.debug("authenticate ... password: {}", password)
+
+		// 아이디 검사
+		val user: OvirtUser = findOneAAA(username)
+
+		// 비밀번호 검사
+		val res = password.validatePassword(user.password)
+		user.consecutiveFailures = if (res) 0 else user.consecutiveFailures+1
+		ovirtUsers.save(user)
+		if (!res) { // 로그인 실패 처리 기록
+			return HttpHeaders()
+		}
+
+		val dto: TokenDto = jwtUtil.createAllToken(username)
+		val rToken: RefreshToken? = refreshTokens.findByExternalId(user.uuid) // Refresh토큰 있는지 확인
+
+		// 있다면 새토큰 발급후 업데이트
+		// 없다면 새로 만들고 디비 저장
+		if (rToken != null) {
+			refreshTokens.save(rToken.updateToken(dto.refreshToken))
+		} else {
+			refreshTokens.save(RefreshToken.builder {
+				externalId { user.uuid }
+				refreshToken { dto.refreshToken }
+			})
+		}
+
+		return HttpHeaders().apply {
+			add(JwtUtil.ACCESS_TOKEN, dto.accessToken)
+			add(JwtUtil.REFRESH_TOKEN, dto.refreshToken)
+		}
 	}
 
 	@Transactional("aaaTransactionManager")
@@ -215,7 +243,7 @@ class OvirtUserServiceImpl(
 		log.info("changePassword ... username: {}", username)
 		val user: OvirtUser = findOneAAA(username)
 
-		if (!authenticate(username, currentPassword))
+		if (authenticate(username, currentPassword).isEmpty())
 			throw ErrorPattern.OVIRTUSER_AUTH_INVALID.toException()
 
 		user.password = newPassword.hashPassword()

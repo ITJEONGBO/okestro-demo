@@ -2,10 +2,10 @@ package com.itinfo.itcloud.aaarepository.entity
 
 import com.itinfo.itcloud.model.auth.UserVo
 import com.itinfo.itcloud.gson
-import org.hibernate.annotations.Type
+import com.itinfo.itcloud.security.UserDetailsImpl
+import org.springframework.security.core.userdetails.UserDetails
 
 import java.io.Serializable
-import java.sql.Types
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
@@ -26,7 +26,7 @@ class OvirtUser(
 	@Column(name="id",updatable=false)
 	var id:	Int? = null,
 	@Column(unique = true, nullable = false, columnDefinition = "uuid")
-	var uuid: String? = null,
+	var uuid: String = "",
 	var name: String = "",
 	var password: String = "",
 	var passwordValidTo: LocalDateTime? = LocalDateTime.now().plusYears(10),
@@ -51,7 +51,7 @@ class OvirtUser(
 
 	class Builder {
 		private var bId: Int? = null;fun id(block: () -> Int?) { bId = block() }
-		private var bUuid: String? = null;fun uuid(block: () -> String?) { bUuid = block() }
+		private var bUuid: String = "";fun uuid(block: () -> String?) { bUuid = block() ?: "" }
 		private var bName: String = "";fun name(block: () -> String?) { bName = block() ?: "" }
 		private var bPassword: String = "";fun password(block: () -> String?) { bPassword = block() ?: "" }
 		private var bPasswordValidTo: LocalDateTime? = LocalDateTime.now().plusYears(10);fun passwordValidTo(block: () -> LocalDateTime?) { bPasswordValidTo = block() ?: LocalDateTime.now().plusYears(10) }
@@ -86,6 +86,11 @@ fun OvirtUser.toUserVo(userDetail: UserDetail?): UserVo = UserVo.builder {
 	administrative { userDetail?.lastAdminCheckStatus }
 	// principal { this@toUserVo.namespace }
 }
+
+fun OvirtUser.toUserDetails(): UserDetails = UserDetailsImpl().apply {
+	ovirtUser = this@toUserDetails
+}
+
 
 fun List<OvirtUser>.toUserVos(userDetails: List<UserDetail>): List<UserVo> {
 	val itemById: Map<String, UserDetail> =
