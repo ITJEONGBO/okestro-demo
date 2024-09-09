@@ -69,14 +69,16 @@
 }
 .aside_popup_content i:first-child,
 .aside_popup_second_content i:first-child,
-.aside_popup_third_content i:first-child
+.aside_popup_third_content i:first-child,
+.aside_popup_fourth_content i:first-child
  {
     font-size: 0.24rem;
     margin-right: 0.27rem;
 }
 .aside_popup_content>span,
 .aside_popup_second_content>span, 
-.aside_popup_third_content>span
+.aside_popup_third_content>span,
+.aside_popup_fourth_content >span
 {
     margin-left: 0.1rem;
 }
@@ -88,7 +90,7 @@
     padding-left: 0.7rem;
 }
 #aside_popup_last_machine,#aside_popup_last_storage {
-    padding-left: 1.4rem;
+    padding-left: 1.33rem;
 }
 #aside_popup_last_machine>div:hover,#aside_popup_last_storage>div:hover{
     background-color: #e6eefa;
@@ -503,5 +505,8 @@
     }
     .aside_popup_third_content{
         padding-left: 0.6rem;
+    }
+    .aside_popup_fourth_content{
+        padding-left: 0.8rem;
     }
     

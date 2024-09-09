@@ -288,7 +288,7 @@ const DataCenterDetail = () => {
       >
         <div className="datacenter_new_popup">
           <div className="network_popup_header">
-            <h1>새로운 데이터 센터</h1>
+            <h1 class="text-sm">새로운 데이터 센터</h1>
             <button onClick={() => handleCloseModal('edit')}><i className="fa fa-times"></i></button>
           </div>
 

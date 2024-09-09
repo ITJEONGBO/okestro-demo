@@ -110,6 +110,7 @@ const Network = ({ }) => {
     // 모달 관련 상태 및 함수
     const openPopup = (popupType) => {
         setActivePopup(popupType);
+        setSelectedTab('network_new_common_btn'); // 모달을 열 때마다 '일반' 탭을 기본으로 설정
     };
 
     const closePopup = () => {
@@ -122,8 +123,12 @@ const Network = ({ }) => {
 
 
     const sectionHeaderButtons = [
-
+        { id: 'new_btn', label: '새로 만들기', onClick: () => openPopup('newNetwork') }, 
+        { id: 'bring_btn', label: '가져오기', onClick: () => openPopup('getNetwork') },   
+        { id: 'edit_btn', label: '편집', onClick: () => openPopup('editNetwork') },       
+        { id: 'delete_btn', label: '삭제', onClick: () => toast('삭제 기능 준비 중...') }, 
     ];
+    
 
 
 
@@ -161,7 +166,7 @@ const Network = ({ }) => {
             >
                 <div className="network_new_popup">
                     <div className="network_popup_header">
-                        <h1>새 논리적 네트워크</h1>
+                        <h1 class="text-sm">새 논리적 네트워크</h1>
                         <button onClick={closePopup}><i className="fa fa-times"></i></button>
                     </div>
 

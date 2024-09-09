@@ -4,9 +4,9 @@
     font-weight: normal;
     font-style: normal;
 }
-/* @tailwind base;
+@tailwind base;
 @tailwind components;
-@tailwind utilities; */
+@tailwind utilities;
 /*aside(Mainouter.js) 옆에 클릭하면 파란밑줄*/
 
 #root,*{
@@ -117,6 +117,7 @@
     border-radius: 3px;
     cursor: pointer;
     font-size: 0.29rem;
+    border: 1px solid #a7a6a6;
 }
 
 .content_header_right {  
@@ -166,9 +167,7 @@
     font-weight: 600;
 }
 
-.edit_footer button:first-child {
-    margin-right: auto; /* 왼쪽 끝으로 이동 */
-}
+
 .edit_footer button:first-child,.edit_footer button:nth-child(3){
     background-color: rgb(218, 218, 218);
     border: 1px solid rgb(122, 122, 122);
@@ -190,7 +189,6 @@
     padding: 0.1rem 0.3rem;
 }
 .table_container_center,.table_container_right{
-   /* margin: 20px;*/
    width: 33%;
 }
 .table {
@@ -280,6 +278,144 @@
 .network_popup_header>button:hover{
     background-color: #DDDDDD;
 }
+
+.network_new_outer {
+    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+.network_new_popup {
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 87%;
+    width: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+
+.network_new_nav{
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid rgb(206, 206, 206);
+    height: 6%;
+}
+.network_new_nav>div{
+    font-weight: 800;
+    text-align: center;
+    font-size: 0.33rem;
+    width: 34%;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-right: 1px solid rgb(206, 206, 206);
+}
+.active-tab {
+    background: #e4e4e4;
+    color: #449bff;
+}
+
+.inactive-tab {
+    color: black;
+}
+.network_first_contents{
+    padding: 0.1rem 0;
+    border-bottom: 1px solid  rgb(206, 206, 206);;
+}
+.network_form_group,
+.network_checkbox_type1,
+.network_radio_group,
+.network_checkbox_type3
+{
+    display: flex;
+    justify-content: space-between;
+    padding: 1.2% 2%;
+}
+.network_form_group input,
+.network_form_group select,
+.network_checkbox_type1>input[type="text"],
+.network_checkbox_type3 input
+{
+    width: 47%;
+    height: 3.3vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+    outline: none;
+    border: 1px solid  rgb(206, 206, 206);
+}
+
+.network_second_contents>span{
+    padding: 1.2% 2% 0 2%;
+    font-weight: 800;
+}
+.network_second_contents{
+    padding: 0.1rem 0;
+}
+.network_second_contents input[type="checkbox"]{
+    margin-right: 0.2rem;
+}
+.network_checkbox_type2{
+    padding: 1.2% 2%;
+}
+.network_radio_group>div:nth-child(2){
+   width: 46%;
+}
+.network_checkbox_type3>div,.network_new_vnic_buttons{
+    display: flex;
+    width: 6%;
+}
+.network_checkbox_type3 button,#network_new_vnic_form button{
+    width: 50%;
+    font-size: 0.4rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.network_new_popup form{
+    height: 69vh;
+    overflow-y: auto; /* 세로 스크롤 추가 */
+    overflow-x: hidden; /* 가로 스크롤 숨김 */
+}
+#network_new_cluster_form{
+    padding: 1rem;
+}
+#network_new_cluster_form>span,#network_new_vnic_form>span{
+    font-size: 0.35rem;
+    font-weight: 600;
+}
+#network_new_cluster_form>div{
+    border: 1px solid rgb(209, 209, 209);
+    height: 47vh;
+}
+.network_new_cluster_table{ 
+    border-collapse: collapse;
+    width: 100%;
+    text-align: left;
+}
+.network_new_cluster_table thead{
+    background-color: #d1e2eb;
+    border-top: none;
+}
+
+.network_new_cluster_table th,.network_new_cluster_table td{
+    border: 1px solid rgb(209, 209, 209);
+    padding: 0.05rem;
+}
+#network_new_vnic_form{
+    padding: 0.5rem;
+}
+
+#network_new_vnic_form>div{
+    display: flex;
+    justify-content: space-between;
+}
+
 /* 중복끝 */
 
 .link-no-underline {
@@ -3016,142 +3152,6 @@ display: flex; /* Flexbox 설정 추가 */
 }
 /*네트워크(새로만들기)팝업*/
 
-.network_new_outer {
-    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
-.network_new_popup {
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 87%;
-    width: 48%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-}
-
-.network_new_nav{
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid rgb(206, 206, 206);
-    height: 6%;
-}
-.network_new_nav>div{
-    font-weight: 800;
-    text-align: center;
-    font-size: 0.33rem;
-    width: 34%;
-    cursor: pointer;
-    padding: 0.25rem;
-    border-right: 1px solid rgb(206, 206, 206);
-}
-.active-tab {
-    background: #e4e4e4;
-    color: #449bff;
-}
-
-.inactive-tab {
-    color: black;
-}
-.network_first_contents{
-    padding: 0.1rem 0;
-    border-bottom: 1px solid  rgb(206, 206, 206);;
-}
-.network_form_group,
-.network_checkbox_type1,
-.network_radio_group,
-.network_checkbox_type3
-{
-    display: flex;
-    justify-content: space-between;
-    padding: 1.2% 2%;
-}
-.network_form_group input,
-.network_form_group select,
-.network_checkbox_type1>input[type="text"],
-.network_checkbox_type3 input
-{
-    width: 47%;
-    height: 3.3vh;
-    padding: 0 3px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
-    outline: none;
-    border: 1px solid  rgb(206, 206, 206);
-}
-
-.network_second_contents>span{
-    padding: 1.2% 2% 0 2%;
-    font-weight: 800;
-}
-.network_second_contents{
-    padding: 0.1rem 0;
-}
-.network_second_contents input[type="checkbox"]{
-    margin-right: 0.2rem;
-}
-.network_checkbox_type2{
-    padding: 1.2% 2%;
-}
-.network_radio_group>div:nth-child(2){
-   width: 46%;
-}
-.network_checkbox_type3>div,.network_new_vnic_buttons{
-    display: flex;
-    width: 6%;
-}
-.network_checkbox_type3 button,#network_new_vnic_form button{
-    width: 50%;
-    font-size: 0.4rem;
-    font-weight: 600;
-    cursor: pointer;
-}
-.network_new_popup form{
-    height: 69vh;
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
-}
-#network_new_cluster_form{
-    padding: 1rem;
-}
-#network_new_cluster_form>span,#network_new_vnic_form>span{
-    font-size: 0.35rem;
-    font-weight: 600;
-}
-#network_new_cluster_form>div{
-    border: 1px solid rgb(209, 209, 209);
-    height: 47vh;
-}
-.network_new_cluster_table{ 
-    border-collapse: collapse;
-    width: 100%;
-    text-align: left;
-}
-.network_new_cluster_table thead{
-    background-color: #d1e2eb;
-    border-top: none;
-}
-
-.network_new_cluster_table th,.network_new_cluster_table td{
-    border: 1px solid rgb(209, 209, 209);
-    padding: 0.05rem;
-}
-#network_new_vnic_form{
-    padding: 0.5rem;
-}
-
-#network_new_vnic_form>div{
-    display: flex;
-    justify-content: space-between;
-}
 /*네트워크 */
 /*네트워크(가져오기)*/
 .network_bring_outer{

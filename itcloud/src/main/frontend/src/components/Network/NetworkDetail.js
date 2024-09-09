@@ -214,13 +214,26 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
 
   //headerbutton 컴포넌트
   const buttons = [
-    { id: 'edit_btn', label: '편집', onClick: () => console.log('Edit button clicked') },
-    { id: 'delete_btn', label: '삭제', onClick: () => console.log('Delete button clicked') },
+    { 
+      id: 'edit_btn', 
+      label: '편집', 
+      onClick: () => {
+        openPopup('edit_popup');
+        console.log('Edit button clicked');
+      }
+    },
+    { 
+      id: 'delete_btn', 
+      label: '삭제', 
+      onClick: () => console.log('Delete button clicked') 
+    },
   ];
-  const popupItems = ['Option 1', 'Option 2', 'Option 3'];
   
+
+
   // 모달 관련 상태 및 함수
   const [activePopup, setActivePopup] = useState(null);
+
 
   const openPopup = (popupType) => setActivePopup(popupType);
   const closePopup = () => setActivePopup(null);
@@ -241,7 +254,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         title="네트워크"
         subtitle={locationState?.name} // 여기서도 네트워크 이름을 표시
         buttons={buttons}
-        popupItems={popupItems}
+        popupItems={[]}
       />
 
       <div className="content_outer">
@@ -393,7 +406,106 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
 
         </div>
       </div>
+      
 
+      {/*header 편집버튼 팝업 */}
+      <Modal
+        isOpen={activePopup === 'edit_popup'}
+        onRequestClose={closePopup}
+        contentLabel="편집"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="vnic_new_content_popup">
+          <div className="network_popup_header">
+            <h1>가상 머신 인터페이스 프로파일</h1>
+            <button onClick={closePopup}><i className="fa fa-times"></i></button>
+          </div>
+          
+          <div className="vnic_new_content">
+            
+            <div className="vnic_new_contents" style={{ paddingTop: '0.4rem' }}>
+              
+              
+              <div className="vnic_new_box">
+                <label htmlFor="data_center">데이터 센터</label>
+                <select id="data_center" disabled>
+                  <option value="none">Default</option>
+                </select>
+              </div>
+              <div className="vnic_new_box">
+                <label htmlFor="network">네트워크</label>
+                <select id="network" disabled>
+                  <option value="none">ovirtmgmt</option>
+                </select>
+              </div>
+              <div className="vnic_new_box">
+                <span>이름</span>
+                <input type="text" id="name" disabled />
+              </div>
+              <div className="vnic_new_box">
+                <span>설명</span>
+                <input type="text" id="description" disabled />
+              </div>
+              <div className="vnic_new_box">
+                <label htmlFor="network_filter">네트워크 필터</label>
+                <select id="network_filter">
+                  <option value="linux">Linux</option>
+                </select>
+              </div>
+              <div className="vnic_new_checkbox">
+                <input type="checkbox" id="passthrough" />
+                <label htmlFor="passthrough">통과</label>
+              </div>
+              <div className="vnic_new_checkbox">
+                <input type="checkbox" id="migratable" disabled checked />
+                <label htmlFor="migratable">마이그레이션 가능</label>
+              </div>
+              <div className="vnic_new_box">
+                <label htmlFor="failover_vnic_profile">페일오버 vNIC 프로파일</label>
+                <select id="failover_vnic_profile">
+                  <option value="none">없음</option>
+                </select>
+              </div>
+              <div className="vnic_new_checkbox">
+                <input type="checkbox" id="port_mirroring" />
+                <label htmlFor="port_mirroring">포트 미러링</label>
+              </div>
+              
+              <div className="vnic_new_inputs">
+                <span>사용자 정의 속성</span>
+                <div className="vnic_new_buttons">
+                  <select id="custom_property_key">
+                    <option value="none">키를 선택하십시오</option>
+                  </select>
+                  <div>
+                    <div>+</div>
+                    <div>-</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="vnic_new_checkbox">
+                <input type="checkbox" id="allow_all_users" checked />
+                <label htmlFor="allow_all_users">모든 사용자가 이 프로파일을 사용하도록 허용</label>
+              </div>
+
+            </div>
+              
+            
+              
+            
+          </div>
+
+
+          <div className="edit_footer">
+            <button style={{ display: 'none' }}></button>
+            <button>OK</button>
+            <button onClick={closePopup}>취소</button>
+          </div>
+        </div>
+      </Modal>
       {/*vNIC 프로파일(새로만들기)팝업 */}
       <Modal
         isOpen={activePopup === 'vnic_new_popup'}

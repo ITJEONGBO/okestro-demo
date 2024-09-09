@@ -51,13 +51,12 @@ const DEFAULT_VALUES = {
     {
       status: '',
       name: 'Cluster1',
-      comment: '',
-      version: '4.6',
       description: 'This is the first cluster',
       cpuType: 'Intel Xeon',
       hostCount: 5,
       vmCount: 10,
-      upgradeStatus: 'Up to date',
+      comment: '',
+      version: '4.6',
     }
   ],
    //클러스터세부(일반)
@@ -252,10 +251,7 @@ const DEFAULT_VALUES = {
 //region: Host------호스트-----------
 FIND_ALL_HOSTS:[
   {
-    iconStatus: [
-      <i className="fa fa-exclamation-triangle" style={{ color: 'yellowgreen' }} key="icon1"></i>,
-      <i className="fa fa-exclamation-triangle" style={{ color: 'red' }} key="icon2"></i>,
-    ],
+    status: 'Up',
     iconWarning: <i className="fa fa-exclamation-triangle" style={{ color: 'red' }}></i>,
     iconSPM: <i className="fa fa-crown" style={{ color: 'gold' }}></i>,
     name: 'host01.ititnfo.com',
@@ -263,7 +259,6 @@ FIND_ALL_HOSTS:[
     address: 'host01.ititinfo.com',
     cluster: 'Default',
     dataCenter: 'Default',
-    status: 'Up',
     vmCount: 1,
     memoryUsage: <div style={{ width: '50px', background: 'orange', color: 'white', textAlign: 'center' }}>80%</div>,
     cpuUsage: <div style={{ width: '50px', background: '#6699ff', color: 'white', textAlign: 'center' }}>6%</div>,

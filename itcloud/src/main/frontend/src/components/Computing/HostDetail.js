@@ -106,19 +106,6 @@ function HostDetail() {
           inheritedFrom: '(시스템)',
         },
       ];
- 
-
-      //선호도 레이블
-      const memberData = [
-        {
-          name: '',
-          vmMember: '',
-          hostMember: '',
-          colSpan: 3,
-          style: { textAlign: 'center' },
-          noItemsText: '표시할 항목이 없습니다',
-        },
-      ];
 
       // 이벤트
       const eventData = [
@@ -156,7 +143,6 @@ function HostDetail() {
         { id: 'networkinterface', label: '네트워크 인터페이스' },
         { id: 'hostdevice', label: '호스트 장치' },
         { id: 'permission', label: '권한' },
-        { id: 'lable', label: '선호도 레이블' },
         { id: 'event', label: '이벤트' }
       ];
 
@@ -412,8 +398,12 @@ function HostDetail() {
                 <>
                     
                         <div className="content_header_right">
-                            <button>추가</button>
-                            <button>제거</button>
+                            <button>실행</button>
+                            <button>일시중지</button>
+                            <button>종료</button>
+                            <button>전원 끔</button>
+                            <button>콘솔</button>
+                            <button>마이그레이션</button>
                         </div>
                         <div className="host_filter_btns">
                             <span>가상 머신 필터:</span>
@@ -502,17 +492,11 @@ function HostDetail() {
                 {/* 호스트 장치 */}
                 {activeTab === 'hostdevice' && (
                 <>
-                   
-                        <div className="content_header_right">
-                            <button>편집</button>
-                            <button>유지보수</button>
-                            <button>활성</button>
-                            <button>기능을 새로 고침</button>
-                            <button>재시작</button>
-                        </div>
-                        <div className="section_table_outer">
-                          <Table columns={TableColumnsInfo.VOLUMES_FROM_HOST} data={volumeData} onRowClick={() => console.log('Row clicked')} />
-                        </div>
+                  <div className="host_empty_outer">
+                    <div className="section_table_outer">
+                      <Table columns={TableColumnsInfo.VOLUMES_FROM_HOST} data={volumeData} onRowClick={() => console.log('Row clicked')} />
+                    </div>
+                  </div>
                 </>
                 )}
                
@@ -548,24 +532,7 @@ function HostDetail() {
                 />
               </div>
             </>
-)}
-
-
-
-
-             
-                {/* 선호도 레이블 */}
-                {activeTab === 'lable' && (
-                    <>
-                      <div className="content_header_right">
-                          <button>새로 만들기</button>
-                          <button>편집</button>
-                      </div>
-                      <div className="section_table_outer">
-                        <Table columns={TableColumnsInfo.AFFINITY_LABELS} data={memberData} onRowClick={() => console.log('Row clicked')} />
-                      </div>        
-                </>
-                )}
+            )}
           
                 {/* 이벤트 */}
                 {activeTab === 'event' && (
@@ -573,9 +540,7 @@ function HostDetail() {
                    <div className="section_table_outer">
                         <Table columns={TableColumnsInfo.EVENTS} data={eventData} onRowClick={() => console.log('Row clicked')} />
                     </div>
-                    
                 </div>
-                
                 )}
 
                 

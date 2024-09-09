@@ -1,8 +1,27 @@
-#section,#storage_section,#network_section,#setting_section,#detail_section{
-    background-color: #ffffff;
-    border-radius: 5px;
-    width: 96%;
-    position: relative;
+.cluster_new_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 87%;
+    width: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 }
-
-
+.cluster_new_popup form{
+    height: 69vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-size: 0.33rem;
+}    
+.cluster_new_popup .network_new_nav>div{
+    font-weight: 800;
+    text-align: center;
+    font-size: 0.33rem;
+    width: 50%;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-right: 1px solid rgb(206, 206, 206);
+}

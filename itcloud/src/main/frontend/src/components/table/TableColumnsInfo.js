@@ -151,13 +151,12 @@ const TableColumnsInfo = {
   CLUSTERS_ALT: [
     { header: '상태', accessor: 'status', clickable: false },
     { header: '이름', accessor: 'name', clickable: true },
-    { header: '코멘트', accessor: 'comment', clickable: false },
-    { header: '호환 버전', accessor: 'version', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
     { header: '클러스터 CPU 유형', accessor: 'cpuType', clickable: false },
     { header: '호스트 수', accessor: 'hostCount', clickable: false },
     { header: '가상 머신 수', accessor: 'vmCount', clickable: false },
-    { header: '업그레이드 상태', accessor: 'upgradeStatus', clickable: false },
+    { header: '코멘트', accessor: 'comment', clickable: false },
+    { header: '호환 버전', accessor: 'version', clickable: false },
   ],
   CLUSTERS: [
     { header: '이름', accessor: 'name', clickable: false },
@@ -193,7 +192,7 @@ const TableColumnsInfo = {
     { header: '총 Tx', accessor: 'totalTx', clickable: false },
   ],
   HOSTS_ALT: [
-    { header: '', accessor: 'iconStatus', clickable: false },
+    { header: '상태', accessor: 'status', clickable: false },
     { header: '', accessor: 'iconWarning', clickable: false },
     { header: '', accessor: 'iconSPM', clickable: false },
     { header: '이름', accessor: 'name', clickable: true },
@@ -201,7 +200,6 @@ const TableColumnsInfo = {
     { header: '호스트 이름/IP', accessor: 'address', clickable: false },
     { header: '클러스터', accessor: 'cluster', clickable: true }, // 클러스터 컬럼에 clickable 추가
     { header: '데이터 센터', accessor: 'dataCenter', clickable: false },
-    { header: '상태', accessor: 'status', clickable: false },
     { header: '가상 머신', accessor: 'vmCount', clickable: false },
     { header: '메모리', accessor: 'memoryUsage', clickable: false },
     { header: 'CPU', accessor: 'cpuUsage', clickable: false },
