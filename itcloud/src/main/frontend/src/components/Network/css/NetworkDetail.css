@@ -142,4 +142,49 @@
 .network_popup_table>.vnic_new_checkbox{
    text-align: center;
 }
+/**호스트(호스트 네트워크 설정)*/
+.host_network_separation{
+    display:flex;
+    justify-content: space-between;
+    border:1px solid black;
+    height:40vh;
+}
+.network_separation_left{
+    background:red;
+    width:65%
+   
+}
+.network_separation_left>div:first-child{
+    background:yellow;
+    display:flex;
+    justify-content: space-between;
+    height:13%;
+}
+.network_separation_left>div:first-child>div{
+    width:50%;
+    text-align:center;
+    padding:0.2rem;
+}
+.separation_left_content{
+    border:1px solid black;
+    display:flex;
+    justify-content: space-between;
+}
+.container{
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    padding: 5px;
+    background-color: white;
+   
+}
+.left-section {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
 
+.right-section {
+    display: flex;
+    gap: 5px;
+}

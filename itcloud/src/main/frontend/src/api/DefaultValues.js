@@ -40,8 +40,6 @@ const DEFAULT_VALUES = {
    FIND_ALL_DATA_CENTERS: [
         {
             iconStatus: <FontAwesomeIcon icon="fa-solid fa-exclamation-triangle" style={{ color: 'yellowgreen' } }fixedWidth/>, // TODO: raw 값만 부여하도록 구현
-            name: '샘플값입니다',
-            comment: '(샘플값입니다.)',
             name: 'DataCenter1',
             comment: '',
             storageType: '공유됨',

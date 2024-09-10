@@ -11,7 +11,8 @@ import Permission from '../Modal/Permission';
 import { useClusterById, useEventFromCluster, useHostFromCluster, useLogicalFromCluster, usePermissionFromCluster, usePermissionromCluster, useVMFromCluster } from '../../api/RQHook';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faCrown, faUser, faBan
+  faCrown, faUser, faBan,
+  faTimes
 } from '@fortawesome/free-solid-svg-icons'
 import './css/ClusterName.css';
 
@@ -432,7 +433,7 @@ function ClusterName() {
                 <div className="network_new_popup">
                     <div className="network_popup_header">
                         <h1 class="text-sm">새 논리적 네트워크</h1>
-                        <button onClick={closePopup}><i className="fa fa-times"></i></button>
+                        <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                     </div>
 
                     <div className="network_new_nav">

@@ -472,7 +472,7 @@ const MainOuter = ({ children }) => {
                 />
 
             <FontAwesomeIcon icon={faBuilding} fixedWidth/>
-            <span>클러스터</span>
+            <span>Cluster</span>
         </div>
     )}  
 
@@ -499,7 +499,7 @@ const MainOuter = ({ children }) => {
 />
 
         <FontAwesomeIcon icon={faBuilding} fixedWidth/>
-        <span>호스트</span>
+        <span>Host</span>
     </div>
     )}
 
@@ -587,7 +587,7 @@ const MainOuter = ({ children }) => {
 />
 
             <FontAwesomeIcon icon={faBuilding} fixedWidth/>
-            <span>도메인</span>
+            <span>Domain</span>
         </div>
     )}
     {isLastVisibleStorage && (

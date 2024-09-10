@@ -17,7 +17,7 @@ const Permission = ({ isOpen, onRequestClose }) => {
       shouldCloseOnOverlayClick={false}
     >
       <div className="network_popup_header">
-        <h1>사용자에게 권한 추가</h1>
+        <h1 className='text-sm'>사용자에게 권한 추가</h1>
         <button onClick={onRequestClose}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
       </div>
 

@@ -152,7 +152,8 @@ const TableColumnsInfo = {
     { header: '통과', accessor: 'passthrough', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],
-  CLUSTERS_ALT: [
+
+  CLUSTERS_ALT : [
     { header: '상태', accessor: 'status', clickable: false },
     { header: '이름', accessor: 'name', clickable: true },
     { header: '설명', accessor: 'description', clickable: false },
@@ -162,6 +163,7 @@ const TableColumnsInfo = {
     { header: '코멘트', accessor: 'comment', clickable: false },
     { header: '호환 버전', accessor: 'version', clickable: false },
   ],
+
   CLUSTERS: [
     { header: '이름', accessor: 'name', clickable: false },
     { header: '호환 버전', accessor: 'version', clickable: false },

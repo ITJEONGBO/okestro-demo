@@ -20,7 +20,15 @@ import {
 } from '../../api/RQHook';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faChevronLeft, faUser, faTimes
+  faChevronLeft, faUser, faTimes,
+  faCircle,
+  faDesktop,
+  faArrowsAltH,
+  faCheck,
+  faFan,
+  faBan,
+  faExclamationTriangle,
+  faPencilAlt
 } from '@fortawesome/free-solid-svg-icons'
 
 const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) => {
@@ -423,8 +431,8 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
       >
         <div className="vnic_new_content_popup">
           <div className="network_popup_header">
-            <h1>가상 머신 인터페이스 프로파일</h1>
-            <button onClick={closePopup}><i className="fa fa-times"></i></button>
+            <h1 className='text-sm'>가상 머신 인터페이스 프로파일</h1>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
           
           <div className="vnic_new_content">
@@ -743,17 +751,55 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
       >
         <div className="vnic_new_content_popup">
           <div className="network_popup_header">
-            <h1>호스트 host01.ititinfo.com 네트워크 설정</h1>
+            <h1 className='text-sm '>호스트 host01.ititinfo.com 네트워크 설정</h1>
             <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
           
-          <div className="host_network_contents_outer">
-            <div className="host_network_top">
-              dd
-            </div>
-            <div className="host_network_bottom">
+          <div className="host_network_outer px-1.5 text-sm">
+            <div className="text-blue-500 py-2 font-bold">드래그 하여 변경</div>
 
+            <div className="host_network_separation">
+              <div className="network_separation_left">
+                <div>
+                  <div>인터페이스</div>
+                  <div>할당된 논리 네트워크</div>
+                </div>
+
+                <div className="separation_left_content">
+                  <div className="container gap-1">
+                    <FontAwesomeIcon icon={faCircle} style={{ fontSize: '0.1rem' }} />
+                    <FontAwesomeIcon icon={faDesktop} /> 
+                    <span>ens192</span>
+                  </div>
+                  <div>
+                    <FontAwesomeIcon icon={faArrowsAltH} style={{color: 'grey',width:'5vw',fontSize:'1rem' }} />
+                  </div>
+
+                  <div className="container">
+                    <div className="left-section">
+                      <FontAwesomeIcon icon={faCheck} className="icon green-icon" />
+                      <span className="text">ovirtmgmt</span>
+                    </div>
+                    <div className="right-section">
+                      <FontAwesomeIcon icon={faFan} className="icon" />
+                      <FontAwesomeIcon icon={faDesktop} className="icon" />
+                      <FontAwesomeIcon icon={faDesktop} className="icon" />
+                      <FontAwesomeIcon icon={faBan} className="icon" />
+                      <FontAwesomeIcon icon={faExclamationTriangle} className="icon" />
+                      <FontAwesomeIcon icon={faPencilAlt} className="icon" />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+
+            <div className="network_separation_right border-t-[1px] border-gray-500 mt-4">
+                <div>
+                  ff
+                </div>
+              </div>
+
+
           </div>
           
 

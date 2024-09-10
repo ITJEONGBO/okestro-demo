@@ -1,4 +1,8 @@
+import React, { useState } from 'react';
+
 const Table = ({ columns, data, onRowClick, shouldHighlight1stCol=false }) => {
+  const [selectedRowIndex, setSelectedRowIndex] = useState(null); // 선택된 행의 인덱스를 관리
+
   return (
     <table className="custom-table">
       <thead>
@@ -10,14 +14,20 @@ const Table = ({ columns, data, onRowClick, shouldHighlight1stCol=false }) => {
       </thead>
       <tbody>
         {data && data.map((row, rowIndex) => (
-          <tr key={rowIndex}>
+          <tr
+            key={rowIndex}
+            onClick={() => setSelectedRowIndex(rowIndex)} // 클릭한 행의 인덱스를 상태에 저장
+            style={{
+              backgroundColor: selectedRowIndex === rowIndex ? 'lightblue' : 'transparent', // 선택된 행의 배경색을 변경
+            }}
+          >
             {columns.map((column, colIndex) => (
               <td
                 key={colIndex}
                 onClick={() => onRowClick(row, column)}
               >
                 {
-                  (colIndex == 0 && shouldHighlight1stCol) ? 
+                  (colIndex === 0 && shouldHighlight1stCol) ? 
                   <span
                       style={{ color: 'blue', cursor: 'pointer'}}
                       onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
@@ -36,4 +46,4 @@ const Table = ({ columns, data, onRowClick, shouldHighlight1stCol=false }) => {
   );
 };
 
-export default Table
+export default Table;
