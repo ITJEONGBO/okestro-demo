@@ -75,8 +75,8 @@ const Cluster = () => {
       name: e?.name ?? '',
       version: e?.version ?? '0.0',
       cpuType: e?.cpuType ?? 'CPU 정보 없음',
-      hostCount: e?.hostSizeVo?.allCnt ?? 0,
-      vmCount: e?.vmSizeVo?.allCnt ?? 0,
+      hostCount: e?.hostCnt ?? 0,
+      vmCount: e?.vmCnt ?? 0,
       comment: e?.comment ?? '',
       description: e?.description ?? '설명없음',
     }

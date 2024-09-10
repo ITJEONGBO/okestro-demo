@@ -224,8 +224,7 @@ class ClusterServiceImpl(
 			conn.findAllClusters()
 				.getOrDefault(listOf())
 				.filter { /*it.dataCenterPresent() && */ it.cpuPresent() }
-		return res.toClusterVos(conn)
-//		return res.toClusterVoInfos()
+		return res.toClusterMenus(conn)
 	}
 
 	@Throws(Error::class)

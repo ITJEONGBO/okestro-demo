@@ -94,6 +94,8 @@ class ClusterVo(
     val networkVos: List<IdentifiedVo> = listOf(), // 관리네트워크가 핵심, 다른 네트워크 존재가능
     val templateVos: List<IdentifiedVo> = listOf(),
 	val networkPropertyVo: NetworkPropertyVo = NetworkPropertyVo(),
+	val hostCnt: Int = 0,
+	val vmCnt: Int = 0,
 
 ): Serializable {
 	override fun toString(): String =
@@ -133,8 +135,10 @@ class ClusterVo(
 		private var bNetworkVos: List<IdentifiedVo> = listOf();fun networkVos(block: () -> List<IdentifiedVo>?) { bNetworkVos = block() ?: listOf() }
 		private var bTemplateVos: List<IdentifiedVo> = listOf();fun templateVos(block: () -> List<IdentifiedVo>?) { bTemplateVos = block() ?: listOf() }
 		private var bNetworkPropertyVo: NetworkPropertyVo = NetworkPropertyVo();fun networkPropertyVo(block: () -> NetworkPropertyVo?) { bNetworkPropertyVo = block() ?: NetworkPropertyVo() }
+		private var bHostCnt: Int = 0; fun hostCnt(block: () -> Int?) { bHostCnt = block() ?: 0 }
+		private var bVmCnt: Int = 0; fun vmCnt(block: () -> Int?) { bVmCnt = block() ?: 0 }
 
-		fun build(): ClusterVo = ClusterVo(bId, bName, bDescription, bComment, bIsConnected, bBallooningEnabled, bBiosType, bCpuArc, bCpuType, bErrorHandling, bFipsMode, bFirewallType, bGlusterService, bHaReservation, bLogMaxMemory, bLogMaxMemoryType, bMemoryOverCommit, bMigrationPolicy, bBandwidth, bEncrypted, bSwitchType, bThreadsAsCores, bVersion, bVirtService, bNetworkProvider, bDataCenterVo, bNetworkVo, bHostSizeVo, bVmSizeVo, bHostVos, bNetworkVos, bTemplateVos, bNetworkPropertyVo)
+		fun build(): ClusterVo = ClusterVo(bId, bName, bDescription, bComment, bIsConnected, bBallooningEnabled, bBiosType, bCpuArc, bCpuType, bErrorHandling, bFipsMode, bFirewallType, bGlusterService, bHaReservation, bLogMaxMemory, bLogMaxMemoryType, bMemoryOverCommit, bMigrationPolicy, bBandwidth, bEncrypted, bSwitchType, bThreadsAsCores, bVersion, bVirtService, bNetworkProvider, bDataCenterVo, bNetworkVo, bHostSizeVo, bVmSizeVo, bHostVos, bNetworkVos, bTemplateVos, bNetworkPropertyVo, bHostCnt, bVmCnt)
 	}
 
 	companion object {
@@ -149,6 +153,29 @@ fun Cluster.toClusterIdName(): ClusterVo = ClusterVo.builder {
 
 fun List<Cluster>.toClusterIdNames(): List<ClusterVo> =
 	this@toClusterIdNames.map { it.toClusterIdName() }
+
+fun Cluster.toClusterMenu(conn: Connection): ClusterVo {
+	val hostCnt: Int = conn.findAllHosts()
+		.getOrDefault(listOf())
+		.count { it.cluster().id().equals(this@toClusterMenu.id()) }
+	val vmCnt: Int = conn.findAllVms()
+		.getOrDefault(listOf())
+		.count { it.cluster().id().equals(this@toClusterMenu.id()) }
+
+	return ClusterVo.builder {
+		id { this@toClusterMenu.id() }
+		name { this@toClusterMenu.name() }
+		comment { this@toClusterMenu.comment() }
+		version { this@toClusterMenu.version().major().toString() + "." + this@toClusterMenu.version().minor() }
+		description { this@toClusterMenu.description() }
+		cpuType { this@toClusterMenu.cpu().type().toString() }
+		hostCnt { hostCnt }
+		vmCnt { vmCnt }
+	}
+}
+
+fun List<Cluster>.toClusterMenus(conn: Connection): List<ClusterVo> =
+	this@toClusterMenus.map { it.toClusterMenu(conn) }
 
 
 fun Cluster.toClusterVo(conn: Connection): ClusterVo {

@@ -94,7 +94,7 @@ class DataCenterServiceImpl(
 		val dataCenters: List<DataCenter> =
 			conn.findAllDataCenters()
 				.getOrDefault(listOf())
-		return dataCenters.toDataCenterVos(conn) // java.lang.StackOverflowError
+		return dataCenters.toDataCentersMenu(conn)
 	}
 
 	@Throws(Error::class)

@@ -55,12 +55,12 @@ const Computing = () => {
     } = useAllDataCenters((e) => {
         //DATACENTERS
         return {
-          iconStatus: e?.iconStatus ?? '',
+          iconStatus: e?.status ?? '',
           name: e?.name ?? '',
           comment: e?.comment ?? '',
-          storageType: e?.storageType ?? '',
+          storageType: e?.storageType ? '로컬' : '공유됨',
           status: e?.status ?? '정보 없음',
-          compatVersion: e?.version ?? '0.0',
+          compatVersion: e?.version ?? '4.7',
           description: e?.description ?? '설명없음',
         }
     });

@@ -44,7 +44,9 @@ class DataCenterVo (
 	val version: String = "",
 	val clusterVos: List<IdentifiedVo> = listOf(),
 	val networkVos: List<IdentifiedVo> = listOf(),
-	val storageDomainVos: List<IdentifiedVo> = listOf()
+	val storageDomainVos: List<IdentifiedVo> = listOf(),
+	val clusterCnt: Int = 0,
+	val hostCnt: Int = 0,
 
 ): Serializable {
 	override fun toString(): String =
@@ -62,11 +64,13 @@ class DataCenterVo (
 		private var bClusterVos: List<IdentifiedVo> = listOf();fun clusterVos(block: () -> List<IdentifiedVo>?) { bClusterVos = block() ?: listOf() }
 		private var bNetworkVos: List<IdentifiedVo> = listOf();fun networkVos(block: () -> List<IdentifiedVo>?) { bNetworkVos = block() ?: listOf() }
 		private var bStorageDomainVos: List<IdentifiedVo> = listOf();fun storageDomainVos(block: () -> List<IdentifiedVo>?) { bStorageDomainVos = block() ?: listOf() }
+		private var bClusterCnt: Int = 0; fun clusterCnt(block: () -> Int?) { bClusterCnt = block() ?: 0 }
+		private var bHostCnt: Int = 0; fun hostCnt(block: () -> Int?) { bHostCnt = block() ?: 0 }
 //		private var bClusterVos: List<ClusterVo> = listOf();fun clusterVos(block: () -> List<ClusterVo>?) { bClusterVos = block() ?: listOf() }
 //		private var bNetworkVos: List<NetworkVo> = listOf();fun networkVos(block: () -> List<NetworkVo>?) { bNetworkVos = block() ?: listOf() }
 //		private var bStorageDomainVos: List<StorageDomainVo> = listOf();fun storageDomainVos(block: () -> List<StorageDomainVo>?) { bStorageDomainVos = block() ?: listOf() }
 
-		fun build(): DataCenterVo = DataCenterVo(bId, bName, bComment, bDescription, bStorageType, bQuotaMode, bStatus, bVersion, bClusterVos, bNetworkVos, bStorageDomainVos)
+		fun build(): DataCenterVo = DataCenterVo(bId, bName, bComment, bDescription, bStorageType, bQuotaMode, bStatus, bVersion, bClusterVos, bNetworkVos, bStorageDomainVos, bClusterCnt, bHostCnt)
 	}
 
 	companion object {
@@ -81,6 +85,24 @@ fun DataCenter.toDataCenterIdName(): DataCenterVo = DataCenterVo.builder {
 
 fun List<DataCenter>.toDataCenterIdNames(): List<DataCenterVo> =
 	this@toDataCenterIdNames.map { it.toDataCenterIdName() }
+
+fun DataCenter.toDataCenterMenu(conn: Connection): DataCenterVo {
+	val clusters: Int =
+		conn.findAllClusters().getOrDefault(listOf())
+			.count { it.dataCenterPresent() && it.dataCenter().id() == this@toDataCenterMenu.id() }
+
+	return DataCenterVo.builder {
+		id { this@toDataCenterMenu.id() }
+		name { this@toDataCenterMenu.name() }
+		comment { this@toDataCenterMenu.comment() }
+		status { this@toDataCenterMenu.status() }
+		version { this@toDataCenterMenu.version().major().toString() + "." + this@toDataCenterMenu.version().minor() }
+		storageType { this@toDataCenterMenu.local() }
+		clusterCnt { clusters }
+	}
+}
+fun List<DataCenter>.toDataCentersMenu(conn: Connection): List<DataCenterVo> =
+	this@toDataCentersMenu.map { it.toDataCenterMenu(conn) }
 
 fun DataCenter.toDataCenterVo(
 	conn: Connection?,
