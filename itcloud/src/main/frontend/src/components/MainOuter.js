@@ -7,7 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
     faThLarge, faDesktop, faServer, faDatabase, faCog
     , faBuilding, faUser, faMicrochip, faChevronLeft, faChevronRight
-    , faTimes, faEllipsisV, faHeart, faInfoCircle
+    , faTimes, faEllipsisV, faHeart, faInfoCircle,
+    faChevronDown
 } from '@fortawesome/free-solid-svg-icons'
 
 const MainOuter = ({ children }) => {
@@ -30,7 +31,7 @@ const MainOuter = ({ children }) => {
 
   const [isSecondVisibleStorage, setIsSecondVisibleStorage] = useState(false);
   const [isLastVisibleStorage, setIsLastVisibleStorage] = useState(false);
-  const [isSecondVisibleNetwork, setIsSecondVisibleNetwork] = useState(true);
+  const [isSecondVisibleNetwork, setIsSecondVisibleNetwork] = useState(false);
   const [isSecondVisible, setIsSecondVisible] = useState(false);
   const [isThirdVisible, setIsThirdVisible] = useState(false);
   const [isFourthVisible, setIsFourthVisible] = useState(false);
@@ -403,8 +404,10 @@ const MainOuter = ({ children }) => {
             }
         }}
     >
-        <i 
-            className={`fa fa-chevron-${isSecondVisible ? 'down' : 'right'}`} 
+        
+        <FontAwesomeIcon 
+         style={{ fontSize:'0.3rem' , marginRight: '0.04rem' }} 
+            icon={isSecondVisible ? faChevronDown : faChevronRight} 
             onClick={(e) => {
                 e.stopPropagation();
                 setIsSecondVisible(!isSecondVisible);
@@ -412,7 +415,8 @@ const MainOuter = ({ children }) => {
                 setIsFourthVisible(false); // 하위 항목들 모두 접기
                 setIsLastVisible(false);  // 하위 항목들 모두 접기
             }}
-        fixedWidth/>
+            fixedWidth
+        />
         <FontAwesomeIcon icon={faBuilding} fixedWidth/>
         <span>Rutil manager</span>
     </div>
@@ -428,39 +432,45 @@ const MainOuter = ({ children }) => {
                 }
             }}
         >
-            <i
-                className={`fa fa-chevron-${isThirdVisible ? 'down' : 'right'}`}
+                <FontAwesomeIcon
+                 style={{ fontSize:'0.3rem' , marginRight: '0.04rem' }} 
+                icon={isThirdVisible ? faChevronDown : faChevronRight}  // 상태에 따라 아이콘 변경
                 onClick={(e) => {
                     e.stopPropagation();
                     setIsThirdVisible(!isThirdVisible);
                     setIsFourthVisible(false);  // 하위 항목들 모두 접기
-                    setIsLastVisible(false);  // 하위 항목들 모두 접기
-                    
+                    setIsLastVisible(false);    // 하위 항목들 모두 접기
                 }}
-            fixedWidth/>
-            <FontAwesomeIcon icon={faBuilding} fixedWidth/>
-            <span>data_center</span>
-        </div>
-    )}
-    {isThirdVisible && (
-        <div 
-            className="aside_popup_third_content" 
-            id="aside_popup_third" 
-            style={{ backgroundColor: location.pathname === '/computing/host' ? 'rgb(218, 236, 245)' : '' }} 
-            onClick={() => {
-                if (selectedDiv !== 'host') {
-                    setSelectedDiv('host');
-                    navigate('/computing/host');
-                }
-            }}
-        >
-            <i className={`fa fa-chevron-${isFourthVisible ? 'down' : 'right'}`} 
-                onClick={(e) => {
-                    e.stopPropagation();
-                    setIsFourthVisible(!isFourthVisible);
-                    setIsLastVisible(false);  // 하위 항목들 모두 접기
-                }}
-            fixedWidth/>
+                fixedWidth
+                />
+
+                <FontAwesomeIcon icon={faBuilding} fixedWidth/>
+                <span>data_center</span>
+            </div>
+            )}
+            {isThirdVisible && (
+                <div 
+                    className="aside_popup_third_content" 
+                    id="aside_popup_third" 
+                    style={{ backgroundColor: location.pathname === '/computing/host' ? 'rgb(218, 236, 245)' : '' }} 
+                    onClick={() => {
+                        if (selectedDiv !== 'host') {
+                            setSelectedDiv('host');
+                            navigate('/computing/host');
+                        }
+                    }}
+                >
+            <FontAwesomeIcon
+             style={{ fontSize:'0.3rem' , marginRight: '0.04rem' }} 
+                    icon={isFourthVisible ? faChevronDown : faChevronRight}  // 상태에 따라 아이콘 변경
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setIsFourthVisible(!isFourthVisible);
+                        setIsLastVisible(false);  // 하위 항목들 모두 접기
+                    }}
+                    fixedWidth
+                />
+
             <FontAwesomeIcon icon={faBuilding} fixedWidth/>
             <span>클러스터</span>
         </div>
@@ -478,12 +488,16 @@ const MainOuter = ({ children }) => {
             }
         }}
     >
-        <i className={`fa fa-chevron-${isLastVisible ? 'down' : 'right'}`} 
-            onClick={(e) => {
-                e.stopPropagation();
-                setIsLastVisible(!isLastVisible);
-            }}
-        fixedWidth/>
+        <FontAwesomeIcon
+         style={{ fontSize:'0.3rem' , marginRight: '0.04rem' }} 
+    icon={isLastVisible ? faChevronDown : faChevronRight}  // 상태에 따라 아이콘 변경
+    onClick={(e) => {
+        e.stopPropagation();
+        setIsLastVisible(!isLastVisible);
+    }}
+    fixedWidth
+/>
+
         <FontAwesomeIcon icon={faBuilding} fixedWidth/>
         <span>호스트</span>
     </div>
@@ -528,24 +542,27 @@ const MainOuter = ({ children }) => {
 
                 {/*스토리지 */} 
                 {selected === 'storage' && (
-<div id="storage_chart">
-    <div
-        className="aside_popup_content"
-        id="aside_popup_first2"
-        style={{ backgroundColor: selectedDiv === 'data_center' ? 'rgb(218, 236, 245)' : '' }}
-        onClick={() => {
-            setSelectedDiv('data_center');
-            navigate('/storage');
-        }}
-    >
-        <i
-            className={`fa fa-chevron-${isSecondVisibleStorage ? 'down' : 'right'}`}
-            onClick={(e) => {
-                e.stopPropagation();
-                setIsSecondVisibleStorage(!isSecondVisibleStorage);
-                setIsLastVisibleStorage(false); // 하위 항목들 모두 접기
-            }}
-        fixedWidth/>
+                <div id="storage_chart">
+                    <div
+                        className="aside_popup_content"
+                        id="aside_popup_first2"
+                        style={{ backgroundColor: selectedDiv === 'data_center' ? 'rgb(218, 236, 245)' : '' }}
+                        onClick={() => {
+                            setSelectedDiv('data_center');
+                            navigate('/storage');
+                        }}
+                    >
+                <FontAwesomeIcon
+                 style={{ fontSize:'0.3rem' , marginRight: '0.04rem' }} 
+                    icon={isSecondVisibleStorage ? faChevronDown : faChevronRight}  // 상태에 따라 아이콘 변경
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setIsSecondVisibleStorage(!isSecondVisibleStorage);
+                        setIsLastVisibleStorage(false); // 하위 항목들 모두 접기
+                    }}
+                    fixedWidth
+                />
+
         <FontAwesomeIcon icon={faBuilding} fixedWidth/>
         <span>data_center</span>
     </div>
@@ -559,13 +576,16 @@ const MainOuter = ({ children }) => {
                 navigate('/storage-domainpart');
             }}
         >
-            <i
-                className={`fa fa-chevron-${isLastVisibleStorage ? 'down' : 'right'}`}
-                onClick={(e) => {
-                    e.stopPropagation();
-                    setIsLastVisibleStorage(!isLastVisibleStorage);
-                }}
-            fixedWidth/>
+            <FontAwesomeIcon
+             style={{ fontSize:'0.3rem' , marginRight: '0.04rem' }} 
+    icon={isLastVisibleStorage ? faChevronDown : faChevronRight}  // 상태에 따라 아이콘 변경
+    onClick={(e) => {
+        e.stopPropagation();
+        setIsLastVisibleStorage(!isLastVisibleStorage);
+    }}
+    fixedWidth
+/>
+
             <FontAwesomeIcon icon={faBuilding} fixedWidth/>
             <span>도메인</span>
         </div>
@@ -621,12 +641,16 @@ const MainOuter = ({ children }) => {
                           navNetworksRefetch()
                         }}
                       >
-                        <i className={`fa fa-chevron-${isSecondVisibleNetwork ? 'down' : 'right'}`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setIsSecondVisibleNetwork(!isSecondVisibleNetwork);
-                          }}>
-                        </i>
+                        <FontAwesomeIcon
+                         style={{ fontSize:'0.3rem' , marginRight: '0.04rem' }} 
+    icon={isSecondVisibleNetwork ? faChevronDown : faChevronRight}  // 상태에 따라 아이콘 변경
+    onClick={(e) => {
+        e.stopPropagation();
+        setIsSecondVisibleNetwork(!isSecondVisibleNetwork);
+    }}
+    fixedWidth
+/>
+
                         <FontAwesomeIcon icon={faBuilding} fixedWidth />
                         <span>Default</span>
                     </div>
