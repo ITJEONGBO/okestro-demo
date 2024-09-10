@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import Login from './page/Login';
 import Dashboard from './components/Dashboard';
 import Header from './components/Header/Header';
 import Computing from './components/Computing/Computing';
@@ -24,7 +25,6 @@ import STOMP from './Socket'
 import { Toaster, toast } from 'react-hot-toast';
 
 function App() {
-
   const [stompClient, setStompClient] = useState(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
@@ -71,31 +71,49 @@ function App() {
   };
 
   const queryClient = new QueryClient()
+  
+  const isAuthenticated = () => {
+    // Implement your authentication logic here
+    return localStorage.getItem('token') !== null; // Example: check if a token exists
+  };
+  const [authenticated, setAuthenticated] = useState(true);
+  useEffect(() => {
+    setAuthenticated(isAuthenticated());
+  }, []);
+  const [usernameGlobal, setUsernameGlobal] = useState(null); // 로그인이 끝났을 때 값을 부여할 예정
 
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        <Header />
-        <MainOuter>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/computing/datacenter" element={<Computing />} />
-            <Route path="/computing/datacenter/:name" element={<DataCenterDetail />} />
-            <Route path="/storage" element={<Storage />} />
-            <Route path="/setting" element={<Setting />} />
-            <Route path="/computing/:name" element={<Vm />} />
-            <Route path="/computing/host" element={<Host />} />
-            <Route path="/computing/vmhost-chart" element={<VmHostChart />} />
-            <Route path="/computing/host/:id" element={<HostDetail />}/>
-            <Route path="/computing/clusters" element={<Cluster />} />
-            <Route path="/computing/clusters/:id" element={<ClusterName />} /> 
-            <Route path="/networks" element={<Network />} />
-            <Route path="/networks/:id" element={<NetworkDetail />} /> 
-            <Route path="/storage-domain/:name" element={<StorageDomainDetail />} />
-            <Route path="/storage-domainpart" element={<DomainParts />} />
-            <Route path="/storage-disk/:name" element={<StorageDiskDetail />} />
-          </Routes>
-        </MainOuter>
+        {authenticated ? (
+          <>
+          <Header setAuthenticated={setAuthenticated} usernameGlobal={usernameGlobal} />
+          <MainOuter>
+            <Routes>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/computing/datacenter" element={<Computing />} />
+              <Route path="/computing/datacenter/:name" element={<DataCenterDetail />} />
+              <Route path="/storage" element={<Storage />} />
+              <Route path="/setting" element={<Setting />} />
+              <Route path="/computing/:name" element={<Vm />} />
+              <Route path="/computing/host" element={<Host />} />
+              <Route path="/computing/vmhost-chart" element={<VmHostChart />} />
+              <Route path="/computing/host/:id" element={<HostDetail />}/>
+              <Route path="/computing/clusters" element={<Cluster />} />
+              <Route path="/computing/clusters/:id" element={<ClusterName />} /> 
+              <Route path="/networks" element={<Network />} />
+              <Route path="/networks/:id" element={<NetworkDetail />} /> 
+              <Route path="/storage-domain/:name" element={<StorageDomainDetail />} />
+              <Route path="/storage-domainpart" element={<DomainParts />} />
+              <Route path="/storage-disk/:name" element={<StorageDiskDetail />} />
+            </Routes>
+          </MainOuter>
+          </>
+          ) :
+          (<Routes>
+            <Route path="/" element={<Login setAuthenticated={setAuthenticated} setUsernameGlobal={setUsernameGlobal} />} />
+          </Routes>)
+        }
       </Router>
       <Toaster 
         position="top-center"

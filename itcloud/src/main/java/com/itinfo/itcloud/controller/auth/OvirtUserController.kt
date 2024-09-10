@@ -57,6 +57,7 @@ class OvirtUserController: BaseController() {
 		return ResponseEntity.ok(res)
 	}
 
+
 	@GetMapping("/{username}")
 	fun findOne(
 		@PathVariable username: String = "",
@@ -66,6 +67,7 @@ class OvirtUserController: BaseController() {
 		val res: UserVo? = ovirtUser.findFullDetailByName(username)
 		return ResponseEntity.ok(res)
 	}
+
 
 	@ApiOperation(
 		httpMethod="POST",
@@ -93,14 +95,14 @@ class OvirtUserController: BaseController() {
 	}
 	data class PasswordPrompt(val password: String = "")
 
+
 	@ApiOperation(
 		httpMethod="POST",
-		value="계정생성 (테스트용)",
+		value="계정생성",
 		notes="사용자의 계정정보를 생성한다."
 	)
 	@ApiImplicitParams(
-		ApiImplicitParam(name="username", value="ovirt 사용자 ID", dataTypeClass=String::class, required=true, paramType="query"),
-		ApiImplicitParam(name="password", value="ovirt 사용자 비밀번호", dataTypeClass=String::class, required=true, paramType="query"),
+		ApiImplicitParam(name="userCreatePrompt", value="ovirt 사용자 정보", dataTypeClass=UserCreatePrompt::class, required=true, paramType="body"),
 	)
 	@ApiResponses(
 		ApiResponse(code = 200, message = "성공"),
@@ -109,15 +111,17 @@ class OvirtUserController: BaseController() {
 	)
 	@PostMapping
 	fun add(
-		@RequestParam(required=true) username: String = "",
-		@RequestParam(required=true) password: String? = null,
+		@RequestBody(required=true) userCreatePrompt: UserCreatePrompt,
 	):  ResponseEntity<UserVo?> {
-		log.info("add ... username: {}", username)
-		if (username.isEmpty())					throw ErrorPattern.OVIRTUSER_REQUIRED_VALUE_EMPTY.toException()
-		if (password.isNullOrEmpty())	        throw ErrorPattern.OVIRTUSER_REQUIRED_VALUE_EMPTY.toException()
-		val res: UserVo? = ovirtUser.add(username, password)
+		log.info("add ... username: {}", userCreatePrompt.username)
+		if (userCreatePrompt.username.isEmpty())			throw ErrorPattern.OVIRTUSER_REQUIRED_VALUE_EMPTY.toException()
+		if (userCreatePrompt.password.isEmpty())	        throw ErrorPattern.OVIRTUSER_REQUIRED_VALUE_EMPTY.toException()
+		val res: UserVo? = ovirtUser.add(userCreatePrompt.username, userCreatePrompt.password)
 		return ResponseEntity.ok(res)
 	}
+	data class UserCreatePrompt(val username: String = "", val password: String = "")
+
+
 	@ApiOperation(
 		httpMethod="GET",
 		value="사용자 권한목록 조회",

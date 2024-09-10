@@ -4,28 +4,51 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
 axios.defaults.baseURL = 'https://' + window.location.hostname + ":" + 8443
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 /**
  * @name makeAPICall
  * @description axios API 호출
  * 
- * @param {string} url 주소
- * @param {*} defaultValues 기본값
+ * @param {*} 파라미터
  * @returns 결과값
  */
-const makeAPICall = async (url, defaultValues) => {
+const makeAPICall = async ({method = "GET", url, data, defaultValues}) => {
   try {
-    const res = await axios.get(url)
+    const res = (data == null || data == undefined) ? await axios.get(url) : await axios({
+      method: method,
+      url: url,
+      headers: { 
+        // TODO: access_token으로 모든 API 처리하기
+      },
+      data: data
+    }); 
+    res.headers.get(`access_token`) && localStorage.setItem('token', res.headers.get(`access_token`)) // 로그인이 처음으로 성공했을 때 진행
     return res.data?.body
   } catch(e) {
     console.error(`Error fetching '${url}':`, e);
     toast.error(`Error fetching '${url}'\n${e.message}`)
-    return defaultValues;
+    if (defaultValues) return defaultValues; 
   }
 }
 
 const ApiManager = {
+  //region: User
+  /**
+   * @name ApiManager.authenticate
+   * @description 로그인
+   * 
+   * @returns 
+   * 
+   * @see Login.js (page)
+   */
+  authenticate: async(username, password) => makeAPICall({
+    method: "POST", 
+    url: ENDPOINTS.FIND_USER(username), 
+    data: { password: password }
+  }),
+  //endregion: User
+
   //region: TreeNavigation
   /**
    * @name ApiManager.findAllTreeNaviations
@@ -35,8 +58,12 @@ const ApiManager = {
    * 
    * @see Dashboard.js (components)
    */
-  findAllTreeNaviations: async (type = "none") => makeAPICall(ENDPOINTS.FIND_ALL_TREE_NAVIGATIONS(type). DEFAULT_VALUES.FIND_ALL_TREE_NAVIGATIONS),
-  //endregion
+  findAllTreeNaviations: async (type = "none") => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_TREE_NAVIGATIONS(type), 
+    defaultValues: DEFAULT_VALUES.FIND_ALL_TREE_NAVIGATIONS
+  }),
+  //endregion: TreeNavigation
 
   //region: Dashboard--------------------------------------------
   /**
@@ -47,7 +74,11 @@ const ApiManager = {
    * 
    * @see Dashboard.js (components)
    */
-  getDashboard: async () => makeAPICall(ENDPOINTS.GET_DASHBOARD(), DEFAULT_VALUES.GET_DASHBOARD),
+  getDashboard: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.GET_DASHBOARD(), 
+    defaultValues: DEFAULT_VALUES.GET_DASHBOARD
+  }),
   /**
    * @name ApiManager.getCpuMemory
    * @description cpu, memory api 불러오는 값
@@ -56,7 +87,11 @@ const ApiManager = {
    * 
    * @see Dashboard.js (components)
    */
-  getCpuMemory: async () => makeAPICall(ENDPOINTS.GET_CPU_MEMERY(), DEFAULT_VALUES.GET_CPU_MEMERY),
+  getCpuMemory: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.GET_CPU_MEMERY(), 
+    defaultValues: DEFAULT_VALUES.GET_CPU_MEMERY
+  }),
   /**
    * @name ApiManager.getStorage
    * @description storage 불러오는 값
@@ -65,7 +100,11 @@ const ApiManager = {
    * 
    * @see Dashboard.js (components)
    */
-  getStorage: async () => makeAPICall(ENDPOINTS.GET_STORAGE(), DEFAULT_VALUES.GET_STORAGE),
+  getStorage: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.GET_STORAGE(), 
+    defaultValues: DEFAULT_VALUES.GET_STORAGE
+  }),
   /**
    * @name ApiManager.getVmCpu
    * @description vmCpu 불러오는 값
@@ -74,7 +113,10 @@ const ApiManager = {
    * 
    * @see Dashboard.js (components)
    */
-  getVmCpu: async () => makeAPICall(ENDPOINTS.GET_VM_CPU()),
+  getVmCpu: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.GET_VM_CPU(),
+  }),
   /**
    * @name ApiManager.getVmMemory
    * @description vmMemory 불러오는 값
@@ -83,7 +125,10 @@ const ApiManager = {
    * 
    * @see Dashboard.js (components)
    */
-  getVmMemory: async () => makeAPICall(ENDPOINTS.GET_VM_MEMORY()),
+  getVmMemory: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.GET_VM_MEMORY()
+  }),
   /**
    * @name ApiManager.getStorageMemory
    * @description storageMemory 불러오는 값
@@ -92,7 +137,10 @@ const ApiManager = {
    * 
    * @see Dashboard.js (components)
    */
-  getStorageMemory: async () => makeAPICall(ENDPOINTS.GET_STORAGE_MEMROY()),
+  getStorageMemory: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.GET_STORAGE_MEMROY()
+  }),
   //endregion: Dashboard
 
   //region: DataCenter
@@ -104,14 +152,22 @@ const ApiManager = {
    * 
    * @see Computing.js (components/Computing)
    */
-  findAllDataCenters: async () => makeAPICall(ENDPOINTS.FIND_ALL_DATA_CENTERS(), DEFAULT_VALUES.FIND_ALL_DATA_CENTERS),
+  findAllDataCenters: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_DATA_CENTERS(), 
+    defaultValues: DEFAULT_VALUES.FIND_ALL_DATA_CENTERS
+  }),
   /**
    * @name findAllClustersFromDataCenter
    * @description 
    * 
    * @returns 
    */
-  findAllClusters: async () => makeAPICall(ENDPOINTS.FIND_ALL_CLUSTERS(), DEFAULT_VALUES.FIND_ALL_CLUSTERS),
+  findAllClusters: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_CLUSTERS(), 
+    defaultValues: DEFAULT_VALUES.FIND_ALL_CLUSTERS
+  }),
 
   //endregion: DataCenter
 
@@ -120,12 +176,36 @@ const ApiManager = {
    * 
    * @returns 
    **/
-  findAllClusterById: async (clusterId) => makeAPICall(ENDPOINTS.FIND_CLUSTERS_BY_ID(clusterId), DEFAULT_VALUES.FIND_CLUSTERS_BY_ID),
-  findLogicalFromCluster : async (clusterId) => makeAPICall(ENDPOINTS.FIND_LOGICAL_FROM_CLUSTERS(clusterId), DEFAULT_VALUES.FIND_HOST_FROM_CLUSTER),
-  findHostFromCluster : async (clusterId) => makeAPICall(ENDPOINTS.FIND_HOST_FROM_CLUSTERS(clusterId), DEFAULT_VALUES.FIND_HOST_FROM_CLUSTER),
-  findVMFromCluster : async (clusterId) => makeAPICall(ENDPOINTS.FIND_VM_FROM_CLUSTERS(clusterId), DEFAULT_VALUES.FIND_VM_FROM_CLUSTER),
-  findPermissionsFromCluster : async (clusterId) => makeAPICall(ENDPOINTS.FIND_PERMISSIONS_FROM_CLUSTERS(clusterId), DEFAULT_VALUES.FIND_ALL_PERMISSION),
-  findEventFromCluster: async (clusterId) => makeAPICall(ENDPOINTS.FIND_EVENT_FROM_CLUSTERS(clusterId), DEFAULT_VALUES.FIND_EVENT_FROM_CLUSTER),
+  findAllClusterById: async (clusterId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_CLUSTERS_BY_ID(clusterId), 
+    defaultValues: DEFAULT_VALUES.FIND_CLUSTERS_BY_ID
+  }),
+  findLogicalFromCluster : async (clusterId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_LOGICAL_FROM_CLUSTERS(clusterId), 
+    defaultValues: DEFAULT_VALUES.FIND_HOST_FROM_CLUSTER
+  }),
+  findHostFromCluster : async (clusterId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_HOST_FROM_CLUSTERS(clusterId), 
+    defaultValues: DEFAULT_VALUES.FIND_HOST_FROM_CLUSTER
+  }),
+  findVMFromCluster : async (clusterId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_VM_FROM_CLUSTERS(clusterId), 
+    defaultValues: DEFAULT_VALUES.FIND_VM_FROM_CLUSTER
+  }),
+  findPermissionsFromCluster : async (clusterId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_PERMISSIONS_FROM_CLUSTERS(clusterId), 
+    defaultValues: DEFAULT_VALUES.FIND_ALL_PERMISSION
+  }),
+  findEventFromCluster: async (clusterId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_EVENT_FROM_CLUSTERS(clusterId), 
+    defaultValues: DEFAULT_VALUES.FIND_EVENT_FROM_CLUSTER
+  }),
   //endregion: Cluster
 
 
@@ -134,31 +214,84 @@ const ApiManager = {
    * 
    * @returns 
    **/
-  findAllHosts : async () => makeAPICall(ENDPOINTS.FIND_ALL_HOSTS(), DEFAULT_VALUES.FIND_ALL_HOSTS),
+  findAllHosts : async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_HOSTS(), 
+    defaultValues: DEFAULT_VALUES.FIND_ALL_HOSTS
+  }),
   //endregion: Host
 
 
   //region : VM/Template --------------------------------------------
-  findAllVMs : async () => makeAPICall(ENDPOINTS.FIND_ALL_VM_CHART(), DEFAULT_VALUES.FIND_ALL_VMS),
-  findAllTemplates : async () => makeAPICall(ENDPOINTS.FIND_ALL_TEMPLATE_CHART(), DEFAULT_VALUES.FIND_ALL_TEMPLATES),
+  /**
+   * @name ApiManager.findAllVMs
+   * 
+   * @returns 
+   **/
+  findAllVMs : async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_VM_CHART(), 
+    defaultValues: DEFAULT_VALUES.FIND_ALL_VMS
+  }),
+  findAllTemplates : async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_TEMPLATE_CHART(), 
+    defaultValues: DEFAULT_VALUES.FIND_ALL_TEMPLATES
+  }),
   //region: Network------------------------------------------------
   /**
    * 
    */
-  findAllNetworks: async () => makeAPICall(ENDPOINTS.FIND_ALL_NETWORKS(), DEFAULT_VALUES.FIND_ALL_NETWORKS),
-  findNetworkById: async (networkId) => makeAPICall(ENDPOINTS.FIND_NETWORK_BY_ID(networkId), DEFAULT_VALUES.FIND_NETWORK_BY_ID),
-  findAllVnicProfilesFromNetwork: async (networkId) => makeAPICall(ENDPOINTS.FIND_ALL_VNIC_PROFILES_FROM_NETWORK(networkId), DEFAULT_VALUES.FIND_ALL_VNIC_PROFILES_FROM_NETWORK),
-  findAllClustersFromNetwork : async (networkId) => makeAPICall(ENDPOINTS.FIND_ALL_CLUSTERS_FROM_NETWORK(networkId), DEFAULT_VALUES.FIND_ALL_CLUSTERS_FROM_NETWORK),
-  findAllHostsFromNetwork : async (networkId) => makeAPICall(ENDPOINTS.FIND_ALL_HOST_FROM_NETWORK(networkId), DEFAULT_VALUES.FIND_ALL_HOST_FROM_NETWORK),
-  findAllVmsFromNetwork : async (networkId) => makeAPICall(ENDPOINTS.FIND_ALL_VMS_FROM_NETWORK(networkId), DEFAULT_VALUES.FIND_ALL_VMS_FROM_NETWORK),
-  findAllTemplatesFromNetwork : async (networkId) => makeAPICall(ENDPOINTS.FIND_ALL_TEMPLATES_NETWORK(networkId), DEFAULT_VALUES.FIND_ALL_TEMPLATES_FROM_NETWORK),
-  findAllPermissionFromNetwork : async (networkId) => makeAPICall(ENDPOINTS.FIND_ALL_PERMISSION_NETWORK(networkId), DEFAULT_VALUES.FIND_ALL_PERMISSION),
+  findAllNetworks: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_NETWORKS(),
+    defaultValues: DEFAULT_VALUES.FIND_ALL_NETWORKS
+  }),
+  findNetworkById: async (networkId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_NETWORK_BY_ID(networkId),
+    defaultValues: DEFAULT_VALUES.FIND_NETWORK_BY_ID
+  }),
+  findAllVnicProfilesFromNetwork: async (networkId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_VNIC_PROFILES_FROM_NETWORK(networkId),
+    defaultValues: DEFAULT_VALUES.FIND_ALL_VNIC_PROFILES_FROM_NETWORK
+  }),
+  findAllClustersFromNetwork : async (networkId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_CLUSTERS_FROM_NETWORK(networkId),
+    defaultValues: DEFAULT_VALUES.FIND_ALL_CLUSTERS_FROM_NETWORK
+  }),
+  findAllHostsFromNetwork : async (networkId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_HOST_FROM_NETWORK(networkId),
+    defaultValues: DEFAULT_VALUES.FIND_ALL_HOST_FROM_NETWORK
+  }),
+  findAllVmsFromNetwork : async (networkId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_VMS_FROM_NETWORK(networkId),
+    defaultValues: DEFAULT_VALUES.FIND_ALL_VMS_FROM_NETWORK
+  }),
+  findAllTemplatesFromNetwork : async (networkId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_TEMPLATES_NETWORK(networkId),
+    defaultValues: DEFAULT_VALUES.FIND_ALL_TEMPLATES_FROM_NETWORK
+  }),
+  findAllPermissionFromNetwork : async (networkId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_PERMISSION_NETWORK(networkId),
+    defaultValues: DEFAULT_VALUES.FIND_ALL_PERMISSION
+  }),
   //endregion: Network
   
 
   
   //region: StorageDomain
-  findAllStorageDomains: async () => makeAPICall(ENDPOINTS.FIND_ALL_STORAGE_DOMAINS(), DEFAULT_VALUES.FIND_ALL_STORAGE_DOMAINS),
+  findAllStorageDomains: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_STORAGE_DOMAINS(),
+    defaultValues: DEFAULT_VALUES.FIND_ALL_STORAGE_DOMAINS
+  }),
   //endregion: StorageDomain
 }
 

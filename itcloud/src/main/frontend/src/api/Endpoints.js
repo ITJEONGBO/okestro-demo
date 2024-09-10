@@ -1,7 +1,12 @@
 const ENDPOINTS = {
+  //region: User
+  USERS: () => `/api/v1/auth/users`,
+  FIND_USER: (username) => `/api/v1/auth/users/${username}`,
+  //endregion: User
+
   //region: TreeNavigation
-  FIND_ALL_TREE_NAVIGATIONS: (type) => `​/api​/v1​/navigation​/${type}`,
-  //endregion
+  FIND_ALL_TREE_NAVIGATIONS: (type) => `/api/v1/navigation/${type}`,
+  //endregion: TreeNavigation
 
   //region: Dashboard
   GET_DASHBOARD: () =>          `/api/v1/dashboard`,

@@ -21,11 +21,11 @@ const DEFAULT_VALUES = {
       storageDomains: 0,
   },
   GET_CPU_MEMERY: {
-      totalCpuUsagePercent: 0,
-      totalMemoryUsagePercent: 0,
-      totalMemoryGB: 0,
-      usedMemoryGB: 0,
-      freeMemoryGB: 0
+    totalCpuUsagePercent: 0,
+    totalMemoryUsagePercent: 0,
+    totalMemoryGB: 0,
+    usedMemoryGB: 0,
+    freeMemoryGB: 0
   },
   GET_STORAGE: {
       usedPercent: 0,

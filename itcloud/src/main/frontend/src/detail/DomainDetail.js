@@ -19,20 +19,13 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
     { id: 'permission', label: '권한' },
   ];
   //
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-  };
-
-   // 모달 관련 상태 및 함수
-   const [activePopup, setActivePopup] = useState(null);
-
-   const openPopup = (popupType) => {
-     setActivePopup(popupType);
-   };
- 
-   const closePopup = () => {
-     setActivePopup(null);
-   };
+  const handleTabClick = (tab) => setActiveTab(tab);
+  
+  // 모달 관련 상태 및 함수
+  const [activePopup, setActivePopup] = useState(null);
+  const openPopup = (popupType) => setActivePopup(popupType);
+  const closePopup = () => setActivePopup(null);
+  
   return (
     <div className="content_detail_section">
       <div className="section_header">

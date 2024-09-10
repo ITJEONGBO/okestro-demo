@@ -784,7 +784,7 @@ const Dashboard = () => {
             <h1>CPU</h1>
             <div className="graphs">
               <div className="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
-                <CpuApexChart cpu = {memoryGb.totalCpuUsagePercent} /> {/* ApexChart 컴포넌트를 여기에 삽입 */}
+                <CpuApexChart cpu={memoryGb?.totalCpuUsagePercent ?? 0} /> {/* ApexChart 컴포넌트를 여기에 삽입 */}
               </div>
               <div>
                 <CpuBarChart /> {/* BarChart 컴포넌트를 여기에 삽입 */}
@@ -803,13 +803,13 @@ const Dashboard = () => {
             <h1>MEMORY</h1>
             <div className="graphs">
               <div className="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
-                <MemoryApexChart memory = {memoryGb.totalMemoryUsagePercent}/> {/* ApexChart 컴포넌트를 여기에 삽입 */}
+                <MemoryApexChart memory={memoryGb?.totalMemoryUsagePercent}/> {/* ApexChart 컴포넌트를 여기에 삽입 */}
               </div>
               <div>
                 <MemoryBarChart /> {/* BarChart 컴포넌트를 여기에 삽입 */}
               </div>
             </div>
-            <span>USED { (memoryGb.usedMemoryGB).toFixed(1) } GB / Total { (memoryGb.totalMemoryGB).toFixed(1) } GB</span>
+            <span>USED { (memoryGb?.usedMemoryGB)?.toFixed(1) } GB / Total { (memoryGb?.totalMemoryGB)?.toFixed(1) } GB</span>
             <div className="wave_graph">
               <h2>Per MEMORY</h2>
               <div>
@@ -822,13 +822,13 @@ const Dashboard = () => {
             <h1>STORAGE</h1>
             <div className="graphs">
               <div className="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
-                <StorageApexChart storage = { storageGb.usedPercent } /> {/* ApexChart 컴포넌트를 여기에 삽입 */}
+                <StorageApexChart storage = {storageGb?.usedPercent} /> {/* ApexChart 컴포넌트를 여기에 삽입 */}
               </div>
               <div>
                 <StorageBarChart /> {/* BarChart 컴포넌트를 여기에 삽입 */}
               </div>
             </div>
-            <span>USED { storageGb.usedGB } GB / Total { storageGb.freeGB } GB</span>
+            <span>USED {storageGb?.usedGB} GB / Total {storageGb?.freeGB} GB</span>
             <div className="wave_graph">
               <h2>Per STORAGE</h2>
               <div>

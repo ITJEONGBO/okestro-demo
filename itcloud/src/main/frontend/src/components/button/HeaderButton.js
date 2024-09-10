@@ -4,13 +4,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faEllipsisV
 } from '@fortawesome/free-solid-svg-icons'
+
 const HeaderButton = ({ title, subtitle, buttons, popupItems }) => {
   const [isPopupBoxVisible, setIsPopupBoxVisible] = useState(false);
-
-  const togglePopupBox = () => {
-    setIsPopupBoxVisible(!isPopupBoxVisible);
-  };
-
+  const togglePopupBox = () => setIsPopupBoxVisible(!isPopupBoxVisible);
   const handlePopupBoxItemClick = (item) => {
     console.log(`Clicked on ${item}`);
     setIsPopupBoxVisible(false);

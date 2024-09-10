@@ -38,8 +38,8 @@ class SystemPropertiesServiceImpl : SystemPropertiesService {
 	override fun retrieveProgramVersion(): Array<String> {
 		log.info("... retrieveProgramVersion")
 		val result = arrayOf<String>(
-			"오케스트로 v${basicConf.okestroVersion}",
-			basicConf.okestroReleaseDate
+//			"오케스트로 v${basicConf.okestroVersion}",
+//			basicConf.okestroReleaseDate
 		)
 		log.info("... retrieveProgramVersion ... res: $result")
 		return result

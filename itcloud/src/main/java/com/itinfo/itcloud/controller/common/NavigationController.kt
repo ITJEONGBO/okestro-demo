@@ -37,7 +37,7 @@ class NavigationController {
 	fun findDcNavigationals(
 		@PathVariable typeId: String = "none"
 	): ResponseEntity<List<TreeNavigationalDataCenter>> {
-		log.info("//api/v1/navigation/{} ... 컴퓨팅 목록이 담긴 네비게이션 정보조회", typeId)
+		log.info("/api/v1/navigation/{} ... 컴퓨팅 목록이 담긴 네비게이션 정보조회", typeId)
 		val res: List<TreeNavigationalDataCenter> = when(typeId) {
 			"cluster", "clusters" -> treeNavigation.findAllNavigationalsWithClusters() // 클러스터
 			"network", "networks" -> treeNavigation.findAllNavigationalsWithNetworks() // 네트워크

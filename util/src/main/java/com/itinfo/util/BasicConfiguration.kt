@@ -16,19 +16,6 @@ class BasicConfiguration {
 	private var databaseProp: Properties? = null
 	companion object {
 		private const val PROP_COMMON_FULL_PATH = "properties/common.properties"
-		
-		private const val PNAME_OKESTRO_PORT_HTTP = "okestro.port-http"
-		private const val PNAME_OKESTRO_PORT_HTTPS = "okestro.port-https"
-		private const val PNAME_OKESTRO_VERSION = "okestro.version"
-		private const val PNAME_OKESTRO_RELEASE_DATE = "okestro.release-date"
-
-		private const val PNAME_ITCLOUD_PORT_HTTP = "itcloud.port-http"
-		private const val PNAME_ITCLOUD_PORT_HTTPS = "itcloud.port-https"
-		private const val PNAME_ITCLOUD_VERSION = "itcloud.version"
-		private const val PNAME_ITCLOUD_RELEASE_DATE = "itcloud.release-date"
-
-		private const val PNAME_JWT_SECRET_KEY = "jwt.secret-key"
-		private const val PNAME_JWT_EXPIRATION_TIME = "jwt.expiration-time"
 
 		private const val PROP_DATABASE_FULL_PATH = "properties/database.properties"
 		private const val PNAME_POSTGRES_DRIVER_CLASS_NAME = "postgres.driverClassName"
@@ -70,27 +57,6 @@ class BasicConfiguration {
 		}
 	}
 
-	val okestroPortHttp: String
-		get() = globalProp?.get(PNAME_OKESTRO_PORT_HTTP).toString()
-	val okestroPortHttps: String
-		get() = globalProp?.get(PNAME_OKESTRO_PORT_HTTPS).toString()
-	val okestroVersion: String
-		get() = globalProp?.get(PNAME_OKESTRO_VERSION).toString()
-	val okestroReleaseDate: String
-		get() = globalProp?.get(PNAME_OKESTRO_RELEASE_DATE).toString()
-
-	val itcloudPortHttp: String
-		get() = globalProp?.get(PNAME_ITCLOUD_PORT_HTTP).toString()
-	val itcloudPortHttps: String
-		get() = globalProp?.get(PNAME_ITCLOUD_PORT_HTTPS).toString()
-	val itcloudVersion: String
-		get() = globalProp?.get(PNAME_ITCLOUD_VERSION).toString()
-	val itcloudReleaseDate: String
-		get() = globalProp?.get(PNAME_ITCLOUD_RELEASE_DATE).toString()
-	val jwtSecretKey: String
-		get() = globalProp?.get(PNAME_JWT_SECRET_KEY).toString()
-	val jwtExpirationTime: Long
-		get() = globalProp?.get(PNAME_JWT_EXPIRATION_TIME).toString().toLongOrNull() ?: 360000L
 	val postgresDriverClassname: String
 		get() = databaseProp?.get(PNAME_POSTGRES_DRIVER_CLASS_NAME).toString()
 	val postgresProtocol: String
@@ -141,8 +107,6 @@ class BasicConfiguration {
 			ip { ovirtIp }
 			vncIp { ovirtVncIp }
 			vncPort { "$ovirtVncPort" }
-			jwtSecretKey { jwtSecretKey }
-			jwtExpirationTime { jwtExpirationTime }
 			cpuThreshold { ovirtThresholdCpu }
 			memoryThreshold { ovirtThresholdMemory }
 			grafanaUri { ovirtGrafanaUri }

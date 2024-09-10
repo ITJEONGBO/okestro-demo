@@ -25,9 +25,6 @@ class UserVo(
 	override fun toString(): String =
 		gson.toJson(this)
 
-	val passwordDecrypted: String
-		get() = password // TODO: 복호화
-
 	class Builder {
 		private var bUsername: String = "";fun username(block: () -> String?) { bUsername = block() ?: "" }
 		private var bPassword: String = "";fun password(block: () -> String?) { bPassword = block() ?: "" }

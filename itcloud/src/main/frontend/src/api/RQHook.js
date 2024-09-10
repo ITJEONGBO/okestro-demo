@@ -1,5 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import ApiManager from "./ApiManager";
+
+//region: User
+export const useAuthenticate = (username, password, _onSuccess, _onError) => useMutation({
+  mutationFn: async () => {
+    const res = await ApiManager.authenticate(username, password)
+    return res
+  },
+  onSuccess: _onSuccess,
+  onError: _onError,
+})
+//endregion: User
 
 //region: Navigation
 export const useAllTreeNavigations = (type = "none", mapPredicate = null) => useQuery({

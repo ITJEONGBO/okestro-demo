@@ -340,7 +340,7 @@ const MainOuter = ({ children }) => {
         <div id="aside_outer" style={{ width: asidePopupVisible ? '20%' : '3%' }}>
             <div id="aside">
                 <div id="nav">
-                    <Link to='/' className="link-no-underline">
+                    <Link to='/dashboard' className="link-no-underline">
                         <div
                             id="aside_popup_dashboard_btn"
                             className={getClassNames('dashboard')}

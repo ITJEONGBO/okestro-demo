@@ -9,4 +9,10 @@ ${AnsiColor.BRIGHT_YELLOW}       _\/\\\______\//\\\_\//\\\\\\\\\_____\//\\\\\___
 ${AnsiColor.RED}        _\///________\///___\/////////_______\/////____\///__\/////////________\///________\///______________\///__
 
 ${AnsiColor.BLUE}${application.title}-${application.version}
+
 ${AnsiColor.BLUE}:: Powered by Spring Boot ${spring-boot.version} ::
+
+${AnsiColor.BRIGHT_YELLOW}- Release Date ${application.release-date}
+${AnsiColor.BRIGHT_YELLOW}- Trying to run it on Ovirt Environment(${application.ovirt.ip}:${server.port}) ...
+${AnsiColor.BRIGHT_YELLOW}- Swagger 3 (${application.ovirt.ip}:${server.port}/swagger-ui/)
+

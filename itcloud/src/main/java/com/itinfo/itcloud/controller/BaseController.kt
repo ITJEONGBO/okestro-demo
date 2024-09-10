@@ -33,11 +33,6 @@ class BaseController(
 	fun handleInvalidRequest(e: Throwable): ResponseEntity<Res<Any?>> {
 		log.error("handleInvalidRequest ... e: {}", e::class.simpleName)
 		return HttpStatus.BAD_REQUEST.toResponseEntity(e.localizedMessage)
-		/*
-		Res.builder {
-			head { Head.fail(HttpStatus.BAD_REQUEST.value(), e.localizedMessage)  }
-		}
-		*/
 	}
 
 	@ExceptionHandler(IdNotFoundException::class, ItemNotFoundException::class)
@@ -45,11 +40,6 @@ class BaseController(
 	fun handleNotFound(e: Throwable): ResponseEntity<Res<Any?>>  {
 		log.error("handleNotFound ... e: {}", e::class.simpleName)
 		return HttpStatus.NOT_FOUND.toResponseEntity(e.localizedMessage)
-		/*
-		return Res.builder {
-			head { Head.fail(HttpStatus.NOT_FOUND.value(), e.localizedMessage)  }
-		}
-		*/
 	}
 
 	@ExceptionHandler(Error::class, ItCloudException::class)

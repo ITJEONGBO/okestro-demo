@@ -421,7 +421,6 @@ input[type="checkbox"],input[type="radio"]{
 }
 input[type="text"]{
     border: 1px solid rgb(206, 206, 206);
-    padding: 0 3px;
     border-radius: 3px;
 }
     /*info 설명박스*/
@@ -3480,3 +3479,8 @@ display: flex; /* Flexbox 설정 추가 */
     overflow-y: auto;
     overflow-x: hidden;
 }
+
+.color-primary { color: #76a314 }
+.color-primary:hover { color: #76a314 }
+.bgcolor-primary { background: #8ec452 }
+.bgcolor-primary:hover { background: #76a314 }
