@@ -101,7 +101,7 @@ class VmDiskService(
 	private val itStorageService: ItStorageService
 ): BaseService(), ItVmDiskService {
 
-	override fun findAllDiskFromVm(vmId: String): List<DiskAttachmentVo> {
+	override fun findAllDisksFromVm(vmId: String): List<DiskAttachmentVo> {
 		log.debug("findAllDiskFromVm ... vmId: {}", vmId)
 		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
 		val res: List<DiskAttachment> =
