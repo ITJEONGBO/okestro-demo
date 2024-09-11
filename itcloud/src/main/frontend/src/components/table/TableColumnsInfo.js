@@ -8,11 +8,12 @@ import {
  */
 const TableColumnsInfo = {
   DATACENTERS: [
-    { header: '', accessor: 'iconStatus', clickable: false }, 
-    { header: '이름', accessor: 'name', clickable: true }, 
+    { header: '이름', accessor: 'name', clickable: false }, 
     { header: '코멘트', accessor: 'comment', clickable: false },
     { header: '스토리지 유형', accessor: 'storageType', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },
+    { header: '호스트 수', accessor: 'hostCnt', clickable: false }, 
+    { header: '클러스터 수', accessor: 'clusterCnt', clickable: false }, 
     { header: '호환 버전', accessor: 'compatVersion', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],
@@ -154,7 +155,6 @@ const TableColumnsInfo = {
   ],
 
   CLUSTERS_ALT : [
-    { header: '상태', accessor: 'status', clickable: false },
     { header: '이름', accessor: 'name', clickable: true },
     { header: '설명', accessor: 'description', clickable: false },
     { header: '클러스터 CPU 유형', accessor: 'cpuType', clickable: false },

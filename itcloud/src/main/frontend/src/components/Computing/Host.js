@@ -130,8 +130,8 @@ const Host = () => {
         overlayClassName="host_new_outer"
         shouldCloseOnOverlayClick={false}
       >
-        <div className="domain_header">
-          <h1 class="text-sm">새 호스트</h1>
+        <div className="popup_header">
+          <h1>새 호스트</h1>
           <button onClick={closeModal}>
             <FontAwesomeIcon icon={faTimes} fixedWidth/>
           </button>
@@ -239,7 +239,7 @@ const Host = () => {
 
     </div>
 
-</div>{/*일반섹션끝 */}
+            </div>{/*일반섹션끝 */}
 
             {/* 전원 관리 섹션 */}
             <div

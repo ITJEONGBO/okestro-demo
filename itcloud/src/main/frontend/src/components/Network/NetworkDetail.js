@@ -28,16 +28,37 @@ import {
   faFan,
   faBan,
   faExclamationTriangle,
-  faPencilAlt
+  faPencilAlt,
+  faInfoCircle,
+  faCaretDown,
+  faNetworkWired,
+  faTag
 } from '@fortawesome/free-solid-svg-icons'
 
 const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) => {
   // 테이블컴포넌트
   const [activePermissionFilter, setActivePermissionFilter] = useState('all');
+  const [activeButton, setActiveButton] = useState('network');
+  const [isLabelVisible, setIsLabelVisible] = useState(false); // 라벨 표시 상태 관리
   const handlePermissionFilterClick = (filter) => {
     setActivePermissionFilter(filter);
-  };
+    
+  
+   
+    setActivePermissionFilter(filter);
+    if (filter === 'direct') {
+      setIsLabelVisible(true); // 레이블 버튼을 누르면 라벨을 보이게 함
+    } else {
+      setIsLabelVisible(false); // 네트워크 버튼을 누르면 라벨을 숨김
+    }
+    };
 
+    const handleButtonClick = (button) => {
+      setActiveButton(button);
+    };
+
+
+  
   const location = useLocation();
   const locationState = location.state  
   const { id } = useParams(); // useParams로 URL에서 name을 가져옴
@@ -430,8 +451,8 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         shouldCloseOnOverlayClick={false}
       >
         <div className="vnic_new_content_popup">
-          <div className="network_popup_header">
-            <h1 className='text-sm'>가상 머신 인터페이스 프로파일</h1>
+          <div className="popup_header">
+            <h1>가상 머신 인터페이스 프로파일</h1>
             <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
           
@@ -528,7 +549,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         shouldCloseOnOverlayClick={false}
       >
         <div className="vnic_new_content_popup">
-          <div className="network_popup_header">
+          <div className="popup_header">
             <h1>가상 머신 인터페이스 프로파일</h1>
             <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
@@ -626,7 +647,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         shouldCloseOnOverlayClick={false}
       >
         <div className="vnic_new_content_popup">
-          <div className="network_popup_header">
+          <div className="popup_header">
             <h1>가상 머신 인터페이스 프로파일</h1>
             <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
@@ -720,7 +741,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         shouldCloseOnOverlayClick={false}
       >
         <div className="manage_network_popup">
-          <div className="network_popup_header">
+          <div className="popup_header">
             <h1>네트워크 관리</h1>
             <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
@@ -750,54 +771,125 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         shouldCloseOnOverlayClick={false}
       >
         <div className="vnic_new_content_popup">
-          <div className="network_popup_header">
-            <h1 className='text-sm '>호스트 host01.ititinfo.com 네트워크 설정</h1>
+          <div className="popup_header">
+            <h1>호스트 host01.ititinfo.com 네트워크 설정</h1>
             <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
           
           <div className="host_network_outer px-1.5 text-sm">
-            <div className="text-blue-500 py-2 font-bold">드래그 하여 변경</div>
+          <div className="py-2 font-bold underline">드래그 하여 변경</div>
 
-            <div className="host_network_separation">
-              <div className="network_separation_left">
-                <div>
-                  <div>인터페이스</div>
-                  <div>할당된 논리 네트워크</div>
-                </div>
+          <div className="host_network_separation">
+      <div className="network_separation_left">
+        <div>
+          <div>인터페이스</div>
+          <div>할당된 논리 네트워크</div>
+        </div>
 
-                <div className="separation_left_content">
-                  <div className="container gap-1">
-                    <FontAwesomeIcon icon={faCircle} style={{ fontSize: '0.1rem' }} />
-                    <FontAwesomeIcon icon={faDesktop} /> 
-                    <span>ens192</span>
-                  </div>
-                  <div>
-                    <FontAwesomeIcon icon={faArrowsAltH} style={{color: 'grey',width:'5vw',fontSize:'1rem' }} />
-                  </div>
+        <div className="separation_left_content">
+          <div className="container gap-1">
+            <FontAwesomeIcon icon={faCircle} style={{ fontSize: '0.1rem', color: '#00FF00' }} />
+            <FontAwesomeIcon icon={faDesktop} />
+            <span>ens192</span>
+          </div>
+          <div className="flex items-center justify-center">
+            <FontAwesomeIcon icon={faArrowsAltH} style={{ color: 'grey', width: '5vw', fontSize: '0.6rem' }} />
+          </div>
 
-                  <div className="container">
-                    <div className="left-section">
-                      <FontAwesomeIcon icon={faCheck} className="icon green-icon" />
-                      <span className="text">ovirtmgmt</span>
-                    </div>
-                    <div className="right-section">
-                      <FontAwesomeIcon icon={faFan} className="icon" />
-                      <FontAwesomeIcon icon={faDesktop} className="icon" />
-                      <FontAwesomeIcon icon={faDesktop} className="icon" />
-                      <FontAwesomeIcon icon={faBan} className="icon" />
-                      <FontAwesomeIcon icon={faExclamationTriangle} className="icon" />
-                      <FontAwesomeIcon icon={faPencilAlt} className="icon" />
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div className="container">
+            <div className="left-section">
+              <FontAwesomeIcon icon={faCheck} className="icon green-icon" />
+              <span className="text">ovirtmgmt</span>
             </div>
+            <div className="right-section">
+              <FontAwesomeIcon icon={faFan} className="icon" />
+              <FontAwesomeIcon icon={faDesktop} className="icon" />
+              <FontAwesomeIcon icon={faDesktop} className="icon" />
+              <FontAwesomeIcon icon={faBan} className="icon" />
+              <FontAwesomeIcon icon={faExclamationTriangle} className="icon" />
+              <FontAwesomeIcon icon={faPencilAlt} className="icon" />
+            </div>
+          </div>
+        </div>
+      </div>
 
-            <div className="network_separation_right border-t-[1px] border-gray-500 mt-4">
-                <div>
-                  ff
+      <div className="network_separation_right">
+      <div className="network_filter_btns">
+  <button
+    className={`btn ${activeButton === 'network' ? 'bg-gray-200' : ''}`}
+    onClick={() => handleButtonClick('network')}
+  >
+    네트워크
+  </button>
+  <button
+    className={`btn border-l border-gray-800 ${activeButton === 'label' ? 'bg-gray-200' : ''}`}
+    onClick={() => handleButtonClick('label')}
+  >
+    레이블
+  </button>
+</div>
+
+  {/* unconfigured_network는 네트워크 버튼이 클릭된 경우만 보임 */}
+  {!isLabelVisible && (
+    <div className="unconfigured_network">
+      <div>할당되지 않은 논리 네트워크</div>
+      <div style={{ backgroundColor: '#d1d1d1' }}>필수</div>
+      <div className="unconfigured_content flex items-center space-x-2">
+        <div>
+          <FontAwesomeIcon icon={faCaretDown} style={{ color: 'red', marginRight: '0.2rem' }} />
+          <span>ddd</span>
+        </div>
+        <FontAwesomeIcon icon={faNetworkWired} style={{ color: 'green', fontSize: '20px' }} />
+      </div>
+      <div className="unconfigured_content flex items-center space-x-2">
+        <div>
+          <FontAwesomeIcon icon={faCaretDown} style={{ color: 'red', marginRight: '0.2rem' }} />
+          <span>ddd</span>
+        </div>
+        <FontAwesomeIcon icon={faNetworkWired} style={{ color: 'green', fontSize: '20px' }} />
+      </div>
+      <div className="unconfigured_content flex items-center space-x-2">
+        <div>
+          <FontAwesomeIcon icon={faCaretDown} style={{ color: 'red', marginRight: '0.2rem' }} />
+          <span>ddd</span>
+        </div>
+        <FontAwesomeIcon icon={faNetworkWired} style={{ color: 'green', fontSize: '20px' }} />
+      </div>
+      <div style={{ backgroundColor: '#d1d1d1' }}>필요하지 않음</div>
+      <div>
+        <span>외부 논리적 네트워크</span>
+        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }} fixedWidth />
+      </div>
+    </div>
+  )}
+
+  {/* lable_part는 레이블 버튼이 클릭된 경우만 보임 */}
+  {isLabelVisible && (
+
+      <div class="lable_part">
+        <FontAwesomeIcon icon={faTag} style={{ color: 'orange', marginRight: '0.2rem' }} />
+        <span>[새 레이블]</span>
+      </div>
+
+  )}
+</div>
+
+
+         </div>
+
+            <div className="border-t-[1px] border-gray-500 mt-4">
+                <div className='py-0.5'>
+                  <input type="checkbox" id="checkHostConnection" checked />
+                  <label htmlFor="checkHostConnection">호스트와 Engine간의 연결을 확인</label>
+                  <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)', cursor: 'pointer' }} fixedWidth />
                 </div>
-              </div>
+                <div>
+                  <input type="checkbox" id="saveNetworkConfig" disabled />
+                  <label htmlFor="saveNetworkConfig">네트워크 설정 저장</label>
+                  <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)', cursor: 'pointer' }} fixedWidth />
+                </div>
+
+            </div>
 
 
           </div>

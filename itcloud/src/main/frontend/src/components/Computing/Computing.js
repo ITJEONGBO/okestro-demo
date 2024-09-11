@@ -55,11 +55,12 @@ const Computing = () => {
     } = useAllDataCenters((e) => {
         //DATACENTERS
         return {
-          iconStatus: e?.status ?? '',
           name: e?.name ?? '',
           comment: e?.comment ?? '',
           storageType: e?.storageType ? '로컬' : '공유됨',
           status: e?.status ?? '정보 없음',
+          hostCnt :e?.hostCnt ?? '',
+          clusterCnt :e?.clusterCnt ?? '',
           compatVersion: e?.version ?? '4.7',
           description: e?.description ?? '설명없음',
         }
@@ -92,7 +93,7 @@ const Computing = () => {
                         <Table
                             columns={TableColumnsInfo.DATACENTERS}
                             data={datacenters}
-                            onRowClick={handleRowClick}
+                            onRowClick={() => console.log()}
                             shouldHighlight1stCol={true}
                         />
                     </div>

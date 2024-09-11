@@ -482,7 +482,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     shouldCloseOnOverlayClick={false}
       >
         <div className="storage_domain_administer_popup">
-          <div className="network_popup_header">
+          <div className="popup_header">
             <h1>도메인 관리</h1>
             <button onClick={closeModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>

@@ -164,8 +164,8 @@ const Network = ({ }) => {
                 shouldCloseOnOverlayClick={false}
             >
                 <div className="network_new_popup">
-                    <div className="network_popup_header">
-                        <h1 class="text-sm">새 논리적 네트워크</h1>
+                    <div className="popup_header">
+                        <h1>새 논리적 네트워크</h1>
                         <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                     </div>
 
@@ -357,7 +357,7 @@ const Network = ({ }) => {
                 shouldCloseOnOverlayClick={false}
             >
                 <div className="network_bring_popup">
-                    <div className="network_popup_header">
+                    <div className="popup_header">
                         <h1>네트워크 가져오기</h1>
                         <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                     </div>
@@ -421,7 +421,7 @@ const Network = ({ }) => {
                 shouldCloseOnOverlayClick={false}
             >
                 <div className="network_edit_popup">
-                    <div className="network_popup_header">
+                    <div className="popup_header">
                         <h1>논리 네트워크 수정</h1>
                         <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                     </div>

@@ -84,8 +84,8 @@ const MainOuter = ({ children }) => {
       } else if (location.pathname === '/computing/host') {  // 정확히 /computing/host 경로일 때만
         updateSelectedState('computing', 'host', true, true, true);
       } else if (location.pathname.includes('/computing/clusters')) {
-        updateSelectedState('computing', 'cluster', true, true);
-      } else if (location.pathname.includes('/computing/datacenter')) {
+        updateSelectedState('computing', 'clusters', true, true);
+      } else if (location.pathname.includes('/computing/datacenters')) {
         updateSelectedState('computing', 'data_center', true);
       } else if (location.pathname.includes('/computing/vmhost-chart')) {
         updateSelectedState('computing', 'vmhost-chart', true, true, true);
@@ -190,7 +190,7 @@ const MainOuter = ({ children }) => {
 
         if (id === 'computing') {
             newBackgroundColor.computing = 'rgb(218, 236, 245)';
-            navigate(`/computing/datacenter`);
+            navigate(`/computing/datacenters`);
         } else if (id === 'storage') {
             newBackgroundColor.storage = 'rgb(218, 236, 245)';
         } else if (id === 'network') {
@@ -213,7 +213,7 @@ const MainOuter = ({ children }) => {
     const handleFirstDivClick = () => {
         setSelectedDiv('data_center');
         setIsSecondVisible(!isSecondVisible);
-        navigate('/computing/datacenter');
+        navigate('/computing/datacenters');
     };
     
     const handleSecondClick = (e) => {
@@ -223,7 +223,7 @@ const MainOuter = ({ children }) => {
 
     const handleSecondDivClick = (e) => {
         e.stopPropagation();
-        setSelectedDiv('cluster');
+        setSelectedDiv('clusters');
         navigate('/computing/clusters');
     };
     
@@ -350,7 +350,7 @@ const MainOuter = ({ children }) => {
                             <FontAwesomeIcon icon={faThLarge} fixedWidth/>
                         </div>
                     </Link>
-                    <Link to='/computing/datacenter' className="link-no-underline">
+                    <Link to='/computing/datacenters' className="link-no-underline">
                         <div
                             id="aside_popup_machine_btn"
                             className={getClassNames('computing')}
@@ -400,7 +400,7 @@ const MainOuter = ({ children }) => {
         onClick={() => {
             if (selectedDiv !== 'data_center') {
                 setSelectedDiv('data_center');
-                navigate('/computing/datacenter');
+                navigate('/computing/datacenters');
             }
         }}
     >
@@ -424,10 +424,10 @@ const MainOuter = ({ children }) => {
         <div 
             className="aside_popup_second_content" 
             id="aside_popup_second" 
-            style={{ backgroundColor: selectedDiv === 'cluster' ? 'rgb(218, 236, 245)' : '' }}
+            style={{ backgroundColor: selectedDiv === 'clusters' ? 'rgb(218, 236, 245)' : '' }}
             onClick={() => {
-                if (selectedDiv !== 'cluster') {
-                    setSelectedDiv('cluster');
+                if (selectedDiv !== 'clusters') {
+                    setSelectedDiv('clusters');
                     navigate('/computing/clusters');
                 }
             }}

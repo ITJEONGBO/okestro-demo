@@ -854,7 +854,7 @@ const VmHostChart = () => {
                     <button onClick={() => document.getElementById('edit_popup_bg').style.display = 'none'}>취소</button>
                 </div>
             </div>
-      </div>
+            </div>
       <Footer/>
     </div>
   );

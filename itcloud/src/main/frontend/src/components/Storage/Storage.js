@@ -265,7 +265,7 @@ const Storage = () => {
         shouldCloseOnOverlayClick={false}
       >
         <div className="storage_domain_new_popup">
-          <div className="network_popup_header">
+          <div className="popup_header">
             <h1>새로운 도메인</h1>
             <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
@@ -397,7 +397,7 @@ const Storage = () => {
         shouldCloseOnOverlayClick={false}
       >
         <div className="storage_domain_get_popup">
-          <div className="network_popup_header">
+          <div className="popup_header">
             <h1>사전 구성된 도메인 가져오기</h1>
             <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
@@ -532,7 +532,7 @@ const Storage = () => {
         shouldCloseOnOverlayClick={false}
       >
         <div className="storage_domain_administer_popup">
-          <div className="network_popup_header">
+          <div className="popup_header">
             <h1>도메인 관리</h1>
             <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>

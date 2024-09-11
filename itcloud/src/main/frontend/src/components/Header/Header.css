@@ -50,7 +50,7 @@
     display: flex;
     justify-content: space-between;
     font-size: 0.5em;
-    min-width: 11%;
+    min-width: 7%;
     align-items: center; /* 세로 중앙 정렬 추가 */
 }
 .header_left span{
@@ -77,12 +77,12 @@
 .user_loginbox{
     position: absolute;
     background-color: #ffffff;
-    z-index: 3;
-    width: 120%;
-    left: -4%;
+    z-index: 4;
+    width: 9vw;
+    left: -226%;
     font-size: 0.3rem;
     border: 1px solid rgb(204, 204, 204);
-    top: 99%;
+    top: 113%;
     border-radius: 2px;
 }
 .user_loginbox>div{
@@ -96,44 +96,10 @@
     background-color: #ffffff;
     z-index: 3;
     width: 11.65vw;
-    left: -4%;
+    left: -4vw;
     font-size: 0.3rem;
     border: 1px solid rgb(204, 204, 204);
-    top: 99%;
-    height: 89.9vh;
-    border-radius: 2px;
-}
-/* Header 아이콘들 */
-.user_btn,.fa-bell-wrapper{
-    position: relative;
-}
-
-.user_loginbox{
-    position: absolute;
-    background-color: #ffffff;
-    z-index: 3;
-    width: 120%;
-    left: -4%;
-    font-size: 0.3rem;
-    border: 1px solid rgb(204, 204, 204);
-    top: 99%;
-    border-radius: 2px;
-}
-.user_loginbox>div{
-    padding: 0.09rem 0.12rem ;
-}
-.user_loginbox>div:hover{
-    background-color: #ebececd8;
-}
-.bell_box{
-    position: absolute;
-    background-color: #ffffff;
-    z-index: 3;
-    width: 11.65vw;
-    left: -4%;
-    font-size: 0.3rem;
-    border: 1px solid rgb(204, 204, 204);
-    top: 99%;
-    height: 89.9vh;
+    top: 113%;
+    height: 89.6vh;
     border-radius: 2px;
 }

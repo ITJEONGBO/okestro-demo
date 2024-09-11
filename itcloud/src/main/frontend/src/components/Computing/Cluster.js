@@ -71,7 +71,6 @@ const Cluster = () => {
     //CLUSTERS_ALT
     return {
       id: e?.id ?? '',
-      status: e?.status ?? 'Unknown',  // 상태에 기본값 'Unknown'을 설정
       name: e?.name ?? '',
       version: e?.version ?? '0.0',
       cpuType: e?.cpuType ?? 'CPU 정보 없음',

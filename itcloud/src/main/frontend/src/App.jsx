@@ -91,8 +91,8 @@ function App() {
           <MainOuter>
             <Routes>
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/computing/datacenter" element={<Computing />} />
-              <Route path="/computing/datacenter/:name" element={<DataCenterDetail />} />
+              <Route path="/computing/datacenters" element={<Computing />} />
+              {/* <Route path="/computing/datacenter/:name" element={<DataCenterDetail />} /> */}
               <Route path="/storage" element={<Storage />} />
               <Route path="/setting" element={<Setting />} />
               <Route path="/computing/:name" element={<Vm />} />

@@ -34,16 +34,17 @@ const DEFAULT_VALUES = {
       freeGB: 0
   },
   GET_VM_CPU: () =>         `/api/v1/dashboard/vmCpu`,
-  GET_VM_MEMORY: () =>      `/api/v1/dashboard/vmMemory`,
+  GET_VM_MEMORY: () =>      `/api/v1/dashboard/vmMemory`, 
   GET_STORAGE_MEMROY: () => `/api/v1/dashboard/storageMemory`,
   // 컴퓨팅
    FIND_ALL_DATA_CENTERS: [
         {
-            iconStatus: <FontAwesomeIcon icon="fa-solid fa-exclamation-triangle" style={{ color: 'yellowgreen' } }fixedWidth/>, // TODO: raw 값만 부여하도록 구현
             name: 'DataCenter1',
             comment: '',
             storageType: '공유됨',
             status: 'Up',
+            hostCnt:'',
+            clusterCnt:'',
             compatVersion: '4.7',
             version: '4.7',
             description: 'The default Data Center',
@@ -52,7 +53,6 @@ const DEFAULT_VALUES = {
 //region:Cluster------ 클러스터
   FIND_ALL_CLUSTERS: [
     {
-      status: '',
       name: 'Cluster1',
       description: 'This is the first cluster',
       cpuType: 'Intel Xeon',

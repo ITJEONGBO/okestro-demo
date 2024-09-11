@@ -251,33 +251,7 @@
     background-color: #dbdbdb;
 }
 
-.network_popup_header{
-    background-color: #ebebeb;
-    display: flex;
-    padding: 8px 13px;
-    justify-content: space-between;
-    font-size: 0.18rem;
-}
-.network_popup_header>h1{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.network_popup_header>button{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 1px;
-    border: none;
-    padding: 11px;
-    border-radius: 50%;
-    font-size: 0.38rem;
-    cursor: pointer;
-    background-color: #ebebeb;
-}
-.network_popup_header>button:hover{
-    background-color: #DDDDDD;
-}
+
 
 .network_new_outer {
     position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
@@ -436,7 +410,66 @@ input[type="text"]{
     font-size: 0.3rem;
     position:absolute;
     zIndex: 1000;
-    }
+}
+.popup_header{
+    background-color: #cfe4eb;
+    border-radius: 3px;
+    display: flex;
+    color: #446dbb;
+    padding: 8px 13px;
+    justify-content: space-between;
+    font-size: 0.35rem;
+    font-weight: 600;
+    border-bottom: 1px solid #6e9cd8;
+}
+.popup_header>h1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.popup_header>button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1px;
+    border: none;
+    padding: 11px;
+    border-radius: 50%;
+    font-size: 0.38rem;
+    cursor: pointer;
+
+}
+.popup_header>button:hover{
+    background-color:#add0e1;
+}
+
+.edit_aside {
+    width: 100%;
+    height: 7%;
+    background-color: #FAFAFA;
+    border-right: 1px solid #ddd;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    font-weight: 800;
+    text-align: center;
+    border-bottom: 1px solid rgb(206, 206, 206);
+}
+
+.edit_aside > div {
+    display: flex;
+    width: 25%;
+    text-align: center;
+    justify-content: center; /* 중앙 정렬 */
+    align-items: center;
+    border-bottom: none; /* 이 줄을 추가하여 기본 테두리를 제거 */
+    cursor: pointer;
+    outline: none; /* 이 줄을 추가하여 기본 outline을 제거 */
+}
+
+.edit_aside > div span {
+    font-size: 0.33rem;
+}
 
 /* 중복끝 */
 
@@ -503,7 +536,10 @@ input[type="text"]{
 
 }
 
-
+.edit_body{
+    height: 84%;
+    font-size: 0.36rem;
+}
 /*article*/
 .section_header_right{
     display: flex;
@@ -636,33 +672,7 @@ input[type="text"]{
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
-.domain_header{
-    background-color: #ebebeb;
-    display: flex;
-    padding: 8px 13px;
-    justify-content: space-between;
-    font-size: 0.18rem;
-}
-.domain_header>h1{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.domain_header>button{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 1px;
-    border: none;
-    padding: 11px;
-    border-radius: 50%;
-    font-size: 0.38rem;
-    cursor: pointer;
-    background-color: #ebebeb;
-}
-.domain_header>button:hover{
-    background-color: #DDDDDD;
-}
+
 #template_article_outer{
     padding: 0 3%;
     font-size: 0.36rem;
@@ -808,33 +818,7 @@ input[type="text"]{
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
-.domain_header{
-    background-color: #ebebeb;
-    display: flex;
-    padding: 8px 13px;
-    justify-content: space-between;
-    font-size: 0.18rem;
-}
-.domain_header>h1{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.domain_header>button{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 1px;
-    border: none;
-    padding: 11px;
-    border-radius: 50%;
-    font-size: 0.38rem;
-    cursor: pointer;
-    background-color: #ebebeb;
-}
-.domain_header>button:hover{
-    background-color: #DDDDDD;
-}
+
 #get_article1{
     min-height: 13%;
     border-bottom: 1px solid gray ;
@@ -974,33 +958,8 @@ input[type="text"]{
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
-.domain_header{
-    background-color: #ebebeb;
-    display: flex;
-    padding: 8px 13px;
-    justify-content: space-between;
-    font-size: 0.18rem;
-}
-.domain_header>h1{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.domain_header>button{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 1px;
-    border: none;
-    padding: 11px;
-    border-radius: 50%;
-    font-size: 0.38rem;
-    cursor: pointer;
-    background-color: #ebebeb;
-}
-.domain_header>button:hover{
-    background-color: #DDDDDD;
-}
+
+
 #domain_article_outer{
     padding: 8px 13px;
     background-color: rgb(255, 255, 255);
@@ -2168,33 +2127,7 @@ input[disabled] {
 /*편집팝업*/
 /*템플릿 생성*/
 
-.domain_header{
-    background-color: #ebebeb;
-    display: flex;
-    padding: 8px 13px;
-    justify-content: space-between;
-    font-size: 0.18rem;
-}
-.domain_header>h1{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.domain_header>button{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 1px;
-    border: none;
-    padding: 11px;
-    border-radius: 50%;
-    font-size: 0.38rem;
-    cursor: pointer;
-    background-color: #ebebeb;
-}
-.domain_header>button:hover{
-    background-color: #DDDDDD;
-}
+
 #template_article_outer{
     padding: 0 3%;
     font-size: 0.36rem;
@@ -2333,37 +2266,7 @@ input[disabled] {
     background-color: #DDDDDD;
 }
 /*중간*/
-.edit_body{
-    height: 84%;
-    font-size: 0.36rem;
-}
-.edit_aside {
-    width: 100%;
-    height: 7%;
-    background-color: #FAFAFA;
-    border-right: 1px solid #ddd;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-between;
-    font-weight: 800;
-    text-align: center;
-    border-bottom: 1px solid rgb(206, 206, 206);
-}
 
-.edit_aside > div {
-    display: flex;
-    width: 25%;
-    text-align: center;
-    justify-content: center; /* 중앙 정렬 */
-    align-items: center;
-    border-bottom: none; /* 이 줄을 추가하여 기본 테두리를 제거 */
-    cursor: pointer;
-    outline: none; /* 이 줄을 추가하여 기본 outline을 제거 */
-}
-
-.edit_aside > div span {
-    font-size: 0.33rem;
-}
 
 form{
     width: 100%;
