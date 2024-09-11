@@ -45,6 +45,9 @@ fun Connection.addNetwork(network: Network): Result<Network?> = runCatching {
 	val networkAdded: Network? =
 		this.srvNetworks().add().network(network).send().network()
 
+	// TODO vnicprofile 기본생성만, 다른창에서 생성기능 넣기
+	// 클러스터 연결, 필수 선택
+
 	networkAdded ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
 }.onSuccess {
 	Term.NETWORK.logSuccess("생성")
@@ -61,7 +64,7 @@ fun Connection.addVnicProfileFromNetwork(networkId: String, vnicProfile: VnicPro
 	val hasDuplicateName: Boolean = vnicProfiles.any { it.name() == vnicProfile.name() }
 	if (hasDuplicateName)
 		return FailureType.DUPLICATE.toResult(vnicProfile.name())
-	this@addVnicProfileFromNetwork.srvVnicProfilesFromNetwork(networkId).add().profile(vnicProfile).send().profile()
+	this.srvVnicProfilesFromNetwork(networkId).add().profile(vnicProfile).send().profile()
 }.onSuccess {
 	log.info("VnicProfile 생성 완료 ... {}", vnicProfile.name())
 } .onFailure {

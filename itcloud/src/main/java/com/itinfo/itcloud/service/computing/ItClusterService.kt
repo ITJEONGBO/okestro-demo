@@ -9,6 +9,7 @@ import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.repository.VmInterfaceSamplesHistoryRepository
 import com.itinfo.itcloud.repository.VmSamplesHistoryRepository
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.network.ItNetworkService
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.Error
@@ -97,10 +98,10 @@ interface ItClusterService {
 	 *
 	 * @param clusterId [String] 클러스터 아이디
 	 * @param networkVo [NetworkVo] 네트워크 생성
-	 * @return [Boolean]
+	 * @return [NetworkVo]?
 	 */
 	@Throws(Error::class)
-	fun addNetwork(clusterId: String, networkVo: NetworkVo): Boolean
+	fun addNetwork(clusterId: String, networkVo: NetworkVo): NetworkVo?
 	/**
 	 * [ItClusterService.findAllManageNetworksFromCluster]
 	 * 클러스터 네트워크 관리 창
@@ -220,6 +221,7 @@ class ClusterServiceImpl(
 ) : BaseService(), ItClusterService {
 	@Autowired private lateinit var vmSamplesHistoryRepository: VmSamplesHistoryRepository
 	@Autowired private lateinit var vmInterfaceSamplesHistoryRepository: VmInterfaceSamplesHistoryRepository
+	@Autowired private lateinit var itNetworkService: ItNetworkService
 
 	@Throws(Error::class)
 	override fun findAll(): List<ClusterVo> {
@@ -296,8 +298,10 @@ class ClusterServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun addNetwork(clusterId: String, networkVo: NetworkVo): Boolean {
-		TODO("Network 부분에서 기능구현해서 합치기")
+	override fun addNetwork(clusterId: String, networkVo: NetworkVo): NetworkVo? {
+		log.info("addNetwork ... ") // // 클러스터 연결 없이 네트워크만 추가
+		// TODO 클러스터 연결/할당 기능 추가
+		return itNetworkService.add(networkVo)
 	}
 
 	@Throws(Error::class)
@@ -311,7 +315,7 @@ class ClusterServiceImpl(
 
 	@Throws(Error::class)
 	override fun manageNetworksFromCluster(clusterId: String, networkVos: List<NetworkVo>): Boolean {
-		log.info("editUsage ... ")
+		log.info("manageNetworksFromCluster ... ")
 		// 클러스터 모두연결이 선택되어야지만 모두 필요가 선택됨
 		/*
         nuVo.getClusterVoList().stream()

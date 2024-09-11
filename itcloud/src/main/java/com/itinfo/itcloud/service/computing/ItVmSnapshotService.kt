@@ -2,6 +2,8 @@ package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.computing.*
+import com.itinfo.itcloud.model.storage.DiskImageVo
+import com.itinfo.itcloud.model.storage.toDiskAttachmentVos
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.addSnapshotFromVm
 import com.itinfo.util.ovirt.findAllDiskAttachmentsFromVm
@@ -36,7 +38,7 @@ interface ItVmSnapshotService {
 	 * @return 스냅샷 목록
 	 */
 	@Throws(Error::class)
-	fun findAllSnapshotDisksFromVm(vmId: String): List<SnapshotDiskVo>
+	fun findAllSnapshotDisksFromVm(vmId: String): List<DiskImageVo>
 	/**
 	 * [ItVmSnapshotService.add]
 	 * 스냅샷 생성
@@ -71,21 +73,21 @@ class VmSnapshotServiceImpl(
 
 	@Throws(Error::class)
 	override fun findAllSnapshotsFromVm(vmId: String): List<SnapshotVo> {
-		log.info("getSnapshotsByVm ... ")
-		val snapshots: List<Snapshot> =
+		log.info("findAllSnapshotsFromVm ... ")
+		val res: List<Snapshot> =
 			conn.findAllSnapshotsFromVm(vmId)
 				.getOrDefault(listOf())
-		return snapshots.toSnapshotVos(conn, vmId)
+		return res.toSnapshotVos(conn, vmId)
 	}
 
 	@Throws(Error::class)
-	override fun findAllSnapshotDisksFromVm(vmId: String): List<SnapshotDiskVo> {
+	override fun findAllSnapshotDisksFromVm(vmId: String): List<DiskImageVo> {
 		log.info("findAllSnapshotDisksFromVm ... vmId: {}", vmId)
-		val diskAttachments: List<DiskAttachment> =
+		val res: List<DiskAttachment> =
 			conn.findAllDiskAttachmentsFromVm(vmId)
 				.getOrDefault(listOf())
-		log.info("스냅샷 디스크 목록")
-		return diskAttachments.toSnapshotDiskVos(conn, vmId)
+//		return res.toDiskAttachmentVos(conn, vmId)
+		TODO("///")
 	}
 
 	@Throws(Error::class)

@@ -194,13 +194,14 @@ class NetworkServiceImpl(
 	@Deprecated("[ItStorageService.findAllClustersFromDataCenter] 와 내용 같음")
 	@Throws(Error::class)
 	override fun findAllClustersFromDataCenter(dataCenterId: String): List<ClusterVo> {
-		TODO("Not yet implemented")
+		TODO("Not")
 	}
 
 
 	// TODO 중복이름 : dc 다르면 중복명 가능
 	@Throws(Error::class)
 	override fun add(networkVo: NetworkVo): NetworkVo? {
+		// TODO 네트워크 생성시 기본이 선택한 데이터센터가 가진 모든 클러스터들이 연결/필수 설정되어잇음
 		log.info("addNetwork ... ")
 		val res: Network? =
 			conn.addNetwork(networkVo.toAddNetworkBuilder(conn))

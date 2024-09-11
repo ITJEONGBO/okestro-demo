@@ -27,9 +27,9 @@ interface ItVmDiskService {
 	 *
 	 * @param vmId [String] 가상머신 id
 	 * @param diskAttachmentId [String] 디스크 id
-	 * @return [DiskAttachmentVo]
+	 * @return [DiskAttachmentVo]?
 	 */
-	fun findOneDiskFromVm(vmId: String, diskAttachmentId: String): DiskAttachmentVo
+	fun findOneDiskFromVm(vmId: String, diskAttachmentId: String): DiskAttachmentVo?
 	/**
 	 * [ItVmDiskService.addDisksFromVm]
 	 * 가상머신 디스크 생성/연결
@@ -44,9 +44,9 @@ interface ItVmDiskService {
 	 * 가상머신 디스크 생성/연결
 	 *
 	 * @param vmVo [VmVo]
-	 * @return[DiskAttachmentVo]
+	 * @return[DiskAttachmentVo]?
 	 */
-	fun addDiskFromVm(vmVo: VmVo): DiskAttachmentVo
+	fun addDiskFromVm(vmVo: VmVo): DiskAttachmentVo?
 	/**
 	 * [ItVmDiskService.updateDiskFromVm]
 	 * 가상머신 디스크 수정
@@ -103,40 +103,43 @@ class VmDiskService(
 
 	override fun findAllDisksFromVm(vmId: String): List<DiskAttachmentVo> {
 		log.debug("findAllDiskFromVm ... vmId: {}", vmId)
-		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
 		val res: List<DiskAttachment> =
 			conn.findAllDiskAttachmentsFromVm(vmId)
 				.getOrDefault(listOf())
 		return res.toDiskAttachmentVos(conn)
 	}
 
-	override fun findOneDiskFromVm(vmId: String, diskAttachmentId: String): DiskAttachmentVo {
+	override fun findOneDiskFromVm(vmId: String, diskAttachmentId: String): DiskAttachmentVo? {
 		log.debug("findOneDiskFromVm ... vmId: {}", vmId)
-		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
-		val res: DiskAttachment =
+		val res: DiskAttachment? =
 			conn.findDiskAttachmentFromVm(vmId, diskAttachmentId)
-				.getOrNull() ?: throw ErrorPattern.DISK_ATTACHMENT_NOT_FOUND.toError()
-		return res.toDiskAttachmentVo(conn)
+				.getOrNull()
+		return res?.toDiskAttachmentVo(conn)
 	}
 
+	// 가상머신 생성/편집 할때에만 디스크 여러개 만들 수 있음
 	override fun addDisksFromVm(vmVo: VmVo): List<DiskAttachmentVo> {
-		conn.findVm(vmVo.id).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
+		log.info("addDisksFromVm ... ")
 		val res: List<DiskAttachment> =
-			conn.addMultipleDiskAttachmentsToVm(vmVo.id, vmVo.diskAttachmentVos.toDiskAttachmentList())
-				.getOrDefault(listOf())
+			conn.addMultipleDiskAttachmentsToVm(
+				vmVo.id,
+				vmVo.diskAttachmentVos.toDiskAttachmentList()
+			)
+			.getOrDefault(listOf())
 		return res.toDiskAttachmentVos(conn)
 	}
 
-	override fun addDiskFromVm(vmVo: VmVo): DiskAttachmentVo {
-		// disk 자체가 들어갈 수 도 있고, id가 있으면 아이디가 들어가야하는거지
-		val res: DiskAttachment =
-			conn.addDiskAttachmentToVm(vmVo.id, vmVo.diskAttachmentVo.toAddDisk())
-				.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
-		return res.toDiskAttachmentVo(conn)
+	override fun addDiskFromVm(vmVo: VmVo): DiskAttachmentVo? {
+		val res: DiskAttachment? =
+			conn.addDiskAttachmentToVm(
+				vmVo.id,
+				vmVo.diskAttachmentVo.toAddDisk()
+			)
+			.getOrNull()
+		return res?.toDiskAttachmentVo(conn)
 	}
 
 	override fun updateDiskFromVm(vmVo: VmVo): DiskAttachmentVo? {
-		conn.findVm(vmVo.id).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
 
 		// add 와 비슷한 방법을 쓸듯요
 		TODO("Not yet implemented")

@@ -150,54 +150,6 @@ fun Connection.resetVm(vmId: String): Result<Boolean> = runCatching {
 }
 
 
-//fun Connection.addDiskAttachmentFromVm(vmId: String, diskAttachments: List<DiskAttachment>): Result<Boolean> = runCatching {
-//	log.debug("Connection.addDisksFromVm ... ")
-//	val vm: Vm =
-//		this.findVm(vmId)
-//			.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
-//
-//	val res: List<DiskAttachment> =
-//		this@addDiskAttachmentFromVm.addMultipleDiskAttachmentsToVm(vm.id(), diskAttachments)
-//			.getOrDefault(listOf())
-//
-//	true
-//}.onSuccess {
-//	Term.VM.logSuccessWithin(Term.DISK, "생성", vmId)
-//}.onFailure {
-//	Term.VM.logFailWithin(Term.DISK,"생성", it, vmId)
-//	throw if (it is Error) it.toItCloudException() else it
-//}
-
-fun Connection.addDiskAttachmentToVm(vmId: String, diskAttachment: DiskAttachment): Result<DiskAttachment> = runCatching {
-	val diskAttachAdded: DiskAttachment =
-		this.srvAllDiskAttachmentsFromVm(vmId).add().attachment(diskAttachment).send().attachment()
-	log.info("디스크 붙이기 성공")
-	diskAttachAdded
-}.onSuccess {
-	Term.VM.logSuccessWithin(Term.DISK, "붙이기", vmId)
-}.onFailure {
-	Term.VM.logFailWithin(Term.DISK,"붙이기", it, vmId)
-	throw if (it is Error) it.toItCloudException() else it
-}
-
-fun Connection.addMultipleDiskAttachmentsToVm(vmId: String, diskAttachments: List<DiskAttachment>): Result<List<DiskAttachment>> = runCatching {
-	val attachedDisks: List<DiskAttachment> = diskAttachments.map { diskAttachment ->
-		this.addDiskAttachmentToVm(vmId, diskAttachment).getOrThrow()
-	}
-	log.info("여러 디스크 붙이기 성공")
-	attachedDisks
-}.onSuccess {
-	Term.VM.logSuccessWithin(Term.DISK, "여러 개 붙이기", vmId)
-}.onFailure {
-	Term.VM.logFailWithin(Term.DISK, "여러 개 붙이기", it, vmId)
-	throw if (it is Error) it.toItCloudException() else it
-}
-
-fun Connection.bootableDiskExist(vmId: String): Boolean =
-	this.findAllDiskAttachmentsFromVm(vmId)
-		.getOrDefault(listOf())
-		.any { it.bootable() }
-
 fun Connection.addVm(
 	vm: Vm,
 	vnicProfileIds: List<String> = listOf(),
@@ -545,7 +497,10 @@ private fun Connection.srvAllDiskAttachmentsFromVm(vmId: String): DiskAttachment
 	this.srvVm(vmId).diskAttachmentsService()
 
 fun Connection.findAllDiskAttachmentsFromVm(vmId: String): Result<List<DiskAttachment>> = runCatching {
-	this.srvAllDiskAttachmentsFromVm(vmId).list().send().attachments()
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
+	this.srvAllDiskAttachmentsFromVm(vmId).list().send().attachments() ?: listOf()
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.DISK_ATTACHMENT, "목록조회", vmId)
 }.onFailure {
@@ -557,6 +512,9 @@ fun Connection.srvDiskAttachmentFromVm(vmId: String, diskAttachmentId: String): 
 	this.srvVm(vmId).diskAttachmentsService().attachmentService(diskAttachmentId)
 
 fun Connection.findDiskAttachmentFromVm(vmId: String, diskAttachmentId: String): Result<DiskAttachment?> = runCatching {
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
 	this.srvDiskAttachmentFromVm(vmId, diskAttachmentId).get().send().attachment()
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.DISK_ATTACHMENT, "상세조회", vmId)
@@ -564,6 +522,44 @@ fun Connection.findDiskAttachmentFromVm(vmId: String, diskAttachmentId: String):
 	Term.VM.logFailWithin(Term.DISK_ATTACHMENT, "상세조회", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
 }
+
+fun Connection.addDiskAttachmentToVm(vmId: String, diskAttachment: DiskAttachment): Result<DiskAttachment> = runCatching {
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
+	val diskAttachAdded: DiskAttachment? =
+		this.srvAllDiskAttachmentsFromVm(vmId).add().attachment(diskAttachment).send().attachment()
+
+	diskAttachAdded ?: throw ErrorPattern.DISK_ATTACHMENT_NOT_FOUND.toError()
+}.onSuccess {
+	Term.VM.logSuccessWithin(Term.DISK, "붙이기", vmId)
+}.onFailure {
+	Term.VM.logFailWithin(Term.DISK,"붙이기", it, vmId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.addMultipleDiskAttachmentsToVm(vmId: String, diskAttachments: List<DiskAttachment>): Result<List<DiskAttachment>> = runCatching {
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
+	val attachedDisks: List<DiskAttachment> = diskAttachments.map { diskAttachment ->
+		this.addDiskAttachmentToVm(vmId, diskAttachment).getOrThrow()
+	}
+	log.info("여러 디스크 붙이기 성공")
+	attachedDisks
+}.onSuccess {
+	Term.VM.logSuccessWithin(Term.DISK, "여러 개 붙이기", vmId)
+}.onFailure {
+	Term.VM.logFailWithin(Term.DISK, "여러 개 붙이기", it, vmId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.bootableDiskExist(vmId: String): Boolean =
+	this.findAllDiskAttachmentsFromVm(vmId)
+		.getOrDefault(listOf())
+		.any { it.bootable() }
+
+
 
 fun Connection.findAllVmsFromDisk(diskId: String): Result<List<Vm>> = runCatching {
 	val vms: List<Vm> =
@@ -588,8 +584,8 @@ private fun Connection.srvSnapshotsFromVm(vmId: String): SnapshotsService =
 	this.srvVm(vmId).snapshotsService()
 
 fun Connection.findAllSnapshotsFromVm(vmId: String): Result<List<Snapshot>> = runCatching {
-	/*val vm: Vm = */this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
-	srvSnapshotsFromVm(vmId).list().send().snapshots()
+	this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	srvSnapshotsFromVm(vmId).list().send().snapshots() ?: listOf()
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.SNAPSHOT, "목록조회", vmId)
 }.onFailure {
