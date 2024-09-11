@@ -11,7 +11,6 @@ import com.itinfo.itcloud.model.storage.*
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
-import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.services.*
 import org.ovirt.engine.sdk4.types.DataCenter
@@ -27,11 +26,6 @@ import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 
 import java.io.IOException
-import java.io.BufferedInputStream
-import java.io.BufferedOutputStream
-import java.net.URL
-import java.security.SecureRandom
-import java.security.cert.X509Certificate
 import javax.net.ssl.*
 import kotlin.Error
 
@@ -54,10 +48,10 @@ interface ItStorageService {
 	 * 데이터센터 - 스토리지 도메인 정보
 	 *
 	 * @param storageDomainId [String]
-	 * @return [StorageDomainVo]
+	 * @return [StorageDomainVo]?
 	 */
 	@Throws(Error::class)
-	fun findStorageDomain(storageDomainId: String): StorageDomainVo
+	fun findStorageDomain(storageDomainId: String): StorageDomainVo?
 	/**
 	 * [ItStorageService.findAllHostsFromDataCenter]
 	 * 도메인 생성 - 호스트 목록
@@ -72,10 +66,19 @@ interface ItStorageService {
 	 * 도메인 생성
 	 *
 	 * @param storageDomainVo [StorageDomainVo]
-	 * @return [StorageDomainVo]
+	 * @return [StorageDomainVo]?
 	 */
 	@Throws(Error::class)
-	fun addDomain(storageDomainVo: StorageDomainVo): StorageDomainVo
+	fun addDomain(storageDomainVo: StorageDomainVo): StorageDomainVo?
+	/**
+	 * [ItStorageService.updatedDomain]
+	 * 도메인 관리(편집)
+	 *
+	 * @param storageDomainVo [StorageDomainVo]
+	 * @return [StorageDomainVo]?
+	 */
+	@Throws(Error::class)
+	fun updatedDomain(storageDomainVo: StorageDomainVo): StorageDomainVo?
 	/**
 	 * [ItStorageService.removeDomain]
 	 * 도메인 삭제
@@ -118,10 +121,10 @@ interface ItStorageService {
 	 * 디스크 정보
 	 *
 	 * @param diskId [String] 디스크 id
-	 * @return [DiskImageVo]
+	 * @return [DiskImageVo]?
 	 */
 	@Throws(Error::class)
-	fun findDisk(diskId: String): DiskImageVo
+	fun findDisk(diskId: String): DiskImageVo?
 	/**
 	 * [ItStorageService.findAllDataCenters]
 	 * 디스크 생성 - 이미지 DataCenter List
@@ -295,7 +298,9 @@ class StorageServiceImpl(
 	@Throws(Error::class)
 	override fun findAllStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
 		log.debug("findAllStorageDomainsFromDataCenter ... dcId: $dataCenterId")
-		conn.findDataCenter(dataCenterId).getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toError()
+		conn.findDataCenter(dataCenterId)
+			.getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toException()
+
 		val res: List<StorageDomain> =
 			conn.findAllStorageDomains()
 				.getOrDefault(listOf())
@@ -304,25 +309,25 @@ class StorageServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findStorageDomain(storageDomainId: String): StorageDomainVo {
+	override fun findStorageDomain(storageDomainId: String): StorageDomainVo? {
 		log.info("findStorageDomain... ")
-		val res: StorageDomain =
+		val res: StorageDomain? =
 			conn.findStorageDomain(storageDomainId)
-				.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toError()
-		return res.toStorageDomainVo(conn)
+				.getOrNull()
+		return res?.toStorageDomainVo(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findAllHostsFromDataCenter(dataCenterId: String): List<IdentifiedVo> {
-		log.debug("setHostList ... dataCenterId: $dataCenterId")
-		val hosts: List<Host> =
+		log.debug("findAllHostsFromDataCenter ... dataCenterId: $dataCenterId")
+		val res: List<Host> =
 			conn.findAllHosts()
 				.getOrDefault(listOf())
 				.filter {
 					conn.findCluster(it.cluster().id())
 						.getOrNull()?.dataCenter()?.id() == dataCenterId
 				}
-		return hosts.fromHostsToIdentifiedVos()
+		return res.fromHostsToIdentifiedVos()
 	}
 
 
@@ -330,12 +335,16 @@ class StorageServiceImpl(
 	// To add a new storage domain with specified name, type, storage.type, storage.address, and storage.path,
 	// and using a host with an id 123, send a request like this
 	@Throws(Error::class)
-	override fun addDomain(storageDomainVo: StorageDomainVo): StorageDomainVo {
+	override fun addDomain(storageDomainVo: StorageDomainVo): StorageDomainVo? {
 		log.info("addDomain ... ")
-		val res: StorageDomain =
+		val res: StorageDomain? =
 			conn.addStorageDomain(storageDomainVo.toAddStorageDomainBuilder(conn))
-				.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_VO_INVALID.toError()
-		return res.toStorageDomainVo(conn)
+				.getOrNull()
+		return res?.toStorageDomainVo(conn)
+	}
+
+	override fun updatedDomain(storageDomainVo: StorageDomainVo): StorageDomainVo? {
+		TODO("Not yet implemented")
 	}
 
 //		val storageDomainsService = system.storageDomainsService()
@@ -366,84 +375,77 @@ class StorageServiceImpl(
 //			return true
 //		}
 
-
 	@Throws(Error::class)
 	override fun removeDomain(storageDomainId: String): Boolean {
-		log.info("deleteDomain ... domainId: {}", storageDomainId)
-		val storageDomain: StorageDomain =
-			conn.findStorageDomain(storageDomainId)
-				.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toException()
-		val dataCenterId: String = storageDomain.dataCenters()[0].id()
+		log.info("removeDomain ... domainId: {}", storageDomainId)
+//		val dataCenterId: String = storageDomain.dataCenters()[0].id()
 		val res: Result<Boolean> =
-			conn.removeAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId)
+			conn.removeStorageDomain(storageDomainId)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun findAllDisksFromStorageDomain(storageDomainId: String): List<DiskImageVo> {
 		log.info("findAllDisksFromStorageDomain ... storageDomainId: {}", storageDomainId)
-		conn.findStorageDomain(storageDomainId).getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toException()
-		val disks: List<Disk> =
+		val res: List<Disk> =
 			conn.findAllDisksFromStorageDomain(storageDomainId)
 				.getOrDefault(listOf())
-		return disks.toDiskImageVos(conn)
+		return res.toDiskImageVos(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findAllPermissionsFromStorageDomain(storageDomainId: String): List<PermissionVo> {
 		log.info("findPermissions ... storageDomainId: {}", storageDomainId)
-		conn.findStorageDomain(storageDomainId).getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toException()
-		val permissionList: List<Permission> =
+		val res: List<Permission> =
 			conn.findAllPermissionsFromStorageDomain(storageDomainId)
 				.getOrDefault(listOf())
-		return permissionList.toPermissionVos(conn)
+		return res.toPermissionVos(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findAllEventsFromStorageDomain(storageDomainId: String): List<EventVo> {
 		log.info("findAllEventsFromStorageDomain ... storageDomainId: {}", storageDomainId)
 		val storageDomain: StorageDomain =
-			conn.findStorageDomain(storageDomainId).getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toError()
-		val events: List<Event> =
+			conn.findStorageDomain(storageDomainId).getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toException()
+		val res: List<Event> =
 			conn.findAllEvents()
 				.getOrDefault(listOf())
 				.filter {event ->
 					event.storageDomainPresent() &&
 						(event.storageDomain().idPresent() && event.storageDomain().id().equals(storageDomainId) || (event.storageDomain().namePresent() && event.storageDomain().name().equals(storageDomain.name())) )
 				}
-		return events.toEventVos()
+		return res.toEventVos()
 	}
 
 
 	@Throws(Error::class)
-	override fun findDisk(diskId: String): DiskImageVo {
+	override fun findDisk(diskId: String): DiskImageVo? {
 		log.info("findDisk ... diskId: $diskId")
-		val disk: Disk =
+		val res: Disk? =
 			conn.findDisk(diskId)
-				.getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toException()
-		return disk.toDiskImageVo(conn)
+				.getOrNull()
+		return res?.toDiskImageVo(conn)
 	}
 
 	@Deprecated("[ItDataCenterService.findAll]와 같은 코드")
 	@Throws(Error::class)
 	override fun findAllDataCenters(): List<DataCenterVo> {
 		log.info("findAllDataCenters ... ")
-		val dataCentersUp: List<DataCenter> =
+		val res: List<DataCenter> =
 			conn.findAllDataCenters()
 				.getOrDefault(listOf())
 				.filter { it.status() == DataCenterStatus.UP }
-		return dataCentersUp.toDataCenterIdNames()
+		return res.toDataCenterIdNames()
 	}
 
 	@Deprecated("[ItStorageService.findAllStorageDomainsFromDataCenter] 겹침")
 	@Throws(Error::class)
 	override fun findAllStorageDomainsfromDataCenter(dataCenterId: String): List<StorageDomainVo> {
 		log.info("findAllStorageDomainsFromDataCenter ... dataCenterId: $dataCenterId")
-
-		val storageDomains: List<StorageDomain> =
+		val res: List<StorageDomain> =
 			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
 				.getOrDefault(listOf())
-		return storageDomains.toStorageDomainIdNames()
+		return res.toStorageDomainIdNames()
 	}
 
 	@Throws(Error::class)
@@ -458,20 +460,20 @@ class StorageServiceImpl(
 	@Throws(Error::class)
 	override fun addDisk(image: DiskImageVo): DiskImageVo? {
 		log.info("addDisk ... image: $image")
-		val res: Disk =
+		val res: Disk? =
 			conn.addDisk(image.toAddDiskBuilder())
-				.getOrNull() ?: throw ErrorPattern.DISK_VO_INVALID.toError()
-		return res.toDiskImageVo(conn)
+				.getOrNull()
+		return res?.toDiskImageVo(conn)
 	}
 
 
 	@Throws(Error::class)
 	override fun updateDisk(image: DiskImageVo): DiskImageVo? {
 		log.info("updateDisk ... image: $image")
-		val res: Disk =
+		val res: Disk? =
 			conn.updateDisk(image.toEditDiskBuilder())
-				.getOrNull() ?: throw ErrorPattern.DISK_VO_INVALID.toError()
-		return res.toDiskImageVo(conn)
+				.getOrNull()
+		return res?.toDiskImageVo(conn)
 	}
 
 	@Throws(Error::class)
@@ -503,7 +505,11 @@ class StorageServiceImpl(
 	override fun copyDisk(diskImageVo: DiskImageVo): Boolean {
 		log.info("copyDisk ... diskVo: $diskImageVo")
 		val res: Result<Boolean> =
-			conn.copyDisk(diskImageVo.id, diskImageVo.alias, diskImageVo.storageDomainVo.id)
+			conn.copyDisk(
+				diskImageVo.id,
+				diskImageVo.alias,
+				diskImageVo.storageDomainVo.id
+			)
 		return res.isSuccess
 	}
 
@@ -515,7 +521,7 @@ class StorageServiceImpl(
 	@Throws(Error::class, IOException::class)
 	override fun uploadDisk(file: MultipartFile, image: DiskImageVo): Boolean {
 		log.info("uploadDisk ... ")
-		if (file.isEmpty) throw ErrorPattern.FILE_NOT_FOUND.toError()
+		if (file.isEmpty) throw ErrorPattern.FILE_NOT_FOUND.toException()
 
 //		val res: Res<Boolean> =
 //			conn.uploadDisk(file, image.toUploadDiskBuilder(file.size))
@@ -535,11 +541,10 @@ class StorageServiceImpl(
 
 	override fun findAllPermissionsFromDisk(diskId: String): List<PermissionVo> {
 		log.info("findAllPermissionsFromDisk ... diskId: {}", diskId)
-		conn.findDisk(diskId).getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toException()
-		val permissionList: List<Permission> =
+		val res: List<Permission> =
 			conn.findAllPermissionsFromDisk(diskId)
 				.getOrDefault(listOf())
-		return permissionList.toPermissionVos(conn)
+		return res.toPermissionVos(conn)
 	}
 
 
@@ -708,7 +713,7 @@ private fun createDisk(image: DiskImageVo, fileSize: Long): Disk {
 //	@Throws(Error::class)
 //	override fun findAllDisksFromDataCenter(dataCenterId: String): List<DiskImageVo> {
 //		log.info("findAllDisksFromDataCenter ... dataCenterId: {}", dataCenterId)
-//		conn.findDataCenter(dataCenterId).getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toError()
+//		conn.findDataCenter(dataCenterId).getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toException()
 //
 //		val storageDomains: List<StorageDomain> =
 //			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)

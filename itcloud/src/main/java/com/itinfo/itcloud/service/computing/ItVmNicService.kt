@@ -20,14 +20,14 @@ import kotlin.jvm.Throws
 
 interface ItVmNicService {
 	/**
-	 * [ItVmNicService.findAllNicsFromVm]
+	 * [ItVmNicService.findAllNicFromVm]
 	 * 네트워크 인터페이스
 	 *
 	 * @param vmId [String] 가상머신 id
 	 * @return List<[NicVo]>
 	 */
 	@Throws(Error::class)
-	fun findAllNicsFromVm(vmId: String): List<NicVo>
+	fun findAllNicFromVm(vmId: String): List<NicVo>
 	/**
 	 * [ItVmNicService.findOneNicFromVm]
 	 * nic 수정창
@@ -42,7 +42,7 @@ interface ItVmNicService {
 	 * [ItVmNicService.addFromVm]
 	 * 가상머신 - 새 네트워크 인터페이스
 	 * 생성창은 필요없음, 왜냐면 프로파일 리스트만 가지고 오면됨
-	 * public List<VnicProfileVo> setVnic(String clusterId) {} 사용하면 됨
+	 * [ItVmService.findAllVnicProfileFromCluster]
 	 *
 	 * @param vmId [String] 가상머신 id
 	 * @param nicVo [NicVo]
@@ -76,8 +76,8 @@ class VmNicServiceImpl(
 ) : BaseService(), ItVmNicService {
 
 	@Throws(Error::class)
-	override fun findAllNicsFromVm(vmId: String): List<NicVo> {
-		log.info("findAllFromVm ... vmId: {}", vmId)
+	override fun findAllNicFromVm(vmId: String): List<NicVo> {
+		log.info("findAllNicFromVm ... vmId: {}", vmId)
 		val res: List<Nic> =
 			conn.findAllNicsFromVm(vmId)
 				.getOrDefault(listOf())
@@ -130,7 +130,7 @@ class VmNicServiceImpl(
 
 	@Throws(Error::class)
 	override fun removeFromVm(vmId: String, nicId: String): Boolean {
-		log.info("removeNicFromVm ... ")
+		log.info("removeFromVm ... ")
 		conn.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 		conn.findNicFromVm(vmId, nicId).getOrNull() ?: throw ErrorPattern.NIC_NOT_FOUND.toError()
 		val res: Result<Boolean> =

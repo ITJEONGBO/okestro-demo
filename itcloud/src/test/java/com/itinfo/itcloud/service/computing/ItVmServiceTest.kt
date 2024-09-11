@@ -82,15 +82,15 @@ class ItVmServiceTest {
 
 	/**
 	 * [should_findAllDiskImagesBy]
-	 * [ItVmService.findAllDiskImagesBy]에 대한 단위테스트
+	 * [ItVmService.findAllDiskImage]에 대한 단위테스트
 	 * TODO 디스크 목록기준이 애매함
-	 * @see [ItVmService.findAllDiskImagesBy]
+	 * @see [ItVmService.findAllDiskImage]
 	 */
 	@Test
 	fun should_findAllDiskImagesBy() {
 		log.debug("should_findAllDiskImagesBy ...")
 		val result: List<DiskImageVo> =
-			service.findAllDiskImagesBy()
+			service.findAllDiskImage()
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(0))
@@ -100,15 +100,15 @@ class ItVmServiceTest {
 
 	/**
 	 * [should_findAllVnicProfilesBy]
-	 * [ItVmService.findAllVnicProfilesBy]에 대한 단위테스트
+	 * [ItVmService.findAllVnicProfileFromCluster]에 대한 단위테스트
 	 *
-	 * @see [ItVmService.findAllVnicProfilesBy]
+	 * @see [ItVmService.findAllVnicProfileFromCluster]
 	 */
 	@Test
 	fun should_findAllVnicProfilesBy() {
 		log.debug("should_findAllVnicProfilesBy ...")
 		val result: List<VnicProfileVo> =
-			service.findAllVnicProfilesBy(clusterId)
+			service.findAllVnicProfileFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(4))
@@ -118,15 +118,15 @@ class ItVmServiceTest {
 
 	/**
 	 * [should_findAllCpuProfilesBy]
-	 * [ItVmService.findAllCpuProfilesBy]에 대한 단위테스트
+	 * [ItVmService.findAllCpuProfileFromCluster]에 대한 단위테스트
 	 *
-	 * @see [ItVmService.findAllCpuProfilesBy]
+	 * @see [ItVmService.findAllCpuProfileFromCluster]
 	 */
 	@Test
 	fun should_findAllCpuProfilesBy() {
 		log.debug("should_findAllCpuProfilesBy ...")
 		val result: List<CpuProfileVo> =
-			service.findAllCpuProfilesBy(clusterId)
+			service.findAllCpuProfileFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(1))
@@ -135,55 +135,19 @@ class ItVmServiceTest {
 	}
 
 	/**
-	 * [findAllISOsBy]
-	 * [ItVmService.findAllISOsBy]에 대한 단위테스트
+	 * [should_findAllIso]
+	 * [ItVmService.findAllISO]에 대한 단위테스트
 	 * TODO
-	 * @see [ItVmService.findAllISOsBy]
+	 * @see [ItVmService.findAllISO]
 	 */
 	@Test
-	fun should_findAllIsosBy() {
+	fun should_findAllIso() {
 		log.debug("should_findAllISOsBy ...")
 		val result: List<IdentifiedVo> =
-			service.findAllISOsBy()
+			service.findAllISO()
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(2))
-
-		result.forEach { println(it) }
-	}
-
-	/**
-	 * [should_findAllAffinityGroupsBy]
-	 * [ItVmService.findAllAffinityGroupsBy]에 대한 단위테스트
-	 * TODO
-	 * @see [ItVmService.findAllAffinityGroupsBy]
-	 */
-	@Test
-	fun should_findAllAffinityGroupsBy() {
-		log.debug("should_findAllAffinityGroupsBy ...")
-		val result: List<IdentifiedVo> =
-			service.findAllAffinityGroupsBy(clusterId)
-
-		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(0))
-
-		result.forEach { println(it) }
-	}
-
-	/**
-	 * [should_findAllAffinityLabelsBy]
-	 * [ItVmService.findAllAffinityLabelsBy]에 대한 단위테스트
-	 * TODO
-	 * @see [ItVmService.findAllAffinityLabelsBy]
-	 */
-	@Test
-	fun should_findAllAffinityLabelsBy() {
-		log.debug("should_findAllAffinityLabelsBy ...")
-		val result: List<IdentifiedVo> =
-			service.findAllAffinityLabelsBy()
-
-		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(0))
 
 		result.forEach { println(it) }
 	}
@@ -252,15 +216,15 @@ class ItVmServiceTest {
 
 	/**
 	 * [should_findAllApplicationsByVm]
-	 * [ItVmService.findAllApplicationsByVm]에 대한 단위테스트
+	 * [ItVmService.findAllApplicationFromVm]에 대한 단위테스트
 	 *
-	 * @see ItVmService.findAllApplicationsByVm
+	 * @see ItVmService.findAllApplicationFromVm
 	 */
 	@Test
 	fun should_findAllApplicationsByVm() {
 		log.debug("should_findAllApplicationsByVm ... ")
 		val result: List<IdentifiedVo> =
-			service.findAllApplicationsByVm(hostVm)
+			service.findAllApplicationFromVm(hostVm)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(2))
@@ -287,15 +251,15 @@ class ItVmServiceTest {
 
 	/**
 	 * [should_findAllPermissionsFromVm]
-	 * [ItVmService.findAllPermissionsFromVm]에 대한 단위테스트
+	 * [ItVmService.findAllPermissionFromVm]에 대한 단위테스트
 	 *
-	 * @see ItVmService.findAllPermissionsFromVm
+	 * @see ItVmService.findAllPermissionFromVm
 	 */
 	@Test
 	fun should_findAllPermissionsFromVm() {
 		log.debug("should_findAllPermissionsFromVm ... ")
 		val result: List<PermissionVo> =
-			service.findAllPermissionsFromVm(hostVm)
+			service.findAllPermissionFromVm(hostVm)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(3))
@@ -305,15 +269,15 @@ class ItVmServiceTest {
 
 	/**
 	 * [should_findAllEventsFromVm]
-	 * [ItVmService.findAllEventsFromVm]에 대한 단위테스트
+	 * [ItVmService.findAllEventFromVm]에 대한 단위테스트
 	 *
-	 * @see ItVmService.findAllEventsFromVm
+	 * @see ItVmService.findAllEventFromVm
 	 */
 	@Test
 	fun should_findAllEventsFromVm() {
 		log.debug("should_findAllEventsFromVm ... ")
 		val result: List<EventVo> =
-			service.findAllEventsFromVm(hostVm)
+			service.findAllEventFromVm(hostVm)
 
 		assertThat(result, `is`(not(nullValue())))
 //		assertThat(result.size, `is`(0))

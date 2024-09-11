@@ -155,15 +155,15 @@ class ItHostServiceTest {
 
 	/**
 	 * [should_findAllVmsFromHost]
-	 * [ItHostService.findAllVmsFromHost]에 대한 단위테스트
+	 * [ItHostService.findAllVmFromHost]에 대한 단위테스트
 	 * 
-	 * @see [ItHostService.findAllVmsFromHost]
+	 * @see [ItHostService.findAllVmFromHost]
 	 */
 	@Test
 	fun should_findAllVmsFromHost() {
 		log.debug("should_findAllVmsFromHost ...")
 		val result: List<VmVo> =
-			service.findAllVmsFromHost(host02)
+			service.findAllVmFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(1))
@@ -172,15 +172,15 @@ class ItHostServiceTest {
 
 	/**
 	 * [should_findAllHostNicsFromHost]
-	 * [ItHostService.findAllHostNicsFromHost]에 대한 단위테스트
+	 * [ItHostService.findAllHostNicFromHost]에 대한 단위테스트
 	 *
-	 * @see [ItHostService.findAllHostNicsFromHost]
+	 * @see [ItHostService.findAllHostNicFromHost]
 	 */
 	@Test
 	fun should_findAllHostNicsFromHost() {
-		log.debug("should_findAllHostNicsFromHost ...")
+		log.debug("should_findAllHostNicFromHost ...")
 		val result: List<HostNicVo> =
-			service.findAllHostNicsFromHost(host02)
+			service.findAllHostNicFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(1))
@@ -189,15 +189,15 @@ class ItHostServiceTest {
 
 	/**
 	 * [should_findAllHostDevicesFromHost]
-	 * [ItHostService.findAllHostDevicesFromHost]에 대한 단위테스트
+	 * [ItHostService.findAllHostDeviceFromHost]에 대한 단위테스트
 	 *
-	 * @see [ItHostService.findAllHostDevicesFromHost]
+	 * @see [ItHostService.findAllHostDeviceFromHost]
 	 */
 	@Test
 	fun should_findAllHostDevicesFromHost() {
 		log.debug("should_findAllHostDevicesFromHost ...")
 		val result: List<HostDeviceVo> =
-			service.findAllHostDevicesFromHost(host02)
+			service.findAllHostDeviceFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(1))
@@ -206,15 +206,15 @@ class ItHostServiceTest {
 
 	/**
 	 * [should_findAllPermissionsFromHost]
-	 * [ItHostService.findAllPermissionsFromHost]에 대한 단위테스트
+	 * [ItHostService.findAllPermissionFromHost]에 대한 단위테스트
 	 *
-	 * @see [ItHostService.findAllPermissionsFromHost]
+	 * @see [ItHostService.findAllPermissionFromHost]
 	 */
 	@Test
 	fun should_findAllPermissionsFromHost() {
 		log.debug("should_findAllPermissionsFromHost ...")
 		val result: List<PermissionVo> =
-			service.findAllPermissionsFromHost(host02)
+			service.findAllPermissionFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(3))
@@ -222,33 +222,16 @@ class ItHostServiceTest {
 	}
 
 	/**
-	 * [should_findAllAffinityLabelsFromHost]
-	 * [ItHostService.findAllAffinityLabelsFromHost]에 대한 단위테스트
-	 * TODO
-	 * @see [ItHostService.findAllAffinityLabelsFromHost]
-	 */
-	@Test
-	fun should_findAllAffinityLabelsFromHost() {
-		log.debug("should_findAllAffinityLabelsFromHost ...")
-		val result: List<AffinityLabelVo> =
-			service.findAllAffinityLabelsFromHost(host02)
-
-		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(0))
-		result.forEach { println(it) }
-	}
-
-	/**
 	 * [should_findAllEventsFromHost]
-	 * [ItHostService.findAllEventsFromHost]에 대한 단위테스트
+	 * [ItHostService.findAllEventFromHost]에 대한 단위테스트
 	 *
-	 * @see [ItHostService.findAllEventsFromHost]
+	 * @see [ItHostService.findAllEventFromHost]
 	 */
 	@Test
 	fun should_findAllEventsFromHost() {
 		log.debug("should_findAllEventsFromHost ...")
 		val result: List<EventVo> =
-			service.findAllEventsFromHost(host02)
+			service.findAllEventFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(197)) // ?

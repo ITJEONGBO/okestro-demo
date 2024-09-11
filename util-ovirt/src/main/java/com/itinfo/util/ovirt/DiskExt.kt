@@ -52,9 +52,10 @@ fun Connection.findAllStorageDomainsFromDisk(diskId: String): Result<List<Storag
 }
 
 fun Connection.addDisk(disk: Disk): Result<Disk?> = runCatching {
-	val diskAdded: Disk =
-		this.srvAllDisks().add().disk(disk).send().disk() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
-	diskAdded
+	val diskAdded: Disk? =
+		this.srvAllDisks().add().disk(disk).send().disk()
+
+	diskAdded ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
 }.onSuccess {
 	Term.DISK.logSuccess("생성")
 }.onFailure {
@@ -63,8 +64,10 @@ fun Connection.addDisk(disk: Disk): Result<Disk?> = runCatching {
 }
 
 fun Connection.updateDisk(disk: Disk): Result<Disk?> = runCatching {
-	this@updateDisk.findDisk(disk.id()).getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
-	this.srvDisk(disk.id()).update().disk(disk).send().disk()
+	val diskUpdated: Disk? =
+		this.srvDisk(disk.id()).update().disk(disk).send().disk()
+
+	diskUpdated ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
 }.onSuccess {
 	Term.DISK.logSuccess("편집")
 }.onFailure {
@@ -73,7 +76,10 @@ fun Connection.updateDisk(disk: Disk): Result<Disk?> = runCatching {
 }
 
 fun Connection.removeDisk(diskId: String): Result<Boolean> = runCatching {
-	this@removeDisk.findDisk(diskId).getOrNull() ?: throw ErrorPattern.DISK_ID_NOT_FOUND.toError()
+	if(this.findDisk(diskId).isFailure) {
+		throw ErrorPattern.DISK_NOT_FOUND.toError()
+	}
+
 	this.srvDisk(diskId).remove().send()
 	this.expectDiskDeleted(diskId)
 }.onSuccess {
@@ -244,6 +250,9 @@ private fun Connection.srvPermissionsFromDisk(diskId: String): AssignedPermissio
 	this.srvDisk(diskId).permissionsService()
 
 fun Connection.findAllPermissionsFromDisk(diskId: String): Result<List<Permission>> = runCatching {
+	if(this.findDisk(diskId).isFailure){
+		throw ErrorPattern.DISK_NOT_FOUND.toError()
+	}
 	this.srvPermissionsFromDisk(diskId).list().send().permissions()
 }.onSuccess {
 	Term.DISK.logSuccessWithin(Term.PERMISSION, "목록조회", diskId)

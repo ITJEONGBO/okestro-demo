@@ -14,13 +14,13 @@ import org.springframework.stereotype.Service
 
 interface ItVmDiskService {
 	/**
-	 * [ItVmDiskService.findAllDisksFromVm]
+	 * [ItVmDiskService.findAllDiskFromVm]
 	 * 가상머신 디스크 목록
 	 *
 	 * @param vmId [String] 가상머신 id
 	 * @return List<[DiskAttachmentVo]>
 	 */
-	fun findAllDisksFromVm(vmId: String): List<DiskAttachmentVo>
+	fun findAllDiskFromVm(vmId: String): List<DiskAttachmentVo>
 	/**
 	 * [ItVmDiskService.findOneDiskFromVm]
 	 * 가상머신 디스크
@@ -81,6 +81,9 @@ interface ItVmDiskService {
 	 * @return [Boolean]
 	 */
 	fun deactivateDiskFromVm(diskAttachmentId: String): Res<Boolean>
+	/**
+	 *
+	 */
 	fun setDiskMove(diskAttachmentId: String): DiskImageVo // 디스크 이동창
 	/**
 	 * [ItVmDiskService.moveDiskFromVm]
@@ -98,8 +101,8 @@ class VmDiskService(
 	private val itStorageService: ItStorageService
 ): BaseService(), ItVmDiskService {
 
-	override fun findAllDisksFromVm(vmId: String): List<DiskAttachmentVo> {
-		log.debug("findAllDisksFromVm ... vmId: {}", vmId)
+	override fun findAllDiskFromVm(vmId: String): List<DiskAttachmentVo> {
+		log.debug("findAllDiskFromVm ... vmId: {}", vmId)
 		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
 		val res: List<DiskAttachment> =
 			conn.findAllDiskAttachmentsFromVm(vmId)
@@ -117,7 +120,6 @@ class VmDiskService(
 	}
 
 	override fun addDisksFromVm(vmVo: VmVo): List<DiskAttachmentVo> {
-		// disk 자체가 들어갈 수 도 있고, id가 있으면 아이디가 들어가야하는거지
 		conn.findVm(vmVo.id).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
 		val res: List<DiskAttachment> =
 			conn.addMultipleDiskAttachmentsToVm(vmVo.id, vmVo.diskAttachmentVos.toDiskAttachmentList())
@@ -135,6 +137,7 @@ class VmDiskService(
 
 	override fun updateDiskFromVm(vmVo: VmVo): DiskAttachmentVo? {
 		conn.findVm(vmVo.id).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
+
 		// add 와 비슷한 방법을 쓸듯요
 		TODO("Not yet implemented")
 	}

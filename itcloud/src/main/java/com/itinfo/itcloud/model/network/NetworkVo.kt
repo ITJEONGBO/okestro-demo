@@ -177,7 +177,7 @@ fun List<Network>.toClusterNetworkVos(conn: Connection): List<NetworkVo> =
  */
 fun NetworkVo.toNetworkBuilder(conn: Connection): NetworkBuilder {
 	// external provider 선택시 vlan, portisolation=false 선택되면 안됨
-	val networkBuilder: NetworkBuilder = NetworkBuilder()
+	val networkBuilder = NetworkBuilder()
 	networkBuilder
 		.dataCenter(DataCenterBuilder().id(this@toNetworkBuilder.dataCenterVo.id).build())
 		.name(this@toNetworkBuilder.name)
@@ -200,9 +200,52 @@ fun NetworkVo.toNetworkBuilder(conn: Connection): NetworkBuilder {
 	// VnicProfile은 기본생성 정도만
 	// cluster 연결(attach), 필수(require)
 
+	// TODO vnic 생성 창/ qos는 제외항목, 네트워크필터도 vdsm으로 고정
+	/*
+            // 기본생성되는 vnicprofile 삭제
+            val vnicProfile: VnicProfile =
+                conn.findAllVnicProfilesFromNetwork(network.id())
+                    .getOrDefault(listOf())
+                    .firstOrNull() ?: throw ErrorPattern.NIC_NOT_FOUND.toException()
+
+            val resRemoveDefaultVnicProfile: Result<Boolean> =
+                conn.removeVnicProfileFromNetwork(network.id(), vnicProfile.id())
+            log.info("기본 vnicprofile 제거 결과: {}", resRemoveDefaultVnicProfile.isSuccess)
+            // 추가해야 할 vnicprofile
+            for (vo in networkVo.vnicProfileVos) {
+                val vnicProfile2Build: VnicProfile = VnicProfileBuilder().name(vo.name).build()
+                val resAddVnicProfile: Result<VnicProfile> =
+                    conn.addVnicProfileFromNetwork(network.id(), vnicProfile2Build)
+                log.info("신규 vnicprofile(s) 추가 결과: {}", resAddVnicProfile.isSuccess)
+            }
+
+            // 클러스터 모두연결이 선택되어야지만 모두 필요가 선택됨
+            // TODO: isConnected가 되어야 할 조건 찾아야 함
+            val clusterVos: List<ClusterVo> = networkVo.clusterVos.filter { it.isConnected *//* 연결된 경우만 필터링 *//* }
+
+		for (clusterVo in clusterVos) {
+			val n: Network = NetworkBuilder()
+				.id(network.id())
+				.required(clusterVo.required) // TODO: 어디서 찾는 값?
+				.build()
+			val resNetwork: Result<Network?> =
+				conn.addNetworkFromCluster(clusterVo.id, n)
+			log.info("신규 network(s) 추가 결과: {}", resNetwork.isSuccess)
+		}
+
+		// 외부 공급자 처리시 레이블 생성 안됨
+		if (networkVo.label.isNotEmpty()) {
+			val resAddNetworkLabel: Result<NetworkLabel> =
+				conn.addNetworkLabelFromNetwork(network.id(), NetworkLabelBuilder().id(networkVo.label).build())
+			log.info("신규 networkLabel 추가 결과: {}", resAddNetworkLabel.isSuccess)
+		}
+
+		log.info("network {} 추가 완료", network.name())
+		return network.toNetworkVo(conn)*/
 	return networkBuilder
 }
 
+// 필요 name, datacenter_id
 fun NetworkVo.toAddNetworkBuilder(conn: Connection): Network =
 	this@toAddNetworkBuilder.toNetworkBuilder(conn).build()
 

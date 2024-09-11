@@ -27,10 +27,12 @@ fun Connection.srvNetwork(networkId: String): NetworkService =
 	this.srvNetworks().networkService(networkId)
 
 fun Connection.findNetwork(networkId: String, follow: String = ""): Result<Network?> = runCatching {
-	if (follow.isNotEmpty())
-		this.srvNetwork(networkId).get().send().network()
-	else
-		this.srvNetwork(networkId).get().follow(follow).send().network()
+	val network = if (follow.isNotEmpty()) {
+		this.srvNetwork(networkId).get().follow(follow)
+	} else {
+		this.srvNetwork(networkId).get()
+	}
+	network.send().network()
 }.onSuccess {
 	Term.NETWORK.logSuccess("상세조회", networkId)
 }.onFailure {
@@ -40,10 +42,10 @@ fun Connection.findNetwork(networkId: String, follow: String = ""): Result<Netwo
 
 
 fun Connection.addNetwork(network: Network): Result<Network?> = runCatching {
-	val networkAdded: Network =
+	val networkAdded: Network? =
 		this.srvNetworks().add().network(network).send().network()
 
-	networkAdded
+	networkAdded ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
 }.onSuccess {
 	Term.NETWORK.logSuccess("생성")
 }.onFailure {
@@ -78,9 +80,10 @@ fun Connection.removeVnicProfileFromNetwork(networkId: String, vnicProfileId: St
 }
 
 fun Connection.updateNetwork(network: Network): Result<Network?> = runCatching {
-	val networkUpdated: Network =
+	val networkUpdated: Network? =
 		this.srvNetwork(network.id()).update().network(network).send().network()
-	networkUpdated
+
+	networkUpdated ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
 }.onSuccess {
 	Term.NETWORK.logSuccess("편집", it.id())
 }.onFailure {
@@ -89,17 +92,15 @@ fun Connection.updateNetwork(network: Network): Result<Network?> = runCatching {
 }
 
 fun Connection.removeNetwork(networkId: String): Result<Boolean> = runCatching {
-	this.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
+	if(this.findNetwork(networkId).isFailure) {
+		throw ErrorPattern.NETWORK_NOT_FOUND.toError()
+	}
 	this.srvNetwork(networkId).remove().send()
 	true
 // 단순 네트워크에서 네트워크 삭제할때는 네트워크 상태 필요없음
 //	if(network.status() == NetworkStatus.NON_OPERATIONAL){
 //		this.srvNetwork(networkId).remove().send()
 //		true
-//	}else {
-//		log.warn("{} 삭제 실패... {} 가 OPERATIONAL 상태 ", Term.NETWORK.desc, networkId)
-//		throw ErrorPattern.NETWORK_OPERATIONAL_ERROR.toError()
-//	}
 }.onSuccess {
 	Term.NETWORK.logSuccess("삭제", networkId)
 }.onFailure {
@@ -144,10 +145,15 @@ private fun Connection.srvVnicProfilesFromNetwork(networkId: String): AssignedVn
 	this.srvNetwork(networkId).vnicProfilesService()
 
 fun Connection.findAllVnicProfilesFromNetwork(networkId: String, follow: String = ""): Result<List<VnicProfile>> = runCatching {
-	if (follow.isNotEmpty())
-		this.srvVnicProfilesFromNetwork(networkId).list().follow(follow).send().profiles()
-	else
-		this.srvVnicProfilesFromNetwork(networkId).list().send().profiles()
+	if(this.findNetwork(networkId).isFailure) {
+		throw ErrorPattern.NETWORK_NOT_FOUND.toError()
+	}
+	val vnicProfile = if (follow.isNotEmpty()) {
+		this.srvVnicProfilesFromNetwork(networkId).list().follow(follow)
+	} else {
+		this.srvVnicProfilesFromNetwork(networkId).list()
+	}
+	vnicProfile.send().profiles() ?: listOf()
 }.onSuccess {
 	Term.NETWORK.logSuccessWithin(Term.VNIC_PROFILE, "목록조회", networkId)
 }.onFailure {
@@ -171,10 +177,16 @@ private fun Connection.srvPermissionsFromNetwork(networkId: String): AssignedPer
 	this.srvNetwork(networkId).permissionsService()
 
 fun Connection.findAllPermissionsFromNetwork(networkId: String, follow: String = ""): Result<List<Permission>> = runCatching {
-	if (follow.isNotEmpty())
-		this.srvPermissionsFromNetwork(networkId).list().follow(follow).send().permissions()
-	else
-		this.srvPermissionsFromNetwork(networkId).list().send().permissions()
+	if(this.findNetwork(networkId).isFailure) {
+		throw ErrorPattern.NETWORK_NOT_FOUND.toError()
+	}
+	val permission = if (follow.isNotEmpty()) {
+		this.srvPermissionsFromNetwork(networkId).list().follow(follow)
+	} else {
+		this.srvPermissionsFromNetwork(networkId).list()
+	}
+
+	permission.send().permissions() ?: listOf()
 }.onSuccess {
 	Term.NETWORK.logSuccessWithin(Term.PERMISSION, "목록조회", networkId)
 }.onFailure {

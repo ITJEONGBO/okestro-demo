@@ -75,9 +75,10 @@ fun Connection.addCluster(cluster: Cluster): Result<Cluster?> = runCatching {
 			.nameDuplicateCluster(cluster.name())) {
 		return FailureType.DUPLICATE.toResult(Term.CLUSTER.desc)
 	}
-	val clusterAdded: Cluster =
+	val clusterAdded: Cluster? =
 		this.srvClusters().add().cluster(cluster).send().cluster()
-	clusterAdded
+
+	clusterAdded ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toError()
 }.onSuccess {
 	Term.CLUSTER.logSuccess("생성")
 }.onFailure {
@@ -91,9 +92,10 @@ fun Connection.updateCluster(cluster: Cluster): Result<Cluster?> = runCatching {
 			.nameDuplicateCluster(cluster.name(), cluster.id())) {
 		return FailureType.DUPLICATE.toResult(Term.CLUSTER.desc)
 	}
-	val clusterUpdated: Cluster =
+	val clusterUpdated: Cluster? =
 		this.srvCluster(cluster.id()).update().cluster(cluster).send().cluster()
-	clusterUpdated
+
+	clusterUpdated ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toError()
 }.onSuccess {
 	Term.CLUSTER.logSuccess("편집")
 }.onFailure {
@@ -102,10 +104,11 @@ fun Connection.updateCluster(cluster: Cluster): Result<Cluster?> = runCatching {
 }
 
 fun Connection.removeCluster(clusterId: String): Result<Boolean> = runCatching {
-	val cluster: Cluster =
-		this.findCluster(clusterId).getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toError()
+	if(this.findCluster(clusterId).isFailure) {
+		throw ErrorPattern.CLUSTER_NOT_FOUND.toError()
+	}
 
-	this.srvCluster(cluster.id()).remove().send()
+	this.srvCluster(clusterId).remove().send()
 	this.expectClusterDeleted(clusterId)
 }.onSuccess {
 	Term.CLUSTER.logSuccess("삭제")
@@ -140,10 +143,10 @@ private fun Connection.srvClusterNetworks(clusterId: String): ClusterNetworksSer
 
 
 fun Connection.findAllNetworksFromCluster(clusterId: String): Result<List<Network>> = runCatching {
-	if (this@findAllNetworksFromCluster.findCluster(clusterId).isFailure) {
-		return FailureType.NOT_FOUND.toResult(Term.CLUSTER.desc)
+	if (this.findCluster(clusterId).isFailure) {
+		throw ErrorPattern.CLUSTER_NOT_FOUND.toError()
 	}
-	this.srvClusterNetworks(clusterId).list().send().networks()
+	this.srvClusterNetworks(clusterId).list().send().networks() ?: listOf()
 }.onSuccess {
 	Term.CLUSTER.logSuccessWithin(Term.NETWORK, "목록조회")
 }.onFailure {
@@ -347,12 +350,10 @@ fun Connection.findAllAffinityGroupVmLabelsFromCluster(clusterId: String, agId: 
 }
 
 fun Connection.findAllPermissionsFromCluster(clusterId: String): Result<List<Permission>> = runCatching {
-	if (this@findAllPermissionsFromCluster.findCluster(clusterId).getOrNull() == null) {
-		log.warn("findAllPermissionsFromCluster ... 클러스터 없음")
-		listOf()
-	} else {
-		this@findAllPermissionsFromCluster.srvCluster(clusterId).permissionsService().list().send().permissions()
+	if (this@findAllPermissionsFromCluster.findCluster(clusterId).isFailure) {
+		throw ErrorPattern.CLUSTER_NOT_FOUND.toError()
 	}
+	this.srvCluster(clusterId).permissionsService().list().send().permissions() ?: listOf()
 }.onSuccess {
 	Term.CLUSTER.logSuccessWithin(Term.PERMISSION, "목록조회")
 }.onFailure {

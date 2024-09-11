@@ -44,7 +44,6 @@ class ItDataCenterServiceTest {
 
 		assertThat(result, `is`(not(nullValue())))
 //		assertThat(result.size, `is`(1)) // 데이터센터 목록의 개수가 2인지 확인
-//		assertThat(result.size, `is`(2)) // 데이터센터 목록의 개수가 2인지 확인
 		result.forEach { println(it) }
 	}
 
@@ -251,15 +250,15 @@ class ItDataCenterServiceTest {
 
 	/**
 	 * [should_findAllEventsBy]
-	 * [ItDataCenterService.findAllEventsBy]에 대한 단위테스트
+	 * [ItDataCenterService.findAllEventFromDataCenter]에 대한 단위테스트
 	 *
-	 * @see ItDataCenterService.findAllEventsBy
+	 * @see ItDataCenterService.findAllEventFromDataCenter
 	 **/
 	@Test
 	fun should_findAllEventsBy() {
 		log.debug("should_findAllEventsBy ... ")
 		val result: List<EventVo> =
-			service.findAllEventsBy(dataCenterId)
+			service.findAllEventFromDataCenter(dataCenterId)
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(110))
 	}

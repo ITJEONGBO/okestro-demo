@@ -1,9 +1,11 @@
 package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.*
+import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.types.Cluster
 import org.ovirt.engine.sdk4.types.Host
@@ -58,6 +60,8 @@ class HostOperationServiceImpl: BaseService(), ItHostOperationService {
     @Throws(Error::class)
     override fun deactivate(hostId: String): Boolean {
         log.info("deactivate ... hostId: {}", hostId)
+        conn.findHost(hostId)
+            .getOrNull()?: throw ErrorPattern.HOST_NOT_FOUND.toException()
         val res: Result<Boolean> =
             conn.deactivateHost(hostId)
         return res.isSuccess
@@ -82,9 +86,9 @@ class HostOperationServiceImpl: BaseService(), ItHostOperationService {
     @Throws(UnknownHostException::class, Error::class)
     override fun restart(hostId: String): Boolean {
         log.info("reStartHost ... ")
-    // TODO: Host 이름, PW 입력문제
+    // TODO Host 이름, PW 입력문제 => application.properties 에 저장해서 불러오는 방식(비번 변경되었을 시 문제발생)
         val userName = ""
-        val hostPw: String = "adminRoot!@#" // TODO: sysprop 값 저장
+        val hostPw: String = "adminRoot!@#"
         val res: Result<Boolean> =
             conn.restartHost(hostId, hostPw)
         return res.isSuccess

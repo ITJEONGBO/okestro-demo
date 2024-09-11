@@ -10,7 +10,6 @@ import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.*
-import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.types.*
 import org.springframework.stereotype.Service
@@ -176,10 +175,10 @@ class NetworkServiceImpl(
 	@Throws(Error::class)
 	override fun findOne(networkId: String): NetworkVo? {
 		log.info("getNetwork ... networkId: {}", networkId)
-		val res: Network =
+		val res: Network? =
 			conn.findNetwork(networkId, "networklabels")
-				.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
-		return res.toNetworkVo(conn)
+				.getOrNull()
+		return res?.toNetworkVo(conn)
 	}
 
 	@Deprecated("[ItDataCenterService.findAll] 과 내용 비슷함")
@@ -198,76 +197,30 @@ class NetworkServiceImpl(
 		TODO("Not yet implemented")
 	}
 
-	// 새 논리 네트워크 추가
-	// 필요 name, datacenter_id
+
 	// TODO 중복이름 : dc 다르면 중복명 가능
 	@Throws(Error::class)
 	override fun add(networkVo: NetworkVo): NetworkVo? {
 		log.info("addNetwork ... ")
-		val res: Network =
+		val res: Network? =
 			conn.addNetwork(networkVo.toAddNetworkBuilder(conn))
-				.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
-		return res.toNetworkVo(conn)
+				.getOrNull()
+		return res?.toNetworkVo(conn)
 		// 클러스터 연결, 필수 선택
-
-		// TODO vnic 생성 창/ qos는 제외항목, 네트워크필터도 vdsm으로 고정
-/*
-		// 기본생성되는 vnicprofile 삭제
-		val vnicProfile: VnicProfile =
-			conn.findAllVnicProfilesFromNetwork(network.id())
-				.getOrDefault(listOf())
-				.firstOrNull() ?: throw ErrorPattern.NIC_NOT_FOUND.toError()
-
-		val resRemoveDefaultVnicProfile: Result<Boolean> =
-			conn.removeVnicProfileFromNetwork(network.id(), vnicProfile.id())
-		log.info("기본 vnicprofile 제거 결과: {}", resRemoveDefaultVnicProfile.isSuccess)
-		// 추가해야 할 vnicprofile
-		for (vo in networkVo.vnicProfileVos) {
-			val vnicProfile2Build: VnicProfile = VnicProfileBuilder().name(vo.name).build()
-			val resAddVnicProfile: Result<VnicProfile> =
-				conn.addVnicProfileFromNetwork(network.id(), vnicProfile2Build)
-			log.info("신규 vnicprofile(s) 추가 결과: {}", resAddVnicProfile.isSuccess)
-		}
-
-		// 클러스터 모두연결이 선택되어야지만 모두 필요가 선택됨
-		// TODO: isConnected가 되어야 할 조건 찾아야 함
-		val clusterVos: List<ClusterVo> = networkVo.clusterVos.filter { it.isConnected *//* 연결된 경우만 필터링 *//* }
-
-		for (clusterVo in clusterVos) {
-			val n: Network = NetworkBuilder()
-				.id(network.id())
-				.required(clusterVo.required) // TODO: 어디서 찾는 값?
-				.build()
-			val resNetwork: Result<Network?> =
-				conn.addNetworkFromCluster(clusterVo.id, n)
-			log.info("신규 network(s) 추가 결과: {}", resNetwork.isSuccess)
-		}
-
-		// 외부 공급자 처리시 레이블 생성 안됨
-		if (networkVo.label.isNotEmpty()) {
-			val resAddNetworkLabel: Result<NetworkLabel> =
-				conn.addNetworkLabelFromNetwork(network.id(), NetworkLabelBuilder().id(networkVo.label).build())
-			log.info("신규 networkLabel 추가 결과: {}", resAddNetworkLabel.isSuccess)
-		}
-
-		log.info("network {} 추가 완료", network.name())
-		return network.toNetworkVo(conn)*/
 	}
-
 
 	@Throws(Error::class)
 	override fun update(networkVo: NetworkVo): NetworkVo? {
 		log.info("update ... networkName: {}", networkVo.name)
-		val res: Network =
+		val res: Network? =
 			conn.updateNetwork(networkVo.toEditNetworkBuilder(conn))
-				.getOrNull()?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
-		return res.toNetworkVo(conn)
+				.getOrNull()
+		return res?.toNetworkVo(conn)
 	}
 
 	@Throws(Error::class)
 	override fun remove(networkId: String): Boolean {
 		log.info("remove ... ")
-		conn.findNetwork(networkId).getOrNull()
 		val res: Result<Boolean> =
 			conn.removeNetwork(networkId)
 		return res.isSuccess
@@ -308,7 +261,6 @@ class NetworkServiceImpl(
 	@Throws(Error::class)
 	override fun findAllVnicProfilesFromNetwork(networkId: String): List<VnicProfileVo> {
 		log.info("findAllVnicProfilesFromNetwork ... networkId: {}", networkId)
-		conn.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
 		val res: List<VnicProfile> =
 			conn.findAllVnicProfilesFromNetwork(networkId)
 				.getOrDefault(listOf())
@@ -318,7 +270,9 @@ class NetworkServiceImpl(
 	@Throws(Error::class)
 	override fun findAllClustersFromNetwork(networkId: String): List<ClusterVo> {
 		log.info("findAllClustersFromNetwork ... networkId: {}", networkId)
-		conn.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
+		conn.findNetwork(networkId)
+			.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
+
 		// TODO
 		val res: List<Cluster> =
 			conn.findAllClusters(follow = "networks")
@@ -335,7 +289,8 @@ class NetworkServiceImpl(
 	override fun findAllHostsFromNetwork(networkId: String): List<HostVo> {
 		log.info("findAllHostsFromNetwork ... ")
 		// TODO Attached / Unattahed 구분해야하는건지 보기
-		conn.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
+		conn.findNetwork(networkId)
+			.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
 		val res: List<Host> =
 			conn.findAllHosts(follow = "nics")
 				.getOrDefault(listOf())
@@ -348,7 +303,8 @@ class NetworkServiceImpl(
 		// TODO VmVo가 가지고 있는 nicVo가 나옴 (vm -nics)
 		//  근데 ovirt에서는 Nic가 우선  (nic - vm)
 		log.info("getVmsByNetwork ... networkId: {}", networkId)
-		conn.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
+		conn.findNetwork(networkId)
+			.getOrNull()?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
 
 		val vms: List<Vm> =
 			conn.findAllVms(follow = "reporteddevices,nics.vnicprofile")
@@ -361,7 +317,8 @@ class NetworkServiceImpl(
 	override fun findAllTemplatesFromNetwork(networkId: String): List<NetworkTemplateVo> {
 		log.info("findTemplatesByNetwork ... network: {}", networkId)
 		// TODO?
-		conn.findNetwork(networkId).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
+		conn.findNetwork(networkId)
+			.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
 		val templates: List<Template> =
 			conn.findAllTemplates(follow = "nics.vnicprofile")
 				.getOrDefault(listOf())

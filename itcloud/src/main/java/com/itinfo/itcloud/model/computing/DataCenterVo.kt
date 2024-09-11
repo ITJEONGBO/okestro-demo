@@ -3,6 +3,7 @@ package com.itinfo.itcloud.model.computing
 import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.*
 import com.itinfo.util.ovirt.findAllClusters
+import com.itinfo.util.ovirt.findAllHosts
 import com.itinfo.util.ovirt.findAllNetworks
 import com.itinfo.util.ovirt.findAllStorageDomains
 import org.ovirt.engine.sdk4.Connection
@@ -88,7 +89,8 @@ fun List<DataCenter>.toDataCenterIdNames(): List<DataCenterVo> =
 
 fun DataCenter.toDataCenterMenu(conn: Connection): DataCenterVo {
 	val clusters: Int =
-		conn.findAllClusters().getOrDefault(listOf())
+		conn.findAllClusters()
+			.getOrDefault(listOf())
 			.count { it.dataCenterPresent() && it.dataCenter().id() == this@toDataCenterMenu.id() }
 
 	return DataCenterVo.builder {

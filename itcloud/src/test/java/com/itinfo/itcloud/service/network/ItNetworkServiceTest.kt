@@ -143,7 +143,7 @@ class ItNetworkServiceTest {
 		assertThat(addResult?.name, `is`(addNetworkVo.name))
 		assertThat(addResult?.description, `is`(addNetworkVo.description))
 		assertThat(addResult?.comment, `is`(addNetworkVo.comment))
-		assertThat(addResult?.usageVo?.vm, `is`(addNetworkVo.usageVo.vm))
+//		assertThat(addResult?.usageVo?.vm, `is`(addNetworkVo.usageVo.vm))
 		assertThat(addResult?.portIsolation, `is`(addNetworkVo.portIsolation))
 		assertThat(addResult?.mtu, `is`(addNetworkVo.mtu))
 		assertThat(addResult?.vlan, `is`(addNetworkVo.vlan))

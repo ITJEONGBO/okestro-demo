@@ -33,10 +33,12 @@ fun Connection.srvVm(vmId: String): VmService =
 	this.srvVms().vmService(vmId)
 
 fun Connection.findVm(vmId: String, follow: String = ""): Result<Vm?> = runCatching {
-	if (follow.isNotEmpty())
-		this.srvVm(vmId).get().follow(follow).send().vm()
-	else
-		this.srvVm(vmId).get().send().vm()
+	val vm = if (follow.isNotEmpty()) {
+		this.srvVm(vmId).get().follow(follow)
+	}else{
+		this.srvVm(vmId).get()
+	}
+	vm.send().vm()
 }.onSuccess {
 	Term.VM.logSuccess("상세조회", vmId)
 }.onFailure {
@@ -148,23 +150,23 @@ fun Connection.resetVm(vmId: String): Result<Boolean> = runCatching {
 }
 
 
-fun Connection.addDiskAttachmentFromVm(vmId: String, diskAttachments: List<DiskAttachment>): Result<Boolean> = runCatching {
-	log.debug("Connection.addDisksFromVm ... ")
-	val vm: Vm =
-		this.findVm(vmId)
-			.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
-
-	val res: List<DiskAttachment> =
-		this@addDiskAttachmentFromVm.addMultipleDiskAttachmentsToVm(vm.id(), diskAttachments)
-			.getOrDefault(listOf())
-
-	true
-}.onSuccess {
-	Term.VM.logSuccessWithin(Term.DISK, "생성", vmId)
-}.onFailure {
-	Term.VM.logFailWithin(Term.DISK,"생성", it, vmId)
-	throw if (it is Error) it.toItCloudException() else it
-}
+//fun Connection.addDiskAttachmentFromVm(vmId: String, diskAttachments: List<DiskAttachment>): Result<Boolean> = runCatching {
+//	log.debug("Connection.addDisksFromVm ... ")
+//	val vm: Vm =
+//		this.findVm(vmId)
+//			.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+//
+//	val res: List<DiskAttachment> =
+//		this@addDiskAttachmentFromVm.addMultipleDiskAttachmentsToVm(vm.id(), diskAttachments)
+//			.getOrDefault(listOf())
+//
+//	true
+//}.onSuccess {
+//	Term.VM.logSuccessWithin(Term.DISK, "생성", vmId)
+//}.onFailure {
+//	Term.VM.logFailWithin(Term.DISK,"생성", it, vmId)
+//	throw if (it is Error) it.toItCloudException() else it
+//}
 
 fun Connection.addDiskAttachmentToVm(vmId: String, diskAttachment: DiskAttachment): Result<DiskAttachment> = runCatching {
 	val diskAttachAdded: DiskAttachment =
@@ -177,7 +179,6 @@ fun Connection.addDiskAttachmentToVm(vmId: String, diskAttachment: DiskAttachmen
 	Term.VM.logFailWithin(Term.DISK,"붙이기", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
 }
-
 
 fun Connection.addMultipleDiskAttachmentsToVm(vmId: String, diskAttachments: List<DiskAttachment>): Result<List<DiskAttachment>> = runCatching {
 	val attachedDisks: List<DiskAttachment> = diskAttachments.map { diskAttachment ->
@@ -200,40 +201,60 @@ fun Connection.bootableDiskExist(vmId: String): Boolean =
 fun Connection.addVm(
 	vm: Vm,
 	vnicProfileIds: List<String> = listOf(),
-	diskIds: List<String> = listOf(),
-	disks: List<Disk> = listOf(),
-	bootId: String = ""
+	diskAttachments: List<String> = listOf(),
+	bootId: String
 ): Result<Vm?> = runCatching {
 	if (this.findAllVms()
 			.getOrDefault(listOf())
 			.nameDuplicateVm(vm.name())) {
 		return FailureType.DUPLICATE.toResult(Term.VM.desc)
 	}
-	val vmAdded: Vm =
+
+	val vmAdded: Vm? =
 		this.srvVms().add().vm(vm).send().vm()
 
 	// vnic 생성
 	if (vnicProfileIds.isNotEmpty()) {
+		if (vmAdded != null) {
 			this.addNicsFromVm(vmAdded.id(), vnicProfileIds)
+		}
 	}
-
 
 	// cdroms
 	if (bootId.isNotEmpty()) {
 		this.addCdromFromVm(vm.id(), bootId)
 	}
-
 	if (!this.expectVmStatus(vm.id(), VmStatus.DOWN)) {
 		log.error("가상머신 생성 시간 초과: {}", vm.name())
 		return Result.failure(Error("가상머신 생성 시간 초과"))
 	}
-	vmAdded
+
+	// 가상머신 만들고 nic 붙이고 disk 붙이는 식
+	/*
+                if (vmCreateVo.vnics.isNotEmpty()) {
+                    val result: Result<Boolean> = conn.addVnicsFromVm(vm, vmCreateVo.vnics)
+                    if (result.head.code == 404)
+                        return CommonVo.failResponse("vnic 연결 실패")
+                }
+                // disk가 있다면
+                if (vmCreateVo.vDisks.isNotEmpty()) {
+                    val result: CommonVo<Boolean> = addVmDisk(vm, vmCreateVo.vDisks)
+                    if (result.head.code == 404)
+                        return CommonVo.failResponse("disk 연결 실패")
+                }
+                // 이것도 vm id가 있어야 생성가능
+                if (vmCreateVo.vmBootVo.connId.isNotEmpty()) {
+                    vmService.cdromsService().add()
+                        .cdrom(CdromBuilder().file(FileBuilder().id(vmCreateVo.vmBootVo.connId)).build())
+                        .send()
+                }
+    */
+	vmAdded ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 }.onSuccess {
 	Term.VM.logSuccess("생성", it.id())
 }.onFailure {
 	Term.VM.logFail("생성", it)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
 
 fun Connection.updateVm(vm: Vm): Result<Vm?> = runCatching {
@@ -242,20 +263,53 @@ fun Connection.updateVm(vm: Vm): Result<Vm?> = runCatching {
 			.nameDuplicateVm(vm.name(), vm.id())) {
 		return FailureType.DUPLICATE.toResult(Term.VM.desc)
 	}
-	val vmUpdated: Vm =
+	val vmUpdated: Vm? =
 		this.srvVm(vm.id()).update().vm(vm).send().vm()
-	vmUpdated
+
+	vmUpdated ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 }.onSuccess {
 	Term.VM.logSuccess("편집", it.id())
 }.onFailure {
 	Term.VM.logFail("편집", it)
 	throw if (it is Error) it.toItCloudException() else it
+// 가상머신 만들고 nic 붙이고 disk 붙이는 식
+	/*
+    //		try{
+    //			if (vmVo.getVnicList() != null) {
+    //				addVmNic(system, vm, vmVo);
+    //			}
+    //
+    //			// disk가 있다면
+    //			if (vmVo.getVDiskList() != null) {
+    //				addVmDisk(system, vm, vmVo.getVDiskList());
+    //			}
+    //
+    //			// 이것도 vm id가 있어야 생성가능
+    //			if (vmVo.getVmBootVo().getConnId() != null) {
+    //				vmService.cdromsService().add().cdrom(new CdromBuilder().file(new FileBuilder().id(vmVo.getVmBootVo().getConnId())).build()).send();
+    //			}
+    //
+    //			if(expectStatus(vmService, VmStatus.DOWN, 3000, 900000)){
+    //				log.info("가상머신 수정 완료: " + vm.name());
+    //				return CommonVo.createResponse();
+    //			} else {
+    //				log.error("가상머신 수정 시간 초과: {}", vm.name());
+    //				return CommonVo.failResponse("가상머신 수정 시간 초과");
+    //			}
+    //		} catch (Exception e) {
+    //			e.printStackTrace();
+    //			log.error("가상머신 수정 실패");
+    //			return CommonVo.failResponse("가상머신 수정 실패");
+    //		}
+    */
 
 }
 
 fun Connection.removeVm(vmId: String, detachOnly: Boolean = false): Result<Boolean> = runCatching {
 	val vm: Vm =
-		this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+		this.findVm(vmId)
+			.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+
 	if (vm.deleteProtected())
 		throw ErrorPattern.VM_PROTECTED.toError()
 
@@ -668,7 +722,10 @@ private fun Connection.srvAllAssignedPermissionsFromVm(vmId: String): AssignedPe
 	this.srvVm(vmId).permissionsService()
 
 fun Connection.findAllAssignedPermissionsFromVm(vmId: String): Result<List<Permission>> = runCatching {
-	this.srvAllAssignedPermissionsFromVm(vmId).list().send().permissions()
+	if(this.findVm(vmId).isFailure) {
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
+	this.srvAllAssignedPermissionsFromVm(vmId).list().send().permissions() ?: listOf()
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.PERMISSION, "목록조회", vmId)
 }.onFailure {
@@ -759,10 +816,13 @@ private fun Connection.srvApplicationsFromVm(vmId: String): VmApplicationsServic
 	this.srvVm(vmId).applicationsService()
 
 fun Connection.findAllApplicationsFromVm(vmId: String, follow: String = ""): Result<List<Application>> = runCatching {
+	if(this.findVm(vmId).isFailure) {
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
 	if (follow.isNotEmpty())
-		this.srvApplicationsFromVm(vmId).list().follow(follow).send().applications()
+		this.srvApplicationsFromVm(vmId).list().follow(follow).send().applications() ?: listOf()
 	else
-		this.srvApplicationsFromVm(vmId).list().send().applications()
+		this.srvApplicationsFromVm(vmId).list().send().applications() ?: listOf()
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.APPLICATION, "목록조회", vmId)
 }.onFailure {

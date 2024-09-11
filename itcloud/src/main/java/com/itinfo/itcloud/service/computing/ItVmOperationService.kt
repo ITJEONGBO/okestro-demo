@@ -1,15 +1,13 @@
 package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.VmExportVo
 import com.itinfo.itcloud.model.fromHostsToIdentifiedVos
-import com.itinfo.itcloud.model.response.Res
 import com.itinfo.itcloud.service.BaseService
-import com.itinfo.itcloud.service.computing.VmServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
-import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.types.Host
 import org.ovirt.engine.sdk4.types.Vm
@@ -168,7 +166,7 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 	override fun migrateHostList(vmId: String): List<IdentifiedVo> {
 		log.info("migrateHostList ... vmId: {}", vmId)
 		val vm: Vm =
-			conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
+			conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toException()
 
 		val res: List<Host> =
 			conn.findAllHosts()
@@ -190,8 +188,8 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 	@Throws(Error::class)
 	override fun migrate(vmId: String, hostId: String): Boolean {
 		log.info("migrateVm ... ")
-		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
-		conn.findHost(hostId).getOrNull()?: throw ErrorPattern.HOST_NOT_FOUND.toError()
+		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toException()
+		conn.findHost(hostId).getOrNull()?: throw ErrorPattern.HOST_NOT_FOUND.toException()
 		val res: Result<Boolean> =
 			conn.migrationVm(vmId, hostId)
 		return res.isSuccess
@@ -201,7 +199,7 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 	@Throws(Error::class)
 	override fun cancelMigration(vmId: String): Boolean {
 		log.info("migrateCancelVm ... ")
-		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toError()
+		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toException()
 		val res: Result<Boolean> =
 			conn.cancelMigrationVm(vmId)
 		return res.isSuccess

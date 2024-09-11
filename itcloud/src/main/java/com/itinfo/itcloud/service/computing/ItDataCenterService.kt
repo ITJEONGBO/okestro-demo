@@ -1,9 +1,12 @@
 package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.*
+import com.itinfo.util.ovirt.error.ErrorPattern
+import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.types.*
 import org.ovirt.engine.sdk4.Error
 import org.springframework.stereotype.Service
@@ -20,7 +23,7 @@ interface ItDataCenterService {
 	fun findAll(): List<DataCenterVo>
 	/**
 	 * [ItDataCenterService.findOne]
-	 * 데이터센터 정보
+	 * 데이터센터 정보 (편집을 위해 존재)
 	 *
 	 * @param dataCenterId [String] 데이터센터 id
 	 * @return [DataCenterVo]?
@@ -55,14 +58,14 @@ interface ItDataCenterService {
 	@Throws(Error::class)
 	fun remove(dataCenterId: String): Boolean
 	/**
-	 * [ItDataCenterService.findAllEventsBy]
+	 * [ItDataCenterService.findAllEventFromDataCenter]
 	 * 데이터센터 이벤트 목록
 	 *
 	 * @param dataCenterId [String] 데이터센터 ID
 	 * @return List<[EventVo]> 이벤트 목록
 	 */
 	@Throws(Error::class)
-	fun findAllEventsBy(dataCenterId: String): List<EventVo>
+	fun findAllEventFromDataCenter(dataCenterId: String): List<EventVo>
 
 	/**
 	 * [ItDataCenterService.dashboardComputing]
@@ -88,13 +91,14 @@ interface ItDataCenterService {
 class DataCenterServiceImpl(
 
 ): BaseService(), ItDataCenterService {
+
 	@Throws(Error::class)
 	override fun findAll(): List<DataCenterVo> {
-		log.info("findAll ... 데이터센터 목록")
-		val dataCenters: List<DataCenter> =
+		log.info("findAll ... ")
+		val res: List<DataCenter> =
 			conn.findAllDataCenters()
 				.getOrDefault(listOf())
-		return dataCenters.toDataCentersMenu(conn)
+		return res.toDataCentersMenu(conn)
 	}
 
 	@Throws(Error::class)
@@ -133,48 +137,48 @@ class DataCenterServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllEventsBy(dataCenterId: String): List<EventVo> {
-		log.info("findAllEventsBy ... dataCenterId: {}", dataCenterId)
-		val dataCenter: DataCenter? =
+	override fun findAllEventFromDataCenter(dataCenterId: String): List<EventVo> {
+		log.info("findAllEventFromDataCenter ... dataCenterId: {}", dataCenterId)
+		val dataCenter: DataCenter =
 			conn.findDataCenter(dataCenterId)
-				.getOrNull()
-		val events: List<Event> =
+				.getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toException()
+		val res: List<Event> =
 			conn.findAllEvents()
 				.getOrDefault(listOf())
 				.filter { (
 						it.dataCenterPresent() && (
 							(it.dataCenter().idPresent() && it.dataCenter().id() == dataCenterId) ||
-							(it.dataCenter().namePresent() && it.dataCenter().name() == dataCenter?.name())
+							(it.dataCenter().namePresent() && it.dataCenter().name() == dataCenter.name())
 						)
 				)}
-		return events.toEventVos()
+		return res.toEventVos()
 	}
 
 	@Throws(Error::class)
 	override fun dashboardComputing(): List<DataCenterVo> {
 		log.info("dashboardComputing ... ")
-		val dataCenters: List<DataCenter> =
+		val res: List<DataCenter> =
 			conn.findAllDataCenters()
 				.getOrDefault(listOf())
-		return dataCenters.toDataCenterVos(conn, findNetworks = false, findStorageDomains = false, findClusters = true)
+		return res.toDataCenterVos(conn, findNetworks = false, findStorageDomains = false, findClusters = true)
 	}
 
 	@Throws(Error::class)
 	override fun dashboardNetwork(): List<DataCenterVo> {
 		log.info("dashboardNetwork ... ")
-		val dataCenters: List<DataCenter> =
+		val res: List<DataCenter> =
 			conn.findAllDataCenters()
 				.getOrDefault(listOf())
-		return dataCenters.toDataCenterVos(conn, findNetworks = true, findStorageDomains = false, findClusters = false)
+		return res.toDataCenterVos(conn, findNetworks = true, findStorageDomains = false, findClusters = false)
 	}
 
 	@Throws(Error::class)
 	override fun dashboardStorage(): List<DataCenterVo> {
 		log.info("dashboardStorage ... ")
-		val dataCenters: List<DataCenter> =
+		val res: List<DataCenter> =
 			conn.findAllDataCenters()
 				.getOrDefault(listOf())
-		return dataCenters.toDataCenterVos(conn, findNetworks = false, findStorageDomains = true, findClusters = false)
+		return res.toDataCenterVos(conn, findNetworks = false, findStorageDomains = true, findClusters = false)
 	}
 
 	companion object {

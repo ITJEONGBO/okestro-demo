@@ -37,23 +37,23 @@ interface ItClusterService {
 	fun findOne(clusterId: String): ClusterVo?
 
 	/**
-	 * [ItClusterService.findAllDataCentersFromCluster]
+	 * [ItClusterService.findAllDataCenter]
 	 * 클러스터 생성 위한 데이터센터 목록
 	 *
 	 * @return List<[DataCenterVo]> 데이터센터 목록
 	 */
 	@Deprecated("[ItDataCenterService.findAll] 와 같은 기능을 수행")
 	@Throws(Error::class)
-	fun findAllDataCentersFromCluster(): List<DataCenterVo>
+	fun findAllDataCenter(): List<DataCenterVo>
 	/**
-	 * [ItClusterService.findAllNetworksFromDataCenter]
+	 * [ItClusterService.findAllNetworkFromDataCenter]
 	 * 클러스터 생성 위한 네트워크 목록
 	 *
 	 * @param dataCenterId [String] 데이터센터 id
 	 * @return List<[NetworkVo]> 네트워크 목록
 	 */
 	@Throws(Error::class)
-	fun findAllNetworksFromDataCenter(dataCenterId: String): List<NetworkVo>
+	fun findAllNetworkFromDataCenter(dataCenterId: String): List<NetworkVo>
 	/**
 	 * [ItClusterService.add]
 	 * 클러스터 생성
@@ -83,14 +83,14 @@ interface ItClusterService {
 	fun remove(clusterId: String): Boolean
 
 	/**
-	 * [ItClusterService.findAllNetworksFromCluster]
+	 * [ItClusterService.findAllNetworkFromCluster]
 	 * 클러스터 네트워크
 	 *
 	 * @param clusterId [String] 클러스터 아이디
 	 * @return List<[NetworkVo]> 네트워크 목록
 	 */
 	@Throws(Error::class)
-	fun findAllNetworksFromCluster(clusterId: String): List<NetworkVo>
+	fun findAllNetworkFromCluster(clusterId: String): List<NetworkVo>
 	/**
 	 * [ItClusterService.addNetwork]
 	 * 클러스터 네트워크 추가
@@ -102,7 +102,7 @@ interface ItClusterService {
 	@Throws(Error::class)
 	fun addNetwork(clusterId: String, networkVo: NetworkVo): Boolean
 	/**
-	 * [ItClusterService.findAllManageNetworkByCluster]
+	 * [ItClusterService.findAllManageNetworkFromCluster]
 	 * 클러스터 네트워크 관리 창
 	 * 할당, 필요, 관리, 네트워크 출력, 마이그레이션 네트워크, gluster 네트워크, 기본 라우팅
 	 *
@@ -110,9 +110,9 @@ interface ItClusterService {
 	 * @return List<[NetworkVo]>? 네트워크 관리 목록
 	 */
 	@Throws(Error::class)
-	fun findAllManageNetworkByCluster(clusterId: String): List<NetworkVo>?
+	fun findAllManageNetworkFromCluster(clusterId: String): List<NetworkVo>?
 	/**
-	 * [ItClusterService.manageNetworkByCluster]
+	 * [ItClusterService.manageNetworkFromCluster]
 	 * 클러스터 네트워크 관리
 	 *
 	 * @param clusterId [String] 클러스터 아이디
@@ -120,92 +120,97 @@ interface ItClusterService {
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun manageNetworkByCluster(clusterId: String, networkVos: List<NetworkVo>): Boolean
+	fun manageNetworkFromCluster(clusterId: String, networkVos: List<NetworkVo>): Boolean
 	/**
-	 * [ItClusterService.findAllHostsFromCluster]
+	 * [ItClusterService.findAllHostFromCluster]
 	 * 클러스터 호스트
 	 *
 	 * @param clusterId [String] 클러스터 아이디
 	 * @return List<[HostVo]> 호스트 목록
 	 */
 	@Throws(Error::class)
-	fun findAllHostsFromCluster(clusterId: String): List<HostVo>
+	fun findAllHostFromCluster(clusterId: String): List<HostVo>
 	/**
-	 * [ItClusterService.findAllVmsFromCluster]
+	 * [ItClusterService.findAllVmFromCluster]
 	 * 클러스터 가상머신
 	 *
 	 * @param clusterId [String] 클러스터 아이디
 	 * @return List<[VmVo]> 가상머신 목록
 	 */
 	@Throws(Error::class)
-	fun findAllVmsFromCluster(clusterId: String): List<VmVo>
+	fun findAllVmFromCluster(clusterId: String): List<VmVo>
 
-	// 선호도 그룹
+	// 선호도 그룹 나중 구현
 	/**
-	 * [ItClusterService.findAllAffinityGroupsByCluster]
+	 * [ItClusterService.findAllAffinityGroupFromCluster]
 	 * 클러스터 선호도그룹
 	 *
 	 * @param clusterId [String] 클러스터 아이디
 	 * @return List<[AffinityGroupVo]>? 클러스터 선호도그룹 목록
 	 */
+	@Deprecated("선호도 나중 구현")
 	@Throws(Error::class)
-	fun findAllAffinityGroupsByCluster(clusterId: String): List<AffinityGroupVo>?
+	fun findAllAffinityGroupFromCluster(clusterId: String): List<AffinityGroupVo>?
 	/**
-	 * [ItClusterService.addAffinityGroupByCluster]
+	 * [ItClusterService.addAffinityGroupFromCluster]
 	 * 클러스터 선호도그룹 생성
 	 *
 	 * @param clusterId [String] 클러스터 아이디
 	 * @return [Boolean]
 	 */
+	@Deprecated("선호도 나중 구현")
 	@Throws(Error::class)
-	fun addAffinityGroupByCluster(clusterId: String, agVo: AffinityGroupVo): Boolean
+	fun addAffinityGroupFromCluster(clusterId: String, agVo: AffinityGroupVo): Boolean
 	/**
-	 * [ItClusterService.getAffinityGroupByCluster]
+	 * [ItClusterService.getAffinityGroupFromCluster]
 	 * 클러스터 선호도그룹 편집창
 	 *
 	 * @param clusterId [String] 클러스터 아이디
 	 * @return [Boolean]
 	 */
+	@Deprecated("선호도 나중 구현")
 	@Throws(Error::class)
-	fun getAffinityGroupByCluster(clusterId: String, agId: String): AffinityGroupVo?
+	fun getAffinityGroupFromCluster(clusterId: String, agId: String): AffinityGroupVo?
 	/**
-	 * [ItClusterService.editAffinityGroupByCluster]
+	 * [ItClusterService.editAffinityGroupFromCluster]
 	 * 클러스터 선호도그룹 편집
 	 *
 	 * @param agVo 선호도그룹
 	 * @return [Boolean]
 	 */
+	@Deprecated("선호도 나중 구현")
 	@Throws(Error::class)
-	fun editAffinityGroupByCluster(agVo: AffinityGroupVo): Boolean
+	fun editAffinityGroupFromCluster(agVo: AffinityGroupVo): Boolean
 	/**
-	 * [ItClusterService.deleteAffinityGroupByCluster]
+	 * [ItClusterService.deleteAffinityGroupFromCluster]
 	 * 클러스터 선호도그룹 삭제
 	 *
 	 * @param clusterId [String] 클러스터 아이디
 	 * @return [Boolean]
 	 */
+	@Deprecated("선호도 나중 구현")
 	@Throws(Error::class)
-	fun deleteAffinityGroupByCluster(clusterId: String, agId: String): Boolean
-	// 선호도 레이블
+	fun deleteAffinityGroupFromCluster(clusterId: String, agId: String): Boolean
+	// 선호도 레이블 나중 구현
 
 	/**
-	 * [ItClusterService.findAllPermissionsFromCluster]
+	 * [ItClusterService.findAllPermissionFromCluster]
 	 * 클러스터 권한
 	 *
 	 * @param clusterId [String] 클러스터 아이디
 	 * @return List<[PermissionVo]>? 권한 목록
 	 */
 	@Throws(Error::class)
-	fun findAllPermissionsFromCluster(clusterId: String): List<PermissionVo>
+	fun findAllPermissionFromCluster(clusterId: String): List<PermissionVo>
 	/**
-	 * [ItClusterService.findAllEventsFromCluster]
+	 * [ItClusterService.findAllEventFromCluster]
 	 * 클러스터 이벤트
 	 *
 	 * @param clusterId [String] 클러스터 아이디
 	 * @return List<[EventVo]>? 이벤트 목록
 	 */
 	@Throws(Error::class)
-	fun findAllEventsFromCluster(clusterId: String): List<EventVo>
+	fun findAllEventFromCluster(clusterId: String): List<EventVo>
 //    List<CpuProfileVo> getCpuProfile(String id);  // 안쓸듯
 }
 
@@ -223,23 +228,23 @@ class ClusterServiceImpl(
 		val res: List<Cluster> =
 			conn.findAllClusters()
 				.getOrDefault(listOf())
-				.filter { /*it.dataCenterPresent() && */ it.cpuPresent() }
+				.filter { it.cpuPresent() }
 		return res.toClusterMenus(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findOne(clusterId: String): ClusterVo? {
 		log.info("findOne ... clusterId: {}", clusterId)
-		val res: Cluster =
+		val res: Cluster? =
 			conn.findCluster(clusterId)
-				.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
-		return res.toClusterVo(conn)
+				.getOrNull()
+		return res?.toClusterVo(conn)
 	}
 
 	@Deprecated("[ItDataCenterService.findAll] 와 같은 기능을 수행")
 	@Throws(Error::class)
-	override fun findAllDataCentersFromCluster(): List<DataCenterVo> {
-		log.info("findAllDataCentersFromCluster ... ")
+	override fun findAllDataCenter(): List<DataCenterVo> {
+		log.info("findAllDataCenter ... ")
 		val res: List<DataCenter> =
 			conn.findAllDataCenters()
 				.getOrDefault(listOf())
@@ -247,10 +252,8 @@ class ClusterServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllNetworksFromDataCenter(dataCenterId: String): List<NetworkVo> {
-		log.info("findAllNetworksFromDataCenter ... dataCenterId: {}", dataCenterId)
-		conn.findDataCenter(dataCenterId).getOrNull()
-			?: throw ErrorPattern.DATACENTER_NOT_FOUND.toException()
+	override fun findAllNetworkFromDataCenter(dataCenterId: String): List<NetworkVo> {
+		log.info("findAllNetworkFromDataCenter ... dataCenterId: {}", dataCenterId)
 		val res: List<Network> =
 			conn.findAllNetworksFromFromDataCenter(dataCenterId)
 				.getOrDefault(listOf())
@@ -260,34 +263,32 @@ class ClusterServiceImpl(
 	@Throws(Error::class)
 	override fun add(clusterVo: ClusterVo): ClusterVo? {
 		log.info("add ... ")
-		val res: Cluster =
+		val res: Cluster? =
 			conn.addCluster(clusterVo.toAddClusterBuilder(conn))
-				.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
-		return res.toClusterVo(conn)
+				.getOrNull()
+		return res?.toClusterVo(conn)
 	}
 
 	@Throws(Error::class)
 	override fun update(clusterVo: ClusterVo): ClusterVo? {
 		log.info("update ... clusterName: {}", clusterVo.name)
-		val res: Cluster =
+		val res: Cluster? =
 			conn.updateCluster(clusterVo.toEditClusterBuilder(conn))
-				.getOrNull()?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
-		return res.toClusterVo(conn)
+				.getOrNull()
+		return res?.toClusterVo(conn)
 	}
 
 	@Throws(Error::class)
 	override fun remove(clusterId: String): Boolean {
-		log.info("remove ... clusterName: {}", conn.findClusterName(clusterId))
-		conn.findCluster(clusterId).getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
+		log.info("remove ... clusterId: {}", clusterId)
 		val res: Result<Boolean> =
 			conn.removeCluster(clusterId)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
-	override fun findAllNetworksFromCluster(clusterId: String): List<NetworkVo> {
-		log.info("findAllNetworksFromCluster ... clusterId: {}", clusterId)
-		conn.findCluster(clusterId).getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
+	override fun findAllNetworkFromCluster(clusterId: String): List<NetworkVo> {
+		log.info("findAllNetworkFromCluster ... clusterId: {}", clusterId)
 		val res: List<Network> =
 			conn.findAllNetworksFromCluster(clusterId)
 				.getOrDefault(listOf())
@@ -300,9 +301,8 @@ class ClusterServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllManageNetworkByCluster(clusterId: String): List<NetworkVo>? {
-		log.info("getUsagesByNetwork ... networkId: {}", clusterId)
-		conn.findCluster(clusterId).getOrNull() ?: ErrorPattern.CLUSTER_NOT_FOUND.toException()
+	override fun findAllManageNetworkFromCluster(clusterId: String): List<NetworkVo>? {
+		log.info("findAllManageNetworkFromCluster ... clusterId: {}", clusterId)
 		val res: List<Network> =
 			conn.findAllNetworksFromCluster(clusterId)
 				.getOrDefault(listOf())
@@ -310,7 +310,7 @@ class ClusterServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun manageNetworkByCluster(clusterId: String, networkVos: List<NetworkVo>): Boolean {
+	override fun manageNetworkFromCluster(clusterId: String, networkVos: List<NetworkVo>): Boolean {
 		log.info("editUsage ... ")
 		// 클러스터 모두연결이 선택되어야지만 모두 필요가 선택됨
 		/*
@@ -329,9 +329,10 @@ class ClusterServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllHostsFromCluster(clusterId: String): List<HostVo> {
-		log.info("findAllHostsFromCluster ... clusterId: {}", clusterId)
-		conn.findCluster(clusterId).getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
+	override fun findAllHostFromCluster(clusterId: String): List<HostVo> {
+		log.info("findAllHostFromCluster ... clusterId: {}", clusterId)
+		conn.findCluster(clusterId)
+			.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
 		val res: List<Host> =
 			conn.findAllHosts()
 				.getOrDefault(listOf())
@@ -341,9 +342,10 @@ class ClusterServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllVmsFromCluster(clusterId: String): List<VmVo> {
-		log.info("findAllVmsFromCluster ... clusterId: {}", clusterId)
-		conn.findCluster(clusterId).getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
+	override fun findAllVmFromCluster(clusterId: String): List<VmVo> {
+		log.info("findAllVmFromCluster ... clusterId: {}", clusterId)
+		conn.findCluster(clusterId)
+			.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
 		val res: List<Vm> =
 			conn.findAllVms()
 				.getOrDefault(listOf())
@@ -351,44 +353,47 @@ class ClusterServiceImpl(
 		return res.toVmVos(conn)
 	}
 
+	@Deprecated("선호도 나중 구현")
 	@Throws(Error::class)
-	override fun findAllAffinityGroupsByCluster(clusterId: String): List<AffinityGroupVo>? {
-		log.info("findAllAffinityGroupsByCluster ... clusterId: {}", clusterId)
-		conn.findCluster(clusterId).getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
+	override fun findAllAffinityGroupFromCluster(clusterId: String): List<AffinityGroupVo>? {
+		log.info("findAllAffinityGroupFromCluster ... clusterId: {}", clusterId)
 		val res: List<AffinityGroup> =
 			conn.findAllAffinityGroupsFromCluster(clusterId)
 				.getOrDefault(listOf())
 		return res.toAffinityGroupVos(conn, clusterId)
 	}
 
+	@Deprecated("선호도 나중 구현")
 	@Throws(Error::class)
-	override fun addAffinityGroupByCluster(clusterId: String, agVo: AffinityGroupVo): Boolean {
-		log.info("addAffinityGroupByCluster ... ")
-		TODO("Not yet implemented")
+	override fun addAffinityGroupFromCluster(clusterId: String, agVo: AffinityGroupVo): Boolean {
+		log.info("addAffinityGroupFromCluster ... ")
+		TODO("나중 구현")
+	}
+
+	@Deprecated("선호도 나중 구현")
+	@Throws(Error::class)
+	override fun getAffinityGroupFromCluster(clusterId: String, agId: String): AffinityGroupVo? {
+		log.info("getAffinityGroupFromCluster ... ")
+		TODO("나중 구현")
+	}
+
+	@Deprecated("선호도 나중 구현")
+	@Throws(Error::class)
+	override fun editAffinityGroupFromCluster(agVo: AffinityGroupVo): Boolean {
+		log.info("editAffinityGroupFromCluster ... ")
+		TODO("나중 구현")
+	}
+
+	@Deprecated("선호도 나중 구현")
+	@Throws(Error::class)
+	override fun deleteAffinityGroupFromCluster(clusterId: String, agId: String): Boolean {
+		log.info("deleteAffinityGroupFromCluster ... ")
+		TODO("나중 구현")
 	}
 
 	@Throws(Error::class)
-	override fun getAffinityGroupByCluster(clusterId: String, agId: String): AffinityGroupVo? {
-		log.info("getAffinityGroupByCluster ... ")
-		TODO("Not yet implemented")
-	}
-
-	@Throws(Error::class)
-	override fun editAffinityGroupByCluster(agVo: AffinityGroupVo): Boolean {
-		log.info("editAffinityGroupByCluster ... ")
-		TODO("Not yet implemented")
-	}
-
-	@Throws(Error::class)
-	override fun deleteAffinityGroupByCluster(clusterId: String, agId: String): Boolean {
-		log.info("deleteAffinityGroupByCluster ... ")
-		TODO("Not yet implemented")
-	}
-
-	@Throws(Error::class)
-	override fun findAllPermissionsFromCluster(clusterId: String): List<PermissionVo> {
-		log.info("findAllPermissionsByCluster ... clusterId: {}", clusterId)
-		conn.findCluster(clusterId).getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
+	override fun findAllPermissionFromCluster(clusterId: String): List<PermissionVo> {
+		log.info("findAllPermissionFromCluster ... clusterId: {}", clusterId)
 		val permissions: List<Permission> =
 			conn.findAllPermissionsFromCluster(clusterId)
 				.getOrDefault(listOf())
@@ -396,13 +401,13 @@ class ClusterServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllEventsFromCluster(clusterId: String): List<EventVo> {
-		log.info("findAllEventsByCluster ... clusterId: {}", clusterId)
+	override fun findAllEventFromCluster(clusterId: String): List<EventVo> {
+		log.info("findAllEventFromCluster ... clusterId: {}", clusterId)
 		val cluster: Cluster =
 			conn.findCluster(clusterId)
 				.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
 
-		val events: List<Event> =
+		val res: List<Event> =
 			conn.findAllEvents("cluster.name=${cluster.name()}")
 				.getOrDefault(listOf())
 				.filter {
@@ -410,7 +415,7 @@ class ClusterServiceImpl(
 					it.cluster().idPresent() &&
 					it.cluster().id().equals(clusterId)
 				}
-		return events.toEventVos()
+		return res.toEventVos()
 	}
 
 	companion object {

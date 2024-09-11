@@ -51,9 +51,10 @@ fun Connection.addDataCenter(dataCenter: DataCenter): Result<DataCenter?> = runC
 			.nameDuplicateDataCenter(dataCenter.name())) {
 		return FailureType.DUPLICATE.toResult(Term.DATACENTER.desc)
 	}
-	val dataCenterAdded: DataCenter =
+	val dataCenterAdded: DataCenter? =
 		this.srvDataCenters().add().dataCenter(dataCenter).send().dataCenter()
-	dataCenterAdded
+
+	dataCenterAdded ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toError()
 }.onSuccess {
 	Term.DATACENTER.logSuccess("생성")
 }.onFailure {
@@ -67,9 +68,10 @@ fun Connection.updateDataCenter(dataCenter: DataCenter): Result<DataCenter?> = r
 			.nameDuplicateDataCenter(dataCenter.name(), dataCenter.id())) {
 		return FailureType.DUPLICATE.toResult(Term.DATACENTER.desc)
 	}
-    val dataCenterUpdated: DataCenter =
+    val dataCenterUpdated: DataCenter? =
 		this.srvDataCenter(dataCenter.id()).update().dataCenter(dataCenter).send().dataCenter()
-	dataCenterUpdated
+
+	dataCenterUpdated ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toError()
 }.onSuccess {
 	Term.DATACENTER.logSuccess("편집")
 }.onFailure {
@@ -79,11 +81,11 @@ fun Connection.updateDataCenter(dataCenter: DataCenter): Result<DataCenter?> = r
 
 fun Connection.removeDataCenter(dataCenterId: String): Result<Boolean> = runCatching {
 	val dataCenter: DataCenter =
-		this.findDataCenter(dataCenterId).getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toError()
+		this.findDataCenter(dataCenterId)
+			.getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toError()
 
 	this.srvDataCenter(dataCenter.id()).remove().force(true).send()
 	this.expectDataCenterDeleted(dataCenterId)
-	true
 }.onSuccess {
 	Term.DATACENTER.logSuccess("삭제")
 }.onFailure {
@@ -140,8 +142,10 @@ fun Connection.srvAllAttachedStorageDomainsFromDataCenter(dataCenterId: String):
 	this.srvDataCenter(dataCenterId).storageDomainsService()
 
 fun Connection.findAllAttachedStorageDomainsFromDataCenter(dataCenterId: String): Result<List<StorageDomain>> = runCatching {
-	this.findDataCenter(dataCenterId).getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toError()
-	this.srvAllAttachedStorageDomainsFromDataCenter(dataCenterId).list().follow("disks").send().storageDomains()
+	if(this.findDataCenter(dataCenterId).isFailure) {
+			throw ErrorPattern.DATACENTER_NOT_FOUND.toError()
+	}
+	this.srvAllAttachedStorageDomainsFromDataCenter(dataCenterId).list().follow("disks").send().storageDomains() ?: listOf()
 }.onSuccess {
 	Term.DATACENTER.logSuccessWithin(Term.STORAGE_DOMAIN,"목록조회", dataCenterId)
 }.onFailure {

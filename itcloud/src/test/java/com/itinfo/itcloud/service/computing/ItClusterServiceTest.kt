@@ -88,7 +88,7 @@ import org.springframework.boot.test.context.SpringBootTest
 	fun should_findAllNetworksFromDataCenter() {
 		log.debug("should_findAllNetworksFromDataCenter ... ")
 		val result: List<NetworkVo> =
-			service.findAllNetworksFromDataCenter(dataCenterId)
+			service.findAllNetworkFromDataCenter(dataCenterId)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(2))
@@ -417,7 +417,7 @@ import org.springframework.boot.test.context.SpringBootTest
 	fun should_findAllNetworksFromCluster() {
 		log.debug("should_findAllNetworksFromCluster ... ")
 		val result: List<NetworkVo> =
-			service.findAllNetworksFromCluster(clusterId)
+			service.findAllNetworkFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(3))
@@ -434,7 +434,7 @@ import org.springframework.boot.test.context.SpringBootTest
 	fun should_findAllHostsFromCluster() {
 		log.debug("should_findAllHostsFromCluster ... ")
 		val result: List<HostVo> =
-			service.findAllHostsFromCluster(clusterId)
+			service.findAllHostFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(2))
@@ -444,15 +444,15 @@ import org.springframework.boot.test.context.SpringBootTest
 
 	/**
 	 * [should_findAllVmsFromCluster]
-	 * [ItClusterService.findAllVmsFromCluster]에 대한 단위테스트
+	 * [ItClusterService.findAllVmFromCluster]에 대한 단위테스트
 	 * 
-	 * @see ItClusterService.findAllVmsFromCluster
+	 * @see ItClusterService.findAllVmFromCluster
 	 **/
 	@Test
 	fun should_findAllVmsFromCluster() {
 		log.debug("should_findAllVmsFromCluster ... ")
 		val result: List<VmVo> =
-			service.findAllVmsFromCluster(clusterId)
+			service.findAllVmFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(5))
@@ -460,42 +460,18 @@ import org.springframework.boot.test.context.SpringBootTest
 		result.forEach { println(it) }
 	}
 
-	/**
-	 * [should_findAllAffinityGroupsByCluster]
-	 * [ItClusterService.findAllAffinityGroupsByCluster]에 대한 단위테스트
-	 *
-	 * @see ItClusterService.findAllAffinityGroupsByCluster
-	 */
-	/*@Test
-	fun should_findAllAffinityGroupsByCluster() {
-		log.debug("should_findAllAffinityGroupsByCluster ... ")
-		val result: List<AffinityGroupVo> =
-			service.findAllAffinityGroupsByCluster(clusterId)
-
-		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(1))
-
-		result.forEach { println(it) }
-	}*/
-
-	/*@Test
-	fun should_getAffinitylabel() {
-		log.debug("should_getAffinitylabel ... ")
-		assertThat(service, `is`(not(nullValue())))
-		// TODO: 메소드의 결과값에 대한 검증처리
-	}*/
 
 	/**
 	 * [should_findAllPermissionsFromCluster]
-	 * [ItClusterService.findAllPermissionsFromCluster]에 대한 단위테스트
+	 * [ItClusterService.findAllPermissionFromCluster]에 대한 단위테스트
 	 * 
-	 * @see ItClusterService.findAllPermissionsFromCluster
+	 * @see ItClusterService.findAllPermissionFromCluster
 	 **/
 	@Test		
 	fun should_findAllPermissionsFromCluster() {
 		log.debug("should_findAllPermissionsFromCluster ... ")
 		val result: List<PermissionVo> =
-			service.findAllPermissionsFromCluster(clusterId)
+			service.findAllPermissionFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(3))
@@ -505,15 +481,15 @@ import org.springframework.boot.test.context.SpringBootTest
 
 	/**
 	 * [should_findAllEventsFromCluster]
-	 * [ItClusterService.findAllEventsFromCluster]에 대한 단위테스트
+	 * [ItClusterService.findAllEventFromCluster]에 대한 단위테스트
 	 * 
-	 * @see ItClusterService.findAllEventsFromCluster
+	 * @see ItClusterService.findAllEventFromCluster
 	 **/
 	@Test			
 	fun should_findAllEventsFromCluster() {
 		log.debug("should_findAllEventsFromCluster ... ")
 		val result: List<EventVo> =
-			service.findAllEventsFromCluster(clusterId)
+			service.findAllEventFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(329))
