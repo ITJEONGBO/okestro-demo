@@ -220,7 +220,7 @@ class VmController: BaseController() {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("----- vm app 불러오기: $vmId")
-		return ResponseEntity.ok(iVm.findAllApplicationsByVm(vmId))
+		return ResponseEntity.ok(iVm.findAllApplicationsFromVm(vmId))
 	}
 	//region: affinity
 

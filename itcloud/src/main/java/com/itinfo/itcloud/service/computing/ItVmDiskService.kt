@@ -14,13 +14,13 @@ import org.springframework.stereotype.Service
 
 interface ItVmDiskService {
 	/**
-	 * [ItVmDiskService.findAllDiskFromVm]
+	 * [ItVmDiskService.findAllDisksFromVm]
 	 * 가상머신 디스크 목록
 	 *
 	 * @param vmId [String] 가상머신 id
 	 * @return List<[DiskAttachmentVo]>
 	 */
-	fun findAllDiskFromVm(vmId: String): List<DiskAttachmentVo>
+	fun findAllDisksFromVm(vmId: String): List<DiskAttachmentVo>
 	/**
 	 * [ItVmDiskService.findOneDiskFromVm]
 	 * 가상머신 디스크

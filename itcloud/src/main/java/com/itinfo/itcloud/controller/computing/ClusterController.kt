@@ -56,7 +56,7 @@ class ClusterController: BaseController() {
 	// TODO: 데이터센터와의 관계 확인 후 이동
 	fun findAllDataCentersFromCluster(): ResponseEntity<List<DataCenterVo>> {
 		log.info("/computing/clusters/settings ... 클러스터 생성 창: 데이터센터 목록")
-		return ResponseEntity.ok(iCluster.findAllDataCentersFromCluster())
+		return ResponseEntity.ok(iCluster.findAllDataCenters())
 	}
 
 	@ApiOperation(

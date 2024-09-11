@@ -149,7 +149,7 @@ class DataCenterController: BaseController() {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/computing/datacenters/{}/events ... 데이터센터 이벤트목록", dataCenterId)
-		return ResponseEntity.ok(iDataCenter.findAllEventsBy(dataCenterId))
+		return ResponseEntity.ok(iDataCenter.findAllEventsFromDataCenter(dataCenterId))
 	}
 
 	// 대시보드 옆에 트리구조

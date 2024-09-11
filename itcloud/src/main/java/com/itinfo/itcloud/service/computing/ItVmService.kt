@@ -60,7 +60,7 @@ interface ItVmService {
 	@Throws(Error::class)
 	fun findAllDiskImage(): List<DiskImageVo>
 	/**
-	 * [ItVmService.findAllStorageDomainFromDataCenter]
+	 * [ItVmService.findAllStorageDomainsFromDataCenter]
 	 * 가상머신 생성 - 인스턴스 이미지 - 생성 -> 생성 시 필요한 스토리지 도메인
 	 * 가상머신 생성 - 고가용성 - 임대 대상 스토리지 도메인 목록
 	 * HELP 데이터센터 id가 있어야되는거 같긴함, 근데 애매한부분
@@ -68,11 +68,11 @@ interface ItVmService {
 	 * @param dataCenterId [String] 데이터센터 id (클러스터가 가지고 있는 데이터센터 id)
 	 * @return List<[StorageDomainVo]> 스토리지 도메인 목록
 	 */
-	@Deprecated("[ItStorageService.findAllStorageDomainsFromDataCenter] 내용")
+	@Deprecated("[ItStorageService.findAllStorageDomainssFromDataCenter] 내용")
 	@Throws(Error::class)
-	fun findAllStorageDomainFromDataCenter(dataCenterId: String): List<StorageDomainVo>
+	fun findAllStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo>
 	/**
-	 * [ItVmService.findAllDiskProfileFromStorageDomain]
+	 * [ItVmService.findAllDiskProfilesFromStorageDomain]
 	 * 가상머신 생성 - 인스턴스 이미지 - 생성 -> 스토리지 도메인과 연동되어 생기는 디스크 프로파일
 	 *
 	 * @param storageDomainId [String] 스토리지 도메인 id
@@ -80,35 +80,35 @@ interface ItVmService {
 	 */
 	@Deprecated("[ItStorageService.findOneDiskProfile] 내용")
 	@Throws(Error::class)
-	fun findAllDiskProfileFromStorageDomain(storageDomainId: String) : List<DiskProfileVo>
+	fun findAllDiskProfilesFromStorageDomain(storageDomainId: String) : List<DiskProfileVo>
 	/**
-	 * [ItVmService.findAllVnicProfileFromCluster]
+	 * [ItVmService.findAllVnicProfilesFromCluster]
 	 * 가상머신 생성 -  vNic-vnicprofile 목록 출력 (가상머신 생성, 네트워크 인터페이스 생성)
 	 *
 	 * @param clusterId [String] 클러스터 id
 	 * @return List<[VnicProfileVo]> VnicProfile 목록
 	 */
 	@Throws(Error::class)
-	fun findAllVnicProfileFromCluster(clusterId: String): List<VnicProfileVo>
+	fun findAllVnicProfilesFromCluster(clusterId: String): List<VnicProfileVo>
 	/**
-	 * [ItVmService.findAllHostFromCluster]
+	 * [ItVmService.findAllHostsFromCluster]
 	 * 가상머신 생성 - 호스트 - 호스트 목록
 	 *
 	 * @param clusterId [String] 클러스터 id
 	 * @return List<[HostVo]> 호스트 목록
 	 */
-	@Deprecated("[ItClusterService.findAllHostFromCluster] 내용과 비슷함")
+	@Deprecated("[ItClusterService.findAllHostsFromCluster] 내용과 비슷함")
 	@Throws(Error::class)
-	fun findAllHostFromCluster(clusterId: String): List<HostVo>
+	fun findAllHostsFromCluster(clusterId: String): List<HostVo>
 	/**
-	 * [ItVmService.findAllCpuProfileFromCluster]
+	 * [ItVmService.findAllCpuProfilesFromCluster]
 	 * 가상머신 생성 - 리소스할당 - cpuProfile 목록 출력
 	 *
 	 * @param clusterId [String] 클러스터 id
 	 * @return List<[CpuProfileVo]> cpuProfile 목록
 	 */
     @Throws(Error::class)
-	fun findAllCpuProfileFromCluster(clusterId: String): List<CpuProfileVo>
+	fun findAllCpuProfilesFromCluster(clusterId: String): List<CpuProfileVo>
 	/**
 	 * [ItVmService.findAllISO]
 	 * 가상머신 생성 - 부트 옵션 - 생성 시 필요한 CD/DVD 연결할 ISO 목록 (디스크이미지)
@@ -120,7 +120,7 @@ interface ItVmService {
 
 	// 선호도 그룹/레이블은 나중구현 가능
 	/**
-	 * [ItVmService.findAllAffinityGroupFromCluster]
+	 * [ItVmService.findAllAffinityGroupsFromCluster]
 	 * 가상머신 생성 - 선호도 - 선호도 그룹 목록
 	 *
 	 * @param clusterId [String] 클러스터 id
@@ -128,7 +128,7 @@ interface ItVmService {
 	 */
 	@Deprecated("선호도 나중 구현")
 	@Throws(Error::class)
-	fun findAllAffinityGroupFromCluster(clusterId: String): List<IdentifiedVo>
+	fun findAllAffinityGroupsFromCluster(clusterId: String): List<IdentifiedVo>
 	/**
 	 * [ItVmService.findAllAffinityLabel]
 	 * 가상머신 생성 - 선호도 - 선호도 레이블 목록
@@ -174,12 +174,12 @@ interface ItVmService {
 	// 네트워크 인터페이스, 디스크, 스냅샷은 따른 서비스로
 
 	/**
-	 * [ItVmService.findAllApplicationFromVm]
+	 * [ItVmService.findAllApplicationsFromVm]
 	 *
 	 * @param vmId [String] 가상머신 id
 	 */
 	@Throws(Error::class)
-	fun findAllApplicationFromVm(vmId: String): List<IdentifiedVo>
+	fun findAllApplicationsFromVm(vmId: String): List<IdentifiedVo>
 	/**
 	 * [ItVmService.findAllGuestFromVm]
 	 *
@@ -188,19 +188,19 @@ interface ItVmService {
 	@Throws(Error::class)
 	fun findAllGuestFromVm(vmId: String): GuestInfoVo?
 	/**
-	 * [ItVmService.findAllPermissionFromVm]
+	 * [ItVmService.findAllPermissionsFromVm]
 	 *
 	 * @param vmId [String] 가상머신 id
 	 */
 	@Throws(Error::class)
-	fun findAllPermissionFromVm(vmId: String): List<PermissionVo>
+	fun findAllPermissionsFromVm(vmId: String): List<PermissionVo>
 	/**
-	 * [ItVmService.findAllEventFromVm]
+	 * [ItVmService.findAllEventsFromVm]
 	 * 이벤트
 	 *
 	 * @param vmId [String] 가상머신 id
 	 */
-	fun findAllEventFromVm(vmId: String): List<EventVo>
+	fun findAllEventsFromVm(vmId: String): List<EventVo>
 	/**
 	 * [ItVmService.findConsole]
 	 *
@@ -272,8 +272,8 @@ class VmServiceImpl(
 	}
 
 	@Deprecated("[ItStorageService.findAllStorageDomainsFromDataCenter] 내용")
-	override fun findAllStorageDomainFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
-		log.info("findAllStorageDomainFromDataCenter ... ")
+	override fun findAllStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
+		log.info("findAllStorageDomainsFromDataCenter ... ")
 		val res: List<StorageDomain> =
 			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
 				.getOrDefault(listOf())
@@ -286,8 +286,8 @@ class VmServiceImpl(
 
 	@Deprecated("[ItStorageService.findOneDiskProfile] 내용")
 	@Throws(Error::class)
-	override fun findAllDiskProfileFromStorageDomain(storageDomainId: String) : List<DiskProfileVo> {
-		log.info("findAllDiskProfileFromStorageDomain ... domainId: $storageDomainId")
+	override fun findAllDiskProfilesFromStorageDomain(storageDomainId: String) : List<DiskProfileVo> {
+		log.info("findAllDiskProfilesFromStorageDomain ... domainId: $storageDomainId")
 		val res: List<DiskProfile> =
 			conn.findAllDiskProfilesFromStorageDomain(storageDomainId)
 				.getOrDefault(listOf())
@@ -295,8 +295,8 @@ class VmServiceImpl(
 	}
 
 
-	override fun findAllVnicProfileFromCluster(clusterId: String): List<VnicProfileVo> {
-		log.info("findAllVnicProfileFromCluster ... clusterId: {}", clusterId)
+	override fun findAllVnicProfilesFromCluster(clusterId: String): List<VnicProfileVo> {
+		log.info("findAllVnicProfilesFromCluster ... clusterId: {}", clusterId)
 		val cluster: Cluster =
 			conn.findCluster(clusterId)
 				.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
@@ -313,8 +313,8 @@ class VmServiceImpl(
 	}
 
 	@Deprecated("[ItClusterService.findAllHostFromCluster] 내용과 비슷함")
-	override fun findAllHostFromCluster(clusterId: String): List<HostVo> {
-		log.info("findAllHostFromCluster ... clusterId: {}", clusterId)
+	override fun findAllHostsFromCluster(clusterId: String): List<HostVo> {
+		log.info("findAllHostsFromCluster ... clusterId: {}", clusterId)
 		conn.findCluster(clusterId)
 			.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
 		val res: List<Host> =
@@ -324,8 +324,8 @@ class VmServiceImpl(
 		return res.toHostIdNames()
 	}
 
-	override fun findAllCpuProfileFromCluster(clusterId: String): List<CpuProfileVo> {
-		log.info("findAllCpuProfileFromCluster ... clusterId: {}", clusterId)
+	override fun findAllCpuProfilesFromCluster(clusterId: String): List<CpuProfileVo> {
+		log.info("findAllCpuProfilesFromCluster ... clusterId: {}", clusterId)
 		conn.findCluster(clusterId)
 			.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
 
@@ -346,8 +346,8 @@ class VmServiceImpl(
 	}
 
 	@Deprecated("선호도 나중 구현")
-	override fun findAllAffinityGroupFromCluster(clusterId: String): List<IdentifiedVo> {
-		log.info("findAllAffinityGroupFromCluster ... ")
+	override fun findAllAffinityGroupsFromCluster(clusterId: String): List<IdentifiedVo> {
+		log.info("findAllAffinityGroupsFromCluster ... ")
 		conn.findCluster(clusterId)
 			.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
 		val res: List<AffinityGroup> =
@@ -395,8 +395,8 @@ class VmServiceImpl(
 	}
 
 
-	override fun findAllApplicationFromVm(vmId: String): List<IdentifiedVo> {
-		log.info("findAllApplicationFromVm ... vmId: {}", vmId)
+	override fun findAllApplicationsFromVm(vmId: String): List<IdentifiedVo> {
+		log.info("findAllApplicationsFromVm ... vmId: {}", vmId)
 		val res: List<Application> =
 			conn.findAllApplicationsFromVm(vmId)
 				.getOrDefault(listOf())
@@ -415,16 +415,16 @@ class VmServiceImpl(
 		return res.toGuestInfoVo()
 	}
 
-	override fun findAllPermissionFromVm(vmId: String): List<PermissionVo> {
-		log.info("findAllPermissionFromVm ... vmId: {}", vmId)
+	override fun findAllPermissionsFromVm(vmId: String): List<PermissionVo> {
+		log.info("findAllPermissionsFromVm ... vmId: {}", vmId)
 		val res: List<Permission> =
 			conn.findAllAssignedPermissionsFromVm(vmId)
 				.getOrDefault(listOf())
 		return res.toPermissionVos(conn)
 	}
 
-	override fun findAllEventFromVm(vmId: String): List<EventVo> {
-		log.info("findAllEventFromVm ... vmId: {}", vmId)
+	override fun findAllEventsFromVm(vmId: String): List<EventVo> {
+		log.info("findAllEventsFromVm ... vmId: {}", vmId)
 		val vm: Vm =
 			conn.findVm(vmId)
 				.getOrNull()?:throw ErrorPattern.VM_NOT_FOUND.toException()

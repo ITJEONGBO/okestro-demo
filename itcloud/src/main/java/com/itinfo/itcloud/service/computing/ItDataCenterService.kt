@@ -58,14 +58,14 @@ interface ItDataCenterService {
 	@Throws(Error::class)
 	fun remove(dataCenterId: String): Boolean
 	/**
-	 * [ItDataCenterService.findAllEventFromDataCenter]
+	 * [ItDataCenterService.findAllEventsFromDataCenter]
 	 * 데이터센터 이벤트 목록
 	 *
 	 * @param dataCenterId [String] 데이터센터 ID
 	 * @return List<[EventVo]> 이벤트 목록
 	 */
 	@Throws(Error::class)
-	fun findAllEventFromDataCenter(dataCenterId: String): List<EventVo>
+	fun findAllEventsFromDataCenter(dataCenterId: String): List<EventVo>
 
 	/**
 	 * [ItDataCenterService.dashboardComputing]
@@ -137,8 +137,8 @@ class DataCenterServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllEventFromDataCenter(dataCenterId: String): List<EventVo> {
-		log.info("findAllEventFromDataCenter ... dataCenterId: {}", dataCenterId)
+	override fun findAllEventsFromDataCenter(dataCenterId: String): List<EventVo> {
+		log.info("findAllEventsFromDataCenter ... dataCenterId: {}", dataCenterId)
 		val dataCenter: DataCenter =
 			conn.findDataCenter(dataCenterId)
 				.getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toException()

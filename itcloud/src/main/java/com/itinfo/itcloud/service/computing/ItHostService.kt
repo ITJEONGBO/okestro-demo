@@ -36,14 +36,14 @@ interface ItHostService {
 	@Throws(Error::class)
 	fun findOne(hostId: String): HostVo?
 	/**
-	 * [ItHostService.findAllClusterFromHost]
+	 * [ItHostService.findAllClustersFromHost]
 	 * 호스트 생성 - 클러스터 목록 출력
 	 *
 	 * @return 클러스터 목록
 	 */
 	@Deprecated("[ItClusterService.findAll] 내용 같음")
 	@Throws(Error::class)
-	fun findAllClusterFromHost(): List<ClusterVo>
+	fun findAllClustersFromHost(): List<ClusterVo>
 	/**
 	 * [ItHostService.add]
 	 * 호스트 생성 (전원관리 제외)
@@ -73,44 +73,44 @@ interface ItHostService {
 	@Throws(Error::class)
 	fun remove(hostId: String): Boolean
 	/**
-	 * [ItHostService.findAllVmFromHost]
+	 * [ItHostService.findAllVmsFromHost]
 	 * 호스트 가상머신 목록
 	 *
 	 * @param hostId [String] 호스트 아이디
 	 * @return List<[VmVo]>? 가상머신 목록
 	 */
 	@Throws(Error::class)
-	fun findAllVmFromHost(hostId: String): List<VmVo>
+	fun findAllVmsFromHost(hostId: String): List<VmVo>
 	/**
-	 * [ItHostService.findAllHostNicFromHost]
+	 * [ItHostService.findAllHostNicsFromHost]
 	 * 호스트 네트워크 인터페이스 목록
 	 *
 	 * @param hostId [String] 호스트 아이디
 	 * @return List<[HostNicVo]>? 네트워크 인터페이스 목록
 	 */
 	@Throws(Error::class)
-	fun findAllHostNicFromHost(hostId: String): List<HostNicVo>
+	fun findAllHostNicsFromHost(hostId: String): List<HostNicVo>
 	// 호스트 네트워크 설정
 	/**
-	 * [ItHostService.findAllHostDeviceFromHost]
+	 * [ItHostService.findAllHostDevicesFromHost]
 	 * 호스트 호스트 장치 목록
 	 *
 	 *  @param hostId [String] 호스트 아이디
 	 *  @return List<[HostDeviceVo]> 호스트 장치 목록
 	 */
 	@Throws(Error::class)
-	fun findAllHostDeviceFromHost(hostId: String): List<HostDeviceVo>
+	fun findAllHostDevicesFromHost(hostId: String): List<HostDeviceVo>
 	/**
-	 * [ItHostService.findAllPermissionFromHost]
+	 * [ItHostService.findAllPermissionsFromHost]
 	 * 호스트 권한 목록
 	 *
 	 *  @param hostId [String] 호스트 아이디
 	 *  @return List<[PermissionVo]> 권한 목록
 	 */
 	@Throws(Error::class)
-	fun findAllPermissionFromHost(hostId: String): List<PermissionVo>
+	fun findAllPermissionsFromHost(hostId: String): List<PermissionVo>
 	/**
-	 * [ItHostService.findAllAffinityLabelFromHost]
+	 * [ItHostService.findAllAffinityLabelsFromHost]
 	 * 호스트 선호도 레이블 목록
 	 *
 	 *  @param hostId [String] 호스트 아이디
@@ -118,16 +118,16 @@ interface ItHostService {
 	 */
 	@Deprecated("선호도 나중 구현")
 	@Throws(Error::class)
-	fun findAllAffinityLabelFromHost(hostId: String): List<AffinityLabelVo>
+	fun findAllAffinityLabelsFromHost(hostId: String): List<AffinityLabelVo>
 	/**
-	 * [ItHostService.findAllEventFromHost]
+	 * [ItHostService.findAllEventsFromHost]
 	 * 호스트 이벤트 목록
 	 *
 	 * @param hostId [String] 호스트 아이디
 	 * @return List<[EventVo]>? 이벤트 목록
 	 */
 	@Throws(Error::class)
-	fun findAllEventFromHost(hostId: String): List<EventVo>
+	fun findAllEventsFromHost(hostId: String): List<EventVo>
 }
 
 @Service
@@ -160,8 +160,8 @@ class HostServiceImpl(
 
 	@Deprecated("[ItClusterService.findAll] 내용 같음")
 	@Throws(Error::class)
-	override fun findAllClusterFromHost(): List<ClusterVo> {
-		log.info("findAllClusterFromHost ... ")
+	override fun findAllClustersFromHost(): List<ClusterVo> {
+		log.info("findAllClustersFromHost ... ")
 		val res: List<Cluster> =
 			conn.findAllClusters()
 				.getOrDefault(listOf())
@@ -202,8 +202,8 @@ class HostServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllVmFromHost(hostId: String): List<VmVo> {
-		log.info("findAllVmFromHost ... hostId: {}", hostId)
+	override fun findAllVmsFromHost(hostId: String): List<VmVo> {
+		log.info("findAllVmsFromHost ... hostId: {}", hostId)
 		conn.findHost(hostId)
 			.getOrNull()?: throw ErrorPattern.HOST_NOT_FOUND.toException()
 		val res: List<Vm> =
@@ -219,8 +219,8 @@ class HostServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllHostNicFromHost(hostId: String): List<HostNicVo> {
-		log.info("findAllHostNicFromHost ... hostId: {}", hostId)
+	override fun findAllHostNicsFromHost(hostId: String): List<HostNicVo> {
+		log.info("findAllHostNicsFromHost ... hostId: {}", hostId)
 		val res: List<HostNic> =
 			conn.findAllNicsFromHost(hostId)
 				.getOrDefault(listOf())
@@ -228,8 +228,8 @@ class HostServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllHostDeviceFromHost(hostId: String): List<HostDeviceVo> {
-		log.info("findAllHostDeviceFromHost ... hostId: {}", hostId)
+	override fun findAllHostDevicesFromHost(hostId: String): List<HostDeviceVo> {
+		log.info("findAllHostDevicesFromHost ... hostId: {}", hostId)
 		val res: List<HostDevice> =
 			conn.findAllHostDeviceFromHost(hostId)
 				.getOrDefault(listOf())
@@ -237,8 +237,8 @@ class HostServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllPermissionFromHost(hostId: String): List<PermissionVo> {
-		log.info("findAllPermissionFromHost ... hostId: {}", hostId)
+	override fun findAllPermissionsFromHost(hostId: String): List<PermissionVo> {
+		log.info("findAllPermissionsFromHost ... hostId: {}", hostId)
 		val res: List<Permission> =
 			conn.findAllPermissionFromHost(hostId)
 				.getOrDefault(listOf())
@@ -247,8 +247,8 @@ class HostServiceImpl(
 
 	@Deprecated("선호도 나중 구현")
 	@Throws(Error::class)
-	override fun findAllAffinityLabelFromHost(hostId: String): List<AffinityLabelVo> {
-		log.info("findAllAffinityLabelsFromHost ... hostId: {}", hostId)
+	override fun findAllAffinityLabelsFromHost(hostId: String): List<AffinityLabelVo> {
+		log.info("findAllAffinityLabelssFromHost ... hostId: {}", hostId)
 		conn.findHost(hostId)
 			.getOrNull()?: throw ErrorPattern.HOST_NOT_FOUND.toException()
 
@@ -256,8 +256,8 @@ class HostServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllEventFromHost(hostId: String): List<EventVo> {
-		log.info("findAllEventFromHost ... ")
+	override fun findAllEventsFromHost(hostId: String): List<EventVo> {
+		log.info("findAllEventsFromHost ... ")
 		val host: Host =
 			conn.findHost(hostId)
 				.getOrNull()?: throw ErrorPattern.HOST_NOT_FOUND.toException()

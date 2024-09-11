@@ -20,14 +20,14 @@ import kotlin.jvm.Throws
 
 interface ItVmNicService {
 	/**
-	 * [ItVmNicService.findAllNicFromVm]
+	 * [ItVmNicService.findAllNicsFromVm]
 	 * 네트워크 인터페이스
 	 *
 	 * @param vmId [String] 가상머신 id
 	 * @return List<[NicVo]>
 	 */
 	@Throws(Error::class)
-	fun findAllNicFromVm(vmId: String): List<NicVo>
+	fun findAllNicsFromVm(vmId: String): List<NicVo>
 	/**
 	 * [ItVmNicService.findOneNicFromVm]
 	 * nic 수정창
@@ -76,8 +76,8 @@ class VmNicServiceImpl(
 ) : BaseService(), ItVmNicService {
 
 	@Throws(Error::class)
-	override fun findAllNicFromVm(vmId: String): List<NicVo> {
-		log.info("findAllNicFromVm ... vmId: {}", vmId)
+	override fun findAllNicsFromVm(vmId: String): List<NicVo> {
+		log.info("findAllNicsFromVm ... vmId: {}", vmId)
 		val res: List<Nic> =
 			conn.findAllNicsFromVm(vmId)
 				.getOrDefault(listOf())
