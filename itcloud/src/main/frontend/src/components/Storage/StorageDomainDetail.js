@@ -13,6 +13,7 @@ import {
   , faUser, faTimes, faChevronCircleRight, faDesktop, faAngleDown
 } from '@fortawesome/free-solid-svg-icons'
 import './css/StorageDomainDetail.css';
+import TableOuter from '../table/TableOuter';
 
 function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const { name } = useParams();
@@ -293,12 +294,11 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                 <button>유지보수</button>
               </div>
               
-              <div className="section_table_outer">
-
-                <Table columns={TableColumnsInfo.STORAGE_DOMAIN_FROM_DATACENTER} data={dataCenterData} onRowClick={() => console.log('Row clicked')} />
-
-              </div>
-
+              <TableOuter 
+                columns={TableColumnsInfo.STORAGE_DOMAIN_FROM_DATACENTER}
+                data={dataCenterData} 
+                onRowClick={() => console.log('Row clicked')} 
+              />
           </>
         )}
 
@@ -306,6 +306,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         {activeTab === 'machine' && (
           <>
           <div className="host_empty_outer">
+            {/* TODO: TableOuter화 */}
             <div className="section_table_outer">
                 <table>
                   <thead>
@@ -375,9 +376,11 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         {activeTab === 'template' && (
           <>
           <div className="host_empty_outer">
-            <div className="section_table_outer">
-              <Table columns={templateColumns} data={templateData} onRowClick={() => console.log('Row clicked')} />
-            </div>
+            <TableOuter 
+              columns={templateColumns}
+              data={templateData}
+              onRowClick={() => console.log('Row clicked')} 
+            />
           </div>
         </>
         )}
@@ -403,9 +406,11 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                 )}
             </div>
             
-            <div className="section_table_outer">
-              <Table columns={diskcolumns} data={diskdata} onRowClick={() => console.log('Row clicked')}/>
-            </div>
+            <TableOuter 
+              columns={diskcolumns}
+              data={diskdata}
+              onRowClick={() => console.log('Row clicked')}
+            />
        </>
         )}
 
@@ -415,18 +420,22 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                 <button>제거</button>
             </div>
             
-            <div className="section_table_outer">
-              <Table columns={snapshotColumns} data={snapshotData} onRowClick={() => console.log('Row clicked')} />
-            </div>
+            <TableOuter 
+              columns={snapshotColumns}
+              data={snapshotData}
+              onRowClick={() => console.log('Row clicked')}
+            />
         </>
         )}
 
         {activeTab === 'event' && (
           <>
         <div className="host_empty_outer">
-            <div className="section_table_outer">
-                <Table columns={TableColumnsInfo.EVENTS} data={eventData} onRowClick={() => console.log('Row clicked')} />
-            </div>
+          <TableOuter 
+            columns={TableColumnsInfo.EVENTS}
+            data={eventData}
+            onRowClick={() => console.log('Row clicked')} 
+          />
         </div>
         </>
         )}
@@ -455,13 +464,11 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                   </button>
                 </div>
               </div>
-              <div className="section_table_outer">
-                <Table
-                  columns={TableColumnsInfo.PERMISSIONS}
-                  data={activePermissionFilter === 'all' ? permissionData : []}
-                  onRowClick={() => console.log('Row clicked')}
-                />
-              </div>
+              <TableOuter
+                columns={TableColumnsInfo.PERMISSIONS}
+                data={activePermissionFilter === 'all' ? permissionData : []}
+                onRowClick={() => console.log('Row clicked')}
+              />
             </>
 )}
 

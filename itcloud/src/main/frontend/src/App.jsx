@@ -19,13 +19,12 @@ import StorageDiskDetail from './components/Storage/StorageDiskDetail';
 import DataCenterDetail from './components/Computing/DataCenterDetail';
 import VmHostChart from './components/Computing/VmHostChart';
 import NetworkDetail from './components/Network/NetworkDetail';
-import './App.css';
 import DomainParts from './components/Storage/StorageDomainPart';
 import STOMP from './Socket'
 import { Toaster, toast } from 'react-hot-toast';
+import './App.css';
 
-
-function App() {
+const App = () => {
   const [stompClient, setStompClient] = useState(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
@@ -77,25 +76,26 @@ function App() {
     // Implement your authentication logic here
     return localStorage.getItem('token') !== null; // Example: check if a token exists
   };
-  const [authenticated, setAuthenticated] = useState(true);
+  
+  const [authenticated, setAuthenticated] = useState(false);
+  
   useEffect(() => {
     setAuthenticated(isAuthenticated());
   }, []);
-  const [usernameGlobal, setUsernameGlobal] = useState(null); // 로그인이 끝났을 때 값을 부여할 예정
 
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
         {authenticated ? (
           <>
-          <Header setAuthenticated={setAuthenticated} usernameGlobal={usernameGlobal} />
+          <Header setAuthenticated={setAuthenticated} />
           <MainOuter>
             <Routes>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/computing/datacenters" element={<Computing />} />
               {/* <Route path="/computing/datacenter/:name" element={<DataCenterDetail />} /> */}
               <Route path="/storage" element={<Storage />} />
-              <Route path="/setting" element={<Setting />} />
+              <Route path="/settings" element={<Setting />} />
               <Route path="/computing/:name" element={<Vm />} />
               <Route path="/computing/host" element={<Host />} />
               <Route path="/computing/vmhost-chart" element={<VmHostChart />} />
@@ -112,7 +112,7 @@ function App() {
           </>
           ) :
           (<Routes>
-            <Route path="/" element={<Login setAuthenticated={setAuthenticated} setUsernameGlobal={setUsernameGlobal} />} />
+            <Route path="/" element={<Login setAuthenticated={setAuthenticated} />} />
           </Routes>)
         }
       </Router>

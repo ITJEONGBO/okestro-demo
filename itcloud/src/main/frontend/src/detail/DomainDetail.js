@@ -3,8 +3,9 @@ import Modal from 'react-modal';
 import NavButton from '../components/navigation/NavButton';
 import {
   faExchange, faBan, faChevronLeft, faChevronRight, faEllipsisV
-  , faUser, faTimes, faInfoCircle,
+  , faUser, faTimes, faInfoCircle, faPencil, faArrowUp,
 } from '@fortawesome/free-solid-svg-icons'
+import HeaderButton from '../components/button/HeaderButton';
 function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const [activeTab, setActiveTab] = useState('general');
 
@@ -18,6 +19,13 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
     { id: 'template', label: '템플릿' },
     { id: 'permission', label: '권한' },
   ];
+
+  const sectionHeaderButtons = [
+    { id: 'new_btn', label: '새로 만들기', onClick: () => openPopup('newNetwork') },
+    { id: 'edit_btn', label: '편집', icon: faPencil, onClick: () => openPopup('newNetwork')  },
+    { id: 'delete_btn', label: '삭제', icon: faArrowUp, onClick: () => {} }
+  ];
+
   //
   const handleTabClick = (tab) => setActiveTab(tab);
   
@@ -28,33 +36,19 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
   
   return (
     <div className="content_detail_section">
-      <div className="section_header">
-        <div className="section_header_left">
-          <span>네트워크 </span>
-          <span>논리네트워크</span>
-          <div>hosted_storage</div>
-          <button>
-            <FontAwesomeIcon icon={faExchange} fixedWidth/>
-          </button>
-        </div>
-
-        <div className="section_header_right">
-          <div className="article_nav">
-            <button>편집</button>
-            <button>삭제</button> 
-          </div>
-        </div>
-
-      </div>
-
+      <HeaderButton
+        title="네트워크 > 논리네트워크"
+        subtitle="hosted_storage"
+        buttons={sectionHeaderButtons}
+        openModal={() => {}}
+        togglePopup={() => {}} 
+      />
       <div className="content_outer">
         <NavButton 
           sections={sections} 
           activeSection={activeTab} 
           handleSectionClick={handleTabClick} 
         />
-
-
         {activeTab === 'general' && (
           <div className="section_content_outer">
             <div className="table_container_left">

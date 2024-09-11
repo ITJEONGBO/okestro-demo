@@ -7,6 +7,7 @@ import {
   faUser, fa1, fa2
 } from '@fortawesome/free-solid-svg-icons'
 import TableColumnsInfo from '../../table/TableColumnsInfo';
+import TableOuter from '../../table/TableOuter';
 const PowerSection = () => {
 
     const [activePermissionFilter, setActivePermissionFilter] = useState('all');
@@ -49,13 +50,11 @@ const PowerSection = () => {
                   </button>
                 </div>
               </div>
-              <div className="section_table_outer">
-                <Table
-                  columns={TableColumnsInfo.PERMISSIONS}
-                  data={activePermissionFilter === 'all' ? permissionData : []}
-                  onRowClick={() => console.log('Row clicked')}
-                />
-              </div>
+              <TableOuter
+                columns={TableColumnsInfo.PERMISSIONS}
+                data={activePermissionFilter === 'all' ? permissionData : []}
+                onRowClick={() => console.log('Row clicked')}
+              />
         {/* 모달 컴포넌트 */}
         <Permission isOpen={isModalOpen} onRequestClose={handleCloseModal} />
 </>

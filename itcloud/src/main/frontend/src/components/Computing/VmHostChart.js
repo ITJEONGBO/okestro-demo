@@ -166,6 +166,7 @@ const VmHostChart = () => {
       />
       <div className="content_outer">
         <div className="empty_nav_outer">
+            {/* TODO: TableOuter화 */}
           <div className="section_table_outer">
             <div className='host_filter_btns'>
               <button

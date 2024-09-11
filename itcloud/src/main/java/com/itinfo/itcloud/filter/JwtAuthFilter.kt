@@ -28,12 +28,13 @@ class JwtAuthFilter (
 		response: HttpServletResponse,
 		filterChain: FilterChain
 	) {
+		log.info("doFilterInternal ... ")
 		// WebSecurityConfig 에서 보았던 UsernamePasswordAuthenticationFilter 보다 먼저 동작을 하게 됩니다.
 		// Access / Refresh 헤더에서 토큰을 가져옴.
 		val accessToken = jwtUtil.getHeaderToken(request, "Access")
 		val refreshToken = jwtUtil.getHeaderToken(request, "Refresh")
 		if (accessToken == null) {
-			log.warn(",.,.,.,.,.,")
+			log.warn("doFilterInternal ... NO accessToken FOUND!")
 			return
 		}
 		// 어세스 토큰값이 유효하다면 setAuthentication를 통해
@@ -56,7 +57,6 @@ class JwtAuthFilter (
 		}
 		filterChain.doFilter(request, response)
 	}
-
 
 	// SecurityContext 에 Authentication 객체를 저장합니다.
 	fun applyAuthentication(username: String) {

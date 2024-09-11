@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
-import HeaderButton from '../button/HeaderButton';
-import Table from '../table/Table';
-import TableColumnsInfo from '../table/TableColumnsInfo';
-import Footer from '../footer/Footer';
-import './css/Storage.css';
-import Permission from '../Modal/Permission';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faGlassWhiskey, faCaretUp, faEllipsisV, faSearch, faChevronCircleRight
-  , faTimes
+  , faTimes, faPencil, faArrowUp
 } from '@fortawesome/free-solid-svg-icons'
+import { adjustFontSize } from '../../UIEvent';
+import HeaderButton from '../button/HeaderButton';
+import TableOuter from '../table/TableOuter';
+import TableColumnsInfo from '../table/TableColumnsInfo';
+import Footer from '../footer/Footer';
+import Permission from '../Modal/Permission';
+import './css/Storage.css';
 
 Modal.setAppElement('#root'); // React 16 이상에서는 필수
 
@@ -121,17 +122,9 @@ const Storage = () => {
 
 
   useEffect(() => {
-    function adjustFontSize() {
-      const width = window.innerWidth;
-      const fontSize = width / 40; // 필요에 따라 이 값을 조정하세요
-      document.documentElement.style.fontSize = fontSize + 'px';
-    }
     window.addEventListener('resize', adjustFontSize);
     adjustFontSize();
-
-    return () => {
-      window.removeEventListener('resize', adjustFontSize);
-    };
+    return () => { window.removeEventListener('resize', adjustFontSize); };
   }, []);
 
   // State for active section
@@ -140,41 +133,18 @@ const Storage = () => {
   const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
   const [activeTab, setActiveTab] = useState('img');
 
-  const toggleFooterContent = () => {
-    setFooterContentVisibility(!isFooterContentVisible);
-  };
-
-  const handleFooterTabClick = (tab) => {
-    setSelectedFooterTab(tab);
-  };
-
-  const handleSectionClick = (section) => {
-    setActiveSection(section);
-  };
-
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-  };
+  const toggleFooterContent = () => setFooterContentVisibility(!isFooterContentVisible);
+  const handleFooterTabClick = (tab) => setSelectedFooterTab(tab);
+  const handleSectionClick = (section) => setActiveSection(section);
+  const handleTabClick = (tab) => setActiveTab(tab);
 
   const [activePopup, setActivePopup] = useState(null);
-
-  const openPopup = (popupType) => {
-    setActivePopup(popupType);
-  };
-
-  const closePopup = () => {
-    setActivePopup(null);
-  };
-
+  const openPopup = (popupType) => setActivePopup(popupType);
+  const closePopup = () => setActivePopup(null);
   const [isPopupBoxVisible, setPopupBoxVisibility] = useState(false);
-
-  const togglePopupBox = () => {
-    setPopupBoxVisibility(!isPopupBoxVisible);
-  };
-
-  const handlePopupBoxItemClick = (e) => {
-    e.stopPropagation();
-  };
+  
+  const togglePopupBox = () => setPopupBoxVisibility(!isPopupBoxVisible);
+  const handlePopupBoxItemClick = (e) => e.stopPropagation();
 
   const [isDomainHiddenBoxVisible, setDomainHiddenBoxVisible] = useState(false);
   const toggleDomainHiddenBox = () => {
@@ -186,8 +156,8 @@ const Storage = () => {
   };
 
   const sectionHeaderButtons = [
-    { label: '편집', onClick: () => {} },
-    { label: '삭제', onClick: () => {} },
+    { id: 'new_btn', label: '편집', icon: faPencil, onClick: () => {} },
+    { id: 'edit_btn', label: '삭제', icon: faArrowUp, onClick: () => {} },
   ];
 
   const sectionHeaderPopupItems = [
@@ -233,18 +203,12 @@ const Storage = () => {
                   </button>
                 </div>
 
-                <div className="section_table_outer">
-                  <div className="search_box">
-                    <input type="text" />
-                    <button><FontAwesomeIcon icon={faSearch} fixedWidth/></button>
-                  </div>
-                  {/* Table 컴포넌트를 이용하여 테이블을 생성합니다. */}
-                  <Table 
-                    columns={TableColumnsInfo.STORAGE_DOMAINS} 
-                    data={domaindata} 
-                    onRowClick={handleDomainClick} 
-                  />
-                </div>
+                {/* Table 컴포넌트를 이용하여 테이블을 생성합니다. */}
+                <TableOuter
+                  columns={TableColumnsInfo.STORAGE_DOMAINS} 
+                  data={domaindata} 
+                  onRowClick={handleDomainClick} 
+                />
               </>
         
 

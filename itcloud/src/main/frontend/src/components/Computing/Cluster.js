@@ -2,13 +2,15 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import HeaderButton from '../button/HeaderButton';
-import Table from '../table/Table';
+import TableOuter from '../table/TableOuter';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
 import { useAllClusters } from '../../api/RQHook';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
+    faArrowUp,
     faInfoCircle,
+  faPencil,
   faRefresh,
   faTimes
 } from '@fortawesome/free-solid-svg-icons'
@@ -42,12 +44,9 @@ const Cluster = () => {
     };
   const sectionHeaderButtons = [
     { id: 'new_btn', label: '새로 만들기', onClick: () => openPopup('newNetwork') },
-    { id: 'edit_btn', label: '편집', icon: 'fa-pencil', onClick: () => openPopup('newNetwork')  },
-    { id: 'delete_btn', label: '삭제', icon: 'fa-arrow-up', onClick: () => {} }
+    { id: 'edit_btn', label: '편집', icon: faPencil, onClick: () => openPopup('newNetwork')  },
+    { id: 'delete_btn', label: '삭제', icon: faArrowUp, onClick: () => {} }
   ];
-
-
-
   /* 
   const [data, setData] = useState(DEFAULT_VALUES.FIND_ALL_CLUSTERS);
   useEffect(() => {
@@ -102,18 +101,12 @@ const Cluster = () => {
       />
       <div className="content_outer">
         <div className="empty_nav_outer">
-          <div className="section_table_outer">
-            <button>
-              <FontAwesomeIcon icon={faRefresh} fixedWidth/>
-            </button>
-            <Table 
+          <TableOuter 
               columns={TableColumnsInfo.CLUSTERS_ALT} 
               data={clusters} 
               onRowClick={handleRowClick}
               shouldHighlight1stCol={true}
-              
-            />
-          </div>
+          />
         </div>
       </div>
 

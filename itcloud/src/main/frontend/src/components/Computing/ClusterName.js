@@ -15,6 +15,7 @@ import {
   faTimes
 } from '@fortawesome/free-solid-svg-icons'
 import './css/ClusterName.css';
+import TableOuter from '../table/TableOuter';
 
 function ClusterName() {
     const { id } = useParams();
@@ -306,71 +307,70 @@ function ClusterName() {
                             {/* 논리 네트워크 */}
                             {activeTab === 'logical_network' && (
                                 <>
-
                                 <div className="content_header_right">
                                     <button onClick={() => openPopup('newNetwork')}>네트워크 추가</button>
                                     <button>네트워크 관리</button>
                                     <button>디스플레이로 설정</button>
                                     <button>모든 네트워크 동기화</button>
                                 </div>
-
-                                    <div className="section_table_outer">
-                                        <Table columns={TableColumnsInfo.LUNS} data={networks} onRowClick={handleRowClick} />
-                                    </div>
+                                <TableOuter
+                                  columns={TableColumnsInfo.LUNS} 
+                                  data={networks} 
+                                  onRowClick={handleRowClick} />
                                 </>
 
                             )}
                             {/* 호스트 */}
                             {activeTab === 'host' && (
                                 <>
-                                    <div className="host_empty_outer">
-                                        <div className="section_table_outer">
-                                            <Table columns={TableColumnsInfo.HOSTS_FROM_CLUSTER} data={hosts} onRowClick={() => console.log('Row clicked')} />
-                                        </div>
-                                    </div>
+                                <div className="host_empty_outer">
+                                  <TableOuter 
+                                    columns={TableColumnsInfo.HOSTS_FROM_CLUSTER} 
+                                    data={hosts}
+                                    onRowClick={() => console.log('Row clicked')} 
+                                  />
+                                </div>
                                 </>
                             )}
                             {/* 가상 머신 */}
                             {activeTab === 'virtual_machine' && (
-                                <div className="host_empty_outer">
-                                    <div className="section_table_outer">
-
-                                        <Table columns={TableColumnsInfo.CLUSTER_VM} data={vms} onRowClick={() => console.log('Row clicked')} />
-
-                                    </div>
-                                </div>
+                              <>
+                              <div className="host_empty_outer">
+                                <TableOuter 
+                                  columns={TableColumnsInfo.CLUSTER_VM} 
+                                  data={vms} 
+                                  onRowClick={() => console.log('Row clicked')}
+                                />
+                              </div>
+                              </>
                             )}
-
-                            {/*     선호도 그룹/ 선호도 레이블 주석
-                         
+                            {/* 선호도 그룹/ 선호도 레이블 주석
                             {activeTab === 'affinity_group' && (
-                                <>
-                                    <div className="content_header_right">
-                                        <button onClick={openAffinityGroupModal}>새로 만들기</button>
-                                        <button>편집</button>
-                                        <button>제거</button>
-                                    </div>
-    
-                                    <div className="section_table_outer">
-
-                                        <Table columns={TableColumnsInfo.AFFINITY_GROUP} data={affinityData} onRowClick={() => console.log('Row clicked')} />
-
-                                    </div>
-                                </>
+                              <>
+                              <div className="content_header_right">
+                                <button onClick={openAffinityGroupModal}>새로 만들기</button>
+                                <button>편집</button>
+                                <button>제거</button>
+                              </div>
+                              <TableOuter 
+                                columns={TableColumnsInfo.AFFINITY_GROUP} 
+                                data={affinityData} 
+                                onRowClick={() => console.log('Row clicked')} 
+                              />
+                              </>
                             )}
-    
-                    
                             {activeTab === 'affinity_label' && (
                                 <>
-                                    <div className="content_header_right">
-                                        <button>새로 만들기</button>
-                                        <button>편집</button>
-                                        <button>제거</button>
-                                    </div>
-    
-                                    <div className="section_table_outer">
-                                        <Table columns={TableColumnsInfo.AFFINITY_LABELS} data={memberData} onRowClick={() => console.log('Row clicked')} />
-                                    </div>
+                                <div className="content_header_right">
+                                  <button>새로 만들기</button>
+                                  <button>편집</button>
+                                  <button>제거</button>
+                                </div>
+                                <TableOuter 
+                                  columns={TableColumnsInfo.AFFINITY_LABELS} 
+                                  data={memberData} 
+                                  onRowClick={() => console.log('Row clicked')} 
+                                />
                                 </>
                             )}  */}
 
@@ -398,24 +398,22 @@ function ClusterName() {
                                     </button>
                                 </div>
                                 </div>
-                                <div className="section_table_outer">
-                                <Table
-                                    columns={TableColumnsInfo.PERMISSIONS}
-                                    data={permissions}
-                                    onRowClick={() => console.log('Row clicked')}
+                                <TableOuter 
+                                  columns={TableColumnsInfo.PERMISSIONS}
+                                  data={permissions}
+                                  onRowClick={() => console.log('Row clicked')}
                                 />
-                                </div>
                                 </>
                             )}
-
-
                             {/* 이벤트 */}
                             {activeTab === 'event' && (
-                                <div className="event_table_outer">
-                                    <div className="section_table_outer">
-                                        <Table columns={TableColumnsInfo.EVENTS} data={events} onRowClick={() => console.log('Row clicked')} />
-                                    </div>
-                                </div>
+                              <div className="event_table_outer">
+                                <TableOuter 
+                                  columns={TableColumnsInfo.EVENTS}
+                                  data={events}
+                                  onRowClick={() => console.log('Row clicked')} 
+                                />
+                              </div>
                             )}
                         </div>
                     </div>

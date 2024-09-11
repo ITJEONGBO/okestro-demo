@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCaretUp, faGlassWhiskey, faEllipsisV, faRefresh, faTimes
 } from '@fortawesome/free-solid-svg-icons'
+import TableOuter from '../table/TableOuter';
 
 Modal.setAppElement('#root');
 
@@ -130,13 +131,11 @@ const DomainParts = () => {
                     </div>
                   </button>
                 </div>
-
-                <div className="section_table_outer">
-                  <button>
-                    <FontAwesomeIcon icon={faRefresh} fixedWidth/>
-                  </button>
-                  <Table columns={TableColumnsInfo.STORAGES} data={data} onRowClick={handleRowClick} />
-                </div>
+                <TableOuter 
+                  columns={TableColumnsInfo.STORAGES}
+                  data={data}
+                  onRowClick={handleRowClick}
+                />
               </>
         </div>
       <Footer/>

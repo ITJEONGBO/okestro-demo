@@ -34,6 +34,7 @@ import {
   faNetworkWired,
   faTag
 } from '@fortawesome/free-solid-svg-icons'
+import TableOuter from '../table/TableOuter';
 
 const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) => {
   // 테이블컴포넌트
@@ -309,14 +310,12 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
               <button onClick={() => openPopup('vnic_eidt_popup')}>편집</button>
               <button>제거</button>
           </div>
-          <div className="section_table_outer">
-            {/* vNIC 프로파일 */}
-            <Table
-              columns={TableColumnsInfo.VNIC_PROFILES} 
-              data={vnicProfiles}
-              onRowClick={() => console.log('Row clicked')} 
-            />
-          </div>
+          {/* vNIC 프로파일 */}
+          <TableOuter
+            columns={TableColumnsInfo.VNIC_PROFILES} 
+            data={vnicProfiles}
+            onRowClick={() => console.log('Row clicked')} 
+          />
        </>
         )}
 
@@ -326,13 +325,11 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                 <button onClick={() => openPopup('cluster_network_popup')}>네트워크 관리</button>
             </div>
           
-            <div className="section_table_outer">
-              <Table 
-                columns={TableColumnsInfo.CLUSTERS} 
-                data={clusters} 
-                onRowClick={() => console.log('Row clicked')}
-              />
-            </div>
+            <TableOuter
+              columns={TableColumnsInfo.CLUSTERS} 
+              data={clusters} 
+              onRowClick={() => console.log('Row clicked')}
+            />
        </>
        
         )}
@@ -354,9 +351,11 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                   연결 해제
               </button>
             </div>
-            <div className="section_table_outer">
-              <Table columns={TableColumnsInfo.HOSTS} data={hosts} onRowClick={() => console.log('Row clicked')} />
-            </div>
+            <TableOuter 
+              columns={TableColumnsInfo.HOSTS}
+              data={hosts}
+              onRowClick={() => console.log('Row clicked')} 
+            />
        </>
        
         )}
@@ -378,9 +377,11 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                     정지중
                 </button>
             </div>
-            <div className="section_table_outer">
-              <Table columns={TableColumnsInfo.VMS} data={vms} onRowClick={() => console.log('Row clicked')} />
-            </div>   
+            <TableOuter 
+              columns={TableColumnsInfo.VMS}
+              data={vms}
+              onRowClick={() => console.log('Row clicked')}
+            />
        </>
         )}
 
@@ -390,10 +391,11 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                 <button>제거</button>
             </div>
 
-            <div className="section_table_outer">
-              <Table columns={TableColumnsInfo.TEMPLATES} data={templates} onRowClick={() => console.log('Row clicked')} />
-            </div>
-          
+            <TableOuter 
+              columns={TableColumnsInfo.TEMPLATES}
+              data={templates} 
+              onRowClick={() => console.log('Row clicked')} 
+            />
         </>
         )}
 
@@ -424,16 +426,11 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
                   </div>
                 </div>
               
-              <div className="section_table_outer">
-              <Table
-                    columns={TableColumnsInfo.PERMISSIONS}
-                    data={permissions}
-                    onRowClick={() => console.log('Row clicked')}
-                  />
-
-              </div>
-     
-            
+              <TableOuter
+                columns={TableColumnsInfo.PERMISSIONS}
+                data={permissions}
+                onRowClick={() => console.log('Row clicked')}
+              />
           </>
         )}
 
@@ -746,13 +743,11 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
             <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
           
-          <div className="section_table_outer">
-            <Table 
-              columns={TableColumnsInfo.CLUSTERS_POPUP} 
-              data={clusterPopupData} 
-              onRowClick={() => console.log('Row clicked')} 
-            />
-          </div>
+          <TableOuter 
+            columns={TableColumnsInfo.CLUSTERS_POPUP} 
+            data={clusterPopupData} 
+            onRowClick={() => console.log('Row clicked')} 
+          />
           
           <div className="edit_footer">
             <button style={{ display: 'none' }}></button>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
-import Table from '../table/Table';
+import TableOuter from '../table/TableOuter';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
 import Permission from '../Modal/Permission';
@@ -158,17 +158,21 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
 
           {activeTab === 'machine' && (
             <div className="host_empty_outer">
-              <div className="section_table_outer">
-                <Table columns={TableColumnsInfo.VMS_FROM_DISK} data={vmData} onRowClick={() => console.log('Row clicked')} />
-              </div>
+              <TableOuter 
+                columns={TableColumnsInfo.VMS_FROM_DISK} 
+                data={vmData}
+                onRowClick={() => console.log('Row clicked')} 
+              />
             </div>
           )}
 
           {activeTab === 'storage' && (
             <div className="host_empty_outer">
-              <div className="section_table_outer">
-                <Table columns={TableColumnsInfo.STORAGES_FROM_DISK} data={storageData} onRowClick={() => console.log('Row clicked')} />
-              </div>
+              <TableOuter 
+                columns={TableColumnsInfo.STORAGES_FROM_DISK} 
+                data={storageData}
+                onRowClick={() => console.log('Row clicked')} 
+              />
             </div>
           )}
 
@@ -195,13 +199,11 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
                   </button>
                 </div>
               </div>
-              <div className="section_table_outer">
-                <Table
-                  columns={TableColumnsInfo.PERMISSIONS}
-                  data={activePermissionFilter === 'all' ? permissionData : []}
-                  onRowClick={() => console.log('Row clicked')}
-                />
-              </div>
+              <TableOuter
+                columns={TableColumnsInfo.PERMISSIONS}
+                data={activePermissionFilter === 'all' ? permissionData : []}
+                onRowClick={() => console.log('Row clicked')}
+              />
             </>
           )}
         </div>

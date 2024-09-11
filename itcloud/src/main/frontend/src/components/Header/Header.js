@@ -1,29 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Header.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBell, faUser
 } from '@fortawesome/free-solid-svg-icons'
+import { adjustFontSize } from '../../UIEvent';
+import './Header.css';
 
-const Header = ({ setAuthenticated, usernameGlobal }) => {
+const Header = ({ setAuthenticated }) => {
     const navigate = useNavigate();
     const [isLoginBoxVisible, setLoginBoxVisible] = useState(false);
     const [isBellActive, setBellActive] = useState(false);
+    const [username, setUsername] = useState(localStorage['username'])
 
     useEffect(() => {
-        function adjustFontSize() {
-            const width = window.innerWidth;
-            const fontSize = width / 40;
-            document.documentElement.style.fontSize = fontSize + 'px';
-        }
-
-        window.addEventListener('resize', adjustFontSize);
-        adjustFontSize();
-
-        return () => {
-          window.removeEventListener('resize', adjustFontSize);
-        };
+      window.addEventListener('resize', adjustFontSize);
+      adjustFontSize();
+      return () => { window.removeEventListener('resize', adjustFontSize); };
     }, []);
 
     const handleTitleClick = () => navigate('/dashboard'); 
@@ -94,16 +87,15 @@ const Header = ({ setAuthenticated, usernameGlobal }) => {
                 </div>
 
                 {/*user */}
-                <div 
-                    className='user_btn' 
-                    onClick={toggleLoginBox}
-                    style={{ 
-                        backgroundColor: isLoginBoxVisible ? '#ebececd8' : 'transparent',
-                        borderRadius: '50%'
-                    }}
+                <div className='user_btn' 
+                  onClick={toggleLoginBox}
+                  style={{ 
+                      backgroundColor: isLoginBoxVisible ? '#ebececd8' : 'transparent',
+                      borderRadius: '50%'
+                  }}
                 >
-                    <FontAwesomeIcon icon={faUser} fixedWidth/>&nbsp;<span>{usernameGlobal}</span>
-                    <div className='user_loginbox' 
+                  <FontAwesomeIcon icon={faUser} fixedWidth/>&nbsp;<span>{username}</span>
+                  <div className='user_loginbox' 
                       style={{ display: isLoginBoxVisible ? 'block' : 'none' }} 
                       onClick={stopPropagation}
                     >

@@ -1,19 +1,21 @@
 # okestro-demo
 
-![favicon](itcloud/src/main/frontend/src/logo.svg)
-
+![favicon](itcloud/src/main/frontend/public/favicon.ico)
+  
 (현) 아이티클라우드
 
 ---
 
 ## What's included?
 
-![shield-java][shield-java]
+![Java (`11`)][shield-java]
 ![Spring (`5.3.20`) / Boot (`2.7.0`)][shield-spring]
 ![shield-spring-security][shield-spring-security]
 ![Node.js (`11.0.23`)][shield-nodejs]
 ![React.js (`18.3.x`)][shield-reactjs]
-![shield-swagger][shield-swagger]
+![Storybook (`8.2.x`)][shield-storybook]
+![PostgreSQL (`?.?.x`)][shield-postgresql]
+![Swagger (`2.9.x`)][shield-swagger]
 ![shield-kotlin][shield-kotlin]
 ![shield-gradle][shield-gradle]
 ![shield-tomcat][shield-tomcat]
@@ -40,15 +42,18 @@
 
 ---
 
-## 🧶Node.js
-
-```sh
-npm start  # React 앱 실행
-npm build # React 앱 빌드
-```
+## ![React.js (`18.3.x`)][shield-reactjs]React.js
 
 > [!IMPORTANT] 
+> 
 > npm이 없을 경우 설치 권고
+> 
+> ```sh
+> npm start  # React 앱 실행
+> npm build # React 앱 빌드
+> ```
+
+---
 
 ## 🐘Gradle
 
@@ -68,39 +73,6 @@ npm build # React 앱 빌드
 > ```
 
 ![itcloud:bootRun](imgs/gradle-itcloud-bootRun.png)
-
-> 실행 후 http://localhost:8080 을 브라우저로 열기
-
----
-
-## 😺Tomcat 
-
-- 톰켓 환경 구성: 📁`<catalina base path>`
-  - SSL 포트: `8443`
-  - p12 파일 구성: 📁`<catalina base path>/keystore/okestro.p12`) 비밀번호: `okestro2018`
-  - context path: `/`
-  - 📁`<catalina base path>/conf/server.xml` 수정
-
-### 📁`conf/server.xml`
-     
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<Server port="8015" shutdown="SHUTDOWN">
-  <Service name="Catalina">
-    <Connector port="8080" protocol="HTTP/1.1"
-               connectionTimeout="20000"
-               redirectPort="8443"
-               maxParameterCount="1000"
-    />
-   
-    <!-- ... 생략 ...   -->
-    <Connector port="8443" protocol="HTTP/1.1"
-               maxThreads="150" SSLEnabled="true" scheme="https" secure="true"
-               clientAuth="false" sslProtocol="TLS"
-               keystoreFile="<catalina base path>/keystore/okestro.p12" keystorePass="okestro2018" />
-  </Service>
-</Server>
-```
 
 ---
 
@@ -171,6 +143,8 @@ npm build # React 앱 빌드
 > ```
 >
 
+## 
+
 ### (사용자 정보 접근을 위한) PostgresDB 초기 구성
 
 > Postgres 관리자 권한으로 로그인
@@ -190,11 +164,7 @@ GRANT ALL ON SCHEMA aaa_jdbc TO okestro;
 
 ```sql
 # DESCRIBE 테이블
-SELECT 
-   table_name, column_name, data_type 
-FROM 
-   information_schema.columns
-WHERE 1=1
+SELECT table_name, column_name, data_type FROM information_schema.columns WHERE 1=1
 AND table_schema = 'aaa_jdbc'
 AND table_name = 'users';
 ```
@@ -207,16 +177,9 @@ cd /etc/pki/ovirt-engine/certs
 
 ## 🎯TODO
 
-- [x] 소스코드 초기상태 복구
-- [ ] package별 endpoint구현
-- [x] docker 생성 자동화 스크립트 (환경변수 지정 > ovirt ip주소)
-- [x] swagger 구성 (`/swagger-ui/`)
-- [x] dokka 구성
-
 ---
 
-
-## Troubleshooting
+## 🩺Troubleshooting
 
 ### admin 계정 잠김
 
@@ -298,6 +261,8 @@ https://hoestory.tistory.com/70
 [shield-spring-security]: https://img.shields.io/badge/Spring%20Security-4.2.2.RELEASE-6DB33F?logo=springsecurity&logoColor=6DB33F&style=flat-square
 [shield-nodejs]: https://img.shields.io/badge/Node.js-11.0.23-5FA04E?logo=nodedotjs&logoColor=5FA04E&style=flat-square
 [shield-reactjs]: https://img.shields.io/badge/React.js-18.3.x-61DAFB?logo=react&logoColor=61DAFB&style=flat-square
+[shield-storybook]: https://img.shields.io/badge/Storybook-8.2.x-FF4785?logo=react&logoColor=FF4785&style=flat-square
+[shield-postgresql]: https://img.shields.io/badge/PostgreSQL-?.?.x-4169E1?logo=react&logoColor=4169E1&style=flat-square
 [shield-swagger]: https://img.shields.io/badge/Swagger-2.9.2-85EA2D?logo=swagger&logoColor=85EA2D&style=flat-square 
 [shield-kotlin]: https://img.shields.io/badge/Kotlin-1.5.31-0095D5?logo=kotlin&logoColor=0095D5&style=flat-square
 [shield-gradle]: https://img.shields.io/badge/Gradle-7.4.2-abd759?logo=gradle&logoColor=abd759&style=flat-square

@@ -11,6 +11,7 @@ import {
   , faCheckCircle, faExclamation, faFilm, faArrowCircleUp
 } from '@fortawesome/free-solid-svg-icons'
 import './css/HostDetail.css';
+import TableOuter from '../table/TableOuter';
 
 
 function HostDetail() {
@@ -420,11 +421,12 @@ function HostDetail() {
                                 <button>모두</button>
                             </div>
                         </div>
-
-                        <div className="section_table_outer">
-                          <Table columns={TableColumnsInfo.VMS_FROM_HOST} data={data} onRowClick={() => console.log('Row clicked')} />
-                        </div>
-              </>
+                        <TableOuter 
+                          columns={TableColumnsInfo.VMS_FROM_HOST}
+                          data={data}
+                          onRowClick={() => console.log('Row clicked')}
+                        />
+                </>
                 )}
              
                 {/* 네트워크 인터페이스 */}
@@ -488,9 +490,11 @@ function HostDetail() {
                         className='host_network_hiddenbox'
                         style={{ display: visibleBoxes.includes(index) ? 'block' : 'none' }}
                       >
-                         <div className="section_table_outer">
-                          <Table columns={TableColumnsInfo.NETWORKS_FROM_HOST} data={networkdata} onRowClick={() => console.log('Row clicked')} />
-                        </div>
+                         <TableOuter 
+                           columns={TableColumnsInfo.NETWORKS_FROM_HOST}
+                           data={networkdata}
+                           onRowClick={() => console.log('Row clicked')}
+                         />
                       </div>
                     </div>
                   ))}
@@ -500,9 +504,11 @@ function HostDetail() {
                 {activeTab === 'hostdevice' && (
                 <>
                   <div className="host_empty_outer">
-                    <div className="section_table_outer">
-                      <Table columns={TableColumnsInfo.VOLUMES_FROM_HOST} data={volumeData} onRowClick={() => console.log('Row clicked')} />
-                    </div>
+                    <TableOuter 
+                      columns={TableColumnsInfo.VOLUMES_FROM_HOST} 
+                      data={volumeData} 
+                      onRowClick={() => console.log('Row clicked')} 
+                    />
                   </div>
                 </>
                 )}
@@ -531,32 +537,27 @@ function HostDetail() {
                   </button>
                 </div>
               </div>
-              <div className="section_table_outer">
-                <Table
-                  columns={TableColumnsInfo.PERMISSIONS}
-                  data={activePermissionFilter === 'all' ? permissionData : []}
-                  onRowClick={() => console.log('Row clicked')}
-                />
-              </div>
+              <TableOuter
+                columns={TableColumnsInfo.PERMISSIONS}
+                data={activePermissionFilter === 'all' ? permissionData : []}
+                onRowClick={() => console.log('Row clicked')}
+              />
             </>
             )}
           
                 {/* 이벤트 */}
                 {activeTab === 'event' && (
                 <div className="host_empty_outer">
-                   <div className="section_table_outer">
-                        <Table columns={TableColumnsInfo.EVENTS} data={eventData} onRowClick={() => console.log('Row clicked')} />
-                    </div>
+                   <TableOuter
+                     columns={TableColumnsInfo.EVENTS}
+                     data={eventData}
+                     onRowClick={() => console.log('Row clicked')} 
+                    />
                 </div>
                 )}
-
-                
                 </div>
             </div>
-
-
             <Footer/>
-            
         </div>
     );
 }

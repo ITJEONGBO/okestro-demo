@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import './Button.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faEllipsisV
-} from '@fortawesome/free-solid-svg-icons'
+import { faEllipsisV, faExchange, faPencil, faArrowUp } from '@fortawesome/free-solid-svg-icons'
+import IconButton from '../Input/IconButton';
+import './HeaderButton.css';
 
 const HeaderButton = ({ title, subtitle, buttons, popupItems }) => {
   const [isPopupBoxVisible, setIsPopupBoxVisible] = useState(false);
@@ -18,13 +17,18 @@ const HeaderButton = ({ title, subtitle, buttons, popupItems }) => {
       <div className="section_header_left">
         <div>{title}</div>
         <div>{subtitle}</div>
+        <button><FontAwesomeIcon icon={faExchange} fixedWidth/></button>
       </div>
       <div className="section_header_right">
         <div className="article_nav">
           {buttons.map((button, index) => (
-            <button key={index} id={button.id} onClick={button.onClick}>
-              {button.label}
-            </button>
+            <>
+            <IconButton id={button.id}
+              key={index} 
+              label={button.label}
+              icon={button.icon}
+              onClick={button.onClick} />
+            </>
           ))}
           {popupItems && popupItems.length > 0 && (
             <button id="popup_btn" onClick={togglePopupBox}>

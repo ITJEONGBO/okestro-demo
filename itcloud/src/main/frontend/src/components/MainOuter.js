@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Modal from 'react-modal';
+import { adjustFontSize } from '../UIEvent';
 import { useAllTreeNavigations, } from '../api/RQHook';
 import './MainOuter.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -107,7 +108,7 @@ const MainOuter = ({ children }) => {
       } else {
         updateSelectedState('network', lastPart, true);
       }
-    } else if (location.pathname.includes('/setting')) {
+    } else if (location.pathname.includes('/settings')) {
       updateSelectedState('setting', 'default');
     } else {
       setSelected('dashboard');
@@ -174,7 +175,7 @@ const MainOuter = ({ children }) => {
       } else {
         updateSelectedState('network', lastPart, true);
       }
-    } else if (location.pathname.includes('/setting')) {
+    } else if (location.pathname.includes('/settings')) {
       updateSelectedState('setting', 'default');
     } else {
       setSelected('dashboard');
@@ -195,18 +196,9 @@ const MainOuter = ({ children }) => {
 
 
   useEffect(() => {
-    function adjustFontSize() {
-        const width = window.innerWidth;
-        const fontSize = width / 40;
-        document.documentElement.style.fontSize = fontSize + 'px';
-    }
-  
     window.addEventListener('resize', adjustFontSize);
     adjustFontSize();
-  
-    return () => {
-      window.removeEventListener('resize', adjustFontSize);
-    };
+    return () => { window.removeEventListener('resize', adjustFontSize); };
   }, []);
 
     // 네트워크 섹션에서 사용하는 것과 유사한 로직으로 수정
@@ -456,7 +448,7 @@ const MainOuter = ({ children }) => {
                         </div>
                     </Link>
                 </div>
-                <Link to='/setting' className="link-no-underline">
+                <Link to='/settings' className="link-no-underline">
                     <div id="setting_icon" style={{ backgroundColor: asidePopupBackgroundColor.setting }} onClick={handleSettingIconClick}>
                        <FontAwesomeIcon icon={faCog} fixedWidth/>
                     </div>

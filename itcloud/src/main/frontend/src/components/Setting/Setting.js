@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {useLocation } from 'react-router-dom';
-import './css/Setting.css';
 import Modal from 'react-modal';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
@@ -16,7 +15,8 @@ import HeaderButton from '../button/HeaderButton';
 import NetworkDetail from '../Network/NetworkDetail';
 import Footer from '../footer/Footer';
 import NavButton from '../navigation/NavButton';
-
+import './css/Setting.css';
+import { adjustFontSize } from '../../UIEvent';
 
 const Setting = ({ }) => {
     //테이블 컴포넌트
@@ -32,82 +32,51 @@ const Setting = ({ }) => {
       },
     ];
     //
-    const location = useLocation();
-    const locationState = location.state; 
-    const [showNetworkDetail, setShowNetworkDetail] = useState(false);
-    const [activeTab, setActiveTab] = useState('host');
-    const [settingPopupOpen, setSettingPopupOpen] = useState(false);
-    const [activePopup, setActivePopup] = useState(null);
-    const [isNewRolePopupOpen, setIsNewRolePopupOpen] = useState(false);
-    const [activeSettingForm, setActiveSettingForm] = useState('part');
+  const location = useLocation();
+  const locationState = location.state; 
 
+  const [showNetworkDetail, setShowNetworkDetail] = useState(false);
+  const [activeTab, setActiveTab] = useState('host');
+  const [settingPopupOpen, setSettingPopupOpen] = useState(false);
+  const [activePopup, setActivePopup] = useState(null);
+  const [isNewRolePopupOpen, setIsNewRolePopupOpen] = useState(false);
+  const [activeSettingForm, setActiveSettingForm] = useState('part');
 
-    const handleTabClick = (tab) => {
-      if (tab === 'app_settings') {
-        setActiveTab(tab); // 설정 탭 클릭 시 모달 표시
-      } else {
-        setActiveTab(tab); // 다른 탭 클릭 시 기본 동작
-      }
-    };
-  const openSettingPopup = () => {
-    setSettingPopupOpen(true);
-};
-// 새로 만들기 버튼 클릭 시
-const openNewRolePopup = () => {
-  setIsNewRolePopupOpen(true); // 새 역할 팝업 열기
-};
+  const handleTabClick = (tab) => {
+    if (tab === 'app_settings') {
+      setActiveTab(tab); // 설정 탭 클릭 시 모달 표시
+    } else {
+      setActiveTab(tab); // 다른 탭 클릭 시 기본 동작
+    }
+  };
+  const openSettingPopup = () => setSettingPopupOpen(true);
+  // 새로 만들기 버튼 클릭 시
+  const openNewRolePopup = () => setIsNewRolePopupOpen(true); // 새 역할 팝업 열기
+  const closeNewRolePopup = () => setIsNewRolePopupOpen(false); // 새 역할 팝업 닫기
+  const closeSettingPopup = () => setActiveTab('host'); // 모달을 닫기 위해 'host'로 탭을 변경
+  const handleSettingNavClick = (form) =>  setActiveSettingForm(form);
+  const openPopup = (popupType) => setActivePopup(popupType);
+  const closePopup = () => setActivePopup(null);
 
-// 새 역할 팝업 닫기
-const closeNewRolePopup = () => {
-  setIsNewRolePopupOpen(false); // 새 역할 팝업 닫기
-};
-const closeSettingPopup = () => {
-  setActiveTab('host'); // 모달을 닫기 위해 'host'로 탭을 변경
-};
-const handleSettingNavClick = (form) => {
-  setActiveSettingForm(form);
-};
+  useEffect(() => {
+    window.addEventListener('resize', adjustFontSize);
+    adjustFontSize();
+    return () => { window.removeEventListener('resize', adjustFontSize); };
+  }, []);
 
-const openPopup = (popupType) => {
-  setActivePopup(popupType);
-};
-const closePopup = () => {
-  setActivePopup(null);
-};
-
-    useEffect(() => {
-        function adjustFontSize() {
-            const width = window.innerWidth;
-            const fontSize = width / 40; // 필요에 따라 이 값을 조정하세요
-            document.documentElement.style.fontSize = fontSize + 'px';
-        }
-
-        // 창 크기가 변경될 때 adjustFontSize 함수 호출
-        window.addEventListener('resize', adjustFontSize);
-
-        // 컴포넌트가 마운트될 때 adjustFontSize 함수 호출
-        adjustFontSize();
-
-        // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
-        return () => {
-            window.removeEventListener('resize', adjustFontSize);
-        };
-    }, []);
-
-
-
-     // nav 컴포넌트
-     const sections = [
-      { id: 'host', label: '활성 사용자 세션' },
-      { id: 'user', label: '사용자' },
-      { id: 'app_settings', label: '설정' },
-      { id: 'user_sessionInfo', label: '계정설정' },
-    ];
-    // HeaderButton 컴포넌트
-      const buttons = [
-        { id: 'edit_btn', label: '버튼1', onClick: () => console.log('Edit button clicked') },
-        { id: 'delete_btn', label: '버튼2', onClick: () => console.log('Delete button clicked') },
-    ];
+  // nav 컴포넌트
+  const sections = [
+    { id: 'host', label: '활성 사용자 세션' },
+    { id: 'user', label: '사용자' },
+    { id: 'app_settings', label: '설정' },
+    { id: 'user_sessionInfo', label: '계정설정' },
+  ];
+  
+  // HeaderButton 컴포넌트
+  const buttons = [
+    { id: 'edit_btn', label: '버튼1', onClick: () => console.log('Edit button clicked') },
+    { id: 'delete_btn', label: '버튼2', onClick: () => console.log('Delete button clicked') },
+  ];
 
       return (
         <div id="section">

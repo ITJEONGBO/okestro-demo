@@ -7,10 +7,9 @@ import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAllDataCenters } from '../../api/RQHook';
-import {
-  faRefresh, faTimes
-} from '@fortawesome/free-solid-svg-icons'
+import { faPencil, faArrowUp, faRefresh, faTimes } from '@fortawesome/free-solid-svg-icons'
 import './css/Computing.css';
+import TableOuter from '../table/TableOuter';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -28,11 +27,10 @@ const Computing = () => {
     };
 
     const sectionHeaderButtons = [
-        { id: 'new_btn', label: '새로 만들기', onClick: openModal }, // 여기서 openModal 연결
-        { id: 'edit_btn', label: '편집', onClick: () => {} },
-        { id: 'delete_btn', label: '삭제', onClick: () => {} },
+      { id: 'new_btn', label: '새로 만들기', onClick: openModal }, // 여기서 openModal 연결
+      { id: 'edit_btn', label: '편집', icon: faPencil, onClick: () => {} },
+      { id: 'delete_btn', label: '삭제', icon: faArrowUp, onClick: () => {} },
     ];
-
     /*
     const [datacenters, setDatacenters] = useState([]);
     useEffect(() => {
@@ -88,15 +86,12 @@ const Computing = () => {
             />
             <div className="content_outer">
                 <div className="empty_nav_outer">
-                    <div className='section_table_outer'>
-                        <button><FontAwesomeIcon icon={faRefresh} fixedWidth/></button>
-                        <Table
-                            columns={TableColumnsInfo.DATACENTERS}
-                            data={datacenters}
-                            onRowClick={() => console.log()}
-                            shouldHighlight1stCol={true}
-                        />
-                    </div>
+                    <TableOuter
+                      columns={TableColumnsInfo.DATACENTERS}
+                      data={datacenters}
+                      onRowClick={handleRowClick}
+                      shouldHighlight1stCol={true}
+                    />
                 </div>
             </div>
 

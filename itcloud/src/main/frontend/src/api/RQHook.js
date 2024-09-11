@@ -43,9 +43,72 @@ export const useAllDataCenters = (mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []
   }
 })
-
-
 //endregion: DataCenter
+
+
+//region: Dashboard
+export const useDashboard = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['dashboard'],
+  queryFn: async () => {
+    const res = await ApiManager.getDashboard()
+    // setShouldRefresh(prevValue => false)
+    return res
+    // return res?.map((e) => mapPredicate(e)) ?? []
+  }
+})
+export const useDashboardCpuMemory = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['dashboardCpuMemory'],
+  queryFn: async () => {
+    const res = await ApiManager.getCpuMemory()
+    // setShouldRefresh(prevValue => false)
+    return res ?? []
+    // return res?.map((e) => mapPredicate(e)) ?? []
+  }
+})
+export const useDashboardStorage = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['dashboardStorage'],
+  queryFn: async () => {
+    const res = await ApiManager.getStorage()
+    // setShouldRefresh(prevValue => false)
+    return res ?? []
+    // return res?.map((e) => mapPredicate(e)) ?? []
+  }
+})
+export const useDashboardVmCpu = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['dashboardVmCpu'],
+  queryFn: async () => {
+    const res = await ApiManager.getVmCpu()
+    // setShouldRefresh(prevValue => false)
+    return res ?? []
+    // return res?.map((e) => mapPredicate(e)) ?? []
+  }
+});
+export const useDashboardVmMemory = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['dashboardVmMemory'],
+  queryFn: async () => {
+    const res = await ApiManager.getVmMemory()
+    // setShouldRefresh(prevValue => false)
+    return res ?? []
+    // return res?.map((e) => mapPredicate(e)) ?? []
+  }
+});
+export const useDashboardStorageMemory = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['dashboardStorageMemory'],
+  queryFn: async () => {
+    const res = await ApiManager.getStorageMemory()
+    // setShouldRefresh(prevValue => false)
+    return res ?? []
+    // return res?.map((e) => mapPredicate(e)) ?? []
+  }
+});
+//endregion
+
 
 //region: Cluster ----------------클러스터---------------------
 /**

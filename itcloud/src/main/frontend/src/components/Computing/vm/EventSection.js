@@ -1,8 +1,6 @@
 import { faCheck, faExclamation, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Table from '../../table/Table';
-
-
+import TableOuter from '../../table/TableOuter';
 
 // 이벤트 섹션
 const EventSection = () => {
@@ -29,10 +27,11 @@ const EventSection = () => {
     ];
     return (
       <div className="host_empty_outer">
-          <div className="section_table_outer">
-            <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
-          </div>
-        
+          <TableOuter 
+            columns={columns}
+            data={data}
+            onRowClick={() => console.log('Row clicked')} 
+          />
       </div>
     );
   };

@@ -1,24 +1,3 @@
-@font-face {
-    font-family: 'GowunDodum-Regular';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
-#root,*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'GowunDodum-Regular';
-}
-
-#root {
-    background-color: #EBEEEE;
-    padding: 1% 1.3% 0 1.3%;
-    height: 100vh; /* 추가 */
-
-    text-rendering: optimizeLegibility;
-}
-
 .header {
     height: 5%;
     margin: 0 auto;
@@ -71,9 +50,9 @@
     background-color: #a4d9db;
 }
 /* Header 아이콘들 */
-.user_btn,.fa-bell-wrapper{
-    position: relative;
-}
+.user_btn,
+.fa-bell-wrapper { position: relative; }
+
 .user_loginbox{
     position: absolute;
     background-color: #ffffff;
@@ -101,5 +80,36 @@
     border: 1px solid rgb(204, 204, 204);
     top: 113%;
     height: 89.6vh;
+    border-radius: 2px;
+}
+
+/* Header 아이콘들 */
+.user_loginbox{
+    position: absolute;
+    background-color: #ffffff;
+    z-index: 3;
+    width: 120%;
+    left: -4%;
+    font-size: 0.3rem;
+    border: 1px solid rgb(204, 204, 204);
+    top: 99%;
+    border-radius: 2px;
+}
+.user_loginbox>div{
+    padding: 0.09rem 0.12rem ;
+}
+.user_loginbox>div:hover{
+    background-color: #ebececd8;
+}
+.bell_box{
+    position: absolute;
+    background-color: #ffffff;
+    z-index: 3;
+    width: 11.65vw;
+    left: -4%;
+    font-size: 0.3rem;
+    border: 1px solid rgb(204, 204, 204);
+    top: 99%;
+    height: 89.9vh;
     border-radius: 2px;
 }

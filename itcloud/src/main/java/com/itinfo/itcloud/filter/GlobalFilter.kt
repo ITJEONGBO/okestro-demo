@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 
-// @Component
 @WebFilter(urlPatterns=[
 	"/api/v1/**",
 ])

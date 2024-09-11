@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthenticate } from '../api/RQHook';
-import Modal from 'react-modal';
 import IconInput from '../components/Input/IconInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -44,7 +43,7 @@ const Login = ({ setAuthenticated, setUsernameGlobal }) => {
         if (localStorage[`token`]) {
           // 토큰 찾아 집어 넣은 후
           setAuthenticated(true)
-          setUsernameGlobal(username)
+          localStorage.setItem('username', username)
           navigate('/dashboard')
         }
       },

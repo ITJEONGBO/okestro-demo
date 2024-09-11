@@ -2,8 +2,7 @@ import { faCaretUp, faEllipsisV, faExternalLink, faGlassWhiskey, faTimes } from 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import Table from '../../table/Table';
-
+import TableOuter from '../../table/TableOuter';
 
 
 // 디스크
@@ -72,12 +71,11 @@ const DiskSection = () => {
                     </button>
                 </div>
   
-                <div className="section_table_outer">
-                  <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
-                </div>
-            
-            
-            
+                <TableOuter
+                  columns={columns}
+                  data={data}
+                  onRowClick={() => console.log('Row clicked')} 
+                />
             {/* 디스크(새로 만들기) 팝업 */}
             <Modal
                 isOpen={isNewDiskModalOpen}

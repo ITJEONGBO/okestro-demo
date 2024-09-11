@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faRefresh, faTimes, faInfoCircle
 } from '@fortawesome/free-solid-svg-icons'
+import TableOuter from '../table/TableOuter';
 
 Modal.setAppElement('#root');
 
@@ -112,12 +113,11 @@ const Host = () => {
       />
       <div className="content_outer">
         <div className="empty_nav_outer">
-          <div className="section_table_outer">
-            <button onClick={() => window.location.reload()}>
-              <FontAwesomeIcon icon={faRefresh} fixedWidth/>
-            </button>
-            <Table columns={TableColumnsInfo.HOSTS_ALT} data={hosts} onRowClick={handleRowClick} />
-          </div>
+          <TableOuter 
+            columns={TableColumnsInfo.HOSTS_ALT} 
+            data={hosts}
+            onRowClick={handleRowClick} 
+          />
         </div>
       </div>
 

@@ -12,6 +12,7 @@ import {
   faUser, faCheck, faRefresh, faTimes
 } from '@fortawesome/free-solid-svg-icons'
 import './css/DataCenterDetail.css';
+import TableOuter from '../table/TableOuter';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -197,10 +198,11 @@ const DataCenterDetail = () => {
                 <button>활성</button>
                 <button>유지보수</button>
               </div>
-              <div className="section_table_outer">
-                <button><FontAwesomeIcon icon={faRefresh} fixedWidth/></button>
-                <Table columns={TableColumnsInfo.STORAGES_FROM_DATACENTER} data={storagedata} onRowClick={handleRowClick} />
-              </div>
+              <TableOuter 
+                columns={TableColumnsInfo.STORAGES_FROM_DATACENTER} 
+                data={storagedata}
+                onRowClick={handleRowClick}
+              />
             </>
           )}
           {activeTab === 'logical_network' && (
@@ -210,26 +212,32 @@ const DataCenterDetail = () => {
                 <button>편집</button>
                 <button>삭제</button>
               </div>
-              <div className="section_table_outer">
-                <Table columns={TableColumnsInfo.LUN_SIMPLE} data={logicaldata} onRowClick={handleRowClick} />
-              </div>
+              <TableOuter 
+                columns={TableColumnsInfo.LUN_SIMPLE}
+                data={logicaldata}
+                onRowClick={handleRowClick} 
+              />
             </>
           )}
           {activeTab === 'cluster' && (
             <>
               <div className="host_empty_outer">
-                <div className="section_table_outer">
-                  <Table columns={TableColumnsInfo.CLUSTERS_FROM_DATACENTER} data={clusterdata} onRowClick={handleRowClick} />
-                </div>
+                <TableOuter
+                  columns={TableColumnsInfo.CLUSTERS_FROM_DATACENTER}
+                  data={clusterdata}
+                  onRowClick={handleRowClick} 
+                />
               </div>
             </>
           )}
           {activeTab === 'Qos' && (
             <>
               <div className="host_empty_outer">
-                <div className="section_table_outer">
-                  <Table columns={TableColumnsInfo.QOSS_FROM_DATACENTER} data={Qosdata} onRowClick={handleRowClick} />
-                </div>
+                <TableOuter
+                  columns={TableColumnsInfo.QOSS_FROM_DATACENTER} 
+                  data={Qosdata}
+                  onRowClick={handleRowClick} 
+                />
               </div>
             </>
           )}
@@ -256,21 +264,21 @@ const DataCenterDetail = () => {
                 </button>
               </div>
             </div>
-            <div className="section_table_outer">
-              <Table
-                columns={TableColumnsInfo.PERMISSIONS}
-                data={activePermissionFilter === 'all' ? permissionData : []}
-                onRowClick={() => console.log('Row clicked')}
-              />
-            </div>
+            <TableOuter
+              columns={TableColumnsInfo.PERMISSIONS}
+              data={activePermissionFilter === 'all' ? permissionData : []}
+              onRowClick={() => console.log('Row clicked')}
+             />
           </>
           )}
           {activeTab === 'event' && (
             <>
               <div className="host_empty_outer">
-                <div className="section_table_outer">
-                  <Table columns={TableColumnsInfo.EVENTS} data={eventData} onRowClick={() => console.log('Row clicked')} />
-                </div>
+                <TableOuter
+                  columns={TableColumnsInfo.EVENTS}
+                  data={eventData} 
+                  onRowClick={() => console.log('Row clicked')} 
+                />
               </div>
             </>
           )}

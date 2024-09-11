@@ -1,590 +1,56 @@
 import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
-import { useNavigate } from 'react-router-dom';
-import ApiManager from '../api/ApiManager';
-import DEFAULT_VALUES from '../api/DefaultValues';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
-import './Dashboard.css';
+import { adjustFontSize } from '../UIEvent';
+import DashboardBoxGroup from './DashboardBoxGroup';
+import './Dashboard.css'
+import {
+  useDashboard,
+  useDashboardCpuMemory,
+  useDashboardStorage,
+  useDashboardStorageMemory,
+  useDashboardVmCpu, 
+  useDashboardVmMemory
+ } from '../api/RQHook';
+import RadialBarChart from './Chart/RadialBarChart';
+import BarChart from './Chart/BarChart';
+import AreaChart from './Chart/AreaChart';
 
-//region: CpuApexChart
-const CpuApexChart = ({ cpu }) => {
-    // 도넛
-    const [series, setSeries] = useState([0]);
-    const [chartOptions, setChartOptions] = useState({
-      chart: {
-        height: 180, // 높이 조정
-        type: 'radialBar',
-      },
-      plotOptions: {
-        radialBar: {
-          hollow: {
-            size: '70%',
-          },
-          dataLabels: {
-            show: true,
-            name: {
-              show: false, // name 라벨을 제거합니다.
-            },
-            value: {
-              show: true,
-              fontSize: '0.6rem', // 값 크기를 rem 단위로 설정합니다.
-              fontWeight: 'bold',
-              color: '#111',
-              formatter: function (val) {
-                return parseInt(val) + "%"; // 값 포맷
-              },
-            },
-          },
-          track: {
-            background: '#f0f0f0',
-            strokeWidth: '100%', // 선 두께 설정
-            margin: 5, // 차트 간격 설정
-          },
-          stroke: {
-            lineCap: 'round', // 선의 끝 모양 설정
-          },
-        },
-      },
-      labels: [], // 라벨을 제거합니다.
-      colors: ['#FF4560'], // 초기 색상 설정
-    });
+//region: RadialBarChart
+const CpuApexChart = ({ cpu }) => { return (<RadialBarChart percentage={cpu} />); }
+const MemoryApexChart = ({ memory }) => { return (<RadialBarChart percentage={memory} />); }
+const StorageApexChart = ({ storage }) => { return (<RadialBarChart percentage={storage} />); }
+//endregion: RadialBarChart
 
-
-    useEffect(() => {
-       setSeries([cpu]);
-
-      let color = '#FF4560'; // 70 이상 빨강
-      if (cpu < 30) {
-        color = '#00E396';  // 30 미만이면 초록색
-      } else if (cpu < 70) {
-        color = '#FEB019'; // 30 이상 70 미만이면 노란색
-      }
-
-      setChartOptions((prevOptions) => ({
-        ...prevOptions,
-        colors: [color],
-        plotOptions: {
-          ...prevOptions.plotOptions,
-          radialBar: {
-            ...prevOptions.plotOptions.radialBar,
-            dataLabels: {
-              ...prevOptions.plotOptions.radialBar.dataLabels,
-              value: {
-                ...prevOptions.plotOptions.radialBar.dataLabels.value,
-                formatter: function (val) {
-                  return parseInt(val) + "%"; // 값 포맷
-                },
-              },
-            },
-          },
-        },
-      }));
-    }, [cpu]);
-
-
+//region: BarChart
+const CpuBarChart = ({vmCpu}) => {
   return (
-    <div>
-      <div id="chart">
-        <ReactApexChart options={chartOptions} series={series} type="radialBar" height={200} />
-      </div>
-      <div id="html-dist"></div>
-    </div>
+    <BarChart 
+      names={vmCpu?.map((e) => e.name) ?? []}
+      percentages={vmCpu?.map((e) => e.cpuPercent) ?? []} 
+    />
   );
 }
-//endregion: CpuApexChart
-
-//region: MemoryApexChart
-const MemoryApexChart = ({ memory }) => {
-    const [series, setSeries] = useState([0]);
-    const [chartOptions, setChartOptions] = useState({
-      chart: {
-        height: 180, // 높이 조정
-        type: 'radialBar',
-      },
-      plotOptions: {
-        radialBar: {
-          hollow: {
-            size: '70%',
-          },
-          dataLabels: {
-            show: true,
-            name: {
-              show: false, // name 라벨을 제거합니다.
-            },
-            value: {
-              show: true,
-              fontSize: '0.6rem', // 값 크기를 rem 단위로 설정합니다.
-              fontWeight: 'bold',
-              color: '#111',
-              formatter: function (val) {
-                return parseInt(val) + "%"; // 값 포맷
-              },
-            },
-          },
-          track: {
-            background: '#f0f0f0',
-            strokeWidth: '100%', // 선 두께 설정
-            margin: 5, // 차트 간격 설정
-          },
-          stroke: {
-            lineCap: 'round', // 선의 끝 모양 설정
-          },
-        },
-      },
-      labels: [], // 라벨을 제거합니다.
-      colors: ['#FF4560'], // 초기 색상 설정
-    });
-
-
-    useEffect(() => {
-       setSeries([memory]);
-
-      let color = '#FF4560'; // 70 이상 빨강
-      if (memory < 30) {
-        color = '#00E396';  // 30 미만이면 초록색
-      } else if (memory < 70) {
-        color = '#FEB019'; // 30 이상 70 미만이면 노란색
-      }
-
-      setChartOptions((prevOptions) => ({
-        ...prevOptions,
-        colors: [color],
-        plotOptions: {
-          ...prevOptions.plotOptions,
-          radialBar: {
-            ...prevOptions.plotOptions.radialBar,
-            dataLabels: {
-              ...prevOptions.plotOptions.radialBar.dataLabels,
-              value: {
-                ...prevOptions.plotOptions.radialBar.dataLabels.value,
-                formatter: function (val) {
-                  return parseInt(val) + "%"; // 값 포맷
-                },
-              },
-            },
-          },
-        },
-      }));
-    }, [memory]);
-
-
+const MemoryBarChart = ({vmMemory}) => {
   return (
-    <div>
-      <div id="chart">
-        <ReactApexChart options={chartOptions} series={series} type="radialBar" height={200} />
-      </div>
-      <div id="html-dist"></div>
-    </div>
+    <BarChart 
+      names={vmMemory?.map((e) => e.name) ?? []}
+      percentages={vmMemory?.map((e) => e.memoryPercent) ?? []} 
+    />
   );
 }
-//endregion: MemoryApexChart
-
-
-//region: StorageApexChart
-const StorageApexChart = ({ storage }) => {
-    const [series, setSeries] = useState([0]);
-    const [chartOptions, setChartOptions] = useState({
-      chart: {
-        height: 180, // 높이 조정
-        type: 'radialBar',
-      },
-      plotOptions: {
-        radialBar: {
-          hollow: {
-            size: '70%',
-          },
-          dataLabels: {
-            show: true,
-            name: {
-              show: false, // name 라벨을 제거합니다.
-            },
-            value: {
-              show: true,
-              fontSize: '0.6rem', // 값 크기를 rem 단위로 설정합니다.
-              fontWeight: 'bold',
-              color: '#111',
-              formatter: function (val) {
-                return parseInt(val) + "%"; // 값 포맷
-              },
-            },
-          },
-          track: {
-            background: '#f0f0f0',
-            strokeWidth: '100%', // 선 두께 설정
-            margin: 5, // 차트 간격 설정
-          },
-          stroke: {
-            lineCap: 'round', // 선의 끝 모양 설정
-          },
-        },
-      },
-      labels: [], // 라벨을 제거합니다.
-      colors: ['#FF4560'], // 초기 색상 설정
-    });
-
-
-    useEffect(() => {
-       setSeries([storage]);
-
-      let color = '#FF4560'; // 70 이상 빨강
-      if (storage < 30) {
-        color = '#00E396';  // 30 미만이면 초록색
-      } else if (storage < 70) {
-        color = '#FEB019'; // 30 이상 70 미만이면 노란색
-      }
-
-      setChartOptions((prevOptions) => ({
-        ...prevOptions,
-        colors: [color],
-        plotOptions: {
-          ...prevOptions.plotOptions,
-          radialBar: {
-            ...prevOptions.plotOptions.radialBar,
-            dataLabels: {
-              ...prevOptions.plotOptions.radialBar.dataLabels,
-              value: {
-                ...prevOptions.plotOptions.radialBar.dataLabels.value,
-                formatter: function (val) {
-                  return parseInt(val) + "%"; // 값 포맷
-                },
-              },
-            },
-          },
-        },
-      }));
-    }, [storage]);
-
-
+const StorageMemoryBarChart = ({storageMemory}) => {
   return (
-    <div>
-      <div id="chart">
-        <ReactApexChart options={chartOptions} series={series} type="radialBar" height={200} />
-      </div>
-      <div id="html-dist"></div>
-    </div>
+    <BarChart 
+      names={storageMemory?.map((e) => e.name) ?? []}
+      percentages={storageMemory?.map((e) => e.memoryPercent) ?? []} 
+    />
   );
 }
-//endregion: StorageApexChart
+//endregion: BarChart
 
-//region: CpuBarChart 
-const CpuBarChart = () => {
-  // CPU 막대그래프
-  const [series, setSeries] = useState([{
-    data: [] // 막대 값
-  }]);
-
-  const [options, setOptions] = useState({
-    chart: {
-      type: 'bar',
-      height: 150  // 높이 조정
-    },
-    plotOptions: {
-      bar: {
-        barHeight: '100%',
-        distributed: true,
-        horizontal: true,
-        dataLabels: {
-          position: 'bottom'
-        },
-      }
-    },
-    colors: ['#1597E5', '#69DADB', '#7C7DEA'],
-    dataLabels: {
-      enabled: true,
-      textAnchor: 'start',
-      style: {
-        colors: ['#fff'],
-        fontSize: '0.25rem', // 텍스트 크기를 rem 단위로 설정합니다.
-        fontWeight: '400'
-      },
-      formatter: function (val, opt) {
-        return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val;
-      },
-      offsetX: 0,
-      dropShadow: {
-        enabled: true
-      }
-    },
-    stroke: {
-      width: 1,
-      colors: ['#fff']
-    },
-    xaxis: {
-      categories: [], // 목록이름
-    },
-    yaxis: {
-      labels: {
-        show: false // y축 레이블을 제거합니다.
-      }
-    },
-    title: {
-      text: '', // 제목을 제거합니다.
-      align: 'center',
-      floating: true
-    },
-    subtitle: {
-      text: '', // 부제목을 제거합니다.
-      align: 'center',
-    },
-    tooltip: {
-      theme: 'dark',
-      x: {
-        show: false // x축 제목을 제거합니다.
-      },
-      y: {
-        title: {
-          formatter: function () {
-            return '';
-          }
-        }
-      }
-    }
-  });
-
-  useEffect(() => {
-      async function fetchData() {
-        const data = await ApiManager.getVmCpu();
-        const names = data?.map(item => item.name) ?? [];
-        const cpuPercents = data?.map(item => item.cpuPercent) ?? [];
-
-        setSeries([{ data: cpuPercents }]);
-        setOptions(prevOptions => ({
-          ...prevOptions,
-          xaxis: {
-            ...prevOptions.xaxis,
-            categories: names,
-          }
-        }));
-      }
-      fetchData();
-    }, []);
-
-  return (
-    <div>
-      <div id="chart">
-        <ReactApexChart options={options} series={series} type="bar" height={180} />
-      </div>
-      <div id="html-dist"></div>
-    </div>
-  );
-}
-//endregion: CpuBarChart
-
-//region: MemoryBarChart
-const MemoryBarChart = () => {
-  const [series, setSeries] = useState([{
-    data: [] // 막대 값
-  }]);
-
-  const [options, setOptions] = useState({
-    chart: {
-      type: 'bar',
-      height: 150  // 높이 조정
-    },
-    plotOptions: {
-      bar: {
-        barHeight: '100%',
-        distributed: true,
-        horizontal: true,
-        dataLabels: {
-          position: 'bottom'
-        },
-      }
-    },
-    colors: ['#1597E5', '#69DADB', '#7C7DEA'],
-    dataLabels: {
-      enabled: true,
-      textAnchor: 'start',
-      style: {
-        colors: ['#fff'],
-        fontSize: '0.25rem', // 텍스트 크기를 rem 단위로 설정합니다.
-        fontWeight: '400'
-      },
-      formatter: function (val, opt) {
-        return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val;
-      },
-      offsetX: 0,
-      dropShadow: {
-        enabled: true
-      }
-    },
-    stroke: {
-      width: 1,
-      colors: ['#fff']
-    },
-    xaxis: {
-      categories: [], // 목록이름
-    },
-    yaxis: {
-      labels: {
-        show: false // y축 레이블을 제거합니다.
-      }
-    },
-    title: {
-      text: '', // 제목을 제거합니다.
-      align: 'center',
-      floating: true
-    },
-    subtitle: {
-      text: '', // 부제목을 제거합니다.
-      align: 'center',
-    },
-    tooltip: {
-      theme: 'dark',
-      x: {
-        show: false // x축 제목을 제거합니다.
-      },
-      y: {
-        title: {
-          formatter: function () {
-            return '';
-          }
-        }
-      }
-    }
-  });
-
-  useEffect(() => {
-      async function fetchData() {
-        try {
-          const data = await ApiManager.getVmMemory();
-          const names = data?.map(item => item.name) ?? [];
-          const memoryPercent = data?.map(item => item.memoryPercent) ?? [];
-
-          setSeries([{ data: memoryPercent }]);
-          setOptions(prevOptions => ({
-            ...prevOptions,
-            xaxis: {
-              ...prevOptions.xaxis,
-              categories: names,
-            }
-          }));
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-      }
-
-      fetchData();
-    }, []);
-
-  return (
-    <div>
-      <div id="chart">
-        <ReactApexChart options={options} series={series} type="bar" height={180} />
-      </div>
-      <div id="html-dist"></div>
-    </div>
-  );
-}
-//endregion: MemoryBarChart
-
-
-//region: StorageBarChart
-const StorageBarChart = () => {
-  const [series, setSeries] = useState([{
-    data: [] // 막대 값
-  }]);
-
-  const [options, setOptions] = useState({
-    chart: {
-      type: 'bar',
-      height: 150  // 높이 조정
-    },
-    plotOptions: {
-      bar: {
-        barHeight: '100%',
-        distributed: true,
-        horizontal: true,
-        dataLabels: {
-          position: 'bottom'
-        },
-      }
-    },
-    colors: ['#1597E5', '#69DADB', '#7C7DEA'],
-    dataLabels: {
-      enabled: true,
-      textAnchor: 'start',
-      style: {
-        colors: ['#fff'],
-        fontSize: '0.25rem', // 텍스트 크기를 rem 단위로 설정합니다.
-        fontWeight: '400'
-      },
-      formatter: function (val, opt) {
-        return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val;
-      },
-      offsetX: 0,
-      dropShadow: {
-        enabled: true
-      }
-    },
-    stroke: {
-      width: 1,
-      colors: ['#fff']
-    },
-    xaxis: {
-      categories: [], // 목록이름
-    },
-    yaxis: {
-      labels: {
-        show: false // y축 레이블을 제거합니다.
-      }
-    },
-    title: {
-      text: '', // 제목을 제거합니다.
-      align: 'center',
-      floating: true
-    },
-    subtitle: {
-      text: '', // 부제목을 제거합니다.
-      align: 'center',
-    },
-    tooltip: {
-      theme: 'dark',
-      x: {
-        show: false // x축 제목을 제거합니다.
-      },
-      y: {
-        title: {
-          formatter: function () {
-            return '';
-          }
-        }
-      }
-    }
-  });
-
-  useEffect(() => {
-      async function fetchData() {
-        const data = await ApiManager.getStorageMemory();
-        const names = data?.map(item => item.name) ?? [];
-        const memoryPercent = data?.map(item => item.memoryPercent) ?? [];
-
-        setSeries([{ data: memoryPercent }]);
-        setOptions(prevOptions => ({
-          ...prevOptions,
-          xaxis: {
-            ...prevOptions.xaxis,
-            categories: names,
-          }
-        }));
-      }
-      fetchData();
-    }, []);
-
-  return (
-    <div>
-      <div id="chart">
-        <ReactApexChart options={options} series={series} type="bar" height={180} />
-      </div>
-      <div id="html-dist"></div>
-    </div>
-  );
-}
-//endregion: StorageBarChart
 
 //region: AreaChart
-const AreaChart = () => {
+const SuperAreaChart = () => {
   // 물결그래프
   const [series, setSeries] = useState([{
     name: 'series1',
@@ -597,21 +63,10 @@ const AreaChart = () => {
     data: [20, 30, 40, 50, 60, 70, 80],
   }]);
 
-  const [options, setOptions] = useState({
-    chart: {
-      height: 140,  // 높이 조정
-      type: 'area'
-    },
-    colors: ['#1597E5', '#69DADB', 'rgb(231, 190, 231)'],
-    dataLabels: {
-      enabled: false
-    },
-    stroke: {
-      curve: 'smooth'
-    },
-    xaxis: {
-      type: 'datetime',
-      categories: [
+  return (
+    <AreaChart 
+      series={series}
+      datetimes={[
         "2018-09-19T00:00:00.000Z",
         "2018-09-19T01:30:00.000Z",
         "2018-09-19T02:30:00.000Z",
@@ -619,22 +74,8 @@ const AreaChart = () => {
         "2018-09-19T04:30:00.000Z",
         "2018-09-19T05:30:00.000Z",
         "2018-09-19T06:30:00.000Z"
-      ]
-    },
-    tooltip: {
-      x: {
-        format: 'dd/MM/yy HH:mm'
-      },
-    },
-  });
-
-  return (
-    <div>
-      <div id="chart">
-        <ReactApexChart options={options} series={series} type="area" height={140} />
-      </div>
-      <div id="html-dist"></div>
-    </div>
+      ]} 
+    />
   );
 }
 //endregion: AreaChart
@@ -698,142 +139,142 @@ class HeatMapChart extends React.Component {
 
 //region: Dashboard
 const Dashboard = () => {
-//폰트사이즈 조정 
-  const navigate = useNavigate();
-  const [data, setData] = useState(() => DEFAULT_VALUES.GET_DASHBOARD);
-  const [memoryGb, setMemoryGb] = useState(() => DEFAULT_VALUES.GET_CPU_MEMORY);
-  const [storageGb, setStorageGb] = useState(() => DEFAULT_VALUES.GET_STORAGE);
+  const {
+    data: dashboard,
+    status: dashboardStatus,
+    isRefetching: isDashboardRefetching,
+    refetch: dashboardRefetch, 
+    isError: isDashboardError, 
+    error: dashboardError, 
+    isLoading: isDashboardLoading,
+  } = useDashboard()
+
+  const {
+    data: cpuMemory,
+    status: cpuMemoryStatus,
+    isRefetching: isCpuMemoryRefetching,
+    refetch: cpuMemoryRefetch, 
+    isError: isCpuMemoryError, 
+    error: cpuMemoryError, 
+    isLoading: isCpuMemoryLoading,
+  } = useDashboardCpuMemory()
+
+  const {
+    data: storage,
+    status: storageStatus,
+    isRefetching: isStorageRefetching,
+    refetch: storageRefetch, 
+    isError: isStorageError, 
+    error: storageError, 
+    isLoading: isStorageLoading,
+  } = useDashboardStorage()
+  
+  const {
+    data: vmCpu,
+    status: vmCpuStatus,
+    isRefetching: isVmCpuRefetching,
+    refetch: vmCpuRefetch, 
+    isError: isVmCpuError, 
+    error: vmCpuError, 
+    isLoading: isVmCpuLoading,
+  } = useDashboardVmCpu()
+
+  const {
+    data: vmMemory,
+    status: vmMemoryStatus,
+    isRefetching: isVmMemoryRefetching,
+    refetch: vmMemoryRefetch, 
+    isError: isVmMemoryError, 
+    error: vmMemoryError, 
+    isLoading: isVmMemoryLoading,
+  } = useDashboardVmMemory()
+
+  const {
+    data: storageMemory,
+    status: storageMemoryStatus,
+    isRefetching: isStorageMemoryRefetching,
+    refetch: storageMemoryRefetch, 
+    isError: isStorageMemoryError, 
+    error: storageMemoryError, 
+    isLoading: isStorageMemoryeLoading,
+  } = useDashboardStorageMemory()
 
   useEffect(() => {
-    const fetchData = async () => {
-      const dashboardRes = await ApiManager.getDashboard();
-      setData(dashboardRes);
-
-      const memorys = await ApiManager.getCpuMemory();
-      setMemoryGb(memorys);
-
-      const storages = await ApiManager.getStorage();
-      setStorageGb(storages);
-    };
-    fetchData();
-
-    function adjustFontSize() {
-      const width = window.innerWidth;
-      const fontSize = width / 40; // 필요에 따라 이 값을 조정하세요
-      document.documentElement.style.fontSize = fontSize + 'px';
-    }
     window.addEventListener('resize', adjustFontSize);
     adjustFontSize();
-    return () => {
-      window.removeEventListener('resize', adjustFontSize);
-    };
+    return () => { window.removeEventListener('resize', adjustFontSize); };
   }, []);
 
   return (
     <>
       {/* 대시보드 section */}
       <div className="dash_board">
-        <div className="dash_boxs">
-
-          <div className="box" onClick={() => navigate('/computing/datacenters')}>
-            <span>Datacenter</span>
-            <h1>{data.datacenters}</h1>
-            <div className="arrows">
-              <FontAwesomeIcon icon={faArrowUp} fixedWidth/> {data.datacentersUp}&nbsp;
-              <FontAwesomeIcon icon={faArrowDown} fixedWidth/> {data.datacentersDown}
-            </div>
-          </div>
-          <div className="box"  onClick={() => navigate('/computing/clusters')}>
-            <span>Cluster</span>
-            <h1>{data.clusters}</h1>
-          </div>
-          <div className="box" onClick={() => navigate('/computing/host')}> 
-            <span>Host</span>
-            <h1>{data.hosts}</h1>
-            <div className="arrows">
-              <FontAwesomeIcon icon={faArrowUp} fixedWidth/> {data.hostsUp} &nbsp;
-              <FontAwesomeIcon icon={faArrowDown} fixedWidth/> {data.hostsDown}
-            </div>
-          </div>
-          <div className="box" onClick={() => navigate('/storage-domainpart')}>
-            <span>Datastoragedomain</span>
-            <h1>{data.storageDomains}</h1>
-          </div>
-          
-          {/*수정해야됨 */}
-          <div className="box" onClick={() => navigate('/computing/vmhost-chart')}> 
-            <span>Virtual machine</span>
-            <h1>{data.vms}</h1>
-            <div className="arrows">
-              <FontAwesomeIcon icon={faArrowUp} fixedWidth/> {data.vmsUp} &nbsp;
-              <FontAwesomeIcon icon={faArrowDown} fixedWidth/> {data.vmsDown}
-            </div>
-          </div>
-          <div className="box">
-            <span>Event</span>
-            <h1>0</h1>
-            <div className="arrows">
-              <FontAwesomeIcon icon={faArrowUp} fixedWidth/> 1 &nbsp;
-              <FontAwesomeIcon icon={faArrowDown} fixedWidth/> 1
-            </div>
-          </div>
-        </div> {/* boxs 끝 */}
-
+        {dashboard && <DashboardBoxGroup 
+          boxItems={[
+            { title: "Datacenter", cntTotal: dashboard?.datacenters ?? [], cntUp: dashboard?.datacentersUp ?? 0, cntDown: dashboard?.datacentersDown ?? 0, navigatePath: '/computing/datacenter' },
+            { title: "Cluster",    cntTotal: dashboard?.clusters ?? 0, navigatePath: '/computing/datacenter' },
+            { title: "Host",       cntTotal: dashboard?.hosts ?? 0, cntUp: dashboard?.hostsUp ?? 0, cntDown: dashboard?.hostsDown ?? 0, navigatePath: '/computing/host' },
+            { title: "DataStorageDomain", cntTotal: dashboard?.storageDomains ?? 0, navigatePath: '/storage-domainpart'},
+            /*수정해야됨 */
+            { title: "Virtual machine", cntTotal: dashboard?.vms ?? 0, cntUp: dashboard?.vmsUp ?? 0, cntDown: dashboard?.vmsDown ?? 0, navigatePath: '/computing/vmhost-chart' },
+            { title: "Event",       cntTotal: 0, cntUp: 1, cntDown: 1, },
+          ]} 
+        />}
         <div className="dash_section">
           <div className="dash_section_contents">
             <h1>CPU</h1>
             <div className="graphs">
-              <div className="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
-                <CpuApexChart cpu={memoryGb?.totalCpuUsagePercent ?? 0} /> {/* ApexChart 컴포넌트를 여기에 삽입 */}
+              <div className="graph-wrap active-on-visible" 
+                data-active-on-visible-callback-func-name="CircleRun"
+              >
+                {cpuMemory && <CpuApexChart cpu={cpuMemory?.totalCpuUsagePercent ?? 0} />/* ApexChart 컴포넌트를 여기에 삽입 */}
               </div>
               <div>
-                <CpuBarChart /> {/* BarChart 컴포넌트를 여기에 삽입 */}
+                {vmCpu && <CpuBarChart vmCpu={vmCpu} /> /* BarChart 컴포넌트를 여기에 삽입 */}
               </div>
             </div>
             <span>USED 64 Core / Total 192 Core</span>
             <div className="wave_graph">
               <h2>Per CPU</h2>
-              <div>
-                <AreaChart /> {/* AreaChart 컴포넌트를 여기에 삽입 */}
-              </div>
+              <div><SuperAreaChart /> {/* AreaChart 컴포넌트를 여기에 삽입 */}</div>
             </div>
           </div>
 
           <div className="dash_section_contents">
             <h1>MEMORY</h1>
             <div className="graphs">
-              <div className="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
-                <MemoryApexChart memory={memoryGb?.totalMemoryUsagePercent}/> {/* ApexChart 컴포넌트를 여기에 삽입 */}
+              <div className="graph-wrap active-on-visible" 
+                data-active-on-visible-callback-func-name="CircleRun"
+              >
+                {cpuMemory && <MemoryApexChart memory={cpuMemory?.totalMemoryUsagePercent}/> /* ApexChart 컴포넌트를 여기에 삽입 */}
               </div>
               <div>
-                <MemoryBarChart /> {/* BarChart 컴포넌트를 여기에 삽입 */}
+                {vmMemory && <MemoryBarChart vmMemory={vmMemory} />/* BarChart 컴포넌트를 여기에 삽입 */}
               </div>
             </div>
-            <span>USED { (memoryGb?.usedMemoryGB)?.toFixed(1) } GB / Total { (memoryGb?.totalMemoryGB)?.toFixed(1) } GB</span>
+            <span>USED { (cpuMemory?.usedMemoryGB)?.toFixed(1) } GB / Total { (cpuMemory?.totalMemoryGB)?.toFixed(1) } GB</span>
             <div className="wave_graph">
               <h2>Per MEMORY</h2>
-              <div>
-                <AreaChart /> {/* AreaChart 컴포넌트를 여기에 삽입 */}
-              </div>
+              <div><SuperAreaChart /> {/* AreaChart 컴포넌트를 여기에 삽입 */}</div>
             </div>
           </div>
 
           <div className="dash_section_contents" style={{ borderRight: 'none' }}>
             <h1>STORAGE</h1>
             <div className="graphs">
-              <div className="graph-wrap active-on-visible" data-active-on-visible-callback-func-name="CircleRun">
-                <StorageApexChart storage = {storageGb?.usedPercent} /> {/* ApexChart 컴포넌트를 여기에 삽입 */}
+              <div className="graph-wrap active-on-visible" 
+                data-active-on-visible-callback-func-name="CircleRun"
+              >
+                {storage && <StorageApexChart storage = {storage?.usedPercent} /> /* ApexChart 컴포넌트를 여기에 삽입 */}
               </div>
               <div>
-                <StorageBarChart /> {/* BarChart 컴포넌트를 여기에 삽입 */}
+                {storageMemory && <StorageMemoryBarChart storageMemory={storageMemory}/> /* BarChart 컴포넌트를 여기에 삽입 */}
               </div>
             </div>
-            <span>USED {storageGb?.usedGB} GB / Total {storageGb?.freeGB} GB</span>
+            <span>USED {storage?.usedGB} GB / Total {storage?.freeGB} GB</span>
             <div className="wave_graph">
               <h2>Per STORAGE</h2>
-              <div>
-                <AreaChart /> {/* AreaChart 컴포넌트를 여기에 삽입 */}
-              </div>
+              <div><SuperAreaChart /> {/* AreaChart 컴포넌트를 여기에 삽입 */}</div>
             </div>
           </div>
         </div> {/* dash section 끝 */}

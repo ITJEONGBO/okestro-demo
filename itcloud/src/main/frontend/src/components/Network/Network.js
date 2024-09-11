@@ -1,51 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAllNetworks } from '../../api/RQHook';
 import Modal from 'react-modal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faTimes, faInfoCircle, faPencil, faArrowUp
+} from '@fortawesome/free-solid-svg-icons'
+import TableOuter from '../table/TableOuter';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import HeaderButton from '../button/HeaderButton';
-import './css/Network.css';
 import Footer from '../footer/Footer';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faTimes, faInfoCircle
-} from '@fortawesome/free-solid-svg-icons'
 import { toast } from 'react-hot-toast';
+import { adjustFontSize } from '../../UIEvent';
+import { useAllNetworks } from '../../api/RQHook';
+import './css/Network.css';
 
 Modal.setAppElement('#root');
 const Network = ({ }) => {
-    // 테이블 데이터
-    /*
-    const [data, setData] = useState([]);
-    useEffect(() => {
-        const fetchData = async () => {
-            const res = await ApiManager.findAllNetworks() //직접 호출하여 네트워크 데이터를 가져오기
-            
-            const items = res.map((e) => toTableItemPredicate(e)) 
-            setData(items) // toTableItemPredicate로 변환한 후 setData로 상태에 저장
-        }
-        fetchData()
-    }, [])
-    */
-    const [shouldRefresh, setShouldRefresh] = useState(false);
-    /**
-     * @name toTableItemPredicate
-     * @description
-     * 
-     * @see ApiManager (api)
-     * @see  (api)
-     */
-    const toTableItemPredicate = (e) => {
-        return {
-            id: e?.id ?? '',
-            name: e?.name ?? '',
-            description: e?.description ?? '',
-            dataCenter: e?.dataCenterVo?.name ?? '', 
-            provider: 'Provider1',  // TODO: 제공자 뭐 넣어줘야 되지?
-            portSeparation: (e?.portIsolation == true) ? '예' : '아니요',
-        }
-    }
     const { 
       data: data,
       status: networksStatus,
@@ -54,7 +25,17 @@ const Network = ({ }) => {
       isError: isNetworksError, 
       error: networksError, 
       isLoading: isNetworksLoading,
-    } = useAllNetworks(toTableItemPredicate)
+    } = useAllNetworks((e) => {
+      return {
+        id: e?.id ?? '',
+        name: e?.name ?? '',
+        description: e?.description ?? '',
+        dataCenter: e?.dataCenterVo?.name ?? '', 
+        provider: 'Provider1',  // TODO: 제공자 뭐 넣어줘야 되지?
+        portSeparation: (e?.portIsolation == true) ? '예' : '아니요',
+      }
+    })
+    const [shouldRefresh, setShouldRefresh] = useState(false)
     useEffect(() => {
         networksRefetch()
     }, [setShouldRefresh, networksRefetch])
@@ -72,42 +53,20 @@ const Network = ({ }) => {
               `/networks/${row.id}`, 
               { state: { name: row.name } }
             );
-            // navigate(`/network/${row.id}`, { state: { id: row.id, name: row.name } });
         }
-            
-        
-        // 
-        // if (column.accessor === 'dataCenter') {
-        //     navigate(`/computing/clusters/${row.name.props.children}`); 
-        // }
     };
 
-    // 폰트 사이즈 조절
     useEffect(() => {
-        function adjustFontSize() {
-            const width = window.innerWidth;
-            const fontSize = width / 40;
-            document.documentElement.style.fontSize = fontSize + 'px';
-        }
-
-        window.addEventListener('resize', adjustFontSize);
-        adjustFontSize();
-
-        return () => {
-            window.removeEventListener('resize', adjustFontSize);
-        };
+      window.addEventListener('resize', adjustFontSize);
+      adjustFontSize();
+      return () => { window.removeEventListener('resize', adjustFontSize); };
     }, []);
 
     const [isFooterContentVisible, setFooterContentVisibility] = useState(false);
     const [selectedFooterTab, setSelectedFooterTab] = useState('recent');
 
-    const toggleFooterContent = () => {
-        setFooterContentVisibility(!isFooterContentVisible);
-    };
-
-    const handleFooterTabClick = (tab) => {
-        setSelectedFooterTab(tab);
-    };
+    const toggleFooterContent = () => setFooterContentVisibility(!isFooterContentVisible);
+    const handleFooterTabClick = (tab) => setSelectedFooterTab(tab);
 
     // 모달 관련 상태 및 함수
     const openPopup = (popupType) => {
@@ -115,40 +74,32 @@ const Network = ({ }) => {
         setSelectedTab('network_new_common_btn'); // 모달을 열 때마다 '일반' 탭을 기본으로 설정
     };
 
-    const closePopup = () => {
-        setActivePopup(null);
-    };
-
-    const handleTabClick = (tab) => {
-        setSelectedTab(tab);
-    };
-
+    const closePopup = () => setActivePopup(null);
+    const handleTabClick = (tab) => setSelectedTab(tab);
 
     const sectionHeaderButtons = [
-        { id: 'new_btn', label: '새로 만들기', onClick: () => openPopup('newNetwork') }, 
-        { id: 'bring_btn', label: '가져오기', onClick: () => openPopup('getNetwork') },   
-        { id: 'edit_btn', label: '편집', onClick: () => openPopup('editNetwork') },       
-        { id: 'delete_btn', label: '삭제', onClick: () => toast('삭제 기능 준비 중...') }, 
+      { id: 'new_btn', label: '새로 만들기', onClick: () => openPopup('newNetwork') }, 
+      { id: 'bring_btn', label: '가져오기', onClick: () => openPopup('getNetwork') },   
+      { id: 'edit_btn', label: '편집', icon: faPencil, onClick: () => openPopup('editNetwork') },       
+      { id: 'delete_btn', label: '삭제', icon: faArrowUp, onClick: () => toast('삭제 기능 준비 중...') }, 
     ];
     
     return (
         <div id="network_section">
             <HeaderButton
-                title="네트워크"
-                buttons={sectionHeaderButtons}
-                popupItems={[]}
+              title="네트워크"
+              buttons={sectionHeaderButtons}
+              popupItems={[]}
             />
 
             <div className="content_outer">
                 <div className='empty_nav_outer'>
-                    <div className="section_table_outer">
-                        <Table 
-                          columns={TableColumnsInfo.NETWORKS} 
-                          data={data} 
-                          onRowClick={handleNetworkNameClick} 
-                          shouldHighlight1stCol={true}
-                        />
-                    </div>
+                  <TableOuter
+                    columns={TableColumnsInfo.NETWORKS} 
+                    data={data} 
+                    onRowClick={handleNetworkNameClick} 
+                    shouldHighlight1stCol={true}
+                  />
                 </div>
             </div>
 

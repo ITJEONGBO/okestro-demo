@@ -1,5 +1,4 @@
-import Table from "../../table/Table";
-
+import TableOuter from "../../table/TableOuter";
 
 // 애플리케이션 섹션
 const ApplicationSection = () => {
@@ -14,12 +13,13 @@ const ApplicationSection = () => {
   
     return (
         <div className="host_empty_outer">
-          <div className="section_table_outer">
-            <Table columns={columns} data={data} onRowClick={() => console.log('Row clicked')} />
-          </div>
+          <TableOuter
+            columns={columns}
+            data={data}
+            onRowClick={() => console.log('Row clicked')}
+          />
         </div>
     );
   };
   
-
   export default ApplicationSection;
