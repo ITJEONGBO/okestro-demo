@@ -8,7 +8,7 @@ import Computing from './components/Computing/Computing';
 import MainOuter from './components/MainOuter';
 import Storage from './components/Storage/Storage';
 import Network from './components/Network/Network';
-import Setting from './components/Setting';
+import Setting from './components/Setting/Setting';
 import Vm from './components/Computing/Vm';
 import Cluster from './components/Computing/Cluster';
 import ClusterName from './components/Computing/ClusterName';
@@ -23,6 +23,7 @@ import './App.css';
 import DomainParts from './components/Storage/StorageDomainPart';
 import STOMP from './Socket'
 import { Toaster, toast } from 'react-hot-toast';
+
 
 function App() {
   const [stompClient, setStompClient] = useState(null);

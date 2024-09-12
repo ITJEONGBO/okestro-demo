@@ -205,6 +205,7 @@
     }
     .setting_part_new_popup{
         position: absolute;
+         
         box-sizing: border-box;
         border-radius: 4px;
         background: #fff;

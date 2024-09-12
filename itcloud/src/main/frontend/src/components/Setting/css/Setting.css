@@ -1,0 +1,82 @@
+/* 기본 모달 스타일 */
+.Modal {
+    z-index: 1000;
+  }
+  
+  .Overlay {
+    z-index: 999;
+  }
+  
+  /* 새 역할 모달 */
+  .Modal.newRolePopup {
+    z-index: 1100;
+  }
+  
+  .Overlay.newRolePopupOverlay {
+    z-index: 1099;
+  }
+  
+  /* 시스템 권한 추가 팝업 */
+  .Modal.addSystemRolePopup {
+    z-index: 1200;
+  }
+  
+  .Overlay.addSystemRolePopupOverlay {
+    z-index: 1199;
+  }
+  
+  /* 스케줄링 정책 팝업 */
+  .Modal.newSchedulePopup {
+    z-index: 1300;
+  }
+  
+  .Overlay.newSchedulePopupOverlay {
+    z-index: 1299;
+  }
+  
+  /* MAC 주소 풀 추가 팝업 */
+  .Modal.macNewPopup {
+    z-index: 1400;
+  }
+  
+  .Overlay.macNewPopupOverlay {
+    z-index: 1399;
+  }
+  
+  /* MAC 주소 풀 편집 팝업 */
+  .Modal.macEditPopup {
+    z-index: 1500;
+  }
+  
+  .Overlay.macEditPopupOverlay {
+    z-index: 1499;
+  }
+  
+  /*계정설정 팝업*/
+  .user_sessionInfo_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 60%;
+    width: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+.user_sessionInfo_popup .network_new_nav{
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid rgb(206, 206, 206);
+    height: 8%;
+}
+.user_sessionInfo_popup .network_new_nav>div{
+    font-weight: 800;
+    text-align: center;
+    font-size: 0.33rem;
+    width: 50%;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-right: 1px solid rgb(206, 206, 206);
+}

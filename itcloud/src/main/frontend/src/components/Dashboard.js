@@ -735,7 +735,7 @@ const Dashboard = () => {
       <div className="dash_board">
         <div className="dash_boxs">
 
-          <div className="box" onClick={() => navigate('/computing/datacenter')}>
+          <div className="box" onClick={() => navigate('/computing/datacenters')}>
             <span>Datacenter</span>
             <h1>{data.datacenters}</h1>
             <div className="arrows">
@@ -743,7 +743,7 @@ const Dashboard = () => {
               <FontAwesomeIcon icon={faArrowDown} fixedWidth/> {data.datacentersDown}
             </div>
           </div>
-          <div className="box"  onClick={() => navigate('/computing/cluster')}>
+          <div className="box"  onClick={() => navigate('/computing/clusters')}>
             <span>Cluster</span>
             <h1>{data.clusters}</h1>
           </div>

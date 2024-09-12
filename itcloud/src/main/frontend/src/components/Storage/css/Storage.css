@@ -8,34 +8,6 @@
     height: 98%;
 }
 
-.host_btn_outer{
-    width: 100%;
-    padding: 0.5rem 0.3rem;
-}
-.content_header_right {  
-    display: flex;
-    margin-bottom: 0.3rem;
-    align-items: center;
-    justify-content: right;
-}
-
-.content_header_right button {
-    margin-right: 0.2rem;
-    font-size: 0.4rem;
-    padding: 0.1rem 0.1rem;
-    cursor: pointer;
-    font-size: 0.3rem;
-    font-weight: 600;
-    border-radius: 3px;
-    border: 1px solid #14417c;
-    border-radius: 3px;
-    color: rgb(10, 55, 107);
-    background: white;
-}
-.content_header_right  i{
-    font-size: 0.3rem;
-    font-weight: 800;
-}
 .section_table_outer{
     font-size: 0.3rem;
 
@@ -156,6 +128,7 @@
     color: rgb(10, 55, 107);
     font-weight: 600;
 }
+
 /*도메인(새로운 도메인)*/
 .storage_domain_new_outer{
     display: none;
