@@ -12,7 +12,7 @@ private fun Connection.srvVnicProfiles(): VnicProfilesService =
 	this.systemService.vnicProfilesService()
 
 fun Connection.findAllVnicProfiles(): Result<List<VnicProfile>> = runCatching {
-	this.srvVnicProfiles().list().send().profiles()
+	this.srvVnicProfiles().list().follow("network").send().profiles()
 }.onSuccess {
 	Term.VNIC_PROFILE.logSuccess("목록조회")
 }.onFailure {
@@ -24,7 +24,7 @@ private fun Connection.srvVnicProfile(vnicProfileId: String): VnicProfileService
 	this.srvVnicProfiles().profileService(vnicProfileId)
 
 fun Connection.findVnicProfile(vnicProfileId: String): Result<VnicProfile?> = runCatching {
-	this.srvVnicProfile(vnicProfileId).get().send().profile()
+	this.srvVnicProfile(vnicProfileId).get().follow("network").send().profile()
 }.onSuccess {
 	Term.VNIC_PROFILE.logSuccess("상세조회", vnicProfileId)
 }.onFailure {

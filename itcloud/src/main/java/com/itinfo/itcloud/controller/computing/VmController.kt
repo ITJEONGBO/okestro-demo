@@ -35,24 +35,32 @@ class VmController: BaseController() {
 	@GetMapping
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun vms(): ResponseEntity<List<VmVo>> {
+	fun findAll(): ResponseEntity<List<VmVo>> {
 		log.info("--- 가상머신 목록")
 		return ResponseEntity.ok(iVm.findAll())
 	}
 
+
 	@ApiOperation(
 		httpMethod="GET",
-		value="가상머신 생성창",
-		notes="가상머신 생성시 필요한 내용을 조회한다"
+		value="가상머신 상세정보",
+		notes="가상머신의 상세정보를 조회한다"
 	)
-	@GetMapping("/settings/vnic")
+	@ApiImplicitParams(
+		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@GetMapping("/{vmId}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun setVnic(): ResponseEntity<List<VnicProfileVo>> {
-		log.info("--- 가상머신 생성 창 - vnic")
-//		return vmService.setVnic();
-		return ResponseEntity.ok(listOf())
+	fun findOne(
+		@PathVariable vmId: String? = null,
+	): ResponseEntity<VmVo?> {
+		if (vmId.isNullOrEmpty())
+			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		log.info("--- 가상머신 상세정보")
+		return ResponseEntity.ok(iVm.findOne(vmId))
 	}
+
 
 	@ApiOperation(
 		httpMethod="POST",
@@ -74,26 +82,6 @@ class VmController: BaseController() {
 		return ResponseEntity.ok(iVm.add(vm))
 	}
 
-	@ApiOperation(
-		httpMethod="GET",
-		value="가상머신 수정창",
-		notes="선택된 가상머신의 정보를 조회한다")
-	@ApiImplicitParams(
-		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@GetMapping("/{vmId}/edit")
-	@ResponseBody
-	@ResponseStatus(
-		HttpStatus.OK
-	)
-	fun getVmCreate(
-		@PathVariable vmId: String? = null,
-	): ResponseEntity<VmVo?> {
-		if (vmId.isNullOrEmpty())
-			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		log.info("--- 가상머신 편집 창")
-		return ResponseEntity.ok(iVm.findOne(vmId))
-	}
 
 	@ApiOperation(
 		httpMethod="PUT",
@@ -142,25 +130,6 @@ class VmController: BaseController() {
 		return ResponseEntity.ok(iVm.remove(vmId, true))
 	}
 
-	@ApiOperation(
-		httpMethod="GET",
-		value="가상머신 상세정보",
-		notes="가상머신의 상세정보를 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@GetMapping("/{vmId}")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun vm(
-		@PathVariable vmId: String? = null,
-	): ResponseEntity<VmVo?> {
-		if (vmId.isNullOrEmpty())
-			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		return ResponseEntity.ok(iVm.findOne(vmId))
-	}
-
 
 	@Autowired private lateinit var iVmDisk: ItVmDiskService
 	@GetMapping("/{vmId}/disks")
@@ -174,7 +143,7 @@ class VmController: BaseController() {
 	)
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun disk(
+	fun findAllDisksFromVm(
 		@PathVariable vmId: String? = null,
 	): ResponseEntity<List<DiskAttachmentVo>> {
 		if (vmId.isNullOrEmpty())
@@ -195,7 +164,7 @@ class VmController: BaseController() {
 	)
 	@GetMapping("/{vmId}/snapshots")
 	@ResponseBody
-	fun snapshot(
+	fun findAllSnapshotsFromVm(
 		@PathVariable vmId: String? = null,
 	): ResponseEntity<List<SnapshotVo>> {
 		if (vmId.isNullOrEmpty())
@@ -214,7 +183,7 @@ class VmController: BaseController() {
 	)
 	@GetMapping("/{vmId}/applications")
 	@ResponseBody
-	fun app(
+	fun findAllApplicationsFromVm(
 		@PathVariable vmId: String? = null,
 	): ResponseEntity<List<IdentifiedVo>> {
 		if (vmId.isNullOrEmpty())
@@ -222,48 +191,6 @@ class VmController: BaseController() {
 		log.info("----- vm app 불러오기: $vmId")
 		return ResponseEntity.ok(iVm.findAllApplicationsFromVm(vmId))
 	}
-	//region: affinity
-
-
-	@Autowired private lateinit var iAffinity: ItAffinityService
-	@ApiOperation(
-		httpMethod="GET",
-		value="가상머신의 선호도그룹 목록",
-		notes="선택된 가상머신의 선호도그룹 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@GetMapping("/{vmId}/affinitygroups")
-	@ResponseBody
-	fun findAllGroupsForVm(
-		@PathVariable vmId: String? = null,
-	): ResponseEntity<List<AffinityGroupVo>> {
-		if (vmId.isNullOrEmpty())
-			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		log.info("----- vm affGroup 불러오기: $vmId")
-		return ResponseEntity.ok(iAffinity.findAllGroupsForVm(vmId))
-	}
-
-	@ApiOperation(
-		httpMethod="GET",
-		value="가상머신의 선호도레이블 목록",
-		notes="선택된 가상머신의 선호도레이블 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@GetMapping("/{vmId}/affinitylabels")
-	@ResponseBody
-	fun findAllLabelsForVm(
-		@PathVariable vmId: String? = null,
-	): ResponseEntity<List<AffinityLabelVo>> {
-		if (vmId.isNullOrEmpty())
-			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		log.info("----- vm affLabel 불러오기: {}", vmId)
-		return ResponseEntity.ok(iAffinity.findAllLabelsForVm(vmId))
-	}
-	//endregion
 
 	@ApiOperation(
 		value="가상머신 게스트 목록",
@@ -274,13 +201,13 @@ class VmController: BaseController() {
 	)
 	@GetMapping("/{vmId}/guests")
 	@ResponseBody
-	fun guest(
+	fun findGuestFromVm(
 		@PathVariable vmId: String? = null,
 	): ResponseEntity<GuestInfoVo?> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("----- vm disk 일반 불러오기: {}", vmId)
-		return ResponseEntity.ok(iVm.findAllGuestFromVm(vmId))
+		return ResponseEntity.ok(iVm.findGuestFromVm(vmId))
 	}
 
 	@GetMapping("/{vmId}/permissions")
@@ -293,7 +220,7 @@ class VmController: BaseController() {
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
 	@ResponseBody
-	fun permission(
+	fun findAllPermissionsFromVm(
 		@PathVariable vmId: String? = null,
 	): ResponseEntity<List<PermissionVo>> {
 		if (vmId.isNullOrEmpty())

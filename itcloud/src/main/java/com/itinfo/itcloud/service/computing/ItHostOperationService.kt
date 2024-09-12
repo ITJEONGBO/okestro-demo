@@ -60,8 +60,6 @@ class HostOperationServiceImpl: BaseService(), ItHostOperationService {
     @Throws(Error::class)
     override fun deactivate(hostId: String): Boolean {
         log.info("deactivate ... hostId: {}", hostId)
-        conn.findHost(hostId)
-            .getOrNull()?: throw ErrorPattern.HOST_NOT_FOUND.toException()
         val res: Result<Boolean> =
             conn.deactivateHost(hostId)
         return res.isSuccess
@@ -69,7 +67,7 @@ class HostOperationServiceImpl: BaseService(), ItHostOperationService {
 
     @Throws(Error::class)
     override fun activate(hostId: String): Boolean {
-        log.info("activate ... ")
+        log.info("activate ... hostId: {}", hostId)
         val res: Result<Boolean> =
             conn.activateHost(hostId)
         return res.isSuccess
@@ -77,7 +75,7 @@ class HostOperationServiceImpl: BaseService(), ItHostOperationService {
 
     @Throws(Error::class)
     override fun refresh(hostId: String): Boolean {
-        log.info("refreshHost ... ")
+        log.info("refreshHost ... hostId: {}", hostId)
         val res: Result<Boolean> =
             conn.refreshHost(hostId)
         return res.isSuccess
@@ -85,7 +83,7 @@ class HostOperationServiceImpl: BaseService(), ItHostOperationService {
 
     @Throws(UnknownHostException::class, Error::class)
     override fun restart(hostId: String): Boolean {
-        log.info("reStartHost ... ")
+        log.info("reStartHost ... hostId: {}", hostId)
     // TODO Host 이름, PW 입력문제 => application.properties 에 저장해서 불러오는 방식(비번 변경되었을 시 문제발생)
         val userName = ""
         val hostPw: String = "adminRoot!@#"
@@ -93,6 +91,7 @@ class HostOperationServiceImpl: BaseService(), ItHostOperationService {
             conn.restartHost(hostId, hostPw)
         return res.isSuccess
     }
+
 
     companion object {
         private val log by LoggerDelegate()

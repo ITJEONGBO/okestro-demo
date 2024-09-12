@@ -734,6 +734,9 @@ private fun Connection.srvStatisticsFromVmNic(vmId: String, nicId: String): Stat
 	this.srvVm(vmId).nicsService().nicService(nicId).statisticsService()
 
 fun Connection.findAllStatisticsFromVmNic(vmId: String, nicId: String): Result<List<Statistic>> = runCatching {
+	if(this.findVm(vmId).isFailure) {
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
 	this.srvStatisticsFromVmNic(vmId, nicId).list().send().statistics()
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.NIC, "통계 목록조회", vmId)

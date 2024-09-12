@@ -108,7 +108,7 @@ class ItVmServiceTest {
 	fun should_findAllVnicProfilesBy() {
 		log.debug("should_findAllVnicProfilesBy ...")
 		val result: List<VnicProfileVo> =
-			service.findAllVnicProfileFromCluster(clusterId)
+			service.findAllVnicProfilesFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(4))
@@ -126,7 +126,7 @@ class ItVmServiceTest {
 	fun should_findAllCpuProfilesBy() {
 		log.debug("should_findAllCpuProfilesBy ...")
 		val result: List<CpuProfileVo> =
-			service.findAllCpuProfileFromCluster(clusterId)
+			service.findAllCpuProfilesFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(1))
@@ -224,7 +224,7 @@ class ItVmServiceTest {
 	fun should_findAllApplicationsByVm() {
 		log.debug("should_findAllApplicationsByVm ... ")
 		val result: List<IdentifiedVo> =
-			service.findAllApplicationFromVm(hostVm)
+			service.findAllApplicationsFromVm(hostVm)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(2))
@@ -259,7 +259,7 @@ class ItVmServiceTest {
 	fun should_findAllPermissionsFromVm() {
 		log.debug("should_findAllPermissionsFromVm ... ")
 		val result: List<PermissionVo> =
-			service.findAllPermissionFromVm(hostVm)
+			service.findAllPermissionsFromVm(hostVm)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(3))
@@ -277,7 +277,7 @@ class ItVmServiceTest {
 	fun should_findAllEventsFromVm() {
 		log.debug("should_findAllEventsFromVm ... ")
 		val result: List<EventVo> =
-			service.findAllEventFromVm(hostVm)
+			service.findAllEventsFromVm(hostVm)
 
 		assertThat(result, `is`(not(nullValue())))
 //		assertThat(result.size, `is`(0))

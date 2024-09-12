@@ -50,14 +50,32 @@ class ItNetworkServiceTest {
 	 * 
 	 * @see ItNetworkService.findAll
 	 */
+//	@Test
+//	fun should_findAll() {
+//		log.debug("should_findAll ... ")
+//		val result: List<NetworkVo> =
+//			service.findAll()
+//
+//		assertThat(result, `is`(not(nullValue())))
+////		assertThat(result.size, `is`(4))
+//
+//		result.forEach { print(it) }
+//	}
+
+	/**
+	 * [should_findAll]
+	 * [ItNetworkService.findAll]에 대한 단위테스트
+	 *
+	 * @see ItNetworkService.findAll
+	 */
 	@Test
 	fun should_findAll() {
 		log.debug("should_findAll ... ")
 		val result: List<NetworkVo> =
-			service.findAll()
+			service.findAll(dataCenterId)
 
 		assertThat(result, `is`(not(nullValue())))
-//		assertThat(result.size, `is`(4))
+		assertThat(result.size, `is`(3))
 
 		result.forEach { print(it) }
 	}

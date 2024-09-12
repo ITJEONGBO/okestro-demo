@@ -82,11 +82,13 @@ class ItStorageServiceTest {
 	@Test
 	fun should_findStorageDomain() {
 		log.debug("should_findStorageDomain ... ")
-		val result: StorageDomainVo =
+		val result: StorageDomainVo? =
 			service.findStorageDomain(domainId)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.id, `is`(domainId))
+		if (result != null) {
+			assertThat(result.id, `is`(domainId))
+		}
 		println(result)
 	}
 
@@ -202,7 +204,7 @@ class ItStorageServiceTest {
 	@Test
 	fun should_findDisk() {
 		log.debug("should_findDisk ... ")
-		val result: DiskImageVo =
+		val result: DiskImageVo? =
 			service.findDisk(diskId)
 
 		assertThat(result, `is`(not(nullValue())))

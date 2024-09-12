@@ -16,17 +16,28 @@ import org.springframework.stereotype.Service
 import kotlin.Error
 
 interface ItNetworkService {
+//	/**
+//	 * [ItNetworkService.findAll]
+//	 * 네트워크 목록
+//	 *
+//	 * @return List<[NetworkVo]> 네트워크 목록
+//	 */
+//	@Throws(Error::class)
+//	fun findAll(): List<NetworkVo>
+
 	/**
-	 * [ItNetworkService.findAll]
+	 * [ItNetworkService.findAllFromDataCenter]
 	 * 네트워크 목록
 	 *
+	 * @param dataCenterId [String]
 	 * @return List<[NetworkVo]> 네트워크 목록
 	 */
 	@Throws(Error::class)
-	fun findAll(): List<NetworkVo>
+	fun findAllFromDataCenter(dataCenterId: String): List<NetworkVo>
+
 	/**
 	 * [ItNetworkService.findOne]
-	 * 네트워크 편집창
+	 * 네트워크 편집 / 정보
 	 *
 	 * @param networkId [String] 네트워크 아이디
 	 * @return [NetworkVo] 네트워크 정보
@@ -163,12 +174,22 @@ class NetworkServiceImpl(
 
 ): BaseService(), ItNetworkService {
 
+//	@Throws(Error::class)
+//	override fun findAll(): List<NetworkVo> {
+//		log.info("findAll ... ")
+//		val networks: List<Network> =
+//			conn.findAllNetworks()
+//				.getOrDefault(listOf())
+//		return networks.toNetworkVos(conn)
+//	}
+
 	@Throws(Error::class)
-	override fun findAll(): List<NetworkVo> {
-		log.info("getNetworks ... ")
+	override fun findAllFromDataCenter(dataCenterId: String): List<NetworkVo> {
+		log.info("findAll ... ")
 		val networks: List<Network> =
 			conn.findAllNetworks()
 				.getOrDefault(listOf())
+				.filter { it.dataCenter().id() == dataCenterId }
 		return networks.toNetworkVos(conn)
 	}
 

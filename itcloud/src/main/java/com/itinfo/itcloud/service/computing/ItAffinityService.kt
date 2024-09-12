@@ -1,11 +1,14 @@
 package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.*
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.response.Res
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.computing.VmServiceImpl.Companion
 import com.itinfo.util.ovirt.*
+import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.services.*
@@ -17,6 +20,13 @@ import org.springframework.stereotype.Service
 
 
 interface ItAffinityService {
+	// 선호도 그룹 나중 구현
+//	fun findAllAffinityGroupsFromCluster(clusterId: String): List<AffinityGroupVo>?
+//	fun addAffinityGroupFromCluster(clusterId: String, agVo: AffinityGroupVo): Boolean
+//	fun getAffinityGroupFromCluster(clusterId: String, agId: String): AffinityGroupVo?
+//	fun editAffinityGroupFromCluster(agVo: AffinityGroupVo): Boolean
+//	fun deleteAffinityGroupFromCluster(clusterId: String, agId: String): Boolean
+
 	/**
 	 * [ItAffinityService.getClusterAffinityGroups]
 	 * 선호도 그룹 목록 - 클러스터
@@ -122,6 +132,41 @@ interface ItAffinityService {
 	// cluster  : label, group      api-group
 	// host     : label             api-affinitylabels
 	// vm       : label, group      api-affinitylabels
+
+
+	/**
+	 * [ItHostService.findAllAffinityLabelsFromHost]
+	 * 호스트 선호도 레이블 목록
+	 *
+	 *  @param hostId [String] 호스트 아이디
+	 *  @return List<[AffinityLabelVo]>? 선호도 레이블 목록
+	 */
+//	@Throws(Error::class)
+//	fun findAllAffinityLabelsFromHost(hostId: String): List<AffinityLabelVo>
+
+	// 선호도 그룹/레이블은 나중구현 가능
+	/**
+	 * [ItVmService.findAllAffinityGroupsFromCluster]
+	 * 가상머신 생성 - 선호도 - 선호도 그룹 목록
+	 *
+	 * @param clusterId [String] 클러스터 id
+	 * @return List<[IdentifiedVo]> 선호도 그룹 목록
+	 */
+	@Deprecated("선호도 나중 구현")
+	@Throws(Error::class)
+	fun findAllAffinityGroupsFromCluster(clusterId: String): List<IdentifiedVo>
+	/**
+	 * [ItVmService.findAllAffinityLabel]
+	 * 가상머신 생성 - 선호도 - 선호도 레이블 목록
+	 * 기준을 모르겠음
+	 *
+	 * @return List<[IdentifiedVo]> 선호도 레이블 목록
+	 */
+	@Deprecated("선호도 나중 구현")
+	@Throws(Error::class)
+	fun findAllAffinityLabel(): List<IdentifiedVo> // 선호도 레이블 리스트
+
+
 }
 
 
@@ -156,6 +201,44 @@ fun <T : Enum<AffinityServiceType>> ItAffinityService<T>.checkServiceType(type: 
 class AffinityServiceImpl(
 
 ): BaseService(), ItAffinityService {
+
+//	@Deprecated("선호도 나중 구현")
+//	@Throws(Error::class)
+//	override fun findAllAffinityGroupsFromCluster(clusterId: String): List<AffinityGroupVo>? {
+//		log.info("findAllAffinityGroupsFromCluster ... clusterId: {}", clusterId)
+//		val res: List<AffinityGroup> =
+//			conn.findAllAffinityGroupsFromCluster(clusterId)
+//				.getOrDefault(listOf())
+//		return res.toAffinityGroupVos(conn, clusterId)
+//	}
+//
+//	@Deprecated("선호도 나중 구현")
+//	@Throws(Error::class)
+//	override fun addAffinityGroupFromCluster(clusterId: String, agVo: AffinityGroupVo): Boolean {
+//		log.info("addAffinityGroupFromCluster ... ")
+//		TODO("나중 구현")
+//	}
+//
+//	@Deprecated("선호도 나중 구현")
+//	@Throws(Error::class)
+//	override fun getAffinityGroupFromCluster(clusterId: String, agId: String): AffinityGroupVo? {
+//		log.info("getAffinityGroupFromCluster ... ")
+//		TODO("나중 구현")
+//	}
+//
+//	@Deprecated("선호도 나중 구현")
+//	@Throws(Error::class)
+//	override fun editAffinityGroupFromCluster(agVo: AffinityGroupVo): Boolean {
+//		log.info("editAffinityGroupFromCluster ... ")
+//		TODO("나중 구현")
+//	}
+//
+//	@Deprecated("선호도 나중 구현")
+//	@Throws(Error::class)
+//	override fun deleteAffinityGroupFromCluster(clusterId: String, agId: String): Boolean {
+//		log.info("deleteAffinityGroupFromCluster ... ")
+//		TODO("나중 구현")
+//	}
 
 	@Throws(Error::class)
 	override fun getClusterAffinityGroups(clusterId: String): List<AffinityGroupVo> {
@@ -293,6 +376,27 @@ class AffinityServiceImpl(
 				.getOrDefault(listOf())
 		log.info("선호도 레이블")
 		return affinityLabels.toAffinityLabelVos(conn)
+	}
+
+
+	@Deprecated("선호도 나중 구현")
+	override fun findAllAffinityGroupsFromCluster(clusterId: String): List<IdentifiedVo> {
+		log.info("findAllAffinityGroupsFromCluster ... ")
+		conn.findCluster(clusterId)
+			.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
+		val res: List<AffinityGroup> =
+			conn.findAllAffinityGroupsFromCluster(clusterId)
+				.getOrDefault(listOf())
+		return res.fromAffinityGroupsToIdentifiedVos()
+	}
+
+	@Deprecated("선호도 나중 구현")
+	override fun findAllAffinityLabel(): List<IdentifiedVo> {
+		log.info("findAllAffinityLabel ... ")
+		val res: List<AffinityLabel> =
+			conn.findAllAffinityLabels()
+				.getOrDefault(listOf())
+		return res.fromAffinityLabelsToIdentifiedVos()
 	}
 
 	// 클러스터에서 가지고 왓ㅇ므요

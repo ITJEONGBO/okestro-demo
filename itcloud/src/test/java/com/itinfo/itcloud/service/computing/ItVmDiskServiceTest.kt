@@ -152,7 +152,7 @@ class ItVmDiskServiceTest {
             diskAttachmentVo { diskAttachVo }
         }
 
-        val result: DiskAttachmentVo =
+        val result: DiskAttachmentVo? =
             service.addDiskFromVm(vmVo)
 
         assertThat(result, `is`(not(nullValue())))
@@ -188,7 +188,7 @@ class ItVmDiskServiceTest {
     fun should_findOneDiskFromVm(){
         log.debug("should_findOneDiskFromVm")
         val diskAttachmentId = "06276214-bfcf-4943-8c6e-a51a68bc6453"
-        val result: DiskAttachmentVo =
+        val result: DiskAttachmentVo? =
             service.findOneDiskFromVm(vm01_1, diskAttachmentId)
 
         assertThat(result, `is`(not(nullValue())))

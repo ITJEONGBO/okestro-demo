@@ -126,14 +126,16 @@ fun Connection.expectHostDeleted(hostId: String, timeout: Long = 60000L, interva
 }
 
 fun Connection.deactivateHost(hostId: String): Result<Boolean> = runCatching {
-	val host: Host = this.findHost(hostId).getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
+	val host: Host =
+		this.findHost(hostId)
+			.getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
+
 	if (host.status() != HostStatus.MAINTENANCE) {
 		srvHost(host.id()).deactivate().send()
 	} else {
 		return Result.failure(Error("deactivateHost 실패 ... {} 가 이미 유지관리 상태"))
 	}
-	val result = expectHostStatus(host.id(), HostStatus.MAINTENANCE)
-	result
+	this.expectHostStatus(host.id(), HostStatus.MAINTENANCE)
 }.onSuccess {
 	Term.HOST.logSuccess("비활성화", hostId)
 }.onFailure {
@@ -151,8 +153,7 @@ fun Connection.activateHost(hostId: String): Result<Boolean> = runCatching {
 	} else {
 		return Result.failure(Error("activateHost 실패 ... ${host.name()}가 이미 활성 상태 "))
 	}
-	val result = expectHostStatus(host.id(), HostStatus.UP)
-	result
+	this.expectHostStatus(host.id(), HostStatus.UP)
 }.onSuccess {
 	Term.HOST.logSuccess("활성화", hostId)
 }.onFailure {
@@ -162,11 +163,11 @@ fun Connection.activateHost(hostId: String): Result<Boolean> = runCatching {
 
 
 fun Connection.refreshHost(hostId: String): Result<Boolean> = runCatching {
-	this.findHost(hostId)
-		.getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
+	if(this.findHost(hostId).isFailure){
+		throw ErrorPattern.HOST_NOT_FOUND.toError()
+	}
 	this.srvHost(hostId).refresh().send()
-	val result = this.expectHostStatus(hostId, HostStatus.UP)
-	result
+	this.expectHostStatus(hostId, HostStatus.UP)
 }.onSuccess {
 	Term.HOST.logSuccess("새로고침", hostId)
 }.onFailure {
@@ -182,13 +183,7 @@ fun Connection.restartHost(hostId: String, hostPw: String): Result<Boolean> = ru
 	if (address.rebootHostViaSSH("root", hostPw, 22).isFailure)
 		return Result.failure(Error("SSH를 통한 호스트 재부팅 실패"))
 
-	Thread.sleep(60000) // 60초 대기, 재부팅 시간 고려
-	if (this.expectHostStatus(host.id(), HostStatus.UP)) {
-		true
-	} else {
-		log.error("재부팅 전환 시간 초과")
-		false
-	}
+	this.expectHostStatus(host.id(), HostStatus.UP)
 }.onSuccess {
 	Term.HOST.logSuccess("재부팅", hostId)
 }.onFailure {
@@ -255,11 +250,10 @@ fun Connection.migrateHostFromVm(vmId: String, host: Host): Result<Boolean> = ru
  * [Connection.expectHostStatus]
  * 호스트 상태 체크하는 메소드
  *
- * @param hostService 호스트 서비스
+ * @param hostId 호스트
  * @param expectStatus 원하는 호스트 상태
- * @param check 상태 확인 간격(밀리초)
+ * @param interval 상태 확인 간격(밀리초)
  * @param timeout 최대 대기 시간(밀리초)
- * @return true =pass / false=fail
  * @throws InterruptedException
  */
 @Throws(InterruptedException::class)
@@ -268,7 +262,6 @@ fun Connection.expectHostStatus(hostId: String, expectStatus: HostStatus, interv
 	while (true) {
 		val currentHost: Host? = this@expectHostStatus.findHost(hostId).getOrNull()
 		val status = currentHost?.status()
-
 		if (status == expectStatus) {
 			log.info("호스트 완료 ... {}", expectStatus)
 			return true

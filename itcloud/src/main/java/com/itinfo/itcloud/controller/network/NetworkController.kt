@@ -26,20 +26,40 @@ import org.springframework.web.bind.annotation.*
 class NetworkController: BaseController() {
 	@Autowired private lateinit var iNetwork: ItNetworkService
 
+//	@ApiOperation(
+//		httpMethod="GET",
+//		value="전체 네트워크 목록 조회",
+//		notes="전체 네트워크 목록을 조회한다"
+//	)
+//	@ApiResponses(
+//		ApiResponse(code = 200, message = "OK")
+//	)
+//	@GetMapping
+//	@ResponseBody
+//	@ResponseStatus(HttpStatus.OK)
+//	fun networks(): ResponseEntity<List<NetworkVo>> {
+//		log.info("GET /api/v1/networks ... 네트워크 목록")
+//		return ResponseEntity.ok(iNetwork.findAll())
+//	}
+
 	@ApiOperation(
 		httpMethod="GET",
-		value="전체 네트워크 목록 조회",
-		notes="전체 네트워크 목록을 조회한다"
+		value="/networks/{networkId}",
+		notes="선택된 네트워크의 정보를 조회한다"
 	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
+	@ApiImplicitParams(
+		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="network", value="네트워크", dataTypeClass=NetworkVo::class, required=true, paramType="body"),
 	)
-	@GetMapping
+	@GetMapping("/{networkId}")
 	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun networks(): ResponseEntity<List<NetworkVo>> {
-		log.info("GET /api/v1/networks ... 네트워크 목록")
-		return ResponseEntity.ok(iNetwork.findAll())
+	@ResponseStatus(HttpStatus.CREATED)
+	fun setEditNetwork(
+		@PathVariable networkId: String? = null,
+	): ResponseEntity<NetworkVo?> {
+		log.info("GET /api/v1/networks/{} ... Network 편집 창", networkId)
+		if (networkId.isNullOrEmpty()) throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
+		return ResponseEntity.ok(iNetwork.findOne(networkId))
 	}
 
 
@@ -66,26 +86,6 @@ class NetworkController: BaseController() {
 		return ResponseEntity.ok(iNetwork.add(network))
 	}
 
-
-	@ApiOperation(
-		httpMethod="GET",
-		value="/networks/{networkId}/edit",
-		notes="선택된 네트워크의 정보를 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		ApiImplicitParam(name="network", value="네트워크", dataTypeClass=NetworkVo::class, required=true, paramType="body"),
-	)
-	@GetMapping("/{networkId}/edit")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.CREATED)
-	fun setEditNetwork(
-		@PathVariable networkId: String? = null,
-	): ResponseEntity<NetworkVo?> {
-		log.info("GET /api/v1/networks/{}/edit ... Network 편집 창", networkId)
-		if (networkId.isNullOrEmpty()) throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-		return ResponseEntity.ok(iNetwork.findOne(networkId))
-	}
 
 	@ApiOperation(
 		httpMethod="PUT",
@@ -150,24 +150,24 @@ class NetworkController: BaseController() {
 		return ResponseEntity.ok(iNetwork.importNetwork())
 	}
 
-	@ApiOperation(
-		httpMethod="GET",
-		value="네트워크 상세정보",
-		notes="네트워크의 상세정보를 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@GetMapping("/{networkId}")
-	@ResponseBody
-	fun network(
-		@PathVariable networkId: String? = null
-	): ResponseEntity<NetworkVo?> {
-		if (networkId.isNullOrEmpty())
-			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-		log.info("--- Network 일반")
-		return ResponseEntity.ok(iNetwork.findOne(networkId))
-	}
+//	@ApiOperation(
+//		httpMethod="GET",
+//		value="네트워크 상세정보",
+//		notes="네트워크의 상세정보를 조회한다"
+//	)
+//	@ApiImplicitParams(
+//		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
+//	)
+//	@GetMapping("/{networkId}")
+//	@ResponseBody
+//	fun network(
+//		@PathVariable networkId: String? = null
+//	): ResponseEntity<NetworkVo?> {
+//		if (networkId.isNullOrEmpty())
+//			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
+//		log.info("--- Network 일반")
+//		return ResponseEntity.ok(iNetwork.findOne(networkId))
+//	}
 
 
 	// region: vnicProfile

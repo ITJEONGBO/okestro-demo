@@ -35,15 +35,28 @@ class HostController {
 		log.info("--- 호스트 목록")
 		return ResponseEntity.ok(iHost.findAll())
 	}
-/*
-	@GetMapping("/settings")
-	@ApiOperation(value = "호스트 생성창", notes = "호스트 생성시 필요한 내용을 조회한다")
+
+
+	@ApiOperation(
+		httpMethod="GET",
+		value = "호스트 상세정보",
+		notes = "호스트의 상세정보를 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@GetMapping("/{hostId}")
 	@ResponseBody
-	public List<ClusterVo> setClusterList(){
-		log.info("--- 호스트 생성 창");
-		return hostService.setClusterList();
+	fun findOne(
+		@PathVariable hostId: String? = null,
+	): ResponseEntity<HostVo?> {
+		if (hostId.isNullOrEmpty())
+			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
+		log.info("--- 호스트 일반")
+		return ResponseEntity.ok(iHost.findOne(hostId))
 	}
-*/
+
+
 	@ApiOperation(
 		httpMethod="POST",
 		value="호스트 생성",
@@ -63,24 +76,6 @@ class HostController {
 		return ResponseEntity.ok(iHost.add(hostVo))
 	}
 
-	@ApiOperation(
-		httpMethod="GET",
-		value="호스트 수정창",
-		notes="선택된 호스트의 정보를 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@GetMapping("/{hostId}/edit")
-	@ResponseBody
-	fun getHostCreate(
-		@PathVariable hostId: String? = null,
-	): ResponseEntity<HostVo?> {
-		if (hostId.isNullOrEmpty())
-			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		log.info("--- 호스트 수정창")
-		return ResponseEntity.ok(iHost.findOne(hostId))
-	}
 
 	@ApiOperation(
 		httpMethod="PUT",
@@ -122,25 +117,6 @@ class HostController {
 		return ResponseEntity.ok(iHost.remove(hostId))
 	}
 
-	@ApiOperation(
-		httpMethod="GET",
-		value = "호스트 상세정보",
-		notes = "호스트의 상세정보를 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@GetMapping("/{hostId}")
-	@ResponseBody
-	fun findOne(
-		@PathVariable hostId: String? = null,
-	): ResponseEntity<HostVo?> {
-		if (hostId.isNullOrEmpty())
-			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		log.info("--- 호스트 일반")
-		return ResponseEntity.ok(iHost.findOne(hostId))
-	}
-
 
 	@ApiOperation(
 		httpMethod="GET",
@@ -171,7 +147,7 @@ class HostController {
 	)
 	@GetMapping("/{hostId}/nics")
 	@ResponseBody
-	fun nic(
+	fun findAllHostNicsFromHost(
 	@PathVariable hostId: String? = null
 	): ResponseEntity<List<HostNicVo>> {
 		if (hostId.isNullOrEmpty())
@@ -190,7 +166,7 @@ class HostController {
 	)
 	@GetMapping("/{hostId}/devices")
 	@ResponseBody
-	fun device(
+	fun findAllHostDevicesFromHost(
 		@PathVariable hostId: String? = null,
 	): ResponseEntity<List<HostNicVo>> {
 		if (hostId.isNullOrEmpty())
@@ -210,7 +186,7 @@ class HostController {
 	)
 	@GetMapping("/{hostId}/permissions")
 	@ResponseBody
-	fun permission(
+	fun findAllPermissionsFromHost(
 		@PathVariable hostId: String? = null
 	): ResponseEntity<List<PermissionVo>> {
 		log.info("--- 호스트 권한")
@@ -218,72 +194,7 @@ class HostController {
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		return ResponseEntity.ok(iHost.findAllPermissionsFromHost(hostId))
 	}
-	@ApiOperation(
-		httpMethod="GET",
-		value="호스트 선호도 레이블 목록",
-		notes="선택된 호스트의 선호도 레이블 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@GetMapping("/{hostId}/affinitylabels")
-	@ResponseBody
-	fun getAffinitylabels(
-		@PathVariable hostId: String? = null
-	): ResponseEntity<List<AffinityLabelVo>> {
-		if (hostId.isNullOrEmpty())
-			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		log.info("--- 호스트 선호도 레이블")
-		return ResponseEntity.ok(iHost.findAllAffinityLabelsFromHost(hostId))
-	}
-/*
-	@ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	@GetMapping("/{hostId}/affinitylabel/settings")
-	@ResponseBody
-	fun setAffinitygroup(
-		@PathVariable hostId: String? = null
-	): ResponseEntity<AffinityHostVm?> {
-		log.info("--- 호스트 선호도 레이블 생성 창");
-		return host.setAffinityDefaultInfo(id, "label");
-	}
 
-
-	@ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	@PostMapping("/{id}/affinitylabel")
-	@ResponseBody
-	public CommonVo<Boolean> addAff(
-		@PathVariable String id,
-		@RequestBody AffinityLabelCreateVo alVo
-	): Aff {
-		log.info("--- 호스트 선호도 레이블 생성");
-		return host.addAffinitylabel(id, alVo);
-	}
-*/
-	//	@GetMapping("/{id}/affinitylabel/{alId}/settings")
-	//	@ResponseBody
-	//	public AffinityHostVm setAffinityDefaultInfo(@PathVariable String id,
-	//												 @PathVariable String type){
-	//		log.info("--- 호스트 선호도 레이블 수정 창");
-	//		return hostService.setAffinityDefaultInfo(id, "label");
-	//	}
-	//
-	//
-	//	@PutMapping("/{id}/affinitylabel/{alId}")
-	//	@ResponseBody
-	//	public CommonVo<Boolean> editAff(@PathVariable String id,
-	//									 @PathVariable String alId,
-	//									 @RequestBody AffinityLabelCreateVo alVo) {
-	//		log.info("--- 호스트 선호도 레이블 편집");
-	//		return hostService.editAffinitylabel(id, alId, alVo);
-	//	}
-	//
-	//	@DeleteMapping("/{id}/affinitylabel/{alId}")
-	//	@ResponseBody
-	//	public CommonVo<Boolean> deleteAff(@PathVariable String id,
-	//									   @PathVariable String alId) {
-	//		log.info("--- 호스트 선호도 레이블 삭제");
-	//		return hostService.deleteAffinitylabel(id, alId);
-	//	}
 	@ApiOperation(
 		httpMethod="GET",
 		value="호스트 이벤트 목록",

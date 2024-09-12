@@ -163,7 +163,7 @@ class ItHostServiceTest {
 	fun should_findAllVmsFromHost() {
 		log.debug("should_findAllVmsFromHost ...")
 		val result: List<VmVo> =
-			service.findAllVmFromHost(host02)
+			service.findAllVmsFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(1))
@@ -180,7 +180,7 @@ class ItHostServiceTest {
 	fun should_findAllHostNicsFromHost() {
 		log.debug("should_findAllHostNicFromHost ...")
 		val result: List<HostNicVo> =
-			service.findAllHostNicFromHost(host02)
+			service.findAllHostNicsFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(1))
@@ -197,7 +197,7 @@ class ItHostServiceTest {
 	fun should_findAllHostDevicesFromHost() {
 		log.debug("should_findAllHostDevicesFromHost ...")
 		val result: List<HostDeviceVo> =
-			service.findAllHostDeviceFromHost(host02)
+			service.findAllHostDevicesFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(1))
@@ -214,7 +214,7 @@ class ItHostServiceTest {
 	fun should_findAllPermissionsFromHost() {
 		log.debug("should_findAllPermissionsFromHost ...")
 		val result: List<PermissionVo> =
-			service.findAllPermissionFromHost(host02)
+			service.findAllPermissionsFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(3))
@@ -231,7 +231,7 @@ class ItHostServiceTest {
 	fun should_findAllEventsFromHost() {
 		log.debug("should_findAllEventsFromHost ...")
 		val result: List<EventVo> =
-			service.findAllEventFromHost(host02)
+			service.findAllEventsFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(197)) // ?

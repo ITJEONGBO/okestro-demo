@@ -8,6 +8,7 @@ import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.model.storage.*
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.computing.VmServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.builders.TemplateBuilder

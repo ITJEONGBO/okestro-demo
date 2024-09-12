@@ -76,25 +76,6 @@ import org.springframework.boot.test.context.SpringBootTest
 		println(result)
 	}
 
-
-	/**
-	 * [should_findAllNetworksFromDataCenter]
-	 * [ItClusterService.findAllNetworksFromDataCenter]에 대한 단위테스트
-	 * 클러스터 생성 위한 네트워크 목록
-	 *
-	 * @see ItClusterService.findAllNetworksFromDataCenter
-	 **/
-	@Test
-	fun should_findAllNetworksFromDataCenter() {
-		log.debug("should_findAllNetworksFromDataCenter ... ")
-		val result: List<NetworkVo> =
-			service.findAllNetworkFromDataCenter(dataCenterId)
-
-		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(2))
-		result.forEach { println(it) }
-	}
-
 	/**
 	 * [should_add_update_and_remove_Cluster]
 	 * [ItClusterService.add], [ItClusterService.update], [ItClusterService.remove]에 대한 단위테스트
@@ -417,7 +398,7 @@ import org.springframework.boot.test.context.SpringBootTest
 	fun should_findAllNetworksFromCluster() {
 		log.debug("should_findAllNetworksFromCluster ... ")
 		val result: List<NetworkVo> =
-			service.findAllNetworkFromCluster(clusterId)
+			service.findAllNetworksFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(3))
@@ -434,7 +415,7 @@ import org.springframework.boot.test.context.SpringBootTest
 	fun should_findAllHostsFromCluster() {
 		log.debug("should_findAllHostsFromCluster ... ")
 		val result: List<HostVo> =
-			service.findAllHostFromCluster(clusterId)
+			service.findAllHostsFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(2))
@@ -452,7 +433,7 @@ import org.springframework.boot.test.context.SpringBootTest
 	fun should_findAllVmsFromCluster() {
 		log.debug("should_findAllVmsFromCluster ... ")
 		val result: List<VmVo> =
-			service.findAllVmFromCluster(clusterId)
+			service.findAllVmsFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(5))
@@ -471,7 +452,7 @@ import org.springframework.boot.test.context.SpringBootTest
 	fun should_findAllPermissionsFromCluster() {
 		log.debug("should_findAllPermissionsFromCluster ... ")
 		val result: List<PermissionVo> =
-			service.findAllPermissionFromCluster(clusterId)
+			service.findAllPermissionsFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(3))
@@ -489,7 +470,7 @@ import org.springframework.boot.test.context.SpringBootTest
 	fun should_findAllEventsFromCluster() {
 		log.debug("should_findAllEventsFromCluster ... ")
 		val result: List<EventVo> =
-			service.findAllEventFromCluster(clusterId)
+			service.findAllEventsFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(329))

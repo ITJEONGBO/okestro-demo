@@ -48,9 +48,8 @@ class StorageController: BaseController() {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/domains ... Domain(s) 목록", dataCenterId)
-		return ResponseEntity.ok(iStorage.findAllStorageDomainsFromDataCenter(dataCenterId))
+		return ResponseEntity.ok(iStorage.findAllDomainsFromDataCenter(dataCenterId))
 	}
-
 
 	@ApiOperation(
 		httpMethod="GET",

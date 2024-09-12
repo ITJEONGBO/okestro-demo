@@ -31,7 +31,7 @@ import kotlin.Error
 
 interface ItStorageService {
 	/**
-	 * [ItStorageService.findAllStorageDomainsFromDataCenter]
+	 * [ItStorageService.findAllDomainsFromDataCenter]
 	 * 데이터센터 - 스토리지 도메인 목록
 	 *
 	 * 디스크 이미지 생성창
@@ -42,7 +42,7 @@ interface ItStorageService {
 	 * @return List<[StorageDomainVo]> 스토리지 도메인 목록
 	 */
 	@Throws(Error::class)
-	fun findAllStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo>
+	fun findAllDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo>
 	/**
 	 * [ItStorageService.findStorageDomain]
 	 * 데이터센터 - 스토리지 도메인 정보
@@ -51,7 +51,7 @@ interface ItStorageService {
 	 * @return [StorageDomainVo]?
 	 */
 	@Throws(Error::class)
-	fun findStorageDomain(storageDomainId: String): StorageDomainVo?
+	fun findDomain(storageDomainId: String): StorageDomainVo?
 	/**
 	 * [ItStorageService.findAllHostsFromDataCenter]
 	 * 도메인 생성 - 호스트 목록
@@ -296,7 +296,7 @@ class StorageServiceImpl(
 ): BaseService(), ItStorageService {
 
 	@Throws(Error::class)
-	override fun findAllStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
+	override fun findAllDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
 		log.debug("findAllStorageDomainsFromDataCenter ... dcId: $dataCenterId")
 		conn.findDataCenter(dataCenterId)
 			.getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toException()
@@ -309,7 +309,7 @@ class StorageServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findStorageDomain(storageDomainId: String): StorageDomainVo? {
+	override fun findDomain(storageDomainId: String): StorageDomainVo? {
 		log.info("findStorageDomain... ")
 		val res: StorageDomain? =
 			conn.findStorageDomain(storageDomainId)

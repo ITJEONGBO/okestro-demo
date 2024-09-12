@@ -37,24 +37,9 @@ interface ItClusterService {
 	@Throws(Error::class)
 	fun findOne(clusterId: String): ClusterVo?
 
-	/**
-	 * [ItClusterService.findAllDataCenters]
-	 * 클러스터 생성 위한 데이터센터 목록
-	 *
-	 * @return List<[DataCenterVo]> 데이터센터 목록
-	 */
-	@Deprecated("[ItDataCenterService.findAll] 와 같은 기능을 수행")
-	@Throws(Error::class)
-	fun findAllDataCenters(): List<DataCenterVo>
-	/**
-	 * [ItClusterService.findAllNetworksFromDataCenter]
-	 * 클러스터 생성 위한 네트워크 목록
-	 *
-	 * @param dataCenterId [String] 데이터센터 id
-	 * @return List<[NetworkVo]> 네트워크 목록
-	 */
-	@Throws(Error::class)
-	fun findAllNetworksFromDataCenter(dataCenterId: String): List<NetworkVo>
+	// 클러스터 생성창 - 데이터센터 목록 [ItDataCenterService.findAll]
+	// 클러스터 생성창 - 네트워크 목록 [ItDataCenterService.findAllNetworksFromDataCenter] 와 같은 기능을 수행
+
 	/**
 	 * [ItClusterService.add]
 	 * 클러스터 생성
@@ -140,60 +125,6 @@ interface ItClusterService {
 	 */
 	@Throws(Error::class)
 	fun findAllVmsFromCluster(clusterId: String): List<VmVo>
-
-	// 선호도 그룹 나중 구현
-	/**
-	 * [ItClusterService.findAllAffinityGroupsFromCluster]
-	 * 클러스터 선호도그룹
-	 *
-	 * @param clusterId [String] 클러스터 아이디
-	 * @return List<[AffinityGroupVo]>? 클러스터 선호도그룹 목록
-	 */
-	@Deprecated("선호도 나중 구현")
-	@Throws(Error::class)
-	fun findAllAffinityGroupsFromCluster(clusterId: String): List<AffinityGroupVo>?
-	/**
-	 * [ItClusterService.addAffinityGroupFromCluster]
-	 * 클러스터 선호도그룹 생성
-	 *
-	 * @param clusterId [String] 클러스터 아이디
-	 * @return [Boolean]
-	 */
-	@Deprecated("선호도 나중 구현")
-	@Throws(Error::class)
-	fun addAffinityGroupFromCluster(clusterId: String, agVo: AffinityGroupVo): Boolean
-	/**
-	 * [ItClusterService.getAffinityGroupFromCluster]
-	 * 클러스터 선호도그룹 편집창
-	 *
-	 * @param clusterId [String] 클러스터 아이디
-	 * @return [Boolean]
-	 */
-	@Deprecated("선호도 나중 구현")
-	@Throws(Error::class)
-	fun getAffinityGroupFromCluster(clusterId: String, agId: String): AffinityGroupVo?
-	/**
-	 * [ItClusterService.editAffinityGroupFromCluster]
-	 * 클러스터 선호도그룹 편집
-	 *
-	 * @param agVo 선호도그룹
-	 * @return [Boolean]
-	 */
-	@Deprecated("선호도 나중 구현")
-	@Throws(Error::class)
-	fun editAffinityGroupFromCluster(agVo: AffinityGroupVo): Boolean
-	/**
-	 * [ItClusterService.deleteAffinityGroupFromCluster]
-	 * 클러스터 선호도그룹 삭제
-	 *
-	 * @param clusterId [String] 클러스터 아이디
-	 * @return [Boolean]
-	 */
-	@Deprecated("선호도 나중 구현")
-	@Throws(Error::class)
-	fun deleteAffinityGroupFromCluster(clusterId: String, agId: String): Boolean
-	// 선호도 레이블 나중 구현
-
 	/**
 	 * [ItClusterService.findAllPermissionsFromCluster]
 	 * 클러스터 권한
@@ -241,25 +172,6 @@ class ClusterServiceImpl(
 			conn.findCluster(clusterId)
 				.getOrNull()
 		return res?.toClusterVo(conn)
-	}
-
-	@Deprecated("[ItDataCenterService.findAll] 와 같은 기능을 수행")
-	@Throws(Error::class)
-	override fun findAllDataCenters(): List<DataCenterVo> {
-		log.info("findAllDataCenters ... ")
-		val res: List<DataCenter> =
-			conn.findAllDataCenters()
-				.getOrDefault(listOf())
-		return res.toDataCenterVos(conn, findNetworks = true, findClusters = true, findStorageDomains = true)
-	}
-
-	@Throws(Error::class)
-	override fun findAllNetworksFromDataCenter(dataCenterId: String): List<NetworkVo> {
-		log.info("findAllNetworksFromDataCenter ... dataCenterId: {}", dataCenterId)
-		val res: List<Network> =
-			conn.findAllNetworksFromFromDataCenter(dataCenterId)
-				.getOrDefault(listOf())
-		return res.toNetworkVos(conn)
 	}
 
 	@Throws(Error::class)
@@ -355,44 +267,6 @@ class ClusterServiceImpl(
 				.getOrDefault(listOf())
 				.filter { it.cluster().id() == clusterId }
 		return res.toVmVos(conn)
-	}
-
-	@Deprecated("선호도 나중 구현")
-	@Throws(Error::class)
-	override fun findAllAffinityGroupsFromCluster(clusterId: String): List<AffinityGroupVo>? {
-		log.info("findAllAffinityGroupsFromCluster ... clusterId: {}", clusterId)
-		val res: List<AffinityGroup> =
-			conn.findAllAffinityGroupsFromCluster(clusterId)
-				.getOrDefault(listOf())
-		return res.toAffinityGroupVos(conn, clusterId)
-	}
-
-	@Deprecated("선호도 나중 구현")
-	@Throws(Error::class)
-	override fun addAffinityGroupFromCluster(clusterId: String, agVo: AffinityGroupVo): Boolean {
-		log.info("addAffinityGroupFromCluster ... ")
-		TODO("나중 구현")
-	}
-
-	@Deprecated("선호도 나중 구현")
-	@Throws(Error::class)
-	override fun getAffinityGroupFromCluster(clusterId: String, agId: String): AffinityGroupVo? {
-		log.info("getAffinityGroupFromCluster ... ")
-		TODO("나중 구현")
-	}
-
-	@Deprecated("선호도 나중 구현")
-	@Throws(Error::class)
-	override fun editAffinityGroupFromCluster(agVo: AffinityGroupVo): Boolean {
-		log.info("editAffinityGroupFromCluster ... ")
-		TODO("나중 구현")
-	}
-
-	@Deprecated("선호도 나중 구현")
-	@Throws(Error::class)
-	override fun deleteAffinityGroupFromCluster(clusterId: String, agId: String): Boolean {
-		log.info("deleteAffinityGroupFromCluster ... ")
-		TODO("나중 구현")
 	}
 
 	@Throws(Error::class)

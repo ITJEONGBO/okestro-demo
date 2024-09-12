@@ -35,15 +35,9 @@ interface ItHostService {
 	 */
 	@Throws(Error::class)
 	fun findOne(hostId: String): HostVo?
-	/**
-	 * [ItHostService.findAllClustersFromHost]
-	 * 호스트 생성 - 클러스터 목록 출력
-	 *
-	 * @return 클러스터 목록
-	 */
-	@Deprecated("[ItClusterService.findAll] 내용 같음")
-	@Throws(Error::class)
-	fun findAllClustersFromHost(): List<ClusterVo>
+
+	// 호스트 생성창 - 클러스터 목록 [ItClusterService.findAll]
+
 	/**
 	 * [ItHostService.add]
 	 * 호스트 생성 (전원관리 제외)
@@ -110,16 +104,6 @@ interface ItHostService {
 	@Throws(Error::class)
 	fun findAllPermissionsFromHost(hostId: String): List<PermissionVo>
 	/**
-	 * [ItHostService.findAllAffinityLabelsFromHost]
-	 * 호스트 선호도 레이블 목록
-	 *
-	 *  @param hostId [String] 호스트 아이디
-	 *  @return List<[AffinityLabelVo]>? 선호도 레이블 목록
-	 */
-	@Deprecated("선호도 나중 구현")
-	@Throws(Error::class)
-	fun findAllAffinityLabelsFromHost(hostId: String): List<AffinityLabelVo>
-	/**
 	 * [ItHostService.findAllEventsFromHost]
 	 * 호스트 이벤트 목록
 	 *
@@ -156,17 +140,6 @@ class HostServiceImpl(
 			conn.findHost(hostId)
 				.getOrNull()
 		return res?.toHostVo(conn)
-	}
-
-	@Deprecated("[ItClusterService.findAll] 내용 같음")
-	@Throws(Error::class)
-	override fun findAllClustersFromHost(): List<ClusterVo> {
-		log.info("findAllClustersFromHost ... ")
-		val res: List<Cluster> =
-			conn.findAllClusters()
-				.getOrDefault(listOf())
-				.filter { it.cpuPresent() }
-		return res.toClusterVos(conn)
 	}
 
 	@Throws(Error::class)
@@ -245,16 +218,6 @@ class HostServiceImpl(
 		return res.toPermissionVos(conn)
 	}
 
-	@Deprecated("선호도 나중 구현")
-	@Throws(Error::class)
-	override fun findAllAffinityLabelsFromHost(hostId: String): List<AffinityLabelVo> {
-		log.info("findAllAffinityLabelssFromHost ... hostId: {}", hostId)
-		conn.findHost(hostId)
-			.getOrNull()?: throw ErrorPattern.HOST_NOT_FOUND.toException()
-
-		TODO("Not yet implemented")
-	}
-
 	@Throws(Error::class)
 	override fun findAllEventsFromHost(hostId: String): List<EventVo> {
 		log.info("findAllEventsFromHost ... ")
@@ -274,6 +237,8 @@ class HostServiceImpl(
 				}
 		return res.toEventVos()
 	}
+
+
 
 	companion object {
 		private val log by LoggerDelegate()

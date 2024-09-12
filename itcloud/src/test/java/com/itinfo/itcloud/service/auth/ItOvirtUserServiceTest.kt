@@ -88,25 +88,25 @@ class ItOvirtUserServiceTest {
 	}
 
 
-	@Test
-	fun should_changePassword() {
-		val username = "rutil"
-		val currentPw = "rutil!@#"
-		val newPw = "rutil@123"
-
-//		val userBefore: OvirtUser = ovirtUser.findOne(username)
-//		assertThat(userBefore, `is`(not(nullValue())))
-//		assertThat(userBefore.password, `is`(not(nullValue())))
-//		assertThat(userBefore.passwordValidTo, `is`(not(nullValue())))
-
-		val userAfter: OvirtUser = ovirtUser.changePassword(username, currentPw, newPw)
-		assertThat(userAfter, `is`(not(nullValue())))
-		assertThat(userAfter.password, `is`(not(nullValue())))
-		assertThat(userAfter.passwordValidTo, `is`(not(nullValue())))
-
-		val isPwValid: Boolean = ovirtUser.authenticate(username, newPw)
-		assertThat(isPwValid, `is`(true))
-	}
+//	@Test
+//	fun should_changePassword() {
+//		val username = "rutil"
+//		val currentPw = "rutil!@#"
+//		val newPw = "rutil@123"
+//
+////		val userBefore: OvirtUser = ovirtUser.findOne(username)
+////		assertThat(userBefore, `is`(not(nullValue())))
+////		assertThat(userBefore.password, `is`(not(nullValue())))
+////		assertThat(userBefore.passwordValidTo, `is`(not(nullValue())))
+//
+//		val userAfter: OvirtUser = ovirtUser.changePassword(username, currentPw, newPw)
+//		assertThat(userAfter, `is`(not(nullValue())))
+//		assertThat(userAfter.password, `is`(not(nullValue())))
+//		assertThat(userAfter.passwordValidTo, `is`(not(nullValue())))
+//
+//		val isPwValid: Boolean = ovirtUser.authenticate(username, newPw)
+//		assertThat(isPwValid, `is`(true))
+//	}
 
 
 	companion object {

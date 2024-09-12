@@ -3,7 +3,15 @@ package com.itinfo.itcloud.service.computing
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.computing.*
+import com.itinfo.itcloud.model.network.NetworkVo
+import com.itinfo.itcloud.model.network.toNetworkVos
+import com.itinfo.itcloud.model.storage.StorageDomainVo
+import com.itinfo.itcloud.model.storage.toStorageDomainVos
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.network.NetworkServiceImpl
+import com.itinfo.itcloud.service.storage.ItStorageService
+import com.itinfo.itcloud.service.storage.StorageServiceImpl
+import com.itinfo.itcloud.service.storage.StorageServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.util.ovirt.error.toError
@@ -66,6 +74,7 @@ interface ItDataCenterService {
 	 */
 	@Throws(Error::class)
 	fun findAllEventsFromDataCenter(dataCenterId: String): List<EventVo>
+
 
 	/**
 	 * [ItDataCenterService.dashboardComputing]
@@ -153,6 +162,8 @@ class DataCenterServiceImpl(
 				)}
 		return res.toEventVos()
 	}
+
+
 
 	@Throws(Error::class)
 	override fun dashboardComputing(): List<DataCenterVo> {

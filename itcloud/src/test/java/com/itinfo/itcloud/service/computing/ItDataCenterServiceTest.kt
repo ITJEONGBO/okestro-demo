@@ -250,15 +250,15 @@ class ItDataCenterServiceTest {
 
 	/**
 	 * [should_findAllEventsBy]
-	 * [ItDataCenterService.findAllEventFromDataCenter]에 대한 단위테스트
+	 * [ItDataCenterService.findAllEventsFromDataCenter]에 대한 단위테스트
 	 *
-	 * @see ItDataCenterService.findAllEventFromDataCenter
+	 * @see ItDataCenterService.findAllEventsFromDataCenter
 	 **/
 	@Test
 	fun should_findAllEventsBy() {
 		log.debug("should_findAllEventsBy ... ")
 		val result: List<EventVo> =
-			service.findAllEventFromDataCenter(dataCenterId)
+			service.findAllEventsFromDataCenter(dataCenterId)
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(110))
 	}
