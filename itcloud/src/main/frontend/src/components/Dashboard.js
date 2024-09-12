@@ -701,7 +701,7 @@ const Dashboard = () => {
 //폰트사이즈 조정 
   const navigate = useNavigate();
   const [data, setData] = useState(() => DEFAULT_VALUES.GET_DASHBOARD);
-  const [memoryGb, setMemoryGb] = useState(() => DEFAULT_VALUES.GET_CPU_MEMERY);
+  const [memoryGb, setMemoryGb] = useState(() => DEFAULT_VALUES.GET_CPU_MEMORY);
   const [storageGb, setStorageGb] = useState(() => DEFAULT_VALUES.GET_STORAGE);
 
   useEffect(() => {

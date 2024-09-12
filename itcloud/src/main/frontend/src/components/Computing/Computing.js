@@ -111,7 +111,7 @@ const Computing = () => {
                 shouldCloseOnOverlayClick={false}
             >
                 <div className="datacenter_new_popup">
-                    <div className="network_popup_header">
+                    <div className="popup_header">
                         <h1 class="text-sm">새로운 데이터 센터</h1>
                         <button onClick={closeModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                     </div>

@@ -20,7 +20,7 @@ const DEFAULT_VALUES = {
       vmsDown: 0,
       storageDomains: 0,
   },
-  GET_CPU_MEMERY: {
+  GET_CPU_MEMORY: {
     totalCpuUsagePercent: 0,
     totalMemoryUsagePercent: 0,
     totalMemoryGB: 0,
@@ -35,7 +35,7 @@ const DEFAULT_VALUES = {
   },
   GET_VM_CPU: () =>         `/api/v1/dashboard/vmCpu`,
   GET_VM_MEMORY: () =>      `/api/v1/dashboard/vmMemory`, 
-  GET_STORAGE_MEMROY: () => `/api/v1/dashboard/storageMemory`,
+  GET_STORAGE_MEMORY: () => `/api/v1/dashboard/storageMemory`,
   // 컴퓨팅
    FIND_ALL_DATA_CENTERS: [
         {

@@ -89,8 +89,8 @@ const ApiManager = {
    */
   getCpuMemory: async () => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.GET_CPU_MEMERY(), 
-    defaultValues: DEFAULT_VALUES.GET_CPU_MEMERY
+    url: ENDPOINTS.GET_CPU_MEMORY(), 
+    defaultValues: DEFAULT_VALUES.GET_CPU_MEMORY
   }),
   /**
    * @name ApiManager.getStorage
@@ -139,7 +139,7 @@ const ApiManager = {
    */
   getStorageMemory: async () => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.GET_STORAGE_MEMROY()
+    url: ENDPOINTS.GET_STORAGE_MEMORY()
   }),
   //endregion: Dashboard
 
