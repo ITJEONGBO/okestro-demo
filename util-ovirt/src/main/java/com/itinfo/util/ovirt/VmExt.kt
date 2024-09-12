@@ -25,9 +25,7 @@ fun Connection.findAllVms(searchQuery: String = "", follow: String = ""): Result
 }.onFailure {
 	Term.VM.logFail("목록조회", it)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
-
 
 fun Connection.srvVm(vmId: String): VmService =
 	this.srvVms().vmService(vmId)
@@ -57,11 +55,12 @@ fun Connection.findVmName(vmId: String): Result<String> = kotlin.runCatching {
 }
 
 fun Connection.startVm(vmId: String): Result<Boolean> = runCatching {
-	log.debug("Connection.startVm ... ")
-	val vm: Vm = this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	val vm: Vm =
+		this.findVm(vmId)
+			.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 	this.srvVm(vmId).start().useCloudInit(vm.initializationPresent()).send()
 
-	this@startVm.expectVmStatus(vmId, VmStatus.UP)
+	this.expectVmStatus(vmId, VmStatus.UP)
 }.onSuccess {
 	Term.VM.logSuccess("시작", vmId)
 }.onFailure {
@@ -71,11 +70,11 @@ fun Connection.startVm(vmId: String): Result<Boolean> = runCatching {
 }
 
 fun Connection.stopVm(vmId: String): Result<Boolean> = runCatching {
-	log.debug("Connection.stopVm ... ")
-	this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
 	this.srvVm(vmId).stop().send()
-
-	this@stopVm.expectVmStatus(vmId, VmStatus.DOWN)
+	this.expectVmStatus(vmId, VmStatus.DOWN)
 }.onSuccess {
 	Term.VM.logSuccess("전원끄기", vmId)
 }.onFailure {
@@ -85,11 +84,11 @@ fun Connection.stopVm(vmId: String): Result<Boolean> = runCatching {
 }
 
 fun Connection.suspendVm(vmId: String): Result<Boolean> = runCatching {
-	log.debug("Connection.suspendVm ... ")
-	this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
 	this.srvVm(vmId).suspend().send()
-
-	this@suspendVm.expectVmStatus(vmId, VmStatus.SUSPENDED)
+	this.expectVmStatus(vmId, VmStatus.SUSPENDED)
 }.onSuccess {
 	Term.VM.logSuccess("일시정지", vmId)
 }.onFailure {
@@ -98,15 +97,15 @@ fun Connection.suspendVm(vmId: String): Result<Boolean> = runCatching {
 }
 
 fun Connection.shutdownVm(vmId: String): Result<Boolean> = runCatching {
-	log.debug("Connection.shutdownVm ... ")
-	/*val vm: Vm = */this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
 	this.srvVm(vmId).shutdown().send()
 	// TODO: 종료되지 않고 다시 올라올때가 잇음, expectVmStatus대신 다른 함수 써야 할지 확인 필요
 //	if (!this@shutdownVm.expectVmStatus(vmId, VmStatus.DOWN)) {
 //		return Result.failure(Error("종료 시간 초과"))
 //	}
-//	return Result.success(true)
-	this@shutdownVm.expectVmStatus(vmId, VmStatus.DOWN)
+	this.expectVmStatus(vmId, VmStatus.DOWN)
 }.onSuccess {
 	Term.VM.logSuccess("종료", vmId)
 }.onFailure {
@@ -116,15 +115,16 @@ fun Connection.shutdownVm(vmId: String): Result<Boolean> = runCatching {
 }
 
 fun Connection.rebootVm(vmId: String): Result<Boolean> = runCatching {
-	log.debug("Connection.rebootVm ... ")
-	this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
 	this.srvVm(vmId).reboot().send()
 //	if (!this@rebootVm.expectVmStatus(vmId, VmStatus.UP)) {
 //		log.error("가상머신 재부팅 시간 초과: {}", vm.name())
 //		return Result.failure(Error("가상머신 재부팅 시간 초과"))
 //	}
 //	return Result.success(true)
-	this@rebootVm.expectVmStatus(vmId, VmStatus.UP)
+	this.expectVmStatus(vmId, VmStatus.UP)
 }.onSuccess {
 	Term.VM.logSuccess("재부팅", vmId)
 }.onFailure {
@@ -134,14 +134,16 @@ fun Connection.rebootVm(vmId: String): Result<Boolean> = runCatching {
 }
 
 fun Connection.resetVm(vmId: String): Result<Boolean> = runCatching {
-	this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
 	this.srvVm(vmId).reset().send()
 //	if (!this@resetVm.expectVmStatus(vmId, VmStatus.UP)) {
 //		log.error("가상머신 재설정 시간 초과: {}", vm.name())
 //		return Result.failure(Error("가상머신 재설정 시간 초과"))
 //	}
 //	return Result.success(true)
-	this@resetVm.expectVmStatus(vmId, VmStatus.UP)
+	this.expectVmStatus(vmId, VmStatus.UP)
 }.onSuccess {
 	Term.VM.logSuccess("재설정", vmId)
 }.onFailure {
@@ -214,6 +216,9 @@ fun Connection.updateVm(vm: Vm): Result<Vm?> = runCatching {
 			.getOrDefault(listOf())
 			.nameDuplicateVm(vm.name(), vm.id())) {
 		return FailureType.DUPLICATE.toResult(Term.VM.desc)
+	}
+	if(this.findVm(vm.id()).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
 	}
 	val vmUpdated: Vm? =
 		this.srvVm(vm.id()).update().vm(vm).send().vm()
@@ -312,13 +317,18 @@ fun Connection.exportVm(vmId: String,
 }
 
 fun Connection.migrationVm(vmId: String, hostId: String): Result<Boolean> = runCatching {
-	this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
-	val host: Host = this.findHost(hostId).getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
+	val host: Host =
+		this.findHost(hostId)
+			.getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
 	this.srvVm(vmId).migrate().host(host).send()
 
-//	val startTime = System.currentTimeMillis()
-	val updatedVm: Vm = this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
-	return@runCatching updatedVm.host().id() == host.id()
+	val updatedVm: Vm =
+		this.findVm(vmId)
+			.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	updatedVm.host().id() == host.id()
 }.onSuccess {
 	Term.VM.logSuccess("마이그레이션", vmId)
 }.onFailure {
@@ -327,7 +337,9 @@ fun Connection.migrationVm(vmId: String, hostId: String): Result<Boolean> = runC
 }
 
 fun Connection.cancelMigrationVm(vmId: String): Result<Boolean> = runCatching {
-	this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
 	this.srvVm(vmId).cancelMigration().send()
 	true
 }.onSuccess {
@@ -343,6 +355,9 @@ private fun Connection.srvVmCdromsFromVm(vmId: String): VmCdromsService =
 	this.srvVm(vmId).cdromsService()
 
 fun Connection.findAllVmCdromsFromVm(vmId: String): Result<List<Cdrom>> = runCatching {
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
 	this.srvVmCdromsFromVm(vmId).list().send().cdroms()
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.CD_ROM, "목록조회", vmId)
@@ -356,6 +371,9 @@ private fun Connection.srvVmCdromFromVm(vmId: String, cdromId: String): VmCdromS
 	this.srvVmCdromsFromVm(vmId).cdromService(cdromId)
 
 fun Connection.findVmCdromFromVm(vmId: String, cdromId: String): Result<Cdrom?> = runCatching {
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
 	this.srvVmCdromFromVm(vmId, cdromId).get().send().cdrom()
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.CD_ROM, "상세조회", vmId)
@@ -366,6 +384,9 @@ fun Connection.findVmCdromFromVm(vmId: String, cdromId: String): Result<Cdrom?> 
 }
 
 fun Connection.addCdromFromVm(vmId: String, bootId: String): Result<Cdrom> = runCatching {
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
 	this.srvVmCdromsFromVm(vmId).add().cdrom(
 		CdromBuilder().file(FileBuilder().id(bootId))
 	).send().cdrom()
@@ -378,6 +399,9 @@ fun Connection.addCdromFromVm(vmId: String, bootId: String): Result<Cdrom> = run
 }
 
 fun Connection.updateCdromFromVm(vmId: String, cdromId: String, cdrom: Cdrom): Result<Cdrom?> = runCatching {
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
 	this.srvVmCdromFromVm(vmId, cdromId).update().cdrom(cdrom).current(true).send().cdrom()
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.CD_ROM, "편집", vmId)
@@ -391,6 +415,9 @@ private fun Connection.srvNicsFromVm(vmId: String): VmNicsService =
 	this.srvVm(vmId).nicsService()
 
 fun Connection.findAllNicsFromVm(vmId: String, follow: String = ""): Result<List<Nic>> = runCatching {
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
 	if (follow.isNotEmpty())
 		this.srvNicsFromVm(vmId).list().follow(follow).send().nics()
 	else
@@ -408,6 +435,9 @@ fun Connection.srvNicFromVm(vmId: String, nicId: String): VmNicService =
 	this.srvNicsFromVm(vmId).nicService(nicId)
 
 fun Connection.findNicFromVm(vmId: String, nicId: String): Result<Nic?> = runCatching {
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
 	this.srvNicFromVm(vmId, nicId).get().send().nic()
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.NIC, "목록조회", vmId)
@@ -473,6 +503,9 @@ fun Connection.updateNicFromVm(vmId: String, nic: Nic): Result<Nic?> = runCatchi
 }
 
 fun Connection.removeNicFromVm(vmId: String, nicId: String): Result<Boolean> = runCatching {
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
 	val nic: Nic = this@removeNicFromVm.findNicFromVm(vmId, nicId)
 		.getOrNull() ?: throw ErrorPattern.NIC_NOT_FOUND.toError()
 
@@ -492,6 +525,9 @@ fun Connection.removeNicFromVm(vmId: String, nicId: String): Result<Boolean> = r
 fun List<Nic>.nameDuplicateVmNic(name: String, id: String? = null): Boolean =
 	this.filter { it.id() != id }.any { it.name() == name }
 
+fun Connection.findAllDiskAttachmentsDisksFromVms(): List<Vm> =
+	this.srvVms().list().follow("diskattachments.disk").send().vms()
+
 
 private fun Connection.srvAllDiskAttachmentsFromVm(vmId: String): DiskAttachmentsService =
 	this.srvVm(vmId).diskAttachmentsService()
@@ -500,7 +536,7 @@ fun Connection.findAllDiskAttachmentsFromVm(vmId: String): Result<List<DiskAttac
 	if(this.findVm(vmId).isFailure){
 		throw ErrorPattern.VM_NOT_FOUND.toError()
 	}
-	this.srvAllDiskAttachmentsFromVm(vmId).list().send().attachments() ?: listOf()
+	this.srvAllDiskAttachmentsFromVm(vmId).list().follow("disk").send().attachments() ?: listOf()
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.DISK_ATTACHMENT, "목록조회", vmId)
 }.onFailure {

@@ -8,11 +8,9 @@ import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.service.computing.ItHostOperationService
 import com.itinfo.itcloud.service.computing.ItHostService
 import com.itinfo.util.ovirt.error.ErrorPattern
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiImplicitParam
-import io.swagger.annotations.ApiImplicitParams
-import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.*
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
@@ -29,8 +27,12 @@ class HostController {
 		value="호스트 목록",
 		notes="전체 호스트 목록을 조회한다"
 	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
 	@GetMapping
 	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
 	fun findAll(): ResponseEntity<List<HostVo>> {
 		log.info("--- 호스트 목록")
 		return ResponseEntity.ok(iHost.findAll())
@@ -45,8 +47,12 @@ class HostController {
 	@ApiImplicitParams(
 		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
 	@GetMapping("/{hostId}")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
 	fun findOne(
 		@PathVariable hostId: String? = null,
 	): ResponseEntity<HostVo?> {
@@ -63,17 +69,22 @@ class HostController {
 		notes="호스트를 생성한다"
 	)
 	@ApiImplicitParams(
-		ApiImplicitParam(name="hostVo", value="호스트", dataTypeClass=HostVo::class, paramType="body")
+		ApiImplicitParam(name="host", value="호스트", dataTypeClass=HostVo::class, paramType="body")
+	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
 	)
 	@PostMapping
 	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
 	fun add(
-		@RequestBody hostVo: HostVo?
+		@RequestBody host: HostVo?
 	): ResponseEntity<HostVo?> {
-		log.info("--- 호스트 생성")
-		if (hostVo == null)
+		if (host == null)
 			throw ErrorPattern.HOST_VO_INVALID.toException()
-		return ResponseEntity.ok(iHost.add(hostVo))
+		log.info("--- 호스트 생성")
+		return ResponseEntity.ok(iHost.add(host))
 	}
 
 
@@ -86,12 +97,18 @@ class HostController {
 		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
 		ApiImplicitParam(name="host", value="호스트", dataTypeClass=HostVo::class, paramType="body")
 	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
 	@PutMapping("/{hostId}")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
 	fun update(
 		@PathVariable hostId: String? = null,
 		@RequestBody host: HostVo? = null
 	): ResponseEntity<HostVo?> {
+		if (hostId.isNullOrEmpty())
+			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		if (host == null)
 			throw ErrorPattern.HOST_VO_INVALID.toException()
 		log.info("--- 호스트 편집")
@@ -106,8 +123,12 @@ class HostController {
 	@ApiImplicitParams(
 		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
 	@DeleteMapping("/{hostId}")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
 	fun remove(
 		@PathVariable hostId: String? = null,
 	): ResponseEntity<Boolean> {
@@ -126,8 +147,12 @@ class HostController {
 	@ApiImplicitParams(
 		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
 	@GetMapping("/{hostId}/vms")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
 	fun findAllVmsFromHost(
 		@PathVariable hostId: String? = null,
 	): ResponseEntity<List<VmVo>> {
@@ -145,10 +170,14 @@ class HostController {
 	@ApiImplicitParams(
 		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
 	@GetMapping("/{hostId}/nics")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
 	fun findAllHostNicsFromHost(
-	@PathVariable hostId: String? = null
+		@PathVariable hostId: String? = null
 	): ResponseEntity<List<HostNicVo>> {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
@@ -164,8 +193,12 @@ class HostController {
 	@ApiImplicitParams(
 		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
 	@GetMapping("/{hostId}/devices")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
 	fun findAllHostDevicesFromHost(
 		@PathVariable hostId: String? = null,
 	): ResponseEntity<List<HostNicVo>> {
@@ -184,8 +217,12 @@ class HostController {
 	@ApiImplicitParams(
 		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
 	@GetMapping("/{hostId}/permissions")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
 	fun findAllPermissionsFromHost(
 		@PathVariable hostId: String? = null
 	): ResponseEntity<List<PermissionVo>> {
@@ -202,8 +239,12 @@ class HostController {
 	@ApiImplicitParams(
 		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
 	@GetMapping("/{hostId}/events")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
 	fun findAllEventsFromHost(
 		@PathVariable hostId: String?
 	): ResponseEntity<List<EventVo>> {
@@ -223,8 +264,13 @@ class HostController {
 	@ApiImplicitParams(
 		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
 	@PostMapping("/{hostId}/deactivate")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
 	fun deactivate(
 		@PathVariable hostId: String?
 	): ResponseEntity<Boolean> {
@@ -242,8 +288,13 @@ class HostController {
 	@ApiImplicitParams(
 		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
 	@PostMapping("/{hostId}/activate")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
 	fun activeHost(
 		@PathVariable hostId: String?
 	): ResponseEntity<Boolean> {
@@ -261,8 +312,13 @@ class HostController {
 	@ApiImplicitParams(
 		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
 	@PostMapping("/{hostId}/refresh")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
 	fun refresh(
 		@PathVariable hostId: String?
 	): ResponseEntity<Boolean> {
@@ -280,8 +336,13 @@ class HostController {
 	@ApiImplicitParams(
 		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
 	@PostMapping("/{hostId}/restart")
 	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
 	fun reStartHost(
 		@PathVariable hostId: String?
 	): ResponseEntity<Boolean> {

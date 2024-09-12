@@ -72,7 +72,7 @@ class ItNetworkServiceTest {
 	fun should_findAll() {
 		log.debug("should_findAll ... ")
 		val result: List<NetworkVo> =
-			service.findAll(dataCenterId)
+			service.findAllFromDataCenter(dataCenterId)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(3))

@@ -39,20 +39,12 @@ interface ItVmService {
 	// 가상머신 생성창 - 템플릿 목록 [ItTemplateService.findAll]
 	// 가상머신 생성창 - 호스트 목록 [ItClusterService.findAllHostsFromCluster] (vo 다름)
 	// 가상머신 생성창 - 스토리지 도메인 목록 [ItStorageService.findAllDomainsFromDataCenter] (vo 다름)
-	// 인스턴스 이미지 -> 생성 시 필요한 스토리지 도메인 / 고가용성 - 임대 대상 스토리지 도메인 목록
-
+	// 					인스턴스 이미지 -> 생성 시 필요한 스토리지 도메인
+	// 					고가용성 - 임대 대상 스토리지 도메인 목록
 	// 가상머신 생성창 - 디스크 프로파일 목록 [ItStorageService.findAllDiskProfilesFromStorageDomain]
-	// 인스턴스 이미지 생성 -> 스토리지 도메인과 연동되어 생기는
-
-	/**
-	 * [ItVmService.findAllDiskImage]
-	 * 가상머신 생성 - 인스턴스 이미지 - 연결 -> 디스크 목록
-	 * 기준: 아무것도 연결되어 있지 않은 디스크
-	 *
-	 * @return List<[DiskImageVo]> 디스크  목록
-	 */
-	@Throws(Error::class)
-	fun findAllDiskImage(): List<DiskImageVo>
+	//				 	인스턴스 이미지 생성 -> 스토리지 도메인과 연동되어 생기는
+	// 가상머신 생성창 - CPU 프로파일 목록 [ItClusterService.findAllCpuProfilesFromCluster]
+	//					리소스할당
 
 	/**
 	 * [ItVmService.findAllVnicProfilesFromCluster]
@@ -63,16 +55,16 @@ interface ItVmService {
 	 */
 	@Throws(Error::class)
 	fun findAllVnicProfilesFromCluster(clusterId: String): List<VnicProfileVo>
-
 	/**
-	 * [ItVmService.findAllCpuProfilesFromCluster]
-	 * 가상머신 생성 - 리소스할당 - cpuProfile 목록 출력
+	 * [ItVmService.findAllDiskImage]
+	 * 가상머신 생성 - 인스턴스 이미지 - 연결 -> 디스크 목록
+	 * 기준: 아무것도 연결되어 있지 않은 디스크
+	 * TODO 값이 제대로 나오지 않음
 	 *
-	 * @param clusterId [String] 클러스터 id
-	 * @return List<[CpuProfileVo]> cpuProfile 목록
+	 * @return List<[DiskImageVo]> 디스크  목록
 	 */
-    @Throws(Error::class)
-	fun findAllCpuProfilesFromCluster(clusterId: String): List<CpuProfileVo>
+	@Throws(Error::class)
+	fun findAllDiskImage(): List<DiskImageVo>
 	/**
 	 * [ItVmService.findAllISO]
 	 * 가상머신 생성 - 부트 옵션 - 생성 시 필요한 CD/DVD 연결할 ISO 목록 (디스크이미지)
@@ -81,7 +73,6 @@ interface ItVmService {
 	 */
     @Throws(Error::class)
 	fun findAllISO(): List<IdentifiedVo>
-
 
 	/**
 	 * [ItVmService.add]
@@ -107,18 +98,15 @@ interface ItVmService {
 	 *
 	 * @param vmId [String] 가상머신 id
 	 * @param disk [Boolean] disk 삭제여부, disk가 true면 디스크 삭제하라는 말
+	 * @return [Boolean]
 	 * // detachOnly => true==가상머신만 삭제/ false==가상머신+디스크 삭제
-	 * @return CommonVo<[Boolean]> 200(success) 404(fail)
 	 */
 	@Throws(Error::class)
 	fun remove(vmId: String, disk: Boolean): Boolean
 
-	// 스냅샷 생성은 스냅샷에서 api로 연결
-
-	// 네트워크 인터페이스, 디스크, 스냅샷은 따른 서비스로
-
 	/**
 	 * [ItVmService.findAllApplicationsFromVm]
+	 * 가상머신 어플리케이션
 	 *
 	 * @param vmId [String] 가상머신 id
 	 */
@@ -126,6 +114,7 @@ interface ItVmService {
 	fun findAllApplicationsFromVm(vmId: String): List<IdentifiedVo>
 	/**
 	 * [ItVmService.findGuestFromVm]
+	 * 가상머신 게스트 정보
 	 *
 	 * @param vmId [String] 가상머신 id
 	 */
@@ -133,6 +122,7 @@ interface ItVmService {
 	fun findGuestFromVm(vmId: String): GuestInfoVo?
 	/**
 	 * [ItVmService.findAllPermissionsFromVm]
+	 * 가상머신 권한
 	 *
 	 * @param vmId [String] 가상머신 id
 	 */
@@ -140,13 +130,14 @@ interface ItVmService {
 	fun findAllPermissionsFromVm(vmId: String): List<PermissionVo>
 	/**
 	 * [ItVmService.findAllEventsFromVm]
-	 * 이벤트
+	 * 가상머신 이벤트
 	 *
 	 * @param vmId [String] 가상머신 id
 	 */
 	fun findAllEventsFromVm(vmId: String): List<EventVo>
 	/**
 	 * [ItVmService.findConsole]
+	 * 가상머신 콘솔
 	 *
 	 * @param vmId [String] 가상머신 id
 	 */
@@ -180,7 +171,7 @@ class VmServiceImpl(
 			conn.findAllVms()
 				.getOrDefault(listOf())
 				.flatMap {
-					conn.findAllDiskAttachmentsFromVm(it.id())
+					conn.findAllDiskAttachmentsFromVm(it.id()) // vmId
 						.getOrDefault(listOf())
 				}.map { it.id() }
 
@@ -188,8 +179,9 @@ class VmServiceImpl(
 			conn.findAllDisks()
 				.getOrDefault(listOf())
 				.filter {
-					(it.storageType() == DiskStorageType.IMAGE || it.storageType() == DiskStorageType.LUN) &&
-					(it.contentType() == DiskContentType.DATA) && !attDiskIds.contains(it.id())
+					it.contentType() == DiskContentType.DATA &&
+					it.format() == DiskFormat.COW &&
+					!attDiskIds.contains(it.id())
 				}
 		return res.toDiskImageVos(conn)
 	}
@@ -204,22 +196,8 @@ class VmServiceImpl(
 		val res: List<VnicProfile> =
 			conn.findAllVnicProfiles()
 				.getOrDefault(listOf())
-				.filter {
-					it.network()?.dataCenter()?.id() == cluster.dataCenter().id()
-				}
+				.filter { it.network()?.dataCenter()?.id() == cluster.dataCenter().id() }
 		return res.toVnicProfileVos(conn)
-	}
-
-	override fun findAllCpuProfilesFromCluster(clusterId: String): List<CpuProfileVo> {
-		log.info("findAllCpuProfilesFromCluster ... clusterId: {}", clusterId)
-		conn.findCluster(clusterId)
-			.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
-
-		val res: List<CpuProfile> =
-			conn.findAllCpuProfiles()
-				.getOrDefault(listOf())
-				.filter { it.cluster().id() == clusterId }
-		return res.toCpuProfileVos()
 	}
 
 	override fun findAllISO(): List<IdentifiedVo> {

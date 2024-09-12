@@ -56,16 +56,16 @@ class ItStorageServiceTest {
 	}
 
 	/**
-	 * [should_findAllStorageDomainsFromDataCenter]
-	 * [ItStorageService.findAllStorageDomainsFromDataCenter] 의 단위테스트
+	 * [should_findAllDomainsFromDataCenter]
+	 * [ItStorageService.findAllDomainsFromDataCenter] 의 단위테스트
 	 *
-	 * @see [ItStorageService.findAllStorageDomainsFromDataCenter]
+	 * @see [ItStorageService.findAllDomainsFromDataCenter]
 	 */
 	@Test
 	fun should_findAllStorageDomainsFromDataCenter() {
 		log.debug("should_findAllStorageDomainsFromDataCenter ... ")
 		val result: List<StorageDomainVo> =
-			service.findAllStorageDomainsFromDataCenter(dataCenterId)
+			service.findAllDomainsFromDataCenter(dataCenterId)
 
 		assertThat(result, `is`(not(nullValue())))
 //		assertThat(result.size, `is`(1))
@@ -75,15 +75,15 @@ class ItStorageServiceTest {
 
 	/**
 	 * [should_findStorageDomain]
-	 * [ItStorageService.findStorageDomain] 의 단위테스트
+	 * [ItStorageService.findDomain] 의 단위테스트
 	 *
-	 * @see [ItStorageService.findStorageDomain]
+	 * @see [ItStorageService.findDomain]
 	 */
 	@Test
 	fun should_findStorageDomain() {
 		log.debug("should_findStorageDomain ... ")
 		val result: StorageDomainVo? =
-			service.findStorageDomain(domainId)
+			service.findDomain(domainId)
 
 		assertThat(result, `is`(not(nullValue())))
 		if (result != null) {

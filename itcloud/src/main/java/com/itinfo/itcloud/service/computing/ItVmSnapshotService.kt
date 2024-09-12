@@ -40,7 +40,7 @@ interface ItVmSnapshotService {
 	@Throws(Error::class)
 	fun findAllSnapshotDisksFromVm(vmId: String): List<DiskImageVo>
 	/**
-	 * [ItVmSnapshotService.add]
+	 * [ItVmSnapshotService.addSnapshot]
 	 * 스냅샷 생성
 	 * 스냅샷 생성 중에는 다른기능(삭제, 커밋)같은 기능 구현 x
 	 * 
@@ -48,9 +48,9 @@ interface ItVmSnapshotService {
 	 * 
 	 * @return
 	 */
-	fun add(vmId: String, snapshotVo: SnapshotVo): SnapshotVo?
+	fun addSnapshot(vmId: String, snapshotVo: SnapshotVo): SnapshotVo?
 	/**
-	 * [ItVmSnapshotService.remove]
+	 * [ItVmSnapshotService.removeSnapshot]
 	 * 스냅샷 삭제
 	 * 
 	 * @param vmId [String] 가상머신 id
@@ -59,7 +59,7 @@ interface ItVmSnapshotService {
 	 * @return
 	 */
 	@Throws(Error::class)
-	fun remove(vmId: String, snapshotId: String): Boolean
+	fun removeSnapshot(vmId: String, snapshotId: String): Boolean
 
 	interface IOperation {
 		fun activeSnapshotDisk(system: SystemService, vmService: VmService, snapshot: Snapshot): List<SnapshotDiskVo>
@@ -91,8 +91,8 @@ class VmSnapshotServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun add(vmId: String, snapshotVo: SnapshotVo): SnapshotVo? {
-		log.info("add ... ")
+	override fun addSnapshot(vmId: String, snapshotVo: SnapshotVo): SnapshotVo? {
+		log.info("addSnapshot ... ")
 		val diskAttachments: List<DiskAttachment> =
 			snapshotVo.snapshotDiskVos.toDiskAttachments(conn, vmId)
 		val snapshot2Add: Snapshot = SnapshotBuilder()
@@ -107,20 +107,13 @@ class VmSnapshotServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun remove(vmId: String, snapshotId: String): Boolean {
-		log.info("remove ... id: {}, snapId: {}", vmId, snapshotId)
+	override fun removeSnapshot(vmId: String, snapshotId: String): Boolean {
+		log.info("removeSnapshot ... id: {}, snapId: {}", vmId, snapshotId)
 		val res: Result<Boolean> =
 			conn.removeSnapshotFromVm(vmId, snapshotId)
 		return res.isSuccess
 	}
 
-// region: 안쓸듯
-/*
-	override fun editDiskImage(id: String, image: VDiskImageVo): CommonVo<Boolean> { return null; }
-	override fun addDiskLun(id: String, lun: VDiskLunVo): CommonVo<Boolean> { return null; }
-	override fun editDiskLun(String id, lun: VDiskLunVo): CommonVo<Boolean> { return null; }
-*/
-// endregion
 
 	companion object {
 		private val log by LoggerDelegate()

@@ -37,15 +37,8 @@ interface ItTemplateService {
 	 */
 	@Throws(Error::class)
 	fun findOne(templateId: String): TemplateVo?
-	/**
-	 * [ItTemplateService.findAllClustersFromTemplate]
-	 * 템플릿 생성시 필요한 클러스터 목록
-	 * @return 클러스터 목록
-	 */
-	@Deprecated("[ItClusterService.findAll]와 비슷한 내용")
-	@Throws(Error::class)
-	fun findAllClustersFromTemplate(): List<ClusterVo>
-	// fun setVmDisk(vmId: String): List<DiskVo>
+
+	// 템플릿 생성창 - 클러스터 목록 [ItClusterService.findAll]
 
 	/**
 	 * [ItTemplateService.add]
@@ -182,17 +175,6 @@ class TemplateServiceImpl(
 		return template?.toTemplateVo(conn)
 	}
 
-	@Deprecated("[ItClusterService.findAll]와 비슷한 내용")
-	@Throws(Error::class)
-	override fun findAllClustersFromTemplate(): List<ClusterVo> {
-		log.info("findAllClustersFromTemplate ... ")
-		val templates: List<Cluster> =
-			conn.findAllClusters()
-				.getOrDefault(listOf())
-				.filter { it.dataCenterPresent() && it.cpuPresent() }
-		return templates.toClusterVos(conn)
-	}
-
 	@Throws(Error::class)
 	override fun add(vmId: String, templateVo: TemplateVo): TemplateVo? {
 		log.info("add ... ")
@@ -202,7 +184,6 @@ class TemplateServiceImpl(
 				.getOrNull()
 		return res?.toTemplateVo(conn)
 	}
-
 
 	@Throws(Error::class)
 	override fun update(templateVo: TemplateVo): TemplateVo? {

@@ -188,8 +188,6 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 	@Throws(Error::class)
 	override fun migrate(vmId: String, hostId: String): Boolean {
 		log.info("migrateVm ... ")
-		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toException()
-		conn.findHost(hostId).getOrNull()?: throw ErrorPattern.HOST_NOT_FOUND.toException()
 		val res: Result<Boolean> =
 			conn.migrationVm(vmId, hostId)
 		return res.isSuccess
@@ -199,7 +197,6 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 	@Throws(Error::class)
 	override fun cancelMigration(vmId: String): Boolean {
 		log.info("migrateCancelVm ... ")
-		conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toException()
 		val res: Result<Boolean> =
 			conn.cancelMigrationVm(vmId)
 		return res.isSuccess

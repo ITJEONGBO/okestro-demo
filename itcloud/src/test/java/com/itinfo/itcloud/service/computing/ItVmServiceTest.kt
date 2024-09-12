@@ -93,9 +93,9 @@ class ItVmServiceTest {
 			service.findAllDiskImage()
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(0))
 
 		result.forEach { println(it) }
+		assertThat(result.size, `is`(4))
 	}
 
 	/**
@@ -112,24 +112,6 @@ class ItVmServiceTest {
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(4))
-
-		result.forEach { println(it) }
-	}
-
-	/**
-	 * [should_findAllCpuProfilesBy]
-	 * [ItVmService.findAllCpuProfileFromCluster]에 대한 단위테스트
-	 *
-	 * @see [ItVmService.findAllCpuProfileFromCluster]
-	 */
-	@Test
-	fun should_findAllCpuProfilesBy() {
-		log.debug("should_findAllCpuProfilesBy ...")
-		val result: List<CpuProfileVo> =
-			service.findAllCpuProfilesFromCluster(clusterId)
-
-		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(1))
 
 		result.forEach { println(it) }
 	}
@@ -234,15 +216,15 @@ class ItVmServiceTest {
 
 	/**
 	 * [should_findAllGuestFromVm]
-	 * [ItVmService.findAllGuestFromVm]에 대한 단위테스트
+	 * [ItVmService.findGuestFromVm]에 대한 단위테스트
 	 *
-	 * @see ItVmService.findAllGuestFromVm
+	 * @see ItVmService.findGuestFromVm
 	 */
 	@Test
 	fun should_findAllGuestFromVm() {
 		log.debug("should_findAllGuestFromVm ... ")
 		val result: GuestInfoVo? =
-			service.findAllGuestFromVm(hostVm)
+			service.findGuestFromVm(hostVm)
 
 		assertThat(result, `is`(not(nullValue())))
 
@@ -251,9 +233,9 @@ class ItVmServiceTest {
 
 	/**
 	 * [should_findAllPermissionsFromVm]
-	 * [ItVmService.findAllPermissionFromVm]에 대한 단위테스트
+	 * [ItVmService.findAllPermissionsFromVm]에 대한 단위테스트
 	 *
-	 * @see ItVmService.findAllPermissionFromVm
+	 * @see ItVmService.findAllPermissionsFromVm
 	 */
 	@Test
 	fun should_findAllPermissionsFromVm() {

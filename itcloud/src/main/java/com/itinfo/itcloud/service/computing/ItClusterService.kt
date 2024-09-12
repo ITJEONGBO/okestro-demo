@@ -9,6 +9,7 @@ import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.repository.VmInterfaceSamplesHistoryRepository
 import com.itinfo.itcloud.repository.VmSamplesHistoryRepository
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.computing.VmServiceImpl.Companion
 import com.itinfo.itcloud.service.network.ItNetworkService
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
@@ -86,7 +87,7 @@ interface ItClusterService {
 	 * @return [NetworkVo]?
 	 */
 	@Throws(Error::class)
-	fun addNetwork(clusterId: String, networkVo: NetworkVo): NetworkVo?
+	fun addNetworkFromCluster(clusterId: String, networkVo: NetworkVo): NetworkVo?
 	/**
 	 * [ItClusterService.findAllManageNetworksFromCluster]
 	 * 클러스터 네트워크 관리 창
@@ -125,6 +126,15 @@ interface ItClusterService {
 	 */
 	@Throws(Error::class)
 	fun findAllVmsFromCluster(clusterId: String): List<VmVo>
+	/**
+	* [ItClusterService.findAllCpuProfilesFromCluster]
+	* 클러스터 cpuProfile 목록
+	*
+	* @param clusterId [String] 클러스터 id
+	* @return List<[CpuProfileVo]> cpuProfile 목록
+	*/
+	@Throws(Error::class)
+	fun findAllCpuProfilesFromCluster(clusterId: String): List<CpuProfileVo>
 	/**
 	 * [ItClusterService.findAllPermissionsFromCluster]
 	 * 클러스터 권한
@@ -210,7 +220,7 @@ class ClusterServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun addNetwork(clusterId: String, networkVo: NetworkVo): NetworkVo? {
+	override fun addNetworkFromCluster(clusterId: String, networkVo: NetworkVo): NetworkVo? {
 		log.info("addNetwork ... ") // // 클러스터 연결 없이 네트워크만 추가
 		// TODO 클러스터 연결/할당 기능 추가
 		return itNetworkService.add(networkVo)
@@ -267,6 +277,15 @@ class ClusterServiceImpl(
 				.getOrDefault(listOf())
 				.filter { it.cluster().id() == clusterId }
 		return res.toVmVos(conn)
+	}
+
+	@Throws(Error::class)
+	override fun findAllCpuProfilesFromCluster(clusterId: String): List<CpuProfileVo> {
+		log.info("findAllCpuProfilesFromCluster ... clusterId: {}", clusterId)
+		val res: List<CpuProfile> =
+			conn.findAllCpuProfilesFromCluster(clusterId)
+				.getOrDefault(listOf())
+		return res.toCpuProfileVos()
 	}
 
 	@Throws(Error::class)

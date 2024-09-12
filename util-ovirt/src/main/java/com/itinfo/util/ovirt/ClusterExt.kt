@@ -44,7 +44,7 @@ fun Connection.findAllClusters(searchQuery: String = "", follow: String = ""): R
 }
 
 
-private fun Connection.srvCluster(id: String): ClusterService =
+fun Connection.srvCluster(id: String): ClusterService =
 	this.srvClusters().clusterService(id)
 
 fun Connection.findCluster(clusterId: String): Result<Cluster?> = runCatching {
@@ -350,7 +350,7 @@ fun Connection.findAllAffinityGroupVmLabelsFromCluster(clusterId: String, agId: 
 }
 
 fun Connection.findAllPermissionsFromCluster(clusterId: String): Result<List<Permission>> = runCatching {
-	if (this@findAllPermissionsFromCluster.findCluster(clusterId).isFailure) {
+	if (this.findCluster(clusterId).isFailure) {
 		throw ErrorPattern.CLUSTER_NOT_FOUND.toError()
 	}
 	this.srvCluster(clusterId).permissionsService().list().send().permissions() ?: listOf()
@@ -360,4 +360,3 @@ fun Connection.findAllPermissionsFromCluster(clusterId: String): Result<List<Per
 	Term.CLUSTER.logFailWithin(Term.PERMISSION, "목록조회", it)
 	throw if (it is Error) it.toItCloudException() else it
 }
-

@@ -124,6 +124,7 @@ interface ItNetworkService {
 	 */
 	@Throws(Error::class)
 	fun findAllVnicProfilesFromNetwork(networkId: String): List<VnicProfileVo>
+	// vnicProfile 생성,편집,삭제
 	/**
 	 * [ItNetworkService.findAllClustersFromNetwork]
 	 * 네트워크 클러스터 목록

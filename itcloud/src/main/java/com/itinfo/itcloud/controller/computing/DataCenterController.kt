@@ -55,6 +55,9 @@ class DataCenterController: BaseController() {
 	@ApiImplicitParams(
 		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
 	@GetMapping("/{dataCenterId}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
@@ -76,7 +79,8 @@ class DataCenterController: BaseController() {
 		ApiImplicitParam(name="dataCenter", value="데이터센터", dataTypeClass=DataCenterVo::class, paramType="body"),
 	)
 	@ApiResponses(
-		ApiResponse(code = 201, message = "CREATED")
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
 	)
 	@PostMapping
 	@ResponseBody
@@ -99,19 +103,22 @@ class DataCenterController: BaseController() {
 		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
 		ApiImplicitParam(name="dataCenter", value="데이터센터", dataTypeClass=DataCenterVo::class, paramType="body"),
 	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
 	@PutMapping("/{dataCenterId}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	fun update(
 		@PathVariable dataCenterId: String? = null,
-		@RequestBody dataCenterVo: DataCenterVo? = null,
+		@RequestBody dataCenter: DataCenterVo? = null,
 	): ResponseEntity<DataCenterVo?> {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-		if (dataCenterVo == null)
+		if (dataCenter == null)
 			throw ErrorPattern.DATACENTER_VO_INVALID.toException()
-		log.info("/computing/datacenters/{} ... 데이터센터 편집\n{}", dataCenterId, dataCenterVo)
-		return ResponseEntity.ok(iDataCenter.update(dataCenterVo))
+		log.info("/computing/datacenters/{} ... 데이터센터 편집\n{}", dataCenterId, dataCenter)
+		return ResponseEntity.ok(iDataCenter.update(dataCenter))
 	}
 
 	@ApiOperation(
@@ -121,6 +128,9 @@ class DataCenterController: BaseController() {
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
 	)
 	@DeleteMapping("/{dataCenterId}")
 	@ResponseBody
@@ -141,6 +151,9 @@ class DataCenterController: BaseController() {
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
 	)
 	@GetMapping("/{dataCenterId}/events")
 	@ResponseBody
