@@ -26,7 +26,7 @@ class SizeVo (
 }
 
 fun Cluster.findHostCntFromCluster(conn: Connection): SizeVo {
-    val allHost: List<Host> = conn.findAllHostsFromCluster(this@findHostCntFromCluster.id())
+    val allHost: List<Host> = conn.findAllHostsFromCluster(this@findHostCntFromCluster.id()).getOrDefault(listOf())
     val allCnt: Int = allHost.size
     val upCnt: Int = allHost.count { it.status() == HostStatus.UP }
     return SizeVo.builder {
@@ -37,7 +37,7 @@ fun Cluster.findHostCntFromCluster(conn: Connection): SizeVo {
 }
 
 fun Cluster.findVmCntFromCluster(conn: Connection): SizeVo {
-    val allVms: List<Vm> = conn.findAllVmsFromCluster(this@findVmCntFromCluster.id())
+    val allVms: List<Vm> = conn.findAllVmsFromCluster(this@findVmCntFromCluster.id()).getOrDefault(listOf())
     val allCnt: Int = allVms.size
     val upCnt: Int = allVms.count { it.status() == VmStatus.UP }
     return SizeVo.builder {

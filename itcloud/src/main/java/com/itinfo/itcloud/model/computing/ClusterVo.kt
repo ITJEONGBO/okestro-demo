@@ -228,7 +228,9 @@ fun Cluster.toClusterVo(conn: Connection): ClusterVo {
 			.getOrNull()
 
 	val hostVos: List<IdentifiedVo> =
-		conn.findAllHostsFromCluster(this@toClusterVo.id()).fromHostsToIdentifiedVos()
+		conn.findAllHostsFromCluster(this@toClusterVo.id())
+			.getOrDefault(listOf())
+			.fromHostsToIdentifiedVos()
 
 	val networks: List<Network> =
 		conn.findAllNetworksFromCluster(this@toClusterVo.id())
