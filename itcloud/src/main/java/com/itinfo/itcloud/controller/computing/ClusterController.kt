@@ -7,7 +7,6 @@ import com.itinfo.itcloud.model.computing.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.setting.PermissionVo
-import com.itinfo.itcloud.service.computing.ItAffinityService
 import com.itinfo.itcloud.service.computing.ItClusterService
 import io.swagger.annotations.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -178,7 +177,7 @@ class ClusterController: BaseController() {
 		ApiResponse(code = 201, message = "CREATED"),
 		ApiResponse(code = 404, message = "NOT_FOUND")
 	)
-	@PostMapping
+	@PostMapping("/{clusterId}/networks")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	fun addNetworkFromCluster(
