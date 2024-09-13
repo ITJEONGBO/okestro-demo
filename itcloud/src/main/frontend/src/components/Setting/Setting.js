@@ -842,16 +842,58 @@ const Setting = ({ }) => {
                      </div>
      
                      {activeSettingForm === 'part' && (
-                         <form id="setting_part_form">
-                             <div>보기</div>
-                          
+                         <form>
+                             <div className='setting_name_email'>
+                                <div>
+                                    <span>사용자 이름</span>
+                                    <span>admin</span>
+                                </div>
+                                <div>
+                                    <span>이메일</span>
+                                    <span>admin@localhost</span>
+                                </div>
+                             </div>
+                             <div className='setting_homepage'>
+                                <div className='font-extrabold'>Home Page</div>
+                                <div className='host_radiobox'>
+                                    <input type="radio" id="ssh_key" name="name_option" />
+                                    <label htmlFor="ssh_key">Default (#dashboard-main)</label>
+                                </div>
+                                <div className='host_radiobox'>
+                                    <input type="radio" id="ssh_key" name="name_option" />
+                                    <label htmlFor="ssh_key">Custom home page</label>
+                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                </div>
+                                <input type='text'/>
+                             </div>
+
+                             <div className='serial_console'>
+                                <div className='font-extrabold'>Serial Console</div>
+                                <div>
+                                    사용자의 공개키
+                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                </div>
+                                <input className='serial_console_text' type='text'/>
+                             </div>
+                             <div className='serial_console'>
+                                <div className='font-extrabold'>Tables</div>
+                                <div>
+                                    <input type="checkbox" id="enable_forwarding" name="enable_forwarding" />
+                                    <label htmlFor="enable_forwarding">그리드 설정을 유지</label>
+                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                </div>
+                                
+                             </div>
      
                            
                          </form>
                      )}
      
-                     {activeSettingForm === 'system' && (
-                        <></>
+                    {activeSettingForm === 'system' && (
+                    <div className='text-sm p-1.5'>
+                        <input type="checkbox" id="enable_forwarding" name="enable_forwarding" />
+                        <label htmlFor="enable_forwarding">Show confirmation dialog on Suspend VM</label>
+                    </div>
                      )}
      
                 

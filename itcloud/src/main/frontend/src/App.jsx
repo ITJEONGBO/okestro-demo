@@ -23,6 +23,7 @@ import DomainParts from './components/Storage/StorageDomainPart';
 import STOMP from './Socket'
 import { Toaster, toast } from 'react-hot-toast';
 import './App.css';
+import TemplateDetail from './components/Computing/TemplateDetail';
 
 const App = () => {
   const [stompClient, setStompClient] = useState(null);
@@ -97,6 +98,7 @@ const App = () => {
               <Route path="/storage" element={<Storage />} />
               <Route path="/settings" element={<Setting />} />
               <Route path="/computing/:name" element={<Vm />} />
+              <Route path="/computing/template" element={<TemplateDetail />} />
               <Route path="/computing/host" element={<Host />} />
               <Route path="/computing/vmhost-chart" element={<VmHostChart />} />
               <Route path="/computing/host/:id" element={<HostDetail />}/>

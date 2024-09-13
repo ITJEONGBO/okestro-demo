@@ -18,6 +18,14 @@ Modal.setAppElement('#root'); // React 16 이상에서는 필수
 
 const Storage = () => {
   const navigate = useNavigate();
+  // 모달창 옵션에따라 화면변경
+  const [storageType, setStorageType] = useState('NFS'); // 기본값은 NFS로 설정
+
+  // 스토리지 유형 변경 핸들러
+  const handleStorageTypeChange = (e) => {
+    setStorageType(e.target.value); // 선택된 옵션의 값을 상태로 저장
+  };
+
   // 테이블 컴포넌트
   const data = [
     {
@@ -154,6 +162,10 @@ const Storage = () => {
   const toggleDomainHiddenBox2 = () => {
     setDomainHiddenBox2Visible(!isDomainHiddenBox2Visible);
   };
+  const [isDomainHiddenBox3Visible, setDomainHiddenBox3Visible] = useState(false);
+  const toggleDomainHiddenBox3 = () => {
+    setDomainHiddenBox3Visible(!isDomainHiddenBox3Visible);
+  };
 
   const sectionHeaderButtons = [
     { id: 'new_btn', label: '편집', icon: faPencil, onClick: () => {} },
@@ -250,8 +262,16 @@ const Storage = () => {
               </div>
               <div className="domain_new_select">
                 <label htmlFor="storage_option_type">스토리지 유형</label>
-                <select id="storage_option_type">
-                  <option value="linux">NFS</option>
+                <select 
+                id="storage_option_type"
+                value={storageType}
+                onChange={handleStorageTypeChange} // 선택된 옵션에 따라 상태 변경
+                >
+                  <option value="NFS">NFS</option>
+                  <option value="POSIX">POSIX 호환 FS</option>
+                  <option value="GlusterFS">GlusterFS</option>
+                  <option value="iSCSI">iSCSI</option>
+                  <option value="fc">파이버 채널</option>
                 </select>
               </div>
               <div className="domain_new_select" style={{ marginBottom: 0 }}>
@@ -277,7 +297,8 @@ const Storage = () => {
             </div>
           </div>
 
-          <div className="storage_domain_new_second">
+          {storageType === 'NFS' && (
+          <div className="storage_popup_NFS">
             <div>
               <label htmlFor="data_hub">내보내기 경로</label>
               <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />
@@ -342,6 +363,132 @@ const Storage = () => {
               </div>
             </div>
           </div>
+          )}
+
+          {storageType === 'POSIX' && (
+          <div className="storage_popup_NFS">
+            <div className="network_form_group">
+              <label htmlFor="description">경로</label>
+              <input type="text" id="description" placeholder="예: /path/to/my/data" />
+            </div>
+            <div className="network_form_group">
+              <label htmlFor="description">VFS 유형</label>
+              <input type="text" id="description" />
+            </div>
+            <div className="network_form_group">
+              <label htmlFor="description">마운트 옵션</label>
+              <input type="text" id="description" />
+            </div>
+
+
+            <div>
+              <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn3" onClick={toggleDomainHiddenBox3}fixedWidth/>
+              <span>고급 매개 변수</span>
+              <div id="domain_hidden_box3" style={{ display: isDomainHiddenBox3Visible ? 'block' : 'none' }}>
+                <div className="domain_new_select">
+                  <label>디스크 공간 부족 경고 표시(%)</label>
+                  <input type="text" />
+                </div>
+                <div className="domain_new_select">
+                  <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+                  <input type="text" />
+                </div>
+                <div className="domain_new_select">
+                  <label>디스크 공간 부족 경고 표시(%)</label>
+                  <input type="text" />
+                </div>
+                <div className="domain_new_select">
+                  <label htmlFor="format_type_selector" style={{ color: 'gray' }}>포맷</label>
+                  <select id="format_type_selector" disabled>
+                    <option value="linux">V5</option>
+                  </select>
+                </div>
+                <div className="hidden_checkbox">
+                  <input type="checkbox" id="reset_after_deletion"/>
+                  <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
+                </div>
+                <div className="hidden_checkbox">
+                  <input type="checkbox" id="backup_vault"/>
+                  <label htmlFor="backup_vault">백업</label>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          )}
+
+          {storageType === 'GlusterFS' && (
+          <div className="storage_popup_NFS">
+            <div>
+              <div>데이터 무결성을 위해 서버가 쿼럼 (클라이언트 및 서버 쿼럼 모두)으로 설정되어 있는지 확인합니다</div>
+              <div>
+                <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
+                <input type="checkbox" id="reset_after_deletion"/>
+              </div>
+
+            </div>
+            <div className="network_form_group">
+              <label htmlFor="description">경로</label>
+              <input type="text" id="description" placeholder="예: myserver.mydomain.com:/myvolumename" />
+            </div>
+            <div className="network_form_group">
+              <label htmlFor="description">VFS 유형</label>
+              <input type="text" id="description" />
+            </div>
+            <div className="network_form_group">
+              <label htmlFor="description">마운트 옵션</label>
+              <input type="text" id="description" />
+            </div>
+
+
+            <div>
+              <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn3" onClick={toggleDomainHiddenBox3}fixedWidth/>
+              <span>고급 매개 변수</span>
+              <div id="domain_hidden_box3" style={{ display: isDomainHiddenBox3Visible ? 'block' : 'none' }}>
+                <div className="domain_new_select">
+                  <label>디스크 공간 부족 경고 표시(%)</label>
+                  <input type="text" />
+                </div>
+                <div className="domain_new_select">
+                  <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+                  <input type="text" />
+                </div>
+                <div className="domain_new_select">
+                  <label>디스크 공간 부족 경고 표시(%)</label>
+                  <input type="text" />
+                </div>
+                <div className="domain_new_select">
+                  <label htmlFor="format_type_selector" style={{ color: 'gray' }}>포맷</label>
+                  <select id="format_type_selector" disabled>
+                    <option value="linux">V5</option>
+                  </select>
+                </div>
+                <div className="hidden_checkbox">
+                  <input type="checkbox" id="reset_after_deletion"/>
+                  <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
+                </div>
+                <div className="hidden_checkbox">
+                  <input type="checkbox" id="backup_vault"/>
+                  <label htmlFor="backup_vault">백업</label>
+                </div>
+
+              </div>
+            </div>
+        </div>
+        )}
+
+          {storageType === 'iSCSI' && (
+          <div className="storage_popup_iSCSI">
+           iSCSI
+          </div>
+          )}
+
+          {storageType === 'fc' && (
+          <div className="storage_popup_fc">
+           fc
+          </div>
+          )}
+
 
           <div className="edit_footer">
             <button style={{ display: 'none' }}></button>
@@ -384,6 +531,10 @@ const Storage = () => {
                 <label htmlFor="storage_option_type">스토리지 유형</label>
                 <select id="storage_option_type">
                   <option value="linux">NFS</option>
+                  <option value="linux">POSIX 호환 FS</option>
+                  <option value="linux">GlusterFS</option>
+                  <option value="linux">iSCSI</option>
+                  <option value="linux">파이버 채널</option>
                 </select>
               </div>
               <div className="domain_new_select" style={{ marginBottom: 0 }}>
@@ -409,7 +560,7 @@ const Storage = () => {
             </div>
           </div>
 
-          <div className="storage_domain_new_second">
+          <div className="storage_popup_NFS">
             <div>
               <label htmlFor="data_hub">내보내기 경로</label>
               <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />
@@ -477,6 +628,9 @@ const Storage = () => {
                 </div>
             </div>
           </div>
+          <div className>
+            ㅇㅇ
+          </div>
 
           <div className="edit_footer">
             <button style={{ display: 'none' }}></button>
@@ -519,6 +673,10 @@ const Storage = () => {
                 <label htmlFor="storage_option_type">스토리지 유형</label>
                 <select id="storage_option_type">
                   <option value="linux">NFS</option>
+                  <option value="linux">POSIX 호환 FS</option>
+                  <option value="linux">GlusterFS</option>
+                  <option value="linux">iSCSI</option>
+                  <option value="linux">파이버 채널</option>
                 </select>
               </div>
               <div className="domain_new_select" style={{ marginBottom: 0 }}>
@@ -544,7 +702,7 @@ const Storage = () => {
             </div>
           </div>
 
-          <div className="storage_domain_new_second">
+          <div className="storage_popup_NFS">
             <div>
               <label htmlFor="data_hub">내보내기 경로</label>
               <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />

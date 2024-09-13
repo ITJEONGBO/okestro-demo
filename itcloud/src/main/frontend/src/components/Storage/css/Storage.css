@@ -170,7 +170,7 @@
 }
 .domain_new_select select, 
 .domain_new_select input,
-.storage_domain_new_second input
+.storage_popup_NFS input
 {
     width: 56%;
     height: 3.3vh;
@@ -181,7 +181,7 @@
     outline: none;
     border: 1px solid  rgb(206, 206, 206);
 }
-.storage_domain_new_second{
+.storage_popup_NFS{
     padding: 0.4rem;
     font-size: 0.32rem;
     overflow-y: auto;
@@ -196,15 +196,15 @@
     input[type="checkbox"]{
         cursor: pointer;
     }
-    .storage_domain_new_second i{
+    .storage_popup_NFS i{
         margin-right: 0.08rem;
     }
     
-    .storage_domain_new_second>div:first-child{
+    .storage_popup_NFS>div:first-child{
         display: flex;
         justify-content: space-between;
     }
-    .storage_domain_new_second>div{
+    .storage_popup_NFS>div{
         margin-bottom: 0.2rem;
     }
     #domain_hidden_box_btn,#domain_hidden_box_btn2{
@@ -391,4 +391,10 @@
 .volume_snap_table th,.volume_snap_table td{
     padding: 0.05rem;
     text-align: left;
+}
+.storage_popup_NFS> .network_form_group{
+    padding:0;
+}
+.storage_popup_NFS> .network_form_group input{
+    width:56%;
 }

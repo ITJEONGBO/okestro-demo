@@ -22,9 +22,9 @@ const Computing = () => {
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
 
-    const handleNameClick = (name) => {
-        navigate(`/computing/datacenters/${name}`);
-    };
+    // const handleNameClick = (name) => {
+    //     navigate(`/computing/datacenters/${name}`);
+    // };
 
     const sectionHeaderButtons = [
       { id: 'new_btn', label: '새로 만들기', onClick: openModal }, // 여기서 openModal 연결
@@ -64,15 +64,15 @@ const Computing = () => {
         }
     });
 
-    const handleRowClick = (row, column) => {
-        console.log(`handleRowClick ... id: ${row.id}`)
-        if (column.accessor === 'name') {
-          navigate(
-            `/computing/datacenters/${row.id}`,
-            { state: { name: row.name } }
-          );
-        }
-    };
+    // const handleRowClick = (row, column) => {
+    //     console.log(`handleRowClick ... id: ${row.id}`)
+    //     if (column.accessor === 'name') {
+    //       navigate(
+    //         `/computing/datacenters/${row.id}`,
+    //         { state: { name: row.name } }
+    //       );
+    //     }
+    // };
 
     return (
         <div id="section">
@@ -89,7 +89,7 @@ const Computing = () => {
                     <TableOuter
                       columns={TableColumnsInfo.DATACENTERS}
                       data={datacenters}
-                      onRowClick={handleRowClick}
+                   
                       shouldHighlight1stCol={true}
                     />
                 </div>
