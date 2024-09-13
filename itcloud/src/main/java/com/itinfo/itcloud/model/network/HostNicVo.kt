@@ -89,7 +89,6 @@ fun HostNic.toHostNicIdName(): HostNicVo = HostNicVo.builder {
 	id { this@toHostNicIdName.id() }
 	name { this@toHostNicIdName.name() }
 }
-
 fun List<HostNic>.toHostNicIdNames(): List<HostNicVo> =
 	this@toHostNicIdNames.map { it.toHostNicIdName() }
 
@@ -99,7 +98,7 @@ fun HostNic.toHostNicVo(conn: Connection): HostNicVo {
 	val hostVo: HostVo? =
 		conn.findHost(this@toHostNicVo.host().id()).getOrNull()?.toHostIdName()
 	val networkVo: NetworkVo? =
-		conn.findNetwork(this@toHostNicVo.network().id()).getOrNull()?.toNetworkIdName()
+		conn.findNetwork(this@toHostNicVo.network().id()).getOrNull()?.toNetworkVo(conn)
 	val statistics: List<Statistic>? =
 		hostVo?.let { conn.findAllStatisticsFromHostNic(it.id, this@toHostNicVo.id()).getOrDefault(listOf()) }
 

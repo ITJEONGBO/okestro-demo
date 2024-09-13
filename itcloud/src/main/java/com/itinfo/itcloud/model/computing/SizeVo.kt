@@ -1,11 +1,9 @@
 package com.itinfo.itcloud.model.computing
 
 import com.itinfo.itcloud.gson
-import com.itinfo.util.ovirt.findAllHosts
-import com.itinfo.util.ovirt.findAllVms
+import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
-import org.ovirt.engine.sdk4.types.Cluster
-import org.ovirt.engine.sdk4.types.Host
+import org.ovirt.engine.sdk4.types.*
 import java.io.Serializable
 
 class SizeVo (
@@ -28,13 +26,9 @@ class SizeVo (
 }
 
 fun Cluster.findHostCntFromCluster(conn: Connection): SizeVo {
-    val allCnt: Int = conn.findAllHosts()
-        .getOrDefault(listOf())
-        .count { it.cluster().id().equals(this@findHostCntFromCluster.id()) }
-    val upCnt: Int = conn.findAllHosts("status=up")
-        .getOrDefault(listOf())
-        .count { it.cluster().id().equals(this@findHostCntFromCluster.id()) }
-
+    val allHost: List<Host> = conn.findAllHostsFromCluster(this@findHostCntFromCluster.id())
+    val allCnt: Int = allHost.size
+    val upCnt: Int = allHost.count { it.status() == HostStatus.UP }
     return SizeVo.builder {
         allCnt { allCnt }
         upCnt { upCnt }
@@ -43,13 +37,9 @@ fun Cluster.findHostCntFromCluster(conn: Connection): SizeVo {
 }
 
 fun Cluster.findVmCntFromCluster(conn: Connection): SizeVo {
-    val allCnt: Int = conn.findAllVms()
-        .getOrDefault(listOf())
-        .count { it.cluster().id().equals(this@findVmCntFromCluster.id()) }
-    val upCnt: Int = conn.findAllVms("status=up")
-        .getOrDefault(listOf())
-        .count { it.cluster().id().equals(this@findVmCntFromCluster.id()) }
-
+    val allVms: List<Vm> = conn.findAllVmsFromCluster(this@findVmCntFromCluster.id())
+    val allCnt: Int = allVms.size
+    val upCnt: Int = allVms.count { it.status() == VmStatus.UP }
     return SizeVo.builder {
         allCnt { allCnt }
         upCnt { upCnt }
@@ -58,13 +48,9 @@ fun Cluster.findVmCntFromCluster(conn: Connection): SizeVo {
 }
 
 fun Host.findVmCntFromHost(conn: Connection): SizeVo {
-    val allCnt: Int = conn.findAllVms()
-        .getOrDefault(listOf())
-        .count { it.host().id().equals(this@findVmCntFromHost.id()) }
-    val upCnt: Int = conn.findAllVms("status=up")
-        .getOrDefault(listOf())
-        .count { it.host().id().equals(this@findVmCntFromHost.id()) }
-
+    val allVms: List<Vm> = conn.findAllVmsFromHost(this@findVmCntFromHost.id())
+    val allCnt: Int = allVms.size
+    val upCnt: Int = allVms.count { it.status() == VmStatus.UP }
     return SizeVo.builder {
         allCnt { allCnt }
         upCnt { upCnt }

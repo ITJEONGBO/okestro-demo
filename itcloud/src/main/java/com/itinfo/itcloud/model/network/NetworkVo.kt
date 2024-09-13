@@ -9,6 +9,7 @@ import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.DataCenterBuilder
 import org.ovirt.engine.sdk4.builders.NetworkBuilder
+import org.ovirt.engine.sdk4.builders.NetworkLabelBuilder
 import org.ovirt.engine.sdk4.builders.OpenStackNetworkProviderBuilder
 import org.ovirt.engine.sdk4.builders.VlanBuilder
 import org.ovirt.engine.sdk4.types.*
@@ -28,11 +29,11 @@ private val log = LoggerFactory.getLogger(NetworkVo::class.java)
  * @property mtu [Int] true면 기본값
  * @property portIsolation [Boolean]
  * @property stp [Boolean] Spanning Tree Protocol 없어도 될듯
- * @property usageVo [UsageVo]  management 기본이 체크된 상태 (true, 가상머신 네트워크 (기본) (usage))
+ * @property usage [UsageVo]  management 기본이 체크된 상태 (true, 가상머신 네트워크 (기본) (usage))
  * @property vdsmName [String]
- * @property dataCenterVo [IdentifiedVo]
+ * @property dataCenter [IdentifiedVo]
 // * @property networkClusterVo []
- * @property openStackNetworkVo [OpenStackNetworkVo] 네트워크 공급자(한개만 있음) (생성시 여부(boolean)으로 처리,추가)
+ * @property openStackNetwork [OpenStackNetworkVo] 네트워크 공급자(한개만 있음) (생성시 여부(boolean)으로 처리,추가)
  *
  * 네트워크 생성시 필요
  * @property vlan [Int] vlan 태그 (태그 자체는 활성화를 해야 입력란이 생김)
@@ -41,17 +42,13 @@ private val log = LoggerFactory.getLogger(NetworkVo::class.java)
  * 클러스터에서 출력될 내용
  * @property status [NetworkStatus] 네트워크 상태
  * @property display [Boolean] 클러스터-네트워크 관리
- * @property allotment [Boolean] 할당 -> cluster-network-cluster<> 생성되고 아니면 cluster-network 에서 제외
+ * @property networkLabel [String] 네트워크 레이블
+ * @property cluster [IdentifiedVo]
+ * @property attached [Boolean] 할당 -> cluster-network-cluster<> 생성되고 아니면 cluster-network 에서 제외
  * @property required [Boolean] 클러스터-네트워크 관리 -> 필수(t,f)
- * @property clusterVo [IdentifiedVo]
  *
- * <link>
- * @property vnicProfileVos List<[IdentifiedVo]> vnicProfile
- * @property clusterVos List<[ClusterVo]> clusters
- *
-// * @property hostVos List<[HostVo]>
-// * @property vmVos List<[VmVo]>
-// * @property templateVos List<[TemplateVo]>
+ * @property vnicProfiles List<[IdentifiedVo]> vnicProfile
+ * @property clusters List<[ClusterVo]> clusters  // networks clusters
  *
  */
 class NetworkVo (
@@ -62,18 +59,18 @@ class NetworkVo (
 	val mtu: Int = 0,
 	val portIsolation: Boolean = false,
 	val stp: Boolean = false,
-	val usageVo: UsageVo = UsageVo(),
+	val usage: UsageVo = UsageVo(),
 	val vdsmName: String = "",
-	val dataCenterVo: IdentifiedVo = IdentifiedVo(),
-	val openStackNetworkVo: OpenStackNetworkVo = OpenStackNetworkVo(),
+	val dataCenter: IdentifiedVo = IdentifiedVo(),
+	val openStackNetwork: OpenStackNetworkVo = OpenStackNetworkVo(),
 	val vlan: Int = 0,
 	val status: NetworkStatus = NetworkStatus.NON_OPERATIONAL,
 	val display: Boolean = false,
-	val allotment: Boolean = false,
-	val required: Boolean = false,
-	val clusterVo: IdentifiedVo = IdentifiedVo(),
-	val vnicProfileVos: List<IdentifiedVo> = listOf(),
-	val clusterVos: List<ClusterVo> = listOf()
+	val networkLabel: String = "",
+	val cluster: IdentifiedVo = IdentifiedVo(),
+	val vnicProfiles: List<IdentifiedVo> = listOf(),
+	val clusters: List<ClusterVo> = listOf(),
+
 ):Serializable {
 	override fun toString(): String = gson.toJson(this)
 
@@ -85,35 +82,25 @@ class NetworkVo (
 		private var bMtu: Int = 0; fun mtu( block: () -> Int?) { bMtu = block() ?: 0 }
 		private var bPortIsolation: Boolean = false; fun portIsolation( block: () -> Boolean?) { bPortIsolation = block() ?: false }
 		private var bStp: Boolean = false; fun stp( block: () -> Boolean?) { bStp = block() ?: false }
-		private var bUsageVo: UsageVo = UsageVo(); fun usageVo(block: () -> UsageVo?) { bUsageVo = block() ?: UsageVo() }
+		private var bUsage: UsageVo = UsageVo(); fun usage(block: () -> UsageVo?) { bUsage = block() ?: UsageVo() }
 		private var bVdsmName: String = ""; fun vdsmName(block: () -> String?) { bVdsmName = block() ?: "" }
-		private var bDataCenterVo: IdentifiedVo = IdentifiedVo(); fun dataCenterVo(block: () -> IdentifiedVo?) { bDataCenterVo = block() ?: IdentifiedVo() }
-		private var bOpenStackNetworkVo: OpenStackNetworkVo = OpenStackNetworkVo(); fun openStackNetworkVo(block: () -> OpenStackNetworkVo?) { bOpenStackNetworkVo = block() ?: OpenStackNetworkVo() }
+		private var bDataCenter: IdentifiedVo = IdentifiedVo(); fun dataCenter(block: () -> IdentifiedVo?) { bDataCenter = block() ?: IdentifiedVo() }
+		private var bOpenStackNetwork: OpenStackNetworkVo = OpenStackNetworkVo(); fun openStackNetwork(block: () -> OpenStackNetworkVo?) { bOpenStackNetwork = block() ?: OpenStackNetworkVo() }
 		private var bVlan: Int = 0; fun vlan(block: () -> Int?) { bVlan = block() ?: 0 }
 		private var bStatus: NetworkStatus = NetworkStatus.NON_OPERATIONAL; fun status(block: () -> NetworkStatus?) { bStatus = block() ?: NetworkStatus.NON_OPERATIONAL }
 		private var bDisplay: Boolean = false; fun display(block: () -> Boolean?) { bDisplay = block() ?: false }
-		private var bAllotment: Boolean = false; fun allotment(block: () -> Boolean?) { bAllotment = block() ?: false }
-		private var bRequired: Boolean = false; fun required(block: () -> Boolean?) { bRequired = block() ?: false }
-		private var bClusterVo: IdentifiedVo = IdentifiedVo(); fun clusterVo(block: () -> IdentifiedVo?) { bClusterVo = block() ?: IdentifiedVo() }
-		private var bVnicProfileVos: List<IdentifiedVo> = listOf(); fun vnicProfileVos(block: () -> List<IdentifiedVo>?) { bVnicProfileVos = block() ?: listOf() }
-		private var bClusterVos: List<ClusterVo> = listOf(); fun clusterVos(block: () -> List<ClusterVo>?) { bClusterVos = block() ?: listOf() }
+		private var bNetworkLabel: String = ""; fun networkLabel(block: () -> String?) { bNetworkLabel = block() ?: "" }
+		private var bCluster: IdentifiedVo = IdentifiedVo(); fun cluster(block: () -> IdentifiedVo?) { bCluster = block() ?: IdentifiedVo() }
+		private var bVnicProfiles: List<IdentifiedVo> = listOf(); fun vnicProfiles(block: () -> List<IdentifiedVo>?) { bVnicProfiles = block() ?: listOf() }
+		private var bClusters: List<ClusterVo> = listOf(); fun clusters(block: () -> List<ClusterVo>?) { bClusters = block() ?: listOf() }
 
-		fun build(): NetworkVo = NetworkVo(bId, bName, bDescription, bComment, bMtu, bPortIsolation, bStp, bUsageVo, bVdsmName, bDataCenterVo, bOpenStackNetworkVo, bVlan, bStatus, bDisplay, bAllotment, bRequired, bClusterVo, bVnicProfileVos, bClusterVos)
+		fun build(): NetworkVo = NetworkVo(bId, bName, bDescription, bComment, bMtu, bPortIsolation, bStp, bUsage, bVdsmName, bDataCenter, bOpenStackNetwork, bVlan, bStatus, bDisplay, bNetworkLabel, bCluster, bVnicProfiles, bClusters,)
 	}
 
 	companion object{
 		inline fun builder(block: NetworkVo.Builder.() -> Unit): NetworkVo =  NetworkVo.Builder().apply(block).build()
 	}
 }
-
-fun Network.toNetworkIdName(): NetworkVo = NetworkVo.builder {
-	id { this@toNetworkIdName.id() }
-	name { this@toNetworkIdName.name() }
-}
-
-fun List<Network>.toNetworkIdNames(): List<NetworkVo> =
-	this@toNetworkIdNames.map { it.toNetworkIdName() }
-
 
 fun Network.toNetworkVo(conn: Connection): NetworkVo {
 	val vnicProfileVos: List<IdentifiedVo> =
@@ -134,10 +121,10 @@ fun Network.toNetworkVo(conn: Connection): NetworkVo {
 		mtu { this@toNetworkVo.mtu().toInt() }
 		portIsolation { this@toNetworkVo.portIsolation() }
 		stp { this@toNetworkVo.stp() }
-		usageVo { usages?.toUsagesVo() }
+		usage { usages?.toUsagesVo() }
 		vdsmName { this@toNetworkVo.vdsmName() }
-		dataCenterVo { conn.findDataCenter(this@toNetworkVo.dataCenter().id()).getOrNull()?.fromDataCenterToIdentifiedVo() }
-		openStackNetworkVo {
+		dataCenter { conn.findDataCenter(this@toNetworkVo.dataCenter().id()).getOrNull()?.fromDataCenterToIdentifiedVo() }
+		openStackNetwork {
 			if(this@toNetworkVo.externalProviderPresent())
 				conn.findOpenStackNetworkProvider(this@toNetworkVo.externalProvider().id())
 					.getOrNull()
@@ -146,7 +133,7 @@ fun Network.toNetworkVo(conn: Connection): NetworkVo {
 				null
 		}
 		vlan { if (this@toNetworkVo.vlanPresent()) this@toNetworkVo.vlan().idAsInteger() else 0}
-		vnicProfileVos { vnicProfileVos }
+		vnicProfiles { vnicProfileVos }
 	}
 }
 
@@ -155,8 +142,7 @@ fun List<Network>.toNetworkVos(conn: Connection): List<NetworkVo> =
 
 
 fun Network.toClusterNetworkVo(conn: Connection): NetworkVo {
-	val usages: List<NetworkUsage> =
-		this@toClusterNetworkVo.usages()
+	val usages: List<NetworkUsage> = this@toClusterNetworkVo.usages()
 
 	return NetworkVo.builder {
 		id { this@toClusterNetworkVo.id() }
@@ -164,8 +150,7 @@ fun Network.toClusterNetworkVo(conn: Connection): NetworkVo {
 		description { this@toClusterNetworkVo.description() }
 		portIsolation { this@toClusterNetworkVo.portIsolation() }
 		status { this@toClusterNetworkVo.status() }
-		required { this@toClusterNetworkVo.required() }
-		usageVo { usages.toUsagesVo() } // TODO
+		usage { usages.toUsagesVo() } // TODO
 	}
 }
 fun List<Network>.toClusterNetworkVos(conn: Connection): List<NetworkVo> =
@@ -179,69 +164,50 @@ fun NetworkVo.toNetworkBuilder(conn: Connection): NetworkBuilder {
 	// external provider 선택시 vlan, portisolation=false 선택되면 안됨
 	val networkBuilder = NetworkBuilder()
 	networkBuilder
-		.dataCenter(DataCenterBuilder().id(this@toNetworkBuilder.dataCenterVo.id).build())
+		.dataCenter(DataCenterBuilder().id(this@toNetworkBuilder.dataCenter.id).build())
 		.name(this@toNetworkBuilder.name)
 		.description(this@toNetworkBuilder.description)
 		.comment(this@toNetworkBuilder.comment)
 		.portIsolation(this@toNetworkBuilder.portIsolation)
 		.mtu(this@toNetworkBuilder.mtu)  // 제한수가 있음
 
-	if (this@toNetworkBuilder.usageVo.vm) {
+	if (this@toNetworkBuilder.usage.vm) {
 		networkBuilder.usages(NetworkUsage.VM)
 	}
 	if(this@toNetworkBuilder.vlan != 0){
 		networkBuilder
 			.vlan(VlanBuilder().id(this@toNetworkBuilder.vlan))
 	}
-	if(this@toNetworkBuilder.openStackNetworkVo.id.isNotEmpty()) {
+	if(this@toNetworkBuilder.openStackNetwork.id.isNotEmpty()) {
 		networkBuilder
-			.externalProvider(OpenStackNetworkProviderBuilder().id(this@toNetworkBuilder.openStackNetworkVo.id))
+			.externalProvider(OpenStackNetworkProviderBuilder().id(this@toNetworkBuilder.openStackNetwork.id))
 	}
-	// VnicProfile은 기본생성 정도만
-	// cluster 연결(attach), 필수(require)
+	if (this@toNetworkBuilder.openStackNetwork.id.isEmpty() && this@toNetworkBuilder.networkLabel.isNotEmpty()) {
+		conn.addNetworkLabelFromNetwork(
+			this@toNetworkBuilder.id,
+			NetworkLabelBuilder().id(this@toNetworkBuilder.networkLabel).build()
+		)
+//		networkBuilder.networkLabels(NetworkLabelBuilder().id(this@toNetworkBuilder.networkLabel))
+	}
+	// VnicProfile은 기본생성만 /qos는 제외항목, 네트워크필터도 vdsm으로 고정(?)
 
-	// TODO vnic 생성 창/ qos는 제외항목, 네트워크필터도 vdsm으로 고정
-	/*
-            // 기본생성되는 vnicprofile 삭제
-            val vnicProfile: VnicProfile =
-                conn.findAllVnicProfilesFromNetwork(network.id())
-                    .getOrDefault(listOf())
-                    .firstOrNull() ?: throw ErrorPattern.NIC_NOT_FOUND.toException()
+	// 클러스터 연결.할당
+	// 클러스터 모두연결이 선택되어야지만 모두 필요가 선택됨
+	// front 에서 연결이 선택되면 clusterNetwork 에 add 하고 필요가 선택되면 required 에 true
 
-            val resRemoveDefaultVnicProfile: Result<Boolean> =
-                conn.removeVnicProfileFromNetwork(network.id(), vnicProfile.id())
-            log.info("기본 vnicprofile 제거 결과: {}", resRemoveDefaultVnicProfile.isSuccess)
-            // 추가해야 할 vnicprofile
-            for (vo in networkVo.vnicProfileVos) {
-                val vnicProfile2Build: VnicProfile = VnicProfileBuilder().name(vo.name).build()
-                val resAddVnicProfile: Result<VnicProfile> =
-                    conn.addVnicProfileFromNetwork(network.id(), vnicProfile2Build)
-                log.info("신규 vnicprofile(s) 추가 결과: {}", resAddVnicProfile.isSuccess)
-            }
-
-            // 클러스터 모두연결이 선택되어야지만 모두 필요가 선택됨
-            // TODO: isConnected가 되어야 할 조건 찾아야 함
-            val clusterVos: List<ClusterVo> = networkVo.clusterVos.filter { it.isConnected *//* 연결된 경우만 필터링 *//* }
-
-		for (clusterVo in clusterVos) {
-			val n: Network = NetworkBuilder()
-				.id(network.id())
-				.required(clusterVo.required) // TODO: 어디서 찾는 값?
-				.build()
-			val resNetwork: Result<Network?> =
-				conn.addNetworkFromCluster(clusterVo.id, n)
-			log.info("신규 network(s) 추가 결과: {}", resNetwork.isSuccess)
-		}
-
-		// 외부 공급자 처리시 레이블 생성 안됨
-		if (networkVo.label.isNotEmpty()) {
-			val resAddNetworkLabel: Result<NetworkLabel> =
-				conn.addNetworkLabelFromNetwork(network.id(), NetworkLabelBuilder().id(networkVo.label).build())
-			log.info("신규 networkLabel 추가 결과: {}", resAddNetworkLabel.isSuccess)
-		}
-
-		log.info("network {} 추가 완료", network.name())
-		return network.toNetworkVo(conn)*/
+//	val clusters: List<Cluster> =
+//		conn.findAllClustersFromDataCenter(this@toNetworkBuilder.dataCenter.id)
+//			.getOrDefault(listOf())
+//
+//	for (clusterVo in clusters) {
+//		val n: Network = NetworkBuilder()
+//			.id(network.id())
+//			.required(clusterVo.required) // TODO: 어디서 찾는 값?
+//			.build()
+//		val resNetwork: Result<Network?> =
+//			conn.addNetworkFromCluster(clusterVo.id, n)
+//		log.info("신규 network(s) 추가 결과: {}", resNetwork.isSuccess)
+//	}
 	return networkBuilder
 }
 

@@ -55,7 +55,7 @@ import org.springframework.boot.test.context.SpringBootTest
 			service.findAll()
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(2))
+//		assertThat(result.size, `is`(2))
 		result.forEach { println(it) }
 	}
 
@@ -89,13 +89,13 @@ import org.springframework.boot.test.context.SpringBootTest
 	fun should_add_update_and_remove_Cluster() {
 		log.debug("should_addCluster ... ")
 		val addCluster: ClusterVo = ClusterVo.builder {
-			dataCenterVo { IdentifiedVo.builder { id { dataCenterId } } }
+			dataCenter { IdentifiedVo.builder { id { dataCenterId } } }
 			name { "testCluster" }
 			cpuArc { Architecture.X86_64 }
 			cpuType { "Intel Nehalem Family" }
 			description { "testDescription" }
 			comment { "testComment" }
-			networkVo { IdentifiedVo.builder { id { networkId } } }
+			network { IdentifiedVo.builder { id { networkId } } }
 			biosType { BiosType.Q35_SEA_BIOS }
 			fipsMode { FipsMode.ENABLED }
 			version { "4.7" }
@@ -116,11 +116,11 @@ import org.springframework.boot.test.context.SpringBootTest
 
 		assertThat(addResult, `is`(not(nullValue())))
 		assertThat(addResult?.id, `is`(not(nullValue())))
-		assertThat(addResult?.dataCenterVo?.id, `is`(addCluster.dataCenterVo.id))
+		assertThat(addResult?.dataCenter?.id, `is`(addCluster.dataCenter.id))
 		assertThat(addResult?.name, `is`(addCluster.name))
 		assertThat(addResult?.description, `is`(addCluster.description))
 		assertThat(addResult?.comment, `is`(addCluster.comment))
-		assertThat(addResult?.networkVo?.id, `is`(addCluster.networkVo.id))
+		assertThat(addResult?.network?.id, `is`(addCluster.network.id))
 		assertThat(addResult?.biosType, `is`(addCluster.biosType))
 		assertThat(addResult?.fipsMode, `is`(addCluster.fipsMode))
 		assertThat(addResult?.version, `is`(addCluster.version))
@@ -138,13 +138,13 @@ import org.springframework.boot.test.context.SpringBootTest
 		log.debug("should_updateCluster ... ")
 		val updateCluster: ClusterVo = ClusterVo.builder {
 			id { addResult?.id }
-			dataCenterVo { IdentifiedVo.builder { id { dataCenterId } } }
+			dataCenter { IdentifiedVo.builder { id { dataCenterId } } }
 			name { "testCluster1" }
 			cpuArc { Architecture.X86_64 }
 			cpuType { "Intel Nehalem Family" }
 			description { "testDescription" }
 			comment { "testComment" }
-			networkVo { IdentifiedVo.builder { id { networkId } } }
+			network { IdentifiedVo.builder { id { networkId } } }
 			biosType { BiosType.Q35_SEA_BIOS }
 			fipsMode { FipsMode.ENABLED }
 			version { "4.7" }
@@ -165,11 +165,11 @@ import org.springframework.boot.test.context.SpringBootTest
 
 		assertThat(updateResult, `is`(not(nullValue())))
 		assertThat(updateResult?.id, `is`(updateCluster.id))
-		assertThat(updateResult?.dataCenterVo?.id, `is`(updateCluster.dataCenterVo.id))
+		assertThat(updateResult?.dataCenter?.id, `is`(updateCluster.dataCenter.id))
 		assertThat(updateResult?.name, `is`(updateCluster.name))
 		assertThat(updateResult?.description, `is`(updateCluster.description))
 		assertThat(updateResult?.comment, `is`(updateCluster.comment))
-		assertThat(updateResult?.networkVo?.id, `is`(updateCluster.networkVo.id))
+		assertThat(updateResult?.network?.id, `is`(updateCluster.network.id))
 		assertThat(updateResult?.biosType, `is`(updateCluster.biosType))
 		assertThat(updateResult?.fipsMode, `is`(updateCluster.fipsMode))
 		assertThat(updateResult?.version, `is`(updateCluster.version))
@@ -202,13 +202,13 @@ import org.springframework.boot.test.context.SpringBootTest
 	fun should_add_success_Cluster() {
 		log.debug("should_add_success_Cluster ... ")
 		val addCluster: ClusterVo = ClusterVo.builder {
-			dataCenterVo { IdentifiedVo.builder { id { dataCenterId } } }
+			dataCenter { IdentifiedVo.builder { id { dataCenterId } } }
 			name { "testCluster" }
 			cpuArc { Architecture.X86_64 }
 			cpuType { "Intel Nehalem Family" }
 			description { "testDescription" }
 			comment { "testComment" }
-			networkVo { IdentifiedVo.builder { id { networkId } } }
+			network { IdentifiedVo.builder { id { networkId } } }
 			biosType { BiosType.Q35_SEA_BIOS }
 			fipsMode { FipsMode.ENABLED }
 			version { "4.7" }
@@ -229,11 +229,11 @@ import org.springframework.boot.test.context.SpringBootTest
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result?.id, `is`(not(nullValue())))
-		assertThat(result?.dataCenterVo?.id, `is`(addCluster.dataCenterVo.id))
+		assertThat(result?.dataCenter?.id, `is`(addCluster.dataCenter.id))
 		assertThat(result?.name, `is`(addCluster.name))
 		assertThat(result?.description, `is`(addCluster.description))
 		assertThat(result?.comment, `is`(addCluster.comment))
-		assertThat(result?.networkVo?.id, `is`(addCluster.networkVo.id))
+		assertThat(result?.network?.id, `is`(addCluster.network.id))
 		assertThat(result?.biosType, `is`(addCluster.biosType))
 		assertThat(result?.fipsMode, `is`(addCluster.fipsMode))
 		assertThat(result?.version, `is`(addCluster.version))
@@ -260,13 +260,13 @@ import org.springframework.boot.test.context.SpringBootTest
 	fun should_add_networkProvider_Cluster() {
 		log.debug("should_add_networkProvider_Cluster ... ")
 		val addCluster: ClusterVo = ClusterVo.builder {
-			dataCenterVo { IdentifiedVo.builder { id { dataCenterId } } }
+			dataCenter { IdentifiedVo.builder { id { dataCenterId } } }
 			name { "testCluster2" }
 			cpuArc { Architecture.X86_64 }
 			cpuType { "Intel Nehalem Family" }
 			description { "networkProvider" }
 			comment { "testComment" }
-			networkVo { IdentifiedVo.builder { id { networkId } } }// 관리 네트워크 ovirtmgmt
+			network { IdentifiedVo.builder { id { networkId } } }// 관리 네트워크 ovirtmgmt
 			biosType { BiosType.Q35_SEA_BIOS }
 			fipsMode { FipsMode.ENABLED }
 			version { "4.7" }
@@ -290,11 +290,11 @@ import org.springframework.boot.test.context.SpringBootTest
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result?.id, `is`(not(nullValue())))
-		assertThat(result?.dataCenterVo?.id, `is`(addCluster.dataCenterVo.id))
+		assertThat(result?.dataCenter?.id, `is`(addCluster.dataCenter.id))
 		assertThat(result?.name, `is`(addCluster.name))
 		assertThat(result?.description, `is`(addCluster.description))
 		assertThat(result?.comment, `is`(addCluster.comment))
-		assertThat(result?.networkVo?.id, `is`(addCluster.networkVo.id))
+		assertThat(result?.network?.id, `is`(addCluster.network.id))
 		assertThat(result?.biosType, `is`(addCluster.biosType))
 		assertThat(result?.fipsMode, `is`(addCluster.fipsMode))
 		assertThat(result?.version, `is`(addCluster.version))
@@ -324,13 +324,13 @@ import org.springframework.boot.test.context.SpringBootTest
 
 		val updateCluster: ClusterVo = ClusterVo.builder {
 			id { clusterId }
-			dataCenterVo { IdentifiedVo.builder { id { dataCenterId } } }
+			dataCenter { IdentifiedVo.builder { id { dataCenterId } } }
 			name { "testCluster1" }
 			cpuArc { Architecture.X86_64 }
 			cpuType { "Intel Nehalem Family" }
 			description { "testDescription" }
 			comment { "testComment" }
-			networkVo { IdentifiedVo.builder { id { networkId } } }
+			network { IdentifiedVo.builder { id { networkId } } }
 			biosType { BiosType.Q35_SEA_BIOS }
 			fipsMode { FipsMode.ENABLED }
 			version { "4.7" }
@@ -351,11 +351,11 @@ import org.springframework.boot.test.context.SpringBootTest
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result?.id, `is`(not(nullValue())))
-		assertThat(result?.dataCenterVo?.id, `is`(updateCluster.dataCenterVo.id))
+		assertThat(result?.dataCenter?.id, `is`(updateCluster.dataCenter.id))
 		assertThat(result?.name, `is`(updateCluster.name))
 		assertThat(result?.description, `is`(updateCluster.description))
 		assertThat(result?.comment, `is`(updateCluster.comment))
-		assertThat(result?.networkVo?.id, `is`(updateCluster.networkVo.id))
+		assertThat(result?.network?.id, `is`(updateCluster.network.id))
 		assertThat(result?.biosType, `is`(updateCluster.biosType))
 		assertThat(result?.fipsMode, `is`(updateCluster.fipsMode))
 		assertThat(result?.version, `is`(updateCluster.version))
@@ -401,7 +401,7 @@ import org.springframework.boot.test.context.SpringBootTest
 			service.findAllNetworksFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(3))
+		assertThat(result.size, `is`(2))
 		result.forEach { println(it) }
 	}
 

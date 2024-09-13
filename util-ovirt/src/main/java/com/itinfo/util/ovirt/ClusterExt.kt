@@ -56,17 +56,38 @@ fun Connection.findCluster(clusterId: String): Result<Cluster?> = runCatching {
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.findClusterName(clusterId: String): Result<String> = runCatching {
-	this.findCluster(clusterId).getOrNull()?.name() ?: ""
+fun List<Cluster>.nameDuplicateCluster(clusterName: String, clusterId: String? = null): Boolean =
+	this.filter { it.id() != clusterId}.any { it.name() == clusterName }
+
+
+fun Connection.findAllHostsFromCluster(clusterId: String): Result<List<Host>> = runCatching {
+	if (this.findCluster(clusterId).isFailure) {
+		throw ErrorPattern.CLUSTER_NOT_FOUND.toError()
+	}
+	this.findAllHosts()
+		.getOrDefault(listOf())
+		.filter { it.cluster().id() == clusterId }
 }.onSuccess {
-	Term.CLUSTER.logSuccess("이름조회")
+	Term.CLUSTER.logSuccessWithin(Term.HOST, "목록조회")
 }.onFailure {
-	Term.CLUSTER.logFail("이름조회", it)
+	Term.CLUSTER.logFailWithin(Term.HOST, "목록조회", it)
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun List<Cluster>.nameDuplicateCluster(clusterName: String, clusterId: String? = null): Boolean =
-	this.filter { it.id() != clusterId}.any { it.name() == clusterName }
+fun Connection.findAllVmsFromCluster(clusterId: String): Result<List<Vm>> = runCatching {
+	if(this.findCluster(clusterId).isFailure){
+		throw ErrorPattern.CLUSTER_NOT_FOUND.toError()
+	}
+	this.findAllVms()
+		.getOrDefault(listOf())
+		.filter { it.cluster().id() == clusterId }
+}.onSuccess {
+	Term.CLUSTER.logSuccessWithin(Term.VM, "목록조회")
+}.onFailure {
+	Term.CLUSTER.logFailWithin(Term.VM, "목록조회", it)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
 
 
 fun Connection.addCluster(cluster: Cluster): Result<Cluster?> = runCatching {

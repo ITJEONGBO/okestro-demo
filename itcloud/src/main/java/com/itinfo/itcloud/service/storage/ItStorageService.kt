@@ -125,17 +125,12 @@ interface ItStorageService {
 	 */
 	@Throws(Error::class)
 	fun findDisk(diskId: String): DiskImageVo?
+
+	// 디스크 생성창 - 이미지 데이터센터 목록 [ItDataCenterService.findAll]
+
+
 	/**
-	 * [ItStorageService.findAllDataCenters]
-	 * 디스크 생성 - 이미지 DataCenter List
-	 *
-	 * @return List<[DataCenterVo]>
-	 */
-	@Deprecated("[ItDataCenterService.findAll]와 같은 코드")
-	@Throws(Error::class)
-	fun findAllDataCenters(): List<DataCenterVo>
-	/**
-	 * [ItStorageService.findAllStorageDomainsfromDataCenter]
+	 * [ItStorageService.findAllDomainsfromDataCenter]
 	 * 디스크 이미지 생성창
 	 * 디스크 생성 - 이미지 도메인 목록
 	 * 디스크 복사
@@ -144,9 +139,8 @@ interface ItStorageService {
 	 * @param dataCenterId [String]
 	 * @return [List]<[StorageDomainVo]> 스토리지 도메인 목록
 	 */
-	@Deprecated("[ItStorageService.findAllStorageDomainsfromDataCenter] 겹침")
 	@Throws(Error::class)
-	fun findAllStorageDomainsfromDataCenter(dataCenterId: String): List<StorageDomainVo>
+	fun findAllDomainsfromDataCenter(dataCenterId: String): List<StorageDomainVo>
 	/**
 	 * [ItStorageService.findAllDiskProfilesFromStorageDomain]
 	 * 디스크 생성 - 이미지프로파일 목록
@@ -427,20 +421,8 @@ class StorageServiceImpl(
 		return res?.toDiskImageVo(conn)
 	}
 
-	@Deprecated("[ItDataCenterService.findAll]와 같은 코드")
 	@Throws(Error::class)
-	override fun findAllDataCenters(): List<DataCenterVo> {
-		log.info("findAllDataCenters ... ")
-		val res: List<DataCenter> =
-			conn.findAllDataCenters()
-				.getOrDefault(listOf())
-				.filter { it.status() == DataCenterStatus.UP }
-		return res.toDataCenterIdNames()
-	}
-
-	@Deprecated("[ItStorageService.findAllStorageDomainsFromDataCenter] 겹침")
-	@Throws(Error::class)
-	override fun findAllStorageDomainsfromDataCenter(dataCenterId: String): List<StorageDomainVo> {
+	override fun findAllDomainsfromDataCenter(dataCenterId: String): List<StorageDomainVo> {
 		log.info("findAllStorageDomainsFromDataCenter ... dataCenterId: $dataCenterId")
 		val res: List<StorageDomain> =
 			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)

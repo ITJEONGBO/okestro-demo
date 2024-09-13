@@ -45,15 +45,10 @@ interface ItNetworkService {
 	@Throws(ItemNotFoundException::class, Error::class)
 	fun findOne(networkId: String): NetworkVo?
 
-	/**
-	 * [ItNetworkService.findAllDatCentersFromNetwork]
-	 * 네트워크 생성- 데이터센터 목록
-	 *
-	 * @return List<[DataCenterVo]> 데이터센터 목록
-	 */
-	@Deprecated("[ItDataCenterService.findAll] 과 내용 비슷함")
-	@Throws(Error::class)
-	fun findAllDatCentersFromNetwork(): List<DataCenterVo>
+
+	// 네트워크 생성창 - 데이터센터 목록 [ItDataCenterService.findAll]
+
+
 	/**
 	 * [ItNetworkService.findAllClustersFromDataCenter]
 	 * 네트워크 생성- 클러스터 목록 (연결, 필수)
@@ -148,7 +143,7 @@ interface ItNetworkService {
 	 * 네트워크 가상머신 목록
 	 *
 	 * @param networkId [String] 네트워크 아이디
-	 * @return List<[NetworkVmVo]>
+	 * @return List<[VmVo]>
 	 */
 	@Throws(Error::class)
 	fun findAllVmsFromNetwork(networkId: String): List<VmVo>
@@ -203,16 +198,6 @@ class NetworkServiceImpl(
 		return res?.toNetworkVo(conn)
 	}
 
-	@Deprecated("[ItDataCenterService.findAll] 과 내용 비슷함")
-	@Throws(Error::class)
-	override fun findAllDatCentersFromNetwork(): List<DataCenterVo> {
-		log.info("findAllDatCentersFromNetwork ... ")
-		val dataCenters: List<DataCenter> =
-			conn.findAllDataCenters()
-				.getOrDefault(listOf())
-		return dataCenters.toDataCenterIdNames()
-	}
-
 	@Deprecated("[ItStorageService.findAllClustersFromDataCenter] 와 내용 같음")
 	@Throws(Error::class)
 	override fun findAllClustersFromDataCenter(dataCenterId: String): List<ClusterVo> {
@@ -220,7 +205,7 @@ class NetworkServiceImpl(
 	}
 
 
-	// TODO 중복이름 : dc 다르면 중복명 가능
+	// TODO dc 다르면 중복명 가능
 	@Throws(Error::class)
 	override fun add(networkVo: NetworkVo): NetworkVo? {
 		// TODO 네트워크 생성시 기본이 선택한 데이터센터가 가진 모든 클러스터들이 연결/필수 설정되어잇음

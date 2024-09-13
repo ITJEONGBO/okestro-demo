@@ -167,8 +167,8 @@ fun Template.toTemplateVo(conn: Connection): TemplateVo {
 		isUsb { this@toTemplateVo.usb().enabled() }
 		hostCluster { cluster?.name() }
 		origin { this@toTemplateVo.origin() }
-		clusterVo { cluster?.toClusterIdName() }
-		datacenterVo { dataCenter?.toDataCenterIdName() }
+		clusterVo { cluster?.toClusterMenu(conn) }
+		datacenterVo { dataCenter?.toDataCenterVoInfo() }
 	}
 }
 

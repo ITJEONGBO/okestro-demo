@@ -44,11 +44,17 @@ fun Connection.findHost(hostId: String): Result<Host?> = runCatching {
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.findHostName(hostId: String): String =
-	this.srvHost(hostId).get().send().host().name()
-
 fun List<Host>.nameDuplicateHost(hostName: String, hostId: String? = null): Boolean =
 	this.filter { it.id() != hostId }.any { it.name() == hostName }
+
+fun Connection.findAllVmsFromHost(hostId: String): List<Vm> {
+	if(this.findCluster(hostId).isFailure){
+		throw ErrorPattern.CLUSTER_NOT_FOUND.toError()
+	}
+	return this.findAllVms()
+		.getOrDefault(listOf())
+		.filter { it.host().id() == hostId }
+}
 
 fun Connection.addHost(host: Host, deployHostedEngine: Boolean = false): Result<Host?> = runCatching {
 	if(this.findAllHosts()

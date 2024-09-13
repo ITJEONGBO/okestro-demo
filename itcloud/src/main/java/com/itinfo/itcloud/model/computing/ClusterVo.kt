@@ -50,15 +50,17 @@ private val log = LoggerFactory.getLogger(ClusterVo::class.java)
  * @property version [String]
  * @property virtService [Boolean] virt 서비스 활성화
  * @property networkProvider [Boolean] 네트워크 공급자 여부 (clusters/id/externalnetworkproviders 에 포함되는지)
- * @property dataCenterVo [IdentifiedVo]
- * @property networkVo [IdentifiedVo] // 관리네트워크
- * @property hostSizeVo [SizeVo]
- * @property vmSizeVo [SizeVo]
- * @property hostVos List<[IdentifiedVo]>
- * @property networkVos List<[IdentifiedVo]>
- * @property templateVos List<[IdentifiedVo]>
+ * @property dataCenter [IdentifiedVo]
+ * @property network [IdentifiedVo] // 관리네트워크
+ * @property hostSize [SizeVo]
+ * @property vmSize [SizeVo]
+ * @property hosts List<[IdentifiedVo]>
+ * @property networks List<[IdentifiedVo]>
+ * @property templates List<[IdentifiedVo]>
+ * @property networkProperty [NetworkPropertyVo]
  *
- * @property networkPropertyVo [NetworkPropertyVo]
+ * @property attached [Boolean]
+ * @property required [Boolean]
  **/
 class ClusterVo(
     val id: String = "",
@@ -86,17 +88,17 @@ class ClusterVo(
     val version: String = "",
     val virtService: Boolean = false,
     val networkProvider: Boolean = false,
-	val dataCenterVo: IdentifiedVo = IdentifiedVo(),
-    val networkVo: IdentifiedVo = IdentifiedVo(), // 관리네트워크
-    val hostSizeVo: SizeVo = SizeVo(),
-    val vmSizeVo: SizeVo = SizeVo(),
-    val hostVos: List<IdentifiedVo> = listOf(),
-    val networkVos: List<IdentifiedVo> = listOf(), // 관리네트워크가 핵심, 다른 네트워크 존재가능
-    val templateVos: List<IdentifiedVo> = listOf(),
-	val networkPropertyVo: NetworkPropertyVo = NetworkPropertyVo(),
-	val hostCnt: Int = 0,
-	val vmCnt: Int = 0,
+	val dataCenter: IdentifiedVo = IdentifiedVo(),
+    val network: IdentifiedVo = IdentifiedVo(), // 관리네트워크
+    val hostSize: SizeVo = SizeVo(),
+    val vmSize: SizeVo = SizeVo(),
+    val hosts: List<IdentifiedVo> = listOf(),
+    val networks: List<IdentifiedVo> = listOf(), // 관리네트워크가 핵심, 다른 네트워크 존재가능
+    val templates: List<IdentifiedVo> = listOf(),
+	val networkProperty: NetworkPropertyVo = NetworkPropertyVo(),
 
+	val attached: Boolean = false,
+	val required: Boolean = false,
 ): Serializable {
 	override fun toString(): String =
 		gson.toJson(this)
@@ -127,18 +129,18 @@ class ClusterVo(
 		private var bVersion: String = ""; fun version(block: () -> String?) { bVersion = block() ?: "" }
 		private var bVirtService: Boolean = false; fun virtService(block: () -> Boolean?) { bVirtService = block() ?: false }
 		private var bNetworkProvider: Boolean = false; fun networkProvider(block: () -> Boolean?) { bNetworkProvider = block() ?: false }
-		private var bDataCenterVo: IdentifiedVo = IdentifiedVo(); fun dataCenterVo(block: () -> IdentifiedVo?) { bDataCenterVo = block() ?: IdentifiedVo() }
-		private var bNetworkVo: IdentifiedVo = IdentifiedVo(); fun networkVo(block: () -> IdentifiedVo?) { bNetworkVo = block() ?: IdentifiedVo() }
-		private var bHostSizeVo: SizeVo = SizeVo(); fun hostSizeVo(block: () -> SizeVo?) { bHostSizeVo = block() ?: SizeVo() }
-		private var bVmSizeVo: SizeVo = SizeVo(); fun vmSizeVo(block: () -> SizeVo?) { bVmSizeVo = block() ?: SizeVo() }
-		private var bHostVos: List<IdentifiedVo> = listOf();fun hostVos(block: () -> List<IdentifiedVo>?) { bHostVos = block() ?: listOf() }
-		private var bNetworkVos: List<IdentifiedVo> = listOf();fun networkVos(block: () -> List<IdentifiedVo>?) { bNetworkVos = block() ?: listOf() }
-		private var bTemplateVos: List<IdentifiedVo> = listOf();fun templateVos(block: () -> List<IdentifiedVo>?) { bTemplateVos = block() ?: listOf() }
-		private var bNetworkPropertyVo: NetworkPropertyVo = NetworkPropertyVo();fun networkPropertyVo(block: () -> NetworkPropertyVo?) { bNetworkPropertyVo = block() ?: NetworkPropertyVo() }
-		private var bHostCnt: Int = 0; fun hostCnt(block: () -> Int?) { bHostCnt = block() ?: 0 }
-		private var bVmCnt: Int = 0; fun vmCnt(block: () -> Int?) { bVmCnt = block() ?: 0 }
+		private var bDataCenter: IdentifiedVo = IdentifiedVo(); fun dataCenter(block: () -> IdentifiedVo?) { bDataCenter = block() ?: IdentifiedVo() }
+		private var bNetwork: IdentifiedVo = IdentifiedVo(); fun network(block: () -> IdentifiedVo?) { bNetwork = block() ?: IdentifiedVo() }
+		private var bHostSize: SizeVo = SizeVo(); fun hostSize(block: () -> SizeVo?) { bHostSize = block() ?: SizeVo() }
+		private var bVmSize: SizeVo = SizeVo(); fun vmSize(block: () -> SizeVo?) { bVmSize = block() ?: SizeVo() }
+		private var bHosts: List<IdentifiedVo> = listOf();fun hosts(block: () -> List<IdentifiedVo>?) { bHosts = block() ?: listOf() }
+		private var bNetworks: List<IdentifiedVo> = listOf();fun networks(block: () -> List<IdentifiedVo>?) { bNetworks = block() ?: listOf() }
+		private var bTemplates: List<IdentifiedVo> = listOf();fun templates(block: () -> List<IdentifiedVo>?) { bTemplates = block() ?: listOf() }
+		private var bNetworkProperty: NetworkPropertyVo = NetworkPropertyVo();fun networkProperty(block: () -> NetworkPropertyVo?) { bNetworkProperty = block() ?: NetworkPropertyVo() }
+		private var bAttached: Boolean = false; fun attached(block: () -> Boolean?) { bAttached = block() ?: false }
+		private var bRequired: Boolean = false; fun required(block: () -> Boolean?) { bRequired = block() ?: false }
 
-		fun build(): ClusterVo = ClusterVo(bId, bName, bDescription, bComment, bIsConnected, bBallooningEnabled, bBiosType, bCpuArc, bCpuType, bErrorHandling, bFipsMode, bFirewallType, bGlusterService, bHaReservation, bLogMaxMemory, bLogMaxMemoryType, bMemoryOverCommit, bMigrationPolicy, bBandwidth, bEncrypted, bSwitchType, bThreadsAsCores, bVersion, bVirtService, bNetworkProvider, bDataCenterVo, bNetworkVo, bHostSizeVo, bVmSizeVo, bHostVos, bNetworkVos, bTemplateVos, bNetworkPropertyVo, bHostCnt, bVmCnt)
+		fun build(): ClusterVo = ClusterVo(bId, bName, bDescription, bComment, bIsConnected, bBallooningEnabled, bBiosType, bCpuArc, bCpuType, bErrorHandling, bFipsMode, bFirewallType, bGlusterService, bHaReservation, bLogMaxMemory, bLogMaxMemoryType, bMemoryOverCommit, bMigrationPolicy, bBandwidth, bEncrypted, bSwitchType, bThreadsAsCores, bVersion, bVirtService, bNetworkProvider, bDataCenter, bNetwork, bHostSize, bVmSize, bHosts, bNetworks, bTemplates, bNetworkProperty, bAttached, bRequired)
 	}
 
 	companion object {
@@ -146,36 +148,78 @@ class ClusterVo(
 	}
 }
 
-fun Cluster.toClusterIdName(): ClusterVo = ClusterVo.builder {
-	id { this@toClusterIdName.id() }
-	name { this@toClusterIdName.name() }
+
+fun Cluster.toClusterMenu(conn: Connection): ClusterVo = ClusterVo.builder {
+	id { this@toClusterMenu.id() }
+	name { this@toClusterMenu.name() }
+	comment { this@toClusterMenu.comment() }
+	version { this@toClusterMenu.version().major().toString() + "." + this@toClusterMenu.version().minor() }
+	description { this@toClusterMenu.description() }
+	cpuType { this@toClusterMenu.cpu().type().toString() }
+	hostSize { this@toClusterMenu.findHostCntFromCluster(conn) }
+	vmSize { this@toClusterMenu.findVmCntFromCluster(conn) }
 }
-
-fun List<Cluster>.toClusterIdNames(): List<ClusterVo> =
-	this@toClusterIdNames.map { it.toClusterIdName() }
-
-fun Cluster.toClusterMenu(conn: Connection): ClusterVo {
-	val hostCnt: Int = conn.findAllHosts()
-		.getOrDefault(listOf())
-		.count { it.cluster().id().equals(this@toClusterMenu.id()) }
-	val vmCnt: Int = conn.findAllVms()
-		.getOrDefault(listOf())
-		.count { it.cluster().id().equals(this@toClusterMenu.id()) }
-
-	return ClusterVo.builder {
-		id { this@toClusterMenu.id() }
-		name { this@toClusterMenu.name() }
-		comment { this@toClusterMenu.comment() }
-		version { this@toClusterMenu.version().major().toString() + "." + this@toClusterMenu.version().minor() }
-		description { this@toClusterMenu.description() }
-		cpuType { this@toClusterMenu.cpu().type().toString() }
-		hostCnt { hostCnt }
-		vmCnt { vmCnt }
-	}
-}
-
 fun List<Cluster>.toClusterMenus(conn: Connection): List<ClusterVo> =
 	this@toClusterMenus.map { it.toClusterMenu(conn) }
+
+
+/**
+ * 클러스터 빌더
+ */
+fun ClusterVo.toClusterBuilder(conn: Connection): ClusterBuilder {
+	val ver = this@toClusterBuilder.version.split(".")
+	if (ver.size < 2) throw IllegalArgumentException("잘못된 버전정보 입력")
+
+	val clusterBuilder = ClusterBuilder()
+	clusterBuilder
+		.dataCenter(DataCenterBuilder().id(this@toClusterBuilder.dataCenter.id).build()) // 필수
+		.name(this@toClusterBuilder.name) // 필수
+		.cpu(CpuBuilder().architecture(this@toClusterBuilder.cpuArc).type(this@toClusterBuilder.cpuType)) // 필수
+		.description(this@toClusterBuilder.description)
+		.comment(this@toClusterBuilder.comment)
+		.managementNetwork(NetworkBuilder().id(this@toClusterBuilder.network.id).build())
+		.biosType(this@toClusterBuilder.biosType)
+		.fipsMode(this@toClusterBuilder.fipsMode)
+		.version(VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())
+		.switchType(this@toClusterBuilder.switchType)  // 편집에선 선택불가
+		.firewallType(this@toClusterBuilder.firewallType)
+		.logMaxMemoryUsedThreshold(this@toClusterBuilder.logMaxMemory)
+		.logMaxMemoryUsedThresholdType(this@toClusterBuilder.logMaxMemoryType)
+		.virtService(this@toClusterBuilder.virtService)
+		.glusterService(this@toClusterBuilder.glusterService)
+		.errorHandling(ErrorHandlingBuilder().onError(this@toClusterBuilder.errorHandling))
+		// HELP: 마이그레이션 정책 관련 설정 값 조회 기능 존재여부 확인필요
+		.migration(
+			MigrationOptionsBuilder()
+				.bandwidth(MigrationBandwidthBuilder().assignmentMethod(this@toClusterBuilder.bandwidth))
+				.encrypted(this@toClusterBuilder.encrypted)
+		)
+		.fencingPolicy(
+			FencingPolicyBuilder()
+				.skipIfConnectivityBroken(SkipIfConnectivityBrokenBuilder().enabled(true))
+				.skipIfSdActive(SkipIfSdActiveBuilder().enabled(true))
+		)
+		if (this.networkProvider) {
+			clusterBuilder.externalNetworkProviders(conn.findAllOpenStackNetworkProviders().getOrDefault(listOf()).first())
+		}
+	return clusterBuilder
+}
+
+/**
+ * [ClusterVo.toAddClusterBuilder]
+ * 클러스터 생성 빌더
+ */
+fun ClusterVo.toAddClusterBuilder(conn: Connection): Cluster =
+	this@toAddClusterBuilder.toClusterBuilder(conn).build()
+
+/**
+ * [ClusterVo.toEditClusterBuilder]
+ * 클러스터 편집 빌더
+ */
+fun ClusterVo.toEditClusterBuilder(conn: Connection): Cluster =
+	this@toEditClusterBuilder.toClusterBuilder(conn).id(this@toEditClusterBuilder.id).build()
+
+
 
 
 fun Cluster.toClusterVo(conn: Connection): ClusterVo {
@@ -183,12 +227,8 @@ fun Cluster.toClusterVo(conn: Connection): ClusterVo {
 		conn.findDataCenter(this@toClusterVo.dataCenter().id())
 			.getOrNull()
 
-	val hosts: List<Host> =
-		conn.findAllHosts()
-			.getOrDefault(listOf())
-			.filter { it.clusterPresent() && it.cluster().id() == this@toClusterVo.id() }
 	val hostVos: List<IdentifiedVo> =
-		hosts.fromHostsToIdentifiedVos()
+		conn.findAllHostsFromCluster(this@toClusterVo.id()).fromHostsToIdentifiedVos()
 
 	val networks: List<Network> =
 		conn.findAllNetworksFromCluster(this@toClusterVo.id())
@@ -199,11 +239,6 @@ fun Cluster.toClusterVo(conn: Connection): ClusterVo {
 	val manageNetworkVo: IdentifiedVo =
 		networks.first { it.usages().contains(NetworkUsage.MANAGEMENT) }
 			.fromNetworkToIdentifiedVo()
-
-//	val networkPropertyVo: NetworkPropertyVo = NetworkPropertyVo.builder {
-//		attached {  }
-//		required {  }
-//	}
 
 	val templates: List<Template> =
 		conn.findAllTemplates()
@@ -238,94 +273,14 @@ fun Cluster.toClusterVo(conn: Connection): ClusterVo {
 		version { this@toClusterVo.version().major().toString() + "." + this@toClusterVo.version().minor() }
 		virtService { this@toClusterVo.virtService() }
 		networkProvider { this@toClusterVo.externalNetworkProviders().size != 0 } // 0이 아니라면 네트워크 공급자 존재
-		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
-		networkVo { manageNetworkVo }
-		hostSizeVo { this@toClusterVo.findHostCntFromCluster(conn) }
-		vmSizeVo { this@toClusterVo.findVmCntFromCluster(conn) }
-		hostVos { hostVos }
-		networkVos { networkVos }
-		templateVos { templateVos }
+		dataCenter { dataCenter?.fromDataCenterToIdentifiedVo() }
+		network { manageNetworkVo }
+		hostSize { this@toClusterVo.findHostCntFromCluster(conn) }
+		vmSize { this@toClusterVo.findVmCntFromCluster(conn) }
+		hosts { hostVos }
+		networks { networkVos }
+		templates { templateVos }
 	}
 }
-
 fun List<Cluster>.toClusterVos(conn: Connection): List<ClusterVo> =
 	this@toClusterVos.map { it.toClusterVo(conn) }
-
-/**
- * 클러스터 목록
- */
-fun Cluster.toClusterVoInfo(): ClusterVo {
-	return ClusterVo.builder {
-		id { this@toClusterVoInfo.id() }
-		name { this@toClusterVoInfo.name() }
-		comment { this@toClusterVoInfo.comment() }
-//		version { this@toClusterVoInfo.version().major() + "." + this@toClusterVoInfo.version().minor() }
-		description { this@toClusterVoInfo.description() }
-		cpuType { if(this@toClusterVoInfo.cpuPresent()) this@toClusterVoInfo.cpu().type() else  null }
-//		hostCnt { getClusterHostCnt(system, cluster.id(), "") }
-//		vmCnt { getClusterVmCnt(system, cluster.id(), "") }
-	}
-}
-
-fun List<Cluster>.toClusterVoInfos(): List<ClusterVo> =
-	this@toClusterVoInfos.map { it.toClusterVoInfo() }
-
-
-/**
- * 클러스터 빌더
- */
-fun ClusterVo.toClusterBuilder(conn: Connection): ClusterBuilder {
-	val ver = this@toClusterBuilder.version.split(".")
-	if (ver.size < 2) throw IllegalArgumentException("잘못된 버전정보 입력")
-
-	val clusterBuilder = ClusterBuilder()
-	clusterBuilder
-		.dataCenter(DataCenterBuilder().id(this@toClusterBuilder.dataCenterVo.id).build()) // 필수
-		.name(this@toClusterBuilder.name) // 필수
-		.cpu(CpuBuilder().architecture(this@toClusterBuilder.cpuArc).type(this@toClusterBuilder.cpuType)) // 필수
-		.description(this@toClusterBuilder.description)
-		.comment(this@toClusterBuilder.comment)
-		.managementNetwork(NetworkBuilder().id(this@toClusterBuilder.networkVo.id).build())
-		.biosType(this@toClusterBuilder.biosType)
-		.fipsMode(this@toClusterBuilder.fipsMode)
-		.version(VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())
-		.switchType(this@toClusterBuilder.switchType)  // 편집에선 선택불가
-		.firewallType(this@toClusterBuilder.firewallType)
-		.logMaxMemoryUsedThreshold(this@toClusterBuilder.logMaxMemory)
-		.logMaxMemoryUsedThresholdType(this@toClusterBuilder.logMaxMemoryType)
-		.virtService(this@toClusterBuilder.virtService)
-		.glusterService(this@toClusterBuilder.glusterService)
-		.errorHandling(ErrorHandlingBuilder().onError(this@toClusterBuilder.errorHandling))
-		// TODO: 마이그레이션 정책 관련 설정 값 조회 기능 존재여부 확인필요
-		.migration(
-			MigrationOptionsBuilder()
-				.bandwidth(MigrationBandwidthBuilder().assignmentMethod(this@toClusterBuilder.bandwidth))
-				.encrypted(this@toClusterBuilder.encrypted)
-		)
-		.fencingPolicy(
-			FencingPolicyBuilder()
-				.skipIfConnectivityBroken(SkipIfConnectivityBrokenBuilder().enabled(true))
-				.skipIfSdActive(SkipIfSdActiveBuilder().enabled(true))
-		)
-//		.externalNetworkProviders( conn.findAllOpenStackNetworkProviders().getOrDefault(listOf()))
-		if (this.networkProvider) {
-			clusterBuilder.externalNetworkProviders(conn.findAllOpenStackNetworkProviders().getOrDefault(listOf()).first())
-		}
-	return clusterBuilder
-}
-
-/**
- * [ClusterVo.toAddClusterBuilder]
- * 클러스터 생성 빌더
- */
-fun ClusterVo.toAddClusterBuilder(conn: Connection): Cluster =
-	this@toAddClusterBuilder.toClusterBuilder(conn).build()
-
-/**
- * [ClusterVo.toEditClusterBuilder]
- * 클러스터 편집 빌더
- */
-fun ClusterVo.toEditClusterBuilder(conn: Connection): Cluster =
-	this@toEditClusterBuilder.toClusterBuilder(conn).id(this@toEditClusterBuilder.id).build()
-
-

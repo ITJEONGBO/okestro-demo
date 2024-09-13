@@ -109,15 +109,15 @@ class ItNetworkServiceTest {
 	fun should_add() {
 		log.debug("should_add ... ")
 		val addNetworkVo: NetworkVo = NetworkVo.builder {
-			dataCenterVo { IdentifiedVo.builder { id { dataCenterId } } }
+			dataCenter { IdentifiedVo.builder { id { dataCenterId } } }
 			name { "fs" }
 			description { "t" }
 			comment { "t" }
-			usageVo { UsageVo.builder { vm { true } } }
+			usage { UsageVo.builder { vm { true } } }
 			portIsolation { false }
 			mtu { 0 }
 			vlan { 0 }
-			openStackNetworkVo { null }
+			openStackNetwork { null }
 		}
 
 		val addResult: NetworkVo? =
@@ -127,7 +127,7 @@ class ItNetworkServiceTest {
 		assertThat(addResult?.name, `is`(addNetworkVo.name))
 		assertThat(addResult?.description, `is`(addNetworkVo.description))
 		assertThat(addResult?.comment, `is`(addNetworkVo.comment))
-		assertThat(addResult?.usageVo?.vm, `is`(addNetworkVo.usageVo.vm))
+		assertThat(addResult?.usage?.vm, `is`(addNetworkVo.usage.vm))
 		assertThat(addResult?.portIsolation, `is`(addNetworkVo.portIsolation))
 		assertThat(addResult?.mtu, `is`(addNetworkVo.mtu))
 		assertThat(addResult?.vlan, `is`(addNetworkVo.vlan))
@@ -143,15 +143,15 @@ class ItNetworkServiceTest {
 	fun should_add2() {
 		log.debug("should_add2 ... ")
 		val addNetworkVo: NetworkVo = NetworkVo.builder {
-			dataCenterVo { IdentifiedVo.builder { id { dataCenterId } } }
+			dataCenter { IdentifiedVo.builder { id { dataCenterId } } }
 			name { "asdf2" }
 			description { "t2" }
 			comment { "t2" }
-			usageVo { UsageVo.builder { vm { false } } }  // TODO
+			usage { UsageVo.builder { vm { false } } }  // TODO
 			portIsolation { false }
 			mtu { 142 }
 			vlan { 23 }
-			openStackNetworkVo { null }
+			openStackNetwork { null }
 		}
 
 		val addResult: NetworkVo? =
@@ -179,12 +179,12 @@ class ItNetworkServiceTest {
 
 		val networkId = "2255ff6c-51fc-431d-bf19-07d486de95fd"
 		val updateNetworkVo: NetworkVo = NetworkVo.builder {
-			dataCenterVo { IdentifiedVo.builder { id { dataCenterId } } }
+			dataCenter { IdentifiedVo.builder { id { dataCenterId } } }
 			id { networkId }
 			name { "asdf5" }
 			description { "t2" }
 			comment { "t2" }
-			usageVo { UsageVo.builder { vm { true } } }  // TODO
+			usage { UsageVo.builder { vm { true } } }  // TODO
 			mtu { 0 }
 			vlan { 0 }
 		}

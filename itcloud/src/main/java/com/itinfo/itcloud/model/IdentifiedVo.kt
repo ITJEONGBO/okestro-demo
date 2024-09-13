@@ -35,7 +35,7 @@ open class IdentifiedVo(
 
 fun DataCenter.fromDataCenterToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
 	id { id() }
-	name { if (namePresent()) name() else "" }
+	name { name() }
 }
 fun List<DataCenter>.fromDataCentersToIdentifiedVos(): List<IdentifiedVo> =
 	this@fromDataCentersToIdentifiedVos.map { it.fromDataCenterToIdentifiedVo() }

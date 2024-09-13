@@ -39,11 +39,34 @@ fun Connection.findDataCenter(dcId: String): Result<DataCenter?> = runCatching {
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.findDataCenterName(dataCenterId: String): String =
-	this.srvDataCenter(dataCenterId).get().send().dataCenter().name()
-
 fun List<DataCenter>.nameDuplicateDataCenter(dataCenterName: String, dataCenterId: String? = null): Boolean =
 	this.filter { it.id() != dataCenterId }.any { it.name() == dataCenterName }
+
+fun Connection.findClusterFromDataCenter(dataCenterId: String): List<Cluster> {
+	if(this.findDataCenter(dataCenterId).isFailure) {
+		throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toError()
+	}
+	return this.findAllClusters()
+		.getOrDefault(listOf())
+		.filter { it.dataCenterPresent() && it.dataCenter().id() == dataCenterId }
+}
+
+fun Connection.findHostFromDataCenter(dataCenterId: String): List<Host> {
+	if(this.findDataCenter(dataCenterId).isFailure) {
+		throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toError()
+	}
+	val clusters: List<Cluster> =
+		this.findClusterFromDataCenter(dataCenterId)
+	if (clusters.isEmpty())
+		return listOf()
+
+	return this.findAllHosts()
+		.getOrDefault(listOf())
+		.filter { host ->
+			clusters.any { it.id() == host.cluster().id() }
+		}
+}
+
 
 fun Connection.addDataCenter(dataCenter: DataCenter): Result<DataCenter?> = runCatching {
 	if (this.findAllDataCenters()

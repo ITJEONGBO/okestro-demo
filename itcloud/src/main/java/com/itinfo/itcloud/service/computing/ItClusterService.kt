@@ -71,7 +71,7 @@ interface ItClusterService {
 
 	/**
 	 * [ItClusterService.findAllNetworksFromCluster]
-	 * 클러스터 네트워크
+	 * 클러스터 네트워크 목록
 	 *
 	 * @param clusterId [String] 클러스터 아이디
 	 * @return List<[NetworkVo]> 네트워크 목록
@@ -79,7 +79,7 @@ interface ItClusterService {
 	@Throws(Error::class)
 	fun findAllNetworksFromCluster(clusterId: String): List<NetworkVo>
 	/**
-	 * [ItClusterService.addNetwork]
+	 * [ItClusterService.addNetworkFromCluster]
 	 * 클러스터 네트워크 추가
 	 *
 	 * @param clusterId [String] 클러스터 아이디
@@ -110,7 +110,7 @@ interface ItClusterService {
 	fun manageNetworksFromCluster(clusterId: String, networkVos: List<NetworkVo>): Boolean
 	/**
 	 * [ItClusterService.findAllHostsFromCluster]
-	 * 클러스터 호스트
+	 * 클러스터 호스트 목록
 	 *
 	 * @param clusterId [String] 클러스터 아이디
 	 * @return List<[HostVo]> 호스트 목록
@@ -119,7 +119,7 @@ interface ItClusterService {
 	fun findAllHostsFromCluster(clusterId: String): List<HostVo>
 	/**
 	 * [ItClusterService.findAllVmsFromCluster]
-	 * 클러스터 가상머신
+	 * 클러스터 가상머신 목록
 	 *
 	 * @param clusterId [String] 클러스터 아이디
 	 * @return List<[VmVo]> 가상머신 목록
@@ -167,7 +167,6 @@ class ClusterServiceImpl(
 	@Throws(Error::class)
 	override fun findAll(): List<ClusterVo> {
 		log.info("findAll ... ")
-		// DataCenter 가 없어도 Cluster 는 출력가능
 		val res: List<Cluster> =
 			conn.findAllClusters()
 				.getOrDefault(listOf())
@@ -222,6 +221,7 @@ class ClusterServiceImpl(
 	@Throws(Error::class)
 	override fun addNetworkFromCluster(clusterId: String, networkVo: NetworkVo): NetworkVo? {
 		log.info("addNetwork ... ") // // 클러스터 연결 없이 네트워크만 추가
+
 		// TODO 클러스터 연결/할당 기능 추가
 		return itNetworkService.add(networkVo)
 	}
@@ -232,7 +232,8 @@ class ClusterServiceImpl(
 		val res: List<Network> =
 			conn.findAllNetworksFromCluster(clusterId)
 				.getOrDefault(listOf())
-		return res.toNetworkVos(conn) // TODO: 모두 할당? 모두 필요?
+		return res.toNetworkVos(conn)
+		// TODO: 모두 할당? 모두 필요?
 	}
 
 	@Throws(Error::class)
@@ -257,25 +258,18 @@ class ClusterServiceImpl(
 	@Throws(Error::class)
 	override fun findAllHostsFromCluster(clusterId: String): List<HostVo> {
 		log.info("findAllHostsFromCluster ... clusterId: {}", clusterId)
-		conn.findCluster(clusterId)
-			.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
 		val res: List<Host> =
-			conn.findAllHosts()
+			conn.findAllHostsFromCluster(clusterId)
 				.getOrDefault(listOf())
-				.filter { it.cluster().id() == clusterId }
 		return res.toHostVos(conn)
-		// TODO usageDto 기능 추가예정
 	}
 
 	@Throws(Error::class)
 	override fun findAllVmsFromCluster(clusterId: String): List<VmVo> {
 		log.info("findAllVmsFromCluster ... clusterId: {}", clusterId)
-		conn.findCluster(clusterId)
-			.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
 		val res: List<Vm> =
-			conn.findAllVms()
+			conn.findAllVmsFromCluster(clusterId)
 				.getOrDefault(listOf())
-				.filter { it.cluster().id() == clusterId }
 		return res.toVmVos(conn)
 	}
 
@@ -291,10 +285,10 @@ class ClusterServiceImpl(
 	@Throws(Error::class)
 	override fun findAllPermissionsFromCluster(clusterId: String): List<PermissionVo> {
 		log.info("findAllPermissionsFromCluster ... clusterId: {}", clusterId)
-		val permissions: List<Permission> =
+		val res: List<Permission> =
 			conn.findAllPermissionsFromCluster(clusterId)
 				.getOrDefault(listOf())
-		return permissions.toPermissionVos(conn)
+		return res.toPermissionVos(conn)
 	}
 
 	@Throws(Error::class)

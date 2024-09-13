@@ -1,13 +1,9 @@
 package com.itinfo.itcloud.model.storage
 
 import com.itinfo.itcloud.model.IdentifiedVo
-import com.itinfo.itcloud.model.computing.DataCenterVo
-import com.itinfo.itcloud.model.computing.HostVo
 import com.itinfo.itcloud.model.fromDataCenterToIdentifiedVo
 import com.itinfo.itcloud.model.fromDiskProfilesToIdentifiedVos
 import com.itinfo.itcloud.gson
-import com.itinfo.itcloud.model.computing.toDataCenterIdName
-import com.itinfo.itcloud.service.storage.StorageServiceImpl
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.*

@@ -1,6 +1,9 @@
 package com.itinfo.itcloud.model.network
 
 import com.itinfo.itcloud.gson
+import com.itinfo.util.ovirt.findAllNetworksFromCluster
+import org.ovirt.engine.sdk4.Connection
+import org.ovirt.engine.sdk4.types.Cluster
 import org.ovirt.engine.sdk4.types.Network
 import org.ovirt.engine.sdk4.types.NetworkUsage
 import org.slf4j.LoggerFactory
@@ -10,12 +13,12 @@ private val log = LoggerFactory.getLogger(UsageVo::class.java)
 /**
  * [UsageVo]
  *
- * @property vm
- * @property management 관리
- * @property display 출력
- * @property migration
- * @property gluster
- * @property defaultRoute
+ * @property vm [Boolean]
+ * @property management [Boolean] 관리
+ * @property display [Boolean] 출력
+ * @property migration [Boolean]
+ * @property gluster [Boolean]
+ * @property defaultRoute [Boolean]
  */
 // TODO cluster network에서 usage는 따로 처리해야할듯요
 class UsageVo (
@@ -45,7 +48,6 @@ class UsageVo (
 }
 
 fun Network.toUsageVo(): UsageVo {
-    log.debug("Network.toUsageVo ... ")
     return UsageVo.builder {
         vm { this@toUsageVo.usages().contains(NetworkUsage.VM) }
         display { this@toUsageVo.usages().contains(NetworkUsage.DISPLAY) }
@@ -66,3 +68,4 @@ fun List<NetworkUsage>.toUsagesVo(): UsageVo{
         gluster { this@toUsagesVo.contains(NetworkUsage.GLUSTER) }
     }
 }
+

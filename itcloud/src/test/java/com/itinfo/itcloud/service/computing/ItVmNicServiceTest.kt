@@ -62,7 +62,7 @@ class ItVmNicServiceTest {
     fun should_findOneNicFromVm() {
         log.debug("should_findOneNicFromVm ...")
         val result: NicVo? =
-            service.findOneNicFromVm(vmId, nicId)
+            service.findNicFromVm(vmId, nicId)
 
         assertThat(result, `is`(not(nullValue())))
 //        assertThat(result?.name, `is`(""))
@@ -89,7 +89,7 @@ class ItVmNicServiceTest {
         }
 
         val addResult: NicVo? =
-            service.addFromVm(vmId, addVmNic)
+            service.addNicFromVm(vmId, addVmNic)
 
         assertThat(addResult?.id, `is`(not(nullValue())))
         assertThat(addResult?.vnicProfileVo?.id, `is`(addVmNic.vnicProfileVo.id))
@@ -119,7 +119,7 @@ class ItVmNicServiceTest {
         }
 
         val updateResult: NicVo? =
-            service.updateFromVm(vmId, updateVmNic)
+            service.updateNicFromVm(vmId, updateVmNic)
 
         assertThat(updateResult?.id, `is`(not(nullValue())))
         assertThat(updateResult?.vnicProfileVo?.id, `is`(updateVmNic.vnicProfileVo.id))
@@ -139,7 +139,7 @@ class ItVmNicServiceTest {
         log.debug("should_removeFromVm ... ")
         val nicId = "80978aab-2a91-489a-9b5b-95009b760026"
         val removeResult: Boolean =
-            service.removeFromVm(vmId, nicId)
+            service.removeNicFromVm(vmId, nicId)
 
         assertThat(removeResult, `is`(true))
     }
