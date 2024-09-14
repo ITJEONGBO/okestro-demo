@@ -13,6 +13,7 @@ import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
 import Permission from '../Modal/Permission';
 import './css/Storage.css';
+import Table from '../table/Table';
 
 Modal.setAppElement('#root'); // React 16 이상에서는 필수
 
@@ -24,6 +25,11 @@ const Storage = () => {
   // 스토리지 유형 변경 핸들러
   const handleStorageTypeChange = (e) => {
     setStorageType(e.target.value); // 선택된 옵션의 값을 상태로 저장
+  };
+
+  const [activeLunTab, setActiveLunTab] = useState('target_lun'); 
+  const handleLunTabClick = (tab) => {
+    setActiveLunTab(tab); 
   };
 
   // 테이블 컴포넌트
@@ -166,6 +172,18 @@ const Storage = () => {
   const toggleDomainHiddenBox3 = () => {
     setDomainHiddenBox3Visible(!isDomainHiddenBox3Visible);
   };
+  const [isDomainHiddenBox4Visible, setDomainHiddenBox4Visible] = useState(false);
+  const toggleDomainHiddenBox4 = () => {
+    setDomainHiddenBox4Visible(!isDomainHiddenBox4Visible);
+  };
+  const [isDomainHiddenBox5Visible, setDomainHiddenBox5Visible] = useState(false);
+  const toggleDomainHiddenBox5 = () => {
+    setDomainHiddenBox5Visible(!isDomainHiddenBox5Visible);
+  };
+  const [isDomainHiddenBox6Visible, setDomainHiddenBox6Visible] = useState(false);
+  const toggleDomainHiddenBox6 = () => {
+    setDomainHiddenBox6Visible(!isDomainHiddenBox6Visible);
+  };
 
   const sectionHeaderButtons = [
     { id: 'new_btn', label: '편집', icon: faPencil, onClick: () => {} },
@@ -299,7 +317,7 @@ const Storage = () => {
 
           {storageType === 'NFS' && (
           <div className="storage_popup_NFS">
-            <div>
+            <div className ="network_form_group">
               <label htmlFor="data_hub">내보내기 경로</label>
               <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />
             </div>
@@ -420,12 +438,11 @@ const Storage = () => {
           {storageType === 'GlusterFS' && (
           <div className="storage_popup_NFS">
             <div>
-              <div>데이터 무결성을 위해 서버가 쿼럼 (클라이언트 및 서버 쿼럼 모두)으로 설정되어 있는지 확인합니다</div>
-              <div>
-                <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
-                <input type="checkbox" id="reset_after_deletion"/>
-              </div>
-
+                <div className='text-red-600'>데이터 무결성을 위해 서버가 쿼럼 (클라이언트 및 서버 쿼럼 모두)으로 설정되어 있는지 확인합니다</div>
+                <div className='input_checkbox'>
+                  <input type="checkbox" id="reset_after_deletion"/>
+                  <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
+                </div>
             </div>
             <div className="network_form_group">
               <label htmlFor="description">경로</label>
@@ -478,14 +495,177 @@ const Storage = () => {
         )}
 
           {storageType === 'iSCSI' && (
-          <div className="storage_popup_iSCSI">
-           iSCSI
+          <div className="storage_popup_NFS">
+            <div className='target_btns'> 
+              <button 
+                className={`target_lun ${activeLunTab === 'target_lun' ? 'active' : ''}`}
+                onClick={() => handleLunTabClick('target_lun')}
+              >
+                대상 - LUN
+              </button>
+              <button 
+                className={`lun_target ${activeLunTab === 'lun_target' ? 'active' : ''}`}
+                onClick={() => handleLunTabClick('lun_target')}
+              > 
+                LUN - 대상
+              </button>
+            </div>
+
+
+          
+            {activeLunTab === 'target_lun' &&(
+              <div className='target_lun_outer'>
+                <div className="search_target_outer">
+                  <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn4" onClick={toggleDomainHiddenBox4}fixedWidth/>
+                  <span>대상 검색</span>
+                  <div id="domain_hidden_box4" style={{ display: isDomainHiddenBox4Visible ? 'block' : 'none' }}>
+                    <div className="search_target ">
+
+                      <div>
+                        <div className ="network_form_group">
+                          <label htmlFor="data_hub">내보내기 경로</label>
+                          <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />
+                        </div>
+                        <div className ="network_form_group">
+                          <label htmlFor="data_hub">내보내기 경로</label>
+                          <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className='input_checkbox'>
+                          <input type="checkbox" id="reset_after_deletion"/>
+                          <label htmlFor="reset_after_deletion">사용자 인증 :</label>
+                        </div>
+                        <div className ="network_form_group">
+                          <label htmlFor="data_hub">내보내기 경로</label>
+                          <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />
+                        </div>
+                        <div className ="network_form_group">
+                          <label htmlFor="data_hub">내보내기 경로</label>
+                          <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />
+                        </div>
+                      </div>
+
+                      
+                    </div>
+                    <button>검색</button>
+                  </div>
+                </div>
+              
+
+                <div>
+                  <button className='all_login'>전체 로그인</button>
+                  <div className='section_table_outer'>
+                    <Table
+                    columns={TableColumnsInfo.CLUSTERS_ALT} 
+                    data={data} 
+                    onRowClick={handleRowClick}
+                    shouldHighlight1stCol={true}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}      
+
+            {activeLunTab === 'lun_target' && (
+              <div className='lun_target_outer'>
+                 <div className='section_table_outer'>
+                    <Table
+                    columns={TableColumnsInfo.CLUSTERS_ALT} 
+                    data={data} 
+                    onRowClick={handleRowClick}
+                    shouldHighlight1stCol={true}
+                    />
+                </div>
+              </div>
+            )}
+            <div>
+              <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn5" onClick={toggleDomainHiddenBox5}fixedWidth/>
+              <span>고급 매개 변수</span>
+              <div id="domain_hidden_box5" style={{ display: isDomainHiddenBox5Visible ? 'block' : 'none' }}>
+                <div className="domain_new_select">
+                  <label>디스크 공간 부족 경고 표시(%)</label>
+                  <input type="text" />
+                </div>
+                <div className="domain_new_select">
+                  <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+                  <input type="text" />
+                </div>
+                <div className="domain_new_select">
+                  <label>디스크 공간 부족 경고 표시(%)</label>
+                  <input type="text" />
+                </div>
+                <div className="domain_new_select">
+                  <label htmlFor="format_type_selector" style={{ color: 'gray' }}>포맷</label>
+                  <select id="format_type_selector" disabled>
+                    <option value="linux">V5</option>
+                  </select>
+                </div>
+                <div className="hidden_checkbox">
+                  <input type="checkbox" id="reset_after_deletion"/>
+                  <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
+                </div>
+                <div className="hidden_checkbox">
+                  <input type="checkbox" id="backup_vault"/>
+                  <label htmlFor="backup_vault">백업</label>
+                </div>
+                <div className="hidden_checkbox">
+                  <input type="checkbox" id="backup_vault"/>
+                  <label htmlFor="backup_vault">삭제 후 폐기</label>
+                </div>
+              </div>
+            </div>
+
           </div>
           )}
 
           {storageType === 'fc' && (
-          <div className="storage_popup_fc">
-           fc
+          <div className="storage_popup_NFS">
+            <div className='section_table_outer'>
+                  <Table
+                  columns={TableColumnsInfo.CLUSTERS_ALT} 
+                  data={data} 
+                  onRowClick={handleRowClick}
+                  shouldHighlight1stCol={true}
+                  />
+            </div>
+            <div>
+              <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn5" onClick={toggleDomainHiddenBox5}fixedWidth/>
+              <span>고급 매개 변수</span>
+              <div id="domain_hidden_box5" style={{ display: isDomainHiddenBox5Visible ? 'block' : 'none' }}>
+                <div className="domain_new_select">
+                  <label>디스크 공간 부족 경고 표시(%)</label>
+                  <input type="text" />
+                </div>
+                <div className="domain_new_select">
+                  <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+                  <input type="text" />
+                </div>
+                <div className="domain_new_select">
+                  <label>디스크 공간 부족 경고 표시(%)</label>
+                  <input type="text" />
+                </div>
+                <div className="domain_new_select">
+                  <label htmlFor="format_type_selector" style={{ color: 'gray' }}>포맷</label>
+                  <select id="format_type_selector" disabled>
+                    <option value="linux">V5</option>
+                  </select>
+                </div>
+                <div className="hidden_checkbox">
+                  <input type="checkbox" id="reset_after_deletion"/>
+                  <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
+                </div>
+                <div className="hidden_checkbox">
+                  <input type="checkbox" id="backup_vault"/>
+                  <label htmlFor="backup_vault">백업</label>
+                </div>
+                <div className="hidden_checkbox">
+                  <input type="checkbox" id="backup_vault"/>
+                  <label htmlFor="backup_vault">삭제 후 폐기</label>
+                </div>
+              </div>
+            </div>
           </div>
           )}
 
@@ -592,9 +772,9 @@ const Storage = () => {
               </div>
             </div>
             <div>
-              <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn2" onClick={toggleDomainHiddenBox2}fixedWidth/>
+              <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn6" onClick={toggleDomainHiddenBox6}fixedWidth/>
               <span>고급 매개 변수</span>
-                <div id="domain_hidden_box2" style={{ display: isDomainHiddenBox2Visible ? 'block' : 'none' }}>
+                <div id="domain_hidden_box6" style={{ display: isDomainHiddenBox6Visible ? 'block' : 'none' }}>
                   <div className="domain_new_select">
                     <label>디스크 공간 부족 경고 표시(%)</label>
                     <input type="text" />

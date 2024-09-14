@@ -56,9 +56,9 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
 
     const handleButtonClick = (button) => {
       setActiveButton(button);
+      setIsLabelVisible(button === 'label'); // 'label' 버튼을 클릭하면 라벨을 표시
     };
-
-
+    
   
   const location = useLocation();
   const locationState = location.state  
