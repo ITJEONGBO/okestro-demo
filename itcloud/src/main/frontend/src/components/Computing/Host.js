@@ -211,7 +211,7 @@ const Host = () => {
           <input type="checkbox" id="memory_balloon" name="memory_balloon" />
           <label htmlFor="headless_mode">헤드리스 모드</label>
       </div>
-      <div>
+      <div className='host_checkbox'>
           <input type="checkbox" id="headless_mode_info" name="headless_mode_info" />
           <label htmlFor="headless_mode_info">헤드리스 모드 정보</label>
           <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }} fixedWidth/>

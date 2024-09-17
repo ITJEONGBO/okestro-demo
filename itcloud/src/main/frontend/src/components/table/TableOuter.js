@@ -6,11 +6,11 @@ import './TableOuter.css';
 const TableOuter = ({ columns, data, onRowClick, shouldHighlight1stCol=false }) => {
   return (
     <div className="section_table_outer">
-      <div className="search_box">
+      {/* <div className="search_box">
         <input type="text" />
         <button><FontAwesomeIcon icon={faSearch} fixedWidth/></button>
         <button><FontAwesomeIcon icon={faRefresh} fixedWidth/></button>
-      </div>
+      </div> */}
       <Table 
         columns={columns} 
         data={data}

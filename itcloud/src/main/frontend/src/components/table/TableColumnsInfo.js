@@ -316,15 +316,7 @@ const TableColumnsInfo = {
     { header: '가상머신 멤버', accessor: 'vmMember', clickable: false },
     { header: '호스트 멤버', accessor: 'hostMember', clickable: false },
   ],
-  SESSIONS: [
-    { header: '세션 DB ID', accessor: 'sessionId', clickable: false },
-    { header: '사용자 이름', accessor: 'username', clickable: false },
-    { header: '인증 공급자', accessor: 'authProvider', clickable: false },
-    { header: '사용자 ID', accessor: 'userId', clickable: false },
-    { header: '소스 IP', accessor: 'sourceIp', clickable: false },
-    { header: '세션 시작 시간', accessor: 'sessionStartTime', clickable: false },
-    { header: '마지막 세션 활성', accessor: 'lastSessionActive', clickable: false },
-  ],
+
   EVENTS: [
     { header: '', accessor: 'icon', clickable: false },
     { header: '시간', accessor: 'time', clickable: false },
@@ -334,6 +326,52 @@ const TableColumnsInfo = {
     { header: '사용자 지정 이벤트 ID', accessor: 'customEventId', clickable: false }
   ],
 
+  // 활성사용사세션
+  ACTIVE_USER_SESSION: [
+    { header: '세션 DB ID', accessor: 'sessionId', clickable: false },
+    { header: '사용자 이름', accessor: 'username', clickable: false },
+    { header: '인증 공급자', accessor: 'authProvider', clickable: false },
+    { header: '사용자 ID', accessor: 'userId', clickable: false },
+    { header: '소스 IP', accessor: 'sourceIp', clickable: false },
+    { header: '세션 시작 시간', accessor: 'sessionStartTime', clickable: false },
+    { header: '마지막 세션 활성', accessor: 'lastSessionActive', clickable: false },
+  ],
+  // 사용자
+  SETTING_USER: [
+    { header: '', accessor: 'icon', clickable: false },
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '성', accessor: 'lastName', clickable: false },
+    { header: '사용자 이름', accessor: 'username', clickable: false },
+    { header: '인증 공급자', accessor: 'provider', clickable: false },
+    { header: '네임스페이스', accessor: 'nameSpace', clickable: false },
+    { header: '이메일', accessor: 'email', clickable: false },
+  ],
+  
+  //설젇(역할)
+  SETTING_ROLE:[
+    { header: '', accessor: 'icon', clickable: false },
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
+   
+  ],
+  //설정(인스턴스유형)
+  SETTING_INSTANCE:[
+    { header: '이름', accessor: 'name', clickable: false }
+  ],
+   //설정(시스템권한)
+  SETTING_SYSTEM: [
+    { header: '', accessor: 'icon', clickable: false },
+    { header: '사용자', accessor: 'user', clickable: false },
+    { header: '인증 공급자', accessor: 'provider', clickable: false },
+    { header: '네임스페이스', accessor: 'nameSpace', clickable: false },
+    { header: '역할', accessor: 'role', clickable: false }
+  ],
+  //설정 시스템권한 추가팝업(사용자)
+  SETTING_POPUP_USER:[
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '성', accessor: 'lastName', clickable: false },
+    { header: '사용자 이름', accessor: 'username', clickable: false },
+  ]
 }
 
 export default TableColumnsInfo

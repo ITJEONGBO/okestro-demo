@@ -60,6 +60,7 @@
 }
 .vnic_new_checkbox{
     padding: 1.2% 0.3rem;
+    display:flex;
 }
 .vnic_new_checkbox input{
     margin-right: 0.2rem;

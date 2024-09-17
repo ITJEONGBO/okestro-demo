@@ -873,12 +873,12 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
          </div>
 
             <div className="border-t-[1px] border-gray-500 mt-4">
-                <div className='py-0.5'>
+                <div className='py-0.5 vnic_new_checkbox'>
                   <input type="checkbox" id="checkHostConnection" checked />
                   <label htmlFor="checkHostConnection">호스트와 Engine간의 연결을 확인</label>
                   <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)', cursor: 'pointer' }} fixedWidth />
                 </div>
-                <div>
+                <div className='vnic_new_checkbox'>
                   <input type="checkbox" id="saveNetworkConfig" disabled />
                   <label htmlFor="saveNetworkConfig">네트워크 설정 저장</label>
                   <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)', cursor: 'pointer' }} fixedWidth />

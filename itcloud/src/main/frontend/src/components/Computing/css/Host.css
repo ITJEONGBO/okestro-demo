@@ -85,6 +85,7 @@
 }
 .host_checkbox{
     display: flex;
+    align-items: center;
 }
 .edit_body input[type='checkbox'],
 .host_text_raido_box input[type='radio'],

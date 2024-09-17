@@ -9,7 +9,8 @@ import {
   , faFilter,
   faTimes,
   faHeart,
-  faInfoCircle
+  faInfoCircle,
+  faUser
 } from '@fortawesome/free-solid-svg-icons'
 import HeaderButton from '../button/HeaderButton';
 import NetworkDetail from '../Network/NetworkDetail';
@@ -17,9 +18,10 @@ import Footer from '../footer/Footer';
 import NavButton from '../navigation/NavButton';
 import './css/Setting.css';
 import { adjustFontSize } from '../../UIEvent';
+import TableOuter from '../table/TableOuter';
 
 const Setting = ({ }) => {
-    //테이블 컴포넌트
+    // 활성사용사세션 데이터
     const sessionData = [
       {
         sessionId: '3204',
@@ -31,7 +33,44 @@ const Setting = ({ }) => {
         lastSessionActive: '2024. 1. 19. PM 4:45:55',
       },
     ];
-    //
+    // 사용자 데이터
+    const userData = [
+        {
+            icon: <FontAwesomeIcon icon={faUser} fixedWidth/>, 
+            name: '임시데이터',  
+            lastName: '임시데이터',  
+            username: '임시데이터', 
+            provider: '임시데이터',  
+            nameSpace: '임시데이터', 
+            email: 'dfajkdf@3kfakdl', 
+        },
+    ];
+    // 설정팝업!!!
+    //스케줄링정책
+    const userRadioData = [
+        {
+          icon: '3204',
+          name: 'admin',
+          description: 'internal-authz'
+        },
+      ];
+    //인스턴스 데이터
+    const instanceData = [
+        {
+          name: 'admin',
+        },
+      ];
+    // 시스템권한
+    const systemData = [
+        {
+            icon: <FontAwesomeIcon icon={faUser} fixedWidth/>, 
+            user: 'admin',
+            provider:'admin',  
+            nameSpace:'admin', 
+            role: 'admin'
+        },
+    ];
+
   const location = useLocation();
   const locationState = location.state; 
 
@@ -108,7 +147,7 @@ const Setting = ({ }) => {
                       </div>
 
                       <div className="section_table_outer">
-                          <Table columns={TableColumnsInfo.SESSIONS} data={sessionData}/>
+                          <Table columns={TableColumnsInfo.ACTIVE_USER_SESSION} data={sessionData}/>
                       </div>
                             
                     </>
@@ -123,7 +162,7 @@ const Setting = ({ }) => {
                      </div>
 
                      <div className="section_table_outer">
-                         <Table columns={TableColumnsInfo.SESSIONS} data={sessionData}/>
+                         <Table columns={TableColumnsInfo.SETTING_USER} data={userData}/>
                      </div>
                            
                    </>
@@ -179,38 +218,12 @@ const Setting = ({ }) => {
                                      </div>
                                  </div>
          
-                                 <div className="setting_part_table_outer">
-                                     <div className="application_content_header">
-                                         <button><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
-                                         <div>1-36</div>
-                                         <button><FontAwesomeIcon icon={faChevronRight} fixedWidth/></button>
-                                         <button><FontAwesomeIcon icon={faEllipsisV} fixedWidth/></button>
-                                     </div>
-         
-                                     <table className="network_new_cluster_table">
-                                         <thead>
-                                             <tr>
-                                                 <th></th>
-                                                 <th></th>
-                                                 <th>이름</th>
-                                                 <th>설명</th>
-                                             </tr>
-                                         </thead>
-                                         <tbody>
-                                             <tr>
-                                                 <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
-                                                 <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
-                                                 <td>dddddddddddddddddddddd</td>
-                                                 <td>ddddddddddddddddddddddㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ</td>
-                                             </tr>
-                                             <tr>
-                                                 <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
-                                                 <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
-                                                 <td>dddddddddddddddddddddd</td>
-                                                 <td>ddddddddddddddddddddddㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ</td>
-                                             </tr>
-                                         </tbody>
-                                     </table>
+                                 <div className="setting_part_table_outer" style={{ borderBottom: 'none' }}>
+                                     <TableOuter
+                                        columns={TableColumnsInfo.SETTING_ROLE}
+                                        data={userRadioData}
+                                        onRowClick={() => console.log('Row clicked')}
+                                    />
                                  </div>
                              </form>
                          )}
@@ -218,62 +231,18 @@ const Setting = ({ }) => {
                          {activeSettingForm === 'system' && (
                              <form id="setting_system_form">
                                  <div className="setting_part_nav">
-                                     <div className="radio_toolbar">
-                                         <div>
-                                             <input type="radio" id="all_roles" name="roles" value="all" defaultChecked />
-                                             <label htmlFor="all_roles">모든역할</label>
-                                         </div>
-                                         <div>
-                                             <input type="radio" id="admin_roles" name="roles" value="admin" />
-                                             <label htmlFor="admin_roles">관리자 역할</label>
-                                         </div>
-                                         <div>
-                                             <input type="radio" id="user_roles" name="roles" value="user" />
-                                             <label htmlFor="user_roles">사용자 역할</label>
-                                         </div>
-                                     </div>
-         
                                      <div className="setting_buttons">
                                          <div id="setting_system_add_btn" onClick={() => openPopup('addSystemRole')}>추가</div>
                                          <div>제거</div>
                                      </div>
                                  </div>
          
-                                 <div className="setting_part_table_outer">
-                                     <div className="application_content_header">
-                                         <button><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
-                                         <div>1-3</div>
-                                         <button><FontAwesomeIcon icon={faChevronRight} fixedWidth/></button>
-                                         <button><FontAwesomeIcon icon={faEllipsisV} fixedWidth/></button>
-                                     </div>
-         
-                                     <table className="network_new_cluster_table">
-                                         <thead>
-                                             <tr>
-                                                 <th></th>
-                                                 <th>사용자</th>
-                                                 <th>인증 공급자</th>
-                                                 <th>네임 스페이스</th>
-                                                 <th>역할</th>
-                                             </tr>
-                                         </thead>
-                                         <tbody>
-                                             <tr>
-                                                 <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
-                                                 <td>ovirt-administrator</td>
-                                                 <td></td>
-                                                 <td>*</td>
-                                                 <td>SuperUser</td>
-                                             </tr>
-                                             <tr>
-                                                 <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
-                                                 <td>ovirt-administrator</td>
-                                                 <td></td>
-                                                 <td>*</td>
-                                                 <td>SuperUser</td>
-                                             </tr>
-                                         </tbody>
-                                     </table>
+                                 <div className="setting_part_table_outer" style={{ borderBottom: 'none' }}>
+                                     <TableOuter
+                                        columns={TableColumnsInfo.SETTING_SYSTEM}
+                                        data={systemData}
+                                        onRowClick={() => console.log('Row clicked')}
+                                    />
                                  </div>
                              </form>
                          )}
@@ -290,35 +259,12 @@ const Setting = ({ }) => {
                                      </div>
                                  </div>
          
-                                 <div className="setting_part_table_outer">
-                                     <div className="application_content_header">
-                                         <button><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
-                                         <div>1-5</div>
-                                         <button><FontAwesomeIcon icon={faChevronRight} fixedWidth/></button>
-                                         <button><FontAwesomeIcon icon={faEllipsisV} fixedWidth/></button>
-                                     </div>
-         
-                                     <table className="network_new_cluster_table">
-                                         <thead>
-                                             <tr>
-                                                 <th></th>
-                                                 <th>이름</th>
-                                                 <th>설명</th>
-                                             </tr>
-                                         </thead>
-                                         <tbody>
-                                             <tr>
-                                                 <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
-                                                 <td>ovirt-administrator</td>
-                                                 <td>ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ</td>
-                                             </tr>
-                                             <tr>
-                                                 <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
-                                                 <td>ovirt-administrator</td>
-                                                 <td></td>
-                                             </tr>
-                                         </tbody>
-                                     </table>
+                                 <div className="setting_part_table_outer" style={{ borderBottom: 'none' }}>
+                                     <TableOuter
+                                        columns={TableColumnsInfo.SETTING_ROLE}
+                                        data={userRadioData}
+                                        onRowClick={() => console.log('Row clicked')}
+                                    />
                                  </div>
                              </form>
                          )}
@@ -334,28 +280,11 @@ const Setting = ({ }) => {
                                  </div>
          
                                  <div className="setting_part_table_outer">
-                                     <div className="application_content_header">
-                                         <button><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
-                                         <div>1-5</div>
-                                         <button><FontAwesomeIcon icon={faChevronRight} fixedWidth/></button>
-                                         <button><FontAwesomeIcon icon={faEllipsisV} fixedWidth/></button>
-                                     </div>
-         
-                                     <table className="network_new_cluster_table">
-                                         <thead>
-                                             <tr>
-                                                 <th>이름</th>
-                                             </tr>
-                                         </thead>
-                                         <tbody>
-                                             <tr>
-                                                 <td>ovirt-administrator</td>
-                                             </tr>
-                                             <tr>
-                                                 <td>ovirt-administrator</td>
-                                             </tr>
-                                         </tbody>
-                                     </table>
+                                 <TableOuter
+                                        columns={TableColumnsInfo.SETTING_INSTANCE}
+                                        data={instanceData}
+                                        onRowClick={() => console.log('Row clicked')}
+                                    />
                                  </div>
                              </form>
                          )}
@@ -364,81 +293,26 @@ const Setting = ({ }) => {
                              <form id="setting_mac_form">
                                  <div className="setting_part_nav">
                                      <div className="setting_buttons">
-                                         <div id="setting_mac_new_btn" onClick={() => openPopup('macNew')}>새로 만들기</div>
+                                         <div id="setting_mac_new_btn" onClick={() => openPopup('macNew')}>추가</div>
                                          <div id="setting_mac_edit_btn" onClick={() => openPopup('macEdit')}>편집</div>
                                          <div>제거</div>
                                      </div>
                                  </div>
-         
+                               
                                  <div className="setting_part_table_outer" style={{ borderBottom: 'none' }}>
-                                     <div className="application_content_header">
-                                         <button><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
-                                         <div>1-5</div>
-                                         <button><FontAwesomeIcon icon={faChevronRight} fixedWidth/></button>
-                                         <button><FontAwesomeIcon icon={faEllipsisV} fixedWidth/></button>
-                                     </div>
-         
-                                     <table className="network_new_cluster_table">
-                                         <thead>
-                                             <tr>
-                                                 <th></th>
-                                                 <th>이름</th>
-                                                 <th>설명</th>
-                                             </tr>
-                                         </thead>
-                                         <tbody>
-                                             <tr>
-                                                 <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
-                                                 <td>ovirt-administrator</td>
-                                                 <td>ovirt-administrator</td>
-                                             </tr>
-                                             <tr>
-                                                 <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
-                                                 <td>ovirt-administrator</td>
-                                                 <td>ovirt-administrator</td>
-                                             </tr>
-                                         </tbody>
-                                     </table>
+                                     <TableOuter
+                                        columns={TableColumnsInfo.SETTING_USER}
+                                        data={userRadioData}
+                                        onRowClick={() => console.log('Row clicked')}
+                                    />
                                  </div>
          
                                  <div className="setting_part_table_outer">
-                                     <div className="application_content_header">
-                                         <button><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
-                                         <div>1-5</div>
-                                         <button><FontAwesomeIcon icon={faChevronRight} fixedWidth/></button>
-                                         <button><FontAwesomeIcon icon={faEllipsisV} fixedWidth/></button>
-                                     </div>
-         
-                                     <table className="network_new_cluster_table">
-                                         <thead>
-                                             <tr>
-                                                 <th></th>
-                                                 <th>사용자</th>
-                                                 <th>인증 공급자</th>
-                                                 <th>네임 스페이스</th>
-                                                 <th>역할</th>
-                                                 <th>생성일</th>
-                                             </tr>
-                                         </thead>
-                                         <tbody>
-                                             <tr>
-                                                 <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
-                                                 <td>ovirt-administrator</td>
-                                                 <td>ovirt-administrator</td>
-                                                 <td>*</td>
-                                                 <td>ovirt-adm</td>
-                                                 <td>2023.12.29AM11:40:58</td>
-                                             </tr>
-                                             <tr>
-                                                 <td><FontAwesomeIcon icon={faHeart} fixedWidth/></td>
-                                                 <td>ovirt-administrator</td>
-                                                 <td>ovirt-administrator</td>
-                                                 <td>*</td>
-                                                 <td>ovirt-adm</td>
-                                                 <td>2023.12.29AM11:40:58</td>
-                                             </tr>
-                                         </tbody>
-                                     </table>
+                                    <TableOuter
+                                        columns={TableColumnsInfo.SETTING_SYSTEM}
+                                        data={systemData}
+                                        onRowClick={() => console.log('Row clicked')}
+                                    />
                                  </div>
                              </form>
                          )}
@@ -582,22 +456,7 @@ const Setting = ({ }) => {
                 </div>
 
                 <div className="power_table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>이름</th>
-                                <th>성</th>
-                                <th>사용자 이름</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>dddddddddddddddddddddd</td>
-                                <td>2024. 1. 17. PM 3:14:39</td>
-                                <td>Snapshot 'on2o-ap01-Snapshot-2024_01_17' been completed.</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <Table columns={TableColumnsInfo.SETTING_POPUP_USER} data={userData}/>
                 </div>
 
                 <div className="power_last_content" style={{ padding: "0.1rem 0.3rem" }}>
@@ -877,7 +736,7 @@ const Setting = ({ }) => {
                              </div>
                              <div className='serial_console'>
                                 <div className='font-extrabold'>Tables</div>
-                                <div>
+                                <div className='flex'>
                                     <input type="checkbox" id="enable_forwarding" name="enable_forwarding" />
                                     <label htmlFor="enable_forwarding">그리드 설정을 유지</label>
                                     <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
@@ -890,7 +749,7 @@ const Setting = ({ }) => {
                      )}
      
                     {activeSettingForm === 'system' && (
-                    <div className='text-sm p-1.5'>
+                    <div className='text-sm p-1.5 flex'>
                         <input type="checkbox" id="enable_forwarding" name="enable_forwarding" />
                         <label htmlFor="enable_forwarding">Show confirmation dialog on Suspend VM</label>
                     </div>
