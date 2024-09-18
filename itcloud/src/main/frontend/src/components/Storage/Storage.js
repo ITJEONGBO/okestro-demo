@@ -218,7 +218,7 @@ const Storage = () => {
               <>
                 <div className="content_header_right">
                   <button id="new_domain_btn" onClick={() => openPopup('newDomain')}>새로운 도메인</button>
-                  <button id="get_domain_btn" onClick={() => openPopup('getDomain')}>도메인 가져오기</button>
+                  <button id="get_domain_btn" onClick={() => openPopup('newDomain')}>도메인 가져오기</button>
                   <button id="administer_domain_btn" onClick={() => openPopup('manageDomain')}>도메인 관리</button>
                   <button>삭제</button>
                   <button>Connections</button>
@@ -678,8 +678,8 @@ const Storage = () => {
         </div>
       </Modal>
 
-      {/*도메인(도메인 가져오기)팝업 */}
-      <Modal
+      {/*도메인(도메인 가져오기)팝업  위와동일*/}
+      {/* <Modal
         isOpen={activePopup === 'getDomain'}
         onRequestClose={closePopup}
         contentLabel="도메인 가져오기"
@@ -818,7 +818,7 @@ const Storage = () => {
             <button onClick={closePopup}>취소</button>
           </div>
         </div>
-      </Modal>
+      </Modal> */}
 
       {/*도메인(도메인 관리)팝업 */}
       <Modal

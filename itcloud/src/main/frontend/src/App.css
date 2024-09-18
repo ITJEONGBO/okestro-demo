@@ -414,7 +414,14 @@ input[type="text"],select{
 .edit_aside > div span {
     font-size: 0.33rem;
 }
-
+/*체크박스*/
+.checkbox_group{
+    display:flex;
+}
+ /*막힌 input*/
+.disabled {
+    cursor: not-allowed;
+}
 /* 중복끝 */
 
 .link-no-underline {

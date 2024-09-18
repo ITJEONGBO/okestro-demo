@@ -176,13 +176,11 @@ const VmHostChart = () => {
                 clickableColumnIndex={[1]} 
               />
             )}
-            {activeChart === 'template' && (
-              <Templates/>
-            )}
+           
           </div>
         </div>
       </div>
-      
+  
 
             {/* 편집팝업 */}
             <div id="edit_popup_bg" style={{ display: 'none' }}>

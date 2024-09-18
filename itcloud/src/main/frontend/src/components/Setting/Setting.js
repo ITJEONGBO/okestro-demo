@@ -156,15 +156,101 @@ const Setting = ({ }) => {
                 {activeTab === 'user' && (
                      <>
                      <div className="content_header_right"> 
-                         <button>추가</button>
-                         <button>삭제</button>
-                         <button>태그설정</button>
+                         <button onClick={() => openPopup('uer_add')}>추가</button>
+                         <button >삭제</button>
+                         <button onClick={() => openPopup('add_tag')}>태그설정</button>
                      </div>
 
                      <div className="section_table_outer">
                          <Table columns={TableColumnsInfo.SETTING_USER} data={userData}/>
                      </div>
-                           
+                     <Modal
+                        isOpen={activePopup === 'uer_add'}
+                        onRequestClose={closePopup}
+                        contentLabel="추가"
+                        className="Modal"
+                        overlayClassName="Overlay newRolePopupOverlay"
+                        shouldCloseOnOverlayClick={false}
+                    >
+                        <div className="setting_system_new_popup">
+                            <div className="popup_header">
+                                <h1>사용자 및 그룹추가</h1>
+                                <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                            </div>
+
+                            <div className="power_radio_group">
+                                <input type="radio" id="user" name="option" defaultChecked />
+                                <label htmlFor="user">사용자</label>
+                                
+                                <input type="radio" id="group" name="option" />
+                                <label htmlFor="group">그룹</label>
+                            </div>
+
+                            <div className="power_contents_outer">
+                                <div>
+                                    <label htmlFor="cluster">검색:</label>
+                                    <select id="cluster">
+                                        <option value="default">Default</option>   
+                                    </select>
+                                </div>
+                                <div>
+                                    <label htmlFor="cluster">네임스페이스:</label>
+                                    <select id="cluster">
+                                        <option value="default">Default</option>   
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style={{ color: "white" }}>.</label>
+                                    <input type="text" id="name" value="" />
+                                </div>
+                                <div>
+                                    <div style={{ color: "white" }}>.</div>
+                                    <input type="submit" value="검색" />
+                                </div>
+                            </div>
+
+                            <div className="power_table">
+                                <Table columns={TableColumnsInfo.SETTING_POPUP_USER} data={userData}/>
+                            </div>
+
+                            <div className="power_last_content" style={{ padding: "0.1rem 0.3rem" }}>
+                                <label htmlFor="cluster">할당된 역할:</label>
+                                <select id="cluster" style={{ width: "65%" }}>
+                                    <option value="default">UserRole</option>   
+                                </select>
+                            </div>
+
+                            <div className="edit_footer">
+                                <button style={{ display: "none" }}></button>
+                                <button>OK</button>
+                                <button onClick={closePopup}>취소</button>
+                            </div>
+                        </div>
+                    </Modal>  
+                    <Modal
+                        isOpen={activePopup === 'add_tag'}
+                        onRequestClose={closePopup}
+                        contentLabel="추가"
+                        className="Modal"
+                        overlayClassName="Overlay newRolePopupOverlay"
+                        shouldCloseOnOverlayClick={false}
+                    >
+                        <div className="setting_add_tag">
+                            <div className="popup_header">
+                                <h1>태그 설정</h1>
+                                <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                            </div>
+                            <div className='setting_add_tag_checkbox'>
+                                <input type="checkbox" id="enable_forwarding" name="enable_forwarding" />
+                                <label htmlFor="enable_forwarding">그리드 설정을 유지</label>
+                            </div>
+                            <div className="edit_footer">
+                                <button style={{ display: "none" }}></button>
+                                <button>OK</button>
+                                <button onClick={closePopup}>취소</button>
+                            </div>
+                        </div>
+                    </Modal>  
                    </>
                 )}
                 {/* 설정 */}
@@ -330,293 +416,293 @@ const Setting = ({ }) => {
                     {/* 설정팝업 역할(새로만들기 팝업) */}
                     <Modal
 
-            isOpen={activePopup === 'newRole'}
-            onRequestClose={closePopup}
-            contentLabel="새로 만들기"
-            className="Modal"
-              overlayClassName="Overlay newRolePopupOverlay"
-            shouldCloseOnOverlayClick={false}
-        >
-            <div className="setting_part_new_popup" >
-                <div className="popup_header">
-                    <h1>새 역할</h1>
-                    <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-                </div>
+                        isOpen={activePopup === 'newRole'}
+                        onRequestClose={closePopup}
+                        contentLabel="새로 만들기"
+                        className="Modal"
+                        overlayClassName="Overlay newRolePopupOverlay"
+                        shouldCloseOnOverlayClick={false}
+                    >
+                        <div className="setting_part_new_popup" >
+                            <div className="popup_header">
+                                <h1>새 역할</h1>
+                                <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                            </div>
 
-                <div className="set_part_text">
-                    <div>
-                        <div>
-                            <label htmlFor="new_role_name">이름</label><br />
-                            <input type="text" id="new_role_name" value="test02" />
-                        </div>
-                        <div>
-                            <label htmlFor="new_role_desc">설명</label><br />
-                            <input type="text" id="new_role_desc" value="test02" />
-                        </div>
-                    </div>
-                    <span>계정 유형:</span>
-                    <div>
-                        <div>
-                            <input type="radio" id="new_role_user" name="new_role_type" value="user" checked />
-                            <label htmlFor="new_role_user" style={{ marginRight: '0.3rem' }}>사용자</label>
-                        </div>
-                        <div>
-                            <input type="radio" id="new_role_admin" name="new_role_type" value="admin" />
-                            <label htmlFor="new_role_admin">관리자</label>
-                        </div>
-                    </div>
-                </div>
+                            <div className="set_part_text">
+                                <div>
+                                    <div>
+                                        <label htmlFor="new_role_name">이름</label><br />
+                                        <input type="text" id="new_role_name" value="test02" />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="new_role_desc">설명</label><br />
+                                        <input type="text" id="new_role_desc" value="test02" />
+                                    </div>
+                                </div>
+                                <span>계정 유형:</span>
+                                <div>
+                                    <div>
+                                        <input type="radio" id="new_role_user" name="new_role_type" value="user" checked />
+                                        <label htmlFor="new_role_user" style={{ marginRight: '0.3rem' }}>사용자</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" id="new_role_admin" name="new_role_type" value="admin" />
+                                        <label htmlFor="new_role_admin">관리자</label>
+                                    </div>
+                                </div>
+                            </div>
 
-                <div className="set_part_checkboxs">
-                    <span>작업 허용을 위한 확인란</span>
-                    <div className="set_part_buttons">
-                        <div>모두 확장</div>
-                        <div>모두 축소</div>
-                    </div>
-                    <div className="checkbox_toolbar">
-                        <div>
-                            <input type="checkbox" id="new_role_system" name="new_role_permissions" />
-                            <label htmlFor="new_role_system">시스템</label>
-                        </div>
-                        <div>
-                            <input type="checkbox" id="new_role_network" name="new_role_permissions" />
-                            <label htmlFor="new_role_network">네트워크</label>
-                        </div>
-                        <div>
-                            <input type="checkbox" id="new_role_template" name="new_role_permissions" />
-                            <label htmlFor="new_role_template">템플릿</label>
-                        </div>
-                        <div>
-                            <input type="checkbox" id="new_role_vm" name="new_role_permissions" />
-                            <label htmlFor="new_role_vm">가상머신</label>
-                        </div>
-                        <div>
-                            <input type="checkbox" id="new_role_vm_pool" name="new_role_permissions" />
-                            <label htmlFor="new_role_vm_pool">가상머신 풀</label>
-                        </div>
-                        <div>
-                            <input type="checkbox" id="new_role_disk" name="new_role_permissions" />
-                            <label htmlFor="new_role_disk">디스크</label>
-                        </div>
-                    </div>
-                </div>
+                            <div className="set_part_checkboxs">
+                                <span>작업 허용을 위한 확인란</span>
+                                <div className="set_part_buttons">
+                                    <div>모두 확장</div>
+                                    <div>모두 축소</div>
+                                </div>
+                                <div className="checkbox_toolbar">
+                                    <div>
+                                        <input type="checkbox" id="new_role_system" name="new_role_permissions" />
+                                        <label htmlFor="new_role_system">시스템</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" id="new_role_network" name="new_role_permissions" />
+                                        <label htmlFor="new_role_network">네트워크</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" id="new_role_template" name="new_role_permissions" />
+                                        <label htmlFor="new_role_template">템플릿</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" id="new_role_vm" name="new_role_permissions" />
+                                        <label htmlFor="new_role_vm">가상머신</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" id="new_role_vm_pool" name="new_role_permissions" />
+                                        <label htmlFor="new_role_vm_pool">가상머신 풀</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" id="new_role_disk" name="new_role_permissions" />
+                                        <label htmlFor="new_role_disk">디스크</label>
+                                    </div>
+                                </div>
+                            </div>
 
-                <div className="edit_footer">
-                    <button style={{ display: 'none' }}></button>
-                    <button>OK</button>
-                    <button onClick={closePopup}>취소</button>
-                </div>
-            </div>
+                            <div className="edit_footer">
+                                <button style={{ display: 'none' }}></button>
+                                <button>OK</button>
+                                <button onClick={closePopup}>취소</button>
+                            </div>
+                        </div>
                     </Modal>
 
                     {/* 설정팝업 시스템권한(추가 팝업) */}
                     <Modal
-            isOpen={activePopup === 'addSystemRole'}
-            onRequestClose={closePopup}
-            contentLabel="추가"
-            className="Modal"
-            overlayClassName="Overlay newRolePopupOverlay"
-            shouldCloseOnOverlayClick={false}
-        >
-            <div className="setting_system_new_popup">
-                <div className="popup_header">
-                    <h1>사용자에게 권한 추가</h1>
-                    <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-                </div>
+                        isOpen={activePopup === 'addSystemRole'}
+                        onRequestClose={closePopup}
+                        contentLabel="추가"
+                        className="Modal"
+                        overlayClassName="Overlay newRolePopupOverlay"
+                        shouldCloseOnOverlayClick={false}
+                    >
+                        <div className="setting_system_new_popup">
+                            <div className="popup_header">
+                                <h1>사용자에게 권한 추가</h1>
+                                <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                            </div>
 
-                <div className="power_radio_group">
-                    <input type="radio" id="user" name="option" defaultChecked />
-                    <label htmlFor="user">사용자</label>
-                    
-                    <input type="radio" id="group" name="option" />
-                    <label htmlFor="group">그룹</label>
-                </div>
+                            <div className="power_radio_group">
+                                <input type="radio" id="user" name="option" defaultChecked />
+                                <label htmlFor="user">사용자</label>
+                                
+                                <input type="radio" id="group" name="option" />
+                                <label htmlFor="group">그룹</label>
+                            </div>
 
-                <div className="power_contents_outer">
-                    <div>
-                        <label htmlFor="cluster">검색:</label>
-                        <select id="cluster">
-                            <option value="default">Default</option>   
-                        </select>
-                    </div>
-                    <div>
-                        <label htmlFor="cluster">네임스페이스:</label>
-                        <select id="cluster">
-                            <option value="default">Default</option>   
-                        </select>
-                    </div>
-                    <div>
-                        <label style={{ color: "white" }}>.</label>
-                        <input type="text" id="name" value="test02" />
-                    </div>
-                    <div>
-                        <div style={{ color: "white" }}>.</div>
-                        <input type="submit" value="검색" />
-                    </div>
-                </div>
+                            <div className="power_contents_outer">
+                                <div>
+                                    <label htmlFor="cluster">검색:</label>
+                                    <select id="cluster">
+                                        <option value="default">Default</option>   
+                                    </select>
+                                </div>
+                                <div>
+                                    <label htmlFor="cluster">네임스페이스:</label>
+                                    <select id="cluster">
+                                        <option value="default">Default</option>   
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style={{ color: "white" }}>.</label>
+                                    <input type="text" id="name" value="test02" />
+                                </div>
+                                <div>
+                                    <div style={{ color: "white" }}>.</div>
+                                    <input type="submit" value="검색" />
+                                </div>
+                            </div>
 
-                <div className="power_table">
-                    <Table columns={TableColumnsInfo.SETTING_POPUP_USER} data={userData}/>
-                </div>
+                            <div className="power_table">
+                                <Table columns={TableColumnsInfo.SETTING_POPUP_USER} data={userData}/>
+                            </div>
 
-                <div className="power_last_content" style={{ padding: "0.1rem 0.3rem" }}>
-                    <label htmlFor="cluster">할당된 역할:</label>
-                    <select id="cluster" style={{ width: "65%" }}>
-                        <option value="default">UserRole</option>   
-                    </select>
-                </div>
+                            <div className="power_last_content" style={{ padding: "0.1rem 0.3rem" }}>
+                                <label htmlFor="cluster">할당된 역할:</label>
+                                <select id="cluster" style={{ width: "65%" }}>
+                                    <option value="default">UserRole</option>   
+                                </select>
+                            </div>
 
-                <div className="edit_footer">
-                    <button style={{ display: "none" }}></button>
-                    <button>OK</button>
-                    <button onClick={closePopup}>취소</button>
-                </div>
-            </div>
+                            <div className="edit_footer">
+                                <button style={{ display: "none" }}></button>
+                                <button>OK</button>
+                                <button onClick={closePopup}>취소</button>
+                            </div>
+                        </div>
                     </Modal>
                     
                     {/* 설정팝업 스케줄링정책(새로만들기 팝업) */}
                     <Modal
-            isOpen={activePopup === 'newSchedule'}
-            onRequestClose={closePopup}
-            contentLabel="새로 만들기"
-            className="Modal"
-              overlayClassName="Overlay newRolePopupOverlay"
-            shouldCloseOnOverlayClick={false}
-        >
-            <div className="setting_schedule_new_popup">
-                <div className="popup_header">
-                    <h1>새 스케줄링 정책</h1>
-                    <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-                </div>
-                
-                <div className="set_part_text" style={{ borderBottom: 'none' }}>
-                    <div>
-                        <div>
-                            <label htmlFor="name">이름</label><br />
-                            <input type="text" id="name" defaultValue="test02" />
-                        </div>
-                        <div>
-                            <label htmlFor="name">설명</label><br />
-                            <input type="text" id="name" defaultValue="test02" />
-                        </div>
-                    </div>
-                </div>
+                        isOpen={activePopup === 'newSchedule'}
+                        onRequestClose={closePopup}
+                        contentLabel="새로 만들기"
+                        className="Modal"
+                        overlayClassName="Overlay newRolePopupOverlay"
+                        shouldCloseOnOverlayClick={false}
+                    >
+                        <div className="setting_schedule_new_popup">
+                            <div className="popup_header">
+                                <h1>새 스케줄링 정책</h1>
+                                <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                            </div>
+                            
+                            <div className="set_part_text" style={{ borderBottom: 'none' }}>
+                                <div>
+                                    <div>
+                                        <label htmlFor="name">이름</label><br />
+                                        <input type="text" id="name" defaultValue="test02" />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="name">설명</label><br />
+                                        <input type="text" id="name" defaultValue="test02" />
+                                    </div>
+                                </div>
+                            </div>
 
-                <div className="set_schedule_contents">
-                    <div className="set_schedule_contents_left">
-                        <div>
-                            <h1>필터 모듈</h1>
-                            <div style={{ fontSize: '0.26rem' }}>드래그하거나 또는 컨텍스트 메뉴를 사용하여 변경 활성화된 필터</div>
-                            <div></div>
-                        </div>
-                        <div>
-                            <h1>필터 모듈</h1>
-                            <div style={{ fontSize: '0.26rem' }}>드래그하거나 또는 컨텍스트 메뉴를 사용하여 변경 활성화된 필터</div>
-                            <div></div>
-                        </div>
-                    </div>
-                    <div className="set_schedule_contents_right">
-                        <div>
-                            <span>비활성화된 필터</span>
-                            <div className="schedule_boxs">
-                                <div>Migration</div>
-                                <div>Migration</div>
-                                <div>Migration</div>
-                                <div>Migration</div>
-                                <div>Migration</div>
-                                <div>Migration</div>
+                            <div className="set_schedule_contents">
+                                <div className="set_schedule_contents_left">
+                                    <div>
+                                        <h1>필터 모듈</h1>
+                                        <div style={{ fontSize: '0.26rem' }}>드래그하거나 또는 컨텍스트 메뉴를 사용하여 변경 활성화된 필터</div>
+                                        <div></div>
+                                    </div>
+                                    <div>
+                                        <h1>필터 모듈</h1>
+                                        <div style={{ fontSize: '0.26rem' }}>드래그하거나 또는 컨텍스트 메뉴를 사용하여 변경 활성화된 필터</div>
+                                        <div></div>
+                                    </div>
+                                </div>
+                                <div className="set_schedule_contents_right">
+                                    <div>
+                                        <span>비활성화된 필터</span>
+                                        <div className="schedule_boxs">
+                                            <div>Migration</div>
+                                            <div>Migration</div>
+                                            <div>Migration</div>
+                                            <div>Migration</div>
+                                            <div>Migration</div>
+                                            <div>Migration</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <span>비활성화된 가중치</span>
+                                        <div className="schedule_boxs">
+                                            <div>Migration</div>
+                                            <div>Migration</div>
+                                            <div>Migration</div>
+                                            <div>Migration</div>
+                                            <div>Migration</div>
+                                            <div>Migration</div>
+                                            <div>Migration</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="set_schedule_balance">
+                                <label htmlFor="network_port_security">
+                                    비활성화된 필터<FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }}/>
+                                </label>
+                                <select>
+                                    <option value="default">활성화</option>   
+                                </select>
+                            </div>
+
+                            <div className="edit_footer">
+                                <button style={{ display: 'none' }}></button>
+                                <button>OK</button>
+                                <button onClick={closePopup}>취소</button>
                             </div>
                         </div>
-                        <div>
-                            <span>비활성화된 가중치</span>
-                            <div className="schedule_boxs">
-                                <div>Migration</div>
-                                <div>Migration</div>
-                                <div>Migration</div>
-                                <div>Migration</div>
-                                <div>Migration</div>
-                                <div>Migration</div>
-                                <div>Migration</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="set_schedule_balance">
-                    <label htmlFor="network_port_security">
-                        비활성화된 필터<FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }}/>
-                    </label>
-                    <select>
-                        <option value="default">활성화</option>   
-                    </select>
-                </div>
-
-                <div className="edit_footer">
-                    <button style={{ display: 'none' }}></button>
-                    <button>OK</button>
-                    <button onClick={closePopup}>취소</button>
-                </div>
-            </div>
 
                     </Modal>
 
                     {/* 설정팝업 MAC주소 풀(추가 팝업) */}
                     <Modal
-            isOpen={activePopup === 'macNew'}
-            onRequestClose={closePopup}
-            contentLabel="새로만들기"
-            className="Modal"
-                overlayClassName="Overlay newRolePopupOverlay"
-            shouldCloseOnOverlayClick={false}
-        >
-            <div className="setting_mac_new_popup">
-                <div className="popup_header">
-                    <h1>새 MAC주소 풀</h1>
-                    <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-                </div>
-                
-                <div className="setting_mac_textboxs">
-                    <div>
-                        <span>이름</span>
-                        <input type="text" />
-                    </div>
-                    <div>
-                        <span>설명</span>
-                        <input type="text" />
-                    </div>
-                </div>
-                <div className="setting_mac_checkbox">
-                    <input type="checkbox" id="allow_duplicate" name="allow_duplicate" />
-                    <label htmlFor="allow_duplicate">중복 허용</label>
-                </div>
-                
-                <div className="network_parameter_outer">
-                    <span>MAC 주소 범위</span>
-                    <div style={{ marginBottom: '0.2rem' }}>
-                        <div>
-                            <span style={{ marginRight: '0.3rem' }}>범위 시작</span>
-                            <input type="text" />
-                        </div>
-                        <div>
-                            <span>범위 끝</span>
-                            <input type="text" />
-                        </div>
-                        <div id="buttons">
-                            <button>+</button>
-                            <button>-</button>
-                        </div>
-                    </div>
-                    <div>
-                        MAC수 : 해당없음
-                    </div>
-                </div>
+                        isOpen={activePopup === 'macNew'}
+                        onRequestClose={closePopup}
+                        contentLabel="새로만들기"
+                        className="Modal"
+                            overlayClassName="Overlay newRolePopupOverlay"
+                        shouldCloseOnOverlayClick={false}
+                    >
+                        <div className="setting_mac_new_popup">
+                            <div className="popup_header">
+                                <h1>새 MAC주소 풀</h1>
+                                <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                            </div>
+                            
+                            <div className="setting_mac_textboxs">
+                                <div>
+                                    <span>이름</span>
+                                    <input type="text" />
+                                </div>
+                                <div>
+                                    <span>설명</span>
+                                    <input type="text" />
+                                </div>
+                            </div>
+                            <div className="setting_mac_checkbox">
+                                <input type="checkbox" id="allow_duplicate" name="allow_duplicate" />
+                                <label htmlFor="allow_duplicate">중복 허용</label>
+                            </div>
+                            
+                            <div className="network_parameter_outer">
+                                <span>MAC 주소 범위</span>
+                                <div style={{ marginBottom: '0.2rem' }}>
+                                    <div>
+                                        <span style={{ marginRight: '0.3rem' }}>범위 시작</span>
+                                        <input type="text" />
+                                    </div>
+                                    <div>
+                                        <span>범위 끝</span>
+                                        <input type="text" />
+                                    </div>
+                                    <div id="buttons">
+                                        <button>+</button>
+                                        <button>-</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    MAC수 : 해당없음
+                                </div>
+                            </div>
 
-                <div className="edit_footer">
-                    <button style={{ display: 'none' }}></button>
-                    <button>OK</button>
-                    <button onClick={closePopup}>취소</button>
-                </div>
-            </div>
+                            <div className="edit_footer">
+                                <button style={{ display: 'none' }}></button>
+                                <button>OK</button>
+                                <button onClick={closePopup}>취소</button>
+                            </div>
+                        </div>
 
                     </Modal>
                     {/* 설정팝업 MAC주소 풀(편집 팝업) */}

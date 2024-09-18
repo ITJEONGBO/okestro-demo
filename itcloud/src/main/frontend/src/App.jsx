@@ -100,10 +100,10 @@ const App = () => {
               <Route path="/settings" element={<Setting />} />
               <Route path="/computing/vms/:id" element={<Vm />} />
               <Route path="/computing/vms/:id/:section" element={<Vm />} />
-              <Route path="/computing/template" element={<TemplateDetail />} />
               <Route path="/computing/host" element={<Host />} />
               <Route path="/computing/vms" element={<VmTemplateChart />} />
               <Route path="/computing/templates" element={<Templates />} />
+              <Route path="/computing/templates:/id" element={<TemplateDetail />} />
               <Route path="/computing/host/:id" element={<HostDetail />}/>
               <Route path="/computing/clusters" element={<Cluster />} />
               <Route path="/computing/clusters/:id" element={<ClusterName />} /> 

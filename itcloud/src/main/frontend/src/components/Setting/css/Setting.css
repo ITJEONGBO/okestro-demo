@@ -365,3 +365,23 @@
 
   margin-bottom: 0;
 }
+/*사용자(태그설정)*/
+.setting_add_tag{
+  position: absolute;
+  box-sizing: border-box;
+  border-radius: 4px;
+  background: #fff;
+  top: 50%;
+  height: 40%;
+  width: 27%;
+  z-index: 3;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+.setting_add_tag_checkbox{
+  display: flex;
+  font-size: 0.35rem;
+  padding: 0.25rem;
+
+}
