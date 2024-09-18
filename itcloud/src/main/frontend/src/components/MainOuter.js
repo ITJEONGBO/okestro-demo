@@ -89,8 +89,8 @@ const MainOuter = ({ children }) => {
         updateSelectedState('computing', 'clusters', true, true);
       } else if (location.pathname.includes('/computing/datacenters')) {
         updateSelectedState('computing', 'data_center', true);
-      } else if (location.pathname.includes('/computing/vmhost-chart')) {
-        updateSelectedState('computing', 'vmhost-chart', true, true, true);
+      } else if (location.pathname.includes('/computing/vms')) {
+        updateSelectedState('computing', 'vms', true, true, true);
       } else {
         updateSelectedState('computing', null);
       }
@@ -156,8 +156,8 @@ const MainOuter = ({ children }) => {
         updateSelectedState('computing', 'clusters', true, true);
       } else if (location.pathname.includes('/computing/datacenters')) {
         updateSelectedState('computing', 'data_center', true);
-      } else if (location.pathname.includes('/computing/vmhost-chart')) {
-        updateSelectedState('computing', 'vmhost-chart', true, true, true);
+      } else if (location.pathname.includes('/computing/vms')) {
+        updateSelectedState('computing', 'vms', true, true, true);
       } else {
         updateSelectedState('computing', null);
       }
@@ -308,8 +308,8 @@ const MainOuter = ({ children }) => {
     };
     
     const handleFourthDivClick = () => {
-        setSelectedDiv('vmhost-chart');
-        navigate('/computing/vmhost-chart');
+        setSelectedDiv('vms');
+        navigate('/computing/vms');
     };
 
     // 스토리지
@@ -547,11 +547,11 @@ const MainOuter = ({ children }) => {
         <div 
         className="aside_popup_fourth_content" 
         id="aside_popup_fourth" 
-        style={{ backgroundColor: selectedDiv === 'vmhost-chart' ? 'rgb(218, 236, 245)' : '' }} 
+        style={{ backgroundColor: selectedDiv === 'vms' ? 'rgb(218, 236, 245)' : '' }} 
         onClick={() => {
-            if (selectedDiv !== 'vmhost-chart') {
-                setSelectedDiv('vmhost-chart');
-                navigate('/computing/vmhost-chart');
+            if (selectedDiv !== 'vms') {
+                setSelectedDiv('vms');
+                navigate('/computing/vms');
             }
         }}
     >

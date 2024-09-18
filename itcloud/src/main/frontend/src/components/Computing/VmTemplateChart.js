@@ -7,6 +7,7 @@ import TableColumnsInfo from '../table/TableColumnsInfo';
 import './css/Host.css';
 import Footer from '../footer/Footer';
 import { useAllTemplates, useAllVMs } from '../../api/RQHook';
+import Templates from './Templates';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -100,7 +101,7 @@ const VmHostChart = () => {
 
   const handleRowClick = (row, column) => {
     if (column.accessor === 'name') {
-      navigate(`/computing/host/${row.name}`); // 해당 이름을 URL로 전달하며 HostDetail로 이동합니다.
+      navigate(`/computing/vms/${row.id}`); // 해당 이름을 URL로 전달하며 HostDetail로 이동합니다.
     }
   };
 
@@ -116,6 +117,7 @@ const VmHostChart = () => {
   
   function toTableItemPredicateVMs(vm) {
     return {
+      id: vm?.id ?? '',
       icon: '',                                   
       name: vm?.name ?? 'Unknown',               
       comment: vm?.comment ?? '',                 
@@ -129,29 +131,7 @@ const VmHostChart = () => {
       description: vm?.description ?? 'No description',  
     };
   }
-  
-  const { 
-    data: templates, 
-    status: templatesStatus,
-    isRefetching: isTemplatesRefetching,
-    refetch: refetchTemplates, 
-    isError: isTemplatesError, 
-    error: templatesError, 
-    isLoading: isTemplatesLoading,
-  } = useAllTemplates(toTableItemPredicateTemplates);
-  
-  function toTableItemPredicateTemplates(template) {
-    return {
-      status: template?.status ?? 'Unknown',                // 템플릿 상태
-      name: template?.name ?? 'Unknown',                    // 템플릿 이름
-      version: template?.version ?? 'N/A',                  // 템플릿 버전 정보
-      description: template?.description ?? 'No description',// 템플릿 설명
-      cpuType: template?.cpuType ?? 'CPU 정보 없음',         // CPU 유형 정보
-      hostCount: template?.hostCount ?? 0,                  // 템플릿에 연결된 호스트 수
-      vmCount: template?.vmCount ?? 0,                      // 템플릿에 연결된 VM 수
-    };
-  }
-  
+
 
 
   return (
@@ -169,24 +149,35 @@ const VmHostChart = () => {
             {/* TODO: TableOuter화 */}
           <div className="section_table_outer">
             <div className='host_filter_btns'>
-              <button
-                onClick={() => setActiveChart('machine')}
+                <button
+                onClick={() => {
+                  setActiveChart('machine');
+                  navigate('/computing/vms'); // 가상머신 목록 경로로 이동
+                }}
                 className={activeChart === 'machine' ? 'active' : ''}
               >
                 가상머신 목록
               </button>
               <button
-                onClick={() => setActiveChart('template')}
+                onClick={() => {
+                    setActiveChart('template');
+                    navigate('/computing/templates'); // 템플릿 목록 경로로 이동
+                }}
                 className={activeChart === 'template' ? 'active' : ''}
-              >
-                템플릿목록
-              </button>
+                >
+                템플릿 목록
+                </button>
             </div>
             {activeChart === 'machine' && (
-              <Table columns={TableColumnsInfo.VM_CHART} data={vms} onRowClick={handleRowClick} className='machine_chart' />
+              <Table 
+                columns={TableColumnsInfo.VM_CHART} 
+                data={vms} onRowClick={handleRowClick} 
+                className='machine_chart' 
+                clickableColumnIndex={[1]} 
+              />
             )}
             {activeChart === 'template' && (
-              <Table columns={TableColumnsInfo.TEMPLATE_CHART} data={templates} onRowClick={() => {}} className='template_chart' />
+              <Templates/>
             )}
           </div>
         </div>

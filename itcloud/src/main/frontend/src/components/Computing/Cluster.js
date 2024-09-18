@@ -120,7 +120,7 @@ const Cluster = () => {
                 shouldCloseOnOverlayClick={false}
             >
                 <div className="cluster_new_popup">
-                    <div className="network_popup_header">
+                    <div className="popup_header">
                         <h1 class="text-sm">새 클러스터</h1>
                         <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                     </div>

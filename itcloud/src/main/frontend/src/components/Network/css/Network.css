@@ -226,57 +226,12 @@
     border: 1px solid  rgb(206, 206, 206);
 }
 
-.network_second_contents>span{
-    padding: 1.2% 2% 0 2%;
-    font-weight: 800;
-}
-.network_second_contents{
-    padding: 0.1rem 0;
-}
-.network_second_contents input[type="checkbox"]{
-    margin-right: 0.2rem;
-}
-.network_checkbox_type2{
-    padding: 1.2% 2%;
-}
-.network_radio_group>div:nth-child(2){
-   width: 46%;
-}
-.network_checkbox_type3>div,.network_new_vnic_buttons{
-    display: flex;
-    width: 6%;
-}
-.network_checkbox_type3 button,#network_new_vnic_form button{
-    width: 50%;
-    font-size: 0.4rem;
-    font-weight: 600;
-    cursor: pointer;
-}
-.network_new_popup form{
-    height: 69vh;
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
-}
+
+
 #network_new_cluster_form{
     padding: 1rem;
 }
-#network_new_cluster_form>span,#network_new_vnic_form>span{
-    font-size: 0.35rem;
-    font-weight: 600;
-}
-#network_new_cluster_form>div{
-    border: 1px solid rgb(209, 209, 209);
-    height: 47vh;
-}
-.network_new_cluster_table{ 
-    border-collapse: collapse;
-    width: 100%;
-    text-align: left;
-}
-.network_new_cluster_table thead{
-    background-color: #d1e2eb;
-    border-top: none;
-}
+
 
 .network_new_cluster_table th,.network_new_cluster_table td{
     border: 1px solid rgb(209, 209, 209);

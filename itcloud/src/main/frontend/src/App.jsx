@@ -17,13 +17,14 @@ import HostDetail from './components/Computing/HostDetail';
 import StorageDomainDetail from './components/Storage/StorageDomainDetail';
 import StorageDiskDetail from './components/Storage/StorageDiskDetail';
 import DataCenterDetail from './components/Computing/DataCenterDetail';
-import VmHostChart from './components/Computing/VmHostChart';
+import VmTemplateChart from './components/Computing/VmTemplateChart';
 import NetworkDetail from './components/Network/NetworkDetail';
 import DomainParts from './components/Storage/StorageDomainPart';
 import STOMP from './Socket'
 import { Toaster, toast } from 'react-hot-toast';
 import './App.css';
 import TemplateDetail from './components/Computing/TemplateDetail';
+import Templates from './components/Computing/Templates';
 
 const App = () => {
   const [stompClient, setStompClient] = useState(null);
@@ -97,10 +98,12 @@ const App = () => {
               {/* <Route path="/computing/datacenter/:name" element={<DataCenterDetail />} /> */}
               <Route path="/storage" element={<Storage />} />
               <Route path="/settings" element={<Setting />} />
-              <Route path="/computing/:name" element={<Vm />} />
+              <Route path="/computing/vms/:id" element={<Vm />} />
+              <Route path="/computing/vms/:id/:section" element={<Vm />} />
               <Route path="/computing/template" element={<TemplateDetail />} />
               <Route path="/computing/host" element={<Host />} />
-              <Route path="/computing/vmhost-chart" element={<VmHostChart />} />
+              <Route path="/computing/vms" element={<VmTemplateChart />} />
+              <Route path="/computing/templates" element={<Templates />} />
               <Route path="/computing/host/:id" element={<HostDetail />}/>
               <Route path="/computing/clusters" element={<Cluster />} />
               <Route path="/computing/clusters/:id" element={<ClusterName />} /> 

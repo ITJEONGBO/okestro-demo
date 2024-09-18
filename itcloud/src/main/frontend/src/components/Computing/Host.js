@@ -117,6 +117,7 @@ const Host = () => {
             columns={TableColumnsInfo.HOSTS_ALT} 
             data={hosts}
             onRowClick={handleRowClick} 
+            clickableColumnIndex={[1, 3]} 
           />
         </div>
       </div>

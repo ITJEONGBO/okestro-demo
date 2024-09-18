@@ -280,6 +280,7 @@
 }
 .network_checkbox_type2{
     padding: 1.2% 2%;
+    display:flex;
 }
 .network_radio_group>div:nth-child(2){
    width: 46%;
