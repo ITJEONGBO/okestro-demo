@@ -757,7 +757,7 @@ new Vue({
                 this.$http.post('/compute/template/checkDuplicateName?name=' + this.templateEditInfo.name).then(function (response) {
                     isDuplication = response.data.resultKey;
 
-                    // 하위 버전 템플릿 수정 시, 기반 템플릿 이름이 중복될 수 있음
+                    // 하위 버전 템플릿 편집 시, 기반 템플릿 이름이 중복될 수 있음
                     if (this.templateEditInfo.subName != null) {
                         isDuplication = false;
                     }

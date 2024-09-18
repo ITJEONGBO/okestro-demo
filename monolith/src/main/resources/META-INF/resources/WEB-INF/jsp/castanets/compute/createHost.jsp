@@ -16,7 +16,7 @@
 						<div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3 f-right">
 							<button class="btn btn-primary" type="reset" @click="goList()">취소</button>
 							<button type="submit" class="btn btn-success" v-if="!isUpdate" @click="createHost()">생성</button>
-							<button type="submit" class="btn btn-success" v-if="isUpdate" @click="updateHost()">수정</button>
+							<button type="submit" class="btn btn-success" v-if="isUpdate" @click="updateHost()">편집</button>
 						</div>
 					</div>
 				</div>

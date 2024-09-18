@@ -201,7 +201,7 @@ const MainOuter = ({ children }) => {
     return () => { window.removeEventListener('resize', adjustFontSize); };
   }, []);
 
-    // 네트워크 섹션에서 사용하는 것과 유사한 로직으로 수정
+    // 네트워크 섹션에서 사용하는 것과 유사한 로직으로 편집
     useEffect(() => {
         const pathParts = location.pathname.split('/');
         const lastPart = decodeURIComponent(pathParts[pathParts.length - 1]);

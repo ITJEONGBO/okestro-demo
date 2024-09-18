@@ -247,16 +247,16 @@ fun Connection.updateVm(vm: Vm): Result<Vm?> = runCatching {
     //			}
     //
     //			if(expectStatus(vmService, VmStatus.DOWN, 3000, 900000)){
-    //				log.info("가상머신 수정 완료: " + vm.name());
+    //				log.info("가상머신 편집 완료: " + vm.name());
     //				return CommonVo.createResponse();
     //			} else {
-    //				log.error("가상머신 수정 시간 초과: {}", vm.name());
-    //				return CommonVo.failResponse("가상머신 수정 시간 초과");
+    //				log.error("가상머신 편집 시간 초과: {}", vm.name());
+    //				return CommonVo.failResponse("가상머신 편집 시간 초과");
     //			}
     //		} catch (Exception e) {
     //			e.printStackTrace();
-    //			log.error("가상머신 수정 실패");
-    //			return CommonVo.failResponse("가상머신 수정 실패");
+    //			log.error("가상머신 편집 실패");
+    //			return CommonVo.failResponse("가상머신 편집 실패");
     //		}
     */
 

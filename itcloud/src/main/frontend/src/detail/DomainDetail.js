@@ -603,7 +603,7 @@ function DomainDetail({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCli
           </div>
         </div>
       </Modal>
-       {/*클러스터(네트워크 관리)팝업 -> 수정필요*/}
+       {/*클러스터(네트워크 관리)팝업 -> 편집필요*/}
        <Modal
         isOpen={activePopup === 'cluster_network_popup'}
         onRequestClose={closePopup}

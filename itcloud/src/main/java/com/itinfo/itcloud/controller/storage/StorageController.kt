@@ -128,7 +128,7 @@ class StorageController: BaseController() {
 			throw ErrorPattern.DISK_IMAGE_ID_NOT_FOUND.toException()
 		if (diskImage == null)
 			throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
-		log.info("/storages/{}/disks/image/{} ... 새가상 디스크 - 이미지 수정", dataCenterId, diskImageId)
+		log.info("/storages/{}/disks/image/{} ... 새가상 디스크 - 이미지 편집", dataCenterId, diskImageId)
 		return ResponseEntity.ok(iStorage.updateDisk(diskImage))
 	}
 

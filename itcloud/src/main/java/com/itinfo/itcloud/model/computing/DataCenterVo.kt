@@ -86,15 +86,15 @@ fun DataCenter.toDataCenterMenu(conn: Connection): DataCenterVo = DataCenterVo.b
 	status { this@toDataCenterMenu.status() }
 	version { this@toDataCenterMenu.version().major().toString() + "." + this@toDataCenterMenu.version().minor() }
 	storageType { this@toDataCenterMenu.local() }
-	clusterCnt { conn.findClusterFromDataCenter(this@toDataCenterMenu.id()).size }
-	hostCnt { conn.findHostFromDataCenter(this@toDataCenterMenu.id()).size }
+	clusterCnt { conn.findAllClustersFromDataCenter(this@toDataCenterMenu.id()).getOrDefault(listOf()).size }
+	hostCnt { conn.findAllHostsFromDataCenter(this@toDataCenterMenu.id()).getOrDefault(listOf()).size }
 }
 fun List<DataCenter>.toDataCentersMenu(conn: Connection): List<DataCenterVo> =
 	this@toDataCentersMenu.map { it.toDataCenterMenu(conn) }
 
 
 /**
- * 데이터센터 편집창
+ * 데이터센터 정보(편집창)
  */
 fun DataCenter.toDataCenterVoInfo(): DataCenterVo = DataCenterVo.builder {
 	id { this@toDataCenterVoInfo.id() }
@@ -175,4 +175,3 @@ fun List<DataCenter>.toDataCenterVos(
 	findStorageDomains: Boolean = true
 ): List<DataCenterVo> =
 	this@toDataCenterVos.map { it.toDataCenterVo(conn, findClusters, findNetworks, findStorageDomains) }
-

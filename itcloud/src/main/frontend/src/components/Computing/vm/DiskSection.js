@@ -58,7 +58,7 @@ const DiskSection = () => {
                 <div className="content_header_right">
                     <button id="disk_popup_new" onClick={openNewDiskModal}>새로 만들기</button>
                     <button id="join_popup_btn" onClick={openJoinDiskModal}>연결</button>
-                    <button>수정</button>
+                    <button>편집</button>
                     <button>제거</button>
                     <button className="content_header_popup_btn">
                         <FontAwesomeIcon icon={faEllipsisV} fixedWidth/>

@@ -44,7 +44,7 @@ interface ItStorageService {
 	@Throws(Error::class)
 	fun findAllDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo>
 	/**
-	 * [ItStorageService.findStorageDomain]
+	 * [ItStorageService.findDomain]
 	 * 데이터센터 - 스토리지 도메인 정보
 	 *
 	 * @param storageDomainId [String]
@@ -164,7 +164,7 @@ interface ItStorageService {
 	fun addDisk(image: DiskImageVo): DiskImageVo?
 	/**
 	 * [ItStorageService.updateDisk]
-	 * 디스트 수정
+	 * 디스트 편집
 	 *
 	 * @param image [DiskImageVo] 이미지 생성
 	 * @return [DiskImageVo]
@@ -275,7 +275,7 @@ interface ItStorageService {
 /*
 	LunCreateVo setDiskLun(String dcId);	 // 디스크-lun: 생성 창
 	CommonVo<Boolean> addDiskLun(LunCreateVo lun);	  // 디스크-lun: 생성
-	CommonVo<Boolean> editDiskLun(LunCreateVo lun);	 // 디스크-lun: 수정
+	CommonVo<Boolean> editDiskLun(LunCreateVo lun);	 // 디스크-lun: 편집
 	CommonVo<Boolean> cancelUpload(String diskId); // 업로드 취소
 	CommonVo<Boolean> pauseUpload(String diskId);  // 업로드 일시정지
 	CommonVo<Boolean> resumeUpload(String diskId); // 업로드 재시작
@@ -315,12 +315,8 @@ class StorageServiceImpl(
 	override fun findAllHostsFromDataCenter(dataCenterId: String): List<IdentifiedVo> {
 		log.debug("findAllHostsFromDataCenter ... dataCenterId: $dataCenterId")
 		val res: List<Host> =
-			conn.findAllHosts()
+			conn.findAllHostsFromDataCenter(dataCenterId)
 				.getOrDefault(listOf())
-				.filter {
-					conn.findCluster(it.cluster().id())
-						.getOrNull()?.dataCenter()?.id() == dataCenterId
-				}
 		return res.fromHostsToIdentifiedVos()
 	}
 
@@ -547,7 +543,7 @@ class StorageServiceImpl(
             return false
         }
 
-        // 이미지를 저장하거나 관리하는 컨테이너,.이미지의 생성, 삭제, 수정 등의 작업을 지원
+        // 이미지를 저장하거나 관리하는 컨테이너,.이미지의 생성, 삭제, 편집 등의 작업을 지원
         val imageContainer = ImageContainer()
         imageContainer.id(disk.id())
 
@@ -871,7 +867,7 @@ private fun createDisk(image: DiskImageVo, fileSize: Long): Disk {
 				.storageDomains(*arrayOf(StorageDomainBuilder().id(image.domainId).build()))
 				.sparse(image.sparse) // 할당정책: 씬 true
 				.diskProfile(DiskProfileBuilder().id(image.profileId).build()) // 없어도 상관없음
-		} else { // 수정
+		} else { // 편집
 			diskBuilder
 				.provisionedSize(
 					BigInteger.valueOf((image.size + image.appendSize).toLong())

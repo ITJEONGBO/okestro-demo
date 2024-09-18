@@ -115,7 +115,7 @@ const DomainParts = () => {
        <>
                 <div className="content_header_right">
                   <button id="storage_disk_new_btn" onClick={() => openPopup('newDisk')}>새로 만들기</button>
-                  <button>수정</button>
+                  <button>편집</button>
                   <button>제거</button>
                   <button>이동</button>
                   <button>복사</button>

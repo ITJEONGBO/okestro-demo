@@ -86,7 +86,7 @@ public class NetworkServiceImpl extends BaseService implements ItNetworkService 
         }
     }
 
-    // 네트워크 수정 창
+    // 네트워크 편집 창
     @Override
     public NetworkCreateVo setEditNetwork(String id) {
         Network network = getSystem().networksService().networkService(id).get().follow("networklabels").send().network();
@@ -94,7 +94,7 @@ public class NetworkServiceImpl extends BaseService implements ItNetworkService 
         return NetworkCreateVoKt.toNetworkCreateVo(network, getConn(), id);
     }
 
-    // 네트워크 수정
+    // 네트워크 편집
     // 중복이름 : dc 다르면 중복명 가능
     // 문제있음
     @Override
@@ -114,7 +114,7 @@ public class NetworkServiceImpl extends BaseService implements ItNetworkService 
                     .mtu(ncVo.getMtu())
                     .stp(ncVo.getStp())
                     .vlan(ncVo.getVlan() != null ? new VlanBuilder().id(ncVo.getVlan()) : null)
-//                    .externalProvider(ncVo.getExternalProvider() ? system.openstackNetworkProvidersService().list().send().providers().get(0) : null)  // 수정불가
+//                    .externalProvider(ncVo.getExternalProvider() ? system.openstackNetworkProvidersService().list().send().providers().get(0) : null)  // 편집불가
                     .dataCenter(dataCenter);
 
             // 외부 공급자 처리시 레이블 생성 안됨

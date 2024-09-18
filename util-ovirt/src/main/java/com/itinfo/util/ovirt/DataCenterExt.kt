@@ -42,30 +42,30 @@ fun Connection.findDataCenter(dcId: String): Result<DataCenter?> = runCatching {
 fun List<DataCenter>.nameDuplicateDataCenter(dataCenterName: String, dataCenterId: String? = null): Boolean =
 	this.filter { it.id() != dataCenterId }.any { it.name() == dataCenterName }
 
-fun Connection.findClusterFromDataCenter(dataCenterId: String): List<Cluster> {
-	if(this.findDataCenter(dataCenterId).isFailure) {
-		throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toError()
-	}
-	return this.findAllClusters()
-		.getOrDefault(listOf())
-		.filter { it.dataCenterPresent() && it.dataCenter().id() == dataCenterId }
-}
-
-fun Connection.findHostFromDataCenter(dataCenterId: String): List<Host> {
-	if(this.findDataCenter(dataCenterId).isFailure) {
-		throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toError()
-	}
-	val clusters: List<Cluster> =
-		this.findClusterFromDataCenter(dataCenterId)
-	if (clusters.isEmpty())
-		return listOf()
-
-	return this.findAllHosts()
-		.getOrDefault(listOf())
-		.filter { host ->
-			clusters.any { it.id() == host.cluster().id() }
-		}
-}
+//fun Connection.findAllClustersFromDataCenter(dataCenterId: String): List<Cluster> {
+//	if(this.findDataCenter(dataCenterId).isFailure) {
+//		throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toError()
+//	}
+//	return this.findAllClusters()
+//		.getOrDefault(listOf())
+//		.filter { it.dataCenterPresent() && it.dataCenter().id() == dataCenterId }
+//}
+//
+//fun Connection.findHostFromDataCenter(dataCenterId: String): List<Host> {
+//	if(this.findDataCenter(dataCenterId).isFailure) {
+//		throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toError()
+//	}
+//	val clusters: List<Cluster> =
+//		this.findAllClustersFromDataCenter(dataCenterId)
+//	if (clusters.isEmpty())
+//		return listOf()
+//
+//	return this.findAllHosts()
+//		.getOrDefault(listOf())
+//		.filter { host ->
+//			clusters.any { it.id() == host.cluster().id() }
+//		}
+//}
 
 
 fun Connection.addDataCenter(dataCenter: DataCenter): Result<DataCenter?> = runCatching {
@@ -136,7 +136,6 @@ fun Connection.expectDataCenterDeleted(dataCenterId: String, timeout: Long = 600
 	}
 }
 
-
 fun Connection.srvClustersFromDataCenter(dataCenterId: String): ClustersService =
 	this.srvDataCenter(dataCenterId).clustersService()
 
@@ -149,10 +148,24 @@ fun Connection.findAllClustersFromDataCenter(dataCenterId: String): Result<List<
 	throw if (it is Error) it.toItCloudException() else it
 }
 
+fun Connection.findAllHostsFromDataCenter(dataCenterId: String): Result<List<Host>> = runCatching {
+	this.findAllHosts()
+		.getOrDefault(listOf())
+		.filter {
+			this.findCluster(it.cluster().id())
+				.getOrNull()?.dataCenter()?.id() == dataCenterId
+		}
+}.onSuccess {
+	Term.DATACENTER.logSuccessWithin(Term.HOST,"목록조회", dataCenterId)
+}.onFailure {
+	Term.DATACENTER.logFailWithin(Term.HOST,"목록조회", it, dataCenterId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
 fun Connection.srvNetworksFromFromDataCenter(dataCenterId: String): DataCenterNetworksService =
 	this.srvDataCenter(dataCenterId).networksService()
 
-fun Connection.findAllNetworksFromFromDataCenter(dataCenterId: String): Result<List<Network>> = runCatching {
+fun Connection.findAllNetworksFromDataCenter(dataCenterId: String): Result<List<Network>> = runCatching {
 	this.srvNetworksFromFromDataCenter(dataCenterId).list().send().networks() ?: listOf()
 }.onSuccess {
 	Term.DATACENTER.logSuccessWithin(Term.NETWORK,"목록조회", dataCenterId)

@@ -25,7 +25,7 @@
 						</div>
                         <div class="btn-group">
                             <button type="button" class="btn btn-success btn-sm" v-on:click="createNetwork"><i class="fa fa-file-o"></i> 등록</button>
-                            <button type="button" class="btn btn-success btn-sm" v-on:click="updateNetwork" v-bind:disabled="selectNetworks.length == 0 || networkList == null || selectNetworks.length >1" ><i class="fa fa-edit"></i> 수정</button>
+                            <button type="button" class="btn btn-success btn-sm" v-on:click="updateNetwork" v-bind:disabled="selectNetworks.length == 0 || networkList == null || selectNetworks.length >1" ><i class="fa fa-edit"></i> 편집</button>
                             <!-- <button type="button" class="btn btn-success btn-sm" v-on:click="deleteNetwork" v-bind:disabled="selectNetworks.length == 0"><i class="fa fa-trash-o"></i> 삭제</button> -->
                             <button type="button" class="btn btn-success btn-sm" v-on:click="deleteNetwokSet" v-bind:disabled="selectNetworks.length == 0 || selectNetworks.length >1 || networkList == null" data-toggle="modal" data-target=".removevmmodal"><i class="fa fa-trash-o"></i> 삭제</button>
                        </div>

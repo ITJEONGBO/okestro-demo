@@ -15,8 +15,8 @@ public interface ItDataCenterService {
     List<DataCenterVo> getDataCenters();   // 목록
 
     CommonVo<Boolean> addDatacenter(DataCenterCreateVo dcVo);   // 생성
-    DataCenterCreateVo setDatacenter(String id);    // 수정 창
-    CommonVo<Boolean> editDatacenter(DataCenterCreateVo dcVo);  // 수정
+    DataCenterCreateVo setDatacenter(String id);    // 편집 창
+    CommonVo<Boolean> editDatacenter(DataCenterCreateVo dcVo);  // 편집
     CommonVo<Boolean> deleteDatacenter(List<String> ids);  // 삭제
 
     List<EventVo> getEventsByDatacenter(String id);  // 이벤트 출력

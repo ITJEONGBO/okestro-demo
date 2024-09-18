@@ -93,6 +93,7 @@ class ClusterVo(
     val hostSize: SizeVo = SizeVo(),
     val vmSize: SizeVo = SizeVo(),
     val hosts: List<IdentifiedVo> = listOf(),
+
     val networks: List<IdentifiedVo> = listOf(), // 관리네트워크가 핵심, 다른 네트워크 존재가능
     val templates: List<IdentifiedVo> = listOf(),
 	val networkProperty: NetworkPropertyVo = NetworkPropertyVo(),
@@ -147,6 +148,13 @@ class ClusterVo(
 		inline fun builder(block: ClusterVo.Builder.() -> Unit): ClusterVo = ClusterVo.Builder().apply(block).build()
 	}
 }
+
+fun Cluster.toClusterIdName(): ClusterVo = ClusterVo.builder {
+	id { this@toClusterIdName.id() }
+	name { this@toClusterIdName.name() }
+}
+fun List<Cluster>.toClustersIdName(): List<ClusterVo> =
+	this@toClustersIdName.map { it.toClusterIdName() }
 
 
 fun Cluster.toClusterMenu(conn: Connection): ClusterVo = ClusterVo.builder {

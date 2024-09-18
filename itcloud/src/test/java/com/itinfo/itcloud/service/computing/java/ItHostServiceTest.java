@@ -64,7 +64,7 @@ class ItHostServiceTest {
     }
 
     @Test
-    @DisplayName("호스트 수정창")
+    @DisplayName("호스트 편집창")
     void setHost() {
         HostCreateVo result = hostService.setHost(host1);
         
@@ -72,7 +72,7 @@ class ItHostServiceTest {
     }
 
     @Test
-    @DisplayName("호스트 수정")
+    @DisplayName("호스트 편집")
     void editHost() {
         HostCreateVo create =
                 HostCreateVo.builder()
@@ -236,7 +236,7 @@ class ItHostServiceTest {
     }
 
     @Test
-    @DisplayName("호스트 선호도 레이블 수정")
+    @DisplayName("호스트 선호도 레이블 편집")
     void editAffinitylabel() {
     }
 

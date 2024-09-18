@@ -13,7 +13,7 @@
 				<div class="col-md-6 col-sm-6 col-xs-12 form-group pull-right">
 					<div class="col-md-12 col-sm-12 col-xs-12 col-md-offset-3 f-right">
 						<button class="btn btn-primary" type="reset" v-on:click="goBack()">취소</button>
-						<button type="submit" class="btn btn-success" v-on:click="updateVm()">수정</button>
+						<button type="submit" class="btn btn-success" v-on:click="updateVm()">편집</button>
 					</div>
 				</div>
 			</div>
@@ -363,7 +363,7 @@
 							</div>
 							<div class="form-group">
 								<label class="control-label col-md-12 col-sm-12 col-xs-12">
-									※ 메모리 크기를 줄이거나 가상 소켓 당 코어 개수, 코어 당 스레드 개수의 수정은 가상머신을 정지한 상태에서 수정해야 적용됩니다.
+									※ 메모리 크기를 줄이거나 가상 소켓 당 코어 개수, 코어 당 스레드 개수의 편집은 가상머신을 정지한 상태에서 편집해야 적용됩니다.
 								</label>
 							</div>
 							<!-- <div class="form-group">
@@ -1317,7 +1317,7 @@
 					<button type="button" class="close" data-dismiss="modal">
 						<span aria-hidden="true">×</span>
 					</button>
-					<h4 class="modal-title" id="myModalLabel">가상 디스크 수정</h4>
+					<h4 class="modal-title" id="myModalLabel">가상 디스크 편집</h4>
 				</div>
 				<div class="modal-body">
 					<div class="row">

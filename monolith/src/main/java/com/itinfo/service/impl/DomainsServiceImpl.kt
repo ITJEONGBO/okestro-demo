@@ -442,17 +442,17 @@ class DomainsServiceImpl : DomainsService {
 		log.info("... updateDomain")
 		val connection: Connection = adminConnectionService.getConnection()
 		val message = MessageVo()
-		message.title = "스토리지 도메인 수정"
+		message.title = "스토리지 도메인 편집"
 		try {
 			val sdb = StorageDomainBuilder()
 			sdb.name(storageDomainCreateVo.name)
 			sdb.description(storageDomainCreateVo.description)
 			connection.updateStorageDomain(storageDomainCreateVo.id, sdb.build())
-			message.text = "스토리지 도메인 수정 완료(" + storageDomainCreateVo.name + ")"
+			message.text = "스토리지 도메인 편집 완료(" + storageDomainCreateVo.name + ")"
 			message.style = "success"
 		} catch (e: Exception) {
 			e.printStackTrace()
-			message.text = "스토리지 도메인 수정 실패(" + storageDomainCreateVo!!.name + ")"
+			message.text = "스토리지 도메인 편집 실패(" + storageDomainCreateVo!!.name + ")"
 			message.style = "error"
 		}
 		try {

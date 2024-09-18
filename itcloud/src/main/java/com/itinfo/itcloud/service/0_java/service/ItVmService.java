@@ -22,8 +22,8 @@ public interface ItVmService {
 
     List<AffinityGroupVo> getAffinityGroupByVm(String id);  // 선호도 그룹
     CommonVo<Boolean> addAffinityGroupByVm(String id, AffinityGroupVo agVo);  // 선호도 그룹 생성
-    AffinityGroupVo setAffinityGroupByVm(String id, String agId);    // 선호도 그룹 수정창
-    CommonVo<Boolean> editAffinityGroupByVm(AffinityGroupVo agVo); // 선호도 그룹 수정
+    AffinityGroupVo setAffinityGroupByVm(String id, String agId);    // 선호도 그룹 편집창
+    CommonVo<Boolean> editAffinityGroupByVm(AffinityGroupVo agVo); // 선호도 그룹 편집
     CommonVo<Boolean> deleteAffinityGroupByVm(String id, String agId); // 선호도 그룹 삭제
 
 //    List<AffinityLabelVo> getAffinityLabelByVm(String id);  // 선호도 레이블
@@ -38,10 +38,10 @@ public interface ItVmService {
 
 
 
-//    CommonVo<Boolean> editDiskImage(String id, VDiskImageVo image); // 디스크 이미지 수정
+//    CommonVo<Boolean> editDiskImage(String id, VDiskImageVo image); // 디스크 이미지 편집
 //    CommonVo<Boolean> addDiskLun(String id, VDiskLunVo lun);        // 디스크 lun 생성, id=vmId
 //    CommonVo<Boolean> connectDisk(String id);     // 디스크 연결
-//    CommonVo<Boolean> editDiskLun(String id, VDiskLunVo lun);       // 디스크 lun 수정
+//    CommonVo<Boolean> editDiskLun(String id, VDiskLunVo lun);       // 디스크 lun 편집
 //    CommonVo<Boolean> previewSnapshot(String id, String snapId);    // 스냅샷 미리보기
 //    CommonVo<Boolean> commitSnapshot(String id, String snapId);     // 스냅샷 커밋
 //    CommonVo<Boolean> restoreSnapshot(String id, String snapId);    // 스냅샷 되돌리기

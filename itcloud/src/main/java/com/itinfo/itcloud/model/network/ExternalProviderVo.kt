@@ -9,6 +9,7 @@ import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.types.ExternalProvider
 import java.io.Serializable
 
+@Deprecated("openstacknetworkprovidervo와 중복?")
 class ExternalProviderVo (
     val id: String = "",
     val name: String = ""

@@ -243,7 +243,7 @@
                                                         <ul >
                                                             <li>
                                                                 <button @click="openModal('update')">
-                                                                    <span class="ico ico-edit"></span>수정
+                                                                    <span class="ico ico-edit"></span>편집
                                                                 </button>
 
                                                             </li>
@@ -1949,7 +1949,7 @@
     <%--					<button type="button" class="close" data-dismiss="modal" @click="cancelModifyDisk()">--%>
     <%--						<span aria-hidden="true">×</span>--%>
     <%--					</button>--%>
-    <%--					<h4 class="modal-title" id="myModalLabel3">가상 디스크 수정</h4>--%>
+    <%--					<h4 class="modal-title" id="myModalLabel3">가상 디스크 편집</h4>--%>
     <%--				</div>--%>
     <%--				<div class="modal-body">--%>
     <%--					<br>--%>
@@ -3155,7 +3155,7 @@
     <%--					<button type="button" class="close" data-dismiss="modal" @click="cancelModifyDisk()">--%>
     <%--						<span aria-hidden="true">×</span>--%>
     <%--					</button>--%>
-    <%--					<h4 class="modal-title" id="myModalLabel3">가상 디스크 수정</h4>--%>
+    <%--					<h4 class="modal-title" id="myModalLabel3">가상 디스크 편집</h4>--%>
     <%--				</div>--%>
     <%--				<div class="modal-body">--%>
     <%--					<br>--%>

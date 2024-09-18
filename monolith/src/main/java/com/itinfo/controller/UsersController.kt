@@ -86,9 +86,9 @@ class UsersController {
 		}
 	}
 
-	@ApiOperation(httpMethod="POST", value="updateUser", notes="사용자 정보 수정")
+	@ApiOperation(httpMethod="POST", value="updateUser", notes="사용자 정보 편집")
 	@ApiImplicitParams(
-		ApiImplicitParam(name="user", value="수정할 사용자 정보", paramType="body", dataTypeClass=UserVo::class)
+		ApiImplicitParam(name="user", value="편집할 사용자 정보", paramType="body", dataTypeClass=UserVo::class)
 	)
 	@ApiResponses(ApiResponse(code=200, message="OK"))
 	@PostMapping("/updateUser")

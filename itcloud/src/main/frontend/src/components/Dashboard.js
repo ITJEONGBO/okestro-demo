@@ -215,7 +215,7 @@ const Dashboard = () => {
             { title: "Cluster",    cntTotal: dashboard?.clusters ?? 0, navigatePath: '/computing/datacenter' },
             { title: "Host",       cntTotal: dashboard?.hosts ?? 0, cntUp: dashboard?.hostsUp ?? 0, cntDown: dashboard?.hostsDown ?? 0, navigatePath: '/computing/host' },
             { title: "DataStorageDomain", cntTotal: dashboard?.storageDomains ?? 0, navigatePath: '/storage-domainpart'},
-            /*수정해야됨 */
+            /*편집해야됨 */
             { title: "Virtual machine", cntTotal: dashboard?.vms ?? 0, cntUp: dashboard?.vmsUp ?? 0, cntDown: dashboard?.vmsDown ?? 0, navigatePath: '/computing/vmhost-chart' },
             { title: "Event",       cntTotal: 0, cntUp: 1, cntDown: 1, },
           ]} 

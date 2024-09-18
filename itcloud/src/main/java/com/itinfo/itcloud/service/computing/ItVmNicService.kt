@@ -30,7 +30,7 @@ interface ItVmNicService {
 	fun findAllNicsFromVm(vmId: String): List<NicVo>
 	/**
 	 * [ItVmNicService.findNicFromVm]
-	 * nic 수정창
+	 * nic 편집창
 	 *
 	 * @param vmId [String] 가상머신 id
 	 * @param nicId [String] nic id
@@ -58,7 +58,7 @@ interface ItVmNicService {
 	 * @return CommonVo<[Boolean]> 201(create) 404(fail)
 	 */
 	@Throws(Error::class)
-	fun updateNicFromVm(vmId: String, nicVo: NicVo): NicVo? // nic 수정
+	fun updateNicFromVm(vmId: String, nicVo: NicVo): NicVo? // nic 편집
 	/**
 	 * [ItVmNicService.removeNicFromVm]
 	 *

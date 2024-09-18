@@ -11,6 +11,7 @@ import com.itinfo.itcloud.repository.VmSamplesHistoryRepository
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.itcloud.service.computing.VmServiceImpl.Companion
 import com.itinfo.itcloud.service.network.ItNetworkService
+import com.itinfo.itcloud.service.network.NetworkServiceImpl
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.Error
@@ -97,7 +98,7 @@ interface ItClusterService {
 	 * @return List<[NetworkVo]>? 네트워크 관리 목록
 	 */
 	@Throws(Error::class)
-	fun findAllManageNetworksFromCluster(clusterId: String): List<NetworkVo>?
+	fun findAllManageNetworksFromCluster(clusterId: String): List<NetworkVo>
 	/**
 	 * [ItClusterService.manageNetworksFromCluster]
 	 * 클러스터 네트워크 관리
@@ -218,27 +219,66 @@ class ClusterServiceImpl(
 		return res.toClusterNetworkVos(conn)
 	}
 
+	/**
+	 * TODO("클러스터 네트워크 대략 난감")
+	 */
 	@Throws(Error::class)
 	override fun addNetworkFromCluster(clusterId: String, networkVo: NetworkVo): NetworkVo? {
-		log.info("addNetwork ... ") // // 클러스터 연결 없이 네트워크만 추가
+		// TODO: [ItNetworkService.add] 와 같은 기능이지만 약간 다름
+		log.info("addNetworkFromCluster ... ")
+		val res: Network? =
+			conn.addNetwork(networkVo.toAddNetworkBuilder(conn))
+				.getOrNull()
+		if(res == null){
+			throw ErrorPattern.NETWORK_NOT_FOUND.toException()
+		}
 
-		// TODO 클러스터 연결/할당 기능 추가
-		return itNetworkService.add(networkVo)
+		// 생성 후에 나온 network Id로 클러스터 네트워크 생성 및 레이블 생성 가능
+		// 기본 단순 생성은 클러스터가 할당되지도 필수도 선택되지 않음
+		networkVo.toAddClusterAttach(conn, res.id())	// 클러스터 연결, 필수 선택
+		networkVo.toAddNetworkLabel(conn, res.id())
+		return res.toNetworkVo(conn)
 	}
 
+	// 클러스터 네트워크 - 네트워크 관리창
 	@Throws(Error::class)
-	override fun findAllManageNetworksFromCluster(clusterId: String): List<NetworkVo>? {
+	override fun findAllManageNetworksFromCluster(clusterId: String): List<NetworkVo> {
 		log.info("findAllManageNetworksFromCluster ... clusterId: {}", clusterId)
-		val res: List<Network> =
+		val cluster: Cluster =
+			conn.findCluster(clusterId)
+				.getOrNull() ?: throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
+
+		// 클러스터가 가지고 있는 네트워크
+		val clusterNetworks: List<Network> =
 			conn.findAllNetworksFromCluster(clusterId)
 				.getOrDefault(listOf())
-		return res.toNetworkVos(conn)
-		// TODO: 모두 할당? 모두 필요?
+
+		val networks: List<Network> =
+			conn.findAllNetworksFromDataCenter(cluster.dataCenter().id())
+				.getOrDefault(listOf())
+				.filter { network ->
+					clusterNetworks.none { clusterNetwork ->
+						clusterNetwork.id() == network.id()
+					}
+				}
+
+		val mergedNetworks = clusterNetworks + networks
+		return mergedNetworks.toClusterNetworkVos(conn)
 	}
 
+	// networkvo 각각
 	@Throws(Error::class)
 	override fun manageNetworksFromCluster(clusterId: String, networkVos: List<NetworkVo>): Boolean {
 		log.info("manageNetworksFromCluster ... ")
+
+		if(networkVos.isNotEmpty()){
+			networkVos.forEach { networkVo ->
+				networkVo.toAddClusterAttach(conn, networkVo.id)	// 클러스터 연결, 필수 선택
+			}
+		}
+
+
+		//
 		// 클러스터 모두연결이 선택되어야지만 모두 필요가 선택됨
 		/*
         nuVo.getClusterVoList().stream()

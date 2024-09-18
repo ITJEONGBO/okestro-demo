@@ -968,7 +968,7 @@ new Vue({
             }
         },
 
-        //by gtpark 가상머신 내 네트워크인터페이스 수정
+        //by gtpark 가상머신 내 네트워크인터페이스 편집
         updateNic: function () {
             if (this.updateNetworkStatus === "ok") {
                 this.nicUpdate.ipv4 = this.vmNic.ipv4;

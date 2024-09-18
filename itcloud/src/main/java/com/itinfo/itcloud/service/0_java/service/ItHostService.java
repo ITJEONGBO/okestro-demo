@@ -15,8 +15,8 @@
 //    List<ClusterVo> setClusterList();   // 호스트 생성 - 클러스터 목록 출력
 //
 //    CommonVo<Boolean> addHost(HostCreateVo hostCreateVo);   // 생성
-//    HostCreateVo setHost(String id);    // 수정 창
-//    CommonVo<Boolean> editHost(HostCreateVo hostCreateVo);   // 수정
+//    HostCreateVo setHost(String id);    // 편집 창
+//    CommonVo<Boolean> editHost(HostCreateVo hostCreateVo);   // 편집
 //    CommonVo<Boolean> deleteHost(List<String> ids);    // 삭제
 //
 //    CommonVo<Boolean> deactiveHost(String id);       // 관리 - 유지보수

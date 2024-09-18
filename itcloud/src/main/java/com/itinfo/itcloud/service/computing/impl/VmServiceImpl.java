@@ -937,16 +937,16 @@ public class VmServiceImpl extends BaseService implements ItVmService {
 //            }
 //
 //            if(expectStatus(vmService, VmStatus.DOWN, 3000, 900000)){
-//                log.info("가상머신 수정 완료: " + vm.name());
+//                log.info("가상머신 편집 완료: " + vm.name());
 //                return CommonVo.createResponse();
 //            } else {
-//                log.error("가상머신 수정 시간 초과: {}", vm.name());
-//                return CommonVo.failResponse("가상머신 수정 시간 초과");
+//                log.error("가상머신 편집 시간 초과: {}", vm.name());
+//                return CommonVo.failResponse("가상머신 편집 시간 초과");
 //            }
 //        } catch (Exception e) {
 //            e.printStackTrace();
-//            log.error("가상머신 수정 실패");
-//            return CommonVo.failResponse("가상머신 수정 실패");
+//            log.error("가상머신 편집 실패");
+//            return CommonVo.failResponse("가상머신 편집 실패");
 //        }
         return null;
     }
@@ -1456,7 +1456,7 @@ public class VmServiceImpl extends BaseService implements ItVmService {
     }
 
 
-    // 가상머신 nic 수정
+    // 가상머신 nic 편집
     @Override
     public Res<Boolean> editNic(String id, NicVo nicVo) {
         
@@ -1483,7 +1483,7 @@ public class VmServiceImpl extends BaseService implements ItVmService {
                 Nic nic = vmNicService.update().nic(nicBuilder).send().nic();
 
                 // HELP
-                // 수정창에 nf List가 뜰 예정(id)
+                // 편집창에 nf List가 뜰 예정(id)
                 // 추가되면 추가해야하고 삭제되면 삭제해야함
                 if (nicVo.getNfVoList() != null) {
                     NicNetworkFilterParametersService nfpsService = getSystem().vmsService().vmService(id).nicsService().nicService(nic.id()).networkFilterParametersService();
@@ -1502,11 +1502,11 @@ public class VmServiceImpl extends BaseService implements ItVmService {
                     for (NetworkFilterParameter np : npList) {
                         nfpsService.add().parameter(np).send();
                     }
-                    log.info("네트워크 필터 수정 완료");
+                    log.info("네트워크 필터 편집 완료");
                 }
 
 
-                log.info("nic 수정 성공");
+                log.info("nic 편집 성공");
                 return Res.successResponse();
             }else{
                 log.error("nic 이름중복");
@@ -1579,7 +1579,7 @@ public class VmServiceImpl extends BaseService implements ItVmService {
                 return Res.failResponse("가상머신이 Down이 아님");
             }
         }catch (Exception e){
-            log.error("실패: 새 가상 디스크 (이미지) 수정");
+            log.error("실패: 새 가상 디스크 (이미지) 편집");
             e.printStackTrace();
             return Res.failResponse(e.getMessage());
         }

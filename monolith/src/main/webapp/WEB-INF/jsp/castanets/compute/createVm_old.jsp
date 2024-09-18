@@ -1299,7 +1299,7 @@
 					<button type="button" class="close" data-dismiss="modal" @click="cancelModifyDisk()">
 						<span aria-hidden="true">×</span>
 					</button>
-					<h4 class="modal-title" id="myModalLabel2">가상 디스크 수정</h4>
+					<h4 class="modal-title" id="myModalLabel2">가상 디스크 편집</h4>
 				</div>
 				<div class="modal-body">
 					<br>
@@ -1406,7 +1406,7 @@
 <%--					<button type="button" class="close" data-dismiss="modal" @click="cancelModifyDisk()">--%>
 <%--						<span aria-hidden="true">×</span>--%>
 <%--					</button>--%>
-<%--					<h4 class="modal-title" id="myModalLabel3">가상 디스크 수정</h4>--%>
+<%--					<h4 class="modal-title" id="myModalLabel3">가상 디스크 편집</h4>--%>
 <%--				</div>--%>
 <%--				<div class="modal-body">--%>
 <%--					<br>--%>

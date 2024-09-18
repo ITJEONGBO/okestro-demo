@@ -393,7 +393,7 @@ const Network = ({ }) => {
             >
                 <div className="network_edit_popup">
                     <div className="popup_header">
-                        <h1>논리 네트워크 수정</h1>
+                        <h1>논리 네트워크 편집</h1>
                         <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                     </div>
                     

@@ -1688,7 +1688,7 @@ data class MessageVo(
 				)
 				MessageType.INSTANCE_TYPE_UPDATE -> MessageVo(
 					title = type.title,
-					text = "${type.title} ${if (isSuccess) " 완료($message 이 수정되었습니다." else " 실패($message"})",
+					text = "${type.title} ${if (isSuccess) " 완료($message 이 편집되었습니다." else " 실패($message"})",
 					style = if (isSuccess) SUCCESS else ERROR
 				)
 				MessageType.TEMPLATE_REMOVE -> MessageVo(
@@ -1710,19 +1710,19 @@ enum class MessageType(
 	val title: String,
 ) {
 	CLUSTER_ADD("클러스터 생성"),
-	CLUSTER_UPDATE("클러스터 수정"),
+	CLUSTER_UPDATE("클러스터 편집"),
 	CLUSTER_REMOVE("클러스터 삭제"),
 	VIRTUAL_MACHINE_START("가상머신 실행"),
 	VIRTUAL_MACHINE_STOP("가상머신 정지"),
 	VIRTUAL_MACHINE_REBOOT("가상머신 재기동"),
 	VIRTUAL_MACHINE_SUSPEND("가상머신 일시정지"),
 	VIRTUAL_MACHINE_CREATE("가상머신 생성"),
-	VIRTUAL_MACHINE_MODIFY("가상머신 수정"),
+	VIRTUAL_MACHINE_MODIFY("가상머신 편집"),
 	VIRTUAL_MACHINE_REMOVE("가상머신 삭제"),
 	VIRTUAL_MACHINE_COPY("가상머신 복제"),
 	VIRTUAL_MACHINE_RELOCATE("가상머신 이동"),
 	INSTANCE_TYPE_ADD("인스턴스 유형 생성"),
-	INSTANCE_TYPE_UPDATE("인스턴스 유형 수정"),
+	INSTANCE_TYPE_UPDATE("인스턴스 유형 편집"),
 	TEMPLATE_ADD("탬플릿 생성"),
 	TEMPLATE_REMOVE("탬플릿 삭제"),
 	MAINTENANCE_START("호스트 유지보수 모드 시작"),
@@ -1731,15 +1731,15 @@ enum class MessageType(
 	HOST_RESTART("호스트 재시작"),
 	HOST_STOP("호스트 정지"),
 	HOST_ADD("호스트 추가"),
-	HOST_MODIFY("호스트 수정"),
+	HOST_MODIFY("호스트 편집"),
 	HOST_REMOVE("호스트 삭제"),
-	HOST_NETWORK_MODIFY("호스트 네트워크 수정"),
+	HOST_NETWORK_MODIFY("호스트 네트워크 편집"),
 	DISK_ADD("디스크 생성"),
 	DISK_REMOVE("디스크 삭제"),
 	DISK_MOVE("디스크 이동"),
 	DISK_COPY("디스크 복사"),
 	NETWORK_ADD("네트워크 생성"),
-	NETWORK_UPDATE("네트워크 수정"),
+	NETWORK_UPDATE("네트워크 편집"),
 	NETWORK_REMOVE("네트워크 삭제"),
 	NETWORK_INTERFACE_ADD("네트워크 인터페이스 생성"),
 	CHANGE_CD_ROM("CD 변경")

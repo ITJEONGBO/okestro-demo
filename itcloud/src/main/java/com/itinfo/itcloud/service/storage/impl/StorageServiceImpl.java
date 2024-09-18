@@ -151,7 +151,7 @@ public class StorageServiceImpl extends BaseService implements ItStorageService 
 
     */
 /**
-     * 디스크 생성, 수정
+     * 디스크 생성, 편집
      * @param image 디스크 객체
      * @param isAdd true면 add, false면 edit
      * @return
@@ -173,7 +173,7 @@ public class StorageServiceImpl extends BaseService implements ItStorageService 
                     .storageDomains(new StorageDomain[]{ new StorageDomainBuilder().id(image.getDomainId()).build()})
                     .sparse(image.isSparse()) // 할당정책: 씬 true
                     .diskProfile(new DiskProfileBuilder().id(image.getProfileId()).build()); // 없어도 상관없음
-        }else { // 수정
+        }else { // 편집
             return diskBuilder
                     .provisionedSize((BigInteger.valueOf(image.getSize()+ image.getAppendSize())).multiply(BigInteger.valueOf(1024).pow(3)) ) // 값 받은 것을 byte로 변환하여 준다
                     .id(image.getId());
@@ -182,7 +182,7 @@ public class StorageServiceImpl extends BaseService implements ItStorageService 
     }
     */
 /**
-     * 디스크 이미지 수정 창 & 디스크 이동 창
+     * 디스크 이미지 편집 창 & 디스크 이동 창
      * @param diskId 디스크 id
      * @return
      *//*
@@ -214,7 +214,7 @@ public class StorageServiceImpl extends BaseService implements ItStorageService 
 
     */
 /**
-     * 디스트 이미지 수정
+     * 디스트 이미지 편집
      * @param image
      * @return
      *//*
@@ -226,10 +226,10 @@ public class StorageServiceImpl extends BaseService implements ItStorageService 
         try{
             getSystem().disksService().diskService(image.getId()).update().disk(configureDiskBuilder(image, false)).send().disk();
 
-            log.info("성공: 디스크 이미지 {} 수정", image.getAlias());
+            log.info("성공: 디스크 이미지 {} 편집", image.getAlias());
             return Res.createResponse();
         }catch (Exception e){
-            log.error("실패: 새 가상 디스크 (이미지) 수정");
+            log.error("실패: 새 가상 디스크 (이미지) 편집");
             e.printStackTrace();
             return Res.failResponse(e.getMessage());
         }
@@ -373,7 +373,7 @@ public class StorageServiceImpl extends BaseService implements ItStorageService 
                 return Res.failResponse("디스크 대기시간 초과");
             }
 
-            // 이미지를 저장하거나 관리하는 컨테이너,.이미지의 생성, 삭제, 수정 등의 작업을 지원
+            // 이미지를 저장하거나 관리하는 컨테이너,.이미지의 생성, 삭제, 편집 등의 작업을 지원
             ImageContainer imageContainer = new ImageContainer();
             imageContainer.id(disk.id());
 

@@ -169,7 +169,7 @@ const Cluster = () => {
                             <input type="text" id="comment" />
                             </div>
                       
-                            {/* id 수정 */}
+                            {/* id 편집 */}
                             <div className="network_form_group">
                             <label htmlFor="management_network">관리 네트워크</label>
                             <select id="management_network">

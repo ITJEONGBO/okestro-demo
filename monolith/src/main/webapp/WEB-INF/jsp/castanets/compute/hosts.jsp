@@ -253,7 +253,7 @@
                                                         <ul class="first">
                                                             <li>
                                                                 <button @click="openModal('update')">
-                                                                    <span class="ico ico-edit"></span>수정
+                                                                    <span class="ico ico-edit"></span>편집
                                                                 </button>
 
                                                             </li>

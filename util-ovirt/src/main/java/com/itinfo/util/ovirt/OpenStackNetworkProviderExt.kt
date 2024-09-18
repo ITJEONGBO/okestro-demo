@@ -26,8 +26,8 @@ fun Connection.findAllOpenStackNetworkProviders(follow: String = ""): Result<Lis
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.findExternalProvider(): OpenStackNetworkProvider? =
-	this@findExternalProvider.findAllOpenStackNetworkProviders().getOrDefault(listOf()).firstOrNull()
+fun Connection.findExternalProvider(): OpenStackNetworkProvider =
+	this@findExternalProvider.srvOpenStackNetworkProviders().list().send().providers().first()
 
 private fun Connection.srvOpenStackNetworkProvider(networkProviderId: String): OpenstackNetworkProviderService =
 	this.srvOpenStackNetworkProviders().providerService(networkProviderId)

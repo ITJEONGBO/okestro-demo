@@ -170,7 +170,7 @@
                                                         <div class="openPop-target_inner">
                                                             <ul>
                                                                 <li>
-                                                                    <button @click="showDomainModal('update')"><span class="ico ico-edit"></span>수정</button>
+                                                                    <button @click="showDomainModal('update')"><span class="ico ico-edit"></span>편집</button>
                                                                 </li>
                                                                 <li>
                                                                     <button @click="showDomainModal('domainDeleteModal')" :disabled="!isPosibleDelete()"><span class="ico ico-del"></span>삭제</button>
@@ -505,7 +505,7 @@
                     <div class="buttonSet">
                         <button class="btn-c-modal btn-cancel" @click="closePop('createDomainVue')">취소</button>
                         <button class="btn-c-modal" v-show="!isUpdate" @click="createDomain()">생성</button>
-                        <button class="btn-c-modal" v-show="isUpdate" @click="updateDomain()">수정</button>
+                        <button class="btn-c-modal" v-show="isUpdate" @click="updateDomain()">편집</button>
                     </div>
                 </div> <!-- //c-modal-footer -->
             </div>

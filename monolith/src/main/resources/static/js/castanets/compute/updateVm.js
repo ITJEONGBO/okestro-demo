@@ -1470,7 +1470,7 @@ new Vue({
                 this.vmUpdate.deviceSource = this.deviceSource;
                 this.vmUpdate.exSelectNics = this.exSelectNics;
 
-                // 부팅가능 옵션 수정 시 부팅 디스크를 제일 나중에 업데이트해야 충돌이 나지 않는다
+                // 부팅가능 옵션 편집 시 부팅 디스크를 제일 나중에 업데이트해야 충돌이 나지 않는다
                 var disks = [];
 
                 if (this.linkedDisks.length > 0) {

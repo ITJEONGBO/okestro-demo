@@ -11,7 +11,7 @@ import com.jcraft.jsch.JSch
 import java.net.InetAddress
 
 
-private fun Connection.srvHosts(): HostsService =
+fun Connection.srvHosts(): HostsService =
 	this.systemService.hostsService()
 
 fun Connection.srvHost(hostId: String): HostService =

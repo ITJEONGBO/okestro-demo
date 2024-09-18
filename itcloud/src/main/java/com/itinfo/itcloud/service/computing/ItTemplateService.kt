@@ -97,7 +97,7 @@ interface ItTemplateService {
 	fun addNicFromTemplate(templateId: String): NicVo?
 	/**
 	 * [ItTemplateService.updateNicFromTemplate]
-	 * 템플릿 nic 수정
+	 * 템플릿 nic 편집
 	 *
 	 * @param nicVo [NicVo] 템플릿 아이디
 	 * @return [NicVo]

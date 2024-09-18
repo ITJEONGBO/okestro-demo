@@ -662,7 +662,7 @@ var vmsVue = new Vue({
         // update vm
         updateVm: function () {
             if (this.selectedVms.length == 0) {
-                alert("수정할 가상머신을 선택해 주세요.");
+                alert("편집할 가상머신을 선택해 주세요.");
             } else if (this.selectedVms.length != 1) {
                 alert("가상머신을 하나만 선택해 주세요.");
             } else {

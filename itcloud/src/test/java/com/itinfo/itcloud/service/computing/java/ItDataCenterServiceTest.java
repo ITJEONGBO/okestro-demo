@@ -71,7 +71,7 @@ class ItDataCenterServiceTest {
     }
 
     @Test
-    @DisplayName("데이터센터 수정 창")
+    @DisplayName("데이터센터 편집 창")
     void getDatacenter() {
         DataCenterCreateVo result =  dcService.setDatacenter(defaultDcId);
 
@@ -90,7 +90,7 @@ class ItDataCenterServiceTest {
     }
 
     @Test
-    @DisplayName("데이터센터 수정")
+    @DisplayName("데이터센터 편집")
     void editDatacenter() {
         String id = "99c24506-4bfa-4995-ba69-2692a8e81186";
 
@@ -109,7 +109,7 @@ class ItDataCenterServiceTest {
     }
 
     @Test
-    @DisplayName("데이터센터 수정 - 이름 중복")
+    @DisplayName("데이터센터 편집 - 이름 중복")
     void editDatacenter2() {
         DataCenterCreateVo dc = DataCenterCreateVo.builder()
                 .id(defaultDcId)

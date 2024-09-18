@@ -56,7 +56,7 @@ class ItTemplateServiceTest {
     }
 
     @Test
-    @DisplayName("템플릿 수정창")
+    @DisplayName("템플릿 편집창")
     void setTemplate() {
         TemplateVo result = templateService.findOne(id);
 
@@ -64,7 +64,7 @@ class ItTemplateServiceTest {
     }
 
     @Test
-    @DisplayName("템플릿 수정")
+    @DisplayName("템플릿 편집")
     void editTemplate() {
     }
 

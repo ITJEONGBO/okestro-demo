@@ -243,7 +243,7 @@ public class ClusterServiceImpl implements ItClusterService {
 /**
      * 클러스터 편집
      * @param cVo 클러스터 객체
-     * @return 클러스터 수정 결과 201(create), 404(fail)
+     * @return 클러스터 편집 결과 201(create), 404(fail)
      *//*
 
     @Override

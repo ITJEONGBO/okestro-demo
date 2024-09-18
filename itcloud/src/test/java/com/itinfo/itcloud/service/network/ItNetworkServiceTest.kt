@@ -142,22 +142,36 @@ class ItNetworkServiceTest {
 	@Test
 	fun should_add2() {
 		log.debug("should_add2 ... ")
+		val clusterVos: List<ClusterVo> =
+			listOf(
+				ClusterVo.builder {
+					id { "6ce0356a-6459-11ef-a03a-00163e5d0646" }
+					required { true }
+				},
+				ClusterVo.builder {
+					id { "2c1a8a79-1802-496b-95fb-85f0d2e79510" }
+					required { false }
+				}
+			)
+
 		val addNetworkVo: NetworkVo = NetworkVo.builder {
 			dataCenter { IdentifiedVo.builder { id { dataCenterId } } }
-			name { "asdf2" }
-			description { "t2" }
-			comment { "t2" }
-			usage { UsageVo.builder { vm { false } } }  // TODO
+			name { "asdf1" }
+			description { "t" }
+			comment { "t" }
+			usage { UsageVo.builder { vm { true } } }
 			portIsolation { false }
-			mtu { 142 }
-			vlan { 23 }
+			mtu { 0 }
+			vlan { 0 }
 			openStackNetwork { null }
+			clusters { clusterVos }
 		}
 
 		val addResult: NetworkVo? =
 			service.add(addNetworkVo)
 
 		assertThat(addResult, `is`(not(nullValue())))
+		assertThat(addResult?.id, `is`(not(nullValue())))
 		assertThat(addResult?.name, `is`(addNetworkVo.name))
 		assertThat(addResult?.description, `is`(addNetworkVo.description))
 		assertThat(addResult?.comment, `is`(addNetworkVo.comment))

@@ -100,11 +100,11 @@
                 <div class="btnSet-right">
                     <div class="btn-box">
                         <button type="button" class="btn-icon btn-icon-copy btn-tooltip"
-                                @click="openModal('updateVm')">수정
+                                @click="openModal('updateVm')">편집
                         </button>
                         <div class="c-tooltip top-right">
                             <span class="c-tooltip-arrow"></span>
-                            <span class="txt">수정</span>
+                            <span class="txt">편집</span>
                         </div>
                     </div>
                 </div>
@@ -339,11 +339,11 @@
                     </div>
                     <%--                        <div class="btn-box">--%>
                     <%--                            <button type="button" class="btn-icon btn-icon-edit btn-tooltip"--%>
-                    <%--                                    @click="openModal('updateNic')">수정--%>
+                    <%--                                    @click="openModal('updateNic')">편집--%>
                     <%--                            </button>--%>
                     <%--                            <div class="c-tooltip top-right">--%>
                     <%--                                <span class="c-tooltip-arrow"></span>--%>
-                    <%--                                <span class="txt">수정</span>--%>
+                    <%--                                <span class="txt">편집</span>--%>
                     <%--                            </div>--%>
                     <%--                        </div>--%>
                 </div>
@@ -407,7 +407,7 @@
                                             <ul>
                                                 <li>
                                                     <button @click="openModal('updateNic', nic)">
-                                                        <span class="ico ico-edit"></span>수정
+                                                        <span class="ico ico-edit"></span>편집
                                                     </button>
 
                                                 </li>
@@ -436,7 +436,7 @@
                     <div class="c-modal-inner">
                         <div class="c-modal-header">
                             <h1 v-if="!isUpdate">네트워크 인터페이스 생성</h1>
-                            <h1 v-if="isUpdate">네트워크 인터페이스 수정</h1>
+                            <h1 v-if="isUpdate">네트워크 인터페이스 편집</h1>
                         </div>
                         <div class="c-modal-body scroll-css">
                             <div class="steps-cont-wrap">
@@ -2928,7 +2928,7 @@
     <%--					<button type="button" class="close" data-dismiss="modal" @click="cancelModifyDisk()">--%>
     <%--						<span aria-hidden="true">×</span>--%>
     <%--					</button>--%>
-    <%--					<h4 class="modal-title" id="myModalLabel3">가상 디스크 수정</h4>--%>
+    <%--					<h4 class="modal-title" id="myModalLabel3">가상 디스크 편집</h4>--%>
     <%--				</div>--%>
     <%--				<div class="modal-body">--%>
     <%--					<br>--%>

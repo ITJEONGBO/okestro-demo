@@ -25,14 +25,14 @@
           <div v-show="!spinnerOn">
             <div class="page-title">
               <div class="title_left"  v-if="networkNames != null">
-                <h3>네트워크 수정 > {{orgNetworkName}}</h3>
+                <h3>네트워크 편집 > {{orgNetworkName}}</h3>
               </div>
 
               <div class="text-right">
                 <div class="col-md-6 col-sm-6 col-xs-12 form-group pull-right">
 					<div class="col-md-12 col-sm-12 col-xs-12 col-md-offset-3 f-right">
 						<button class="btn btn-primary" type="reset" v-on:click="cancel">취소</button>
-						<button type="submit" class="btn btn-success" v-on:click="updateNetwork">수정</button>
+						<button type="submit" class="btn btn-success" v-on:click="updateNetwork">편집</button>
 					</div>
                 </div>
               </div>

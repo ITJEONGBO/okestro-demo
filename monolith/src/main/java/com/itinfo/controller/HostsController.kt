@@ -398,9 +398,9 @@ class HostsController {
 		}
 	}
 
-	@ApiOperation(httpMethod="POST", value="modifyNicNetwork", notes="??? 수정")
+	@ApiOperation(httpMethod="POST", value="modifyNicNetwork", notes="??? 편집")
 	@ApiImplicitParams(
-		ApiImplicitParam(name="nicUsageApiVoList", value="수정할 ???", required=true, paramType="body", dataTypeClass=Array<NetworkAttachmentVo>::class)
+		ApiImplicitParam(name="nicUsageApiVoList", value="편집할 ???", required=true, paramType="body", dataTypeClass=Array<NetworkAttachmentVo>::class)
 	)
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")

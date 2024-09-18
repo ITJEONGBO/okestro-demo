@@ -175,7 +175,7 @@
 						<div class="col-md-9 col-sm-9 col-xs-12 text-right" >
 							<div class="btn-group2">
 								<button type="button" class="btn  btn-success btn-sm" :disabled="inPreview || locked || tempVmNics.id  == ''" data-toggle="modal" data-target=".updatevmnicmodel">
-									<i class="fa fa-file-o"></i> 수정
+									<i class="fa fa-file-o"></i> 편집
 							</button>
 							</div>
 						</div>
@@ -231,7 +231,7 @@
 									<i class="fa fa-chain"></i> 연결
 								</button>
 								<button type="button" class="btn btn-primary btn-sm">
-									<i class="fa fa-edit"></i> 수정
+									<i class="fa fa-edit"></i> 편집
 								</button>
 								<button type="button" class="btn btn-primary btn-sm">
 									<i class="fa fa-trash-o"></i> 삭제
@@ -705,7 +705,7 @@
 					<button type="button" class="close" @click="cancelModifyNic()">
 						<span aria-hidden="true">×</span>
 					</button>
-					<h4 class="modal-title" id="myModalLabel2">네트워크 인터페이스 수정</h4>
+					<h4 class="modal-title" id="myModalLabel2">네트워크 인터페이스 편집</h4>
 				</div>
 				<div class="modal-body">
 

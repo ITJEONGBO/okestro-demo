@@ -40,12 +40,12 @@ class ItNetworkServiceTest {
     }
 
     @Test
-    @DisplayName("네트워크 수정창")
+    @DisplayName("네트워크 편집창")
     void setEditNetwork() {
     }
 
     @Test
-    @DisplayName("네트워크 수정")
+    @DisplayName("네트워크 편집")
     void editNetwork() {
     }
 

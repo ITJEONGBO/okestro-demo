@@ -13,7 +13,7 @@
 				<div class="col-md-6 col-sm-6 col-xs-12 form-group pull-right">
 					<div class="col-md-12 col-sm-12 col-xs-12 col-md-offset-3 f-right">
 						<button class="btn btn-primary" type="reset" v-on:click="goBack()">취소</button>
-						<button type="submit" class="btn btn-success" v-on:click="updateTemplate()">수정</button>
+						<button type="submit" class="btn btn-success" v-on:click="updateTemplate()">편집</button>
 					</div>
 				</div>
 			</div>

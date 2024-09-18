@@ -768,16 +768,16 @@ class VirtualMachinesServiceImpl : VirtualMachinesService {
 					c.updateNicFromVm(vmNicVo.id, vmNicVo.nicId, nicBuilder.build())
 					doSleep(2000L)
 					message = MessageVo(
-						"네트워크 인터페이스 수정",
-						"네트워크 인터페이스 수정 완료" + vmNicVo.nicName + ")",
+						"네트워크 인터페이스 편집",
+						"네트워크 인터페이스 편집 완료" + vmNicVo.nicName + ")",
 						"success"
 					)
 				} catch (e: Exception) {
 					log.error(e.localizedMessage)
 					e.printStackTrace()
 					message = MessageVo(
-						"네트워크 인터페이스 수정",
-						"네트워크 인터페이스 수정 실패" + vmNicVo.nicName + ")",
+						"네트워크 인터페이스 편집",
+						"네트워크 인터페이스 편집 실패" + vmNicVo.nicName + ")",
 						"error"
 					)
 				}

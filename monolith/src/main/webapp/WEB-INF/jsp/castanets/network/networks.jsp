@@ -92,7 +92,7 @@
                                                     <div class="openPop-target scrollBodyY long">
                                                         <div class="openPop-target_inner">
                                                             <ul>
-                                                                <li><button @click="updateNetwork(index)"><span class="ico ico-edit" ></span>수정</button></li>
+                                                                <li><button @click="updateNetwork(index)"><span class="ico ico-edit" ></span>편집</button></li>
                                                                 <li><button @click="deleteNetworkSet(index)"><span class="ico ico-del" ></span>삭제</button></li>
                                                             </ul>
                                                         </div>
@@ -294,7 +294,7 @@
         <section class="c-modal-wrap c-modal-auto">
             <div class="c-modal-inner">
                 <div class="c-modal-header" v-if="networkNames != null">
-                    <h1>네트워크 수정 > {{orgNetworkName}}</h1>
+                    <h1>네트워크 편집 > {{orgNetworkName}}</h1>
                 </div>
                 <div class="c-modal-body scroll-css">
                     <div class="steps-cont-wrap">
@@ -442,7 +442,7 @@
                 <div class="c-modal-footer">
                     <div class="buttonSet">
                         <button class="btn-c-modal btn-cancel" @click="closePop('updateNetwork')">취소</button>
-                        <button class="btn-c-modal" @click="updateNetwork">수정</button>
+                        <button class="btn-c-modal" @click="updateNetwork">편집</button>
                     </div>
                 </div> <!-- //c-modal-footer -->
             </div>

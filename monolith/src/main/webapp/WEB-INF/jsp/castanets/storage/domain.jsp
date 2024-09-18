@@ -224,7 +224,7 @@
 						<div class="btn-box">
 							<div class="c-tooltip top-right">
 								<span class="c-tooltip-arrow"></span>
-								<span class="txt">수정</span>
+								<span class="txt">편집</span>
 							</div>
 						</div>
 					</div>
