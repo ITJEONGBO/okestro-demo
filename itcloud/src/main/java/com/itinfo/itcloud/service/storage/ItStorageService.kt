@@ -44,7 +44,7 @@ interface ItStorageService {
 	@Throws(Error::class)
 	fun findAllDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo>
 	/**
-	 * [ItStorageService.findStorageDomain]
+	 * [ItStorageService.findDomain]
 	 * 데이터센터 - 스토리지 도메인 정보
 	 *
 	 * @param storageDomainId [String]
@@ -315,12 +315,8 @@ class StorageServiceImpl(
 	override fun findAllHostsFromDataCenter(dataCenterId: String): List<IdentifiedVo> {
 		log.debug("findAllHostsFromDataCenter ... dataCenterId: $dataCenterId")
 		val res: List<Host> =
-			conn.findAllHosts()
+			conn.findAllHostsFromDataCenter(dataCenterId)
 				.getOrDefault(listOf())
-				.filter {
-					conn.findCluster(it.cluster().id())
-						.getOrNull()?.dataCenter()?.id() == dataCenterId
-				}
 		return res.fromHostsToIdentifiedVos()
 	}
 

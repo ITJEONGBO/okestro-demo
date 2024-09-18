@@ -5,6 +5,7 @@ import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.error.ItemNotFoundException
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.computing.*
+import com.itinfo.itcloud.model.fromNetworkToIdentifiedVo
 import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
@@ -47,8 +48,6 @@ interface ItNetworkService {
 
 
 	// 네트워크 생성창 - 데이터센터 목록 [ItDataCenterService.findAll]
-
-
 	/**
 	 * [ItNetworkService.findAllClustersFromDataCenter]
 	 * 네트워크 생성- 클러스터 목록 (연결, 필수)
@@ -56,8 +55,8 @@ interface ItNetworkService {
 	 * @param dataCenterId [String]
 	 * @return List<[ClusterVo]>
 	 */
-	@Deprecated("[ItStorageService.findAllClustersFromDataCenter] 와 내용 같음")
 	fun findAllClustersFromDataCenter(dataCenterId: String): List<ClusterVo>
+
 	/**
 	 * [ItNetworkService.add]
 	 * 네트워크 생성
@@ -95,7 +94,8 @@ interface ItNetworkService {
 	fun findAllNetworkProviderFromNetwork(): OpenStackNetworkVo?
 	/**
 	 * [ItNetworkService.findAllExternalNetworkFromNetworkProvider]
-	 * 네트워크 가져오기 - 네트워크 공급자가 가지고있는 네트워크
+	 * 네트워크 가져오기 창
+	 * 네트워크 공급자가 가지고있는 네트워크(한개)
 	 *
 	 * @param providerId [String]
 	 * @return List<[Network]>
@@ -109,7 +109,7 @@ interface ItNetworkService {
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun importNetwork(): Boolean
+	fun importNetwork(): NetworkVo
 	/**
 	 * [ItNetworkService.findAllVnicProfilesFromNetwork]
 	 * 네트워크 - vNIC Profile 목록
@@ -191,30 +191,39 @@ class NetworkServiceImpl(
 
 	@Throws(Error::class)
 	override fun findOne(networkId: String): NetworkVo? {
-		log.info("getNetwork ... networkId: {}", networkId)
+		log.info("findOne ... networkId: {}", networkId)
 		val res: Network? =
 			conn.findNetwork(networkId, "networklabels")
 				.getOrNull()
 		return res?.toNetworkVo(conn)
 	}
 
-	@Deprecated("[ItStorageService.findAllClustersFromDataCenter] 와 내용 같음")
 	@Throws(Error::class)
 	override fun findAllClustersFromDataCenter(dataCenterId: String): List<ClusterVo> {
-		TODO("Not")
+		log.info("findAllClustersFromDataCenter ... : {}", dataCenterId)
+		val res: List<Cluster> =
+			conn.findAllClustersFromDataCenter(dataCenterId).
+				getOrDefault(listOf())
+		return res.toClusterVos(conn)
 	}
 
 
 	// TODO dc 다르면 중복명 가능
 	@Throws(Error::class)
 	override fun add(networkVo: NetworkVo): NetworkVo? {
-		// TODO 네트워크 생성시 기본이 선택한 데이터센터가 가진 모든 클러스터들이 연결/필수 설정되어잇음
 		log.info("addNetwork ... ")
 		val res: Network? =
 			conn.addNetwork(networkVo.toAddNetworkBuilder(conn))
 				.getOrNull()
-		return res?.toNetworkVo(conn)
-		// 클러스터 연결, 필수 선택
+		if(res == null){
+			throw ErrorPattern.NETWORK_NOT_FOUND.toException()
+		}
+
+		// 생성 후에 나온 network Id로 클러스터 네트워크 생성 및 레이블 생성 가능
+		// 기본 단순 생성은 클러스터가 할당되지도 필수도 선택되지 않음
+		networkVo.toAddClusterAttach(conn, res.id())	// 클러스터 연결, 필수 선택
+		networkVo.toAddNetworkLabel(conn, res.id())
+		return res.toNetworkVo(conn)
 	}
 
 	@Throws(Error::class)
@@ -223,6 +232,7 @@ class NetworkServiceImpl(
 		val res: Network? =
 			conn.updateNetwork(networkVo.toEditNetworkBuilder(conn))
 				.getOrNull()
+		// 레이블 애매
 		return res?.toNetworkVo(conn)
 	}
 
@@ -254,16 +264,11 @@ class NetworkServiceImpl(
 		return res.toNetworkVos(conn)
 	}
 
+
 	@Throws(Error::class)
-	override fun importNetwork(): Boolean {
+	override fun importNetwork(): NetworkVo {
 		log.info("importNetwork ... ")
-		// 그냥 있는거 가져오기
-		val osProvider: OpenStackProvider? =
-			conn.findAllOpenStackNetworkProviders("network")
-				.getOrDefault(listOf())
-				.firstOrNull()
-		// openstack import
-		return true // TODO: 데이터 필요할 경우 return 정하기
+		TODO("Not yet implemented")
 	}
 
 	@Throws(Error::class)
@@ -280,8 +285,6 @@ class NetworkServiceImpl(
 		log.info("findAllClustersFromNetwork ... networkId: {}", networkId)
 		conn.findNetwork(networkId)
 			.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
-
-		// TODO
 		val res: List<Cluster> =
 			conn.findAllClusters(follow = "networks")
 				.getOrDefault(listOf())

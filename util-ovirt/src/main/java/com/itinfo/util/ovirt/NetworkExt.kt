@@ -45,9 +45,6 @@ fun Connection.addNetwork(network: Network): Result<Network?> = runCatching {
 	val networkAdded: Network? =
 		this.srvNetworks().add().network(network).send().network()
 
-	// TODO vnicprofile 기본생성만, 다른창에서 생성기능 넣기
-	// 클러스터 연결, 필수 선택
-
 	networkAdded ?: throw ErrorPattern.NETWORK_NOT_FOUND.toError()
 }.onSuccess {
 	Term.NETWORK.logSuccess("생성")

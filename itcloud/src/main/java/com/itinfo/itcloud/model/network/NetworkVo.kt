@@ -1,11 +1,13 @@
 package com.itinfo.itcloud.model.network
 
+import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.fromDataCenterToIdentifiedVo
 import com.itinfo.itcloud.model.fromVnicProfilesToIdentifiedVos
 import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.*
+import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.DataCenterBuilder
 import org.ovirt.engine.sdk4.builders.NetworkBuilder
@@ -101,6 +103,12 @@ class NetworkVo (
 		inline fun builder(block: NetworkVo.Builder.() -> Unit): NetworkVo =  NetworkVo.Builder().apply(block).build()
 	}
 }
+fun Network.toNetworkIdName(): NetworkVo = NetworkVo.builder {
+	id { this@toNetworkIdName.id() }
+	name { this@toNetworkIdName.name() }
+}
+fun List<Network>.toNetworksIdName(): List<NetworkVo> =
+	this@toNetworksIdName.map { it.toNetworkIdName() }
 
 fun Network.toNetworkVo(conn: Connection): NetworkVo {
 	val vnicProfileVos: List<IdentifiedVo> =
@@ -159,62 +167,62 @@ fun List<Network>.toClusterNetworkVos(conn: Connection): List<NetworkVo> =
 
 /**
  * 네트워크 빌더
+ * external provider 선택시 vlan, portisolation=false 선택되면 안됨
+ * VnicProfile은 기본생성만 /qos는 제외항목, 네트워크필터도 vdsm으로 고정(?)
  */
-fun NetworkVo.toNetworkBuilder(conn: Connection): NetworkBuilder {
-	// external provider 선택시 vlan, portisolation=false 선택되면 안됨
-	val networkBuilder = NetworkBuilder()
-	networkBuilder
-		.dataCenter(DataCenterBuilder().id(this@toNetworkBuilder.dataCenter.id).build())
-		.name(this@toNetworkBuilder.name)
-		.description(this@toNetworkBuilder.description)
-		.comment(this@toNetworkBuilder.comment)
-		.portIsolation(this@toNetworkBuilder.portIsolation)
-		.mtu(this@toNetworkBuilder.mtu)  // 제한수가 있음
+fun NetworkVo.toNetworkBuilder(conn: Connection): NetworkBuilder = NetworkBuilder()
+	.dataCenter(DataCenterBuilder().id(this@toNetworkBuilder.dataCenter.id).build())
+	.name(this@toNetworkBuilder.name)
+	.description(this@toNetworkBuilder.description)
+	.comment(this@toNetworkBuilder.comment)
+	.portIsolation(this@toNetworkBuilder.portIsolation)
+	.mtu(this@toNetworkBuilder.mtu)  // 제한수가 있음
+	.vlan(if(this@toNetworkBuilder.vlan != 0) VlanBuilder().id(this@toNetworkBuilder.vlan) else null)
+	.usages(if(this@toNetworkBuilder.usage.vm) NetworkUsage.VM else null )
+	.externalProvider(
+		if(this@toNetworkBuilder.openStackNetwork.id.isNotEmpty())
+			OpenStackNetworkProviderBuilder().id(this@toNetworkBuilder.openStackNetwork.id)
+		else
+			null
+	)
 
-	if (this@toNetworkBuilder.usage.vm) {
-		networkBuilder.usages(NetworkUsage.VM)
-	}
-	if(this@toNetworkBuilder.vlan != 0){
-		networkBuilder
-			.vlan(VlanBuilder().id(this@toNetworkBuilder.vlan))
-	}
-	if(this@toNetworkBuilder.openStackNetwork.id.isNotEmpty()) {
-		networkBuilder
-			.externalProvider(OpenStackNetworkProviderBuilder().id(this@toNetworkBuilder.openStackNetwork.id))
-	}
-	if (this@toNetworkBuilder.openStackNetwork.id.isEmpty() && this@toNetworkBuilder.networkLabel.isNotEmpty()) {
-		conn.addNetworkLabelFromNetwork(
-			this@toNetworkBuilder.id,
-			NetworkLabelBuilder().id(this@toNetworkBuilder.networkLabel).build()
-		)
-//		networkBuilder.networkLabels(NetworkLabelBuilder().id(this@toNetworkBuilder.networkLabel))
-	}
-	// VnicProfile은 기본생성만 /qos는 제외항목, 네트워크필터도 vdsm으로 고정(?)
+// 클러스터 연결.할당 (attach 가 되어잇어야 required 선택가능)
+// 선택되면 clusterVo(id, required=t/f)
+// 이게 ext에 들어가려면 cluster의 개수,  networkid, clusterid, cluster required(tf)
+fun NetworkVo.toAddClusterAttach(conn: Connection, networkId: String) {
+	conn.findNetwork(networkId)
+		.getOrNull()?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
 
-	// 클러스터 연결.할당
-	// 클러스터 모두연결이 선택되어야지만 모두 필요가 선택됨
-	// front 에서 연결이 선택되면 clusterNetwork 에 add 하고 필요가 선택되면 required 에 true
-
-//	val clusters: List<Cluster> =
-//		conn.findAllClustersFromDataCenter(this@toNetworkBuilder.dataCenter.id)
-//			.getOrDefault(listOf())
-//
-//	for (clusterVo in clusters) {
-//		val n: Network = NetworkBuilder()
-//			.id(network.id())
-//			.required(clusterVo.required) // TODO: 어디서 찾는 값?
-//			.build()
-//		val resNetwork: Result<Network?> =
-//			conn.addNetworkFromCluster(clusterVo.id, n)
-//		log.info("신규 network(s) 추가 결과: {}", resNetwork.isSuccess)
-//	}
-	return networkBuilder
+	// TODO:HELP 반환값을 어떻게 할지 의문
+	if (this@toAddClusterAttach.clusters.isNotEmpty()) {
+		this@toAddClusterAttach.clusters.forEach { clusterVo ->
+			conn.findCluster(clusterVo.id)
+				.getOrNull()?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
+			conn.addNetworkFromCluster(
+				clusterVo.id,
+				NetworkBuilder().id(networkId).required(clusterVo.required).build()
+			).getOrNull()
+		}
+	}
 }
+// 네트워크 레이블
+fun NetworkVo.toAddNetworkLabel(conn: Connection, networkId: String) {
+	if (this@toAddNetworkLabel.openStackNetwork.id.isEmpty() && this@toAddNetworkLabel.networkLabel.isNotEmpty()) {
+		conn.addNetworkLabelFromNetwork(
+			this@toAddNetworkLabel.id,
+			NetworkLabelBuilder().id(this@toAddNetworkLabel.networkLabel).build()
+		)
+	}
+}
+
 
 // 필요 name, datacenter_id
 fun NetworkVo.toAddNetworkBuilder(conn: Connection): Network =
 	this@toAddNetworkBuilder.toNetworkBuilder(conn).build()
 
+
 fun NetworkVo.toEditNetworkBuilder(conn: Connection): Network =
 	this@toEditNetworkBuilder.toNetworkBuilder(conn).id(this@toEditNetworkBuilder.id).build()
+
+
 

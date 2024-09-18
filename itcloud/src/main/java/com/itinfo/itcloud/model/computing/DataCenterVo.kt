@@ -86,8 +86,8 @@ fun DataCenter.toDataCenterMenu(conn: Connection): DataCenterVo = DataCenterVo.b
 	status { this@toDataCenterMenu.status() }
 	version { this@toDataCenterMenu.version().major().toString() + "." + this@toDataCenterMenu.version().minor() }
 	storageType { this@toDataCenterMenu.local() }
-	clusterCnt { conn.findClusterFromDataCenter(this@toDataCenterMenu.id()).size }
-	hostCnt { conn.findHostFromDataCenter(this@toDataCenterMenu.id()).size }
+	clusterCnt { conn.findAllClustersFromDataCenter(this@toDataCenterMenu.id()).getOrDefault(listOf()).size }
+	hostCnt { conn.findAllHostsFromDataCenter(this@toDataCenterMenu.id()).getOrDefault(listOf()).size }
 }
 fun List<DataCenter>.toDataCentersMenu(conn: Connection): List<DataCenterVo> =
 	this@toDataCentersMenu.map { it.toDataCenterMenu(conn) }

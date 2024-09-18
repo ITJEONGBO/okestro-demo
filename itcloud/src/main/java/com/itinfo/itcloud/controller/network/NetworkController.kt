@@ -44,21 +44,20 @@ class NetworkController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="/networks/{networkId}",
-		notes="선택된 네트워크의 정보를 조회한다"
+		value="네트워크 상세정보",
+		notes="네트워크의 상세정보를 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		ApiImplicitParam(name="network", value="네트워크", dataTypeClass=NetworkVo::class, required=true, paramType="body"),
 	)
 	@GetMapping("/{networkId}")
 	@ResponseBody
-	@ResponseStatus(HttpStatus.CREATED)
-	fun setEditNetwork(
-		@PathVariable networkId: String? = null,
+	fun network(
+		@PathVariable networkId: String? = null
 	): ResponseEntity<NetworkVo?> {
-		log.info("GET /api/v1/networks/{} ... Network 편집 창", networkId)
-		if (networkId.isNullOrEmpty()) throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
+		if (networkId.isNullOrEmpty())
+			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
+		log.info("--- Network 일반")
 		return ResponseEntity.ok(iNetwork.findOne(networkId))
 	}
 
@@ -144,29 +143,10 @@ class NetworkController: BaseController() {
 
 	// TODO: 정리필요
 	// 네트워크 가져오기
-	@PostMapping("/import")
-	fun importNw(): ResponseEntity<Boolean> {
-		log.info("--- Network 가져오기")
-		return ResponseEntity.ok(iNetwork.importNetwork())
-	}
-
-//	@ApiOperation(
-//		httpMethod="GET",
-//		value="네트워크 상세정보",
-//		notes="네트워크의 상세정보를 조회한다"
-//	)
-//	@ApiImplicitParams(
-//		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-//	)
-//	@GetMapping("/{networkId}")
-//	@ResponseBody
-//	fun network(
-//		@PathVariable networkId: String? = null
-//	): ResponseEntity<NetworkVo?> {
-//		if (networkId.isNullOrEmpty())
-//			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-//		log.info("--- Network 일반")
-//		return ResponseEntity.ok(iNetwork.findOne(networkId))
+//	@PostMapping("/import")
+//	fun importNw(): ResponseEntity<Boolean> {
+//		log.info("--- Network 가져오기")
+//		return ResponseEntity.ok(iNetwork.importNetwork())
 //	}
 
 

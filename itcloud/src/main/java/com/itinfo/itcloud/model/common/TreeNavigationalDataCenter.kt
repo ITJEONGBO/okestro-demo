@@ -3,7 +3,7 @@ package com.itinfo.itcloud.model.common
 import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.findAllAttachedStorageDomainsFromDataCenter
 import com.itinfo.util.ovirt.findAllClustersFromDataCenter
-import com.itinfo.util.ovirt.findAllNetworksFromFromDataCenter
+import com.itinfo.util.ovirt.findAllNetworksFromDataCenter
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.types.Cluster
 import org.ovirt.engine.sdk4.types.DataCenter
@@ -51,7 +51,7 @@ fun List<DataCenter>.toNavigationalsWithClusters(conn: Connection): List<TreeNav
 
 fun DataCenter.toNavigationalWithNetworks(conn: Connection): TreeNavigationalDataCenter {
     val networks: List<Network> =
-        conn.findAllNetworksFromFromDataCenter(this@toNavigationalWithNetworks.id())
+        conn.findAllNetworksFromDataCenter(this@toNavigationalWithNetworks.id())
             .getOrDefault(listOf())
 
     return TreeNavigationalDataCenter.builder {
