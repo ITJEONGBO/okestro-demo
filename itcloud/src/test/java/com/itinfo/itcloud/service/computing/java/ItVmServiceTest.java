@@ -599,7 +599,7 @@ class ItVmServiceTest {
     }
 
     @Test
-    @DisplayName("가상머신 nic 수정창")
+    @DisplayName("가상머신 nic 편집창")
     void setEditNic() {
         String id = "e929923d-8710-47ef-bfbd-e281434eb8ee";
         String nicId = "53658aa8-5d6d-4875-822c-c7ec61eb9ba5";

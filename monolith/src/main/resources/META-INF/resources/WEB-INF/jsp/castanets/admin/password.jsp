@@ -10,7 +10,7 @@
     <div v-cloak>
         <div class="page-title">
             <div class="title_left">
-                <h3>비밀번호 수정</h3>
+                <h3>비밀번호 편집</h3>
             </div>
         </div>
         <div class="clearfix"></div>

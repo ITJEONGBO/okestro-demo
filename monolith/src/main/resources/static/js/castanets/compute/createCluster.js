@@ -130,7 +130,7 @@ var clusterVue = new Vue({
         // // 네트워크 공급자 조회
         // this.retrieveNetworkProviders();
         //
-        // // 수정화면일 경우 클러스터 정보 조회
+        // // 편집화면일 경우 클러스터 정보 조회
         // if (this.isUpdate) {
         //     this.retrieveCreateClusterInfo();
         // }
@@ -208,7 +208,7 @@ var clusterVue = new Vue({
                 return;
             }
 
-            // if (confirm('클러스터를 수정하시겠습니까?')) {
+            // if (confirm('클러스터를 편집하시겠습니까?')) {
                 this.$http.put('/v2/clusters/'+this.clusterId, this.cluster).then(function (response) {
                     this.returnCluster = response.data.resultKey;
                     location.href = '/compute/clusters';

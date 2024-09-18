@@ -151,7 +151,7 @@ fun NetworkCreateVo.toNetworkBuilder(conn: Connection, add: Boolean = true): Net
 
 	return if (add) { // 생성 시
 		networkBuilder
-	} else {  // 수정 시
+	} else {  // 편집 시
 		networkBuilder.id(this@toNetworkBuilder.id)
 	}
 }*/

@@ -20,7 +20,7 @@
                     <div class="row text-right">
                         <div class="btn-group">
                             <button type="button" class="btn btn-success btn-sm" @click="goCreateQuota()"><i class="fa fa-file-o"></i> 등록</button>
-                            <button type="button" class="btn btn-success btn-sm" @click="goUpdateQuota()"><i class="fa fa-edit"></i> 수정</button>
+                            <button type="button" class="btn btn-success btn-sm" @click="goUpdateQuota()"><i class="fa fa-edit"></i> 편집</button>
                             <button type="button" class="btn btn-success btn-sm" @click="removeQuota()"><i class="fa fa-trash-o"></i> 삭제</button>
                        </div>
                     </div>

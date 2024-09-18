@@ -65,7 +65,7 @@
 													<div class="openPop-target scrollBodyY long">
 														<div class="openPop-target_inner">
 															<ul>
-																<li><button type="button" class="active" @click="openPop('targetInstanceType')"><span class="ico ico-edit"></span>수정</button></li>
+																<li><button type="button" class="active" @click="openPop('targetInstanceType')"><span class="ico ico-edit"></span>편집</button></li>
 																<li><button type="button" class="active" @click="openPop('deleteModal')"><span class="ico ico-del"></span>삭제</button></li>
 															</ul>
 														</div>
@@ -781,7 +781,7 @@
 				<div class="c-modal-footer">
 					<div class="buttonSet">
 						<button class="btn-c-modal btn-cancel" @click="closePop">취소</button>
-						<button class="btn-c-modal" @click="updateInstanceType()">수정</button>
+						<button class="btn-c-modal" @click="updateInstanceType()">편집</button>
 					</div>
 				</div>
 			</div>

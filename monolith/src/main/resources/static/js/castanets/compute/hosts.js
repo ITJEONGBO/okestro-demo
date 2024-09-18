@@ -122,10 +122,10 @@ var hostsVue = new Vue({
         },// end goCreateHost
         goUpdateHost: function () {
             if (this.selectedHosts.length == 0) {
-                alert("수정할 호스트를 선택해주세요.");
+                alert("편집할 호스트를 선택해주세요.");
                 return;
             } else if (this.selectedHosts.length != 1) {
-                alert("수정할 호스트를 1개만 선택해주세요.");
+                alert("편집할 호스트를 1개만 선택해주세요.");
                 return;
             }
             window.location.href = "/compute/updateHost?id=" + this.selectedHosts[0].id;

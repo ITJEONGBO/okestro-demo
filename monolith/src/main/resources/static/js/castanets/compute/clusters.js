@@ -94,9 +94,9 @@ var clustersVue = new Vue({
         },// end goCreateCluster
         goUpdateCluster: function () {
             if (this.selectedClusters.length == 0) {
-                alert("수정할 클러스터를 선택해주세요.");
+                alert("편집할 클러스터를 선택해주세요.");
             } else if (this.selectedClusters.length != 1) {
-                alert("수정할 클러스터를 1개만 선택해주세요.");
+                alert("편집할 클러스터를 1개만 선택해주세요.");
             } else {
                 window.location.href = "/compute/updateCluster?id=" + this.selectedClusters[0].id;
             }// end if

@@ -25,7 +25,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
   const handleCloseModal = () => setIsModalOpen(false); // 모달 닫기
 
   const buttons = [
-    { id: 'edit_btn', label: '수정', onClick: () => console.log('Edit button clicked') },
+    { id: 'edit_btn', label: '편집', onClick: () => console.log('Edit button clicked') },
     { id: 'remove_btn', label: '제거', onClick: () => console.log('Remove button clicked') },
     { id: 'move_btn', label: '이동', onClick: () => console.log('Move button clicked') },
     { id: 'copy_btn', label: '복사', onClick: () => console.log('Copy button clicked') },

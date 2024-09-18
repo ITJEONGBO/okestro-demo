@@ -26,7 +26,7 @@
 									</div>
 									<div class="btn-group">
 										<button type="button" class="btn btn-success btn-sm" @click="goCreateCluster()"><i class="fa fa-file-o"></i> 등록</button>
-										<button type="button" class="btn btn-success btn-sm" @click="goUpdateCluster()" :disabled="selectedClusters.length!=1"><i class="fa fa-edit"></i> 수정</button>
+										<button type="button" class="btn btn-success btn-sm" @click="goUpdateCluster()" :disabled="selectedClusters.length!=1"><i class="fa fa-edit"></i> 편집</button>
 										<button type="button" class="btn btn-success btn-sm" @click="removeCluster()" :disabled="selectedClusters.length!=1"><i class="fa fa-trash-o"></i> 삭제</button>
 									</div>
 								</div>

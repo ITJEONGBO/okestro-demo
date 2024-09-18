@@ -367,7 +367,7 @@ fun Vm.toVmVo(conn: Connection): VmVo {
 //        templateVo { this@toVmVo. }
         description { this@toVmVo.description() }
         comment { this@toVmVo.comment() }
-        osSystem { this@toVmVo.os().type() } // 수정필요 OsVo.valueOf(vm.os().type()).findOs()
+        osSystem { this@toVmVo.os().type() } // 편집필요 OsVo.valueOf(vm.os().type()).findOs()
         chipsetFirmwareType { this@toVmVo.bios().type().findBios() }
         optimizeOption { this@toVmVo.type().findVmType() } //
         stateless { this@toVmVo.stateless() }
@@ -458,7 +458,7 @@ fun Vm.toVmVoInfo(conn: Connection/*, graph: ItGraphService*/): VmVo {
         id { this@toVmVoInfo.id() }
         name { this@toVmVoInfo.name() }
         description { this@toVmVoInfo.description() }
-        osSystem { this@toVmVoInfo.os().type() } // 수정필요 OsVo.valueOf(vm.os().type()).findOs()
+        osSystem { this@toVmVoInfo.os().type() } // 편집필요 OsVo.valueOf(vm.os().type()).findOs()
         chipsetFirmwareType { this@toVmVoInfo.bios().type().findBios() }
         priority { this@toVmVoInfo.highAvailability().priorityAsInteger() }
         optimizeOption { this@toVmVoInfo.type().findVmType() }

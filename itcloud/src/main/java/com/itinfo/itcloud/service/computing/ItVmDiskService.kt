@@ -49,7 +49,7 @@ interface ItVmDiskService {
 	fun addDiskFromVm(vmVo: VmVo): DiskAttachmentVo?
 	/**
 	 * [ItVmDiskService.updateDiskFromVm]
-	 * 가상머신 디스크 수정
+	 * 가상머신 디스크 편집
 	 *
 	 * @param vmVo [VmVo] 가상머신 id
 	 * @return [DiskAttachmentVo]?

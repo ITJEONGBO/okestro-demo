@@ -164,7 +164,7 @@ class ItClusterServiceTest {
 
 
     @Test
-    @DisplayName("클러스터 수정 창")
+    @DisplayName("클러스터 편집 창")
     void setCluster() {
         String id = "729bd062-f5b6-44f1-a3c2-64d81e2dbf1b";
         ClusterCreateVo c = clusterService.getCluster(id);
@@ -174,7 +174,7 @@ class ItClusterServiceTest {
     }
 
     @Test
-    @DisplayName("클러스터 수정")
+    @DisplayName("클러스터 편집")
     void editCluster() {
         String randomName = RandomStringUtils.randomAlphabetic(2);
         String id = "4318aae2-29bd-4062-a2ba-75f814ca847c";
@@ -210,7 +210,7 @@ class ItClusterServiceTest {
     }
 
     @Test
-    @DisplayName("클러스터 수정 - 중복이름 ")
+    @DisplayName("클러스터 편집 - 중복이름 ")
     void editCluster2() {
         String id = "4318aae2-29bd-4062-a2ba-75f814ca847c";
 

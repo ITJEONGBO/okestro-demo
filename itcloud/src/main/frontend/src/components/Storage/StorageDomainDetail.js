@@ -51,7 +51,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
       domainStatus: '활성화',
     },
   ];
-  //가상머신(수정해야됨)
+  //가상머신(편집해야됨)
   //템플릿
   const templateColumns = [
     { header: '별칭', accessor: 'alias', clickable: false },
@@ -302,7 +302,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
           </>
         )}
 
-        {/*밑에딸린 박스 수정 */}
+        {/*밑에딸린 박스 편집 */}
         {activeTab === 'machine' && (
           <>
           <div className="host_empty_outer">

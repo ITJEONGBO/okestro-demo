@@ -88,8 +88,8 @@ class VmController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="PUT",
-		value="가상머신 수정",
-		notes="가상머신을 수정한다"
+		value="가상머신 편집",
+		notes="가상머신을 편집한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),

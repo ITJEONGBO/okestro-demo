@@ -17,8 +17,8 @@
 //    List<NetworkVo> setNetworkList(String dcId);    // 생성 위한 network 목록
 //
 //    CommonVo<Boolean> addCluster(ClusterCreateVo cVo);  // 생성
-//    ClusterCreateVo getCluster(String id);  // 수정 창
-//    CommonVo<Boolean> editCluster(ClusterCreateVo cVo);  // 수정
+//    ClusterCreateVo getCluster(String id);  // 편집 창
+//    CommonVo<Boolean> editCluster(ClusterCreateVo cVo);  // 편집
 //    CommonVo<Boolean> deleteCluster(List<String> ids); // 삭제
 //
 //

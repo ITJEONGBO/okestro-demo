@@ -557,8 +557,8 @@ class TemplatesServiceImpl : TemplatesService {
 			response = templateService.get().send().template()
 			val gson = Gson()
 			val message = MessageVo(
-				"템플릿 수정",
-				"템플릿 수정 완료(" + response.name() + ")",
+				"템플릿 편집",
+				"템플릿 편집 완료(" + response.name() + ")",
 				"success"
 			)
 			websocketService.notify( message)
@@ -569,7 +569,7 @@ class TemplatesServiceImpl : TemplatesService {
 				interruptedException.printStackTrace()
 			}
 			log.error(e.localizedMessage)
-			val message = MessageVo("템플릿 수정", "템플릿 수정 실패(${e.message})", "error")
+			val message = MessageVo("템플릿 편집", "템플릿 편집 실패(${e.message})", "error")
 			websocketService.notify(message)
 		}
 		return response!!.id()

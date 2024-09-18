@@ -27,7 +27,7 @@
 <%--								<button type="button" class="btn btn-success btn-sm" :disabled="selectedTemplates.length == 0 || selectedTemplates[0].name === 'Blank'" @click="updateTemplate()">--%>
 								<button type="button" class="btn btn-success btn-sm" :disabled="selectedTemplates.length == 0 " @click="updateTemplate()">
 
-									<i class="fa fa-edit"></i> 수정
+									<i class="fa fa-edit"></i> 편집
 								</button>
 <%--								<button type="button" class="btn btn-success btn-sm" :disabled="selectedTemplates.length == 0 || selectedTemplates[0].name === 'Blank'"--%>
 								<button type="button" class="btn btn-success btn-sm" :disabled="selectedTemplates.length == 0 "

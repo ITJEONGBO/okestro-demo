@@ -98,7 +98,7 @@ class ItDataCenterServiceTest {
 		assertThat(addResult?.quotaMode, `is`(dcAdd.quotaMode))
 		assertThat(addResult?.comment, `is`(dcAdd.comment))
 
-		// 수정
+		// 편집
 		val dcUpdate: DataCenterVo = DataCenterVo.builder {
 			id { addResult?.id }
 			name { "test2" }

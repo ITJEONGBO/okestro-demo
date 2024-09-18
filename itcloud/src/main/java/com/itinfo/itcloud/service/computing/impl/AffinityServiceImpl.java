@@ -139,7 +139,7 @@ public class AffinityServiceImpl implements ItAffinityService {
 
 	*/
 /**
-	 * 선호도 그룹 수정 창
+	 * 선호도 그룹 편집 창
 	 * @param id    cluster/vm ID
 	 * @param cluster  cluster/vm 인지
 	 * @param agId  해당 선호도 그룹의 ID
@@ -152,13 +152,13 @@ public class AffinityServiceImpl implements ItAffinityService {
 		String clusterId = cluster ? id : system.vmsService().vmService(id).get().send().vm().cluster().id();
 		AffinityGroup ag = system.clustersService().clusterService(clusterId).affinityGroupsService().groupService(agId).get().follow("vmlabels,hostlabels,vms,hosts").send().group();
 
-		log.info(cluster ? "클러스터 선호도 그룹 수정창" : "가상머신 선호도 그룹 수정창");
+		log.info(cluster ? "클러스터 선호도 그룹 편집창" : "가상머신 선호도 그룹 편집창");
 		return AffinityGroupVoKt.toAffinityGroupVo(ag, conn, clusterId);
 
 	}
 
 
-	// 선호도 그룹 수정
+	// 선호도 그룹 편집
 	@Override
 	public CommonVo<Boolean> editAffinityGroup(AffinityGroupVo agVo) {
 		Connection conn = admin.getConnection();
@@ -175,7 +175,7 @@ public class AffinityServiceImpl implements ItAffinityService {
 			AffinityGroupBuilder ag = getAffinityGroupBuilder(agVo);
 			ag.id(agId);
 
-			// 수정시 들어갈 host/vm labels,list
+			// 편집시 들어갈 host/vm labels,list
 			editHostLabels(system, ag, agVo);
 			editVmLabels(system, ag, agVo);
 			editHostMembers(system, ag, agVo);
@@ -606,7 +606,7 @@ public class AffinityServiceImpl implements ItAffinityService {
 	}
 
 
-	// 선호도 그룹 수정 시, Host/Vm 멤버 추가&삭제
+	// 선호도 그룹 편집 시, Host/Vm 멤버 추가&삭제
 	private void editHostMembers(SystemService system, AffinityGroupBuilder agBuilder, AffinityGroupVo agVo) {
 		AffinityGroupHostsService agHostsService = system.clustersService().clusterService(agVo.getClusterId()).affinityGroupsService().groupService(agVo.getId()).hostsService();
 
@@ -629,7 +629,7 @@ public class AffinityServiceImpl implements ItAffinityService {
 		}
 	}
 
-	// 선호도 그룹 수정 시, Host/Vm 멤버 추가&삭제
+	// 선호도 그룹 편집 시, Host/Vm 멤버 추가&삭제
 	private void editVmMembers(SystemService system, AffinityGroupBuilder agBuilder, AffinityGroupVo agVo) {
 		AffinityGroupVmsService agVmsService = system.clustersService().clusterService(agVo.getClusterId()).affinityGroupsService().groupService(agVo.getId()).vmsService();
 

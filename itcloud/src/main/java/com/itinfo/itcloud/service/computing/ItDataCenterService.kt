@@ -49,7 +49,7 @@ interface ItDataCenterService {
 	fun add(dataCenterVo: DataCenterVo): DataCenterVo?
 	/**
 	 * [ItDataCenterService.update]
-	 * 데이터센터 수정
+	 * 데이터센터 편집
 	 *
 	 * @param dataCenterVo [DataCenterVo]
 	 * @return [DataCenterVo]?

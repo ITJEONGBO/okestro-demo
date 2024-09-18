@@ -160,7 +160,7 @@ class NetworkController {
 		}
 	}
 
-	@ApiOperation(httpMethod="POST", value="updateNetwork", notes="네트워크 수정")
+	@ApiOperation(httpMethod="POST", value="updateNetwork", notes="네트워크 편집")
 	@ApiImplicitParams(
 		ApiImplicitParam(name="itinfoNetworkVo", value="네트워크 정보", paramType="body", dataTypeClass=ItInfoNetworkVo::class)
 	)

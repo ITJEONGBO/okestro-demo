@@ -367,10 +367,10 @@ class HostsServiceImpl : HostsService {
 		}
 		if (hostId.isEmpty()) {
 			val message = MessageVo()
-			message.title = "호스트 네트워크 수정"
-			message.text = "호스트 네트워크 수정 실패(no such hostId Found)"
+			message.title = "호스트 네트워크 편집"
+			message.text = "호스트 네트워크 편집 실패(no such hostId Found)"
 			message.style = "error"
-			log.error("호스트 네트워크 수정 실패(no such hostId Found)")
+			log.error("호스트 네트워크 편집 실패(no such hostId Found)")
 			return
 		}
 		val host: Host = c.findHost(hostId) ?: run {
@@ -380,7 +380,7 @@ class HostsServiceImpl : HostsService {
 		val hostNics = c.findAllNicsFromHost(hostId)
 		var networkAttachmentId: String? = null
 		val message = MessageVo()
-		message.title = "호스트 네트워크 수정"
+		message.title = "호스트 네트워크 편집"
 		for (nicUsageApiVo in nicUsageApiVoList) {
 			if (nicUsageApiVo.bonding.isEmpty() && nicUsageApiVo.id.isEmpty()) {
 				if ("" != nicUsageApiVo.networkId) {
@@ -446,12 +446,12 @@ class HostsServiceImpl : HostsService {
 												)
 											)
 										}
-										message.text = "호스트 네트워크 수정 완료(${nicUsageApiVo.name})"
+										message.text = "호스트 네트워크 편집 완료(${nicUsageApiVo.name})"
 										message.style = "success"
 									} catch (e: Exception) {
 										log.error(e.localizedMessage)
 										e.printStackTrace()
-										message.text = "호스트 네트워크 수정 실패(${nicUsageApiVo.name})"
+										message.text = "호스트 네트워크 편집 실패(${nicUsageApiVo.name})"
 										message.style = "error"
 									}
 								} else if (nicUsageApiVo.vlanNetworkList.isEmpty()) {
@@ -473,12 +473,12 @@ class HostsServiceImpl : HostsService {
 													.hostNic(Builders.hostNic().name(nicUsageApiVo.name)).build()
 											)
 										)
-										message.text = "호스트 네트워크 수정 완료(${nicUsageApiVo.name})"
+										message.text = "호스트 네트워크 편집 완료(${nicUsageApiVo.name})"
 										message.style = "success"
 									} catch (e2: Exception) {
 										log.error(e2.localizedMessage)
 										e2.printStackTrace()
-										message.text = "호스트 네트워크 수정 실패(${nicUsageApiVo.name})"
+										message.text = "호스트 네트워크 편집 실패(${nicUsageApiVo.name})"
 										message.style = "error"
 									}
 								} else if (nicUsageApiVo.vlanNetworkList.isNotEmpty() && nicUsageApiVo.networkId.isEmpty()) {
@@ -524,11 +524,11 @@ class HostsServiceImpl : HostsService {
 												)
 											)
 										}
-										message.text = "호스트 네트워크 수정 완료(${nicUsageApiVo.name})"
+										message.text = "호스트 네트워크 편집 완료(${nicUsageApiVo.name})"
 										message.style = "success"
 									} catch (e3: Exception) {
 										e3.printStackTrace()
-										message.text = "호스트 네트워크 수정 실패(${nicUsageApiVo.name})"
+										message.text = "호스트 네트워크 편집 실패(${nicUsageApiVo.name})"
 										message.style = "error"
 									}
 								}
@@ -569,11 +569,11 @@ class HostsServiceImpl : HostsService {
 											)
 										)
 									}
-									message.text = "호스트 네트워크 수정 완료(${nicUsageApiVo.name})"
+									message.text = "호스트 네트워크 편집 완료(${nicUsageApiVo.name})"
 									message.style = "success"
 								} catch (e4: Exception) {
 									e4.printStackTrace()
-									message.text = "호스트 네트워크 수정 실패(${nicUsageApiVo.name})"
+									message.text = "호스트 네트워크 편집 실패(${nicUsageApiVo.name})"
 									message.style = "error"
 								}
 							}
@@ -594,13 +594,13 @@ class HostsServiceImpl : HostsService {
 									).slaves(*slaves5.toTypedArray<HostNicBuilder>()).build()
 							).build(), listOf()
 						)
-						message.text = "호스트 네트워크 수정 완료(${nicUsageApiVo.name})"
+						message.text = "호스트 네트워크 편집 완료(${nicUsageApiVo.name})"
 						message.style = "success"
 						return
 					} catch (e5: Exception) {
 						e5.printStackTrace()
 						log.error(e5.localizedMessage)
-						message.text = "호스트 네트워크 수정 실패(${nicUsageApiVo.name})"
+						message.text = "호스트 네트워크 편집 실패(${nicUsageApiVo.name})"
 						message.style = "error"
 						return
 					}
@@ -634,12 +634,12 @@ class HostsServiceImpl : HostsService {
 									Builders.option().name("miimon").value("100")
 							).slaves(*slaves6.toTypedArray<HostNicBuilder>())
 						).build())
-						message.text = "호스트 네트워크 수정 완료(${nicUsageApiVo.name})"
+						message.text = "호스트 네트워크 편집 완료(${nicUsageApiVo.name})"
 						message.style = "success"
 					} catch (e6: Exception) {
 						e6.printStackTrace()
 						log.error(e6.localizedMessage)
-						message.text = "호스트 네트워크 수정 실패(${nicUsageApiVo.name})"
+						message.text = "호스트 네트워크 편집 실패(${nicUsageApiVo.name})"
 						message.style = "error"
 					}
 				} else if (logicalNetId.isEmpty() &&
@@ -669,12 +669,12 @@ class HostsServiceImpl : HostsService {
 									.hostNic(Builders.hostNic().name(nicUsageApiVo.name)).build())
 							}
 						}
-						message.text = "호스트 네트워크 수정 완료(${nicUsageApiVo.name})"
+						message.text = "호스트 네트워크 편집 완료(${nicUsageApiVo.name})"
 						message.style = "success"
 					} catch (e7: Exception) {
 						e7.printStackTrace()
 						log.error(e7.localizedMessage)
-						message.text = "호스트 네트워크 수정 실패(${nicUsageApiVo.name})"
+						message.text = "호스트 네트워크 편집 실패(${nicUsageApiVo.name})"
 						message.style = "error"
 					}
 				} else if (nicUsageApiVo.vlanNetworkList.isNotEmpty()) {
@@ -706,11 +706,11 @@ class HostsServiceImpl : HostsService {
 								)
 							)
 						}
-						message.text = "호스트 네트워크 수정 완료(${nicUsageApiVo.name})"
+						message.text = "호스트 네트워크 편집 완료(${nicUsageApiVo.name})"
 						message.style = "success"
 					} catch (e8: Exception) {
 						e8.printStackTrace()
-						message.text = "호스트 네트워크 수정 실패(${nicUsageApiVo.name})"
+						message.text = "호스트 네트워크 편집 실패(${nicUsageApiVo.name})"
 						message.style = "error"
 					}
 				} else if (nicUsageApiVo.networkId.isEmpty()) {
@@ -720,12 +720,12 @@ class HostsServiceImpl : HostsService {
 							it.network().id() == logicalNetId
 						}.id()
 						c.removeNetworkAttachmentFromHost(host.id(), networkAttachmentId)
-						message.text = "호스트 네트워크 수정 완료(${nicUsageApiVo.name})"
+						message.text = "호스트 네트워크 편집 완료(${nicUsageApiVo.name})"
 						message.style = "success"
 					} catch (e9: Exception) {
 						e9.printStackTrace()
 						log.error(e9.localizedMessage)
-						message.text = "호스트 네트워크 수정 실패(${nicUsageApiVo.name})"
+						message.text = "호스트 네트워크 편집 실패(${nicUsageApiVo.name})"
 						message.style = "error"
 					}
 				} else if (
@@ -754,12 +754,12 @@ class HostsServiceImpl : HostsService {
 						for (attachmentId in vlanNetAttachment)
 							c.removeNetworkAttachmentFromHost(host.id(), attachmentId)
 
-						message.text = "호스트 네트워크 수정 완료(${nicUsageApiVo.name})"
+						message.text = "호스트 네트워크 편집 완료(${nicUsageApiVo.name})"
 						message.style = "success"
 					} catch (e10: Exception) {
 						e10.printStackTrace()
 						log.error(e10.localizedMessage)
-						message.text = "호스트 네트워크 수정 실패(${nicUsageApiVo.name})"
+						message.text = "호스트 네트워크 편집 실패(${nicUsageApiVo.name})"
 						message.style = "error"
 					}
 				}
@@ -905,12 +905,12 @@ class HostsServiceImpl : HostsService {
 								}
 							}
 						}
-						message.text = "호스트 네트워크 수정 완료(${nicUsageApiVo.name})"
+						message.text = "호스트 네트워크 편집 완료(${nicUsageApiVo.name})"
 						message.style = "success"
 					} catch (e11: Exception) {
 						e11.printStackTrace()
 						log.error(e11.localizedMessage)
-						message.text = "호스트 네트워크 수정 실패(${nicUsageApiVo.name})"
+						message.text = "호스트 네트워크 편집 실패(${nicUsageApiVo.name})"
 						message.style = "error"
 					}
 				}
@@ -922,8 +922,8 @@ class HostsServiceImpl : HostsService {
 	override fun modifyNicNetwork(networkAttachmentVo: NetworkAttachmentVo) {
 		val c = adminConnectionService.getConnection()
 		val message = MessageVo()
-		message.title = "호스트 네트워크 수정"
-		message.text = "할당된 네트워크 수정 실패(${networkAttachmentVo.nicNetworkName})"
+		message.title = "호스트 네트워크 편집"
+		message.text = "할당된 네트워크 편집 실패(${networkAttachmentVo.nicNetworkName})"
 		message.style = "error"
 		val host: Host = c.findHost(networkAttachmentVo.netHostId) ?: run {
 			websocketService.notify(message)
@@ -1044,19 +1044,19 @@ class HostsServiceImpl : HostsService {
 			}
 			try {
 				Thread.sleep(2000L)
-				message.text = "할당된 네트워크 수정 완료(" + networkAttachmentVo.nicNetworkName + ")"
+				message.text = "할당된 네트워크 편집 완료(" + networkAttachmentVo.nicNetworkName + ")"
 				message.style = "success"
 			} catch (e: InterruptedException) {
 				e.printStackTrace()
 				log.error(e.localizedMessage)
-				message.text = "할당된 네트워크 수정 실패(" + networkAttachmentVo.nicNetworkName + ")"
+				message.text = "할당된 네트워크 편집 실패(" + networkAttachmentVo.nicNetworkName + ")"
 				message.style = "error"
 			}
 			websocketService.notify(message)
 		} catch (e: Exception) {
 			e.printStackTrace()
 			log.error(e.localizedMessage)
-			message.text = "할당된 네트워크 수정 실패(" + networkAttachmentVo.nicNetworkName + ")"
+			message.text = "할당된 네트워크 편집 실패(" + networkAttachmentVo.nicNetworkName + ")"
 			message.style = "error"
 		}
 	}

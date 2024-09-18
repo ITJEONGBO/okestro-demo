@@ -86,7 +86,7 @@
 													<div class="openPop-target scrollBodyY long">
 														<div class="openPop-target_inner">
 															<ul>
-																<li><button type="button" :disabled="selectedUsers.length <= 0" @click="openPop('updateUser')"><span class="ico ico-edit"></span>수정</button></li>
+																<li><button type="button" :disabled="selectedUsers.length <= 0" @click="openPop('updateUser')"><span class="ico ico-edit"></span>편집</button></li>
 																<li><button type="button" :disabled="selectedUsers.length <= 0" @click="openPop('deleteModal')"><span class="ico ico-del"></span>삭제</button></li>
 															</ul>
 														</div>
@@ -138,7 +138,7 @@
 			<div class="c-modal-inner">
 				<div class="c-modal-header">
 					<h1 v-if="mode == 'create'">사용자 등록</h1>
-					<h1 v-else-if="mode == 'update'">사용자 수정</h1>
+					<h1 v-else-if="mode == 'update'">사용자 편집</h1>
 				</div>
 				<div class="c-modal-body">
 					<div class="c-modal-body_inner pt-40">
@@ -214,7 +214,7 @@
 		<section class="c-modal-wrap c-modal-auto">
 			<div class="c-modal-inner">
 				<div class="c-modal-header">
-					<h1>비밀번호 수정</h1>
+					<h1>비밀번호 편집</h1>
 				</div>
 				<div class="c-modal-body">
 					<div class="c-modal-body_inner pt-40">

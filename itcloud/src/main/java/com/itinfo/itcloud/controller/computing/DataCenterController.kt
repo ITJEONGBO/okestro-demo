@@ -66,7 +66,7 @@ class DataCenterController: BaseController() {
 	): ResponseEntity<DataCenterVo?> {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-		log.info("/computing/datacenters/{}/edit ... 데이터센터 편집 창", dataCenterId)
+		log.info("/computing/datacenters/{} ... 데이터센터 상세정보", dataCenterId)
 		return ResponseEntity.ok(iDataCenter.findOne(dataCenterId))
 	}
 
@@ -194,7 +194,9 @@ class DataCenterController: BaseController() {
 		return ResponseEntity.ok(iNetwork.findAllFromDataCenter(dataCenterId))
 	}
 
-
+	/**
+	 * 스토리지 - 데이터센터가 가지고 있는 도메인 목록
+	 */
 	@ApiOperation(
 		httpMethod="GET",
 		value="스토리지 - 도메인 목록 조회",

@@ -144,10 +144,10 @@ class DomainsController {
 		return asJsonResponse("OK")
 	}
 
-	@ApiOperation(httpMethod="PUT", value="updateDomain", notes="도메인 수정")
+	@ApiOperation(httpMethod="PUT", value="updateDomain", notes="도메인 편집")
 	@ApiImplicitParams(
 		ApiImplicitParam(name="id", value="도메인 ID", paramType="body", dataTypeClass=String::class),
-		ApiImplicitParam(name="storageDomainCreateVo", value="수정할 도메인 정보", paramType="body", dataTypeClass=StorageDomainCreateVo::class),
+		ApiImplicitParam(name="storageDomainCreateVo", value="편집할 도메인 정보", paramType="body", dataTypeClass=StorageDomainCreateVo::class),
 	)
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")

@@ -24,7 +24,8 @@ class ClusterController: BaseController() {
 	@ApiOperation(
 		httpMethod="GET",
 		value="클러스터 목록 조회",
-		notes="전체 클러스터 목록을 조회한다")
+		notes="전체 클러스터 목록을 조회한다"
+	)
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
@@ -39,8 +40,8 @@ class ClusterController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="클러스터 상세정보 조회",
-		notes="클러스터 상세정보를 조회한다"
+		value="클러스터의 정보 상세조회",
+		notes="선택된 클러스터의 정보를 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -91,8 +92,8 @@ class ClusterController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="PUT",
-		value="클러스터 수정",
-		notes="클러스터를 수정한다"
+		value="클러스터 편집",
+		notes="클러스터를 편집한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -106,7 +107,7 @@ class ClusterController: BaseController() {
 	@ResponseStatus(HttpStatus.CREATED)
 	fun update(
 		@PathVariable clusterId: String? = null,
-		@RequestBody cluster: ClusterVo? = null, // TODO: clusterId를 clusterVo에 포함시켜야 할거 같음?
+		@RequestBody cluster: ClusterVo? = null,
 	): ResponseEntity<ClusterVo?> {
 		if (clusterId.isNullOrEmpty())
 			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()

@@ -128,7 +128,7 @@ var updateNetwork = new Vue({
 			    }
 			  })
 			  .then(function (response) {
-				  //수정되는 네트워크의 클러스터 연결 여부를 가져온다
+				  //편집되는 네트워크의 클러스터 연결 여부를 가져온다
 				  // console.log("response.data.clusters" ,response.data.clusters);
 				  updateNetwork.clusters = response.data.clusters;
 

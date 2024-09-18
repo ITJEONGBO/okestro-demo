@@ -94,7 +94,7 @@ fun List<DataCenter>.toDataCentersMenu(conn: Connection): List<DataCenterVo> =
 
 
 /**
- * 데이터센터 편집창
+ * 데이터센터 정보(편집창)
  */
 fun DataCenter.toDataCenterVoInfo(): DataCenterVo = DataCenterVo.builder {
 	id { this@toDataCenterVoInfo.id() }
@@ -175,4 +175,3 @@ fun List<DataCenter>.toDataCenterVos(
 	findStorageDomains: Boolean = true
 ): List<DataCenterVo> =
 	this@toDataCenterVos.map { it.toDataCenterVo(conn, findClusters, findNetworks, findStorageDomains) }
-

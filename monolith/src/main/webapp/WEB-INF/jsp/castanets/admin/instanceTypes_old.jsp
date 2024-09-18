@@ -27,7 +27,7 @@
 									<i class="fa fa-file-o"></i> 등록
 								</button>
 								<button type="button" class="btn btn-success btn-sm" v-on:click="updateInstanceType()">
-									<i class="fa fa-edit"></i> 수정
+									<i class="fa fa-edit"></i> 편집
 								</button>
 								<button type="button" class="btn btn-success btn-sm" v-on:click="removeInstanceType()">
 									<i class="fa fa-trash-o"></i> 삭제

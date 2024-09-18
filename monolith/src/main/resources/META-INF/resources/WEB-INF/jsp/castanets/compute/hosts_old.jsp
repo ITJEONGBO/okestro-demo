@@ -26,7 +26,7 @@
 						</div>
                         <div class="btn-group">
                             <button type="button" class="btn btn-success btn-sm" @click="goCreateHost()"><i class="fa fa-file-o"></i> 등록</button>
-                            <button type="button" class="btn btn-success btn-sm" @click="goUpdateHost()" :disabled="selectedHosts.length!=1"><i class="fa fa-edit"></i> 수정</button>
+                            <button type="button" class="btn btn-success btn-sm" @click="goUpdateHost()" :disabled="selectedHosts.length!=1"><i class="fa fa-edit"></i> 편집</button>
                             <button type="button" class="btn btn-success btn-sm" @click="removeHost()" :disabled="!isPosibleDelete()"><i class="fa fa-trash-o"></i> 삭제</button>
                             <button type="button" data-toggle="dropdown" class="btn btn-success dropdown-toggle btn-sm" type="button"><i class="fa fa-gear"></i> 관리 <span class="caret"></span></button>
                             	<ul role="menu" class="dropdown-menu">

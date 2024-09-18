@@ -165,9 +165,9 @@ class TemplatesController {
 		}
 	}
 
-	@ApiOperation(httpMethod = "GET", value = "retrieveTemplateEditInfo", notes = "탬플릿 수정 정보 조회")
+	@ApiOperation(httpMethod = "GET", value = "retrieveTemplateEditInfo", notes = "탬플릿 편집 정보 조회")
 	@ApiImplicitParams(
-		ApiImplicitParam(name = "id", value = "수정할 탬플릿 ID", paramType="query", dataTypeClass=String::class)
+		ApiImplicitParam(name = "id", value = "편집할 탬플릿 ID", paramType="query", dataTypeClass=String::class)
 	)
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
@@ -185,9 +185,9 @@ class TemplatesController {
 		}
 	}
 
-	@ApiOperation(httpMethod = "POST", value = "updateTemplate", notes = "탬플릿 수정")
+	@ApiOperation(httpMethod = "POST", value = "updateTemplate", notes = "탬플릿 편집")
 	@ApiImplicitParams(
-		ApiImplicitParam(name = "templateEditInfo", value = "수정할 탬플릿 정보", paramType="body", dataTypeClass=TemplateEditVo::class)
+		ApiImplicitParam(name = "templateEditInfo", value = "편집할 탬플릿 정보", paramType="body", dataTypeClass=TemplateEditVo::class)
 	)
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")

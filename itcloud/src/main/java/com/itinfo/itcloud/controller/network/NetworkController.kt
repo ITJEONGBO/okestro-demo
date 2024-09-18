@@ -89,7 +89,7 @@ class NetworkController: BaseController() {
 	@ApiOperation(
 		httpMethod="PUT",
 		value="/networks/{networkId}",
-		notes="네트워크를 수정한다"
+		notes="네트워크를 편집한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),

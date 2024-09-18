@@ -110,9 +110,9 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
     */
 /**
-     * 데이터센터 수정
+     * 데이터센터 편집
      * @param dcVo 데이터센터 id
-     * @return 데이터센터 수정 결과 201(create), 404(fail)
+     * @return 데이터센터 편집 결과 201(create), 404(fail)
      *//*
 
     @Override
@@ -127,7 +127,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
             }
 
             DataCenterBuilder dcBuilder = setDcBuilder(dcVo, false);
-            datacentersService.dataCenterService(dcVo.getId()).update().dataCenter(dcBuilder.build()).send();   // 데이터센터 수정
+            datacentersService.dataCenterService(dcVo.getId()).update().dataCenter(dcBuilder.build()).send();   // 데이터센터 편집
 
             log.info("데이터센터 편집 성공");
             return CommonVo.createResponse();
@@ -140,9 +140,9 @@ public class DataCenterServiceImpl implements ItDataCenterService {
 
     */
 /**
-     * 데이터센터 생성&수정 빌더
+     * 데이터센터 생성&편집 빌더
      * @param dcVo 데이터센터
-     * @param add 생성시 true, 수정시 false
+     * @param add 생성시 true, 편집시 false
      * @return 데이터센터 빌더
      *//*
 
@@ -159,7 +159,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
                         .comment(dcVo.getComment());     // 코멘트
         if(add) {   // 생성 시
             return dcBuilder;
-        }else{  // 수정 시
+        }else{  // 편집 시
             return dcBuilder.id(dcVo.getId());
         }
     }
@@ -355,7 +355,7 @@ public class DataCenterServiceImpl implements ItDataCenterService {
      *//*
 
     // 애매한게 생성시에는 데이터센터 목록에서 찾고
-    // 수정시에는 데이터센터 목록에서 찾지만, 아이디가 같다면 이름중복 허용(내자신의 이름과 비교x)
+    // 편집시에는 데이터센터 목록에서 찾지만, 아이디가 같다면 이름중복 허용(내자신의 이름과 비교x)
     private boolean isNameDuplicate(SystemService system, String name, String id) {
         return system.dataCentersService().list().send().dataCenters().stream()
                 .filter(dataCenter -> id == null || !dataCenter.id().equals(id))

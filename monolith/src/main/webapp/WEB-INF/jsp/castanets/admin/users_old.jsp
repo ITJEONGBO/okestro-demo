@@ -29,7 +29,7 @@
 									<i class="fa fa-file-o"></i> 등록
 								</button>
 								<button type="button" class="btn btn-success btn-sm" :disabled="selectedUsers.length <= 0" @click="updateUser()">
-									<i class="fa fa-trash-o"></i> 수정
+									<i class="fa fa-trash-o"></i> 편집
 								</button>
 								<button type="button" class="btn btn-success btn-sm" :disabled="selectedUsers.length <= 0" @click="removeUsers()">
 									<i class="fa fa-trash-o"></i> 삭제

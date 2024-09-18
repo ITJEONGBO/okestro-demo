@@ -44,7 +44,7 @@ const NetworkSection = () => {
       
           <div className="content_header_right">
             <button id="network_popup_new" onClick={openModal}>새로 만들기</button>
-            <button>수정</button>
+            <button>편집</button>
             <button>제거</button>
           </div>
           {Array.from({ length: 3 }).map((_, index) => (
@@ -90,7 +90,7 @@ const NetworkSection = () => {
           shouldCloseOnOverlayClick={false}
         >
                       <div className="popup_header">
-                  <h1>네트워크 인터페이스 수정</h1>
+                  <h1>네트워크 인터페이스 편집</h1>
                   <button  onClick={closeModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
               </div>
   

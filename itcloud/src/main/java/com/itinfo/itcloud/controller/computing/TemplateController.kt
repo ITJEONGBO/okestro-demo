@@ -96,8 +96,8 @@ class TemplateController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="PUT",
-		value="템플릿 수정",
-		notes="템플릿 수정한다"
+		value="템플릿 편집",
+		notes="템플릿 편집한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="templateId", value="템플릿 ID", dataTypeClass=String::class, required=true, paramType="path"),

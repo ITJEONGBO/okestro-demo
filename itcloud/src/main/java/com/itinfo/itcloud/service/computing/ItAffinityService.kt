@@ -687,7 +687,7 @@ class AffinityServiceImpl(
 	}
 
 
-	// 선호도 그룹 수정 시, Host/Vm 멤버 추가&삭제
+	// 선호도 그룹 편집 시, Host/Vm 멤버 추가&삭제
 	private fun editHostMembers(system: SystemService, agBuilder: AffinityGroupBuilder, agVo: AffinityGroupVo) {
 		val agHostsService =
 			system.clustersService().clusterService(agVo.clusterId).affinityGroupsService().groupService(agVo.id)
@@ -712,7 +712,7 @@ class AffinityServiceImpl(
 		}
 	}
 
-	// 선호도 그룹 수정 시, Host/Vm 멤버 추가&삭제
+	// 선호도 그룹 편집 시, Host/Vm 멤버 추가&삭제
 	private fun editVmMembers(system: SystemService, agBuilder: AffinityGroupBuilder, agVo: AffinityGroupVo) {
 		val agVmsService =
 			system.clustersService().clusterService(agVo.clusterId).affinityGroupsService().groupService(agVo.id)

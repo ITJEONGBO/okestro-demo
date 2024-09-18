@@ -158,9 +158,9 @@ class VirtualMachinesController {
 		}
 	}
 
-	@ApiOperation(httpMethod="POST", value="updateVmNic", notes="가상머신 네트워크 수정")
+	@ApiOperation(httpMethod="POST", value="updateVmNic", notes="가상머신 네트워크 편집")
 	@ApiImplicitParams(
-		ApiImplicitParam(name="vmNicVo", value="수정할 VM 네트워크 정보", required=true, paramType="body", dataTypeClass=VmNicVo::class)
+		ApiImplicitParam(name="vmNicVo", value="편집할 VM 네트워크 정보", required=true, paramType="body", dataTypeClass=VmNicVo::class)
 	)
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")
@@ -420,7 +420,7 @@ class VirtualMachinesController {
 		}
 	}
 
-	@ApiOperation(value="updateVmInfo", notes="가상머신 수정 정보 조회", httpMethod="GET")
+	@ApiOperation(value="updateVmInfo", notes="가상머신 편집 정보 조회", httpMethod="GET")
 	@ApiResponses(ApiResponse(code=200, message="OK"))
 	@GetMapping("/updateVm/info")
 	@ResponseBody
@@ -435,9 +435,9 @@ class VirtualMachinesController {
 		}
 	}
 
-	@ApiOperation(value="updateVm", notes="가상머신 수정", httpMethod="POST")
+	@ApiOperation(value="updateVm", notes="가상머신 편집", httpMethod="POST")
 	@ApiImplicitParams(
-		ApiImplicitParam(name="vmCreate", value="수정 할 VM 정보", paramType="body", dataTypeClass=VmCreateVo::class)
+		ApiImplicitParam(name="vmCreate", value="편집 할 VM 정보", paramType="body", dataTypeClass=VmCreateVo::class)
 	)
 	@ApiResponses(
 		ApiResponse(code=200, message="OK")

@@ -28,7 +28,7 @@
 									<i class="fa fa-file-o"></i> 등록
 								</button>
 								<button type="button" class="btn btn-success btn-sm" :disabled="selectedVms.length == 0" v-on:click="updateVm()">
-									<i class="fa fa-edit"></i> 수정
+									<i class="fa fa-edit"></i> 편집
 								</button>
 								<button type="button" class="btn btn-success btn-sm" :disabled="downVms.length == 0" data-toggle="modal" data-target=".removevmmodal">
 									<i class="fa fa-trash-o"></i> 삭제
@@ -147,7 +147,7 @@
 <%--									<td>{{changeUptime(vm.startTime)}}</td>--%>
 <%--								</tr>--%>
 
-								<%--by gtpark 가상머신 상태가 구별이 잘 안 간다고 해서 상태 아이콘들을 조금 수정 함--%>
+								<%--by gtpark 가상머신 상태가 구별이 잘 안 간다고 해서 상태 아이콘들을 조금 편집 함--%>
 								<tr v-if="vms.length > 0" v-for="vm in vms" @click="selectVm(vm)">
 									<td class="a-center">
 										<input type="checkbox" :id="vm.id" :value="vm" v-model="selectedVms">
