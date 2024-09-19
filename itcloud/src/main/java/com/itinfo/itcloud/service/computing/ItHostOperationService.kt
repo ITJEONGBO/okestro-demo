@@ -84,7 +84,7 @@ class HostOperationServiceImpl: BaseService(), ItHostOperationService {
     @Throws(UnknownHostException::class, Error::class)
     override fun restart(hostId: String): Boolean {
         log.info("reStartHost ... hostId: {}", hostId)
-    // TODO Host 이름, PW 입력문제 => application.properties 에 저장해서 불러오는 방식(비번 변경되었을 시 문제발생)
+    // TODO Host 이름, PW 문제 => application.properties 에 저장해서 불러오는 방식
         val userName = ""
         val hostPw: String = "adminRoot!@#"
         val res: Result<Boolean> =

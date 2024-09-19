@@ -47,14 +47,24 @@ fun Connection.findHost(hostId: String): Result<Host?> = runCatching {
 fun List<Host>.nameDuplicateHost(hostName: String, hostId: String? = null): Boolean =
 	this.filter { it.id() != hostId }.any { it.name() == hostName }
 
-fun Connection.findAllVmsFromHost(hostId: String): List<Vm> {
-	if(this.findCluster(hostId).isFailure){
+
+fun Connection.findAllVmsFromHost(hostId: String): Result<List<Vm>> = runCatching {
+	if(this.findHost(hostId).isFailure){
 		throw ErrorPattern.CLUSTER_NOT_FOUND.toError()
 	}
-	return this.findAllVms()
+	this.findAllVms()
 		.getOrDefault(listOf())
-		.filter { it.host().id() == hostId }
+		.filter {
+			(it.hostPresent() && it.host().id() == hostId)
+			|| (it.placementPolicy().hostsPresent() && it.placementPolicy().hosts().any { h -> h?.id() == hostId })
+		}
+}.onSuccess {
+	Term.HOST.logSuccess("vms 조회", hostId)
+}.onFailure {
+	Term.HOST.logFail("vms 조회", it, hostId)
+	throw if (it is Error) it.toItCloudException() else it
 }
+
 
 fun Connection.addHost(host: Host, deployHostedEngine: Boolean = false): Result<Host?> = runCatching {
 	if(this.findAllHosts()
@@ -139,15 +149,19 @@ fun Connection.deactivateHost(hostId: String): Result<Boolean> = runCatching {
 	if (host.status() != HostStatus.MAINTENANCE) {
 		srvHost(host.id()).deactivate().send()
 	} else {
-		return Result.failure(Error("deactivateHost 실패 ... {} 가 이미 유지관리 상태"))
+		throw Error("deactivateHost 실패 ... ${hostId} 가 이미 유지관리 상태") // return 대신 throw
 	}
-	this.expectHostStatus(host.id(), HostStatus.MAINTENANCE)
+	if (!this.expectHostStatus(host.id(), HostStatus.MAINTENANCE)) {
+		throw Error("expectHostStatus가 실패했습니다 ... ${hostId} 가 유지관리 상태가 아닙니다.")
+	}
+	true
 }.onSuccess {
 	Term.HOST.logSuccess("비활성화", hostId)
 }.onFailure {
 	Term.HOST.logFail("비활성화", it, hostId)
 	throw if (it is Error) it.toItCloudException() else it
 }
+
 
 fun Connection.activateHost(hostId: String): Result<Boolean> = runCatching {
 	val host: Host =

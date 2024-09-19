@@ -20,11 +20,11 @@ import org.springframework.boot.test.context.SpringBootTest
 class ItHostOperationServiceTest {
     @Autowired private lateinit var service: ItHostOperationService
 
-    private lateinit var hostId: String // host01.ititinfo.local
+    private lateinit var host01: String // host01.ititinfo.local
 
     @BeforeEach
     fun setup() {
-        hostId = "c36563e3-83eb-49c7-91c0-fc4b197387b2"
+        host01 = "722096d3-4cb2-43b0-bf41-dd69c3a70779"
     }
 
 
@@ -39,7 +39,7 @@ class ItHostOperationServiceTest {
     fun should_deactivate() {
         log.debug("should_deactivate ...")
         val result: Boolean =
-            service.deactivate(hostId)
+            service.deactivate(host01)
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))
@@ -56,7 +56,7 @@ class ItHostOperationServiceTest {
     fun should_activate() {
         log.debug("should_activate ...")
         val result: Boolean =
-            service.activate(hostId)
+            service.activate(host01)
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))
@@ -72,7 +72,7 @@ class ItHostOperationServiceTest {
     fun should_refresh() {
         log.debug("should_refresh ...")
         val result: Boolean =
-            service.refresh(hostId)
+            service.refresh(host01)
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))
@@ -91,7 +91,7 @@ class ItHostOperationServiceTest {
     fun should_restart() {
         log.debug("should_restart ...")
         val result: Boolean =
-            service.restart(hostId)
+            service.restart(host01)
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))

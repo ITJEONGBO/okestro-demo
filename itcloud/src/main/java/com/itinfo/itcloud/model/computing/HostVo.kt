@@ -44,6 +44,7 @@ private val log = LoggerFactory.getLogger(HostVo::class.java)
  * @property transparentPage [Boolean] 자동으로 페이지를 크게
  * @property vmTotalCnt [Int] summary
  * @property vmActiveCnt [Int] summary
+ * @property vmSizeVo [SizeVo]
  * @property vmMigratingCnt [Int] summary
  * 전원관리는 항상 비활성상태
  * <statistics>
@@ -90,8 +91,7 @@ class HostVo (
     val sshPassWord: String = "",
     val status: HostStatus = HostStatus.NON_RESPONSIVE,
     val transparentPage: Boolean = false,
-    val vmTotalCnt: Int = 0,
-    val vmActiveCnt: Int = 0,
+    val vmSizeVo: SizeVo = SizeVo(),
     val vmMigratingCnt: Int = 0,
     val memoryTotal: BigInteger = BigInteger.ZERO,
     val memoryUsed: BigInteger = BigInteger.ZERO,
@@ -111,7 +111,6 @@ class HostVo (
     val clusterVo: IdentifiedVo = IdentifiedVo(),
     val dataCenterVo: IdentifiedVo = IdentifiedVo(),
     val hostNicVos: List<HostNicVo> = listOf(),
-//    val hostNicVos: List<IdentifiedVo> = listOf(),
     val vmVos: List<IdentifiedVo> = listOf()
 ): Serializable{
     override fun toString(): String = gson.toJson(this)
@@ -138,8 +137,9 @@ class HostVo (
         private var bSshPassWord: String = ""; fun sshPassWord(block: () -> String?) { bSshPassWord = block() ?: "" }
         private var bStatus: HostStatus = HostStatus.NON_RESPONSIVE; fun status(block: () -> HostStatus?) { bStatus = block() ?: HostStatus.NON_RESPONSIVE }
         private var bTransparentPage: Boolean = false; fun transparentPage(block: () -> Boolean?) { bTransparentPage = block() ?: false }
-        private var bVmTotalCnt: Int = 0; fun vmTotalCnt(block: () -> Int?) { bVmTotalCnt = block() ?: 0 }
-        private var bVmActiveCnt: Int = 0; fun vmActiveCnt(block: () -> Int?) { bVmActiveCnt = block() ?: 0 }
+//        private var bVmTotalCnt: Int = 0; fun vmTotalCnt(block: () -> Int?) { bVmTotalCnt = block() ?: 0 }
+//        private var bVmActiveCnt: Int = 0; fun vmActiveCnt(block: () -> Int?) { bVmActiveCnt = block() ?: 0 }
+        private var bVmSizeVo: SizeVo = SizeVo(); fun vmSizeVo(block: () -> SizeVo?) { bVmSizeVo = block() ?: SizeVo() }
         private var bVmMigratingCnt: Int = 0; fun vmMigratingCnt(block: () -> Int?) { bVmMigratingCnt = block() ?: 0 }
         private var bMemoryTotal: BigInteger = BigInteger.ZERO; fun memoryTotal (block: () -> BigInteger?) { bMemoryTotal = block() ?: BigInteger.ZERO}
         private var bMemoryUsed: BigInteger = BigInteger.ZERO; fun memoryUsed (block: () -> BigInteger?) { bMemoryUsed = block() ?: BigInteger.ZERO}
@@ -158,26 +158,95 @@ class HostVo (
         private var bHostSwVo: HostSwVo = HostSwVo(); fun hostSwVo(block: () -> HostSwVo?) { bHostSwVo = block() ?: HostSwVo()}
         private var bClusterVo: IdentifiedVo = IdentifiedVo(); fun clusterVo(block: () -> IdentifiedVo?) { bClusterVo = block() ?: IdentifiedVo() }
         private var bDataCenterVo: IdentifiedVo = IdentifiedVo(); fun dataCenterVo(block: () -> IdentifiedVo?) { bDataCenterVo = block() ?: IdentifiedVo() }
-//        private var bHostNicVos: List<IdentifiedVo> = listOf(); fun hostNicVos(block: () -> List<IdentifiedVo>?) { bHostNicVos = block() ?: listOf() }
         private var bHostNicVos: List<HostNicVo> = listOf(); fun hostNicVos(block: () -> List<HostNicVo>?) { bHostNicVos = block() ?: listOf() }
         private var bVmVos: List<IdentifiedVo> = listOf(); fun vmVos(block: () -> List<IdentifiedVo>?) { bVmVos = block() ?: listOf() }
 
-        fun build(): HostVo = HostVo(bId, bName, bComment, bAddress, bDevicePassThrough, bHostedActive, bHostedScore, bIscsi, bKdump, bKsm, bSeLinux, bHostedEngine, bSpmPriority, bSpmStatus, bSshFingerPrint, bSshPort, bSshPublicKey, bSshName, bSshPassWord, bStatus, bTransparentPage, bVmTotalCnt, bVmActiveCnt, bVmMigratingCnt, bMemoryTotal, bMemoryUsed, bMemoryFree, bMemoryMax, bMemoryShared, bSwapTotal, bSwapUsed, bSwapFree, bHugePage2048Free, bHugePage2048Total, bHugePage1048576Free, bHugePage1048576Total, bBootingTime, bHostHwVo, bHostSwVo, bClusterVo, bDataCenterVo, bHostNicVos, bVmVos)
+        fun build(): HostVo = HostVo(bId, bName, bComment, bAddress, bDevicePassThrough, bHostedActive, bHostedScore, bIscsi, bKdump, bKsm, bSeLinux, bHostedEngine, bSpmPriority, bSpmStatus, bSshFingerPrint, bSshPort, bSshPublicKey, bSshName, bSshPassWord, bStatus, bTransparentPage, /*bVmTotalCnt, bVmActiveCnt,*/ bVmSizeVo, bVmMigratingCnt, bMemoryTotal, bMemoryUsed, bMemoryFree, bMemoryMax, bMemoryShared, bSwapTotal, bSwapUsed, bSwapFree, bHugePage2048Free, bHugePage2048Total, bHugePage1048576Free, bHugePage1048576Total, bBootingTime, bHostHwVo, bHostSwVo, bClusterVo, bDataCenterVo, bHostNicVos, bVmVos)
     }
     companion object {
         inline fun builder(block: HostVo.Builder.() -> Unit): HostVo = HostVo.Builder().apply(block).build()
     }
 }
 
-
+/**
+ * 클러스터 id&name
+ */
 fun Host.toHostIdName(): HostVo = HostVo.builder {
     id { this@toHostIdName.id() }
     name { this@toHostIdName.name() }
 }
+fun List<Host>.toHostsIdName(): List<HostVo> =
+    this@toHostsIdName.map { it.toHostIdName() }
 
-fun List<Host>.toHostIdNames(): List<HostVo> =
-    this@toHostIdNames.map { it.toHostIdName() }
+/**
+ * 호스트 목록
+ */
+fun Host.toHostMenu(conn: Connection): HostVo {
+    val cluster: Cluster? =
+        conn.findCluster(this@toHostMenu.cluster().id())
+            .getOrNull()
+    val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let {
+        conn.findDataCenter(it).getOrNull()
+    }
 
+    return HostVo.builder {
+        id { this@toHostMenu.id() }
+        name { this@toHostMenu.name() }
+        comment { this@toHostMenu.comment() }
+        status { this@toHostMenu.status() }
+//    hostedEngine {  }
+        address { this@toHostMenu.address() }
+        clusterVo { cluster?.fromClusterToIdentifiedVo() }
+        dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
+        vmSizeVo {
+            SizeVo.builder {
+                allCnt { this@toHostMenu.summary().totalAsInteger() }
+                upCnt { this@toHostMenu.summary().activeAsInteger() }
+                downCnt { this@toHostMenu.summary().totalAsInteger() - this@toHostMenu.summary().activeAsInteger() }
+            }
+        }
+        // 메모리
+        // cpu
+        // 네트워크
+        spmStatus { this@toHostMenu.spm().status() }
+    }
+}
+fun List<Host>.toHostsMenu(conn: Connection): List<HostVo> =
+    this@toHostsMenu.map { it.toHostMenu(conn) }
+
+
+/**
+ * 호스트 빌더
+ */
+fun HostVo.toHostBuilder(): HostBuilder {
+    return HostBuilder()
+        .cluster(ClusterBuilder().id(this@toHostBuilder.clusterVo.id))
+        .name(this@toHostBuilder.name)
+        .comment(this@toHostBuilder.comment)
+        .address(this@toHostBuilder.address)
+        .ssh(SshBuilder().port(this@toHostBuilder.sshPort)) // 기본값이 22 포트 연결은 더 테스트 해봐야함(ovirt 내에서 한적은 없음)
+        .rootPassword(this@toHostBuilder.sshPassWord)   // 비밀번호 잘못되면 보여줄 코드?
+        .powerManagement(PowerManagementBuilder().enabled(false)) // 전원관리 비활성화 (기본)
+        .spm(SpmBuilder().priority(this@toHostBuilder.spmPriority))
+//        .port()
+        // ssh port가 22면 .ssh() 설정하지 않아도 알아서 지정됨. port 변경을 cmd 에서만 하심
+    // deployHostedEngine은 ext에서
+}
+
+/**
+ * 호스트 생성 빌더
+ */
+fun HostVo.toAddHostBuilder(): Host =
+    this@toAddHostBuilder.toHostBuilder().build()
+
+/**
+ * 호스트 편집 빌더
+ */
+fun HostVo.toEditHostBuilder(): Host =
+    this@toEditHostBuilder.toHostBuilder()
+        .id(this@toEditHostBuilder.id)
+        .os(OperatingSystemBuilder().customKernelCmdline("vfio_iommu_type1.allow_unsafe_interrupts=1").build()) //?
+        .build()
 
 
 fun Host.toHostVo(conn: Connection): HostVo {
@@ -218,8 +287,15 @@ fun Host.toHostVo(conn: Connection): HostVo {
         sshPublicKey { this@toHostVo.ssh().publicKey() }
         status { this@toHostVo.status() }
         transparentPage { this@toHostVo.transparentHugePages().enabled() }
-        vmTotalCnt { this@toHostVo.summary().totalAsInteger() }
-        vmActiveCnt { this@toHostVo.summary().activeAsInteger() }
+        vmSizeVo {
+            SizeVo.builder {
+                allCnt { this@toHostVo.summary().totalAsInteger() }
+                upCnt { this@toHostVo.summary().activeAsInteger() }
+                downCnt { this@toHostVo.summary().totalAsInteger() - this@toHostVo.summary().activeAsInteger() }
+            }
+        }
+//        vmTotalCnt { this@toHostVo.summary().totalAsInteger() }
+//        vmActiveCnt { this@toHostVo.summary().activeAsInteger() }
         vmMigratingCnt { this@toHostVo.summary().migratingAsInteger() }
         memoryTotal { statistics.findMemory("memory.total") }
         memoryUsed { statistics.findMemory("memory.used") }
@@ -243,31 +319,5 @@ fun Host.toHostVo(conn: Connection): HostVo {
         vmVos { vms.fromVmsToIdentifiedVos() }
     }
 }
-
 fun List<Host>.toHostVos(conn: Connection): List<HostVo> =
     this@toHostVos.map { it.toHostVo(conn) }
-
-
-fun HostVo.toHostBuilder(): HostBuilder {
-    return HostBuilder()
-        .cluster(ClusterBuilder().id(this@toHostBuilder.clusterVo.id))
-        .name(this@toHostBuilder.name)
-        .comment(this@toHostBuilder.comment)
-        .address(this@toHostBuilder.address)
-        .ssh(SshBuilder().port(this@toHostBuilder.sshPort)) // 기본값이 22 포트 연결은 더 테스트 해봐야함(ovirt 내에서 한적은 없음)
-        .rootPassword(this@toHostBuilder.sshPassWord)
-        .powerManagement(PowerManagementBuilder().enabled(false)) // 전원관리 비활성화 (기본)
-        .spm(SpmBuilder().priority(this@toHostBuilder.spmPriority))
-        /*.hostedEngine(
-            HostedEngineBuilder()
-                // .active() // 호스트 엔진 배치 작업(없음, 배포)
-                .build()
-        )*/
-}
-
-fun HostVo.toAddHostBuilder(): Host =
-    this@toAddHostBuilder.toHostBuilder().build()
-
-fun HostVo.toEditHostBuilder(): Host =
-    this@toEditHostBuilder.toHostBuilder().id(this@toEditHostBuilder.id).build()
-

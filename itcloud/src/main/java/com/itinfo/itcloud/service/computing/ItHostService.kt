@@ -9,6 +9,7 @@ import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.repository.*
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.computing.ClusterServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.util.ovirt.error.toError
@@ -145,9 +146,6 @@ class HostServiceImpl(
 	@Throws(Error::class)
 	override fun add(hostVo: HostVo): HostVo? {
 		log.info("add ... ")
-		// ssh port가 22면 .ssh() 설정하지 않아도 알아서 지정됨.
-		// ssh port 변경을 ovirt에서 해보신적은 없어서 우선 보류 (cmd로 하셨음)
-		// 비밀번호 잘못되면 보여줄 코드?
 		val res: Host? =
 			conn.addHost(
 				hostVo.toAddHostBuilder(),
@@ -160,6 +158,10 @@ class HostServiceImpl(
 	@Throws(Error::class)
 	override fun update(hostVo: HostVo): HostVo? {
 		log.info("update ... hostName: {}", hostVo.name)
+		// TODO
+		//  com.itinfo.util.ovirt.error.ItCloudException: Fault reason is 'Operation Failed'. Fault detail is '[Cannot edit Host. Host parameters cannot be modified while Host is operational.
+		//  Please switch Host to Maintenance mode first.]'. HTTP response code is '409'. HTTP response message is 'Conflict'.
+
 		val res: Host? =
 			conn.updateHost(hostVo.toEditHostBuilder())
 				.getOrNull()
@@ -177,17 +179,9 @@ class HostServiceImpl(
 	@Throws(Error::class)
 	override fun findAllVmsFromHost(hostId: String): List<VmVo> {
 		log.info("findAllVmsFromHost ... hostId: {}", hostId)
-		conn.findHost(hostId)
-			.getOrNull()?: throw ErrorPattern.HOST_NOT_FOUND.toException()
 		val res: List<Vm> =
-			conn.findAllVms()
+			conn.findAllVmsFromHost(hostId)
 				.getOrDefault(listOf())
-				.filter {
-					(it.hostPresent() && it.host().id() == hostId) ||
-					(it.placementPolicy().hostsPresent()
-							&& it.placementPolicy().hosts()
-								.any { h -> h?.id() == hostId })
-				}
 		return res.toVmVosFromHost(conn)
 	}
 
@@ -197,6 +191,7 @@ class HostServiceImpl(
 		val res: List<HostNic> =
 			conn.findAllNicsFromHost(hostId)
 				.getOrDefault(listOf())
+		// TODO
 		return res.toHostNicVos(conn)
 	}
 

@@ -29,16 +29,16 @@ class ItHostServiceTest {
 	private lateinit var dataCenterId: String
 	private lateinit var clusterId: String // Default
 	private lateinit var networkId: String // ovirtmgmt(dc: Default)
-	private lateinit var host02: String // host02.ititinfo.local
 	private lateinit var host01: String // host01
+	private lateinit var host02: String // host02.ititinfo.local
 
 	@BeforeEach
 	fun setup() {
 		dataCenterId = "6cde7270-6459-11ef-8be2-00163e5d0646"
 		clusterId = "6ce0356a-6459-11ef-a03a-00163e5d0646"
 		networkId = "00000000-0000-0000-0000-000000000009"
+		host01 = "722096d3-4cb2-43b0-bf41-dd69c3a70779"
 		host02 = "789b78c4-3fcf-4f19-9b69-d382aa66c12f"
-		host01 = "c36563e3-83eb-49c7-91c0-fc4b197387b2"
 	}
 
 	/**
@@ -116,9 +116,6 @@ class ItHostServiceTest {
 	 */
 	@Test
 	fun should_update_Host() {
-		// TODO
-		// com.itinfo.util.ovirt.error.ItCloudException: Fault reason is 'Operation Failed'. Fault detail is '[Cannot edit Host. Host parameters cannot be modified while Host is operational.
-		// Please switch Host to Maintenance mode first.]'. HTTP response code is '409'. HTTP response message is 'Conflict'.
 		log.debug("should_update_Host ...")
 		val updateHost: HostVo = HostVo.builder {
 			id { host01 }
@@ -155,9 +152,9 @@ class ItHostServiceTest {
 
 	/**
 	 * [should_findAllVmsFromHost]
-	 * [ItHostService.findAllVmFromHost]에 대한 단위테스트
+	 * [ItHostService.findAllVmsFromHost]에 대한 단위테스트
 	 * 
-	 * @see [ItHostService.findAllVmFromHost]
+	 * @see [ItHostService.findAllVmsFromHost]
 	 */
 	@Test
 	fun should_findAllVmsFromHost() {
@@ -166,15 +163,32 @@ class ItHostServiceTest {
 			service.findAllVmsFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(1))
+		assertThat(result.size, `is`(3))
 		result.forEach { println(it) }
 	}
 
+//	/**
+//	 * [should_findAllVmsFromHost2]
+//	 * [ItHostService.findAllVmsFromHost]에 대한 단위테스트
+//	 *
+//	 * @see [ItHostService.findAllVmsFromHost]
+//	 */
+//	@Test
+//	fun should_findAllVmsFromHost1() {
+//		log.debug("should_findAllVmsFromHost ...")
+//		val result: List<VmVo> =
+//			service.findAllVmsFromHost(host01)
+//
+//		assertThat(result, `is`(not(nullValue())))
+//		assertThat(result.size, `is`(3))
+//		result.forEach { println(it) }
+//	}
+
 	/**
 	 * [should_findAllHostNicsFromHost]
-	 * [ItHostService.findAllHostNicFromHost]에 대한 단위테스트
+	 * [ItHostService.findAllHostNicsFromHost]에 대한 단위테스트
 	 *
-	 * @see [ItHostService.findAllHostNicFromHost]
+	 * @see [ItHostService.findAllHostNicsFromHost]
 	 */
 	@Test
 	fun should_findAllHostNicsFromHost() {
@@ -189,9 +203,9 @@ class ItHostServiceTest {
 
 	/**
 	 * [should_findAllHostDevicesFromHost]
-	 * [ItHostService.findAllHostDeviceFromHost]에 대한 단위테스트
+	 * [ItHostService.findAllHostDevicesFromHost]에 대한 단위테스트
 	 *
-	 * @see [ItHostService.findAllHostDeviceFromHost]
+	 * @see [ItHostService.findAllHostDevicesFromHost]
 	 */
 	@Test
 	fun should_findAllHostDevicesFromHost() {
@@ -200,15 +214,15 @@ class ItHostServiceTest {
 			service.findAllHostDevicesFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(1))
+		assertThat(result.size, `is`(93))
 		result.forEach { println(it) }
 	}
 
 	/**
 	 * [should_findAllPermissionsFromHost]
-	 * [ItHostService.findAllPermissionFromHost]에 대한 단위테스트
+	 * [ItHostService.findAllPermissionsFromHost]에 대한 단위테스트
 	 *
-	 * @see [ItHostService.findAllPermissionFromHost]
+	 * @see [ItHostService.findAllPermissionsFromHost]
 	 */
 	@Test
 	fun should_findAllPermissionsFromHost() {
@@ -217,15 +231,15 @@ class ItHostServiceTest {
 			service.findAllPermissionsFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(3))
+		assertThat(result.size, `is`(5))
 		result.forEach { println(it) }
 	}
 
 	/**
 	 * [should_findAllEventsFromHost]
-	 * [ItHostService.findAllEventFromHost]에 대한 단위테스트
+	 * [ItHostService.findAllEventsFromHost]에 대한 단위테스트
 	 *
-	 * @see [ItHostService.findAllEventFromHost]
+	 * @see [ItHostService.findAllEventsFromHost]
 	 */
 	@Test
 	fun should_findAllEventsFromHost() {

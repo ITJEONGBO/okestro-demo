@@ -111,7 +111,7 @@ fun HostNic.toHostNicVo(conn: Connection): HostNicVo {
 		macAddress { this@toHostNicVo.mac().address() }
 		mtu { this@toHostNicVo.mtuAsInteger() }
 		status { this@toHostNicVo.status() }
-		hostVo { hostVo }
+//		hostVo { hostVo }
 		networkVo { networkVo }
 		speed { this@toHostNicVo.speed() }
 		rxSpeed { statistics?.findSpeed("data.current.rx.bps") }
