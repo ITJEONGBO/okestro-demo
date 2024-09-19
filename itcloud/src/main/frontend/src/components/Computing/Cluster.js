@@ -111,7 +111,7 @@ const Cluster = () => {
       </div>
 
         {/* 새로 만들기 팝업 */}
-        <Modal
+            <Modal
                 isOpen={activePopup === 'newNetwork'}
                 onRequestClose={closePopup}
                 contentLabel="새로 만들기"

@@ -196,11 +196,12 @@
     margin-bottom: 0.2rem;
     border-radius:3px;
     border:1px solid gray;
-    width: 42.4%;
+    width: 50%;
 }
 .network_filter_btns>button{
     padding:0.06rem;
     cursor:pointer;
+    width:50%;
   
 }
 .unconfigured_network{
@@ -239,4 +240,21 @@
     color: black;
     font-weight: normal;
   }
-  
+#network_detail_edit_form{
+  height: 69vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-size: 0.33rem;
+}
+.network_detail_edit_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 82.8%;
+    width: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}

@@ -1,42 +1,7 @@
 
 
 /**/
-.network_new_popup {
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 87%;
-    width: 48%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-}
 
-.network_new_nav{
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid rgb(206, 206, 206);
-    height: 6%;
-}
-.network_new_nav>div{
-    font-weight: 800;
-    text-align: center;
-    font-size: 0.33rem;
-    width: 34%;
-    cursor: pointer;
-    padding: 0.25rem;
-    border-right: 1px solid rgb(206, 206, 206);
-}
-.active-tab {
-    background: #e4e4e4;
-    color: #449bff;
-}
-.network_new_nav div.active {
-    background: #e4e4e4;
-    color: #449bff;
-}
 /*네트워크(가져오기)*/
 .network_bring_outer{
     display: none;
@@ -67,7 +32,9 @@
     font-size: 0.34rem;
     padding: 0 0.4rem 0.4rem 0.4rem;
 }
-#network_bring_table_outer span,.network_form_group label{
+#network_bring_table_outer span,
+
+{
     font-weight: 600;
     margin-bottom: 0.1rem;
     display: block;
@@ -389,4 +356,45 @@
     padding: 0 3px;
     cursor: pointer;
     font-size: 0.29rem;
+}
+.network_edit_popup form{
+    height: 66.3vh;
+    overflow-y: auto;
+    overflow-x: hidden; 
+}
+.network_edit_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 80%;
+    width: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+.popup_plus_btn{
+    padding: 1.2% 2%;
+    display: flex;
+    justify-content: right;
+}
+.popup_plus{
+    padding:0.08rem;
+    border:1px solid gray;
+    border-radius:3px;
+    cursor:pointer;
+}
+.plus_popup_outer{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 56%;
+    width: 42%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+    font-size:0.35rem;
 }

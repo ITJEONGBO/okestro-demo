@@ -41,6 +41,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   const [activePermissionFilter, setActivePermissionFilter] = useState('all');
   const [activeButton, setActiveButton] = useState('network');
   const [isLabelVisible, setIsLabelVisible] = useState(false); // 라벨 표시 상태 관리
+  const [secondModalOpen, setSecondModalOpen] = useState(false); // 추가 모달 상태
   const handlePermissionFilterClick = (filter) => {
     setActivePermissionFilter(filter);
     
@@ -447,93 +448,178 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         overlayClassName="Overlay"
         shouldCloseOnOverlayClick={false}
       >
-        <div className="vnic_new_content_popup">
-          <div className="popup_header">
-            <h1>가상 머신 인터페이스 프로파일</h1>
-            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-          </div>
-          
-          <div className="vnic_new_content">
-            
-            <div className="vnic_new_contents" style={{ paddingTop: '0.4rem' }}>
-              
-              
-              <div className="vnic_new_box">
-                <label htmlFor="data_center">데이터 센터</label>
-                <select id="data_center" disabled>
-                  <option value="none">Default</option>
-                </select>
-              </div>
-              <div className="vnic_new_box">
-                <label htmlFor="network">네트워크</label>
-                <select id="network" disabled>
-                  <option value="none">ovirtmgmt</option>
-                </select>
-              </div>
-              <div className="vnic_new_box">
-                <span>이름</span>
-                <input type="text" id="name" disabled />
-              </div>
-              <div className="vnic_new_box">
-                <span>설명</span>
-                <input type="text" id="description" disabled />
-              </div>
-              <div className="vnic_new_box">
-                <label htmlFor="network_filter">네트워크 필터</label>
-                <select id="network_filter">
-                  <option value="linux">Linux</option>
-                </select>
-              </div>
-              <div className="vnic_new_checkbox">
-                <input type="checkbox" id="passthrough" />
-                <label htmlFor="passthrough">통과</label>
-              </div>
-              <div className="vnic_new_checkbox">
-                <input type="checkbox" id="migratable" disabled checked />
-                <label htmlFor="migratable">마이그레이션 가능</label>
-              </div>
-              <div className="vnic_new_box">
-                <label htmlFor="failover_vnic_profile">페일오버 vNIC 프로파일</label>
-                <select id="failover_vnic_profile">
-                  <option value="none">없음</option>
-                </select>
-              </div>
-              <div className="vnic_new_checkbox">
-                <input type="checkbox" id="port_mirroring" />
-                <label htmlFor="port_mirroring">포트 미러링</label>
-              </div>
-              
-              <div className="vnic_new_inputs">
-                <span>사용자 정의 속성</span>
-                <div className="vnic_new_buttons">
-                  <select id="custom_property_key">
-                    <option value="none">키를 선택하십시오</option>
-                  </select>
-                  <div>
-                    <div>+</div>
-                    <div>-</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="vnic_new_checkbox">
-                <input type="checkbox" id="allow_all_users" checked />
-                <label htmlFor="allow_all_users">모든 사용자가 이 프로파일을 사용하도록 허용</label>
-              </div>
-
+        <div className="network_detail_edit_popup">
+            <div className="popup_header">
+                <h1>논리 네트워크 수정</h1>
+                <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
             </div>
-              
-            
-              
-            
-          </div>
+
+            <form id="network_detail_edit_form">
+                            <div className="network_first_contents">
+                                <div className="network_form_group">
+                                    <label htmlFor="cluster">데이터 센터</label>
+                                    <select id="cluster">
+                                        <option value="default">Default</option>
+                                    </select>
+                                </div>
+                                <div className="network_form_group">
+                                    <div  className='checkbox_group'>
+                                        <label htmlFor="name">이름</label>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }}fixedWidth/>
+                                    </div>
+                                    <input type="text" id="name" />
+                                </div>
+                                <div className="network_form_group">
+                                    <label htmlFor="description">설명</label>
+                                    <input type="text" id="description" />
+                                </div>
+                                <div className="network_form_group">
+                                    <label htmlFor="comment">코멘트</label>
+                                    <input type="text" id="comment" />
+                                </div>
+                            </div>
+
+                            <div className="network_second_contents">
+                                <span>네트워크 매개변수</span>
+                                <div className="network_form_group">
+                                    <label htmlFor="network_label">네트워크 레이블</label>
+                                    <input type="text" id="network_label" />
+                                </div>
+                                <div className="network_checkbox_type1">
+                                    <div className='checkbox_group'>
+                                        <input type="checkbox" id="valn_tagging" name="valn_tagging" />
+                                        <label htmlFor="valn_tagging">VALN 태깅 활성화</label>
+                                    </div>
+                                    <input type="text" id="valn_tagging_input" disabled />
+                                </div>
+                                <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="vm_network" name="vm_network" />
+                                    <label htmlFor="vm_network">가상 머신 네트워크</label>
+                                </div>
+                                <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="photo_separation" name="photo_separation" />
+                                    <label htmlFor="photo_separation">포토 분리</label>
+                                </div>
+                                <div className="network_radio_group">
+                                    <div style={{ marginTop: '0.2rem' }}>MTU</div>
+                                    <div>
+                                        <div className="radio_option">
+                                            <input type="radio" id="default_mtu" name="mtu" value="default" checked />
+                                            <label htmlFor="default_mtu">기본값 (1500)</label>
+                                        </div>
+                                        <div className="radio_option">
+                                            <input type="radio" id="user_defined_mtu" name="mtu" value="user_defined" />
+                                            <label htmlFor="user_defined_mtu">사용자 정의</label>
+                                        </div>
+                                    </div>
+                                   
+                                </div>
+                                <div className="network_form_group">
+                                    <label htmlFor="host_network_qos">호스트 네트워크 QoS</label>
+                                    <select id="host_network_qos">
+                                        <option value="default">[제한없음]</option>
+                                    </select>
+                               </div>
+                                <div className='popup_plus_btn'>
+                                    <div className="popup_plus" onClick={() => setSecondModalOpen(true)}>새로만들기</div>
+                                </div>
+                                
+                                    <Modal
+                                        isOpen={secondModalOpen}
+                                        onRequestClose={() => setSecondModalOpen(false)}
+                                        contentLabel="추가 모달"
+                                        className="SecondModal"
+                                        overlayClassName="Overlay"
+                                    >
+                                                            
+                                    <div className="plus_popup_outer">
+                                        <div className="popup_header">
+                                            <h1>새 호스트 네트워크 Qos</h1>
+                                            <button  onClick={() => setSecondModalOpen(false)}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                                        </div>
+                                        
+                                        <div className='p-1' style={{ borderBottom: '1px solid #d3d3d3' }}>
+                                            <div className="network_form_group">
+                                                <label htmlFor="network_provider">네트워크 공급자</label>
+                                                <select id="network_provider">
+                                                <option value="ovirt-provider-ovn">ovirt-provider-ovn</option>
+                                                </select>
+                                            </div>
+                                            <div className="network_form_group">
+                                                <label htmlFor="qos_name">QoS 이름</label>
+                                                <input type="text" id="qos_name" />
+                                            </div>
+                                            <div className="network_form_group">
+                                                <label htmlFor="description">설명</label>
+                                                <input type="text" id="description" />
+                                            </div>
+                                            </div>
+
+                                            <div className='p-1'>
+                                            <span className="network_form_group font-bold">아웃바운드</span>
+                                            <div className="network_form_group">
+                                                <label htmlFor="weighted_share">가중 공유</label>
+                                                <input type="text" id="weighted_share" />
+                                            </div>
+                                            <div className="network_form_group">
+                                                <label htmlFor="speed_limit">속도 제한 [Mbps]</label>
+                                                <input type="text" id="speed_limit" />
+                                            </div>
+                                            <div className="network_form_group">
+                                                <label htmlFor="commit_rate">커밋 속도 [Mbps]</label>
+                                                <input type="text" id="commit_rate" />
+                                            </div>
+                                        </div>
 
 
-          <div className="edit_footer">
-            <button style={{ display: 'none' }}></button>
-            <button>OK</button>
-            <button onClick={closePopup}>취소</button>
-          </div>
+                                        <div className="edit_footer">
+                                            <button style={{ display: 'none' }}></button>
+                                            <button>가져오기</button>
+                                            <button onClick={() => setSecondModalOpen(false)}>취소</button>
+                                        </div>
+                                    </div>
+                                     
+                                    </Modal>
+                                <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="dns_settings" name="dns_settings" />
+                                    <label htmlFor="dns_settings">DNS 설정</label>
+                                </div>
+                                <span>DB서버</span>
+                                <div className="network_checkbox_type3">
+                                    <input type="text" id="name" disabled />
+                                    <div>
+                                        <button>+</button>
+                                        <button>-</button>
+                                    </div>
+                                </div>
+                                <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="external_vendor_creation" name="external_vendor_creation" />
+                                    <label htmlFor="external_vendor_creation">외부 업체에서 작성</label>
+                                </div>
+                                <span>외부</span>
+                                <div className="network_form_group" style={{ paddingTop: 0 }}>
+                                    <label htmlFor="external_provider">외부 공급자</label>
+                                    <select id="external_provider">
+                                        <option value="default">ovirt-provider-ovn</option>
+                                    </select>
+                                </div>
+                                <div className="network_form_group">
+                                    <label htmlFor="network_port_security">네트워크 포트 보안</label>
+                                    <select id="network_port_security">
+                                        <option value="default">활성화</option>
+                                    </select>
+                                </div>
+                                <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="connect_to_physical_network" name="connect_to_physical_network" />
+                                    <label htmlFor="connect_to_physical_network">물리적 네트워크에 연결</label>
+                                </div>
+                            </div>
+            </form>
+            <div className="edit_footer">
+              <button style={{ display: 'none' }}></button>
+              <button>OK</button>
+              <button onClick={closePopup}>취소</button>
+            </div>
         </div>
       </Modal>
       {/*vNIC 프로파일(새로만들기)팝업 */}
@@ -873,12 +959,12 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
          </div>
 
             <div className="border-t-[1px] border-gray-500 mt-4">
-                <div className='py-0.5 vnic_new_checkbox'>
+                <div className='py-1 checkbox_group'>
                   <input type="checkbox" id="checkHostConnection" checked />
                   <label htmlFor="checkHostConnection">호스트와 Engine간의 연결을 확인</label>
                   <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)', cursor: 'pointer' }} fixedWidth />
                 </div>
-                <div className='vnic_new_checkbox'>
+                <div className='checkbox_group'>
                   <input type="checkbox" id="saveNetworkConfig" disabled />
                   <label htmlFor="saveNetworkConfig">네트워크 설정 저장</label>
                   <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)', cursor: 'pointer' }} fixedWidth />

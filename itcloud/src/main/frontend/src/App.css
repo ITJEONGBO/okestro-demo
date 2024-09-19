@@ -29,7 +29,10 @@
     width: 100%;
     padding: 0.6rem 0.3rem;
 }
-
+button{
+   
+    border-radius:3px;
+}
 .edit_first_content{
     border-bottom: 1px solid #cecece;
     font-size: 0.32rem;
@@ -210,7 +213,7 @@
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 87%;
+    height: 88%;
     width: 48%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -414,9 +417,10 @@ input[type="text"],select{
 .edit_aside > div span {
     font-size: 0.33rem;
 }
-/*체크박스*/
+/*체크박스*/  
 .checkbox_group{
     display:flex;
+    align-items: center; 
 }
  /*막힌 input*/
 .disabled {
@@ -2714,9 +2718,6 @@ input[type="text"]:focus {
     box-shadow: 0 0 8px rgba(22, 90, 190, 0.8); /* 파란색 번짐 효과 */
     outline: none; /* 기본 아웃라인 제거 */
   }
-input[type="checkbox"]{
-    cursor: pointer;
-}
 
 #domain_hidden_box_btn,#domain_hidden_box_btn2{
     cursor: pointer;   
@@ -3029,34 +3030,7 @@ display: flex; /* Flexbox 설정 추가 */
     font-size: 0.34rem;
     padding: 0.4rem;
 }
-#network_bring_table_outer{
-    font-size: 0.34rem;
-    padding: 0 0.4rem 0.4rem 0.4rem;
-}
-#network_bring_table_outer span,.network_form_group label{
-    font-weight: 600;
-    margin-bottom: 0.1rem;
-    display: block;
-}
-#network_bring_table_outer>div{
-    border: 1px solid #c9c9c9;
-    height: 27vh;
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
-}
-#network_bring_table_outer table{
-    width: 100%;
-    border-collapse: collapse;
-}
-#network_bring_table_outer th,#network_bring_table_outer td{
-    padding: 0.04rem;
-}
-#network_bring_table_outer th{
-    border-bottom: 1px solid black;
-    background-color: #d1e2eb;
-    text-align: left;
-    border-collapse: collapse;
-}
+
 /*NetworkDetail*/
 
 /*클러스터(네트워크 관리)*/
@@ -3269,23 +3243,6 @@ display: flex; /* Flexbox 설정 추가 */
 
 .content_header_right>button:last-child{
     margin-right: 0;
-}
-.network_edit_popup form{
-    height: 67vh;
-    overflow-y: auto;
-    overflow-x: hidden; 
-}
-.network_edit_popup{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 80%;
-    width: 48%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
 
   
