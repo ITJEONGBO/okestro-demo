@@ -84,6 +84,32 @@ fun Permission.toPermissionVo(conn: Connection): PermissionVo? {
     return null
 }
 
-// 권한
-fun List<Permission>.toPermissionVos(conn: Connection): List<PermissionVo> =
-    this@toPermissionVos.mapNotNull { it.toPermissionVo(conn) }
+fun List<Permission>.toPermissionVos(conn: Connection): List<PermissionVo> {
+    return this@toPermissionVos.mapNotNull { permission ->
+        // 특정 permission id를 제외하는 조건
+        if (permission.id() == "e3df3b43-8d52-4fa4-855f-b6047acfba64") {
+            return@mapNotNull null // 해당 ID인 경우 null 반환
+        }
+
+        val role: Role? = conn.findRole(permission.role().id()).getOrNull()
+
+        if (permission.groupPresent() && !permission.userPresent()) {
+            val group: Group? = conn.findGroup(permission.group().id()).getOrNull()
+            PermissionVo.builder {
+                user { group?.name() }
+                nameSpace { group?.namespace() }
+                role { role?.name() }
+            }
+        } else if (!permission.groupPresent() && permission.userPresent()) {
+            val user: User? = conn.findUser(permission.user().id()).getOrNull()
+            PermissionVo.builder {
+                user { user?.name() }
+                nameSpace { user?.namespace() }
+                provider { if (user?.domainPresent() == true) user.domain()?.name() else null }
+                role { role?.name() }
+            }
+        } else {
+            null
+        }
+    }
+}

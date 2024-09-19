@@ -172,7 +172,7 @@ class ClusterServiceImpl(
 			conn.findAllClusters()
 				.getOrDefault(listOf())
 				.filter { it.cpuPresent() }
-		return res.toClusterMenus(conn)
+		return res.toClustersMenu(conn)
 	}
 
 	@Throws(Error::class)
@@ -330,6 +330,7 @@ class ClusterServiceImpl(
 				.getOrDefault(listOf())
 		return res.toPermissionVos(conn)
 	}
+
 
 	@Throws(Error::class)
 	override fun findAllEventsFromCluster(clusterId: String): List<EventVo> {

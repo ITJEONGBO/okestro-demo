@@ -52,7 +52,7 @@ private val log = LoggerFactory.getLogger(VmVo::class.java)
  * @property ipv4 [String]
  * @property ipv6 [String]
  * @property hostEngineVm [Boolean] 금장/은장 vm().origin() == "managed_hosted_engine"
- * @property placement [String] 호스트에 부탁? 여부 ( 호스트에 고정, 호스트에서 실행중, 호스트에서 고정 및 실행)
+ * @property placement [String] 호스트에 부착 여부 ( 호스트에 고정, 호스트에서 실행중, 호스트에서 고정 및 실행)
  * @property hostVo [HostVo]  실행 호스트 정보 (현재 실행되고 있는 호스트의 정보)
  * @property snapshotVos List<[IdentifiedVo]>
 // * @property diskAttachmentVos List<[DiskAttachmentVo]> // 출력용
@@ -313,14 +313,466 @@ class VmVo (
     }
 }
 
-
+/**
+ * 가상머신 id&name
+ */
 fun Vm.toVmIdName(): VmVo = VmVo.builder {
     id { this@toVmIdName.id() }
     name { this@toVmIdName.name() }
 }
+fun List<Vm>.toVmsIdName(): List<VmVo> =
+    this@toVmsIdName.map { it.toVmIdName() }
 
-fun List<Vm>.toVmIdNames(): List<VmVo> =
-    this@toVmIdNames.map { it.toVmIdName() }
+
+fun Vm.toVmVoInfo(conn: Connection/*, graph: ItGraphService*/): VmVo {
+    val cluster: Cluster? =
+        conn.findCluster(this@toVmVoInfo.cluster().id())
+            .getOrNull()
+    val dataCenter: DataCenter? =
+        cluster?.dataCenter()?.id()?.let { conn.findDataCenter(it).getOrNull() }
+    val vmNic: Nic? =
+        conn.findAllNicsFromVm(this@toVmVoInfo.id())
+            .getOrNull()?.firstOrNull()
+    val host: Host? =
+        if (this@toVmVoInfo.hostPresent())
+            conn.findHost(this@toVmVoInfo.host().id()).getOrNull()
+        else if (!this@toVmVoInfo.hostPresent() && this@toVmVoInfo.placementPolicy().hostsPresent())
+            conn.findHost(this@toVmVoInfo.placementPolicy().hosts().first().id()).getOrNull()
+        else
+            null
+    val template: Template? =
+        conn.findTemplate(this@toVmVoInfo.template().id())
+            .getOrNull()
+
+    return VmVo.builder {
+        id { this@toVmVoInfo.id() }
+        name { this@toVmVoInfo.name() }
+        description { this@toVmVoInfo.description() }
+        osSystem { this@toVmVoInfo.os().type() } // 편집필요 OsVo.valueOf(vm.os().type()).findOs()
+        chipsetFirmwareType { this@toVmVoInfo.bios().type().findBios() }
+        priority { this@toVmVoInfo.highAvailability().priorityAsInteger() }
+        optimizeOption { this@toVmVoInfo.type().findVmType() }
+        memorySize { this@toVmVoInfo.memory() }
+        memoryActual { this@toVmVoInfo.memoryPolicy().guaranteed() }
+        cpuTopologyCore { this@toVmVoInfo.cpu().topology().coresAsInteger() }
+        cpuTopologySocket { this@toVmVoInfo.cpu().topology().socketsAsInteger() }
+        cpuTopologyThread { this@toVmVoInfo.cpu().topology().threadsAsInteger() }
+        cpuTopologyCnt {
+            this@toVmVoInfo.cpu().topology().coresAsInteger() *
+                    this@toVmVoInfo.cpu().topology().socketsAsInteger() *
+                    this@toVmVoInfo.cpu().topology().threadsAsInteger()
+        }
+        monitor { this@toVmVoInfo.display().monitorsAsInteger() }
+        usb { this@toVmVoInfo.usb().enabled() }
+        timeOffset { this@toVmVoInfo.timeZone().name() }
+        status { this@toVmVoInfo.status() }
+        hostEngineVm { this@toVmVoInfo.origin() == "managed_hosted_engine" } // 엔진여부
+        upTime { this@toVmVoInfo.findVmUptime(conn) }
+        ipv4 { this@toVmVoInfo.findVmIp(conn, "v4") }
+        ipv6 { this@toVmVoInfo.findVmIp(conn, "v6") }
+        fqdn { this@toVmVoInfo.fqdn() }
+        hostVo { host?.fromHostToIdentifiedVo() }
+        clusterVo { cluster?.fromClusterToIdentifiedVo() }
+        dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() } // 메모리, cpu, 네트워크
+//        templateName { template?.name() }
+    }
+}
+fun List<Vm>.toVmVoInfos(conn: Connection/*, graph: ItGraphService*/): List<VmVo> =
+    this@toVmVoInfos.map { it.toVmVoInfo(conn) }
+
+
+// region: VmBuilder
+
+/**
+ * 가상머신 빌더
+ */
+fun VmVo.toVmBuilder(conn: Connection): VmBuilder {
+    val vmBuilder = VmBuilder()
+    this@toVmBuilder.toVmInfoBuilder(vmBuilder)
+    this@toVmBuilder.toVmSystemBuilder(vmBuilder, conn)
+    this@toVmBuilder.toVmInitBuilder(vmBuilder)
+    this@toVmBuilder.toVmHostBuilder(vmBuilder)
+    this@toVmBuilder.toVmResourceBuilder(vmBuilder)
+    this@toVmBuilder.toVmHaBuilder(vmBuilder)
+    this@toVmBuilder.toVmBootBuilder(vmBuilder)
+    return vmBuilder
+}
+
+/**
+ * 가상머신 생성 빌더
+ */
+fun VmVo.toAddVmBuilder(conn: Connection): Vm =
+    this@toAddVmBuilder.toVmBuilder(conn).build()
+
+/**
+ * 가상머신 편집 빌더
+ */
+fun VmVo.toEditVmBuilder(conn: Connection): Vm =
+    this@toEditVmBuilder.toVmBuilder(conn).id(this@toEditVmBuilder.id).build()
+
+
+
+
+/**
+ * vm 일반정보
+ */
+fun VmVo.toVmInfoBuilder(vmBuilder: VmBuilder): VmBuilder {
+    return vmBuilder
+        .cluster(ClusterBuilder().id(this@toVmInfoBuilder.clusterVo.id))
+//        .template(TemplateBuilder().id(this@toVmInfoBuilder.templateId)) // template지정된게 있으면
+        .bios(BiosBuilder().type(BiosType.valueOf(this@toVmInfoBuilder.chipsetFirmwareType)))
+        .type(VmType.valueOf(this@toVmInfoBuilder.optimizeOption))
+        .name(this@toVmInfoBuilder.name)
+        .description(this@toVmInfoBuilder.description)
+        .comment(this@toVmInfoBuilder.comment)
+        .stateless(this@toVmInfoBuilder.stateless)
+        .startPaused(this@toVmInfoBuilder.startPaused)
+        .deleteProtected(this@toVmInfoBuilder.deleteProtected)
+}
+
+/**
+ * vm 시스템
+ */
+fun VmVo.toVmSystemBuilder(vmBuilder: VmBuilder, conn: Connection): VmBuilder {
+	val convertMb = BigInteger.valueOf(1024).pow(2)
+
+	// 시스템-일반 하드웨어 클럭의 시간 오프셋
+	vmBuilder.timeZone(TimeZoneBuilder().name(this@toVmSystemBuilder.timeOffset))
+
+	// 인스턴스 타입이 지정되어 있다면
+	if (this@toVmSystemBuilder.instanceType.isNotEmpty()) {
+		val instance: InstanceType? = conn.findAllInstanceTypes("name=${this@toVmSystemBuilder.instanceType}").getOrNull()?.first()
+		vmBuilder.instanceType(instance)
+	} else {    // 사용자 정의 값
+		vmBuilder
+//			.memory(BigInteger.valueOf(this@toVmSystemBuilder.memorySize).multiply(convertMb))
+			.memory(this@toVmSystemBuilder.memorySize)
+			.memoryPolicy(
+				MemoryPolicyBuilder()
+					.max(this@toVmSystemBuilder.memoryMax)
+					.ballooning(this@toVmSystemBuilder.memoryBalloon) // 리소스할당- 메모리 balloon 활성화
+					.guaranteed(this@toVmSystemBuilder.memoryActual)
+			)
+			.cpu(
+				CpuBuilder().topology(
+					CpuTopologyBuilder()
+						.cores(this@toVmSystemBuilder.cpuTopologyCore)
+						.sockets(this@toVmSystemBuilder.cpuTopologySocket)
+						.threads(this@toVmSystemBuilder.cpuTopologyThread)
+				)
+			)
+	}
+	return vmBuilder
+}
+
+/**
+ * vm 초기 실행
+ */
+fun VmVo.toVmInitBuilder(vmBuilder: VmBuilder): VmBuilder {
+	if (this@toVmInitBuilder.cloudInit) {
+		vmBuilder.initialization(
+			InitializationBuilder()
+				.hostName(this@toVmInitBuilder.hostName)
+				.timezone(this@toVmInitBuilder.timeStandard) // Asia/Seoul
+				.customScript(this@toVmInitBuilder.script)
+		)
+	}
+	return vmBuilder
+}
+
+/**
+ * vm 호스트
+ */
+fun VmVo.toVmHostBuilder(vmBuilder: VmBuilder): VmBuilder {
+	val placementBuilder = VmPlacementPolicyBuilder()
+
+	// 실행 호스트 - 특정 호스트(무조건 한개는 존재), 기본이 클러스터 내 호스트라 지정 필요없음
+	if (!this@toVmHostBuilder.hostInCluster) {
+		placementBuilder.hosts(
+			// 선택된 호스트 전부 넣기
+			this@toVmHostBuilder.hostVos.map { hostVo ->  HostBuilder().id(hostVo.id).build() }
+		)
+	}
+	vmBuilder
+		.placementPolicy(placementBuilder.affinity(VmAffinity.valueOf(this@toVmHostBuilder.migrationMode)))
+        // 정책은 찾을 수가 없음, parallel Migrations 안보임, 암호화
+		.migration(MigrationOptionsBuilder().encrypted(this@toVmHostBuilder.migrationEncrypt).build())
+	return vmBuilder
+}
+
+/**
+ * vm 리소스 할당
+ */
+fun VmVo.toVmResourceBuilder(vmBuilder: VmBuilder): VmBuilder {
+	return vmBuilder
+		.cpuProfile(CpuProfileBuilder().id(this@toVmResourceBuilder.cpuProfileVo.id))
+		.cpuShares(this@toVmResourceBuilder.cpuShare)
+		.autoPinningPolicy(if ("RESIZE_AND_PIN_NUMA" == this@toVmResourceBuilder.cpuPinningPolicy) AutoPinningPolicy.ADJUST else AutoPinningPolicy.DISABLED)
+		.cpuPinningPolicy(CpuPinningPolicy.valueOf(this@toVmResourceBuilder.cpuPinningPolicy))
+		.virtioScsiMultiQueuesEnabled(this@toVmResourceBuilder.multiQue) // VirtIO-SCSI 활성화
+}
+
+/**
+ * vm 고가용성
+ */
+fun VmVo.toVmHaBuilder(vmBuilder: VmBuilder): VmBuilder {
+	if (this@toVmHaBuilder.ha) {
+		vmBuilder
+            .lease(StorageDomainLeaseBuilder()
+                .storageDomain(StorageDomainBuilder().id(this@toVmHaBuilder.storageDomainVo.id))
+            )
+	}
+	vmBuilder
+		.highAvailability(HighAvailabilityBuilder()
+            .enabled(this@toVmHaBuilder.ha)
+            .priority(this@toVmHaBuilder.priority)
+        )
+
+	return vmBuilder
+}
+
+/**
+ * vm 부트 옵션
+ */
+fun VmVo.toVmBootBuilder(vmBuilder: VmBuilder): VmBuilder {
+	val bootDeviceList: MutableList<BootDevice> = mutableListOf(
+		BootDevice.valueOf(this@toVmBootBuilder.firstDevice), // 첫번째 장치
+	)
+
+	if (this@toVmBootBuilder.secDevice.isNotEmpty())
+		bootDeviceList.add(BootDevice.valueOf(this@toVmBootBuilder.secDevice)) // 두번째 장치
+
+	vmBuilder
+		.os(
+			OperatingSystemBuilder()
+				.type(this@toVmBootBuilder.osSystem) // 일반 - 운영시스템 TODO 확인 필요
+				.boot(BootBuilder().devices(bootDeviceList))
+		)
+//		.bios(new BiosBuilder ().type(BiosType.valueOf(vmVo.getChipsetType())))  // 칩셋/펌웨어
+//		.bootMenu(new BootMenuBuilder ().enabled(vmVo.getVmBootVo().isBootingMenu()))
+	return vmBuilder
+}
+
+// endregion
+
+
+/**
+ * [Vm.toVmSystem]
+ *
+ * @param conn [Connection]
+ * @return
+ */
+fun Vm.toVmSystem(conn: Connection): VmVo {
+	val convertMb = BigInteger.valueOf(1024).pow(2)
+	return VmVo.builder {
+		memorySize { this@toVmSystem.memory() }
+		memoryActual { this@toVmSystem.memoryPolicy().guaranteed() }
+		memoryMax { this@toVmSystem.memoryPolicy().max() }
+//		memoryActual { this@toVmSystemVo.memoryPolicy().guaranteed().divide(convertMb).toLong() }
+//		memoryMax { this@toVmSystemVo.memoryPolicy().max().divide(convertMb).toLong() }
+		cpuTopologyCnt {
+			this@toVmSystem.cpu().topology().coresAsInteger() *
+					this@toVmSystem.cpu().topology().socketsAsInteger() *
+					this@toVmSystem.cpu().topology().threadsAsInteger()
+		}
+		cpuTopologySocket { this@toVmSystem.cpu().topology().socketsAsInteger() }
+		cpuTopologyCore { this@toVmSystem.cpu().topology().coresAsInteger() }
+		cpuTopologyThread { this@toVmSystem.cpu().topology().threadsAsInteger() }
+		timeOffset { this@toVmSystem.timeZone().name() }
+	}
+}
+
+/**
+ * 편집 - 초기실행
+ */
+fun Vm.toVmInit(conn: Connection): VmVo {
+    return VmVo.builder {
+        cloudInit { this@toVmInit.initializationPresent() }
+        hostName { if (this@toVmInit.initializationPresent()) this@toVmInit.initialization().hostName() else "" }
+    }
+}
+/**
+ * 편집 - 호스트
+ */
+fun Vm.toVmHost(conn: Connection): VmVo {
+	return VmVo.builder {
+		hostInCluster { !this@toVmHost.placementPolicy().hostsPresent() } // 클러스터내 호스트(t)인지 특정호스트(f)인지
+        //TODO
+//		hostVos {
+//			if (this@toVmHost.placementPolicy().hostsPresent())
+//				this@toVmHost.placementPolicy().hosts().map { host ->
+//					conn.findHost(host.id()).getOrNull()?.fromHostToIdentifiedVo() ?: HostVo.builder {  }
+//				}
+//			else listOf()
+//		}
+		migrationMode { this@toVmHost.placementPolicy().affinity().value() }
+		migrationEncrypt { this@toVmHost.migration().encrypted() }
+	}
+}
+
+
+/**
+ * 편집 - 고가용성
+ */
+fun Vm.toVmHa(conn: Connection): VmVo {
+	return VmVo.builder {
+		ha { this@toVmHa.highAvailability().enabled() }
+		priority { this@toVmHa.highAvailability().priorityAsInteger() }
+		storageDomainVo {
+            if (this@toVmHa.leasePresent())
+                conn.findStorageDomain(this@toVmHa.lease().storageDomain().id())
+                    .getOrNull()?.fromStorageDomainToIdentifiedVo()
+            else null
+        }
+		resumeOperation { this@toVmHa.storageErrorResumeBehaviour().value() } // 워치독?
+		watchDogAction { WatchdogAction.NONE }
+	}
+}
+
+/**
+ * 편집 - 리소스 할당
+ */
+fun Vm.toVmResource(conn: Connection): VmVo {
+	return VmVo.builder {
+        cpuProfileVo { conn.findCpuProfile(this@toVmResource.cpuProfile().id()).getOrNull()?.fromCpuProfileToIdentifiedVo() }
+		cpuShare { this@toVmResource.cpuSharesAsInteger() }
+		cpuPinningPolicy { this@toVmResource.cpuPinningPolicy().value() }
+		memoryBalloon { this@toVmResource.memoryPolicy().ballooning() }
+		ioThreadCnt  { if (this@toVmResource.io().threadsPresent()) this@toVmResource.io().threadsAsInteger() else 0 }
+		multiQue { this@toVmResource.multiQueuesEnabled() }
+//		virtSCSIEnable { this@toVmResource.virtioScsiMultiQueuesEnabled() } // TODO:HELP virtio-scsi 활성화
+		// virtio-scsi multi queues
+	}
+}
+
+/**
+ * 편집 - 부트 옵션
+ */
+fun Vm.toVmBoot(conn: Connection): VmVo {
+	val cdrom: Cdrom? = conn.findAllVmCdromsFromVm(this@toVmBoot.id()).getOrDefault(listOf()).firstOrNull()
+	val cdromFileId: String = cdrom?.file()?.id() ?: ""
+	val disk: Disk? = conn.findDisk(cdromFileId).getOrNull()
+	return VmVo.builder {
+		firstDevice { this@toVmBoot.os().boot().devices().first().value() }
+		secDevice {
+			if (this@toVmBoot.os().boot().devices().size > 1)
+				this@toVmBoot.os().boot().devices()[1].value()
+			else
+				null
+		}
+        connVo { disk?.fromDiskToIdentifiedVo() }
+//		connId { cdromFileId }
+//		connName { disk?.name() }
+	}
+}
+
+
+fun Vm.toVmVoFromHost(conn: Connection/*, graph: ItGraphService*/): VmVo {
+    val cluster: Cluster? =
+        conn.findCluster(this@toVmVoFromHost.cluster().id())
+            .getOrNull()
+    val host: Host? =
+        conn.findHost(this@toVmVoFromHost.host().id())
+            .getOrNull()
+
+//    val nic: Nic? = conn.findAllNicsFromVm(this@toVmVoFromHost.id()).getOrDefault(listOf()).firstOrNull()
+//    val vmNicId: String? = nic?.id()
+
+    return VmVo.builder {
+        id { this@toVmVoFromHost.id() }
+        name { this@toVmVoFromHost.name() }
+        clusterVo { cluster?.fromClusterToIdentifiedVo() }
+        hostVo { host?.fromHostToIdentifiedVo() }
+        hostEngineVm { this@toVmVoFromHost.origin().equals("managed_hosted_engine") }
+        status { this@toVmVoFromHost.status() }
+        fqdn { this@toVmVoFromHost.fqdn() }
+        ipv4 { this@toVmVoFromHost.findVmIp(conn, "v4") }
+        ipv6 { this@toVmVoFromHost.findVmIp(conn, "v6") }
+        upTime { this@toVmVoFromHost.findVmUptime(conn) }
+//      usageDto { if (this@toVmVoFromHost.status() == VmStatus.UP) graph.vmPercent(this@toVmVoFromHost.id(), vmNicId) else null }
+    }
+}
+fun List<Vm>.toVmVosFromHost(conn: Connection): List<VmVo> =
+    this@toVmVosFromHost.map { it.toVmVoFromHost(conn) }
+
+
+fun Vm.toVmVoFromNetwork(conn: Connection): VmVo {
+    val cluster: Cluster =
+        conn.findCluster(this@toVmVoFromNetwork.cluster().id())
+            .getOrNull() ?: throw ErrorPattern.VM_ID_NOT_FOUND.toError()
+    val vmNic: List<Nic> =
+        conn.findAllNicsFromVm(this@toVmVoFromNetwork.id()).getOrDefault(listOf())
+
+    return VmVo.builder {
+        id { this@toVmVoFromNetwork.id() }
+        name { this@toVmVoFromNetwork.name() }
+        status { this@toVmVoFromNetwork.status() }
+        fqdn { this@toVmVoFromNetwork.fqdn() }
+        description { this@toVmVoFromNetwork.description() }
+        clusterVo { cluster.fromClusterToIdentifiedVo() }
+        nicVos { vmNic.toNicVosFromVm(conn, this@toVmVoFromNetwork.id()) }
+    }
+}
+fun List<Vm>.toVmVoFromNetworks(conn: Connection): List<VmVo> =
+    this@toVmVoFromNetworks.map { it.toVmVoFromNetwork(conn) }
+
+
+
+
+/**
+ * [Vm.findVmUptime]
+ * Vm 업타임 구하기
+ * 이건 매개변수로 statisticList 안줘도 되는게 vm에서만 사용
+ *
+ * @param conn
+ * @return 일, 시간, 분 형식
+ */
+fun Vm.findVmUptime(conn: Connection): String {
+    log.debug("Vm.findVmUptime ... ")
+    val vmId: String = this@findVmUptime.id()
+    val statistics: List<Statistic> = conn.findAllStatisticsFromVm(vmId)
+
+    val time: Long = statistics.filter {
+        it.name() == "elapsed.time"
+    }.map {
+        it.values().firstOrNull()?.datum()?.toLong()
+    }.firstOrNull() ?: 0L
+
+    val days = time / (60 * 60 * 24)
+    val hours = (time % (60 * 60 * 24)) / (60 * 60)
+    val minutes = ((time % (60 * 60 * 24)) % (60 * 60)) / 60
+
+    return if (days > 0)    "${days}일"
+    else if (hours > 0)     "${hours}시간"
+    else if (minutes > 0)   "${minutes}분"
+    else                    ""
+}
+
+
+/**
+ * [Vm.findVmIp]
+ * Vm ip 알아내기
+ * vms/{id}/nic/{id}/statistic
+ * TODO 검증해야함
+ * @param conn
+ * @param version [String] ipv4, ipv6
+ * @return
+ */
+fun Vm.findVmIp(conn: Connection, version: String): String {
+    log.debug("Vm.findVmIp ... ")
+    val vm: Vm? = conn.findVm(this@findVmIp.id(), "nics").getOrNull()
+    return vm?.nics()?.flatMap {
+        conn.findAllReportedDeviceFromVmNic(vm.id(), it.id())
+            .getOrDefault(listOf())
+            .filter { rd: ReportedDevice -> rd.vm().status()?.value() != "down" }
+    }?.map {
+        if ("v4" == version)
+            return@map it.ips()[0].address()
+        else
+            return@map it.ips()[1].address()
+    }?.firstOrNull() ?: ""
+}
+
 
 /**
  * vm 전부 모아둔것...
@@ -436,465 +888,5 @@ fun Vm.toVmVo(conn: Connection): VmVo {
 //        bootingMenu { this@toVmVo. }
     }
 }
-
 fun List<Vm>.toVmVos(conn: Connection/*, graph: ItGraphService*/): List<VmVo> =
     this@toVmVos.map { it.toVmVo(conn/*, graph*/) }
-
-
-fun Vm.toVmVoInfo(conn: Connection/*, graph: ItGraphService*/): VmVo {
-    val cluster: Cluster? = conn.findCluster(this@toVmVoInfo.cluster().id()).getOrNull()
-    val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let { conn.findDataCenter(it).getOrNull() }
-    val vmNic: Nic? = conn.findAllNicsFromVm(this@toVmVoInfo.id()).getOrNull()?.firstOrNull()
-    val host: Host? =
-        if (this@toVmVoInfo.hostPresent())
-            conn.findHost(this@toVmVoInfo.host().id()).getOrNull()
-        else if (!this@toVmVoInfo.hostPresent() && this@toVmVoInfo.placementPolicy().hostsPresent())
-            conn.findHost(this@toVmVoInfo.placementPolicy().hosts().first().id()).getOrNull()
-        else
-            null
-    val template: Template? = conn.findTemplate(this@toVmVoInfo.template().id()).getOrNull()
-
-    return VmVo.builder {
-        id { this@toVmVoInfo.id() }
-        name { this@toVmVoInfo.name() }
-        description { this@toVmVoInfo.description() }
-        osSystem { this@toVmVoInfo.os().type() } // 편집필요 OsVo.valueOf(vm.os().type()).findOs()
-        chipsetFirmwareType { this@toVmVoInfo.bios().type().findBios() }
-        priority { this@toVmVoInfo.highAvailability().priorityAsInteger() }
-        optimizeOption { this@toVmVoInfo.type().findVmType() }
-        memorySize { this@toVmVoInfo.memory() }
-        memoryActual { this@toVmVoInfo.memoryPolicy().guaranteed() }
-        cpuTopologyCore { this@toVmVoInfo.cpu().topology().coresAsInteger() }
-        cpuTopologySocket { this@toVmVoInfo.cpu().topology().socketsAsInteger() }
-        cpuTopologyThread { this@toVmVoInfo.cpu().topology().threadsAsInteger() }
-        cpuTopologyCnt {
-            this@toVmVoInfo.cpu().topology().coresAsInteger() *
-                    this@toVmVoInfo.cpu().topology().socketsAsInteger() *
-                    this@toVmVoInfo.cpu().topology().threadsAsInteger()
-        }
-        monitor { this@toVmVoInfo.display().monitorsAsInteger() }
-        usb { this@toVmVoInfo.usb().enabled() }
-        timeOffset { this@toVmVoInfo.timeZone().name() }
-        status { this@toVmVoInfo.status() }
-        hostEngineVm { this@toVmVoInfo.origin() == "managed_hosted_engine" } // 엔진여부
-        upTime { this@toVmVoInfo.findVmUptime(conn) }
-        ipv4 { this@toVmVoInfo.findVmIp(conn, "v4") }
-        ipv6 { this@toVmVoInfo.findVmIp(conn, "v6") }
-        fqdn { this@toVmVoInfo.fqdn() }
-        hostVo { host?.fromHostToIdentifiedVo() }
-        clusterVo { cluster?.fromClusterToIdentifiedVo() }
-        dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() } // 메모리, cpu, 네트워크
-//        templateName { template?.name() }
-    }
-}
-
-fun List<Vm>.toVmVoInfos(conn: Connection/*, graph: ItGraphService*/): List<VmVo> =
-    this@toVmVoInfos.map { it.toVmVoInfo(conn) }
-
-
-// region: VmBuilder
-
-fun VmVo.toVmBuilder(conn: Connection): VmBuilder {
-    val vmBuilder = VmBuilder()
-    this.toVmInfoBuilder(vmBuilder)
-    this.toVmSystemBuilder(vmBuilder, conn)
-    this.toVmInitBuilder(vmBuilder)
-    this.toVmHostBuilder(vmBuilder)
-    this.toVmResourceBuilder(vmBuilder)
-    this.toVmHaBuilder(vmBuilder)
-    this.toVmBootBuilder(vmBuilder)
-
-    return vmBuilder
-}
-
-fun VmVo.toAddVmBuilder(conn: Connection): Vm =
-    this.toVmBuilder(conn).build()
-
-
-fun VmVo.toEditVmBuilder(conn: Connection): Vm =
-    this.toVmBuilder(conn).id(this@toEditVmBuilder.id).build()
-
-
-
-
-/**
- * vm 일반정보
- */
-fun VmVo.toVmInfoBuilder(vmBuilder: VmBuilder): VmBuilder {
-    return vmBuilder
-        .cluster(ClusterBuilder().id(this@toVmInfoBuilder.clusterVo.id))
-//        .template(TemplateBuilder().id(this@toVmInfoBuilder.templateId)) // template지정된게 있으면
-        .bios(BiosBuilder().type(BiosType.valueOf(this@toVmInfoBuilder.chipsetFirmwareType)))
-        .type(VmType.valueOf(this@toVmInfoBuilder.optimizeOption))
-        .name(this@toVmInfoBuilder.name)
-        .description(this@toVmInfoBuilder.description)
-        .comment(this@toVmInfoBuilder.comment)
-        .stateless(this@toVmInfoBuilder.stateless)
-        .startPaused(this@toVmInfoBuilder.startPaused)
-        .deleteProtected(this@toVmInfoBuilder.deleteProtected)
-}
-
-/**
- * 시스템
- */
-fun VmVo.toVmSystemBuilder(vmBuilder: VmBuilder, conn: Connection): VmBuilder {
-	val convertMb = BigInteger.valueOf(1024).pow(2)
-
-	// 시스템-일반 하드웨어 클럭의 시간 오프셋
-	vmBuilder.timeZone(TimeZoneBuilder().name(this@toVmSystemBuilder.timeOffset))
-
-	// 인스턴스 타입이 지정되어 있다면
-	if (this@toVmSystemBuilder.instanceType.isNotEmpty()) {
-		val instance: InstanceType? = conn.findAllInstanceTypes("name=${this@toVmSystemBuilder.instanceType}").getOrNull()?.first()
-		vmBuilder.instanceType(instance)
-	} else {    // 사용자 정의 값
-		vmBuilder
-//			.memory(BigInteger.valueOf(this@toVmSystemBuilder.memorySize).multiply(convertMb))
-			.memory(this@toVmSystemBuilder.memorySize)
-			.memoryPolicy(
-				MemoryPolicyBuilder()
-					.max(this@toVmSystemBuilder.memoryMax)
-					.ballooning(this@toVmSystemBuilder.memoryBalloon) // 리소스할당- 메모리 balloon 활성화
-					.guaranteed(this@toVmSystemBuilder.memoryActual)
-			)
-			.cpu(
-				CpuBuilder().topology(
-					CpuTopologyBuilder()
-						.cores(this@toVmSystemBuilder.cpuTopologyCore)
-						.sockets(this@toVmSystemBuilder.cpuTopologySocket)
-						.threads(this@toVmSystemBuilder.cpuTopologyThread)
-				)
-			)
-	}
-	return vmBuilder
-}
-
-/**
- * 초기 실행
- */
-fun VmVo.toVmInitBuilder(vmBuilder: VmBuilder): VmBuilder {
-	if (this@toVmInitBuilder.cloudInit) {
-		vmBuilder.initialization(
-			InitializationBuilder()
-				.hostName(this@toVmInitBuilder.hostName)
-				.timezone(this@toVmInitBuilder.timeStandard) // Asia/Seoul
-				.customScript(this@toVmInitBuilder.script)
-		)
-	}
-	return vmBuilder
-}
-
-/**
- * 호스트
- */
-fun VmVo.toVmHostBuilder(vmBuilder: VmBuilder): VmBuilder {
-	val placementBuilder = VmPlacementPolicyBuilder()
-
-	// 실행 호스트 - 특정 호스트(무조건 한개는 존재), 기본이 클러스터 내 호스트라 지정 필요없음
-	if (!this@toVmHostBuilder.hostInCluster) {
-		placementBuilder.hosts(
-			// 선택된 호스트 전부 넣기
-			this@toVmHostBuilder.hostVos.map { hostVo ->  HostBuilder().id(hostVo.id).build() }
-		)
-	}
-	vmBuilder
-		.placementPolicy(placementBuilder.affinity(VmAffinity.valueOf(this@toVmHostBuilder.migrationMode)))
-        // 정책은 찾을 수가 없음, parallel Migrations 안보임, 암호화
-		.migration(MigrationOptionsBuilder().encrypted(this@toVmHostBuilder.migrationEncrypt).build())
-	return vmBuilder
-}
-
-/**
- * 리소스 할당
- */
-fun VmVo.toVmResourceBuilder(vmBuilder: VmBuilder): VmBuilder {
-	return vmBuilder
-		.cpuProfile(CpuProfileBuilder().id(this@toVmResourceBuilder.cpuProfileVo.id))
-		.cpuShares(this@toVmResourceBuilder.cpuShare)
-		.autoPinningPolicy(if ("RESIZE_AND_PIN_NUMA" == this@toVmResourceBuilder.cpuPinningPolicy) AutoPinningPolicy.ADJUST else AutoPinningPolicy.DISABLED)
-		.cpuPinningPolicy(CpuPinningPolicy.valueOf(this@toVmResourceBuilder.cpuPinningPolicy))
-		.virtioScsiMultiQueuesEnabled(this@toVmResourceBuilder.multiQue) // VirtIO-SCSI 활성화
-}
-
-/**
- * 고가용성
- */
-fun VmVo.toVmHaBuilder(vmBuilder: VmBuilder): VmBuilder {
-	if (this@toVmHaBuilder.ha) {
-		vmBuilder
-            .lease(StorageDomainLeaseBuilder()
-                .storageDomain(StorageDomainBuilder().id(this@toVmHaBuilder.storageDomainVo.id))
-            )
-	}
-	vmBuilder
-		.highAvailability(HighAvailabilityBuilder()
-            .enabled(this@toVmHaBuilder.ha)
-            .priority(this@toVmHaBuilder.priority)
-        )
-
-	return vmBuilder
-}
-
-/**
- * 부트 옵션
- */
-fun VmVo.toVmBootBuilder(vmBuilder: VmBuilder): VmBuilder {
-	val bootDeviceList: MutableList<BootDevice> = mutableListOf(
-		BootDevice.valueOf(this@toVmBootBuilder.firstDevice), // 첫번째 장치
-	)
-
-	if (this@toVmBootBuilder.secDevice.isNotEmpty())
-		bootDeviceList.add(BootDevice.valueOf(this@toVmBootBuilder.secDevice)) // 두번째 장치
-
-	vmBuilder
-		.os(
-			OperatingSystemBuilder()
-				.type(this@toVmBootBuilder.osSystem) // 일반 - 운영시스템 TODO 확인 필요
-				.boot(BootBuilder().devices(bootDeviceList))
-		)
-//		.bios(new BiosBuilder ().type(BiosType.valueOf(vmVo.getChipsetType())))  // 칩셋/펌웨어
-//		.bootMenu(new BootMenuBuilder ().enabled(vmVo.getVmBootVo().isBootingMenu()))
-	return vmBuilder
-}
-
-// endregion
-
-
-
-
-
-/**
- * [Vm.toVmSystem]
- *
- * @param conn [Connection]
- * @return
- */
-fun Vm.toVmSystem(conn: Connection): VmVo {
-	val convertMb = BigInteger.valueOf(1024).pow(2)
-	return VmVo.builder {
-		memorySize { this@toVmSystem.memory() }
-		memoryActual { this@toVmSystem.memoryPolicy().guaranteed() }
-		memoryMax { this@toVmSystem.memoryPolicy().max() }
-//		memoryActual { this@toVmSystemVo.memoryPolicy().guaranteed().divide(convertMb).toLong() }
-//		memoryMax { this@toVmSystemVo.memoryPolicy().max().divide(convertMb).toLong() }
-		cpuTopologyCnt {
-			this@toVmSystem.cpu().topology().coresAsInteger() *
-					this@toVmSystem.cpu().topology().socketsAsInteger() *
-					this@toVmSystem.cpu().topology().threadsAsInteger()
-		}
-		cpuTopologySocket { this@toVmSystem.cpu().topology().socketsAsInteger() }
-		cpuTopologyCore { this@toVmSystem.cpu().topology().coresAsInteger() }
-		cpuTopologyThread { this@toVmSystem.cpu().topology().threadsAsInteger() }
-		timeOffset { this@toVmSystem.timeZone().name() }
-	}
-}
-
-/**
- * [Vm.toVmInit]
- * 편집 - 초기실행
- *
- * @param conn
- * @return
- * TODO: 함수명 toVmInitVo로 변경
- */
-fun Vm.toVmInit(conn: Connection): VmVo {
-    return VmVo.builder {
-        cloudInit { this@toVmInit.initializationPresent() }
-        hostName { if (this@toVmInit.initializationPresent()) this@toVmInit.initialization().hostName() else "" }
-    }
-}
-/**
- * [Vm.toVmHost]
- * 편집 - 호스트
- *
- * @param conn
- * @return
- */
-fun Vm.toVmHost(conn: Connection): VmVo {
-	return VmVo.builder {
-		hostInCluster { !this@toVmHost.placementPolicy().hostsPresent() } // 클러스터내 호스트(t)인지 특정호스트(f)인지
-        //TODO
-//		hostVos {
-//			if (this@toVmHost.placementPolicy().hostsPresent())
-//				this@toVmHost.placementPolicy().hosts().map { host ->
-//					conn.findHost(host.id()).getOrNull()?.fromHostToIdentifiedVo() ?: HostVo.builder {  }
-//				}
-//			else listOf()
-//		}
-		migrationMode { this@toVmHost.placementPolicy().affinity().value() }
-		migrationEncrypt { this@toVmHost.migration().encrypted() }
-	}
-}
-
-
-/**
- * [Vm.toVmHa]
- * 편집 - 고가용성
- *
- * @param conn
- * @return
- */
-fun Vm.toVmHa(conn: Connection): VmVo {
-	return VmVo.builder {
-		ha { this@toVmHa.highAvailability().enabled() }
-		priority { this@toVmHa.highAvailability().priorityAsInteger() }
-		storageDomainVo {
-            if (this@toVmHa.leasePresent())
-                conn.findStorageDomain(this@toVmHa.lease().storageDomain().id())
-                    .getOrNull()?.fromStorageDomainToIdentifiedVo()
-            else null
-        }
-		resumeOperation { this@toVmHa.storageErrorResumeBehaviour().value() } // 워치독?
-		watchDogAction { WatchdogAction.NONE }
-	}
-}
-
-/**
- * [Vm.toVmResource]
- * 편집 - 리소스 할당
- *
- * @param conn
- * @return
- */
-fun Vm.toVmResource(conn: Connection): VmVo {
-	return VmVo.builder {
-        cpuProfileVo { conn.findCpuProfile(this@toVmResource.cpuProfile().id()).getOrNull()?.fromCpuProfileToIdentifiedVo() }
-		cpuShare { this@toVmResource.cpuSharesAsInteger() }
-		cpuPinningPolicy { this@toVmResource.cpuPinningPolicy().value() }
-		memoryBalloon { this@toVmResource.memoryPolicy().ballooning() }
-		ioThreadCnt  { if (this@toVmResource.io().threadsPresent()) this@toVmResource.io().threadsAsInteger() else 0 }
-		multiQue { this@toVmResource.multiQueuesEnabled() }
-//		virtSCSIEnable { this@toVmResource.virtioScsiMultiQueuesEnabled() } // TODO:HELP virtio-scsi 활성화
-		// virtio-scsi multi queues
-	}
-}
-
-/**
- * [Vm.toVmBoot]
- * 편집 - 부트 옵션
- *
- * @param conn
- * @return
- */
-fun Vm.toVmBoot(conn: Connection): VmVo {
-	val cdrom: Cdrom? = conn.findAllVmCdromsFromVm(this@toVmBoot.id()).getOrDefault(listOf()).firstOrNull()
-	val cdromFileId: String = cdrom?.file()?.id() ?: ""
-	val disk: Disk? = conn.findDisk(cdromFileId).getOrNull()
-	return VmVo.builder {
-		firstDevice { this@toVmBoot.os().boot().devices().first().value() }
-		secDevice {
-			if (this@toVmBoot.os().boot().devices().size > 1)
-				this@toVmBoot.os().boot().devices()[1].value()
-			else
-				null
-		}
-        connVo { disk?.fromDiskToIdentifiedVo() }
-//		connId { cdromFileId }
-//		connName { disk?.name() }
-	}
-}
-
-
-
-fun Vm.toVmVoFromHost(conn: Connection/*, graph: ItGraphService*/): VmVo {
-    val host: Host? = conn.findHost(this@toVmVoFromHost.host().id()).getOrNull()
-    val nic: Nic? = conn.findAllNicsFromVm(this@toVmVoFromHost.id()).getOrDefault(listOf()).firstOrNull()
-    val vmNicId: String? = nic?.id()
-    val cluster: Cluster? = conn.findCluster(this@toVmVoFromHost.cluster().id()).getOrNull()
-
-    return VmVo.builder {
-        id { this@toVmVoFromHost.id() }
-        name { this@toVmVoFromHost.name() }
-        clusterVo { cluster?.fromClusterToIdentifiedVo() }
-        hostVo { host?.fromHostToIdentifiedVo() }
-        hostEngineVm { this@toVmVoFromHost.origin().equals("managed_hosted_engine") }
-        status { this@toVmVoFromHost.status() }
-        fqdn { this@toVmVoFromHost.fqdn() }
-        upTime { this@toVmVoFromHost.findVmUptime(conn) }
-        ipv4 { this@toVmVoFromHost.findVmIp(conn, "v4") }
-        ipv6 { this@toVmVoFromHost.findVmIp(conn, "v6") }
-//      usageDto { if (this@toVmVoFromHost.status() == VmStatus.UP) graph.vmPercent(this@toVmVoFromHost.id(), vmNicId) else null }
-    }
-}
-
-fun List<Vm>.toVmVosFromHost(conn: Connection): List<VmVo> =
-    this@toVmVosFromHost.map { it.toVmVoFromHost(conn) }
-
-fun Vm.toVmVoFromNetwork(conn: Connection): VmVo {
-    val cluster: Cluster =
-        conn.findCluster(this@toVmVoFromNetwork.cluster().id())
-            .getOrNull() ?: throw ErrorPattern.VM_ID_NOT_FOUND.toError()
-    val vmNic: List<Nic> =
-        conn.findAllNicsFromVm(this@toVmVoFromNetwork.id()).getOrDefault(listOf())
-
-    return VmVo.builder {
-        id { this@toVmVoFromNetwork.id() }
-        name { this@toVmVoFromNetwork.name() }
-        status { this@toVmVoFromNetwork.status() }
-        fqdn { this@toVmVoFromNetwork.fqdn() }
-        description { this@toVmVoFromNetwork.description() }
-        clusterVo { cluster.fromClusterToIdentifiedVo() }
-        nicVos { vmNic.toNicVosFromVm(conn, this@toVmVoFromNetwork.id()) }
-    }
-}
-
-fun List<Vm>.toVmVoFromNetworks(conn: Connection): List<VmVo> =
-    this@toVmVoFromNetworks.map { it.toVmVoFromNetwork(conn) }
-
-
-
-
-/**
- * [Vm.findVmUptime]
- * Vm 업타임 구하기
- * 이건 매개변수로 statisticList 안줘도 되는게 vm에서만 사용
- *
- * @param conn
- * @return 일, 시간, 분 형식
- */
-fun Vm.findVmUptime(conn: Connection): String {
-    log.debug("Vm.findVmUptime ... ")
-    val vmId: String = this@findVmUptime.id()
-    val statistics: List<Statistic> = conn.findAllStatisticsFromVm(vmId)
-
-    val time: Long = statistics.filter {
-        it.name() == "elapsed.time"
-    }.map {
-        it.values().firstOrNull()?.datum()?.toLong()
-    }.firstOrNull() ?: 0L
-
-    val days = time / (60 * 60 * 24)
-    val hours = (time % (60 * 60 * 24)) / (60 * 60)
-    val minutes = ((time % (60 * 60 * 24)) % (60 * 60)) / 60
-
-    return if (days > 0)    "${days}일"
-    else if (hours > 0)     "${hours}시간"
-    else if (minutes > 0)   "${minutes}분"
-    else                    ""
-}
-
-
-/**
- * [Vm.findVmIp]
- * Vm ip 알아내기
- * vms/{id}/nic/{id}/statistic
- * TODO 검증해야함
- * @param conn
- * @param version [String] ipv4, ipv6
- * @return
- */
-fun Vm.findVmIp(conn: Connection, version: String): String {
-    log.debug("Vm.findVmIp ... ")
-    val vm: Vm? = conn.findVm(this@findVmIp.id(), "nics").getOrNull()
-    return vm?.nics()?.flatMap {
-        conn.findAllReportedDeviceFromVmNic(vm.id(), it.id())
-            .getOrDefault(listOf())
-            .filter { rd: ReportedDevice -> rd.vm().status()?.value() != "down" }
-    }?.map {
-        if ("v4" == version)
-            return@map it.ips()[0].address()
-        else
-            return@map it.ips()[1].address()
-    }?.firstOrNull() ?: ""
-}
-

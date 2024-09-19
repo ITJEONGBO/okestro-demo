@@ -287,7 +287,7 @@ class AffinityServiceImpl(
 			conn.findAllHosts()
 				.getOrDefault(listOf())
 				.filter { it.cluster().id() == clusterId }
-		return hosts.toHostIdNames()
+		return hosts.toHostsIdName()
 	}
 
 	@Throws(Error::class)

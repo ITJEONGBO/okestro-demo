@@ -161,7 +161,7 @@ class ClusterController: BaseController() {
 	): ResponseEntity<List<NetworkVo>> {
 		if (clusterId.isNullOrEmpty())
 			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
-		log.info("--- 클러스터 네트워크 목록")
+		log.info("/computing/clusters/{}/networks ... 클러스터 네트워크 목록", clusterId)
 		return ResponseEntity.ok(iCluster.findAllNetworksFromCluster(clusterId))
 	}
 
@@ -215,7 +215,7 @@ class ClusterController: BaseController() {
 	): ResponseEntity<List<HostVo>> {
 		if (clusterId.isNullOrEmpty())
 			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
-		log.info("--- 클러스터 내 호스트 목록")
+		log.info("/computing/clusters/{}/hosts ... 클러스터 내 호스트 목록", clusterId)
 		return ResponseEntity.ok(iCluster.findAllHostsFromCluster(clusterId))
 	}
 
@@ -239,7 +239,7 @@ class ClusterController: BaseController() {
 	): ResponseEntity<List<VmVo>> {
 		if (clusterId.isNullOrEmpty())
 			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
-		log.info("--- 클러스터 가상머신 목록")
+		log.info("/computing/clusters/{}/vms ... 클러스터 가상머신 목록", clusterId)
 		return ResponseEntity.ok(iCluster.findAllVmsFromCluster(clusterId))
 	}
 
@@ -263,7 +263,7 @@ class ClusterController: BaseController() {
 	): ResponseEntity<List<CpuProfileVo>> {
 		if (clusterId.isNullOrEmpty())
 			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
-		log.info("--- 클러스터 Cpu Profile")
+		log.info("/computing/clusters/{}/cpuProfiles ... 클러스터 Cpu Profile", clusterId)
 		return ResponseEntity.ok(iCluster.findAllCpuProfilesFromCluster(clusterId))
 	}
 
@@ -287,7 +287,7 @@ class ClusterController: BaseController() {
 	): ResponseEntity<List<PermissionVo>> {
 		if (clusterId.isNullOrEmpty())
 			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
-		log.info("--- 클러스터 권한")
+		log.info("/computing/clusters/{}/permissions ... 클러스터 권한", clusterId)
 		return ResponseEntity.ok(iCluster.findAllPermissionsFromCluster(clusterId))
 	}
 
@@ -307,7 +307,7 @@ class ClusterController: BaseController() {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	fun findAllEventsFromCluster(@PathVariable clusterId: String): ResponseEntity<List<EventVo>> {
-		log.info("--- 클러스터 이벤트")
+		log.info("/computing/clusters/{}/events ... 클러스터 이벤트", clusterId)
 		return ResponseEntity.ok(iCluster.findAllEventsFromCluster(clusterId))
 	}
 

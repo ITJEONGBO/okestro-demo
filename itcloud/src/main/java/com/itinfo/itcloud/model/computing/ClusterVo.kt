@@ -149,6 +149,9 @@ class ClusterVo(
 	}
 }
 
+/**
+ * 클러스터 id&name
+ */
 fun Cluster.toClusterIdName(): ClusterVo = ClusterVo.builder {
 	id { this@toClusterIdName.id() }
 	name { this@toClusterIdName.name() }
@@ -156,7 +159,9 @@ fun Cluster.toClusterIdName(): ClusterVo = ClusterVo.builder {
 fun List<Cluster>.toClustersIdName(): List<ClusterVo> =
 	this@toClustersIdName.map { it.toClusterIdName() }
 
-
+/**
+ * 클러스터 목록
+ */
 fun Cluster.toClusterMenu(conn: Connection): ClusterVo = ClusterVo.builder {
 	id { this@toClusterMenu.id() }
 	name { this@toClusterMenu.name() }
@@ -167,8 +172,8 @@ fun Cluster.toClusterMenu(conn: Connection): ClusterVo = ClusterVo.builder {
 	hostSize { this@toClusterMenu.findHostCntFromCluster(conn) }
 	vmSize { this@toClusterMenu.findVmCntFromCluster(conn) }
 }
-fun List<Cluster>.toClusterMenus(conn: Connection): List<ClusterVo> =
-	this@toClusterMenus.map { it.toClusterMenu(conn) }
+fun List<Cluster>.toClustersMenu(conn: Connection): List<ClusterVo> =
+	this@toClustersMenu.map { it.toClusterMenu(conn) }
 
 
 /**
@@ -214,20 +219,16 @@ fun ClusterVo.toClusterBuilder(conn: Connection): ClusterBuilder {
 }
 
 /**
- * [ClusterVo.toAddClusterBuilder]
  * 클러스터 생성 빌더
  */
 fun ClusterVo.toAddClusterBuilder(conn: Connection): Cluster =
 	this@toAddClusterBuilder.toClusterBuilder(conn).build()
 
 /**
- * [ClusterVo.toEditClusterBuilder]
  * 클러스터 편집 빌더
  */
 fun ClusterVo.toEditClusterBuilder(conn: Connection): Cluster =
 	this@toEditClusterBuilder.toClusterBuilder(conn).id(this@toEditClusterBuilder.id).build()
-
-
 
 
 fun Cluster.toClusterVo(conn: Connection): ClusterVo {
