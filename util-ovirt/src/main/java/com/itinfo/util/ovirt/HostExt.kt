@@ -173,7 +173,10 @@ fun Connection.activateHost(hostId: String): Result<Boolean> = runCatching {
 	} else {
 		return Result.failure(Error("activateHost 실패 ... ${host.name()}가 이미 활성 상태 "))
 	}
-	this.expectHostStatus(host.id(), HostStatus.UP)
+	if (!this.expectHostStatus(host.id(), HostStatus.UP)) {
+		throw Error("expectHostStatus가 실패했습니다 ... ${hostId}")
+	}
+	true
 }.onSuccess {
 	Term.HOST.logSuccess("활성화", hostId)
 }.onFailure {

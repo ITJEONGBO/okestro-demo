@@ -671,9 +671,9 @@ fun Vm.toVmVoFromHost(conn: Connection/*, graph: ItGraphService*/): VmVo {
     val cluster: Cluster? =
         conn.findCluster(this@toVmVoFromHost.cluster().id())
             .getOrNull()
-    val host: Host? =
-        conn.findHost(this@toVmVoFromHost.host().id())
-            .getOrNull()
+//    val host: Host? =
+//        conn.findHost(this@toVmVoFromHost.host().id())
+//            .getOrNull()
 
 //    val nic: Nic? = conn.findAllNicsFromVm(this@toVmVoFromHost.id()).getOrDefault(listOf()).firstOrNull()
 //    val vmNicId: String? = nic?.id()
@@ -682,7 +682,7 @@ fun Vm.toVmVoFromHost(conn: Connection/*, graph: ItGraphService*/): VmVo {
         id { this@toVmVoFromHost.id() }
         name { this@toVmVoFromHost.name() }
         clusterVo { cluster?.fromClusterToIdentifiedVo() }
-        hostVo { host?.fromHostToIdentifiedVo() }
+//        hostVo { host?.fromHostToIdentifiedVo() }
         hostEngineVm { this@toVmVoFromHost.origin().equals("managed_hosted_engine") }
         status { this@toVmVoFromHost.status() }
         fqdn { this@toVmVoFromHost.fqdn() }

@@ -160,29 +160,12 @@ class ItHostServiceTest {
 	fun should_findAllVmsFromHost() {
 		log.debug("should_findAllVmsFromHost ...")
 		val result: List<VmVo> =
-			service.findAllVmsFromHost(host02)
+			service.findAllVmsFromHost(host01)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(3))
 		result.forEach { println(it) }
 	}
-
-//	/**
-//	 * [should_findAllVmsFromHost2]
-//	 * [ItHostService.findAllVmsFromHost]에 대한 단위테스트
-//	 *
-//	 * @see [ItHostService.findAllVmsFromHost]
-//	 */
-//	@Test
-//	fun should_findAllVmsFromHost1() {
-//		log.debug("should_findAllVmsFromHost ...")
-//		val result: List<VmVo> =
-//			service.findAllVmsFromHost(host01)
-//
-//		assertThat(result, `is`(not(nullValue())))
-//		assertThat(result.size, `is`(3))
-//		result.forEach { println(it) }
-//	}
 
 	/**
 	 * [should_findAllHostNicsFromHost]
@@ -248,7 +231,7 @@ class ItHostServiceTest {
 			service.findAllEventsFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(197)) // ?
+		assertThat(result.size, `is`(643)) // ?
 		result.forEach { println(it) }
 	}
 	

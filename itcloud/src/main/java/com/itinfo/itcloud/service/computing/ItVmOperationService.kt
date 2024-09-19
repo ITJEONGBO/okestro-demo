@@ -89,16 +89,9 @@ interface ItVmOperationService {
 	 */
 	@Throws(Error::class)
 	fun migrate(vmId: String, hostId: String): Boolean
-	/**
-	 * [ItVmOperationService.cancelMigration]
-	 * 가상머신 마이그레이션 취소
-	 *
-	 * @param vmId [String] 가상머신 id
-	 * @return [Boolean]
-	 */
-	@Deprecated("마이그레이션 중에 취소하는 기능인데 마이그레이션이 빨리 되어서 필요없는 기능")
-	@Throws(Error::class)
-	fun cancelMigration(vmId: String): Boolean
+
+	// 가상머신 내보내기 - 호스트 목록 [ItHostService.findAll] (가상 어플라이언스로 가상머신 내보내기)
+
 	/**
 	 * TODO: 가상머신 내보내기 (기본 내보내기 기능 실행시, 해당 host?vm? 내부에 파일이 생성됨)
 	 * [ItVmOperationService.exportOvaVm]
@@ -190,15 +183,6 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 		log.info("migrateVm ... ")
 		val res: Result<Boolean> =
 			conn.migrationVm(vmId, hostId)
-		return res.isSuccess
-	}
-
-	@Deprecated("마이그레이션 중에 취소하는 기능인데 마이그레이션이 빨리 되어서 필요없는 기능")
-	@Throws(Error::class)
-	override fun cancelMigration(vmId: String): Boolean {
-		log.info("migrateCancelVm ... ")
-		val res: Result<Boolean> =
-			conn.cancelMigrationVm(vmId)
 		return res.isSuccess
 	}
 

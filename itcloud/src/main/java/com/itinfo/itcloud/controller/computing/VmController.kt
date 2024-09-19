@@ -10,6 +10,7 @@ import com.itinfo.itcloud.model.network.NicVo
 import com.itinfo.itcloud.model.network.VnicProfileVo
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.DiskAttachmentVo
+import com.itinfo.itcloud.model.storage.DiskImageVo
 import com.itinfo.itcloud.service.computing.*
 import io.swagger.annotations.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -35,7 +36,7 @@ class VmController: BaseController() {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	fun findAll(): ResponseEntity<List<VmVo>> {
-		log.info("--- 가상머신 목록")
+		log.info("/computing/vms ... 가상머신 목록")
 		return ResponseEntity.ok(iVm.findAll())
 	}
 
@@ -58,9 +59,70 @@ class VmController: BaseController() {
 	): ResponseEntity<VmVo?> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		log.info("--- 가상머신 상세정보")
+		log.info("/computing/vms/{} ... 가상머신 상세정보", vmId)
 		return ResponseEntity.ok(iVm.findOne(vmId))
 	}
+
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="가상머신 생성창 - nic 목록",
+		notes="가상머신 생성시에 필요한 vnicProfile 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/nic/{clusterId}")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun findAllVnicProfilesFromCluster(
+		@PathVariable clusterId: String? = null,
+	): ResponseEntity<List<VnicProfileVo>?> {
+		if (clusterId.isNullOrEmpty())
+			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/nic/{} ... 가상머신 생성창 - nic목록", clusterId)
+		return ResponseEntity.ok(iVm.findAllVnicProfilesFromCluster(clusterId))
+	}
+
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="가상머신 생성창 - 디스크 연결 목록",
+		notes="가상머신 생성시에 필요한 디스크 연결 목록을 조회한다"
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/disks")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun findAllDiskImage(
+	): ResponseEntity<List<DiskImageVo>?> {
+		log.info("/computing/vms/disks ... 가상머신 생성창 - 디스크 연결 목록")
+		return ResponseEntity.ok(iVm.findAllDiskImage())
+	}
+
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="가상머신 생성창 - CD/DVD 연결할 ISO 목록",
+		notes="가상머신 생성시에 필요한 CD/DVD 연결할 ISO 목록을 조회한다"
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/iso")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun findAllISO(
+	): ResponseEntity<List<IdentifiedVo>?> {
+		log.info("/computing/vms/iso ... 가상머신 생성창 - CD/DVD 연결할 ISO 목록")
+		return ResponseEntity.ok(iVm.findAllISO())
+	}
+
 
 	@ApiOperation(
 		httpMethod="POST",
@@ -82,7 +144,7 @@ class VmController: BaseController() {
 	): ResponseEntity<VmVo?> {
 		if (vm == null)
 			throw ErrorPattern.VM_VO_INVALID.toException()
-		log.info("--- 가상머신 생성")
+		log.info("/computing/vms ... 가상머신 생성")
 		return ResponseEntity.ok(iVm.add(vm))
 	}
 
@@ -109,7 +171,7 @@ class VmController: BaseController() {
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		if (vm == null)
 			throw ErrorPattern.VM_VO_INVALID.toException()
-		log.info("--- 가상머신 편집")
+		log.info("/computing/vms/{} ... 가상머신 편집", vmId)
 		return ResponseEntity.ok(iVm.update(vm))
 	}
 
@@ -129,9 +191,11 @@ class VmController: BaseController() {
 	@ResponseStatus(HttpStatus.OK)
 	fun remove(
 		@PathVariable vmId: String? = null,
+//		@PathVariable disk: Boolean? = null // disk 삭제여부
 	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/{} ... 가상머신 삭제", vmId)
 		return ResponseEntity.ok(iVm.remove(vmId, true))
 	}
 
@@ -155,7 +219,7 @@ class VmController: BaseController() {
 	): ResponseEntity<List<IdentifiedVo>> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		log.info("----- vm app 불러오기: $vmId")
+		log.info("/computing/vms/{}/applications ... 가상머신 어플리케이션 목록", vmId)
 		return ResponseEntity.ok(iVm.findAllApplicationsFromVm(vmId))
 	}
 
@@ -169,7 +233,7 @@ class VmController: BaseController() {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@GetMapping("/{vmId}/guests")
+	@GetMapping("/{vmId}/guest")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	fun findGuestFromVm(
@@ -177,7 +241,7 @@ class VmController: BaseController() {
 	): ResponseEntity<GuestInfoVo?> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		log.info("----- vm 게스트 불러오기: {}", vmId)
+		log.info("/computing/vms/{}/guest ... 가상머신 게스트", vmId)
 		return ResponseEntity.ok(iVm.findGuestFromVm(vmId))
 	}
 
@@ -200,7 +264,7 @@ class VmController: BaseController() {
 	): ResponseEntity<List<PermissionVo>> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		log.info("----- vm Permission 불러오기: {}", vmId)
+		log.info("/computing/vms/{}/permissions ... 가상머신 권한", vmId)
 		return ResponseEntity.ok(iVm.findAllPermissionsFromVm(vmId))
 	}
 
@@ -223,7 +287,7 @@ class VmController: BaseController() {
 	): ResponseEntity<List<EventVo>> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		log.info("----- vm event 불러오기: $vmId")
+		log.info("/computing/vms/{}/events ... 가상머신 이벤트", vmId)
 		return ResponseEntity.ok(iVm.findAllEventsFromVm(vmId))
 	}
 
@@ -250,7 +314,7 @@ class VmController: BaseController() {
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 //		if (console == null)
 //			throw ErrorPattern.CONSOLE_VO_INVALID.toException()
-		log.info("--- 가상머신 콘솔")
+		log.info("/computing/vms/{}/console ... 가상머신 콘솔", vmId)
 		return ResponseEntity.ok(iVm.findConsole(vmId))
 	}
 
@@ -278,6 +342,7 @@ class VmController: BaseController() {
 	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/start ... 가상머신 시작", vmId)
 		return ResponseEntity.ok(iVmOp.start(vmId))
 	}
 
@@ -301,6 +366,7 @@ class VmController: BaseController() {
 	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/pause ... 가상머신 일시정지", vmId)
 		return ResponseEntity.ok(iVmOp.pause(vmId))
 	}
 
@@ -324,6 +390,7 @@ class VmController: BaseController() {
 	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/powerOff ... 가상머신 전원끄기", vmId)
 		return ResponseEntity.ok(iVmOp.powerOff(vmId))
 	}
 
@@ -347,6 +414,7 @@ class VmController: BaseController() {
 	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/shutdown ... 가상머신 종료", vmId)
 		return ResponseEntity.ok(iVmOp.shutdown(vmId))
 	}
 
@@ -370,6 +438,7 @@ class VmController: BaseController() {
 	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/reboot ... 가상머신 재부팅", vmId)
 		return ResponseEntity.ok(iVmOp.reboot(vmId))
 	}
 
@@ -393,8 +462,11 @@ class VmController: BaseController() {
 	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/reset ... 가상머신 재설정", vmId)
 		return ResponseEntity.ok(iVmOp.reset(vmId))
 	}
+
+
 	//endregion
 
 
@@ -413,7 +485,7 @@ class VmController: BaseController() {
 	): ResponseEntity<List<NicVo>> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		log.info("----- vm nic 일반 불러오기: $vmId")
+		log.info("/computing/vms/{}/nics ... 가상머신 nic 목록", vmId)
 		return ResponseEntity.ok(vmNic.findAllNicsFromVm(vmId))
 	}
 
@@ -432,6 +504,7 @@ class VmController: BaseController() {
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		if (nicId.isNullOrEmpty())
 			throw ErrorPattern.NIC_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/nics/{} ... 가상머신 nic 일반 ", vmId, nicId)
 		return ResponseEntity.ok(vmNic.findNicFromVm(vmId, nicId))
 	}
 
@@ -448,7 +521,7 @@ class VmController: BaseController() {
 		ApiResponse(code = 201, message = "CREATED"),
 		ApiResponse(code = 404, message = "NOT_FOUND")
 	)
-	@PostMapping("/{vmId}/nics/{nicId}")
+	@PostMapping("/{vmId}/nics")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	fun addNicFromVm(
@@ -459,6 +532,7 @@ class VmController: BaseController() {
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		if (nic == null)
 			throw ErrorPattern.NIC_VO_INVALID.toException()
+		log.info("/computing/vms/{}/nics ... 가상머신 nic 생성 ", vmId)
 		return ResponseEntity.ok(vmNic.addNicFromVm(vmId, nic))
 	}
 
@@ -489,6 +563,7 @@ class VmController: BaseController() {
 			throw ErrorPattern.NIC_ID_NOT_FOUND.toException()
 		if (nic == null)
 			throw ErrorPattern.NIC_VO_INVALID.toException()
+		log.info("/computing/vms/{}/nics/{} ... 가상머신 nic 편집 ", vmId, nicId)
 		return ResponseEntity.ok(vmNic.updateNicFromVm(vmId, nic))
 	}
 
@@ -515,6 +590,7 @@ class VmController: BaseController() {
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		if (nicId.isNullOrEmpty())
 			throw ErrorPattern.NIC_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/nics/{} ... 가상머신 nic 삭제 ", vmId, nicId)
 		return ResponseEntity.ok(vmNic.removeNicFromVm(vmId, nicId))
 	}
 	// endregion
@@ -542,7 +618,7 @@ class VmController: BaseController() {
 	): ResponseEntity<List<DiskAttachmentVo>> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		log.info("----- vm disk 일반 불러오기: $vmId")
+		log.info("/computing/vms/{}/disks ... 가상머신 disk 목록", vmId)
 		return ResponseEntity.ok(iVmDisk.findAllDisksFromVm(vmId))
 	}
 	// endregion
@@ -570,7 +646,7 @@ class VmController: BaseController() {
 	): ResponseEntity<List<SnapshotVo>> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		log.info("----- vm snapshot 불러오기: $vmId")
+		log.info("/computing/vms/{}/snapshots ... 가상머신 스냅샷 목록", vmId)
 		return ResponseEntity.ok(iVmSnapshot.findAllSnapshotsFromVm(vmId))
 	}
 	// endregion

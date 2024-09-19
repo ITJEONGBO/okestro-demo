@@ -27,8 +27,8 @@ class ItVmOperationServiceTest {
         dataCenterId = "6cde7270-6459-11ef-8be2-00163e5d0646"
         clusterId = "6ce0356a-6459-11ef-a03a-00163e5d0646"
         networkId = "00000000-0000-0000-0000-000000000009"
-        host02 = "789b78c4-3fcf-4f19-9b69-d382aa66c12f"
         host01 = "722096d3-4cb2-43b0-bf41-dd69c3a70779"
+        host02 = "789b78c4-3fcf-4f19-9b69-d382aa66c12f"
         hostVm = "c26e287c-bc48-4da7-9977-61203abf9e64"
         vm01_1 = "0a27211c-04da-490c-9a05-804f439033e1"
     }
@@ -142,7 +142,7 @@ class ItVmOperationServiceTest {
     fun should_migrateHostList() {
         log.debug("should_migrateHostList ... ")
         val result: List<IdentifiedVo> =
-            service.migrateHostList(vm01_1)
+            service.migrateHostList(hostVm)
 
         assertThat(result, `is`(not(nullValue())))
         result.forEach { println(it) }
@@ -165,21 +165,6 @@ class ItVmOperationServiceTest {
         assertThat(result, `is`(true))
     }
 
-    /**
-     * [should_cancelMigration_Vm]
-     * [ItVmOperationService.cancelMigration]에 대한 단위테스트
-     *
-     * @see ItVmOperationService.cancelMigration
-     */
-//    @Test
-//    fun should_cancelMigration_Vm() {
-//        log.debug("should_cancelMigration_Vm ... ")
-//        val result: Boolean =
-//            service.cancelMigration(vm01_1)
-//
-//        assertThat(result, `is`(not(nullValue())))
-//        assertThat(result, `is`(true))
-//    }
 
     /**
      * [should_exportOvaVm]
@@ -187,7 +172,8 @@ class ItVmOperationServiceTest {
      *
      * @see ItVmOperationService.exportOvaVm
      */
-    //TODO 테스트 해야함
+    // TODO 테스트를 하려면 설치되는 host에 cmd로 접속하여 지정 디렉토리에 파일이 있는지 확인해야함
+    //  => 파일확인은 불가능
     @Test
     fun should_exportOvaVm() {
         log.debug("should_exportOvaVm ... ")

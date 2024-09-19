@@ -9,6 +9,7 @@ import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.model.storage.*
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.computing.HostServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.builders.*
@@ -192,11 +193,18 @@ class VmServiceImpl(
 			conn.findCluster(clusterId)
 				.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
 
-		// 데이터 센터가 같아야함
 		val res: List<VnicProfile> =
-			conn.findAllVnicProfiles()
+			conn.findAllNetworks()
 				.getOrDefault(listOf())
-				.filter { it.network()?.dataCenter()?.id() == cluster.dataCenter().id() }
+				.filter { it.dataCenter().id() == cluster.dataCenter().id() && !it.externalProviderPresent() }
+				.flatMap { network ->
+					conn.findAllVnicProfilesFromNetwork(network.id())
+						.getOrDefault(listOf())
+						.filter { vnicProfile ->
+							log.debug("{} -> {}", vnicProfile.network().id(), network.id())
+							vnicProfile.network().id() == network.id()
+						}
+				}
 		return res.toVnicProfileVos(conn)
 	}
 

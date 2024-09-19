@@ -15,7 +15,7 @@ private val log = LoggerFactory.getLogger(VmExportVo::class.java)
  * @property vmVo [VmVo]
  * @property hostVo [IdentifiedVo]
  * @property directory [String]
- * @property fileName [String]
+ * @property fileName [String]  확장자명 .ova
  */
 class VmExportVo (
     val vmVo: IdentifiedVo = IdentifiedVo(),
@@ -38,3 +38,4 @@ class VmExportVo (
         inline fun builder(block: VmExportVo.Builder.() -> Unit): VmExportVo = VmExportVo.Builder().apply(block).build()
     }
 }
+
