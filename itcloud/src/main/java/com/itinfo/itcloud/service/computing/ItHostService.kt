@@ -70,6 +70,7 @@ interface ItHostService {
 	/**
 	 * [ItHostService.findAllVmsFromHost]
 	 * 호스트 가상머신 목록
+	 * [MENU]
 	 *
 	 * @param hostId [String] 호스트 아이디
 	 * @return List<[VmVo]>? 가상머신 목록
@@ -182,7 +183,7 @@ class HostServiceImpl(
 		val res: List<Vm> =
 			conn.findAllVmsFromHost(hostId)
 				.getOrDefault(listOf())
-		return res.toVmVosFromHost(conn)
+		return res.toVmsMenu(conn)
 	}
 
 	@Throws(Error::class)

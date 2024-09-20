@@ -155,7 +155,7 @@ fun Connection.resetVm(vmId: String): Result<Boolean> = runCatching {
 fun Connection.addVm(
 	vm: Vm,
 	vnicProfileIds: List<String> = listOf(),
-	diskAttachments: List<String> = listOf(),
+//	diskAttachments: List<String> = listOf(), // diskVo 가 들어오는데 id가 있으면 연결, id 없으면 생성
 	bootId: String
 ): Result<Vm?> = runCatching {
 	if (this.findAllVms()
@@ -164,46 +164,24 @@ fun Connection.addVm(
 		return FailureType.DUPLICATE.toResult(Term.VM.desc)
 	}
 
-	val vmAdded: Vm? =
+	val vmAdded: Vm =
 		this.srvVms().add().vm(vm).send().vm()
+			?: throw ErrorPattern.VM_NOT_FOUND.toError()
 
 	// vnic 생성
 	if (vnicProfileIds.isNotEmpty()) {
-		if (vmAdded != null) {
-			this.addNicsFromVm(vmAdded.id(), vnicProfileIds)
-		}
+		this.addNicsFromVm(vmAdded.id(), vnicProfileIds)
 	}
 
 	// cdroms
 	if (bootId.isNotEmpty()) {
-		this.addCdromFromVm(vm.id(), bootId)
+		this.addCdromFromVm(vmAdded.id(), bootId)
 	}
-	if (!this.expectVmStatus(vm.id(), VmStatus.DOWN)) {
-		log.error("가상머신 생성 시간 초과: {}", vm.name())
+	if (!this.expectVmStatus(vmAdded.id(), VmStatus.DOWN)) {
+		log.error("가상머신 생성 시간 초과: {}", vmAdded.name())
 		return Result.failure(Error("가상머신 생성 시간 초과"))
 	}
-
-	// 가상머신 만들고 nic 붙이고 disk 붙이는 식
-	/*
-                if (vmCreateVo.vnics.isNotEmpty()) {
-                    val result: Result<Boolean> = conn.addVnicsFromVm(vm, vmCreateVo.vnics)
-                    if (result.head.code == 404)
-                        return CommonVo.failResponse("vnic 연결 실패")
-                }
-                // disk가 있다면
-                if (vmCreateVo.vDisks.isNotEmpty()) {
-                    val result: CommonVo<Boolean> = addVmDisk(vm, vmCreateVo.vDisks)
-                    if (result.head.code == 404)
-                        return CommonVo.failResponse("disk 연결 실패")
-                }
-                // 이것도 vm id가 있어야 생성가능
-                if (vmCreateVo.vmBootVo.connId.isNotEmpty()) {
-                    vmService.cdromsService().add()
-                        .cdrom(CdromBuilder().file(FileBuilder().id(vmCreateVo.vmBootVo.connId)).build())
-                        .send()
-                }
-    */
-	vmAdded ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	vmAdded
 }.onSuccess {
 	Term.VM.logSuccess("생성", it.id())
 }.onFailure {

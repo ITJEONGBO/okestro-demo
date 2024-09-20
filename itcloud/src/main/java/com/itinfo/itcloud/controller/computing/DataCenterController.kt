@@ -2,7 +2,9 @@ package com.itinfo.itcloud.controller.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.controller.BaseController
+import com.itinfo.itcloud.controller.computing.ClusterController.Companion
 import com.itinfo.itcloud.error.toException
+import com.itinfo.itcloud.model.computing.ClusterVo
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.model.computing.DataCenterVo
 import com.itinfo.itcloud.model.computing.EventVo
@@ -165,6 +167,29 @@ class DataCenterController: BaseController() {
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/computing/datacenters/{}/events ... 데이터센터 이벤트목록", dataCenterId)
 		return ResponseEntity.ok(iDataCenter.findAllEventsFromDataCenter(dataCenterId))
+	}
+
+
+	/**
+	 * 클러스터 - 데이터센터가 가지고 있는 클러스터 목록
+	 */
+	@ApiOperation(
+		httpMethod="GET",
+		value="클러스터 목록 조회",
+		notes="데이터센터가 가지고있는 클러스터 목록을 조회한다, [MENU]"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("{dataCenterId}/clusters")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun findAllFromDataCenter(dataCenterId: String): ResponseEntity<List<ClusterVo>> {
+		log.info("/computing/clusters ... 클러스터 목록")
+		return ResponseEntity.ok(iDataCenter.findAllClusterFromDataCenter(dataCenterId))
 	}
 
 

@@ -112,6 +112,7 @@ interface ItClusterService {
 	/**
 	 * [ItClusterService.findAllHostsFromCluster]
 	 * 클러스터 호스트 목록
+	 * [MENU]
 	 *
 	 * @param clusterId [String] 클러스터 아이디
 	 * @return List<[HostVo]> 호스트 목록
@@ -301,7 +302,7 @@ class ClusterServiceImpl(
 		val res: List<Host> =
 			conn.findAllHostsFromCluster(clusterId)
 				.getOrDefault(listOf())
-		return res.toHostVos(conn)
+		return res.toHostsMenu(conn)
 	}
 
 	@Throws(Error::class)

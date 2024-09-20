@@ -90,18 +90,17 @@ interface ItVmOperationService {
 	@Throws(Error::class)
 	fun migrate(vmId: String, hostId: String): Boolean
 
-	// 가상머신 내보내기 - 호스트 목록 [ItHostService.findAll] (가상 어플라이언스로 가상머신 내보내기)
+	// 가상머신 내보내기 창 - 호스트 목록 [ItClusterService.findAllHostsFromCluster] (가상 어플라이언스로 가상머신 내보내기)
 
 	/**
-	 * TODO: 가상머신 내보내기 (기본 내보내기 기능 실행시, 해당 host?vm? 내부에 파일이 생성됨)
 	 * [ItVmOperationService.exportOvaVm]
-	 * ova 창 = setHostList(String clusterId)
+	 * 가상머신 ova로 내보내기 (실행시, 해당 host?vm? 내부에 파일이 생성됨)
 	 *
 	 * @param vmExportVo [VmExportVo]
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun exportOvaVm(vmExportVo: VmExportVo): Boolean // ova로 내보내기
+	fun exportOvaVm(vmExportVo: VmExportVo): Boolean
 }
 
 @Service
@@ -159,22 +158,13 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 	override fun migrateHostList(vmId: String): List<IdentifiedVo> {
 		log.info("migrateHostList ... vmId: {}", vmId)
 		val vm: Vm =
-			conn.findVm(vmId).getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toException()
+			conn.findVm(vmId)
+				.getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toException()
 
 		val res: List<Host> =
 			conn.findAllHosts()
 				.getOrDefault(listOf())
 				.filter { host -> host.cluster().id() == vm.cluster().id() && host.id() != vm.host().id() }
-//		if (vm.placementPolicy().hostsPresent()){
-//			log.info("가상머신 특정 호스트 마이그레이션 목록");
-//			return vm.placementPolicy().hosts().stream() // 특정호스트
-//				.filter(host -> !host.id().equals(vm.host().id()))
-//				.map {
-//						Host host1 = system.hostsService().hostService(it.id()).get().send().host();
-//						return IdentifiedVo.builder().id(it.id()).name(host1.name()).build();
-//				}
-//		}
-		// 이건 클러스터 내 호스트 이야기
 		return res.fromHostsToIdentifiedVos()
 	}
 

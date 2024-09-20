@@ -8,23 +8,7 @@ import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.Connection
-import org.ovirt.engine.sdk4.builders.BiosBuilder
-import org.ovirt.engine.sdk4.builders.BootBuilder
-import org.ovirt.engine.sdk4.builders.ClusterBuilder
-import org.ovirt.engine.sdk4.builders.CpuBuilder
-import org.ovirt.engine.sdk4.builders.CpuProfileBuilder
-import org.ovirt.engine.sdk4.builders.CpuTopologyBuilder
-import org.ovirt.engine.sdk4.builders.HighAvailabilityBuilder
-import org.ovirt.engine.sdk4.builders.HostBuilder
-import org.ovirt.engine.sdk4.builders.InitializationBuilder
-import org.ovirt.engine.sdk4.builders.MemoryPolicyBuilder
-import org.ovirt.engine.sdk4.builders.MigrationOptionsBuilder
-import org.ovirt.engine.sdk4.builders.OperatingSystemBuilder
-import org.ovirt.engine.sdk4.builders.StorageDomainBuilder
-import org.ovirt.engine.sdk4.builders.StorageDomainLeaseBuilder
-import org.ovirt.engine.sdk4.builders.TimeZoneBuilder
-import org.ovirt.engine.sdk4.builders.VmBuilder
-import org.ovirt.engine.sdk4.builders.VmPlacementPolicyBuilder
+import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.types.*
 import org.slf4j.LoggerFactory
 import java.io.Serializable
@@ -165,7 +149,7 @@ class VmVo (
     val nicVos: List<NicVo> = listOf(),
     val dataCenterVo: IdentifiedVo = IdentifiedVo(),
     val clusterVo: IdentifiedVo = IdentifiedVo(),
-//    val templateVo: TemplateVo = TemplateVo(),
+    val templateVo: IdentifiedVo = IdentifiedVo(),
     val description: String = "",
     val comment: String = "",
     val osSystem: String = "",
@@ -249,7 +233,7 @@ class VmVo (
         private var bNicVos: List<NicVo> = listOf(); fun nicVos(block: () -> List<NicVo>?) { bNicVos = block() ?: listOf() }
         private var bDataCenterVo: IdentifiedVo = IdentifiedVo(); fun dataCenterVo(block: () -> IdentifiedVo?) { bDataCenterVo = block() ?: IdentifiedVo() }
         private var bClusterVo: IdentifiedVo = IdentifiedVo(); fun clusterVo(block: () -> IdentifiedVo?) { bClusterVo = block() ?: IdentifiedVo() }
-//        private var bTemplateVo: IdentifiedVo = IdentifiedVo(); fun templateVo(block: () -> TemplateVo?) { bTemplateVo = block() ?: TemplateVo() }
+        private var bTemplateVo: IdentifiedVo = IdentifiedVo(); fun templateVo(block: () -> IdentifiedVo?) { bTemplateVo = block() ?: IdentifiedVo() }
         private var bDescription: String = ""; fun description(block: () -> String?) { bDescription = block() ?: "" }
         private var bComment: String = ""; fun comment(block: () -> String?) { bComment = block() ?: "" }
         private var bOsSystem: String = ""; fun osSystem(block: () -> String?) { bOsSystem = block() ?: "" }
@@ -305,7 +289,7 @@ class VmVo (
         private var bDeviceList: List<String> = listOf(); fun deviceList(block: () -> List<String>?) { bDeviceList = block() ?: listOf() }
         private var bConnVo: IdentifiedVo = IdentifiedVo(); fun connVo(block: () -> IdentifiedVo?) { bConnVo = block() ?: IdentifiedVo() }
         private var bBootingMenu: Boolean = false; fun bootingMenu(block: () -> Boolean?) { bBootingMenu = block() ?: false }
-        fun build(): VmVo = VmVo(bId, bName, bStatus, bUpTime, bMemoryInstalled, bMemoryUsed, bMemoryBuffered, bMemoryCached, bMemoryFree, bMemoryUnused, bFqdn, bIpv4, bIpv6, bHostEngineVm, bPlacement, bHostVo, bSnapshotVos, bNicVos, bDataCenterVo, bClusterVo, /*bTemplateVo,*/ bDescription, bComment, bOsSystem, bChipsetFirmwareType, bOptimizeOption, bStateless, bStartPaused, bDeleteProtected, bDiskAttachmentVos, bVnicProfileVos, bDiskAttachmentVo, bMemorySize, bMemoryMax, bMemoryActual, bCpuArc, bCpuTopologyCnt, bCpuTopologyCore, bCpuTopologySocket, bCpuTopologyThread, /*bUserEmulation, bUserCpu, bUserVersion,*/ bInstanceType, bTimeOffset, bCloudInit, bHostName, bTimeStandard, bScript, bMonitor, bUsb, bHostInCluster, bHostVos, bMigrationMode, bMigrationPolicy, bMigrationEncrypt, bParallelMigration, bHa, bStorageDomainVo, bResumeOperation, bPriority, bWatchDogModel, bWatchDogAction, bCpuProfileVo, bCpuShare, bCpuPinningPolicy, bMemoryBalloon, bIoThreadCnt, bMultiQue, bVirtSCSIEnable, bVirtIoCnt, bFirstDevice, bSecDevice, bDeviceList, bConnVo, bBootingMenu)
+        fun build(): VmVo = VmVo(bId, bName, bStatus, bUpTime, bMemoryInstalled, bMemoryUsed, bMemoryBuffered, bMemoryCached, bMemoryFree, bMemoryUnused, bFqdn, bIpv4, bIpv6, bHostEngineVm, bPlacement, bHostVo, bSnapshotVos, bNicVos, bDataCenterVo, bClusterVo, bTemplateVo, bDescription, bComment, bOsSystem, bChipsetFirmwareType, bOptimizeOption, bStateless, bStartPaused, bDeleteProtected, bDiskAttachmentVos, bVnicProfileVos, bDiskAttachmentVo, bMemorySize, bMemoryMax, bMemoryActual, bCpuArc, bCpuTopologyCnt, bCpuTopologyCore, bCpuTopologySocket, bCpuTopologyThread, /*bUserEmulation, bUserCpu, bUserVersion,*/ bInstanceType, bTimeOffset, bCloudInit, bHostName, bTimeStandard, bScript, bMonitor, bUsb, bHostInCluster, bHostVos, bMigrationMode, bMigrationPolicy, bMigrationEncrypt, bParallelMigration, bHa, bStorageDomainVo, bResumeOperation, bPriority, bWatchDogModel, bWatchDogAction, bCpuProfileVo, bCpuShare, bCpuPinningPolicy, bMemoryBalloon, bIoThreadCnt, bMultiQue, bVirtSCSIEnable, bVirtIoCnt, bFirstDevice, bSecDevice, bDeviceList, bConnVo, bBootingMenu)
     }
 
     companion object {
@@ -323,7 +307,39 @@ fun Vm.toVmIdName(): VmVo = VmVo.builder {
 fun List<Vm>.toVmsIdName(): List<VmVo> =
     this@toVmsIdName.map { it.toVmIdName() }
 
+fun Vm.toVmMenu(conn: Connection): VmVo {
+    val cluster: Cluster? =
+        conn.findCluster(this@toVmMenu.cluster().id())
+            .getOrNull()
+    val dataCenter: DataCenter? =
+        cluster?.dataCenter()?.id()?.let { conn.findDataCenter(it).getOrNull() }
+    val host: Host? =
+        if (this@toVmMenu.hostPresent()) conn.findHost(this@toVmMenu.host().id()).getOrNull()
+        else null
 
+    return VmVo.builder {
+        id { this@toVmMenu.id() }
+        name { this@toVmMenu.name() }
+        comment { this@toVmMenu.comment() }
+        ipv4 { this@toVmMenu.findVmIp(conn, "v4") }
+        ipv6 { this@toVmMenu.findVmIp(conn, "v6") }
+        fqdn { this@toVmMenu.fqdn() }
+        status { this@toVmMenu.status() }
+        description { this@toVmMenu.description() }
+        hostEngineVm { this@toVmMenu.origin() == "managed_hosted_engine" } // 엔진여부
+        upTime { this@toVmMenu.findVmUptime(conn) }
+        hostVo { host?.fromHostToIdentifiedVo() }
+        clusterVo { cluster?.fromClusterToIdentifiedVo() }
+        dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
+    }
+}
+fun List<Vm>.toVmsMenu(conn: Connection): List<VmVo> =
+    this@toVmsMenu.map { it.toVmMenu(conn) }
+
+
+/**
+ * 가상머신 메뉴
+ */
 fun Vm.toVmVoInfo(conn: Connection/*, graph: ItGraphService*/): VmVo {
     val cluster: Cluster? =
         conn.findCluster(this@toVmVoInfo.cluster().id())
@@ -417,9 +433,13 @@ fun VmVo.toEditVmBuilder(conn: Connection): Vm =
  * vm 일반정보
  */
 fun VmVo.toVmInfoBuilder(vmBuilder: VmBuilder): VmBuilder {
+    log.info("cluster {}, {}", this@toVmInfoBuilder.clusterVo.id, this@toVmInfoBuilder.clusterVo.name)
+    log.info("template {}, {}", this@toVmInfoBuilder.templateVo.id, this@toVmInfoBuilder.templateVo.name)
     return vmBuilder
-        .cluster(ClusterBuilder().id(this@toVmInfoBuilder.clusterVo.id))
-//        .template(TemplateBuilder().id(this@toVmInfoBuilder.templateId)) // template지정된게 있으면
+        .cluster(ClusterBuilder().id(this@toVmInfoBuilder.clusterVo.id).build())
+//        .cluster(ClusterBuilder().name(this@toVmInfoBuilder.clusterVo.name).build())
+        .template(TemplateBuilder().id(this@toVmInfoBuilder.templateVo.id).build()) // template지정된게 있으면
+//        .template(TemplateBuilder().name(this@toVmInfoBuilder.templateVo.name).build()) // template지정된게 있으면
         .bios(BiosBuilder().type(BiosType.valueOf(this@toVmInfoBuilder.chipsetFirmwareType)))
         .type(VmType.valueOf(this@toVmInfoBuilder.optimizeOption))
         .name(this@toVmInfoBuilder.name)
@@ -439,19 +459,19 @@ fun VmVo.toVmSystemBuilder(vmBuilder: VmBuilder, conn: Connection): VmBuilder {
 	// 시스템-일반 하드웨어 클럭의 시간 오프셋
 	vmBuilder.timeZone(TimeZoneBuilder().name(this@toVmSystemBuilder.timeOffset))
 
-	// 인스턴스 타입이 지정되어 있다면
-	if (this@toVmSystemBuilder.instanceType.isNotEmpty()) {
+	// 인스턴스 타입이 "none"이 아니라면
+	if (this@toVmSystemBuilder.instanceType != "none") {
 		val instance: InstanceType? = conn.findAllInstanceTypes("name=${this@toVmSystemBuilder.instanceType}").getOrNull()?.first()
 		vmBuilder.instanceType(instance)
-	} else {    // 사용자 정의 값
+	} else if(this@toVmSystemBuilder.instanceType == "none") {    // 사용자 정의 값
 		vmBuilder
 //			.memory(BigInteger.valueOf(this@toVmSystemBuilder.memorySize).multiply(convertMb))
-			.memory(this@toVmSystemBuilder.memorySize)
+			.memory(this@toVmSystemBuilder.memorySize * convertMb)
 			.memoryPolicy(
 				MemoryPolicyBuilder()
-					.max(this@toVmSystemBuilder.memoryMax)
+					.max(this@toVmSystemBuilder.memoryMax * convertMb)
+					.guaranteed(this@toVmSystemBuilder.memoryActual * convertMb)
 					.ballooning(this@toVmSystemBuilder.memoryBalloon) // 리소스할당- 메모리 balloon 활성화
-					.guaranteed(this@toVmSystemBuilder.memoryActual)
 			)
 			.cpu(
 				CpuBuilder().topology(
@@ -505,7 +525,7 @@ fun VmVo.toVmHostBuilder(vmBuilder: VmBuilder): VmBuilder {
  */
 fun VmVo.toVmResourceBuilder(vmBuilder: VmBuilder): VmBuilder {
 	return vmBuilder
-		.cpuProfile(CpuProfileBuilder().id(this@toVmResourceBuilder.cpuProfileVo.id))
+		.cpuProfile(CpuProfileBuilder().id(this@toVmResourceBuilder.cpuProfileVo.id).build())
 		.cpuShares(this@toVmResourceBuilder.cpuShare)
 		.autoPinningPolicy(if ("RESIZE_AND_PIN_NUMA" == this@toVmResourceBuilder.cpuPinningPolicy) AutoPinningPolicy.ADJUST else AutoPinningPolicy.DISABLED)
 		.cpuPinningPolicy(CpuPinningPolicy.valueOf(this@toVmResourceBuilder.cpuPinningPolicy))
@@ -666,34 +686,6 @@ fun Vm.toVmBoot(conn: Connection): VmVo {
 	}
 }
 
-
-fun Vm.toVmVoFromHost(conn: Connection/*, graph: ItGraphService*/): VmVo {
-    val cluster: Cluster? =
-        conn.findCluster(this@toVmVoFromHost.cluster().id())
-            .getOrNull()
-//    val host: Host? =
-//        conn.findHost(this@toVmVoFromHost.host().id())
-//            .getOrNull()
-
-//    val nic: Nic? = conn.findAllNicsFromVm(this@toVmVoFromHost.id()).getOrDefault(listOf()).firstOrNull()
-//    val vmNicId: String? = nic?.id()
-
-    return VmVo.builder {
-        id { this@toVmVoFromHost.id() }
-        name { this@toVmVoFromHost.name() }
-        clusterVo { cluster?.fromClusterToIdentifiedVo() }
-//        hostVo { host?.fromHostToIdentifiedVo() }
-        hostEngineVm { this@toVmVoFromHost.origin().equals("managed_hosted_engine") }
-        status { this@toVmVoFromHost.status() }
-        fqdn { this@toVmVoFromHost.fqdn() }
-        ipv4 { this@toVmVoFromHost.findVmIp(conn, "v4") }
-        ipv6 { this@toVmVoFromHost.findVmIp(conn, "v6") }
-        upTime { this@toVmVoFromHost.findVmUptime(conn) }
-//      usageDto { if (this@toVmVoFromHost.status() == VmStatus.UP) graph.vmPercent(this@toVmVoFromHost.id(), vmNicId) else null }
-    }
-}
-fun List<Vm>.toVmVosFromHost(conn: Connection): List<VmVo> =
-    this@toVmVosFromHost.map { it.toVmVoFromHost(conn) }
 
 
 fun Vm.toVmVoFromNetwork(conn: Connection): VmVo {

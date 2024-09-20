@@ -59,6 +59,7 @@ class ItHostServiceTest {
 		result.forEach { println(it) }
 	}
 
+
 	/**
 	 * [should_findOne]
 	 * [ItHostService.findOne]에 대한 단위테스트
@@ -160,7 +161,7 @@ class ItHostServiceTest {
 	fun should_findAllVmsFromHost() {
 		log.debug("should_findAllVmsFromHost ...")
 		val result: List<VmVo> =
-			service.findAllVmsFromHost(host01)
+			service.findAllVmsFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(3))

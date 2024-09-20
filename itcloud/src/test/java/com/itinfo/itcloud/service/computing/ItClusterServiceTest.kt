@@ -59,6 +59,7 @@ import org.springframework.boot.test.context.SpringBootTest
 		result.forEach { println(it) }
 	}
 
+
 	/**
 	 * [should_findOne]
 	 * [ItClusterService.findOne]에 대한 단위테스트
@@ -480,9 +481,26 @@ import org.springframework.boot.test.context.SpringBootTest
 
 
 	/**
+	 * [should_findAllCpuProfilesFromCluster]
+	 * [ItClusterService.findAllCpuProfilesFromCluster]에 대한 단위테스트
+	 * 
+	 * @see ItClusterService.findAllCpuProfilesFromCluster
+	 **/
+	@Test
+	fun should_findAllCpuProfilesFromCluster() {
+		log.debug("should_findAllCpuProfilesFromCluster ... ")
+		val result: List<CpuProfileVo> =
+			service.findAllCpuProfilesFromCluster(clusterId)
+
+		assertThat(result, `is`(not(nullValue())))
+//		assertThat(result.size, `is`(5))
+		result.forEach { println(it) }
+	}
+
+	/**
 	 * [should_findAllPermissionsFromCluster]
 	 * [ItClusterService.findAllPermissionsFromCluster]에 대한 단위테스트
-	 * 
+	 *
 	 * @see ItClusterService.findAllPermissionsFromCluster
 	 **/
 	@Test

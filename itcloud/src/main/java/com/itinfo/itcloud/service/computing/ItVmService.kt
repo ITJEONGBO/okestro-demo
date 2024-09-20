@@ -221,15 +221,15 @@ class VmServiceImpl(
 	override fun add(vmVo: VmVo): VmVo? {
 		log.info("add ... ")
 		// TODO: 파라미터에 대한 처리 내용 검토 필요
-//		val res: Vm? =
-//			conn.addVm(
-//				vmVo.toAddVmBuilder(conn),
-//				vmVo.vnicProfileVos.map { it.id },
-//				vmVo.diskAttachmentVos.map { it.id },
-//			)
-//			.getOrNull()
-//		return res?.toVmVo(conn)
-		TODO("Not yet implemented")
+		val res: Vm? =
+			conn.addVm(
+				vmVo.toAddVmBuilder(conn),
+				vmVo.vnicProfileVos.map { vnicProfileVo ->  vnicProfileVo.id },
+//				vmVo.diskAttachmentVos.map { diskAttachmentVo ->  diskAttachmentVo.id },
+				vmVo.connVo.id // 부팅될 disk id
+			)
+			.getOrNull()
+		return res?.toVmVo(conn)
 	}
 
 	override fun update(vmVo: VmVo): VmVo? {

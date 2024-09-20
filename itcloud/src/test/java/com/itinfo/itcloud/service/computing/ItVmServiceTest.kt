@@ -12,8 +12,13 @@ import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.not
 import org.hamcrest.Matchers.nullValue
 import org.junit.jupiter.api.BeforeEach
+import org.ovirt.engine.sdk4.types.BiosType
+import org.ovirt.engine.sdk4.types.InheritableBoolean
+import org.ovirt.engine.sdk4.types.VmType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import java.math.BigInteger
+import java.util.Arrays
 
 /**
  * [ItVmServiceTest]
@@ -24,7 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest
  * @since 2024.03.05
  */
 @SpringBootTest
-class ItVmServiceTest {
+class  ItVmServiceTest {
 	@Autowired private lateinit var service: ItVmService
 
 	private lateinit var dataCenterId: String
@@ -39,8 +44,8 @@ class ItVmServiceTest {
 		dataCenterId = "6cde7270-6459-11ef-8be2-00163e5d0646"
 		clusterId = "6ce0356a-6459-11ef-a03a-00163e5d0646"
 		networkId = "00000000-0000-0000-0000-000000000009"
-		host02 = "789b78c4-3fcf-4f19-9b69-d382aa66c12f"
 		host01 = "722096d3-4cb2-43b0-bf41-dd69c3a70779"
+		host02 = "789b78c4-3fcf-4f19-9b69-d382aa66c12f"
 		hostVm = "c26e287c-bc48-4da7-9977-61203abf9e64"
 	}
 
@@ -58,7 +63,7 @@ class ItVmServiceTest {
 			service.findAll()
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(3))
+		assertThat(result.size, `is`(5))
 
 		result.forEach { println(it) }
 	}
@@ -113,7 +118,6 @@ class ItVmServiceTest {
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }
 		assertThat(result.size, `is`(5))
-		// TODO 약간애매
 	}
 
 	/**
@@ -142,9 +146,84 @@ class ItVmServiceTest {
 	 */
 	@Test
 	fun should_add_Vm() {
-		log.debug("should_add_Vm ... ")
+		log.debug("should_add_Vm ... {}", clusterId)
 		val addVm: VmVo = VmVo.builder {
-
+			clusterVo {
+				IdentifiedVo.builder {
+					id { clusterId }
+					name { "Default" }
+				}
+			}
+			templateVo {
+				IdentifiedVo.builder {
+					id { "00000000-0000-0000-0000-000000000000" }
+					name { "Blank" }
+				}
+			}
+			osSystem { "other_linux" }
+			chipsetFirmwareType { "Q35_SEA_BIOS" }  // String.valueOf(BiosType.Q35_OVMF }
+			optimizeOption { "SERVER" }  // String.valueOf(VmType.SERVER
+			name { "random1" }
+			description { "" }
+			comment { "" }
+			stateless { false }
+			startPaused { false }
+			deleteProtected { false }
+			vnicProfileVos {
+				Arrays.asList(
+					VnicProfileVo.builder { id { "0000000a-000a-000a-000a-000000000398" } },
+					VnicProfileVo.builder { id { "86106902-bf8b-4637-95d7-8cf5aca28fc5" } }
+				)
+			}
+			diskAttachmentVos { null }
+//			diskAttachmentVos {
+//					Arrays.asList(
+//						DiskImageVo.builder {
+//							size { 200 }
+//							alias { randomName + 1 }
+//							description { "" }
+//							interfaces { "VIRTIO_SCSI" } // 인터페이스
+//							storageDomainId { } // hosted_storage
+//							allocationPolicy { true } // 할당정책: 씬
+//							diskProfile { 3ab66ac-26c3-4b21-ba78-691ec2a004df" }
+//							wipeAfterDelete { false }
+//							bootable { true } // 기본값:t
+//							shareable { false }
+//							readOnly { false } // 읽기전용
+//							backup { true } // 증분백업 기본값 t
+//							build { ) }
+//						}
+//					)
+//				}
+			instanceType { "none" } //tiny 안됨 ( none,small, medium, xlarge)
+			memorySize { BigInteger.valueOf(2048) }
+			memoryMax { BigInteger.valueOf(8192) }
+			memoryActual { BigInteger.valueOf(2048) }
+			memoryBalloon { true }
+			cpuTopologySocket { 2 }
+			cpuTopologyCore { 1 }
+			cpuTopologyThread { 1 }
+			timeOffset { "Asia/Seoul"}  // Asia/Seoul , Etc/GMT
+			cloudInit { false }   // 일단 안됨
+			hostInCluster { true }  // 특정 호스트(false)
+			hostVos {
+//				Arrays.asList(
+//					IdentifiedVo.builder{ id { "" } }
+//				)
+				null
+			}
+			migrationEncrypt { InheritableBoolean.INHERIT }
+			migrationMode {"MIGRATABLE" }  // 마이그레이션
+			ha { false } // 기본 false
+			priority { 1 }  // 우선순위: 기본 1(낮음)
+			cpuProfileVo { IdentifiedVo.builder { id { "58ca604e-01a7-003f-01de-000000000250" } }  } // 클러스터 밑에 있는 cpu profile
+			cpuShare  { 0 } // 비활성화됨 0
+			cpuPinningPolicy  { "NONE" }
+			memoryBalloon  { true }    // 메모리 balloon 활성화
+			multiQue  { false } // 멀티 큐 사용
+			virtSCSIEnable  { true }  // virtIO-SCSI 활성화
+			firstDevice  { "HD" }
+			connVo  { IdentifiedVo.builder { id { "4754b4fa-39c5-438d-81f1-d0defc08f7aa" } } }
 		}
 
 		val addResult: VmVo? =
@@ -152,7 +231,9 @@ class ItVmServiceTest {
 
 		assertThat(addResult, `is`(not(nullValue())))
 		assertThat(addResult?.id, `is`(not(nullValue())))
-		assertThat(addResult?.id, `is`(addVm.id))
+		assertThat(addResult?.name, `is`(addVm.name))
+		assertThat(addResult?.clusterVo?.id, `is`(addVm.clusterVo.id))
+		assertThat(addResult?.templateVo?.id, `is`(addVm.templateVo.id))
 	}
 
 	/**

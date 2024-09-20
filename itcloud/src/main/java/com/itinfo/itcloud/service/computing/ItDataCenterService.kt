@@ -77,6 +77,17 @@ interface ItDataCenterService {
 
 
 	/**
+	 * [ItDataCenterService.findAllClusterFromDataCenter]
+	 * 데이터센터가 가지고있는 클러스터 목록
+	 * [MENU]
+	 *
+	 * @param dataCenterId [String]
+	 * @return List<[ClusterVo]> 클러스터 목록
+	 */
+	@Throws(Error::class)
+	fun findAllClusterFromDataCenter(dataCenterId: String): List<ClusterVo>
+
+	/**
 	 * [ItDataCenterService.dashboardComputing]
 	 * 대시보드 컴퓨팅 목록
 	 */
@@ -163,6 +174,16 @@ class DataCenterServiceImpl(
 		return res.toEventVos()
 	}
 
+	// cluster 출력
+	@Throws(Error::class)
+	override fun findAllClusterFromDataCenter(dataCenterId: String): List<ClusterVo> {
+		log.info("")
+		val res: List<Cluster> =
+			conn.findAllClustersFromDataCenter(dataCenterId)
+				.getOrDefault(listOf())
+				.filter { it.cpuPresent() }
+		return res.toClustersMenu(conn)
+	}
 
 
 	@Throws(Error::class)

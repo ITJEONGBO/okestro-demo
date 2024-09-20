@@ -37,7 +37,6 @@ class ClusterController: BaseController() {
 		return ResponseEntity.ok(iCluster.findAll())
 	}
 
-
 	@ApiOperation(
 		httpMethod="GET",
 		value="클러스터의 정보 상세조회",
@@ -199,7 +198,7 @@ class ClusterController: BaseController() {
 	@ApiOperation(
 		httpMethod="GET",
 		value="클러스터 호스트 목록",
-		notes="클러스터의 호스트 목록을 조회한다"
+		notes="클러스터의 호스트 목록을 조회한다, [MENU]"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
