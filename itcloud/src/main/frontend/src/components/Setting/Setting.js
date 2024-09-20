@@ -112,10 +112,6 @@ const Setting = ({ }) => {
   ];
   
   // HeaderButton 컴포넌트
-  const buttons = [
-    { id: 'edit_btn', label: '버튼1', onClick: () => console.log('Edit button clicked') },
-    { id: 'delete_btn', label: '버튼2', onClick: () => console.log('Delete button clicked') },
-  ];
 
       return (
         <div id="section">
@@ -127,7 +123,7 @@ const Setting = ({ }) => {
                 title="관리"
                 subtitle=" > 사용자 세션"
                 additionalText="목록이름"
-                buttons={buttons}
+                buttons={[]}
                 popupItems={[]}
                 uploadOptions={[]}
               />
@@ -671,7 +667,7 @@ const Setting = ({ }) => {
                                     <input type="text" />
                                 </div>
                             </div>
-                            <div className="setting_mac_checkbox">
+                            <div className="setting_mac_checkbox flex">
                                 <input type="checkbox" id="allow_duplicate" name="allow_duplicate" />
                                 <label htmlFor="allow_duplicate">중복 허용</label>
                             </div>
@@ -707,61 +703,61 @@ const Setting = ({ }) => {
                     </Modal>
                     {/* 설정팝업 MAC주소 풀(편집 팝업) */}
                     <Modal
-            isOpen={activePopup === 'macEdit'}
-            onRequestClose={closePopup}
-            contentLabel="편집"
-            className="Modal"
-               overlayClassName="Overlay newRolePopupOverlay"
-            shouldCloseOnOverlayClick={false}
-        >
-            <div className="setting_mac_edit_popup">
-                <div className="popup_header">
-                    <h1>새 MAC주소 풀</h1>
-                    <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-                </div>
-                
-                <div className="setting_mac_textboxs">
-                    <div>
-                        <span>이름</span>
-                        <input type="text" />
-                    </div>
-                    <div>
-                        <span>설명</span>
-                        <input type="text" />
-                    </div>
-                </div>
-                <div className="setting_mac_checkbox">
-                    <input type="checkbox" id="allow_duplicate" name="allow_duplicate" />
-                    <label htmlFor="allow_duplicate">중복 허용</label>
-                </div>
-                
-                <div className="network_parameter_outer">
-                    <span>MAC 주소 범위</span>
-                    <div style={{ marginBottom: '0.2rem' }}>
-                        <div>
-                            <span style={{ marginRight: '0.3rem' }}>범위 시작</span>
-                            <input type="text" />
-                        </div>
-                        <div>
-                            <span>범위 끝</span>
-                            <input type="text" />
-                        </div>
-                        <div id="buttons">
-                            <button>+</button>
-                            <button>-</button>
-                        </div>
-                    </div>
-                    <div>
-                        MAC수 : 해당없음
-                    </div>
-                </div>
+                        isOpen={activePopup === 'macEdit'}
+                        onRequestClose={closePopup}
+                        contentLabel="새로만들기"
+                        className="Modal"
+                            overlayClassName="Overlay newRolePopupOverlay"
+                        shouldCloseOnOverlayClick={false}
+                    >
+                        <div className="setting_mac_new_popup">
+                            <div className="popup_header">
+                                <h1>새 MAC주소 풀</h1>
+                                <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                            </div>
+                            
+                            <div className="setting_mac_textboxs">
+                                <div>
+                                    <span>이름</span>
+                                    <input type="text" />
+                                </div>
+                                <div>
+                                    <span>설명</span>
+                                    <input type="text" />
+                                </div>
+                            </div>
+                            <div className="setting_mac_checkbox flex">
+                                <input type="checkbox" id="allow_duplicate" name="allow_duplicate" />
+                                <label htmlFor="allow_duplicate">중복 허용</label>
+                            </div>
+                            
+                            <div className="network_parameter_outer">
+                                <span>MAC 주소 범위</span>
+                                <div style={{ marginBottom: '0.2rem' }}>
+                                    <div>
+                                        <span style={{ marginRight: '0.3rem' }}>범위 시작</span>
+                                        <input type="text" />
+                                    </div>
+                                    <div>
+                                        <span>범위 끝</span>
+                                        <input type="text" />
+                                    </div>
+                                    <div id="buttons">
+                                        <button>+</button>
+                                        <button>-</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    MAC수 : 해당없음
+                                </div>
+                            </div>
 
-                <div className="edit_footer">
-                    <button style={{ display: 'none' }}></button>
-                    <button>OK</button>
-                    <button onClick={closePopup}>취소</button>
-                </div>
-            </div>
+                            <div className="edit_footer">
+                                <button style={{ display: 'none' }}></button>
+                                <button>OK</button>
+                                <button onClick={closePopup}>취소</button>
+                            </div>
+                        </div>
 
                     </Modal>
               

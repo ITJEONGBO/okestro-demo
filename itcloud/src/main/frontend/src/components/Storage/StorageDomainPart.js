@@ -239,7 +239,7 @@ const DomainParts = () => {
             <h1>새 가상 디스크</h1>
             <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
-          <div id="disk_new_nav">
+          <div className="disk_new_nav">
             <div
               id="storage_img_btn"
               onClick={() => handleTabClick('img')}

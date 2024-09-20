@@ -349,7 +349,7 @@ const Vm = () => {
       {/* 편집팝업 */}
       <div id="edit_popup_bg" style={{ display: 'none' }}>
             <div id="edit_popup">
-                <div className="popoup_header">
+                <div className="popup_header">
                     <h1>가상머신 편집</h1>
                     <button onClick={() => document.getElementById('edit_popup_bg').style.display = 'none'}>
                         <FontAwesomeIcon icon={faTimes} fixedWidth/>
@@ -492,7 +492,7 @@ const Vm = () => {
                                 <div>
                                     <div>
                                         <label htmlFor="actual_memory">할당할 실제 메모리</label>
-                                        <FontAwesomeIcon icon={faInfoCircle} fixedWidth/>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
                                     </div>
                                     <input type="text" id="actual_memory" value="2048 MB" readOnly />
                                 </div>
@@ -500,7 +500,7 @@ const Vm = () => {
                                 <div>
                                     <div>
                                         <label htmlFor="total_cpu">총 가상 CPU</label>
-                                        <FontAwesomeIcon icon={faInfoCircle} fixedWidth/>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
                                     </div>
                                     <input type="text" id="total_cpu" value="1" readOnly />
                                 </div>
@@ -561,8 +561,8 @@ const Vm = () => {
                             </div>
 
                             <div className="res_alloc_checkbox" style={{ marginBottom: 0 }}>
-                                <span>그래픽 콘솔</span>
-                                <div>
+                               
+                                <div className='checkbox_group'>
                                     <input type="checkbox" id="memory_balloon" name="memory_balloon" />
                                     <label htmlFor="memory_balloon">헤드리스(headless)모드</label>
                                     <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }} fixedWidth/>
@@ -609,20 +609,20 @@ const Vm = () => {
                             </div>
 
                             <div className="console_checkboxs">
-                                <div className="console_checkbox">
+                                <div className="checkbox_group">
                                     <input type="checkbox" id="memory_balloon" name="memory_balloon" disabled />
                                     <label style={{ color: '#A1A1A1' }} htmlFor="memory_balloon">USB활성화</label>
                                 </div>
-                                <div className="console_checkbox">
+                                <div className="checkbox_group">
                                     <input type="checkbox" id="memory_balloon" name="memory_balloon" disabled />
                                     <label style={{ color: '#A1A1A1' }} htmlFor="memory_balloon">스마트카드 사용가능</label>
                                 </div>
                                 <span>단일 로그인 방식</span>
-                                <div className="console_checkbox">
+                                <div className="checkbox_group">
                                     <input type="checkbox" id="memory_balloon" name="memory_balloon" />
                                     <label htmlFor="memory_balloon">USB활성화</label>
                                 </div>
-                                <div className="console_checkbox">
+                                <div className="checkbox_group">
                                     <input type="checkbox" id="memory_balloon" name="memory_balloon" />
                                     <label htmlFor="memory_balloon">스마트카드 사용가능</label>
                                 </div>
@@ -790,7 +790,7 @@ const Vm = () => {
                             </div>
 
                             <div id="ha_mode_second_content">
-                                <div className="check_box">
+                                <div className="checkbox_group">
                                     <input className="check_input" type="checkbox" value="" id="ha_mode_box" />
                                     <label className="check_label" htmlFor="ha_mode_box">
                                         고가용성
@@ -914,7 +914,7 @@ const Vm = () => {
 
                                 <span style={{ fontWeight: 600 }}>I/O 스레드:</span>
                                 <div id="threads">
-                                    <div>
+                                    <div className='checkbox_group'>
                                         <input type="checkbox" id="enableIOThreads" name="enableIOThreads" />
                                         <label htmlFor="enableIOThreads">I/O 스레드 활성화</label>
                                     </div>
@@ -982,17 +982,17 @@ const Vm = () => {
 
                                 <div id="boot_checkboxs">
                                     <div>
-                                        <div>
+                                        <div className='checkbox_group'>
                                             <input type="checkbox" id="connectCdDvd" name="connectCdDvd" />
                                             <label htmlFor="connectCdDvd">CD/DVD 연결</label>
                                         </div>
                                         <div>
                                             <input type="text" disabled />
-                                            <FontAwesomeIcon icon={faInfoCircle} fixedWidth/>
+                                            <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
                                         </div>
                                     </div>
 
-                                    <div>
+                                    <div className='checkbox_group'>
                                         <input type="checkbox" id="enableBootMenu" name="enableBootMenu" />
                                         <label htmlFor="enableBootMenu">부팅 메뉴를 활성화</label>
                                     </div>

@@ -26,6 +26,12 @@ const Storage = () => {
   const handleStorageTypeChange = (e) => {
     setStorageType(e.target.value); // 선택된 옵션의 값을 상태로 저장
   };
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  // 버튼 클릭 시 팝업의 열림/닫힘 상태를 토글하는 함수
+  const togglePopup = () => {
+    setIsPopupOpen(!isPopupOpen);
+  };
 
   const [activeLunTab, setActiveLunTab] = useState('target_lun'); 
   const handleLunTabClick = (tab) => {
@@ -222,14 +228,16 @@ const Storage = () => {
                   <button id="administer_domain_btn" onClick={() => openPopup('manageDomain')}>도메인 관리</button>
                   <button>삭제</button>
                   <button>Connections</button>
-                  <button className="content_header_popup_btn">
+                  <button className="content_header_popup_btn" onClick={togglePopup}>
                     <FontAwesomeIcon icon={faEllipsisV} fixedWidth/>
-                    <div className="content_header_popup" style={{ display: 'none' }}>
-                      <div>활성</div>
-                      <div>비활성화</div>
-                      <div>이동</div>
-                      <div>LUN 새로고침</div>
-                    </div>
+                    {isPopupOpen && (
+                      <div className="content_header_popup">
+                        <div>활성</div>
+                        <div>비활성화</div>
+                        <div>이동</div>
+                        <div>LUN 새로고침</div>
+                      </div>
+                    )}
                   </button>
                 </div>
 
