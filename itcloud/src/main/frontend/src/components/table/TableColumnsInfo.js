@@ -183,6 +183,7 @@ const TableColumnsInfo = {
     { header: 'Gluster 네트워크', accessor: 'glusterNetwork', clickable: false },
     { header: '기본 라우팅', accessor: 'defaultRouting', clickable: false },
   ],
+
   HOSTS: [
     { header: '', accessor: 'icon', clickable: false },
     { header: '이름', accessor: 'name', clickable: false },

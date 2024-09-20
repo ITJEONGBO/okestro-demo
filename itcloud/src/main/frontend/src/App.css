@@ -124,6 +124,33 @@ button{
     border: 1px solid #295b9c;
 
 }
+/*새로만들기 팝업*/
+.host_new_outer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.host_new_popup {
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 90%;
+    width: 47%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+
+
+
+
+
 .host_btn_outer{
     width: 100%;
     padding: 0.5rem 0.3rem;
@@ -426,7 +453,30 @@ input[type="text"],select{
 .disabled {
     cursor: not-allowed;
 }
+.host_hidden_parameter>div:first-child{
+    font-weight: 800;
+    font-size: 0.34rem;
+    margin-top:0.3rem;
+    margin-bottom: 0.7rem;
+}
+.proxy_content{
+    display: flex;
+    justify-content: space-between;
+    font-size:0.34rem;
+}
+.proxy_content>button{
+    padding:0.15rem;
+}
+.proxy_add{
+    padding:0.3rem 0;
+    border-top:1px solid rgb(207, 207, 207);
+    font-size:0.34rem;
+    display:flex;
+    justify-content: space-between;
+}
 /* 중복끝 */
+
+
 
 .link-no-underline {
     text-decoration: none;
@@ -549,36 +599,6 @@ input[type="text"],select{
 }
 .article_nav button i{
     margin-right: 3px;
-}
-#popup_btn {
-    position: relative; /* 부모 요소에 대해 상대적인 위치 설정 */
-}
-
-#popup_box {
-    width: 210px;
-    position: absolute;
-    background-color: white;
-    top: 116% ; /* 부모 요소에 대해 상대적인 위치 사용 */
-    right: 0;
-    display: none;
-    border: 1px solid #DDDDDD;
-    color: #4F4F4F;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-    text-align: left;
-    z-index: 3;
-}
-
-#popup_box>div{
-    border-bottom: 1px solid #DDDDDD;
-    cursor: pointer;
-}
-
-#popup_box>div>div{
-    padding: 10px 4px;
-
-}
-#popup_box>div>div:hover{
-    background-color: #DDDDDD;
 }
 
 #out_btn{
@@ -2403,17 +2423,7 @@ form>div
     cursor: pointer;
     font-size: 0.29rem;
 }
-.console_checkboxs{
-    padding:0.4rem;
-}
-.console_checkboxs>div{
-    margin-bottom: 0.2rem;
-}
-.console_checkboxs>span{
-    font-weight: 600;
-    display: block;
-    margin-bottom: 0.1rem;
-}
+
 #console_outer>.res_alloc_checkbox{
     padding: 0.4rem;  
 }
@@ -3005,27 +3015,7 @@ display: flex; /* Flexbox 설정 추가 */
 
 /*네트워크 */
 /*네트워크(가져오기)*/
-.network_bring_outer{
-    display: none;
-    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
-.network_bring_popup{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 87%;
-    width: 48%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-}
+
 .network_bring_outer .network_form_group{
     font-size: 0.34rem;
     padding: 0.4rem;

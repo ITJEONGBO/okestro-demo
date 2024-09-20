@@ -202,6 +202,32 @@ function ClusterName() {
         { id: 'permission', label: '권한' },
         { id: 'event', label: '이벤트' }
     ];
+  // 클러스터 팝업(보류)
+  const clusterPopupData = [
+    {
+      id: id,
+      name: 'Default',
+      allAssigned: (
+        <>
+          <input type="checkbox" checked /> <label>할당</label>
+        </>
+      ),
+      allRequired: (
+        <>
+          <input type="checkbox" checked/> <label>필요</label>
+        </>
+      ),
+      vmNetMgmt: (
+        <>
+          <i class="fa-solid fa-star" style={{ color: 'green'}}fixedWidth/>
+        </>
+      ),
+      networkOutput: <input type="checkbox" />,
+      migrationNetwork: <input type="checkbox"/>,
+      glusterNetwork: <input type="checkbox"/>,
+      defaultRouting: <input type="checkbox"/>,
+    },
+  ];
 
     return (
         <div id='section'>
@@ -314,7 +340,7 @@ function ClusterName() {
                                 <>
                                 <div className="content_header_right">
                                     <button onClick={() => openPopup('newNetwork')}>네트워크 추가</button>
-                                    <button>네트워크 관리</button>
+                                    <button onClick={() => openPopup('cluster_network_popup')}>네트워크 관리</button>
                                     <button>디스플레이로 설정</button>
                                     <button>모든 네트워크 동기화</button>
                                 </div>
@@ -973,6 +999,34 @@ function ClusterName() {
             <AffinityGroupModal isOpen={isAffinityGroupModalOpen} onRequestClose={closeAffinityGroupModal} />
             {/* 권한 모달 컴포넌트 */}
             <Permission isOpen={isPermissionModalOpen} onRequestClose={closePermissionModal} />
+            {/*클러스터(네트워크 관리)팝업*/}
+            <Modal
+                isOpen={activePopup === 'cluster_network_popup'}
+                onRequestClose={closePopup}
+                contentLabel="네트워크 관리"
+                className="Modal"
+                overlayClassName="Overlay"
+                shouldCloseOnOverlayClick={false}
+            >
+                <div className="manage_network_popup">
+                <div className="popup_header">
+                    <h1>네트워크 관리</h1>
+                    <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                </div>
+                
+                <TableOuter 
+                    columns={TableColumnsInfo.CLUSTERS_POPUP} 
+                    data={clusterPopupData} 
+                    onRowClick={() => console.log('Row clicked')} 
+                />
+                
+                <div className="edit_footer">
+                    <button style={{ display: 'none' }}></button>
+                    <button>OK</button>
+                    <button onClick={closePopup}>취소</button>
+                </div>
+                </div>
+            </Modal>
         </div>
 
     

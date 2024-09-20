@@ -235,7 +235,7 @@ const DomainParts = () => {
         shouldCloseOnOverlayClick={false}
       >
         <div className="storage_disk_new_popup">
-          <div className="network_popup_header">
+          <div className="popup_header">
             <h1>새 가상 디스크</h1>
             <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>

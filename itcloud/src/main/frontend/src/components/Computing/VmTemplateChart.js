@@ -8,6 +8,8 @@ import './css/Host.css';
 import Footer from '../footer/Footer';
 import { useAllTemplates, useAllVMs } from '../../api/RQHook';
 import Templates from './Templates';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInfoCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -185,10 +187,10 @@ const VmHostChart = () => {
             {/* 편집팝업 */}
             <div id="edit_popup_bg" style={{ display: 'none' }}>
             <div id="edit_popup">
-                <div className="edit_header">
-                    <h1 class="sm">가상머신 편집</h1>
+                <div className="popup_header">
+                    <h1>가상머신 편집</h1>
                     <button onClick={() => document.getElementById('edit_popup_bg').style.display = 'none'}>
-                        <i className="fa fa-times"></i>
+                        <FontAwesomeIcon icon={faTimes} fixedWidth/>
                     </button>
                 </div>
                 <div className="edit_body">
@@ -445,20 +447,20 @@ const VmHostChart = () => {
                             </div>
 
                             <div className="console_checkboxs">
-                                <div className="console_checkbox">
+                                <div className="checkbox_group">
                                     <input type="checkbox" id="memory_balloon" name="memory_balloon" disabled />
                                     <label style={{ color: '#A1A1A1' }} htmlFor="memory_balloon">USB활성화</label>
                                 </div>
-                                <div className="console_checkbox">
+                                <div className="checkbox_group">
                                     <input type="checkbox" id="memory_balloon" name="memory_balloon" disabled />
                                     <label style={{ color: '#A1A1A1' }} htmlFor="memory_balloon">스마트카드 사용가능</label>
                                 </div>
                                 <span>단일 로그인 방식</span>
-                                <div className="console_checkbox">
+                                <div className="checkbox_group">
                                     <input type="checkbox" id="memory_balloon" name="memory_balloon" />
                                     <label htmlFor="memory_balloon">USB활성화</label>
                                 </div>
-                                <div className="console_checkbox">
+                                <div className="checkbox_group">
                                     <input type="checkbox" id="memory_balloon" name="memory_balloon" />
                                     <label htmlFor="memory_balloon">스마트카드 사용가능</label>
                                 </div>
@@ -626,7 +628,7 @@ const VmHostChart = () => {
                             </div>
 
                             <div id="ha_mode_second_content">
-                                <div className="check_box">
+                                <div className="checkbox_group">
                                     <input className="check_input" type="checkbox" value="" id="ha_mode_box" />
                                     <label className="check_label" htmlFor="ha_mode_box">
                                         고가용성
@@ -750,7 +752,7 @@ const VmHostChart = () => {
 
                                 <span style={{ fontWeight: 600 }}>I/O 스레드:</span>
                                 <div id="threads">
-                                    <div>
+                                    <div className='checkbox_group'>
                                         <input type="checkbox" id="enableIOThreads" name="enableIOThreads" />
                                         <label htmlFor="enableIOThreads">I/O 스레드 활성화</label>
                                     </div>
@@ -818,7 +820,7 @@ const VmHostChart = () => {
 
                                 <div id="boot_checkboxs">
                                     <div>
-                                        <div>
+                                        <div className='checkbox_group'>
                                             <input type="checkbox" id="connectCdDvd" name="connectCdDvd" />
                                             <label htmlFor="connectCdDvd">CD/DVD 연결</label>
                                         </div>
@@ -828,7 +830,7 @@ const VmHostChart = () => {
                                         </div>
                                     </div>
 
-                                    <div>
+                                    <div className='checkbox_group'>
                                         <input type="checkbox" id="enableBootMenu" name="enableBootMenu" />
                                         <label htmlFor="enableBootMenu">부팅 메뉴를 활성화</label>
                                     </div>
@@ -845,6 +847,44 @@ const VmHostChart = () => {
                 </div>
             </div>
             </div>
+              {/* 마이그레이션 팝업 */}
+                {<Modal
+                    isOpen={isModalOpen}
+                    onRequestClose={closeModal}
+                    contentLabel="마이그레이션"
+                    className="migration_popup"
+                    overlayClassName="migration_popup_outer"
+                    shouldCloseOnOverlayClick={false}
+                >
+                    <div className="popup_header">
+                    <h1>가상머신 마이그레이션</h1>
+                    <button onClick={closeModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                    </div>
+                    <div id="migration_article_outer">
+                    <span>1대의 가상 머신이 마이그레이션되는 호스트를 선택하십시오.</span>
+                    <div id="migration_article">
+                        <div>
+                        <div id="migration_dropdown">
+                            <label htmlFor="host">대상 호스트 <FontAwesomeIcon icon={faInfoCircle} fixedWidth/></label>
+                            <select name="host_dropdown" id="host">
+                            <option value="">호스트 자동 선택</option>
+                            <option value="php">PHP</option>
+                            <option value="java">Java</option>
+                            </select>
+                        </div>
+                        </div>
+                        <div>
+                        <div>가상머신</div>
+                        <div>on20-ap02</div>
+                        </div>
+                    </div>
+                    <div id="migration_footer">
+                        <button>마이그레이션</button>
+                        <button onClick={closeModal}>취소</button>
+                    </div>
+                    </div>
+                </Modal> 
+               }
       <Footer/>
     </div>
   );

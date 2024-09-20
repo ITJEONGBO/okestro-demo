@@ -8,7 +8,11 @@ import Footer from '../footer/Footer';
 import { useAllHosts } from '../../api/RQHook';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faRefresh, faTimes, faInfoCircle
+  faRefresh, faTimes, faInfoCircle,
+  faArrowUp,
+  faArrowDown,
+  faMinus,
+  faPlus
 } from '@fortawesome/free-solid-svg-icons'
 import TableOuter from '../table/TableOuter';
 
@@ -27,7 +31,12 @@ const Host = () => {
   const closePopup = () => {
     setActivePopup(null); // 모달을 닫을 때 상태 초기화
   };
+  const [isHiddenParameterVisible, setHiddenParameterVisible] = useState(false);
 
+  const toggleHiddenParameter = () => {
+    setHiddenParameterVisible(!isHiddenParameterVisible);
+  };
+  
   const buttons = [
     { id: 'new_btn', label: '새로 만들기',  onClick: () => openPopup('host_new') },
     { id: 'edit_btn', label: '편집',  onClick: () => openPopup('host_edit') },
@@ -279,8 +288,41 @@ const Host = () => {
               </div>
 
               <div className='advanced_objec_add'>
-                <button>+</button>
+                <button onClick={toggleHiddenParameter}>
+                  {isHiddenParameterVisible ? '-' : '+'}
+                </button>
                 <span>고급 매개 변수</span>
+                {isHiddenParameterVisible && (
+                <div className='host_hidden_parameter'>
+                 
+                  <div>전원 관리 프록시 설정</div>
+                  <div>
+                    <div className='proxy_content'>
+                      <div className='font-bold'>1.</div>
+                      <div className='w-6'>cluster</div>
+                      <div>  
+                        <button> <FontAwesomeIcon icon={faArrowUp} fixedWidth /></button>
+                        <button><FontAwesomeIcon icon={faArrowDown} fixedWidth /></button>
+                      </div>
+                      <button><FontAwesomeIcon icon={faMinus} fixedWidth /></button>
+                    </div>
+                    <div className='proxy_content'>
+                      <div className='font-bold'>2.</div>
+                      <div className='w-6'>dc</div>
+                      <div>  
+                        <button> <FontAwesomeIcon icon={faArrowUp} fixedWidth /></button>
+                        <button><FontAwesomeIcon icon={faArrowDown} fixedWidth /></button>
+                      </div>
+                      <button><FontAwesomeIcon icon={faMinus} fixedWidth /></button>
+                    </div>
+                  </div>
+
+                  <div className='proxy_add'>
+                    <div>전원 관리 프록시 추가</div>
+                    <button><FontAwesomeIcon icon={faPlus} fixedWidth /></button>
+                  </div>
+                </div>
+                )}
               </div>
               
 
@@ -340,7 +382,7 @@ const Host = () => {
           </form>
         </div>
 
-        <div className="host_edit_footer">
+        <div className="edit_footer">
 
           <button>OK</button>
           <button onClick={closePopup}>취소</button>
@@ -498,9 +540,43 @@ const Host = () => {
               </div>
 
               <div className='advanced_objec_add'>
-                <button>+</button>
+                <button onClick={toggleHiddenParameter}>
+                  {isHiddenParameterVisible ? '-' : '+'}
+                </button>
                 <span>고급 매개 변수</span>
+                {isHiddenParameterVisible && (
+                <div className='host_hidden_parameter'>
+                 
+                  <div>전원 관리 프록시 설정</div>
+                  <div>
+                    <div className='proxy_content'>
+                      <div className='font-bold'>1.</div>
+                      <div className='w-6'>cluster</div>
+                      <div>  
+                        <button> <FontAwesomeIcon icon={faArrowUp} fixedWidth /></button>
+                        <button><FontAwesomeIcon icon={faArrowDown} fixedWidth /></button>
+                      </div>
+                      <button><FontAwesomeIcon icon={faMinus} fixedWidth /></button>
+                    </div>
+                    <div className='proxy_content'>
+                      <div className='font-bold'>2.</div>
+                      <div className='w-6'>dc</div>
+                      <div>  
+                        <button> <FontAwesomeIcon icon={faArrowUp} fixedWidth /></button>
+                        <button><FontAwesomeIcon icon={faArrowDown} fixedWidth /></button>
+                      </div>
+                      <button><FontAwesomeIcon icon={faMinus} fixedWidth /></button>
+                    </div>
+                  </div>
+
+                  <div className='proxy_add'>
+                    <div>전원 관리 프록시 추가</div>
+                    <button><FontAwesomeIcon icon={faPlus} fixedWidth /></button>
+                  </div>
+                </div>
+                )}
               </div>
+              
               
 
             </div>
@@ -559,8 +635,7 @@ const Host = () => {
           </form>
         </div>
 
-        <div className="host_edit_footer">
-
+        <div className="edit_footer">
           <button>OK</button>
           <button onClick={closePopup}>취소</button>
         </div>
