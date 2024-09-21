@@ -316,6 +316,7 @@ class  ItVmServiceTest {
 //						} // 기존
 //					},
 					DiskAttachmentVo.builder {
+						id { "3377928a-500d-430f-ae9b-bc01a9a5b377" } // 있는거
 						bootable { false }
 						interface_ { DiskInterface.VIRTIO_SCSI }
 						readOnly { false }

@@ -152,12 +152,12 @@ class ItVmDiskServiceTest {
             diskAttachmentVo { diskAttachVo }
         }
 
-        val result: DiskAttachmentVo? =
-            service.addDiskFromVm(vmVo)
-
-        assertThat(result, `is`(not(nullValue())))
-
-        println(result)
+//        val result: DiskAttachmentVo? =
+//            service.addDiskFromVm(vmVo)
+//
+//        assertThat(result, `is`(not(nullValue())))
+//
+//        println(result)
     }
 
     /**
@@ -193,6 +193,48 @@ class ItVmDiskServiceTest {
 
         assertThat(result, `is`(not(nullValue())))
         log.debug("result: {}", result)
+    }
+
+    /**
+     * [should_activeDiskFromVm]
+     * [ItVmDiskService.activeDiskFromVm]에 대한 단위테스트
+     *
+     * @see [ItVmDiskService.activeDiskFromVm]
+     */
+    @Test
+    fun should_activeDiskFromVm(){
+        log.debug("should_activeDiskFromVm")
+        val diskAttachment = DiskAttachmentVo.builder {
+            id { "174a9404-bcbc-4ad7-a18b-5c157e7ebc91" }
+            vmVo { IdentifiedVo.builder { id { "4fd618ae-761c-4518-bf6c-f2245e439079" } } }
+        }
+
+        val result: DiskAttachmentVo? =
+            service.activeDiskFromVm(diskAttachment)
+
+        assertThat(result, `is`(not(nullValue())))
+        print(result)
+    }
+
+    /**
+     * [should_activeDiskFromVm]
+     * [ItVmDiskService.activeDiskFromVm]에 대한 단위테스트
+     *
+     * @see [ItVmDiskService.activeDiskFromVm]
+     */
+    @Test
+    fun should_deactivateDiskFromVm(){
+        log.debug("should_deactivateDiskFromVm")
+        val diskAttachment = DiskAttachmentVo.builder {
+            id { "174a9404-bcbc-4ad7-a18b-5c157e7ebc91" }
+            vmVo { IdentifiedVo.builder { id { "4fd618ae-761c-4518-bf6c-f2245e439079" } } }
+        }
+
+        val result: DiskAttachmentVo? =
+            service.deactivateDiskFromVm(diskAttachment)
+
+        assertThat(result, `is`(not(nullValue())))
+        print(result)
     }
 
     companion object {

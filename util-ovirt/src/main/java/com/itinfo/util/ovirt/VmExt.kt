@@ -7,6 +7,7 @@ import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.services.*
 import org.ovirt.engine.sdk4.types.*
+import kotlin.math.E
 
 private fun Connection.srvVms(): VmsService =
 	this.systemService.vmsService()
@@ -80,7 +81,6 @@ fun Connection.stopVm(vmId: String): Result<Boolean> = runCatching {
 }.onFailure {
 	Term.VM.logFail("전원끄기", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
 
 fun Connection.suspendVm(vmId: String): Result<Boolean> = runCatching {
@@ -232,37 +232,6 @@ fun Connection.updateVm(vm: Vm): Result<Vm?> = runCatching {
 }.onFailure {
 	Term.VM.logFail("편집", it)
 	throw if (it is Error) it.toItCloudException() else it
-// 가상머신 만들고 nic 붙이고 disk 붙이는 식
-	/*
-    //		try{
-    //			if (vmVo.getVnicList() != null) {
-    //				addVmNic(system, vm, vmVo);
-    //			}
-    //
-    //			// disk가 있다면
-    //			if (vmVo.getVDiskList() != null) {
-    //				addVmDisk(system, vm, vmVo.getVDiskList());
-    //			}
-    //
-    //			// 이것도 vm id가 있어야 생성가능
-    //			if (vmVo.getVmBootVo().getConnId() != null) {
-    //				vmService.cdromsService().add().cdrom(new CdromBuilder().file(new FileBuilder().id(vmVo.getVmBootVo().getConnId())).build()).send();
-    //			}
-    //
-    //			if(expectStatus(vmService, VmStatus.DOWN, 3000, 900000)){
-    //				log.info("가상머신 편집 완료: " + vm.name());
-    //				return CommonVo.createResponse();
-    //			} else {
-    //				log.error("가상머신 편집 시간 초과: {}", vm.name());
-    //				return CommonVo.failResponse("가상머신 편집 시간 초과");
-    //			}
-    //		} catch (Exception e) {
-    //			e.printStackTrace();
-    //			log.error("가상머신 편집 실패");
-    //			return CommonVo.failResponse("가상머신 편집 실패");
-    //		}
-    */
-
 }
 
 fun Connection.removeVm(vmId: String, detachOnly: Boolean = false): Result<Boolean> = runCatching {
@@ -575,9 +544,9 @@ fun Connection.addDiskAttachmentToVm(vmId: String, diskAttachment: DiskAttachmen
 
 	diskAttachAdded ?: throw ErrorPattern.DISK_ATTACHMENT_NOT_FOUND.toError()
 }.onSuccess {
-	Term.VM.logSuccessWithin(Term.DISK, "붙이기", vmId)
+	Term.VM.logSuccessWithin(Term.DISK_ATTACHMENT, "붙이기", vmId)
 }.onFailure {
-	Term.VM.logFailWithin(Term.DISK,"붙이기", it, vmId)
+	Term.VM.logFailWithin(Term.DISK_ATTACHMENT,"붙이기", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
 }
 
@@ -599,6 +568,78 @@ fun Connection.addMultipleDiskAttachmentsToVm(vmId: String, diskAttachments: Lis
 	Term.VM.logFailWithin(Term.DISK, "여러 개 붙이기", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
 }
+
+fun Connection.updateDiskAttachmentToVm(vmId: String, diskAttachment: DiskAttachment): Result<DiskAttachment> = runCatching {
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
+	if(this.findDiskAttachmentFromVm(vmId, diskAttachment.id()).isFailure){
+		throw ErrorPattern.DISK_ATTACHMENT_ID_NOT_FOUND.toError()
+	}
+
+	val diskAttachUpdated: DiskAttachment? =
+		this.srvDiskAttachmentFromVm(vmId, diskAttachment.id()).update().diskAttachment(diskAttachment).send().diskAttachment()
+	diskAttachUpdated ?: throw ErrorPattern.DISK_ATTACHMENT_NOT_FOUND.toError()
+}.onSuccess {
+	Term.VM.logSuccessWithin(Term.DISK, "붙이기", vmId)
+}.onFailure {
+	Term.VM.logFailWithin(Term.DISK,"붙이기", it, vmId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.removeDiskAttachmentToVm(vmId: String, diskAttachmentId: String, detachOnly: Boolean?): Result<Boolean> = runCatching {
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
+	if(this.findDiskAttachmentFromVm(vmId, diskAttachmentId).isFailure){
+		throw ErrorPattern.DISK_ATTACHMENT_ID_NOT_FOUND.toError()
+	}
+//	val diskAttachUpdated: DiskAttachment? =
+//		this.srvDiskAttachmentFromVm(vmId, diskAttachmentId).remove().detachOnly()
+//		this.srvVm(vmId).diskAttachmentsService().attachmentService(diskAttachmentId).get().send().attachment().disk().active()
+
+	false
+}.onSuccess {
+	Term.VM.logSuccessWithin(Term.DISK_ATTACHMENT, "삭제", vmId)
+}.onFailure {
+	Term.VM.logFailWithin(Term.DISK_ATTACHMENT,"삭제", it, vmId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.removeMultipleDiskAttachmentToVm(vmId: String, diskAttachmentIds: List<String>): Result<Boolean> = runCatching {
+
+
+	false
+}.onSuccess {
+	Term.VM.logSuccessWithin(Term.DISK_ATTACHMENT, "삭제", vmId)
+}.onFailure {
+	Term.VM.logFailWithin(Term.DISK_ATTACHMENT,"삭제", it, vmId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.activeDiskAttachmentToVm(vmId: String, diskAttachmentId: String, active: Boolean): Result<DiskAttachment> = runCatching {
+	if(this.findVm(vmId).isFailure){
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
+	val d: DiskAttachment = this.findDiskAttachmentFromVm(vmId, diskAttachmentId)
+		.getOrNull()?: throw ErrorPattern.DISK_ATTACHMENT_ID_NOT_FOUND.toError()
+
+	if(d.active() == active){
+		throw ErrorPattern.DISK_ATTACHMENT_VO_INVALID.toError()
+	}
+
+	val diskAttachment: DiskAttachment =
+		DiskAttachmentBuilder().id(diskAttachmentId).active(active).build()
+
+	this.updateDiskAttachmentToVm(vmId, diskAttachment)
+		.getOrNull()?: throw ErrorPattern.DISK_ATTACHMENT_NOT_FOUND.toError()
+}.onSuccess {
+	Term.VM.logSuccessWithin(Term.DISK_ATTACHMENT, "active", vmId)
+}.onFailure {
+	Term.VM.logFailWithin(Term.DISK_ATTACHMENT,"삭제", it, vmId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
 
 fun Connection.bootableDiskExist(vmId: String): Boolean =
 	this.findAllDiskAttachmentsFromVm(vmId)

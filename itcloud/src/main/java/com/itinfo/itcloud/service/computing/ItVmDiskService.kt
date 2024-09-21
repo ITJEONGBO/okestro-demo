@@ -30,31 +30,22 @@ interface ItVmDiskService {
 	 * @return [DiskAttachmentVo]?
 	 */
 	fun findDiskFromVm(vmId: String, diskAttachmentId: String): DiskAttachmentVo?
-//	/**
-//	 * [ItVmDiskService.addDisksFromVm]
-//	 * 가상머신 디스크 생성/연결
-//	 * 이후 없애야함
-//	 *
-//	 * @param vmVo [VmVo]
-//	 * @return List<[DiskAttachmentVo]>
-//	 */
-//	fun addDisksFromVm(vmVo: VmVo): List<DiskAttachmentVo>?
 	/**
 	 * [ItVmDiskService.addDiskFromVm]
 	 * 가상머신 디스크 생성/연결
 	 *
-	 * @param vmVo [VmVo]
+	 * @param diskAttachmentVo [DiskAttachmentVo]
 	 * @return [DiskAttachmentVo]?
 	 */
-	fun addDiskFromVm(vmVo: VmVo): DiskAttachmentVo?
+	fun addDiskFromVm(diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo?
 	/**
 	 * [ItVmDiskService.updateDiskFromVm]
 	 * 가상머신 디스크 편집
 	 *
-	 * @param vmVo [VmVo] 가상머신 id
+	 * @param diskAttachmentVo [DiskAttachmentVo]
 	 * @return [DiskAttachmentVo]?
 	 */
-	fun updateDiskFromVm(vmVo: VmVo): DiskAttachmentVo?
+	fun updateDiskFromVm(diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo?
 	/**
 	 * [ItVmDiskService.removeDiskFromVm]
 	 * 가상머신 디스크 삭제
@@ -62,9 +53,11 @@ interface ItVmDiskService {
 	 * @param vmId [String] 가상머신 id
 	 * @param diskAttachmentId [String] 가상머신 디스크
 	 * @param type [Boolean] 가상머신 디스크
+	 *
+	 * @param diskAttachmentVos List<[DiskAttachmentVo]>
 	 * @return [Boolean]
 	 */
-	fun removeDiskFromVm(vmId: String, diskAttachmentId: String, type: Boolean): Boolean
+	fun removeDiskFromVm(diskAttachmentVos: List<DiskAttachmentVo>): Boolean
 	/**
 	 * [ItVmDiskService.activeDiskFromVm]
 	 * 가상머신 디스크 활성화
@@ -72,7 +65,7 @@ interface ItVmDiskService {
 	 * @param diskAttachmentId [String] 가상머신 id
 	 * @return [Boolean]
 	 */
-	fun activeDiskFromVm(diskAttachmentId: String): Boolean
+	fun activeDiskFromVm(diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo?
 	/**
 	 * [ItVmDiskService.deactivateDiskFromVm]
 	 * 가상머신 디스크 비활성화
@@ -80,7 +73,7 @@ interface ItVmDiskService {
 	 * @param diskAttachmentId [String] 가상머신 id
 	 * @return [Boolean]
 	 */
-	fun deactivateDiskFromVm(diskAttachmentId: String): Boolean
+	fun deactivateDiskFromVm(diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo?
 	/**
 	 *
 	 */
@@ -102,7 +95,7 @@ class VmDiskService(
 ): BaseService(), ItVmDiskService {
 
 	override fun findAllDisksFromVm(vmId: String): List<DiskAttachmentVo> {
-		log.debug("findAllDiskFromVm ... vmId: {}", vmId)
+		log.info("findAllDiskFromVm ... vmId: {}", vmId)
 		val res: List<DiskAttachment> =
 			conn.findAllDiskAttachmentsFromVm(vmId)
 				.getOrDefault(listOf())
@@ -110,7 +103,7 @@ class VmDiskService(
 	}
 
 	override fun findDiskFromVm(vmId: String, diskAttachmentId: String): DiskAttachmentVo? {
-		log.debug("findDiskFromVm ... vmId: {}", vmId)
+		log.info("findDiskFromVm ... vmId: {}", vmId)
 		val res: DiskAttachment? =
 			conn.findDiskAttachmentFromVm(vmId, diskAttachmentId)
 				.getOrNull()
@@ -129,35 +122,54 @@ class VmDiskService(
 //		return res.toDiskAttachmentVos(conn)
 //	}
 
-	override fun addDiskFromVm(vmVo: VmVo): DiskAttachmentVo? {
+	override fun addDiskFromVm(diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo? {
+		log.info("addDiskFromVm ... vmId: {}", diskAttachmentVo.vmVo.id)
 		val res: DiskAttachment? =
 			conn.addDiskAttachmentToVm(
-				vmVo.id,
-				vmVo.diskAttachmentVo.toAddDisk()
+				diskAttachmentVo.vmVo.id,
+				diskAttachmentVo.toAddDiskAttachment()
 			)
 			.getOrNull()
 		return res?.toDiskAttachmentVo(conn)
 	}
 
-	override fun updateDiskFromVm(vmVo: VmVo): DiskAttachmentVo? {
-		// add 와 비슷한 방법을 쓸듯요
+	override fun updateDiskFromVm(diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo? {
+		log.info("updateDiskFromVm ... vmId: {}", diskAttachmentVo.vmVo.id)
+		val res: DiskAttachment? =
+			conn.updateDiskAttachmentToVm(
+				diskAttachmentVo.vmVo.id,
+				diskAttachmentVo.toEditDiskAttachment()
+			).getOrNull()
+		return res?.toDiskAttachmentVo(conn)
+	}
+
+	override fun removeDiskFromVm(diskAttachmentVos: List<DiskAttachmentVo>): Boolean {
 		TODO("Not yet implemented")
 	}
 
-	override fun removeDiskFromVm(vmId: String, diskAttachmentId: String, type: Boolean): Boolean {
-		TODO("Not yet implemented")
+	override fun activeDiskFromVm(diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo? {
+		log.info("activeDiskFromVm ... vmId: {}, diskAttachmentId: {}", diskAttachmentVo.vmVo.id, diskAttachmentVo.id)
+		val res: DiskAttachment? =
+			conn.activeDiskAttachmentToVm(
+				diskAttachmentVo.vmVo.id,
+				diskAttachmentVo.id,
+				true
+			).getOrNull()
+		return res?.toDiskAttachmentVo(conn)
 	}
 
-	override fun activeDiskFromVm(diskAttachmentId: String): Boolean {
-		TODO("Not yet implemented")
-	}
-
-	override fun deactivateDiskFromVm(diskAttachmentId: String): Boolean {
-		TODO("Not yet implemented")
+	override fun deactivateDiskFromVm(diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo? {
+		log.info("deactivateDiskFromVm ... vmId: {}, diskAttachmentId: {}", diskAttachmentVo.vmVo.id, diskAttachmentVo.id)
+		val res: DiskAttachment? =
+			conn.activeDiskAttachmentToVm(
+				diskAttachmentVo.vmVo.id,
+				diskAttachmentVo.id,
+				false
+			).getOrNull()
+		return res?.toDiskAttachmentVo(conn)
 	}
 
 	override fun setDiskMove(diskAttachmentId: String): DiskImageVo {
-		log.debug("setDiskMove ... diskAttachmentId: {}", diskAttachmentId)
 		TODO("Not yet implemented")
 	}
 
