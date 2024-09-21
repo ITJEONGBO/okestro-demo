@@ -300,7 +300,7 @@ FIND_ALL_TEMPLATES:[
       // 스토리지 도메인
     FIND_ALL_STORAGE_DOMAINS: [
       {
-        domainName: 'ㅁㅎㅇㅁㄹㄹ', // 여기에 도메인 이름을 설정합니다.
+        domainName: '스토리지도메인명', // 여기에 도메인 이름을 설정합니다.
         comment: '',
         domainType: '',                
         storageType: '',
@@ -312,9 +312,6 @@ FIND_ALL_TEMPLATES:[
         description: '',
       }
     ],
-
-
-
 }
 
 export default DEFAULT_VALUES

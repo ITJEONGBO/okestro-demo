@@ -211,14 +211,15 @@ const Dashboard = () => {
       <div className="dash_board">
         {dashboard && <DashboardBoxGroup 
           boxItems={[
-            { title: "Datacenter", cntTotal: dashboard?.datacenters ?? [], cntUp: dashboard?.datacentersUp ?? 0, cntDown: dashboard?.datacentersDown ?? 0, navigatePath: '/computing/datacenter' },
+            { title: "Datacenter", cntTotal: dashboard?.datacenters ?? [], cntUp: dashboard?.datacentersUp === 0 ? "" : dashboard?.datacentersUp, cntDown: dashboard?.datacentersDown === 0 ? "" : dashboard?.datacentersDown, navigatePath: '/computing/datacenter' },
             { title: "Cluster",    cntTotal: dashboard?.clusters ?? 0, navigatePath: '/computing/datacenter' },
-            { title: "Host",       cntTotal: dashboard?.hosts ?? 0, cntUp: dashboard?.hostsUp ?? 0, cntDown: dashboard?.hostsDown ?? 0, navigatePath: '/computing/host' },
-            { title: "DataStorageDomain", cntTotal: dashboard?.storageDomains ?? 0, navigatePath: '/storage-domainpart'},
+            { title: "Host",       cntTotal: dashboard?.hosts ?? 0, cntUp: dashboard?.hostsUp === 0 ? "" : dashboard?.hostsUp, cntDown: dashboard?.hostsDown === 0 ? "" : dashboard?.hostsDown, navigatePath: '/computing/host' },
+            { title: "StorageDomain", cntTotal: dashboard?.storageDomains ?? 0, navigatePath: '/storage-domainpart' },
             /*편집해야됨 */
-            { title: "Virtual machine", cntTotal: dashboard?.vms ?? 0, cntUp: dashboard?.vmsUp ?? 0, cntDown: dashboard?.vmsDown ?? 0, navigatePath: '/computing/vmhost-chart' },
-            { title: "Event",       cntTotal: 0, cntUp: 1, cntDown: 1, },
-          ]} 
+            { title: "Virtual machine", cntTotal: dashboard?.vms ?? 0, cntUp: dashboard?.vmsUp === 0 ? "" : dashboard?.vmsUp, cntDown: dashboard?.vmsDown === 0 ? "" : dashboard?.vmsDown, navigatePath: '/computing/vmhost-chart' },
+            { title: "Event",       cntTotal: 0, cntUp: 0 === 0 ? "" : 1, cntDown: 0 === 0 ? "" : 1 },
+          ]}
+
         />}
         <div className="dash_section">
           <div className="dash_section_contents">
