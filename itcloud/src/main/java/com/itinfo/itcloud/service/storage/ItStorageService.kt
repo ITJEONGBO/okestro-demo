@@ -31,6 +31,14 @@ import kotlin.Error
 
 interface ItStorageService {
 	/**
+	 * [ItStorageService.findAllDomains]
+	 * 데이터센터 - 스토리지 도메인 목록
+	 *
+	 * @return List<[StorageDomainVo]> 스토리지 도메인 목록
+	 */
+	@Throws(Error::class)
+	fun findAllDomains(): List<StorageDomainVo>
+	/**
 	 * [ItStorageService.findAllDomainsFromDataCenter]
 	 * 데이터센터 - 스토리지 도메인 목록
 	 *
@@ -288,6 +296,12 @@ interface ItStorageService {
 class StorageServiceImpl(
 
 ): BaseService(), ItStorageService {
+	override fun findAllDomains(): List<StorageDomainVo> {
+		val res: List<StorageDomain> =
+			conn.findAllStorageDomains()
+				.getOrDefault(listOf())
+		return res.toStorageDomainsMenu()
+	}
 
 	@Throws(Error::class)
 	override fun findAllDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo> {

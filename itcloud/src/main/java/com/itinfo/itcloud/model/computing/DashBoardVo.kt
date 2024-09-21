@@ -94,7 +94,7 @@ fun Connection.toDashboardVo(): DashBoardVo {
     val storageDomains: Int =
         this@toDashboardVo.findAllStorageDomains()
             .getOrDefault(listOf())
-            .count { it.statusPresent() && it.status() == StorageDomainStatus.ACTIVE }
+            .size
 
     return DashBoardVo.builder {
         datacenters { dataCenters }

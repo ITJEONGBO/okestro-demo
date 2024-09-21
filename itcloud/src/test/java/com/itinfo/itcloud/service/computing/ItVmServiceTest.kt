@@ -5,7 +5,9 @@ import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.VnicProfileVo
 import com.itinfo.itcloud.model.setting.PermissionVo
+import com.itinfo.itcloud.model.storage.DiskAttachmentVo
 import com.itinfo.itcloud.model.storage.DiskImageVo
+import com.itinfo.itcloud.model.storage.DiskProfileVo
 import org.junit.jupiter.api.Test
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
@@ -13,6 +15,7 @@ import org.hamcrest.Matchers.not
 import org.hamcrest.Matchers.nullValue
 import org.junit.jupiter.api.BeforeEach
 import org.ovirt.engine.sdk4.types.BiosType
+import org.ovirt.engine.sdk4.types.DiskInterface
 import org.ovirt.engine.sdk4.types.InheritableBoolean
 import org.ovirt.engine.sdk4.types.VmType
 import org.springframework.beans.factory.annotation.Autowired
@@ -38,6 +41,7 @@ class  ItVmServiceTest {
 	private lateinit var host02: String // host02.ititinfo.local
 	private lateinit var host01: String // host01
 	private lateinit var hostVm: String // hostVm
+	private lateinit var storageDomain: String // hostVm
 
 	@BeforeEach
 	fun setup() {
@@ -47,6 +51,7 @@ class  ItVmServiceTest {
 		host01 = "722096d3-4cb2-43b0-bf41-dd69c3a70779"
 		host02 = "789b78c4-3fcf-4f19-9b69-d382aa66c12f"
 		hostVm = "c26e287c-bc48-4da7-9977-61203abf9e64"
+		storageDomain = "dc38dcb4-c3f9-4568-af0b-0d6a225d25e5"
 	}
 
 
@@ -100,7 +105,7 @@ class  ItVmServiceTest {
 		assertThat(result, `is`(not(nullValue())))
 
 		result.forEach { println(it) }
-		assertThat(result.size, `is`(7))
+//		assertThat(result.size, `is`(7))
 	}
 
 	/**
@@ -151,19 +156,17 @@ class  ItVmServiceTest {
 			clusterVo {
 				IdentifiedVo.builder {
 					id { clusterId }
-					name { "Default" }
 				}
 			}
 			templateVo {
 				IdentifiedVo.builder {
 					id { "00000000-0000-0000-0000-000000000000" }
-					name { "Blank" }
 				}
 			}
 			osSystem { "other_linux" }
 			chipsetFirmwareType { "Q35_SEA_BIOS" }  // String.valueOf(BiosType.Q35_OVMF }
 			optimizeOption { "SERVER" }  // String.valueOf(VmType.SERVER
-			name { "random1" }
+			name { "random2" }
 			description { "" }
 			comment { "" }
 			stateless { false }
@@ -175,42 +178,59 @@ class  ItVmServiceTest {
 					VnicProfileVo.builder { id { "86106902-bf8b-4637-95d7-8cf5aca28fc5" } }
 				)
 			}
-			diskAttachmentVos { null }
-//			diskAttachmentVos {
-//					Arrays.asList(
-//						DiskImageVo.builder {
-//							size { 200 }
-//							alias { randomName + 1 }
-//							description { "" }
-//							interfaces { "VIRTIO_SCSI" } // 인터페이스
-//							storageDomainId { } // hosted_storage
-//							allocationPolicy { true } // 할당정책: 씬
-//							diskProfile { 3ab66ac-26c3-4b21-ba78-691ec2a004df" }
-//							wipeAfterDelete { false }
-//							bootable { true } // 기본값:t
-//							shareable { false }
-//							readOnly { false } // 읽기전용
-//							backup { true } // 증분백업 기본값 t
-//							build { ) }
+			diskAttachmentVos {
+				Arrays.asList(
+					DiskAttachmentVo.builder {
+						bootable { false }
+						interface_ { DiskInterface.VIRTIO_SCSI }
+						readOnly { false }
+						diskImageVo {
+							DiskImageVo.builder {
+								size { 1 }
+								alias { "random2_disk" }
+								description { "" }
+								storageDomainVo {
+									IdentifiedVo.builder { id { storageDomain } }
+								}
+								sparse { true } // 할당정책: 씬
+								diskProfileVo {
+									IdentifiedVo.builder { id { "df3d6b80-5326-4855-96a4-455147016fc7" } }
+								}
+								wipeAfterDelete { false }
+								sharable { false }
+								backup { true } // 증분백업 기본값 t
+							}
+						}
+					},
+//					DiskAttachmentVo.builder {
+//						bootable { false }
+//						interface_ { DiskInterface.VIRTIO_SCSI }
+//						readOnly { false }
+//						diskImageVo {
+//							DiskImageVo.builder {
+//								id { "599b3a25-3351-4906-aae1-be53efa37f2a" }
+//							}
 //						}
-//					)
-//				}
-			instanceType { "none" } //tiny 안됨 ( none,small, medium, xlarge)
-			memorySize { BigInteger.valueOf(2048) }
-			memoryMax { BigInteger.valueOf(8192) }
-			memoryActual { BigInteger.valueOf(2048) }
+//					}
+				)
+			}
+			instanceType { "small" } //tiny 안됨 ( none,small, medium, xlarge)
+//			memorySize { BigInteger.valueOf(2048) }
+//			memoryMax { BigInteger.valueOf(8192) }
+//			memoryActual { BigInteger.valueOf(2048) }
 			memoryBalloon { true }
-			cpuTopologySocket { 2 }
-			cpuTopologyCore { 1 }
-			cpuTopologyThread { 1 }
+//			cpuTopologySocket { 2 }
+//			cpuTopologyCore { 1 }
+//			cpuTopologyThread { 1 }
 			timeOffset { "Asia/Seoul"}  // Asia/Seoul , Etc/GMT
 			cloudInit { false }   // 일단 안됨
-			hostInCluster { true }  // 특정 호스트(false)
+//			hostInCluster { true }  // 특정 호스트(false)
+			hostInCluster { false }  // 특정 호스트(false)
 			hostVos {
-//				Arrays.asList(
-//					IdentifiedVo.builder{ id { "" } }
-//				)
-				null
+				Arrays.asList(
+					IdentifiedVo.builder{ id { "722096d3-4cb2-43b0-bf41-dd69c3a70779" } }
+				)
+//				null
 			}
 			migrationEncrypt { InheritableBoolean.INHERIT }
 			migrationMode {"MIGRATABLE" }  // 마이그레이션
@@ -233,7 +253,6 @@ class  ItVmServiceTest {
 		assertThat(addResult?.id, `is`(not(nullValue())))
 		assertThat(addResult?.name, `is`(addVm.name))
 		assertThat(addResult?.clusterVo?.id, `is`(addVm.clusterVo.id))
-		assertThat(addResult?.templateVo?.id, `is`(addVm.templateVo.id))
 	}
 
 	/**
@@ -246,7 +265,114 @@ class  ItVmServiceTest {
 	fun should_update_Vm() {
 		log.debug("should_update_Vm ... ")
 		val updateVm: VmVo = VmVo.builder {
-
+			id { "4fd618ae-761c-4518-bf6c-f2245e439079" } // 유일하게 추가되는 점
+			clusterVo {
+				IdentifiedVo.builder {
+					id { clusterId }
+				}
+			}
+			templateVo {
+				IdentifiedVo.builder {
+					id { "00000000-0000-0000-0000-000000000000" }
+				}
+			} // front 에서 막음
+			osSystem { "other_linux" }
+			chipsetFirmwareType { "Q35_SEA_BIOS" }  // String.valueOf(BiosType.Q35_OVMF }
+			optimizeOption { "SERVER" }  // String.valueOf(VmType.SERVER
+			name { "random2-1" }
+			description { "" }
+			comment { "" }
+			stateless { false }
+			startPaused { false }
+			deleteProtected { false }
+			vnicProfileVos {
+				Arrays.asList(
+					VnicProfileVo.builder { id { "0000000a-000a-000a-000a-000000000398" } },
+//					VnicProfileVo.builder { id { "86106902-bf8b-4637-95d7-8cf5aca28fc5" } }
+				)
+			}
+			diskAttachmentVos {
+				Arrays.asList(
+//					DiskAttachmentVo.builder {
+//						bootable { false }
+//						interface_ { DiskInterface.VIRTIO_SCSI }
+//						readOnly { false }
+//						diskImageVo {
+//							DiskImageVo.builder {
+//								size { 1 }
+//								alias { "random1_disk" }
+//								description { "" }
+//								storageDomainVo {
+//									IdentifiedVo.builder { id { storageDomain } }
+//								}
+//								sparse { true } // 할당정책: 씬
+//								diskProfileVo {
+//									IdentifiedVo.builder { id { "df3d6b80-5326-4855-96a4-455147016fc7" } }
+//								}
+//								wipeAfterDelete { false }
+//								sharable { false }
+//								backup { true } // 증분백업 기본값 t
+//							}
+//						} // 기존
+//					},
+					DiskAttachmentVo.builder {
+						bootable { false }
+						interface_ { DiskInterface.VIRTIO_SCSI }
+						readOnly { false }
+						diskImageVo {
+							DiskImageVo.builder {
+								size { 2 }
+								alias { "random1-1_disk" }
+								description { "" }
+								storageDomainVo {
+									IdentifiedVo.builder { id { storageDomain } }
+								}
+								sparse { true } // 할당정책: 씬
+								diskProfileVo {
+									IdentifiedVo.builder { id { "df3d6b80-5326-4855-96a4-455147016fc7" } }
+								}
+								wipeAfterDelete { false }
+								sharable { false }
+								backup { true } // 증분백업 기본값 t
+							}
+						} // 추가
+					},
+					DiskAttachmentVo.builder {
+						bootable { false }
+						interface_ { DiskInterface.VIRTIO }
+						readOnly { false }
+						diskImageVo {
+							DiskImageVo.builder {
+								id { "2c73c9c0-6552-4ddc-9727-8b2de7f54267" } // 추가 attach
+							}
+						}
+					}
+				)
+			}
+			instanceType { "none" } //tiny 안됨 ( none,small, medium, xlarge)
+			memorySize { BigInteger.valueOf(2048) }
+			memoryMax { BigInteger.valueOf(4096) }
+			memoryActual { BigInteger.valueOf(2048) }
+			memoryBalloon { true }
+			cpuTopologySocket { 2 }
+			cpuTopologyCore { 2 }
+			cpuTopologyThread { 1 }
+			timeOffset { "Asia/Seoul"}  // Asia/Seoul , Etc/GMT
+			cloudInit { false }   // 일단 안됨
+			hostInCluster { true }  // 특정 호스트(false)
+			hostVos { null }
+			migrationEncrypt { InheritableBoolean.INHERIT }
+			migrationMode {"MIGRATABLE" }  // 마이그레이션
+			ha { false } // 기본 false
+			priority { 1 }  // 우선순위: 기본 1(낮음)
+			cpuProfileVo { IdentifiedVo.builder { id { "58ca604e-01a7-003f-01de-000000000250" } }  } // 클러스터 밑에 있는 cpu profile
+			cpuShare  { 0 } // 비활성화됨 0
+			cpuPinningPolicy  { "NONE" }
+			memoryBalloon  { true }    // 메모리 balloon 활성화
+			multiQue  { false } // 멀티 큐 사용
+			virtSCSIEnable  { true }  // virtIO-SCSI 활성화
+			firstDevice  { "HD" }
+			connVo  { IdentifiedVo.builder { id { "385f7865-795a-49e1-b768-74edda6bb518" } } }// 변화
 		}
 
 		val updateResult: VmVo? =

@@ -34,6 +34,7 @@ private val log = LoggerFactory.getLogger(DiskAttachmentVo::class.java)
  * @property passDiscard [Boolean]
  * @property interface_ [DiskInterface]  인터페이스
  * @property logicalName [String]  논리적 이름 (보통 없음)
+ * @property detachOnly [Boolean] 완전삭제 여부 (기본 false=분리, true=완전삭제)
  *
  * @property diskImageVo [DiskImageVo] 디스크 이미지 생성
  * @property IdentifiedVo [IdentifiedVo] 가상머신
@@ -46,6 +47,7 @@ class DiskAttachmentVo(
 	val passDiscard: Boolean = false,
 	val interface_: DiskInterface = DiskInterface.VIRTIO,
 	val logicalName: String = "",
+	val detachOnly: Boolean = false,
 	val diskImageVo: DiskImageVo = DiskImageVo(),
 	val vmVo: IdentifiedVo = IdentifiedVo()
 ): Serializable {
@@ -60,9 +62,10 @@ class DiskAttachmentVo(
 		private var bPassDiscard: Boolean = false;fun passDiscard(block: () -> Boolean?) { bPassDiscard = block() ?: false }
 		private var bInterface_: DiskInterface = DiskInterface.VIRTIO;fun interface_(block: () -> DiskInterface?) { bInterface_ = (block() ?: DiskInterface.VIRTIO) }
 		private var bLogicalName: String = "";fun logicalName(block: () -> String?) { bLogicalName = block() ?: "" }
+		private var bDetachOnly: Boolean = false;fun detachOnly(block: () -> Boolean?) { bDetachOnly = block() ?: false }
 		private var bDiskImageVo: DiskImageVo = DiskImageVo();fun diskImageVo(block: () -> DiskImageVo?) { bDiskImageVo = block() ?: DiskImageVo() }
 		private var bVmVo: IdentifiedVo = IdentifiedVo();fun vmVo(block: () -> IdentifiedVo?) { bVmVo = block() ?: IdentifiedVo() }
-		fun build(): DiskAttachmentVo = DiskAttachmentVo(bId, bActive, bBootable, bReadOnly, bPassDiscard, bInterface_, bLogicalName, bDiskImageVo, bVmVo)
+		fun build(): DiskAttachmentVo = DiskAttachmentVo(bId, bActive, bBootable, bReadOnly, bPassDiscard, bInterface_, bLogicalName, bDetachOnly, bDiskImageVo, bVmVo)
 	}
 	
 	companion object {
@@ -123,10 +126,9 @@ fun DiskAttachmentVo.toAttachDisk(): DiskAttachment =
 /**
  * 생성과 연결될 DiskAttachment 를 목록으로 내보낸다
  */
-fun List<DiskAttachmentVo>.toDiskAttachmentList(): List<DiskAttachment> {
+fun List<DiskAttachmentVo>.toAddDiskAttachmentList(): List<DiskAttachment> {
 	val diskAttachmentList = mutableListOf<DiskAttachment>()
-	this.forEach { diskAttachmentVo ->
-//		val diskAttachmentBuilder = diskAttachmentVo.toDiskAttachment()
+	this@toAddDiskAttachmentList.forEach { diskAttachmentVo ->
 		if (diskAttachmentVo.diskImageVo.id.isEmpty()) {
 			diskAttachmentList.add(diskAttachmentVo.toAddDisk())
 		} else {
@@ -136,5 +138,17 @@ fun List<DiskAttachmentVo>.toDiskAttachmentList(): List<DiskAttachment> {
 	return diskAttachmentList
 }
 
-
-
+/**
+ * 부팅가능한 디스크는 한개만 설정가능
+ * @param bootableDiskExists
+ * @param vDiskVo
+ * @return
+ */
+//private boolean bootableFlag(boolean bootableDiskExists, VDiskVo vDiskVo){
+//	boolean isBootable = vDiskVo.getVDiskImageVo().isBootable();
+//	if (bootableDiskExists && isBootable) {
+//		log.warn("이미 부팅 가능한 디스크가 존재하므로 디스크는 부팅 불가능으로 설정됨");
+//		isBootable = false;
+//	}
+//	return isBootable;
+//}

@@ -437,9 +437,7 @@ fun VmVo.toVmInfoBuilder(vmBuilder: VmBuilder): VmBuilder {
     log.info("template {}, {}", this@toVmInfoBuilder.templateVo.id, this@toVmInfoBuilder.templateVo.name)
     return vmBuilder
         .cluster(ClusterBuilder().id(this@toVmInfoBuilder.clusterVo.id).build())
-//        .cluster(ClusterBuilder().name(this@toVmInfoBuilder.clusterVo.name).build())
         .template(TemplateBuilder().id(this@toVmInfoBuilder.templateVo.id).build()) // template지정된게 있으면
-//        .template(TemplateBuilder().name(this@toVmInfoBuilder.templateVo.name).build()) // template지정된게 있으면
         .bios(BiosBuilder().type(BiosType.valueOf(this@toVmInfoBuilder.chipsetFirmwareType)))
         .type(VmType.valueOf(this@toVmInfoBuilder.optimizeOption))
         .name(this@toVmInfoBuilder.name)
@@ -449,6 +447,8 @@ fun VmVo.toVmInfoBuilder(vmBuilder: VmBuilder): VmBuilder {
         .startPaused(this@toVmInfoBuilder.startPaused)
         .deleteProtected(this@toVmInfoBuilder.deleteProtected)
 }
+
+
 
 /**
  * vm 시스템

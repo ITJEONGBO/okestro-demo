@@ -220,23 +220,46 @@ class VmServiceImpl(
 
 	override fun add(vmVo: VmVo): VmVo? {
 		log.info("add ... ")
-		// TODO: 파라미터에 대한 처리 내용 검토 필요
+		// 우선 vm 추가
 		val res: Vm? =
-			conn.addVm(
-				vmVo.toAddVmBuilder(conn),
-				vmVo.vnicProfileVos.map { vnicProfileVo ->  vnicProfileVo.id },
-//				vmVo.diskAttachmentVos.map { diskAttachmentVo ->  diskAttachmentVo.id },
-				vmVo.connVo.id // 부팅될 disk id
-			)
-			.getOrNull()
+			conn.addVm(vmVo.toAddVmBuilder(conn))
+				.getOrNull()
+
+		if(res != null) {
+			val vmId = res.id()
+			conn.selectCdromFromVm(vmId, vmVo.connVo.id) // 부팅시 iso 선택
+
+			val vnics = vmVo.vnicProfileVos.map { it.id }
+			conn.addMultipleNicsFromVm(vmId, vnics).isSuccess // nic 붙이기
+			// TODO 부팅시 디스크 부팅가능은 한개
+			conn.addMultipleDiskAttachmentsToVm(
+				vmId,
+				vmVo.diskAttachmentVos.toAddDiskAttachmentList()
+			).isSuccess  // 디스크 생성, 연결
+		}
 		return res?.toVmVo(conn)
 	}
 
 	override fun update(vmVo: VmVo): VmVo? {
-		log.info("update ... ")
+		log.info("update ... {}", vmVo.name)
+		val vmId = vmVo.id
+		conn.findVm(vmId)
+			.getOrNull()?: throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		val res: Vm? =
 			conn.updateVm(vmVo.toEditVmBuilder(conn))
 				.getOrNull()
+
+		if(res != null) {
+			conn.selectCdromFromVm(vmId, vmVo.connVo.id)
+
+			val vnics = vmVo.vnicProfileVos.map { it.id }
+			conn.addMultipleNicsFromVm(vmId, vnics).isSuccess // nic 붙이기
+
+			conn.addMultipleDiskAttachmentsToVm(
+				vmId,
+				vmVo.diskAttachmentVos.toAddDiskAttachmentList()
+			).isSuccess  // 디스크 생성, 연결
+		}
 		return res?.toVmVo(conn)
 	}
 

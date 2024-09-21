@@ -113,12 +113,16 @@ class NicVo (
 	}
 }
 
+/**
+ * Nic id&name
+ */
 fun Nic.toNicIdName(): NicVo = NicVo.builder {
 	id { this@toNicIdName.id()}
 	name { this@toNicIdName.name() }
 }
 fun List<Nic>.toNicIdNames(): List<NicVo> =
 	this@toNicIdNames.map { it.toNicIdName() }
+
 
 fun Nic.toNicVoFromVm(conn: Connection, vmId: String): NicVo {
 	val vm: Vm = conn.findVm(vmId).getOrNull() ?: run {
@@ -202,22 +206,32 @@ fun List<Nic>.toNicVosFromTemplate(conn: Connection): List<NicVo> =
 	this@toNicVosFromTemplate.map { it.toNicVoFromTemplate(conn) }
 
 
+/**
+ * Nic 빌더
+ */
 fun NicVo.toNicBuilder(): NicBuilder {
-	val nicBuilder: NicBuilder = NicBuilder()
+	val nicBuilder = NicBuilder()
 	nicBuilder
 		.name(this@toNicBuilder.name)
 		.vnicProfile(VnicProfileBuilder().id(this@toNicBuilder.vnicProfileVo.id))
 		.interface_(this@toNicBuilder.interface_)
 		.linked(this@toNicBuilder.linked)
 		.plugged(this@toNicBuilder.plugged)
-	if (this@toNicBuilder.macAddress.isNotEmpty())
+	if (this@toNicBuilder.macAddress.isNotEmpty()) {
 		nicBuilder.mac(MacBuilder().address(this@toNicBuilder.macAddress).build())
+	}
 	return nicBuilder
 }
 
+/**
+ * Nic 생성 빌더
+ */
 fun NicVo.toAddNicBuilder(): Nic =
 	this@toAddNicBuilder.toNicBuilder().build()
 
+/**
+ * Nic 편집 빌더
+ */
 fun NicVo.toEditNicBuilder(): Nic =
 	this@toEditNicBuilder.toNicBuilder().id(this@toEditNicBuilder.id).build()
 

@@ -30,44 +30,47 @@ interface ItVmNicService {
 	fun findAllNicsFromVm(vmId: String): List<NicVo>
 	/**
 	 * [ItVmNicService.findNicFromVm]
-	 * nic 편집창
+	 * 네트워크 인터페이스 정보, 편집
 	 *
 	 * @param vmId [String] 가상머신 id
 	 * @param nicId [String] nic id
-	 * @return [NicVo]
+	 * @return [NicVo]?
 	 */
 	@Throws(Error::class)
 	fun findNicFromVm(vmId: String, nicId: String): NicVo?
+
+	 // 네트워크 인터페이스 생성창 - VnicProfile 목록 [ItVmService.findAllVnicProfilesFromCluster]
+
 	/**
 	 * [ItVmNicService.addNicFromVm]
-	 * 가상머신 - 새 네트워크 인터페이스
-	 * 생성창은 필요없음, 왜냐면 프로파일 리스트만 가지고 오면됨
-	 * [ItVmService.findAllVnicProfilesFromCluster]
+	 * 네트워크 인터페이스 생성
 	 *
 	 * @param vmId [String] 가상머신 id
 	 * @param nicVo [NicVo]
-	 * @return [Boolean]
+	 * @return [NicVo]?
 	 */
 	@Throws(Error::class)
-	fun addNicFromVm(vmId: String, nicVo: NicVo): NicVo? // nic 추가
+	fun addNicFromVm(vmId: String, nicVo: NicVo): NicVo?
 	/**
 	 * [ItVmNicService.updateNicFromVm]
+	 * 네트워크 인터페이스 편집
 	 *
 	 * @param vmId [String] 가상머신 id
 	 * @param nicVo [NicVo]
-	 * @return CommonVo<[Boolean]> 201(create) 404(fail)
+	 * @return [NicVo]?
 	 */
 	@Throws(Error::class)
-	fun updateNicFromVm(vmId: String, nicVo: NicVo): NicVo? // nic 편집
+	fun updateNicFromVm(vmId: String, nicVo: NicVo): NicVo?
 	/**
 	 * [ItVmNicService.removeNicFromVm]
+	 * 네트워크 인터페이스 삭제
 	 *
 	 * @param vmId [String] 가상머신 id
 	 * @param nicId [String] nic id
-	 * @return [Boolean] 200(success) 404(fail)
+	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun removeNicFromVm(vmId: String, nicId: String): Boolean // nic 삭제
+	fun removeNicFromVm(vmId: String, nicId: String): Boolean
 }
 
 @Service

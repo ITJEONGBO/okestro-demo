@@ -30,15 +30,15 @@ interface ItVmDiskService {
 	 * @return [DiskAttachmentVo]?
 	 */
 	fun findDiskFromVm(vmId: String, diskAttachmentId: String): DiskAttachmentVo?
-	/**
-	 * [ItVmDiskService.addDisksFromVm]
-	 * 가상머신 디스크 생성/연결
-	 * 이후 없애야함
-	 *
-	 * @param vmVo [VmVo]
-	 * @return List<[DiskAttachmentVo]>
-	 */
-	fun addDisksFromVm(vmVo: VmVo): List<DiskAttachmentVo>?
+//	/**
+//	 * [ItVmDiskService.addDisksFromVm]
+//	 * 가상머신 디스크 생성/연결
+//	 * 이후 없애야함
+//	 *
+//	 * @param vmVo [VmVo]
+//	 * @return List<[DiskAttachmentVo]>
+//	 */
+//	fun addDisksFromVm(vmVo: VmVo): List<DiskAttachmentVo>?
 	/**
 	 * [ItVmDiskService.addDiskFromVm]
 	 * 가상머신 디스크 생성/연결
@@ -117,17 +117,17 @@ class VmDiskService(
 		return res?.toDiskAttachmentVo(conn)
 	}
 
-	// 가상머신 생성/편집 할때에만 디스크 여러개 만들 수 있음
-	override fun addDisksFromVm(vmVo: VmVo): List<DiskAttachmentVo> {
-		log.info("addDisksFromVm ... ")
-		val res: List<DiskAttachment> =
-			conn.addMultipleDiskAttachmentsToVm(
-				vmVo.id,
-				vmVo.diskAttachmentVos.toDiskAttachmentList()
-			)
-			.getOrDefault(listOf())
-		return res.toDiskAttachmentVos(conn)
-	}
+//	// 가상머신 생성/편집 할때에만 디스크 여러개 만들 수 있음
+//	override fun addDisksFromVm(vmVo: VmVo): List<DiskAttachmentVo> {
+//		log.info("addDisksFromVm ... ")
+//		val res: List<DiskAttachment> =
+//			conn.addMultipleDiskAttachmentsToVm(
+//				vmVo.id,
+//				vmVo.diskAttachmentVos.toAddDiskAttachmentList()
+//			)
+//			.getOrDefault(listOf())
+//		return res.toDiskAttachmentVos(conn)
+//	}
 
 	override fun addDiskFromVm(vmVo: VmVo): DiskAttachmentVo? {
 		val res: DiskAttachment? =

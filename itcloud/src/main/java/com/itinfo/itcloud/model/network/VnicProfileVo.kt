@@ -5,6 +5,7 @@ import com.itinfo.itcloud.model.*
 import com.itinfo.itcloud.model.computing.DataCenterVo
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
+import org.ovirt.engine.sdk4.builders.NetworkBuilder
 import org.ovirt.engine.sdk4.builders.VnicProfileBuilder
 import org.ovirt.engine.sdk4.types.*
 import org.slf4j.LoggerFactory
@@ -69,9 +70,8 @@ fun VnicProfile.toVnicProfileIdName(): VnicProfileVo = VnicProfileVo.builder {
 	id { this@toVnicProfileIdName.id() }
 	name { this@toVnicProfileIdName.name() }
 }
-
-fun List<VnicProfile>.toVnicProfileIdNames(): List<VnicProfileVo> =
-	this@toVnicProfileIdNames.map { it.toVnicProfileIdName() }
+fun List<VnicProfile>.toVnicProfilesIdName(): List<VnicProfileVo> =
+	this@toVnicProfilesIdName.map { it.toVnicProfileIdName() }
 
 
 fun VnicProfile.toVnicProfileVo(conn: Connection): VnicProfileVo {
@@ -99,25 +99,32 @@ fun VnicProfile.toVnicProfileVo(conn: Connection): VnicProfileVo {
 		networkVo { network?.fromNetworkToIdentifiedVo() }
 	}
 }
-
 fun List<VnicProfile>.toVnicProfileVos(conn: Connection): List<VnicProfileVo> =
 	this@toVnicProfileVos.map { it.toVnicProfileVo(conn) }
 
 
 /**
  * vnicProfile 빌더
- *  여쭤보기 네트워크 생성할때 만드는것으로 끝나는지 따로 vnicProfile에서 만드는지
- * 만약 네트워크에서 만들고 끝난다고 한다면 vnicprofile 빌더는 따로 필요없음
  */
-fun VnicProfileVo.toVnicProfileBuilder(conn: Connection): VnicProfileBuilder {
+fun VnicProfileVo.toVnicProfileBuilder(): VnicProfileBuilder {
 	return VnicProfileBuilder()
-//		.network()
-//		.name()
-//		.description()
-//		.migratable()
+		.name(this@toVnicProfileBuilder.name)
+		.network(NetworkBuilder().id(this@toVnicProfileBuilder.networkVo.id))
+		.description(this@toVnicProfileBuilder.description)
+		.migratable(this@toVnicProfileBuilder.migration)
 }
 
+/**
+ * vnicProfile 생성 빌더
+ */
+fun VnicProfileVo.toAddVnicProfileBuilder(): VnicProfile =
+	this@toAddVnicProfileBuilder.toVnicProfileBuilder().build()
 
+/**
+ * vnicProfile 생성 빌더
+ */
+fun VnicProfileVo.toEditVnicProfileBuilder(): VnicProfile =
+	this@toEditVnicProfileBuilder.toVnicProfileBuilder().id(this@toEditVnicProfileBuilder.id).build()
 
 
 

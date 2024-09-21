@@ -119,9 +119,32 @@ fun StorageDomain.toStorageDomainIdName(): StorageDomainVo = StorageDomainVo.bui
 	id { this@toStorageDomainIdName.id() }
 	name { this@toStorageDomainIdName.name() }
 }
-
 fun List<StorageDomain>.toStorageDomainIdNames(): List<StorageDomainVo> =
 	this@toStorageDomainIdNames.map { it.toStorageDomainIdName() }
+
+
+fun StorageDomain.toStorageDomainMenu(): StorageDomainVo = StorageDomainVo.builder {
+	id { this@toStorageDomainMenu.id() }
+	name { this@toStorageDomainMenu.name() }
+//		active { isActive }
+	description { this@toStorageDomainMenu.description() }
+	status { this@toStorageDomainMenu.status() }
+	comment { this@toStorageDomainMenu.comment() }
+	domainType { this@toStorageDomainMenu.type() }
+	domainTypeMaster { if (this@toStorageDomainMenu.masterPresent()) this@toStorageDomainMenu.master() else false }
+	storageType { if (this@toStorageDomainMenu.storagePresent()) this@toStorageDomainMenu.storage().type() else null }
+	format { this@toStorageDomainMenu.storageFormat() }
+	usedSize { this@toStorageDomainMenu.used() }
+	availableSize { this@toStorageDomainMenu.available() }
+	diskSize {
+//			 TODO: 이거 처리 어떻게 해야하는지 확립필요
+		if (this@toStorageDomainMenu.availablePresent()) this@toStorageDomainMenu.available()
+			.add(this@toStorageDomainMenu.used())
+		else BigInteger.ZERO
+	}
+}
+fun List<StorageDomain>.toStorageDomainsMenu(): List<StorageDomainVo> =
+	this@toStorageDomainsMenu.map { it.toStorageDomainMenu() }
 
 
 fun StorageDomain.toStorageDomainVo(conn: Connection): StorageDomainVo {

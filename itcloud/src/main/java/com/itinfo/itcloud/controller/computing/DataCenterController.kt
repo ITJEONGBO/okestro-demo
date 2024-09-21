@@ -171,6 +171,9 @@ class DataCenterController: BaseController() {
 
 
 	/**
+	 * 옆의 네비게이션 메뉴에서 해당 항목을 클릭햇을 때 나오는 항목
+	 */
+	/**
 	 * 클러스터 - 데이터센터가 가지고 있는 클러스터 목록
 	 */
 	@ApiOperation(

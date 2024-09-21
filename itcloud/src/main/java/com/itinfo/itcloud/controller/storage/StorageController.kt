@@ -22,7 +22,7 @@ import java.io.IOException
 
 @Controller
 @Api(tags = ["Storage"])
-@RequestMapping("/api/v1/storages/{dataCenterId}")
+@RequestMapping("/api/v1/storages")
 class StorageController: BaseController() {
 	@Autowired private lateinit var iStorage: ItStorageService
 
@@ -30,7 +30,25 @@ class StorageController: BaseController() {
 	@ApiOperation(
 		httpMethod="GET",
 		value="/domains",
-//		value="/{dataCenterId}/domains",
+		notes="Domain(s) 목록, dashboard 용"
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("Domains")
+	@ResponseStatus(HttpStatus.OK)
+	@ResponseBody
+	fun findAllDomains(
+	): ResponseEntity<List<StorageDomainVo>> {
+		log.info("/storages/domains ... Domain(s) 목록")
+		return ResponseEntity.ok(iStorage.findAllDomains())
+	}
+
+
+	@ApiOperation(
+		httpMethod="GET",
+//		value="/domains",
+		value="/{dataCenterId}/domains",
 		notes="Domain(s) 목록"
 	)
 	@ApiImplicitParams(
@@ -39,7 +57,7 @@ class StorageController: BaseController() {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@GetMapping("/domains")
+	@GetMapping("/{dataCenterId}/domains")
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
 	fun findAllStorageDomainsFromDataCenter(
