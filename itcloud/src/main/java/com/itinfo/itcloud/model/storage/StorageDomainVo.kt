@@ -4,6 +4,8 @@ import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.fromDataCenterToIdentifiedVo
 import com.itinfo.itcloud.model.fromDiskProfilesToIdentifiedVos
 import com.itinfo.itcloud.gson
+import com.itinfo.itcloud.model.computing.DataCenterVo
+import com.itinfo.itcloud.model.computing.toDataCenterVoInfo
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.*
@@ -123,28 +125,41 @@ fun List<StorageDomain>.toStorageDomainIdNames(): List<StorageDomainVo> =
 	this@toStorageDomainIdNames.map { it.toStorageDomainIdName() }
 
 
-fun StorageDomain.toStorageDomainMenu(): StorageDomainVo = StorageDomainVo.builder {
-	id { this@toStorageDomainMenu.id() }
-	name { this@toStorageDomainMenu.name() }
-//		active { isActive }
-	description { this@toStorageDomainMenu.description() }
-	status { this@toStorageDomainMenu.status() }
-	comment { this@toStorageDomainMenu.comment() }
-	domainType { this@toStorageDomainMenu.type() }
-	domainTypeMaster { if (this@toStorageDomainMenu.masterPresent()) this@toStorageDomainMenu.master() else false }
-	storageType { if (this@toStorageDomainMenu.storagePresent()) this@toStorageDomainMenu.storage().type() else null }
-	format { this@toStorageDomainMenu.storageFormat() }
-	usedSize { this@toStorageDomainMenu.used() }
-	availableSize { this@toStorageDomainMenu.available() }
-	diskSize {
-//			 TODO: 이거 처리 어떻게 해야하는지 확립필요
-		if (this@toStorageDomainMenu.availablePresent()) this@toStorageDomainMenu.available()
-			.add(this@toStorageDomainMenu.used())
-		else BigInteger.ZERO
+fun StorageDomain.toStorageDomainMenu(conn: Connection): StorageDomainVo {
+	val dataCenter: DataCenter? =
+		if(this@toStorageDomainMenu.dataCenterPresent())
+			conn.findDataCenter(this@toStorageDomainMenu.dataCenter().id()).getOrNull()
+		else null
+
+	return StorageDomainVo.builder {
+		id { this@toStorageDomainMenu.id() }
+		name { this@toStorageDomainMenu.name() }
+		description { this@toStorageDomainMenu.description() }
+		status { this@toStorageDomainMenu.status() }
+		comment { this@toStorageDomainMenu.comment() }
+		domainType { this@toStorageDomainMenu.type() }
+		domainTypeMaster {
+			if (this@toStorageDomainMenu.masterPresent()) this@toStorageDomainMenu.master()
+			else false
+		}
+		storageType {
+			if (this@toStorageDomainMenu.storagePresent()) this@toStorageDomainMenu.storage().type()
+			else null
+		}
+		format { this@toStorageDomainMenu.storageFormat() }
+		usedSize { this@toStorageDomainMenu.used() }
+		availableSize { this@toStorageDomainMenu.available() }
+		diskSize {
+			if (this@toStorageDomainMenu.availablePresent())
+				this@toStorageDomainMenu.available().add(this@toStorageDomainMenu.used())
+			else
+				BigInteger.ZERO
+		}
+		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
 	}
 }
-fun List<StorageDomain>.toStorageDomainsMenu(): List<StorageDomainVo> =
-	this@toStorageDomainsMenu.map { it.toStorageDomainMenu() }
+fun List<StorageDomain>.toStorageDomainsMenu(conn: Connection): List<StorageDomainVo> =
+	this@toStorageDomainsMenu.map { it.toStorageDomainMenu(conn) }
 
 
 fun StorageDomain.toStorageDomainVo(conn: Connection): StorageDomainVo {

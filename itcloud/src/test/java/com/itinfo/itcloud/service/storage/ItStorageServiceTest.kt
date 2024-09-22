@@ -62,8 +62,8 @@ class ItStorageServiceTest {
 	 * @see [ItStorageService.findAllDomainsFromDataCenter]
 	 */
 	@Test
-	fun should_findAllStorageDomainsFromDataCenter() {
-		log.debug("should_findAllStorageDomainsFromDataCenter ... ")
+	fun should_findAllDomainsFromDataCenter() {
+		log.debug("should_findAllDomainsFromDataCenter ... ")
 		val result: List<StorageDomainVo> =
 			service.findAllDomainsFromDataCenter(dataCenterId)
 

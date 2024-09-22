@@ -19,34 +19,42 @@ import org.springframework.stereotype.Service
 interface ItVmSnapshotService {
 	/**
 	 * [ItVmSnapshotService.findAllSnapshotsFromVm]
-	 * 목록
-	 *
 	 * 스냅샷 목록
+	 *
 	 * @param vmId [String] 가상머신 id
 	 * @return
 	 */
 	@Throws(Error::class)
 	fun findAllSnapshotsFromVm(vmId: String): List<SnapshotVo>
 	/**
-	 * [ItVmSnapshotService.findAllSnapshotDisksFromVm]
-	 * 스냅샷 생성창
+	 * [ItVmSnapshotService.findSnapshotFromVm]
+	 * 스냅샷 목록
 	 *
+	 * @param vmId [String] 가상머신 id
+	 * @param snapshotId [String]
+	 * @return SnapshotVo
+	 */
+	@Throws(Error::class)
+	fun findSnapshotFromVm(vmId: String, snapshotId: String): SnapshotVo
+
+	/**
+	 * [ItVmSnapshotService.findAllDisksFromVm]
+	 * 스냅샷 생성창
+	 * [ItVmDiskService.findAllDisksFromVm] 대체가능
 	 * 가상머신 스냅샷 생성 창
 	 * 
 	 * @param vmId [String] 가상머신 id
-	 * 
 	 * @return 스냅샷 목록
 	 */
-	@Throws(Error::class)
-	fun findAllSnapshotDisksFromVm(vmId: String): List<DiskImageVo>
+//	@Throws(Error::class)
+//	fun findAllDisksFromVm(vmId: String): List<DiskImageVo>
 	/**
 	 * [ItVmSnapshotService.addSnapshot]
 	 * 스냅샷 생성
 	 * 스냅샷 생성 중에는 다른기능(삭제, 커밋)같은 기능 구현 x
 	 * 
 	 * @param snapshotVo
-	 * 
-	 * @return
+	 * @return SnapshotVo
 	 */
 	fun addSnapshot(vmId: String, snapshotVo: SnapshotVo): SnapshotVo?
 	/**
@@ -80,25 +88,31 @@ class VmSnapshotServiceImpl(
 		return res.toSnapshotVos(conn, vmId)
 	}
 
-	@Throws(Error::class)
-	override fun findAllSnapshotDisksFromVm(vmId: String): List<DiskImageVo> {
-		log.info("findAllSnapshotDisksFromVm ... vmId: {}", vmId)
-		val res: List<DiskAttachment> =
-			conn.findAllDiskAttachmentsFromVm(vmId)
-				.getOrDefault(listOf())
-//		return res.toDiskAttachmentVos(conn, vmId)
-		TODO("///")
+	override fun findSnapshotFromVm(vmId: String, snapshotId: String): SnapshotVo {
+		TODO("Not yet implemented")
 	}
+
+//	@Throws(Error::class)
+//	override fun findAllDisksFromVm(vmId: String): List<DiskImageVo> {
+//		log.info("findAllSnapshotDisksFromVm ... vmId: {}", vmId)
+//		val res: List<DiskAttachment> =
+//			conn.findAllDiskAttachmentsFromVm(vmId)
+//				.getOrDefault(listOf())
+//		return res.toDiskAttachmentVos(conn, vmId)
+//	}
 
 	@Throws(Error::class)
 	override fun addSnapshot(vmId: String, snapshotVo: SnapshotVo): SnapshotVo? {
 		log.info("addSnapshot ... ")
-		val diskAttachments: List<DiskAttachment> =
-			snapshotVo.snapshotDiskVos.toDiskAttachments(conn, vmId)
+		// TODO
+//		val disk: List<Disk> =
+//			snapshotVo.snapshotDiskVos
+
+
 		val snapshot2Add: Snapshot = SnapshotBuilder()
 			.description(snapshotVo.description)
 			.persistMemorystate(snapshotVo.persistMemory)
-			.diskAttachments(diskAttachments)
+//			.diskAttachments(diskAttachments)
 			.build()
 		val res: Snapshot? =
 			conn.addSnapshotFromVm(vmId, snapshot2Add)

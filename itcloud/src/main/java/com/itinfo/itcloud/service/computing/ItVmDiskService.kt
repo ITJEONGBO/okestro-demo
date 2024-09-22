@@ -6,10 +6,13 @@ import com.itinfo.itcloud.model.response.Res
 import com.itinfo.itcloud.model.storage.*
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.itcloud.service.storage.ItStorageService
+import com.itinfo.itcloud.service.storage.StorageServiceImpl
+import com.itinfo.itcloud.service.storage.StorageServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.types.DiskAttachment
+import org.ovirt.engine.sdk4.types.StorageDomain
 import org.springframework.stereotype.Service
 
 interface ItVmDiskService {
@@ -50,10 +53,6 @@ interface ItVmDiskService {
 	 * [ItVmDiskService.removeDiskFromVm]
 	 * 가상머신 디스크 삭제
 	 *
-	 * @param vmId [String] 가상머신 id
-	 * @param diskAttachmentId [String] 가상머신 디스크
-	 * @param type [Boolean] 가상머신 디스크
-	 *
 	 * @param diskAttachmentVos List<[DiskAttachmentVo]>
 	 * @return [Boolean]
 	 */
@@ -62,7 +61,7 @@ interface ItVmDiskService {
 	 * [ItVmDiskService.activeDiskFromVm]
 	 * 가상머신 디스크 활성화
 	 *
-	 * @param diskAttachmentId [String] 가상머신 id
+	 * @param diskAttachmentVo [DiskAttachmentVo]
 	 * @return [Boolean]
 	 */
 	fun activeDiskFromVm(diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo?
@@ -70,23 +69,30 @@ interface ItVmDiskService {
 	 * [ItVmDiskService.deactivateDiskFromVm]
 	 * 가상머신 디스크 비활성화
 	 *
-	 * @param diskAttachmentId [String] 가상머신 id
+	 * @param diskAttachmentVo [DiskAttachmentVo]
 	 * @return [Boolean]
 	 */
 	fun deactivateDiskFromVm(diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo?
 	/**
+	 * [ItVmDiskService.findAllDomains]
+	 * 보류:[ItStorageService.findAllDomainsFromDataCenter] 와 다른점은 내가 가지고 있는 도메인은 제외하고 출력
+	 * 가상머신 디스크 이동창- 스토리지 도메인
 	 *
+	 * @param diskAttachmentId [String]
+	 * @return [DiskAttachmentVo]
 	 */
-	fun setDiskMove(diskAttachmentId: String): DiskImageVo // 디스크 이동창
+	fun findAllDomains(diskAttachmentId: String): List<StorageDomainVo>
+
+	// 가상머신 디스크 이동창- 디스크 프로파일 [ItStorageService.findAllDiskProfilesFromStorageDomain] 사용
+
 	/**
 	 * [ItVmDiskService.moveDiskFromVm]
 	 * 가상머신 디스크 스토리지 이동
 	 *
-	 * @param diskAttachmentId [String] 가상머신 id
-	 * @param diskVo [DiskImageVo] 디스크 이미지
+	 * @param diskAttachmentVo [DiskAttachmentVo]
 	 * @return [Boolean]
 	 */
-	fun moveDiskFromVm(diskAttachmentId: String, diskVo: DiskImageVo): Boolean
+	fun moveDiskFromVm(diskAttachmentVo: DiskAttachmentVo): Boolean
 }
 
 @Service
@@ -110,18 +116,6 @@ class VmDiskService(
 		return res?.toDiskAttachmentVo(conn)
 	}
 
-//	// 가상머신 생성/편집 할때에만 디스크 여러개 만들 수 있음
-//	override fun addDisksFromVm(vmVo: VmVo): List<DiskAttachmentVo> {
-//		log.info("addDisksFromVm ... ")
-//		val res: List<DiskAttachment> =
-//			conn.addMultipleDiskAttachmentsToVm(
-//				vmVo.id,
-//				vmVo.diskAttachmentVos.toAddDiskAttachmentList()
-//			)
-//			.getOrDefault(listOf())
-//		return res.toDiskAttachmentVos(conn)
-//	}
-
 	override fun addDiskFromVm(diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo? {
 		log.info("addDiskFromVm ... vmId: {}", diskAttachmentVo.vmVo.id)
 		val res: DiskAttachment? =
@@ -144,7 +138,17 @@ class VmDiskService(
 	}
 
 	override fun removeDiskFromVm(diskAttachmentVos: List<DiskAttachmentVo>): Boolean {
-		TODO("Not yet implemented")
+		log.info("removeDiskFromVm ...")
+//		val res: Result<Boolean> =
+//			diskAttachmentVos.forEach { diskAttachmentVo ->
+//				conn.removeDiskAttachmentToVm(
+//					diskAttachmentVo.vmVo.id,
+//					diskAttachmentVo.id,
+//					diskAttachmentVo.detachOnly
+//				)
+//			}
+//		return res.isSuccess
+		TODO()
 	}
 
 	override fun activeDiskFromVm(diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo? {
@@ -169,11 +173,17 @@ class VmDiskService(
 		return res?.toDiskAttachmentVo(conn)
 	}
 
-	override fun setDiskMove(diskAttachmentId: String): DiskImageVo {
-		TODO("Not yet implemented")
+	override fun findAllDomains(diskAttachmentId: String): List<StorageDomainVo> {
+		// findAllDomainsFromDataCenter
+		log.debug("findAllStorageDomainsFromDataCenter ... diskAttachmentId: $diskAttachmentId")
+		val res: List<StorageDomain> =
+			conn.findAllStorageDomains()
+				.getOrDefault(listOf())
+				.filter { it.id() != diskAttachmentId }
+		return res.toStorageDomainsMenu(conn)
 	}
 
-	override fun moveDiskFromVm(diskAttachmentId: String, diskVo: DiskImageVo): Boolean {
+	override fun moveDiskFromVm(diskAttachmentVo: DiskAttachmentVo): Boolean {
 		TODO("Not yet implemented")
 	}
 

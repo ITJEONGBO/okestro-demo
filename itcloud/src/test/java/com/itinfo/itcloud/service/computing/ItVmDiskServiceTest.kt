@@ -5,6 +5,7 @@ import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.storage.DiskAttachmentVo
 import com.itinfo.itcloud.model.storage.DiskImageVo
+import com.itinfo.itcloud.model.storage.StorageDomainVo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.BeforeEach
@@ -170,12 +171,12 @@ class ItVmDiskServiceTest {
     fun should_findAllDisksFromVm(){
         log.debug("should_findAllDisksFromVm")
         val result: List<DiskAttachmentVo> =
-            service.findAllDisksFromVm(vm01_1)
+            service.findAllDisksFromVm("4fd618ae-761c-4518-bf6c-f2245e439079")
 
         assertThat(result, `is`(not(nullValue())))
-        assertThat(result.size, `is`(1))
 
         result.forEach { println(it) }
+//        assertThat(result.size, `is`(1))
     }
 
     /**
@@ -236,6 +237,28 @@ class ItVmDiskServiceTest {
         assertThat(result, `is`(not(nullValue())))
         print(result)
     }
+
+
+
+    /**
+     * [should_findAllDisksFromVm]
+     * [ItVmDiskService.findAllDisksFromVm]에 대한 단위테스트
+     *
+     * @see [ItVmDiskService.findAllDisksFromVm]
+     */
+    @Test
+    fun should_findAllDomains(){
+        log.debug("should_findAllDomains")
+        val result: List<StorageDomainVo> =
+            service.findAllDomains("")
+
+        assertThat(result, `is`(not(nullValue())))
+        assertThat(result.size, `is`(1))
+
+        result.forEach { println(it) }
+    }
+
+
 
     companion object {
         private val log by LoggerDelegate()

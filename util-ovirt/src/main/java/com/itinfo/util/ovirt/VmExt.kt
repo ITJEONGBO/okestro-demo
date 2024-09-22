@@ -594,10 +594,11 @@ fun Connection.removeDiskAttachmentToVm(vmId: String, diskAttachmentId: String, 
 	if(this.findDiskAttachmentFromVm(vmId, diskAttachmentId).isFailure){
 		throw ErrorPattern.DISK_ATTACHMENT_ID_NOT_FOUND.toError()
 	}
-//	val diskAttachUpdated: DiskAttachment? =
-//		this.srvDiskAttachmentFromVm(vmId, diskAttachmentId).remove().detachOnly()
-//		this.srvVm(vmId).diskAttachmentsService().attachmentService(diskAttachmentId).get().send().attachment().disk().active()
-
+//	val diskAttachUpdated: Boolean =
+//		this.srvDiskAttachmentFromVm(vmId, diskAttachmentId).remove().detachOnly(detachOnly).send()
+//
+//	diskAttachUpdated
+	//TODO 기능구현
 	false
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.DISK_ATTACHMENT, "삭제", vmId)
@@ -606,26 +607,17 @@ fun Connection.removeDiskAttachmentToVm(vmId: String, diskAttachmentId: String, 
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.removeMultipleDiskAttachmentToVm(vmId: String, diskAttachmentIds: List<String>): Result<Boolean> = runCatching {
 
-
-	false
-}.onSuccess {
-	Term.VM.logSuccessWithin(Term.DISK_ATTACHMENT, "삭제", vmId)
-}.onFailure {
-	Term.VM.logFailWithin(Term.DISK_ATTACHMENT,"삭제", it, vmId)
-	throw if (it is Error) it.toItCloudException() else it
-}
 
 fun Connection.activeDiskAttachmentToVm(vmId: String, diskAttachmentId: String, active: Boolean): Result<DiskAttachment> = runCatching {
-	if(this.findVm(vmId).isFailure){
-		throw ErrorPattern.VM_NOT_FOUND.toError()
-	}
-	val d: DiskAttachment = this.findDiskAttachmentFromVm(vmId, diskAttachmentId)
+	this.findVm(vmId).getOrElse {throw ErrorPattern.VM_NOT_FOUND.toError()}
+
+	val diskStatus: DiskAttachment = this.findDiskAttachmentFromVm(vmId, diskAttachmentId)
 		.getOrNull()?: throw ErrorPattern.DISK_ATTACHMENT_ID_NOT_FOUND.toError()
 
-	if(d.active() == active){
-		throw ErrorPattern.DISK_ATTACHMENT_VO_INVALID.toError()
+	// 활성화/비활성화 상태확인
+	if(diskStatus.active() == active){
+		throw ErrorPattern.DISK_ATTACHMENT_ACTIVE_INVALID.toError()
 	}
 
 	val diskAttachment: DiskAttachment =
@@ -685,7 +677,9 @@ private fun Connection.srvSnapshotFromVm(vmId: String, snapshotId: String): Snap
 	this.srvSnapshotsFromVm(vmId).snapshotService(snapshotId)
 
 fun Connection.findSnapshotFromVm(vmId: String, snapshotId: String): Result<Snapshot?> = runCatching {
-	/*val vm: Vm = */this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	this.findVm(vmId)
+		.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+
 	this.srvSnapshotFromVm(vmId, snapshotId).get().send().snapshot()
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.SNAPSHOT, "상세조회", vmId)

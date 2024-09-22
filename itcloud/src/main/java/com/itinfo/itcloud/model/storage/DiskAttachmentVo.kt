@@ -73,6 +73,17 @@ class DiskAttachmentVo(
 	}
 }
 
+fun DiskAttachment.toDiskAttachMenu(conn: Connection): DiskAttachmentVo {
+	val disk: Disk? =
+		conn.findDisk(this@toDiskAttachMenu.disk().id())
+			.getOrNull()
+	return DiskAttachmentVo.builder { 
+		id { this@toDiskAttachMenu.id() }
+		diskImageVo { disk?.toDiskIdName() }
+	}
+}
+
+
 fun DiskAttachment.toDiskAttachmentVo(conn: Connection): DiskAttachmentVo {
 	val disk: Disk? =
 		conn.findDisk(this@toDiskAttachmentVo.disk().id())
@@ -94,6 +105,8 @@ fun DiskAttachment.toDiskAttachmentVo(conn: Connection): DiskAttachmentVo {
 }
 fun List<DiskAttachment>.toDiskAttachmentVos(conn: Connection): List<DiskAttachmentVo> =
 	this@toDiskAttachmentVos.map { it.toDiskAttachmentVo(conn) }
+
+
 
 /**
  * DiskAttachmentBuilder
@@ -129,7 +142,7 @@ fun DiskAttachmentVo.toAttachDisk(): DiskAttachment =
  */
 fun DiskAttachmentVo.toEditDiskAttachment(): DiskAttachment =
 	this@toEditDiskAttachment.toDiskAttachment()
-		.disk(this@toEditDiskAttachment.diskImageVo.toAddDiskBuilder())
+		.disk(this@toEditDiskAttachment.diskImageVo.toEditDiskBuilder())
 		.build()
 
 /**

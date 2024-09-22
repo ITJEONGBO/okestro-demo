@@ -297,23 +297,20 @@ class StorageServiceImpl(
 
 ): BaseService(), ItStorageService {
 	override fun findAllDomains(): List<StorageDomainVo> {
+		log.debug("findAllStorageDomains ...")
 		val res: List<StorageDomain> =
 			conn.findAllStorageDomains()
 				.getOrDefault(listOf())
-		return res.toStorageDomainsMenu()
+		return res.toStorageDomainsMenu(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findAllDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
 		log.debug("findAllStorageDomainsFromDataCenter ... dcId: $dataCenterId")
-		conn.findDataCenter(dataCenterId)
-			.getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toException()
-
 		val res: List<StorageDomain> =
-			conn.findAllStorageDomains()
+			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
 				.getOrDefault(listOf())
-				.filter { !it.dataCentersPresent() || it.dataCenters().first().id() == dataCenterId }
-		return res.toStorageDomainVos(conn)
+		return res.toStorageDomainsMenu(conn)
 	}
 
 	@Throws(Error::class)

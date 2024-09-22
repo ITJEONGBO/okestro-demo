@@ -1,6 +1,7 @@
 package com.itinfo.itcloud.model.network
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.computing.findVmIp
@@ -8,6 +9,7 @@ import com.itinfo.itcloud.model.fromNetworkToIdentifiedVo
 import com.itinfo.itcloud.model.fromVnicProfileToIdentifiedVo
 import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.*
+import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.MacBuilder
 import org.ovirt.engine.sdk4.builders.NicBuilder
@@ -125,10 +127,9 @@ fun List<Nic>.toNicIdNames(): List<NicVo> =
 
 
 fun Nic.toNicVoFromVm(conn: Connection, vmId: String): NicVo {
-	val vm: Vm = conn.findVm(vmId).getOrNull() ?: run {
-		log.error("찾을 수 없는 VM")
-		return NicVo.builder { }
-	}
+	val vm: Vm =
+		conn.findVm(vmId)
+		.getOrNull() ?: throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 	val vmNic: Nic? =
 		conn.findNicFromVm(vm.id(), this@toNicVoFromVm.id())
 			.getOrNull()
@@ -180,6 +181,26 @@ fun Nic.toNicVoFromVm(conn: Connection, vmId: String): NicVo {
 }
 fun List<Nic>.toNicVosFromVm(conn: Connection, vmId: String): List<NicVo> =
 	this@toNicVosFromVm.map { it.toNicVoFromVm(conn, vmId) }
+
+fun Nic.toNicVoFromSnapshot(conn: Connection): NicVo {
+	val vnicProfile: VnicProfile? =
+		conn.findVnicProfile(this@toNicVoFromSnapshot.vnicProfile().id())
+			.getOrNull()
+	val networkId: String =
+		vnicProfile?.network()?.id() ?: "" // TODO: 없을 경우 예외처리
+	val network: Network? =
+		conn.findNetwork(networkId)
+			.getOrNull()
+	return NicVo.builder {
+		name { this@toNicVoFromSnapshot.name() }
+		networkVo { network?.fromNetworkToIdentifiedVo() }
+		vnicProfileVo { vnicProfile?.fromVnicProfileToIdentifiedVo() }
+		interface_ { this@toNicVoFromSnapshot.interface_() }
+		macAddress { if (this@toNicVoFromSnapshot.macPresent()) this@toNicVoFromSnapshot.mac().address() else null }
+	}
+}
+fun List<Nic>.toNicVosFromSnapshot(conn: Connection): List<NicVo> =
+	this@toNicVosFromSnapshot.map { it.toNicVoFromSnapshot(conn) }
 
 
 fun Nic.toNicVoFromTemplate(conn: Connection): NicVo {

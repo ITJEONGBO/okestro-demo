@@ -4,7 +4,9 @@ import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.fromApplicationsToIdentifiedVos
 import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.network.NicVo
+import com.itinfo.itcloud.model.network.toNicVosFromSnapshot
 import com.itinfo.itcloud.model.network.toNicVosFromVm
+import com.itinfo.itcloud.model.storage.DiskImageVo
 import com.itinfo.itcloud.ovirtDf
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
@@ -21,17 +23,18 @@ private val log = LoggerFactory.getLogger(SnapshotVo::class.java)
  * [SnapshotVo]
  *
  * @property id[String]
+ * @property description [String]
+ * @property date [String]
+ * @property persistMemory [Boolean] 메모리 저장 여부 f/t
+ * @property status [String]
  * @property vmVo [VmVo]
- * @property description[String]
- * @property date[String]
- * @property persistMemory[Boolean] 메모리 저장 여부 f/t
- * @property status[String]
- * @property setMemory[BigInteger] // 설정된 메모리
- * @property guaranteedMemory[BigInteger] 할당할 실제 메모리
- * @property cpuCore[Int]
  * @property snapshotDiskVos List<[SnapshotDiskVo]>
  * @property nicVos List<[NicVo]>
- * @property applicationVos List<[IdentifiedVo]>
+// * @property applicationVos List<[IdentifiedVo]>
+ *
+*   val setMemory: BigInteger = BigInteger.ZERO,
+*   val guaranteedMemory: BigInteger = BigInteger.ZERO,
+*   val cpuCore: Int = 0,
 // * @property saveMemory [Boolean] 스냅샷 생성창에서 필요
  */
 class SnapshotVo (
@@ -41,14 +44,9 @@ class SnapshotVo (
     val date: String = "",
     val persistMemory: Boolean = false,
     val status: String = "",
-    val setMemory: BigInteger = BigInteger.ZERO,
-    val guaranteedMemory: BigInteger = BigInteger.ZERO,
-    val cpuCore: Int = 0,
     val snapshotDiskVos: List<SnapshotDiskVo> = listOf(),
     val nicVos: List<NicVo> = listOf(),
-    val applicationVos: List<IdentifiedVo> = listOf(),
-
-//    val saveMemory: boolean = false
+//    val applicationVos: List<IdentifiedVo> = listOf(),
 ): Serializable {
     override fun toString(): String = gson.toJson(this)
 
@@ -59,14 +57,11 @@ class SnapshotVo (
         private var bDate: String = ""; fun date(block: () -> String?) { bDate= block() ?: "" }
         private var bPersistMemory: Boolean = false; fun persistMemory(block: () -> Boolean?) { bPersistMemory= block() ?: false }
         private var bStatus: String = ""; fun status(block: () -> String?) { bStatus= block() ?: "" }
-        private var bSetMemory: BigInteger = BigInteger.ZERO; fun setMemory(block: () -> BigInteger?) { bSetMemory= block() ?: BigInteger.ZERO }
-        private var bGuaranteedMemory: BigInteger = BigInteger.ZERO; fun guaranteedMemory(block: () -> BigInteger?) { bGuaranteedMemory= block() ?: BigInteger.ZERO }
-        private var bCpuCore: Int = 0; fun cpuCore(block: () -> Int?) { bCpuCore= block() ?: 0 }
         private var bSnapshotDiskVos: List<SnapshotDiskVo> = listOf(); fun snapshotDiskVos(block: () -> List<SnapshotDiskVo>?) { bSnapshotDiskVos = block() ?: listOf() }
         private var bNicVos: List<NicVo> = listOf(); fun nicVos(block: () -> List<NicVo>?) { bNicVos = block() ?: listOf() }
-        private var bApplicationVos: List<IdentifiedVo> = listOf(); fun applicationVos(block: () -> List<IdentifiedVo>?) { bApplicationVos = block() ?: listOf() }
+//        private var bApplicationVos: List<IdentifiedVo> = listOf(); fun applicationVos(block: () -> List<IdentifiedVo>?) { bApplicationVos = block() ?: listOf() }
 
-        fun build(): SnapshotVo = SnapshotVo( bId, bVmVo, bDescription, bDate, bPersistMemory, bStatus, bSetMemory, bGuaranteedMemory, bCpuCore, bSnapshotDiskVos, bNicVos, bApplicationVos)
+        fun build(): SnapshotVo = SnapshotVo( bId, bVmVo, bDescription, bDate, bPersistMemory, bStatus, bSnapshotDiskVos, bNicVos,)
     }
 
     companion object {
@@ -77,20 +72,19 @@ class SnapshotVo (
 
 @Throws(Error::class)
 fun Snapshot.toSnapshotVo(conn: Connection, vmId: String): SnapshotVo {
-    val vm: Vm = conn.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+    val vm: Vm =
+        conn.findVm(vmId)
+            .getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 
-    val disks: List<Disk?> = if (this@toSnapshotVo.vmPresent())
+    val disks: List<Disk> =
         conn.findAllSnapshotDisksFromVm(vmId, this@toSnapshotVo.id())
             .getOrDefault(listOf())
-    else
-        conn.findAllDiskAttachmentsFromVm(vmId)
+    val nics: List<Nic> =
+        conn.findAllSnapshotNicsFromVm(vmId, this@toSnapshotVo.id())
             .getOrDefault(listOf())
-            .map { conn.findDisk(it.disk().id()).getOrNull() }
-    val snapshotDiskVos: List<SnapshotDiskVo> =
-        disks.filterNotNull().toSnapshotDiskVosd(conn, vmId)
-    val applications: List<Application> =
-        conn.findAllApplicationsFromVm(vmId)
-        .getOrDefault(listOf())
+
+//    val applications: List<Application> =
+//        conn.findAllApplicationsFromVm(vmId).getOrDefault(listOf())
 
     return SnapshotVo.builder {
         id { this@toSnapshotVo.id() }
@@ -98,19 +92,12 @@ fun Snapshot.toSnapshotVo(conn: Connection, vmId: String): SnapshotVo {
         date { if (this@toSnapshotVo.vmPresent()) ovirtDf.format(this@toSnapshotVo.date().time) else "현재" }
         status { this@toSnapshotVo.snapshotStatus().value() }
         persistMemory { this@toSnapshotVo.persistMemorystate() }
-        setMemory { vm.memory() }
-        guaranteedMemory { vm.memoryPolicy().guaranteed() }
-        cpuCore {
-            vm.cpu().topology().coresAsInteger() *
-            vm.cpu().topology().socketsAsInteger() *
-            vm.cpu().topology().threadsAsInteger()
-        }
-        snapshotDiskVos { snapshotDiskVos }
-        nicVos { this@toSnapshotVo.nics().toNicVosFromVm(conn, vm.id()) }
-        applicationVos { applications.fromApplicationsToIdentifiedVos() }
+        vmVo { vm.toVmSystem(conn) }
+        snapshotDiskVos { disks.toSnapshotDiskVos(conn) }
+        nicVos { nics.toNicVosFromSnapshot(conn) }
+//        applicationVos { applications.fromApplicationsToIdentifiedVos() }
     }
 }
-
 @Throws(Error::class)
 fun List<Snapshot>.toSnapshotVos(conn: Connection, vmId: String): List<SnapshotVo> =
     this@toSnapshotVos.map { it.toSnapshotVo(conn, vmId) }
