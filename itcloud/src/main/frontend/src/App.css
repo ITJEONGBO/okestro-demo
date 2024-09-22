@@ -20,6 +20,24 @@ button{
     border-radius: 3px;
     padding: 0 0.1rem;
 }
+form{
+    width: 100%;
+}
+form>div{
+    font-size: 0.32rem;
+}
+.Overlay {
+ 
+    background-color: rgba(116, 115, 115, 0.555); /* 회색 배경 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 #section,#storage_section,#network_section,#setting_section,#detail_section{
     background-color: #ffffff;
     border-radius: 5px;
@@ -214,11 +232,6 @@ button{
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 }
-
-
-
-
-
 .host_btn_outer{
     width: 100%;
     padding: 0.5rem 0.3rem;
@@ -445,6 +458,10 @@ input[type="submit"]{
     border-radius: 3px;
     padding: 0 0.1rem;
 }
+input[type="text"]:focus {
+    box-shadow: 0 0 8px rgba(22, 90, 190, 0.8);
+    outline: none;
+}
     /*info 설명박스*/
 .tooltip-box {
     background-color: #333; 
@@ -491,6 +508,10 @@ input[type="submit"]{
     background-color:#add0e1;
 }
 
+.network_new_nav div.active {
+    background: #e4e4e4;
+    color: #449bff;
+}
 .edit_aside {
     width: 100%;
     height: 7%;
@@ -549,6 +570,79 @@ input[type="submit"]{
     display:flex;
     justify-content: space-between;
 }
+/*호스트 네트워크설정*/
+.vnic_new_content_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 80.4vh;
+    width: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+    }
+.vnic_new_contents{
+    font-size: 0.33rem;
+}
+
+.vnic_new_box{
+    padding: 1.2% 0.3rem;
+    display: flex;
+    justify-content: space-between;
+}
+.vnic_new_box>input,.vnic_new_box>select{
+    width: 50%;
+    height: 3.5vh;
+    border: 1px solid #8b8989;
+    background: white;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+    outline: none;
+}
+.vnic_new_checkbox{
+    padding: 1.2% 0.3rem;
+    display:flex;
+}
+.vnic_new_checkbox input{
+    margin-right: 0.2rem;
+}
+.vnic_new_inputs{
+    padding: 1.2% 0.3rem;
+}
+
+.vnic_new_buttons{
+    display: flex;
+    justify-content: space-between;
+}
+.vnic_new_buttons>div{
+    display: flex;
+    width: 8%;
+}
+.vnic_new_buttons>div>div{
+    width: 50%;
+    border: 1px solid #8b8989;
+    text-align: center;
+    font-size: 0.4rem;
+    font-weight: 800;
+    border-radius: 3px;
+    color: #8b8989;
+    cursor: pointer;
+}
+.vnic_new_inputs select{
+    width: 30%;
+    height: 3.5vh;
+    border: 1px solid #8b8989;
+    background: white;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+    outline: none;
+}
+
 /* 중복끝 */
 
 
@@ -1008,8 +1102,6 @@ input[type="submit"]{
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
-
-
 #domain_article_outer{
     padding: 8px 13px;
     background-color: rgb(255, 255, 255);
@@ -1592,25 +1684,6 @@ input[type="submit"]{
     border: none;
 }
 
-#disk_content td:first-child
-#disk_content td:nth-child(3),
-#disk_content td:nth-child(4),
-#disk_content td:nth-child(5),
-#disk_content th:first-child,
-#disk_content th:nth-child(3),
-#disk_content th:nth-child(4),
-#disk_content th:nth-child(5)
-{
-    text-align: center;
-}
-#disk_content tbody tr:hover {
-    background-color: #ebececd8;
-    cursor: pointer;
-}
-
-#disk_content tbody td {
-    white-space: nowrap;
-}
 /*디스크팝업*/
     /*새로만들기*/
 .disk_popup_outer{
@@ -1953,161 +2026,9 @@ input[disabled] {
     font-size: 0.34rem;
     padding: 2.5%;
 }
-/*애플리케이션*/
-#application_content{
-    padding: 1.2rem 0.3rem;
-    
-}
 
 
-#application_content table,.pregroup_content table {
-    width: 100%;
-    border-collapse: collapse;
-}
 
-#application_content th, #application_content td,
-.pregroup_content th, .pregroup_content td
- {
-    border: 1px solid #ddd;
-    font-size: 0.3rem;
-    padding: 0.03rem 0.2rem 0.03rem 0.2rem;
-    text-align: left;
-}
-#application_content td,.pregroup_content td{
-    cursor: pointer;
-}
-#application_content td:hover,.pregroup_content tbody tr:hover{
-    background-color: #ebececd8;
-}
-#application_content thead th,.pregroup_content thead th{
-    background-color: #d1e2eb;
-    font-weight: bold;
-}
-/*선호도 그룹 팝업(새로만들기)*/
-.pregroup_create_outer{
-    position: fixed; /* 변경 */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000; /* 추가 */
-}
-.pregroup_create{
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 63%;
-    width: 41%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-    z-index: 1001;
-}
-#pregroup_create_content{
-    padding: 0 0.2rem;
-}
-.snap_create_inputbox{
-    display: flex;
-    font-size: 0.34rem;
-}
-.snap_create_inputbox>div{
-    position: relative;
-}
-#pregroup_create_content i{
-    color:#1ba4e4;
-    cursor: pointer;
-    font-size: 0.4rem;
-    position: absolute;
-    top: 0.079rem;
-    right: -0.45rem;
-}
-.pregroup_create_select{
-    display: flex;
-    justify-content: space-between;
-    width: 55%;
-}
-.pregroup_create_select>div:first-child{
-    width: 60%;
-}
-.pregroup_create_select select{
-    width: 100%;
-    height: 3.5vh;
-    border: 1px solid #8b8989;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem; 
-    outline: none;
-} 
-.pregroup_create_buttons{
-    padding:0 3.4%;
-    display: flex;
-    justify-content: space-between;
-}
-.pregroup_buttons_content{
-    width: 45%;
-}
-.pregroup_buttons_content label{
-    font-size: 0.34rem;
-}
-.pregroup_buttons_select{
-    padding-top: 0.2rem;
-    display: flex;
-    justify-content: space-between;
-}
-.pregroup_buttons_select>div:first-child{
-    width: 70%;
-    font-size: 0.34rem;
-}
-.pregroup_buttons_select>div:nth-child(2){
-    width: 20%;
-    display: flex;
-   
-}
-
-.pregroup_buttons_select select{
-    width: 100%;
-    height: 3.5vh;
-    border: 1px solid #8b8989;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem; 
-    outline: none;
-}
-.pregroup_buttons_select button{
-    width: 50%;
-    height: 100%;
-    font-size: 0.44rem;
-    font-weight: 800;
-    cursor: pointer;
-}
-/*선호도레이블(새로만들기) 팝업*/
-.lable_create_outer{
-    position: fixed; /* 변경 */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000; /* 추가 */
-}
-.lable_create{
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 42%;
-    width: 58%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-    z-index: 1001; /* 추가 */
-}
 /*권한*/
 #power_outer span{
     margin-right: 0.2rem;
@@ -2119,7 +2040,7 @@ input[disabled] {
     text-align: center;
 }
 
-/*권한 팝업창(추가)*/
+
 /*편집팝업*/
 /*템플릿 생성*/
 .domain_header{
@@ -2259,45 +2180,8 @@ input[disabled] {
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
     z-index: 1000; /* #edit_popup_bg 보다 위에 표시되도록 z-index 설정 */
 }
-.edit_header{
-    background-color: #ebebeb;
-    display: flex;
-    padding: 8px 13px;
-    justify-content: space-between;
-    font-size: 0.18rem;
-}
-.edit_header>h1{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.edit_header>button{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 1px;
-    border: none;
-    padding: 11px;
-    border-radius: 50%;
-    font-size: 0.38rem;
-    cursor: pointer;
-    background-color: #ebebeb;
-}
-.edit_header>button:hover{
-    background-color: #DDDDDD;
-}
+
 /*중간*/
-
-
-form{
-    width: 100%;
-}
-
-form>div
-{
-    font-size: 0.32rem;
-
-}
 
 .edit_second_content>div,#host_third_content>div{
     display: flex;
@@ -2372,24 +2256,7 @@ form>div
     margin-bottom: 0.2rem;
     display: block;
 }
-.edit_fourth_content_select{
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-}
-.edit_fourth_content_select>div:first-child{
-    width: 50%;
-    display: flex;
-    justify-content: space-between;
-}
 
-.edit_fourth_content_select select{
-    width: 77%;
-    height: 3.3vh;
-    padding: 0 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
-}
 
 #host_outer,
 #ha_mode_outer,
@@ -2546,9 +2413,6 @@ form>div
 
 
 /*스토리지 section*/
-
-
-
 #setting_user_section,
 .host_detail_section
 {
@@ -2603,7 +2467,7 @@ form>div
 }
 
 /*테이블설정*/
-.storage_domain_content table
+/* .storage_domain_content table
 {
     border-collapse: collapse;
     width: 100%;
@@ -2634,9 +2498,9 @@ form>div
 .storage_domain_content table td:first-child,
 .storage_domain_content table td:nth-child(2){
     text-align: center;
-}
+} */
 /*볼륨*/
-.empty_table{
+/* .empty_table{
     border: 1px solid rgb(204, 204, 204);
     width: 100%;
     height: 20vh;
@@ -2652,7 +2516,9 @@ form>div
     top: 30%;
     left: 50%;
     transform: translate(-50%, -50%);
-}
+} */
+
+
 /*논리 네트워크*/
 /*권한*/
 .storage_right_btns{
@@ -2689,7 +2555,6 @@ form>div
     left: 0;
     width: 100%;
     height: 100%;
-    
 
 }
 .storage_disk_new_popup{
@@ -2751,11 +2616,7 @@ form>div
 }
 
 
-/* 번짐 효과를 위한 CSS */
-input[type="text"]:focus {
-    box-shadow: 0 0 8px rgba(22, 90, 190, 0.8); /* 파란색 번짐 효과 */
-    outline: none; /* 기본 아웃라인 제거 */
-  }
+
 
 #domain_hidden_box_btn,#domain_hidden_box_btn2{
     cursor: pointer;   
@@ -2807,19 +2668,6 @@ display: flex; /* Flexbox 설정 추가 */
 
     /*볼륨(새로 만들기*/
 
-      
-      .Overlay {
-        /* 오버레이 스타일 */
-        background-color: rgba(116, 115, 115, 0.555); /* 회색 배경 */
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
 .storage_volume_new_popup{
     border: 1px solid #dfdddd;
     position: absolute;
@@ -2921,102 +2769,7 @@ display: flex; /* Flexbox 설정 추가 */
     text-align: left;
 }
 /*------------------------------------------------------------*/
-/*설정(setting_section)*/
-#setting_section .section_header,#setting_user_section .section_header{
-    border-bottom: none;
-    padding: 0.4rem;
-}
-#setting_section .section_header_left>div ,#setting_user_section .section_header_left>div{
-    font-size: 0.4rem;
-}
 
-#setting_chart>div{
-    padding: 0.1rem;
-    font-size: 2rem;
-}
-#setting_chart i{
-   margin-right: 0.1rem;
-}
-
-    /*설정(설정)팝업*/
-.setting_setting_outer{
-    display: none;
-    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 3;
-}
-.setting_setting_popup{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 87%;
-    width: 48%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-}
-.setting_setting_popup>form{
-    padding: 0.2rem 0.4rem;
-}
-    /*설정(설정->역할)*/
-#setting_part_form>div:first-child{
-    padding: 0.2rem 0;
-    font-weight: 600;
-}
-.setting_part_nav{
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.34rem;
-    margin-bottom: 0.3rem;
-}
-
-
-.network_new_nav div.active {
-    background: #e4e4e4;
-    color: #449bff;
-}
-
-
-
-
-    /*설정(사용자)*/
-.setting_user_buttons{
-    display: flex;
-    font-size: 0.36rem;
-}
-.setting_user_buttons>div{
-    border: 1px solid black;
-    cursor: pointer;
-    margin-left: 0.1rem;
-}
-.setting_user_new_outer{
-    display: none;
-    position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
-.setting_user_new_popup{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 75%;
-    width: 50%;
-    z-index: 3;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-}
 /*네트워크(편집 위에있는거)팝업*/
 .network_new_outer2{
     display: none;
@@ -3042,14 +2795,7 @@ display: flex; /* Flexbox 설정 추가 */
 /*네트워크(새로만들기)팝업*/
 
 /*네트워크 */
-/*네트워크(가져오기)*/
 
-.network_bring_outer .network_form_group{
-    font-size: 0.34rem;
-    padding: 0.4rem;
-}
-
-/*NetworkDetail*/
 
 /*클러스터(네트워크 관리)*/
 .network_popup_table{
@@ -3098,78 +2844,9 @@ display: flex; /* Flexbox 설정 추가 */
 .host_network_header>i{
     margin-right: 0.2rem;
 }
-.host_network_top{
-    padding: 0.3rem;
-    display: flex;
-    justify-content: space-between;
-}
-.host_network_top_left{
 
-    width: 62%;
-}
-.host_network_top_right{
 
-    width: 35%;
-}
-.host_network_top{
-    height: 44vh;
-    font-size: 0.33rem;
-}
-.interface_logical{
-    display: flex;
-    text-align: center;
-    height: 17%;
-}
-.interface_logical>div{
-    display: flex;
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-    width: 50%;
-    height: 100%;
-  
-}
-.interface_logical_icon{
-   background-color: #e0e0e0;
-    height: 17%;
-    border-radius: 3px;
-    display: flex;
-    align-items: center; /* 수직 가운데 정렬 */
-    justify-content: space-between;
-    font-size: 0.35rem;
-    padding: 0 0.2rem ;
-}
-.interface_logical_icon>div:nth-child(1){
-    width: 40%;
-    display: flex;
-    align-items: center; /* 수직 가운데 정렬 */
-    padding-left: 0.3rem;
-}
-.interface_logical_icon>div:nth-child(2){
-    width: 10%;
-    display: flex;
-    font-size: 0.7rem;
-    align-items: center; /* 수직 가운데 정렬 */
-}
-.interface_logical_icon>div:nth-child(3){
-    width: 50%;
-    display: flex;
-    align-items: center; /* 수직 가운데 정렬 */
-    padding-left: 0.3rem;
-    justify-content: space-between;
-}
-.interface_logical_icon>div>i{
-    margin-right: 0.14rem;
-}
-.interface_logical_icon button{
-    padding: 0.06rem; 
-    background-color: #e0e0e0;
-    cursor: pointer;
-    border: 1px solid #8b8989;
-}
-.interface_logical_icon button>i{
-    display: flex;
-    align-items: center; /* 수직 가운데 정렬 */
-}
+
 .host_right_btns{
     display: flex;
     align-items: center; /* 수직 가운데 정렬 */
@@ -3178,28 +2855,7 @@ display: flex; /* Flexbox 설정 추가 */
 .host_right_btns>button{
     padding: 0.06rem 0.14rem;
 }
-.unassigned_logical{
-    height: 43%;
-}
-.unassigned_logical>div{
-    height: 30%;
-    margin-bottom: 0.1rem;
-    display: flex;
-    align-items: center; /* 수직 가운데 정렬 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    background-color: #8fadd3;
-}
-.external_logical{
-    display: flex;
-}
-.external_logical>i,.host_network_bottom>div>i{
-    display: flex;
-    align-items: center; /* 수직 가운데 정렬 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    color: #0066CC;
-    margin-left: 0.1rem;
-    
-}
+
 .host_network_bottom{
     border-top: 1px solid #d1d1d1;
 }

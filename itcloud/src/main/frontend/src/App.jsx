@@ -93,6 +93,7 @@ const App = () => {
           <Header setAuthenticated={setAuthenticated} />
           <MainOuter>
             <Routes>
+            <Route path="/" element={<Dashboard />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/computing/datacenters" element={<Computing />} />
               {/* <Route path="/computing/datacenter/:name" element={<DataCenterDetail />} /> */}

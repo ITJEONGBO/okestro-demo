@@ -26,77 +26,6 @@
     font-weight: 600;
 }
 /*vNic프로파일(새로만들기)*/
-.vnic_new_content_popup{
-    border: 1px solid #dfdddd;
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 80.4vh;
-    width: 45%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-    }
-.vnic_new_contents{
-    font-size: 0.33rem;
-}
-
-.vnic_new_box{
-    padding: 1.2% 0.3rem;
-    display: flex;
-    justify-content: space-between;
-}
-.vnic_new_box>input,.vnic_new_box>select{
-    width: 50%;
-    height: 3.5vh;
-    border: 1px solid #8b8989;
-    background: white;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
-    outline: none;
-}
-.vnic_new_checkbox{
-    padding: 1.2% 0.3rem;
-    display:flex;
-}
-.vnic_new_checkbox input{
-    margin-right: 0.2rem;
-}
-.vnic_new_inputs{
-    padding: 1.2% 0.3rem;
-}
-
-.vnic_new_buttons{
-    display: flex;
-    justify-content: space-between;
-}
-.vnic_new_buttons>div{
-    display: flex;
-    width: 8%;
-}
-.vnic_new_buttons>div>div{
-    width: 50%;
-    border: 1px solid #8b8989;
-    text-align: center;
-    font-size: 0.4rem;
-    font-weight: 800;
-    border-radius: 3px;
-    color: #8b8989;
-    cursor: pointer;
-}
-.vnic_new_inputs select{
-    width: 30%;
-    height: 3.5vh;
-    border: 1px solid #8b8989;
-    background: white;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
-    outline: none;
-}
 
 /*클러스터(네트워크 관리)*/
 .manage_network_popup{
@@ -195,7 +124,6 @@
 .network_filter_btns{
     margin-bottom: 0.2rem;
     border-radius:3px;
-    border:1px solid gray;
     width: 50%;
 }
 .network_filter_btns>button{

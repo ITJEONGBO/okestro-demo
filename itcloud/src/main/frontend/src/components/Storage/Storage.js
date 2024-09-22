@@ -686,7 +686,7 @@ const Storage = () => {
         </div>
       </Modal>
 
-      {/*도메인(도메인 가져오기)팝업  위와동일*/}
+      {/*도메인(도메인 가져오기)팝업  위와동일 일단 버튼을 눌렀을때 위 팝업이 열리게해놓음*/}
       {/* <Modal
         isOpen={activePopup === 'getDomain'}
         onRequestClose={closePopup}

@@ -385,3 +385,14 @@
   padding: 0.25rem;
 
 }
+  /*설정(설정->역할)*/
+  #setting_part_form>div:first-child{
+    padding: 0.2rem 0;
+    font-weight: 600;
+}
+.setting_part_nav{
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.34rem;
+    margin-bottom: 0.3rem;
+}
