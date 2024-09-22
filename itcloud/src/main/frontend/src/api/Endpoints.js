@@ -19,28 +19,33 @@ const ENDPOINTS = {
   
   //region: DataCenter
   FIND_ALL_DATA_CENTERS: () =>  `/api/v1/computing/datacenters`,
-  FIND_ALL_CLUSTERS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/clusters`,
+  FIND_DATA_CENTER: (dataCenterId) =>  `/api/v1/computing/datacenters/${dataCenterId}`, 
+  FIND_CLUSTERS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/datacenters/${dataCenterId}/clusters`, 
+  FIND_STORAGE_DOMAINS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/datacenters/${dataCenterId}/domains`, 
+  FIND_EVENTS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/datacenters/${dataCenterId}/events`, 
+  FIND_NETWORKS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/datacenters/${dataCenterId}/networks`, 
   //endregion: DataCenter
+
+  // region: Cluster
+  FIND_ALL_CLUSTERS: () =>      `/api/v1/computing/clusters`,
+  FIND_CLUSTERS_BY_ID: (clusterId) =>  `/api/v1/computing/clusters/${clusterId}`, 
+  FIND_CPU_PROFILES_FROM_CLUSTERS:(clusterId) =>  `/api/v1/computing/clusters/${clusterId}/cpuProfiles`, 
+  FIND_LOGICAL_FROM_CLUSTERS:(clusterId) =>  `/api/v1/computing/clusters/${clusterId}/networks`, 
+  FIND_HOST_FROM_CLUSTERS:(clusterId) =>  `/api/v1/computing/clusters/${clusterId}/hosts`, 
+  FIND_VM_FROM_CLUSTERS:(clusterId) =>  `/api/v1/computing/clusters/${clusterId}/vms`, 
+  FIND_PERMISSIONS_FROM_CLUSTERS:(clusterId) =>  `/api/v1/computing/clusters/${clusterId}/permissions`, 
+  FIND_EVENTS_FROM_CLUSTERS: (clusterId) => `/api/v1/computing/clusters/${clusterId}/events`,
+  // endregion: Cluster
 
   //region: Host
   FIND_ALL_HOSTS: () =>  `/api/v1/computing/hosts`,
+  FIND_HOST: (hostId) =>  `/api/v1/computing/hosts/${hostId}`, 
   //endregion: Host
 
   //region: Vm/Template
   FIND_ALL_VM_CHART: () =>  `/api/v1/computing/vms`,
   FIND_ALL_TEMPLATE_CHART :() =>  `/api/v1/computing/templates`,
   //endregion: Vm/Template
-
-
-  // region: Cluster
-  FIND_ALL_CLUSTERS: () =>      `/api/v1/computing/clusters`,
-  FIND_CLUSTERS_BY_ID: (clusterId) =>  `/api/v1/computing/clusters/${clusterId}`, 
-  FIND_LOGICAL_FROM_CLUSTERS:(clusterId) =>  `/api/v1/computing/clusters/${clusterId}/networks`, 
-  FIND_HOST_FROM_CLUSTERS:(clusterId) =>  `/api/v1/computing/clusters/${clusterId}/hosts`, 
-  FIND_VM_FROM_CLUSTERS:(clusterId) =>  `/api/v1/computing/clusters/${clusterId}/vms`, 
-  FIND_PERMISSIONS_FROM_CLUSTERS:(clusterId) =>  `/api/v1/computing/clusters/${clusterId}/permissions`, 
-  FIND_EVENT_FROM_CLUSTERS: (clusterId) => `/api/v1/computing/clusters/${clusterId}/events`,
-  // endregion: Cluster
 
   //region: Network
   FIND_ALL_NETWORKS: () =>      `/api/v1/networks`,

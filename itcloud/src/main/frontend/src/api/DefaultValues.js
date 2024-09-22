@@ -1,4 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { version } from 'react';
 
 const DEFAULT_VALUES = {
   FIND_ALL_TREE_NAVIGATIONS: {
@@ -50,6 +51,38 @@ const DEFAULT_VALUES = {
             description: 'The default Data Center',
         },
    ],
+   // 데이터센터 세부(일반) 편집
+   FIND_DATACENTER:[
+    {
+      id: '40dc4bc6-9016-4a90-ae86-f3d36095a29f',
+      name: 'Default', 
+      description: '', 
+      storageType: "shared",
+      version: "4.7",
+      quotaMode: 'Disabled',
+      comment: '',
+    }
+  ],
+  FIND_CLUSTERS_FROM_DATA_CENTER:[
+    {
+      id: '',
+      name: '', 
+    }
+  ],
+  FIND_STORAGE_DOMAINS_FROM_DATA_CENTER:[
+    {
+      id: '',
+      name: '', 
+    }
+  ],
+  FIND_NETWORKS_FROM_DATA_CENTER:[
+    {
+      id: '',
+      name: '', 
+    }
+  ],
+  
+
 //region:Cluster------ 클러스터
   FIND_ALL_CLUSTERS: [
     {
@@ -120,7 +153,7 @@ const DEFAULT_VALUES = {
       correlationId: '',
       source: 'oVirt',
       userEventId: '',
-  },
+    },
   ],
 
 //region: Network------네트워크-----------
@@ -312,6 +345,19 @@ FIND_ALL_TEMPLATES:[
         description: '',
       }
     ],
+
+
+    FIND_EVENT:[
+      {
+        icon: <FontAwesomeIcon icon="fa-solid fa-check-circle" style={{ color: 'green' }}fixedWidth/>,  // 상태 아이콘
+        time: '2024. 8. 12. PM 12:24:11',
+        description: 'Check for update of host host02.ititinfo.com. Delete yum_updates file from host.',
+        correlationId: '',
+        source: 'oVirt',
+        userEventId: '',
+      },
+    ],
 }
+
 
 export default DEFAULT_VALUES

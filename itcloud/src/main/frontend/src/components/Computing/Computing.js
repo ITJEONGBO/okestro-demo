@@ -7,6 +7,7 @@ import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAllDataCenters } from '../../api/RQHook';
+import { useDataCenter } from '../../api/RQHook';
 import { faPencil, faArrowUp, faRefresh, faTimes } from '@fortawesome/free-solid-svg-icons'
 import './css/Computing.css';
 import TableOuter from '../table/TableOuter';
@@ -47,11 +48,11 @@ const Computing = () => {
     */
     const {
       data: datacenters,
-      status: datacenterStatus,
+      status: datacentersStatus,
       isRefetching: isDatacentersRefetching,
       refetch: refetchDatacenters,
       isError: isDatacentersError,
-      error: datacenterError,
+      error: datacentersError,
       isLoading: isDatacentersLoading
     } = useAllDataCenters((e) => {
         //DATACENTERS
@@ -66,6 +67,27 @@ const Computing = () => {
           description: e?.description ?? '설명없음',
         }
     });
+
+    const {
+        data: datacenter,
+        status: datacenterStatus,
+        isRefetching: isDatacenterRefetching,
+        refetch: refetchDatacenter,
+        isError: isDatacenterError,
+        error: datacenterError,
+        isLoading: isDatacenterLoading
+      } = useDataCenter((e) => {
+          //DATACENTER
+          return {
+            id: '40dc4bc6-9016-4a90-ae86-f3d36095a29f',
+            name: e?.name ?? '',
+            description: e?.description ?? '', 
+            storageType: e?.storageType ? '로컬' : '공유됨',
+            compatVersion: e?.version ?? '4.7',            
+            quotaMode: e?.quotaMode ?? 'Disabled',
+            comment: e?.comment ?? '',
+          }
+      });
 
     // const handleRowClick = (row, column) => {
     //     console.log(`handleRowClick ... id: ${row.id}`)
@@ -169,7 +191,7 @@ const Computing = () => {
             >
                 <div className="datacenter_new_popup">
                     <div className="popup_header">
-                        <h1>데이터센터 수정</h1>
+                        <h1>데이터센터 편집</h1>
                         <button onClick={closeEditModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                     </div>
 

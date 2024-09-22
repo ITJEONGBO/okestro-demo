@@ -27,25 +27,6 @@ export const useAllTreeNavigations = (type = "none", mapPredicate = null) => use
 });
 //endregion
 
-//region: DataCenter ----------------데이터센터----------------
-/**
- * @name useAllDataCenters
- * @description 데이터센터 목록조회 useQuery훅
- *
- * @param {function} mapPredicate 객체 변형 처리
- */
-export const useAllDataCenters = (mapPredicate) => useQuery({
-  refetchOnWindowFocus: true,
-  queryKey: ['allDataCenters'],
-  queryFn: async () => {
-    const res = await ApiManager.findAllDataCenters()
-    // setShouldRefresh(prevValue => false)
-    return res?.map((e) => mapPredicate(e)) ?? []
-  }
-})
-//endregion: DataCenter
-
-
 //region: Dashboard
 export const useDashboard = (mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
@@ -110,6 +91,43 @@ export const useDashboardStorageMemory = (mapPredicate) => useQuery({
 //endregion
 
 
+//region: DataCenter ----------------데이터센터----------------
+/**
+ * @name useAllDataCenters
+ * @description 데이터센터 목록조회 useQuery훅
+ *
+ * @param {function} mapPredicate 객체 변형 처리
+ */
+export const useAllDataCenters = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['allDataCenters'],
+  queryFn: async () => {
+    const res = await ApiManager.findAllDataCenters()
+    // setShouldRefresh(prevValue => false)
+    return res?.map((e) => mapPredicate(e)) ?? []
+  }
+})
+/**
+ * @name useDataCenter
+ * @description 데이터센터 정보 useQuery훅
+ *
+ * @param {function} mapPredicate 객체 변형 처리
+ */
+export const useDataCenter = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['dataCenter'],
+  queryFn: async () => {
+    const res = await ApiManager.findDataCenter()
+    // setShouldRefresh(prevValue => false)
+    return res?.map((e) => mapPredicate(e)) ?? []
+  }
+})
+
+
+
+//endregion: DataCenter
+
+
 //region: Cluster ----------------클러스터---------------------
 /**
  * @name useAllClusters
@@ -122,6 +140,7 @@ export const useAllClusters = (mapPredicate) => useQuery({
   queryKey: ['allClusters'],
   queryFn: async () => {
     const res = await ApiManager.findAllClusters()
+    // const res = await ApiManager.findAllClustersFromDataCenter()
     // setShouldRefresh(prevValue => false)
     return res?.map((e) => mapPredicate(e)) ?? []
   }

@@ -157,17 +157,63 @@ const ApiManager = {
     url: ENDPOINTS.FIND_ALL_DATA_CENTERS(), 
     defaultValues: DEFAULT_VALUES.FIND_ALL_DATA_CENTERS
   }),
+    /**
+   * @name ApiManager.findDataCenter
+   * @description datacenter
+   *
+   * @returns 
+   * 
+   * @see Computing.js (components/Computing)
+   */
+    findDataCenter: async () => makeAPICall({
+      method: "GET", 
+      url: ENDPOINTS.FIND_DATA_CENTER(), 
+      defaultValues: DEFAULT_VALUES.FIND_DATACENTER
+    }),
   /**
    * @name findAllClustersFromDataCenter
    * @description 
    * 
    * @returns 
    */
-  findAllClusters: async () => makeAPICall({
+  findAllClustersFromDataCenter: async () => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_ALL_CLUSTERS(), 
+    url: ENDPOINTS.FIND_CLUSTERS_FROM_DATA_CENTER(), 
+    defaultValues: DEFAULT_VALUES.FIND_CLUSTERS_FROM_DATA_CENTER
+  }),
+  /**
+   * @name findAllDomainsFromDataCenter
+   * @description 
+   * 
+   * @returns 
+   */
+  findAllDomainsFromDataCenter: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_STORAGE_DOMAINS_FROM_DATA_CENTER(), 
     defaultValues: DEFAULT_VALUES.FIND_ALL_CLUSTERS
   }),
+  /**
+   * @name findAllEventsFromDataCenter
+   * @description 
+   * 
+   * @returns 
+   */
+  findAllEventsFromDataCenter: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_EVENTS_FROM_DATA_CENTER(), 
+    defaultValues: DEFAULT_VALUES.FIND_EVENT
+  }),
+    /**
+   * @name findAllNetworksFromDataCenter
+   * @description 
+   * 
+   * @returns 
+   */
+    findAllNetworksFromDataCenter: async () => makeAPICall({
+      method: "GET", 
+      url: ENDPOINTS.FIND_NETWORKS_FROM_DATA_CENTER(), 
+      defaultValues: DEFAULT_VALUES.FIND_NETWORKS_FROM_DATA_CENTER
+    }),
 
   //endregion: DataCenter
 
@@ -176,6 +222,11 @@ const ApiManager = {
    * 
    * @returns 
    **/
+  findAllClusters: async ()  => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_CLUSTERS(), 
+    defaultValues: DEFAULT_VALUES.FIND_ALL_CLUSTERS
+  }),
   findAllClusterById: async (clusterId) => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_CLUSTERS_BY_ID(clusterId), 
