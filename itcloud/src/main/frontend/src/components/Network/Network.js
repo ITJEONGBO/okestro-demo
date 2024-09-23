@@ -88,7 +88,7 @@ const Network = ({ }) => {
     return (
         <div id="network_section">
             <HeaderButton
-              title="네트워크"
+              title="Network Chart"
               buttons={sectionHeaderButtons}
               popupItems={[]}
             />

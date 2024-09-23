@@ -25,6 +25,8 @@ import { Toaster, toast } from 'react-hot-toast';
 import './App.css';
 import TemplateDetail from './components/Computing/TemplateDetail';
 import Templates from './components/Computing/Templates';
+import AllVm from './components/Computing/AllVm';
+import AllDisk from './components/Storage/AllDisk';
 
 const App = () => {
   const [stompClient, setStompClient] = useState(null);
@@ -96,13 +98,14 @@ const App = () => {
             <Route path="/" element={<Dashboard />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/computing/datacenters" element={<Computing />} />
-              {/* <Route path="/computing/datacenter/:name" element={<DataCenterDetail />} /> */}
-              <Route path="/storage" element={<Storage />} />
+              <Route path="/storage" element={<AllDisk />} />
+              {/* <Route path="/storage" element={<Storage />} /> */}
               <Route path="/settings" element={<Setting />} />
               <Route path="/computing/vms/:id" element={<Vm />} />
               <Route path="/computing/vms/:id/:section" element={<Vm />} />
               <Route path="/computing/host" element={<Host />} />
-              <Route path="/computing/vms" element={<VmTemplateChart />} />
+              <Route path="/computing/vms" element={<AllVm />} />
+              {/* 데이터센터아이디 추가<Route path="/computing/vms" element={<VmTemplateChart />} /> */}
               <Route path="/computing/templates" element={<Templates />} />
               <Route path="/computing/templates:/id" element={<TemplateDetail />} />
               <Route path="/computing/host/:id" element={<HostDetail />}/>
@@ -113,6 +116,7 @@ const App = () => {
               <Route path="/storage-domain/:name" element={<StorageDomainDetail />} />
               <Route path="/storage-domainpart" element={<DomainParts />} />
               <Route path="/storage-disk/:name" element={<StorageDiskDetail />} />
+        
             </Routes>
           </MainOuter>
           </>

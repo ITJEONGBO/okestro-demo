@@ -417,7 +417,7 @@ const MainOuter = ({ children }) => {
                             <FontAwesomeIcon icon={faThLarge} fixedWidth/>
                         </div>
                     </Link>
-                    <Link to='/computing/datacenters' className="link-no-underline">
+                    <Link to='/computing/vms' className="link-no-underline">
                         <div
                             id="aside_popup_machine_btn"
                             className={getClassNames('computing')}
@@ -547,11 +547,11 @@ const MainOuter = ({ children }) => {
         <div 
         className="aside_popup_fourth_content" 
         id="aside_popup_fourth" 
-        style={{ backgroundColor: selectedDiv === 'vms' ? 'rgb(218, 236, 245)' : '' }} 
+        style={{ backgroundColor: selectedDiv === '/아이디추가/vms' ? 'rgb(218, 236, 245)' : '' }} 
         onClick={() => {
             if (selectedDiv !== 'vms') {
                 setSelectedDiv('vms');
-                navigate('/computing/vms');
+                navigate('/computing/아이디추가/vms');
             }
         }}
     >
@@ -613,10 +613,10 @@ const MainOuter = ({ children }) => {
                     <div
                         className="aside_popup_content"
                         id="aside_popup_first2"
-                        style={{ backgroundColor: selectedDiv === 'data_center' ? 'rgb(218, 236, 245)' : '' }}
+                        style={{ backgroundColor: selectedDiv === '아이디추가/data_center' ? 'rgb(218, 236, 245)' : '' }}
                         onClick={() => {
-                            setSelectedDiv('data_center');
-                            navigate('/storage');
+                            setSelectedDiv('아이디추가/data_center');
+                            navigate('아이디추가/storage');
                         }}
                     >
                 <FontAwesomeIcon
@@ -701,10 +701,10 @@ const MainOuter = ({ children }) => {
                       <div
                         className="aside_popup_content"
                         id="aside_popup_first3"
-                        style={{ backgroundColor: selectedDiv === 'default' ? 'rgb(218, 236, 245)' : '' }}
+                        style={{ backgroundColor: selectedDiv === '아이디추가/default' ? 'rgb(218, 236, 245)' : '' }}
                         onClick={() => {
                           setSelectedDiv('default');
-                          navigate('/networks');
+                          navigate('아이디추가/networks');
                           navNetworksRefetch()
                         }}
                       >
@@ -719,7 +719,7 @@ const MainOuter = ({ children }) => {
 />
 
                         <FontAwesomeIcon icon={faBuilding} fixedWidth />
-                        <span>Default</span>
+                        <span>ovirtmgmt</span>
                     </div>
                     {
                       isSecondVisibleNetwork && /*navNetworks && navNetworks[0] && (navNetworks[0]?.networks?.map*/(/*(n) => */

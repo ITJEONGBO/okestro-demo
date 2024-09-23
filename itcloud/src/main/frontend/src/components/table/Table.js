@@ -18,7 +18,7 @@ const Table = ({ columns, data, onRowClick = () => {}, clickableColumnIndex = []
           <tr key={rowIndex}
             onClick={() => setSelectedRowIndex(rowIndex)} // 클릭한 행의 인덱스를 상태에 저장
             style={{
-              backgroundColor: selectedRowIndex === rowIndex ? 'lightblue' : 'transparent', // 선택된 행의 배경색을 변경
+              backgroundColor: selectedRowIndex === rowIndex ? 'rgb(218, 236, 245)' : 'transparent', // 선택된 행의 배경색을 변경
             }}
           >
             {columns.map((column, colIndex) => (

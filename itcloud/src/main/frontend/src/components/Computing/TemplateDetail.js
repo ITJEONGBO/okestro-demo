@@ -159,7 +159,7 @@ function TemplateDetail() {
     return (
         <div id='section'>
              <HeaderButton
-      title="호스트"
+      title="템플릿"
       subtitle={name}
       additionalText="목록이름"
       buttons={buttons}

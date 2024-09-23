@@ -15,7 +15,7 @@ import TableOuter from '../table/TableOuter';
 
 Modal.setAppElement('#root');
 
-const DomainParts = () => {
+const AllDisk = () => {
   const navigate = useNavigate();
   const { name } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -105,7 +105,7 @@ const DomainParts = () => {
   return (
     <div id="section">
       <HeaderButton
-        title="스토리지 디스크"
+        title="Disk Chart"
         subtitle=""
         buttons={[]} 
         popupItems={[]} 
@@ -410,4 +410,4 @@ const DomainParts = () => {
   );
 };
 
-export default DomainParts;
+export default AllDisk;
