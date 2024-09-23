@@ -1,32 +1,66 @@
 /* DashboardBox.css */
 .dash_boxs {
-  width:auto;min-height:1.5vh;
+  width: 100%;
+  min-height:1.5vh;
   padding: 0.23rem 0.2rem;
   border-radius: 5px;
   margin-bottom: 0.14rem;
   background-color: #fafaff;
   box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.13);
-  display:flex;justify-content:flex-start;align-items:center;flex-direction:row;flex-wrap:wrap;
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+  flex-direction:row;
+  flex-wrap:wrap;
 }
 .box { 
-  min-width:180px;width:auto;min-height:100px;cursor: pointer;
-  display:flex;justify-content:center;align-items:center;flex-direction:column;
+  min-width: 16%;
+  min-height:100px;
+  cursor: pointer;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
   padding: 0 10px;
   border-right: 1px solid #5e95a745; 
 }
-.box:hover { background-color: #e9fbfc;border-radius: 3px; }
+.box:hover { 
+  background-color: #e9fbfc;
+  border-radius: 3px; 
+}
 .box > span {
   width:100%;
-  font-size:0.4rem;font-weight: 600;color: #1190c3;
-  overflow: hidden;text-overflow: ellipsis;white-space: nowrap;
-  display:flex;justify-content:flex-start;align-items:center;flex-direction:row;
+  font-size:0.4rem;
+  font-weight: 600;
+  color: #1190c3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display:flex;
+  justify-content:flex-start;
+  align-items:center;
+  flex-direction:row;
 }
-.box > h1 { font-size: 0.5rem;line-height: 27px;font-weight: 600;color: #1190c3; }
+.box > h1 { 
+  font-size: 0.5rem;
+  line-height: 27px;
+  font-weight: 600;
+  color: #1190c3; 
+}
 .box > h1,
-.box > .arrows { margin-left:auto; }
-.arrows {
-  height: 24px;margin-top: 6px;
-  text-align: right;font-size: 16px;
+.box > .arrows { 
+  margin-left:auto; 
 }
-.arrows>svg:first-child { color: #ff8417; }
-.arrows>svg:last-child { color: #4d4d4d; margin-top: 2px; }
+.arrows {
+  height: 24px;
+  margin-top: 6px;
+  text-align: 
+  right;font-size: 16px;
+}
+.arrows>svg:first-child { 
+  color: #ff8417; 
+}
+.arrows>svg:last-child { 
+  color: #4d4d4d; 
+  margin-top: 2px; 
+}

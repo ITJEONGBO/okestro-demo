@@ -43,7 +43,7 @@ const ENDPOINTS = {
   //endregion: Host
 
   //region: Vm/Template
-  FIND_ALL_VM_CHART: () =>  `/api/v1/computing/vms`,
+  FIND_ALL_VMS: () =>  `/api/v1/computing/vms`,
   FIND_ALL_TEMPLATE_CHART :() =>  `/api/v1/computing/templates`,
   //endregion: Vm/Template
 

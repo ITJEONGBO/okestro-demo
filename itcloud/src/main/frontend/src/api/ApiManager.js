@@ -281,7 +281,7 @@ const ApiManager = {
    **/
   findAllVMs : async () => makeAPICall({
     method: "GET", 
-    url: ENDPOINTS.FIND_ALL_VM_CHART(), 
+    url: ENDPOINTS.FIND_ALL_VMS(), 
     defaultValues: DEFAULT_VALUES.FIND_ALL_VMS
   }),
   findAllTemplates : async () => makeAPICall({

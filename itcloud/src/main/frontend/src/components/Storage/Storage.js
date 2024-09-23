@@ -174,10 +174,7 @@ const Storage = () => {
   const toggleDomainHiddenBox2 = () => {
     setDomainHiddenBox2Visible(!isDomainHiddenBox2Visible);
   };
-  const [isDomainHiddenBox3Visible, setDomainHiddenBox3Visible] = useState(false);
-  const toggleDomainHiddenBox3 = () => {
-    setDomainHiddenBox3Visible(!isDomainHiddenBox3Visible);
-  };
+ 
   const [isDomainHiddenBox4Visible, setDomainHiddenBox4Visible] = useState(false);
   const toggleDomainHiddenBox4 = () => {
     setDomainHiddenBox4Visible(!isDomainHiddenBox4Visible);
@@ -186,10 +183,7 @@ const Storage = () => {
   const toggleDomainHiddenBox5 = () => {
     setDomainHiddenBox5Visible(!isDomainHiddenBox5Visible);
   };
-  const [isDomainHiddenBox6Visible, setDomainHiddenBox6Visible] = useState(false);
-  const toggleDomainHiddenBox6 = () => {
-    setDomainHiddenBox6Visible(!isDomainHiddenBox6Visible);
-  };
+
 
   const sectionHeaderButtons = [
     { id: 'new_btn', label: '편집', icon: faPencil, onClick: () => {} },
@@ -214,8 +208,8 @@ const Storage = () => {
         <HeaderButton
           title="스토리지 도메인"
           subtitle=""
-          buttons={sectionHeaderButtons}
-          popupItems={sectionHeaderPopupItems}
+          buttons={[]}
+          popupItems={[]}
         />
         
         <div className="content_outer">
@@ -294,8 +288,7 @@ const Storage = () => {
                 onChange={handleStorageTypeChange} // 선택된 옵션에 따라 상태 변경
                 >
                   <option value="NFS">NFS</option>
-                  <option value="POSIX">POSIX 호환 FS</option>
-                  <option value="GlusterFS">GlusterFS</option>
+        
                   <option value="iSCSI">iSCSI</option>
                   <option value="fc">파이버 채널</option>
                 </select>
@@ -391,7 +384,7 @@ const Storage = () => {
           </div>
           )}
 
-          {storageType === 'POSIX' && (
+          {/* {storageType === 'POSIX' && (
           <div className="storage_popup_NFS">
             <div className="network_form_group">
               <label htmlFor="description">경로</label>
@@ -500,7 +493,7 @@ const Storage = () => {
               </div>
             </div>
         </div>
-        )}
+        )} */}
 
           {storageType === 'iSCSI' && (
           <div className="storage_popup_NFS">

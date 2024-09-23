@@ -116,7 +116,10 @@ const App = () => {
               <Route path="/storage-domain/:name" element={<StorageDomainDetail />} />
               <Route path="/storage-domainpart" element={<DomainParts />} />
               <Route path="/storage-disk/:name" element={<StorageDiskDetail />} />
-        
+
+
+              {/*임시 */}
+              <Route path="/아이디추가/storage" element={<Storage />} />
             </Routes>
           </MainOuter>
           </>

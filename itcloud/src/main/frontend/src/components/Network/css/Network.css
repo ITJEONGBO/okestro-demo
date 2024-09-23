@@ -313,27 +313,3 @@
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
-.popup_plus_btn{
-    padding: 1.2% 2%;
-    display: flex;
-    justify-content: right;
-}
-.popup_plus{
-    padding:0.08rem;
-    border:1px solid gray;
-    border-radius:3px;
-    cursor:pointer;
-}
-.plus_popup_outer{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 56%;
-    width: 42%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-    font-size:0.35rem;
-}
