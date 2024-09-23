@@ -394,7 +394,7 @@ class StorageServiceImpl(
 	}
 
 	override fun findAllDisks(): List<DiskImageVo> {
-		log.info("findAllDisksFromStorageDomain ... ")
+		log.info("findAllDisks ... ")
 		val res: List<Disk> =
 			conn.findAllDisks()
 				.getOrDefault(listOf())
