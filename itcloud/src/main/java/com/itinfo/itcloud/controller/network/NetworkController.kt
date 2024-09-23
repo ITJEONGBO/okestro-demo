@@ -26,21 +26,21 @@ import org.springframework.web.bind.annotation.*
 class NetworkController: BaseController() {
 	@Autowired private lateinit var iNetwork: ItNetworkService
 
-//	@ApiOperation(
-//		httpMethod="GET",
-//		value="전체 네트워크 목록 조회",
-//		notes="전체 네트워크 목록을 조회한다"
-//	)
-//	@ApiResponses(
-//		ApiResponse(code = 200, message = "OK")
-//	)
-//	@GetMapping
-//	@ResponseBody
-//	@ResponseStatus(HttpStatus.OK)
-//	fun networks(): ResponseEntity<List<NetworkVo>> {
-//		log.info("GET /api/v1/networks ... 네트워크 목록")
-//		return ResponseEntity.ok(iNetwork.findAll())
-//	}
+	@ApiOperation(
+		httpMethod="GET",
+		value="전체 네트워크 목록 조회",
+		notes="전체 네트워크 목록을 조회한다"
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun networks(): ResponseEntity<List<NetworkVo>> {
+		log.info("GET /api/v1/networks ... 네트워크 목록")
+		return ResponseEntity.ok(iNetwork.findAll())
+	}
 
 	@ApiOperation(
 		httpMethod="GET",

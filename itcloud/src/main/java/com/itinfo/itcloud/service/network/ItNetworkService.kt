@@ -17,14 +17,14 @@ import org.springframework.stereotype.Service
 import kotlin.Error
 
 interface ItNetworkService {
-//	/**
-//	 * [ItNetworkService.findAll]
-//	 * 네트워크 목록
-//	 *
-//	 * @return List<[NetworkVo]> 네트워크 목록
-//	 */
-//	@Throws(Error::class)
-//	fun findAll(): List<NetworkVo>
+	/**
+	 * [ItNetworkService.findAll]
+	 * 네트워크 목록
+	 *
+	 * @return List<[NetworkVo]> 네트워크 목록
+	 */
+	@Throws(Error::class)
+	fun findAll(): List<NetworkVo>
 
 	/**
 	 * [ItNetworkService.findAllFromDataCenter]
@@ -170,14 +170,14 @@ class NetworkServiceImpl(
 
 ): BaseService(), ItNetworkService {
 
-//	@Throws(Error::class)
-//	override fun findAll(): List<NetworkVo> {
-//		log.info("findAll ... ")
-//		val networks: List<Network> =
-//			conn.findAllNetworks()
-//				.getOrDefault(listOf())
-//		return networks.toNetworkVos(conn)
-//	}
+	@Throws(Error::class)
+	override fun findAll(): List<NetworkVo> {
+		log.info("findAll ... ")
+		val networks: List<Network> =
+			conn.findAllNetworks()
+				.getOrDefault(listOf())
+		return networks.toNetworkVos(conn)
+	}
 
 	@Throws(Error::class)
 	override fun findAllFromDataCenter(dataCenterId: String): List<NetworkVo> {
