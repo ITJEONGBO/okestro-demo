@@ -97,6 +97,14 @@ interface ItStorageService {
 	@Throws(Error::class)
 	fun removeDomain(storageDomainId: String): Boolean
 	/**
+	 * [ItStorageService.findAllDisks]
+	 * 디스크 목록
+	 *
+	 * @return List<[DiskImageVo]> 디스크 정보 목록
+	 */
+	@Throws(Error::class)
+	fun findAllDisks(): List<DiskImageVo>
+	/**
 	 * [ItStorageService.findAllDisksFromStorageDomain]
 	 * 스토리지 도메인 - 디스크 목록
 	 *
@@ -383,6 +391,14 @@ class StorageServiceImpl(
 		val res: Result<Boolean> =
 			conn.removeStorageDomain(storageDomainId)
 		return res.isSuccess
+	}
+
+	override fun findAllDisks(): List<DiskImageVo> {
+		log.info("findAllDisksFromStorageDomain ... ")
+		val res: List<Disk> =
+			conn.findAllDisks()
+				.getOrDefault(listOf())
+		return res.toDiskImageVos(conn)
 	}
 
 	@Throws(Error::class)

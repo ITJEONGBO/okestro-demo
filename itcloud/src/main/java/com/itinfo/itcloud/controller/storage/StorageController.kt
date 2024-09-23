@@ -69,6 +69,23 @@ class StorageController: BaseController() {
 		return ResponseEntity.ok(iStorage.findAllDomainsFromDataCenter(dataCenterId))
 	}
 
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="/storages/disks",
+		notes="Disk 목록"
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/disks")
+	@ResponseBody
+	fun findAllDisks(
+	): ResponseEntity<List<DiskImageVo>> {
+		log.info("/storages/disks ... 스토리지 Disk 목록")
+		return ResponseEntity.ok(iStorage.findAllDisks())
+	}
+
 	@ApiOperation(
 		httpMethod="GET",
 		value="/storages/{storageDomainId}/disks",
@@ -82,7 +99,7 @@ class StorageController: BaseController() {
 	)
 	@GetMapping("/{storageDomainId}/disks")
 	@ResponseBody
-	fun disks(
+	fun findAllDisksFromStorageDomain(
 		@PathVariable("storageDomainId") storageDomainId: String? = null // id=dcId
 	): ResponseEntity<List<DiskImageVo>> {
 		if (storageDomainId == null)
