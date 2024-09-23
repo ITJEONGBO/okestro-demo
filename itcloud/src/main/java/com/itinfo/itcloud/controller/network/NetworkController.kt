@@ -3,6 +3,7 @@ package com.itinfo.itcloud.controller.network
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.controller.BaseController
 import com.itinfo.itcloud.error.toException
+import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.model.computing.ClusterVo
 import com.itinfo.itcloud.model.computing.HostVo
@@ -136,7 +137,7 @@ class NetworkController: BaseController() {
 	)
 	@GetMapping("/import/settings")
 	@ResponseBody
-	fun setImportNetwork(): ResponseEntity<OpenStackNetworkVo?> {
+	fun setImportNetwork(): ResponseEntity<IdentifiedVo?> {
 		log.info("--- Network 가져오기 창(openstack networkProvider 목록)")
 		return ResponseEntity.ok(iNetwork.findAllNetworkProviderFromNetwork())
 	}

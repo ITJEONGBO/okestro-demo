@@ -6,6 +6,7 @@ import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.services.OpenstackNetworkProviderService
 import org.ovirt.engine.sdk4.services.OpenstackNetworkProvidersService
+import org.ovirt.engine.sdk4.types.OpenStackNetwork
 import org.ovirt.engine.sdk4.types.OpenStackNetworkProvider
 
 /**
@@ -38,5 +39,14 @@ fun Connection.findOpenStackNetworkProvider(networkProviderId: String): Result<O
 	Term.OPEN_STAK_NETWORK_PROVIDER.logSuccess("상세조회")
 }.onFailure {
 	Term.OPEN_STAK_NETWORK_PROVIDER.logFail("상세조회", it)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.findAllOpenStackNetworksFromNetworkProvider(networkProviderId: String): Result<List<OpenStackNetwork>?> = runCatching {
+	this.srvOpenStackNetworkProvider(networkProviderId).networksService().list().send().networks()
+}.onSuccess {
+	Term.OPEN_STAK_NETWORK_PROVIDER.logSuccess("목록")
+}.onFailure {
+	Term.OPEN_STAK_NETWORK_PROVIDER.logFail("목록", it)
 	throw if (it is Error) it.toItCloudException() else it
 }

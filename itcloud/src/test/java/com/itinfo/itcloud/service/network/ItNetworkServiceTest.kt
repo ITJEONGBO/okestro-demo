@@ -241,7 +241,7 @@ class ItNetworkServiceTest {
 	@Test
 	fun should_findAllNetworkProviderFromNetwork () {
 		log.debug("should_findAllNetworkProviderFromNetwork ... ")
-		val result: OpenStackNetworkVo? =
+		val result: IdentifiedVo? =
 			service.findAllNetworkProviderFromNetwork()
 
 		assertThat(result, `is`(not(nullValue())))

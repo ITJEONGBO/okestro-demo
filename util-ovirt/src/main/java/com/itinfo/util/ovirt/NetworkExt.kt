@@ -53,31 +53,7 @@ fun Connection.addNetwork(network: Network): Result<Network?> = runCatching {
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.addVnicProfileFromNetwork(networkId: String, vnicProfile: VnicProfile): Result<VnicProfile> = runCatching {
-	val vnicProfiles: List<VnicProfile> =
-		this.findAllVnicProfilesFromNetwork(networkId)
-			.getOrDefault(listOf())
 
-	val hasDuplicateName: Boolean = vnicProfiles.any { it.name() == vnicProfile.name() }
-	if (hasDuplicateName)
-		return FailureType.DUPLICATE.toResult(vnicProfile.name())
-	this.srvVnicProfilesFromNetwork(networkId).add().profile(vnicProfile).send().profile()
-}.onSuccess {
-	log.info("VnicProfile 생성 완료 ... {}", vnicProfile.name())
-} .onFailure {
-	log.error("VnicProfile 생성 실패... {}", it.localizedMessage)
-	throw if (it is Error) it.toItCloudException() else it
-}
-
-fun Connection.removeVnicProfileFromNetwork(networkId: String, vnicProfileId: String): Result<Boolean> = runCatching {
-    this.srvVnicProfileFromNetwork(networkId, vnicProfileId).remove().send()
-	true
-}.onSuccess {
-	log.info("VnicProfile 삭제 완료 ... {}", vnicProfileId)
-}.onFailure {
-	log.info("VnicProfile 삭제 실패 ... 이유: {}", it.localizedMessage)
-	throw if (it is Error) it.toItCloudException() else it
-}
 
 fun Connection.updateNetwork(network: Network): Result<Network?> = runCatching {
 	val networkUpdated: Network? =
@@ -141,7 +117,7 @@ fun Connection.removeNetworkLabelFromNetwork(networkId: String, networkLabelId: 
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-private fun Connection.srvVnicProfilesFromNetwork(networkId: String): AssignedVnicProfilesService =
+fun Connection.srvVnicProfilesFromNetwork(networkId: String): AssignedVnicProfilesService =
 	this.srvNetwork(networkId).vnicProfilesService()
 
 fun Connection.findAllVnicProfilesFromNetwork(networkId: String, follow: String = ""): Result<List<VnicProfile>> = runCatching {
@@ -161,10 +137,14 @@ fun Connection.findAllVnicProfilesFromNetwork(networkId: String, follow: String 
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-private fun Connection.srvVnicProfileFromNetwork(networkId: String, vnicProfileId: String): AssignedVnicProfileService =
+fun Connection.srvVnicProfileFromNetwork(networkId: String, vnicProfileId: String): AssignedVnicProfileService =
 	this.srvVnicProfilesFromNetwork(networkId).profileService(vnicProfileId)
 
 fun Connection.findVnicProfileFromNetwork(networkId: String, vnicProfileId: String): Result<VnicProfile?> = runCatching {
+	if(this.findNetwork(networkId).isFailure) {
+		throw ErrorPattern.NETWORK_NOT_FOUND.toError()
+	}
+
 	this.srvVnicProfileFromNetwork(networkId, vnicProfileId).get().send().profile()
 }.onSuccess {
 	Term.NETWORK.logSuccessWithin(Term.VNIC_PROFILE, "상세조회", networkId)

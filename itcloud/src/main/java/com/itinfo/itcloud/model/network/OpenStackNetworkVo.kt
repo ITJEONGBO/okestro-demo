@@ -49,7 +49,6 @@ fun OpenStackNetworkProvider.toOpenStackNetworkVoIdName(): OpenStackNetworkVo = 
 fun OpenStackNetworkProvider.toOpenStackNetworkVo(conn: Connection): OpenStackNetworkVo {
     val dataCenters: List<DataCenter> = conn.findAllDataCenters()
         .getOrDefault(listOf())
-
     return OpenStackNetworkVo.builder {
         id { this@toOpenStackNetworkVo.id() }
         name { this@toOpenStackNetworkVo.name() }
