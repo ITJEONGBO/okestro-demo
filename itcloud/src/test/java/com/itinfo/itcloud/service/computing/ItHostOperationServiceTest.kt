@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest
  *
  * @author chanhi2000
  * @author deh22
- * @since 2024.08.28
+ * @since 2024.09.24
  */
 @SpringBootTest
 class ItHostOperationServiceTest {
@@ -27,13 +27,12 @@ class ItHostOperationServiceTest {
         host01 = "722096d3-4cb2-43b0-bf41-dd69c3a70779"
     }
 
-
     /**
      * [should_deactivate]
      * [ItHostOperationService.deactivate]에 대한 단위테스트
      * 유지보수
      *
-     * @see [ItHostOperationService.deactivate]
+     * @see ItHostOperationService.deactivate
      */
     @Test
     fun should_deactivate() {
@@ -66,6 +65,7 @@ class ItHostOperationServiceTest {
      * [should_refresh]
      * [ItHostOperationService.refresh]에 대한 단위테스트
      * 기능 새로고침
+     *
      * @see [ItHostOperationService.refresh]
      */
     @Test
@@ -83,7 +83,6 @@ class ItHostOperationServiceTest {
      * [ItHostOperationService.restart]에 대한 단위테스트
      * 재시작
      * 실행되지만 유저명과 암호 입력 문제 있음
-     * TODO
      *
      * @see [ItHostOperationService.restart]
      */

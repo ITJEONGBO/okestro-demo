@@ -288,14 +288,17 @@ fun Host.toHostVo(conn: Connection): HostVo {
         status { this@toHostVo.status() }
         transparentPage { this@toHostVo.transparentHugePages().enabled() }
         vmSizeVo {
-            SizeVo.builder {
-                allCnt { this@toHostVo.summary().totalAsInteger() }
-                upCnt { this@toHostVo.summary().activeAsInteger() }
-                downCnt { this@toHostVo.summary().totalAsInteger() - this@toHostVo.summary().activeAsInteger() }
-            }
+            if (this@toHostVo.summaryPresent()) {
+                val allCnt = if (this@toHostVo.summary().totalPresent()) this@toHostVo.summary().totalAsInteger() else 0
+                val upCnt = if (this@toHostVo.summary().activePresent()) this@toHostVo.summary().activeAsInteger() else 0
+                val downCnt = allCnt - upCnt
+                SizeVo.builder {
+                    allCnt { allCnt }
+                    upCnt { upCnt }
+                    downCnt { downCnt }
+                }
+            } else null
         }
-//        vmTotalCnt { this@toHostVo.summary().totalAsInteger() }
-//        vmActiveCnt { this@toHostVo.summary().activeAsInteger() }
         vmMigratingCnt { this@toHostVo.summary().migratingAsInteger() }
         memoryTotal { statistics.findMemory("memory.total") }
         memoryUsed { statistics.findMemory("memory.used") }

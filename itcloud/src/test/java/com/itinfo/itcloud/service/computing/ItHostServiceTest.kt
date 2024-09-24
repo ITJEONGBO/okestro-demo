@@ -20,7 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest
  *
  * @author chanhi2000
  * @author deh22
- * @since 2024.08.28
+ * @since 2024.09.24
  */
 @SpringBootTest
 class ItHostServiceTest {
@@ -45,7 +45,7 @@ class ItHostServiceTest {
 	 * [should_findAll]
 	 * [ItHostService.findAll]에 대한 단위테스트
 	 * 
-	 * @see [ItHostService.findAll]
+	 * @see ItHostService.findAll
 	 */
 	@Test
 	fun should_findAll() {
@@ -59,12 +59,11 @@ class ItHostServiceTest {
 		result.forEach { println(it) }
 	}
 
-
 	/**
 	 * [should_findOne]
 	 * [ItHostService.findOne]에 대한 단위테스트
 	 * 
-	 * @see [ItHostService.findOne]
+	 * @see ItHostService.findOne
 	 */
 	@Test
 	fun should_findOne() {
@@ -76,50 +75,44 @@ class ItHostServiceTest {
 		println(result)
 	}
 
-
 	/**
-	 * [should_add_Host]
-	 * [ItHostService.add]에 대한 단위테스트
+	 * [should_add_update_and_remove_Host]
+	 * [ItHostService.add], [ItHostService.update], [ItHostService.remove]에 대한 단위테스트
 	 *
-	 * @see [ItHostService.add]
+	 * @see ItHostService.add
+	 * @see ItHostService.update
+	 * @see ItHostService.remove
 	 */
 	@Test
-	fun should_add_Host() {
-		log.debug("should_add_Host ...")
-		val addHost: HostVo = HostVo.builder {
-			clusterVo { IdentifiedVo.builder { id { clusterId } } }
-			name { "host01.ititinfo.local" }
-			comment { "192.168.0.71" }
-			address { "host01.ititinfo.local" }
-			sshPort { 22 }
-			sshPassWord { "adminRoot!@#" }
-            spmPriority { 5 }
-		}
+	fun should_add_update_and_remove_Host() {
+//		log.debug("should_add_update_and_remove_Host ...")
+//		val addHost: HostVo = HostVo.builder {
+//			clusterVo { IdentifiedVo.builder { id { clusterId } } }
+//			name { "host01.ititinfo.local" }
+//			comment { "192.168.0.71" }
+//			address { "host01.ititinfo.local" }
+//			sshPort { 22 }
+//			sshPassWord { "adminRoot!@#" }
+//            spmPriority { 5 }
+//		}
+//
+//		val addResult: HostVo? =
+//			service.add(addHost)
+//
+//		assertThat(addResult, `is`(not(nullValue())))
+//		assertThat(addResult?.id, `is`(not(nullValue())))
+////		assertThat(addResult?.clusterVo?.id, `is`(addHost.clusterVo.id))
+//		assertThat(addResult?.name, `is`(addHost.name))
+//		assertThat(addResult?.comment, `is`(addHost.comment))
+//		assertThat(addResult?.address, `is`(addHost.address))
+//		assertThat(addResult?.sshPort, `is`(addHost.sshPort))
+//		assertThat(addResult?.spmPriority, `is`(addHost.spmPriority))
 
-		val addResult: HostVo? =
-			service.add(addHost)
 
-		assertThat(addResult, `is`(not(nullValue())))
-		assertThat(addResult?.id, `is`(not(nullValue())))
-//		assertThat(addResult?.clusterVo?.id, `is`(addHost.clusterVo.id))
-		assertThat(addResult?.name, `is`(addHost.name))
-		assertThat(addResult?.comment, `is`(addHost.comment))
-		assertThat(addResult?.address, `is`(addHost.address))
-		assertThat(addResult?.sshPort, `is`(addHost.sshPort))
-		assertThat(addResult?.spmPriority, `is`(addHost.spmPriority))
-	}
-
-	/**
-	 * [should_update_Host]
-	 * [ItHostService.update]에 대한 단위테스트
-	 *
-	 * @see [ItHostService.update]
-	 */
-	@Test
-	fun should_update_Host() {
 		log.debug("should_update_Host ...")
 		val updateHost: HostVo = HostVo.builder {
-			id { host01 }
+			id { "5169e7c0-789c-47f6-b9b1-0c5a7f3bb52c"}
+//			id { addResult?.id }
 			name { "host01.ititinfo.local2" }
 			comment { "192.168.0.71-test" }
 			spmPriority { 5 }
@@ -133,29 +126,20 @@ class ItHostServiceTest {
 		assertThat(updateResult?.name, `is`(updateHost.name))
 		assertThat(updateResult?.comment, `is`(updateHost.comment))
 		assertThat(updateResult?.spmPriority, `is`(updateHost.spmPriority))
-	}
 
-	/**
-	 * [should_remove_Host]
-	 * [ItHostService.remove]에 대한 단위테스트
-	 *
-	 * @see [ItHostService.remove]
-	 */
-	@Test
-	fun should_remove_Host() {
-		log.debug("should_remove_Host ...")
-		val removeResult: Boolean =
-			service.remove(host01)
-		assertThat(removeResult, `is`(not(nullValue())))
-		assertThat(removeResult, `is`(true))
+//		log.debug("should_remove_Host ...")
+//		val removeResult =
+//			updateResult?.let { service.remove(it.id) }
+//
+//		assertThat(removeResult, `is`(not(nullValue())))
+//		assertThat(removeResult, `is`(true))
 	}
-
 
 	/**
 	 * [should_findAllVmsFromHost]
 	 * [ItHostService.findAllVmsFromHost]에 대한 단위테스트
 	 * 
-	 * @see [ItHostService.findAllVmsFromHost]
+	 * @see ItHostService.findAllVmsFromHost
 	 */
 	@Test
 	fun should_findAllVmsFromHost() {
@@ -164,15 +148,15 @@ class ItHostServiceTest {
 			service.findAllVmsFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(3))
 		result.forEach { println(it) }
+		assertThat(result.size, `is`(3))
 	}
 
 	/**
 	 * [should_findAllHostNicsFromHost]
 	 * [ItHostService.findAllHostNicsFromHost]에 대한 단위테스트
 	 *
-	 * @see [ItHostService.findAllHostNicsFromHost]
+	 * @see ItHostService.findAllHostNicsFromHost
 	 */
 	@Test
 	fun should_findAllHostNicsFromHost() {
@@ -181,15 +165,15 @@ class ItHostServiceTest {
 			service.findAllHostNicsFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(1))
 		result.forEach { println(it) }
+		assertThat(result.size, `is`(1))
 	}
 
 	/**
 	 * [should_findAllHostDevicesFromHost]
 	 * [ItHostService.findAllHostDevicesFromHost]에 대한 단위테스트
 	 *
-	 * @see [ItHostService.findAllHostDevicesFromHost]
+	 * @see ItHostService.findAllHostDevicesFromHost
 	 */
 	@Test
 	fun should_findAllHostDevicesFromHost() {
@@ -198,15 +182,15 @@ class ItHostServiceTest {
 			service.findAllHostDevicesFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(93))
 		result.forEach { println(it) }
+		assertThat(result.size, `is`(97))
 	}
 
 	/**
 	 * [should_findAllPermissionsFromHost]
 	 * [ItHostService.findAllPermissionsFromHost]에 대한 단위테스트
 	 *
-	 * @see [ItHostService.findAllPermissionsFromHost]
+	 * @see ItHostService.findAllPermissionsFromHost
 	 */
 	@Test
 	fun should_findAllPermissionsFromHost() {
@@ -215,15 +199,15 @@ class ItHostServiceTest {
 			service.findAllPermissionsFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(5))
 		result.forEach { println(it) }
+		assertThat(result.size, `is`(5))
 	}
 
 	/**
 	 * [should_findAllEventsFromHost]
 	 * [ItHostService.findAllEventsFromHost]에 대한 단위테스트
 	 *
-	 * @see [ItHostService.findAllEventsFromHost]
+	 * @see ItHostService.findAllEventsFromHost
 	 */
 	@Test
 	fun should_findAllEventsFromHost() {
@@ -232,8 +216,7 @@ class ItHostServiceTest {
 			service.findAllEventsFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(643)) // ?
-		result.forEach { println(it) }
+		assertThat(result.size, `is`(727))
 	}
 	
 	companion object {

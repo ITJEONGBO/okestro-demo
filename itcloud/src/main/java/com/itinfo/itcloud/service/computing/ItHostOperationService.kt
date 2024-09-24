@@ -1,14 +1,10 @@
 package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.*
-import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.Error
-import org.ovirt.engine.sdk4.types.Cluster
-import org.ovirt.engine.sdk4.types.Host
 import org.springframework.stereotype.Service
 import java.net.UnknownHostException
 
@@ -75,7 +71,7 @@ class HostOperationServiceImpl: BaseService(), ItHostOperationService {
 
     @Throws(Error::class)
     override fun refresh(hostId: String): Boolean {
-        log.info("refreshHost ... hostId: {}", hostId)
+        log.info("refresh ... hostId: {}", hostId)
         val res: Result<Boolean> =
             conn.refreshHost(hostId)
         return res.isSuccess
@@ -83,9 +79,9 @@ class HostOperationServiceImpl: BaseService(), ItHostOperationService {
 
     @Throws(UnknownHostException::class, Error::class)
     override fun restart(hostId: String): Boolean {
-        log.info("reStartHost ... hostId: {}", hostId)
+        log.info("reStart ... hostId: {}", hostId)
     // TODO Host 이름, PW 문제 => application.properties 에 저장해서 불러오는 방식
-        val userName = ""
+//        val userName = ""
         val hostPw: String = "adminRoot!@#"
         val res: Result<Boolean> =
             conn.restartHost(hostId, hostPw)

@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
-
 @Controller
 @Api(tags = ["Computing", "Host"])
 @RequestMapping("/api/v1/computing/hosts")
@@ -33,11 +32,10 @@ class HostController {
 	@GetMapping
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAll(): ResponseEntity<List<HostVo>> {
+	fun hosts(): ResponseEntity<List<HostVo>> {
 		log.info("/computing/hosts ... 호스트 목록")
 		return ResponseEntity.ok(iHost.findAll())
 	}
-
 
 	@ApiOperation(
 		httpMethod="GET",
@@ -53,15 +51,14 @@ class HostController {
 	@GetMapping("/{hostId}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findOne(
+	fun host(
 		@PathVariable hostId: String? = null,
 	): ResponseEntity<HostVo?> {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		log.info("/computing/hosts/{} ... 호스트 일반", hostId)
+		log.info("/computing/hosts/{} ... 호스트 상세정보", hostId)
 		return ResponseEntity.ok(iHost.findOne(hostId))
 	}
-
 
 	@ApiOperation(
 		httpMethod="POST",
@@ -79,14 +76,13 @@ class HostController {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	fun add(
-		@RequestBody host: HostVo?
+		@RequestBody host: HostVo? = null
 	): ResponseEntity<HostVo?> {
 		if (host == null)
 			throw ErrorPattern.HOST_VO_INVALID.toException()
 		log.info("/computing/hosts ... 호스트 생성\n{}", host)
 		return ResponseEntity.ok(iHost.add(host))
 	}
-
 
 	@ApiOperation(
 		httpMethod="PUT",
@@ -114,7 +110,6 @@ class HostController {
 		log.info("/computing/hosts/{} ... 호스트 편집\n{}", hostId, host)
 		return ResponseEntity.ok(iHost.update(host))
 	}
-
 
 	@ApiOperation(
 		httpMethod="DELETE",
@@ -154,15 +149,14 @@ class HostController {
 	@GetMapping("/{hostId}/vms")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAllVmsFromHost(
+	fun vms(
 		@PathVariable hostId: String? = null,
 	): ResponseEntity<List<VmVo>> {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		log.info("/computing/hosts/{}/vms ... 호스트 vm", hostId)
+		log.info("/computing/hosts/{}/vms ... 호스트 가상머신 목록", hostId)
 		return ResponseEntity.ok(iHost.findAllVmsFromHost(hostId))
 	}
-
 
 	@ApiOperation(
 		httpMethod="GET",
@@ -178,13 +172,13 @@ class HostController {
 	@GetMapping("/{hostId}/nics")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAllHostNicsFromHost(
+	fun nics(
 		@PathVariable hostId: String? = null
 	): ResponseEntity<List<HostNicVo>> {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		log.info("/computing/hosts/{}/nics ... 호스트 nic", hostId)
-		return ResponseEntity.ok(iHost.findAllHostNicsFromHost(hostId))
+		log.info("/computing/hosts/{}/nics ... 호스트 nic 목록", hostId)
+		return ResponseEntity.ok(iHost.findAllNicsFromHost(hostId))
 	}
 
 
@@ -202,15 +196,14 @@ class HostController {
 	@GetMapping("/{hostId}/devices")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAllHostDevicesFromHost(
+	fun devices(
 		@PathVariable hostId: String? = null,
-	): ResponseEntity<List<HostNicVo>> {
+	): ResponseEntity<List<HostDeviceVo>> {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		log.info("/computing/hosts/{}/devices ...  호스트 장치", hostId)
-		return ResponseEntity.ok(iHost.findAllHostNicsFromHost(hostId))
+		log.info("/computing/hosts/{}/devices ...  호스트 장치 목록", hostId)
+		return ResponseEntity.ok(iHost.findAllHostDevicesFromHost(hostId))
 	}
-
 
 	@ApiOperation(
 		httpMethod="GET",
@@ -226,15 +219,14 @@ class HostController {
 	@GetMapping("/{hostId}/permissions")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAllPermissionsFromHost(
+	fun permissions(
 		@PathVariable hostId: String? = null
 	): ResponseEntity<List<PermissionVo>> {
-		log.info("/computing/hosts/{}/permissions ... 호스트 권한", hostId)
+		log.info("/computing/hosts/{}/permissions ... 호스트 권한 목록", hostId)
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		return ResponseEntity.ok(iHost.findAllPermissionsFromHost(hostId))
 	}
-
 
 	@ApiOperation(
 		httpMethod="GET",
@@ -249,12 +241,12 @@ class HostController {
 	@GetMapping("/{hostId}/events")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAllEventsFromHost(
+	fun events(
 		@PathVariable hostId: String?
 	): ResponseEntity<List<EventVo>> {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		log.info("/computing/hosts/{}/events ... 호스트 이벤트", hostId)
+		log.info("/computing/hosts/{}/events ... 호스트 이벤트 목록", hostId)
 		return ResponseEntity.ok(iHost.findAllEventsFromHost(hostId))
 	}
 
@@ -286,7 +278,6 @@ class HostController {
 		return ResponseEntity.ok(iHostOp.deactivate(hostId))
 	}
 
-
 	@ApiOperation(
 		httpMethod="POST",
 		value="호스트 활성화 모드전환",
@@ -302,7 +293,7 @@ class HostController {
 	@PostMapping("/{hostId}/activate")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
-	fun activeHost(
+	fun activate(
 		@PathVariable hostId: String?
 	): ResponseEntity<Boolean> {
 		if (hostId.isNullOrEmpty())
@@ -352,7 +343,7 @@ class HostController {
 	@PostMapping("/{hostId}/restart")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
-	fun reStartHost(
+	fun restart(
 		@PathVariable hostId: String?
 	): ResponseEntity<Boolean> {
 		if (hostId.isNullOrEmpty())

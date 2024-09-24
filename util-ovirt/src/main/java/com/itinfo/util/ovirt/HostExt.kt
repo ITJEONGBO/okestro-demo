@@ -84,7 +84,6 @@ fun Connection.addHost(host: Host, deployHostedEngine: Boolean = false): Result<
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-// TODO deploy HostEngine 찾아보기
 fun Connection.updateHost(host: Host): Result<Host?> = runCatching {
 	if(this.findAllHosts()
 			.getOrDefault(listOf())
@@ -107,13 +106,22 @@ fun Connection.removeHost(hostId: String): Result<Boolean> = runCatching {
 		this.findHost(hostId)
 			.getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
 
+	if(this.findAllVmsFromHost(hostId)
+			.getOrDefault(listOf())
+			.any { it.status() == VmStatus.UP }){
+		throw ErrorPattern.HOST_HAS_RUNNING_VMS.toError()
+	}
+
 	if (host.status() != HostStatus.MAINTENANCE) {
 		log.warn("{} 삭제 실패... {} 가 유지관리 상태가 아님 ", Term.HOST.desc, hostId)
 		throw throw ErrorPattern.HOST_NOT_MAINTENANCE.toError()
 	}
 
 	this.srvHost(hostId).remove().send()
-	this.expectHostDeleted(hostId)
+	if(!this.expectHostDeleted(hostId)){
+		throw Error("삭제 실패했습니다 ... ${hostId}.")
+	}
+	true
 }.onSuccess {
 	Term.HOST.logSuccess("삭제", hostId)
 }.onFailure {
@@ -146,11 +154,11 @@ fun Connection.deactivateHost(hostId: String): Result<Boolean> = runCatching {
 		this.findHost(hostId)
 			.getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
 
-	if (host.status() != HostStatus.MAINTENANCE) {
-		srvHost(host.id()).deactivate().send()
-	} else {
+	if (host.status() == HostStatus.MAINTENANCE) {
 		throw Error("deactivateHost 실패 ... ${hostId} 가 이미 유지관리 상태") // return 대신 throw
 	}
+	srvHost(host.id()).deactivate().send()
+
 	if (!this.expectHostStatus(host.id(), HostStatus.MAINTENANCE)) {
 		throw Error("expectHostStatus가 실패했습니다 ... ${hostId} 가 유지관리 상태가 아닙니다.")
 	}
@@ -168,13 +176,13 @@ fun Connection.activateHost(hostId: String): Result<Boolean> = runCatching {
 		this.findHost(hostId)
 			.getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
 
-	if (host.status() != HostStatus.UP) {
-		srvHost(host.id()).activate().send()
-	} else {
+	if (host.status() == HostStatus.UP) {
 		return Result.failure(Error("activateHost 실패 ... ${host.name()}가 이미 활성 상태 "))
 	}
+	srvHost(host.id()).activate().send()
+
 	if (!this.expectHostStatus(host.id(), HostStatus.UP)) {
-		throw Error("expectHostStatus가 실패했습니다 ... ${hostId}")
+		throw Error("activate Host 실패했습니다 ...")
 	}
 	true
 }.onSuccess {
@@ -190,7 +198,11 @@ fun Connection.refreshHost(hostId: String): Result<Boolean> = runCatching {
 		throw ErrorPattern.HOST_NOT_FOUND.toError()
 	}
 	this.srvHost(hostId).refresh().send()
-	this.expectHostStatus(hostId, HostStatus.UP)
+
+	if (!this.expectHostStatus(hostId, HostStatus.UP)) {
+		throw Error("refresh Host 실패했습니다 ...")
+	}
+	true
 }.onSuccess {
 	Term.HOST.logSuccess("새로고침", hostId)
 }.onFailure {
@@ -202,11 +214,17 @@ fun Connection.restartHost(hostId: String, hostPw: String): Result<Boolean> = ru
 	val host: Host =
 		this.findHost(hostId)
 			.getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
+	if(hostPw.isEmpty()){
+		throw ErrorPattern.HOST_NOT_FOUND.toError()
+	}
 	val address: InetAddress = InetAddress.getByName(host.address())
 	if (address.rebootHostViaSSH("root", hostPw, 22).isFailure)
 		return Result.failure(Error("SSH를 통한 호스트 재부팅 실패"))
 
-	this.expectHostStatus(host.id(), HostStatus.UP)
+	if (!this.expectHostStatus(hostId, HostStatus.UP)) {
+		throw Error("호스트 재부팅 실패했습니다 ...")
+	}
+	true
 }.onSuccess {
 	Term.HOST.logSuccess("재부팅", hostId)
 }.onFailure {

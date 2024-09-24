@@ -9,10 +9,8 @@ import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.repository.*
 import com.itinfo.itcloud.service.BaseService
-import com.itinfo.itcloud.service.computing.ClusterServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
-import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.types.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -31,8 +29,8 @@ interface ItHostService {
 	 * [ItHostService.findOne]
 	 * 호스트 상세정보
 	 *
-	 * @param hostId [String] 호스트 아이디
-	 * @return [HostVo] 호스트 정보
+	 * @param hostId [String] 호스트 Id
+	 * @return [HostVo]?
 	 */
 	@Throws(Error::class)
 	fun findOne(hostId: String): HostVo?
@@ -43,8 +41,8 @@ interface ItHostService {
 	 * [ItHostService.add]
 	 * 호스트 생성 (전원관리 제외)
 	 *
-	 * @param hostVo [HostVo] 호스트 객체
-	 * @return [HostVo]
+	 * @param hostVo [HostVo]
+	 * @return [HostVo]?
 	 */
 	@Throws(Error::class)
 	fun add(hostVo: HostVo): HostVo?
@@ -52,17 +50,17 @@ interface ItHostService {
 	 * [ItHostService.update]
 	 * 호스트 편집 (전원관리 제외)
 	 *
-	 * @param hostVo [HostVo] 호스트 객체
-	 * @return [HostVo]
+	 * @param hostVo [HostVo]
+	 * @return [HostVo]?
 	 */
 	@Throws(Error::class)
 	fun update(hostVo: HostVo): HostVo?
 	/**
 	 * [ItHostService.remove]
 	 * 호스트 삭제
-	 * 삭제 여부 = 가상머신 돌아가는게 있는지 -> 유지보수 상태인지 -> 삭제
+	 * 가상머신 돌아가는게 있는지 -> 유지보수 상태인지 -> 삭제
 	 *
-	 * @param hostId [String] 호스트 id
+	 * @param hostId [String] 호스트 Id
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
@@ -70,29 +68,36 @@ interface ItHostService {
 	/**
 	 * [ItHostService.findAllVmsFromHost]
 	 * 호스트 가상머신 목록
-	 * [MENU]
 	 *
-	 * @param hostId [String] 호스트 아이디
-	 * @return List<[VmVo]>? 가상머신 목록
+	 * @param hostId [String] 호스트 Id
+	 * @return List<[VmVo]> 가상머신 목록
 	 */
 	@Throws(Error::class)
 	fun findAllVmsFromHost(hostId: String): List<VmVo>
 	/**
-	 * [ItHostService.findAllHostNicsFromHost]
+	 * [ItHostService.findAllNicsFromHost]
 	 * 호스트 네트워크 인터페이스 목록
 	 *
-	 * @param hostId [String] 호스트 아이디
-	 * @return List<[HostNicVo]>? 네트워크 인터페이스 목록
+	 * @param hostId [String] 호스트 Id
+	 * @return List<[HostNicVo]> 네트워크 인터페이스 목록
 	 */
 	@Throws(Error::class)
-	fun findAllHostNicsFromHost(hostId: String): List<HostNicVo>
-	// 호스트 네트워크 설정
+	fun findAllNicsFromHost(hostId: String): List<HostNicVo>
+	/**
+	 * [ItHostService.setUpNetworksFromHost]
+	 * 호스트 네트워크 설정
+	 *
+	 * @param hostId [String] 호스트 Id
+	 * @return [Boolean] 아직미정
+	 */
+	@Throws(Error::class)
+	fun setUpNetworksFromHost(hostId: String): Boolean
 	/**
 	 * [ItHostService.findAllHostDevicesFromHost]
-	 * 호스트 호스트 장치 목록
+	 * 호스트 호스트장치 목록
 	 *
-	 *  @param hostId [String] 호스트 아이디
-	 *  @return List<[HostDeviceVo]> 호스트 장치 목록
+	 *  @param hostId [String] 호스트 Id
+	 *  @return List<[HostDeviceVo]> 호스트장치 목록
 	 */
 	@Throws(Error::class)
 	fun findAllHostDevicesFromHost(hostId: String): List<HostDeviceVo>
@@ -100,7 +105,7 @@ interface ItHostService {
 	 * [ItHostService.findAllPermissionsFromHost]
 	 * 호스트 권한 목록
 	 *
-	 *  @param hostId [String] 호스트 아이디
+	 *  @param hostId [String] 호스트 Id
 	 *  @return List<[PermissionVo]> 권한 목록
 	 */
 	@Throws(Error::class)
@@ -109,8 +114,8 @@ interface ItHostService {
 	 * [ItHostService.findAllEventsFromHost]
 	 * 호스트 이벤트 목록
 	 *
-	 * @param hostId [String] 호스트 아이디
-	 * @return List<[EventVo]>? 이벤트 목록
+	 * @param hostId [String] 호스트 Id
+	 * @return List<[EventVo]> 이벤트 목록
 	 */
 	@Throws(Error::class)
 	fun findAllEventsFromHost(hostId: String): List<EventVo>
@@ -162,7 +167,6 @@ class HostServiceImpl(
 		// TODO
 		//  com.itinfo.util.ovirt.error.ItCloudException: Fault reason is 'Operation Failed'. Fault detail is '[Cannot edit Host. Host parameters cannot be modified while Host is operational.
 		//  Please switch Host to Maintenance mode first.]'. HTTP response code is '409'. HTTP response message is 'Conflict'.
-
 		val res: Host? =
 			conn.updateHost(hostVo.toEditHostBuilder())
 				.getOrNull()
@@ -187,13 +191,18 @@ class HostServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllHostNicsFromHost(hostId: String): List<HostNicVo> {
-		log.info("findAllHostNicsFromHost ... hostId: {}", hostId)
+	override fun findAllNicsFromHost(hostId: String): List<HostNicVo> {
+		log.info("findAllNicsFromHost ... hostId: {}", hostId)
 		val res: List<HostNic> =
 			conn.findAllNicsFromHost(hostId)
 				.getOrDefault(listOf())
 		// TODO
 		return res.toHostNicVos(conn)
+	}
+
+	@Throws(Error::class)
+	override fun setUpNetworksFromHost(hostId: String): Boolean {
+		TODO("Not yet implemented")
 	}
 
 	@Throws(Error::class)
