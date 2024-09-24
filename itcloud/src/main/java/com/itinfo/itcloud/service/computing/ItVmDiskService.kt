@@ -175,7 +175,7 @@ class VmDiskService(
 
 	override fun findAllDomains(diskAttachmentId: String): List<StorageDomainVo> {
 		// findAllDomainsFromDataCenter
-		log.debug("findAllStorageDomainsFromDataCenter ... diskAttachmentId: $diskAttachmentId")
+		log.debug("findAllStorageDomains ... diskAttachmentId: $diskAttachmentId")
 		val res: List<StorageDomain> =
 			conn.findAllStorageDomains()
 				.getOrDefault(listOf())

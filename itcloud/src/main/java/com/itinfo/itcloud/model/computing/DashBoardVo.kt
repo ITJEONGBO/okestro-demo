@@ -23,6 +23,9 @@ private val log = LoggerFactory.getLogger(DashBoardVo::class.java)
  * @property vms
  * @property vmsUp
  * @property vmsDown
+ * @property events
+ * @property eventsAlert
+ * @property eventsError
  */
 class DashBoardVo (
     val datacenters: Int = 0,
@@ -36,6 +39,9 @@ class DashBoardVo (
     val vmsUp: Int = 0,
     val vmsDown: Int = 0,
     val storageDomains: Int = 0,
+    val events: Int = 0,
+    val eventsAlert: Int = 0,
+    val eventsError: Int = 0,
 ): Serializable {
     override fun toString(): String =
         gson.toJson(this)
@@ -52,11 +58,13 @@ class DashBoardVo (
         private var bVmsUp: Int = 0; fun vmsUp(block: () -> Int?) { bVmsUp = block() ?: 0}
         private var bVmsDown: Int = 0; fun vmsDown(block: () -> Int?) { bVmsDown = block() ?: 0}
         private var bStorageDomains: Int = 0; fun storageDomains(block: () -> Int?) { bStorageDomains = block() ?: 0}
-        fun build(): DashBoardVo = DashBoardVo(bDatacenters, bDatacentersUp, bDatacentersDown, bClusters, bHosts, bHostsUp, bHostsDown, bVms, bVmsUp, bVmsDown, bStorageDomains)
+        private var bEvents: Int = 0; fun events(block: () -> Int?) { bEvents = block() ?: 0}
+        private var bEventAlert: Int = 0; fun eventsAlert(block: () -> Int?) { bEventAlert = block() ?: 0}
+        private var bEventError: Int = 0; fun eventsError(block: () -> Int?) { bEventError = block() ?: 0}
+        fun build(): DashBoardVo = DashBoardVo(bDatacenters, bDatacentersUp, bDatacentersDown, bClusters, bHosts, bHostsUp, bHostsDown, bVms, bVmsUp, bVmsDown, bStorageDomains, bEvents, bEventAlert, bEventError)
     }
 
     companion object {
-
         inline fun builder(block: DashBoardVo.Builder.() -> Unit): DashBoardVo = DashBoardVo.Builder().apply(block).build()
     }
 }
@@ -95,6 +103,14 @@ fun Connection.toDashboardVo(): DashBoardVo {
         this@toDashboardVo.findAllStorageDomains()
             .getOrDefault(listOf())
             .size
+    val eventsAlert: Int =
+        this@toDashboardVo.findAllEvents("severity=alert")
+            .getOrDefault(listOf())
+            .size
+    val eventsError: Int =
+        this@toDashboardVo.findAllEvents(searchQuery = "severity=error and time > Today")
+            .getOrDefault(listOf())
+            .size
 
     return DashBoardVo.builder {
         datacenters { dataCenters }
@@ -108,5 +124,8 @@ fun Connection.toDashboardVo(): DashBoardVo {
         vmsUp { vmsUp }
         vmsDown { vms - vmsUp }
         storageDomains { storageDomains }
+        events { eventsAlert + eventsError }
+        eventsAlert { eventsAlert }
+        eventsError { eventsError }
     }
 }

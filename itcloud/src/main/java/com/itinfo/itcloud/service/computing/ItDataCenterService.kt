@@ -2,12 +2,17 @@ package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.error.toException
+import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.*
+import com.itinfo.itcloud.model.fromHostsToIdentifiedVos
 import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.network.toNetworkVos
+import com.itinfo.itcloud.model.setting.PermissionVo
+import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.model.storage.StorageDomainVo
 import com.itinfo.itcloud.model.storage.toStorageDomainVos
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.network.ItNetworkService
 import com.itinfo.itcloud.service.network.NetworkServiceImpl
 import com.itinfo.itcloud.service.storage.ItStorageService
 import com.itinfo.itcloud.service.storage.StorageServiceImpl
@@ -31,7 +36,7 @@ interface ItDataCenterService {
 	fun findAll(): List<DataCenterVo>
 	/**
 	 * [ItDataCenterService.findOne]
-	 * 데이터센터 정보 (편집을 위해 존재)
+	 * 데이터센터 정보 (편집)
 	 *
 	 * @param dataCenterId [String] 데이터센터 id
 	 * @return [DataCenterVo]?
@@ -66,6 +71,59 @@ interface ItDataCenterService {
 	@Throws(Error::class)
 	fun remove(dataCenterId: String): Boolean
 	/**
+	 * [ItDataCenterService.findAllClusterFromDataCenter]
+	 * 데이터센터가 가지고있는 클러스터 목록
+	 *
+	 * @param dataCenterId [String]
+	 * @return List<[ClusterVo]> 클러스터 목록
+	 */
+	@Throws(Error::class)
+	fun findAllClusterFromDataCenter(dataCenterId: String): List<ClusterVo>
+	/**
+	 * [ItDataCenterService.findAllHostsFromDataCenter]
+	 * 데이터센터가 가지고있는 호스트 목록
+	 *
+	 * @param dataCenterId [String]
+	 * @return 호스트 목록
+	 */
+	@Throws(Error::class)
+	fun findAllHostsFromDataCenter(dataCenterId: String): List<HostVo>
+	/**
+	 * [ItDataCenterService.findAllVmsFromDataCenter]
+	 * 데이터센터가 가지고있는 가상머신 목록
+	 *
+	 * @param dataCenterId [String]
+	 * @return 가상머신 목록
+	 */
+	@Throws(Error::class)
+	fun findAllVmsFromDataCenter(dataCenterId: String): List<VmVo>
+	/**
+	 * [ItDataCenterService.findAllNetworkFromDataCenter]
+	 * 네트워크 목록
+	 *
+	 * @param dataCenterId [String]
+	 * @return List<[NetworkVo]> 네트워크 목록
+	 */
+	@Throws(Error::class)
+	fun findAllNetworkFromDataCenter(dataCenterId: String): List<NetworkVo>
+	/**
+	 * [ItDataCenterService.findAllDomainsFromDataCenter]
+	 * 데이터센터 - 스토리지 도메인 목록
+	 *
+	 * @param dataCenterId [String] 데이터센터 밑에 있는 도메인 목록
+	 * @return List<[StorageDomainVo]> 스토리지 도메인 목록
+	 */
+	@Throws(Error::class)
+	fun findAllDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo>
+	/**
+	 * [ItDataCenterService.findAllPermissionsFromDataCenter]
+	 *
+	 * @param dataCenterId [String] 네트워크 아이디
+	 * @return List<[PermissionVo]>
+	 */
+	@Throws(Error::class)
+	fun findAllPermissionsFromDataCenter(dataCenterId: String): List<PermissionVo>
+	/**
 	 * [ItDataCenterService.findAllEventsFromDataCenter]
 	 * 데이터센터 이벤트 목록
 	 *
@@ -76,16 +134,6 @@ interface ItDataCenterService {
 	fun findAllEventsFromDataCenter(dataCenterId: String): List<EventVo>
 
 
-	/**
-	 * [ItDataCenterService.findAllClusterFromDataCenter]
-	 * 데이터센터가 가지고있는 클러스터 목록
-	 * [MENU]
-	 *
-	 * @param dataCenterId [String]
-	 * @return List<[ClusterVo]> 클러스터 목록
-	 */
-	@Throws(Error::class)
-	fun findAllClusterFromDataCenter(dataCenterId: String): List<ClusterVo>
 
 	/**
 	 * [ItDataCenterService.dashboardComputing]
@@ -156,6 +204,52 @@ class DataCenterServiceImpl(
 		return res.isSuccess
 	}
 
+	// cluster 출력
+	@Throws(Error::class)
+	override fun findAllClusterFromDataCenter(dataCenterId: String): List<ClusterVo> {
+		log.info("findAllClusterFromDataCenter ... ")
+		val res: List<Cluster> =
+			conn.findAllClustersFromDataCenter(dataCenterId)
+				.getOrDefault(listOf())
+				.filter { it.cpuPresent() }
+		return res.toClustersMenu(conn)
+	}
+
+	@Throws(Error::class)
+	override fun findAllHostsFromDataCenter(dataCenterId: String): List<HostVo> {
+		log.debug("findAllHostsFromDataCenter ... dataCenterId: $dataCenterId")
+		val res: List<Host> =
+			conn.findAllHostsFromDataCenter(dataCenterId)
+				.getOrDefault(listOf())
+		return res.toHostsMenu(conn)
+	}
+
+	override fun findAllVmsFromDataCenter(dataCenterId: String): List<VmVo> {
+		TODO("Not yet implemented")
+	}
+
+	override fun findAllNetworkFromDataCenter(dataCenterId: String): List<NetworkVo> {
+		log.info("findAllFromDataCenter ... ")
+		val networks: List<Network> =
+			conn.findAllNetworks()
+				.getOrDefault(listOf())
+				.filter { it.dataCenter().id() == dataCenterId }
+		return networks.toNetworkVos(conn)
+	}
+
+	override fun findAllDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
+		TODO("Not yet implemented")
+	}
+
+	override fun findAllPermissionsFromDataCenter(dataCenterId: String): List<PermissionVo> {
+		log.info("getPermissionsByNetwork ... ")
+		val permissions: List<Permission> =
+			conn.findAllPermissionsFromDisk(dataCenterId)
+				.getOrDefault(listOf())
+		return permissions.toPermissionVos(conn)
+	}
+
+
 	@Throws(Error::class)
 	override fun findAllEventsFromDataCenter(dataCenterId: String): List<EventVo> {
 		log.info("findAllEventsFromDataCenter ... dataCenterId: {}", dataCenterId)
@@ -174,16 +268,6 @@ class DataCenterServiceImpl(
 		return res.toEventVos()
 	}
 
-	// cluster 출력
-	@Throws(Error::class)
-	override fun findAllClusterFromDataCenter(dataCenterId: String): List<ClusterVo> {
-		log.info("")
-		val res: List<Cluster> =
-			conn.findAllClustersFromDataCenter(dataCenterId)
-				.getOrDefault(listOf())
-				.filter { it.cpuPresent() }
-		return res.toClustersMenu(conn)
-	}
 
 
 	@Throws(Error::class)

@@ -20,6 +20,9 @@ const DEFAULT_VALUES = {
       vmsUp: 0,
       vmsDown: 0,
       storageDomains: 0,
+      events: 0,
+      eventsAlert: 0,
+      eventsError: 0
   },
   GET_CPU_MEMORY: {
     totalCpuUsagePercent: 0,
@@ -39,17 +42,17 @@ const DEFAULT_VALUES = {
   GET_STORAGE_MEMORY: () => `/api/v1/dashboard/storageMemory`,
   // 컴퓨팅
    FIND_ALL_DATA_CENTERS: [
-        {
-            name: 'DataCenter1',
-            comment: '',
-            storageType: '공유됨',
-            status: 'Up',
-            hostCnt:'',
-            clusterCnt:'',
-            compatVersion: '4.7',
-            version: '4.7',
-            description: 'The default Data Center',
-        },
+    {
+        name: 'DataCenter1',
+        comment: '',
+        storageType: '공유됨',
+        status: 'Up',
+        hostCnt:'',
+        clusterCnt:'',
+        compatVersion: '4.7',
+        version: '4.7',
+        description: 'The default Data Center',
+    },
    ],
    // 데이터센터 세부(일반) 편집
    FIND_DATACENTER:[

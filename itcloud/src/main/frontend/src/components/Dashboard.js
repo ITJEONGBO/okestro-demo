@@ -217,7 +217,7 @@ const Dashboard = () => {
             { title: "StorageDomain", cntTotal: dashboard?.storageDomains ?? 0, navigatePath: '/storage-domainpart' },
             /*편집해야됨 */
             { title: "Virtual machine", cntTotal: dashboard?.vms ?? 0, cntUp: dashboard?.vmsUp === 0 ? "" : dashboard?.vmsUp, cntDown: dashboard?.vmsDown === 0 ? "" : dashboard?.vmsDown, navigatePath: '/computing/vmhost-chart' },
-            { title: "Event",       cntTotal: 0, cntUp: 0 === 0 ? "" : 1, cntDown: 0 === 0 ? "" : 1 },
+            { title: "Event",       cntTotal: dashboard?.events ?? 0, alert: dashboard?.eventsAlert === 0 ? "" : dashboard?.eventsAlert, error: dashboard?.eventsError === 0 ? "" : dashboard?.eventsError, navigatePath: '/events' }
           ]}
 
         />}
@@ -234,7 +234,7 @@ const Dashboard = () => {
                 {vmCpu && <CpuBarChart vmCpu={vmCpu} /> /* BarChart 컴포넌트를 여기에 삽입 */}
               </div>
             </div>
-            <span>USED 64 Core / Total 192 Core</span>
+            <span>USED { (cpuMemory?.usedMemoryGB)?.toFixed(1) } Core / Total { (cpuMemory?.totalMemoryGB)?.toFixed(1) } Core</span>
             <div className="wave_graph">
               <h2>Per CPU</h2>
               <div><SuperAreaChart /> {/* AreaChart 컴포넌트를 여기에 삽입 */}</div>

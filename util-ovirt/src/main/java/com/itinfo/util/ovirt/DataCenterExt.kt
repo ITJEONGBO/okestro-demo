@@ -307,3 +307,16 @@ private fun Connection.srvQuotaStorageLimitsFromDataCenter(dataCenterId: String,
 
 fun Connection.findAllQuotaStorageLimitsFromDataCenter(dataCenterId: String, quotaId: String): List<QuotaStorageLimit> =
 	this.srvQuotaStorageLimitsFromDataCenter(dataCenterId, quotaId).list().send().limits()
+
+
+//fun Connection.findAllPermissionsFromDataCenter(diskId: String): Result<List<Permission>> = runCatching {
+//	if(this.findDisk(diskId).isFailure){
+//		throw ErrorPattern.DISK_NOT_FOUND.toError()
+//	}
+//	this.srvPermissionsFromData(diskId).list().send().permissions()
+//}.onSuccess {
+//	Term.DISK.logSuccessWithin(Term.PERMISSION, "목록조회", diskId)
+//}.onFailure {
+//	Term.DISK.logFailWithin(Term.PERMISSION, "목록조회", it, diskId)
+//	throw if (it is Error) it.toItCloudException() else it
+//}

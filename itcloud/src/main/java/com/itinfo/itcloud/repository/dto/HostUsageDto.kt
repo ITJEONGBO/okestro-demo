@@ -24,8 +24,11 @@ private val log = LoggerFactory.getLogger(HostUsageDto::class.java)
  * @property hostName [String] 
  * @property historyDatetime [LocalDateTime] 
  * @property totalCpuUsagePercent [Double] 
- * @property totalMemoryUsagePercent [Double] 
- * @property totalMemoryGB [Double] 
+ * @property totalMemoryUsagePercent [Double]
+ * @property totalCpuCore [Int]
+ * @property usedCpuCore [Int]
+ * @property freeCpuCore [Int]
+ * @property totalMemoryGB [Double]
  * @property usedMemoryGB [Double] 
  * @property freeMemoryGB [Double] 
  */
@@ -35,6 +38,9 @@ class HostUsageDto(
     val historyDatetime: LocalDateTime? = null,
     val totalCpuUsagePercent: Double = 0.0,
     val totalMemoryUsagePercent: Double = 0.0,
+    val totalCpuCore: Int = 0,
+    val usedCpuCore: Int = 0,
+    val freeCpuCore: Int = 0,
     val totalMemoryGB: Double = 0.0,
     val usedMemoryGB: Double = 0.0,
     val freeMemoryGB: Double = 0.0,
@@ -47,10 +53,13 @@ class HostUsageDto(
     	private var bHistoryDatetime: LocalDateTime? = null;fun historyDatetime(block: () -> LocalDateTime?) { bHistoryDatetime = block() }
     	private var bTotalCpuUsagePercent: Double = 0.0;fun totalCpuUsagePercent(block: () -> Double?) { bTotalCpuUsagePercent = block() ?: 0.0 }
     	private var bTotalMemoryUsagePercent: Double = 0.0;fun totalMemoryUsagePercent(block: () -> Double?) { bTotalMemoryUsagePercent = block() ?: 0.0 }
+        private var bTotalCpuCore: Int = 0; fun totalCpuCore(block: () -> Int?) { bTotalCpuCore = block() ?: 0 }
+        private var bUsedCpuCore: Int = 0; fun usedCpuCore(block: () -> Int?) { bUsedCpuCore = block() ?: 0 }
+        private var bFreeCpuCore: Int = 0; fun freeCpuCore(block: () -> Int?) { bFreeCpuCore = block() ?: 0 }
     	private var bTotalMemoryGB: Double = 0.0;fun totalMemoryGB(block: () -> Double?) { bTotalMemoryGB = block() ?: 0.0 }
     	private var bUsedMemoryGB: Double = 0.0;fun usedMemoryGB(block: () -> Double?) { bUsedMemoryGB = block() ?: 0.0 }
     	private var bFreeMemoryGB: Double = 0.0;fun freeMemoryGB(block: () -> Double?) { bFreeMemoryGB = block() ?: 0.0 }
-        fun build(): HostUsageDto = HostUsageDto(bHostId, bHostName, bHistoryDatetime, bTotalCpuUsagePercent, bTotalMemoryUsagePercent, bTotalMemoryGB, bUsedMemoryGB, bFreeMemoryGB)
+        fun build(): HostUsageDto = HostUsageDto(bHostId, bHostName, bHistoryDatetime, bTotalCpuUsagePercent, bTotalMemoryUsagePercent, bTotalCpuCore, bUsedCpuCore, bFreeCpuCore, bTotalMemoryGB, bUsedMemoryGB, bFreeMemoryGB)
     }
 
     companion object {

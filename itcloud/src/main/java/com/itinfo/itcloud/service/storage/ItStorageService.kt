@@ -9,6 +9,7 @@ import com.itinfo.itcloud.model.response.Res
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.model.storage.*
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.computing.ItDataCenterService
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.builders.*
@@ -60,15 +61,9 @@ interface ItStorageService {
 	 */
 	@Throws(Error::class)
 	fun findDomain(storageDomainId: String): StorageDomainVo?
-	/**
-	 * [ItStorageService.findAllHostsFromDataCenter]
-	 * 도메인 생성 - 호스트 목록
-	 *
-	 * @param dataCenterId [String] 데이터센터 밑에 있는 호스트
-	 * @return 호스트 목록
-	 */
-	@Throws(Error::class)
-	fun findAllHostsFromDataCenter(dataCenterId: String): List<IdentifiedVo>
+
+	// 도메인 생성 - 호스트 목록 [ItDataCenterService.findAllHostsFromDataCenter]
+
 	/**
 	 * [ItStorageService.addDomain]
 	 * 도메인 생성
@@ -330,14 +325,6 @@ class StorageServiceImpl(
 		return res?.toStorageDomainVo(conn)
 	}
 
-	@Throws(Error::class)
-	override fun findAllHostsFromDataCenter(dataCenterId: String): List<IdentifiedVo> {
-		log.debug("findAllHostsFromDataCenter ... dataCenterId: $dataCenterId")
-		val res: List<Host> =
-			conn.findAllHostsFromDataCenter(dataCenterId)
-				.getOrDefault(listOf())
-		return res.fromHostsToIdentifiedVos()
-	}
 
 
 	// requires: name, type, host, and storage attributes. Identify the host attribute with the id or name attributes.
