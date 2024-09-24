@@ -81,16 +81,16 @@ const MainOuter = ({ children }) => {
     };
     
     if (location.pathname.includes('/computing')) {
-      if (location.pathname.includes('/computing/HostedEngine')) {
-        updateSelectedState('computing', 'HostedEngine', true, true, true);
+      if (location.pathname.includes('/computing/rutil-manager')) {
+        updateSelectedState('computing', 'rutil-manager', true, true, true);
       } else if (location.pathname === '/computing/host') {  // 정확히 /computing/host 경로일 때만
         updateSelectedState('computing', 'host', true, true, true);
       } else if (location.pathname.includes('/computing/clusters')) {
         updateSelectedState('computing', 'clusters', true, true);
       } else if (location.pathname.includes('/computing/datacenters')) {
         updateSelectedState('computing', 'data_center', true);
-      } else if (location.pathname.includes('/computing/vms')) {
-        updateSelectedState('computing', 'vms', true, true, true);
+      } else if (location.pathname.includes('/computing/host/:id')) {
+        updateSelectedState('computing', 'host/:id', true, true, true);
       } else {
         updateSelectedState('computing', null);
       }
@@ -148,16 +148,16 @@ const MainOuter = ({ children }) => {
     };
   
     if (location.pathname.includes('/computing')) {
-      if (location.pathname.includes('/computing/HostedEngine')) {
-        updateSelectedState('computing', 'HostedEngine', true, true, true);
+      if (location.pathname.includes('/computing/rutil-manager')) {
+        updateSelectedState('computing', 'rutil-manager', true, true, true);
       } else if (location.pathname === '/computing/host') {  // 정확히 /computing/host 경로일 때만
         updateSelectedState('computing', 'host', true, true, true);
       } else if (location.pathname.includes('/computing/clusters')) {
         updateSelectedState('computing', 'clusters', true, true);
       } else if (location.pathname.includes('/computing/datacenters')) {
         updateSelectedState('computing', 'data_center', true);
-      } else if (location.pathname.includes('/computing/vms')) {
-        updateSelectedState('computing', 'vms', true, true, true);
+      } else if (location.pathname.includes('/computing/host/:id')) {
+        updateSelectedState('computing', 'host/:id', true, true, true);
       } else {
         updateSelectedState('computing', null);
       }
@@ -459,43 +459,42 @@ const MainOuter = ({ children }) => {
 
                 {/*가상머신*/} 
                 {selected === 'computing' && (
-<div id="virtual_machine_chart">
-    <div 
-        className="aside_popup_content" 
-        id="aside_popup_first" 
-        style={{ backgroundColor: selectedDiv === 'data_center' ? 'rgb(218, 236, 245)' : '' }} 
-        onClick={() => {
-            if (selectedDiv !== 'data_center') {
-                setSelectedDiv('data_center');
-                navigate('/computing/datacenters');
-            }
-        }}
-    >
-        
-        <FontAwesomeIcon 
-         style={{ fontSize:'0.3rem' , marginRight: '0.04rem' }} 
-            icon={isSecondVisible ? faChevronDown : faChevronRight} 
-            onClick={(e) => {
-                e.stopPropagation();
-                setIsSecondVisible(!isSecondVisible);
-                setIsThirdVisible(false); // 하위 항목들 모두 접기
-                setIsFourthVisible(false); // 하위 항목들 모두 접기
-                setIsLastVisible(false);  // 하위 항목들 모두 접기
-            }}
-            fixedWidth
-        />
-        <FontAwesomeIcon icon={faBuilding} fixedWidth/>
-        <span>Rutil manager</span>
-    </div>
+                  <div id="virtual_machine_chart">
+                      <div 
+                        className="aside_popup_content" 
+                        id="aside_popup_first" 
+                        style={{ backgroundColor: selectedDiv === 'rutil-manager' ? 'rgb(218, 236, 245)' : '' }} 
+                        onClick={() => {
+                            if (selectedDiv !== 'rutil-manager') {
+                                setSelectedDiv('rutil-manager');
+                                navigate('/computing/rutil-manager');
+                            }
+                        }}
+                      >
+                        <FontAwesomeIcon 
+                          style={{ fontSize:'0.3rem', marginRight: '0.04rem' }} 
+                          icon={isSecondVisible ? faChevronDown : faChevronRight} 
+                          onClick={(e) => {
+                              e.stopPropagation();
+                              setIsSecondVisible(!isSecondVisible);
+                              setIsThirdVisible(false); // 하위 항목들 모두 접기
+                              setIsFourthVisible(false); // 하위 항목들 모두 접기
+                              setIsLastVisible(false);  // 하위 항목들 모두 접기
+                          }}
+                          fixedWidth
+                        />
+                        <FontAwesomeIcon icon={faBuilding} fixedWidth/>
+                        <span>Rutil manager</span>
+                      </div>
     {isSecondVisible && (
         <div 
             className="aside_popup_second_content" 
             id="aside_popup_second" 
-            style={{ backgroundColor: selectedDiv === 'clusters' ? 'rgb(218, 236, 245)' : '' }}
+            style={{ backgroundColor: selectedDiv === 'data-center' ? 'rgb(218, 236, 245)' : '' }}
             onClick={() => {
-                if (selectedDiv !== 'clusters') {
-                    setSelectedDiv('clusters');
-                    navigate('/computing/clusters');
+                if (selectedDiv !== 'data-center') {
+                    setSelectedDiv('data-center');
+                    navigate('/computing/data-center');
                 }
             }}
         >
@@ -547,11 +546,11 @@ const MainOuter = ({ children }) => {
         <div 
         className="aside_popup_fourth_content" 
         id="aside_popup_fourth" 
-        style={{ backgroundColor: selectedDiv === '/아이디추가/vms' ? 'rgb(218, 236, 245)' : '' }} 
+        style={{ backgroundColor: selectedDiv === '/computing/host/:id' ? 'rgb(218, 236, 245)' : '' }} 
         onClick={() => {
-            if (selectedDiv !== 'vms') {
-                setSelectedDiv('vms');
-                navigate('/computing/아이디추가/vms');
+            if (selectedDiv !== 'host/:id') {
+                setSelectedDiv('host/:id');
+                navigate('/computing/host/:id');
             }
         }}
     >
@@ -565,14 +564,14 @@ const MainOuter = ({ children }) => {
     fixedWidth
 />
 
-        <FontAwesomeIcon icon={faBuilding} fixedWidth/>
-        <span>Host</span>
+          <FontAwesomeIcon icon={faUser} fixedWidth/>
+          <span>host01.ititnfo.com</span>
     </div>
     )}
 
     {isLastVisible && (
         <div id="aside_popup_last_machine">
-            <div
+            {/* <div
                 onClick={() => handleUserIconClick('host01.ititnfo.com')}
                 onContextMenu={(e) => handleContextMenu(e, 'host01.ititnfo.com')}
                 onMouseEnter={() => handleMouseEnter('host01.ititnfo.com')}
@@ -585,8 +584,9 @@ const MainOuter = ({ children }) => {
             >
                 <FontAwesomeIcon icon={faUser} fixedWidth/>
                 <span>host01.ititnfo.com</span>
-            </div>
+            </div> */}
             <div
+                id
                 onClick={() => handleMicrochipIconClick('HostedEngine')}
                 onContextMenu={(e) => handleContextMenu(e, 'HostedEngine')}
                 onMouseEnter={() => handleMouseEnter('HostedEngine')}
@@ -698,8 +698,34 @@ const MainOuter = ({ children }) => {
                   selected === 'network' && 
                   (
                     <div id="network_chart">
-                      <div
-                        className="aside_popup_content"
+
+                    <div 
+                        className="aside_popup_content" 
+                        id="aside_popup_first" 
+                        style={{ backgroundColor: selectedDiv === 'rutil-manager' ? 'rgb(218, 236, 245)' : '' }} 
+                        onClick={() => {
+                            if (selectedDiv !== 'rutil-manager') {
+                                setSelectedDiv('rutil-manager');
+                                navigate('/computing/rutil-manager');
+                            }
+                        }}
+                      >
+                        <FontAwesomeIcon 
+                          style={{ fontSize:'0.3rem', marginRight: '0.04rem' }} 
+                          icon={isSecondVisible ? faChevronDown : faChevronRight} 
+                          onClick={(e) => {
+                              e.stopPropagation();
+                              setIsSecondVisibleNetwork(!isSecondVisibleNetwork);
+                 
+                          }}
+                          fixedWidth
+                        />
+                        <FontAwesomeIcon icon={faBuilding} fixedWidth/>
+                        <span>Rutil manager</span>
+                      </div>
+
+                    <div
+                        className="aside_popup_second_content"
                         id="aside_popup_first3"
                         style={{ backgroundColor: selectedDiv === '아이디추가/default' ? 'rgb(218, 236, 245)' : '' }}
                         onClick={() => {
@@ -709,18 +735,20 @@ const MainOuter = ({ children }) => {
                         }}
                       >
                         <FontAwesomeIcon
-                         style={{ fontSize:'0.3rem' , marginRight: '0.04rem' }} 
-    icon={isSecondVisibleNetwork ? faChevronDown : faChevronRight}  // 상태에 따라 아이콘 변경
-    onClick={(e) => {
-        e.stopPropagation();
-        setIsSecondVisibleNetwork(!isSecondVisibleNetwork);
-    }}
-    fixedWidth
-/>
+                          style={{ fontSize:'0.3rem' , marginRight: '0.04rem' }} 
+                          icon={isSecondVisibleNetwork ? faChevronDown : faChevronRight}  // 상태에 따라 아이콘 변경
+                          onClick={(e) => {
+                              e.stopPropagation();
+                              setIsSecondVisibleNetwork(!isSecondVisibleNetwork);
+                          }}
+                          fixedWidth
+                        />
 
                         <FontAwesomeIcon icon={faBuilding} fixedWidth />
-                        <span>ovirtmgmt</span>
+                        <span>detault</span>
                     </div>
+
+                    
                     {
                       isSecondVisibleNetwork && /*navNetworks && navNetworks[0] && (navNetworks[0]?.networks?.map*/(/*(n) => */
                         <>

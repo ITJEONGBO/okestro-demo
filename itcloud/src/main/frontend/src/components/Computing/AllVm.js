@@ -139,8 +139,9 @@ const AllVm = () => {
   return (
     <div id="section">
       <HeaderButton
+        maintitle="Virtual Machine Chart"
         title=""
-        subtitle="Virtual Machine Chart"
+        subtitle=""
         buttons={buttons}
         popupItems={popupItems}
         openModal={openModal}

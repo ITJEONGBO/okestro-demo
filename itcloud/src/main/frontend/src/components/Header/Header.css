@@ -29,7 +29,7 @@
     display: flex;
     justify-content: space-between;
     font-size: 0.5em;
-    min-width: 7%;
+    min-width: 9%;
     align-items: center; /* 세로 중앙 정렬 추가 */
 }
 .header_left span{
@@ -75,10 +75,10 @@
     background-color: #ffffff;
     z-index: 3;
     width: 11.65vw;
-    left: -4vw;
+    left: -95%;
     font-size: 0.3rem;
     border: 1px solid rgb(204, 204, 204);
-    top: 113%;
+    top: 112%;
     height: 89.6vh;
     border-radius: 2px;
 }
@@ -100,16 +100,4 @@
 }
 .user_loginbox>div:hover{
     background-color: #ebececd8;
-}
-.bell_box{
-    position: absolute;
-    background-color: #ffffff;
-    z-index: 3;
-    width: 11.65vw;
-    left: -4%;
-    font-size: 0.3rem;
-    border: 1px solid rgb(204, 204, 204);
-    top: 99%;
-    height: 89.9vh;
-    border-radius: 2px;
 }

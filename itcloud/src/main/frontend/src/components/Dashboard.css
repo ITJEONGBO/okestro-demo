@@ -96,11 +96,16 @@
     font-size: 0.34rem;
     justify-content: space-between;
     background-color: rgb(255, 255, 255);
+    width: 100%;
 }
 .bar>div{
     width: 33%;
 }
 .bar span{
-    font-size: 0.4rem;
+    font-size: 0.36rem;
+    text-align: center;
     font-weight: 600;
+    display: block;
+    width: 100%;
+    padding: 0.1rem 0;
 }

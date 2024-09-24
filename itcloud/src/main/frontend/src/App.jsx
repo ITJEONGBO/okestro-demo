@@ -16,7 +16,7 @@ import Host from './components/Computing/Host';
 import HostDetail from './components/Computing/HostDetail';
 import StorageDomainDetail from './components/Storage/StorageDomainDetail';
 import StorageDiskDetail from './components/Storage/StorageDiskDetail';
-import DataCenterDetail from './components/Computing/DataCenterDetail';
+import DataCenter from './components/Computing/DataCenter';
 import VmTemplateChart from './components/Computing/VmTemplateChart';
 import NetworkDetail from './components/Network/NetworkDetail';
 import DomainParts from './components/Storage/StorageDomainPart';
@@ -27,6 +27,7 @@ import TemplateDetail from './components/Computing/TemplateDetail';
 import Templates from './components/Computing/Templates';
 import AllVm from './components/Computing/AllVm';
 import AllDisk from './components/Storage/AllDisk';
+import DataCenterDetail from './components/Computing/DataCenterDetail';
 
 const App = () => {
   const [stompClient, setStompClient] = useState(null);
@@ -99,6 +100,7 @@ const App = () => {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/computing/datacenters" element={<Computing />} />
               <Route path="/storage" element={<AllDisk />} />
+              <Route path="/computing/rutil-manager" element={<DataCenter />} />
               {/* <Route path="/storage" element={<Storage />} /> */}
               <Route path="/settings" element={<Setting />} />
               <Route path="/computing/vms/:id" element={<Vm />} />
@@ -120,6 +122,9 @@ const App = () => {
 
               {/*임시 */}
               <Route path="/아이디추가/storage" element={<Storage />} />
+              <Route path="/computing/data-center" element={<DataCenterDetail />} />
+              <Route path="/computing/vm-template-chart" element={<VmTemplateChart />} />
+              
             </Routes>
           </MainOuter>
           </>

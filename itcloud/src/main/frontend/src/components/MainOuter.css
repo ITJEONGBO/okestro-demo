@@ -82,16 +82,20 @@
 {
     margin-left: 0.1rem;
 }
-#aside_popup_first,#aside_popup_first2,#aside_popup_first3 {
+#aside_popup_first,#aside_popup_first2 {
+ 
+}
+.aside_popup_content{
     padding-left: 0.2rem;
 }
-
 #aside_popup_third_content{
     padding-left: 0.7rem;
 }
+
 #aside_popup_last_machine,#aside_popup_last_storage {
     padding-left: 1.33rem;
 }
+
 #aside_popup_last_machine>div:hover,#aside_popup_last_storage>div:hover{
     background-color: #e6eefa;
 }
