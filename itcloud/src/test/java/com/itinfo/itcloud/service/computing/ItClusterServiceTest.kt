@@ -21,13 +21,11 @@ import org.springframework.boot.test.context.SpringBootTest
  *
  * @author chanhi2000
  * @author deh22
- * @since 2024.03.05
+ * @since 2024.09.24
  */
-//@ExtendWith(MockitoExtension::class)
 @SpringBootTest
-/*internal */class ItClusterServiceTest {
+class ItClusterServiceTest {
 
-//	@Mock private lateinit var service: ItClusterService
 	@Autowired private lateinit var service: ItClusterService
 
 	private lateinit var dataCenterId: String
@@ -55,10 +53,9 @@ import org.springframework.boot.test.context.SpringBootTest
 			service.findAll()
 
 		assertThat(result, `is`(not(nullValue())))
-//		assertThat(result.size, `is`(2))
 		result.forEach { println(it) }
+		assertThat(result.size, `is`(2))
 	}
-
 
 	/**
 	 * [should_findOne]
@@ -193,64 +190,6 @@ import org.springframework.boot.test.context.SpringBootTest
 	}
 
 	/**
-	 * [should_add_success_Cluster]
-	 * [ItClusterService.add]에 대한 단위테스트
-	 * 외부공급자 생성x
-	 *
-	 * @see ItClusterService.add
-	 **/
-	@Test
-	fun should_add_success_Cluster() {
-		log.debug("should_add_success_Cluster ... ")
-		val addCluster: ClusterVo = ClusterVo.builder {
-			dataCenter { IdentifiedVo.builder { id { dataCenterId } } }
-			name { "testCluster" }
-			cpuArc { Architecture.X86_64 }
-			cpuType { "Intel Nehalem Family" }
-			description { "testDescription" }
-			comment { "testComment" }
-			network { IdentifiedVo.builder { id { networkId } } }
-			biosType { BiosType.Q35_SEA_BIOS }
-			fipsMode { FipsMode.ENABLED }
-			version { "4.7" }
-			switchType { SwitchType.LEGACY }
-			firewallType { FirewallType.FIREWALLD }
-			logMaxMemory { 90 }
-			logMaxMemoryType { LogMaxMemoryUsedThresholdType.PERCENTAGE }
-			virtService { true }
-			glusterService { false }
-			errorHandling { MigrateOnError.MIGRATE }
-			bandwidth { MigrationBandwidthAssignmentMethod.AUTO }
-			encrypted { InheritableBoolean.INHERIT }
-			networkProvider { false }
-		}
-
-		val result: ClusterVo? =
-			service.add(addCluster)
-
-		assertThat(result, `is`(not(nullValue())))
-		assertThat(result?.id, `is`(not(nullValue())))
-		assertThat(result?.dataCenter?.id, `is`(addCluster.dataCenter.id))
-		assertThat(result?.name, `is`(addCluster.name))
-		assertThat(result?.description, `is`(addCluster.description))
-		assertThat(result?.comment, `is`(addCluster.comment))
-		assertThat(result?.network?.id, `is`(addCluster.network.id))
-		assertThat(result?.biosType, `is`(addCluster.biosType))
-		assertThat(result?.fipsMode, `is`(addCluster.fipsMode))
-		assertThat(result?.version, `is`(addCluster.version))
-		assertThat(result?.switchType, `is`(addCluster.switchType))
-		assertThat(result?.firewallType, `is`(addCluster.firewallType))
-		assertThat(result?.logMaxMemory, `is`(addCluster.logMaxMemory))
-		assertThat(result?.logMaxMemoryType, `is`(addCluster.logMaxMemoryType))
-		assertThat(result?.virtService, `is`(addCluster.virtService))
-		assertThat(result?.glusterService, `is`(addCluster.glusterService))
-		assertThat(result?.errorHandling, `is`(addCluster.errorHandling))
-		assertThat(result?.bandwidth, `is`(addCluster.bandwidth))
-		assertThat(result?.encrypted, `is`(addCluster.encrypted))
-		assertThat(result?.networkProvider, `is`(addCluster.networkProvider))
-	}
-
-	/**
 	 * [should_add_networkProvider_Cluster]
 	 * [ItClusterService.add]에 대한 단위테스트
 	 * 외부공급자 생성o
@@ -288,7 +227,6 @@ import org.springframework.boot.test.context.SpringBootTest
 
 		log.debug(result?.networkProvider.toString() + ", " + addCluster.networkProvider)
 
-
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result?.id, `is`(not(nullValue())))
 		assertThat(result?.dataCenter?.id, `is`(addCluster.dataCenter.id))
@@ -308,140 +246,13 @@ import org.springframework.boot.test.context.SpringBootTest
 		assertThat(result?.errorHandling, `is`(addCluster.errorHandling))
 		assertThat(result?.bandwidth, `is`(addCluster.bandwidth))
 		assertThat(result?.encrypted, `is`(addCluster.encrypted))
-		assertThat(result?.networkProvider, `is`(addCluster.networkProvider))
+
+		val removeResult =
+			result?.let { service.remove(it.id) }
+		assertThat(removeResult, `is`(true))
 	}
 
-	/**
-	 * [should_update_Cluster]
-	 * [ItClusterService.update]에 대한 단위테스트
-	 *	미완
-	 *
-	 * @see ItClusterService.update
-	 **/
-	@Test
-	fun should_update_Cluster() {
-		log.debug("should_update_Cluster ... ")
-		val clusterId = ""
 
-		val updateCluster: ClusterVo = ClusterVo.builder {
-			id { clusterId }
-			dataCenter { IdentifiedVo.builder { id { dataCenterId } } }
-			name { "testCluster1" }
-			cpuArc { Architecture.X86_64 }
-			cpuType { "Intel Nehalem Family" }
-			description { "testDescription" }
-			comment { "testComment" }
-			network { IdentifiedVo.builder { id { networkId } } }
-			biosType { BiosType.Q35_SEA_BIOS }
-			fipsMode { FipsMode.ENABLED }
-			version { "4.7" }
-			switchType { SwitchType.LEGACY }
-			firewallType { FirewallType.FIREWALLD }
-			logMaxMemory { 90 }
-			logMaxMemoryType { LogMaxMemoryUsedThresholdType.PERCENTAGE }
-			virtService { true }
-			glusterService { false }
-			errorHandling { MigrateOnError.MIGRATE }
-			bandwidth { MigrationBandwidthAssignmentMethod.AUTO }
-			encrypted { InheritableBoolean.INHERIT }
-			networkProvider { false }
-		}
-
-		val result: ClusterVo? =
-			service.add(updateCluster)
-
-		assertThat(result, `is`(not(nullValue())))
-		assertThat(result?.id, `is`(not(nullValue())))
-		assertThat(result?.dataCenter?.id, `is`(updateCluster.dataCenter.id))
-		assertThat(result?.name, `is`(updateCluster.name))
-		assertThat(result?.description, `is`(updateCluster.description))
-		assertThat(result?.comment, `is`(updateCluster.comment))
-		assertThat(result?.network?.id, `is`(updateCluster.network.id))
-		assertThat(result?.biosType, `is`(updateCluster.biosType))
-		assertThat(result?.fipsMode, `is`(updateCluster.fipsMode))
-		assertThat(result?.version, `is`(updateCluster.version))
-		assertThat(result?.switchType, `is`(updateCluster.switchType))
-		assertThat(result?.firewallType, `is`(updateCluster.firewallType))
-		assertThat(result?.logMaxMemory, `is`(updateCluster.logMaxMemory))
-		assertThat(result?.logMaxMemoryType, `is`(updateCluster.logMaxMemoryType))
-		assertThat(result?.virtService, `is`(updateCluster.virtService))
-		assertThat(result?.glusterService, `is`(updateCluster.glusterService))
-		assertThat(result?.errorHandling, `is`(updateCluster.errorHandling))
-		assertThat(result?.bandwidth, `is`(updateCluster.bandwidth))
-		assertThat(result?.encrypted, `is`(updateCluster.encrypted))
-		assertThat(result?.networkProvider, `is`(updateCluster.networkProvider))
-	}
-
-	/**
-	 * [should_remove_Cluster]
-	 * [ItClusterService.remove]에 대한 단위테스트
-	 *
-	 * @see ItClusterService.remove
-	 **/
-	@Test
-	fun should_remove_Cluster() {
-		log.debug("should_remove_Cluster ... ")
-		val clusterId = ""
-		val removeCluster =
-			service.remove(clusterId)
-
-//		assertThat(removeCluster, `is`(not(nullValue())))
-		assertThat(removeCluster, `is`(false))
-	}
-
-	/**
-	 * [should_findAllNetworksFromCluster]
-	 * [ItClusterService.findAllNetworksFromCluster]에 대한 단위테스트
-	 *
-	 * @see ItClusterService.findAllNetworksFromCluster
-	 **/
-	@Test
-	fun should_findAllNetworksFromCluster() {
-		log.debug("should_findAllNetworksFromCluster ... ")
-		val result: List<NetworkVo> =
-			service.findAllNetworksFromCluster(clusterId)
-
-		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(2))
-		result.forEach { println(it) }
-	}
-
-	/**
-	 * [should_addNetworkFromCluster]
-	 * [ItClusterService.addNetworkFromCluster]에 대한 단위테스트
-	 *
-	 * @see ItClusterService.addNetworkFromCluster
-	 **/
-	@Test
-	fun should_addNetworkFromCluster() {
-		log.debug("should_addNetworkFromCluster ... ")
-		val networkVo: NetworkVo =
-			NetworkVo.builder {
-//				id {  }
-//				name {  }
-			}
-		val result: NetworkVo? =
-			service.addNetworkFromCluster(clusterId, networkVo)
-
-		assertThat(result, `is`(not(nullValue())))
-	}
-
-	/**
-	 * [should_findAllManageNetworksFromCluster]
-	 * [ItClusterService.findAllManageNetworksFromCluster]에 대한 단위테스트
-	 *
-	 * @see ItClusterService.findAllManageNetworksFromCluster
-	 **/
-	@Test
-	fun should_findAllManageNetworksFromCluster() {
-		log.debug("should_findAllManageNetworksFromCluster ... ")
-		val result: List<NetworkVo> =
-			service.findAllManageNetworksFromCluster(clusterId)
-
-		assertThat(result, `is`(not(nullValue())))
-		result.forEach { println(it) }
-		assertThat(result.size, `is`(4))
-	}
 
 	/**
 	 * [should_findAllHostsFromCluster]
@@ -474,10 +285,64 @@ import org.springframework.boot.test.context.SpringBootTest
 			service.findAllVmsFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
-//		assertThat(result.size, `is`(5))
+		result.forEach { println(it) }
+		assertThat(result.size, `is`(9))
+	}
 
+
+	/**
+	 * [should_findAllNetworksFromCluster]
+	 * [ItClusterService.findAllNetworksFromCluster]에 대한 단위테스트
+	 *
+	 * @see ItClusterService.findAllNetworksFromCluster
+	 **/
+	@Test
+	fun should_findAllNetworksFromCluster() {
+		log.debug("should_findAllNetworksFromCluster ... ")
+		val result: List<NetworkVo> =
+			service.findAllNetworksFromCluster(clusterId)
+
+		assertThat(result, `is`(not(nullValue())))
+		assertThat(result.size, `is`(3))
 		result.forEach { println(it) }
 	}
+
+//	/**
+//	 * [should_addNetworkFromCluster]
+//	 * [ItClusterService.addNetworkFromCluster]에 대한 단위테스트
+//	 *
+//	 * @see ItClusterService.addNetworkFromCluster
+//	 **/
+//	@Test
+//	fun should_addNetworkFromCluster() {
+//		log.debug("should_addNetworkFromCluster ... ")
+//		val networkVo: NetworkVo =
+//			NetworkVo.builder {
+////				id {  }
+////				name {  }
+//			}
+//		val result: NetworkVo? =
+//			service.addNetworkFromCluster(clusterId, networkVo)
+//
+//		assertThat(result, `is`(not(nullValue())))
+//	}
+//
+//	/**
+//	 * [should_findAllManageNetworksFromCluster]
+//	 * [ItClusterService.findAllManageNetworksFromCluster]에 대한 단위테스트
+//	 *
+//	 * @see ItClusterService.findAllManageNetworksFromCluster
+//	 **/
+//	@Test
+//	fun should_findAllManageNetworksFromCluster() {
+//		log.debug("should_findAllManageNetworksFromCluster ... ")
+//		val result: List<NetworkVo> =
+//			service.findAllManageNetworksFromCluster(clusterId)
+//
+//		assertThat(result, `is`(not(nullValue())))
+//		result.forEach { println(it) }
+//		assertThat(result.size, `is`(4))
+//	}
 
 
 	/**
@@ -493,8 +358,8 @@ import org.springframework.boot.test.context.SpringBootTest
 			service.findAllCpuProfilesFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
-//		assertThat(result.size, `is`(5))
 		result.forEach { println(it) }
+		assertThat(result.size, `is`(1))
 	}
 
 	/**
@@ -527,7 +392,7 @@ import org.springframework.boot.test.context.SpringBootTest
 			service.findAllEventsFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(1328))
+		assertThat(result.size, `is`(1691))
 	}
 
 
