@@ -144,7 +144,7 @@ class DataCenterController: BaseController() {
 	@ApiOperation(
 		httpMethod="GET",
 		value="클러스터 목록 조회",
-		notes="데이터센터가 가지고있는 클러스터 목록을 조회한다"
+		notes="선택된 데이터센터의 클러스터 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -167,7 +167,7 @@ class DataCenterController: BaseController() {
 	@ApiOperation(
 		httpMethod="GET",
 		value="호스트 목록 조회",
-		notes="데이터센터가 가지고있는 호스트 목록을 조회한다"
+		notes="선택된 데이터센터의 호스트 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -190,7 +190,7 @@ class DataCenterController: BaseController() {
 	@ApiOperation(
 		httpMethod="GET",
 		value="가상머신 목록 조회",
-		notes="데이터센터가 가지고있는 가상머신 목록을 조회한다"
+		notes="선택된 데이터센터의 가상머신 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -213,7 +213,7 @@ class DataCenterController: BaseController() {
 	@ApiOperation(
 		httpMethod="GET",
 		value="네트워크 목록 조회",
-		notes="데이터센터가 가지고있는 네트워크 목록을 조회한다"
+		notes="선택된 데이터센터의 네트워크 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -236,7 +236,7 @@ class DataCenterController: BaseController() {
 	@ApiOperation(
 		httpMethod="GET",
 		value="스토리지도메인 목록 조회",
-		notes="데이터센터가 가지고있는 스토리지도메인 목록을 조회한다"
+		notes="선택된 데이터센터의 스토리지도메인 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -259,7 +259,7 @@ class DataCenterController: BaseController() {
 	@ApiOperation(
 		httpMethod="GET",
 		value="권한 목록 조회",
-		notes="데이터센터가 가지고있는 권한 목록울 조회한다"
+		notes="선택된 데이터센터의 권한 목록울 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -282,7 +282,7 @@ class DataCenterController: BaseController() {
 	@ApiOperation(
 		httpMethod="GET",
 		value="이벤트 목록조회",
-		notes="데이터센터가 가지고있는 이벤트 목록을 조회한다"
+		notes="선택된 데이터센터의 이벤트 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -298,7 +298,7 @@ class DataCenterController: BaseController() {
 	): ResponseEntity<List<EventVo>> {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-		log.info("/computing/datacenters/{}/events ... 데이터센터 이벤트목록", dataCenterId)
+		log.info("/computing/datacenters/{}/events ... 데이터센터 이벤트 목록", dataCenterId)
 		return ResponseEntity.ok(iDataCenter.findAllEventsFromDataCenter(dataCenterId))
 	}
 

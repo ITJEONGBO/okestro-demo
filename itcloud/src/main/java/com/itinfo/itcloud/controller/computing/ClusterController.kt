@@ -137,11 +137,57 @@ class ClusterController: BaseController() {
 		return ResponseEntity.ok(iCluster.remove(clusterId))
 	}
 
+	@ApiOperation(
+		httpMethod="GET",
+		value="호스트 목록",
+		notes="선택된 클러스터의 호스트 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{clusterId}/hosts")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun hosts(
+		@PathVariable clusterId: String? = null
+	): ResponseEntity<List<HostVo>> {
+		if (clusterId.isNullOrEmpty())
+			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
+		log.info("/computing/clusters/{}/hosts ... 클러스터 내 호스트 목록", clusterId)
+		return ResponseEntity.ok(iCluster.findAllHostsFromCluster(clusterId))
+	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="가상머신 목록조회",
+		notes="선택된 클러스터의 가상머신 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{clusterId}/vms")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun vms(
+		@PathVariable clusterId: String? = null
+	): ResponseEntity<List<VmVo>> {
+		if (clusterId.isNullOrEmpty())
+			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
+		log.info("/computing/clusters/{}/vms ... 클러스터 가상머신 목록", clusterId)
+		return ResponseEntity.ok(iCluster.findAllVmsFromCluster(clusterId))
+	}
+
 
 	@ApiOperation(
 		httpMethod="GET",
 		value="네트워크 목록조회",
-		notes="클러스터가 가지고있는 네트워크 목록을 조회한다"
+		notes="선택된 클러스터의 네트워크 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -164,7 +210,7 @@ class ClusterController: BaseController() {
 	@ApiOperation(
 		httpMethod="POST",
 		value="네트워크 생성",
-		notes="클러스터의 네트워크를 생성한다"
+		notes="선택된 클러스터의 네트워크를 생성한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -192,7 +238,7 @@ class ClusterController: BaseController() {
 	@ApiOperation(
 		httpMethod="GET",
 		value="네트워크 관리 목록",
-		notes="클러스터가 가지고있는 네트워크 관리 목록을 조회한다"
+		notes="선택된 클러스터의 네트워크 관리 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -236,56 +282,11 @@ class ClusterController: BaseController() {
 //		return ResponseEntity.ok(iCluster.manageNetworksFromCluster(clusterId, networkVos = ))
 //	}
 
-	@ApiOperation(
-		httpMethod="GET",
-		value="호스트 목록",
-		notes="클러스터가 가지고있는 호스트 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{clusterId}/hosts")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun hosts(
-		@PathVariable clusterId: String? = null
-	): ResponseEntity<List<HostVo>> {
-		if (clusterId.isNullOrEmpty())
-			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
-		log.info("/computing/clusters/{}/hosts ... 클러스터 내 호스트 목록", clusterId)
-		return ResponseEntity.ok(iCluster.findAllHostsFromCluster(clusterId))
-	}
-
-	@ApiOperation(
-		httpMethod="GET",
-		value="가상머신 목록조회",
-		notes="클러스터가 가지고있는 가상머신 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{clusterId}/vms")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun vms(
-		@PathVariable clusterId: String? = null
-	): ResponseEntity<List<VmVo>> {
-		if (clusterId.isNullOrEmpty())
-			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
-		log.info("/computing/clusters/{}/vms ... 클러스터 가상머신 목록", clusterId)
-		return ResponseEntity.ok(iCluster.findAllVmsFromCluster(clusterId))
-	}
 
 	@ApiOperation(
 		httpMethod="GET",
 		value="Cpu Profile 목록",
-		notes="클러스터가 가지고있는 Cpu Profile 목록을 조회한다"
+		notes="선택된 클러스터의 Cpu Profile 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -308,7 +309,7 @@ class ClusterController: BaseController() {
 	@ApiOperation(
 		httpMethod="GET",
 		value="권한 목록",
-		notes="클러스터가 가지고있는 권한 목록을 조회한다"
+		notes="선택된 클러스터의 권한 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -331,7 +332,7 @@ class ClusterController: BaseController() {
 	@ApiOperation(
 		httpMethod="GET",
 		value="이벤트 목록",
-		notes="클러스터가 가지고있는 이벤트 목록을 조회한다"
+		notes="선택된 클러스터의 이벤트 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
