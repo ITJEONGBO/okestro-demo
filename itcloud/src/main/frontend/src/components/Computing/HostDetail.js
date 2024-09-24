@@ -242,7 +242,7 @@ function HostDetail() {
                     activeSection={activeTab} 
                     handleSectionClick={handleTabClick} 
                 />
-                <div className="host_btn_outer">
+                
                   
                 {/* 일반 */}
                 {activeTab === 'general' && (
@@ -472,7 +472,7 @@ function HostDetail() {
                 )}
                 {/* 가상머신 */}
                 {activeTab === 'machine' && (
-                <>
+                <div className="host_btn_outer">
                     
                         <div className="content_header_right">
                             <button>실행</button>
@@ -495,12 +495,12 @@ function HostDetail() {
                           data={data}
                           onRowClick={() => console.log('Row clicked')}
                         />
-                </>
+                </div>
                 )}
              
                 {/* 네트워크 인터페이스 */}
                 {activeTab === 'networkinterface' && (
-                <>
+                <div className="host_btn_outer">
                   <div className="content_header_right">
                     <button>VF 보기</button>
                     <button>모두 확장</button>
@@ -567,11 +567,11 @@ function HostDetail() {
                       </div>
                     </div>
                   ))}
-                </>
+                </div>
                 )}
                 {/* 호스트 장치 */}
                 {activeTab === 'hostdevice' && (
-                <>
+                <div className="host_btn_outer">
                   <div className="host_empty_outer">
                     <TableOuter 
                       columns={TableColumnsInfo.VOLUMES_FROM_HOST} 
@@ -579,12 +579,12 @@ function HostDetail() {
                       onRowClick={() => console.log('Row clicked')} 
                     />
                   </div>
-                </>
+                </div>
                 )}
                
                 {/* 권한 */}
                 {activeTab === 'permission' && (
-              <>
+              <div className="host_btn_outer">
               <div className="content_header_right">
                 <button>추가</button>
                 <button>제거</button>
@@ -611,7 +611,7 @@ function HostDetail() {
                 data={activePermissionFilter === 'all' ? permissionData : []}
                 onRowClick={() => console.log('Row clicked')}
               />
-            </>
+            </div>
             )}
           
                 {/* 이벤트 */}
@@ -624,7 +624,7 @@ function HostDetail() {
                     />
                 </div>
                 )}
-                </div>
+               
             </div>
 
 

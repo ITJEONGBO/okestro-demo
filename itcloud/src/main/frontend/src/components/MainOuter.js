@@ -9,7 +9,9 @@ import {
     faThLarge, faDesktop, faServer, faDatabase, faCog
     , faBuilding, faUser, faMicrochip, faChevronLeft, faChevronRight
     , faTimes, faEllipsisV, faHeart, faInfoCircle,
-    faChevronDown
+    faChevronDown,
+    faMailForward,
+    faListUl
 } from '@fortawesome/free-solid-svg-icons'
 
 const MainOuter = ({ children }) => {
@@ -27,6 +29,7 @@ const MainOuter = ({ children }) => {
     storage: '',
     network: '',
     setting: '',
+    event: '',
     default: 'rgb(218, 236, 245)'
   });
 
@@ -75,6 +78,7 @@ const MainOuter = ({ children }) => {
         computing: section === 'computing' ? 'rgb(218, 236, 245)' : '',
         storage: section === 'storage' ? 'rgb(218, 236, 245)' : '',
         network: section === 'network' ? 'rgb(218, 236, 245)' : '',
+        event: section === 'event' ? 'rgb(218, 236, 245)' : '',
         setting: section === 'setting' ? 'rgb(218, 236, 245)' : '',
         default: ''
       });
@@ -87,10 +91,10 @@ const MainOuter = ({ children }) => {
         updateSelectedState('computing', 'host', true, true, true);
       } else if (location.pathname.includes('/computing/clusters')) {
         updateSelectedState('computing', 'clusters', true, true);
-      } else if (location.pathname.includes('/computing/datacenters')) {
-        updateSelectedState('computing', 'data_center', true);
-      } else if (location.pathname.includes('/computing/host/:id')) {
-        updateSelectedState('computing', 'host/:id', true, true, true);
+      } else if (location.pathname.includes('/computing/data-center')) {
+        updateSelectedState('computing', 'data-center', true);
+      } else if (location.pathname.includes('/computing/host')) {
+        updateSelectedState('computing', 'host', true, true, true);
       } else {
         updateSelectedState('computing', null);
       }
@@ -100,15 +104,17 @@ const MainOuter = ({ children }) => {
       } else if (location.pathname.includes('/storage-disk')) {
         updateSelectedState('storage', lastPart, true, true);
       } else {
-        updateSelectedState('storage', 'data_center');
+        updateSelectedState('storage', 'data-center');
       }
     } else if (location.pathname.includes('/networks')) {
       if (location.pathname === '/networks' || lastPart === 'network') {
-        updateSelectedState('network', 'default', true);
+        updateSelectedState('network', 'data-center', true);
       } else {
         updateSelectedState('network', lastPart, true);
       }
-    } else if (location.pathname.includes('/settings')) {
+    } else if (location.pathname.includes('/events')) {
+      updateSelectedState('event', 'default');
+    }  else if (location.pathname.includes('/settings')) {
       updateSelectedState('setting', 'default');
     } else {
       setSelected('dashboard');
@@ -119,6 +125,7 @@ const MainOuter = ({ children }) => {
         storage: '',
         network: '',
         setting: '',
+        event: '',
         default: ''
       });
     }
@@ -126,70 +133,7 @@ const MainOuter = ({ children }) => {
   
   
 
-  // setting일때 aside닫기
-  useEffect(() => {
-    const pathParts = location.pathname.split('/');
-    const lastPart = decodeURIComponent(pathParts[pathParts.length - 1]);
-  
-    const updateSelectedState = (section, div, secondVisible = false, thirdVisible = false, lastVisible = false) => {
-      setSelected(section);
-      setSelectedDiv(div);
-  
-      // setting 경로일 때 asidePopup을 false로 설정
-      setAsidePopupVisible(section !== 'setting');
-      setAsidePopupBackgroundColor({
-        dashboard: '',
-        computing: section === 'computing' ? 'rgb(218, 236, 245)' : '',
-        storage: section === 'storage' ? 'rgb(218, 236, 245)' : '',
-        network: section === 'network' ? 'rgb(218, 236, 245)' : '',
-        setting: section === 'setting' ? 'rgb(218, 236, 245)' : '',
-        default: ''
-      });
-    };
-  
-    if (location.pathname.includes('/computing')) {
-      if (location.pathname.includes('/computing/rutil-manager')) {
-        updateSelectedState('computing', 'rutil-manager', true, true, true);
-      } else if (location.pathname === '/computing/host') {  // 정확히 /computing/host 경로일 때만
-        updateSelectedState('computing', 'host', true, true, true);
-      } else if (location.pathname.includes('/computing/clusters')) {
-        updateSelectedState('computing', 'clusters', true, true);
-      } else if (location.pathname.includes('/computing/datacenters')) {
-        updateSelectedState('computing', 'data_center', true);
-      } else if (location.pathname.includes('/computing/host/:id')) {
-        updateSelectedState('computing', 'host/:id', true, true, true);
-      } else {
-        updateSelectedState('computing', null);
-      }
-    } else if (location.pathname.includes('/storage')) {
-      if (location.pathname.includes('/storage-domain')) {
-        updateSelectedState('storage', 'storage_domain', true);
-      } else if (location.pathname.includes('/storage-disk')) {
-        updateSelectedState('storage', lastPart, true, true);
-      } else {
-        updateSelectedState('storage', 'data_center');
-      }
-    } else if (location.pathname.includes('/networks')) {
-      if (location.pathname === '/networks' || lastPart === 'network') {
-        updateSelectedState('network', 'default', true);
-      } else {
-        updateSelectedState('network', lastPart, true);
-      }
-    } else if (location.pathname.includes('/settings')) {
-      updateSelectedState('setting', 'default');
-    } else {
-      setSelected('dashboard');
-      setAsidePopupVisible(false); // 대시보드에서 aside 팝업을 닫음
-      setAsidePopupBackgroundColor({
-        dashboard: 'rgb(218, 236, 245)',
-        computing: '',
-        storage: '',
-        network: '',
-        setting: '',
-        default: ''
-      });
-    }
-  }, [location]);
+
   
 
 
@@ -249,7 +193,9 @@ const MainOuter = ({ children }) => {
             storage: '',
             network: '',
             setting: '',
+              event:'',
             default: ''
+          
         };
 
         if (id === 'computing') {
@@ -259,7 +205,9 @@ const MainOuter = ({ children }) => {
             newBackgroundColor.storage = 'rgb(218, 236, 245)';
         } else if (id === 'network') {
             newBackgroundColor.network = 'rgb(218, 236, 245)';
-        } else if (id === 'setting') {
+        } else if (id === 'event') {
+          newBackgroundColor.setting = 'rgb(218, 236, 245)';
+        }else if (id === 'setting') {
             newBackgroundColor.setting = 'rgb(218, 236, 245)';
         } else {
             setAsidePopupVisible(false);
@@ -447,6 +395,16 @@ const MainOuter = ({ children }) => {
                            <FontAwesomeIcon icon={faDatabase} fixedWidth/>
                         </div>
                     </Link>
+                    <Link to='/events' className="link-no-underline">
+                        <div
+                            id="aside_popup_storage_btn"
+                            className={getClassNames('event')}
+                            onClick={() => handleClick('event')}
+                            style={{ backgroundColor: asidePopupBackgroundColor.event }}
+                        >
+                           <FontAwesomeIcon icon={faListUl} fixedWidth/>
+                        </div>
+                    </Link>
                 </div>
                 <Link to='/settings' className="link-no-underline">
                     <div id="setting_icon" style={{ backgroundColor: asidePopupBackgroundColor.setting }} onClick={handleSettingIconClick}>
@@ -518,11 +476,11 @@ const MainOuter = ({ children }) => {
                 <div 
                     className="aside_popup_third_content" 
                     id="aside_popup_third" 
-                    style={{ backgroundColor: location.pathname === '/computing/host' ? 'rgb(218, 236, 245)' : '' }} 
+                    style={{ backgroundColor: location.pathname === '/computing/clusters/:id' ? 'rgb(218, 236, 245)' : '' }} 
                     onClick={() => {
-                        if (selectedDiv !== 'host') {
-                            setSelectedDiv('host');
-                            navigate('/computing/host');
+                        if (selectedDiv !== 'id') {
+                            setSelectedDiv('id');
+                            navigate('/computing/clusters/:id');
                         }
                     }}
                 >
@@ -540,37 +498,37 @@ const MainOuter = ({ children }) => {
             <FontAwesomeIcon icon={faBuilding} fixedWidth/>
             <span>Cluster</span>
         </div>
-    )}  
+            )}  
 
-    {isFourthVisible && (
-        <div 
-        className="aside_popup_fourth_content" 
-        id="aside_popup_fourth" 
-        style={{ backgroundColor: selectedDiv === '/computing/host/:id' ? 'rgb(218, 236, 245)' : '' }} 
-        onClick={() => {
-            if (selectedDiv !== 'host/:id') {
-                setSelectedDiv('host/:id');
-                navigate('/computing/host/:id');
-            }
-        }}
-    >
-        <FontAwesomeIcon
-         style={{ fontSize:'0.3rem' , marginRight: '0.04rem' }} 
-    icon={isLastVisible ? faChevronDown : faChevronRight}  // 상태에 따라 아이콘 변경
-    onClick={(e) => {
-        e.stopPropagation();
-        setIsLastVisible(!isLastVisible);
-    }}
-    fixedWidth
-/>
+            {isFourthVisible && (
+                <div 
+                className="aside_popup_fourth_content" 
+                id="aside_popup_fourth" 
+                style={{ backgroundColor: selectedDiv === '/computing/host/:id' ? 'rgb(218, 236, 245)' : '' }} 
+                onClick={() => {
+                    if (selectedDiv !== 'id') {
+                        setSelectedDiv('id');
+                        navigate('/computing/host/:id');
+                    }
+                }}
+            >
+                <FontAwesomeIcon
+                style={{ fontSize:'0.3rem' , marginRight: '0.04rem' }} 
+            icon={isLastVisible ? faChevronDown : faChevronRight}  // 상태에 따라 아이콘 변경
+            onClick={(e) => {
+                e.stopPropagation();
+                setIsLastVisible(!isLastVisible);
+            }}
+            fixedWidth
+        />
 
-          <FontAwesomeIcon icon={faUser} fixedWidth/>
-          <span>host01.ititnfo.com</span>
-    </div>
-    )}
+                  <FontAwesomeIcon icon={faUser} fixedWidth/>
+                  <span>host01.ititnfo.com</span>
+            </div>
+            )}
 
     {isLastVisible && (
-        <div id="aside_popup_last_machine">
+        <>
             {/* <div
                 onClick={() => handleUserIconClick('host01.ititnfo.com')}
                 onContextMenu={(e) => handleContextMenu(e, 'host01.ititnfo.com')}
@@ -586,21 +544,26 @@ const MainOuter = ({ children }) => {
                 <span>host01.ititnfo.com</span>
             </div> */}
             <div
-                id
-                onClick={() => handleMicrochipIconClick('HostedEngine')}
-                onContextMenu={(e) => handleContextMenu(e, 'HostedEngine')}
-                onMouseEnter={() => handleMouseEnter('HostedEngine')}
+                id="aside_popup_last_machine"
+                onClick={() => handleMicrochipIconClick('vms/:id')}
+                onContextMenu={(e) => handleContextMenu(e, 'vms/:id')}
+                onMouseEnter={() => handleMouseEnter('vms/:id')}
                 onMouseLeave={handleMouseLeave}
                 style={{
-                    backgroundColor: location.pathname === '/computing/HostedEngine' ? 'rgb(218, 236, 245)' : 
-                                    selectedDiv === 'HostedEngine' ? 'rgb(218, 236, 245)' : 
-                                    (hoverTarget === 'HostedEngine' ? '#e6eefa' : 'transparent')
+                    backgroundColor: location.pathname === '/computing/vms/:id' ? 'rgb(218, 236, 245)' : 
+                                    selectedDiv === 'vms/:id' ? 'rgb(218, 236, 245)' : 
+                                    (hoverTarget === 'vms/:id' ? '#e6eefa' : 'transparent')
                 }}
             >
                 <FontAwesomeIcon icon={faMicrochip} fixedWidth/>
-                <span>HostedEngine</span>
+                <span>가상머신아이디</span>
             </div>
-        </div>
+
+
+            
+
+
+            </>
     )}
 </div>
 )}
@@ -727,11 +690,12 @@ const MainOuter = ({ children }) => {
                     <div
                         className="aside_popup_second_content"
                         id="aside_popup_first3"
-                        style={{ backgroundColor: selectedDiv === '아이디추가/default' ? 'rgb(218, 236, 245)' : '' }}
+                        style={{ backgroundColor: selectedDiv === 'data-center' ? 'rgb(218, 236, 245)' : '' }}
                         onClick={() => {
-                          setSelectedDiv('default');
-                          navigate('아이디추가/networks');
-                          navNetworksRefetch()
+                          if (selectedDiv !== 'data-center') {
+                            setSelectedDiv('data-center');
+                            navigate('/computing/data-center');
+                        }
                         }}
                       >
                         <FontAwesomeIcon
@@ -745,7 +709,7 @@ const MainOuter = ({ children }) => {
                         />
 
                         <FontAwesomeIcon icon={faBuilding} fixedWidth />
-                        <span>detault</span>
+                        <span>data_center</span>
                     </div>
 
                     
@@ -768,8 +732,8 @@ const MainOuter = ({ children }) => {
                             <span>{n?.name}</span>
                           </div> */}
                           <div
-                            className="aside_popup_second_content"
-                            id="aside_popup_network_content"
+                            className="aside_popup_third_content"
+                      
                             style={{
                               backgroundColor: selectedDiv === 'example1' ? 'rgb(218, 236, 245)' : '',
                               paddingLeft: '0.85rem'
@@ -783,7 +747,7 @@ const MainOuter = ({ children }) => {
                             <span>example1</span>
                           </div>
                           <div
-                            className="aside_popup_second_content"
+                            className="aside_popup_third_content"
                             id="aside_popup_network_content"
                             style={{
                                 backgroundColor: selectedDiv === 'example2' ? 'rgb(218, 236, 245)' : '',
@@ -803,6 +767,7 @@ const MainOuter = ({ children }) => {
                     </div>
                 )}
                 
+               
             </div>
         </div>
 
@@ -829,7 +794,70 @@ const MainOuter = ({ children }) => {
             <div>Connections</div>
         </div>
 
-       
+       {/*  // // setting일때 aside닫기
+  // useEffect(() => {
+  //   const pathParts = location.pathname.split('/');
+  //   const lastPart = decodeURIComponent(pathParts[pathParts.length - 1]);
+  
+  //   const updateSelectedState = (section, div, secondVisible = false, thirdVisible = false, lastVisible = false) => {
+  //     setSelected(section);
+  //     setSelectedDiv(div);
+  
+  //     // setting 경로일 때 asidePopup을 false로 설정
+  //     setAsidePopupVisible(section !== 'setting');
+  //     setAsidePopupBackgroundColor({
+  //       dashboard: '',
+  //       computing: section === 'computing' ? 'rgb(218, 236, 245)' : '',
+  //       storage: section === 'storage' ? 'rgb(218, 236, 245)' : '',
+  //       network: section === 'network' ? 'rgb(218, 236, 245)' : '',
+  //       setting: section === 'setting' ? 'rgb(218, 236, 245)' : '',
+  //       default: ''
+  //     });
+  //   };
+  
+  //   if (location.pathname.includes('/computing')) {
+  //     if (location.pathname.includes('/computing/rutil-manager')) {
+  //       updateSelectedState('computing', 'rutil-manager', true, true, true);
+  //     } else if (location.pathname === '/computing/host:/id') {  // 정확히 /computing/host 경로일 때만
+  //       updateSelectedState('computing', 'host:/id', true, true, true);
+  //     } else if (location.pathname.includes('/computing/clusters')) {
+  //       updateSelectedState('computing', 'clusters', true, true);
+  //     } else if (location.pathname.includes('/computing/data-center')) {
+  //       updateSelectedState('computing', 'data-center', true);
+  //     } else if (location.pathname.includes('/computing/host:/idst')) {
+  //       updateSelectedState('computing', 'host:/id', true, true, true);
+  //     } else {
+  //       updateSelectedState('computing', null);
+  //     }
+  //   } else if (location.pathname.includes('/storage')) {
+  //     if (location.pathname.includes('/storage-domain')) {
+  //       updateSelectedState('storage', 'storage_domain', true);
+  //     } else if (location.pathname.includes('/storage-disk')) {
+  //       updateSelectedState('storage', lastPart, true, true);
+  //     } else {
+  //       updateSelectedState('storage', 'data-center');
+  //     }
+  //   } else if (location.pathname.includes('/networks')) {
+  //     if (location.pathname === '/networks' || lastPart === 'network') {
+  //       updateSelectedState('network', 'data-center', true);
+  //     } else {
+  //       updateSelectedState('network', lastPart, true);
+  //     }
+  //   } else if (location.pathname.includes('/settings')) {
+  //     updateSelectedState('setting', 'default');
+  //   } else {
+  //     setSelected('dashboard');
+  //     setAsidePopupVisible(false); // 대시보드에서 aside 팝업을 닫음
+  //     setAsidePopupBackgroundColor({
+  //       dashboard: 'rgb(218, 236, 245)',
+  //       computing: '',
+  //       storage: '',
+  //       network: '',
+  //       setting: '',
+  //       default: ''
+  //     });
+  //   }
+  // }, [location]); */}
 
       </div>
     );

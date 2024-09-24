@@ -9,7 +9,7 @@
 /*section(중간)*/
 .dash_board { 
   display:flex;flex-direction:column;justify-content:center;align-items:flex-start;
-  border-radius: 5px; width:96%; 
+  border-radius: 5px;     width: 96.7%;
 }
 /*박스끝*/
 

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUp, faArrowDown, faTrashCan, faBatteryEmpty } from '@fortawesome/free-solid-svg-icons'
+import { faArrowUp, faArrowDown, faBatteryEmpty, faStarOfLife } from '@fortawesome/free-solid-svg-icons'
 import './DashboardBoxGroup.css'
 
 const DashboardBox = ({ title, cntTotal, cntUp, cntDown, alert, error, navigatePath }) => {
@@ -13,7 +13,7 @@ const DashboardBox = ({ title, cntTotal, cntUp, cntDown, alert, error, navigateP
       <div className="arrows">
         {cntUp && <><FontAwesomeIcon icon={faArrowUp} fixedWidth/> {cntUp}&nbsp;</>}
         {cntDown && <><FontAwesomeIcon icon={faArrowDown} fixedWidth/> {cntDown}</>}
-        {alert && <><FontAwesomeIcon icon={faTrashCan} fixedWidth/> {alert}&nbsp;</>}
+        {alert && <><FontAwesomeIcon icon={faStarOfLife} fixedWidth/> {alert}&nbsp;</>}
         {error && <><FontAwesomeIcon icon={faBatteryEmpty} fixedWidth/> {error}</>}
       </div>
     </div>

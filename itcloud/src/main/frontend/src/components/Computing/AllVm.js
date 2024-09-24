@@ -139,8 +139,7 @@ const AllVm = () => {
   return (
     <div id="section">
       <HeaderButton
-        maintitle="Virtual Machine Chart"
-        title=""
+        title="Virtual Machine Chart"
         subtitle=""
         buttons={buttons}
         popupItems={popupItems}

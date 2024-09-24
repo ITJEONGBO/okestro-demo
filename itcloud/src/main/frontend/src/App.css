@@ -11,8 +11,18 @@
 
 #root,* { margin: 0;padding: 0;box-sizing: border-box;font-family: 'GowunDodum-Regular'; }
 .selected { background-color: #a4d9db; }
-#root { background-color:#EBEEEE;padding: 1% 1.3% 0 1.3%;height:100vh;text-rendering:optimizeLegibility; }
-
+/* #root { 
+    background-color:#EBEEEE;
+    padding: 1% 1.3% 0 1.3%;
+    height:100vh;
+    text-rendering:optimizeLegibility; 
+} */
+#root { 
+    background-color:#EBEEEE;
+    padding: 0.1rem;
+    height:100vh;
+    text-rendering:optimizeLegibility; 
+}
 /*-----중복 */
 button{
     border:1px solid gray;
@@ -41,7 +51,7 @@ form>div{
 #section,#storage_section,#network_section,#setting_section,#detail_section{
     background-color: #ffffff;
     border-radius: 5px;
-    width: 96%;
+    width: 96.7%;
     position: relative;
 }
 .content_outer{
@@ -268,11 +278,7 @@ form>div{
     text-align: left;
     color: #757575;
 }
-.content_detail_section{
-    width: 96%;
-    background: white;
-    position: relative;
-}
+
 .host_filter_btns{
     display: flex;
     font-size: 0.34rem;
@@ -2917,17 +2923,7 @@ display: flex; /* Flexbox 설정 추가 */
 .table_storage_domain_detail{
     width: 58%;
 }
-/* 이벤트 테이블 */
-.event_table_outer{
-    width: 100%;
-    height: 100%;
-    border: 1px solid black;
-}
-.event_table_outer>.section_table_outer{
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
+
 
 .color-primary { color: #76a314 }
 .color-primary:hover { color: #76a314 }

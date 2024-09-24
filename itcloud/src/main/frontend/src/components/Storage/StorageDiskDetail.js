@@ -42,10 +42,10 @@ const [activePopup, setActivePopup] = useState(null);  // activePopup 선언은 
 
 
   const buttons = [
-    { id: 'edit_btn', label: '편집', onClick: () => openPopup('newDisk') },
-    { id: 'remove_btn', label: '제거', onClick: () => console.log('Remove button clicked') },
-    { id: 'move_btn', label: '이동', onClick: () => console.log('Move button clicked') },
-    { id: 'copy_btn', label: '복사', onClick: () => console.log('Copy button clicked') },
+    { id: 'new_btn', label: '생성', onClick: () => openPopup('newDisk') },
+    { id: 'get_btn', label: '가져오기', onClick: () => console.log('Move button clicked') },
+    { id: 'edit_btn', label: '편집', onClick: () => openPopup('editDisk') },
+    { id: 'remove_btn', label: '삭제', onClick: () => console.log('Remove button clicked') },
   ];
   
 
@@ -124,7 +124,7 @@ const [activePopup, setActivePopup] = useState(null);  // activePopup 선언은 
         subtitle={name}
         additionalText={name}
         buttons={buttons}
-        popupItems={popupItems}
+        popupItems={[]}
         uploadOptions={uploadOptions}
       />
 
@@ -226,9 +226,9 @@ const [activePopup, setActivePopup] = useState(null);  // activePopup 선언은 
           )}
         </div>
       </div>
-           {/*디스크(새로만들기)팝업 */}
+           {/*디스크(편집)팝업 */}
            <Modal
-        isOpen={activePopup === 'newDisk'}
+        isOpen={activePopup === 'editDisk'}
         onRequestClose={closePopup}
         contentLabel="새 가상 디스크"
         className="Modal"

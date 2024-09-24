@@ -28,6 +28,7 @@ import Templates from './components/Computing/Templates';
 import AllVm from './components/Computing/AllVm';
 import AllDisk from './components/Storage/AllDisk';
 import DataCenterDetail from './components/Computing/DataCenterDetail';
+import Event from './components/Event';
 
 const App = () => {
   const [stompClient, setStompClient] = useState(null);
@@ -118,13 +119,13 @@ const App = () => {
               <Route path="/storage-domain/:name" element={<StorageDomainDetail />} />
               <Route path="/storage-domainpart" element={<DomainParts />} />
               <Route path="/storage-disk/:name" element={<StorageDiskDetail />} />
+              <Route path="/events" element={<Event />} />
 
-
+ 
               {/*임시 */}
               <Route path="/아이디추가/storage" element={<Storage />} />
               <Route path="/computing/data-center" element={<DataCenterDetail />} />
               <Route path="/computing/vm-template-chart" element={<VmTemplateChart />} />
-              
             </Routes>
           </MainOuter>
           </>
