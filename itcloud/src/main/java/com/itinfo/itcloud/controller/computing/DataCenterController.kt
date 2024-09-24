@@ -2,17 +2,13 @@ package com.itinfo.itcloud.controller.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.controller.BaseController
-import com.itinfo.itcloud.controller.computing.ClusterController.Companion
 import com.itinfo.itcloud.error.toException
-import com.itinfo.itcloud.model.computing.ClusterVo
+import com.itinfo.itcloud.model.computing.*
 import com.itinfo.util.ovirt.error.ErrorPattern
-import com.itinfo.itcloud.model.computing.DataCenterVo
-import com.itinfo.itcloud.model.computing.EventVo
 import com.itinfo.itcloud.model.network.NetworkVo
+import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.StorageDomainVo
 import com.itinfo.itcloud.service.computing.ItDataCenterService
-import com.itinfo.itcloud.service.network.ItNetworkService
-import com.itinfo.itcloud.service.storage.ItStorageService
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -30,8 +26,6 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/computing/datacenters")
 class DataCenterController: BaseController() {
 	@Autowired private lateinit var iDataCenter: ItDataCenterService
-	@Autowired private lateinit var iNetwork: ItNetworkService
-	@Autowired private lateinit var iStorage: ItStorageService
 
 	@ApiOperation(
 		httpMethod="GET",
@@ -44,7 +38,7 @@ class DataCenterController: BaseController() {
 	@GetMapping
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAll(): ResponseEntity<List<DataCenterVo?>> {
+	fun datacenters(): ResponseEntity<List<DataCenterVo?>> {
 		log.info("/computing/datacenters ... 데이터센터 목록")
 		return ResponseEntity.ok(iDataCenter.findAll())
 	}
@@ -63,7 +57,7 @@ class DataCenterController: BaseController() {
 	@GetMapping("/{dataCenterId}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findOne(
+	fun datacenter(
 		@PathVariable dataCenterId: String? = null,
 	): ResponseEntity<DataCenterVo?> {
 		if (dataCenterId.isNullOrEmpty())
@@ -88,12 +82,12 @@ class DataCenterController: BaseController() {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	fun add(
-		@RequestBody dataCenterVo: DataCenterVo?
+		@RequestBody dataCenter: DataCenterVo? = null
 	): ResponseEntity<DataCenterVo?> {
-		if (dataCenterVo == null)
+		if (dataCenter == null)
 			throw ErrorPattern.DATACENTER_VO_INVALID.toException()
-		log.info("/computing/datacenters ... 데이터센터 생성\n{}", dataCenterVo)
-		return ResponseEntity(iDataCenter.add(dataCenterVo), HttpStatus.CREATED)
+		log.info("/computing/datacenters ... 데이터센터 생성\n{}", dataCenter)
+		return ResponseEntity.ok(iDataCenter.add(dataCenter))
 	}
 
 	@ApiOperation(
@@ -146,40 +140,11 @@ class DataCenterController: BaseController() {
 		return ResponseEntity.ok(iDataCenter.remove(dataCenterId))
 	}
 
-	@ApiOperation(
-		httpMethod="GET",
-		value="데이터센터 이벤트 목록조회",
-		notes="데이터센터의 이벤트 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{dataCenterId}/events")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun findAllEventsFromDataCenter(
-		@PathVariable dataCenterId: String? = null,
-	): ResponseEntity<List<EventVo>> {
-		if (dataCenterId.isNullOrEmpty())
-			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-		log.info("/computing/datacenters/{}/events ... 데이터센터 이벤트목록", dataCenterId)
-		return ResponseEntity.ok(iDataCenter.findAllEventsFromDataCenter(dataCenterId))
-	}
 
-
-	/**
-	 * 옆의 네비게이션 메뉴에서 해당 항목을 클릭햇을 때 나오는 항목
-	 */
-	/**
-	 * 클러스터 - 데이터센터가 가지고 있는 클러스터 목록
-	 */
 	@ApiOperation(
 		httpMethod="GET",
 		value="클러스터 목록 조회",
-		notes="데이터센터가 가지고있는 클러스터 목록을 조회한다, [MENU]"
+		notes="데이터센터가 가지고있는 클러스터 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -187,22 +152,68 @@ class DataCenterController: BaseController() {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@GetMapping("{dataCenterId}/clusters")
+	@GetMapping("/{dataCenterId}/clusters")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAllFromDataCenter(dataCenterId: String): ResponseEntity<List<ClusterVo>> {
-		log.info("/computing/clusters ... 클러스터 목록")
-		return ResponseEntity.ok(iDataCenter.findAllClusterFromDataCenter(dataCenterId))
+	fun clusters(
+		@PathVariable dataCenterId: String? = null,
+	): ResponseEntity<List<ClusterVo>> {
+		if (dataCenterId.isNullOrEmpty())
+			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
+		log.info("/computing/datacenters/{}/clusters ... 데이터센터 클러스터 목록", dataCenterId)
+		return ResponseEntity.ok(iDataCenter.findAllClustersFromDataCenter(dataCenterId))
 	}
 
+	@ApiOperation(
+		httpMethod="GET",
+		value="호스트 목록 조회",
+		notes="데이터센터가 가지고있는 호스트 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{dataCenterId}/hosts")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun hosts(
+		@PathVariable dataCenterId: String? = null,
+	): ResponseEntity<List<HostVo>> {
+		if (dataCenterId.isNullOrEmpty())
+			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
+		log.info("/computing/dataCenters/{}/hosts ... 데이터센터 호스트 목록", dataCenterId)
+		return ResponseEntity.ok(iDataCenter.findAllHostsFromDataCenter(dataCenterId))
+	}
 
-	/**
-	 * 네트워크 - 데이터센터가 가지고 있는 네트워크 목록
-	 */
+	@ApiOperation(
+		httpMethod="GET",
+		value="가상머신 목록 조회",
+		notes="데이터센터가 가지고있는 가상머신 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{dataCenterId}/vms")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun vms(
+		@PathVariable dataCenterId: String? = null
+	): ResponseEntity<List<VmVo>> {
+		if (dataCenterId.isNullOrEmpty())
+			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
+		log.info("/computing/dataCenters/{}/vms ... 데이터센터 가상머신 목록", dataCenterId)
+		return ResponseEntity.ok(iDataCenter.findAllVmsFromDataCenter(dataCenterId))
+	}
+
 	@ApiOperation(
 		httpMethod="GET",
 		value="네트워크 목록 조회",
-		notes="네트워크 목록을 조회한다"
+		notes="데이터센터가 가지고있는 네트워크 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -213,22 +224,19 @@ class DataCenterController: BaseController() {
 	@GetMapping("/{dataCenterId}/networks")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAllNetworksFromDataCenter(
+	fun networks(
 		@PathVariable dataCenterId: String? = null
 	): ResponseEntity<List<NetworkVo>> {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-		log.info("GET /api/v1/dataCenters/{}/networks ... 네트워크 목록", dataCenterId)
-		return ResponseEntity.ok(iNetwork.findAllFromDataCenter(dataCenterId))
+		log.info("/computing/dataCenters/{}/networks ... 데이터센터 네트워크 목록", dataCenterId)
+		return ResponseEntity.ok(iDataCenter.findAllNetworksFromDataCenter(dataCenterId))
 	}
 
-	/**
-	 * 스토리지 - 데이터센터가 가지고 있는 도메인 목록
-	 */
 	@ApiOperation(
 		httpMethod="GET",
-		value="스토리지 - 도메인 목록 조회",
-		notes="스토리지 - 도메인 목록을 조회한다"
+		value="스토리지도메인 목록 조회",
+		notes="데이터센터가 가지고있는 스토리지도메인 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -236,20 +244,65 @@ class DataCenterController: BaseController() {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@GetMapping("/{dataCenterId}/domains")
+	@GetMapping("/{dataCenterId}/storageDomains")
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
-	fun findAllDomainsFromDataCenter(
+	fun storageDomains(
 		@PathVariable dataCenterId: String? = null,
 	): ResponseEntity<List<StorageDomainVo>> {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-		log.info("GET /api/v1/dataCenters/{}/domains ... 스토리지 목록", dataCenterId)
-		return ResponseEntity.ok(iStorage.findAllDomainsFromDataCenter(dataCenterId))
+		log.info("/computing/dataCenters/{}/storageDomains ... 데이터센터 스토리지 목록", dataCenterId)
+		return ResponseEntity.ok(iDataCenter.findAllStorageDomainsFromDataCenter(dataCenterId))
+	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="권한 목록 조회",
+		notes="데이터센터가 가지고있는 권한 목록울 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{dataCenterId}/permissions")
+	@ResponseStatus(HttpStatus.OK)
+	@ResponseBody
+	fun permissions(
+		@PathVariable dataCenterId: String? = null,
+	): ResponseEntity<List<PermissionVo>> {
+		if (dataCenterId.isNullOrEmpty())
+			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
+		log.info("/computing/dataCenters/{}/permissions ... 데이터센터 권한 목록", dataCenterId)
+		return ResponseEntity.ok(iDataCenter.findAllPermissionsFromDataCenter(dataCenterId))
+	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="이벤트 목록조회",
+		notes="데이터센터가 가지고있는 이벤트 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{dataCenterId}/events")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun events(
+		@PathVariable dataCenterId: String? = null,
+	): ResponseEntity<List<EventVo>> {
+		if (dataCenterId.isNullOrEmpty())
+			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
+		log.info("/computing/datacenters/{}/events ... 데이터센터 이벤트목록", dataCenterId)
+		return ResponseEntity.ok(iDataCenter.findAllEventsFromDataCenter(dataCenterId))
 	}
 
 
-	// 대시보드 옆에 트리구조
 	companion object {
 		private val log by LoggerDelegate()
 	}

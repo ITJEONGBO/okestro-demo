@@ -98,17 +98,17 @@ class ItStorageServiceTest {
 	 *
 	 * @see [ItStorageService.findAllHostsFromDataCenter]
 	 */
-	@Test
-	fun should_findAllHostsFromDataCenter() {
-		log.debug("should_findAllHostsFromDataCenter ... ")
-		val result: List<IdentifiedVo> =
-			service.findAllHostsFromDataCenter(dataCenterId)
-
-		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(2))
-
-		result.forEach { println(it) }
-	}
+//	@Test
+//	fun should_findAllHostsFromDataCenter() {
+//		log.debug("should_findAllHostsFromDataCenter ... ")
+//		val result: List<IdentifiedVo> =
+//			service.findAllHostsFromDataCenter(dataCenterId)
+//
+//		assertThat(result, `is`(not(nullValue())))
+//		assertThat(result.size, `is`(2))
+//
+//		result.forEach { println(it) }
+//	}
 
 	/**
 	 * [should_addDomain]

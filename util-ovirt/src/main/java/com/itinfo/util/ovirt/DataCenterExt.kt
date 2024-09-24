@@ -162,6 +162,23 @@ fun Connection.findAllHostsFromDataCenter(dataCenterId: String): Result<List<Hos
 	throw if (it is Error) it.toItCloudException() else it
 }
 
+
+fun Connection.findAllVmsFromDataCenter(dataCenterId: String): Result<List<Vm>> = runCatching {
+	val clusters: List<Cluster> =
+		this.findAllClustersFromDataCenter(dataCenterId)
+		.getOrDefault(listOf())
+
+	this.findAllVms()
+		.getOrDefault(listOf())
+		.filter { vm -> vm.cluster().id() in clusters.map { it.id() } }
+}.onSuccess {
+	Term.DATACENTER.logSuccessWithin(Term.VM,"목록조회", dataCenterId)
+}.onFailure {
+	Term.DATACENTER.logFailWithin(Term.VM,"목록조회", it, dataCenterId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+
 fun Connection.srvNetworksFromFromDataCenter(dataCenterId: String): DataCenterNetworksService =
 	this.srvDataCenter(dataCenterId).networksService()
 
@@ -308,15 +325,17 @@ private fun Connection.srvQuotaStorageLimitsFromDataCenter(dataCenterId: String,
 fun Connection.findAllQuotaStorageLimitsFromDataCenter(dataCenterId: String, quotaId: String): List<QuotaStorageLimit> =
 	this.srvQuotaStorageLimitsFromDataCenter(dataCenterId, quotaId).list().send().limits()
 
+private fun Connection.srvPermissionsFromDataCenter(dataCenterId: String): AssignedPermissionsService =
+	this.srvDataCenter(dataCenterId).permissionsService()
 
-//fun Connection.findAllPermissionsFromDataCenter(diskId: String): Result<List<Permission>> = runCatching {
-//	if(this.findDisk(diskId).isFailure){
-//		throw ErrorPattern.DISK_NOT_FOUND.toError()
-//	}
-//	this.srvPermissionsFromData(diskId).list().send().permissions()
-//}.onSuccess {
-//	Term.DISK.logSuccessWithin(Term.PERMISSION, "목록조회", diskId)
-//}.onFailure {
-//	Term.DISK.logFailWithin(Term.PERMISSION, "목록조회", it, diskId)
-//	throw if (it is Error) it.toItCloudException() else it
-//}
+fun Connection.findAllPermissionsFromDataCenter(dataCenterId: String): Result<List<Permission>> = runCatching {
+	if(this.findDataCenter(dataCenterId).isFailure){
+		throw ErrorPattern.DATACENTER_NOT_FOUND.toError()
+	}
+	this.srvPermissionsFromDataCenter(dataCenterId).list().send().permissions() ?: listOf()
+}.onSuccess {
+	Term.DATACENTER.logSuccessWithin(Term.PERMISSION, "목록조회", dataCenterId)
+}.onFailure {
+	Term.DATACENTER.logFailWithin(Term.PERMISSION, "목록조회", it, dataCenterId)
+	throw if (it is Error) it.toItCloudException() else it
+}
