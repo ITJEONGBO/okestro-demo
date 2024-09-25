@@ -11,7 +11,8 @@ import {
     , faTimes, faEllipsisV, faHeart, faInfoCircle,
     faChevronDown,
     faMailForward,
-    faListUl
+    faListUl,
+    faFileEdit
 } from '@fortawesome/free-solid-svg-icons'
 
 const MainOuter = ({ children }) => {
@@ -47,7 +48,7 @@ const MainOuter = ({ children }) => {
   const [hoverTarget, setHoverTarget] = useState(null);
   const [activePopup, setActivePopup] = useState(null);
   const [activeSettingForm, setActiveSettingForm] = useState('part');
-  const [settingPopupOpen, setSettingPopupOpen] = useState(false);
+
   const [activeSection, setActiveSection] = useState('general');
 
   const { 
@@ -99,16 +100,16 @@ const MainOuter = ({ children }) => {
         updateSelectedState('computing', null);
       }
     } else if (location.pathname.includes('/storage')) {
-      if (location.pathname.includes('/storage-domain')) {
-        updateSelectedState('storage', 'storage_domain', true);
-      } else if (location.pathname.includes('/storage-disk')) {
+      if (location.pathname.includes('/storage-domain/:id')) {
+        updateSelectedState('storage', 'storage_domain/:id', true);
+      } else if (location.pathname.includes('/storages/disks')) {
         updateSelectedState('storage', lastPart, true, true);
       } else {
         updateSelectedState('storage', 'data-center');
       }
     } else if (location.pathname.includes('/networks')) {
       if (location.pathname === '/networks' || lastPart === 'network') {
-        updateSelectedState('network', 'data-center', true);
+        updateSelectedState('network', 'data-centerdd', true);
       } else {
         updateSelectedState('network', lastPart, true);
       }
@@ -150,17 +151,17 @@ const MainOuter = ({ children }) => {
         const pathParts = location.pathname.split('/');
         const lastPart = decodeURIComponent(pathParts[pathParts.length - 1]);
 
-        if (location.pathname.includes('/storage-disk')) {
+        if (location.pathname.includes('/storages/disks')) {
             setSelected('storage');
             setSelectedDiv(null); 
             setSelectedDisk(lastPart);
-        } else if (location.pathname.includes('/storage-domain')) {
+        } else if (location.pathname.includes('/storage-domain/:id')) {
             setSelected('storage');
             setSelectedDiv('storage_domain');
             setSelectedDisk(null); 
         } else if (location.pathname.includes('/storage')) {
             setSelected('storage');
-            setSelectedDiv('data_center');  
+            setSelectedDiv('data_centerdd');  
             setSelectedDisk(null); 
         }
     }, [location]);
@@ -169,7 +170,7 @@ const MainOuter = ({ children }) => {
         if (selectedDisk !== diskName) {
             setSelectedDisk(diskName);
             setSelectedDiv(null);
-            navigate(`/storage-disk/${diskName}`);
+            navigate(`/storages/disks/${diskName}`);
         }
     };
 
@@ -216,49 +217,6 @@ const MainOuter = ({ children }) => {
         setAsidePopupBackgroundColor(newBackgroundColor);
     };
 
-    // 컴퓨팅부분
-    const handleFirstClick = (e) => {
-        e.stopPropagation();
-        setIsSecondVisible(!isSecondVisible);
-    };
-
-    const handleFirstDivClick = () => {
-        setSelectedDiv('data_center');
-        setIsSecondVisible(!isSecondVisible);
-        navigate('/computing/datacenters');
-    };
-    
-    const handleSecondClick = (e) => {
-        e.stopPropagation();
-        setIsThirdVisible(!isThirdVisible);
-    };
-
-    const handleSecondDivClick = (e) => {
-        e.stopPropagation();
-        setSelectedDiv('clusters');
-        navigate('/computing/clusters');
-    };
-    
-    const handleThirdClick = (e) => {
-        e.stopPropagation();
-        setIsFourthVisible(!isFourthVisible);
-    };
-
-    const handleThirdDivClick = () => {
-        setSelectedDiv('host');
-        setIsFourthVisible(!isSecondVisible);
-        navigate('/computing/host');
-    };
-    
-    const handleFourthClick = (e) => {
-        e.stopPropagation();
-        setIsLastVisible(!isLastVisible);
-    };
-    
-    const handleFourthDivClick = () => {
-        setSelectedDiv('vms');
-        navigate('/computing/vms');
-    };
 
     // 스토리지
     const handleFirstDivClickStorage = () => {
@@ -268,24 +226,7 @@ const MainOuter = ({ children }) => {
             navigate('/storage');
         }
     };
-    
-    const handleSecondDivClickStorage = () => {
-        if (selectedDiv !== 'storage_domain') {
-            setSelectedDiv('storage_domain');
-            setSelectedDisk(null);
-            navigate('/storage-domain');
-        }
-    };
-
-    const toggleSecondVisibleStorage = (e) => {
-        e.stopPropagation();
-        setIsSecondVisibleStorage(!isSecondVisibleStorage);
-    };
-    
-    const toggleLastVisibleStorage = (e) => {
-        e.stopPropagation();
-        setIsLastVisibleStorage(!isLastVisibleStorage);
-    };
+ 
 
     const getClassNames = (id) => {
         return selected === id ? 'selected' : '';
@@ -322,22 +263,7 @@ const MainOuter = ({ children }) => {
         setAsidePopupVisible(false); // setting_icon을 눌렀을 때 사이드바 닫기
     };
     
-    const openPopup = (popupType) => {
-        setActivePopup(popupType);
-    };
 
-    const closePopup = () => {
-        setActivePopup(null);
-    };
-
-    const openSettingPopup = () => {
-        setSettingPopupOpen(true);
-    };
-
-    const closeSettingPopup = () => {
-        setSettingPopupOpen(false);
-    };
-    
     const handleUserIconClick = (name) => {
         navigate(`/computing/host/${name}`);
         setSelectedDiv(name);
@@ -350,6 +276,12 @@ const MainOuter = ({ children }) => {
         navigate(`/computing/${name}`);
     };
 
+    const handleStorageDiskClick = (name) => {
+        setSelectedDiv(name);
+   
+        setIsThirdVisible(true);
+        navigate(`/storages/${name}`);
+    };
     return (
       <div id="main_outer" onClick={handleMainClick}>
         <div id="aside_outer" style={{ width: asidePopupVisible ? '20%' : '3%' }}>
@@ -573,37 +505,68 @@ const MainOuter = ({ children }) => {
                 {/*스토리지 */} 
                 {selected === 'storage' && (
                 <div id="storage_chart">
-                    <div
-                        className="aside_popup_content"
-                        id="aside_popup_first2"
-                        style={{ backgroundColor: selectedDiv === '아이디추가/data_center' ? 'rgb(218, 236, 245)' : '' }}
+                     <div 
+                        className="aside_popup_content" 
+                        id="aside_popup_first" 
+                        style={{ backgroundColor: selectedDiv === 'rutil-manager' ? 'rgb(218, 236, 245)' : '' }} 
                         onClick={() => {
-                            setSelectedDiv('아이디추가/data_center');
-                            navigate('아이디추가/storage');
+                            if (selectedDiv !== 'rutil-manager') {
+                                setSelectedDiv('rutil-manager');
+                                navigate('/computing/rutil-manager');
+                            }
+                        }}
+                      >
+                        <FontAwesomeIcon 
+                          style={{ fontSize:'0.3rem', marginRight: '0.04rem' }} 
+                          icon={isSecondVisible ? faChevronDown : faChevronRight} 
+                          onClick={(e) => {
+                              e.stopPropagation();
+                              setIsSecondVisibleNetwork(!isSecondVisibleNetwork);
+                 
+                          }}
+                          fixedWidth
+                        />
+                        <FontAwesomeIcon icon={faBuilding} fixedWidth/>
+                        <span>Rutil manager</span>
+                      </div>
+
+
+                    <div
+                        className="aside_popup_second_content"
+                        id="aside_popup_first2"
+                        style={{ backgroundColor: selectedDiv === 'data_center' ? 'rgb(218, 236, 245)' : '' }}
+                        onClick={() => {
+                            setSelectedDiv('data_center');
+                            navigate('/computing/data-center');
                         }}
                     >
-                <FontAwesomeIcon
-                 style={{ fontSize:'0.3rem' , marginRight: '0.04rem' }} 
-                    icon={isSecondVisibleStorage ? faChevronDown : faChevronRight}  // 상태에 따라 아이콘 변경
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setIsSecondVisibleStorage(!isSecondVisibleStorage);
-                        setIsLastVisibleStorage(false); // 하위 항목들 모두 접기
-                    }}
-                    fixedWidth
-                />
+                                <FontAwesomeIcon
+                                style={{ fontSize:'0.3rem' , marginRight: '0.04rem' }} 
+                                    icon={isSecondVisibleStorage ? faChevronDown : faChevronRight}  // 상태에 따라 아이콘 변경
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setIsSecondVisibleStorage(!isSecondVisibleStorage);
+                                        setIsLastVisibleStorage(false); // 하위 항목들 모두 접기
+                                    }}
+                                    fixedWidth
+                                />
 
-        <FontAwesomeIcon icon={faBuilding} fixedWidth/>
-        <span>data_center</span>
-    </div>
+                        <FontAwesomeIcon icon={faBuilding} fixedWidth/>
+                        <span>data_center</span>
+                    </div>
+
+                
+
+
+
     {isSecondVisibleStorage && (
         <div
-            className="aside_popup_second_content"
+            className="aside_popup_third_content"
             id="aside_popup_second2"
-            style={{ backgroundColor: selectedDiv === 'storage_domain' ? 'rgb(218, 236, 245)' : '' }}
+            style={{ backgroundColor: selectedDiv === 'storage-domain/:id' ? 'rgb(218, 236, 245)' : '' }}
             onClick={() => {
-                setSelectedDiv('storage_domain');
-                navigate('/storage-domainpart');
+                setSelectedDiv('storage-domain/:id');
+                navigate('storage-domain/:id');
             }}
         >
             <FontAwesomeIcon
@@ -621,38 +584,55 @@ const MainOuter = ({ children }) => {
         </div>
     )}
     {isLastVisibleStorage && (
-        <div id="aside_popup_last_storage">
-            <div
-                onClick={() => handleDetailClickStorage('he_metadata')}
-                onContextMenu={(e) => handleContextMenu(e, 'he_metadata')}
-                onMouseEnter={() => handleMouseEnter('he_metadata')}
-                onMouseLeave={handleMouseLeave}
-                style={getDiskDivStyle('he_metadata')}
-            >
-              <FontAwesomeIcon icon={faMicrochip} fixedWidth/>
-              <span>he_metadata</span>
-            </div>
-            <div
-                onClick={() => handleDetailClickStorage('디스크2')}
-                onContextMenu={(e) => handleContextMenu(e, '디스크2')}
-                onMouseEnter={() => handleMouseEnter('디스크2')}
-                onMouseLeave={handleMouseLeave}
-                style={getDiskDivStyle('디스크2')}
-            >
-              <FontAwesomeIcon icon={faMicrochip} fixedWidth/>
-              <span>디스크2</span>
-            </div>
-            <div
-                onClick={() => handleDetailClickStorage('디스크3')}
-                onContextMenu={(e) => handleContextMenu(e, '디스크3')}
-                onMouseEnter={() => handleMouseEnter('디스크3')}
-                onMouseLeave={handleMouseLeave}
-                style={getDiskDivStyle('디스크3')}
-            >
-              <FontAwesomeIcon icon={faMicrochip} fixedWidth/>
-              <span>디스크3</span>
-            </div>
-        </div>
+             <div
+             id="aside_popup_last_machine"
+             onClick={() => handleStorageDiskClick('disks/:id')}
+             onContextMenu={(e) => handleContextMenu(e, 'disks/:id')}
+             onMouseEnter={() => handleMouseEnter('disks/:id')}
+             onMouseLeave={handleMouseLeave}
+             style={{
+                 backgroundColor: location.pathname === '/storages/disks/:id' ? 'rgb(218, 236, 245)' : 
+                                 selectedDiv === 'disks/:id' ? 'rgb(218, 236, 245)' : 
+                                 (hoverTarget === 'disks/:id' ? '#e6eefa' : 'transparent')
+             }}
+         >
+             <FontAwesomeIcon icon={faMicrochip} fixedWidth/>
+             <span>디스크1</span>
+         </div>
+
+         
+        // <div id="aside_popup_last_storage">
+        //     <div
+        //         onClick={() => handleDetailClickStorage('he_metadata')}
+        //         onContextMenu={(e) => handleContextMenu(e, 'he_metadata')}
+        //         onMouseEnter={() => handleMouseEnter('he_metadata')}
+        //         onMouseLeave={handleMouseLeave}
+        //         style={getDiskDivStyle('he_metadata')}
+        //     >
+        //       <FontAwesomeIcon icon={faMicrochip} fixedWidth/>
+        //       <span>he_metadata</span>
+        //     </div>
+        //     <div
+        //         onClick={() => handleDetailClickStorage('디스크2')}
+        //         onContextMenu={(e) => handleContextMenu(e, '디스크2')}
+        //         onMouseEnter={() => handleMouseEnter('디스크2')}
+        //         onMouseLeave={handleMouseLeave}
+        //         style={getDiskDivStyle('디스크2')}
+        //     >
+        //       <FontAwesomeIcon icon={faMicrochip} fixedWidth/>
+        //       <span>디스크2</span>
+        //     </div>
+        //     <div
+        //         onClick={() => handleDetailClickStorage('디스크3')}
+        //         onContextMenu={(e) => handleContextMenu(e, '디스크3')}
+        //         onMouseEnter={() => handleMouseEnter('디스크3')}
+        //         onMouseLeave={handleMouseLeave}
+        //         style={getDiskDivStyle('디스크3')}
+        //     >
+        //       <FontAwesomeIcon icon={faMicrochip} fixedWidth/>
+        //       <span>디스크3</span>
+        //     </div>
+        // </div>
     )}
 </div>
 )}
@@ -668,11 +648,12 @@ const MainOuter = ({ children }) => {
                         style={{ backgroundColor: selectedDiv === 'rutil-manager' ? 'rgb(218, 236, 245)' : '' }} 
                         onClick={() => {
                             if (selectedDiv !== 'rutil-manager') {
+                         
                                 setSelectedDiv('rutil-manager');
                                 navigate('/computing/rutil-manager');
                             }
                         }}
-                      >
+                      >  
                         <FontAwesomeIcon 
                           style={{ fontSize:'0.3rem', marginRight: '0.04rem' }} 
                           icon={isSecondVisible ? faChevronDown : faChevronRight} 
@@ -731,36 +712,24 @@ const MainOuter = ({ children }) => {
                            <FontAwesomeIcon icon={faBuilding} style={{ fontSize: '0.34rem', marginRight: '0.05rem' }}fixedWidth/>
                             <span>{n?.name}</span>
                           </div> */}
-                          <div
-                            className="aside_popup_third_content"
-                      
-                            style={{
-                              backgroundColor: selectedDiv === 'example1' ? 'rgb(218, 236, 245)' : '',
-                              paddingLeft: '0.85rem'
-                            }}
-                            onClick={() => {
-                                setSelectedDiv('example1');
-                                navigate('/networks/example1');
-                            }}
-                          >
-                            <FontAwesomeIcon icon={faBuilding} style={{ fontSize: '0.34rem', marginRight: '0.05rem' }} fixedWidth/>
-                            <span>example1</span>
-                          </div>
-                          <div
-                            className="aside_popup_third_content"
-                            id="aside_popup_network_content"
-                            style={{
-                                backgroundColor: selectedDiv === 'example2' ? 'rgb(218, 236, 245)' : '',
-                                paddingLeft: '0.85rem'
-                            }}
-                            onClick={() => {
-                                setSelectedDiv('example2');
-                                navigate('/networks/example2');
-                            }}
-                          >
-                            <FontAwesomeIcon icon={faBuilding} style={{ fontSize: '0.34rem', marginRight: '0.05rem' }} fixedWidth/>
-                            <span>example2</span>
-                          </div>
+               
+                            <div
+                                className="aside_popup_fourth_content"
+                        
+                                style={{
+                                backgroundColor: selectedDiv === 'ddd' ? 'rgb(218, 236, 245)' : '',
+                                paddingLeft: '1rem'
+                                }}
+                                onClick={() => {
+                                    setSelectedDiv('ddd');
+                                    navigate('/networks/ddd');
+                                }}
+                            >
+                                <FontAwesomeIcon icon={faFileEdit} style={{ fontSize: '0.34rem', marginRight: '0.05rem' }} fixedWidth/>
+                                <span>ddd</span>
+                            </div>
+                           
+                   
                         </>
                       )
                     }

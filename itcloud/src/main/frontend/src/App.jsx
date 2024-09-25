@@ -27,7 +27,7 @@ import TemplateDetail from './components/Computing/TemplateDetail';
 import Templates from './components/Computing/Templates';
 import AllVm from './components/Computing/AllVm';
 import AllDisk from './components/Storage/AllDisk';
-import DataCenterDetail from './components/Computing/DataCenterDetail';
+import RutilManager from './components/Computing/RutilManager';
 import Event from './components/Event';
 
 const App = () => {
@@ -101,7 +101,7 @@ const App = () => {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/computing/datacenters" element={<Computing />} />
               <Route path="/storage" element={<AllDisk />} />
-              <Route path="/computing/rutil-manager" element={<DataCenter />} />
+              <Route path="/computing/data-center" element={<DataCenter />} />
               {/* <Route path="/storage" element={<Storage />} /> */}
               <Route path="/settings" element={<Setting />} />
               <Route path="/computing/vms/:id" element={<Vm />} />
@@ -116,15 +116,15 @@ const App = () => {
               <Route path="/computing/clusters/:id" element={<ClusterName />} /> 
               <Route path="/networks" element={<Network />} />
               <Route path="/networks/:id" element={<NetworkDetail />} /> 
-              <Route path="/storage-domain/:name" element={<StorageDomainDetail />} />
+              <Route path="/storage-domain/:id" element={<StorageDomainDetail />} /> 
               <Route path="/storage-domainpart" element={<DomainParts />} />
-              <Route path="/storage-disk/:name" element={<StorageDiskDetail />} />
+              <Route path="/storages/disks/:id" element={<StorageDiskDetail />} />
               <Route path="/events" element={<Event />} />
 
  
               {/*임시 */}
               <Route path="/아이디추가/storage" element={<Storage />} />
-              <Route path="/computing/data-center" element={<DataCenterDetail />} />
+              <Route path="/computing/rutil-manager" element={<RutilManager />} />
               <Route path="/computing/vm-template-chart" element={<VmTemplateChart />} />
             </Routes>
           </MainOuter>

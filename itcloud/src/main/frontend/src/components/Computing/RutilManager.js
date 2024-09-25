@@ -236,7 +236,7 @@ function DataCenterDetail() {
             ) : (
                 <>
                     <HeaderButton
-                        title="데이터센터 세부"
+                        title="Rutil Manager"
                         subtitle={locationState?.name}
                         additionalText="목록이름"
                         buttons={buttons}
