@@ -195,7 +195,8 @@ fun Connection.addVm(
 
 fun Connection.updateVm(
 	vm: Vm,
-	diskAttachments: List<DiskAttachment>,
+	addDiskAttachments: List<DiskAttachment>,
+	deleteDiskAttachments: List<DiskAttachment>,
 	vnicIds: List<String>,
 	connId: String
 ): Result<Vm?> = runCatching {
@@ -212,12 +213,12 @@ fun Connection.updateVm(
 		this.srvVm(vm.id()).update().vm(vm).send().vm()
 			?: throw ErrorPattern.VM_NOT_FOUND.toError()
 
-
-	this.selectCdromFromVm(vmUpdated.id(), connId)
-	this.addMultipleDiskAttachmentsToVm(vmUpdated.id(), diskAttachments)
+	this.addMultipleDiskAttachmentsToVm(vmUpdated.id(), addDiskAttachments)
+//	this.removeDiskAttachmentToVm(vmUpdated.id(), deleteDiskAttachments)
 	this.addMultipleNicsFromVm(vmUpdated.id(), vnicIds)
+	this.selectCdromFromVm(vmUpdated.id(), connId)
 
-	vmUpdated ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	vmUpdated
 }.onSuccess {
 	Term.VM.logSuccess("편집", it.id())
 }.onFailure {
@@ -612,25 +613,72 @@ fun Connection.updateDiskAttachmentToVm(vmId: String, diskAttachment: DiskAttach
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.removeDiskAttachmentToVm(vmId: String, diskAttachmentId: String, detachOnly: Boolean?): Result<Boolean> = runCatching {
+fun Connection.updateMultipleDiskAttachmentsToVm(vmId: String, diskAttachments: List<DiskAttachment>): Result<Boolean> = runCatching {
 	if(this.findVm(vmId).isFailure){
 		throw ErrorPattern.VM_NOT_FOUND.toError()
 	}
-	if(this.findDiskAttachmentFromVm(vmId, diskAttachmentId).isFailure){
-		throw ErrorPattern.DISK_ATTACHMENT_ID_NOT_FOUND.toError()
+	// 기존 디스크 목록 가져오기
+	val existDisks: List<DiskAttachment> = this.findAllDiskAttachmentsFromVm(vmId).getOrDefault(listOf())
+
+	val diskAttachmentListToAdd = mutableListOf<DiskAttachment>()
+	val diskAttachmentListToDelete = mutableListOf<DiskAttachment>()
+
+	// 1. 추가할 디스크 찾기 (새로운 목록에 있지만 기존 목록에 없는 디스크)
+	diskAttachments.forEach { newDisk ->
+		if (existDisks.none { it.id() == newDisk.id() }) {
+			// 새로운 디스크는 추가할 목록에 넣음
+			diskAttachmentListToAdd.add(newDisk)
+		}
 	}
-//	val diskAttachUpdated: Boolean =
+
+	// 2. 삭제할 디스크 찾기 (기존 목록에 있지만 새로운 목록에 없는 디스크)
+	existDisks.forEach { existingDisk ->
+		if (diskAttachments.none { it.id() == existingDisk.id() }) {
+			// 기존 디스크가 새 목록에 없으면 삭제할 목록에 넣음
+			diskAttachmentListToDelete.add(existingDisk)
+		}
+	}
+
+	// 3. 디스크 추가 처리
+	val addResults = diskAttachmentListToAdd.map { this.addDiskAttachmentToVm(vmId, it) }
+	val allAddSuccessful = addResults.all { it.isSuccess }
+
+	// 4. 디스크 삭제 처리
+//	val deleteResults = diskAttachmentListToDelete.map { this.removeDiskAttachmentToVm(vmId, it.id()) }
+//	val allDeleteSuccessful = deleteResults.all { it.isSuccess }
+
+	// 결과 반환
+	allAddSuccessful /*&& allDeleteSuccessful*/
+}.onSuccess {
+	Term.VM.logSuccessWithin(Term.DISK, "여러 개 붙이기", vmId)
+}.onFailure {
+	Term.VM.logFailWithin(Term.DISK, "여러 개 붙이기", it, vmId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+//fun Connection.removeDiskAttachmentToVm(vmId: String, diskAttachmentId: String, detachOnly: Boolean): Result<Boolean> = runCatching {
+//	// VM 확인
+//	if (this.findVm(vmId).isFailure) {
+//		throw ErrorPattern.VM_NOT_FOUND.toError()
+//	}
+//
+//	// DiskAttachment 확인
+//	if (this.findDiskAttachmentFromVm(vmId, diskAttachmentId).isFailure) {
+//		throw ErrorPattern.DISK_ATTACHMENT_ID_NOT_FOUND.toError()
+//	}
+//
+//	// DiskAttachment 삭제 요청 및 결과 확인
+//	val diskAttachUpdated =
 //		this.srvDiskAttachmentFromVm(vmId, diskAttachmentId).remove().detachOnly(detachOnly).send()
 //
 //	diskAttachUpdated
-	//TODO 기능구현
-	false
-}.onSuccess {
-	Term.VM.logSuccessWithin(Term.DISK_ATTACHMENT, "삭제", vmId)
-}.onFailure {
-	Term.VM.logFailWithin(Term.DISK_ATTACHMENT,"삭제", it, vmId)
-	throw if (it is Error) it.toItCloudException() else it
-}
+//}.onSuccess {
+//	Term.VM.logSuccessWithin(Term.DISK_ATTACHMENT, "삭제", vmId)
+//}.onFailure {
+//	Term.VM.logFailWithin(Term.DISK_ATTACHMENT, "삭제", it, vmId)
+//	throw if (it is Error) it.toItCloudException() else it
+//}
+
 
 
 

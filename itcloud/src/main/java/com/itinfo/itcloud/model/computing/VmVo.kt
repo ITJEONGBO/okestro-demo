@@ -448,8 +448,6 @@ fun VmVo.toVmInfoBuilder(vmBuilder: VmBuilder): VmBuilder {
         .deleteProtected(this@toVmInfoBuilder.deleteProtected)
 }
 
-
-
 /**
  * vm 시스템
  */
@@ -465,7 +463,6 @@ fun VmVo.toVmSystemBuilder(vmBuilder: VmBuilder, conn: Connection): VmBuilder {
 		vmBuilder.instanceType(instance)
 	} else if(this@toVmSystemBuilder.instanceType == "none") {    // 사용자 정의 값
 		vmBuilder
-//			.memory(BigInteger.valueOf(this@toVmSystemBuilder.memorySize).multiply(convertMb))
 			.memory(this@toVmSystemBuilder.memorySize * convertMb)
 			.memoryPolicy(
 				MemoryPolicyBuilder()

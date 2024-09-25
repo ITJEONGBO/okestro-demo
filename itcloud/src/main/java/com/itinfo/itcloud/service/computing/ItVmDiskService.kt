@@ -132,7 +132,7 @@ class VmDiskService(
 		val res: DiskAttachment? =
 			conn.updateDiskAttachmentToVm(
 				diskAttachmentVo.vmVo.id,
-				diskAttachmentVo.toEditDiskAttachment()
+				diskAttachmentVo.toAddDiskAttachment()
 			).getOrNull()
 		return res?.toDiskAttachmentVo(conn)
 	}

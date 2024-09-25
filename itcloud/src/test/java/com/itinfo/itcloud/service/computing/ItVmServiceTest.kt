@@ -93,13 +93,13 @@ class  ItVmServiceTest {
 	}
 
 	/**
-	 * [should_findAllDiskImagesBy]
+	 * [should_findAllDiskImages]
 	 * [ItVmService.findAllDiskImage]에 대한 단위테스트
-	 * TODO 디스크 목록기준이 애매함
+	 *
 	 * @see [ItVmService.findAllDiskImage]
 	 */
 	@Test
-	fun should_findAllDiskImagesBy() {
+	fun should_findAllDiskImages() {
 		log.debug("should_findAllDiskImagesBy ...")
 		val result: List<DiskImageVo> =
 			service.findAllDiskImage()

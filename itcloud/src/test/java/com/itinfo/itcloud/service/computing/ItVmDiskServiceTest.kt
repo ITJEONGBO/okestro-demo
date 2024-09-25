@@ -27,20 +27,21 @@ class ItVmDiskServiceTest {
     @Autowired private lateinit var service: ItVmDiskService
 
     private lateinit var hostVm: String // hostVm
-    private lateinit var vm01_1: String // hostVm
+    private lateinit var r: String // hostVm
     private lateinit var nicId: String
 
     @BeforeEach
     fun setup() {
         hostVm = "c2ae1da5-ce4f-46df-b337-7c471bea1d8d" // HostedEngine
+        r = "46560fd8-97c4-41d2-a362-7773b0065261"
         nicId = "9f8ba468-35ea-4102-baa6-44951557eac9" // vnet0
     }
 
     /**
      * [should_addDisks]
-     * [ItVmDiskService.addDisksFromVm]에 대한 단위테스트
+     * [ItVmDiskService.addDiskFromVm]에 대한 단위테스트
      *
-     * @see [ItVmDiskService.addDisksFromVm]
+     * @see [ItVmDiskService.addDiskFromVm]
      */
     @Test
     fun should_addDisks(){
@@ -108,7 +109,7 @@ class ItVmDiskServiceTest {
         diskattaches.add(diskAttachVo4)
 
         val vmVo: VmVo = VmVo.builder {
-            id { vm01_1 }
+            id { r }
             diskAttachmentVos { diskattaches }
         }
 
@@ -148,7 +149,7 @@ class ItVmDiskServiceTest {
                 readOnly { false }
             }
         val vmVo: VmVo = VmVo.builder {
-            id { vm01_1 }
+            id { r }
             diskAttachmentVo { diskAttachVo }
         }
 
@@ -170,26 +171,26 @@ class ItVmDiskServiceTest {
     fun should_findAllDisksFromVm(){
         log.debug("should_findAllDisksFromVm")
         val result: List<DiskAttachmentVo> =
-            service.findAllDisksFromVm("4fd618ae-761c-4518-bf6c-f2245e439079")
+            service.findAllDisksFromVm(r)
 
         assertThat(result, `is`(not(nullValue())))
 
         result.forEach { println(it) }
-//        assertThat(result.size, `is`(1))
+        assertThat(result.size, `is`(3))
     }
 
     /**
      * [should_findOneDiskFromVm]
-     * [ItVmDiskService.findOneDiskFromVm]에 대한 단위테스트
+     * [ItVmDiskService.findDiskFromVm]에 대한 단위테스트
      *
-     * @see [ItVmDiskService.findOneDiskFromVm]
+     * @see [ItVmDiskService.findDiskFromVm]
      */
     @Test
     fun should_findOneDiskFromVm(){
         log.debug("should_findOneDiskFromVm")
         val diskAttachmentId = "06276214-bfcf-4943-8c6e-a51a68bc6453"
         val result: DiskAttachmentVo? =
-            service.findDiskFromVm(vm01_1, diskAttachmentId)
+            service.findDiskFromVm(r, diskAttachmentId)
 
         assertThat(result, `is`(not(nullValue())))
         log.debug("result: {}", result)

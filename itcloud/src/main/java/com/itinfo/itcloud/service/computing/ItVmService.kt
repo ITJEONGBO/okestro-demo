@@ -247,15 +247,35 @@ class VmServiceImpl(
 	@Throws(Error::class)
 	override fun update(vmVo: VmVo): VmVo? {
 		log.info("update ... {}", vmVo.name)
-//		if(vmVo.diskAttachmentVos.filter { it.bootable }.size != 1){
-//			log.error("디스크 부팅가능은 한개만 가능")
-//			throw ErrorPattern.VM_VO_INVALID.toException()
-//		}
+		if(vmVo.diskAttachmentVos.filter { it.bootable }.size != 1){
+			log.error("디스크 부팅가능은 한개만 가능")
+			throw ErrorPattern.VM_VO_INVALID.toException()
+		}
+
+		val existDiskAttachments: List<DiskAttachment> =
+			conn.findAllDiskAttachmentsFromVm(vmVo.id).getOrDefault(listOf())
+
+		val diskAttachmentListToAdd = mutableListOf<DiskAttachment>()
+		val diskAttachmentListToDelete = mutableListOf<DiskAttachment>()
+
+		vmVo.diskAttachmentVos.forEach { diskAttachmentVo ->
+			if (existDiskAttachments.none { it.id() == diskAttachmentVo.id }) {
+				diskAttachmentListToAdd.add(diskAttachmentVo.toAddDiskAttachment())
+			}
+		}
+		existDiskAttachments.forEach { existingDisk ->
+			if (vmVo.diskAttachmentVos.none { it.id == existingDisk.id() }) {
+				// 기존 디스크가 새 목록에 없으면 삭제할 목록에 넣음
+				diskAttachmentListToDelete.add(existingDisk)
+			}
+		}
 
 		val res: Vm? =
 			conn.updateVm(
 				vmVo.toEditVmBuilder(conn),
-				vmVo.diskAttachmentVos.toEditDiskAttachmentList(conn, vmVo.id),
+				diskAttachmentListToAdd,
+				diskAttachmentListToDelete,
+//				vmVo.diskAttachmentVos.toEditDiskAttachmentList(conn, vmVo.id),
 				vmVo.vnicProfileVos.map { it.id },
 				vmVo.connVo.id
 			).getOrNull()

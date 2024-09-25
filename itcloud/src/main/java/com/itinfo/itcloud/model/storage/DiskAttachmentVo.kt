@@ -157,20 +157,30 @@ fun List<DiskAttachmentVo>.toAddDiskAttachmentList(): List<DiskAttachment> {
 	return diskAttachmentList
 }
 
+/**
+ * 편집과 연결된 DiskAttachment 를 목록으로 내보낸다
+ */
 fun List<DiskAttachmentVo>.toEditDiskAttachmentList(conn: Connection, vmId: String): List<DiskAttachment> {
 	val diskAttachmentList = mutableListOf<DiskAttachment>()
-
-	val diskAttachments: List<DiskAttachment> =
+	val existDiskAttachments: List<DiskAttachment> =
 		conn.findAllDiskAttachmentsFromVm(vmId).getOrDefault(listOf())
 
-	val existAttachments = this@toEditDiskAttachmentList.filter { diskAttachmentVo ->
-		diskAttachmentVo.diskImageVo.id.isNotEmpty() &&
-				diskAttachments.none { it.id() == diskAttachmentVo.diskImageVo.id }
+	val diskAttachmentListToAdd = mutableListOf<DiskAttachment>()
+	val diskAttachmentListToDelete = mutableListOf<DiskAttachment>()
+
+	// 1. 추가할 디스크 찾기 (새로운 목록에 있지만 기존 목록에 없는 디스크)
+	this@toEditDiskAttachmentList.forEach { newDisk ->
+		if (existDiskAttachments.none { it.id() == newDisk.id }) {
+			diskAttachmentListToAdd.add(newDisk.toAddDiskAttachment())
+		}
 	}
 
-	// 없는 값을 출력
-	existAttachments.forEach { missing ->
-		println("Disk attachment not found: ${missing.diskImageVo.id}")
+	// 2. 삭제할 디스크 찾기 (기존 목록에 있지만 새로운 목록에 없는 디스크)
+	existDiskAttachments.forEach { existingDisk ->
+		if (this@toEditDiskAttachmentList.none { it.id == existingDisk.id() }) {
+			// 기존 디스크가 새 목록에 없으면 삭제할 목록에 넣음
+			diskAttachmentListToDelete.add(existingDisk)
+		}
 	}
 
 	// 기존 로직 - DiskAttachmentVo 추가
@@ -184,3 +194,4 @@ fun List<DiskAttachmentVo>.toEditDiskAttachmentList(conn: Connection, vmId: Stri
 
 	return diskAttachmentList
 }
+
