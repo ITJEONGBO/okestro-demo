@@ -29,7 +29,7 @@ import java.util.Arrays
  *
  * @author chanhi2000
  * @author deh22
- * @since 2024.03.05
+ * @since 2024.09.25
  */
 @SpringBootTest
 class  ItVmServiceTest {
@@ -38,20 +38,22 @@ class  ItVmServiceTest {
 	private lateinit var dataCenterId: String
 	private lateinit var clusterId: String // Default
 	private lateinit var networkId: String // ovirtmgmt(dc: Default)
-	private lateinit var host02: String // host02.ititinfo.local
 	private lateinit var host01: String // host01
+	private lateinit var host02: String // host02.ititinfo.local
 	private lateinit var hostVm: String // hostVm
-	private lateinit var storageDomain: String // hostVm
+	private lateinit var apm: String // hostVm
+	private lateinit var storageDomain: String
 
 	@BeforeEach
 	fun setup() {
-		dataCenterId = "6cde7270-6459-11ef-8be2-00163e5d0646"
-		clusterId = "6ce0356a-6459-11ef-a03a-00163e5d0646"
+		dataCenterId = "023b0a26-3819-11ef-8d02-00163e6c8feb"
+		clusterId = "023c79d8-3819-11ef-bf08-00163e6c8feb"
 		networkId = "00000000-0000-0000-0000-000000000009"
-		host01 = "722096d3-4cb2-43b0-bf41-dd69c3a70779"
-		host02 = "789b78c4-3fcf-4f19-9b69-d382aa66c12f"
-		hostVm = "c26e287c-bc48-4da7-9977-61203abf9e64"
-		storageDomain = "dc38dcb4-c3f9-4568-af0b-0d6a225d25e5"
+		host01 = "671e18b2-964d-4cc6-9645-08690c94d249"
+		host02 = "0d7ba24e-452f-47fe-a006-f4702aa9b37f"
+		hostVm = "c2ae1da5-ce4f-46df-b337-7c471bea1d8d"
+		apm = "fceb0fe4-2927-4340-a970-401fe55781e6"
+		storageDomain = "06faa572-f1ac-4874-adcc-9d26bb74a54d"
 	}
 
 
@@ -68,7 +70,7 @@ class  ItVmServiceTest {
 			service.findAll()
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(5))
+		assertThat(result.size, `is`(6))
 
 		result.forEach { println(it) }
 	}
@@ -105,7 +107,7 @@ class  ItVmServiceTest {
 		assertThat(result, `is`(not(nullValue())))
 
 		result.forEach { println(it) }
-//		assertThat(result.size, `is`(7))
+		assertThat(result.size, `is`(4))
 	}
 
 	/**
@@ -122,7 +124,7 @@ class  ItVmServiceTest {
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }
-		assertThat(result.size, `is`(5))
+		assertThat(result.size, `is`(4))
 	}
 
 	/**
@@ -137,7 +139,7 @@ class  ItVmServiceTest {
 			service.findAllISO()
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(2))
+		assertThat(result.size, `is`(1))
 
 		result.forEach { println(it) }
 	}
@@ -166,7 +168,7 @@ class  ItVmServiceTest {
 			osSystem { "other_linux" }
 			chipsetFirmwareType { "Q35_SEA_BIOS" }  // String.valueOf(BiosType.Q35_OVMF }
 			optimizeOption { "SERVER" }  // String.valueOf(VmType.SERVER
-			name { "random2" }
+			name { "random" }
 			description { "" }
 			comment { "" }
 			stateless { false }
@@ -175,13 +177,13 @@ class  ItVmServiceTest {
 			vnicProfileVos {
 				Arrays.asList(
 					VnicProfileVo.builder { id { "0000000a-000a-000a-000a-000000000398" } },
-					VnicProfileVo.builder { id { "86106902-bf8b-4637-95d7-8cf5aca28fc5" } }
+					VnicProfileVo.builder { id { "0000000a-000a-000a-000a-000000000398" } },
 				)
 			}
 			diskAttachmentVos {
 				Arrays.asList(
 					DiskAttachmentVo.builder {
-						bootable { false }
+						bootable { true }
 						interface_ { DiskInterface.VIRTIO_SCSI }
 						readOnly { false }
 						diskImageVo {
@@ -194,7 +196,7 @@ class  ItVmServiceTest {
 								}
 								sparse { true } // 할당정책: 씬
 								diskProfileVo {
-									IdentifiedVo.builder { id { "df3d6b80-5326-4855-96a4-455147016fc7" } }
+									IdentifiedVo.builder { id { "3b68642f-425a-4d0d-aa2f-0fef3a1a20d5" } }
 								}
 								wipeAfterDelete { false }
 								sharable { false }
@@ -202,36 +204,36 @@ class  ItVmServiceTest {
 							}
 						}
 					},
-//					DiskAttachmentVo.builder {
-//						bootable { false }
-//						interface_ { DiskInterface.VIRTIO_SCSI }
-//						readOnly { false }
-//						diskImageVo {
-//							DiskImageVo.builder {
-//								id { "599b3a25-3351-4906-aae1-be53efa37f2a" }
-//							}
-//						}
-//					}
+					DiskAttachmentVo.builder { // 연결
+						bootable { false }
+						interface_ { DiskInterface.VIRTIO_SCSI }
+						readOnly { false }
+						diskImageVo {
+							DiskImageVo.builder {
+								id { "bd2f3120-e605-4bfb-8faa-2407c0349399" }
+							}
+						}
+					}
 				)
 			}
-			instanceType { "small" } //tiny 안됨 ( none,small, medium, xlarge)
-//			memorySize { BigInteger.valueOf(2048) }
-//			memoryMax { BigInteger.valueOf(8192) }
-//			memoryActual { BigInteger.valueOf(2048) }
+			instanceType { "none" } //tiny 안됨 ( none,small, medium, xlarge)
+			memorySize { BigInteger.valueOf(2048) }
+			memoryMax { BigInteger.valueOf(8192) }
+			memoryActual { BigInteger.valueOf(2048) }
 			memoryBalloon { true }
-//			cpuTopologySocket { 2 }
-//			cpuTopologyCore { 1 }
-//			cpuTopologyThread { 1 }
+			cpuTopologySocket { 2 }
+			cpuTopologyCore { 1 }
+			cpuTopologyThread { 1 }
 			timeOffset { "Asia/Seoul"}  // Asia/Seoul , Etc/GMT
 			cloudInit { false }   // 일단 안됨
-//			hostInCluster { true }  // 특정 호스트(false)
-			hostInCluster { false }  // 특정 호스트(false)
-			hostVos {
-				Arrays.asList(
-					IdentifiedVo.builder{ id { "722096d3-4cb2-43b0-bf41-dd69c3a70779" } }
-				)
+			hostInCluster { true }  // 특정 호스트(false)
+//			hostInCluster { false }  // 특정 호스트(false)
+//			hostVos {
+//				Arrays.asList(
+//					IdentifiedVo.builder{ id { "722096d3-4cb2-43b0-bf41-dd69c3a70779" } }
+//				)
 //				null
-			}
+//			}
 			migrationEncrypt { InheritableBoolean.INHERIT }
 			migrationMode {"MIGRATABLE" }  // 마이그레이션
 			ha { false } // 기본 false
@@ -243,7 +245,7 @@ class  ItVmServiceTest {
 			multiQue  { false } // 멀티 큐 사용
 			virtSCSIEnable  { true }  // virtIO-SCSI 활성화
 			firstDevice  { "HD" }
-			connVo  { IdentifiedVo.builder { id { "4754b4fa-39c5-438d-81f1-d0defc08f7aa" } } }
+			connVo  { IdentifiedVo.builder { id { "30f0c1cf-763a-479c-a1b6-b3d255902998" } } }
 		}
 
 		val addResult: VmVo? =
@@ -265,7 +267,7 @@ class  ItVmServiceTest {
 	fun should_update_Vm() {
 		log.debug("should_update_Vm ... ")
 		val updateVm: VmVo = VmVo.builder {
-			id { "4fd618ae-761c-4518-bf6c-f2245e439079" } // 유일하게 추가되는 점
+			id { "46560fd8-97c4-41d2-a362-7773b0065261" } // 유일하게 추가되는 점
 			clusterVo {
 				IdentifiedVo.builder {
 					id { clusterId }
@@ -279,7 +281,7 @@ class  ItVmServiceTest {
 			osSystem { "other_linux" }
 			chipsetFirmwareType { "Q35_SEA_BIOS" }  // String.valueOf(BiosType.Q35_OVMF }
 			optimizeOption { "SERVER" }  // String.valueOf(VmType.SERVER
-			name { "random2-1" }
+			name { "random2" }
 			description { "" }
 			comment { "" }
 			stateless { false }
@@ -288,66 +290,43 @@ class  ItVmServiceTest {
 			vnicProfileVos {
 				Arrays.asList(
 					VnicProfileVo.builder { id { "0000000a-000a-000a-000a-000000000398" } },
-//					VnicProfileVo.builder { id { "86106902-bf8b-4637-95d7-8cf5aca28fc5" } }
+					VnicProfileVo.builder { id { "0000000a-000a-000a-000a-000000000398" } },
 				)
 			}
 			diskAttachmentVos {
 				Arrays.asList(
-//					DiskAttachmentVo.builder {
-//						bootable { false }
-//						interface_ { DiskInterface.VIRTIO_SCSI }
-//						readOnly { false }
-//						diskImageVo {
-//							DiskImageVo.builder {
-//								size { 1 }
-//								alias { "random1_disk" }
-//								description { "" }
-//								storageDomainVo {
-//									IdentifiedVo.builder { id { storageDomain } }
-//								}
-//								sparse { true } // 할당정책: 씬
-//								diskProfileVo {
-//									IdentifiedVo.builder { id { "df3d6b80-5326-4855-96a4-455147016fc7" } }
-//								}
-//								wipeAfterDelete { false }
-//								sharable { false }
-//								backup { true } // 증분백업 기본값 t
-//							}
-//						} // 기존
-//					},
 					DiskAttachmentVo.builder {
-						id { "3377928a-500d-430f-ae9b-bc01a9a5b377" } // 있는거
 						bootable { false }
 						interface_ { DiskInterface.VIRTIO_SCSI }
 						readOnly { false }
 						diskImageVo {
 							DiskImageVo.builder {
-								size { 2 }
-								alias { "random1-1_disk" }
+								size { 1 }
+								alias { "random1_disk" }
 								description { "" }
 								storageDomainVo {
 									IdentifiedVo.builder { id { storageDomain } }
 								}
 								sparse { true } // 할당정책: 씬
 								diskProfileVo {
-									IdentifiedVo.builder { id { "df3d6b80-5326-4855-96a4-455147016fc7" } }
+									IdentifiedVo.builder { id { "3b68642f-425a-4d0d-aa2f-0fef3a1a20d5" } }
 								}
 								wipeAfterDelete { false }
 								sharable { false }
 								backup { true } // 증분백업 기본값 t
 							}
-						} // 추가
+						} // 기존
 					},
-					DiskAttachmentVo.builder {
-						bootable { false }
-						interface_ { DiskInterface.VIRTIO }
-						readOnly { false }
-						diskImageVo {
-							DiskImageVo.builder {
-								id { "2c73c9c0-6552-4ddc-9727-8b2de7f54267" } // 추가 attach
-							}
-						}
-					}
+//					DiskAttachmentVo.builder {
+//						bootable { false }
+//						interface_ { DiskInterface.VIRTIO }
+//						readOnly { false }
+//						diskImageVo {
+//							DiskImageVo.builder {
+//								id { "2c73c9c0-6552-4ddc-9727-8b2de7f54267" } // 추가 attach
+//							}
+//						}
+//					}
 				)
 			}
 			instanceType { "none" } //tiny 안됨 ( none,small, medium, xlarge)
@@ -373,7 +352,7 @@ class  ItVmServiceTest {
 			multiQue  { false } // 멀티 큐 사용
 			virtSCSIEnable  { true }  // virtIO-SCSI 활성화
 			firstDevice  { "HD" }
-			connVo  { IdentifiedVo.builder { id { "385f7865-795a-49e1-b768-74edda6bb518" } } }// 변화
+			connVo  { IdentifiedVo.builder { id { "30f0c1cf-763a-479c-a1b6-b3d255902998" } } }
 		}
 
 		val updateResult: VmVo? =
@@ -404,21 +383,20 @@ class  ItVmServiceTest {
 
 
 	/**
-	 * [should_findAllApplicationsByVm]
+	 * [should_findAllApplicationsFromVm]
 	 * [ItVmService.findAllApplicationsFromVm]에 대한 단위테스트
 	 *
 	 * @see ItVmService.findAllApplicationsFromVm
 	 */
 	@Test
-	fun should_findAllApplicationsByVm() {
+	fun should_findAllApplicationsFromVm() {
 		log.debug("should_findAllApplicationsByVm ... ")
 		val result: List<IdentifiedVo> =
 			service.findAllApplicationsFromVm(hostVm)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(2))
-
 		result.forEach { println(it) }
+		assertThat(result.size, `is`(2))
 	}
 
 	/**
@@ -434,8 +412,8 @@ class  ItVmServiceTest {
 			service.findGuestFromVm(hostVm)
 
 		assertThat(result, `is`(not(nullValue())))
-
 		println(result)
+		assertThat(result?.type, `is`("Linux"))
 	}
 
 	/**
@@ -451,9 +429,8 @@ class  ItVmServiceTest {
 			service.findAllPermissionsFromVm(hostVm)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(5))
-
 		result.forEach { println(it) }
+		assertThat(result.size, `is`(4))
 	}
 
 	/**
@@ -469,9 +446,7 @@ class  ItVmServiceTest {
 			service.findAllEventsFromVm(hostVm)
 
 		assertThat(result, `is`(not(nullValue())))
-//		assertThat(result.size, `is`(0))
-
-		result.forEach { println(it) }
+		assertThat(result.size, `is`(12))
 	}
 
 	/**

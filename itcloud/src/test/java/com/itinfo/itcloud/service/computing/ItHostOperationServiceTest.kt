@@ -24,7 +24,7 @@ class ItHostOperationServiceTest {
 
     @BeforeEach
     fun setup() {
-        host01 = "722096d3-4cb2-43b0-bf41-dd69c3a70779"
+        host01 = "671e18b2-964d-4cc6-9645-08690c94d249"
     }
 
     /**

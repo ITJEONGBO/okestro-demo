@@ -20,31 +20,31 @@ class ItVmOperationServiceTest {
     private lateinit var host02: String // host02.ititinfo.local
     private lateinit var host01: String // host01
     private lateinit var hostVm: String // hostVm
-    private lateinit var vm01_1: String // hostVm
+    private lateinit var apm: String // hostVm
 
     @BeforeEach
     fun setup() {
-        dataCenterId = "6cde7270-6459-11ef-8be2-00163e5d0646"
-        clusterId = "6ce0356a-6459-11ef-a03a-00163e5d0646"
+        dataCenterId = "023b0a26-3819-11ef-8d02-00163e6c8feb"
+        clusterId = "023c79d8-3819-11ef-bf08-00163e6c8feb"
         networkId = "00000000-0000-0000-0000-000000000009"
-        host01 = "722096d3-4cb2-43b0-bf41-dd69c3a70779"
-        host02 = "789b78c4-3fcf-4f19-9b69-d382aa66c12f"
-        hostVm = "c26e287c-bc48-4da7-9977-61203abf9e64"
-        vm01_1 = "0a27211c-04da-490c-9a05-804f439033e1"
+        host01 = "671e18b2-964d-4cc6-9645-08690c94d249"
+        host02 = "0d7ba24e-452f-47fe-a006-f4702aa9b37f"
+        hostVm = "c2ae1da5-ce4f-46df-b337-7c471bea1d8d"
+        apm = "fceb0fe4-2927-4340-a970-401fe55781e6"
     }
 
 
     /**
-     * [should_start_Vm]
+     * [should_startVm]
      * [ItVmOperationService.start]에 대한 단위테스트
      *
      * @see ItVmOperationService.start
      */
     @Test
-    fun should_start_Vm() {
+    fun should_startVm() {
         log.debug("should_start_Vm ... ")
         val result: Boolean =
-            service.start(vm01_1)
+            service.start(apm)
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))
@@ -60,7 +60,7 @@ class ItVmOperationServiceTest {
     fun should_pause_Vm() {
         log.debug("should_pause_Vm ... ")
         val result: Boolean =
-            service.pause(vm01_1)
+            service.pause(apm)
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))
@@ -76,7 +76,7 @@ class ItVmOperationServiceTest {
     fun should_powerOff_Vm() {
         log.debug("should_powerOff_Vm ... ")
         val result: Boolean =
-            service.powerOff(vm01_1)
+            service.powerOff(apm)
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))
@@ -92,7 +92,7 @@ class ItVmOperationServiceTest {
     fun should_shutdown_Vm() {
         log.debug("should_shutdown_Vm ... ")
         val result: Boolean =
-            service.shutdown(vm01_1)
+            service.shutdown(apm)
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))
@@ -108,7 +108,7 @@ class ItVmOperationServiceTest {
     fun should_reboot_Vm() {
         log.debug("should_reboot_Vm ... ")
         val result: Boolean =
-            service.reboot(vm01_1)
+            service.reboot(apm)
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))
@@ -124,13 +124,11 @@ class ItVmOperationServiceTest {
     fun should_reset_Vm() {
         log.debug("should_reset_Vm ... ")
         val result: Boolean =
-            service.reset(vm01_1)
+            service.reset(apm)
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))
     }
-
-
 
     /**
      * [should_migrateHostList]
@@ -142,35 +140,33 @@ class ItVmOperationServiceTest {
     fun should_migrateHostList() {
         log.debug("should_migrateHostList ... ")
         val result: List<IdentifiedVo> =
-            service.migrateHostList(hostVm)
+            service.migrateHostList(apm)
 
         assertThat(result, `is`(not(nullValue())))
         result.forEach { println(it) }
     }
 
-
     /**
-     * [should_migrate_Vm]
+     * [should_migrateVm]
      * [ItVmOperationService.migrate]에 대한 단위테스트
      *
      * @see ItVmOperationService.migrate
      */
     @Test
-    fun should_migrate_Vm() {
+    fun should_migrateVm() {
         log.debug("should_migrate_Vm ... ")
         val result: Boolean =
-            service.migrate(vm01_1, host02)
+            service.migrate(apm, host02)
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))
     }
 
-
     /**
      * [should_exportOvaVm]
-     * [ItVmOperationService.exportOvaVm]에 대한 단위테스트
+     * [ItVmOperationService.exportOva]에 대한 단위테스트
      *
-     * @see ItVmOperationService.exportOvaVm
+     * @see ItVmOperationService.exportOva
      */
     // TODO 테스트를 하려면 설치되는 host에 cmd로 접속하여 지정 디렉토리에 파일이 있는지 확인해야함
     //  => 파일확인은 불가능
@@ -178,13 +174,13 @@ class ItVmOperationServiceTest {
     fun should_exportOvaVm() {
         log.debug("should_exportOvaVm ... ")
         val exportVo: VmExportVo = VmExportVo.builder {
-            vmVo { IdentifiedVo.builder { id { vm01_1 } } }
+            vmVo { IdentifiedVo.builder { id { apm } } }
             hostVo { IdentifiedVo.builder { name { "host02.ititinfo.local" } } }
             directory { "/root" }
             fileName { "exporth2" }
         }
         val result: Boolean =
-            service.exportOvaVm(exportVo)
+            service.exportOva(apm, exportVo)
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))

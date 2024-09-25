@@ -29,7 +29,7 @@ class ItVmNicServiceTest {
 
     @BeforeEach
     fun setup() {
-        hostVm = "c26e287c-bc48-4da7-9977-61203abf9e64" // HostedEngine
+        hostVm = "c2ae1da5-ce4f-46df-b337-7c471bea1d8d" // HostedEngine
         vmId = "0a27211c-04da-490c-9a05-804f439033e1" // vm01-1
         nicId = "9f8ba468-35ea-4102-baa6-44951557eac9" // vnet0
     }

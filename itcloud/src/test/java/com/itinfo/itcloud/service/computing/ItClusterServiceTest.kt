@@ -34,8 +34,8 @@ class ItClusterServiceTest {
 
 	@BeforeEach
 	fun setup() {
-		dataCenterId = "6cde7270-6459-11ef-8be2-00163e5d0646"
-		clusterId = "6ce0356a-6459-11ef-a03a-00163e5d0646"
+		dataCenterId = "023b0a26-3819-11ef-8d02-00163e6c8feb"
+		clusterId = "023c79d8-3819-11ef-bf08-00163e6c8feb"
 		networkId = "00000000-0000-0000-0000-000000000009"
 	}
 

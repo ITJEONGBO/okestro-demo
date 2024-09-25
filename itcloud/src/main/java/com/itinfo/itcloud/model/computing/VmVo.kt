@@ -720,7 +720,6 @@ fun List<Vm>.toVmVoFromNetworks(conn: Connection): List<VmVo> =
  * @return 일, 시간, 분 형식
  */
 fun Vm.findVmUptime(conn: Connection): String {
-    log.debug("Vm.findVmUptime ... ")
     val vmId: String = this@findVmUptime.id()
     val statistics: List<Statistic> = conn.findAllStatisticsFromVm(vmId)
 
@@ -751,7 +750,6 @@ fun Vm.findVmUptime(conn: Connection): String {
  * @return
  */
 fun Vm.findVmIp(conn: Connection, version: String): String {
-    log.debug("Vm.findVmIp ... ")
     val vm: Vm? = conn.findVm(this@findVmIp.id(), "nics").getOrNull()
     return vm?.nics()?.flatMap {
         conn.findAllReportedDeviceFromVmNic(vm.id(), it.id())

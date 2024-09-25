@@ -12,6 +12,7 @@ import com.itinfo.itcloud.service.BaseService
 import com.itinfo.itcloud.service.computing.HostServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
+import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.types.*
 import org.springframework.stereotype.Service
@@ -37,14 +38,14 @@ interface ItVmService {
 	fun findOne(vmId: String): VmVo?
 
 	// 가상머신 생성창 - 클러스터 목록 [ItClusterService.findAll]
-	// 가상머신 생성창 - 템플릿 목록 [ItTemplateService.findAll]
-	// 가상머신 생성창 - 호스트 목록 [ItClusterService.findAllHostsFromCluster] (vo 다름)
-	// 가상머신 생성창 - 스토리지 도메인 목록 [ItStorageService.findAllDomainsFromDataCenter] (vo 다름)
+	// 				  - 템플릿 목록 [ItTemplateService.findAll]
+	// 				  - 호스트 목록 [ItClusterService.findAllHostsFromCluster] (vo 다름)
+	// 				  - 스토리지 도메인 목록 [ItStorageService.findAllDomainsFromDataCenter] (vo 다름)
 	// 					인스턴스 이미지 -> 생성 시 필요한 스토리지 도메인
 	// 					고가용성 - 임대 대상 스토리지 도메인 목록
-	// 가상머신 생성창 - 디스크 프로파일 목록 [ItStorageService.findAllDiskProfilesFromStorageDomain]
+	// 				  - 디스크 프로파일 목록 [ItStorageService.findAllDiskProfilesFromStorageDomain]
 	//				 	인스턴스 이미지 생성 -> 스토리지 도메인과 연동되어 생기는
-	// 가상머신 생성창 - CPU 프로파일 목록 [ItClusterService.findAllCpuProfilesFromCluster]
+	// 				  - CPU 프로파일 목록 [ItClusterService.findAllCpuProfilesFromCluster]
 	//					리소스할당
 
 	/**
@@ -135,6 +136,7 @@ interface ItVmService {
 	 *
 	 * @param vmId [String] 가상머신 id
 	 */
+	@Throws(Error::class)
 	fun findAllEventsFromVm(vmId: String): List<EventVo>
 	/**
 	 * [ItVmService.findConsole]
@@ -142,6 +144,7 @@ interface ItVmService {
 	 *
 	 * @param vmId [String] 가상머신 id
 	 */
+	@Throws(Error::class)
 	fun findConsole(vmId: String): ConsoleVo?
 }
 
@@ -159,6 +162,7 @@ class VmServiceImpl(
 		return res.toVmVos(conn)
 	}
 
+	@Throws(Error::class)
 	override fun findOne(vmId: String): VmVo? {
 		log.info("findOne ... vmId : {}", vmId)
 		val res: Vm? =
@@ -166,6 +170,7 @@ class VmServiceImpl(
 		return res?.toVmVo(conn)
 	}
 
+	@Throws(Error::class)
 	override fun findAllDiskImage(): List<DiskImageVo> {
 		log.info("findAllDiskImage ... ")
 		val attDiskIds =
@@ -187,6 +192,7 @@ class VmServiceImpl(
 		return res.toDiskImageVos(conn)
 	}
 
+	@Throws(Error::class)
 	override fun findAllVnicProfilesFromCluster(clusterId: String): List<VnicProfileVo> {
 		log.info("findAllVnicProfilesFromCluster ... clusterId: {}", clusterId)
 		val cluster: Cluster =
@@ -208,6 +214,7 @@ class VmServiceImpl(
 		return res.toVnicProfileVos(conn)
 	}
 
+	@Throws(Error::class)
 	override fun findAllISO(): List<IdentifiedVo> {
 		log.info("findAllISO ... ")
 		val res: List<Disk> =
@@ -218,51 +225,45 @@ class VmServiceImpl(
 	}
 
 
+	@Throws(Error::class)
 	override fun add(vmVo: VmVo): VmVo? {
 		log.info("add ... ")
-		// 우선 vm 추가
-		val res: Vm? =
-			conn.addVm(vmVo.toAddVmBuilder(conn))
-				.getOrNull()
-
-		if(res != null) {
-			val vmId = res.id()
-			conn.selectCdromFromVm(vmId, vmVo.connVo.id) // 부팅시 iso 선택
-
-			val vnics = vmVo.vnicProfileVos.map { it.id }
-			conn.addMultipleNicsFromVm(vmId, vnics).isSuccess // nic 붙이기
-			// TODO 부팅시 디스크 부팅가능은 한개
-			conn.addMultipleDiskAttachmentsToVm(
-				vmId,
-				vmVo.diskAttachmentVos.toAddDiskAttachmentList()
-			).isSuccess  // 디스크 생성, 연결
+		if(vmVo.diskAttachmentVos.filter { it.bootable }.size != 1){
+			log.error("디스크 부팅가능은 한개만 가능")
+			throw ErrorPattern.VM_VO_INVALID.toException()
 		}
+
+		val res: Vm? =
+			conn.addVm(
+				vmVo.toAddVmBuilder(conn),
+				vmVo.diskAttachmentVos.toAddDiskAttachmentList(),
+				vmVo.vnicProfileVos.map { it.id },
+				vmVo.connVo.id
+			).getOrNull()
+
 		return res?.toVmVo(conn)
 	}
 
+	@Throws(Error::class)
 	override fun update(vmVo: VmVo): VmVo? {
 		log.info("update ... {}", vmVo.name)
-		val vmId = vmVo.id
-		conn.findVm(vmId)
-			.getOrNull()?: throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+//		if(vmVo.diskAttachmentVos.filter { it.bootable }.size != 1){
+//			log.error("디스크 부팅가능은 한개만 가능")
+//			throw ErrorPattern.VM_VO_INVALID.toException()
+//		}
+
 		val res: Vm? =
-			conn.updateVm(vmVo.toEditVmBuilder(conn))
-				.getOrNull()
+			conn.updateVm(
+				vmVo.toEditVmBuilder(conn),
+				vmVo.diskAttachmentVos.toEditDiskAttachmentList(conn, vmVo.id),
+				vmVo.vnicProfileVos.map { it.id },
+				vmVo.connVo.id
+			).getOrNull()
 
-		if(res != null) {
-			conn.selectCdromFromVm(vmId, vmVo.connVo.id)
-
-			val vnics = vmVo.vnicProfileVos.map { it.id }
-			conn.addMultipleNicsFromVm(vmId, vnics).isSuccess // nic 붙이기
-
-			conn.addMultipleDiskAttachmentsToVm(
-				vmId,
-				vmVo.diskAttachmentVos.toAddDiskAttachmentList()
-			).isSuccess  // 디스크 생성, 연결
-		}
 		return res?.toVmVo(conn)
 	}
 
+	@Throws(Error::class)
 	override fun remove(vmId: String, disk: Boolean): Boolean {
 		log.info("remove ...  vmName: {}", conn.findVmName(vmId))
 		val res: Result<Boolean> =
@@ -271,6 +272,7 @@ class VmServiceImpl(
 	}
 
 
+	@Throws(Error::class)
 	override fun findAllApplicationsFromVm(vmId: String): List<IdentifiedVo> {
 		log.info("findAllApplicationsFromVm ... vmId: {}", vmId)
 		val res: List<Application> =
@@ -279,6 +281,7 @@ class VmServiceImpl(
 		return res.fromApplicationsToIdentifiedVos()
 	}
 
+	@Throws(Error::class)
 	override fun findGuestFromVm(vmId: String): GuestInfoVo? {
 		log.info("findGuestFromVm ... vmId: {}", vmId)
 		val res: Vm =
@@ -291,6 +294,7 @@ class VmServiceImpl(
 		return res.toGuestInfoVo()
 	}
 
+	@Throws(Error::class)
 	override fun findAllPermissionsFromVm(vmId: String): List<PermissionVo> {
 		log.info("findAllPermissionsFromVm ... vmId: {}", vmId)
 		val res: List<Permission> =
@@ -299,6 +303,7 @@ class VmServiceImpl(
 		return res.toPermissionVos(conn)
 	}
 
+	@Throws(Error::class)
 	override fun findAllEventsFromVm(vmId: String): List<EventVo> {
 		log.info("findAllEventsFromVm ... vmId: {}", vmId)
 		val vm: Vm =
@@ -311,6 +316,7 @@ class VmServiceImpl(
 		return res.toEventVos()
 	}
 
+	@Throws(Error::class)
 	override fun findConsole(vmId: String): ConsoleVo? {
 		log.info("findConsole ... vmId: {}", vmId)
 		val res: Vm =

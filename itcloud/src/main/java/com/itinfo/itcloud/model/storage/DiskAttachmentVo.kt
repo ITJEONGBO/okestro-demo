@@ -5,12 +5,9 @@ import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.computing.toVmVo
 import com.itinfo.itcloud.model.fromVmToIdentifiedVo
 import com.itinfo.itcloud.gson
-import com.itinfo.util.ovirt.addDisk
+import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.util.ovirt.error.toError
-import com.itinfo.util.ovirt.findDisk
-import com.itinfo.util.ovirt.findVm
-import com.itinfo.util.ovirt.moveDisk
 import org.slf4j.LoggerFactory
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.DiskAttachmentBuilder
@@ -160,17 +157,30 @@ fun List<DiskAttachmentVo>.toAddDiskAttachmentList(): List<DiskAttachment> {
 	return diskAttachmentList
 }
 
-/**
- * 부팅가능한 디스크는 한개만 설정가능
- * @param bootableDiskExists
- * @param vDiskVo
- * @return
- */
-//private boolean bootableFlag(boolean bootableDiskExists, VDiskVo vDiskVo){
-//	boolean isBootable = vDiskVo.getVDiskImageVo().isBootable();
-//	if (bootableDiskExists && isBootable) {
-//		log.warn("이미 부팅 가능한 디스크가 존재하므로 디스크는 부팅 불가능으로 설정됨");
-//		isBootable = false;
-//	}
-//	return isBootable;
-//}
+fun List<DiskAttachmentVo>.toEditDiskAttachmentList(conn: Connection, vmId: String): List<DiskAttachment> {
+	val diskAttachmentList = mutableListOf<DiskAttachment>()
+
+	val diskAttachments: List<DiskAttachment> =
+		conn.findAllDiskAttachmentsFromVm(vmId).getOrDefault(listOf())
+
+	val existAttachments = this@toEditDiskAttachmentList.filter { diskAttachmentVo ->
+		diskAttachmentVo.diskImageVo.id.isNotEmpty() &&
+				diskAttachments.none { it.id() == diskAttachmentVo.diskImageVo.id }
+	}
+
+	// 없는 값을 출력
+	existAttachments.forEach { missing ->
+		println("Disk attachment not found: ${missing.diskImageVo.id}")
+	}
+
+	// 기존 로직 - DiskAttachmentVo 추가
+	this@toEditDiskAttachmentList.forEach { diskAttachmentVo ->
+		if (diskAttachmentVo.diskImageVo.id.isEmpty()) {
+			diskAttachmentList.add(diskAttachmentVo.toAddDiskAttachment())
+		} else {
+			diskAttachmentList.add(diskAttachmentVo.toAttachDisk())
+		}
+	}
+
+	return diskAttachmentList
+}

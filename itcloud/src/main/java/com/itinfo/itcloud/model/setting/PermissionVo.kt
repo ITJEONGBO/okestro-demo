@@ -53,7 +53,6 @@ class PermissionVo (
 }
 
 fun Permission.toPermissionVo(conn: Connection): PermissionVo? {
-    log.debug("Permission.toPermissionVo ... ")
     val role: Role? =
         conn.findRole(this@toPermissionVo.role().id())
             .getOrNull()
@@ -87,10 +86,9 @@ fun Permission.toPermissionVo(conn: Connection): PermissionVo? {
 fun List<Permission>.toPermissionVos(conn: Connection): List<PermissionVo> {
     return this@toPermissionVos.mapNotNull { permission ->
         // 특정 permission id를 제외하는 조건
-        if (permission.id() == "e3df3b43-8d52-4fa4-855f-b6047acfba64") {
-            return@mapNotNull null // 해당 ID인 경우 null 반환
-        }
-
+//        if (permission.id() == "e3df3b43-8d52-4fa4-855f-b6047acfba64") {
+//            return@mapNotNull null // 해당 ID인 경우 null 반환
+//        }
         val role: Role? = conn.findRole(permission.role().id()).getOrNull()
 
         if (permission.groupPresent() && !permission.userPresent()) {

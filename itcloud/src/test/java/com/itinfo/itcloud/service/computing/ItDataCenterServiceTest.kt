@@ -29,7 +29,7 @@ class ItDataCenterServiceTest {
 
 	@BeforeEach
 	fun setup() {
-		dataCenterId = "6cde7270-6459-11ef-8be2-00163e5d0646"
+		dataCenterId = "023b0a26-3819-11ef-8d02-00163e6c8feb"
 	}
 
 	/**

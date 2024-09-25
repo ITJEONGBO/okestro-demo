@@ -35,7 +35,7 @@ class VmController: BaseController() {
 	@GetMapping
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAll(): ResponseEntity<List<VmVo>> {
+	fun vms(): ResponseEntity<List<VmVo>> {
 		log.info("/computing/vms ... 가상머신 목록")
 		return ResponseEntity.ok(iVm.findAll())
 	}
@@ -43,7 +43,7 @@ class VmController: BaseController() {
 	@ApiOperation(
 		httpMethod="GET",
 		value="가상머신 상세정보",
-		notes="가상머신의 상세정보를 조회한다"
+		notes="선택된 가상머신의 정보를 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -54,7 +54,7 @@ class VmController: BaseController() {
 	@GetMapping("/{vmId}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findOne(
+	fun vm(
 		@PathVariable vmId: String? = null,
 	): ResponseEntity<VmVo?> {
 		if (vmId.isNullOrEmpty())
@@ -62,7 +62,6 @@ class VmController: BaseController() {
 		log.info("/computing/vms/{} ... 가상머신 상세정보", vmId)
 		return ResponseEntity.ok(iVm.findOne(vmId))
 	}
-
 
 	@ApiOperation(
 		httpMethod="GET",
@@ -78,15 +77,14 @@ class VmController: BaseController() {
 	@GetMapping("/nic/{clusterId}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAllVnicProfilesFromCluster(
+	fun vnicProfiles(
 		@PathVariable clusterId: String? = null,
 	): ResponseEntity<List<VnicProfileVo>?> {
 		if (clusterId.isNullOrEmpty())
 			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
-		log.info("/computing/vms/nic/{} ... 가상머신 생성창 - nic목록", clusterId)
+		log.info("/computing/vms/nic/{} ... 가상머신 생성창 - nic 목록", clusterId)
 		return ResponseEntity.ok(iVm.findAllVnicProfilesFromCluster(clusterId))
 	}
-
 
 	@ApiOperation(
 		httpMethod="GET",
@@ -99,12 +97,11 @@ class VmController: BaseController() {
 	@GetMapping("/disks")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAllDiskImage(
+	fun disks(
 	): ResponseEntity<List<DiskImageVo>?> {
 		log.info("/computing/vms/disks ... 가상머신 생성창 - 디스크 연결 목록")
 		return ResponseEntity.ok(iVm.findAllDiskImage())
 	}
-
 
 	@ApiOperation(
 		httpMethod="GET",
@@ -117,7 +114,7 @@ class VmController: BaseController() {
 	@GetMapping("/iso")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAllISO(
+	fun iso(
 	): ResponseEntity<List<IdentifiedVo>?> {
 		log.info("/computing/vms/iso ... 가상머신 생성창 - CD/DVD 연결할 ISO 목록")
 		return ResponseEntity.ok(iVm.findAllISO())
@@ -199,11 +196,10 @@ class VmController: BaseController() {
 		return ResponseEntity.ok(iVm.remove(vmId, true))
 	}
 
-
 	@ApiOperation(
 		httpMethod="GET",
 		value="가상머신 내 어플리케이션 목록",
-		notes="선택된 가상머신 내 어플리케이션 목록을 조회한다"
+		notes="선택된 가상머신의 어플리케이션 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -214,7 +210,7 @@ class VmController: BaseController() {
 	@GetMapping("/{vmId}/applications")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAllApplicationsFromVm(
+	fun applications(
 		@PathVariable vmId: String? = null,
 	): ResponseEntity<List<IdentifiedVo>> {
 		if (vmId.isNullOrEmpty())
@@ -236,7 +232,7 @@ class VmController: BaseController() {
 	@GetMapping("/{vmId}/guest")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findGuestFromVm(
+	fun guest(
 		@PathVariable vmId: String? = null,
 	): ResponseEntity<GuestInfoVo?> {
 		if (vmId.isNullOrEmpty())
@@ -259,7 +255,7 @@ class VmController: BaseController() {
 	@GetMapping("/{vmId}/permissions")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAllPermissionsFromVm(
+	fun permissions(
 		@PathVariable vmId: String? = null,
 	): ResponseEntity<List<PermissionVo>> {
 		if (vmId.isNullOrEmpty())
@@ -282,7 +278,7 @@ class VmController: BaseController() {
 	@GetMapping("/{vmId}/events")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAllEventsFromVm(
+	fun events(
 		@PathVariable vmId: String? = null,
 	): ResponseEntity<List<EventVo>> {
 		if (vmId.isNullOrEmpty())
@@ -306,7 +302,7 @@ class VmController: BaseController() {
 	@PostMapping("/{vmId}/console")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
-	fun findConsole(
+	fun console(
 		@PathVariable vmId: String? = null,
 		// @RequestBody console: ConsoleVo? = null,
 	): ResponseEntity<ConsoleVo?> {
@@ -324,8 +320,8 @@ class VmController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="POST",
-		value="가상머신 시작",
-		notes="가상머신을 시작한다"
+		value="가상머신 실행",
+		notes="선택된 가상머신을 실행한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -349,7 +345,7 @@ class VmController: BaseController() {
 	@ApiOperation(
 		httpMethod="POST",
 		value="가상머신 일시정지",
-		notes="가상머신을 일시정지한다"
+		notes="선택된 가상머신을 일시정지한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -373,7 +369,7 @@ class VmController: BaseController() {
 	@ApiOperation(
 		httpMethod="POST",
 		value="가상머신 전원끔",
-		notes="가상머신의 전원을 끈다"
+		notes="선택된 가상머신의 전원을 끈다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -397,7 +393,7 @@ class VmController: BaseController() {
 	@ApiOperation(
 		httpMethod="POST",
 		value="가상머신 종료",
-		notes="가상머신을 종료한다"
+		notes="선택된 가상머신을 종료한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -421,7 +417,7 @@ class VmController: BaseController() {
 	@ApiOperation(
 		httpMethod="POST",
 		value="가상머신 재부팅",
-		notes="가상머신을 재부팅한다"
+		notes="선택된 가상머신을 재부팅한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -445,7 +441,7 @@ class VmController: BaseController() {
 	@ApiOperation(
 		httpMethod="POST",
 		value="가상머신 재설정",
-		notes="가상머신을 재설정한다"
+		notes="선택된 가상머신을 재설정한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -466,6 +462,84 @@ class VmController: BaseController() {
 		return ResponseEntity.ok(iVmOp.reset(vmId))
 	}
 
+	@ApiOperation(
+		httpMethod="POST",
+		value="가상머신 마이그레이션 호스트 목록",
+		notes="선택된 가상머신의 마이그레이션 가능한 호스트 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@PostMapping("/{vmId}/migrateHosts")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	fun migrateHosts(
+		@PathVariable vmId: String? = null,
+	): ResponseEntity<List<IdentifiedVo>> {
+		if (vmId.isNullOrEmpty())
+			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/migrateHosts ... 가상머신 호스트 목록 조회", vmId)
+		return ResponseEntity.ok(iVmOp.migrateHostList(vmId))
+	}
+
+	@ApiOperation(
+		httpMethod="POST",
+		value="가상머신 마이그레이션",
+		notes="선택된 가상머신을 재설정한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
+	@PostMapping("/{vmId}/migrate/{hostId}")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	fun reset(
+		@PathVariable vmId: String? = null,
+		@PathVariable hostId: String? = null
+	): ResponseEntity<Boolean> {
+		if (vmId.isNullOrEmpty())
+			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		if (hostId.isNullOrEmpty())
+			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/migrate ... 가상머신 재설정", vmId)
+		return ResponseEntity.ok(iVmOp.migrate(vmId, hostId))
+	}
+
+	@ApiOperation(
+		httpMethod="POST",
+		value="가상머신 내보내기",
+		notes="선택된 가상머신을 OVA로 내보낸다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, paramType="path"),
+		ApiImplicitParam(name="vmExport", value="가상머신 내보내기", dataTypeClass=VmExportVo::class, paramType="body"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
+	@PostMapping("/{vmId}/export")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	fun exportOva(
+		@PathVariable vmId: String? = null,
+		@RequestBody vmExport: VmExportVo? = null,
+	): ResponseEntity<Boolean?> {
+		if (vmId.isNullOrEmpty())
+			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		if (vmExport == null)
+			throw ErrorPattern.VM_VO_INVALID.toException()
+		log.info("/computing/vms/{}/export ... 가상머신 생성", vmId)
+		return ResponseEntity.ok(iVmOp.exportOva(vmId, vmExport))
+	}
 
 	//endregion
 
@@ -473,14 +547,18 @@ class VmController: BaseController() {
 	//region: vmNic
 	@Autowired private lateinit var vmNic: ItVmNicService
 
-	@ApiOperation(value = "가상머신 네트워크 인터페이스 목록", notes = "선택된 가상머신의 네트워크 인터페이스 목록을 조회한다")
+	@ApiOperation(
+		httpMethod="GET",
+		value = "가상머신 네트워크 인터페이스 목록",
+		notes = "선택된 가상머신의 네트워크 인터페이스 목록을 조회한다"
+	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
 	@GetMapping("/{vmId}/nics")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAllNicsFromVm(
+	fun nics(
 		@PathVariable vmId: String? = null,
 	): ResponseEntity<List<NicVo>> {
 		if (vmId.isNullOrEmpty())
@@ -489,14 +567,19 @@ class VmController: BaseController() {
 		return ResponseEntity.ok(vmNic.findAllNicsFromVm(vmId))
 	}
 
-	@ApiOperation(value = "가상머신 네트워크 인터페이스 목록", notes = "선택된 가상머신의 네트워크 인터페이스 목록을 조회한다")
+	@ApiOperation(
+		httpMethod="GET",
+		value = "가상머신 네트워크 인터페이스 목록",
+		notes = "선택된 가상머신의 네트워크 인터페이스 목록을 조회한다"
+	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="nicId", value="네트워크 인터페이스 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
 	@GetMapping("/{vmId}/nics/{nicId}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findNicFromVm(
+	fun nic(
 		@PathVariable vmId: String? = null,
 		@PathVariable nicId: String? = null,
 	): ResponseEntity<NicVo?> {
@@ -515,7 +598,7 @@ class VmController: BaseController() {
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		ApiImplicitParam(name="nic", value="네트워크 인터페이스 컨트롤러", dataTypeClass=NicVo::class, paramType="body"),
+		ApiImplicitParam(name="nic", value="네트워크 인터페이스", dataTypeClass=NicVo::class, paramType="body"),
 	)
 	@ApiResponses(
 		ApiResponse(code = 201, message = "CREATED"),
@@ -524,9 +607,9 @@ class VmController: BaseController() {
 	@PostMapping("/{vmId}/nics")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
-	fun addNicFromVm(
+	fun addNic(
 		@PathVariable vmId: String? = null,
-		@PathVariable nic: NicVo? = null,
+		@RequestBody nic: NicVo? = null,
 	): ResponseEntity<NicVo?> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
@@ -543,8 +626,8 @@ class VmController: BaseController() {
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		ApiImplicitParam(name="nicId", value="네트워크 인터페이스 컨트롤러 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		ApiImplicitParam(name="nic", value="네트워크 인터페이스 컨트롤러", dataTypeClass=NicVo::class, paramType="body"),
+		ApiImplicitParam(name="nicId", value="네트워크 인터페이스 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="nic", value="네트워크 인터페이스", dataTypeClass=NicVo::class, paramType="body"),
 	)
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
@@ -552,10 +635,10 @@ class VmController: BaseController() {
 	@PutMapping("/{vmId}/nics/{nicId}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun updateNicFromVm(
+	fun updateNic(
 		@PathVariable vmId: String? = null,
 		@PathVariable nicId: String? = null,
-		@PathVariable nic: NicVo? = null,
+		@RequestBody nic: NicVo? = null,
 	): ResponseEntity<NicVo?> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
@@ -574,7 +657,7 @@ class VmController: BaseController() {
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		ApiImplicitParam(name="nicId", value="네트워크 인터페이스 컨트롤러 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="nicId", value="네트워크 인터페이스 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
@@ -582,7 +665,7 @@ class VmController: BaseController() {
 	@DeleteMapping("/{vmId}/nics/{nicId}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun removeNicFromVm(
+	fun removeNic(
 		@PathVariable vmId: String? = null,
 		@PathVariable nicId: String? = null,
 	): ResponseEntity<Boolean> {
@@ -613,7 +696,7 @@ class VmController: BaseController() {
 	@GetMapping("/{vmId}/disks")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAllDisksFromVm(
+	fun disks(
 		@PathVariable vmId: String? = null,
 	): ResponseEntity<List<DiskAttachmentVo>> {
 		if (vmId.isNullOrEmpty())
@@ -621,6 +704,8 @@ class VmController: BaseController() {
 		log.info("/computing/vms/{}/disks ... 가상머신 disk 목록", vmId)
 		return ResponseEntity.ok(iVmDisk.findAllDisksFromVm(vmId))
 	}
+
+
 	// endregion
 
 

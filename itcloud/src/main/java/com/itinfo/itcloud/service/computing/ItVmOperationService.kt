@@ -17,54 +17,54 @@ import org.springframework.stereotype.Service
 interface ItVmOperationService {
 	/**
 	 * [ItVmOperationService.start]
-	 * 가상머신 실행
+	 * 가상머신 - 실행
 	 *
-	 * @param vmId [String] 가상머신 id
+	 * @param vmId [String] 가상머신 Id
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
 	fun start(vmId: String): Boolean
 	/**
 	 * [ItVmOperationService.pause]
-	 * 가상머신 일시정지
+	 * 가상머신 - 일시정지
 	 *
-	 * @param vmId [String] 가상머신 id
+	 * @param vmId [String] 가상머신 Id
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
 	fun pause(vmId: String): Boolean
 	/**
 	 * [ItVmOperationService.powerOff]
-	 * 가상머신 전원끔
+	 * 가상머신 - 전원끔
 	 *
-	 * @param vmId [String] 가상머신 id
+	 * @param vmId [String] 가상머신 Id
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
 	fun powerOff(vmId: String): Boolean
 	/**
 	 * [ItVmOperationService.shutdown]
-	 * 가상머신 종료
+	 * 가상머신 - 종료
 	 *
-	 * @param vmId [String] 가상머신 id
+	 * @param vmId [String] 가상머신 Id
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
 	fun shutdown(vmId: String): Boolean
 	/**
 	 * [ItVmOperationService.reboot]
-	 * 가상머신 재부팅
+	 * 가상머신 - 재부팅
 	 *
-	 * @param vmId [String] 가상머신 id
+	 * @param vmId [String] 가상머신 Id
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
 	fun reboot(vmId: String): Boolean
 	/**
 	 * [ItVmOperationService.reset]
-	 * 가상머신 재설정
+	 * 가상머신 - 재설정
 	 * 
-	 * @param vmId [String] 가상머신 id
+	 * @param vmId [String] 가상머신 Id
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
@@ -74,17 +74,17 @@ interface ItVmOperationService {
 	 * [ItVmOperationService.migrateHostList]
 	 * 마이그레이션 할 수 있는 호스트 목록
 	 *
-	 * @param vmId [String] 가상머신 id
+	 * @param vmId [String] 가상머신 Id
 	 * @return List<[IdentifiedVo]>
 	 */
 	@Throws(Error::class)
 	fun migrateHostList(vmId: String): List<IdentifiedVo>
 	/**
 	 * [ItVmOperationService.migrate]
-	 * 가상머신 마이그레이션
+	 * 가상머신 - 마이그레이션
 	 *
-	 * @param vmId [String] 가상머신 id
-	 * @param hostId [String] 마이그레이션할 호스트 id
+	 * @param vmId [String] 가상머신 Id
+	 * @param hostId [String] 마이그레이션할 호스트 Id
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
@@ -93,14 +93,15 @@ interface ItVmOperationService {
 	// 가상머신 내보내기 창 - 호스트 목록 [ItClusterService.findAllHostsFromCluster] (가상 어플라이언스로 가상머신 내보내기)
 
 	/**
-	 * [ItVmOperationService.exportOvaVm]
+	 * [ItVmOperationService.exportOva]
 	 * 가상머신 ova로 내보내기 (실행시, 해당 host?vm? 내부에 파일이 생성됨)
 	 *
+	 * @param vmId [String]
 	 * @param vmExportVo [VmExportVo]
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun exportOvaVm(vmExportVo: VmExportVo): Boolean
+	fun exportOva(vmId: String, vmExportVo: VmExportVo): Boolean
 }
 
 @Service
@@ -116,7 +117,7 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 
 	@Throws(Error::class)
 	override fun pause(vmId: String): Boolean {
-		log.info("pauseVm ... vmId: {}", vmId)
+		log.info("pause ... vmId: {}", vmId)
 		val res: Result<Boolean> =
 			conn.suspendVm(vmId)
 		return res.isSuccess
@@ -124,7 +125,7 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 
 	@Throws(Error::class)
 	override fun powerOff(vmId: String): Boolean {
-		log.info("powerOffVm ... vmId: {}", vmId)
+		log.info("powerOff ... vmId: {}", vmId)
 		val res: Result<Boolean> =
 			conn.stopVm(vmId)
 		return res.isSuccess
@@ -132,7 +133,7 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 
 	@Throws(Error::class)
 	override fun shutdown(vmId: String): Boolean {
-		log.info("shutDownVm ... vmId: {}", vmId)
+		log.info("shutdown ... vmId: {}", vmId)
 		val res: Result<Boolean> =
 			conn.shutdownVm(vmId)
 		return res.isSuccess
@@ -140,7 +141,7 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 
 	@Throws(Error::class)
 	override fun reboot(vmId: String): Boolean {
-		log.info("rebootVm ... vmId: {}", vmId)
+		log.info("reboot ... vmId: {}", vmId)
 		val res: Result<Boolean> =
 			conn.rebootVm(vmId)
 		return res.isSuccess
@@ -148,7 +149,7 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 
 	@Throws(Error::class)
 	override fun reset(vmId: String): Boolean {
-		log.info("resetVm ... vmId: {}", vmId)
+		log.info("reset ... vmId: {}", vmId)
 		val res: Result<Boolean> =
 			conn.resetVm(vmId)
 		return res.isSuccess
@@ -170,18 +171,18 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 
 	@Throws(Error::class)
 	override fun migrate(vmId: String, hostId: String): Boolean {
-		log.info("migrateVm ... ")
+		log.info("migrate ... ")
 		val res: Result<Boolean> =
 			conn.migrationVm(vmId, hostId)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
-	override fun exportOvaVm(vmExportVo: VmExportVo): Boolean {
-		log.info("exportOvaVm ... ")
+	override fun exportOva(vmId: String, vmExportVo: VmExportVo): Boolean {
+		log.info("exportOva ... ")
 		val res: Result<Boolean> =
 			conn.exportVm(
-				vmExportVo.vmVo.id,
+				vmId,
 				vmExportVo.hostVo.name,
 				vmExportVo.directory,
 				vmExportVo.fileName

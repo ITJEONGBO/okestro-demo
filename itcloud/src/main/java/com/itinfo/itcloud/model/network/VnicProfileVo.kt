@@ -121,19 +121,13 @@ fun VnicProfileVo.toAddVnicProfileBuilder(): VnicProfile =
 	this@toAddVnicProfileBuilder.toVnicProfileBuilder().build()
 
 /**
- * vnicProfile 생성 빌더
+ * vnicProfile 편집 빌더
  */
 fun VnicProfileVo.toEditVnicProfileBuilder(): VnicProfile =
 	this@toEditVnicProfileBuilder.toVnicProfileBuilder().id(this@toEditVnicProfileBuilder.id).build()
 
 
-
-
-
-
-
 fun Nic.toVnicProfileVoFromNic(conn: Connection): VnicProfileVo {
-	log.debug("toVnicProfileVo ... ")
 	val vnicProfile: VnicProfile? =
 		conn.findVnicProfile(this@toVnicProfileVoFromNic.vnicProfile().id())
 			.getOrNull()

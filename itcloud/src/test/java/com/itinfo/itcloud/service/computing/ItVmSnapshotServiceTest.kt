@@ -26,7 +26,7 @@ class ItVmSnapshotServiceTest {
 
     @BeforeEach
     fun setup() {
-        hostVm = "c26e287c-bc48-4da7-9977-61203abf9e64" // HostedEngine
+        hostVm = "c2ae1da5-ce4f-46df-b337-7c471bea1d8d" // HostedEngine
     }
 
     /**

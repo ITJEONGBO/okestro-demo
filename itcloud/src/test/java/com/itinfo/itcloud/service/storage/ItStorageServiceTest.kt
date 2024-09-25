@@ -49,7 +49,7 @@ class ItStorageServiceTest {
 
 	@BeforeEach
 	fun setup() {
-		dataCenterId = "6cde7270-6459-11ef-8be2-00163e5d0646"
+		dataCenterId = "023b0a26-3819-11ef-8d02-00163e6c8feb"
 		domainId = "dc38dcb4-c3f9-4568-af0b-0d6a225d25e5" //hosted_storage
 		diskProfile = "df3d6b80-5326-4855-96a4-455147016fc7"
 		diskId = "c42fcba8-9021-4dea-b23a-802eb932247c"

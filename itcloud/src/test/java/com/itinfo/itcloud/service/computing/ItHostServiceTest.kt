@@ -35,11 +35,11 @@ class ItHostServiceTest {
 
 	@BeforeEach
 	fun setup() {
-		dataCenterId = "6cde7270-6459-11ef-8be2-00163e5d0646"
-		clusterId = "6ce0356a-6459-11ef-a03a-00163e5d0646"
+		dataCenterId = "023b0a26-3819-11ef-8d02-00163e6c8feb"
+		clusterId = "023c79d8-3819-11ef-bf08-00163e6c8feb"
 		networkId = "00000000-0000-0000-0000-000000000009"
-		host01 = "722096d3-4cb2-43b0-bf41-dd69c3a70779"
-		host02 = "789b78c4-3fcf-4f19-9b69-d382aa66c12f"
+		host01 = "671e18b2-964d-4cc6-9645-08690c94d249"
+		host02 = "0d7ba24e-452f-47fe-a006-f4702aa9b37f"
 	}
 
 	/**

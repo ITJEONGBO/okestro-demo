@@ -59,15 +59,23 @@ fun Connection.startVm(vmId: String): Result<Boolean> = runCatching {
 	val vm: Vm =
 		this.findVm(vmId)
 			.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
-	this.srvVm(vmId).start().useCloudInit(vm.initializationPresent()).send()
+	if(vm.status() == VmStatus.UP){
+		log.error("가상머신 상태가 up인 상태")
+		throw ErrorPattern.VM_STATUS_ERROR.toError()
+	}
+	val diskAttachments =
+		this.findAllDiskAttachmentsFromVm(vmId).getOrDefault(listOf())
+	if (!diskAttachments.any { it.bootable() }) {
+		throw ErrorPattern.DISK_ATTACHMENT_NOT_BOOTABLE.toError()
+	}
 
+	this.srvVm(vmId).start().useCloudInit(vm.initializationPresent()).send()
 	this.expectVmStatus(vmId, VmStatus.UP)
 }.onSuccess {
 	Term.VM.logSuccess("시작", vmId)
 }.onFailure {
 	Term.VM.logFail("시작", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
 
 fun Connection.stopVm(vmId: String): Result<Boolean> = runCatching {
@@ -152,44 +160,12 @@ fun Connection.resetVm(vmId: String): Result<Boolean> = runCatching {
 }
 
 
-//fun Connection.addVm(
-//	vm: Vm,
-//	vnicProfileIds: List<String> = listOf(),
-////	diskAttachments: List<String> = listOf(), // diskVo 가 들어오는데 id가 있으면 연결, id 없으면 생성
-//	bootId: String
-//): Result<Vm?> = runCatching {
-//	if (this.findAllVms()
-//			.getOrDefault(listOf())
-//			.nameDuplicateVm(vm.name())) {
-//		return FailureType.DUPLICATE.toResult(Term.VM.desc)
-//	}
-//
-//	val vmAdded: Vm =
-//		this.srvVms().add().vm(vm).send().vm()
-//			?: throw ErrorPattern.VM_NOT_FOUND.toError()
-//
-//	// vnic 생성
-//	if (vnicProfileIds.isNotEmpty()) {
-//		this.addNicsFromVm(vmAdded.id(), vnicProfileIds)
-//	}
-//
-//	// cdroms
-//	if (bootId.isNotEmpty()) {
-//		this.addCdromFromVm(vmAdded.id(), bootId)
-//	}
-//	if (!this.expectVmStatus(vmAdded.id(), VmStatus.DOWN)) {
-//		log.error("가상머신 생성 시간 초과: {}", vmAdded.name())
-//		return Result.failure(Error("가상머신 생성 시간 초과"))
-//	}
-//	vmAdded
-//}.onSuccess {
-//	Term.VM.logSuccess("생성", it.id())
-//}.onFailure {
-//	Term.VM.logFail("생성", it)
-//	throw if (it is Error) it.toItCloudException() else it
-//}
-
-fun Connection.addVm(vm: Vm): Result<Vm?> = runCatching {
+fun Connection.addVm(
+	vm: Vm,
+	diskAttachments: List<DiskAttachment>,
+	vnicIds: List<String>,
+	connId: String
+): Result<Vm?> = runCatching {
 	if (this.findAllVms()
 			.getOrDefault(listOf())
 			.nameDuplicateVm(vm.name())) {
@@ -199,6 +175,10 @@ fun Connection.addVm(vm: Vm): Result<Vm?> = runCatching {
 	val vmAdded: Vm =
 		this.srvVms().add().vm(vm).send().vm()
 			?: throw ErrorPattern.VM_NOT_FOUND.toError()
+
+	this.addMultipleDiskAttachmentsToVm(vmAdded.id(), diskAttachments)
+	this.addMultipleNicsFromVm(vmAdded.id(), vnicIds)
+	this.selectCdromFromVm(vmAdded.id(), connId)
 
 	if (!this.expectVmStatus(vmAdded.id(), VmStatus.DOWN)) {
 		log.error("가상머신 생성 시간 초과: {}", vmAdded.name())
@@ -213,8 +193,12 @@ fun Connection.addVm(vm: Vm): Result<Vm?> = runCatching {
 }
 
 
-
-fun Connection.updateVm(vm: Vm): Result<Vm?> = runCatching {
+fun Connection.updateVm(
+	vm: Vm,
+	diskAttachments: List<DiskAttachment>,
+	vnicIds: List<String>,
+	connId: String
+): Result<Vm?> = runCatching {
 	if (this.findAllVms()
 			.getOrDefault(listOf())
 			.nameDuplicateVm(vm.name(), vm.id())) {
@@ -223,8 +207,15 @@ fun Connection.updateVm(vm: Vm): Result<Vm?> = runCatching {
 	if(this.findVm(vm.id()).isFailure){
 		throw ErrorPattern.VM_NOT_FOUND.toError()
 	}
-	val vmUpdated: Vm? =
+
+	val vmUpdated: Vm =
 		this.srvVm(vm.id()).update().vm(vm).send().vm()
+			?: throw ErrorPattern.VM_NOT_FOUND.toError()
+
+
+	this.selectCdromFromVm(vmUpdated.id(), connId)
+	this.addMultipleDiskAttachmentsToVm(vmUpdated.id(), diskAttachments)
+	this.addMultipleNicsFromVm(vmUpdated.id(), vnicIds)
 
 	vmUpdated ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 }.onSuccess {
@@ -270,10 +261,12 @@ fun Connection.expectVmDeleted(vmId: String, timeout: Long = 60000L, interval: L
 	}
 }
 
-fun Connection.exportVm(vmId: String,
-						hostName: String,
-						directory: String,
-						fileName: String): Result<Boolean> = runCatching {
+fun Connection.exportVm(
+	vmId: String,
+	hostName: String,
+	directory: String,
+	fileName: String
+): Result<Boolean> = runCatching {
 	this@exportVm.srvVm(vmId).exportToPathOnHost()
 		.host(HostBuilder().name(hostName))
 		.directory(directory)
@@ -469,14 +462,46 @@ fun Connection.updateNicFromVm(vmId: String, nic: Nic): Result<Nic?> = runCatchi
 			.nameDuplicateVmNic(nic.name(), nic.id())) {
 		return FailureType.DUPLICATE.toResult(Term.NIC.desc)
 	}
+
 	srvNicFromVm(vmId, nic.id()).update().nic(nic).send().nic()
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.NIC, "편집", vmId)
 }.onFailure {
 	Term.VM.logFailWithin(Term.NIC, "편집", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
+
+fun Connection.updateMultipleNicsFromVm(vmId: String, vnicProfileIds: List<String>): Result<Boolean> = runCatching {
+	val existNics: List<Nic> =
+		this.findAllNicsFromVm(vmId).getOrDefault(listOf())
+
+	val nicsCnt = existNics.size
+
+
+
+	val nics =
+		vnicProfileIds.mapIndexed { index, profileId ->
+			NicBuilder()
+				.name("nic${index + 1}")
+				.vnicProfile(VnicProfileBuilder().id(profileId).build())
+				.build()
+		}
+
+	val results = nics.map { addNicFromVm(vmId, it) }
+	val allSuccessful = results.all { it.isSuccess }
+
+	if (!allSuccessful) {
+		val failedResults = results.filter { it.isFailure }
+		log.warn("일부 NIC 생성 실패: ${failedResults.size}개")
+	}
+	allSuccessful
+}.onSuccess {
+	Term.VM.logSuccessWithin(Term.NIC, "생성 여러개", vmId)
+}.onFailure {
+	Term.VM.logFailWithin(Term.NIC, "생성 여러개", it, vmId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
 
 fun Connection.removeNicFromVm(vmId: String, nicId: String): Result<Boolean> = runCatching {
 	if(this.findVm(vmId).isFailure){
