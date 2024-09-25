@@ -4,6 +4,7 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.HostNicVo
+import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.setting.PermissionVo
 import org.junit.jupiter.api.Test
 import org.hamcrest.MatcherAssert.assertThat
@@ -154,19 +155,40 @@ class ItHostServiceTest {
 
 	/**
 	 * [should_findAllHostNicsFromHost]
-	 * [ItHostService.findAllHostNicsFromHost]에 대한 단위테스트
+	 * [ItHostService.findAllNicsFromHost]에 대한 단위테스트
 	 *
-	 * @see ItHostService.findAllHostNicsFromHost
+	 * @see ItHostService.findAllNicsFromHost
 	 */
 	@Test
 	fun should_findAllHostNicsFromHost() {
 		log.debug("should_findAllHostNicFromHost ...")
 		val result: List<HostNicVo> =
-			service.findAllHostNicsFromHost(host02)
+			service.findAllNicsFromHost(host02)
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }
 		assertThat(result.size, `is`(1))
+	}
+
+	/**
+	 * [should_setUpNetworksFromHost]
+	 * [ItHostService.setUpNetworksFromHost]에 대한 단위테스트
+	 *
+	 * @see ItHostService.setUpNetworksFromHost
+	 */
+	@Test
+	fun should_setUpNetworksFromHost() {
+		log.debug("should_setUpNetworksFromHost ...")
+		val hostId = ""
+		val networkVo: NetworkVo =
+			NetworkVo.builder {
+
+			}
+
+		val result: Boolean =
+			service.setUpNetworksFromHost(hostId, networkVo)
+
+		assertThat(result, `is`(not(nullValue())))
 	}
 
 	/**

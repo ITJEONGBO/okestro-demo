@@ -4,6 +4,7 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.HostNicVo
+import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.service.computing.ItHostOperationService
 import com.itinfo.itcloud.service.computing.ItHostService
@@ -181,6 +182,30 @@ class HostController {
 		return ResponseEntity.ok(iHost.findAllNicsFromHost(hostId))
 	}
 
+	@ApiOperation(
+		httpMethod="POST",
+		value="호스트 네트워크 설정",
+		notes="선택된 호스트의 네트워크를 설정한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="network", value="네트워크", dataTypeClass=NetworkVo::class, required=true, paramType="body"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@PostMapping("/{hostId}/nics/setup")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun setupNetwork(
+		@PathVariable hostId: String? = null,
+		@RequestBody network: NetworkVo
+	): ResponseEntity<Boolean> {
+		if (hostId.isNullOrEmpty())
+			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
+		log.info("/computing/hosts/{}/nics/setup ... 호스트 네트워크 생성", hostId)
+		return ResponseEntity.ok(iHost.setUpNetworksFromHost(hostId, network))
+	}
 
 	@ApiOperation(
 		httpMethod="GET",

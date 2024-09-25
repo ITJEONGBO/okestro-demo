@@ -4,6 +4,7 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.HostNicVo
+import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.network.toHostNicVos
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
@@ -88,10 +89,11 @@ interface ItHostService {
 	 * 호스트 네트워크 설정
 	 *
 	 * @param hostId [String] 호스트 Id
+	 * @param network [NetworkVo] 네트워크 (미정)
 	 * @return [Boolean] 아직미정
 	 */
 	@Throws(Error::class)
-	fun setUpNetworksFromHost(hostId: String): Boolean
+	fun setUpNetworksFromHost(hostId: String, network: NetworkVo): Boolean
 	/**
 	 * [ItHostService.findAllHostDevicesFromHost]
 	 * 호스트 호스트장치 목록
@@ -201,7 +203,7 @@ class HostServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun setUpNetworksFromHost(hostId: String): Boolean {
+	override fun setUpNetworksFromHost(hostId: String, network: NetworkVo): Boolean {
 		TODO("Not yet implemented")
 	}
 
