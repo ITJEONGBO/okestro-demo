@@ -22,7 +22,8 @@ const DEFAULT_VALUES = {
       storageDomains: 0,
       events: 0,
       eventsAlert: 0,
-      eventsError: 0
+      eventsError: 0,
+      eventsWarning: 0
   },
   GET_CPU_MEMORY: {
     totalCpuUsagePercent: 0,

@@ -26,6 +26,7 @@ private val log = LoggerFactory.getLogger(DashBoardVo::class.java)
  * @property events
  * @property eventsAlert
  * @property eventsError
+ * @property eventsWarning
  */
 class DashBoardVo (
     val datacenters: Int = 0,
@@ -42,6 +43,7 @@ class DashBoardVo (
     val events: Int = 0,
     val eventsAlert: Int = 0,
     val eventsError: Int = 0,
+    val eventsWarning: Int = 0,
 ): Serializable {
     override fun toString(): String =
         gson.toJson(this)
@@ -61,7 +63,8 @@ class DashBoardVo (
         private var bEvents: Int = 0; fun events(block: () -> Int?) { bEvents = block() ?: 0}
         private var bEventAlert: Int = 0; fun eventsAlert(block: () -> Int?) { bEventAlert = block() ?: 0}
         private var bEventError: Int = 0; fun eventsError(block: () -> Int?) { bEventError = block() ?: 0}
-        fun build(): DashBoardVo = DashBoardVo(bDatacenters, bDatacentersUp, bDatacentersDown, bClusters, bHosts, bHostsUp, bHostsDown, bVms, bVmsUp, bVmsDown, bStorageDomains, bEvents, bEventAlert, bEventError)
+        private var bEventsWarning: Int = 0; fun eventsWarning(block: () -> Int?) { bEventsWarning = block() ?: 0}
+        fun build(): DashBoardVo = DashBoardVo(bDatacenters, bDatacentersUp, bDatacentersDown, bClusters, bHosts, bHostsUp, bHostsDown, bVms, bVmsUp, bVmsDown, bStorageDomains, bEvents, bEventAlert, bEventError, bEventsWarning)
     }
 
     companion object {
@@ -111,6 +114,10 @@ fun Connection.toDashboardVo(): DashBoardVo {
         this@toDashboardVo.findAllEvents(searchQuery = "severity=error and time > Today")
             .getOrDefault(listOf())
             .size
+    val eventsWarning: Int =
+        this@toDashboardVo.findAllEvents(searchQuery = "severity=warning and time > Today")
+            .getOrDefault(listOf())
+            .size
 
     return DashBoardVo.builder {
         datacenters { dataCenters }
@@ -124,8 +131,9 @@ fun Connection.toDashboardVo(): DashBoardVo {
         vmsUp { vmsUp }
         vmsDown { vms - vmsUp }
         storageDomains { storageDomains }
-        events { eventsAlert + eventsError }
+        events { eventsAlert + eventsError + eventsWarning }
         eventsAlert { eventsAlert }
         eventsError { eventsError }
+        eventsWarning { eventsWarning }
     }
 }

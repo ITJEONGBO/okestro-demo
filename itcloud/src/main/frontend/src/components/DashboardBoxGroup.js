@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUp, faArrowDown, faBatteryEmpty, faStarOfLife, faLink } from '@fortawesome/free-solid-svg-icons'
+import { faArrowUp, faArrowDown, faBatteryEmpty, faStarOfLife, faLink, faWarning, faEraser, faMessage } from '@fortawesome/free-solid-svg-icons'
 import './DashboardBoxGroup.css'
 
-const DashboardBox = ({ title, cntTotal, cntUp, cntDown, alert, error, navigatePath }) => {
+const DashboardBox = ({ title, cntTotal, cntUp, cntDown, alert, error, warning, navigatePath }) => {
   const navigate = useNavigate();
   
   return (
@@ -13,9 +13,9 @@ const DashboardBox = ({ title, cntTotal, cntUp, cntDown, alert, error, navigateP
       <div className="arrows">
         {cntUp && <><FontAwesomeIcon icon={faArrowUp} fixedWidth/> {cntUp}&nbsp;</>}
         {cntDown && <><FontAwesomeIcon icon={faArrowDown} fixedWidth/> {cntDown}</>}
-        {alert && <><FontAwesomeIcon icon={faStarOfLife} fixedWidth/> {alert}&nbsp;</>}
-        {error && <><FontAwesomeIcon icon={faBatteryEmpty} fixedWidth/> {error}</>}
-        {error && <><FontAwesomeIcon icon={faLink} fixedWidth/> {error}</>}{/*샘플 */}
+        {alert && <><FontAwesomeIcon icon={faMessage} fixedWidth/> {alert}&nbsp;</>}
+        {error && <><FontAwesomeIcon icon={faEraser} fixedWidth/> {error}&nbsp;</>}
+        {warning && <><FontAwesomeIcon icon={faWarning} fixedWidth/> {warning}</>}
       </div>
     </div>
   )
@@ -33,6 +33,7 @@ const DashboardBoxGroup = ({ boxItems }) => {
           cntDown={e.cntDown}
           alert={e.alert}
           error={e.error}
+          warning={e.warning}
           navigatePath={e.navigatePath} />
       ))}
     </div>

@@ -27,7 +27,7 @@ private val log = LoggerFactory.getLogger(HostUsageDto::class.java)
  * @property totalMemoryUsagePercent [Double]
  * @property totalCpuCore [Int]
  * @property usedCpuCore [Int]
- * @property freeCpuCore [Int]
+ * @property commitCpuCore [Int]
  * @property totalMemoryGB [Double]
  * @property usedMemoryGB [Double] 
  * @property freeMemoryGB [Double] 
@@ -40,7 +40,7 @@ class HostUsageDto(
     val totalMemoryUsagePercent: Double = 0.0,
     val totalCpuCore: Int = 0,
     val usedCpuCore: Int = 0,
-    val freeCpuCore: Int = 0,
+    val commitCpuCore: Int = 0,
     val totalMemoryGB: Double = 0.0,
     val usedMemoryGB: Double = 0.0,
     val freeMemoryGB: Double = 0.0,
@@ -55,11 +55,11 @@ class HostUsageDto(
     	private var bTotalMemoryUsagePercent: Double = 0.0;fun totalMemoryUsagePercent(block: () -> Double?) { bTotalMemoryUsagePercent = block() ?: 0.0 }
         private var bTotalCpuCore: Int = 0; fun totalCpuCore(block: () -> Int?) { bTotalCpuCore = block() ?: 0 }
         private var bUsedCpuCore: Int = 0; fun usedCpuCore(block: () -> Int?) { bUsedCpuCore = block() ?: 0 }
-        private var bFreeCpuCore: Int = 0; fun freeCpuCore(block: () -> Int?) { bFreeCpuCore = block() ?: 0 }
+        private var bCommitCpuCore: Int = 0; fun commitCpuCore(block: () -> Int?) { bCommitCpuCore = block() ?: 0 }
     	private var bTotalMemoryGB: Double = 0.0;fun totalMemoryGB(block: () -> Double?) { bTotalMemoryGB = block() ?: 0.0 }
     	private var bUsedMemoryGB: Double = 0.0;fun usedMemoryGB(block: () -> Double?) { bUsedMemoryGB = block() ?: 0.0 }
     	private var bFreeMemoryGB: Double = 0.0;fun freeMemoryGB(block: () -> Double?) { bFreeMemoryGB = block() ?: 0.0 }
-        fun build(): HostUsageDto = HostUsageDto(bHostId, bHostName, bHistoryDatetime, bTotalCpuUsagePercent, bTotalMemoryUsagePercent, bTotalCpuCore, bUsedCpuCore, bFreeCpuCore, bTotalMemoryGB, bUsedMemoryGB, bFreeMemoryGB)
+        fun build(): HostUsageDto = HostUsageDto(bHostId, bHostName, bHistoryDatetime, bTotalCpuUsagePercent, bTotalMemoryUsagePercent, bTotalCpuCore, bUsedCpuCore, bCommitCpuCore, bTotalMemoryGB, bUsedMemoryGB, bFreeMemoryGB)
     }
 
     companion object {
@@ -88,6 +88,13 @@ fun List<Host>.toHostUsageDto(conn: Connection, hostSamplesHistoryEntities: List
         .filter { "memory.used" == it.name() }
         .sumOf { stat: Statistic -> stat.values().firstOrNull()?.datum()?.toDouble() ?: 0.0 } / GB
 
+//    val totalCpuCore: Int =
+//        conn.findAllHosts()
+//            .getOrDefault(listOf())
+//            .filter { host ->
+//                host.to
+//            }
+
     val free = total - used
     var totalCpu = 0.0
     var totalMemory = 0.0
@@ -97,6 +104,7 @@ fun List<Host>.toHostUsageDto(conn: Connection, hostSamplesHistoryEntities: List
         totalMemory += usage.totalMemoryUsagePercent
         time = usage.historyDatetime
     }
+
     log.debug("totalCpuMemory ... ${totalCpu}, ${this@toHostUsageDto.size}")
     return HostUsageDto.builder {
         historyDatetime { time }
