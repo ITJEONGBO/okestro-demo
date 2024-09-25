@@ -12,7 +12,11 @@ import {
     faChevronDown,
     faMailForward,
     faListUl,
-    faFileEdit
+    faFileEdit,
+    faHashtag,
+    faUserGroup,
+    faEarthAmericas,
+    faLayerGroup
 } from '@fortawesome/free-solid-svg-icons'
 
 const MainOuter = ({ children }) => {
@@ -51,6 +55,8 @@ const MainOuter = ({ children }) => {
 
   const [activeSection, setActiveSection] = useState('general');
 
+  const [isThirdVisibleNetwork, setIsThirdVisibleNetwork] = useState(false); // 3단계 열림/닫힘 상태
+  const [isFourthVisibleNetwork, setIsFourthVisibleNetwork] = useState(false); // 4단계 열림/닫힘 상태
   const { 
     data: navNetworks,
     status: navNetworksStatus,
@@ -147,24 +153,24 @@ const MainOuter = ({ children }) => {
   }, []);
 
     // 네트워크 섹션에서 사용하는 것과 유사한 로직으로 편집
-    useEffect(() => {
-        const pathParts = location.pathname.split('/');
-        const lastPart = decodeURIComponent(pathParts[pathParts.length - 1]);
+    // useEffect(() => {
+    //     const pathParts = location.pathname.split('/');
+    //     const lastPart = decodeURIComponent(pathParts[pathParts.length - 1]);
 
-        if (location.pathname.includes('/storages/disks')) {
-            setSelected('storage');
-            setSelectedDiv(null); 
-            setSelectedDisk(lastPart);
-        } else if (location.pathname.includes('/storage-domain/:id')) {
-            setSelected('storage');
-            setSelectedDiv('storage_domain');
-            setSelectedDisk(null); 
-        } else if (location.pathname.includes('/storage')) {
-            setSelected('storage');
-            setSelectedDiv('data_centerdd');  
-            setSelectedDisk(null); 
-        }
-    }, [location]);
+    //     if (location.pathname.includes('/storages/disks')) {
+    //         setSelected('storage');
+    //         setSelectedDiv(null); 
+    //         setSelectedDisk(lastPart);
+    //     } else if (location.pathname.includes('/storage-domain/:id')) {
+    //         setSelected('storage');
+    //         setSelectedDiv('storage_domain');
+    //         setSelectedDisk(null); 
+    //     } else if (location.pathname.includes('/storage')) {
+    //         setSelected('storage');
+    //         setSelectedDiv('data_centerdd');  
+    //         setSelectedDisk(null); 
+    //     }
+    // }, [location]);
 
     const handleDetailClickStorage = (diskName) => {
         if (selectedDisk !== diskName) {
@@ -174,11 +180,7 @@ const MainOuter = ({ children }) => {
         }
     };
 
-    const getDiskDivStyle = (diskName) => {
-        return {
-            backgroundColor: selectedDisk === diskName ? 'rgb(218, 236, 245)' : 'transparent',
-        };
-    };
+ 
 
     const handleClick = (id) => {
         if (selected === id) return;
@@ -260,7 +262,7 @@ const MainOuter = ({ children }) => {
         setActiveSettingForm(form);
     };
     const handleSettingIconClick = () => {
-        setAsidePopupVisible(false); // setting_icon을 눌렀을 때 사이드바 닫기
+        navigate('/settings');
     };
     
 
@@ -340,9 +342,11 @@ const MainOuter = ({ children }) => {
                 </div>
                 <Link to='/settings' className="link-no-underline">
                     <div id="setting_icon" style={{ backgroundColor: asidePopupBackgroundColor.setting }} onClick={handleSettingIconClick}>
-                       <FontAwesomeIcon icon={faCog} fixedWidth/>
+                    <FontAwesomeIcon icon={faCog} fixedWidth/>
                     </div>
                 </Link>
+
+
             </div>
             <div id="aside_popup" style={{ display: asidePopupVisible ? 'block' : 'none' }}>
                 <button id='aside_popup_btn' onClick={handleAsidePopupBtnClick}><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
@@ -400,7 +404,7 @@ const MainOuter = ({ children }) => {
                 fixedWidth
                 />
 
-                <FontAwesomeIcon icon={faBuilding} fixedWidth/>
+                <FontAwesomeIcon icon={faLayerGroup} fixedWidth/>
                 <span>data_center</span>
             </div>
             )}
@@ -427,7 +431,7 @@ const MainOuter = ({ children }) => {
                     fixedWidth
                 />
 
-            <FontAwesomeIcon icon={faBuilding} fixedWidth/>
+            <FontAwesomeIcon icon={faEarthAmericas} fixedWidth/>
             <span>Cluster</span>
         </div>
             )}  
@@ -551,7 +555,7 @@ const MainOuter = ({ children }) => {
                                     fixedWidth
                                 />
 
-                        <FontAwesomeIcon icon={faBuilding} fixedWidth/>
+                        <FontAwesomeIcon icon={faLayerGroup} fixedWidth/>
                         <span>data_center</span>
                     </div>
 
@@ -641,34 +645,34 @@ const MainOuter = ({ children }) => {
                   selected === 'network' && 
                   (
                     <div id="network_chart">
-
+                    {/* 첫 번째 레벨 */}
                     <div 
-                        className="aside_popup_content" 
-                        id="aside_popup_first" 
-                        style={{ backgroundColor: selectedDiv === 'rutil-manager' ? 'rgb(218, 236, 245)' : '' }} 
-                        onClick={() => {
-                            if (selectedDiv !== 'rutil-manager') {
-                         
-                                setSelectedDiv('rutil-manager');
-                                navigate('/computing/rutil-manager');
-                            }
+                      className="aside_popup_content" 
+                      id="aside_popup_first" 
+                      style={{ backgroundColor: selectedDiv === 'rutil-manager' ? 'rgb(218, 236, 245)' : '' }} 
+                      onClick={() => {
+                        if (selectedDiv !== 'rutil-manager') {
+                          setSelectedDiv('rutil-manager');
+                          navigate('/computing/rutil-manager');
+                        }
+                      }}
+                    >  
+                      <FontAwesomeIcon 
+                        style={{ fontSize:'0.3rem', marginRight: '0.04rem' }} 
+                        icon={isSecondVisibleNetwork ? faChevronDown : faChevronRight} 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsSecondVisibleNetwork(!isSecondVisibleNetwork); // 2단계 열림/닫힘 토글
                         }}
-                      >  
-                        <FontAwesomeIcon 
-                          style={{ fontSize:'0.3rem', marginRight: '0.04rem' }} 
-                          icon={isSecondVisible ? faChevronDown : faChevronRight} 
-                          onClick={(e) => {
-                              e.stopPropagation();
-                              setIsSecondVisibleNetwork(!isSecondVisibleNetwork);
-                 
-                          }}
-                          fixedWidth
-                        />
-                        <FontAwesomeIcon icon={faBuilding} fixedWidth/>
-                        <span>Rutil manager</span>
-                      </div>
-
-                    <div
+                        fixedWidth
+                      />
+                      <FontAwesomeIcon icon={faBuilding} fixedWidth/>
+                      <span>Rutil manager</span>
+                    </div>
+              
+                    {/* 두 번째 레벨 */}
+                    {isSecondVisibleNetwork && (
+                      <div
                         className="aside_popup_second_content"
                         id="aside_popup_first3"
                         style={{ backgroundColor: selectedDiv === 'data-center' ? 'rgb(218, 236, 245)' : '' }}
@@ -676,64 +680,43 @@ const MainOuter = ({ children }) => {
                           if (selectedDiv !== 'data-center') {
                             setSelectedDiv('data-center');
                             navigate('/computing/data-center');
-                        }
+                          }
                         }}
                       >
                         <FontAwesomeIcon
                           style={{ fontSize:'0.3rem' , marginRight: '0.04rem' }} 
-                          icon={isSecondVisibleNetwork ? faChevronDown : faChevronRight}  // 상태에 따라 아이콘 변경
+                          icon={isFourthVisibleNetwork ? faChevronDown : faChevronRight}  // 상태에 따라 아이콘 변경
                           onClick={(e) => {
-                              e.stopPropagation();
-                              setIsSecondVisibleNetwork(!isSecondVisibleNetwork);
+                            e.stopPropagation();
+                            setIsFourthVisibleNetwork(!isFourthVisibleNetwork); // 4단계 열림/닫힘 토글
                           }}
                           fixedWidth
                         />
-
-                        <FontAwesomeIcon icon={faBuilding} fixedWidth />
+                        <FontAwesomeIcon icon={faLayerGroup} fixedWidth />
                         <span>data_center</span>
-                    </div>
-
-                    
-                    {
-                      isSecondVisibleNetwork && /*navNetworks && navNetworks[0] && (navNetworks[0]?.networks?.map*/(/*(n) => */
-                        <>
-                          {/* <div
-                            className="aside_popup_second_content"
-                            id="aside_popup_network_content"
-                            style={{
-                              backgroundColor: selectedDiv === 'ovirtmgmt' ? 'rgb(218, 236, 245)' : '',
-                              paddingLeft: '0.85rem'
-                            }}
-                            onClick={() => {
-                              setSelectedDiv('ovirtmgmt');
-                              navigate(`/networks/${n?.id}`);
-                            }}
-                          >
-                           <FontAwesomeIcon icon={faBuilding} style={{ fontSize: '0.34rem', marginRight: '0.05rem' }}fixedWidth/>
-                            <span>{n?.name}</span>
-                          </div> */}
-               
-                            <div
-                                className="aside_popup_fourth_content"
-                        
-                                style={{
-                                backgroundColor: selectedDiv === 'ddd' ? 'rgb(218, 236, 245)' : '',
-                                paddingLeft: '1rem'
-                                }}
-                                onClick={() => {
-                                    setSelectedDiv('ddd');
-                                    navigate('/networks/ddd');
-                                }}
-                            >
-                                <FontAwesomeIcon icon={faFileEdit} style={{ fontSize: '0.34rem', marginRight: '0.05rem' }} fixedWidth/>
-                                <span>ddd</span>
-                            </div>
-                           
-                   
-                        </>
-                      )
-                    }
-                    </div>
+                      </div>
+                    )}
+              
+                    {/* 세번째 레벨 */}
+                    {isFourthVisibleNetwork && (
+                      <div
+                        className="aside_popup_third_content"
+                        style={{
+                          backgroundColor: selectedDiv === 'ddd' ? 'rgb(218, 236, 245)' : '',
+                          paddingLeft: '1rem'
+                        }}
+                        onClick={() => {
+                          if (selectedDiv !== 'ddd') {
+                            setSelectedDiv('ddd');
+                            navigate('/networks/ddd');
+                          }
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faFileEdit} style={{ fontSize: '0.34rem', marginRight: '0.05rem' }} fixedWidth/>
+                        <span>ddd</span>
+                      </div>
+                    )}
+                  </div>
                 )}
                 
                
@@ -765,6 +748,13 @@ const MainOuter = ({ children }) => {
 
        {/*  // // setting일때 aside닫기
   // useEffect(() => {
+
+
+       const getDiskDivStyle = (diskName) => {
+        return {
+            backgroundColor: selectedDisk === diskName ? 'rgb(218, 236, 245)' : 'transparent',
+        };
+    };
   //   const pathParts = location.pathname.split('/');
   //   const lastPart = decodeURIComponent(pathParts[pathParts.length - 1]);
   

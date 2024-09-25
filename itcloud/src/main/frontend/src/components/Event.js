@@ -8,6 +8,8 @@ import {
     faArrowUp,
   faCheckCircle,
   faPencil,
+  faRefresh,
+  faSearch,
 
 } from '@fortawesome/free-solid-svg-icons'
 
@@ -85,20 +87,24 @@ const Event = () => {
       <HeaderButton
         title="Event"
         subtitle="Chart"
-        buttons={sectionHeaderButtons}
+        buttons={[]}
         popupItems={[]}
         openModal={[]}
         togglePopup={() => {}}
       />
       <div className="content_outer">
         <div className="empty_nav_outer">
-
-                   <TableOuter
-                     columns={TableColumnsInfo.EVENTS}
-                     data={eventData}
-                     onRowClick={() => console.log('Row clicked')} 
-                    />
-                </div>
+            <div className="search_box">
+              <input type="text" />
+              <button><FontAwesomeIcon icon={faSearch} fixedWidth/></button>
+              <button><FontAwesomeIcon icon={faRefresh} fixedWidth/></button>
+            </div>
+            <TableOuter
+              columns={TableColumnsInfo.EVENTS}
+              data={eventData}
+              onRowClick={() => console.log('Row clicked')} 
+            />
+        </div>
 
       </div>
 

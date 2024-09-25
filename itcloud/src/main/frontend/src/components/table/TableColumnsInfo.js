@@ -47,6 +47,17 @@ const TableColumnsInfo = {
     { header: 'IPv4 주소', accessor: 'ipv4' },
     { header: 'IPv6 주소', accessor: 'ipv6' }
   ],
+  HOST_NETWORK_INTERFACE:[
+    { header: '', accessor: 'icon' },
+    { header: '이름',       accessor: 'name',          clickable: false },
+    { header: 'MAC',       accessor: 'mac',    clickable: false },
+    { header: 'Rx 속도 (Mbps)',  accessor: 'rx',     clickable: false },
+    { header: '총 Rx (바이트)',     accessor: 'allRx',       clickable: false },
+    { header: 'Tx 속도 (Mbps)',   accessor: 'tx', clickable: false },
+    { header: '총 Tx (바이트)',     accessor: 'allTx',       clickable: false },
+    { header: 'Mbps',     accessor: 'mbps',       clickable: false },
+    { header: 'Pkts',     accessor: 'pkts',       clickable: false },
+  ],
   LUNS: [
     { header: '이름', accessor: 'name', clickable: true },
     { header: '상태', accessor: 'status', clickable: false },

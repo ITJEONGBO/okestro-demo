@@ -1030,7 +1030,7 @@ function DataCenterDetail() {
                 </div>
             </Modal>
 
-            {/* 호스트 새로 만들기 팝업 */}
+            {/* 클러스터 새로 만들기 팝업 */}
             <Modal
                 isOpen={activePopup === 'host_new'}
                 onRequestClose={closePopup}

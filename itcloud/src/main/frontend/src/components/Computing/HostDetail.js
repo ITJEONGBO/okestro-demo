@@ -158,7 +158,19 @@ function HostDetail() {
     });
   };
 
-  
+  const networkInterfaceData =[
+    {
+      icon: <FontAwesomeIcon icon={faWrench} fixedWidth/>,
+      name: 'Network 2',
+      mac: 'AA:BB:CC:DD:EE:FF',
+      rx: '150',
+      allRx: '1,500,000',
+      tx: '250',
+      allTx: '2,500,000',
+      mbps: '150',
+      pkts: '15,000'
+    },
+  ]
   const networkdata = [
     {
       icon: <FontAwesomeIcon icon={faUniversity} fixedWidth/>,
@@ -250,7 +262,7 @@ function HostDetail() {
 
                     <div className="host_tables">
 
-                        <div className="table_container_left">
+                        <div className="table_container_left" style={{paddingTop:0}}>
                             <h2 style={{color:'white',border:'none'}}>하드웨어</h2>
                             <table className="host_table">
                               <tbody>
@@ -338,8 +350,8 @@ function HostDetail() {
                             </table>
                         </div>
 
-                        <div className="table_container_left">
-                            <h2>하드웨어</h2>
+                        <div className="table_container_left" style={{paddingTop:0}}>
+                            <h2 className='font-bold'>하드웨어</h2>
                             <table className="host_table">
                               <tbody>
                                 <tr>
@@ -396,8 +408,8 @@ function HostDetail() {
                         </div>
 
 
-                        <div  className="table_container_left">
-                            <h2>소프트웨어</h2>
+                        <div  className="table_container_left" style={{paddingTop:0}}>
+                            <h2 className='font-bold'>소프트웨어</h2>
                             <table className="host_table">
                               <tbody>
                                 <tr>
@@ -510,60 +522,31 @@ function HostDetail() {
                   </div>
 
                   {[0, 1].map((index) => (
+                    
                     <div className='host_network_boxs' key={index}>
                       <div
                         className='host_network_firstbox'
                         onClick={() => toggleHiddenBox(index)}
                       >
-                        <div>
-                          <FontAwesomeIcon icon={faArrowCircleUp} fixedWidth/>
-                          <FontAwesomeIcon icon={faFilm} fixedWidth/>
-                          <span>ens192</span>
-                        </div>
-                        <div className='firstbox_flex'>
-                          <div>
-                            <div>MAC</div>
-                            <span>00:4234324</span>
-                          </div>
-                        </div>
-                        <div className='firstbox_flex'>
-                          <div>
-                            <div>Rx 속도(mbps)</div>
-                            <span>103</span>
-                          </div>
-                          <div>
-                            <div>총 Rx(바이트)</div>
-                            <span>42,214,343,32,522</span>
-                          </div>
-                        </div>
-                        <div className='firstbox_flex'>
-                          <div>
-                            <div>Rx 속도(mbps)</div>
-                            <span>103</span>
-                          </div>
-                          <div>
-                            <div>총 Rx(바이트)</div>
-                            <span>42,214,343,32,522</span>
-                          </div>
-                        </div>
-                        <div>
-                          <FontAwesomeIcon icon={faFilm} fixedWidth/>
-                          <span>Mbps</span>
-                        </div>
-                        <div>
-                          <FontAwesomeIcon icon={faFilm} fixedWidth/>
-                          <span>0 Pkts</span>
-                        </div>
+                        <div className="section_table_outer">
+                          <Table
+                            columns={TableColumnsInfo.HOST_NETWORK_INTERFACE}
+                            data={networkInterfaceData}
+                            onRowClick={() => console.log('Row clicked')}
+                          />
+                         </div>
                       </div>
                       <div
                         className='host_network_hiddenbox'
                         style={{ display: visibleBoxes.includes(index) ? 'block' : 'none' }}
                       >
-                         <TableOuter 
-                           columns={TableColumnsInfo.NETWORKS_FROM_HOST}
-                           data={networkdata}
-                           onRowClick={() => console.log('Row clicked')}
-                         />
+                        <div className="section_table_outer">
+                          <Table
+                            columns={TableColumnsInfo.NETWORKS_FROM_HOST}
+                            data={networkdata}
+                            onRowClick={() => console.log('Row clicked')}
+                          />
+                         </div>
                       </div>
                     </div>
                   ))}

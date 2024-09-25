@@ -33,9 +33,9 @@
     width: 100%;
     padding: 1rem 0;
 }
-.host_network_boxs{
-    border: 1px solid black;
-    background-color: rgb(229 255 251);
+
+.host_network_boxs:hover{
+   background:#e6eefa;
 }
 .host_network_firstbox{
     display: flex;
@@ -49,12 +49,17 @@
     margin-right: 0.3rem;
     font-size: 0.55rem;
 }
+.host_network_boxs{
+    border:1px solid #DDDDDD;
+    margin-bottom:0.2rem;
+}
 .host_network_firstbox>div{
 
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0.3rem 0.4rem;
+    padding: 0.2rem 0 ;
+    width:100%;
  
 }
 .firstbox_flex{

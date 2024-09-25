@@ -22,7 +22,12 @@ const Table = ({ columns, data, onRowClick = () => {}, clickableColumnIndex = []
             }}
           >
             {columns.map((column, colIndex) => (
-              <td key={colIndex}>
+              <td 
+                key={colIndex}
+                style={{
+                  textAlign: typeof row[column.accessor] === 'object' ? 'center' : 'left' // 아이콘이면 center, 텍스트면 left
+                }}
+              >
                 {
                   // 특정 컬럼에만 클릭 이벤트 적용
                   clickableColumnIndex.includes(colIndex) ? (

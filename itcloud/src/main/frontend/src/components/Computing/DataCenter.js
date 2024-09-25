@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import Modal from 'react-modal';
 import { useParams, useNavigate } from 'react-router-dom';
 import NavButton from '../navigation/NavButton';
@@ -10,7 +10,12 @@ import Permission from '../Modal/Permission';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUser, faCheck, faRefresh, faTimes,
-  faInfoCircle
+  faInfoCircle,
+  faBan,
+  faArrowUp,
+  faArrowDown,
+  faMinus,
+  faPlus
 } from '@fortawesome/free-solid-svg-icons'
 import './css/DataCenterDetail.css';
 import TableOuter from '../table/TableOuter';
@@ -22,18 +27,48 @@ const DataCenterDetail = () => {
   const { name } = useParams();
   const navigate = useNavigate();
   const [activePermissionFilter, setActivePermissionFilter] = useState('all');
+  const [showNetworkDetail, setShowNetworkDetail] = useState(false);
+  const [활성화된섹션, set활성화된섹션] = useState('일반_섹션');
   const [isModalOpen, setIsModalOpen] = useState({
     edit: false,
     permission: false,
   });
+  useEffect(() => {
+    const 기본섹션 = document.getElementById('일반_섹션_btn');
+    if (기본섹션) {
+      기본섹션.style.backgroundColor = '#EDEDED';
+      기본섹션.style.color = '#1eb8ff';
+      기본섹션.style.borderBottom = '1px solid blue';
+    }
+  }, []);
 
+  const 섹션변경 = (section) => {
+    set활성화된섹션(section);
+    const 모든섹션들 = document.querySelectorAll('.edit_aside > div');
+    모든섹션들.forEach((el) => {
+      el.style.backgroundColor = '#FAFAFA';
+      el.style.color = 'black';
+      el.style.borderBottom = 'none';
+    });
+
+    const 선택된섹션 = document.getElementById(`${section}_btn`);
+    if (선택된섹션) {
+      선택된섹션.style.backgroundColor = '#EDEDED';
+      선택된섹션.style.color = '#1eb8ff';
+      선택된섹션.style.borderBottom = '1px solid blue';
+    }
+  };
   const handleOpenModal = (type) => {
     setIsModalOpen((prev) => ({ ...prev, [type]: true }));
-    // 모달 열 때 기본적으로 '일반' 탭을 선택
-    setSelectedTab('cluster_common_btn'); 
+    setSelectedTab('cluster_common_btn');
   };
-
-
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    setShowNetworkDetail(false);
+};
+const handleTabClickModal = (tab) => {
+  setSelectedTab(tab); 
+};
   const handleCloseModal = (type) => {
     setIsModalOpen((prev) => ({ ...prev, [type]: false }));
   };
@@ -47,16 +82,18 @@ const DataCenterDetail = () => {
   const handleInputChange = (event) => {
     setInputName(event.target.value); // input의 값을 상태로 업데이트
   };
-  const [selectedTab, setSelectedTab] = useState('network_new_common_btn');
+  const [selectedTab, setSelectedTab] = useState('cluster_common_btn');
   const [showTooltip, setShowTooltip] = useState(false); // hover하면 설명창 뜨게하기
-  const handleTabClickModal = (tab) => {
-    setSelectedTab(tab);
-  };
+
   const sectionHeaderButtons = [
     { id: 'edit_btn', label: '편집', onClick: () => handleOpenModal('edit') },
     { id: 'delete_btn', label: '삭제', onClick: () => {} },
   ];
-
+  const [isHiddenParameterVisible, setHiddenParameterVisible] = useState(false);
+  const toggleHiddenParameter = () => {
+    setHiddenParameterVisible(!isHiddenParameterVisible);
+  };
+  
   const sectionHeaderPopupItems = [
     '강제 제거',
     '가이드',
@@ -64,22 +101,22 @@ const DataCenterDetail = () => {
     '완료된 작업 정리'
   ];
 
-  const [activeTab, setActiveTab] = useState('storage');
+  const [activeTab, setActiveTab] = useState('general');
 
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-  };
+ 
 
   // Nav 컴포넌트
   const sections = [
-    { id: 'storage', label: '스토리지' },
-    { id: 'logical_network', label: '논리 네트워크' },
+    { id: 'general', label: '일반' },
     { id: 'cluster', label: '클러스터' },
-    { id: 'Qos', label: 'Qos' },
-    { id: 'permission', label: '권한' },
-    { id: 'event', label: '이벤트' },
+    { id: 'host', label: '호스트' },
     { id: 'vm', label: '가상머신' },
-    { id: 'host', label: '호스트' }
+    { id: 'logical_network', label: '논리 네트워크' },
+    { id: 'storage', label: '스토리지 도메인' },
+    { id: 'permission', label: '권한' },
+    { id: 'event', label: '이벤트' }
+
+
   ];
 
   // 테이블 컴포넌트 데이터
@@ -136,13 +173,13 @@ const DataCenterDetail = () => {
     },
   ];
 
-  const Qosdata = [
-    {
-      QosName: 'dd',  
-      version: '4.7',
-      description: '',
-    },
-  ];
+  // const Qosdata = [
+  //   {
+  //     QosName: 'dd',  
+  //     version: '4.7',
+  //     description: '',
+  //   },
+  // ];
 
   const permissionData = [
     {
@@ -219,6 +256,91 @@ const DataCenterDetail = () => {
         />
 
         <div className="empty_nav_outer">
+        {activeTab === 'general' && (
+            <>
+             <div className="cluster_general">
+                <div className="table_container_center">
+                    <table className="table">
+                        <tbody>
+                            <tr>
+                                <th>ID:</th>
+                                <td>id</td>
+                            </tr>
+                            <tr>
+                                <th>설명:</th>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>데이터센터:</th>
+                                <td>Default</td>
+                            </tr>
+                            <tr>
+                                <th>호환버전:</th>
+                                <td>4.7</td>
+                            </tr>
+                            <tr>
+                                <th>클러스터 노드 유형:</th>
+                                <td>Virt</td>
+                            </tr>
+                            <tr>
+                                <th>클러스터 ID:</th>
+                                <td>f0adf4f6-274b-4533-b6b3-6a683b062c9a</td>
+                            </tr>
+                            <tr>
+                                <th>클러스터 CPU 유형:</th>
+                                <td>
+                                      Intel Nehalem Family
+                                    <FontAwesomeIcon icon={faBan} style={{ marginLeft: '13%', color: 'orange' }} fixedWidth/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>스레드를 CPU 로 사용:</th>
+                                <td>아니요</td>
+                            </tr>
+                            <tr>
+                                <th>최대 메모리 오버 커밋:</th>
+                                <td>100%</td>
+                            </tr>
+                            <tr>
+                                <th>복구 정책:</th>
+                                <td>예</td>
+                            </tr>
+                            <tr>
+                                <th>칩셋/펌웨어 유형:</th>
+                                <td>UEFI의 Q35 칩셋</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div className="table_container_center">
+                    <table className="table">
+                        <tbody>
+                            <tr>
+                                <th>에뮬레이션된 시스템:</th>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th>가상 머신 수:</th>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <th>총 볼륨 수:</th>
+                                <td>해당 없음</td>
+                            </tr>
+                            <tr>
+                                <th>Up 상태의 볼륨 수:</th>
+                                <td>해당 없음</td>
+                            </tr>
+                            <tr>
+                                <th>Down 상태의 볼륨 수:</th>
+                                <td>해당 없음</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </>
+          )}
           {activeTab === 'storage' && (
             <>
               <div className="content_header_right">
@@ -251,17 +373,21 @@ const DataCenterDetail = () => {
             </>
           )}
           {activeTab === 'cluster' && (
-            <>
-              <div className="host_empty_outer">
+              <>
+                <div className="content_header_right">
+                  <button onClick={() => handleOpenModal('cluster_new')}>새로 만들기</button>
+                  <button>편집</button>
+                  <button>삭제</button>
+                </div>
                 <TableOuter
                   columns={TableColumnsInfo.CLUSTERS_FROM_DATACENTER}
                   data={clusterdata}
                   onRowClick={handleRowClick} 
                 />
-              </div>
             </>
+          
           )}
-          {activeTab === 'Qos' && (
+          {/* {activeTab === 'Qos' && (
             <>
               <div className="host_empty_outer">
                 <TableOuter
@@ -271,7 +397,7 @@ const DataCenterDetail = () => {
                 />
               </div>
             </>
-          )}
+          )} */}
           {activeTab === 'permission' && (
             <>
             <div className="content_header_right">
@@ -397,9 +523,10 @@ const DataCenterDetail = () => {
             </div>
           </div>
         </Modal>
-        {/* 호스트 새로 만들기 팝업 */}
-        <Modal
-            isOpen={isModalOpen.host_new}
+
+         {/* 클러스터 새로 만들기 팝업 */}
+         <Modal
+            isOpen={isModalOpen.cluster_new}
             onRequestClose={handleCloseModal}
             contentLabel="새로 만들기"
             className="Modal"
@@ -409,24 +536,24 @@ const DataCenterDetail = () => {
             <div className="cluster_new_popup">
                 <div className="popup_header">
                     <h1>새 클러스터</h1>
-                    <button onClick={() =>handleCloseModal('host_new')}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                    <button onClick={() =>handleCloseModal('cluster_new')}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                 </div>
 
                 <div className="network_new_nav">
-                    <div
-                        id="cluster_common_btn"
-                        className={selectedTab === 'cluster_common_btn' ? 'active-tab' : 'inactive-tab'}
-                        onClick={() => handleTabClick('cluster_common_btn')}
-                    >
-                        일반
-                    </div>
-                    <div
-                        id="cluster_migration_btn"
-                        className={selectedTab === 'cluster_migration_btn' ? 'active-tab' : 'inactive-tab'}
-                        onClick={() => handleTabClick('cluster_migration_btn')}
-                    >
-                        마이그레이션 정책
-                    </div>
+                <div
+              id="cluster_common_btn"
+              className={selectedTab === 'cluster_common_btn' ? 'active-tab' : 'inactive-tab'}
+              onClick={() => handleTabClickModal('cluster_common_btn')}
+            >
+              일반
+            </div>
+            <div
+              id="cluster_migration_btn"
+              className={selectedTab === 'cluster_migration_btn' ? 'active-tab' : 'inactive-tab'}
+              onClick={() => handleTabClickModal('cluster_migration_btn')}
+            >
+              마이그레이션 정책
+            </div>
                 </div>
 
                 {/* 일반 */}
@@ -658,10 +785,262 @@ const DataCenterDetail = () => {
                 <div className="edit_footer">
                     <button style={{ display: 'none' }}></button>
                     <button>OK</button>
-                    <button onClick={handleCloseModal}>취소</button>
+                    <button onClick={() =>handleCloseModal('cluster_new')}>취소</button>
                 </div>
             </div>
         </Modal>
+        {/* 호스트 새로 만들기 팝업 */}
+        <Modal
+        isOpen={isModalOpen.host_new}
+        onRequestClose={handleCloseModal}
+        contentLabel="새로 만들기"
+        className="host_new_popup"
+        overlayClassName="host_new_outer"
+        shouldCloseOnOverlayClick={false}
+
+      >
+        <div className="popup_header">
+          <h1>새 호스트</h1>
+          <button onClick={() =>handleCloseModal('host_new')}>
+            <FontAwesomeIcon icon={faTimes} fixedWidth/>
+          </button>
+        </div>
+
+        <div className="edit_body">
+          <div className="edit_aside">
+            <div
+              className={`edit_aside_item`}
+              id="일반_섹션_btn"
+              onClick={() => 섹션변경('일반_섹션')}
+              style={{ backgroundColor: 활성화된섹션 === '일반_섹션' ? '#EDEDED' : '#FAFAFA', color: 활성화된섹션 === '일반_섹션' ? '#1eb8ff' : 'black', borderBottom: 활성화된섹션 === '일반_섹션' ? '1px solid blue' : 'none' }}
+            >
+              <span>일반</span>
+            </div>
+            <div
+              className={`edit_aside_item`}
+              id="전원관리_섹션_btn"
+              onClick={() => 섹션변경('전원관리_섹션')}
+              style={{ backgroundColor: 활성화된섹션 === '전원관리_섹션' ? '#EDEDED' : '#FAFAFA', color: 활성화된섹션 === '전원관리_섹션' ? '#1eb8ff' : 'black', borderBottom: 활성화된섹션 === '전원관리_섹션' ? '1px solid blue' : 'none' }}
+            >
+              <span>전원 관리</span>
+            </div>
+            <div
+              className={`edit_aside_item`}
+              id="호스트엔진_섹션_btn"
+              onClick={() => 섹션변경('호스트엔진_섹션')}
+              style={{ backgroundColor: 활성화된섹션 === '호스트엔진_섹션' ? '#EDEDED' : '#FAFAFA', color: 활성화된섹션 === '호스트엔진_섹션' ? '#1eb8ff' : 'black', borderBottom: 활성화된섹션 === '호스트엔진_섹션' ? '1px solid blue' : 'none' }}
+            >
+              <span>호스트 엔진</span>
+            </div>
+            <div
+              className={`edit_aside_item`}
+              id="선호도_섹션_btn"
+              onClick={() => 섹션변경('선호도_섹션')}
+              style={{ backgroundColor: 활성화된섹션 === '선호도_섹션' ? '#EDEDED' : '#FAFAFA', color: 활성화된섹션 === '선호도_섹션' ? '#1eb8ff' : 'black', borderBottom: 활성화된섹션 === '선호도_섹션' ? '1px solid blue' : 'none' }}
+            >
+              <span>선호도</span>
+            </div>
+          </div>
+
+          {/* 폼의 다양한 섹션들 */}
+          <form action="#">
+            {/* 공통 섹션 */}
+            <div
+              id="일반_섹션"
+              style={{ display: 활성화된섹션 === '일반_섹션' ? 'block' : 'none' }}
+            >
+          <div className="edit_first_content">
+                  <div>
+                      <label htmlFor="cluster">클러스터</label>
+                      <select id="cluster">
+                          <option value="default">Default</option>
+                      </select>
+                      <div>데이터센터 Default</div>
+                  </div>
+                  <div>
+                      <label htmlFor="name1">이름</label>
+                      <input type="text" id="name1" />
+                  </div>
+                  <div>
+                      <label htmlFor="comment">코멘트</label>
+                      <input type="text" id="comment" />
+                  </div>
+                  <div>
+                      <label htmlFor="hostname">호스트이름/IP</label>
+                      <input type="text" id="hostname" />
+                  </div>
+                  <div>
+                      <label htmlFor="ssh_port">SSH 포트</label>
+                      <input type="text" id="ssh_port" value="22" />
+                  </div>
+              </div>
+
+    <div className='host_checkboxs'>
+      <div className='host_checkbox'>
+          <input type="checkbox" id="memory_balloon" name="memory_balloon" />
+          <label htmlFor="headless_mode">헤드리스 모드</label>
+      </div>
+      <div className='host_checkbox'>
+          <input type="checkbox" id="headless_mode_info" name="headless_mode_info" />
+          <label htmlFor="headless_mode_info">헤드리스 모드 정보</label>
+          <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }} fixedWidth/>
+      </div>
+    </div>
+
+    <div className='host_checkboxs'>
+      <div className='host_textbox'>
+          <label htmlFor="user_name">사용자 이름</label>
+          <input type="text" id="user_name" />
+      </div>
+
+      <div className='host_text_raido_box'>
+          <div>
+            <input type="radio" id="password" name="name_option" />
+            <label htmlFor="password">암호</label>
+          </div>
+          <input type="text" id="radio1_name" />
+      </div>
+
+      <div className='host_radiobox'>
+          <input type="radio" id="ssh_key" name="name_option" />
+          <label htmlFor="ssh_key">SSH 공개키</label>
+      </div>
+
+    </div>
+
+            </div>{/*일반섹션끝 */}
+
+            {/* 전원 관리 섹션 */}
+            <div
+              id="전원관리_섹션"
+              style={{ display: 활성화된섹션 === '전원관리_섹션' ? 'block' : 'none' }}
+            >
+              
+              <div className='host_checkboxs'>
+                <div className='host_checkbox'>
+                    <input type="checkbox" id="enable_forwarding" name="enable_forwarding" />
+                    <label htmlFor="enable_forwarding">전송 관리 활성</label>
+                </div>
+                <div className='host_checkbox'>
+                    <input type="checkbox" id="kdump_usage" name="kdump_usage" checked />
+                    <label htmlFor="kdump_usage">Kdump 통합</label>
+                </div>
+                <div className='host_checkbox'>
+                    <input type="checkbox" id="disable_forwarding_policy" name="disable_forwarding_policy" />
+                    <label htmlFor="disable_forwarding_policy">전송 관리 정책 제어를 비활성화</label>
+                </div>
+
+
+                <span className='sorted_agents'>순서대로 정렬된 에이전트</span>
+              </div>
+              
+              
+              <div className='addFence_agent'>
+                <span>펜스 에이전트 추가</span>
+                <button>+</button>
+              </div>
+
+              <div className='advanced_objec_add'>
+                <button onClick={toggleHiddenParameter}>
+                  {isHiddenParameterVisible ? '-' : '+'}
+                </button>
+                <span>고급 매개 변수</span>
+                {isHiddenParameterVisible && (
+                <div className='host_hidden_parameter'>
+                 
+                  <div>전원 관리 프록시 설정</div>
+                  <div>
+                    <div className='proxy_content'>
+                      <div className='font-bold'>1.</div>
+                      <div className='w-6'>cluster</div>
+                      <div>  
+                        <button> <FontAwesomeIcon icon={faArrowUp} fixedWidth /></button>
+                        <button><FontAwesomeIcon icon={faArrowDown} fixedWidth /></button>
+                      </div>
+                      <button><FontAwesomeIcon icon={faMinus} fixedWidth /></button>
+                    </div>
+                    <div className='proxy_content'>
+                      <div className='font-bold'>2.</div>
+                      <div className='w-6'>dc</div>
+                      <div>  
+                        <button> <FontAwesomeIcon icon={faArrowUp} fixedWidth /></button>
+                        <button><FontAwesomeIcon icon={faArrowDown} fixedWidth /></button>
+                      </div>
+                      <button><FontAwesomeIcon icon={faMinus} fixedWidth /></button>
+                    </div>
+                  </div>
+
+                  <div className='proxy_add'>
+                    <div>전원 관리 프록시 추가</div>
+                    <button><FontAwesomeIcon icon={faPlus} fixedWidth /></button>
+                  </div>
+                </div>
+                )}
+              </div>
+              
+
+            </div>
+
+            {/* 호스트 엔진 섹션 */}
+            <div
+              id="호스트엔진_섹션"
+              style={{ display: 활성화된섹션 === '호스트엔진_섹션' ? 'block' : 'none' }}
+            >
+              <div className="host_policy">
+                  <label htmlFor="host_action">호스트 연관 전처리 작업 선택</label>
+                  <select id="host_action">
+                      <option value="none">없음</option>
+                  </select>
+              </div>
+
+
+            </div>
+
+            {/* 선호도 섹션 */}
+            <div
+              id="선호도_섹션"
+              style={{ display: 활성화된섹션 === '선호도_섹션' ? 'block' : 'none' }}
+            >
+              <div className="preference_outer">
+                <div className="preference_content">
+                  <label htmlFor="preference_group">선호도 그룹을 선택하십시오</label>
+                    <div>
+                      <select id="preference_group">
+                        <option value="none"></option>
+                      </select>
+                      <button>추가</button>
+                    </div>
+                </div>
+                <div className="preference_noncontent">
+                  <div>선택된 선호도 그룹</div>
+                  <div>선택된 선호도 그룹이 없습니다</div>
+                </div>
+                <div className="preference_content">
+                  <label htmlFor="preference_label">선호도 레이블 선택</label>
+                  <div>
+                    <select id="preference_label">
+                      <option value="none"></option>
+                    </select>
+                    <button>추가</button>
+                  </div>
+                </div>
+                <div className="preference_noncontent">
+                  <div>선택한 선호도 레이블</div>
+                  <div>선호도 레이블이 선택되어있지 않습니다</div>
+                </div>
+
+              </div>
+            </div>
+
+          </form>
+        </div>
+
+        <div className="edit_footer">
+
+          <button>OK</button>
+          <button onClick={() =>handleCloseModal('host_new')}>취소</button>
+        </div>
+      </Modal>
       {/* Permission 모달 컴포넌트 */}
       <Permission isOpen={isModalOpen.permission} onRequestClose={() => handleCloseModal('permission')} />
     </div>
