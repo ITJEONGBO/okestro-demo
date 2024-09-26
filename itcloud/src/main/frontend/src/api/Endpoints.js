@@ -1,4 +1,4 @@
-const ENDPOINTS = {
+const ENDPOINTS = {  
   //region: User
   USERS: () => `/api/v1/auth/users`,
   FIND_USER: (username) => `/api/v1/auth/users/${username}`,

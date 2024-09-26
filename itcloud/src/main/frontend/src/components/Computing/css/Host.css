@@ -1,9 +1,3 @@
-#section,#storage_section,#network_section,#setting_section,#detail_section{
-    background-color: #ffffff;
-    border-radius: 5px;
-    width: 96%;
-    position: relative;
-}
 
 .edit_first_content input,
 .host_textbox input,

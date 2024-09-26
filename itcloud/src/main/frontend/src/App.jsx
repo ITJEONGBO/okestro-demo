@@ -102,6 +102,7 @@ const App = () => {
               <Route path="/computing/datacenters" element={<Computing />} />
               <Route path="/storage" element={<AllDisk />} />
               <Route path="/computing/data-center" element={<DataCenter />} />
+              <Route path="/computing/datacenters/:id" element={<DataCenter />} />
               {/* <Route path="/storage" element={<Storage />} /> */}
               <Route path="/settings" element={<Setting />} />
               <Route path="/computing/vms/:id" element={<Vm />} />
@@ -110,7 +111,7 @@ const App = () => {
               <Route path="/computing/vms" element={<AllVm />} />
               {/* 데이터센터아이디 추가<Route path="/computing/vms" element={<VmTemplateChart />} /> */}
               <Route path="/computing/templates" element={<Templates />} />
-              <Route path="/computing/templates:/id" element={<TemplateDetail />} />
+              <Route path="/computing/templates/:id" element={<TemplateDetail />} />
               <Route path="/computing/host/:id" element={<HostDetail />}/>
               <Route path="/computing/clusters" element={<Cluster />} />
               <Route path="/computing/clusters/:id" element={<ClusterName />} /> 

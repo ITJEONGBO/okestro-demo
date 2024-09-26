@@ -19,11 +19,13 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import './css/DataCenterDetail.css';
 import TableOuter from '../table/TableOuter';
+import { useNetworkById } from '../../api/RQHook';
 
 // React Modal 설정
 Modal.setAppElement('#root');
 
 const DataCenterDetail = () => {
+
   const { name } = useParams();
   const navigate = useNavigate();
   const [activePermissionFilter, setActivePermissionFilter] = useState('all');
@@ -103,7 +105,25 @@ const handleTabClickModal = (tab) => {
 
   const [activeTab, setActiveTab] = useState('general');
 
- 
+
+  //api
+  const { networkid } = useParams(); // useParams로 URL에서 name을 가져옴
+  const [shouldRefresh, setShouldRefresh] = useState(false);
+  const { 
+    data: network,
+    status: networkStatus,
+    isRefetching: isNetworkRefetching,
+    refetch: networkRefetch, 
+    isError: isNetworkError,
+    error: networkError, 
+    isLoading: isNetworkLoaindg,
+  } = useNetworkById(networkid);
+  useEffect(() => {
+    networkRefetch()
+  }, [setShouldRefresh, networkRefetch])
+
+
+
 
   // Nav 컴포넌트
   const sections = [
@@ -173,13 +193,6 @@ const handleTabClickModal = (tab) => {
     },
   ];
 
-  // const Qosdata = [
-  //   {
-  //     QosName: 'dd',  
-  //     version: '4.7',
-  //     description: '',
-  //   },
-  // ];
 
   const permissionData = [
     {

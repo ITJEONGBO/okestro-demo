@@ -1,14 +1,4 @@
 
-
-
-#section,#storage_section,#network_section,#setting_section,#detail_section{
-    background-color: #ffffff;
-    border-radius: 5px;
-    width: 96%;
-    position: relative;
-}
-
-
 /*새로만들기 팝업*/
 .datacenter_new_popup{
     position: absolute;
