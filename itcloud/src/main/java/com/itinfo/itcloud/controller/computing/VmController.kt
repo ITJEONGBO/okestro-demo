@@ -979,7 +979,7 @@ class VmController: BaseController() {
 	@GetMapping("/{vmId}/snapshots")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAllSnapshotsFromVm(
+	fun snapshots(
 		@PathVariable vmId: String? = null,
 	): ResponseEntity<List<SnapshotVo>> {
 		if (vmId.isNullOrEmpty())
@@ -987,6 +987,8 @@ class VmController: BaseController() {
 		log.info("/computing/vms/{}/snapshots ... 가상머신 스냅샷 목록", vmId)
 		return ResponseEntity.ok(iVmSnapshot.findAllSnapshotsFromVm(vmId))
 	}
+
+
 	// endregion
 
 

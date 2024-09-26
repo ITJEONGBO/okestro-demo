@@ -2,12 +2,10 @@ package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.computing.*
-import com.itinfo.itcloud.model.storage.DiskImageVo
-import com.itinfo.itcloud.model.storage.toDiskAttachmentVos
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.addSnapshotFromVm
-import com.itinfo.util.ovirt.findAllDiskAttachmentsFromVm
 import com.itinfo.util.ovirt.findAllSnapshotsFromVm
+import com.itinfo.util.ovirt.findSnapshotFromVm
 import com.itinfo.util.ovirt.removeSnapshotFromVm
 import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.builders.SnapshotBuilder
@@ -21,57 +19,54 @@ interface ItVmSnapshotService {
 	 * [ItVmSnapshotService.findAllSnapshotsFromVm]
 	 * 스냅샷 목록
 	 *
-	 * @param vmId [String] 가상머신 id
-	 * @return
+	 * @param vmId [String] 가상머신 Id
+	 * @return List<[SnapshotVo]>
 	 */
 	@Throws(Error::class)
 	fun findAllSnapshotsFromVm(vmId: String): List<SnapshotVo>
 	/**
 	 * [ItVmSnapshotService.findSnapshotFromVm]
-	 * 스냅샷 목록
+	 * 스냅샷 상세정보
 	 *
-	 * @param vmId [String] 가상머신 id
-	 * @param snapshotId [String]
-	 * @return SnapshotVo
+	 * @param vmId [String] 가상머신 Id
+	 * @param snapshotId [String] 스냅샷 Id
+	 * @return [SnapshotVo] ?
 	 */
 	@Throws(Error::class)
-	fun findSnapshotFromVm(vmId: String, snapshotId: String): SnapshotVo
+	fun findSnapshotFromVm(vmId: String, snapshotId: String): SnapshotVo?
 
-	/**
-	 * [ItVmSnapshotService.findAllDisksFromVm]
-	 * 스냅샷 생성창
-	 * [ItVmDiskService.findAllDisksFromVm] 대체가능
-	 * 가상머신 스냅샷 생성 창
-	 * 
-	 * @param vmId [String] 가상머신 id
-	 * @return 스냅샷 목록
-	 */
-//	@Throws(Error::class)
-//	fun findAllDisksFromVm(vmId: String): List<DiskImageVo>
+	// 가상머신 스냅샷 생성 창 - [ItVmDiskService.findAllDisksFromVm]
+
 	/**
 	 * [ItVmSnapshotService.addSnapshot]
-	 * 스냅샷 생성
-	 * 스냅샷 생성 중에는 다른기능(삭제, 커밋)같은 기능 구현 x
+	 * 스냅샷 생성 (생성 중에는 다른기능(삭제, 커밋)같은 기능 구현 x)
 	 * 
 	 * @param snapshotVo
-	 * @return SnapshotVo
-	 */
-	fun addSnapshot(vmId: String, snapshotVo: SnapshotVo): SnapshotVo?
-	/**
-	 * [ItVmSnapshotService.removeSnapshot]
-	 * 스냅샷 삭제
-	 * 
-	 * @param vmId [String] 가상머신 id
-	 * @param snapshotId 스냅샷 id
-	 * 
-	 * @return
+	 * @return [SnapshotVo]
 	 */
 	@Throws(Error::class)
-	fun removeSnapshot(vmId: String, snapshotId: String): Boolean
-
-	interface IOperation {
-		fun activeSnapshotDisk(system: SystemService, vmService: VmService, snapshot: Snapshot): List<SnapshotDiskVo>
-	}
+	fun addSnapshot(vmId: String, snapshotVo: SnapshotVo): SnapshotVo?
+	/**
+	 * [ItVmSnapshotService.removeSnapshots]
+	 * 스냅샷 삭제
+	 *
+	 * @param vmId [String] 가상머신 Id
+	 * @param snapshotIds List<[String]> 스냅샷 Id 목록
+	 * @return [Boolean]
+	 */
+	@Throws(Error::class)
+	fun removeSnapshots(vmId: String, snapshotIds: List<String>): Boolean
+	/**
+	 * [ItVmSnapshotService.copySnapshot]
+	 * 스냅샷 복제
+	 * 복제하면 nic, disks는 스냅샷에 있는 값을 가져와서 복제
+	 *
+	 * @param vmId [String] 가상머신 Id
+	 * @param snapshotId [String]
+	 * @return [SnapshotVo]
+	 */
+	@Throws(Error::class)
+	fun copySnapshot(vmId: String, snapshotId: String): SnapshotVo?
 }
 
 @Service
@@ -88,18 +83,14 @@ class VmSnapshotServiceImpl(
 		return res.toSnapshotVos(conn, vmId)
 	}
 
-	override fun findSnapshotFromVm(vmId: String, snapshotId: String): SnapshotVo {
-		TODO("Not yet implemented")
+	@Throws(Error::class)
+	override fun findSnapshotFromVm(vmId: String, snapshotId: String): SnapshotVo? {
+		log.info("findSnapshotFromVm ... vmId: {}, snapshotId: {}", vmId, snapshotId)
+		val res: Snapshot? =
+			conn.findSnapshotFromVm(vmId, snapshotId)
+				.getOrNull()
+		return res?.toSnapshotVo(conn, vmId)
 	}
-
-//	@Throws(Error::class)
-//	override fun findAllDisksFromVm(vmId: String): List<DiskImageVo> {
-//		log.info("findAllSnapshotDisksFromVm ... vmId: {}", vmId)
-//		val res: List<DiskAttachment> =
-//			conn.findAllDiskAttachmentsFromVm(vmId)
-//				.getOrDefault(listOf())
-//		return res.toDiskAttachmentVos(conn, vmId)
-//	}
 
 	@Throws(Error::class)
 	override fun addSnapshot(vmId: String, snapshotVo: SnapshotVo): SnapshotVo? {
@@ -121,11 +112,17 @@ class VmSnapshotServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun removeSnapshot(vmId: String, snapshotId: String): Boolean {
-		log.info("removeSnapshot ... id: {}, snapId: {}", vmId, snapshotId)
-		val res: Result<Boolean> =
-			conn.removeSnapshotFromVm(vmId, snapshotId)
-		return res.isSuccess
+	override fun removeSnapshots(vmId: String, snapshotIds: List<String>): Boolean {
+		log.info("removeSnapshot ... id: {}", vmId)
+//		val res: Result<Boolean> =
+//			conn.removeSnapshotFromVm(vmId, snapshotIds)
+//		return res.isSuccess
+		TODO()
+	}
+
+	@Throws(Error::class)
+	override fun copySnapshot(vmId: String, snapshotId: String): SnapshotVo? {
+		TODO("Not yet implemented")
 	}
 
 

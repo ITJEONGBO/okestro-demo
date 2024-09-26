@@ -16,17 +16,19 @@ import org.springframework.boot.test.context.SpringBootTest
  *
  * @author chanhi2000
  * @author deh22
- * @since 2024.08.28
+ * @since 2024.09.26
  */
 @SpringBootTest
 class ItVmSnapshotServiceTest {
     @Autowired private lateinit var service: ItVmSnapshotService
 
     private lateinit var hostVm: String // hostVm
+    private lateinit var apm: String // apm
 
     @BeforeEach
     fun setup() {
         hostVm = "c2ae1da5-ce4f-46df-b337-7c471bea1d8d" // HostedEngine
+        apm = "fceb0fe4-2927-4340-a970-401fe55781e6"
     }
 
     /**
@@ -39,13 +41,32 @@ class ItVmSnapshotServiceTest {
     fun should_findAllSnapshotsFromVm(){
         log.debug("should_findAllSnapshotsFromVm")
         val result: List<SnapshotVo> =
-            service.findAllSnapshotsFromVm("4fd618ae-761c-4518-bf6c-f2245e439079")
+            service.findAllSnapshotsFromVm(apm)
 
         assertThat(result, `is`(not(nullValue())))
-
         result.forEach { println(it) }
-        assertThat(result.size, `is`(1))
+        assertThat(result.size, `is`(3))
     }
+
+
+    /**
+     * [should_findSnapshotFromVm]
+     * [ItVmSnapshotService.findSnapshotFromVm]에 대한 단위테스트
+     *
+     * @see [ItVmSnapshotService.findSnapshotFromVm]
+     */
+    @Test
+    fun should_findSnapshotFromVm(){
+        log.debug("should_findSnapshotFromVm")
+        val result: SnapshotVo? =
+            service.findSnapshotFromVm(apm, snapshotId = "2bda4522-5d82-4772-a1bd-65633928bf35")
+
+        assertThat(result, `is`(not(nullValue())))
+        println(result)
+    }
+
+
+
 
     companion object {
         private val log by LoggerDelegate()
