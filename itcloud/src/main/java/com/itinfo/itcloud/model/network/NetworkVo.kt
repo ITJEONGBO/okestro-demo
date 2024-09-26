@@ -110,6 +110,29 @@ fun Network.toNetworkIdName(): NetworkVo = NetworkVo.builder {
 fun List<Network>.toNetworksIdName(): List<NetworkVo> =
 	this@toNetworksIdName.map { it.toNetworkIdName() }
 
+
+fun Network.toNetworkMenu(conn: Connection): NetworkVo = NetworkVo.builder {
+	id { this@toNetworkMenu.id() }
+	name { this@toNetworkMenu.name() }
+	description { this@toNetworkMenu.description() }
+	comment { this@toNetworkMenu.comment() }
+	mtu { this@toNetworkMenu.mtu().toInt() }
+	portIsolation { this@toNetworkMenu.portIsolation() }
+	dataCenter { conn.findDataCenter(this@toNetworkMenu.dataCenter().id()).getOrNull()?.fromDataCenterToIdentifiedVo() }
+	openStackNetwork {
+		if(this@toNetworkMenu.externalProviderPresent())
+			conn.findOpenStackNetworkProvider(this@toNetworkMenu.externalProvider().id())
+				.getOrNull()
+				?.toOpenStackNetworkVo(conn)
+		else
+			null
+	}
+	vlan { if (this@toNetworkMenu.vlanPresent()) this@toNetworkMenu.vlan().idAsInteger() else 0}
+}
+fun List<Network>.toNetworksMenu(conn: Connection): List<NetworkVo> =
+	this@toNetworksMenu.map { it.toNetworkMenu(conn) }
+
+
 fun Network.toNetworkVo(conn: Connection): NetworkVo {
 	val vnicProfileVos: List<IdentifiedVo> =
 		conn.findAllVnicProfiles().getOrDefault(listOf())
@@ -151,7 +174,6 @@ fun List<Network>.toNetworkVos(conn: Connection): List<NetworkVo> =
 
 fun Network.toClusterNetworkVo(conn: Connection): NetworkVo {
 	val usages: List<NetworkUsage> = this@toClusterNetworkVo.usages()
-
 	return NetworkVo.builder {
 		id { this@toClusterNetworkVo.id() }
 		name { this@toClusterNetworkVo.name() }
@@ -205,6 +227,7 @@ fun NetworkVo.toAddClusterAttach(conn: Connection, networkId: String) {
 		}
 	}
 }
+
 // 네트워크 레이블
 fun NetworkVo.toAddNetworkLabel(conn: Connection, networkId: String) {
 	if (this@toAddNetworkLabel.openStackNetwork.id.isEmpty() && this@toAddNetworkLabel.networkLabel.isNotEmpty()) {

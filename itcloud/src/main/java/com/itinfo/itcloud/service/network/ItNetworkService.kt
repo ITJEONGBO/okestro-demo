@@ -6,7 +6,6 @@ import com.itinfo.itcloud.error.ItemNotFoundException
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.*
-import com.itinfo.itcloud.model.fromNetworkToIdentifiedVo
 import com.itinfo.itcloud.model.fromOpenStackNetworkProviderToIdentifiedVo
 import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.model.setting.PermissionVo
@@ -28,30 +27,24 @@ interface ItNetworkService {
 	@Throws(Error::class)
 	fun findAll(): List<NetworkVo>
 	/**
-	 * [ItNetworkService.findAllFromDataCenter]
-	 * 네트워크 목록
-	 *
-	 * @param dataCenterId [String]
-	 * @return List<[NetworkVo]> 네트워크 목록
-	 */
-	@Throws(Error::class)
-	fun findAllFromDataCenter(dataCenterId: String): List<NetworkVo>
-	/**
 	 * [ItNetworkService.findOne]
-	 * 네트워크 편집 / 정보
+	 * 네트워크 상세정보
 	 *
-	 * @param networkId [String] 네트워크 아이디
+	 * @param networkId [String] 네트워크 Id
 	 * @return [NetworkVo] 네트워크 정보
 	 */
 	@Throws(ItemNotFoundException::class, Error::class)
 	fun findOne(networkId: String): NetworkVo?
+
 	// 네트워크 생성창 - 데이터센터 목록 [ItDataCenterService.findAll]
-	// 네트워크 생성창 - 클러스터 목록(연결,필수) [ItDataCenterService.findAllClusterFromDataCenter]
+	// 				  - 클러스터 목록(연결,필수) [ItDataCenterService.findAllClusterFromDataCenter]
+
 	/**
 	 * [ItNetworkService.add]
 	 * 네트워크 생성
+	 * 기본 단순 생성은 클러스터가 할당되지도 필수도 선택되지 않음
 	 *
-	 * @param networkVo [NetworkVo] 네트워크
+	 * @param networkVo [NetworkVo]
 	 * @return [NetworkVo]
 	 */
 	@Throws(Error::class)
@@ -59,8 +52,9 @@ interface ItNetworkService {
 	/**
 	 * [ItNetworkService.update]
 	 * 네트워크 편집
+	 * 편집에서는 클러스터 선택 못함
 	 *
-	 * @param networkVo [NetworkVo] 네트워크 객체
+	 * @param networkVo [NetworkVo]
 	 * @return [NetworkVo]
 	 */
 	@Throws(Error::class)
@@ -69,24 +63,24 @@ interface ItNetworkService {
 	 * [ItNetworkService.remove]
 	 * 네트워크 삭제
 	 *
-	 * @param networkId [String] 네트워크 아이디
+	 * @param networkId [String] 네트워크 Id
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
 	fun remove(networkId: String): Boolean
 	/**
 	 * [ItNetworkService.findAllNetworkProviderFromNetwork]
-	 * 네트워크 가져오기- 네트워크 공급자 목록
+	 * 네트워크 가져오기 - 네트워크 공급자 목록
 	 *
 	 * @return [IdentifiedVo]
 	 */
 	@Throws(Error::class)
-	fun findAllNetworkProviderFromNetwork(): IdentifiedVo?
+	fun findAllNetworkProviderFromNetwork(): IdentifiedVo
 	/**
 	 * [ItNetworkService.findAllExternalNetworkFromNetworkProvider]
 	 * 네트워크 가져오기 창 - 네트워크 공급자가 가지고있는 네트워크
 	 *
-	 * @param providerId [String]
+	 * @param providerId [String] 공급자 Id
 	 * @return List<[NetworkVo]>
 	 */
 	@Throws(Error::class)
@@ -100,52 +94,7 @@ interface ItNetworkService {
 	 */
 	@Throws(Error::class)
 	fun importNetwork(): NetworkVo
-	/**
-	 * [ItNetworkService.findAllVnicProfilesFromNetwork]
-	 * 네트워크 - vNIC Profile 목록
-	 *
-	 * @param networkId [String] 네트워크 아이디
-	 * @return List<[VnicProfileVo]>
-	 */
-	@Throws(Error::class)
-	fun findAllVnicProfilesFromNetwork(networkId: String): List<VnicProfileVo>
 
-	/**
-	 * [ItNetworkService.findVnicProfile]
-	 * 네트워크 - vNIC Profile
-	 *
-	 * @param vnicProfileId [String]
-	 * @return List<[VnicProfileVo]>
-	 */
-	@Throws(Error::class)
-	fun findVnicProfile(vnicProfileId: String): VnicProfileVo?
-	/**
-	 * [ItNetworkService.addVnicProfile]
-	 * 네트워크 - vNIC Profile 생성
-	 *
-	 * @param vnicProfileVo [VnicProfileVo]
-	 * @return [VnicProfileVo]
-	 */
-	@Throws(Error::class)
-	fun addVnicProfile(vnicProfileVo: VnicProfileVo): VnicProfileVo?
-	/**
-	 * [ItNetworkService.updateVnicProfile]
-	 * 네트워크 - vNIC Profile 편집
-	 *
-	 * @param vnicProfileVo [VnicProfileVo]
-	 * @return [VnicProfileVo]
-	 */
-	@Throws(Error::class)
-	fun updateVnicProfile(vnicProfileVo: VnicProfileVo): VnicProfileVo?
-	/**
-	 * [ItNetworkService.removeVnicProfile]
-	 * 네트워크 - vNIC Profile 삭제
-	 *
-	 * @param vnicProfileId [String] 네트워크 아이디
-	 * @return List<[VnicProfileVo]>
-	 */
-	@Throws(Error::class)
-	fun removeVnicProfile(vnicProfileId: String): Boolean
 	/**
 	 * [ItNetworkService.findAllClustersFromNetwork]
 	 * 네트워크 클러스터 목록
@@ -202,17 +151,7 @@ class NetworkServiceImpl(
 		val networks: List<Network> =
 			conn.findAllNetworks()
 				.getOrDefault(listOf())
-		return networks.toNetworkVos(conn)
-	}
-
-	@Throws(Error::class)
-	override fun findAllFromDataCenter(dataCenterId: String): List<NetworkVo> {
-		log.info("findAllFromDataCenter ... ")
-		val networks: List<Network> =
-			conn.findAllNetworks()
-				.getOrDefault(listOf())
-				.filter { it.dataCenter().id() == dataCenterId }
-		return networks.toNetworkVos(conn)
+		return networks.toNetworksMenu(conn)
 	}
 
 	@Throws(Error::class)
@@ -224,19 +163,19 @@ class NetworkServiceImpl(
 		return res?.toNetworkVo(conn)
 	}
 
-	// dc 다르면 중복명 가능
 	@Throws(Error::class)
 	override fun add(networkVo: NetworkVo): NetworkVo? {
+		// dc 다르면 중복명 가능
 		log.info("addNetwork ... ")
 		val res: Network? =
 			conn.addNetwork(networkVo.toAddNetworkBuilder(conn))
 				.getOrNull()
+
 		if(res == null){
 			throw ErrorPattern.NETWORK_NOT_FOUND.toException()
 		}
 
 		// 생성 후에 나온 network Id로 클러스터 네트워크 생성 및 레이블 생성 가능
-		// 기본 단순 생성은 클러스터가 할당되지도 필수도 선택되지 않음
 		networkVo.toAddClusterAttach(conn, res.id())	// 클러스터 연결, 필수 선택
 		networkVo.toAddNetworkLabel(conn, res.id())
 		return res.toNetworkVo(conn)
@@ -248,7 +187,6 @@ class NetworkServiceImpl(
 		val res: Network? =
 			conn.updateNetwork(networkVo.toEditNetworkBuilder(conn))
 				.getOrNull()
-		// 레이블 애매
 		return res?.toNetworkVo(conn)
 	}
 
@@ -261,13 +199,13 @@ class NetworkServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllNetworkProviderFromNetwork(): IdentifiedVo? {
+	override fun findAllNetworkProviderFromNetwork(): IdentifiedVo {
 		log.info("findAllNetworkProviderFromNetwork ... ")
-		val osProvider: OpenStackNetworkProvider? =
+		val osProvider: OpenStackNetworkProvider =
 			conn.findAllOpenStackNetworkProviders("networks")
 				.getOrDefault(listOf())
-				.firstOrNull()
-		return osProvider?.fromOpenStackNetworkProviderToIdentifiedVo()
+				.first()
+		return osProvider.fromOpenStackNetworkProviderToIdentifiedVo()
 	}
 
 	@Throws(Error::class)
@@ -280,7 +218,6 @@ class NetworkServiceImpl(
 		return res.toNetworkVos(conn)
 	}
 
-
 	@Throws(Error::class)
 	override fun importNetwork(): NetworkVo {
 		log.info("importNetwork ... ")
@@ -288,51 +225,6 @@ class NetworkServiceImpl(
 		TODO("Not yet implemented")
 	}
 
-	@Throws(Error::class)
-	override fun findAllVnicProfilesFromNetwork(networkId: String): List<VnicProfileVo> {
-		log.info("findAllVnicProfilesFromNetwork ... networkId: {}", networkId)
-		val res: List<VnicProfile> =
-			conn.findAllVnicProfilesFromNetwork(networkId)
-				.getOrDefault(listOf())
-		return res.toVnicProfileVos(conn)
-	}
-
-	@Throws(Error::class)
-	override fun findVnicProfile(vnicProfileId: String): VnicProfileVo? {
-		log.info("findVnicProfile ... vcId: {}", vnicProfileId)
-		val res: VnicProfile? =
-			conn.findVnicProfile(vnicProfileId)
-				.getOrNull()
-		return res?.toVnicProfileVo(conn)
-	}
-
-	@Throws(Error::class)
-	override fun addVnicProfile(vnicProfileVo: VnicProfileVo): VnicProfileVo? {
-		log.info("addVnicProfile ... ")
-		val res: VnicProfile? =
-			conn.addVnicProfileFromNetwork(
-				vnicProfileVo.networkVo.id,
-				vnicProfileVo.toAddVnicProfileBuilder()
-			).getOrNull()
-		return res?.toVnicProfileVo(conn)
-	}
-
-	@Throws(Error::class)
-	override fun updateVnicProfile(vnicProfileVo: VnicProfileVo): VnicProfileVo? {
-		log.info("updateVnicProfile ... ")
-		val res: VnicProfile? =
-			conn.updateVnicProfile(vnicProfileVo.toEditVnicProfileBuilder())
-				.getOrNull()
-		return res?.toVnicProfileVo(conn)
-	}
-
-	@Throws(Error::class)
-	override fun removeVnicProfile(vnicProfileId: String): Boolean {
-		log.info("removeVnicProfile ... ")
-		val res: Result<Boolean> =
-			conn.removeVnicProfile(vnicProfileId)
-		return res.isSuccess
-	}
 
 	@Throws(Error::class)
 	override fun findAllClustersFromNetwork(networkId: String): List<ClusterVo> {
@@ -404,111 +296,8 @@ class NetworkServiceImpl(
 		return permissions.toPermissionVos(conn)
 	}
 
+
 	companion object {
 		private val log by LoggerDelegate()
 	}
 }
-
-
-
-/*
-@Service
-class ItVnicProfileService(
-
-): BaseService(), ItNetworkService.VnicProfile {
-
-	@Throws(Error::class)
-	override fun getVnicProfileByNetwork(networkId: String): List<VnicProfileVo> {
-		log.info("getVnicByNetwork ... ")
-		if (conn.findNetwork(networkId).getOrNull() == null) {
-			log.warn("getVnicByNetwork ... 네트워크 없음")
-			return listOf()
-		}
-
-		val vnicProfiles: List<VnicProfile> =
-			conn.findAllVnicProfilesFromNetwork(networkId)
-				.getOrDefault(listOf())
-		log.info("네트워크 vnic 목록")
-		return vnicProfiles.toVnicProfileVos(conn)
-	}
-
-	@Throws(Error::class)
-	override fun findOneVnicProfile(networkId: String): VnicProfileVo? {
-		log.info("findOneVnic ... networkId: {}", networkId)
-		val network: Network? =
-			conn.findNetwork(networkId)
-				.getOrNull()
-		return network?.VnicProfileVo(conn)
-	}
-
-
-	override fun addVnicProfileByNetwork(networkId: String, vcVo: VnicProfileVo): Boolean {
-		log.info("addVnicByNetwork ... networkId: {}", networkId)
-		val aVnicsService = system.networksService().networkService(networkId).vnicProfilesService()
-		val vpList = system.networksService().networkService(networkId).vnicProfilesService().list().send().profiles()
-		val hasDuplicateName = vpList.any {
-			it.name() == vcVo.name
-		}
-		if (hasDuplicateName) {
-			log.error("vnic 이름 중복")
-			return false
-		}
-
-		try {
-			val vnicBuilder = VnicProfileBuilder()
-				.network(NetworkBuilder().id(networkId).build())
-				.name(vcVo.name)
-				.description(vcVo.description) // 네트워크 필터 기본생성됨
-				.passThrough(VnicPassThroughBuilder().mode(vcVo.passThrough).build())
-				.migratable(vcVo.migration)
-				.build()
-
-			aVnicsService.add().profile(vnicBuilder).send().profile()
-			log.info("네트워크 vnic 생성")
-			return Res.successResponse()
-		} catch (e: Exception) {
-			log.error("네트워크 vnic 생성 실패 ... 이유: {}", e.localizedMessage)
-			return Res.fail(e)
-		}
-	}
-
-	override fun setEditVnicProfileByNetwork(networkId: String, vcId: String): VnicProfileVo? {
-		log.info("setEditVnicByNetwork ... networkId: {}, vcId: {}", networkId, vcId)
-		if(conn.findNetwork(networkId).getOrNull() == null) {
-			log.warn("setEditVnicByNetwork ... 네트워크 없음")
-			return null
-		}
-
-		val vnicProfile: VnicProfile = conn.findVnicProfileFromNetwork(networkId, vcId) ?: run{
-			log.warn("getNetworkDetail ... vnic 없음")
-			return null
-		}
-
-		log.info("vnic 프로파일 편집")
-		return vnicProfile.toVnicProfileVo(conn)
-	}
-
-	override fun editVnicProfile(networkId: String, vnicProfileId: String, vcVo: VnicProfileVo): Boolean {
-		log.info("editVnic ... ")
-		val res: Result<VnicProfile?> = conn.updateVnicProfile(vnicProfileId, VnicProfileBuilder()
-			.name(vcVo.name)
-			.description(vcVo.description)
-			.passThrough(VnicPassThroughBuilder().mode(vcVo.passThrough).build())
-			.migratable(vcVo.migration)
-			.portMirroring(vcVo.portMirroring)
-			.build())
-		return res.isSuccess && res.getOrNull() != null
-	}
-
-	override fun deleteVnicProfileByNetwork(networkId: String, vnicProfileId: String): Boolean {
-		log.info("deleteVnic ... ")
-		val res: Result<Boolean> =
-			conn.removeVnicProfile(vnicProfileId)
-		return res.isSuccess
-	}
-
-
-	companion object {
-		private val log by LoggerDelegate()
-	}
-}*/

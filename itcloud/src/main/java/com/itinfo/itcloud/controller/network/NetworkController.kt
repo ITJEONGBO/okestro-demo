@@ -14,6 +14,7 @@ import com.itinfo.itcloud.model.network.VnicProfileVo
 import com.itinfo.itcloud.model.network.NetworkTemplateVo
 import com.itinfo.itcloud.model.network.OpenStackNetworkVo
 import com.itinfo.itcloud.service.network.ItNetworkService
+import com.itinfo.itcloud.service.network.ItVnicProfileService
 import io.swagger.annotations.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -152,6 +153,8 @@ class NetworkController: BaseController() {
 
 
 	// region: vnicProfile
+	@Autowired private lateinit var iVnic: ItVnicProfileService
+
 	@ApiOperation(
 		httpMethod="GET",
 		value="네트워크 vnic 프로파일 목록",
@@ -168,10 +171,9 @@ class NetworkController: BaseController() {
 		if (networkId.isNullOrEmpty())
 			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
 		log.info("--- Network vnic 프로파일")
-		return ResponseEntity.ok(iNetwork.findAllVnicProfilesFromNetwork(networkId))
+		return ResponseEntity.ok(iVnic.findAllVnicProfilesFromNetwork(networkId))
 	}
 
-//	// vnic 생성 창
 //	@ApiImplicitParams(
 //		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
 //	)
@@ -183,10 +185,9 @@ class NetworkController: BaseController() {
 //		if (networkId.isNullOrEmpty())
 //			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
 //		log.info("--- Network vnic 프로파일 생성창")
-//		return ResponseEntity.ok(iVnicProfile.findOneVnicProfile(networkId) }
+//		return ResponseEntity.ok(iVnic.findOneVnicProfile(networkId) }
 //	}
 //
-//	// vnic 생성
 //	@ApiImplicitParams(
 //		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
 //		ApiImplicitParam(name="vnicProfile", value="VNIC 생성", dataTypeClass=VnicProfileVo::class, paramType="body"),
@@ -202,10 +203,9 @@ class NetworkController: BaseController() {
 //			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
 //		if (vnicProfile == null)
 //			throw ErrorPattern.VNIC_PROFILE_VO_INVALID.toException()
-//		return ResponseEntity.ok(iVnicProfile.addVnicProfileByNetwork(networkId, vnicProfile) }
+//		return ResponseEntity.ok(iVnic.addVnicProfileByNetwork(networkId, vnicProfile) }
 //	}
 //
-//	// vnic 편집 창
 //	@ApiImplicitParams(
 //		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
 //		ApiImplicitParam(name="vnicProfileId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -221,10 +221,9 @@ class NetworkController: BaseController() {
 //		if (vnicProfileId == null)
 //			throw ErrorPattern.VNIC_PROFILE_ID_NOT_FOUND.toException()
 //		log.info("--- Network vnic프로파일 편집창")
-//		return Res.success { iVnicProfile.setEditVnicProfileByNetwork(networkId, vnicProfileId) }
+//		return Res.success { iVnic.setEditVnicProfileByNetwork(networkId, vnicProfileId) }
 //	}
 //
-//	// vnic 편집
 //	@ApiImplicitParams(
 //		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
 //		ApiImplicitParam(name="vnicProfileId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -244,10 +243,9 @@ class NetworkController: BaseController() {
 //			throw ErrorPattern.VNIC_PROFILE_ID_NOT_FOUND.toException()
 //		if (vnicProfile == null)
 //			throw ErrorPattern.VNIC_PROFILE_VO_INVALID.toException()
-//		return ResponseEntity.ok(iVnicProfile.updateVnicProfileFromNetwork(networkId, vnicProfileId, vnicProfile) }
+//		return ResponseEntity.ok(iVnic.updateVnicProfileFromNetwork(networkId, vnicProfileId, vnicProfile) }
 //	}
 //
-//	// vnic 삭제
 //	@ApiImplicitParams(
 //		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
 //		ApiImplicitParam(name="vnicProfileId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -263,7 +261,7 @@ class NetworkController: BaseController() {
 //		if (vnicProfileId.isNullOrEmpty())
 //			throw ErrorPattern.VNIC_PROFILE_ID_NOT_FOUND.toException()
 //		log.info("--- Network vnic프로파일 삭제")
-//		return ResponseEntity.ok(iVnicProfile.deleteVnicProfileByNetwork(networkId, vnicProfileId) }
+//		return ResponseEntity.ok(iVnic.deleteVnicProfileByNetwork(networkId, vnicProfileId) }
 //	}
 	// endregion
 

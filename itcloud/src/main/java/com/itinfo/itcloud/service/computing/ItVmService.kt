@@ -31,7 +31,7 @@ interface ItVmService {
 	 * [ItVmService.findOne]
 	 * 가상머신 정보, 편집
 	 *
-	 * @param vmId [String] 가상머신 id
+	 * @param vmId [String] 가상머신 Id
 	 * @return [VmVo]
 	 */
 	@Throws(Error::class)
@@ -52,7 +52,7 @@ interface ItVmService {
 	 * [ItVmService.findAllVnicProfilesFromCluster]
 	 * 가상머신 생성 -  vNic-vnicprofile 목록 출력 (가상머신 생성, 네트워크 인터페이스 생성)
 	 *
-	 * @param clusterId [String] 클러스터 id
+	 * @param clusterId [String] 클러스터 Id
 	 * @return List<[VnicProfileVo]> VnicProfile 목록
 	 */
 	@Throws(Error::class)
@@ -80,8 +80,8 @@ interface ItVmService {
 	 * [ItVmService.add]
 	 * 가상머신 생성
 	 *
-	 * @param vmVo [VmVo] 가상머신 객체
-	 * @return [VmVo] 가상머신 정보
+	 * @param vmVo [VmVo]
+	 * @return [VmVo]
 	 */
 	@Throws(Error::class)
 	fun add(vmVo: VmVo): VmVo?
@@ -90,7 +90,7 @@ interface ItVmService {
 	 * 가상머신 편집
 	 *
 	 * @param vmVo [VmVo]
-	 * @return [VmVo] 가상머신 정보
+	 * @return [VmVo]
 	 */
 	@Throws(Error::class)
 	fun update(vmVo: VmVo): VmVo?
@@ -98,10 +98,10 @@ interface ItVmService {
 	 * [ItVmService.remove]
 	 * 가상머신 삭제
 	 *
-	 * @param vmId [String] 가상머신 id
+	 * @param vmId [String] 가상머신 Id
 	 * @param disk [Boolean] disk 삭제여부, disk가 true면 디스크 삭제하라는 말
 	 * @return [Boolean]
-	 * // detachOnly => true==가상머신만 삭제/ false==가상머신+디스크 삭제
+	 * detachOnly => true==가상머신만 삭제/ false==가상머신+디스크 삭제
 	 */
 	@Throws(Error::class)
 	fun remove(vmId: String, disk: Boolean): Boolean
@@ -110,7 +110,7 @@ interface ItVmService {
 	 * [ItVmService.findAllApplicationsFromVm]
 	 * 가상머신 어플리케이션
 	 *
-	 * @param vmId [String] 가상머신 id
+	 * @param vmId [String] 가상머신 Id
 	 */
 	@Throws(Error::class)
 	fun findAllApplicationsFromVm(vmId: String): List<IdentifiedVo>
@@ -118,7 +118,7 @@ interface ItVmService {
 	 * [ItVmService.findGuestFromVm]
 	 * 가상머신 게스트 정보
 	 *
-	 * @param vmId [String] 가상머신 id
+	 * @param vmId [String] 가상머신 Id
 	 */
 	@Throws(Error::class)
 	fun findGuestFromVm(vmId: String): GuestInfoVo?
@@ -126,7 +126,7 @@ interface ItVmService {
 	 * [ItVmService.findAllPermissionsFromVm]
 	 * 가상머신 권한
 	 *
-	 * @param vmId [String] 가상머신 id
+	 * @param vmId [String] 가상머신 Id
 	 */
 	@Throws(Error::class)
 	fun findAllPermissionsFromVm(vmId: String): List<PermissionVo>
@@ -134,7 +134,7 @@ interface ItVmService {
 	 * [ItVmService.findAllEventsFromVm]
 	 * 가상머신 이벤트
 	 *
-	 * @param vmId [String] 가상머신 id
+	 * @param vmId [String] 가상머신 Id
 	 */
 	@Throws(Error::class)
 	fun findAllEventsFromVm(vmId: String): List<EventVo>
@@ -142,7 +142,7 @@ interface ItVmService {
 	 * [ItVmService.findConsole]
 	 * 가상머신 콘솔
 	 *
-	 * @param vmId [String] 가상머신 id
+	 * @param vmId [String] 가상머신 Id
 	 */
 	@Throws(Error::class)
 	fun findConsole(vmId: String): ConsoleVo?
