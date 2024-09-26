@@ -231,7 +231,7 @@ fun Connection.uploadDisk(/*file: MultipartFile?, */disk: Disk): Result<Boolean>
  * @throws InterruptedException
  */
 @Throws(InterruptedException::class)
-fun Connection.expectDiskStatus(diskId: String, expectStatus: DiskStatus = DiskStatus.OK, timeout: Long = 60000L, interval: Long = 1000L): Boolean {
+fun Connection.expectDiskStatus(diskId: String, expectStatus: DiskStatus = DiskStatus.OK, timeout: Long = 90000L, interval: Long = 1000L): Boolean {
 	val startTime = System.currentTimeMillis()
 	while (true) {
 		val disk: Disk? = this@expectDiskStatus.findDisk(diskId).getOrNull()
@@ -258,5 +258,23 @@ fun Connection.findAllPermissionsFromDisk(diskId: String): Result<List<Permissio
 	Term.DISK.logSuccessWithin(Term.PERMISSION, "목록조회", diskId)
 }.onFailure {
 	Term.DISK.logFailWithin(Term.PERMISSION, "목록조회", it, diskId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+
+fun Connection.findAllVmsFromDisk(diskId: String): Result<List<Vm>> = runCatching {
+	val vms: List<Vm> =
+		this.findAllVms(follow = "diskattachments")
+			.getOrDefault(listOf())
+			.filter { vm ->
+				vm.diskAttachments().any { diskAttachment ->
+					diskAttachment.disk().id() == diskId
+				}
+			}
+	vms
+}.onSuccess {
+	Term.DISK.logSuccessWithin(Term.VM, "목록조회", diskId)
+}.onFailure {
+	Term.DISK.logFailWithin(Term.VM, "목록조회", it, diskId)
 	throw if (it is Error) it.toItCloudException() else it
 }

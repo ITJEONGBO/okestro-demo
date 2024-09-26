@@ -2,10 +2,8 @@ package com.itinfo.itcloud.service.storage
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.IdentifiedVo
-import com.itinfo.itcloud.model.computing.DataCenterVo
 import com.itinfo.itcloud.model.computing.EventVo
 import com.itinfo.itcloud.model.computing.VmVo
-import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.DiskImageVo
 import com.itinfo.itcloud.model.storage.DiskProfileVo
@@ -14,11 +12,9 @@ import org.apache.commons.fileupload.FileItem
 import org.apache.commons.fileupload.disk.DiskFileItem
 import org.apache.commons.io.IOUtils
 
-import org.assertj.core.api.Assertions
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
 import org.springframework.beans.factory.annotation.Autowired
@@ -329,7 +325,6 @@ class ItStorageServiceTest {
 	}
 
 
-	// TODO 스토리지도메인 2개이상이어야 테스트 가능
 	@Test
 	fun should_moveDisk() {
 		val diskId = "2c73c9c0-6552-4ddc-9727-8b2de7f54267"

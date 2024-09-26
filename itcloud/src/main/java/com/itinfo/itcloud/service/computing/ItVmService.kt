@@ -244,6 +244,7 @@ class VmServiceImpl(
 		return res?.toVmVo(conn)
 	}
 
+	//TODO
 	@Throws(Error::class)
 	override fun update(vmVo: VmVo): VmVo? {
 		log.info("update ... {}", vmVo.name)
@@ -285,7 +286,7 @@ class VmServiceImpl(
 
 	@Throws(Error::class)
 	override fun remove(vmId: String, disk: Boolean): Boolean {
-		log.info("remove ...  vmName: {}", conn.findVmName(vmId))
+		log.info("remove ...  vmName: {}", conn.findVmName(vmId).isSuccess)
 		val res: Result<Boolean> =
 			conn.removeVm(vmId, disk)
 		return res.isSuccess

@@ -17,21 +17,21 @@ import org.springframework.boot.test.context.SpringBootTest
  *
  * @author chanhi2000
  * @author deh22
- * @since 2024.08.28
+ * @since 2024.09.26
  */
 @SpringBootTest
 class ItVmNicServiceTest {
     @Autowired private lateinit var service: ItVmNicService
 
     private lateinit var hostVm: String // hostVm
-    private lateinit var vmId: String // hostVm
+    private lateinit var apm: String // apm
     private lateinit var nicId: String
 
     @BeforeEach
     fun setup() {
         hostVm = "c2ae1da5-ce4f-46df-b337-7c471bea1d8d" // HostedEngine
-        vmId = "0a27211c-04da-490c-9a05-804f439033e1" // vm01-1
-        nicId = "9f8ba468-35ea-4102-baa6-44951557eac9" // vnet0
+        apm = "fceb0fe4-2927-4340-a970-401fe55781e6"
+        nicId = "0e2c6f67-3081-4e8a-a7f9-730a54aa69ac" // vnet0
     }
 
     /**
@@ -44,52 +44,51 @@ class ItVmNicServiceTest {
     fun should_findAllNicsFromVm() {
         log.debug("should_findAllNicsFromVm ...")
         val result: List<NicVo> =
-            service.findAllNicsFromVm(vmId)
+            service.findAllNicsFromVm(hostVm)
 
         assertThat(result, `is`(not(nullValue())))
-        assertThat(result.size, `is`(1))
-
         result.forEach { println(it) }
+        assertThat(result.size, `is`(1))
+        assertThat(result.any { it.name == "vnet0" }, `is`(true) )
     }
 
     /**
-     * [should_findOneNicFromVm]
-     * [ItVmNicService.findOneNicFromVm]에 대한 단위테스트
+     * [should_findNicFromVm]
+     * [ItVmNicService.findNicFromVm]에 대한 단위테스트
      *
-     * @see [ItVmNicService.findOneNicFromVm]
+     * @see [ItVmNicService.findNicFromVm]
      */
     @Test
-    fun should_findOneNicFromVm() {
-        log.debug("should_findOneNicFromVm ...")
+    fun should_findNicFromVm() {
+        log.debug("should_findNicFromVm ...")
         val result: NicVo? =
-            service.findNicFromVm(vmId, nicId)
+            service.findNicFromVm(apm, nicId)
 
         assertThat(result, `is`(not(nullValue())))
-//        assertThat(result?.name, `is`(""))
-
         println(result)
+        assertThat(result?.name, `is`("nic3"))
     }
 
     /**
-     * [should_addFromVm]
-     * [ItVmNicService.addFromVm]에 대한 단위테스트
+     * [should_addNicFromVm]
+     * [ItVmNicService.addNicFromVm]에 대한 단위테스트
      *
-     * @see ItVmNicService.addFromVm
+     * @see ItVmNicService.addNicFromVm
      */
     @Test
-    fun should_addFromVm() {
-        log.debug("should_addFromVm ... ")
+    fun should_addNicFromVm() {
+        log.debug("should_addNicFromVm ... ")
         val addVmNic: NicVo = NicVo.builder {
-            name { "nic3" }
+            name { "nic4" }
             vnicProfileVo { IdentifiedVo.builder { id { "0000000a-000a-000a-000a-000000000398" } } }
             interface_ { NicInterface.VIRTIO  }
             linked { true }
             plugged { true }
-//            macAddress { "00:14:4a:23:67:55" } // 기본은 없음
+            macAddress { null } // 기본은 없음
         }
 
         val addResult: NicVo? =
-            service.addNicFromVm(vmId, addVmNic)
+            service.addNicFromVm(apm, addVmNic)
 
         assertThat(addResult?.id, `is`(not(nullValue())))
         assertThat(addResult?.vnicProfileVo?.id, `is`(addVmNic.vnicProfileVo.id))
@@ -100,26 +99,27 @@ class ItVmNicServiceTest {
     }
 
     /**
-     * [should_updateFromVm]
-     * [ItVmNicService.updateFromVm]에 대한 단위테스트
+     * [should_updateNicFromVm]
+     * [ItVmNicService.updateNicFromVm]에 대한 단위테스트
      *
-     * @see ItVmNicService.updateFromVm
+     * @see ItVmNicService.updateNicFromVm
      */
     @Test
-    fun should_updateFromVm() {
-        log.debug("should_updateFromVm ... ")
-        val nicId = "80978aab-2a91-489a-9b5b-95009b760026"
+    fun should_updateNicFromVm() {
+        log.debug("should_updateNicFromVm ... ")
+        val nicId = "4b2ee465-599e-423d-9ada-5ea298f7c0a4"
+
         val updateVmNic: NicVo = NicVo.builder {
             id { nicId }
-            name { "nic7" }
-            vnicProfileVo { IdentifiedVo.builder { id { "86106902-bf8b-4637-95d7-8cf5aca28fc5" } } }
+            name { "nic3" }
+            vnicProfileVo { IdentifiedVo.builder { id { "483053ac-bac5-48d8-8927-12f96f3d1c2b" } } }
             interface_ { NicInterface.VIRTIO  }
             linked { false }
             plugged { false }
         }
 
         val updateResult: NicVo? =
-            service.updateNicFromVm(vmId, updateVmNic)
+            service.updateNicFromVm(apm, updateVmNic)
 
         assertThat(updateResult?.id, `is`(not(nullValue())))
         assertThat(updateResult?.vnicProfileVo?.id, `is`(updateVmNic.vnicProfileVo.id))
@@ -129,17 +129,17 @@ class ItVmNicServiceTest {
     }
 
     /**
-     * [should_removeFromVm]
-     * [ItVmNicService.removeFromVm]에 대한 단위테스트
+     * [should_removeNicFromVm]
+     * [ItVmNicService.removeNicFromVm]에 대한 단위테스트
      *
-     * @see ItVmNicService.removeFromVm
+     * @see ItVmNicService.removeNicFromVm
      */
     @Test
-    fun should_removeFromVm() {
-        log.debug("should_removeFromVm ... ")
-        val nicId = "80978aab-2a91-489a-9b5b-95009b760026"
+    fun should_removeNicFromVm() {
+        log.debug("should_removeNicFromVm ... ")
+        val nicId = "4b2ee465-599e-423d-9ada-5ea298f7c0a4"
         val removeResult: Boolean =
-            service.removeNicFromVm(vmId, nicId)
+            service.removeNicFromVm(apm, nicId)
 
         assertThat(removeResult, `is`(true))
     }

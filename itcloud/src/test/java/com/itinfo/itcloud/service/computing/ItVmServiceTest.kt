@@ -7,17 +7,14 @@ import com.itinfo.itcloud.model.network.VnicProfileVo
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.DiskAttachmentVo
 import com.itinfo.itcloud.model.storage.DiskImageVo
-import com.itinfo.itcloud.model.storage.DiskProfileVo
 import org.junit.jupiter.api.Test
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.not
 import org.hamcrest.Matchers.nullValue
 import org.junit.jupiter.api.BeforeEach
-import org.ovirt.engine.sdk4.types.BiosType
 import org.ovirt.engine.sdk4.types.DiskInterface
 import org.ovirt.engine.sdk4.types.InheritableBoolean
-import org.ovirt.engine.sdk4.types.VmType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.math.BigInteger
@@ -184,6 +181,7 @@ class  ItVmServiceTest {
 				Arrays.asList(
 					DiskAttachmentVo.builder {
 						bootable { true }
+						active { true }
 						interface_ { DiskInterface.VIRTIO_SCSI }
 						readOnly { false }
 						diskImageVo {
@@ -206,6 +204,7 @@ class  ItVmServiceTest {
 					},
 					DiskAttachmentVo.builder { // 연결
 						bootable { false }
+						active { true }
 						interface_ { DiskInterface.VIRTIO_SCSI }
 						readOnly { false }
 						diskImageVo {
@@ -372,7 +371,7 @@ class  ItVmServiceTest {
 	@Test
 	fun should_remove_Vm() {
 		log.debug("should_remove_Vm ... ")
-		val vmId = "s"
+		val vmId = "46560fd8-97c4-41d2-a362-7773b0065261"
 		val disk = false
 		val removeResult: Boolean =
 			service.remove(vmId, disk)

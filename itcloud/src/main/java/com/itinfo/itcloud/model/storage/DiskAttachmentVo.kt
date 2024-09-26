@@ -1,13 +1,9 @@
 package com.itinfo.itcloud.model.storage
 
 import com.itinfo.itcloud.model.IdentifiedVo
-import com.itinfo.itcloud.model.computing.VmVo
-import com.itinfo.itcloud.model.computing.toVmVo
 import com.itinfo.itcloud.model.fromVmToIdentifiedVo
 import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.*
-import com.itinfo.util.ovirt.error.ErrorPattern
-import com.itinfo.util.ovirt.error.toError
 import org.slf4j.LoggerFactory
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.DiskAttachmentBuilder
@@ -130,7 +126,7 @@ fun DiskAttachmentVo.toAddDiskAttachment(): DiskAttachment =
  */
 fun DiskAttachmentVo.toAttachDisk(): DiskAttachment =
 	this@toAttachDisk.toDiskAttachment()
-		.disk(DiskBuilder().id(this@toAttachDisk.diskImageVo.id))
+		.disk(DiskBuilder().id(this@toAttachDisk.diskImageVo.id).build())
 		.build()
 
 
@@ -139,6 +135,7 @@ fun DiskAttachmentVo.toAttachDisk(): DiskAttachment =
  */
 fun DiskAttachmentVo.toEditDiskAttachment(): DiskAttachment =
 	this@toEditDiskAttachment.toDiskAttachment()
+		.id(this@toEditDiskAttachment.id)
 		.disk(this@toEditDiskAttachment.diskImageVo.toEditDiskBuilder())
 		.build()
 
@@ -158,40 +155,10 @@ fun List<DiskAttachmentVo>.toAddDiskAttachmentList(): List<DiskAttachment> {
 }
 
 /**
- * 편집과 연결된 DiskAttachment 를 목록으로 내보낸다
+ * 연결될 DiskAttachment 를 목록으로 내보낸다
  */
-fun List<DiskAttachmentVo>.toEditDiskAttachmentList(conn: Connection, vmId: String): List<DiskAttachment> {
-	val diskAttachmentList = mutableListOf<DiskAttachment>()
-	val existDiskAttachments: List<DiskAttachment> =
-		conn.findAllDiskAttachmentsFromVm(vmId).getOrDefault(listOf())
+fun List<DiskAttachmentVo>.toAttachDiskList(): List<DiskAttachment> =
+	this.map { it.toAttachDisk() }
 
-	val diskAttachmentListToAdd = mutableListOf<DiskAttachment>()
-	val diskAttachmentListToDelete = mutableListOf<DiskAttachment>()
 
-	// 1. 추가할 디스크 찾기 (새로운 목록에 있지만 기존 목록에 없는 디스크)
-	this@toEditDiskAttachmentList.forEach { newDisk ->
-		if (existDiskAttachments.none { it.id() == newDisk.id }) {
-			diskAttachmentListToAdd.add(newDisk.toAddDiskAttachment())
-		}
-	}
-
-	// 2. 삭제할 디스크 찾기 (기존 목록에 있지만 새로운 목록에 없는 디스크)
-	existDiskAttachments.forEach { existingDisk ->
-		if (this@toEditDiskAttachmentList.none { it.id == existingDisk.id() }) {
-			// 기존 디스크가 새 목록에 없으면 삭제할 목록에 넣음
-			diskAttachmentListToDelete.add(existingDisk)
-		}
-	}
-
-	// 기존 로직 - DiskAttachmentVo 추가
-	this@toEditDiskAttachmentList.forEach { diskAttachmentVo ->
-		if (diskAttachmentVo.diskImageVo.id.isEmpty()) {
-			diskAttachmentList.add(diskAttachmentVo.toAddDiskAttachment())
-		} else {
-			diskAttachmentList.add(diskAttachmentVo.toAttachDisk())
-		}
-	}
-
-	return diskAttachmentList
-}
 

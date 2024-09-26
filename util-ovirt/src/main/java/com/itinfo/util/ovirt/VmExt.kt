@@ -527,9 +527,6 @@ fun Connection.removeNicFromVm(vmId: String, nicId: String): Result<Boolean> = r
 fun List<Nic>.nameDuplicateVmNic(name: String, id: String? = null): Boolean =
 	this.filter { it.id() != id }.any { it.name() == name }
 
-fun Connection.findAllDiskAttachmentsDisksFromVms(): List<Vm> =
-	this.srvVms().list().follow("diskattachments.disk").send().vms()
-
 
 private fun Connection.srvAllDiskAttachmentsFromVm(vmId: String): DiskAttachmentsService =
 	this.srvVm(vmId).diskAttachmentsService()
@@ -580,6 +577,7 @@ fun Connection.addMultipleDiskAttachmentsToVm(vmId: String, diskAttachments: Lis
 	if(this.findVm(vmId).isFailure){
 		throw ErrorPattern.VM_NOT_FOUND.toError()
 	}
+
 	val results = diskAttachments.map { this.addDiskAttachmentToVm(vmId, it) }
 	val allSuccessful = results.all { it.isSuccess }
 
@@ -668,10 +666,10 @@ fun Connection.updateMultipleDiskAttachmentsToVm(vmId: String, diskAttachments: 
 //	}
 //
 //	// DiskAttachment 삭제 요청 및 결과 확인
-//	val diskAttachUpdated =
+//	val diskAttachRemove: Boolean =
 //		this.srvDiskAttachmentFromVm(vmId, diskAttachmentId).remove().detachOnly(detachOnly).send()
 //
-//	diskAttachUpdated
+//	diskAttachRemove
 //}.onSuccess {
 //	Term.VM.logSuccessWithin(Term.DISK_ATTACHMENT, "삭제", vmId)
 //}.onFailure {
@@ -681,27 +679,62 @@ fun Connection.updateMultipleDiskAttachmentsToVm(vmId: String, diskAttachments: 
 
 
 
-
-fun Connection.activeDiskAttachmentToVm(vmId: String, diskAttachmentId: String, active: Boolean): Result<DiskAttachment> = runCatching {
-	this.findVm(vmId).getOrElse {throw ErrorPattern.VM_NOT_FOUND.toError()}
-
-	val diskStatus: DiskAttachment = this.findDiskAttachmentFromVm(vmId, diskAttachmentId)
-		.getOrNull()?: throw ErrorPattern.DISK_ATTACHMENT_ID_NOT_FOUND.toError()
-
-	// 활성화/비활성화 상태확인
-	if(diskStatus.active() == active){
-		throw ErrorPattern.DISK_ATTACHMENT_ACTIVE_INVALID.toError()
+fun Connection.activeDiskAttachmentsToVm(vmId: String, diskAttachmentIds: List<String>): Result<Boolean> = runCatching {
+	if(this.findVm(vmId).isFailure) {
+		throw ErrorPattern.VM_NOT_FOUND.toError()
 	}
 
-	val diskAttachment: DiskAttachment =
-		DiskAttachmentBuilder().id(diskAttachmentId).active(active).build()
+	diskAttachmentIds.map { diskAttachmentId ->
+		val diskStatus: DiskAttachment =
+			this.findDiskAttachmentFromVm(vmId, diskAttachmentId)
+				.getOrNull() ?: throw ErrorPattern.DISK_ATTACHMENT_ID_NOT_FOUND.toError()
 
-	this.updateDiskAttachmentToVm(vmId, diskAttachment)
-		.getOrNull()?: throw ErrorPattern.DISK_ATTACHMENT_NOT_FOUND.toError()
+		if (diskStatus.active()) {
+			log.error("이미 활성화 상태: $diskAttachmentId")
+			throw ErrorPattern.DISK_ATTACHMENT_ACTIVE_INVALID.toError()
+		}
+
+		val diskAttachment =
+			DiskAttachmentBuilder().id(diskAttachmentId).active(true).build()
+
+		this.updateDiskAttachmentToVm(vmId, diskAttachment)
+			.getOrNull() ?: throw ErrorPattern.DISK_ATTACHMENT_NOT_FOUND.toError()
+	}
+	true
 }.onSuccess {
-	Term.VM.logSuccessWithin(Term.DISK_ATTACHMENT, "active", vmId)
+	Term.VM.logSuccessWithin(Term.DISK_ATTACHMENT, "활성화", vmId)
 }.onFailure {
-	Term.VM.logFailWithin(Term.DISK_ATTACHMENT,"삭제", it, vmId)
+	Term.VM.logFailWithin(Term.DISK_ATTACHMENT, "활성화 실패", it, vmId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+
+fun Connection.deactivateDiskAttachmentsToVm(vmId: String, diskAttachmentIds: List<String>): Result<Boolean> = runCatching {
+	if(this.findVm(vmId).isFailure) {
+		throw ErrorPattern.VM_NOT_FOUND.toError()
+	}
+
+	diskAttachmentIds.map { diskAttachmentId ->
+		val diskStatus: DiskAttachment =
+			this.findDiskAttachmentFromVm(vmId, diskAttachmentId)
+				.getOrNull() ?: throw ErrorPattern.DISK_ATTACHMENT_ID_NOT_FOUND.toError()
+
+		if (!diskStatus.active()) {
+			log.error("이미 비활성화 상태: $diskAttachmentId")
+			throw ErrorPattern.DISK_ATTACHMENT_ACTIVE_INVALID.toError()
+		}
+
+		val diskAttachment =
+			DiskAttachmentBuilder().id(diskAttachmentId).active(false).build()
+
+		this.updateDiskAttachmentToVm(vmId, diskAttachment)
+			.getOrNull() ?: throw ErrorPattern.DISK_ATTACHMENT_NOT_FOUND.toError()
+	}
+	true
+}.onSuccess {
+	Term.VM.logSuccessWithin(Term.DISK_ATTACHMENT, "비활성화", vmId)
+}.onFailure {
+	Term.VM.logFailWithin(Term.DISK_ATTACHMENT, "비활성화 실패", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
 }
 
@@ -710,26 +743,6 @@ fun Connection.bootableDiskExist(vmId: String): Boolean =
 	this.findAllDiskAttachmentsFromVm(vmId)
 		.getOrDefault(listOf())
 		.any { it.bootable() }
-
-
-
-fun Connection.findAllVmsFromDisk(diskId: String): Result<List<Vm>> = runCatching {
-	val vms: List<Vm> =
-		this.findAllVms(follow = "diskattachments")
-			.getOrDefault(listOf())
-			.filter { vm ->
-				vm.diskAttachments().any { diskAttachment ->
-					diskAttachment.disk().id() == diskId
-				}
-			}
-	vms
-}.onSuccess {
-	Term.VM.logSuccessWithin(Term.VM, "목록조회", diskId)
-}.onFailure {
-	Term.VM.logFailWithin(Term.VM, "목록조회", it, diskId)
-	throw if (it is Error) it.toItCloudException() else it
-}
-
 
 
 private fun Connection.srvSnapshotsFromVm(vmId: String): SnapshotsService =

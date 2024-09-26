@@ -7,13 +7,7 @@ import com.itinfo.itcloud.model.network.toNicVosFromVm
 import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.*
-import com.itinfo.util.ovirt.error.ErrorPattern
-import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.Error
-import org.ovirt.engine.sdk4.builders.MacBuilder
-import org.ovirt.engine.sdk4.builders.NicBuilder
-import org.ovirt.engine.sdk4.builders.VnicProfileBuilder
-import org.ovirt.engine.sdk4.types.NetworkFilterParameter
 import org.ovirt.engine.sdk4.types.Nic
 import org.springframework.stereotype.Service
 import kotlin.jvm.Throws
@@ -23,7 +17,7 @@ interface ItVmNicService {
 	 * [ItVmNicService.findAllNicsFromVm]
 	 * 네트워크 인터페이스
 	 *
-	 * @param vmId [String] 가상머신 id
+	 * @param vmId [String] 가상머신 Id
 	 * @return List<[NicVo]>
 	 */
 	@Throws(Error::class)
@@ -32,8 +26,8 @@ interface ItVmNicService {
 	 * [ItVmNicService.findNicFromVm]
 	 * 네트워크 인터페이스 정보, 편집
 	 *
-	 * @param vmId [String] 가상머신 id
-	 * @param nicId [String] nic id
+	 * @param vmId [String] 가상머신 Id
+	 * @param nicId [String] nic Id
 	 * @return [NicVo]?
 	 */
 	@Throws(Error::class)
@@ -45,7 +39,7 @@ interface ItVmNicService {
 	 * [ItVmNicService.addNicFromVm]
 	 * 네트워크 인터페이스 생성
 	 *
-	 * @param vmId [String] 가상머신 id
+	 * @param vmId [String] 가상머신 Id
 	 * @param nicVo [NicVo]
 	 * @return [NicVo]?
 	 */
@@ -55,7 +49,7 @@ interface ItVmNicService {
 	 * [ItVmNicService.updateNicFromVm]
 	 * 네트워크 인터페이스 편집
 	 *
-	 * @param vmId [String] 가상머신 id
+	 * @param vmId [String] 가상머신 Id
 	 * @param nicVo [NicVo]
 	 * @return [NicVo]?
 	 */
@@ -65,8 +59,8 @@ interface ItVmNicService {
 	 * [ItVmNicService.removeNicFromVm]
 	 * 네트워크 인터페이스 삭제
 	 *
-	 * @param vmId [String] 가상머신 id
-	 * @param nicId [String] nic id
+	 * @param vmId [String] 가상머신 Id
+	 * @param nicId [String] nic Id
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
@@ -91,8 +85,9 @@ class VmNicServiceImpl(
 	override fun findNicFromVm(vmId: String, nicId: String): NicVo? {
 		log.info("findNicFromVm ... vmId: {}, nicId: {}", vmId, nicId)
 		val res: Nic? =
-			conn.findNicFromVm(vmId, nicId).getOrNull()
-		return res?.toNicVoFromVm(conn, vmId)
+			conn.findNicFromVm(vmId, nicId)
+				.getOrNull()
+		return res?.toEditNicVoFromVm(conn)
 	}
 
 	@Throws(Error::class)
@@ -103,20 +98,6 @@ class VmNicServiceImpl(
 				.getOrNull()
 		return res?.toNicVoFromVm(conn, vmId)
 
-// 		네트워크 필터 매개변수 (네트워크 필터랑 다른거 같음)
-//		val nfps: List<NetworkFilterParameter> =
-//			nicVo.nfpVos.map { nFVo: NetworkFilterParameterVo ->
-//				NetworkFilterParameterBuilder()
-//					.name(nFVo.name)
-//					.value(nFVo.value)
-//					.nic(nic)
-//					.build()
-//			}
-//		for (np in nfps)
-//			conn.addNicNetworkFilterParameterFromVm(vmId, nic.id(), np)
-//		val nfps: List<NetworkFilterParameter> = nicVo.nfpVos.ttoNetworkFilterParameters()
-//		for (np in nfps)
-//			conn.addNicNetworkFilterParameterFromVm(vmId, nic.id(), np)
 	}
 
 	@Throws(Error::class)
