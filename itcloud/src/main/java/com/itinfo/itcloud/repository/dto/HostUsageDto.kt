@@ -5,9 +5,12 @@ import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.repository.entity.HostSamplesHistoryEntity
 import com.itinfo.util.ovirt.findAllHosts
 import com.itinfo.util.ovirt.findAllStatisticsFromHost
+import com.itinfo.util.ovirt.findAllVms
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.types.Host
 import org.ovirt.engine.sdk4.types.Statistic
+import org.ovirt.engine.sdk4.types.Vm
+import org.ovirt.engine.sdk4.types.VmStatus
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -88,12 +91,32 @@ fun List<Host>.toHostUsageDto(conn: Connection, hostSamplesHistoryEntities: List
         .filter { "memory.used" == it.name() }
         .sumOf { stat: Statistic -> stat.values().firstOrNull()?.datum()?.toDouble() ?: 0.0 } / GB
 
-//    val totalCpuCore: Int =
-//        conn.findAllHosts()
-//            .getOrDefault(listOf())
-//            .filter { host ->
-//                host.to
-//            }
+    val totalCpuCore: Int =
+        conn.findAllHosts()
+            .getOrDefault(listOf())
+            .sumOf { it.cpu().topology().coresAsInteger() * it.cpu().topology().socketsAsInteger()* it.cpu().topology().threadsAsInteger() }
+
+    val commitCpuCore: Int =
+        conn.findAllVms()
+            .getOrDefault(listOf())
+            .sumOf { vm ->
+                if(vm.cpuPresent()) {
+                    vm.cpu().topology().coresAsInteger() * vm.cpu().topology().socketsAsInteger() * vm.cpu().topology().threadsAsInteger()
+                }else
+                    0
+            }
+
+    val usedCpuCore: Int =
+        conn.findAllVms()
+            .getOrDefault(listOf())
+            .filter { it.status() == VmStatus.UP }
+            .sumOf { vm ->
+                if(vm.cpuPresent()) {
+                    vm.cpu().topology().coresAsInteger() * vm.cpu().topology().socketsAsInteger() * vm.cpu().topology().threadsAsInteger()
+                }else
+                    0
+            }
+
 
     val free = total - used
     var totalCpu = 0.0
@@ -113,6 +136,9 @@ fun List<Host>.toHostUsageDto(conn: Connection, hostSamplesHistoryEntities: List
         totalMemoryGB { total }
         usedMemoryGB { used }
         freeMemoryGB { free }
+        totalCpuCore { totalCpuCore }
+        commitCpuCore { commitCpuCore }
+        usedCpuCore { usedCpuCore }
     }
 }
 
