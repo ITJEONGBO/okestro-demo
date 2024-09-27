@@ -93,7 +93,7 @@ class ItClusterServiceTest {
 			cpuType { "Intel Nehalem Family" }
 			description { "testDescription" }
 			comment { "testComment" }
-			network { IdentifiedVo.builder { id { networkId } } }
+			network { NetworkVo.builder { id { networkId } } }
 			biosType { BiosType.Q35_SEA_BIOS }
 			fipsMode { FipsMode.ENABLED }
 			version { "4.7" }
@@ -142,7 +142,7 @@ class ItClusterServiceTest {
 			cpuType { "Intel Nehalem Family" }
 			description { "testDescription" }
 			comment { "testComment" }
-			network { IdentifiedVo.builder { id { networkId } } }
+			network { NetworkVo.builder { id { networkId } } }
 			biosType { BiosType.Q35_SEA_BIOS }
 			fipsMode { FipsMode.ENABLED }
 			version { "4.7" }
@@ -206,7 +206,7 @@ class ItClusterServiceTest {
 			cpuType { "Intel Nehalem Family" }
 			description { "networkProvider" }
 			comment { "testComment" }
-			network { IdentifiedVo.builder { id { networkId } } }// 관리 네트워크 ovirtmgmt
+			network { NetworkVo.builder { id { networkId } } }// 관리 네트워크 ovirtmgmt
 			biosType { BiosType.Q35_SEA_BIOS }
 			fipsMode { FipsMode.ENABLED }
 			version { "4.7" }
@@ -303,46 +303,46 @@ class ItClusterServiceTest {
 			service.findAllNetworksFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(3))
 		result.forEach { println(it) }
+		assertThat(result.size, `is`(4))
 	}
 
-//	/**
-//	 * [should_addNetworkFromCluster]
-//	 * [ItClusterService.addNetworkFromCluster]에 대한 단위테스트
-//	 *
-//	 * @see ItClusterService.addNetworkFromCluster
-//	 **/
-//	@Test
-//	fun should_addNetworkFromCluster() {
-//		log.debug("should_addNetworkFromCluster ... ")
-//		val networkVo: NetworkVo =
-//			NetworkVo.builder {
-////				id {  }
-////				name {  }
-//			}
-//		val result: NetworkVo? =
-//			service.addNetworkFromCluster(clusterId, networkVo)
-//
-//		assertThat(result, `is`(not(nullValue())))
-//	}
-//
-//	/**
-//	 * [should_findAllManageNetworksFromCluster]
-//	 * [ItClusterService.findAllManageNetworksFromCluster]에 대한 단위테스트
-//	 *
-//	 * @see ItClusterService.findAllManageNetworksFromCluster
-//	 **/
-//	@Test
-//	fun should_findAllManageNetworksFromCluster() {
-//		log.debug("should_findAllManageNetworksFromCluster ... ")
-//		val result: List<NetworkVo> =
-//			service.findAllManageNetworksFromCluster(clusterId)
-//
-//		assertThat(result, `is`(not(nullValue())))
-//		result.forEach { println(it) }
-//		assertThat(result.size, `is`(4))
-//	}
+	/**
+	 * [should_addNetworkFromCluster]
+	 * [ItClusterService.addNetworkFromCluster]에 대한 단위테스트
+	 *
+	 * @see ItClusterService.addNetworkFromCluster
+	 **/
+	@Test
+	fun should_addNetworkFromCluster() {
+		log.debug("should_addNetworkFromCluster ... ")
+		val networkVo: NetworkVo =
+			NetworkVo.builder {
+//				id {  }
+//				name {  }
+			}
+		val result: NetworkVo? =
+			service.addNetworkFromCluster(clusterId, networkVo)
+
+		assertThat(result, `is`(not(nullValue())))
+	}
+
+	/**
+	 * [should_findAllManageNetworksFromCluster]
+	 * [ItClusterService.findAllManageNetworksFromCluster]에 대한 단위테스트
+	 *
+	 * @see ItClusterService.findAllManageNetworksFromCluster
+	 **/
+	@Test
+	fun should_findAllManageNetworksFromCluster() {
+		log.debug("should_findAllManageNetworksFromCluster ... ")
+		val result: List<NetworkVo> =
+			service.findAllManageNetworksFromCluster(clusterId)
+
+		assertThat(result, `is`(not(nullValue())))
+		result.forEach { println(it) }
+		assertThat(result.size, `is`(4))
+	}
 
 
 	/**

@@ -2,9 +2,11 @@ package com.itinfo.itcloud.model.network
 
 import com.itinfo.itcloud.model.computing.DataCenterVo
 import com.itinfo.itcloud.gson
+import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.util.ovirt.findAllDataCenters
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.types.DataCenter
+import org.ovirt.engine.sdk4.types.OpenStackNetwork
 import org.ovirt.engine.sdk4.types.OpenStackNetworkProvider
 import java.io.Serializable
 
@@ -15,14 +17,12 @@ import java.io.Serializable
  * 가져올 네트워크
  * @property id [String]
  * @property name [String]
- *
- * 네트워크가 속해있는 dc
-// * @property dataCenterVos List<[DataCenterVo]>
+ * @property dataCenterVo [IdentifiedVo] dc 편집
  */
 class OpenStackNetworkVo (
     val id: String = "",
     val name: String = "",
-//    val dataCenterVos: List<DataCenterVo> = listOf(),
+    val dataCenterVo: IdentifiedVo = IdentifiedVo()
 ) : Serializable {
     override fun toString(): String =
         gson.toJson(this)
@@ -30,21 +30,23 @@ class OpenStackNetworkVo (
     class Builder {
         private var bId: String = "";fun id(block: () -> String?) { bId = block() ?: "" }
         private var bName: String = "";fun name(block: () -> String?) { bName = block() ?: "" }
-//        private var bDataCenterVos: List<DataCenterVo> = listOf();fun dataCenterVos(block: () -> List<DataCenterVo>?) { bDataCenterVos = block() ?: listOf() }
+        private var bDataCenterVo: IdentifiedVo = IdentifiedVo();fun dataCenterVo(block: () -> IdentifiedVo?) { bDataCenterVo = block() ?: IdentifiedVo() }
 
-        fun build(): OpenStackNetworkVo = OpenStackNetworkVo(bId, bName,/*bDataCenterVos*/)
+        fun build(): OpenStackNetworkVo = OpenStackNetworkVo(bId, bName, bDataCenterVo)
     }
 
     companion object {
-        inline fun builder(block: OpenStackNetworkVo.Builder.() -> Unit): OpenStackNetworkVo =
-            OpenStackNetworkVo.Builder().apply(block).build()
+        inline fun builder(block: OpenStackNetworkVo.Builder.() -> Unit): OpenStackNetworkVo = OpenStackNetworkVo.Builder().apply(block).build()
     }
 }
 
-fun OpenStackNetworkProvider.toOpenStackNetworkVoIdName(): OpenStackNetworkVo = OpenStackNetworkVo.builder {
+fun OpenStackNetwork.toOpenStackNetworkVoIdName(): OpenStackNetworkVo = OpenStackNetworkVo.builder {
     id { this@toOpenStackNetworkVoIdName.id() }
     name { this@toOpenStackNetworkVoIdName.name() }
 }
+fun List<OpenStackNetwork>.toOpenStackNetworkVosIdName(): List<OpenStackNetworkVo> =
+    this@toOpenStackNetworkVosIdName.map { it.toOpenStackNetworkVoIdName() }
+
 
 fun OpenStackNetworkProvider.toOpenStackNetworkVo(conn: Connection): OpenStackNetworkVo {
     val dataCenters: List<DataCenter> = conn.findAllDataCenters()
@@ -55,3 +57,4 @@ fun OpenStackNetworkProvider.toOpenStackNetworkVo(conn: Connection): OpenStackNe
 //        dataCenterVos { dataCenters.toDataCenterIdNames() }
     }
 }
+

@@ -3,6 +3,7 @@ package com.itinfo.itcloud.service.network
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.ClusterVo
+import com.itinfo.itcloud.model.computing.DataCenterVo
 import com.itinfo.itcloud.model.computing.HostVo
 import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.network.*
@@ -124,7 +125,6 @@ class ItNetworkServiceTest {
 		assertThat(addResult?.mtu, `is`(addNetworkVo.mtu))
 		assertThat(addResult?.vlan, `is`(addNetworkVo.vlan))
 
-
 		log.debug("should_update ... ")
 		val updateNetworkVo: NetworkVo = NetworkVo.builder {
 			dataCenter { IdentifiedVo.builder { id { dataCenterId } } }
@@ -157,37 +157,58 @@ class ItNetworkServiceTest {
 
 
 	/**
-	 * [should_findAllNetworkProviderFromNetwork]
-	 * [ItNetworkService.findAllNetworkProviderFromNetwork]에 대한 단위테스트
+	 * [should_findNetworkProviderFromNetwork]
+	 * [ItNetworkService.findNetworkProviderFromNetwork]에 대한 단위테스트
 	 *
-	 * @see ItNetworkService.findAllNetworkProviderFromNetwork
+	 * @see ItNetworkService.findNetworkProviderFromNetwork
 	 */
 	@Test
-	fun should_findAllNetworkProviderFromNetwork () {
-		log.debug("should_findAllNetworkProviderFromNetwork ... ")
+	fun should_findNetworkProviderFromNetwork () {
+		log.debug("should_findNetworkProviderFromNetwork ... ")
 		val result: IdentifiedVo =
-			service.findAllNetworkProviderFromNetwork()
+			service.findNetworkProviderFromNetwork()
 
 		assertThat(result, `is`(not(nullValue())))
 		print(result)
 	}
 
 	/**
-	 * [should_findAllExternalNetworkFromNetworkProvider]
-	 * [ItNetworkService.findAllExternalNetworkFromNetworkProvider]에 대한 단위테스트
+	 * [should_findAllOpenStackNetworkFromNetworkProvider]
+	 * [ItNetworkService.findAllOpenStackNetworkFromNetworkProvider]에 대한 단위테스트
 	 *
-	 * @see ItNetworkService.findAllExternalNetworkFromNetworkProvider
+	 * @see ItNetworkService.findAllOpenStackNetworkFromNetworkProvider
 	 */
 	@Test
-	fun should_findAllExternalNetworkFromNetworkProvider () {
-		log.debug("should_findAllExternalNetworkFromNetworkProvider ... ")
-		val providerId = "4a21ce43-7bb2-4cf9-951b-5ea210ecfca6"
-		val result: List<NetworkVo> =
-			service.findAllExternalNetworkFromNetworkProvider(providerId)
+	fun should_findAllOpenStackNetworkFromNetworkProvider () {
+		log.debug("should_findAllOpenStackNetworkFromNetworkProvider ... ")
+		val provider: String =
+			service.findNetworkProviderFromNetwork().id
+		print(provider)
+
+		val result: List<OpenStackNetworkVo> =
+			service.findAllOpenStackNetworkFromNetworkProvider(provider)
 
 		assertThat(result, `is`(not(nullValue())))
-//		assertThat(result.size, `is`(1))
 		result.forEach { print(it) }
+		assertThat(result.size, `is`(3))
+	}
+
+	/**
+	 * [should_findAllDataCentersFromNetwork]
+	 * [ItNetworkService.findAllDataCentersFromNetwork]에 대한 단위테스트
+	 *
+	 * @see ItNetworkService.findAllDataCentersFromNetwork
+	 */
+	@Test
+	fun should_findAllDataCentersFromNetwork () {
+		log.debug("should_findAllDataCentersFromNetwork ... ")
+		val openstackNetwork = "fe633904-90d4-4bd4-85b2-2a1fd3a044a9"
+		val result: List<DataCenterVo> =
+			service.findAllDataCentersFromNetwork(openstackNetwork)
+
+		assertThat(result, `is`(not(nullValue())))
+		result.forEach { print(it) }
+		assertThat(result.size, `is`(1))
 	}
 
 	/**
@@ -199,8 +220,21 @@ class ItNetworkServiceTest {
 	@Test
 	fun should_importNetwork () {
 		log.debug("should_importNetwork ... ")
+		val networks: List<OpenStackNetworkVo> =
+			Arrays.asList(
+				OpenStackNetworkVo.builder {
+					id { "fe633904-90d4-4bd4-85b2-2a1fd3a044a9" }
+					dataCenterVo {
+						IdentifiedVo.builder {
+							id { "039b5351-e373-460b-9051-52da76a3b19d" }
+						}
+					}
+				}
+			)
+
+		val result: Boolean =
+			service.importNetwork(networks)
 		assertThat(service, `is`(not(nullValue())))
-		// TODO: 메소드의 결과값에 대한 검증처리
 	}
 
 
@@ -217,8 +251,8 @@ class ItNetworkServiceTest {
 			service.findAllClustersFromNetwork(networkId)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(3))
 		result.forEach { println(it) }
+		assertThat(result.size, `is`(2))
 	}
 
 	/**

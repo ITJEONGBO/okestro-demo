@@ -72,7 +72,7 @@ class NetworkVo (
 	val cluster: IdentifiedVo = IdentifiedVo(),
 	val vnicProfiles: List<IdentifiedVo> = listOf(),
 	val clusters: List<ClusterVo> = listOf(),
-
+	val required: Boolean = false,
 ):Serializable {
 	override fun toString(): String = gson.toJson(this)
 
@@ -95,8 +95,9 @@ class NetworkVo (
 		private var bCluster: IdentifiedVo = IdentifiedVo(); fun cluster(block: () -> IdentifiedVo?) { bCluster = block() ?: IdentifiedVo() }
 		private var bVnicProfiles: List<IdentifiedVo> = listOf(); fun vnicProfiles(block: () -> List<IdentifiedVo>?) { bVnicProfiles = block() ?: listOf() }
 		private var bClusters: List<ClusterVo> = listOf(); fun clusters(block: () -> List<ClusterVo>?) { bClusters = block() ?: listOf() }
+		private var bRequired: Boolean = false; fun required(block: () -> Boolean?) { bRequired = block() ?: false }
 
-		fun build(): NetworkVo = NetworkVo(bId, bName, bDescription, bComment, bMtu, bPortIsolation, bStp, bUsage, bVdsmName, bDataCenter, bOpenStackNetwork, bVlan, bStatus, bDisplay, bNetworkLabel, bCluster, bVnicProfiles, bClusters,)
+		fun build(): NetworkVo = NetworkVo(bId, bName, bDescription, bComment, bMtu, bPortIsolation, bStp, bUsage, bVdsmName, bDataCenter, bOpenStackNetwork, bVlan, bStatus, bDisplay, bNetworkLabel, bCluster, bVnicProfiles, bClusters, bRequired)
 	}
 
 	companion object{
@@ -180,7 +181,8 @@ fun Network.toClusterNetworkVo(conn: Connection): NetworkVo {
 		description { this@toClusterNetworkVo.description() }
 		portIsolation { this@toClusterNetworkVo.portIsolation() }
 		status { this@toClusterNetworkVo.status() }
-		usage { usages.toUsagesVo() } // TODO
+		usage { usages.toUsagesVo() }
+		required { this@toClusterNetworkVo.required() }
 	}
 }
 fun List<Network>.toClusterNetworkVos(conn: Connection): List<NetworkVo> =
@@ -192,7 +194,7 @@ fun List<Network>.toClusterNetworkVos(conn: Connection): List<NetworkVo> =
  * external provider 선택시 vlan, portisolation=false 선택되면 안됨
  * VnicProfile은 기본생성만 /qos는 제외항목, 네트워크필터도 vdsm으로 고정(?)
  */
-fun NetworkVo.toNetworkBuilder(conn: Connection): NetworkBuilder = NetworkBuilder()
+fun NetworkVo.toNetworkBuilder(): NetworkBuilder = NetworkBuilder()
 	.dataCenter(DataCenterBuilder().id(this@toNetworkBuilder.dataCenter.id).build())
 	.name(this@toNetworkBuilder.name)
 	.description(this@toNetworkBuilder.description)
@@ -232,7 +234,7 @@ fun NetworkVo.toAddClusterAttach(conn: Connection, networkId: String) {
 fun NetworkVo.toAddNetworkLabel(conn: Connection, networkId: String) {
 	if (this@toAddNetworkLabel.openStackNetwork.id.isEmpty() && this@toAddNetworkLabel.networkLabel.isNotEmpty()) {
 		conn.addNetworkLabelFromNetwork(
-			this@toAddNetworkLabel.id,
+			networkId,
 			NetworkLabelBuilder().id(this@toAddNetworkLabel.networkLabel).build()
 		)
 	}
@@ -240,12 +242,12 @@ fun NetworkVo.toAddNetworkLabel(conn: Connection, networkId: String) {
 
 
 // 필요 name, datacenter_id
-fun NetworkVo.toAddNetworkBuilder(conn: Connection): Network =
-	this@toAddNetworkBuilder.toNetworkBuilder(conn).build()
+fun NetworkVo.toAddNetworkBuilder(): Network =
+	this@toAddNetworkBuilder.toNetworkBuilder().build()
 
 
-fun NetworkVo.toEditNetworkBuilder(conn: Connection): Network =
-	this@toEditNetworkBuilder.toNetworkBuilder(conn).id(this@toEditNetworkBuilder.id).build()
+fun NetworkVo.toEditNetworkBuilder(): Network =
+	this@toEditNetworkBuilder.toNetworkBuilder().id(this@toEditNetworkBuilder.id).build()
 
 
 

@@ -14,9 +14,9 @@ private fun Connection.srvOpenStackImageProviders(): OpenstackImageProvidersServ
 fun Connection.findAllOpenStackImageProviders(): Result<List<OpenStackImageProvider>> = runCatching {
 	this.srvOpenStackImageProviders().list().send().providers()
 }.onSuccess {
-	Term.OPEN_STAK_IMAGE_PROVIDER.logSuccess("목록조회")
+	Term.OPEN_STACK_IMAGE_PROVIDER.logSuccess("목록조회")
 }.onFailure {
-	Term.OPEN_STAK_IMAGE_PROVIDER.logFail("목록조회", it)
+	Term.OPEN_STACK_IMAGE_PROVIDER.logFail("목록조회", it)
 	throw if (it is Error) it.toItCloudException() else it
 }
 
@@ -26,8 +26,8 @@ private fun Connection.srvOpenStackImageProvider(openStackImageProviderId: Strin
 fun Connection.findOpenStackImageProvider(openStackImageProviderId: String): Result<OpenStackImageProvider?> = runCatching {
 	this.srvOpenStackImageProvider(openStackImageProviderId).get().send().provider()
 }.onSuccess {
-	Term.OPEN_STAK_IMAGE_PROVIDER.logSuccess("상세조회", openStackImageProviderId)
+	Term.OPEN_STACK_IMAGE_PROVIDER.logSuccess("상세조회", openStackImageProviderId)
 }.onFailure {
-	Term.OPEN_STAK_IMAGE_PROVIDER.logFail("상세조회", it, openStackImageProviderId)
+	Term.OPEN_STACK_IMAGE_PROVIDER.logFail("상세조회", it, openStackImageProviderId)
 	throw if (it is Error) it.toItCloudException() else it
 }

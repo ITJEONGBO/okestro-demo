@@ -43,6 +43,7 @@ interface ItNetworkService {
 	 * [ItNetworkService.add]
 	 * 네트워크 생성
 	 * 기본 단순 생성은 클러스터가 할당되지도 필수도 선택되지 않음
+	 * 외부 공급자 선택시 클러스터는 연결만 선택 가능 (필수 불가능)
 	 *
 	 * @param networkVo [NetworkVo]
 	 * @return [NetworkVo]
@@ -69,31 +70,41 @@ interface ItNetworkService {
 	@Throws(Error::class)
 	fun remove(networkId: String): Boolean
 	/**
-	 * [ItNetworkService.findAllNetworkProviderFromNetwork]
+	 * [ItNetworkService.findNetworkProviderFromNetwork]
 	 * 네트워크 가져오기 - 네트워크 공급자 목록
 	 *
 	 * @return [IdentifiedVo]
 	 */
 	@Throws(Error::class)
-	fun findAllNetworkProviderFromNetwork(): IdentifiedVo
+	fun findNetworkProviderFromNetwork(): IdentifiedVo
 	/**
-	 * [ItNetworkService.findAllExternalNetworkFromNetworkProvider]
+	 * [ItNetworkService.findAllOpenStackNetworkFromNetworkProvider]
 	 * 네트워크 가져오기 창 - 네트워크 공급자가 가지고있는 네트워크
 	 *
 	 * @param providerId [String] 공급자 Id
-	 * @return List<[NetworkVo]>
+	 * @return List<[OpenStackNetworkVo]>
 	 */
 	@Throws(Error::class)
-	fun findAllExternalNetworkFromNetworkProvider(providerId: String): List<NetworkVo>
+	fun findAllOpenStackNetworkFromNetworkProvider(providerId: String): List<OpenStackNetworkVo>
+	/**
+	 * [ItNetworkService.findAllDataCentersFromNetwork]
+	 * 네트워크 가져올 때 사용될 데이터센터 목록
+	 * 네트워크 자신의 데이터센터는 제외
+	 *
+	 * @param openstackNetworkId [String] 네트워크 Id
+	 * @return List<[DataCenterVo]>
+	 */
+	@Throws(Error::class)
+	fun findAllDataCentersFromNetwork(openstackNetworkId: String): List<DataCenterVo>
 	/**
 	 * [ItNetworkService.importNetwork]
 	 * 네트워크 가져오기 - 데이터센터만 바꿔서 네트워크 복사기능
-	 * // TODO 애매함 한번 가져오기 된거는 더이상 못가져오나?
 	 *
+	 * @param openStackNetworkVos List<[OpenStackNetworkVo]> 오픈스택 네트워크 Id
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun importNetwork(): NetworkVo
+	fun importNetwork(openStackNetworkVos: List<OpenStackNetworkVo>): Boolean
 
 	/**
 	 * [ItNetworkService.findAllClustersFromNetwork]
@@ -168,7 +179,7 @@ class NetworkServiceImpl(
 		// dc 다르면 중복명 가능
 		log.info("addNetwork ... ")
 		val res: Network? =
-			conn.addNetwork(networkVo.toAddNetworkBuilder(conn))
+			conn.addNetwork(networkVo.toAddNetworkBuilder())
 				.getOrNull()
 
 		if(res == null){
@@ -185,7 +196,7 @@ class NetworkServiceImpl(
 	override fun update(networkVo: NetworkVo): NetworkVo? {
 		log.info("update ... networkName: {}", networkVo.name)
 		val res: Network? =
-			conn.updateNetwork(networkVo.toEditNetworkBuilder(conn))
+			conn.updateNetwork(networkVo.toEditNetworkBuilder())
 				.getOrNull()
 		return res?.toNetworkVo(conn)
 	}
@@ -199,38 +210,60 @@ class NetworkServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllNetworkProviderFromNetwork(): IdentifiedVo {
-		log.info("findAllNetworkProviderFromNetwork ... ")
-		val osProvider: OpenStackNetworkProvider =
+	override fun findNetworkProviderFromNetwork(): IdentifiedVo {
+		log.info("findNetworkProviderFromNetwork ... ")
+		val res: OpenStackNetworkProvider =
 			conn.findAllOpenStackNetworkProviders("networks")
 				.getOrDefault(listOf())
 				.first()
-		return osProvider.fromOpenStackNetworkProviderToIdentifiedVo()
+		return res.fromOpenStackNetworkProviderToIdentifiedVo()
 	}
 
 	@Throws(Error::class)
-	override fun findAllExternalNetworkFromNetworkProvider(providerId: String): List<NetworkVo> {
-		log.info("findAllExternalNetworkFromNetworkProvider ... ")
-		val res: List<Network> =
-			conn.findAllNetworks()
+	override fun findAllOpenStackNetworkFromNetworkProvider(providerId: String): List<OpenStackNetworkVo> {
+		log.info("findAllOpenStackNetworkFromNetworkProvider ... providerId: {}", providerId)
+		val res: List<OpenStackNetwork> =
+			conn.findAllOpenStackNetworksFromNetworkProvider(providerId)
 				.getOrDefault(listOf())
-				.filter { it.externalProviderPresent() }
-		return res.toNetworkVos(conn)
+		return res.toOpenStackNetworkVosIdName()
 	}
 
 	@Throws(Error::class)
-	override fun importNetwork(): NetworkVo {
-		log.info("importNetwork ... ")
+	override fun findAllDataCentersFromNetwork(openstackNetworkId: String): List<DataCenterVo> {
+		log.info("findAllDataCentersFromNetwork ... openstackNetworkId:{}", openstackNetworkId)
+		val provider: OpenStackNetworkProvider =
+			conn.findOpenStackNetworkProviderFirst()
+				.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
+		val openstack: OpenStackNetwork =
+			conn.findOpenStackNetworkFromNetworkProvider(provider.id(), openstackNetworkId)
+				.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
 
-		TODO("Not yet implemented")
+		val res: List<DataCenter> =
+			conn.findAllDataCenters()
+				.getOrDefault(listOf())
+				.filter { dataCenter ->
+					conn.findAllNetworksFromDataCenter(dataCenter.id())
+						.getOrDefault(listOf())
+						.none { it.externalProviderPresent() && it.name() != openstack.name() }
+				}
+		return res.toDataCenterIdNames()
+	}
+
+	@Throws(Error::class)
+	override fun importNetwork(openStackNetworkVos: List<OpenStackNetworkVo>): Boolean {
+		log.info("importNetwork ... ")
+		// TODO 되긴하는데 리턴값이 애매함
+
+		openStackNetworkVos.forEach{
+			conn.importOpenStackNetwork(it.id, it.dataCenterVo.id)
+		}
+		return true
 	}
 
 
 	@Throws(Error::class)
 	override fun findAllClustersFromNetwork(networkId: String): List<ClusterVo> {
 		log.info("findAllClustersFromNetwork ... networkId: {}", networkId)
-		conn.findNetwork(networkId)
-			.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
 		val res: List<Cluster> =
 			conn.findAllClusters(follow = "networks")
 				.getOrDefault(listOf())
@@ -239,7 +272,7 @@ class NetworkServiceImpl(
 						.getOrDefault(listOf())
 						.any { n -> n.id() == networkId }
 				}
-		return res.toClusterVos(conn)
+		return res.toNetworkClusterVos(conn, networkId)
 	}
 
 	@Throws(Error::class)
@@ -289,7 +322,7 @@ class NetworkServiceImpl(
 
 	@Throws(Error::class)
 	override fun findAllPermissionsFromNetwork(networkId: String): List<PermissionVo> {
-		log.info("getPermissionsByNetwork ... ")
+		log.info("findAllPermissionsFromNetwork ... ")
 		val permissions: List<Permission> =
 			conn.findAllPermissionsFromNetwork(networkId)
 				.getOrDefault(listOf())

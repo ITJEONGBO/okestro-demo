@@ -245,7 +245,7 @@ class ClusterServiceImpl(
 		// TODO: [ItNetworkService.add] 와 같은 기능이지만 약간 다름
 		log.info("addNetworkFromCluster ... ")
 		val res: Network? =
-			conn.addNetwork(networkVo.toAddNetworkBuilder(conn))
+			conn.addNetwork(networkVo.toAddNetworkBuilder())
 				.getOrNull()
 		if(res == null){
 			throw ErrorPattern.NETWORK_NOT_FOUND.toException()

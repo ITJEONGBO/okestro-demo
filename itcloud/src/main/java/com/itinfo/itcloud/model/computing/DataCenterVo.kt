@@ -74,6 +74,12 @@ class DataCenterVo (
 	}
 }
 
+fun DataCenter.toDataCenterIdName(): DataCenterVo = DataCenterVo.builder {
+	id { this@toDataCenterIdName.id() }
+	name { this@toDataCenterIdName.name() }
+}
+fun List<DataCenter>.toDataCenterIdNames(): List<DataCenterVo> =
+	this@toDataCenterIdNames.map { it.toDataCenterIdName() }
 
 /**
  * 데이터센터 목록

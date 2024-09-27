@@ -175,6 +175,7 @@ fun Connection.findAllNetworksFromCluster(clusterId: String): Result<List<Networ
 	throw if (it is Error) it.toItCloudException() else it
 }
 
+
 private fun Connection.srvNetworkFromCluster(clusterId: String, networkId: String): ClusterNetworkService =
 	this.srvClusterNetworks(clusterId).networkService(networkId)
 

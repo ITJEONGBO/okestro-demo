@@ -214,39 +214,19 @@ fun Host.toHostMenu(conn: Connection): HostVo {
 fun List<Host>.toHostsMenu(conn: Connection): List<HostVo> =
     this@toHostsMenu.map { it.toHostMenu(conn) }
 
-
-/**
- * 호스트 빌더
- */
-fun HostVo.toHostBuilder(): HostBuilder {
-    return HostBuilder()
-        .cluster(ClusterBuilder().id(this@toHostBuilder.clusterVo.id))
-        .name(this@toHostBuilder.name)
-        .comment(this@toHostBuilder.comment)
-        .address(this@toHostBuilder.address)
-        .ssh(SshBuilder().port(this@toHostBuilder.sshPort)) // 기본값이 22 포트 연결은 더 테스트 해봐야함(ovirt 내에서 한적은 없음)
-        .rootPassword(this@toHostBuilder.sshPassWord)   // 비밀번호 잘못되면 보여줄 코드?
-        .powerManagement(PowerManagementBuilder().enabled(false)) // 전원관리 비활성화 (기본)
-        .spm(SpmBuilder().priority(this@toHostBuilder.spmPriority))
-//        .port()
-        // ssh port가 22면 .ssh() 설정하지 않아도 알아서 지정됨. port 변경을 cmd 에서만 하심
-    // deployHostedEngine은 ext에서
-}
-
-/**
- * 호스트 생성 빌더
- */
-fun HostVo.toAddHostBuilder(): Host =
-    this@toAddHostBuilder.toHostBuilder().build()
-
-/**
- * 호스트 편집 빌더
- */
-fun HostVo.toEditHostBuilder(): Host =
-    this@toEditHostBuilder.toHostBuilder()
-        .id(this@toEditHostBuilder.id)
-        .os(OperatingSystemBuilder().customKernelCmdline("vfio_iommu_type1.allow_unsafe_interrupts=1").build()) //?
-        .build()
+//fun Host.toNetworkHostVo(conn: Connection): HostVo {
+//    val cluster: Cluster? =
+//        conn.findCluster(this@toHostVo.cluster().id())
+//            .getOrNull()
+//    val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let {
+//        conn.findDataCenter(it).getOrNull()
+//    }
+//
+//    return HostVo.builder {
+//        id { this@toNetworkHostVo.id() }
+//        name { this@toHostVo.name() }
+//    }
+//}
 
 
 fun Host.toHostVo(conn: Connection): HostVo {
@@ -324,3 +304,37 @@ fun Host.toHostVo(conn: Connection): HostVo {
 }
 fun List<Host>.toHostVos(conn: Connection): List<HostVo> =
     this@toHostVos.map { it.toHostVo(conn) }
+
+
+/**
+ * 호스트 빌더
+ */
+fun HostVo.toHostBuilder(): HostBuilder {
+    return HostBuilder()
+        .cluster(ClusterBuilder().id(this@toHostBuilder.clusterVo.id))
+        .name(this@toHostBuilder.name)
+        .comment(this@toHostBuilder.comment)
+        .address(this@toHostBuilder.address)
+        .ssh(SshBuilder().port(this@toHostBuilder.sshPort)) // 기본값이 22 포트 연결은 더 테스트 해봐야함(ovirt 내에서 한적은 없음)
+        .rootPassword(this@toHostBuilder.sshPassWord)   // 비밀번호 잘못되면 보여줄 코드?
+        .powerManagement(PowerManagementBuilder().enabled(false)) // 전원관리 비활성화 (기본)
+        .spm(SpmBuilder().priority(this@toHostBuilder.spmPriority))
+//        .port()
+        // ssh port가 22면 .ssh() 설정하지 않아도 알아서 지정됨. port 변경을 cmd 에서만 하심
+    // deployHostedEngine은 ext에서
+}
+
+/**
+ * 호스트 생성 빌더
+ */
+fun HostVo.toAddHostBuilder(): Host =
+    this@toAddHostBuilder.toHostBuilder().build()
+
+/**
+ * 호스트 편집 빌더
+ */
+fun HostVo.toEditHostBuilder(): Host =
+    this@toEditHostBuilder.toHostBuilder()
+        .id(this@toEditHostBuilder.id)
+        .os(OperatingSystemBuilder().customKernelCmdline("vfio_iommu_type1.allow_unsafe_interrupts=1").build()) //?
+        .build()

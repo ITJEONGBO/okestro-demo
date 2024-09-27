@@ -140,7 +140,7 @@ class NetworkController: BaseController() {
 	@ResponseBody
 	fun setImportNetwork(): ResponseEntity<IdentifiedVo?> {
 		log.info("--- Network 가져오기 창(openstack networkProvider 목록)")
-		return ResponseEntity.ok(iNetwork.findAllNetworkProviderFromNetwork())
+		return ResponseEntity.ok(iNetwork.findNetworkProviderFromNetwork())
 	}
 
 	// TODO: 정리필요

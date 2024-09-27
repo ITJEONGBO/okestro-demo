@@ -54,12 +54,14 @@ private val log = LoggerFactory.getLogger(ClusterVo::class.java)
  * @property network [IdentifiedVo] // 관리네트워크
  * @property hostSize [SizeVo]
  * @property vmSize [SizeVo]
+ *
  * @property hosts List<[IdentifiedVo]>
  * @property networks List<[IdentifiedVo]>
  * @property templates List<[IdentifiedVo]>
- * @property networkProperty [NetworkPropertyVo]
+
+// * @property networkProperty [NetworkPropertyVo]
  *
- * @property attached [Boolean]
+// * @property attached [Boolean]
  * @property required [Boolean]
  **/
 class ClusterVo(
@@ -89,17 +91,15 @@ class ClusterVo(
     val virtService: Boolean = false,
     val networkProvider: Boolean = false,
 	val dataCenter: IdentifiedVo = IdentifiedVo(),
-    val network: IdentifiedVo = IdentifiedVo(), // 관리네트워크
+    val network: NetworkVo = NetworkVo(), // 관리네트워크
     val hostSize: SizeVo = SizeVo(),
     val vmSize: SizeVo = SizeVo(),
-    val hosts: List<IdentifiedVo> = listOf(),
 
+    val hosts: List<IdentifiedVo> = listOf(),
     val networks: List<IdentifiedVo> = listOf(), // 관리네트워크가 핵심, 다른 네트워크 존재가능
     val templates: List<IdentifiedVo> = listOf(),
-	val networkProperty: NetworkPropertyVo = NetworkPropertyVo(),
 
-	val attached: Boolean = false,
-	val required: Boolean = false,
+	val required: Boolean = false, // 네트워크 생성시 필수 지정
 ): Serializable {
 	override fun toString(): String =
 		gson.toJson(this)
@@ -131,17 +131,15 @@ class ClusterVo(
 		private var bVirtService: Boolean = false; fun virtService(block: () -> Boolean?) { bVirtService = block() ?: false }
 		private var bNetworkProvider: Boolean = false; fun networkProvider(block: () -> Boolean?) { bNetworkProvider = block() ?: false }
 		private var bDataCenter: IdentifiedVo = IdentifiedVo(); fun dataCenter(block: () -> IdentifiedVo?) { bDataCenter = block() ?: IdentifiedVo() }
-		private var bNetwork: IdentifiedVo = IdentifiedVo(); fun network(block: () -> IdentifiedVo?) { bNetwork = block() ?: IdentifiedVo() }
+		private var bNetwork: NetworkVo = NetworkVo(); fun network(block: () -> NetworkVo?) { bNetwork = block() ?: NetworkVo() }
 		private var bHostSize: SizeVo = SizeVo(); fun hostSize(block: () -> SizeVo?) { bHostSize = block() ?: SizeVo() }
 		private var bVmSize: SizeVo = SizeVo(); fun vmSize(block: () -> SizeVo?) { bVmSize = block() ?: SizeVo() }
 		private var bHosts: List<IdentifiedVo> = listOf();fun hosts(block: () -> List<IdentifiedVo>?) { bHosts = block() ?: listOf() }
 		private var bNetworks: List<IdentifiedVo> = listOf();fun networks(block: () -> List<IdentifiedVo>?) { bNetworks = block() ?: listOf() }
 		private var bTemplates: List<IdentifiedVo> = listOf();fun templates(block: () -> List<IdentifiedVo>?) { bTemplates = block() ?: listOf() }
-		private var bNetworkProperty: NetworkPropertyVo = NetworkPropertyVo();fun networkProperty(block: () -> NetworkPropertyVo?) { bNetworkProperty = block() ?: NetworkPropertyVo() }
-		private var bAttached: Boolean = false; fun attached(block: () -> Boolean?) { bAttached = block() ?: false }
 		private var bRequired: Boolean = false; fun required(block: () -> Boolean?) { bRequired = block() ?: false }
 
-		fun build(): ClusterVo = ClusterVo(bId, bName, bDescription, bComment, bIsConnected, bBallooningEnabled, bBiosType, bCpuArc, bCpuType, bErrorHandling, bFipsMode, bFirewallType, bGlusterService, bHaReservation, bLogMaxMemory, bLogMaxMemoryType, bMemoryOverCommit, bMigrationPolicy, bBandwidth, bEncrypted, bSwitchType, bThreadsAsCores, bVersion, bVirtService, bNetworkProvider, bDataCenter, bNetwork, bHostSize, bVmSize, bHosts, bNetworks, bTemplates, bNetworkProperty, bAttached, bRequired)
+		fun build(): ClusterVo = ClusterVo(bId, bName, bDescription, bComment, bIsConnected, bBallooningEnabled, bBiosType, bCpuArc, bCpuType, bErrorHandling, bFipsMode, bFirewallType, bGlusterService, bHaReservation, bLogMaxMemory, bLogMaxMemoryType, bMemoryOverCommit, bMigrationPolicy, bBandwidth, bEncrypted, bSwitchType, bThreadsAsCores, bVersion, bVirtService, bNetworkProvider, bDataCenter, bNetwork, bHostSize, bVmSize, bHosts, bNetworks, bTemplates, /*bNetworkProperty, bAttached, */bRequired)
 	}
 
 	companion object {
@@ -174,6 +172,97 @@ fun Cluster.toClusterMenu(conn: Connection): ClusterVo = ClusterVo.builder {
 }
 fun List<Cluster>.toClustersMenu(conn: Connection): List<ClusterVo> =
 	this@toClustersMenu.map { it.toClusterMenu(conn) }
+
+
+fun Cluster.toNetworkClusterVo(conn: Connection, networkId: String): ClusterVo{
+	val network: Network? =
+		conn.findNetworkFromCluster(this@toNetworkClusterVo.id(), networkId)
+			.getOrNull()
+
+	return ClusterVo.builder {
+		id { this@toNetworkClusterVo.id() }
+		name { this@toNetworkClusterVo.name() }
+		description {this@toNetworkClusterVo.description() }
+		network { network?.toClusterNetworkVo(conn) }
+//		networks { networks }
+	}
+}
+fun List<Cluster>.toNetworkClusterVos(conn: Connection, networkId: String): List<ClusterVo> =
+	this@toNetworkClusterVos.map { it.toNetworkClusterVo(conn, networkId) }
+
+
+fun Cluster.toClusterVo(conn: Connection): ClusterVo {
+	val dataCenter: DataCenter? =
+		conn.findDataCenter(this@toClusterVo.dataCenter().id())
+			.getOrNull()
+
+	val hostVos: List<IdentifiedVo> =
+		conn.findAllHostsFromCluster(this@toClusterVo.id())
+			.getOrDefault(listOf())
+			.fromHostsToIdentifiedVos()
+
+	val networks: List<Network> =
+		conn.findAllNetworksFromCluster(this@toClusterVo.id())
+			.getOrDefault(listOf())
+	val networkVos: List<NetworkVo> =
+		networks.toNetworkVos(conn)
+
+	val networkIds: List<IdentifiedVo> =
+		conn.findAllNetworksFromCluster(this@toClusterVo.id())
+			.getOrDefault(listOf())
+			.fromNetworksToIdentifiedVos()
+
+//	val manageNetworkVo: IdentifiedVo =
+//		networks.first { it.usages().contains(NetworkUsage.MANAGEMENT) }
+//			.fromNetworkToIdentifiedVo()
+	val manageNetworkVo: NetworkVo =
+		networks.first { it.usages().contains(NetworkUsage.MANAGEMENT) }
+			.toNetworkMenu(conn)
+
+	val templates: List<Template> =
+		conn.findAllTemplates()
+			.getOrDefault(listOf())
+			.filter { !it.clusterPresent() || it.cluster().id() == this@toClusterVo.id() }
+	val templateVos: List<IdentifiedVo> =
+		templates.fromTemplatesToIdentifiedVos()
+
+	return ClusterVo.builder {
+		id { this@toClusterVo.id() }
+		name { this@toClusterVo.name() }
+		description {this@toClusterVo.description() }
+		comment { this@toClusterVo.comment() }
+//		isConnected { this@toClusterVo. }
+		ballooningEnabled { this@toClusterVo.ballooningEnabled() }
+		biosType { this@toClusterVo.biosType() }
+		cpuArc { this@toClusterVo.cpu().architecture() }
+		cpuType { if (this@toClusterVo.cpuPresent()) this@toClusterVo.cpu().type() else null }
+		errorHandling { this@toClusterVo.errorHandling().onError() }
+		fipsMode { this@toClusterVo.fipsMode() }
+		firewallType { this@toClusterVo.firewallType() }
+		glusterService { this@toClusterVo.glusterService() }
+		haReservation { this@toClusterVo.haReservation() }
+		logMaxMemory { this@toClusterVo.logMaxMemoryUsedThresholdAsLong() }
+		logMaxMemoryType { this@toClusterVo.logMaxMemoryUsedThresholdType() }
+		memoryOverCommit { this@toClusterVo.memoryPolicy().overCommit().percentAsInteger() }
+		migrationPolicy { this@toClusterVo.migration().autoConverge() }
+		bandwidth { this@toClusterVo.migration().bandwidth().assignmentMethod() }
+		encrypted { this@toClusterVo.migration().encrypted() }
+		switchType { this@toClusterVo.switchType() }
+		threadsAsCores { this@toClusterVo.threadsAsCores() }
+		version { this@toClusterVo.version().major().toString() + "." + this@toClusterVo.version().minor() }
+		virtService { this@toClusterVo.virtService() }
+		networkProvider { this@toClusterVo.externalNetworkProviders().size != 0 } // 0이 아니라면 네트워크 공급자 존재
+		dataCenter { dataCenter?.fromDataCenterToIdentifiedVo() }
+		network { manageNetworkVo }
+		hostSize { this@toClusterVo.findHostCntFromCluster(conn) }
+		vmSize { this@toClusterVo.findVmCntFromCluster(conn) }
+		hosts { hostVos }
+		networks { networkIds }
+		templates { templateVos }
+	}
+}
+fun List<Cluster>.toClusterVos(conn: Connection): List<ClusterVo> =
+	this@toClusterVos.map { it.toClusterVo(conn) }
 
 
 /**
@@ -230,68 +319,3 @@ fun ClusterVo.toAddClusterBuilder(conn: Connection): Cluster =
 fun ClusterVo.toEditClusterBuilder(conn: Connection): Cluster =
 	this@toEditClusterBuilder.toClusterBuilder(conn).id(this@toEditClusterBuilder.id).build()
 
-
-fun Cluster.toClusterVo(conn: Connection): ClusterVo {
-	val dataCenter: DataCenter? =
-		conn.findDataCenter(this@toClusterVo.dataCenter().id())
-			.getOrNull()
-
-	val hostVos: List<IdentifiedVo> =
-		conn.findAllHostsFromCluster(this@toClusterVo.id())
-			.getOrDefault(listOf())
-			.fromHostsToIdentifiedVos()
-
-	val networks: List<Network> =
-		conn.findAllNetworksFromCluster(this@toClusterVo.id())
-			.getOrDefault(listOf())
-	val networkVos: List<IdentifiedVo> =
-		networks.fromNetworksToIdentifiedVos()
-
-	val manageNetworkVo: IdentifiedVo =
-		networks.first { it.usages().contains(NetworkUsage.MANAGEMENT) }
-			.fromNetworkToIdentifiedVo()
-
-	val templates: List<Template> =
-		conn.findAllTemplates()
-			.getOrDefault(listOf())
-			.filter { !it.clusterPresent() || it.cluster().id() == this@toClusterVo.id() }
-	val templateVos: List<IdentifiedVo> =
-		templates.fromTemplatesToIdentifiedVos()
-
-	return ClusterVo.builder {
-		id { this@toClusterVo.id() }
-		name { this@toClusterVo.name() }
-		description {this@toClusterVo.description() }
-		comment { this@toClusterVo.comment() }
-//		isConnected { this@toClusterVo. }
-		ballooningEnabled { this@toClusterVo.ballooningEnabled() }
-		biosType { this@toClusterVo.biosType() }
-		cpuArc { this@toClusterVo.cpu().architecture() }
-		cpuType { if (this@toClusterVo.cpuPresent()) this@toClusterVo.cpu().type() else null }
-		errorHandling { this@toClusterVo.errorHandling().onError() }
-		fipsMode { this@toClusterVo.fipsMode() }
-		firewallType { this@toClusterVo.firewallType() }
-		glusterService { this@toClusterVo.glusterService() }
-		haReservation { this@toClusterVo.haReservation() }
-		logMaxMemory { this@toClusterVo.logMaxMemoryUsedThresholdAsLong() }
-		logMaxMemoryType { this@toClusterVo.logMaxMemoryUsedThresholdType() }
-		memoryOverCommit { this@toClusterVo.memoryPolicy().overCommit().percentAsInteger() }
-		migrationPolicy { this@toClusterVo.migration().autoConverge() }
-		bandwidth { this@toClusterVo.migration().bandwidth().assignmentMethod() }
-		encrypted { this@toClusterVo.migration().encrypted() }
-		switchType { this@toClusterVo.switchType() }
-		threadsAsCores { this@toClusterVo.threadsAsCores() }
-		version { this@toClusterVo.version().major().toString() + "." + this@toClusterVo.version().minor() }
-		virtService { this@toClusterVo.virtService() }
-		networkProvider { this@toClusterVo.externalNetworkProviders().size != 0 } // 0이 아니라면 네트워크 공급자 존재
-		dataCenter { dataCenter?.fromDataCenterToIdentifiedVo() }
-		network { manageNetworkVo }
-		hostSize { this@toClusterVo.findHostCntFromCluster(conn) }
-		vmSize { this@toClusterVo.findVmCntFromCluster(conn) }
-		hosts { hostVos }
-		networks { networkVos }
-		templates { templateVos }
-	}
-}
-fun List<Cluster>.toClusterVos(conn: Connection): List<ClusterVo> =
-	this@toClusterVos.map { it.toClusterVo(conn) }
