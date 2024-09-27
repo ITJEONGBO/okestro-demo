@@ -98,7 +98,6 @@ const App = () => {
           <MainOuter>
             <Routes>
             <Route path="/" element={<Dashboard />} />
-              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/computing/datacenters" element={<Computing />} />
               <Route path="/storage" element={<AllDisk />} />
               <Route path="/computing/data-center" element={<DataCenter />} />

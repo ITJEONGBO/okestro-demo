@@ -116,11 +116,11 @@ const TableColumnsInfo = {
     { header: '유형', accessor: 'type', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],
-  VOLUMES_FROM_HOST: [
+  DEVICE_FROM_HOST: [
     { header: '이름', accessor: 'name', clickable: false },
-    { header: '기능', accessor: 'function', clickable: false },
-    { header: '벤더', accessor: 'vendor', clickable: false },
-    { header: '제품', accessor: 'product', clickable: false },
+    { header: '기능', accessor: 'capability', clickable: false },
+    { header: '벤더', accessor: 'vendorName', clickable: false },
+    { header: '제품', accessor: 'productName', clickable: false },
     { header: '드라이버', accessor: 'driver', clickable: false },
     { header: '현재 사용중', accessor: 'currentlyUsed', clickable: false },
     { header: '가상 머신에 연결됨', accessor: 'connectedToVM', clickable: false },
@@ -271,15 +271,16 @@ const TableColumnsInfo = {
     { header: '설명', accessor: 'description', clickable: false }
   ],
   VMS_FROM_HOST: [
+    { header: '', accessor: 'icon', clickable: false },
     { header: '이름', accessor: 'name', clickable: false },
     { header: '클러스터', accessor: 'cluster', clickable: false },
-    { header: 'IP 주소', accessor: 'ipAddress', clickable: false },
+    { header: 'IP 주소', accessor: 'ipv4', clickable: false },
     { header: 'FQDN', accessor: 'fqdn', clickable: false },
     { header: '메모리', accessor: 'memory', clickable: false },
     { header: 'CPU', accessor: 'cpu', clickable: false },
     { header: '네트워크', accessor: 'network', clickable: false },
-    { header: '상태', accessor: 'status', clickable: false },
-    { header: '업타임', accessor: 'uptime', clickable: false },
+    { header: '상태', accessor: 'statusDetail', clickable: false },
+    { header: '업타임', accessor: 'upTime', clickable: false },
   ],
   VMS_FROM_DISK: [
     { header: '이름', accessor: 'name', clickable: false },

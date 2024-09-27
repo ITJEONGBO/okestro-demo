@@ -19,7 +19,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import './css/DataCenterDetail.css';
 import TableOuter from '../table/TableOuter';
-import { useNetworkById } from '../../api/RQHook';
+import { useDataCenter, useNetworkById } from '../../api/RQHook';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -107,8 +107,19 @@ const handleTabClickModal = (tab) => {
 
 
   //api
-  const { networkid } = useParams(); // useParams로 URL에서 name을 가져옴
+  const { id } = useParams(); // useParams로 URL에서 name을 가져옴
   const [shouldRefresh, setShouldRefresh] = useState(false);
+
+  const { 
+    data: dataCenter,
+    status: dataCenterStatus,
+    isRefetching: isDataCenterRefetching,
+    refetch: dataCenterRefetch,
+    isError: isDataCenterError,
+    error: dataCenterError,
+    isLoading: isDataCenterLoading,
+  } = useDataCenter(id);
+  
   const { 
     data: network,
     status: networkStatus,
@@ -117,11 +128,10 @@ const handleTabClickModal = (tab) => {
     isError: isNetworkError,
     error: networkError, 
     isLoading: isNetworkLoaindg,
-  } = useNetworkById(networkid);
+  } = useNetworkById(id);
   useEffect(() => {
     networkRefetch()
   }, [setShouldRefresh, networkRefetch])
-
 
 
 
@@ -257,7 +267,7 @@ const handleTabClickModal = (tab) => {
     <div className="content_detail_section">
       <HeaderButton
         title="데이터센터 "
-        subtitle={name}
+        subtitle={dataCenter?.name}
         buttons={sectionHeaderButtons}
         popupItems={sectionHeaderPopupItems}
       />

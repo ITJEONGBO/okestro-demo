@@ -113,13 +113,13 @@ export const useAllDataCenters = (mapPredicate) => useQuery({
  *
  * @param {function} mapPredicate 객체 변형 처리
  */
-export const useDataCenter = (mapPredicate) => useQuery({
+export const useDataCenter = (dataCenterId) => useQuery({
   refetchOnWindowFocus: true,
-  queryKey: ['dataCenter'],
+  queryKey: ['dataCenterId'],
   queryFn: async () => {
-    const res = await ApiManager.findDataCenter()
+    const res = await ApiManager.findDataCenter(dataCenterId)
     // setShouldRefresh(prevValue => false)
-    return res?.map((e) => mapPredicate(e)) ?? []
+    return res ?? {}
   }
 })
 
@@ -276,7 +276,80 @@ export const useAllHosts = (mapPredicate) => useQuery({
     return res?.map((e) => mapPredicate(e)) ?? []
   }
 })
-
+/**
+ * @name useHostById
+ * @description 호스트 상세조회 useQuery훅
+ * 
+ * @param {string} hostId 호스트ID
+ * @returns useQuery훅
+ */
+export const useHostById = (hostId) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['useHostById'],
+  queryFn: async () => {
+    console.log(`useHostById ... ${hostId}`)
+    const res = await ApiManager.findAllHostById(hostId)
+    // setShouldRefresh(prevValue => false)
+    return res ?? {}
+  }
+})
+/**
+ * @name useHostFromCluster
+ * @description 호스트 내 가상머신 목록조회 useQuery훅
+ * 
+ * @param {string} clusterId 클러스터ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.useHostFromCluster
+ */
+export const useVmFromHost = (hostId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['VmFromHost', hostId], 
+  queryFn: async () => {
+    console.log(`useVmFromHost ... ${hostId}`);
+    const res = await ApiManager.findVmFromHost(hostId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  }
+})
+/**
+ * @name useHostFromCluster
+ * @description 호스트 내 호스트장치 목록조회 useQuery훅
+ * 
+ * @param {string} clusterId 클러스터ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.useHostFromCluster
+ */
+export const useHostdeviceFromHost = (hostId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['HostdeviceFromHost', hostId], 
+  queryFn: async () => {
+    console.log(`useHostdeviceFromHost ... ${hostId}`);
+    const res = await ApiManager.findHostdeviceFromHost(hostId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  }
+})
+/**
+ * @name usePermissionFromCluster
+ * @description 클러스터 내 권한 목록조회 useQuery훅
+ * 
+ * @param {string} clusterId 클러스터ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.usePermissionFromCluster
+ */
+export const usePermissionFromHost = (hostId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['PermissionFromHost', hostId], 
+  queryFn: async () => {
+    console.log(`usePermissionFromHost ... ${hostId}`);
+    const res = await ApiManager.findPermissionsFromHost(hostId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  }
+})
 //endregion: Host
 
 //region: VM/TEMPLATE ----------------가상머신/템플릿---------------------

@@ -40,6 +40,9 @@ const ENDPOINTS = {
   //region: Host
   FIND_ALL_HOSTS: () =>  `/api/v1/computing/hosts`,
   FIND_HOST: (hostId) =>  `/api/v1/computing/hosts/${hostId}`, 
+  FIND_VM_FROM_HOST:(hostId) =>  `/api/v1/computing/hosts/${hostId}/vms`, 
+  FIND_HOSTDEVICE_FROM_HOST:(hostId) =>  `/api/v1/computing/hosts/${hostId}/devices`, 
+  FIND_PERMISSIONS_FROM_HOST:(hostId) =>  `/api/v1/computing/hosts/${hostId}/permissions`, 
   //endregion: Host
 
   //region: Vm/Template

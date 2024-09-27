@@ -165,9 +165,9 @@ const ApiManager = {
    * 
    * @see Computing.js (components/Computing)
    */
-    findDataCenter: async () => makeAPICall({
-      method: "GET", 
-      url: ENDPOINTS.FIND_DATA_CENTER(), 
+    findDataCenter: async (dataCenterId) => makeAPICall({ 
+      method: "GET",  
+      url: ENDPOINTS.FIND_DATA_CENTER(dataCenterId), 
       defaultValues: DEFAULT_VALUES.FIND_DATACENTER
     }),
   /**
@@ -269,6 +269,27 @@ const ApiManager = {
     method: "GET", 
     url: ENDPOINTS.FIND_ALL_HOSTS(), 
     defaultValues: DEFAULT_VALUES.FIND_ALL_HOSTS
+  }),
+
+  findAllHostById : async (hostId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_HOST(hostId), 
+    defaultValues: DEFAULT_VALUES.FIND_HOST
+  }),
+  findVmFromHost : async (hostId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_VM_FROM_HOST(hostId), 
+    defaultValues: DEFAULT_VALUES.FIND_HOST_FROM_CLUSTER
+  }),
+  findHostdeviceFromHost : async (hostId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_HOSTDEVICE_FROM_HOST(hostId), 
+    defaultValues: DEFAULT_VALUES.FIND_DEVICE_FROM_HOST
+  }),
+  findPermissionsFromHost: async (hostId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_PERMISSIONS_FROM_HOST(hostId), 
+    defaultValues: DEFAULT_VALUES.FIND_ALL_PERMISSION
   }),
   //endregion: Host
 

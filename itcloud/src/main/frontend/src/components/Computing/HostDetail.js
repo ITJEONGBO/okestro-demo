@@ -29,11 +29,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import './css/HostDetail.css';
 import TableOuter from '../table/TableOuter';
+import { useHostById, useHostdeviceFromHost, usePermissionFromHost, useVmFromHost } from '../../api/RQHook';
 
 
 
 function HostDetail() {
-  const { name } = useParams();
+  const { id } = useParams();
   //클릭한 이름 받아오기
   const handlePermissionFilterClick = (filter) => {
     setActivePermissionFilter(filter);
@@ -88,62 +89,45 @@ function HostDetail() {
     }
   };
 
+  const { 
+    data: host,
+    status: networkStatus,
+    isRefetching: isNetworkRefetching,
+    refetch: hostRefetch, 
+    isError: isNetworkError,
+    error: networkError, 
+    isLoading: isNetworkLoading,
+  } = useHostById(id);
+
+
   const [activePermissionFilter, setActivePermissionFilter] = useState('all');
     //테이블컴포넌트
-     // 가상머신 
-      const data = [
-        {
-          name: (
-            <div>
-              <FontAwesomeIcon icon={faCaretUp} style={{ color: 'green' }}fixedWidth/>
-              HostedEngine
-            </div>
-          ),
-          cluster: (
-            <div>
-              <FontAwesomeIcon icon={faDesktop} fixedWidth/>
-              Default
-            </div>
-          ),
-          ipAddress: '192.168.0.80 fe80::216:3eff:fe6c:208',
-          fqdn: 'ovirt.ititinfo.com',
-          memory: (
-            <div>
-              <span>52%</span>
-              <div style={{ width: '52%', backgroundColor: 'green', height: '4px' }}></div>
-            </div>
-          ),
-          cpu: (
-            <div>
-              <span>2%</span>
-              <div style={{ width: '2%', backgroundColor: 'green', height: '4px' }}></div>
-            </div>
-          ),
-          network: (
-            <div>
-              <span>0%</span>
-              <div style={{ width: '0%', backgroundColor: 'green', height: '4px' }}></div>
-            </div>
-          ),
-          status: '실행 중',
-          uptime: '36 days',
-        },
-      ];
-      
 
-  const volumeData = [
-    {
-      name: 'block_sda',
-      function: 'storage',
-      vendor: 'VMware (null)',
-      product: 'Virtual disk (null)',
-      driver: '',
-      currentlyUsed: '',
-      connectedToVM: '',
-      iommuGroup: '해당 없음',
-      mdevType: '해당 없음',
-    },
-  ];
+    
+    // 가상머신 
+    const { 
+    data: vms, 
+    status: hostsStatus, 
+    isLoading: isHostsLoading, 
+    isError: isHostsError 
+  } = useVmFromHost(host?.id, toTableItemPredicateHosts);
+  
+  function toTableItemPredicateHosts(host) {
+    return {
+      icon: <FontAwesomeIcon icon={faUniversity} fixedWidth />,
+      name: host?.name ?? 'Unknown', 
+      cluster: host?.clusterVo?.name ?? 'Default', 
+      ipv4: host?.ipv4 ?? 'Unknown',
+      fqdn: host?.fqdn ?? 'Unknown', 
+      memory: host?.memoryUsage ? `${host.memoryUsage}%` : 'Unknown', 
+      cpu: host?.cpuUsage ? `${host.cpuUsage}%` : 'Unknown', 
+      network: host?.networkUsage ? `${host.networkUsage}%` : 'Unknown', 
+      statusDetail: host?.statusDetail ?? 'Unknown', 
+      upTime: host?.upTime ?? 'Unknown', 
+    };
+  }
+    
+
 
   // 네트워크인터페이스 박스열고닫기
   const [visibleBoxes, setVisibleBoxes] = useState([]);
@@ -171,6 +155,30 @@ function HostDetail() {
       pkts: '15,000'
     },
   ]
+
+  // 호스트 장치
+  const { 
+    data: hostDevices,     
+    status: hostDevicesStatus,  
+    isLoading: isHostDevicesLoading,  
+    isError: isHostDevicesError       
+  } = useHostdeviceFromHost(host?.id, toTableItemPredicateHostDevices);  
+  
+  function toTableItemPredicateHostDevices(device) {
+    return {
+      name: device?.name ?? 'Unknown',
+      capability: device?.capability ?? 'Unknown',
+      vendorName: device?.vendorName ?? 'Unknown',
+      productName: device?.productName ?? 'Unknown',
+      driver: device?.driver ?? 'Unknown',
+      currentlyUsed: device?.currentlyUsed ?? 'Unknown',
+      connectedToVM: device?.connectedToVM ?? 'Unknown',
+      iommuGroup: device?.iommuGroup ?? '해당 없음',
+      mdevType: device?.mdevType ?? '해당 없음',
+    };
+  }
+  
+
   const networkdata = [
     {
       icon: <FontAwesomeIcon icon={faUniversity} fixedWidth/>,
@@ -182,19 +190,24 @@ function HostDetail() {
     }
   ];
     // 권한
+    const { 
+      data: permissions, 
+      status: permissionsStatus, 
+      isLoading: isPermissionsLoading, 
+      isError: isPermissionsError 
+    } = usePermissionFromHost(host?.id, toTableItemPredicatePermissions);
 
-      const permissionData = [
-        {
-          icon: <FontAwesomeIcon icon={faUser} fixedWidth/>,
-          user: 'ovirtmgmt',
-          authProvider: '',
-          namespace: '*',
-          role: 'SuperUser',
-          createdDate: '2023.12.29 AM 11:40:58',
-          inheritedFrom: '(시스템)',
-        },
-      ];
-
+    function toTableItemPredicatePermissions(permission) {
+      return {
+        icon: <FontAwesomeIcon icon={faUser} fixedWidth/>, 
+        user: permission?.user ?? '없음',  
+        provider: permission?.provider ?? '없음',  
+        nameSpace: permission?.nameSpace ?? '없음', 
+        role: permission?.role ?? '없음',  
+        createDate: permission?.createDate ?? '없음',  
+        inheritedFrom: permission?.inheritedFrom ?? '없음', 
+      };
+    }
       // 이벤트
       const eventData = [
         {
@@ -239,7 +252,7 @@ function HostDetail() {
         <div id='section'>
              <HeaderButton
       title="호스트"
-      subtitle={name}
+      subtitle={host?.name}
       additionalText="목록이름"
       buttons={buttons}
       popupItems={popupItems}
@@ -268,7 +281,7 @@ function HostDetail() {
                               <tbody>
                                   <tr>
                                       <th>호스트이름/IP:</th>
-                                      <td>{name}</td>
+                                      <td>{host?.name}</td>
                                   </tr>
                                   <tr>
                                       <th>SPM 우선순위:</th>
@@ -288,7 +301,7 @@ function HostDetail() {
                                   </tr>
                                   <tr>
                                       <th>부팅 시간:</th>
-                                      <td>2024. 7. 2. AM 10:12:36</td>
+                                      <td>{host?.bootingTime}</td>
                                   </tr>
                                   <tr>
                                       <th>Hosted Engine HA:</th>
@@ -296,7 +309,7 @@ function HostDetail() {
                                   </tr>
                                   <tr>
                                       <th>iSCSI 개시자 이름:</th>
-                                      <td>iqn.1994-05.com.redhat:d33a11d7f51b</td>
+                                      <td>{host?.iscsi}</td>
                                   </tr>
                                   <tr>
                                       <th>Kdump Integration Status:</th>
@@ -336,7 +349,7 @@ function HostDetail() {
                                   </tr>
                                   <tr>
                                       <th>SELinux 모드:</th>
-                                      <td>강제 적용</td>
+                                      <td>{host?.seLinux}</td>
                                   </tr>
                                   <tr>
                                       <th>클러스터 호환 버전:</th>
@@ -364,7 +377,7 @@ function HostDetail() {
                                 </tr>
                                 <tr>
                                     <th>CPU 모델:</th>
-                                    <td>Intel(R) Xeon(R) Gold 6354 CPU @ 3.00GHz</td>
+                                    <td>{host?.hostHwVo.cpuName}</td>
                                 </tr>
                                 <tr>
                                     <th>소켓당 CPU 코어:</th>
@@ -380,7 +393,7 @@ function HostDetail() {
                                 </tr>
                                 <tr>
                                     <th>CPU 유형:</th>
-                                    <td>Secure Intel Cascadelake Server Family</td>
+                                    <td> {host?.hostHwVo.cpuType}</td>
                                 </tr>
                                 <tr>
                                     <th>코어당 CPU의 스레드:</th>
@@ -414,47 +427,47 @@ function HostDetail() {
                               <tbody>
                                 <tr>
                                   <th>OS 버전:</th>
-                                  <td>RHEL - 9.1.2206.0 - 23.el9</td>
+                                  <td>{host?.hostSwVo.osVersion}</td>
                                 </tr>
                                 <tr>
                                   <th>OS 정보:</th>
-                                  <td>oVirt Node 4.5.5</td>
+                                  <td>{host?.hostSwVo.osInfo}</td>
                                 </tr>
                                 <tr>
                                   <th>커널 버전:</th>
-                                  <td>5.14.0 - 388.el9.x86_64</td>
+                                  <td>{host?.hostSwVo.kernalVersion}</td>
                                 </tr>
                                 <tr>
                                   <th>KVM 버전:</th>
-                                  <td>8.1.0 - 4.el9</td>
+                                  <td>{host?.hostSwVo.kvmVersion}</td>
                                 </tr>
                                 <tr>
                                   <th>LIBVIRT 버전:</th>
-                                  <td>libvirt-9.5.0-6.el9</td>
+                                  <td>{host?.hostSwVo.libvirtVersion}</td>
                                 </tr>
                                 <tr>
                                   <th>VDSM 버전:</th>
-                                  <td>vdsm-4.50.5-1.1.el9</td>
+                                  <td>{host?.hostSwVo.vdsmVersion}</td>
                                 </tr>
                                 <tr>
                                   <th>SPICE 버전:</th>
-                                  <td></td>
+                                  <td>{host?.hostSwVo.spiceVersion}</td>
                                 </tr>
                                 <tr>
                                   <th>GlusterFS 버전:</th>
-                                  <td>glusterfs-10.5-1.el9s</td>
+                                  <td>{host?.hostSwVo.glustersfsVersion}</td>
                                 </tr>
                                 <tr>
                                   <th>CEPH 버전:</th>
-                                  <td>librbd1-16.2.14-1.el9</td>
+                                  <td>{host?.hostSwVo.cephVersion}</td>
                                 </tr>
                                 <tr>
                                   <th>Open vSwitch 버전:</th>
-                                  <td>openvswitch-2.17-1.el9</td>
+                                  <td>{host?.hostSwVo.openVswitchVersion}</td>
                                 </tr>
                                 <tr>
                                   <th>Nmstate 버전:</th>
-                                  <td>nmstate-2.2-19.1.el9</td>
+                                  <td>{host?.hostSwVo.nmstateVersion}</td>
                                 </tr>
                                 <tr>
                                   <th>커널 기능:</th>
@@ -504,7 +517,7 @@ function HostDetail() {
                         </div>
                         <TableOuter 
                           columns={TableColumnsInfo.VMS_FROM_HOST}
-                          data={data}
+                          data={vms}
                           onRowClick={() => console.log('Row clicked')}
                         />
                 </div>
@@ -557,8 +570,8 @@ function HostDetail() {
                 <div className="host_btn_outer">
                   <div className="host_empty_outer">
                     <TableOuter 
-                      columns={TableColumnsInfo.VOLUMES_FROM_HOST} 
-                      data={volumeData} 
+                      columns={TableColumnsInfo.DEVICE_FROM_HOST} 
+                      data={hostDevices} 
                       onRowClick={() => console.log('Row clicked')} 
                     />
                   </div>
@@ -591,7 +604,7 @@ function HostDetail() {
               </div>
               <TableOuter
                 columns={TableColumnsInfo.PERMISSIONS}
-                data={activePermissionFilter === 'all' ? permissionData : []}
+                data={activePermissionFilter === 'all' ? permissions : []}
                 onRowClick={() => console.log('Row clicked')}
               />
             </div>

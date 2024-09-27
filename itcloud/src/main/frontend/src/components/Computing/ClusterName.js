@@ -64,6 +64,7 @@ function ClusterName() {
     const openAffinityGroupModal = () => setIsAffinityGroupModalOpen(true);
     const closeAffinityGroupModal = () => setIsAffinityGroupModalOpen(false);
     const [showTooltip, setShowTooltip] = useState(false); // hover하면 설명창 뜨게하기
+
     const { 
         data: cluster,
         status: networkStatus,
@@ -237,7 +238,7 @@ function ClusterName() {
                 <>
                     <HeaderButton
                         title="클러스터"
-                        subtitle={locationState?.name}
+                        subtitle={cluster?.name}
                         additionalText="목록이름"
                         buttons={buttons}
                         popupItems={[]}
@@ -258,20 +259,20 @@ function ClusterName() {
                                         <table className="table">
                                             <tbody>
                                                 <tr>
-                                                    <th>ID:</th>
-                                                    <td>{id}</td>
+                                                    <th>이름</th>
+                                                    <td>{cluster?.name}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>설명:</th>
-                                                    <td></td>
+                                                    <td>{cluster?.description}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>데이터센터:</th>
-                                                    <td>Default</td>
+                                                    <td>{cluster?.dataCenter?.id}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>호환버전:</th>
-                                                    <td>4.7</td>
+                                                    <td>{cluster?.version}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>클러스터 노드 유형:</th>
@@ -279,13 +280,13 @@ function ClusterName() {
                                                 </tr>
                                                 <tr>
                                                     <th>클러스터 ID:</th>
-                                                    <td>f0adf4f6-274b-4533-b6b3-6a683b062c9a</td>
+                                                    <td>{cluster?.id}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>클러스터 CPU 유형:</th>
                                                     <td>
-                                                         Intel Nehalem Family
-                                                        <FontAwesomeIcon icon={faBan} style={{ marginLeft: '13%', color: 'orange' }} fixedWidth/>
+                                                        {cluster?.cpuType}
+                                                         <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)',marginLeft:'3px' }}fixedWidth/> 
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -294,7 +295,7 @@ function ClusterName() {
                                                 </tr>
                                                 <tr>
                                                     <th>최대 메모리 오버 커밋:</th>
-                                                    <td>100%</td>
+                                                    <td>{cluster?.memoryOverCommit}%</td>
                                                 </tr>
                                                 <tr>
                                                     <th>복구 정책:</th>
@@ -302,7 +303,7 @@ function ClusterName() {
                                                 </tr>
                                                 <tr>
                                                     <th>칩셋/펌웨어 유형:</th>
-                                                    <td>UEFI의 Q35 칩셋</td>
+                                                    <td>{cluster?.biosType}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -316,7 +317,7 @@ function ClusterName() {
                                                 </tr>
                                                 <tr>
                                                     <th>가상 머신 수:</th>
-                                                    <td>0</td>
+                                                    <td>{cluster?.vmSize?.allCnt}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>총 볼륨 수:</th>
