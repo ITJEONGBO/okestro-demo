@@ -60,6 +60,5 @@ fun Event.toEventVo(): EventVo {
 		correlationId { this@toEventVo.correlationId()?: "" }
 	}
 }
-
 fun List<Event>.toEventVos(): List<EventVo> =
 	this@toEventVos.map { it.toEventVo() }
