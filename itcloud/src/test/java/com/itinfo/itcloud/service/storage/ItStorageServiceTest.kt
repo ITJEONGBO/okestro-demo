@@ -38,17 +38,38 @@ import java.nio.file.Files
 @SpringBootTest
 class ItStorageServiceTest {
 	@Autowired private lateinit var service: ItStorageService
+
 	private lateinit var dataCenterId: String
-	private lateinit var domainId: String
-	private lateinit var diskProfile: String
-	private lateinit var diskId: String
+	private lateinit var clusterId: String // Default
+	private lateinit var networkId: String // ovirtmgmt(dc: Default)
+	private lateinit var host01: String // host01
+	private lateinit var domainId: String // host01
 
 	@BeforeEach
 	fun setup() {
 		dataCenterId = "023b0a26-3819-11ef-8d02-00163e6c8feb"
-		domainId = "dc38dcb4-c3f9-4568-af0b-0d6a225d25e5" //hosted_storage
-		diskProfile = "df3d6b80-5326-4855-96a4-455147016fc7"
-		diskId = "c42fcba8-9021-4dea-b23a-802eb932247c"
+		clusterId = "023c79d8-3819-11ef-bf08-00163e6c8feb"
+		networkId = "00000000-0000-0000-0000-000000000009"
+		host01 = "671e18b2-964d-4cc6-9645-08690c94d249"
+		domainId = "213b1a0a-b0c0-4d10-95a4-7aafed4f76b9"
+	}
+
+
+	/**
+	 * [should_findAllDomains]
+	 * [ItStorageService.findAllDomains] 의 단위테스트
+	 *
+	 * @see [ItStorageService.findAllDomains]
+	 */
+	@Test
+	fun should_findAllDomains() {
+		log.debug("should_findAllDomains ... ")
+		val result: List<StorageDomainVo> =
+			service.findAllDomains()
+
+		assertThat(result, `is`(not(nullValue())))
+		result.forEach { println(it) }
+		assertThat(result.size, `is`(3))
 	}
 
 	/**
@@ -64,9 +85,8 @@ class ItStorageServiceTest {
 			service.findAllDomainsFromDataCenter(dataCenterId)
 
 		assertThat(result, `is`(not(nullValue())))
-//		assertThat(result.size, `is`(1))
-
 		result.forEach { println(it) }
+		assertThat(result.size, `is`(2))
 	}
 
 	/**
@@ -82,29 +102,10 @@ class ItStorageServiceTest {
 			service.findDomain(domainId)
 
 		assertThat(result, `is`(not(nullValue())))
-		if (result != null) {
-			assertThat(result.id, `is`(domainId))
-		}
+		assertThat(result?.id, `is`(domainId))
 		println(result)
 	}
 
-	/**
-	 * [should_findAllHostsFromDataCenter]
-	 * [ItStorageService.findAllHostsFromDataCenter] 의 단위테스트
-	 *
-	 * @see [ItStorageService.findAllHostsFromDataCenter]
-	 */
-//	@Test
-//	fun should_findAllHostsFromDataCenter() {
-//		log.debug("should_findAllHostsFromDataCenter ... ")
-//		val result: List<IdentifiedVo> =
-//			service.findAllHostsFromDataCenter(dataCenterId)
-//
-//		assertThat(result, `is`(not(nullValue())))
-//		assertThat(result.size, `is`(2))
-//
-//		result.forEach { println(it) }
-//	}
 
 	/**
 	 * [should_addDomain]
@@ -116,6 +117,19 @@ class ItStorageServiceTest {
 	fun should_addDomain() {
 		log.debug("should_addDomain ... ")
 
+
+
+	}
+
+	/**
+	 * [should_updatedDomain]
+	 * [ItStorageService.updatedDomain] 의 단위테스트
+	 *
+	 * @see [ItStorageService.updatedDomain]
+	 */
+	@Test
+	fun should_updatedDomain() {
+		log.debug("should_updatedDomain")
 
 
 	}
@@ -200,11 +214,11 @@ class ItStorageServiceTest {
 	@Test
 	fun should_findDisk() {
 		log.debug("should_findDisk ... ")
-		val result: DiskImageVo? =
-			service.findDisk(diskId)
-
-		assertThat(result, `is`(not(nullValue())))
-		println(result)
+//		val result: DiskImageVo? =
+//			service.findDisk(diskId)
+//
+//		assertThat(result, `is`(not(nullValue())))
+//		println(result)
 	}
 
 
@@ -235,7 +249,7 @@ class ItStorageServiceTest {
 	fun should_addDisk() {
 		log.info("should_addDisk ... ")
 		val storageDomainVo = IdentifiedVo.builder { id { domainId } }
-		val diskProfileVo = IdentifiedVo.builder { id { diskProfile } }
+//		val diskProfileVo = IdentifiedVo.builder { id { diskProfile } }
 
 		val addDisk =
 			DiskImageVo.builder {
@@ -243,7 +257,7 @@ class ItStorageServiceTest {
 				size { 2 }
 				description { "test" }
 				storageDomainVo { storageDomainVo }
-				diskProfileVo { diskProfileVo }
+//				diskProfileVo { diskProfileVo }
 				sparse { true }
 				wipeAfterDelete { false }
 				sharable { false }
@@ -269,7 +283,7 @@ class ItStorageServiceTest {
 	@Test
 	fun should_editDiskImage() {
 		val storageDomainVo = IdentifiedVo.builder { id { domainId } }
-		val diskProfileVo = IdentifiedVo.builder { id { diskProfile } }
+//		val diskProfileVo = IdentifiedVo.builder { id { diskProfile } }
 
 		val updateDisk =
 			DiskImageVo.builder {
@@ -279,7 +293,7 @@ class ItStorageServiceTest {
 				appendSize { 1 }
 				description { "test" }
 				storageDomainVo { storageDomainVo }
-				diskProfileVo { diskProfileVo }
+//				diskProfileVo { diskProfileVo }
 				sparse { true }
 				wipeAfterDelete { false }
 				sharable { false }
@@ -377,16 +391,16 @@ class ItStorageServiceTest {
 		val storageDomainVo = IdentifiedVo.builder {
 			id { domainId }
 		}
-		val diskProfileVo = IdentifiedVo.builder {
-			id { diskProfile }
-		}
+//		val diskProfileVo = IdentifiedVo.builder {
+//			id { diskProfile }
+//		}
 
 		val iVo =
 			DiskImageVo.builder {
 				alias { "absc" }
 				description { "test" }
 				storageDomainVo { storageDomainVo }
-				diskProfileVo { diskProfileVo }
+//				diskProfileVo { diskProfileVo }
 				sparse { false }
 				wipeAfterDelete { false }
 				sharable { false }

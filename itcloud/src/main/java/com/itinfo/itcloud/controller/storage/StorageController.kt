@@ -26,28 +26,26 @@ import java.io.IOException
 class StorageController: BaseController() {
 	@Autowired private lateinit var iStorage: ItStorageService
 
-
 	@ApiOperation(
 		httpMethod="GET",
-		value="/domains",
-		notes="Domain(s) 목록, dashboard 용"
+		value="스토리지 도메인 목록",
+		notes="전체 스토레제 도메인 목록을 보여준다"
 	)
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@GetMapping("Domains")
+	@GetMapping("/domains")
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
-	fun findAllDomains(
+	fun domains(
 	): ResponseEntity<List<StorageDomainVo>> {
-		log.info("/storages/domains ... Domain(s) 목록")
+		log.info("/storages/domains ... 스토리지 도메인 목록")
 		return ResponseEntity.ok(iStorage.findAllDomains())
 	}
 
 
 	@ApiOperation(
 		httpMethod="GET",
-//		value="/domains",
 		value="/{dataCenterId}/domains",
 		notes="Domain(s) 목록"
 	)

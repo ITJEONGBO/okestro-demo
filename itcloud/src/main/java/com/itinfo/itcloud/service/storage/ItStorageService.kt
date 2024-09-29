@@ -74,6 +74,15 @@ interface ItStorageService {
 	@Throws(Error::class)
 	fun addDomain(storageDomainVo: StorageDomainVo): StorageDomainVo?
 	/**
+	 * [ItStorageService.importDomain]
+	 * 도메인 가져오기
+	 *
+	 * @param storageDomainVo [StorageDomainVo]
+	 * @return [StorageDomainVo]?
+	 */
+	@Throws(Error::class)
+	fun importDomain(storageDomainVo: StorageDomainVo): StorageDomainVo?
+	/**
 	 * [ItStorageService.updatedDomain]
 	 * 도메인 관리(편집)
 	 *
@@ -86,7 +95,7 @@ interface ItStorageService {
 	 * [ItStorageService.removeDomain]
 	 * 도메인 삭제
 	 *
-	 * @param storageDomainId [String] 도메인ID
+	 * @param storageDomainId [String] 도메인 ID
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
@@ -252,47 +261,6 @@ interface ItStorageService {
 	 */
 	@Throws(Error::class)
 	fun findAllPermissionsFromDisk(diskId: String): List<PermissionVo>
-
-//	/**
-//	 * [ItStorageService.findAllDisksFromDataCenter]
-//	 * 데이터센터 스토리지도메인 - 디스크 목록
-//	 *
-//	 * @param dataCenterId [String] 데이터센터 아이디 밑에 있는 디스크들
-//	 * @return List<[DiskImageVo]> 디스크 정보 목록
-//	 */
-//	@Throws(Error::class)
-//	fun findAllDisksFromDataCenter(dataCenterId: String): List<DiskImageVo>
-//	/**
-//	 * [ItStorageService.findAllNetworksFromDataCenter]
-//	 * 데이터센터 밑에 있는 네트워크 목록
-//	 *
-//	 * @param dataCenterId [String] 데이터센터 ID
-//	 * @return List<[NetworkVo]> 네트워크 목록
-//	 *//*
-//	@Throws(Error::class)
-//	fun findAllNetworksFromDataCenter(dataCenterId: String): List<NetworkVo>
-//	*//**
-//	 * [ItStorageService.findAllClustersFromDataCenter]
-//	 * 데이터센터 밑에 클러스터 목록
-//	 *
-//	 * @param dataCenterId [String] 데이터센터ID
-//	 * @return List<[ClusterVo]> 클러스터 목록
-//	 *//*
-//	@Throws(Error::class)
-//	fun findAllClustersFromDataCenter(dataCenterId: String): List<ClusterVo>
-//*/
-
-//region:나중
-/*
-	LunCreateVo setDiskLun(String dcId);	 // 디스크-lun: 생성 창
-	CommonVo<Boolean> addDiskLun(LunCreateVo lun);	  // 디스크-lun: 생성
-	CommonVo<Boolean> editDiskLun(LunCreateVo lun);	 // 디스크-lun: 편집
-	CommonVo<Boolean> cancelUpload(String diskId); // 업로드 취소
-	CommonVo<Boolean> pauseUpload(String diskId);  // 업로드 일시정지
-	CommonVo<Boolean> resumeUpload(String diskId); // 업로드 재시작
-	CommonVo<Boolean> downloadDisk();			   // 디스크 다운로드
- */
-//endregion
 }
 
 @Service
@@ -300,7 +268,7 @@ class StorageServiceImpl(
 
 ): BaseService(), ItStorageService {
 	override fun findAllDomains(): List<StorageDomainVo> {
-		log.debug("findAllStorageDomains ...")
+		log.info("findAllStorageDomains ...")
 		val res: List<StorageDomain> =
 			conn.findAllStorageDomains()
 				.getOrDefault(listOf())
@@ -309,7 +277,7 @@ class StorageServiceImpl(
 
 	@Throws(Error::class)
 	override fun findAllDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
-		log.debug("findAllStorageDomainsFromDataCenter ... dcId: $dataCenterId")
+		log.info("findAllStorageDomainsFromDataCenter ... dcId: $dataCenterId")
 		val res: List<StorageDomain> =
 			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
 				.getOrDefault(listOf())
@@ -326,7 +294,6 @@ class StorageServiceImpl(
 	}
 
 
-
 	// requires: name, type, host, and storage attributes. Identify the host attribute with the id or name attributes.
 	// To add a new storage domain with specified name, type, storage.type, storage.address, and storage.path,
 	// and using a host with an id 123, send a request like this
@@ -337,6 +304,10 @@ class StorageServiceImpl(
 			conn.addStorageDomain(storageDomainVo.toAddStorageDomainBuilder(conn))
 				.getOrNull()
 		return res?.toStorageDomainVo(conn)
+	}
+
+	override fun importDomain(storageDomainVo: StorageDomainVo): StorageDomainVo? {
+		TODO("Not yet implemented")
 	}
 
 	override fun updatedDomain(storageDomainVo: StorageDomainVo): StorageDomainVo? {
