@@ -285,10 +285,11 @@ class ItNetworkServiceTest {
 			service.findAllVmsFromNetwork(networkId)
 
 		assertThat(result, `is`(not(nullValue())))
-//		assertThat(result.size, `is`(7))
-
-		println("---" + result.size)
 		result.forEach { println(it) }
+		result.forEach { vmVo ->
+			println( vmVo.nicVos.size )
+		}
+		assertThat(result.size, `is`(7))
 	}
 
 	/**

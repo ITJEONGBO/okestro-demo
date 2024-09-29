@@ -6,6 +6,7 @@ import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.model.computing.ClusterVo
+import com.itinfo.itcloud.model.computing.DataCenterVo
 import com.itinfo.itcloud.model.computing.HostVo
 import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.setting.PermissionVo
@@ -40,7 +41,7 @@ class NetworkController: BaseController() {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	fun networks(): ResponseEntity<List<NetworkVo>> {
-		log.info("GET /api/v1/networks ... 네트워크 목록")
+		log.info("/networks ... 네트워크 목록")
 		return ResponseEntity.ok(iNetwork.findAll())
 	}
 
@@ -52,6 +53,9 @@ class NetworkController: BaseController() {
 	@ApiImplicitParams(
 		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
 	@GetMapping("/{networkId}")
 	@ResponseBody
 	fun network(
@@ -59,26 +63,26 @@ class NetworkController: BaseController() {
 	): ResponseEntity<NetworkVo?> {
 		if (networkId.isNullOrEmpty())
 			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-		log.info("--- Network 일반")
+		log.info("/networks/{} ... 네트워크 상세정보", networkId)
 		return ResponseEntity.ok(iNetwork.findOne(networkId))
 	}
 
-
 	@ApiOperation(
 		httpMethod="POST",
-		value="/networks",
+		value="네트워크 생성",
 		notes="네트워크를 생성한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="network", value="네트워크", dataTypeClass=NetworkVo::class, required=true, paramType="body")
 	)
 	@ApiResponses(
-		ApiResponse(code = 201, message = "CREATED")
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
 	)
 	@PostMapping
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
-	fun addNetwork(
+	fun add(
 		@RequestBody network: NetworkVo? = null
 	): ResponseEntity<NetworkVo?> {
 		if (network == null)
@@ -87,72 +91,261 @@ class NetworkController: BaseController() {
 		return ResponseEntity.ok(iNetwork.add(network))
 	}
 
-
 	@ApiOperation(
 		httpMethod="PUT",
-		value="/networks/{networkId}",
+		value="네트워크 편집",
 		notes="네트워크를 편집한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="network", value="네트워크", dataTypeClass=NetworkVo::class, paramType="body")
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
 	)
 	@PutMapping("/{networkId}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun editNetwork(
+	fun update(
 		@PathVariable networkId: String? = null,
-		@RequestBody networkVo: NetworkVo? = null,
+		@RequestBody network: NetworkVo? = null,
 	): ResponseEntity<NetworkVo?> {
-		log.info("/networks/{} ... Network 편집", networkId)
+		log.info("/networks/{} ... 네트워크 편집", networkId)
 		if (networkId.isNullOrEmpty())
 			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-		if (networkVo == null)
+		if (network == null)
 			throw ErrorPattern.NETWORK_VO_INVALID.toException()
-		return ResponseEntity.ok(iNetwork.update(networkVo))
+		return ResponseEntity.ok(iNetwork.update(network))
 	}
 
 	@ApiOperation(
 		httpMethod="DELETE",
-		value="/networks/{networkId}",
+		value="네트워크 삭제",
 		notes="네트워크를 삭제한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
 	@DeleteMapping("/{networkId}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun deleteNetwork(
+	fun remove(
 		@PathVariable networkId: String? = null,
 	): ResponseEntity<Boolean> {
 		if (networkId.isNullOrEmpty())
 			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-		log.info("/networks/{} ... Network 삭제", networkId)
+		log.info("/networks/{} ... 네트워크 삭제", networkId)
 		return ResponseEntity.ok(iNetwork.remove(networkId))
 	}
 
 	@ApiOperation(
-		httpMethod="PUT",
-		value="/networks/import/settings",
-		notes="네트워크 가져오기 창"
+		httpMethod="GET",
+		value="네트워크 가져오기 창",
+		notes="네트워크 가져오기 창 - 네트워크 공급자 목록을 가져온다"
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
 	)
 	@GetMapping("/import/settings")
 	@ResponseBody
-	fun setImportNetwork(): ResponseEntity<IdentifiedVo?> {
-		log.info("--- Network 가져오기 창(openstack networkProvider 목록)")
+	@ResponseStatus(HttpStatus.OK)
+	fun importProviders(): ResponseEntity<IdentifiedVo?> {
+		log.info("/networks/import/settings ... 네트워크 가져오기 창")
 		return ResponseEntity.ok(iNetwork.findNetworkProviderFromNetwork())
 	}
 
-	// TODO: 정리필요
-	// 네트워크 가져오기
-//	@PostMapping("/import")
-//	fun importNw(): ResponseEntity<Boolean> {
-//		log.info("--- Network 가져오기")
-//		return ResponseEntity.ok(iNetwork.importNetwork())
-//	}
+	@ApiOperation(
+		httpMethod="GET",
+		value="네트워크 가져오기 창",
+		notes="네트워크 가져오기 창 - 네트워크 공급자가 가지고 있는 네트워크 목록을 가져온다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="providerId", value="공급자 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/import/settings/{}")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun providers(
+		@PathVariable providerId: String? = null
+	): ResponseEntity<List<OpenStackNetworkVo?>> {
+		if (providerId.isNullOrEmpty())
+			throw ErrorPattern.NETWORK_NOT_FOUND.toException()
+		log.info("/networks/import/setting/{} ... 네트워크 가져오기 창", providerId)
+		return ResponseEntity.ok(iNetwork.findAllOpenStackNetworkFromNetworkProvider(providerId))
+	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="네트워크 가져오기 창",
+		notes="네트워크 가져오기 창 - 네트워크를 가져올 수 있는 데이터센터 목록"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="openstackNetworkId", value="공급자 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/import/settingDatacenter/{}")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun providersDatacenter(
+		@PathVariable openstackNetworkId: String? = null
+	): ResponseEntity<List<DataCenterVo?>> {
+		if (openstackNetworkId.isNullOrEmpty())
+			throw ErrorPattern.NETWORK_NOT_FOUND.toException()
+		log.info("/networks/import/settingDatacenter/{} ... 네트워크 가져오기 창", openstackNetworkId)
+		return ResponseEntity.ok(iNetwork.findAllDataCentersFromNetwork(openstackNetworkId))
+	}
+
+	@ApiOperation(
+		httpMethod="POST",
+		value="네트워크 가져오기",
+		notes="네트워크를 가져온다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="openstackNetwork", value="네트워크", dataTypeClass=Array<OpenStackNetworkVo>::class, required=true, paramType="body")
+	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
+	@PostMapping("/import")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	fun import(
+		@RequestBody openStackNetworkVos: List<OpenStackNetworkVo>? = null
+	): ResponseEntity<Boolean?> {
+		if (openStackNetworkVos == null)
+			throw ErrorPattern.NETWORK_VO_INVALID.toException()
+		log.info("/networks/import ... 네트워크 가져오기")
+		return ResponseEntity.ok(iNetwork.importNetwork(openStackNetworkVos))
+	}
+
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="네트워크 클러스터 목록",
+		notes="선택된 네트워크의 클러스터 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{networkId}/clusters")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun clusters(
+		@PathVariable networkId: String? = null,
+	): ResponseEntity<List<ClusterVo>> {
+		log.info("/networks/{}/clusters ... 네트워크 클러스터 목록", networkId)
+		if (networkId.isNullOrEmpty())
+			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
+		return ResponseEntity.ok(iNetwork.findAllClustersFromNetwork(networkId))
+	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="네트워크 호스트 목록",
+		notes="선택된 네트워크의 호스트 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{networkId}/hosts")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun hosts(
+		@PathVariable networkId: String? = null,
+	): ResponseEntity<List<HostVo>> {
+		log.info("/networks/{}/hosts ... 네트워크 호스트 목록", networkId)
+		if (networkId.isNullOrEmpty())
+			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
+		return ResponseEntity.ok(iNetwork.findAllHostsFromNetwork(networkId))
+	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value = "네트워크 가상머신 목록",
+		notes = "선택된 네트워크의 가상머신 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{networkId}/vms")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun vms(
+		@PathVariable networkId: String? = null,
+	): ResponseEntity<List<VmVo>> {
+		if (networkId.isNullOrEmpty())
+			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
+		log.info("/networks/{}/vms ... 네트워크 가상머신 목록", networkId)
+		return ResponseEntity.ok(iNetwork.findAllVmsFromNetwork(networkId))
+	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value = "네트워크 템플릿 목록",
+		notes = "선택된 네트워크의 템플릿 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{networkId}/templates")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun templates(
+		@PathVariable networkId: String? = null,
+	): ResponseEntity<List<NetworkTemplateVo>> {
+		if (networkId.isNullOrEmpty())
+			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
+		log.info("/networks/{}/templates ... 네트워크 템플릿 목록", networkId)
+		return ResponseEntity.ok(iNetwork.findAllTemplatesFromNetwork(networkId))
+	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value = "네트워크 권한 목록",
+		notes = "선택된 네트워크의 권한 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{networkId}/permissions")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun permissions(
+		@PathVariable networkId: String? = null,
+	): ResponseEntity<List<PermissionVo>> {
+		if (networkId.isNullOrEmpty())
+			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
+		log.info("/networks/{}/permissions ... 네트워크 권한 목록", networkId)
+		return ResponseEntity.ok(iNetwork.findAllPermissionsFromNetwork(networkId))
+	}
 
 
 	// region: vnicProfile
+
 	@Autowired private lateinit var iVnic: ItVnicProfileService
 
 	@ApiOperation(
@@ -163,251 +356,133 @@ class NetworkController: BaseController() {
 	@ApiImplicitParams(
 		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
 	)
-	@GetMapping("/{networkId}/vnics")
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{networkId}/vnicProfiles")
 	@ResponseBody
-	fun vnic(
+	fun vnics(
 		@PathVariable networkId: String? = null,
 	): ResponseEntity<List<VnicProfileVo>> {
 		if (networkId.isNullOrEmpty())
 			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-		log.info("--- Network vnic 프로파일")
+		log.info("/networks/{}/vnicProfiles ... 네트워크 vnic profile 목록", networkId)
 		return ResponseEntity.ok(iVnic.findAllVnicProfilesFromNetwork(networkId))
 	}
 
-//	@ApiImplicitParams(
-//		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-//	)
-//	@GetMapping("/{networkId}/vnics/settings")
-//	@ResponseBody
-//	fun setVnic(
-//		@PathVariable networkId: String? = null,
-//	): ResponseEntity<VnicProfileVo?> {
-//		if (networkId.isNullOrEmpty())
-//			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-//		log.info("--- Network vnic 프로파일 생성창")
-//		return ResponseEntity.ok(iVnic.findOneVnicProfile(networkId) }
-//	}
-//
-//	@ApiImplicitParams(
-//		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-//		ApiImplicitParam(name="vnicProfile", value="VNIC 생성", dataTypeClass=VnicProfileVo::class, paramType="body"),
-//	)
-//	@PostMapping("/{networkId}/vnic")
-//	@ResponseBody
-//	fun addVnic(
-//		@PathVariable networkId: String?,
-//		@RequestBody vnicProfile: VnicProfileVo?
-//	): ResponseEntity<VnicProfileVo?> {
-//		log.info("--- Network vnic 프로파일 생성")
-//		if (networkId.isNullOrEmpty())
-//			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-//		if (vnicProfile == null)
-//			throw ErrorPattern.VNIC_PROFILE_VO_INVALID.toException()
-//		return ResponseEntity.ok(iVnic.addVnicProfileByNetwork(networkId, vnicProfile) }
-//	}
-//
-//	@ApiImplicitParams(
-//		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-//		ApiImplicitParam(name="vnicProfileId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-//	)
-//	@GetMapping("/{networkId}/vnics/{vnicProfileId}/settings")
-//	@ResponseBody
-//	fun setEditVnic(
-//		@PathVariable networkId: String? = null,
-//		@PathVariable vnicProfileId: String? = null,
-//	): ResponseEntity<VnicProfileVo?> {
-//		if (networkId.isNullOrEmpty())
-//			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-//		if (vnicProfileId == null)
-//			throw ErrorPattern.VNIC_PROFILE_ID_NOT_FOUND.toException()
-//		log.info("--- Network vnic프로파일 편집창")
-//		return Res.success { iVnic.setEditVnicProfileByNetwork(networkId, vnicProfileId) }
-//	}
-//
-//	@ApiImplicitParams(
-//		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-//		ApiImplicitParam(name="vnicProfileId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-//		ApiImplicitParam(name="vnicProfile", value="VNIC 생성", dataTypeClass=VnicProfileVo::class, paramType="body"),
-//	)
-//	@PutMapping("/{networkId}/vnics/{vnicProfileId}")
-//	@ResponseBody
-//	fun editVnic(
-//		@PathVariable networkId: String? = null,
-//		@PathVariable vnicProfileId: String? = null,
-//		@RequestBody vnicProfile: VnicProfileVo? = null,
-//	): ResponseEntity<VnicProfileVo?> {
-//		log.info("--- Network vnic프로파일 편집")
-//		if (networkId.isNullOrEmpty())
-//			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-//		if (vnicProfileId.isNullOrEmpty())
-//			throw ErrorPattern.VNIC_PROFILE_ID_NOT_FOUND.toException()
-//		if (vnicProfile == null)
-//			throw ErrorPattern.VNIC_PROFILE_VO_INVALID.toException()
-//		return ResponseEntity.ok(iVnic.updateVnicProfileFromNetwork(networkId, vnicProfileId, vnicProfile) }
-//	}
-//
-//	@ApiImplicitParams(
-//		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-//		ApiImplicitParam(name="vnicProfileId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-//	)
-//	@DeleteMapping("/{id}/vnics/{vcId}")
-//	@ResponseBody
-//	fun deleteVnic(
-//		@PathVariable networkId: String? = null,
-//		@PathVariable vnicProfileId: String? = null,
-//	): ResponseEntity<Boolean> {
-//		if (networkId.isNullOrEmpty())
-//			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-//		if (vnicProfileId.isNullOrEmpty())
-//			throw ErrorPattern.VNIC_PROFILE_ID_NOT_FOUND.toException()
-//		log.info("--- Network vnic프로파일 삭제")
-//		return ResponseEntity.ok(iVnic.deleteVnicProfileByNetwork(networkId, vnicProfileId) }
-//	}
+	@ApiOperation(
+		httpMethod="GET",
+		value="네트워크 vnic 프로파일",
+		notes="선택된 네트워크의 vnic 프로파일의 상세정보를 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="vnicProfileId", value="Vnic Profile ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{networkId}/vnicProfiles/{vnicProfileId}")
+	@ResponseBody
+	fun vnic(
+		@PathVariable networkId: String? = null,
+		@PathVariable vnicProfileId: String? = null,
+	): ResponseEntity<VnicProfileVo?> {
+		if (networkId.isNullOrEmpty())
+			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
+		if (vnicProfileId.isNullOrEmpty())
+			throw ErrorPattern.VNIC_PROFILE_ID_NOT_FOUND.toException()
+		log.info("/networks/{}/vnicProfiles/{} ... 네트워크 vnic profile", networkId, vnicProfileId)
+		return ResponseEntity.ok(iVnic.findVnicProfile(vnicProfileId))
+	}
+
+	@ApiOperation(
+		httpMethod="POST",
+		value="vnic 프로파일 생성",
+		notes="vnic 프로파일을 생성한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="vnicProfile", value="Vnic Profile", dataTypeClass=VnicProfileVo::class, required=true, paramType="body")
+	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
+	@PostMapping("/{networkId}/vnicProfiles")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	fun addVnic(
+		@PathVariable networkId: String? = null,
+		@RequestBody vnicProfile: VnicProfileVo? = null
+	): ResponseEntity<VnicProfileVo?> {
+		if (vnicProfile == null)
+			throw ErrorPattern.VNIC_PROFILE_VO_INVALID.toException()
+		log.info("/networks/{}/vnicProfiles ... vnicProfile 생성", networkId)
+		return ResponseEntity.ok(iVnic.addVnicProfile(vnicProfile))
+	}
+
+	@ApiOperation(
+		httpMethod="PUT",
+		value="vnic 프로파일 편집",
+		notes="vnic 프로파일을 편집한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="vnicProfileId", value="Vnic Profile ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="vnicProfile", value="Vnic Profile", dataTypeClass=VnicProfileVo::class, paramType="body")
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@PutMapping("/{networkId}/vnicProfiles/{vnicProfileId}")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun updateVnic(
+		@PathVariable networkId: String? = null,
+		@PathVariable vnicProfileId: String? = null,
+		@RequestBody vnicProfile: VnicProfileVo? = null,
+	): ResponseEntity<VnicProfileVo?> {
+		log.info("/networks/{}/vnicProfiles/{} ... vnicProfile 생성", networkId, vnicProfileId)
+		if (networkId.isNullOrEmpty())
+			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
+		if (vnicProfileId.isNullOrEmpty())
+			throw ErrorPattern.VNIC_PROFILE_ID_NOT_FOUND.toException()
+		if (vnicProfile == null)
+			throw ErrorPattern.VNIC_PROFILE_NOT_FOUND.toException()
+		return ResponseEntity.ok(iVnic.updateVnicProfile(vnicProfile))
+	}
+
+	@ApiOperation(
+		httpMethod="DELETE",
+		value="vnic 프로파일 삭제",
+		notes="vnic 프로파일을 삭제한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="vnicProfileId", value="Vnic Profile ID", dataTypeClass=String::class, required=true, paramType="path")
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@DeleteMapping("/{networkId}/vnicProfiles/{vnicProfileId}")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun removeVnic(
+		@PathVariable networkId: String? = null,
+		@PathVariable vnicProfileId: String? = null,
+	): ResponseEntity<Boolean> {
+		if (networkId.isNullOrEmpty())
+			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
+		if (vnicProfileId.isNullOrEmpty())
+			throw ErrorPattern.VNIC_PROFILE_ID_NOT_FOUND.toException()
+		log.info("/{}/vnicProfiles/{} ... vnic 프로파일 삭제", networkId, vnicProfileId)
+		return ResponseEntity.ok(iVnic.removeVnicProfile(vnicProfileId))
+	}
+
+
+
 	// endregion
-
-
-
-	// 클러스터 목록
-	@GetMapping("/{networkId}/clusters")
-	@ApiOperation(value = "네트워크 클러스터 목록", notes = "선택된 네트워크의 클러스터 목록을 조회한다")
-	@ApiImplicitParams(
-		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ResponseBody
-	fun cluster(
-		@PathVariable networkId: String? = null,
-	): ResponseEntity<List<ClusterVo>> {
-		log.info("--- Network 클러스터")
-		if (networkId.isNullOrEmpty())
-			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-		return ResponseEntity.ok(iNetwork.findAllClustersFromNetwork(networkId))
-	}
-
-	// 클러스터 네트워크 관리창
-//	@ApiImplicitParams(
-//		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-//		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
-//	)
-//	@GetMapping("/{networkId}/clusters/{clusterId}/settings")
-//	@ResponseBody
-//	fun getUsage(
-//		@PathVariable networkId: String? = null,
-//		@PathVariable clusterId: String? = null,
-//	): ResponseEntity<NetworkUsageVo> {
-//		log.info("--- Network  네트워크 관리 창")
-//		if (networkId.isNullOrEmpty())
-//			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-//		if (clusterId.isNullOrEmpty())
-//			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
-//		return ResponseEntity.ok(iNetwork.getUsage(networkId, clusterId) }
-//	}
-
-	@ApiOperation(value = "네트워크 호스트 목록", notes = "선택된 네트워크의 호스트 목록을 조회한다")
-	@ApiImplicitParams(
-		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@GetMapping("/{networkId}/hosts")
-	@ResponseBody
-	fun host(
-		@PathVariable networkId: String? = null,
-	): ResponseEntity<List<HostVo>> {
-		log.info("--- Network 호스트")
-		if (networkId.isNullOrEmpty())
-			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-		return ResponseEntity.ok(iNetwork.findAllHostsFromNetwork(networkId))
-	}
-
-	@GetMapping("/{networkId}/vms")
-	@ApiOperation(value = "네트워크 가상머신 목록", notes = "선택된 네트워크의 가상머신 목록을 조회한다")
-	@ApiImplicitParams(
-		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ResponseBody
-	fun findAllVmsFromNetwork(
-		@PathVariable networkId: String? = null,
-	): ResponseEntity<List<VmVo>> {
-		if (networkId.isNullOrEmpty())
-			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-		log.info("--- Network 가상머신")
-		return ResponseEntity.ok(iNetwork.findAllVmsFromNetwork(networkId))
-	}
-
-	// 가상머신 nic 제거
-/*
-	@ApiImplicitParams(
-		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		ApiImplicitParam(name="nicId", value="네트워크 인터페이스 컨트롤러 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@DeleteMapping("/{networkId}/vms/{vmId}/{nicId}")
-	@ResponseBody
-	fun deleteVmNic(
-		@PathVariable networkId: String? = null,
-		@PathVariable vmId: String? = null,
-		@PathVariable nicId: String? = null,
-	): ResponseEntity<Boolean> {
-		if (networkId.isNullOrEmpty())
-			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-		if (vmId.isNullOrEmpty())
-			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		if (nicId.isNullOrEmpty())
-			throw ErrorPattern.NIC_ID_NOT_FOUND.toException()
-		log.info("--- Network 가상머신 nic 제거")
-		return ResponseEntity.ok(iNetwork.deleteVmNicFromNetwork(/* networkId, */vmId, nicId) }
-	}
-*/
-	@ApiOperation(value = "네트워크 템플릿 목록", notes = "선택된 네트워크의 템플릿 목록을 조회한다")
-	@ApiImplicitParams(
-		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@GetMapping("/{networkId}/templates")
-	@ResponseBody
-	fun findAllTemplatesFromNetwork(
-		@PathVariable networkId: String? = null,
-	): ResponseEntity<List<NetworkTemplateVo>> {
-		if (networkId.isNullOrEmpty())
-			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-		log.info("--- Network 템플릿")
-		return ResponseEntity.ok(iNetwork.findAllTemplatesFromNetwork(networkId))
-	}
-/*
-	@ApiOperation(value = "템플릿 제거", notes = "선택된 네트워크의 템플릿 제거한다")
-	@ApiImplicitParams(
-		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		ApiImplicitParam(name="templateId", value="탬플릿 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		ApiImplicitParam(name="nicId", value="네트워크 인터페이스 컨트롤러 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@DeleteMapping("/{networkId}/templates/{templateId}/{nicId}")
-	@ResponseBody
-	fun deleteTempNic(
-		@PathVariable networkId: String? = null,
-		@PathVariable templateId: String? = null,
-		@PathVariable nicId: String? = null
-	): ResponseEntity<Boolean> {
-		if (networkId.isNullOrEmpty())
-			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-		if (templateId.isNullOrEmpty())
-			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
-		if (nicId.isNullOrEmpty())
-			throw ErrorPattern.NIC_ID_NOT_FOUND.toException()
-		log.info("--- Network 템플릿 nic 제거")
-		return ResponseEntity.ok(iNetwork.deleteTemplateNicFromNetwork(templateId, nicId) }
-	}
-*/
-	@ApiOperation(value = "네트워크 권한 목록", notes = "선택된 네트워크의 권한 목록을 조회한다")
-	@ApiImplicitParams(
-		ApiImplicitParam(name="networkId", value="네트워크 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@GetMapping("/{networkId}/permissions")
-	@ResponseBody
-	fun permission(
-		@PathVariable networkId: String? = null,
-	): ResponseEntity<List<PermissionVo>> {
-		if (networkId.isNullOrEmpty())
-			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
-		log.info("--- Network 권한")
-		return ResponseEntity.ok(iNetwork.findAllPermissionsFromNetwork(networkId))
-	}
 
 	companion object {
 		private val log by LoggerDelegate()

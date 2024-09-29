@@ -135,6 +135,7 @@ interface ItNetworkService {
 	fun findAllVmsFromNetwork(networkId: String): List<VmVo>
 	/**
 	 * [ItNetworkService.findAllTemplatesFromNetwork]
+	 * 네트워크 템플릿 목록
 	 *
 	 * @param networkId [String] 네트워크 아이디
 	 * @return List<[NetworkTemplateVo]>
@@ -143,6 +144,7 @@ interface ItNetworkService {
 	fun findAllTemplatesFromNetwork(networkId: String): List<NetworkTemplateVo>
 	/**
 	 * [ItNetworkService.findAllPermissionsFromNetwork]
+	 * 네트워크 권한 목록
 	 *
 	 * @param networkId [String] 네트워크 아이디
 	 * @return List<[PermissionVo]>
@@ -253,7 +255,6 @@ class NetworkServiceImpl(
 	override fun importNetwork(openStackNetworkVos: List<OpenStackNetworkVo>): Boolean {
 		log.info("importNetwork ... ")
 		// TODO 되긴하는데 리턴값이 애매함
-
 		openStackNetworkVos.forEach{
 			conn.importOpenStackNetwork(it.id, it.dataCenterVo.id)
 		}
@@ -285,37 +286,34 @@ class NetworkServiceImpl(
 			conn.findAllHosts(follow = "nics")
 				.getOrDefault(listOf())
 				.filter { it.nics().first().networkPresent() && it.nics().first().network().id() == networkId }
-		return res.toHostVos(conn) //TODO
+		return res.toNetworkHostVos(conn) //TODO
 	}
 
 	@Throws(Error::class)
 	override fun findAllVmsFromNetwork(networkId: String): List<VmVo> {
-		// TODO VmVo가 가지고 있는 nicVo가 나옴 (vm -nics)
-		//  근데 ovirt에서는 Nic가 우선  (nic - vm)
-		log.info("getVmsByNetwork ... networkId: {}", networkId)
+		// 출력은 vmvo로 나오지만 내부 nic를 보여주는 방식으로 해야함
+		log.info("findAllVmsFromNetwork ... networkId: {}", networkId)
 		conn.findNetwork(networkId)
 			.getOrNull()?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
 
-		val vms: List<Vm> =
+		val res: List<Vm> =
 			conn.findAllVms(follow = "reporteddevices,nics.vnicprofile")
 				.getOrDefault(listOf())
 				.filter { it.nics().any { nic -> nic.vnicProfile().network().id() == networkId } }
-		return vms.toVmVoFromNetworks(conn)
+		return res.toVmVoFromNetworks(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findAllTemplatesFromNetwork(networkId: String): List<NetworkTemplateVo> {
-		log.info("findTemplatesByNetwork ... network: {}", networkId)
-		// TODO?
+		log.info("findAllTemplatesFromNetwork ... networkId: {}", networkId)
 		conn.findNetwork(networkId)
 			.getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
-		val templates: List<Template> =
+		val res: List<Template> =
 			conn.findAllTemplates(follow = "nics.vnicprofile")
 				.getOrDefault(listOf())
 				.filter { it.nics().any { nic -> nic.vnicProfile().network().id() == networkId }
 		}
-
-		return templates.flatMap { it ->
+		return res.flatMap { it ->
 			it.nics().map { nic -> it.toNetworkTemplateVo(conn, nic) }
 		}
 	}

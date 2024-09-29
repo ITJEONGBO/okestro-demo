@@ -52,10 +52,7 @@ fun Connection.srvOpenStackNetwork(openstackNetworkId: String): OpenstackNetwork
 
 
 fun Connection.importOpenStackNetwork(openstackNetworkId: String, dataCenterId: String): Result<Boolean> = runCatching {
-	this.srvOpenStackNetwork(openstackNetworkId)
-		.import_()
-		.dataCenter(DataCenterBuilder().id(dataCenterId).build())
-		.send()
+	this.srvOpenStackNetwork(openstackNetworkId).import_().dataCenter(DataCenterBuilder().id(dataCenterId).build()).send()
 
 	true
 }.onSuccess {

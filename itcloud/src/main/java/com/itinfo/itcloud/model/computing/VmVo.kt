@@ -699,7 +699,7 @@ fun Vm.toVmVoFromNetwork(conn: Connection): VmVo {
         fqdn { this@toVmVoFromNetwork.fqdn() }
         description { this@toVmVoFromNetwork.description() }
         clusterVo { cluster.fromClusterToIdentifiedVo() }
-        nicVos { vmNic.toNicVosFromVm(conn, this@toVmVoFromNetwork.id()) }
+        nicVos { vmNic.toNetworkFromVms(conn, this@toVmVoFromNetwork.id()) }
     }
 }
 fun List<Vm>.toVmVoFromNetworks(conn: Connection): List<VmVo> =

@@ -5,6 +5,7 @@ import com.itinfo.itcloud.ovirtDf
 import com.itinfo.itcloud.model.*
 import com.itinfo.itcloud.model.network.HostNicVo
 import com.itinfo.itcloud.model.network.toHostNicVos
+import com.itinfo.itcloud.model.network.toNetworkHostNicVos
 import com.itinfo.itcloud.repository.dto.UsageDto
 import com.itinfo.util.ovirt.*
 import org.slf4j.LoggerFactory
@@ -214,19 +215,31 @@ fun Host.toHostMenu(conn: Connection): HostVo {
 fun List<Host>.toHostsMenu(conn: Connection): List<HostVo> =
     this@toHostsMenu.map { it.toHostMenu(conn) }
 
-//fun Host.toNetworkHostVo(conn: Connection): HostVo {
-//    val cluster: Cluster? =
-//        conn.findCluster(this@toHostVo.cluster().id())
-//            .getOrNull()
-//    val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let {
-//        conn.findDataCenter(it).getOrNull()
-//    }
-//
-//    return HostVo.builder {
-//        id { this@toNetworkHostVo.id() }
-//        name { this@toHostVo.name() }
-//    }
-//}
+/**
+ * 네트워크에서 호스트 볼때
+ */
+fun Host.toNetworkHostVo(conn: Connection): HostVo {
+    val cluster: Cluster? =
+        conn.findCluster(this@toNetworkHostVo.cluster().id())
+            .getOrNull()
+    val dataCenter: DataCenter? = cluster?.dataCenter()?.id()?.let {
+        conn.findDataCenter(it).getOrNull()
+    }
+    val hostNics: List<HostNic> =
+        conn.findAllNicsFromHost(this@toNetworkHostVo.id())
+            .getOrDefault(listOf())
+
+    return HostVo.builder {
+        id { this@toNetworkHostVo.id() }
+        name { this@toNetworkHostVo.name() }
+        status { this@toNetworkHostVo.status() }
+        clusterVo { cluster?.fromClusterToIdentifiedVo() }
+        dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
+        hostNicVos { hostNics.toNetworkHostNicVos(conn) }
+    }
+}
+fun List<Host>.toNetworkHostVos(conn: Connection): List<HostVo> =
+    this@toNetworkHostVos.map { it.toNetworkHostVo(conn) }
 
 
 fun Host.toHostVo(conn: Connection): HostVo {
