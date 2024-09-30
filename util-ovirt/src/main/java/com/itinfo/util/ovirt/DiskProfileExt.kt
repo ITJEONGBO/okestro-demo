@@ -31,3 +31,40 @@ fun Connection.findDiskProfile(diskProfileId: String): Result<DiskProfile?> = ru
 	Term.DISK_PROFILE.logFail("상세조회")
 	throw if (it is Error) it.toItCloudException() else it
 }
+
+fun Connection.addDiskProfile(diskProfile: DiskProfile): Result<DiskProfile?> = runCatching {
+	val diskProfileAdd: DiskProfile? =
+		this.srvDiskProfiles().add().profile(diskProfile).send().profile()
+
+	diskProfileAdd ?: throw ErrorPattern.DISK_PROFILE_NOT_FOUND.toError()
+}.onSuccess {
+	Term.DISK_PROFILE.logSuccess("생성")
+}.onFailure {
+	Term.DISK_PROFILE.logFail("생성", it)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.updateDiskProfile(diskProfile: DiskProfile): Result<DiskProfile?> = runCatching {
+	val diskProfileUpdate: DiskProfile? =
+		this.srvDiskProfile(diskProfile.id()).update().profile(diskProfile).send().profile()
+
+	diskProfileUpdate ?: throw ErrorPattern.DISK_PROFILE_NOT_FOUND.toError()
+}.onSuccess {
+	Term.DISK_PROFILE.logSuccess("편집")
+}.onFailure {
+	Term.DISK_PROFILE.logFail("편집", it)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.removeDiskProfile(diskProfileId: String): Result<Boolean> = runCatching {
+	if(this.findDiskProfile(diskProfileId).isFailure){
+		throw ErrorPattern.DISK_PROFILE_NOT_FOUND.toError()
+	}
+	this.srvDiskProfile(diskProfileId).remove().send()
+	true
+}.onSuccess {
+	Term.DISK_PROFILE.logSuccess("삭제")
+}.onFailure {
+	Term.DISK_PROFILE.logFail("삭제", it)
+	throw if (it is Error) it.toItCloudException() else it
+}

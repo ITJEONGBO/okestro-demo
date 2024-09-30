@@ -12,6 +12,7 @@ import org.ovirt.engine.sdk4.services.FileService
 import org.ovirt.engine.sdk4.services.StorageDomainDisksService
 import org.ovirt.engine.sdk4.services.DiskSnapshotsService
 import org.ovirt.engine.sdk4.services.StorageDomainTemplatesService
+import org.ovirt.engine.sdk4.services.StorageDomainVmsService
 import org.ovirt.engine.sdk4.types.*
 
 private fun Connection.srvStorageDomains(): StorageDomainsService =
@@ -32,7 +33,7 @@ fun Connection.findAllStorageDomains(searchQuery: String = ""): Result<List<Stor
 private fun Connection.srvStorageDomain(storageDomainId: String): StorageDomainService =
 	this.srvStorageDomains().storageDomainService(storageDomainId)
 
-fun Connection.findStorageDomain(storageDomainId: String): Result<StorageDomain?> = runCatching {
+fun Connection.findStorageDomain(storageDomainId: String): Result<StorageDomain> = runCatching {
 	this.srvStorageDomain(storageDomainId).get().send().storageDomain()
 }.onSuccess {
 	Term.STORAGE_DOMAIN.logSuccess("상세조회")
@@ -41,8 +42,6 @@ fun Connection.findStorageDomain(storageDomainId: String): Result<StorageDomain?
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.findStorageDomainName(storageDomainId: String): String
-	= this.findStorageDomain(storageDomainId).getOrNull()?.name() ?: ""
 
 fun Connection.addStorageDomain(storageDomain: StorageDomain): Result<StorageDomain?> = runCatching {
 	val storageAdded: StorageDomain? =
@@ -69,34 +68,39 @@ fun Connection.updateStorageDomain(storageDomainId: String, storageDomain: Stora
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.removeStorageDomain(storageId: String, format: Boolean = false): Result<Boolean> = runCatching {
-	if(this.findStorageDomain(storageId).isFailure) {
-		throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
-	}
-	this.srvStorageDomain(storageId).remove().destroy(true).format(format)
-	true
-	// TODO EXpectStorageDomainDeleted()
-}.onSuccess {
-	Term.STORAGE_DOMAIN.logSuccess("삭제", storageId)
-}.onFailure {
-	Term.STORAGE_DOMAIN.logFail("삭제", it, storageId)
-	throw if (it is Error) it.toItCloudException() else it
-}
-
-private fun Connection.srvPermissionsFromStorageDomain(sdId: String): AssignedPermissionsService =
-	this.srvStorageDomain(sdId).permissionsService()
-
-fun Connection.findAllPermissionsFromStorageDomain(storageDomainId: String): Result<List<Permission>> = runCatching {
+fun Connection.removeStorageDomain(storageDomainId: String, format: Boolean = false): Result<Boolean> = runCatching {
 	if(this.findStorageDomain(storageDomainId).isFailure) {
 		throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
 	}
-	this.srvPermissionsFromStorageDomain(storageDomainId).list().send().permissions() ?: listOf()
+	this.srvStorageDomain(storageDomainId).remove().destroy(true).format(format)
+	true
+	// TODO EXpectStorageDomainDeleted()
 }.onSuccess {
-	Term.STORAGE_DOMAIN.logSuccessWithin(Term.PERMISSION, "목록조회", storageDomainId)
+	Term.STORAGE_DOMAIN.logSuccess("삭제", storageDomainId)
 }.onFailure {
-	Term.STORAGE_DOMAIN.logFailWithin(Term.PERMISSION, "목록조회", it, storageDomainId)
+	Term.STORAGE_DOMAIN.logFail("삭제", it, storageDomainId)
 	throw if (it is Error) it.toItCloudException() else it
 }
+
+
+//fun Connection.findAllDataCentersFromStorageDomain(storageDomainId: String): Result<List<DataCenter>> = kotlin.runCatching {
+//	if(this.findStorageDomain(storageDomainId).isFailure) {
+//		throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
+//	}
+//	this.srvStorageDomains().list().send().storageDomains().filter { storageDomain ->
+//		if(storageDomain.dataCentersPresent()) storageDomain.dataCenters().first().id()
+//		else null
+//	}
+//
+//	this.srvStorageDomain(storageDomainId).get().send().storageDomain().
+//
+//}.onSuccess {
+//	Term.STORAGE_DOMAIN.logSuccessWithin(Term.DATACENTER, "목록조회", storageDomainId)
+//}.onFailure {
+//	Term.STORAGE_DOMAIN.logFailWithin(Term.DATACENTER, "목록조회", it, storageDomainId)
+//	throw if (it is Error) it.toItCloudException() else it
+//}
+
 
 private fun Connection.srvAllFilesFromStorageDomain(sdId: String): FilesService =
 	this.srvStorageDomain(sdId).filesService()
@@ -121,6 +125,23 @@ fun Connection.findFileFromStorageDomain(storageDomainId: String, fileId: String
 	Term.STORAGE_DOMAIN.logFailWithin(Term.FILE, "상세조회", it, storageDomainId)
 	throw if (it is Error) it.toItCloudException() else it
 }
+
+
+private fun Connection.srvVmsFromStorageDomain(storageId: String): StorageDomainVmsService =
+	this.srvStorageDomain(storageId).vmsService()
+
+fun Connection.findAllVmsFromStorageDomain(storageDomainId: String): Result<List<Vm>> = runCatching {
+	if(this.findStorageDomain(storageDomainId).isFailure) {
+		throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
+	}
+	this.srvVmsFromStorageDomain(storageDomainId).list().send().vm()
+}.onSuccess {
+	Term.STORAGE_DOMAIN.logSuccessWithin(Term.DISK, "목록조회", storageDomainId)
+}.onFailure {
+	Term.STORAGE_DOMAIN.logFailWithin(Term.DISK, "목록조회", it, storageDomainId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
 
 private fun Connection.srvDisksFromStorageDomain(storageId: String): StorageDomainDisksService =
 	this.srvStorageDomain(storageId).disksService()
@@ -170,5 +191,20 @@ fun Connection.findAllDiskProfilesFromStorageDomain(storageDomainId: String): Re
 	Term.STORAGE_DOMAIN.logSuccessWithin(Term.DISK_PROFILE, "목록조회", storageDomainId)
 }.onFailure {
 	Term.STORAGE_DOMAIN.logFailWithin(Term.DISK_PROFILE, "목록조회", it, storageDomainId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+private fun Connection.srvPermissionsFromStorageDomain(sdId: String): AssignedPermissionsService =
+	this.srvStorageDomain(sdId).permissionsService()
+
+fun Connection.findAllPermissionsFromStorageDomain(storageDomainId: String): Result<List<Permission>> = runCatching {
+	if(this.findStorageDomain(storageDomainId).isFailure) {
+		throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
+	}
+	this.srvPermissionsFromStorageDomain(storageDomainId).list().send().permissions() ?: listOf()
+}.onSuccess {
+	Term.STORAGE_DOMAIN.logSuccessWithin(Term.PERMISSION, "목록조회", storageDomainId)
+}.onFailure {
+	Term.STORAGE_DOMAIN.logFailWithin(Term.PERMISSION, "목록조회", it, storageDomainId)
 	throw if (it is Error) it.toItCloudException() else it
 }

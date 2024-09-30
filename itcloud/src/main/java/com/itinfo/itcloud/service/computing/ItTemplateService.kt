@@ -249,11 +249,12 @@ class TemplateServiceImpl(
 
 	@Throws(Error::class)
 	override fun findAllStorageDomainsFromTemplate(templateId: String): List<StorageDomainVo> {
-		log.info("findAllStorageDomainsFromTemplate ... ")
-		val res: List<DiskAttachment> =
-			conn.findAllDiskAttachmentsFromTemplate(templateId)
-				.getOrDefault(listOf())
-		return res.toDiskAttachMentStorageDomainVos(conn)
+//		log.info("findAllStorageDomainsFromTemplate ... ")
+//		val res: List<DiskAttachment> =
+//			conn.findAllDiskAttachmentsFromTemplate(templateId)
+//				.getOrDefault(listOf())
+//		return res.toDiskAttachMentStorageDomainVos(conn)
+		TODO("")
 	}
 
 	@Throws(Error::class)

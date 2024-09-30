@@ -171,7 +171,6 @@ fun Template.toTemplateVo(conn: Connection): TemplateVo {
 		datacenterVo { dataCenter?.toDataCenterVoInfo() }
 	}
 }
-
 fun List<Template>.toTemplateVos(conn: Connection): List<TemplateVo> =
 	this@toTemplateVos.map { it.toTemplateVo(conn) }
 

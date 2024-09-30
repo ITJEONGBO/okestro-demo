@@ -10,6 +10,7 @@ import com.itinfo.itcloud.model.computing.EventVo
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.DiskImageVo
 import com.itinfo.itcloud.model.storage.StorageDomainVo
+import com.itinfo.itcloud.service.storage.ItDiskService
 import com.itinfo.itcloud.service.storage.ItStorageService
 import io.swagger.annotations.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,12 +25,12 @@ import java.io.IOException
 @Api(tags = ["Storage"])
 @RequestMapping("/api/v1/storages")
 class StorageController: BaseController() {
-	@Autowired private lateinit var iStorage: ItStorageService
+	@Autowired private lateinit var iDomain: ItStorageService
 
 	@ApiOperation(
 		httpMethod="GET",
 		value="스토리지 도메인 목록",
-		notes="전체 스토레제 도메인 목록을 보여준다"
+		notes="전체 스토리지 도메인 목록을 보여준다"
 	)
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
@@ -40,9 +41,8 @@ class StorageController: BaseController() {
 	fun domains(
 	): ResponseEntity<List<StorageDomainVo>> {
 		log.info("/storages/domains ... 스토리지 도메인 목록")
-		return ResponseEntity.ok(iStorage.findAllDomains())
+		return ResponseEntity.ok(iDomain.findAll())
 	}
-
 
 	@ApiOperation(
 		httpMethod="GET",
@@ -64,9 +64,60 @@ class StorageController: BaseController() {
 		if (dataCenterId.isNullOrEmpty())
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/domains ... Domain(s) 목록", dataCenterId)
-		return ResponseEntity.ok(iStorage.findAllDomainsFromDataCenter(dataCenterId))
+		return ResponseEntity.ok(iDomain.findAllFromDataCenter(dataCenterId))
 	}
 
+	// 생성
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="/{storageDomainId}/permissions",
+		notes="Permission(s) 목록"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="storageDomainId", value="스토리지 도메인 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{storageDomainId}/permissions")
+	@ResponseStatus(HttpStatus.OK)
+	@ResponseBody
+	fun permissions(
+		@PathVariable storageDomainId: String? = null,
+	): ResponseEntity<List<PermissionVo>> {
+		if (storageDomainId.isNullOrEmpty())
+			throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toException()
+		log.info("/storages/{}/permissions ... Permission(s) 목록", storageDomainId)
+		return ResponseEntity.ok(iDomain.findAllPermissionsFromStorageDomain(storageDomainId))
+	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="/{storageDomainId}/events",
+		notes = "Event(s) 목록"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="storageDomainId", value="스토리지 도메인 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{storageDomainId}/events")
+	@ResponseStatus(HttpStatus.OK)
+	@ResponseBody
+	fun events(
+		@PathVariable("storageDomainId") storageDomainId: String? = null
+	): ResponseEntity<List<EventVo>> {
+		if (storageDomainId.isNullOrEmpty())
+			throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toException()
+		log.info("/storages/{}/events ... Event(s) 목록", storageDomainId)
+		return ResponseEntity.ok(iDomain.findAllEventsFromStorageDomain(storageDomainId))
+	}
+
+
+
+	@Autowired private lateinit var iDisk: ItDiskService
 
 	@ApiOperation(
 		httpMethod="GET",
@@ -81,7 +132,7 @@ class StorageController: BaseController() {
 	fun findAllDisks(
 	): ResponseEntity<List<DiskImageVo>> {
 		log.info("/storages/disks ... 스토리지 Disk 목록")
-		return ResponseEntity.ok(iStorage.findAllDisks())
+		return ResponseEntity.ok(iDisk.findAllDisks())
 	}
 
 	@ApiOperation(
@@ -103,7 +154,7 @@ class StorageController: BaseController() {
 		if (storageDomainId == null)
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/disks ... 스토리지 도메인 밑에 붙어있는 Disk 목록", storageDomainId)
-		return ResponseEntity.ok(iStorage.findAllDisksFromStorageDomain(storageDomainId))
+		return ResponseEntity.ok(iDomain.findAllDisksFromStorageDomain(storageDomainId))
 	}
 
 
@@ -131,7 +182,7 @@ class StorageController: BaseController() {
 		if (diskImage == null)
 			throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
 		log.info("/storages/{}/disks/image ... 새가상 디스크 - 이미지 생성", dataCenterId)
-		return ResponseEntity.ok(iStorage.addDisk(diskImage))
+		return ResponseEntity.ok(iDisk.addDisk(diskImage))
 	}
 
 	@ApiOperation(
@@ -162,7 +213,7 @@ class StorageController: BaseController() {
 		if (diskImage == null)
 			throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
 		log.info("/storages/{}/disks/image/{} ... 새가상 디스크 - 이미지 편집", dataCenterId, diskImageId)
-		return ResponseEntity.ok(iStorage.updateDisk(diskImage))
+		return ResponseEntity.ok(iDisk.updateDisk(diskImage))
 	}
 
 	@ApiOperation(
@@ -189,7 +240,7 @@ class StorageController: BaseController() {
 		if (diskImageId == null)
 			throw ErrorPattern.DISK_IMAGE_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/disks/image/{} ... 새가상 디스크 - 이미지 삭제", dataCenterId, diskImageId)
-		return ResponseEntity.ok(iStorage.moveDisk(diskImageId, storageDomainId = ""))
+		return ResponseEntity.ok(iDisk.moveDisk(diskImageId, storageDomainId = ""))
 	}
 
 	@ApiOperation(
@@ -214,7 +265,7 @@ class StorageController: BaseController() {
 		if (diskId.isNullOrEmpty()) throw ErrorPattern.DISK_ID_NOT_FOUND.toException()
 		if (diskImage == null)  throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
 		log.info("/storages/disks/{}/copy ... 디스크 - 복사", diskId)
-		return ResponseEntity(iStorage.copyDisk(diskImage), HttpStatus.CREATED)
+		return ResponseEntity(iDisk.copyDisk(diskImage), HttpStatus.CREATED)
 	}
 
 	@ApiOperation(
@@ -242,7 +293,7 @@ class StorageController: BaseController() {
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		if (diskImage == null)
 			throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
-		return ResponseEntity.ok(iStorage.uploadDisk(file, diskImage))
+		return ResponseEntity.ok(iDisk.uploadDisk(file, diskImage))
 	}
 
 //	@ApiOperation(
@@ -320,51 +371,6 @@ class StorageController: BaseController() {
 //		return ResponseEntity.ok(iStorage.findAllClustersFromDataCenter(dataCenterId))
 //	}
 
-	@ApiOperation(
-		httpMethod="GET",
-		value="/{storageDomainId}/permissions",
-		notes="Permission(s) 목록"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="storageDomainId", value="스토리지 도메인 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{storageDomainId}/permissions")
-	@ResponseStatus(HttpStatus.OK)
-	@ResponseBody
-	fun permissions(
-		@PathVariable storageDomainId: String? = null,
-	): ResponseEntity<List<PermissionVo>> {
-		if (storageDomainId.isNullOrEmpty())
-			throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toException()
-		log.info("/storages/{}/permissions ... Permission(s) 목록", storageDomainId)
-		return ResponseEntity.ok(iStorage.findAllPermissionsFromStorageDomain(storageDomainId))
-	}
-
-	@ApiOperation(
-		httpMethod="GET",
-		value="/{storageDomainId}/events",
-		notes = "Event(s) 목록"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="storageDomainId", value="스토리지 도메인 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{storageDomainId}/events")
-	@ResponseStatus(HttpStatus.OK)
-	@ResponseBody
-	fun events(
-		@PathVariable("storageDomainId") storageDomainId: String? = null
-	): ResponseEntity<List<EventVo>> {
-		if (storageDomainId.isNullOrEmpty())
-			throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toException()
-		log.info("/storages/{}/events ... Event(s) 목록", storageDomainId)
-		return ResponseEntity.ok(iStorage.findAllEventsFromStorageDomain(storageDomainId))
-	}
 	
 	companion object {
 		private val log by LoggerDelegate()
