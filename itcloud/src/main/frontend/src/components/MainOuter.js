@@ -14,9 +14,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 const MainOuter = ({ children }) => {
-  const [selected, setSelected] = useState(() => localStorage.getItem('selected') || 'dashboard');
+
   const [lastSelected, setLastSelected] = useState(null); // 마지막 선택 항목 저장
-  const [selectedDiv, setSelectedDiv] = useState('data_center');
+
   const [selectedDisk, setSelectedDisk] = useState(null);
   const [savedStates, setSavedStates] = useState({
     computing: null,
@@ -39,7 +39,8 @@ const MainOuter = ({ children }) => {
     event: '',
     default: 'rgb(218, 236, 245)'
   });
-
+  const [selected, setSelected] = useState(() => localStorage.getItem('selected') || 'dashboard');
+  const [selectedDiv, setSelectedDiv] = useState(() => localStorage.getItem('selectedDiv') || null);
   const [isSecondVisibleStorage, setIsSecondVisibleStorage] = useState(false);
   const [isLastVisibleStorage, setIsLastVisibleStorage] = useState(false);
   const [isSecondVisibleNetwork, setIsSecondVisibleNetwork] = useState(false);
@@ -60,9 +61,9 @@ const MainOuter = ({ children }) => {
   const [isThirdVisibleNetwork, setIsThirdVisibleNetwork] = useState(false); // 3단계 열림/닫힘 상태
   const [isFourthVisibleNetwork, setIsFourthVisibleNetwork] = useState(false); // 4단계 열림/닫힘 상태
 
+// 클러스터(컴퓨팅)api
 
-   //클러스터(컴퓨팅)api
-   const { 
+const { 
     data: navClusters,          
     status: navClustersStatus,   
     isRefetching: isNavClustersRefetching,
@@ -72,11 +73,7 @@ const MainOuter = ({ children }) => {
     isLoading: isNavClustersLoading, 
   } = useAllTreeNavigations('cluster');
   
-  useEffect(() => {
-    navClustersRefetch();
-  }, [setShouldRefresh, navClustersRefetch]);
-
-  //네트워크api
+  // 네트워크 api
   const { 
     data: navNetworks,
     status: navNetworksStatus,
@@ -86,72 +83,106 @@ const MainOuter = ({ children }) => {
     error: navNetworksError, 
     isLoading: isNavNetworkskLoaindg,
   } = useAllTreeNavigations('network');
+  
+  // 스토리지 도메인 api
+  const { 
+    data: navStorageDomains,         
+    status: navStorageDomainsStatus,   
+    isRefetching: isNavStorageDomainsRefetching,
+    refetch: navStorageDomainsRefetch, 
+    isError: isNavStorageDomainsError,
+    error: navStorageDomainsError,    
+    isLoading: isNavStorageDomainsLoading,
+  } = useAllTreeNavigations('storagedomain');
+  
   useEffect(() => {
-    navNetworksRefetch()
-  }, [setShouldRefresh, navNetworksRefetch])
-  // 스토리지도메인api
-    const { 
-        data: navStorageDomains,         
-        status: navStorageDomainsStatus,   
-        isRefetching: isNavStorageDomainsRefetching,
-        refetch: navStorageDomainsRefetch, 
-        isError: isNavStorageDomainsError,
-        error: navStorageDomainsError,    
-        isLoading: isNavStorageDomainsLoading,
-    } = useAllTreeNavigations('storagedomain'); 
-    useEffect(() => {
-        navStorageDomainsRefetch(); 
-    }, [setShouldRefresh, navStorageDomainsRefetch]);
-
-
-
+    const fetchData = async () => {
+       try {
+          await navClustersRefetch(); 
+          console.log("Clusters:", navClusters);
+       } catch (error) {
+          console.error('Error fetching clusters:', error);
+       }
+    };
+    fetchData();
+ }, [navClustersRefetch]);
+ 
+ useEffect(() => {
+    const fetchData = async () => {
+       try {
+          await navNetworksRefetch();
+          console.log("Networks:", navNetworks);
+       } catch (error) {
+          console.error('Error fetching networks:', error);
+       }
+    };
+    fetchData();
+ }, [navNetworksRefetch]);
+ 
+ useEffect(() => {
+    const fetchData = async () => {
+       try {
+          await navStorageDomainsRefetch();
+          console.log("Storage Domains:", navStorageDomains);
+       } catch (error) {
+          console.error('Error fetching storage domains:', error);
+       }
+    };
+    fetchData();
+ }, [navStorageDomainsRefetch]);
+ 
   
-  // dashboard일때 aside닫기
-  // useEffect(() => {
-  //   const pathParts = location.pathname.split('/');
-  //   const lastPart = decodeURIComponent(pathParts[pathParts.length - 1]);
-  
-  //   const updateSelectedState = (section, div, secondVisible = false, thirdVisible = false, lastVisible = false) => {
-  //     setSelected(section);
-  //     setSelectedDiv(div);
-  //   };
 
-  //   if (location.pathname.includes('/computing')) {
-  //     if (location.pathname.includes('/computing/rutil-manager')) {
-  //       updateSelectedState('computing', 'rutil-manager', true, true, true);
-  //     } else if (location.pathname === '/computing/host') {
-  //       updateSelectedState('computing', 'host', true, true, true);
-  //     } else if (location.pathname.includes('/computing/clusters')) {
-  //       updateSelectedState('computing', 'clusters', true, true);
-  //     } else if (location.pathname.includes('/computing/data-center')) {
-  //       updateSelectedState('computing', 'data-center', true);
-  //     } else if (location.pathname.includes('/computing/host')) {
-  //       updateSelectedState('computing', 'host', true, true, true);
-  //     } else {
-  //       updateSelectedState('computing', null);
-  //     }
-  //   } else if (location.pathname.includes('/storage')) {
-  //     if (location.pathname.includes('/storage-domain/:id')) {
-  //       updateSelectedState('storage', 'storage_domain/:id', true);
-  //     } else if (location.pathname.includes('/storages/disks')) {
-  //       updateSelectedState('storage', lastPart, true, true);
-  //     } else {
-  //       updateSelectedState('storage', 'data-center');
-  //     }
-  //   } else if (location.pathname.includes('/networks')) {
-  //     if (location.pathname === '/networks' || lastPart === 'network') {
-  //       updateSelectedState('network', 'data-centerdd', true);
-  //     } else {
-  //       updateSelectedState('network', lastPart, true);
-  //     }
-  //   } else if (location.pathname.includes('/events')) {
-  //     updateSelectedState('event', 'default');
-  //   } else if (location.pathname.includes('/settings')) {
-  //     updateSelectedState('setting', 'default');
-  //   } else {
-  //     updateSelectedState('dashboard', 'default');  // 대시보드일 때도 aside 팝업을 열리게 설정
-  //   }
-  // }, [location]);
+
+      
+      
+// useEffect(() => {
+//   const path = location.pathname;
+//   const pathParts = path.split('/');
+
+//   // 사용자가 직접 버튼을 클릭했을 때에는 경로 분석을 건너뛰기 위한 변수
+//   const manuallySetSelected = localStorage.getItem('manuallySetSelected');
+
+//   // 사용자가 직접 선택하지 않은 경우에만 location에 따라 selected 상태 설정
+//   if (!manuallySetSelected) {
+//     if (path.includes('/rutil-manager')) {
+//       setSelected('computing'); // 컴퓨팅 섹션 선택
+//       setSelectedDiv('rutil-manager'); // rutil-manager로 selectedDiv 설정
+//     } else if (path.includes('/datacenters')) {
+//       const dataCenterId = pathParts[pathParts.length - 1];
+//       setSelected('computing'); // 클러스터 섹션 선택
+//       setSelectedDiv(dataCenterId); // 데이터센터 ID 저장
+//     } else if (path.includes('/clusters')) {
+//       const clusterId = pathParts[pathParts.length - 1];
+//       setSelected('computing');
+//       setSelectedDiv(clusterId); 
+//     } else if (path.includes('/host')) {
+//       const hostId = pathParts[pathParts.length - 1];
+//       setSelected('computing');
+//       setSelectedDiv(hostId);
+//     } else if (path.includes('/networks')) {
+//       setSelected('network');
+//       setSelectedDiv(null);
+//     } else if (path.includes('/storage')) {
+//       setSelected('storage');
+//       setSelectedDiv(null);
+//     } else if (path.includes('/events')) {
+//       setSelected('event');
+//     } else if (path.includes('/settings')) {
+//       setSelected('setting');
+//     } else {
+//       setSelected('dashboard');
+//     }
+//   }
+
+//   // manuallySetSelected는 한 번 설정 후 삭제
+//   localStorage.removeItem('manuallySetSelected');
+// }, [location.pathname]);
+
+
+
+
+
   
   
 
@@ -192,23 +223,17 @@ const MainOuter = ({ children }) => {
  
 
     const handleClick = (id) => {
-      setSelected(id);  // selected 값을 변경
-      toggleAsidePopup(id);  // 색상을 변경하는 로직 호출
-      setAsidePopupVisible(true);  // aside_popup을 열리게 함
-      localStorage.setItem('selected', id); // 로컬 스토리지에 저장
-
-      if (selected !== id) {
-        setSavedStates((prevState) => ({
-          ...prevState,
-          [selected]: savedStates[selected], // 이전 섹션 상태 저장
-        }));
-      }
-      if (id !== 'event' && id !== 'setting' && id !== 'dashboard') {
-        setLastSelected(id);  // 마지막 선택 항목 업데이트
-      }
-      setSelected(id);
-      localStorage.setItem('selected', id); // 선택 상태를 로컬 스토리지에 저장
-  };
+        setSelected(id);  // selected 값을 변경
+        toggleAsidePopup(id);  // 색상을 변경하는 로직 호출
+        setAsidePopupVisible(true);  // aside_popup을 열리게 함
+        localStorage.setItem('selected', id);  // 로컬 스토리지에 저장
+      
+        if (id !== 'event' && id !== 'setting' && id !== 'dashboard') {
+          setLastSelected(id);  // 마지막 선택 항목 업데이트
+          localStorage.setItem('lastSelected', id);  // 로컬 스토리지에 저장
+        }
+      };
+      
   const renderAsidePopupContent = () => {
     if (selected === 'event' || selected === 'setting'|| selected === 'dashboard') {
       return lastSelected ? renderAsidePopup(lastSelected) : <div>선택된 내용이 없습니다.</div>;
@@ -230,6 +255,8 @@ const MainOuter = ({ children }) => {
                       if (selectedDiv !== 'rutil-manager') {
                           setSelectedDiv('rutil-manager');
                           navigate('/computing/rutil-manager');
+                    
+
                       }
                   }}
               >
@@ -596,8 +623,9 @@ const MainOuter = ({ children }) => {
       [networkId]: !prevState[networkId], // 해당 네트워크만 열림/닫힘 토글
     }));
   };
+
     // 데이터 센터 열림/닫힘 토글 함수
-  const [openDataCenters, setOpenDataCenters] = useState({});
+  const [openDataCenters, setOpenDataCenters] =  useState(() => JSON.parse(localStorage.getItem('openDataCenters')) || {});
   const toggleDataCenter = (dataCenterId) => {
     setOpenDataCenters((prevState) => ({
       ...prevState,

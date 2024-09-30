@@ -12,6 +12,7 @@ import {
   faCaretUp, faGlassWhiskey, faEllipsisV, faRefresh, faTimes
 } from '@fortawesome/free-solid-svg-icons'
 import TableOuter from '../table/TableOuter';
+import { useAllDisk } from '../../api/RQHook';
 
 Modal.setAppElement('#root');
 
@@ -60,48 +61,45 @@ const AllDisk = () => {
   }, [])
   */
   const { 
-    data,
-    status,
-    isRefetching,
-    refetch, 
-    isError, 
-    error, 
-    isLoading
-  } = useQuery({
-    queryKey: ['allStorageDomains'],
-    queryFn: async () => {
-      const res = await ApiManager.findAllStorageDomains()
-      return res?.map((e) => toTableItemPredicate(e)) ?? []
-    },
-    refetchOnMount: false,
-
+    data: data,
+    status: networksStatus,
+    isRefetching: isNetworksRefetching,
+    refetch: networksRefetch, 
+    isError: isNetworksError, 
+    error: networksError, 
+    isLoading: isNetworksLoading,
+  } = useAllDisk((item) => {
+    return {
+      id: item?.id ?? '',  // ID
+      name: item?.name ?? '',  // 이름
+      description: item?.description ?? '',  // 설명
+      dataCenter: item?.dataCenterVo?.name ?? '',  // 데이터 센터
+      provider: item?.provider ?? 'Provider1',  // 제공자 (기본값: 'Provider1')
+      portSeparation: item?.portIsolation ? '예' : '아니요',  // 포트 분리 여부
+      alias: item?.alias ?? '',  // 별칭
+      icon1: item?.icon1 ?? '',  // 아이콘 1
+      icon2: item?.icon2 ?? '',  // 아이콘 2
+      connectionTarget: item?.connectionTarget ?? '',  // 연결 대상
+      storageDomain: item?.storageDomainVo?.name ?? '',
+      virtualSize: item?.virtualSize ?? '',  // 가상 크기
+      status: item?.status ?? '',  // 상태
+      type: item?.type ?? '',  // 유형
+    }
   })
 
-  const toTableItemPredicate = (e) => {
-    return {
-      status: <FontAwesomeIcon icon={faCaretUp} style={{ color: '#1DED00' }}fixedWidth/>,
-      icon: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>,
-      domainName: 'ㅁㅎㅇㅁㄹㄹ', // 여기에 도메인 이름을 설정합니다.
-      comment: '',
-      domainType: '',
-      storageType: '',
-      format: '',
-      dataCenterStatus: '',
-      totalSpace: '',
-      freeSpace: '',
-      reservedSpace: '',
-      description: '',
-    }
-  }
 
-  // 이름 열을 클릭했을 때 동작하는 함수
-  // 행 클릭 시 도메인 이름을 이용하여 이동하는 함수
   const handleRowClick = (row, column) => {
-    if (column.accessor === 'alias') {  // 'alias' 컬럼만 체크
-        navigate(`/storage-disk/${row.alias.props.children}`);
-    }
-  };
+        if (column.accessor === 'alias') {
+            navigate(
+              `/storages/disks/${row.id}`, 
+              { state: { name: row.name } }
+            );
+        }
+    };
 
+
+
+  
   return (
     <div id="section">
       <HeaderButton
@@ -132,7 +130,7 @@ const AllDisk = () => {
                   </button>
                 </div>
                 <TableOuter 
-                  columns={TableColumnsInfo.STORAGES}
+                  columns={TableColumnsInfo.ALL_DISK}
                   data={data}
                   onRowClick={handleRowClick}
                 />

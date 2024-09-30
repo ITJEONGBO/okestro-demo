@@ -62,6 +62,7 @@ const ENDPOINTS = {
   //endregion: Network
 
   //region: StorageDomain
+  FIND_ALL_DISK: () =>      `/api/v1/storages/disks`,
   FIND_ALL_STORAGE_DOMAINS: async () => `/api/v1/storages`,
   //endregion: StorageDomain
 }

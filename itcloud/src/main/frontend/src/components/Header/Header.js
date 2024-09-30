@@ -19,7 +19,7 @@ const Header = ({ setAuthenticated }) => {
       return () => { window.removeEventListener('resize', adjustFontSize); };
     }, []);
 
-    const handleTitleClick = () => navigate('/dashboard'); 
+    const handleTitleClick = () => navigate('/'); 
 
     const toggleLoginBox = () => {
         setLoginBoxVisible(!isLoginBoxVisible);
@@ -67,7 +67,7 @@ const Header = ({ setAuthenticated }) => {
     return (
         <div className="header">
             <div className="header_right" onClick={handleTitleClick} style={{ cursor: 'pointer' }}>
-                <span>Rutil Vm</span>
+                <span>RutilVM</span>
             </div>
 
             <div className="header_left">

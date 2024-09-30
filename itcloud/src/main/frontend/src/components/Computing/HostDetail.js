@@ -35,6 +35,7 @@ import { useHostById, useHostdeviceFromHost, usePermissionFromHost, useVmFromHos
 
 function HostDetail() {
   const { id } = useParams();
+  console.log("알멍니ㅏ럼ㄴ리;ㅇ너ㅏㄹ민ㄹ어ㅏㄹ"+id);
   //클릭한 이름 받아오기
   const handlePermissionFilterClick = (filter) => {
     setActivePermissionFilter(filter);
@@ -612,12 +613,14 @@ function HostDetail() {
           
                 {/* 이벤트 */}
                 {activeTab === 'event' && (
-                <div className="host_empty_outer">
-                   <TableOuter
-                     columns={TableColumnsInfo.EVENTS}
-                     data={eventData}
-                     onRowClick={() => console.log('Row clicked')} 
-                    />
+                <div className="host_btn_outer">
+                  <div className="host_empty_outer">
+                    <TableOuter
+                      columns={TableColumnsInfo.EVENTS}
+                      data={eventData}
+                      onRowClick={() => console.log('Row clicked')} 
+                      />
+                  </div>
                 </div>
                 )}
                

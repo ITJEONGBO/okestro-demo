@@ -359,6 +359,12 @@ const ApiManager = {
 
   
   //region: StorageDomain
+  findAllDisk: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_DISK(),
+    defaultValues: DEFAULT_VALUES.FIND_ALL_DISK
+  }),
+
   findAllStorageDomains: async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_ALL_STORAGE_DOMAINS(),
@@ -366,5 +372,9 @@ const ApiManager = {
   }),
   //endregion: StorageDomain
 }
+
+
+
+
 
 export default ApiManager

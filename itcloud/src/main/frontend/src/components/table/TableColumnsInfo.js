@@ -104,7 +104,7 @@ const TableColumnsInfo = {
     { header: '전체 공간 (GiB)', accessor: 'totalSpace', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],
-  STORAGES:  [
+  ALL_DISK:  [
     { header: '별칭', accessor: 'alias', clickable: true },
     { header: 'ID', accessor: 'id', clickable: false },
     { header: '', accessor: 'icon1', clickable: false },

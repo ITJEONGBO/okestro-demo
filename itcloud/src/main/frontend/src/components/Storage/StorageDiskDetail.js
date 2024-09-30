@@ -13,16 +13,18 @@ import {
   faTimes
 } from '@fortawesome/free-solid-svg-icons'
 import './css/StorageDiskDetail.css';
+import { useAllDisk } from '../../api/RQHook';
 
 function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const { name } = useParams();
+  const { id } = useParams();
 
   const [activePermissionFilter, setActivePermissionFilter] = useState('all');
   const [activeTab, setActiveTab] = useState('general'); // 초기값은 'general'로 설정
-const [activePopup, setActivePopup] = useState(null);  // activePopup 선언은 이 아래에 있어야 함
+  const [activePopup, setActivePopup] = useState(null);  // activePopup 선언은 이 아래에 있어야 함
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 추가
   const [modalTab, setModalTab] = useState('img'); // 모달 창 내 탭 관리
-  
+
   const handlePermissionFilterClick = (filter) => setActivePermissionFilter(filter);
   const handleTabClick = (tab) => setActiveTab(tab);
   const handleOpenModal = () => setIsModalOpen(true); // 모달 열기
@@ -55,17 +57,6 @@ const [activePopup, setActivePopup] = useState(null);  // activePopup 선언은 
     '옵션 3',
   ];
 
-  const popupItems = [
-    '가져오기',
-    '가상 머신 복제',
-    '삭제',
-    '마이그레이션 취소',
-    '변환 취소',
-    '템플릿 생성',
-    '도메인으로 내보내기',
-    'Export to Data Domain',
-    'OVA로 내보내기',
-  ];
 
   const sections = [
     { id: 'general', label: '일반' },
@@ -117,11 +108,28 @@ const [activePopup, setActivePopup] = useState(null);  // activePopup 선언은 
     };
   }, []);
 
+  // api
+  const { 
+    data: disk,
+    status: diskStatus,
+    isRefetching: isDiskRefetching,
+    refetch: diskRefetch,
+    isError: isDiskError,
+    error: diskError,
+    isLoading: isDiskLoading,
+  } = useAllDisk(id);
+  
+  useEffect(() => {
+    diskRefetch();
+  }, [diskRefetch]);
+
+
+
   return (
     <div className="content_detail_section">
       <HeaderButton
         title="디스크"
-        subtitle={name}
+        subtitle="디스크이름"
         additionalText={name}
         buttons={buttons}
         popupItems={[]}

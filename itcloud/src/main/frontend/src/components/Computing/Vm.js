@@ -322,7 +322,7 @@ const Vm = () => {
     <div id="section">
        <HeaderButton
       title="가상머신"
-      subtitle="on20-ap01"
+      subtitle="d"
       buttons={buttons}
       popupItems={popupItems}
     />

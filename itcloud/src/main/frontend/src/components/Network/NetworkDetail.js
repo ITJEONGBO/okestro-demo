@@ -287,7 +287,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     <div className="content_detail_section">
       <HeaderButton
         title="네트워크"
-        subtitle={locationState?.name} // 여기서도 네트워크 이름을 표시
+        subtitle={network?.name}
         buttons={buttons}
         popupItems={[]}
       />

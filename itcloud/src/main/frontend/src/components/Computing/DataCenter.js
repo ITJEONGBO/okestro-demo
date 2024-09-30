@@ -287,7 +287,7 @@ const handleTabClickModal = (tab) => {
                         <tbody>
                             <tr>
                                 <th>ID:</th>
-                                <td>id</td>
+                                <td>{id}</td>
                             </tr>
                             <tr>
                                 <th>설명:</th>
@@ -295,7 +295,7 @@ const handleTabClickModal = (tab) => {
                             </tr>
                             <tr>
                                 <th>데이터센터:</th>
-                                <td>Default</td>
+                                <td>{dataCenter?.name}</td>
                             </tr>
                             <tr>
                                 <th>호환버전:</th>
