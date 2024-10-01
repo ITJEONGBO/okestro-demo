@@ -174,7 +174,18 @@ const TableColumnsInfo = {
     { header: '코멘트', accessor: 'comment', clickable: false },
     { header: '호환 버전', accessor: 'version', clickable: false },
   ],
+  CLUSTERS_DATA :[
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '이름', accessor: 'name', clickable: true },
+    { header: '코멘트', accessor: 'comment', clickable: false },
+    { header: '호환 버전', accessor: 'version', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
+    { header: '클러스터 CPU 유형', accessor: 'cpuType', clickable: false },
+    { header: '호스트 수', accessor: 'hostCount', clickable: false },
+    { header: '가상 머신 수', accessor: 'vmCount', clickable: false },
+    { header: '업그레이드 상태', accessor: 'upgrade', clickable: false },
 
+  ],
   CLUSTERS: [
     { header: '이름', accessor: 'name', clickable: false },
     { header: '호환 버전', accessor: 'version', clickable: false },
@@ -231,6 +242,21 @@ const TableColumnsInfo = {
     { header: '상태', accessor: 'status', clickable: false },
     { header: '불러오기', accessor: 'loading', clickable: false },
     { header: '디스플레이 주소 덮어쓰기', accessor: 'displayAddress', clickable: false }
+  ],
+  HOSTS_ALL_DATA: [
+    { header: '', accessor: 'icon', clickable: false }, 
+    { header: '', accessor: 'icon', clickable: false }, 
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '코멘트', accessor: 'comment', clickable: false },
+    { header: '호스트이름/IP', accessor: 'hostNameIP', clickable: false },
+    { header: '클러스터', accessor: 'cluster', clickable: true },
+    { header: '데이터센터', accessor: 'datacenter', clickable: true },
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '가상머신', accessor: 'vm', clickable: false },
+    { header: '메모리', accessor: 'memory', clickable: false },
+    { header: 'CPU', accessor: 'cpu', clickable: false },
+    { header: '네트워크', accessor: 'network', clickable: false },
+    { header: 'SPM', accessor: 'spmStatus', clickable: false }
   ],
   VM_CHART:[
     { header: '', accessor: 'icon', clickable: false },  // 이모티콘 칸

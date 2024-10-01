@@ -132,7 +132,7 @@ const DomainParts = () => {
                   </button>
                 </div>
                 <TableOuter 
-                  columns={TableColumnsInfo.STORAGES}
+                  columns={TableColumnsInfo.STORAGES_FROM_DATACENTER}
                   data={data}
                   onRowClick={handleRowClick}
                 />

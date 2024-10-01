@@ -13,7 +13,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faCrown, faUser, faBan,
   faTimes,
-  faInfoCircle
+  faInfoCircle,
+  faSearch,
+  faRefresh,
+  faEllipsisV,
+  faCaretUp,
+  faGlassWhiskey
 } from '@fortawesome/free-solid-svg-icons'
 import './css/ClusterName.css';
 import TableOuter from '../table/TableOuter';
@@ -53,7 +58,12 @@ function DataCenterDetail() {
     };
     const [isPermissionModalOpen, setIsPermissionModalOpen] = useState(false); // 권한 모달 상태
     const [isAffinityGroupModalOpen, setIsAffinityGroupModalOpen] = useState(false); // 선호도 그룹 모달 상태
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
 
+    // 버튼 클릭 시 팝업의 열림/닫힘 상태를 토글하는 함수
+    const togglePopup = () => {
+      setIsPopupOpen(!isPopupOpen);
+    };
     // 권한 모달 핸들러
     const openPermissionModal = () => setIsPermissionModalOpen(true);
     const closePermissionModal = () => setIsPermissionModalOpen(false);
@@ -137,6 +147,31 @@ function DataCenterDetail() {
           ipv4: vm?.ipv4 ?? '',         
         };
       }
+        // 도메인 테이블 컴포넌트 
+  const domaindata = [
+    {
+      status: <FontAwesomeIcon icon={faCaretUp} style={{ color: '#1DED00' }}fixedWidth/>,
+      icon: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>,
+      domainName: (
+        <span
+          style={{ color: 'blue', cursor: 'pointer'}}
+          onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
+          onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
+        >
+          ㅇㄻㄹㅇㄻ
+        </span>
+      ),
+      comment: '',
+      domainType: '',
+      storageType: '',
+      format: '',
+      dataCenterStatus: '',
+      totalSpace: '',
+      freeSpace: '',
+      reservedSpace: '',
+      description: '',
+    },
+  ];
     // 권한
     const { 
         data: permissions, 
@@ -199,7 +234,7 @@ function DataCenterDetail() {
         { id: 'host', label: '호스트' },
         { id: 'virtual_machine', label: '가상머신' },
         { id: 'storage', label: '스토리지' },
-        { id: 'permission', label: '권한' },
+        { id: 'network', label: '네트워크' },
     ];
   // 클러스터 팝업(보류)
   const clusterPopupData = [
@@ -252,6 +287,12 @@ function DataCenterDetail() {
                         <div className="host_btn_outer">
                             {/* 일반 */}
                             {activeTab === 'general' && (
+                                <div>
+                                    
+                                </div>
+                            )}
+                            {/* 일반(삭제예정) */}
+                            {/* {activeTab === 'general' && (
                                 <div className="cluster_general">
                                     <div className="table_container_center">
                                         <table className="table">
@@ -333,7 +374,7 @@ function DataCenterDetail() {
                                         </table>
                                     </div>
                                 </div>
-                            )}
+                            )} */}
                             {/*데이터 센터 */}
                             {activeTab === 'data_center' && (
                                 <>
@@ -343,8 +384,13 @@ function DataCenterDetail() {
                                     <button>디스플레이로 설정</button>
                                     <button>모든 네트워크 동기화</button>
                                 </div>
+                                <div className="search_box">
+                                    <input type="text" />
+                                    <button><FontAwesomeIcon icon={faSearch} fixedWidth/></button>
+                                    <button><FontAwesomeIcon icon={faRefresh} fixedWidth/></button>
+                                </div>
                                 <TableOuter
-                                  columns={TableColumnsInfo.LUNS} 
+                                  columns={TableColumnsInfo.DATACENTERS} 
                                   data={networks} 
                                   onRowClick={handleRowClick} />
                                 </>
@@ -353,13 +399,22 @@ function DataCenterDetail() {
                             {/* 클러스터 */}
                             {activeTab === 'cluster' && (
                               <>
-                              <div className="host_empty_outer">
+                               <div className="content_header_right">
+                                    <button onClick={() => openPopup('newNetwork')}>새로만들기</button>
+                                    <button onClick={() => openPopup('cluster_network_popup')}>편집</button>
+                                    <button>업그레이드</button>
+                                </div>
+                                <div className="search_box">
+                                    <input type="text" />
+                                    <button><FontAwesomeIcon icon={faSearch} fixedWidth/></button>
+                                    <button><FontAwesomeIcon icon={faRefresh} fixedWidth/></button>
+                                </div>
                                 <TableOuter 
-                                  columns={TableColumnsInfo.CLUSTER_VM} 
+                                  columns={TableColumnsInfo.CLUSTERS_DATA} 
                                   data={vms} 
                                   onRowClick={() => console.log('Row clicked')}
                                 />
-                              </div>
+                             
                               </>
                             )}
                             {/* 호스트 */}
@@ -368,8 +423,13 @@ function DataCenterDetail() {
                                 <div className="content_header_right">
                                     <button onClick={() => openPopup('host_new')}>새로 만들기</button>
                                 </div>
+                                <div className="search_box">
+                                    <input type="text" />
+                                    <button><FontAwesomeIcon icon={faSearch} fixedWidth/></button>
+                                    <button><FontAwesomeIcon icon={faRefresh} fixedWidth/></button>
+                                </div>
                                   <TableOuter 
-                                    columns={TableColumnsInfo.HOSTS_FROM_CLUSTER} 
+                                    columns={TableColumnsInfo.HOSTS_ALL_DATA} 
                                     data={hosts}
                                     onRowClick={() => console.log('Row clicked')} 
                                   />
@@ -379,57 +439,65 @@ function DataCenterDetail() {
                             {/* 가상 머신 */}
                             {activeTab === 'virtual_machine' && (
                               <>
-                              <div className="host_empty_outer">
+                              <div className="content_header_right">
+                                    <button onClick={() => openPopup('newNetwork')}>새로만들기</button>
+                                    <button onClick={() => openPopup('cluster_network_popup')}>편집</button>
+                                    <button>실행</button>
+                                    <button>일시중지</button>
+                                    <button>종료</button>
+                                    <button>재부팅</button>
+                                    <button>콘솔</button>
+                                    <button>스냅샷 생성</button>
+                                    <button>마이그레이션</button>
+                                </div>
+                              <div className="search_box">
+                                    <input type="text" />
+                                    <button><FontAwesomeIcon icon={faSearch} fixedWidth/></button>
+                                    <button><FontAwesomeIcon icon={faRefresh} fixedWidth/></button>
+                                </div>
                                 <TableOuter 
-                                  columns={TableColumnsInfo.CLUSTER_VM} 
+                                  columns={TableColumnsInfo.VM_CHART} 
                                   data={vms} 
                                   onRowClick={() => console.log('Row clicked')}
                                 />
-                              </div>
+                            
                               </>
                             )}
                             {/* 스토리지*/}
                             {activeTab === 'storage' && (
-                              <>
-                              <div className="host_empty_outer">
-                                <TableOuter 
-                                  columns={TableColumnsInfo.CLUSTER_VM} 
-                                  data={vms} 
-                                  onRowClick={() => console.log('Row clicked')}
-                                />
-                              </div>
-                              </>
+                                            <>
+                                            <div className="content_header_right">
+                                              <button id="new_domain_btn" onClick={() => openPopup('newDomain')}>새로운 도메인</button>
+                                              <button id="get_domain_btn" onClick={() => openPopup('newDomain')}>도메인 가져오기</button>
+                                              <button id="administer_domain_btn" onClick={() => openPopup('manageDomain')}>도메인 관리</button>
+                                              <button>삭제</button>
+                                              <button>Connections</button>
+                                              <button className="content_header_popup_btn" onClick={togglePopup}>
+                                                <FontAwesomeIcon icon={faEllipsisV} fixedWidth/>
+                                                {isPopupOpen && (
+                                                  <div className="content_header_popup">
+                                                    <div>활성</div>
+                                                    <div>비활성화</div>
+                                                    <div>이동</div>
+                                                    <div>LUN 새로고침</div>
+                                                  </div>
+                                                )}
+                                              </button>
+                                            </div>
+                            
+                                            {/* Table 컴포넌트를 이용하여 테이블을 생성합니다. */}
+                                            <TableOuter
+                                              columns={TableColumnsInfo.STORAGE_DOMAINS} 
+                                              data={domaindata} 
+                                              onRowClick={() => console.log('Row clicked')}
+                                            />
+                                          </>
                             )}
 
-                            {/* 권한 */}
-                            {activeTab === 'permission' && (
+                            {/* 네트워크 */}
+                            {activeTab === 'network' && (
                                 <>
-                                <div className="content_header_right">
-                                <button onClick={openPermissionModal}>추가</button> {/* 추가 버튼 */}
-                                <button>제거</button>
-                                </div>
-                                <div className="host_filter_btns">
-                                <span>Permission Filters:</span>
-                                <div>
-                                    <button
-                                    className={activePermissionFilter === 'all' ? 'active' : ''}
-                                    onClick={() => handlePermissionFilterClick('all')}
-                                    >
-                                    All
-                                    </button>
-                                    <button
-                                    className={activePermissionFilter === 'direct' ? 'active' : ''}
-                                    onClick={() => handlePermissionFilterClick('direct')}
-                                    >
-                                    Direct
-                                    </button>
-                                </div>
-                                </div>
-                                <TableOuter 
-                                  columns={TableColumnsInfo.PERMISSIONS}
-                                  data={permissions}
-                                  onRowClick={() => console.log('Row clicked')}
-                                />
+                                <div>네트워크 차트 나오게하는부분0</div>
                                 </>
                             )}
                           
