@@ -113,3 +113,7 @@
 .user_loginbox>div:hover{
     background-color: #ebececd8;
 }
+.logo{
+    width: 22%;
+    margin: 0 0.2rem;
+}

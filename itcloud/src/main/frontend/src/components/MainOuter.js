@@ -10,7 +10,9 @@ import {
     faListUl,
     faFileEdit,
     faEarthAmericas,
-    faLayerGroup
+    faLayerGroup,
+    faHdd,
+    faCloud
 } from '@fortawesome/free-solid-svg-icons'
 
 const MainOuter = ({ children }) => {
@@ -571,7 +573,7 @@ const {
                                                   fixedWidth
                                               />
                                           )}
-                                          <FontAwesomeIcon icon={faBuilding} fixedWidth />
+                                          <FontAwesomeIcon icon={faCloud} fixedWidth/>
                                           <span>{domain.name}</span>
                                       </div>
   
@@ -589,7 +591,7 @@ const {
                                                   navigate(`/storages/disks/${disk.id}`);
                                               }}
                                           >
-                                              <FontAwesomeIcon icon={faMicrochip} fixedWidth />
+                                              <FontAwesomeIcon icon={faHdd} fixedWidth/>
                                               <span>{disk.name}</span>
                                           </div>
                                       ))}

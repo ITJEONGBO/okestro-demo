@@ -172,15 +172,11 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
 
 
   const popupItems = [
-    '가져오기',
-    '가상 머신 복제',
-    '삭제',
-    '마이그레이션 취소',
-    '변환 취소',
-    '템플릿 생성',
-    '도메인으로 내보내기',
-    'Export to Data Domai',
-    'OVA로 내보내기',
+    '??'
+    // 'OVF 업데이트',
+    // '파괴',
+    // '디스크 검사',
+    // '마스터 스토리지 도메인으로 선택',
   ];
   // NAV컴포넌트
   const sections = [

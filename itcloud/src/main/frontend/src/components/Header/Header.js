@@ -6,6 +6,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { adjustFontSize } from '../../UIEvent';
 import './Header.css';
+import logo from '../../img/logo.png'
 
 const Header = ({ setAuthenticated }) => {
     const navigate = useNavigate();
@@ -67,6 +68,7 @@ const Header = ({ setAuthenticated }) => {
     return (
         <div className="header">
             <div className="header_right" onClick={handleTitleClick} style={{ cursor: 'pointer' }}>
+                <img className='logo' src={logo} alt="logo Image" />
                 <span>RutilVM</span>
             </div>
 

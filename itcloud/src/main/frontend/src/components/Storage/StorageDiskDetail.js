@@ -61,8 +61,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
   const sections = [
     { id: 'general', label: '일반' },
     { id: 'machine', label: '가상머신' },
-    { id: 'storage', label: '스토리지' },
-    { id: 'permission', label: '권한' },
+    { id: 'storage', label: '스토리지' }
   ];
 
   const vmData = [];
@@ -164,10 +163,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
                       <th>디스크 프로파일:</th>
                       <td>hosted_storage</td>
                     </tr>
-                    <tr>
-                      <th>삭제 후 초기화:</th>
-                      <td>아니요</td>
-                    </tr>
+                    
                     <tr>
                       <th>가상 크기:</th>
                       <td>&lt; 1 GiB</td>
@@ -202,36 +198,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
             </div>
           )}
 
-          {activeTab === 'permission' && (
-            <>
-              <div className="content_header_right">
-                <button onClick={handleOpenModal}>추가</button> {/* 추가 버튼 */}
-                <button>제거</button>
-              </div>
-              <div className="host_filter_btns">
-                <span>Permission Filters:</span>
-                <div>
-                  <button
-                    className={activePermissionFilter === 'all' ? 'active' : ''}
-                    onClick={() => handlePermissionFilterClick('all')}
-                  >
-                    All
-                  </button>
-                  <button
-                    className={activePermissionFilter === 'direct' ? 'active' : ''}
-                    onClick={() => handlePermissionFilterClick('direct')}
-                  >
-                    Direct
-                  </button>
-                </div>
-              </div>
-              <TableOuter
-                columns={TableColumnsInfo.PERMISSIONS}
-                data={activePermissionFilter === 'all' ? permissionData : []}
-                onRowClick={() => console.log('Row clicked')}
-              />
-            </>
-          )}
+        
         </div>
       </div>
            {/*디스크(편집)팝업 */}

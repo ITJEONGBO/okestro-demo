@@ -369,8 +369,6 @@ const Vm = () => {
                         <div className={`edit_aside_item ${activeSection === 'console_outer' ? 'active' : ''}`} id="console_outer_btn" onClick={() => handleSectionChange('console_outer')}>
                             <span>콘솔</span>
                         </div>
-                    </div>
-                    <div className="edit_aside">
                         <div className={`edit_aside_item ${activeSection === 'host_outer' ? 'active' : ''}`} id="host_outer_btn" onClick={() => handleSectionChange('host_outer')}>
                             <span>호스트</span>
                         </div>

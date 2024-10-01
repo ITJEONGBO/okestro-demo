@@ -194,13 +194,12 @@ function DataCenterDetail() {
     // nav 컴포넌트
     const sections = [
         { id: 'general', label: '일반' },
-        { id: 'logical_network', label: '논리 네트워크' },
+        { id: 'data_center', label: '데이터센터' },
+        { id: 'cluster', label: '클러스터' },
         { id: 'host', label: '호스트' },
-        { id: 'virtual_machine', label: '가상 머신' },
-        // { id: 'affinity_group', label: '선호도 그룹' },
-        // { id: 'affinity_label', label: '선호도 레이블' },
+        { id: 'virtual_machine', label: '가상머신' },
+        { id: 'storage', label: '스토리지' },
         { id: 'permission', label: '권한' },
-        { id: 'event', label: '이벤트' }
     ];
   // 클러스터 팝업(보류)
   const clusterPopupData = [
@@ -335,8 +334,8 @@ function DataCenterDetail() {
                                     </div>
                                 </div>
                             )}
-                            {/* 논리 네트워크 */}
-                            {activeTab === 'logical_network' && (
+                            {/*데이터 센터 */}
+                            {activeTab === 'data_center' && (
                                 <>
                                 <div className="content_header_right">
                                     <button onClick={() => openPopup('newNetwork')}>네트워크 추가</button>
@@ -350,6 +349,18 @@ function DataCenterDetail() {
                                   onRowClick={handleRowClick} />
                                 </>
 
+                            )}
+                            {/* 클러스터 */}
+                            {activeTab === 'cluster' && (
+                              <>
+                              <div className="host_empty_outer">
+                                <TableOuter 
+                                  columns={TableColumnsInfo.CLUSTER_VM} 
+                                  data={vms} 
+                                  onRowClick={() => console.log('Row clicked')}
+                                />
+                              </div>
+                              </>
                             )}
                             {/* 호스트 */}
                             {activeTab === 'host' && (
@@ -377,35 +388,18 @@ function DataCenterDetail() {
                               </div>
                               </>
                             )}
-                            {/* 선호도 그룹/ 선호도 레이블 주석
-                            {activeTab === 'affinity_group' && (
+                            {/* 스토리지*/}
+                            {activeTab === 'storage' && (
                               <>
-                              <div className="content_header_right">
-                                <button onClick={openAffinityGroupModal}>새로 만들기</button>
-                                <button>편집</button>
-                                <button>제거</button>
+                              <div className="host_empty_outer">
+                                <TableOuter 
+                                  columns={TableColumnsInfo.CLUSTER_VM} 
+                                  data={vms} 
+                                  onRowClick={() => console.log('Row clicked')}
+                                />
                               </div>
-                              <TableOuter 
-                                columns={TableColumnsInfo.AFFINITY_GROUP} 
-                                data={affinityData} 
-                                onRowClick={() => console.log('Row clicked')} 
-                              />
                               </>
                             )}
-                            {activeTab === 'affinity_label' && (
-                                <>
-                                <div className="content_header_right">
-                                  <button>새로 만들기</button>
-                                  <button>편집</button>
-                                  <button>제거</button>
-                                </div>
-                                <TableOuter 
-                                  columns={TableColumnsInfo.AFFINITY_LABELS} 
-                                  data={memberData} 
-                                  onRowClick={() => console.log('Row clicked')} 
-                                />
-                                </>
-                            )}  */}
 
                             {/* 권한 */}
                             {activeTab === 'permission' && (
@@ -438,16 +432,7 @@ function DataCenterDetail() {
                                 />
                                 </>
                             )}
-                            {/* 이벤트 */}
-                            {activeTab === 'event' && (
-                              <div className="event_table_outer">
-                                <TableOuter 
-                                  columns={TableColumnsInfo.EVENTS}
-                                  data={events}
-                                  onRowClick={() => console.log('Row clicked')} 
-                                />
-                              </div>
-                            )}
+                          
                         </div>
                     </div>
                 </>

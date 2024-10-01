@@ -8,10 +8,9 @@ import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
 import ApiManager from '../../api/ApiManager';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCaretUp, faGlassWhiskey, faEllipsisV, faRefresh, faTimes
-} from '@fortawesome/free-solid-svg-icons'
+import { faArrowDown, faChevronDown, faExclamationTriangle, faRefresh, faSearch, faTimes} from '@fortawesome/free-solid-svg-icons'
 import TableOuter from '../table/TableOuter';
+import './css/AllDisk.css';
 import { useAllDisk } from '../../api/RQHook';
 
 Modal.setAppElement('#root');
@@ -33,6 +32,10 @@ const AllDisk = () => {
     setActiveTab(tab);
   };
 
+  const [isVisible, setIsVisible] = useState(false);
+  const toggleContent = () => {
+    setIsVisible(!isVisible);
+  };
 
   /*
   const [data, setData] = useState([
@@ -114,21 +117,47 @@ const AllDisk = () => {
                 <div className="content_header_right">
                   <button id="storage_disk_new_btn" onClick={() => openPopup('newDisk')}>새로 만들기</button>
                   <button>편집</button>
-                  <button>제거</button>
+                  <button id="storage_delete_btn" onClick={() => openPopup('delete')}>제거</button>
                   <button>이동</button>
                   <button>복사</button>
                   <button id="storage_disk_upload" onClick={() => openPopup('uploadDisk')}>업로드</button>
                   <button>다운로드</button>
-                  <button className="content_header_popup_btn">
-                    <FontAwesomeIcon icon={faEllipsisV} fixedWidth/>
-                    <div className="content_header_popup" style={{ display: 'none' }}>
-                      <div>활성</div>
-                      <div>비활성화</div>
-                      <div>이동</div>
-                      <div>LUN 새로고침</div>
-                    </div>
-                  </button>
+                  <button>LUN 새로고침</button>
                 </div>
+                <div className="search_box">
+                  <input type="text" />
+                  <button><FontAwesomeIcon icon={faSearch} fixedWidth/></button>
+                  <button><FontAwesomeIcon icon={faRefresh} fixedWidth/></button>
+                </div>
+
+                <div className="disk_type">
+                  <div>
+                    <span>디스크유형 : </span>
+                    <div>
+                      <button>모두</button>
+                      <button>이미지</button>
+                      <button className='mr-1'>직접 LUN</button>
+                    </div>
+                  </div>
+                      <span className='mt-1'>컨텐츠 유형 : </span>
+                      <div  className="content_type_btn">
+                      <button onClick={toggleContent}>모두<FontAwesomeIcon icon={faChevronDown} fixedWidth /></button>
+                      {isVisible && (
+                        <div className='content_type'>
+                          <div>모두</div>
+                          <div>데이터</div>
+                          <div>OVF 스토어</div>
+                          <div className='border-b border-gray-400'>메모리 덤프</div>
+                          <div>ISO</div>
+                          <div>Hosted Engine</div>
+                          <div>Hosted Engine Sanlock</div>
+                          <div>Hosted Engine Metadata</div>
+                          <div>Hosted Engine Conf.</div>
+                        </div>
+                      )}
+                  </div>
+                </div>
+
                 <TableOuter 
                   columns={TableColumnsInfo.ALL_DISK}
                   data={data}
@@ -223,51 +252,99 @@ const AllDisk = () => {
           </div>
         </div>
       </Modal>
-         {/*디스크(새로만들기)팝업 */}
-         <Modal
-        isOpen={activePopup === 'newDisk'}
-        onRequestClose={closePopup}
-        contentLabel="새 가상 디스크"
-        className="Modal"
-        overlayClassName="Overlay"
-        shouldCloseOnOverlayClick={false}
-      >
-        <div className="storage_disk_new_popup">
-          <div className="popup_header">
-            <h1>새 가상 디스크</h1>
-            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+        {/*디스크(새로만들기)팝업 */}
+        <Modal
+      isOpen={activePopup === 'newDisk'}
+      onRequestClose={closePopup}
+      contentLabel="새 가상 디스크"
+      className="Modal"
+      overlayClassName="Overlay"
+      shouldCloseOnOverlayClick={false}
+    >
+      <div className="storage_disk_new_popup">
+        <div className="popup_header">
+          <h1>새 가상 디스크</h1>
+          <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+        </div>
+        <div className="disk_new_nav">
+          <div
+            id="storage_img_btn"
+            onClick={() => handleTabClick('img')}
+            className={activeTab === 'img' ? 'active' : ''}
+          >
+            이미지
           </div>
-          <div className="disk_new_nav">
-            <div
-              id="storage_img_btn"
-              onClick={() => handleTabClick('img')}
-              className={activeTab === 'img' ? 'active' : ''}
-            >
-              이미지
+          <div
+            id="storage_directlun_btn"
+            onClick={() => handleTabClick('directlun')}
+            className={activeTab === 'directlun' ? 'active' : ''}
+          >
+            직접LUN
+          </div>
+          
+        </div>
+        {/*이미지*/}
+        {activeTab === 'img' && (
+          <div className="disk_new_img">
+            <div className="disk_new_img_left">
+              <div className="img_input_box">
+                <span>크기(GIB)</span>
+                <input type="text" />
+              </div>
+              <div className="img_input_box">
+                <span>별칭</span>
+                <input type="text" />
+              </div>
+              <div className="img_input_box">
+                <span>설명</span>
+                <input type="text" />
+              </div>
+              <div className="img_select_box">
+                <label htmlFor="os">데이터 센터</label>
+                <select id="os">
+                  <option value="linux">Linux</option>
+                </select>
+              </div>
+              <div className="img_select_box">
+                <label htmlFor="os">스토리지 도메인</label>
+                <select id="os">
+                  <option value="linux">Linux</option>
+                </select>
+              </div>
+              <div className="img_select_box">
+                <label htmlFor="os">할당 정책</label>
+                <select id="os">
+                  <option value="linux">Linux</option>
+                </select>
+              </div>
+              <div className="img_select_box">
+                <label htmlFor="os">디스크 프로파일</label>
+                <select id="os">
+                  <option value="linux">Linux</option>
+                </select>
+              </div>
             </div>
-            <div
-              id="storage_directlun_btn"
-              onClick={() => handleTabClick('directlun')}
-              className={activeTab === 'directlun' ? 'active' : ''}
-            >
-              직접LUN
-            </div>
-            <div
-              id="storage_managed_btn"
-              onClick={() => handleTabClick('managed')}
-              className={activeTab === 'managed' ? 'active' : ''}
-            >
-              관리되는 블록
+            <div className="disk_new_img_right">
+              <div>
+                <input type="checkbox" id="reset_after_deletion" />
+                <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
+              </div>
+              <div>
+                <input type="checkbox" className="shareable" />
+                <label htmlFor="shareable">공유 가능</label>
+              </div>
+              <div>
+                <input type="checkbox" id="incremental_backup" defaultChecked />
+                <label htmlFor="incremental_backup">중복 백업 사용</label>
+              </div>
             </div>
           </div>
-          {/*이미지*/}
-          {activeTab === 'img' && (
-            <div className="disk_new_img">
+        )}
+        {/*직접LUN*/}
+        {activeTab === 'directlun' && (
+          <div id="storage_directlun_outer">
+            <div id="storage_lun_first">
               <div className="disk_new_img_left">
-                <div className="img_input_box">
-                  <span>크기(GIB)</span>
-                  <input type="text" />
-                </div>
                 <div className="img_input_box">
                   <span>별칭</span>
                   <input type="text" />
@@ -283,19 +360,13 @@ const AllDisk = () => {
                   </select>
                 </div>
                 <div className="img_select_box">
-                  <label htmlFor="os">스토리지 도메인</label>
+                  <label htmlFor="os">호스트</label>
                   <select id="os">
                     <option value="linux">Linux</option>
                   </select>
                 </div>
                 <div className="img_select_box">
-                  <label htmlFor="os">할당 정책</label>
-                  <select id="os">
-                    <option value="linux">Linux</option>
-                  </select>
-                </div>
-                <div className="img_select_box">
-                  <label htmlFor="os">디스크 프로파일</label>
+                  <label htmlFor="os">스토리지 타입</label>
                   <select id="os">
                     <option value="linux">Linux</option>
                   </select>
@@ -303,106 +374,88 @@ const AllDisk = () => {
               </div>
               <div className="disk_new_img_right">
                 <div>
-                  <input type="checkbox" id="reset_after_deletion" />
-                  <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
-                </div>
-                <div>
                   <input type="checkbox" className="shareable" />
                   <label htmlFor="shareable">공유 가능</label>
                 </div>
-                <div>
-                  <input type="checkbox" id="incremental_backup" defaultChecked />
-                  <label htmlFor="incremental_backup">중복 백업 사용</label>
-                </div>
               </div>
             </div>
-          )}
-          {/*직접LUN*/}
-          {activeTab === 'directlun' && (
-            <div id="storage_directlun_outer">
-              <div id="storage_lun_first">
-                <div className="disk_new_img_left">
-                  <div className="img_input_box">
-                    <span>별칭</span>
-                    <input type="text" />
-                  </div>
-                  <div className="img_input_box">
-                    <span>설명</span>
-                    <input type="text" />
-                  </div>
-                  <div className="img_select_box">
-                    <label htmlFor="os">데이터 센터</label>
-                    <select id="os">
-                      <option value="linux">Linux</option>
-                    </select>
-                  </div>
-                  <div className="img_select_box">
-                    <label htmlFor="os">호스트</label>
-                    <select id="os">
-                      <option value="linux">Linux</option>
-                    </select>
-                  </div>
-                  <div className="img_select_box">
-                    <label htmlFor="os">스토리지 타입</label>
-                    <select id="os">
-                      <option value="linux">Linux</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="disk_new_img_right">
-                  <div>
-                    <input type="checkbox" className="shareable" />
-                    <label htmlFor="shareable">공유 가능</label>
-                  </div>
-                </div>
+          </div>
+        )}
+        {/*관리되는 블록 (삭제예정)*/}
+        {/* {activeTab === 'managed' && (
+          <div id="storage_managed_outer">
+            <div id="disk_managed_block_left">
+              <div className="img_input_box">
+                <span>크기(GIB)</span>
+                <input type="text" disabled />
+              </div>
+              <div className="img_input_box">
+                <span>별칭</span>
+                <input type="text" value="on20-ap01_Disk1" disabled />
+              </div>
+              <div className="img_input_box">
+                <span>설명</span>
+                <input type="text" disabled />
+              </div>
+              <div className="img_select_box">
+                <label htmlFor="data_center_select">데이터 센터</label>
+                <select id="data_center_select" disabled>
+                  <option value="dc_linux">Linux</option>
+                </select>
+              </div>
+              <div className="img_select_box">
+                <label htmlFor="storage_domain_select">스토리지 도메인</label>
+                <select id="storage_domain_select" disabled>
+                  <option value="sd_linux">Linux</option>
+                </select>
+              </div>
+              <span>해당 데이터 센터에 디스크를 생성할 수 있는 권한을 갖는 사용 가능한 관리 블록 스토리지 도메인이 없습니다.</span>
+            </div>
+            <div id="disk_managed_block_right">
+              <div>
+                <input type="checkbox" id="disk_shared_option" disabled />
+                <label htmlFor="disk_shared_option">공유 가능</label>
               </div>
             </div>
-          )}
-          {/*관리되는 블록 */}
-          {activeTab === 'managed' && (
-            <div id="storage_managed_outer">
-              <div id="disk_managed_block_left">
-                <div className="img_input_box">
-                  <span>크기(GIB)</span>
-                  <input type="text" disabled />
-                </div>
-                <div className="img_input_box">
-                  <span>별칭</span>
-                  <input type="text" value="on20-ap01_Disk1" disabled />
-                </div>
-                <div className="img_input_box">
-                  <span>설명</span>
-                  <input type="text" disabled />
-                </div>
-                <div className="img_select_box">
-                  <label htmlFor="data_center_select">데이터 센터</label>
-                  <select id="data_center_select" disabled>
-                    <option value="dc_linux">Linux</option>
-                  </select>
-                </div>
-                <div className="img_select_box">
-                  <label htmlFor="storage_domain_select">스토리지 도메인</label>
-                  <select id="storage_domain_select" disabled>
-                    <option value="sd_linux">Linux</option>
-                  </select>
-                </div>
-                <span>해당 데이터 센터에 디스크를 생성할 수 있는 권한을 갖는 사용 가능한 관리 블록 스토리지 도메인이 없습니다.</span>
-              </div>
-              <div id="disk_managed_block_right">
-                <div>
-                  <input type="checkbox" id="disk_shared_option" disabled />
-                  <label htmlFor="disk_shared_option">공유 가능</label>
-                </div>
-              </div>
+          </div>
+        )} */}
+        <div className="edit_footer">
+          <button style={{ display: 'none' }}></button>
+          <button>OK</button>
+          <button onClick={closePopup}>취소</button>
+        </div>
+      </div>
+      </Modal>
+        {/*디스크(삭제)팝업 */}
+      <Modal
+        isOpen={activePopup === 'delete'}
+        onRequestClose={closePopup}
+        contentLabel="디스크 업로드"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="storage_delete_popup">
+          <div className="popup_header">
+            <h1>디스크 삭제</h1>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+          </div>
+         
+          <div className='disk_delete_box'>
+            <div>
+              <FontAwesomeIcon style={{marginRight:'0.3rem'}} icon={faExclamationTriangle} />
+              <span>다음 항목을 삭제하시겠습니까?</span>
             </div>
-          )}
+          </div>
+
+
           <div className="edit_footer">
             <button style={{ display: 'none' }}></button>
             <button>OK</button>
             <button onClick={closePopup}>취소</button>
           </div>
         </div>
-        </Modal>
+      </Modal>
     </div>
     
   );
