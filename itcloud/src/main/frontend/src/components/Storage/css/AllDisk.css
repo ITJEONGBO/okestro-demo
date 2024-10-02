@@ -108,3 +108,18 @@
 .content_type>div:hover{
     background:#DDDDDD;
 }
+/*디스크 이동*/
+.disk_move_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 48.4vh;
+    width: 38%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+/*디스크 복사*/

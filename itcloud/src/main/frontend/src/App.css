@@ -520,23 +520,25 @@ input[type="text"]:focus {
 }
 .edit_aside {
     width: 30%;
+    height: 100%;
     background-color: #FAFAFA;
     border-right: 1px solid #ddd;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    justify-content: space-between;
     font-weight: 800;
     text-align: center;
 }
 
 .edit_aside > div {
     display: flex;
-    width: 25%;
+    width: 100%;
     text-align: center;
-    justify-content: center; /* 중앙 정렬 */
+    justify-content: center;
     align-items: center;
-    border-bottom: none; /* 이 줄을 추가하여 기본 테두리를 제거 */
+    border-bottom: none;
     cursor: pointer;
-    outline: none; /* 이 줄을 추가하여 기본 outline을 제거 */
+    padding: 0.4rem 0;
+    outline: none;
+    
 }
 
 .edit_aside > div span {

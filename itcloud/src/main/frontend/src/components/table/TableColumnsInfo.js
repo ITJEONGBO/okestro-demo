@@ -116,6 +116,7 @@ const TableColumnsInfo = {
     { header: '유형', accessor: 'type', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],
+
   DEVICE_FROM_HOST: [
     { header: '이름', accessor: 'name', clickable: false },
     { header: '기능', accessor: 'capability', clickable: false },

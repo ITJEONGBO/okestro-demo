@@ -60,16 +60,7 @@
     padding: 0.7rem 0.4rem;
 }
 
-.edit_aside > div {
-    display: flex;
-    width: 34%;
-    text-align: center;
-    justify-content: center;
-    align-items: center;
-    border-bottom: none;
-    cursor: pointer;
-    outline: none;
-}
+
 
 .host_policy{
     padding: 0.7rem 0.4rem;
