@@ -221,38 +221,36 @@ fun List<StorageDomain>.toStorageDomainVos(conn: Connection): List<StorageDomain
  * 스토리지 도메인 빌더
  * 기본
  */
-fun StorageDomainVo.toStorageDomainBuilder(): StorageDomainBuilder {
-	val storageDomainBuilder = StorageDomainBuilder()
-
-	storageDomainBuilder
-		.name(this@toStorageDomainBuilder.name)
-		.type(this@toStorageDomainBuilder.domainType)
-		.warningLowSpaceIndicator(this@toStorageDomainBuilder.warning)
-		.criticalSpaceActionBlocker(this@toStorageDomainBuilder.spaceBlocker)
-		.host(HostBuilder().name(this@toStorageDomainBuilder.hostVo.name).build())
-	return storageDomainBuilder
+fun StorageDomainVo.toAddStorageDomainBuilder(): StorageDomain {
+	return StorageDomainBuilder()
+		.name(this@toAddStorageDomainBuilder.name)
+		.type(this@toAddStorageDomainBuilder.domainType)
+		.warningLowSpaceIndicator(this@toAddStorageDomainBuilder.warning)
+		.criticalSpaceActionBlocker(this@toAddStorageDomainBuilder.spaceBlocker)
+		.host(HostBuilder().name(this@toAddStorageDomainBuilder.hostVo.name).build())
+		.storage(
+			if(this.storageType == StorageType.NFS) {
+				this@toAddStorageDomainBuilder.toAddNFSBuilder()
+			} else {
+				this@toAddStorageDomainBuilder.toAddEtcBuilder()
+			}
+		).build()
 }
 
-fun StorageDomainVo.toAddNFSBuilder(): StorageDomain{
-	return this@toAddNFSBuilder.toStorageDomainBuilder()
-		.storage(
-			HostStorageBuilder()
-				.type(this@toAddNFSBuilder.storageType)
-				.address(this@toAddNFSBuilder.storageAddress)
-				.path(this@toAddNFSBuilder.storagePath)
-		)
-		.build()
+fun StorageDomainVo.toAddNFSBuilder(): HostStorage {
+	return HostStorageBuilder()
+			.type(this@toAddNFSBuilder.storageType)
+			.address(this@toAddNFSBuilder.storageAddress)
+			.path(this@toAddNFSBuilder.storagePath)
+	.build()
 }
 
 // iscsi, fc(?)
-fun StorageDomainVo.toAddEtcBuilder(): StorageDomain{
-	return this@toAddEtcBuilder.toStorageDomainBuilder()
-		.storage(
-			HostStorageBuilder()
-				.type(this@toAddEtcBuilder.storageType)
-				.logicalUnits(this@toAddEtcBuilder.logicalUnits.map { LogicalUnitBuilder().id(it).build() })
-		)
-		.build()
+fun StorageDomainVo.toAddEtcBuilder(): HostStorage {
+	return HostStorageBuilder()
+			.type(this@toAddEtcBuilder.storageType)
+			.logicalUnits(this@toAddEtcBuilder.logicalUnits.map { LogicalUnitBuilder().id(it).build() })
+	.build()
 }
 
 

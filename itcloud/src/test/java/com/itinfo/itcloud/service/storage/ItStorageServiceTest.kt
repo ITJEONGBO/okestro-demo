@@ -4,10 +4,12 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.DataCenterVo
 import com.itinfo.itcloud.model.computing.EventVo
+import com.itinfo.itcloud.model.computing.TemplateVo
 import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.DiskImageVo
 import com.itinfo.itcloud.model.storage.DiskProfileVo
+import com.itinfo.itcloud.model.storage.HostStorageVo
 import com.itinfo.itcloud.model.storage.StorageDomainVo
 import org.apache.commons.fileupload.FileItem
 import org.apache.commons.fileupload.disk.DiskFileItem
@@ -53,7 +55,7 @@ class ItStorageServiceTest {
 		clusterId = "023c79d8-3819-11ef-bf08-00163e6c8feb"
 		networkId = "00000000-0000-0000-0000-000000000009"
 		host01 = "671e18b2-964d-4cc6-9645-08690c94d249"
-		domainId = "213b1a0a-b0c0-4d10-95a4-7aafed4f76b9"
+		domainId = "571f10ef-3b23-417d-a954-d6ab90cf9ecb"
 		nfs = "06faa572-f1ac-4874-adcc-9d26bb74a54d"
 	}
 
@@ -72,7 +74,7 @@ class ItStorageServiceTest {
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }
-		assertThat(result.size, `is`(3))
+		assertThat(result.size, `is`(2))
 	}
 
 	/**
@@ -110,17 +112,37 @@ class ItStorageServiceTest {
 	}
 
 	/**
-	 * [findAllConn]
-	 * [ItStorageService.findAllConn] 의 단위테스트
+	 * [findAllIscsiFromHost]
+	 * [ItStorageService.findAllIscsiFromHost] 의 단위테스트
 	 *
-	 * @see [ItStorageService.findAllConn]
+	 * @see [ItStorageService.findAllIscsiFromHost]
 	 */
 	@Test
-	fun findAllConn() {
-		log.debug("findAllConn ... ")
-		val result: Int = service.findAllConn()
-//		print(result)
+	fun findAllIscsiFromHost() {
+		log.debug("findAllIscsiFromHost ... ")
+		val result: List<HostStorageVo> =
+			service.findAllIscsiFromHost("7ba9acd9-90da-49f1-88f5-6ad82a246574")
 
+		assertThat(result, `is`(not(nullValue())))
+		result.forEach { println(it) }
+		assertThat(result.size, `is`(0))
+	}
+
+	/**
+	 * [findAllFibreFromHost]
+	 * [ItStorageService.findAllFibreFromHost] 의 단위테스트
+	 *
+	 * @see [ItStorageService.findAllFibreFromHost]
+	 */
+	@Test
+	fun findAllFibreFromHost() {
+		log.debug("findAllFibreFromHost ... ")
+		val result: List<HostStorageVo> =
+			service.findAllFibreFromHost("7ba9acd9-90da-49f1-88f5-6ad82a246574")
+
+		assertThat(result, `is`(not(nullValue())))
+		result.forEach { println(it) }
+		assertThat(result.size, `is`(2))
 	}
 
 
@@ -199,6 +221,52 @@ class ItStorageServiceTest {
 	}
 
 	/**
+	 * [should_attachFromDataCenter]
+	 * [ItStorageService.attachFromDataCenter] 의 단위테스트
+	 *
+	 * @see [ItStorageService.attachFromDataCenter]
+	 */
+	@Test
+	fun should_attachFromDataCenter() {
+		log.debug("should_attachFromDataCenter ... ")
+	}
+
+	/**
+	 * [should_detachFromDataCenter]
+	 * [ItStorageService.detachFromDataCenter] 의 단위테스트
+	 *
+	 * @see [ItStorageService.detachFromDataCenter]
+	 */
+	@Test
+	fun should_detachFromDataCenter() {
+		log.debug("should_detachFromDataCenter ... ")
+	}
+
+	/**
+	 * [should_activateFromDataCenter]
+	 * [ItStorageService.activateFromDataCenter] 의 단위테스트
+	 *
+	 * @see [ItStorageService.activateFromDataCenter]
+	 */
+	@Test
+	fun should_activateFromDataCenter() {
+		log.debug("should_activateFromDataCenter ... ")
+	}
+
+	/**
+	 * [should_maintenanceFromDataCenter]
+	 * [ItStorageService.maintenanceFromDataCenter] 의 단위테스트
+	 *
+	 * @see [ItStorageService.maintenanceFromDataCenter]
+	 */
+	@Test
+	fun should_maintenanceFromDataCenter() {
+		log.debug("should_maintenanceFromDataCenter ... ")
+	}
+
+
+
+	/**
 	 * [should_findAllVmsFromStorageDomain]
 	 * [ItStorageService.findAllVmsFromStorageDomain] 의 단위테스트
 	 *
@@ -216,22 +284,21 @@ class ItStorageServiceTest {
 	}
 
 	/**
-	 * [should_findAllDisksFromStorageDomain]
-	 * [ItStorageService.findAllDisksFromStorageDomain] 의 단위테스트
+	 * [should_findAllTemplatesFromStorageDomain]
+	 * [ItStorageService.findAllTemplatesFromStorageDomain] 의 단위테스트
 	 *
-	 * @see [ItStorageService.findAllDisksFromStorageDomain]
+	 * @see [ItStorageService.findAllTemplatesFromStorageDomain]
 	 */
 	@Test
-	fun should_findAllDisksFromStorageDomain() {
-		log.debug("should_findAllDisksFromStorageDomain ... ")
-		val result: List<DiskImageVo> =
-			service.findAllDisksFromStorageDomain(domainId)
+	fun should_findAllTemplatesFromStorageDomain() {
+		log.debug("should_findAllTemplatesFromStorageDomain ... ")
+		val result: List<TemplateVo> =
+			service.findAllTemplatesFromStorageDomain("072fbaa1-08f3-4a40-9f34-a5ca22dd1d74")
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }
-		assertThat(result.size, `is`(13))
+		assertThat(result.size, `is`(0))
 	}
-
 
 
 	/**

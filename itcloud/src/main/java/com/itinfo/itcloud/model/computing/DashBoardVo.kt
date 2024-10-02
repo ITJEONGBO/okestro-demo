@@ -4,6 +4,7 @@ import com.itinfo.itcloud.gson
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.types.StorageDomainStatus
+import org.ovirt.engine.sdk4.types.StorageType
 import org.slf4j.LoggerFactory
 import java.io.Serializable
 
@@ -105,6 +106,7 @@ fun Connection.toDashboardVo(): DashBoardVo {
     val storageDomains: Int =
         this@toDashboardVo.findAllStorageDomains()
             .getOrDefault(listOf())
+            .filter { it.storage().type() != StorageType.GLANCE }
             .size
     val eventsAlert: Int =
         this@toDashboardVo.findAllEvents("severity=alert")

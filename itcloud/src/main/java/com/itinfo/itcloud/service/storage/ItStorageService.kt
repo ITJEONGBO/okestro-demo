@@ -12,16 +12,7 @@ import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.services.*
-import org.ovirt.engine.sdk4.types.DataCenter
-import org.ovirt.engine.sdk4.types.StorageDomain
-import org.ovirt.engine.sdk4.types.Disk
-import org.ovirt.engine.sdk4.types.DiskProfile
-import org.ovirt.engine.sdk4.types.Permission
-import org.ovirt.engine.sdk4.types.Event
-import org.ovirt.engine.sdk4.types.StorageConnection
-import org.ovirt.engine.sdk4.types.StorageConnectionExtension
-import org.ovirt.engine.sdk4.types.Template
-import org.ovirt.engine.sdk4.types.Vm
+import org.ovirt.engine.sdk4.types.*
 import org.springframework.stereotype.Service
 
 import javax.net.ssl.*
@@ -56,8 +47,26 @@ interface ItStorageService {
 	fun findOne(storageDomainId: String): StorageDomainVo?
 
 	// 도메인 생성 - 호스트 목록 [ItDataCenterService.findAllHostsFromDataCenter]
-
-	// 도메인 생성 - iSCSI 유형에서 대상 LUN 목록?
+	/**
+	 * [ItStorageService.findAllIscsiFromHost]
+	 * 도메인 생성(가져오기?) - iSCSI 유형 대상 LUN 목록
+	 *
+	 *
+	 * @param hostId [String] 호스트 Id
+	 * @return List<[HostStorageVo]>
+	 */
+	@Throws(Error::class)
+	fun findAllIscsiFromHost(hostId: String): List<HostStorageVo>
+	/**
+	 * [ItStorageService.findAllFibreFromHost]
+	 * 도메인 생성(가져오기?) - Fibre Channel 유형 대상 LUN 목록
+	 * 타입이 tcp로 뜸
+	 *
+	 * @param hostId [String] 호스트 Id
+	 * @return List<[HostStorageVo]>
+	 */
+	@Throws(Error::class)
+	fun findAllFibreFromHost(hostId: String): List<HostStorageVo>
 
 	/**
 	 * [ItStorageService.add]
@@ -95,6 +104,7 @@ interface ItStorageService {
 	 */
 	@Throws(Error::class)
 	fun remove(storageDomainId: String): Boolean
+	// Connection (?)
 	/**
 	 * [ItStorageService.destroy]
 	 * 도메인 파괴
@@ -116,28 +126,28 @@ interface ItStorageService {
 	fun findAllDataCentersFromStorageDomain(storageDomainId: String): List<DataCenterVo>
 
 	/**
-	 * [ItStorageService.connectFromDataCenter]
-	 * 스토리지 도메인 - 연결
+	 * [ItStorageService.attachFromDataCenter]
+	 * 스토리지 도메인 - 데이터센터 연결 attach
 	 *
 	 * @param dataCenterId [String] 데이터센터 Id
 	 * @param storageDomainId [String] 스토리지 도메인 Id
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun connectFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean
+	fun attachFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean
 	/**
-	 * [ItStorageService.separateFromDataCenter]
-	 * 스토리지 도메인 - 분리
+	 * [ItStorageService.detachFromDataCenter]
+	 * 스토리지 도메인 - 데이터센터 분리 detach
 	 *
 	 * @param dataCenterId [String] 데이터센터 Id
 	 * @param storageDomainId [String] 스토리지 도메인 Id
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun separateFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean
+	fun detachFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean
 	/**
 	 * [ItStorageService.activateFromDataCenter]
-	 * 스토리지 도메인 - 활성
+	 * 스토리지 도메인 - 데이터센터 활성 activate
 	 *
 	 * @param dataCenterId [String] 데이터센터 Id
 	 * @param storageDomainId [String] 스토리지 도메인 Id
@@ -146,15 +156,15 @@ interface ItStorageService {
 	@Throws(Error::class)
 	fun activateFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean
 	/**
-	 * [ItStorageService.deactivateFromDataCenter]
-	 * 스토리지 도메인 - 유지보수
+	 * [ItStorageService.maintenanceFromDataCenter]
+	 * 스토리지 도메인 - 데이터센터 유지보수 maintenance
 	 *
 	 * @param dataCenterId [String] 데이터센터 Id
 	 * @param storageDomainId [String] 스토리지 도메인 Id
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun deactivateFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean
+	fun maintenanceFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean
 
 	/**
 	 * [ItStorageService.findAllVmsFromStorageDomain]
@@ -174,15 +184,18 @@ interface ItStorageService {
 	 */
 	@Throws(Error::class)
 	fun findAllTemplatesFromStorageDomain(storageDomainId: String): List<TemplateVo>
+
+	// 스토리지 도메인 - 디스크 목록
+
 	/**
-	 * [ItStorageService.findAllDisksFromStorageDomain]
-	 * 스토리지 도메인 - 디스크 목록
+	 * [ItStorageService.findAllDiskSnapshotsFromStorageDomain]
+	 * 스토리지 도메인 - 디스크 스냅샷 목록
 	 *
 	 * @param storageDomainId [String] 스토리지 도메인 Id
 	 * @return List<[DiskImageVo]> 디스크 목록
 	 */
 	@Throws(Error::class)
-	fun findAllDisksFromStorageDomain(storageDomainId: String): List<DiskImageVo>
+	fun findAllDiskSnapshotsFromStorageDomain(storageDomainId: String): List<DiskImageVo>
 
 //	/**
 //	 * [ItStorageService.findAllDiskProfilesFromStorageDomain]
@@ -253,6 +266,7 @@ class StorageServiceImpl(
 		val res: List<StorageDomain> =
 			conn.findAllStorageDomains()
 				.getOrDefault(listOf())
+				.filter { it.storage().type() != StorageType.GLANCE }
 		return res.toStorageDomainsMenu(conn)
 	}
 
@@ -274,18 +288,34 @@ class StorageServiceImpl(
 		return res?.toStorageDomainVo(conn)
 	}
 
+	@Throws(Error::class)
+	override fun findAllIscsiFromHost(hostId: String): List<HostStorageVo> {
+		log.info("findAllIscsiFromHost... hostId: {}", hostId)
+		val res: List<HostStorage> =
+			conn.findAllStoragesFromHost(hostId)
+				.getOrDefault(listOf())
+				.filter { it.type() == StorageType.ISCSI }
+		return res.toIscsiHostStorageVos()
+	}
 
-	// requires: name, type, host, and storage attributes. Identify the host attribute with the id or name attributes.
-	// To add a new storage domain with specified name, type, storage.type, storage.address, and storage.path,
-	// and using a host with an id 123, send a request like this
+	@Throws(Error::class)
+	override fun findAllFibreFromHost(hostId: String): List<HostStorageVo> {
+		log.info("findAllFibreFromHost... hostId: {}", hostId)
+		val res: List<HostStorage> =
+			conn.findAllStoragesFromHost(hostId)
+				.getOrDefault(listOf())
+				.filter { it.type() == StorageType.FCP }
+		return res.toFibreHostStorageVos()
+	}
+
+
 	@Throws(Error::class)
 	override fun add(storageDomainVo: StorageDomainVo): StorageDomainVo? {
 		log.info("add ... ")
-//		val res: StorageDomain? =
-//			conn.addStorageDomain(storageDomainVo.toAddStorageDomainBuilder(conn))
-//				.getOrNull()
-//		return res?.toStorageDomainVo(conn)
-		TODO("Not yet implemented")
+		val res: StorageDomain? =
+			conn.addStorageDomain(storageDomainVo.toAddStorageDomainBuilder())
+				.getOrNull()
+		return res?.toStorageDomainVo(conn)
 	}
 
 	@Throws(Error::class)
@@ -359,12 +389,12 @@ class StorageServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun connectFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean {
+	override fun attachFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean {
 		TODO("Not yet implemented")
 	}
 
 	@Throws(Error::class)
-	override fun separateFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean {
+	override fun detachFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean {
 		TODO("Not yet implemented")
 	}
 
@@ -374,7 +404,7 @@ class StorageServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun deactivateFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean {
+	override fun maintenanceFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean {
 		TODO("Not yet implemented")
 	}
 
@@ -398,12 +428,9 @@ class StorageServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllDisksFromStorageDomain(storageDomainId: String): List<DiskImageVo> {
-		log.info("findAllDisksFromStorageDomain ... storageDomainId: {}", storageDomainId)
-		val res: List<Disk> =
-			conn.findAllDisksFromStorageDomain(storageDomainId)
-				.getOrDefault(listOf())
-		return res.toDiskImageVos(conn)
+	override fun findAllDiskSnapshotsFromStorageDomain(storageDomainId: String): List<DiskImageVo> {
+		log.info("findAllDiskSnapshotsFromStorageDomain ... storageDomainId: {}", storageDomainId)
+		TODO("Not yet implemented")
 	}
 
 //	@Throws(Error::class)

@@ -364,7 +364,7 @@ fun Connection.findAllStatisticsFromHost(hostId: String): Result<List<Statistic>
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-private fun Connection.srvStoragesFromHost(hostId: String): HostStorageService =
+fun Connection.srvStoragesFromHost(hostId: String): HostStorageService =
 	this.srvHost(hostId).storageService()
 
 fun Connection.findAllStoragesFromHost(hostId: String): Result<List<HostStorage>> = runCatching {
@@ -375,6 +375,12 @@ fun Connection.findAllStoragesFromHost(hostId: String): Result<List<HostStorage>
 	Term.HOST.logFailWithin(Term.STORAGE,"목록조회", it, hostId)
 	throw if (it is Error) it.toItCloudException() else it
 }
+
+
+
+
+
+
 
 private fun Connection.srvNetworkAttachmentsFromHost(hostId: String): NetworkAttachmentsService =
 	this.srvHost(hostId).networkAttachmentsService()

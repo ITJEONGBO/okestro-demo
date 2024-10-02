@@ -18,7 +18,7 @@ private val log = LoggerFactory.getLogger(DiskProfileVo::class.java)
  * @property name [String]
  * @property description [String] 설명
  */
-open class DiskProfileVo(
+class DiskProfileVo(
 	val id: String = "",
 	val name: String = "",
 	val description: String = "",

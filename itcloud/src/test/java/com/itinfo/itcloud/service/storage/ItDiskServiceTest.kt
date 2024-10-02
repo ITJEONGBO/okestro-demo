@@ -7,6 +7,7 @@ import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.DiskImageVo
 import com.itinfo.itcloud.model.storage.DiskProfileVo
 import com.itinfo.itcloud.model.storage.StorageDomainVo
+import com.itinfo.itcloud.service.storage.ItStorageServiceTest.Companion
 import org.apache.commons.fileupload.FileItem
 import org.apache.commons.fileupload.disk.DiskFileItem
 import org.apache.commons.io.IOUtils
@@ -43,6 +44,7 @@ class ItDiskServiceTest {
     private lateinit var networkId: String // ovirtmgmt(dc: Default)
     private lateinit var host01: String // host01
     private lateinit var domainId: String // host01
+    private lateinit var diskId: String // host01
 
     @BeforeEach
     fun setup() {
@@ -51,32 +53,82 @@ class ItDiskServiceTest {
         networkId = "00000000-0000-0000-0000-000000000009"
         host01 = "671e18b2-964d-4cc6-9645-08690c94d249"
         domainId = "213b1a0a-b0c0-4d10-95a4-7aafed4f76b9"
+        diskId = ""
     }
-
 
 
     /**
-     * [should_findDisk]
-     * [ItStorageService.findDisk] 의 단위테스트
+     * [should_findAll]
+     * [ItDiskService.findAll] 의 단위테스트
      *
-     * @see [ItStorageService.findDisk]
+     * @see [ItDiskService.findAll]
      */
     @Test
-    fun should_findDisk() {
-        log.debug("should_findDisk ... ")
-//		val result: DiskImageVo? =
-//			service.findDisk(diskId)
-//
-//		assertThat(result, `is`(not(nullValue())))
-//		println(result)
+    fun should_findAll() {
+        log.debug("should_findAll ... ")
+        val result: List<DiskImageVo> =
+            service.findAll()
+
+        assertThat(result, `is`(not(nullValue())))
+        result.forEach { println(it) }
+        assertThat(result.size, `is`(8))
     }
 
+    /**
+     * [should_findAllFromStorageDomain]
+     * [ItDiskService.findAllFromStorageDomain] 의 단위테스트
+     *
+     * @see [ItDiskService.findAllFromStorageDomain]
+     */
+    @Test
+    fun should_findAllFromStorageDomain() {
+        log.debug("should_findAllFromStorageDomain ... ")
+        val result: List<DiskImageVo> =
+            service.findAllFromStorageDomain(domainId)
+
+        assertThat(result, `is`(not(nullValue())))
+        result.forEach { println(it) }
+        assertThat(result.size, `is`(8))
+    }
+
+    /**
+     * [should_findOne]
+     * [ItDiskService.findOne] 의 단위테스트
+     *
+     * @see [ItDiskService.findOne]
+     */
+    @Test
+    fun should_findOne() {
+        log.debug("should_findDisk ... ")
+		val result: DiskImageVo? =
+			service.findOne(diskId)
+
+		assertThat(result, `is`(not(nullValue())))
+		println(result)
+    }
+
+    /**
+     * [should_findAllDomainsFromDataCenter]
+     * [ItDiskService.findAllDomainsFromDataCenter] 의 단위테스트
+     *
+     * @see [ItDiskService.findAllDomainsFromDataCenter]
+     */
+    @Test
+    fun should_findAllDomainsFromDataCenter() {
+        log.info("should_findAllDomainsFromDataCenter ... ")
+        val result: List<StorageDomainVo> =
+            service.findAllDomainsFromDataCenter(domainId)
+
+        assertThat(result, `is`(not(nullValue())))
+        assertThat(result.size, `is`(1))
+        result.forEach { println(it) }
+    }
 
     /**
      * [should_findAllDiskProfilesFromStorageDomain]
-     * [ItStorageService.findAllDiskProfilesFromStorageDomain] 의 단위테스트
+     * [ItDiskService.findAllDomainsFromDataCenter] 의 단위테스트
      *
-     * @see [ItStorageService.findAllDiskProfilesFromStorageDomain]
+     * @see [ItDiskService.findAllDiskProfilesFromStorageDomain]
      */
     @Test
     fun should_findAllDiskProfilesFromStorageDomain() {
@@ -90,16 +142,15 @@ class ItDiskServiceTest {
     }
 
     /**
-     * [should_addDisk]
-     * [ItStorageService.addDisk] 의 단위테스트
+     * [should_add]
+     * [ItDiskService.add] 의 단위테스트
      *
-     * @see [ItStorageService.addDisk]
+     * @see [ItDiskService.add]
      */
     @Test
-    fun should_addDisk() {
-        log.info("should_addDisk ... ")
+    fun should_add() {
+        log.info("should_add... ")
         val storageDomainVo = IdentifiedVo.builder { id { domainId } }
-//		val diskProfileVo = IdentifiedVo.builder { id { diskProfile } }
 
         val addDisk =
             DiskImageVo.builder {
@@ -115,7 +166,7 @@ class ItDiskServiceTest {
             }
 
         val addResult: DiskImageVo? =
-            service.addDisk(addDisk)
+            service.add(addDisk)
 
         assertThat(addResult, `is`(not(nullValue())))
         assertThat(addResult?.alias, `is`(addDisk.alias))
@@ -130,8 +181,15 @@ class ItDiskServiceTest {
     }
 
 
+    /**
+     * [should_update]
+     * [ItDiskService.update] 의 단위테스트
+     *
+     * @see [ItDiskService.update]
+     */
     @Test
-    fun should_editDiskImage() {
+    fun should_update() {
+        log.info("should_update... ")
         val storageDomainVo = IdentifiedVo.builder { id { domainId } }
 //		val diskProfileVo = IdentifiedVo.builder { id { diskProfile } }
 
@@ -151,7 +209,7 @@ class ItDiskServiceTest {
             }
 
         val updateResult: DiskImageVo? =
-            service.updateDisk(updateDisk)
+            service.update(updateDisk)
 
         assertThat(updateResult, `is`(not(nullValue())))
         assertThat(updateResult?.alias, `is`(updateDisk.alias))
@@ -165,17 +223,29 @@ class ItDiskServiceTest {
         assertThat(updateResult?.backup, `is`(updateDisk.backup))
     }
 
-
+    /**
+     * [should_remove]
+     * [ItDiskService.remove] 의 단위테스트
+     *
+     * @see [ItDiskService.remove]
+     */
     @Test
-    fun should_removeDisk() {
+    fun should_remove() {
+        log.info("should_remove ... ")
         val diskId = "7b5522b4-cf3e-4b61-a135-3284a97105dc"
         val result: Boolean =
-            service.removeDisk(diskId)
+            service.remove(diskId)
 
         assertThat(result, `is`(true))
     }
 
-    // TODO 추가 구현필요
+
+    /**
+     * [should_findAllStorageDomainsFromDisk]
+     * [ItDiskService.findAllStorageDomainsFromDisk] 의 단위테스트
+     *
+     * @see [ItDiskService.findAllStorageDomainsFromDisk]
+     */
     @Test
     fun should_findAllStorageDomainsFromDisk(){
         log.info("should_findAllStorageDomainsFromDisk ... ")
@@ -188,19 +258,29 @@ class ItDiskServiceTest {
         result.forEach { println(it) }
     }
 
-
+    /**
+     * [should_move]
+     * [ItDiskService.move] 의 단위테스트
+     *
+     * @see [ItDiskService.move]
+     */
     @Test
-    fun should_moveDisk() {
+    fun should_move() {
         val diskId = "2c73c9c0-6552-4ddc-9727-8b2de7f54267"
         val result: Boolean =
-            service.moveDisk(diskId, domainId)
+            service.move(diskId, domainId)
 
         assertThat(result, `is`(true))
     }
 
-
+    /**
+     * [should_copy]
+     * [ItDiskService.copy] 의 단위테스트
+     *
+     * @see [ItDiskService.copy]
+     */
     @Test
-    fun should_copyDisk() {
+    fun should_copy() {
         val diskId = "2c73c9c0-6552-4ddc-9727-8b2de7f54267"
         val domainId2 = ""
         val storageDomainVo = IdentifiedVo.builder { id { domainId }}
@@ -212,15 +292,20 @@ class ItDiskServiceTest {
                 storageDomainVo { storageDomainVo }
             }
         val result =
-            service.copyDisk(image)
+            service.copy(image)
 
         assertThat(result, `is`(true))
     }
 
-
+    /**
+     * [should_upload]
+     * [ItDiskService.upload] 의 단위테스트
+     *
+     * @see [ItDiskService.upload]
+     */
     @Test
     @Throws(IOException::class)
-    fun should_uploadDisk() {
+    fun should_upload() {
         // test환경에서는 실패할 경우 있음
         val path = "C:/Users/deh22/Documents/Rocky-8.4-x86_64-minimal.iso"
 
@@ -258,15 +343,15 @@ class ItDiskServiceTest {
             }
 
         val result =
-            service.uploadDisk(multipartFile, iVo)
+            service.upload(multipartFile, iVo)
     }
 
 
     /**
      * [should_findAllVmsFromDisk]
-     * [ItStorageService.findAllVmsFromDisk] 의 단위테스트
+     * [ItDiskService.findAllVmsFromDisk] 의 단위테스트
      *
-     * @see [ItStorageService.findAllVmsFromDisk]
+     * @see [ItDiskService.findAllVmsFromDisk]
      */
     @Test
     fun should_findAllVmsFromDisk() {
@@ -280,23 +365,23 @@ class ItDiskServiceTest {
         result.forEach { println(it) }
     }
 
-    /**
-     * [should_findAllPermissionsFromDisk]
-     * [ItStorageService.findAllPermissionsFromDisk] 의 단위테스트
-     *
-     * @see [ItStorageService.findAllPermissionsFromDisk]
-     */
-    @Test
-    fun should_findAllPermissionsFromDisk() {
-        log.info("should_findAllPermissionsFromDisk ... ")
-        val diskId = "6ebde818-0b00-425d-b1c2-8a6c066140c8"
-        val result: List<PermissionVo> =
-            service.findAllPermissionsFromDisk(diskId)
-
-        assertThat(result, `is`(not(nullValue())))
-        assertThat(result.size, `is`(5))
-        result.forEach { println(it) }
-    }
+//    /**
+//     * [should_findAllPermissionsFromDisk]
+//     * [ItDiskService.findAllPermissionsFromDisk] 의 단위테스트
+//     *
+//     * @see [ItDiskService.findAllPermissionsFromDisk]
+//     */
+//    @Test
+//    fun should_findAllPermissionsFromDisk() {
+//        log.info("should_findAllPermissionsFromDisk ... ")
+//        val diskId = "6ebde818-0b00-425d-b1c2-8a6c066140c8"
+//        val result: List<PermissionVo> =
+//            service.findAllPermissionsFromDisk(diskId)
+//
+//        assertThat(result, `is`(not(nullValue())))
+//        assertThat(result.size, `is`(5))
+//        result.forEach { println(it) }
+//    }
 
     companion object{
         private val log by LoggerDelegate()

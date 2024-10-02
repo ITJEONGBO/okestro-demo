@@ -42,7 +42,7 @@ import java.math.BigInteger
  *
  * @property diskProfileVos List<[IdentifiedVo]> 디스크 프로파일 목록
  */
-open class DiskImageVo(
+class DiskImageVo(
 	val id: String = "",
 	val size: Int = 0,
 	val appendSize: Int = 0,

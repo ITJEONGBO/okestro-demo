@@ -9,6 +9,7 @@ import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.model.storage.*
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.storage.StorageServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.services.ImageTransferService
@@ -20,24 +21,33 @@ import java.io.IOException
 interface ItDiskService {
 
     /**
-     * [ItDiskService.findAllDisks]
+     * [ItDiskService.findAll]
      * 전체 디스크 목록
      *
      * @return List<[DiskImageVo]> 디스크 목록
      */
     @Throws(Error::class)
-    fun findAllDisks(): List<DiskImageVo>
-
+    fun findAll(): List<DiskImageVo>
 
     /**
-     * [ItDiskService.findDisk]
+     * [ItDiskService.findAllFromStorageDomain]
+     * 스토리지 도메인 - 디스크 목록
+     *
+     * @param storageDomainId [String] 스토리지 도메인 Id
+     * @return List<[DiskImageVo]> 디스크 목록
+     */
+    @Throws(Error::class)
+    fun findAllFromStorageDomain(storageDomainId: String): List<DiskImageVo>
+
+    /**
+     * [ItDiskService.findOne]
      * 디스크 정보
      *
      * @param diskId [String] 디스크 id
      * @return [DiskImageVo]?
      */
     @Throws(Error::class)
-    fun findDisk(diskId: String): DiskImageVo?
+    fun findOne(diskId: String): DiskImageVo?
 
     // 디스크 생성창 - 이미지 데이터센터 목록 [ItDataCenterService.findAll]
 
@@ -64,7 +74,7 @@ interface ItDiskService {
     @Throws(Error::class)
     fun findAllDiskProfilesFromStorageDomain(storageDomainId: String): List<DiskProfileVo>
     /**
-     * [ItDiskService.addDisk]
+     * [ItDiskService.add]
      * 디스크 생성 (이미지)
      * 가상 디스크 생성 - Lun, 관리되는 블록 제외
      * ovirt에서 dc정보는 스토리지 도메인을 파악하기 위해있음
@@ -73,25 +83,25 @@ interface ItDiskService {
      * @return [Res]<[Boolean]> 201 (create), 404(fail)
      */
     @Throws(Error::class)
-    fun addDisk(image: DiskImageVo): DiskImageVo?
+    fun add(image: DiskImageVo): DiskImageVo?
     /**
-     * [ItDiskService.updateDisk]
+     * [ItDiskService.update]
      * 디스트 편집
      *
      * @param image [DiskImageVo] 이미지 생성
      * @return [DiskImageVo]
      */
     @Throws(Error::class)
-    fun updateDisk(image: DiskImageVo): DiskImageVo?
+    fun update(image: DiskImageVo): DiskImageVo?
     /**
-     * [ItDiskService.removeDisk]
+     * [ItDiskService.remove]
      * 디스크 삭제
      *
      * @param diskId [String] 디스크 ID
      * @return [Boolean] 성공여부
      */
     @Throws(Error::class)
-    fun removeDisk(diskId: String): Boolean
+    fun remove(diskId: String): Boolean
     /**
      * [ItDiskService.findAllStorageDomainsFromDisk]
      * 디스크 이동- 창
@@ -104,7 +114,7 @@ interface ItDiskService {
     @Throws(Error::class)
     fun findAllStorageDomainsFromDisk(diskId: String): List<StorageDomainVo>
     /**
-     * [ItDiskService.moveDisk]
+     * [ItDiskService.move]
      * 디스크 이동
      *
      * @param diskId [String] 디스크 아이디
@@ -112,18 +122,18 @@ interface ItDiskService {
      * @return [Boolean] 성공여부
      */
     @Throws(Error::class)
-    fun moveDisk(diskId: String, storageDomainId: String): Boolean
+    fun move(diskId: String, storageDomainId: String): Boolean
     /**
-     * [ItDiskService.copyDisk]
+     * [ItDiskService.copy]
      * 디스크 복사
      *
      * @param diskImageVo [DiskImageVo] 디스크 객체
      * @return [Boolean]
      */
     @Throws(Error::class)
-    fun copyDisk(diskImageVo: DiskImageVo): Boolean
+    fun copy(diskImageVo: DiskImageVo): Boolean
     /**
-     * [ItDiskService.uploadDisk]
+     * [ItDiskService.upload]
      * 디스크 이미지 업로드
      * required: provisioned_size, alias, description, wipe_after_delete, shareable, backup, disk_profile.
      * @param file [MultipartFile] 업로드 할 파일
@@ -133,7 +143,7 @@ interface ItDiskService {
      * @throws IOException
      */
     @Throws(Error::class, IOException::class)
-    fun uploadDisk(file: MultipartFile, image: DiskImageVo): Boolean
+    fun upload(file: MultipartFile, image: DiskImageVo): Boolean
 
     /**
      * [ItDiskService.findAllVmsFromDisk]
@@ -152,6 +162,7 @@ interface ItDiskService {
      * @return List<[PermissionVo]> 권한 목록
      */
     @Throws(Error::class)
+    @Deprecated("나중구현")
     fun findAllPermissionsFromDisk(diskId: String): List<PermissionVo>
 }
 
@@ -160,18 +171,27 @@ class DiskServiceImpl(
     
 ): BaseService(), ItDiskService {
 
-    override fun findAllDisks(): List<DiskImageVo> {
-        log.info("findAllDisks ... ")
+    @Throws(Error::class)
+    override fun findAll(): List<DiskImageVo> {
+        log.info("findAll ... ")
         val res: List<Disk> =
             conn.findAllDisks()
                 .getOrDefault(listOf())
         return res.toDiskImageVos(conn)
     }
 
+    @Throws(Error::class)
+    override fun findAllFromStorageDomain(storageDomainId: String): List<DiskImageVo> {
+        log.info("findAllFromStorageDomain ... storageDomainId: {}", storageDomainId)
+        val res: List<Disk> =
+            conn.findAllDisksFromStorageDomain(storageDomainId)
+                .getOrDefault(listOf())
+        return res.toDiskImageVos(conn)
+    }
 
     @Throws(Error::class)
-    override fun findDisk(diskId: String): DiskImageVo? {
-        log.info("findDisk ... diskId: $diskId")
+    override fun findOne(diskId: String): DiskImageVo? {
+        log.info("findOne ... diskId: $diskId")
         val res: Disk? =
             conn.findDisk(diskId)
                 .getOrNull()
@@ -197,7 +217,7 @@ class DiskServiceImpl(
     }
 
     @Throws(Error::class)
-    override fun addDisk(image: DiskImageVo): DiskImageVo? {
+    override fun add(image: DiskImageVo): DiskImageVo? {
         log.info("addDisk ... image: $image")
         val res: Disk? =
             conn.addDisk(image.toAddDiskBuilder())
@@ -205,9 +225,8 @@ class DiskServiceImpl(
         return res?.toDiskImageVo(conn)
     }
 
-
     @Throws(Error::class)
-    override fun updateDisk(image: DiskImageVo): DiskImageVo? {
+    override fun update(image: DiskImageVo): DiskImageVo? {
         log.info("updateDisk ... image: $image")
         val res: Disk? =
             conn.updateDisk(image.toEditDiskBuilder())
@@ -216,13 +235,14 @@ class DiskServiceImpl(
     }
 
     @Throws(Error::class)
-    override fun removeDisk(diskId: String): Boolean {
+    override fun remove(diskId: String): Boolean {
         log.info("removeDisk ... diskId: $diskId")
         val res: Result<Boolean> =
             conn.removeDisk(diskId)
         return res.isSuccess
     }
 
+    @Throws(Error::class)
     override fun findAllStorageDomainsFromDisk(diskId: String): List<StorageDomainVo> {
         log.info("findAllStorageDomainsFromDisk ... diskId: $diskId")
         val res: List<StorageDomain> =
@@ -232,16 +252,15 @@ class DiskServiceImpl(
     }
 
     @Throws(Error::class)
-    override fun moveDisk(diskId: String, storageDomainId: String): Boolean {
+    override fun move(diskId: String, storageDomainId: String): Boolean {
         log.info("moveDisk ... diskId: $diskId, storageDomainId: $storageDomainId")
         val res: Result<Boolean> =
             conn.moveDisk(diskId, storageDomainId)
         return res.isSuccess
     }
 
-
     @Throws(Error::class)
-    override fun copyDisk(diskImageVo: DiskImageVo): Boolean {
+    override fun copy(diskImageVo: DiskImageVo): Boolean {
         log.info("copyDisk ... diskVo: $diskImageVo")
         val res: Result<Boolean> =
             conn.copyDisk(
@@ -252,13 +271,12 @@ class DiskServiceImpl(
         return res.isSuccess
     }
 
-
     // (화면표시) 파일 선택시 파일에 있는 포맷, 컨텐츠(파일 확장자로 칭하는건지), 크기 출력
     //		   파일 크기가 자동으로 디스크 옵션에 추가, 파일 명칭이 파일의 이름으로 지정됨 (+설명)
     // 디스크 이미지 업로드
     // required: provisioned_size, alias, description, wipe_after_delete, shareable, backup, disk_profile.
     @Throws(Error::class, IOException::class)
-    override fun uploadDisk(file: MultipartFile, image: DiskImageVo): Boolean {
+    override fun upload(file: MultipartFile, image: DiskImageVo): Boolean {
         log.info("uploadDisk ... ")
         if (file.isEmpty) throw ErrorPattern.FILE_NOT_FOUND.toException()
 
@@ -270,6 +288,7 @@ class DiskServiceImpl(
     }
 
 
+    @Throws(Error::class)
     override fun findAllVmsFromDisk(diskId: String): List<VmVo> {
         log.info("findAllVmsFromDisk ... ")
         val res: List<Vm> =
@@ -278,6 +297,8 @@ class DiskServiceImpl(
         return res.toVmVoInfos(conn)
     }
 
+    @Deprecated("나중구현")
+    @Throws(Error::class)
     override fun findAllPermissionsFromDisk(diskId: String): List<PermissionVo> {
         log.info("findAllPermissionsFromDisk ... diskId: {}", diskId)
         val res: List<Permission> =

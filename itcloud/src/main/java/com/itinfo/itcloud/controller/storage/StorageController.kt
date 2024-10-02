@@ -132,7 +132,7 @@ class StorageController: BaseController() {
 	fun findAllDisks(
 	): ResponseEntity<List<DiskImageVo>> {
 		log.info("/storages/disks ... 스토리지 Disk 목록")
-		return ResponseEntity.ok(iDisk.findAllDisks())
+		return ResponseEntity.ok(iDisk.findAll())
 	}
 
 	@ApiOperation(
@@ -154,7 +154,7 @@ class StorageController: BaseController() {
 		if (storageDomainId == null)
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/disks ... 스토리지 도메인 밑에 붙어있는 Disk 목록", storageDomainId)
-		return ResponseEntity.ok(iDomain.findAllDisksFromStorageDomain(storageDomainId))
+		return ResponseEntity.ok(iDisk.findAllFromStorageDomain(storageDomainId))
 	}
 
 
@@ -182,7 +182,7 @@ class StorageController: BaseController() {
 		if (diskImage == null)
 			throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
 		log.info("/storages/{}/disks/image ... 새가상 디스크 - 이미지 생성", dataCenterId)
-		return ResponseEntity.ok(iDisk.addDisk(diskImage))
+		return ResponseEntity.ok(iDisk.add(diskImage))
 	}
 
 	@ApiOperation(
@@ -213,7 +213,7 @@ class StorageController: BaseController() {
 		if (diskImage == null)
 			throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
 		log.info("/storages/{}/disks/image/{} ... 새가상 디스크 - 이미지 편집", dataCenterId, diskImageId)
-		return ResponseEntity.ok(iDisk.updateDisk(diskImage))
+		return ResponseEntity.ok(iDisk.update(diskImage))
 	}
 
 	@ApiOperation(
@@ -240,7 +240,7 @@ class StorageController: BaseController() {
 		if (diskImageId == null)
 			throw ErrorPattern.DISK_IMAGE_ID_NOT_FOUND.toException()
 		log.info("/storages/{}/disks/image/{} ... 새가상 디스크 - 이미지 삭제", dataCenterId, diskImageId)
-		return ResponseEntity.ok(iDisk.moveDisk(diskImageId, storageDomainId = ""))
+		return ResponseEntity.ok(iDisk.move(diskImageId, storageDomainId = ""))
 	}
 
 	@ApiOperation(
@@ -265,7 +265,7 @@ class StorageController: BaseController() {
 		if (diskId.isNullOrEmpty()) throw ErrorPattern.DISK_ID_NOT_FOUND.toException()
 		if (diskImage == null)  throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
 		log.info("/storages/disks/{}/copy ... 디스크 - 복사", diskId)
-		return ResponseEntity(iDisk.copyDisk(diskImage), HttpStatus.CREATED)
+		return ResponseEntity(iDisk.copy(diskImage), HttpStatus.CREATED)
 	}
 
 	@ApiOperation(
@@ -293,7 +293,7 @@ class StorageController: BaseController() {
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		if (diskImage == null)
 			throw ErrorPattern.DISK_IMAGE_VO_INVALID.toException()
-		return ResponseEntity.ok(iDisk.uploadDisk(file, diskImage))
+		return ResponseEntity.ok(iDisk.upload(file, diskImage))
 	}
 
 //	@ApiOperation(
