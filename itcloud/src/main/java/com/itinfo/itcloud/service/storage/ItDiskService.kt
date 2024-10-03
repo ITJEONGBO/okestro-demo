@@ -138,12 +138,21 @@ interface ItDiskService {
      * required: provisioned_size, alias, description, wipe_after_delete, shareable, backup, disk_profile.
      * @param file [MultipartFile] 업로드 할 파일
      * @param image [DiskImageVo] 이미지 객체
-     *
      * @return [Boolean] 성공여부
      * @throws IOException
      */
     @Throws(Error::class, IOException::class)
     fun upload(file: MultipartFile, image: DiskImageVo): Boolean
+    /**
+     * [ItDiskService.refreshLun]
+     * lun 새로고침
+     *
+     * @param diskId [String] 도메인 ID
+     * @param hostId [String] host Id
+     * @return [Boolean]
+     */
+    @Throws(Error::class)
+    fun refreshLun(diskId: String, hostId: String): Boolean
 
     /**
      * [ItDiskService.findAllVmsFromDisk]
@@ -284,6 +293,12 @@ class DiskServiceImpl(
 //			conn.uploadDisk(file, image.toUploadDiskBuilder(file.size))
 //				.getOrNull()
 //		return res.isSuccess
+        TODO("Not yet implemented")
+    }
+
+    override fun refreshLun(diskId: String, hostId: String): Boolean {
+        log.info("refreshLun ... ")
+
         TODO("Not yet implemented")
     }
 

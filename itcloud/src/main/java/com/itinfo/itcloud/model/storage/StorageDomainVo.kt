@@ -118,11 +118,11 @@ fun StorageDomain.toStorageDomainIdName(): StorageDomainVo = StorageDomainVo.bui
 fun List<StorageDomain>.toStorageDomainIdNames(): List<StorageDomainVo> =
 	this@toStorageDomainIdNames.map { it.toStorageDomainIdName() }
 
-
+//
 fun StorageDomain.toStorageDomainDataCenter(conn: Connection): StorageDomainVo {
 	val dataCenter: DataCenter? =
-		if(this@toStorageDomainDataCenter.dataCenterPresent())
-			conn.findDataCenter(this@toStorageDomainDataCenter.dataCenter().id()).getOrNull()
+		if(this@toStorageDomainDataCenter.dataCentersPresent())
+			conn.findDataCenter(this@toStorageDomainDataCenter.dataCenters().first().id()).getOrNull()
 		else null
 
 	return StorageDomainVo.builder {
@@ -132,8 +132,21 @@ fun StorageDomain.toStorageDomainDataCenter(conn: Connection): StorageDomainVo {
 		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
 	}
 }
-fun List<StorageDomain>.toStorageDomainDataCenters(conn: Connection): List<StorageDomainVo> =
-	this@toStorageDomainDataCenters.map { it.toStorageDomainDataCenter(conn) }
+
+
+fun StorageDomain.toDomainStatus(conn: Connection): StorageDomainVo {
+	val dataCenter: DataCenter? =
+		if(this@toDomainStatus.dataCenterPresent())
+			conn.findDataCenter(this@toDomainStatus.dataCenter().id()).getOrNull()
+		else null
+
+	return StorageDomainVo.builder {
+		status { this@toDomainStatus.status() }
+	}
+}
+
+fun List<StorageDomain>.toDomainStatuss(conn: Connection): List<StorageDomainVo> =
+	this@toDomainStatuss.map { it.toDomainStatus(conn) }
 
 
 
@@ -218,18 +231,20 @@ fun List<StorageDomain>.toStorageDomainVos(conn: Connection): List<StorageDomain
 
 // region: 빌더
 /**
- * 스토리지 도메인 빌더
+ * 스토리지 도메인 생성 빌더
  * 기본
  */
 fun StorageDomainVo.toAddStorageDomainBuilder(): StorageDomain {
 	return StorageDomainBuilder()
 		.name(this@toAddStorageDomainBuilder.name)
 		.type(this@toAddStorageDomainBuilder.domainType)
+		.description(this@toAddStorageDomainBuilder.description)
 		.warningLowSpaceIndicator(this@toAddStorageDomainBuilder.warning)
 		.criticalSpaceActionBlocker(this@toAddStorageDomainBuilder.spaceBlocker)
+		.dataCenters(*arrayOf(DataCenterBuilder().id(this@toAddStorageDomainBuilder.dataCenterVo.id).build()))
 		.host(HostBuilder().name(this@toAddStorageDomainBuilder.hostVo.name).build())
 		.storage(
-			if(this.storageType == StorageType.NFS) {
+			if(this@toAddStorageDomainBuilder.storageType == StorageType.NFS) {
 				this@toAddStorageDomainBuilder.toAddNFSBuilder()
 			} else {
 				this@toAddStorageDomainBuilder.toAddEtcBuilder()
@@ -237,21 +252,42 @@ fun StorageDomainVo.toAddStorageDomainBuilder(): StorageDomain {
 		).build()
 }
 
+/**
+ * NFS
+ */
 fun StorageDomainVo.toAddNFSBuilder(): HostStorage {
 	return HostStorageBuilder()
-			.type(this@toAddNFSBuilder.storageType)
 			.address(this@toAddNFSBuilder.storageAddress)
+//			.nfsVersion(NfsVersion.AUTO)
 			.path(this@toAddNFSBuilder.storagePath)
+			.type(this@toAddNFSBuilder.storageType)
 	.build()
 }
 
-// iscsi, fc(?)
+/**
+ * ISCSI, Fibre Channel
+ */
 fun StorageDomainVo.toAddEtcBuilder(): HostStorage {
 	return HostStorageBuilder()
 			.type(this@toAddEtcBuilder.storageType)
-			.logicalUnits(this@toAddEtcBuilder.logicalUnits.map { LogicalUnitBuilder().id(it).build() })
+			.logicalUnits(this@toAddEtcBuilder.logicalUnits.map {
+				LogicalUnitBuilder().id(it).build()
+			})
 	.build()
 }
 
+/**
+ * 스토리지 도메인 편집 빌더
+ * 기본
+ */
+fun StorageDomainVo.toEditStorageDomainBuilder(): StorageDomain {
+	return StorageDomainBuilder()
+		.id(this@toEditStorageDomainBuilder.id)
+		.name(this@toEditStorageDomainBuilder.name)
+		.description(this@toEditStorageDomainBuilder.description)
+		.warningLowSpaceIndicator(this@toEditStorageDomainBuilder.warning)
+		.criticalSpaceActionBlocker(this@toEditStorageDomainBuilder.spaceBlocker)
+		.build()
+}
 
 // endregion

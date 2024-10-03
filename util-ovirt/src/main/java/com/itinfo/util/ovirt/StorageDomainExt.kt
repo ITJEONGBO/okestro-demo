@@ -4,15 +4,8 @@ import com.itinfo.util.ovirt.error.*
 
 import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.Connection
-import org.ovirt.engine.sdk4.services.AssignedPermissionsService
-import org.ovirt.engine.sdk4.services.StorageDomainsService
-import org.ovirt.engine.sdk4.services.StorageDomainService
-import org.ovirt.engine.sdk4.services.FilesService
-import org.ovirt.engine.sdk4.services.FileService
-import org.ovirt.engine.sdk4.services.StorageDomainDisksService
-import org.ovirt.engine.sdk4.services.DiskSnapshotsService
-import org.ovirt.engine.sdk4.services.StorageDomainTemplatesService
-import org.ovirt.engine.sdk4.services.StorageDomainVmsService
+import org.ovirt.engine.sdk4.builders.StorageDomainBuilder
+import org.ovirt.engine.sdk4.services.*
 import org.ovirt.engine.sdk4.types.*
 
 private fun Connection.srvStorageDomains(): StorageDomainsService =
@@ -43,11 +36,44 @@ fun Connection.findStorageDomain(storageDomainId: String): Result<StorageDomain>
 }
 
 
-fun Connection.addStorageDomain(storageDomain: StorageDomain): Result<StorageDomain?> = runCatching {
-	val storageAdded: StorageDomain? =
-		this.srvStorageDomains().add().storageDomain(storageDomain).send().storageDomain()
+fun Connection.attachStorageDomainsToDataCenter(storageDomainId: String, dataCenterId: String): Result<Boolean> = runCatching {
+	this.srvDataCenter(dataCenterId).storageDomainsService()
+		.add()
+		.storageDomain(StorageDomainBuilder().id(storageDomainId).build())
+		.send().storageDomain() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toError()
+	true
+}.onSuccess {
+	Term.DATACENTER.logSuccessWithin(Term.STORAGE_DOMAIN,"연결", storageDomainId)
+}.onFailure {
+	Term.DATACENTER.logSuccessWithin(Term.STORAGE_DOMAIN,"연결", storageDomainId)
+	throw if (it is Error) it.toItCloudException() else it
+}
 
+fun Connection.detachStorageDomainsToDataCenter(storageDomainId: String, dataCenterId: String): Result<Boolean> = runCatching {
+	this.srvAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId).remove().send()
+	true
+}.onSuccess {
+	Term.DATACENTER.logSuccessWithin(Term.STORAGE_DOMAIN,"분리", storageDomainId)
+}.onFailure {
+	Term.DATACENTER.logSuccessWithin(Term.STORAGE_DOMAIN,"분리", storageDomainId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+
+fun Connection.addStorageDomain(storageDomain: StorageDomain, dataCenterId: String): Result<StorageDomain?> = runCatching {
+	val storageAdded: StorageDomain? = this.srvStorageDomains().add()
+		.storageDomain(storageDomain)
+		.send()
+		.storageDomain()
+
+	// 스토리지 도메인이 생성되지 않았을 경우 예외 처리
 	storageAdded ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
+
+	// 스토리지 도메인을 데이터센터에 붙이는 작업
+	this.attachStorageDomainsToDataCenter(storageAdded.id(), dataCenterId)
+		.onFailure { throw it }
+
+	storageAdded
 }.onSuccess {
 	Term.STORAGE_DOMAIN.logSuccess("생성")
 }.onFailure {
@@ -55,7 +81,8 @@ fun Connection.addStorageDomain(storageDomain: StorageDomain): Result<StorageDom
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-// 도메인 관리
+
+// 도메인 관리(편집)
 fun Connection.updateStorageDomain(storageDomainId: String, storageDomain: StorageDomain): Result<StorageDomain?> = runCatching {
 	val storageDomainUpdated: StorageDomain? =
 		this.srvStorageDomain(storageDomainId).update().storageDomain(storageDomain).send().storageDomain()
@@ -72,9 +99,16 @@ fun Connection.removeStorageDomain(storageDomainId: String, format: Boolean = fa
 	if(this.findStorageDomain(storageDomainId).isFailure) {
 		throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
 	}
-	this.srvStorageDomain(storageDomainId).remove().destroy(true).format(format)
-	true
-	// TODO EXpectStorageDomainDeleted()
+	//If the destroy parameter is true then the operation will always succeed,
+	// even if the storage is not accessible,
+	// the failure is just ignored and the storage domain is removed from the database anyway.
+
+	//If the format parameter is true then the actual storage is formatted,
+	// and the metadata is removed from the LUN or directory,
+	// so it can no longer be imported to the same or to a different setup.
+
+	this.srvStorageDomain(storageDomainId).remove().destroy(false).format(format).send()
+	this.expectStorageDomainDeleted(storageDomainId)
 }.onSuccess {
 	Term.STORAGE_DOMAIN.logSuccess("삭제", storageDomainId)
 }.onFailure {
@@ -82,24 +116,24 @@ fun Connection.removeStorageDomain(storageDomainId: String, format: Boolean = fa
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-
-//fun Connection.findAllDataCentersFromStorageDomain(storageDomainId: String): Result<List<DataCenter>> = kotlin.runCatching {
-//	if(this.findStorageDomain(storageDomainId).isFailure) {
-//		throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
-//	}
-//	this.srvStorageDomains().list().send().storageDomains().filter { storageDomain ->
-//		if(storageDomain.dataCentersPresent()) storageDomain.dataCenters().first().id()
-//		else null
-//	}
-//
-//	this.srvStorageDomain(storageDomainId).get().send().storageDomain().
-//
-//}.onSuccess {
-//	Term.STORAGE_DOMAIN.logSuccessWithin(Term.DATACENTER, "목록조회", storageDomainId)
-//}.onFailure {
-//	Term.STORAGE_DOMAIN.logFailWithin(Term.DATACENTER, "목록조회", it, storageDomainId)
-//	throw if (it is Error) it.toItCloudException() else it
-//}
+@Throws(InterruptedException::class)
+fun Connection.expectStorageDomainDeleted(storageDomainId: String, timeout: Long = 60000L, interval: Long = 1000L): Boolean {
+	val startTime = System.currentTimeMillis()
+	while (true) {
+		val storageDomains: List<StorageDomain> =
+			this.findAllStorageDomains().getOrDefault(listOf())
+		val storageDomainToRemove = storageDomains.firstOrNull() { it.id() == storageDomainId } // vm이 어느것이라도 매치되는것이 있다면
+		if (storageDomainToRemove == null) {// !(매치되는것이 있다)
+			Term.STORAGE_DOMAIN.logSuccess("삭제")
+			return true
+		} else if (System.currentTimeMillis() - startTime > timeout){
+			log.error("{} {} 삭제 시간 초과", Term.STORAGE_DOMAIN.desc, storageDomainToRemove.name())
+			return false
+		}
+		log.debug("{} 삭제 진행중 ... ", Term.STORAGE_DOMAIN.desc)
+		Thread.sleep(interval)
+	}
+}
 
 
 private fun Connection.srvAllFilesFromStorageDomain(sdId: String): FilesService =

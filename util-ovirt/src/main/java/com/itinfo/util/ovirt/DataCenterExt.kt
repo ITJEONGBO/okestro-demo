@@ -196,7 +196,7 @@ fun Connection.srvAllAttachedStorageDomainsFromDataCenter(dataCenterId: String):
 
 fun Connection.findAllAttachedStorageDomainsFromDataCenter(dataCenterId: String): Result<List<StorageDomain>> = runCatching {
 	if(this.findDataCenter(dataCenterId).isFailure) {
-			throw ErrorPattern.DATACENTER_NOT_FOUND.toError()
+		throw ErrorPattern.DATACENTER_NOT_FOUND.toError()
 	}
 	this.srvAllAttachedStorageDomainsFromDataCenter(dataCenterId).list().follow("disks").send().storageDomains() ?: listOf()
 }.onSuccess {
@@ -228,6 +228,17 @@ fun Connection.findAttachedStorageDomainFromDataCenter(dataCenterId: String, sto
 }
 
 fun Connection.activateAttachedStorageDomainFromDataCenter(dataCenterId: String, storageDomainId: String): Result<Boolean> = runCatching {
+	if(this.findDataCenter(dataCenterId).isFailure) {
+		throw ErrorPattern.DATACENTER_NOT_FOUND.toError()
+	}
+	val storageDomain: StorageDomain =
+		this.findAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId)
+			.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
+
+	if(storageDomain.status() == StorageDomainStatus.ACTIVE){
+		throw Error("activate 실패 ... $storageDomainId 가 이미 활성 상태") // return 대신 throw
+	}
+
 	this.srvAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId).activate().send()
 	true
 }.onSuccess {
@@ -238,6 +249,17 @@ fun Connection.activateAttachedStorageDomainFromDataCenter(dataCenterId: String,
 }
 
 fun Connection.deactivateAttachedStorageDomainFromDataCenter(dataCenterId: String, storageDomainId: String): Result<Boolean> = runCatching {
+	if(this.findDataCenter(dataCenterId).isFailure) {
+		throw ErrorPattern.DATACENTER_NOT_FOUND.toError()
+	}
+	val storageDomain: StorageDomain =
+		this.findAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId)
+			.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
+
+	if(storageDomain.status() == StorageDomainStatus.MAINTENANCE){
+		throw Error("maintenance 실패 ... $storageDomainId 가 이미 유지관리 상태") // return 대신 throw
+	}
+
 	this.srvAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId).deactivate().force(true).send()
 	true
 }.onSuccess {

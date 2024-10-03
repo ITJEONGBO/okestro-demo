@@ -2,6 +2,7 @@ package com.itinfo.itcloud.model.computing
 
 import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.*
+import com.itinfo.itcloud.model.storage.*
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.DataCenterBuilder
@@ -43,9 +44,11 @@ class DataCenterVo (
 	val version: String = "",
 	val clusters: List<IdentifiedVo> = listOf(),
 	val networks: List<IdentifiedVo> = listOf(),
-	val storageDomains: List<IdentifiedVo> = listOf(),
+	val storageDomains: List<StorageDomainVo> = listOf(),
+//	val storageDomains: List<IdentifiedVo> = listOf(),
 	val clusterCnt: Int = 0,
 	val hostCnt: Int = 0,
+
 
 ): Serializable {
 	override fun toString(): String =
@@ -62,7 +65,8 @@ class DataCenterVo (
 		private var bVersion: String = "";fun version(block: () -> String?) { bVersion = block() ?: "" }
 		private var bClusters: List<IdentifiedVo> = listOf();fun clusters(block: () -> List<IdentifiedVo>?) { bClusters = block() ?: listOf() }
 		private var bNetworks: List<IdentifiedVo> = listOf();fun networks(block: () -> List<IdentifiedVo>?) { bNetworks = block() ?: listOf() }
-		private var bStorageDomains: List<IdentifiedVo> = listOf();fun storageDomains(block: () -> List<IdentifiedVo>?) { bStorageDomains = block() ?: listOf() }
+		private var bStorageDomains: List<StorageDomainVo> = listOf();fun storageDomains(block: () -> List<StorageDomainVo>?) { bStorageDomains = block() ?: listOf() }
+//		private var bStorageDomains: List<IdentifiedVo> = listOf();fun storageDomains(block: () -> List<IdentifiedVo>?) { bStorageDomains = block() ?: listOf() }
 		private var bClusterCnt: Int = 0; fun clusterCnt(block: () -> Int?) { bClusterCnt = block() ?: 0 }
 		private var bHostCnt: Int = 0; fun hostCnt(block: () -> Int?) { bHostCnt = block() ?: 0 }
 
@@ -113,6 +117,21 @@ fun DataCenter.toDataCenterVoInfo(): DataCenterVo = DataCenterVo.builder {
 	status { this@toDataCenterVoInfo.status() }
 }
 
+fun DataCenter.toStorageDomainDataCenterVo(conn: Connection): DataCenterVo {
+	val storageDomains: List<StorageDomain> =
+		conn.findAllAttachedStorageDomainsFromDataCenter(this@toStorageDomainDataCenterVo.id())
+			.getOrDefault(listOf())
+
+	return DataCenterVo.builder {
+		id { this@toStorageDomainDataCenterVo.id() }
+		name { this@toStorageDomainDataCenterVo.name() }
+		storageDomains { storageDomains.toDomainStatuss(conn) }
+	}
+}
+fun List<DataCenter>.toStorageDomainDataCenterVos(conn: Connection): List<DataCenterVo> =
+	this@toStorageDomainDataCenterVos.map { it.toStorageDomainDataCenterVo(conn) }
+
+
 /**
  * 데이터센터 빌더
  */
@@ -161,7 +180,8 @@ fun DataCenter.toDataCenterVo(
 		it.dataCenterPresent() && it.dataCenter().id() == this@toDataCenterVo.id()
 	} ?: listOf()
 
-	val storageDomainVos: List<IdentifiedVo> = if (conn == null || !findStorageDomains) listOf() else storageDomains.fromStorageDomainsToIdentifiedVos()
+	val storageDomainVos: List<StorageDomainVo> = if (conn == null || !findStorageDomains) listOf() else storageDomains.toStorageDomainIdNames()
+//	val storageDomainVos: List<IdentifiedVo> = if (conn == null || !findStorageDomains) listOf() else storageDomains.fromStorageDomainsToIdentifiedVos()
 	val networkVos: List<IdentifiedVo> = if (conn == null || !findNetworks) listOf() else networks.fromNetworksToIdentifiedVos()
 	val clusterVos: List<IdentifiedVo> = if (conn == null || !findClusters) listOf() else clusters.fromClustersToIdentifiedVos()
 
@@ -181,3 +201,4 @@ fun List<DataCenter>.toDataCenterVos(
 	findStorageDomains: Boolean = true
 ): List<DataCenterVo> =
 	this@toDataCenterVos.map { it.toDataCenterVo(conn, findClusters, findNetworks, findStorageDomains) }
+

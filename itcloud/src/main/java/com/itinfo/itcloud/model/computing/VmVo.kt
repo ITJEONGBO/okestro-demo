@@ -397,19 +397,19 @@ fun List<Vm>.toVmVoInfos(conn: Connection/*, graph: ItGraphService*/): List<VmVo
     this@toVmVoInfos.map { it.toVmVoInfo(conn) }
 
 
-//fun Vm.toStorageDomainVm(conn: Connection): VmVo {
-//    val disks: List<D>
-//    val disk: Disk = cdrom?.file()?.id()?.let { conn.findDisk(it).getOrNull() }
-//
-//    return VmVo.builder {
-//        id { this@toStorageDomainVm.id() }
-//        name { this@toStorageDomainVm.name() }
-//        status { this@toStorageDomainVm.status() }
-//        diskAttachmentVos { this@toVmVo.diskAttachments().toDiskAttachmentVos(conn) }
-//    }
-//}
-//fun List<Vm>.toVmVos(conn: Connection/*, graph: ItGraphService*/): List<VmVo> =
-//    this@toVmVos.map { it.toVmVo(conn/*, graph*/) }
+fun Vm.toStorageDomainVm(conn: Connection, storageDomainId: String): VmVo {
+    val diskAttachments: List<DiskAttachment> =
+       this@toStorageDomainVm.diskAttachments()
+
+    return VmVo.builder {
+        id { this@toStorageDomainVm.id() }
+        name { this@toStorageDomainVm.name() }
+        status { this@toStorageDomainVm.status() }
+        diskAttachmentVos { diskAttachments.toDiskAttachmentVos(conn) }
+    }
+}
+fun List<Vm>.toStorageDomainVms(conn: Connection, storageDomainId: String): List<VmVo> =
+    this@toStorageDomainVms.map { it.toStorageDomainVm(conn,storageDomainId) }
 
 
 

@@ -19,6 +19,9 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.ovirt.engine.sdk4.types.Host
+import org.ovirt.engine.sdk4.types.StorageDomainType
+import org.ovirt.engine.sdk4.types.StorageType
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -148,14 +151,33 @@ class ItStorageServiceTest {
 
 
 	/**
-	 * [should_add]
+	 * [should_add_data_nfs]
 	 * [ItStorageService.add] 의 단위테스트
 	 *
 	 * @see [ItStorageService.add]
 	 */
 	@Test
-	fun should_add() {
-		log.debug("should_add ... ")
+	fun should_add_data_nfs() {
+		log.debug("should_add_data_nfs ... ")
+		val storage: StorageDomainVo = StorageDomainVo.builder {
+			name { "test02" }
+			domainType { StorageDomainType.DATA }
+			description { "test add data-nfs" }
+			warning { 10 }
+			spaceBlocker { 5 }
+			dataCenterVo { IdentifiedVo.builder { id { "92dedc62-7bdd-11ef-9270-00163e2fda35" } } }
+			hostVo { IdentifiedVo.builder { name { "on45-host01" } } }
+			storageType { StorageType.NFS }
+			storageAddress { "192.168.0.160" }
+			storagePath { "/nfstest02" }
+		}
+
+		val result: StorageDomainVo? =
+			service.add(storage)
+
+		assertThat(result, `is`(not(nullValue())))
+		assertThat(result?.storageType, `is`(StorageType.NFS))
+		assertThat(result?.name, `is`("test02"))
 	}
 
 	/**
@@ -189,6 +211,11 @@ class ItStorageServiceTest {
 	@Test
 	fun should_remove() {
 		log.debug("should_remove ... ")
+		val result: Boolean =
+			service.remove("ead3bea8-0f10-435f-9acb-242dfa14010a")
+
+		assertThat(result, `is`(not(nullValue())))
+		assertThat(result, `is`(false))
 	}
 
 	/**
@@ -212,13 +239,15 @@ class ItStorageServiceTest {
 	@Test
 	fun should_findAllDataCentersFromStorageDomain() {
 		log.debug("should_findAllDataCentersFromStorageDomain ... ")
-		val result: List<DataCenterVo> =
-			service.findAllDataCentersFromStorageDomain(domainId)
+		val result: StorageDomainVo =
+			service.findAllDataCentersFromStorageDomain("ead3bea8-0f10-435f-9acb-242dfa14010a")
 
 		assertThat(result, `is`(not(nullValue())))
-		result.forEach { println(it) }
+//		result.forEach { println(it) }
+		print(result)
 //		assertThat(result.size, `is`(1))
 	}
+
 
 	/**
 	 * [should_attachFromDataCenter]
@@ -229,6 +258,14 @@ class ItStorageServiceTest {
 	@Test
 	fun should_attachFromDataCenter() {
 		log.debug("should_attachFromDataCenter ... ")
+		val dataCenterId = "92dedc62-7bdd-11ef-9270-00163e2fda35"
+		val storageDomainId = "ead3bea8-0f10-435f-9acb-242dfa14010a"
+
+		val result: Boolean =
+			service.attachFromDataCenter(dataCenterId, storageDomainId)
+
+		assertThat(result, `is`(not(nullValue())))
+		assertThat(result, `is`(true))
 	}
 
 	/**
@@ -240,6 +277,14 @@ class ItStorageServiceTest {
 	@Test
 	fun should_detachFromDataCenter() {
 		log.debug("should_detachFromDataCenter ... ")
+		val dataCenterId = "92dedc62-7bdd-11ef-9270-00163e2fda35"
+		val storageDomainId = "ead3bea8-0f10-435f-9acb-242dfa14010a"
+
+		val result: Boolean =
+			service.detachFromDataCenter(dataCenterId, storageDomainId)
+
+		assertThat(result, `is`(not(nullValue())))
+		assertThat(result, `is`(true))
 	}
 
 	/**
@@ -251,6 +296,14 @@ class ItStorageServiceTest {
 	@Test
 	fun should_activateFromDataCenter() {
 		log.debug("should_activateFromDataCenter ... ")
+		val dataCenterId = "92dedc62-7bdd-11ef-9270-00163e2fda35"
+		val storageDomainId = "ead3bea8-0f10-435f-9acb-242dfa14010a"
+
+		val result: Boolean =
+			service.activateFromDataCenter(dataCenterId, storageDomainId)
+
+		assertThat(result, `is`(not(nullValue())))
+		assertThat(result, `is`(true))
 	}
 
 	/**
@@ -262,6 +315,14 @@ class ItStorageServiceTest {
 	@Test
 	fun should_maintenanceFromDataCenter() {
 		log.debug("should_maintenanceFromDataCenter ... ")
+		val dataCenterId = "92dedc62-7bdd-11ef-9270-00163e2fda35"
+		val storageDomainId = "ead3bea8-0f10-435f-9acb-242dfa14010a"
+
+		val result: Boolean =
+			service.maintenanceFromDataCenter(dataCenterId, storageDomainId)
+
+		assertThat(result, `is`(not(nullValue())))
+		assertThat(result, `is`(true))
 	}
 
 

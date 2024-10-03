@@ -123,14 +123,15 @@ interface ItStorageService {
 	 * @return List<[DataCenterVo]> 데이터센터 목록
 	 */
 	@Throws(Error::class)
-	fun findAllDataCentersFromStorageDomain(storageDomainId: String): List<DataCenterVo>
+	fun findAllDataCentersFromStorageDomain(storageDomainId: String): StorageDomainVo
 
+	// 데이터센터 연결할 목록 - [ItDataCenterService.findAll] 사용하면 될듯
 	/**
 	 * [ItStorageService.attachFromDataCenter]
 	 * 스토리지 도메인 - 데이터센터 연결 attach
 	 *
-	 * @param dataCenterId [String] 데이터센터 Id
 	 * @param storageDomainId [String] 스토리지 도메인 Id
+	 * @param dataCenterId [String] 데이터센터 Id
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
@@ -139,8 +140,8 @@ interface ItStorageService {
 	 * [ItStorageService.detachFromDataCenter]
 	 * 스토리지 도메인 - 데이터센터 분리 detach
 	 *
-	 * @param dataCenterId [String] 데이터센터 Id
 	 * @param storageDomainId [String] 스토리지 도메인 Id
+	 * @param dataCenterId [String] 데이터센터 Id
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
@@ -149,8 +150,8 @@ interface ItStorageService {
 	 * [ItStorageService.activateFromDataCenter]
 	 * 스토리지 도메인 - 데이터센터 활성 activate
 	 *
-	 * @param dataCenterId [String] 데이터센터 Id
 	 * @param storageDomainId [String] 스토리지 도메인 Id
+	 * @param dataCenterId [String] 데이터센터 Id
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
@@ -159,8 +160,8 @@ interface ItStorageService {
 	 * [ItStorageService.maintenanceFromDataCenter]
 	 * 스토리지 도메인 - 데이터센터 유지보수 maintenance
 	 *
-	 * @param dataCenterId [String] 데이터센터 Id
 	 * @param storageDomainId [String] 스토리지 도메인 Id
+	 * @param dataCenterId [String] 데이터센터 Id
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
@@ -311,53 +312,41 @@ class StorageServiceImpl(
 
 	@Throws(Error::class)
 	override fun add(storageDomainVo: StorageDomainVo): StorageDomainVo? {
-		log.info("add ... ")
+		log.info("add ... storageDomain name: {}", storageDomainVo.name)
 		val res: StorageDomain? =
-			conn.addStorageDomain(storageDomainVo.toAddStorageDomainBuilder())
-				.getOrNull()
+			conn.addStorageDomain(
+				storageDomainVo.toAddStorageDomainBuilder(),
+				storageDomainVo.dataCenterVo.id
+			).getOrNull()
 		return res?.toStorageDomainVo(conn)
 	}
 
 	@Throws(Error::class)
 	override fun import(storageDomainVo: StorageDomainVo): StorageDomainVo? {
-		TODO("Not yet implemented")
+		// TODO add와 다른점을 모르겟음(api측면에서)
+		log.info("import ... storageDomain name: {}", storageDomainVo.name)
+		val res: StorageDomain? =
+			conn.addStorageDomain(
+				storageDomainVo.toAddStorageDomainBuilder(),
+				storageDomainVo.dataCenterVo.id
+			).getOrNull()
+		return res?.toStorageDomainVo(conn)
 	}
 
 	@Throws(Error::class)
 	override fun update(storageDomainVo: StorageDomainVo): StorageDomainVo? {
-		TODO("Not yet implemented")
+		log.info("update ... storageDomain name: {}", storageDomainVo.name)
+		val res: StorageDomain? =
+			conn.updateStorageDomain(
+				storageDomainVo.id,
+				storageDomainVo.toEditStorageDomainBuilder(),
+			).getOrNull()
+		return res?.toStorageDomainVo(conn)
 	}
-//		val storageDomainsService = system.storageDomainsService()
-//		val dataCenterService = system.dataCentersService().dataCenterService(storageDomainVo.dataCenterVo.id)
-//		// TODO: storageDomain서비스에서 한번 넣고, DataCenter의 attachedStorageDoamin서비스에서 한번 더 생성하는지 모르겠음
-//		try {
-//			var storageDomain = storageDomainsService.add().storageDomain(storageDomainVo.toStorageDomainBuilder(conn)).send().storageDomain()
-//			val storageDomainService = storageDomainsService.storageDomainService(storageDomain.id())
-//
-//			do {
-//				Thread.sleep(2000L)
-//				storageDomain = storageDomainService.get().send().storageDomain()
-//			} while (storageDomain.status() != StorageDomainStatus.UNATTACHED)
-//
-//			val asdsService = dataCenterService.storageDomainsService()
-//			val asdService = asdsService.storageDomainService(storageDomain.id())
-//			try {
-//				asdsService.add().storageDomain(StorageDomainBuilder().id(storageDomain.id())).send()
-////					.dataCenter(new DataCenterBuilder().id(dcVo.getDatacenterId()).build())
-//			} catch (var18: java.lang.Exception) {
-//				var18.printStackTrace()
-//			}
-//			do {
-//				Thread.sleep(2000L)
-//				storageDomain = asdService.get().send().storageDomain()
-//			} while (storageDomain.status() != StorageDomainStatus.ACTIVE)
-//
-//			return true
-//		}
 
 	@Throws(Error::class)
 	override fun remove(storageDomainId: String): Boolean {
-		log.info("removeDomain ... storageDomainId: {}", storageDomainId)
+		log.info("remove ... storageDomainId: {}", storageDomainId)
 		val res: Result<Boolean> =
 			conn.removeStorageDomain(storageDomainId)
 		return res.isSuccess
@@ -365,47 +354,63 @@ class StorageServiceImpl(
 
 	@Throws(Error::class)
 	override fun destroy(storageDomainId: String): Boolean {
-		TODO("Not yet implemented")
+		// TODO: 여쭤보고 바꾸기(만약 삭제창에서 같이 보여주는 방식이라면 함수 필요없음(format으로 처리))
+		log.info("destroy ... storageDomainId: {}", storageDomainId)
+		val res: Result<Boolean> =
+			conn.removeStorageDomain(storageDomainId, true)
+		return res.isSuccess
 	}
 
 
 	@Throws(Error::class)
-	// TODO 이상함
-	override fun findAllDataCentersFromStorageDomain(storageDomainId: String): List<DataCenterVo> {
+	override fun findAllDataCentersFromStorageDomain(storageDomainId: String): StorageDomainVo {
 		log.info("findAllDataCentersFromStorageDomain ... storageDomainId: {}", storageDomainId)
 		val storageDomain: StorageDomain =
 			conn.findStorageDomain(storageDomainId)
 				.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toException()
 
-		val res: List<DataCenterVo> =
-			storageDomain.dataCenters()
-				.map { dataCenter ->
-					val dc: DataCenter =
-						conn.findDataCenter(dataCenter.id())
-							.getOrNull() ?: throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-					dc.toDataCenterIdName()
-				}
-		return res
+//		val res: List<DataCenter> =
+//			storageDomain.dataCenters()
+//				.map { dataCenter ->
+//					val dc: DataCenter =
+//						conn.findDataCenter(dataCenter.id())
+//							.getOrNull() ?: throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
+//					dc
+//				}
+//		return res.toStorageDomainDataCenterVos(conn)
+		return storageDomain.toStorageDomainDataCenter(conn)
 	}
 
 	@Throws(Error::class)
 	override fun attachFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean {
-		TODO("Not yet implemented")
+		log.info("attachFromDataCenter ... storageDomainId: {}, dataCenterId: {}", storageDomainId, dataCenterId)
+		val res: Result<Boolean> =
+			conn.attachStorageDomainsToDataCenter(storageDomainId, dataCenterId)
+		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun detachFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean {
-		TODO("Not yet implemented")
+		log.info("detachFromDataCenter ... storageDomainId: {}, dataCenterId: {}", storageDomainId, dataCenterId)
+		val res: Result<Boolean> =
+			conn.detachStorageDomainsToDataCenter(storageDomainId, dataCenterId)
+		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun activateFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean {
-		TODO("Not yet implemented")
+		log.info("activateFromDataCenter ... storageDomainId: {}, dataCenterId: {}", storageDomainId, dataCenterId)
+		val res: Result<Boolean> =
+			conn.activateAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId)
+		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun maintenanceFromDataCenter(dataCenterId: String, storageDomainId: String): Boolean {
-		TODO("Not yet implemented")
+		log.info("maintenanceFromDataCenter ... storageDomainId: {}, dataCenterId: {}", storageDomainId, dataCenterId)
+		val res: Result<Boolean> =
+			conn.deactivateAttachedStorageDomainFromDataCenter(dataCenterId, storageDomainId)
+		return res.isSuccess
 	}
 
 
@@ -415,7 +420,7 @@ class StorageServiceImpl(
 		val res: List<Vm> =
 			conn.findAllVmsFromStorageDomain(storageDomainId)
 				.getOrDefault(listOf())
-		return res.toVmsIdName()
+		return res.toStorageDomainVms(conn, storageDomainId)
 	}
 
 	@Throws(Error::class)
