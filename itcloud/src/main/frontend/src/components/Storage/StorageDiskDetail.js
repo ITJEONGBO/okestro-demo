@@ -10,7 +10,8 @@ import Permission from '../Modal/Permission';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUser, fa1, fa2,
-  faTimes
+  faTimes,
+  faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons'
 import './css/StorageDiskDetail.css';
 import { useAllDisk } from '../../api/RQHook';
@@ -44,10 +45,13 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
 
 
   const buttons = [
-    { id: 'new_btn', label: '생성', onClick: () => openPopup('newDisk') },
-    { id: 'get_btn', label: '가져오기', onClick: () => console.log('Move button clicked') },
-    { id: 'edit_btn', label: '편집', onClick: () => openPopup('editDisk') },
-    { id: 'remove_btn', label: '삭제', onClick: () => console.log('Remove button clicked') },
+    { id: 'edit_btn', label: '수정', onClick: () => openPopup('editDisk') },
+    { id: 'new_btn', label: '제거', onClick: () => openPopup('delete') },
+    { id: 'get_btn', label: '이동', onClick: () => console.log('move') },
+    { id: 'new_btn', label: '복사', onClick: () => openPopup('copy') },
+    { id: 'get_btn', label: '업로드', onClick: () => console.log('Move button clicked') },
+    { id: 'edit_btn', label: '다운로드', onClick: () => openPopup('editDisk') },
+   
   ];
   
 
@@ -389,6 +393,153 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
           </div>
         </div>
         </Modal>
+        {/*디스크(삭제)팝업 */}
+      <Modal
+        isOpen={activePopup === 'delete'}
+        onRequestClose={closePopup}
+        contentLabel="디스크 업로드"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="storage_delete_popup">
+          <div className="popup_header">
+            <h1>디스크 삭제</h1>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+          </div>
+         
+          <div className='disk_delete_box'>
+            <div>
+              <FontAwesomeIcon style={{marginRight:'0.3rem'}} icon={faExclamationTriangle} />
+              <span>다음 항목을 삭제하시겠습니까?</span>
+            </div>
+          </div>
+
+
+          <div className="edit_footer">
+            <button style={{ display: 'none' }}></button>
+            <button>OK</button>
+            <button onClick={closePopup}>취소</button>
+          </div>
+        </div>
+      </Modal>
+       {/*디스크(이동)팝업 */}
+       <Modal
+        isOpen={activePopup === 'move'}
+        onRequestClose={closePopup}
+        contentLabel="디스크 이동"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="disk_move_popup">
+          <div className="popup_header">
+            <h1>디스크 이동</h1>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+          </div>
+
+          <div className="section_table_outer py-1">
+              <table >
+        <thead>
+          <tr>
+            <th>별칭</th>
+            <th>가상 크기</th>
+            <th>소스</th>
+            <th>대상</th>
+            <th>디스크 프로파일</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>he_sanlock</td>
+            <td>1 GiB</td>
+            <td>hosted_storage</td>
+            <td>
+              <select>
+                <option>NFS (499 GiB)</option>
+                <option>Option 2</option>
+              </select>
+            </td>
+            <td>
+              <select>
+                <option>NFS</option>
+                <option>Option 2</option>
+              </select>
+            </td>
+          </tr>
+        </tbody>
+              </table>
+          </div>
+
+          <div className="edit_footer">
+            <button style={{ display: 'none' }}></button>
+            <button>OK</button>
+            <button onClick={closePopup}>취소</button>
+          </div>
+        </div>
+      </Modal>
+        {/*디스크(복사)팝업 */}
+        <Modal
+        isOpen={activePopup === 'copy'}
+        onRequestClose={closePopup}
+        contentLabel="디스크 복사"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="disk_move_popup">
+          <div className="popup_header">
+            <h1>디스크 복사</h1>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+          </div>
+
+          <div className="section_table_outer py-1">
+              <table >
+                <thead>
+                  <tr>
+                    <th>별칭</th>
+                    <th>가상 크기</th>
+                    <th>소스</th>
+                    <th>대상</th>
+                    <th>디스크 프로파일</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <input type='text' value={'별칭'}/>
+                    </td>
+                    <td>1 GiB</td>
+                    <td>
+                      <select>
+                        <option>hosted_storage</option>
+                     
+                      </select>
+                    </td>
+                    <td>
+                      <select>
+                        <option>NFS (499 GiB)</option>
+                        <option>Option 2</option>
+                      </select>
+                    </td>
+                    <td>
+                      <select>
+                        <option>NFS</option>
+                     
+                      </select>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+          </div>
+
+          <div className="edit_footer">
+            <button style={{ display: 'none' }}></button>
+            <button>OK</button>
+            <button onClick={closePopup}>취소</button>
+          </div>
+        </div>
+      </Modal>
       <Footer/>
 
       {/* 모달 컴포넌트 */}
