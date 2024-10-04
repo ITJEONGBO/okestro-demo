@@ -24,6 +24,9 @@ import GuestInfoSection from './vm/GuestInfoSection';
 import NetworkSection from './vm/NetworkSection';
 import SnapshotSection from './vm/SnapshotSection';
 import PowerSection from './vm/PowerSection'; 
+import HostDevice from './vm/HostDevice'; 
+import TableOuter from '../table/TableOuter';
+import TableColumnsInfo from '../table/TableColumnsInfo';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -41,9 +44,10 @@ const Vm = () => {
     { id: 'disk', label: '디스크' },
     { id: 'snapshot', label: '스냅샷' },
     { id: 'application', label: '애플리케이션' },
-    { id: 'guest_info', label: '게스트 정보' },
-    { id: 'power', label: '권한' },
-    { id: 'event', label: '이벤트' }
+    // { id: 'guest_info', label: '게스트 정보' },
+    // { id: 'power', label: '권한' },
+    { id: 'event', label: '이벤트' },
+    { id: 'host_device', label: '호스트 장치' }
   ];
   
   // headerbutton 컴포넌트
@@ -86,6 +90,7 @@ const Vm = () => {
   const handleFooterTabClick = (tab) => {
     setSelectedFooterTab(tab);
   };
+
 
     // 편집 팝업
         useEffect(() => {
@@ -153,61 +158,316 @@ const Vm = () => {
         return <SnapshotSection />;
       case 'application':
         return <ApplicationSection/>;
-      case 'guest_info':
-        return <GuestInfoSection />;
-      case 'power':
-        return <PowerSection/>;
+    //   case 'guest_info':
+    //     return <GuestInfoSection />;
+    //   case 'power':
+    //     return <PowerSection/>;
       case 'event':
         return <EventSection />;
+      case 'host_device':
+        return <HostDevice />;
       default:
         return (
-          <div className="tables">
+        //   <div className="tables">
+        //     <div className="table_container_center">
+        //       <table className="table">
+        //         <tbody>
+        //           <tr>
+        //             <th>이름:</th>
+        //             <td>{id}</td>
+        //           </tr>
+        //           <tr>
+        //             <th>설명:</th>
+        //             <td></td>
+        //           </tr>
+        //           <tr>
+        //             <th>상태:</th>
+        //             <td>실행 중</td>
+        //           </tr>
+        //           <tr>
+        //             <th>업타임:</th>
+        //             <td>11 days</td>
+        //           </tr>
+        //           <tr className="empty">
+        //             <th>.</th>
+        //             <td style={{ color: 'white' }}>.</td>
+        //           </tr>
+        //           <tr>
+        //             <th>템플릿:</th>
+        //             <td>Blank</td>
+        //           </tr>
+        //           <tr>
+        //             <th>운영 시스템:</th>
+        //             <td>Linux</td>
+        //           </tr>
+        //           <tr className="empty">
+        //             <th>.</th>
+        //             <td style={{ color: 'white' }}>.</td>
+        //           </tr>
+        //           <tr>
+        //             <th>펌웨어/장치의 유형:</th>
+        //             <td>BIOS의 Q35 칩셋 <FontAwesomeIcon icon={faBan} style={{ marginLeft: '13%', color: 'orange' }}fixedWidth/></td>
+        //           </tr>
+        //           <tr>
+        //             <th>우선 순위:</th>
+        //             <td>높음</td>
+        //           </tr>
+        //           <tr>
+        //             <th>최적화 옵션:</th>
+        //             <td>서버</td>
+        //           </tr>
+        //         </tbody>
+        //       </table>
+        //     </div>
+        //     <div className="table_container_center">
+        //       <table className="table">
+        //         <tbody>
+        //           <tr>
+        //             <th>설정된 메모리:</th>
+        //             <td>2048 MB</td>
+        //           </tr>
+        //           <tr>
+        //             <th>할당할 실제 메모리:</th>
+        //             <td>2048 MB</td>
+        //           </tr>
+        //           <tr className="empty">
+        //             <th>.</th>
+        //             <td style={{ color: 'white' }}>.</td>
+        //           </tr>
+        //           <tr>
+        //             <th>게스트 OS의 여유/캐시+비퍼</th>
+        //             <td>1003 / 0 MB</td>
+        //           </tr>
+        //           <tr>
+        //             <th>된 메모리:</th>
+        //             <td></td>
+        //           </tr>
+        //           <tr>
+        //             <th>CPU 코어 수:</th>
+        //             <td>2(2:1:1)</td>
+        //           </tr>
+        //           <tr>
+        //             <th>게스트 CPU 수:</th>
+        //             <td>2</td>
+        //           </tr>
+        //           <tr className="empty">
+        //             <th>.</th>
+        //             <td style={{ color: 'white' }}>.</td>
+        //           </tr>
+        //           <tr>
+        //             <th>게스트 CPU</th>
+        //             <td>Cascadelake-Server</td>
+        //             <td></td>
+        //           </tr>
+        //           <tr>
+        //             <th>고가용성:</th>
+        //             <td>예</td>
+        //           </tr>
+        //           <tr>
+        //             <th>모니터 수:</th>
+        //             <td>1</td>
+        //           </tr>
+        //           <tr>
+        //             <th>USB:</th>
+        //             <td>비활성화됨</td>
+        //           </tr>
+        //         </tbody>
+        //       </table>
+        //     </div>
+        //     <div className="table_container_center">
+        //       <table className="table">
+        //         <tbody>
+        //           <tr>
+        //             <th>작성자:</th>
+        //             <td>admin</td>
+        //           </tr>
+        //           <tr>
+        //             <th>소스:</th>
+        //             <td>oVirt</td>
+        //           </tr>
+        //           <tr>
+        //             <th>실행 호스트:</th>
+        //             <td>클러스터 내의 호스트</td>
+        //           </tr>
+        //           <tr>
+        //             <th>사용자 정의 속성:</th>
+        //             <td>설정되지 않음</td>
+        //           </tr>
+        //           <tr>
+        //             <th>클러스터 호환 버전:</th>
+        //             <td>4.7</td>
+        //           </tr>
+        //           <tr>
+        //             <th>가상 머신의 ID:</th>
+        //             <td>Linuxdddddddddddddddddddddd</td>
+        //           </tr>
+        //           <tr className="empty">
+        //             <th>.</th>
+        //             <td style={{ color: 'white' }}>.</td>
+        //           </tr>
+        //           <tr className="empty">
+        //             <th>.</th>
+        //             <td style={{ color: 'white' }}>.</td>
+        //           </tr>
+        //           <tr>
+        //             <th>FQDN:</th>
+        //             <td>on20-ap01</td>
+        //           </tr>
+        //           <tr>
+        //             <th>하드웨어 클럭의 시간 오프셋:</th>
+        //             <td>Asia/Seoul</td>
+        //           </tr>
+        //         </tbody>
+        //       </table>
+        //     </div>
+        //   </div>
+        <>
+        <div className='vm_detail_general_boxs'>
+            <div className='detail_general_box'>
+                <table className="table">
+                    <tbody>
+                    <tr>
+                        <th>전원상태</th>
+                        <td>전원 켜짐</td>
+                    </tr>
+                    <tr>
+                        <th>게스트 운영 체제</th>
+                        <td>Red Hat Enterprise Linux 8.x x64</td>
+                    </tr>
+                    <tr>
+                        <th>게스트 에이전트</th>
+                        <td>실행 중, 버전 : 123456(최신)</td>
+                    </tr>
+                    <tr>
+                        <th>업타임</th>
+                        <td>28 days</td>
+                    </tr>
+                    <tr>
+                        <th>FQDN</th>
+                        <td>on20-ap01</td>
+                    </tr>
+                    <tr>
+                        <th>실행 호스트</th>
+                        <td>클러스터 내 호스트</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div className='detail_general_box'>
+                
+                <div>VM하드웨어</div>
+                <table className="table">
+                    <tbody>
+                    <tr>
+                        <th>CPU</th>
+                        <td>2(2:1:1)</td>
+                    </tr>
+                    <tr>
+                        <th>메모리</th>
+                        <td>16GB</td>
+                    </tr>
+                    <tr>
+                        <th>하드 디스크1</th>
+                        <td>300 GB | 씬 프로비전<br/>hosted-engine</td>
+                    </tr>
+                    <tr>
+                        <th>네트워트 어댑터1</th>
+                        <td>ovirt-mgmgt</td>
+                    </tr>
+                    <tr>
+                        <th>칩셋/펌웨어 유형</th>
+                        <td>BIOS Q35 칩셋</td>
+                    </tr>
+                  
+                    </tbody>
+                </table>
+            </div>
+            <div className='detail_general_mini_box'>
+                <div>용량 및 사용량</div>
+                <div className='capacity_outer'>
+                    <div className='capacity'>
+                        <div>CPU</div>
+                        <div className='capacity_box'>
+                            <div>20%</div>
+                            <div>사용됨</div>
+                            <div>10CPU<br/>할당됨</div>
+                        </div>
+                    </div>
+                    <div className='capacity'>
+                        <div>메모리</div>
+                        <div className='capacity_box'>
+                            <div>20%</div>
+                            <div>사용됨</div>
+                            <div>10CPU<br/>할당됨</div>
+                        </div>
+                    </div>
+                    <div className='capacity'>
+                        <div>스토리지</div>
+                        <div className='capacity_box'>
+                            <div>20%</div>
+                            <div>사용됨</div>
+                            <div>10CPU<br/>할당됨</div>
+                        </div>
+                    </div>
+                </div>  
+            </div>
+
+            <div className='detail_general_mini_box'>
+                <div>관련개체</div>
+                <div className='capacity_outer'>
+                    <div className='capacity'>
+                        <div>클러스터</div>
+                        <div className='related_object'>
+                            <div><FontAwesomeIcon icon={faTimes} fixedWidth/></div>
+                            <span class="text-blue-500 font-bold">ITITINFO</span>
+                        </div>
+                    </div>
+                    <div className='capacity'>
+                        <div>호스트</div>
+                        <div className='related_object'>
+                            <div><FontAwesomeIcon icon={faTimes} fixedWidth/></div>
+                            <span class="text-blue-500 font-bold">192.168.0.4</span>
+                        </div>
+                    </div>
+                    <div className='capacity'>
+                        <div>네트워크</div>
+                        <div className='related_object'>
+                            <div><FontAwesomeIcon icon={faTimes} fixedWidth/></div>
+                            <span>ovirt-mgmt</span>
+                        </div>
+                    </div>
+                    <div className='capacity'>
+                        <div>스토리지 도메인</div>
+                        <div className='related_object'>
+                            <div><FontAwesomeIcon icon={faTimes} fixedWidth/></div>
+                            <span >hosted-engine</span>
+                        </div>
+                    </div>
+                
+            </div>
+            </div>
+        </div>
+
+        <div className='detail_general_boxs_bottom'>
+        <div className="tables">
             <div className="table_container_center">
               <table className="table">
                 <tbody>
                   <tr>
-                    <th>이름:</th>
-                    <td>{id}</td>
-                  </tr>
-                  <tr>
-                    <th>설명:</th>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <th>상태:</th>
-                    <td>실행 중</td>
-                  </tr>
-                  <tr>
-                    <th>업타임:</th>
-                    <td>11 days</td>
-                  </tr>
-                  <tr className="empty">
-                    <th>.</th>
-                    <td style={{ color: 'white' }}>.</td>
-                  </tr>
-                  <tr>
-                    <th>템플릿:</th>
-                    <td>Blank</td>
-                  </tr>
-                  <tr>
-                    <th>운영 시스템:</th>
+                    <th>유형:</th>
                     <td>Linux</td>
                   </tr>
-                  <tr className="empty">
-                    <th>.</th>
-                    <td style={{ color: 'white' }}>.</td>
+                  <tr>
+                    <th>아키텍처:</th>
+                    <td>x86_64</td>
                   </tr>
                   <tr>
-                    <th>펌웨어/장치의 유형:</th>
-                    <td>BIOS의 Q35 칩셋 <FontAwesomeIcon icon={faBan} style={{ marginLeft: '13%', color: 'orange' }}fixedWidth/></td>
+                    <th>운영체제:</th>
+                    <td>ContOs Linux7</td>
                   </tr>
                   <tr>
-                    <th>우선 순위:</th>
-                    <td>높음</td>
-                  </tr>
-                  <tr>
-                    <th>최적화 옵션:</th>
-                    <td>서버</td>
+                    <th>커널버전:</th>
+                    <td>3.10.38343344</td>
                   </tr>
                 </tbody>
               </table>
@@ -216,53 +476,8 @@ const Vm = () => {
               <table className="table">
                 <tbody>
                   <tr>
-                    <th>설정된 메모리:</th>
-                    <td>2048 MB</td>
-                  </tr>
-                  <tr>
-                    <th>할당할 실제 메모리:</th>
-                    <td>2048 MB</td>
-                  </tr>
-                  <tr className="empty">
-                    <th>.</th>
-                    <td style={{ color: 'white' }}>.</td>
-                  </tr>
-                  <tr>
-                    <th>게스트 OS의 여유/캐시+비퍼</th>
-                    <td>1003 / 0 MB</td>
-                  </tr>
-                  <tr>
-                    <th>된 메모리:</th>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <th>CPU 코어 수:</th>
-                    <td>2(2:1:1)</td>
-                  </tr>
-                  <tr>
-                    <th>게스트 CPU 수:</th>
-                    <td>2</td>
-                  </tr>
-                  <tr className="empty">
-                    <th>.</th>
-                    <td style={{ color: 'white' }}>.</td>
-                  </tr>
-                  <tr>
-                    <th>게스트 CPU</th>
-                    <td>Cascadelake-Server</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <th>고가용성:</th>
-                    <td>예</td>
-                  </tr>
-                  <tr>
-                    <th>모니터 수:</th>
-                    <td>1</td>
-                  </tr>
-                  <tr>
-                    <th>USB:</th>
-                    <td>비활성화됨</td>
+                    <th>시간대:</th>
+                    <td>KST(UTC+09:00)</td>
                   </tr>
                 </tbody>
               </table>
@@ -271,49 +486,24 @@ const Vm = () => {
               <table className="table">
                 <tbody>
                   <tr>
-                    <th>작성자:</th>
-                    <td>admin</td>
+                    <th>로그인된 사용자:</th>
+                    <td>root</td>
                   </tr>
                   <tr>
-                    <th>소스:</th>
-                    <td>oVirt</td>
+                    <th>콘솔 사용자:</th>
+                    <td></td>
                   </tr>
                   <tr>
-                    <th>실행 호스트:</th>
-                    <td>클러스터 내의 호스트</td>
-                  </tr>
-                  <tr>
-                    <th>사용자 정의 속성:</th>
-                    <td>설정되지 않음</td>
-                  </tr>
-                  <tr>
-                    <th>클러스터 호환 버전:</th>
-                    <td>4.7</td>
-                  </tr>
-                  <tr>
-                    <th>가상 머신의 ID:</th>
-                    <td>Linuxdddddddddddddddddddddd</td>
-                  </tr>
-                  <tr className="empty">
-                    <th>.</th>
-                    <td style={{ color: 'white' }}>.</td>
-                  </tr>
-                  <tr className="empty">
-                    <th>.</th>
-                    <td style={{ color: 'white' }}>.</td>
-                  </tr>
-                  <tr>
-                    <th>FQDN:</th>
-                    <td>on20-ap01</td>
-                  </tr>
-                  <tr>
-                    <th>하드웨어 클럭의 시간 오프셋:</th>
-                    <td>Asia/Seoul</td>
+                    <th>콘솔 클라이언트IP:</th>
+                    <td></td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
+
+        </div>
+        </>
         );
     }
   };

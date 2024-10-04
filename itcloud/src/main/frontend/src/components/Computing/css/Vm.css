@@ -1,10 +1,55 @@
-@font-face {
-    font-family: 'GowunDodum-Regular';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
 
+/*일반파트*/
+.vm_detail_general_boxs{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:0.3rem;
+}
+.detail_general_box{
+    border: 1px solid #dedede;
+    width: 33%;
+    height: 36vh;
+}
+.detail_general_mini_box{
+    width: 15%;
+    height: 36vh;
+    border: 1px solid #dedede;
+}
+.detail_general_mini_box>div:first-child,
+.detail_general_box>div:first-child
+{
+    font-size:0.4rem;
+    font-weight:600;
+    padding:0.18rem;
+}
+.capacity{
+    font-size:0.35rem;
+    padding: 0.2rem;
+}
+.capacity>div:first-child{
+    font-weight:600;
+}
+.capacity_outer{
+    flex-direction: column;
+    display:flex;
+    height:86%;
+    justify-content:space-between;
+}
+.capacity_box{
+    display: flex;
+    height: 48%;
+    justify-content: space-between;
+    align-items: center;
+}
+.related_object{
+    display:flex;
+    padding:0.1rem 0;
+}
+.detail_general_boxs_bottom{
+    width:100%;
+    border: 1px solid #dedede;
+}
+/**/
 .network_new_popup form{
     height: 69vh;
     overflow-y: auto; /* 세로 스크롤 추가 */
@@ -452,7 +497,7 @@
         font-size: 0.3rem;
         padding: 0.03rem 0.2rem 0.03rem 0.2rem;
     }
-    .table_outer{
+    /* .table_outer{
         border: 1px solid black;
         height: 50%;
     }
@@ -461,7 +506,7 @@
         width: 100%;
         text-align: center;
         border: none;
-    }
+    } */
     table{
         font-size: 0.33rem;
     }
@@ -1116,18 +1161,7 @@ input[disabled] {
     justify-content: space-between;
     padding: 2.3% 2% 0 2%
 }
-.edit_second_content input,
-#time_offset,
-#host_third_content>div:nth-child(n+2) select,
-.cpu_res>div select,
-.cpu_res input
-{
-    width: 47%;
-    height: 3.3vh;
-    padding: 0 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
-}
+
 #host_third_content>div:nth-child(n+2) select{
     font-weight: 600;
     font-size: 0.27rem;
@@ -1159,61 +1193,10 @@ input[disabled] {
 .edit_check_boxs>div{
     margin-right: 0.5rem;
 }
-.edit_third_content{
-    padding: 0.2rem 0.4rem;
-    margin-bottom: 0.4rem;
-}
-.edit_third_content>div:nth-child(2),.edit_fourth_content_select>div:nth-child(2){
-    display: flex;
-    justify-content: right;
 
-}
-.edit_third_content button,.edit_fourth_content_select button{
-    margin-right: 0.2rem;
-    padding: 0.08rem 0.15rem;
-    font-size: 0.3rem;
-    font-weight: 600;
-    cursor: pointer;
-}
-.edit_fourth_content{
-    padding: 0.2rem 0.4rem;
 
-    border-top: 2px solid #cecece;
-}
-.edit_fourth_content>span{
-    margin-bottom: 0.2rem;
-    display: block;
-}
-.edit_fourth_content_select{
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-}
-.edit_fourth_content_select>div:first-child{
-    width: 50%;
-    display: flex;
-    justify-content: space-between;
-}
 
-.edit_fourth_content_select select{
-    width: 77%;
-    height: 3.3vh;
-    padding: 0 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
-}
 
-#host_outer,
-#ha_mode_outer,
-#system_outer,
-#res_alloc_outer,
-#common_outer,
-#console_outer
-{
-    height: 63.4vh;
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
-}
 #system_outer,#host_outer,#ha_mode_outer,#res_alloc_outer{
     display: none;
 }
@@ -1275,11 +1258,6 @@ input[disabled] {
     padding: 2%;
 }
 
-.cpu_res>div,#threads,#boot_checkboxs>div:first-child{
-    display: flex;
-    justify-content: space-between;
-    padding-bottom: 2%;
-}
 #cpu_sharing{
     display: flex;
     width: 47%;

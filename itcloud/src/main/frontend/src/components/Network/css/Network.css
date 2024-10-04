@@ -152,22 +152,11 @@
     justify-content: space-between;
 }
 
-#host_outer,
-#ha_mode_outer,
-#system_outer,
-#res_alloc_outer,
-#common_outer,
-#console_outer
-{
-    height: 63.4vh;
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
-}
+
 #system_outer,#host_outer,#ha_mode_outer,#res_alloc_outer{
     display: none;
 }
 
-#system_outer,
 #res_alloc_outer,
 #common_outer,
 #console_outer
@@ -222,11 +211,6 @@
     padding: 2%;
 }
 
-.cpu_res>div,#threads,#boot_checkboxs>div:first-child{
-    display: flex;
-    justify-content: space-between;
-    padding-bottom: 2%;
-}
 #cpu_sharing{
     display: flex;
     width: 47%;

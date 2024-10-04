@@ -3,6 +3,7 @@ import {useParams, useNavigate, useLocation } from 'react-router-dom';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
 import Modal from 'react-modal';
+import './css/RutilManager.css';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import AffinityGroupModal from '../Modal/AffinityGroupModal';
@@ -21,8 +22,8 @@ import {
   faGlassWhiskey,
   faChevronCircleRight
 } from '@fortawesome/free-solid-svg-icons'
-import './css/ClusterName.css';
 import TableOuter from '../table/TableOuter';
+import logo from '../../img/logo.png'
 
 function RutilManager() {
     const { id } = useParams();
@@ -375,8 +376,46 @@ function RutilManager() {
                         <div className="host_btn_outer">
                             {/* 일반 */}
                             {activeTab === 'general' && (
-                                <div>
-                                    
+                                <div className='rutil_general'>
+                                    <div className='rutil_general_first_contents'>
+                                        <div>
+                                            <img className='logo_general' src={logo} alt="logo Image" />
+                                            <span>
+                                                버전: 2.1.3<br/>
+                                                빌드:2024093011
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <div className='mb-2'>
+                                                데이터센터 : 2<br/>
+                                                클러스터    : 4<br/>
+                                                호스트       : 4<br/>
+                                                가상머신    : 4 / 12<br/>
+                                                스토리지 도메인 : 2<br/>
+                                            </div>
+                                            <div>
+                                                부팅시간(업타임)<br/>
+                                                <span className='font-bold'>2024-07-11 20:15:45</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className='type_info_boxs'>
+                                        <div className='type_info_box'>
+                                                <span className='font-bold'>CPU</span><br/>
+                                                100% 사용가능 / 100%<br/>
+                                                가상 리소스 - 사용됨: 25%, 할당됨: 41%
+                                        </div>
+                                        <div className='type_info_box'>
+                                                <span className='font-bold'>메모리</span><br/>
+                                                63.4 사용가능 / 100%<br/>
+                                                가상 리소스 - 사용됨: 25%, 할당됨: 41%
+                                        </div>
+                                        <div className='type_info_box'>
+                                                <span className='font-bold'>스토리지</span><br/>
+                                                0.4 사용가능 / 100%<br/>
+                                                가상 리소스 - 사용됨: 25%, 할당됨: 41%
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                             {/* 일반(삭제예정) */}

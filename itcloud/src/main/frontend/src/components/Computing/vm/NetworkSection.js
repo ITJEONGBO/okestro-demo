@@ -112,8 +112,8 @@ const NetworkSection = () => {
                       </select>
                   </div>
                   <div className="select_box2" style={{ marginBottom: '2%' }}>
-                      <div>
-                          <input type="checkbox" id="custom_mac_box" disabled/>
+                      <div  className='flex' >
+                          <input type="checkbox" id="custom_mac_box"disabled/>
                           <label htmlFor="custom_mac_box" style={{ color: 'gray' }}>
                               사용자 지정 MAC 주소
                           </label>

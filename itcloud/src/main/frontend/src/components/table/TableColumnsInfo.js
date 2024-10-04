@@ -22,6 +22,7 @@ const TableColumnsInfo = {
     { header: '호환 버전', accessor: 'version' },  // 호환 버전 열 추가
     { header: '설명', accessor: 'description' }
   ],
+  
   STORAGE_DOMAIN_FROM_DATACENTER: [
     { header: '', accessor: 'icon', clickable: false, style: { textAlign: 'center' } },
     { header: '이름', accessor: 'name', clickable: false },

@@ -1,9 +1,10 @@
 @font-face {
-    font-family: 'GowunDodum-Regular';
-    src: url('GowunDodum-Regular.woff') format('woff');
+    font-family: 'Gothic';
+    src: local('Noto Sans KR'), local('Malgun Gothic'), local('Apple SD Gothic Neo'), local('Segoe UI'), local('Roboto'), sans-serif;
     font-weight: normal;
     font-style: normal;
 }
+
 
 @tailwind base;
 @tailwind components;
@@ -310,9 +311,80 @@ form>div{
 .host_filter_btns button.active {
     background-color: #dbdbdb;
 }
+/*가상머신 편집팝업*/
 
+#system_outer,#host_outer,#ha_mode_outer,#res_alloc_outer{
+    display: none;
+}
+#host_outer,
+#ha_mode_outer,
+#res_alloc_outer,
+#common_outer,
+#console_outer
+{
+    height: 73.4vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.edit_third_content{
+    padding: 2.3% 2% 0 2%;
+    margin-bottom: 0.4rem;
+    display:flex;
+    justify-content: space-between;
+}
+.edit_third_content>div:nth-child(2){
+    display: flex;
+    justify-content: right;
 
+}
+.edit_third_content>div:nth-child(2)>button{
+    margin-right:0.2rem;
+}
+.edit_third_content button{
+    padding: 0.08rem 0.15rem;
+    font-size: 0.3rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.edit_fourth_content{
+    padding: 2.3% 2% 0 2%;
+    display:flex;
+    justify-content: space-between;
+    border-top: 1px solid #cecece;
+}
+.edit_fourth_content_select{
+    width: 80%;
+    display: flex;
+    justify-content: space-between;
+}
 
+.edit_fourth_content_select select{
+    width: 67%;
+    height: 3.3vh;
+    padding: 0 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+}
+.edit_fourth_span{
+    padding: 2.3% 2% 0 2%;
+    font-weight:600;
+}
+.instance_image{
+    padding: 2.3% 2% 0 2%;
+    margin-bottom:0.2rem;
+}
+.instance_image>div{
+
+    display:flex;
+    justify-content: space-between;
+}
+.instance_image button{
+    padding: 0.08rem 0.15rem;
+    font-size: 0.3rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+/**/
 .network_new_outer {
     position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
     top: 0;
@@ -348,6 +420,9 @@ form>div{
     cursor: pointer;
     padding: 0.25rem;
     border-right: 1px solid rgb(206, 206, 206);
+}
+.active{
+    color: #449bff;
 }
 .active-tab {
     background: #e4e4e4;
@@ -553,6 +628,7 @@ input[type="text"]:focus {
 .disabled {
     cursor: not-allowed;
     color:gray;
+    pointer-events: none;
 }
 .host_hidden_parameter>div:first-child{
     font-weight: 800;
@@ -2288,7 +2364,7 @@ input[disabled] {
 .edit_second_content input,
 #time_offset,
 #host_third_content>div:nth-child(n+2) select,
-.cpu_res>div select,
+.cpu_res_box select,
 .cpu_res input
 {
     width: 47%;
@@ -2328,47 +2404,9 @@ input[disabled] {
 .edit_check_boxs>div{
     margin-right: 0.5rem;
 }
-.edit_third_content{
-    padding: 0.2rem 0.4rem;
-    margin-bottom: 0.4rem;
-}
-.edit_third_content>div:nth-child(2),.edit_fourth_content_select>div:nth-child(2){
-    display: flex;
-    justify-content: right;
-
-}
-.edit_third_content button,.edit_fourth_content_select button{
-    margin-right: 0.2rem;
-    padding: 0.08rem 0.15rem;
-    font-size: 0.3rem;
-    font-weight: 600;
-    cursor: pointer;
-}
-.edit_fourth_content{
-    padding: 0.2rem 0.4rem;
-
-    border-top: 2px solid #cecece;
-}
-.edit_fourth_content>span{
-    margin-bottom: 0.2rem;
-    display: block;
-}
 
 
-#host_outer,
-#ha_mode_outer,
-#system_outer,
-#res_alloc_outer,
-#common_outer,
-#console_outer
-{
-    height: 63.4vh;
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
-}
-#system_outer,#host_outer,#ha_mode_outer,#res_alloc_outer{
-    display: none;
-}
+
 
 #host_second_content{
     padding: 2%;
@@ -2427,7 +2465,7 @@ input[disabled] {
     padding: 2%;
 }
 
-.cpu_res>div,#threads,#boot_checkboxs>div:first-child{
+.cpu_res_box,#threads,#boot_checkboxs>div:first-child{
     display: flex;
     justify-content: space-between;
     padding-bottom: 2%;

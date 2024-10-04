@@ -608,8 +608,17 @@ const {
   };
   
 
-  
-
+  useEffect(() => {
+    // 페이지가 처음 로드될 때 기본적으로 dashboard가 선택되도록 설정
+    setSelected('dashboard');
+    toggleAsidePopup('dashboard');
+  }, []);
+  useEffect(() => {
+    // 페이지가 처음 로드될 때 기본적으로 computing 섹션이 선택되도록 설정
+    setSelected('computing');
+    toggleAsidePopup('computing');
+    setSelectedDiv(null); // 루틸매니저가 선택되지 않도록 초기화
+  }, []);
 
 
 
@@ -774,35 +783,44 @@ useEffect(() => {
                         </div>
                     </Link>
                     <Link to='/computing/vms' className="link-no-underline">
-                        <div
-                            id="aside_popup_machine_btn"
-                            className={getClassNames('computing')}
-                            onClick={() => handleClick('computing')}
-                            style={{ backgroundColor: asidePopupBackgroundColor.computing }}
-                        >
-                            <FontAwesomeIcon icon={faDesktop} fixedWidth/>
-                        </div>
-                    </Link>
-                    <Link to='/networks' className="link-no-underline">
-                        <div
-                            id="aside_popup_network_btn"
-                            className={getClassNames('network')}
-                            onClick={() => handleClick('network')}
-                            style={{ backgroundColor: asidePopupBackgroundColor.network }}
-                        >
-                           <FontAwesomeIcon icon={faServer} fixedWidth/>
-                        </div>
-                    </Link>
-                    <Link to='/storage' className="link-no-underline">
-                        <div
-                            id="aside_popup_storage_btn"
-                            className={getClassNames('storage')}
-                            onClick={() => handleClick('storage')}
-                            style={{ backgroundColor: asidePopupBackgroundColor.storage }}
-                        >
-                           <FontAwesomeIcon icon={faDatabase} fixedWidth/>
-                        </div>
-                    </Link>
+    <div
+        id="aside_popup_machine_btn"
+        className={getClassNames('computing')}
+        onClick={() => {
+            handleClick('computing');
+            setSelectedDiv(null); // 선택된 div를 null로 설정하여 루틸 매니저가 선택되지 않도록 함
+        }}
+        style={{ backgroundColor: asidePopupBackgroundColor.computing }}
+    >
+        <FontAwesomeIcon icon={faDesktop} fixedWidth/>
+    </div>
+</Link>
+<Link to='/networks' className="link-no-underline">
+    <div
+        id="aside_popup_network_btn"
+        className={getClassNames('network')}
+        onClick={() => {
+            handleClick('network');
+            setSelectedDiv(null); // 루틸 매니저 선택을 방지하기 위해 selectedDiv를 null로 설정
+        }}
+        style={{ backgroundColor: asidePopupBackgroundColor.network }}
+    >
+       <FontAwesomeIcon icon={faServer} fixedWidth/>
+    </div>
+</Link>
+<Link to='/storage' className="link-no-underline">
+    <div
+        id="aside_popup_storage_btn"
+        className={getClassNames('storage')}
+        onClick={() => {
+            handleClick('storage');
+            setSelectedDiv(null); // 루틸 매니저 선택을 방지하기 위해 selectedDiv를 null로 설정
+        }}
+        style={{ backgroundColor: asidePopupBackgroundColor.storage }}
+    >
+       <FontAwesomeIcon icon={faDatabase} fixedWidth/>
+    </div>
+</Link>
                     <Link to='/events' className="link-no-underline">
                         <div
                             id="aside_popup_storage_btn"
