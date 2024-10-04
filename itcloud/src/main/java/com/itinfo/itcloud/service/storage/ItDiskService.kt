@@ -213,7 +213,8 @@ class DiskServiceImpl(
         val res: List<StorageDomain> =
             conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
                 .getOrDefault(listOf())
-        return res.toStorageDomainIdNames()
+                .filter { it.status() == StorageDomainStatus.ACTIVE }
+        return res.toStorageDomainSizes()
     }
 
     @Throws(Error::class)
@@ -262,7 +263,7 @@ class DiskServiceImpl(
 
     @Throws(Error::class)
     override fun move(diskId: String, storageDomainId: String): Boolean {
-        log.info("moveDisk ... diskId: $diskId, storageDomainId: $storageDomainId")
+        log.info("move ... diskId: $diskId, storageDomainId: $storageDomainId")
         val res: Result<Boolean> =
             conn.moveDisk(diskId, storageDomainId)
         return res.isSuccess
@@ -270,7 +271,8 @@ class DiskServiceImpl(
 
     @Throws(Error::class)
     override fun copy(diskImageVo: DiskImageVo): Boolean {
-        log.info("copyDisk ... diskVo: $diskImageVo")
+        log.info("copy ... diskName: ${diskImageVo.alias}")
+        // vm 연결대상이 있을 경우, 복사 불가능
         val res: Result<Boolean> =
             conn.copyDisk(
                 diskImageVo.id,

@@ -41,7 +41,9 @@ fun Connection.findAllStorageDomainsFromDisk(diskId: String): Result<List<Storag
 		this.findDisk(diskId)
 			.getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
 	val storageDomains: List<StorageDomain> =
-		disk.storageDomains()
+		disk.storageDomains().mapNotNull { storageDomain ->
+			this.findStorageDomain(storageDomain.id()).getOrNull()
+		}
 
 	storageDomains
 }.onSuccess {
@@ -109,8 +111,12 @@ fun Connection.expectDiskDeleted(diskId: String, interval: Long = 1000L, timeout
 
 
 fun Connection.moveDisk(diskId: String, domainId: String): Result<Boolean> = runCatching {
-	this@moveDisk.findDisk(diskId).getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
-	val storageDomain: StorageDomain = this@moveDisk.findStorageDomain(domainId).getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
+	this@moveDisk.findDisk(diskId)
+		.getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
+
+	val storageDomain: StorageDomain =
+		this@moveDisk.findStorageDomain(domainId)
+			.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
 
 	this.srvDisk(diskId).move().storageDomain(storageDomain).send()
 	if (!this@moveDisk.expectDiskStatus(diskId)) {
@@ -132,6 +138,7 @@ fun Connection.copyDisk(diskId: String, diskAlias:String, domainId: String): Res
 	val storageDomain: StorageDomain =
 		this.findStorageDomain(domainId)
 			.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
+
 
 	this.srvDisk(diskId).copy().disk(DiskBuilder().id(diskId).alias(diskAlias)).storageDomain(storageDomain).send()
 	// 복사된 디스크가 같은 ID를 가질까? => x
@@ -231,7 +238,7 @@ fun Connection.uploadDisk(/*file: MultipartFile?, */disk: Disk): Result<Boolean>
  * @throws InterruptedException
  */
 @Throws(InterruptedException::class)
-fun Connection.expectDiskStatus(diskId: String, expectStatus: DiskStatus = DiskStatus.OK, timeout: Long = 90000L, interval: Long = 1000L): Boolean {
+fun Connection.expectDiskStatus(diskId: String, expectStatus: DiskStatus = DiskStatus.OK, timeout: Long = 150000L, interval: Long = 1000L): Boolean {
 	val startTime = System.currentTimeMillis()
 	while (true) {
 		val disk: Disk? = this@expectDiskStatus.findDisk(diskId).getOrNull()

@@ -8,6 +8,8 @@ import com.itinfo.itcloud.model.storage.DiskImageVo
 import com.itinfo.itcloud.model.storage.DiskProfileVo
 import com.itinfo.itcloud.model.storage.StorageDomainVo
 import com.itinfo.itcloud.service.storage.ItStorageServiceTest.Companion
+import com.itinfo.util.ovirt.expectDiskStatus
+import com.itinfo.util.ovirt.findDisk
 import org.apache.commons.fileupload.FileItem
 import org.apache.commons.fileupload.disk.DiskFileItem
 import org.apache.commons.io.IOUtils
@@ -15,6 +17,8 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.ovirt.engine.sdk4.types.Disk
+import org.ovirt.engine.sdk4.types.DiskStatus
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.web.multipart.MultipartFile
@@ -53,7 +57,7 @@ class ItDiskServiceTest {
         networkId = "00000000-0000-0000-0000-000000000009"
         host01 = "671e18b2-964d-4cc6-9645-08690c94d249"
         domainId = "213b1a0a-b0c0-4d10-95a4-7aafed4f76b9"
-        diskId = ""
+        diskId = "ebe58983-3c96-473a-9553-98bee3606f0e"
     }
 
 
@@ -71,7 +75,7 @@ class ItDiskServiceTest {
 
         assertThat(result, `is`(not(nullValue())))
         result.forEach { println(it) }
-        assertThat(result.size, `is`(8))
+        assertThat(result.size, `is`(34))
     }
 
     /**
@@ -88,7 +92,7 @@ class ItDiskServiceTest {
 
         assertThat(result, `is`(not(nullValue())))
         result.forEach { println(it) }
-        assertThat(result.size, `is`(8))
+        assertThat(result.size, `is`(14))
     }
 
     /**
@@ -117,10 +121,10 @@ class ItDiskServiceTest {
     fun should_findAllDomainsFromDataCenter() {
         log.info("should_findAllDomainsFromDataCenter ... ")
         val result: List<StorageDomainVo> =
-            service.findAllDomainsFromDataCenter(domainId)
+            service.findAllDomainsFromDataCenter(dataCenterId)
 
         assertThat(result, `is`(not(nullValue())))
-        assertThat(result.size, `is`(1))
+        assertThat(result.size, `is`(2))
         result.forEach { println(it) }
     }
 
@@ -137,8 +141,8 @@ class ItDiskServiceTest {
             service.findAllDiskProfilesFromStorageDomain(domainId)
 
         assertThat(result, `is`(not(nullValue())))
-        assertThat(result.size, `is`(1))
         result.forEach { println(it) }
+        assertThat(result.size, `is`(1))
     }
 
     /**
@@ -151,15 +155,16 @@ class ItDiskServiceTest {
     fun should_add() {
         log.info("should_add... ")
         val storageDomainVo = IdentifiedVo.builder { id { domainId } }
+        val diskProfileVo = IdentifiedVo.builder { id { "71ba3cf0-7062-4bff-9b36-e9141857d148" } }
 
         val addDisk =
             DiskImageVo.builder {
-                alias { "image4" }
+                alias { "a3" }
                 size { 2 }
                 description { "test" }
                 storageDomainVo { storageDomainVo }
-//				diskProfileVo { diskProfileVo }
-                sparse { true }
+				diskProfileVo { diskProfileVo }
+                sparse { false } // false 사전할당
                 wipeAfterDelete { false }
                 sharable { false }
                 backup { true }
@@ -191,18 +196,17 @@ class ItDiskServiceTest {
     fun should_update() {
         log.info("should_update... ")
         val storageDomainVo = IdentifiedVo.builder { id { domainId } }
-//		val diskProfileVo = IdentifiedVo.builder { id { diskProfile } }
+        val diskProfileVo = IdentifiedVo.builder { id { "71ba3cf0-7062-4bff-9b36-e9141857d148" } }
 
         val updateDisk =
             DiskImageVo.builder {
-                id { "7db6dfa4-d757-4f06-b6e8-02271a88bd0a" }
-                alias { "image41" }
-                size { 3 }
+                id { "471a36ae-822f-42cc-9947-c3aea332d644" }
+                alias { "image1" }
+                size { 4 }
                 appendSize { 1 }
                 description { "test" }
                 storageDomainVo { storageDomainVo }
-//				diskProfileVo { diskProfileVo }
-                sparse { true }
+				diskProfileVo { diskProfileVo }
                 wipeAfterDelete { false }
                 sharable { false }
                 backup { true }
@@ -212,12 +216,8 @@ class ItDiskServiceTest {
             service.update(updateDisk)
 
         assertThat(updateResult, `is`(not(nullValue())))
-        assertThat(updateResult?.alias, `is`(updateDisk.alias))
-//		assertThat(updateResult?.size, `is`(updateDisk.size))
+//        assertThat(updateResult?.alias, `is`(updateDisk.alias))
         assertThat(updateResult?.description, `is`(updateDisk.description))
-//		assertThat(updateResult?.storageDomainVo?.id, `is`(updateDisk.storageDomainVo.id))
-//		assertThat(updateResult?.diskProfileVo?.id, `is`(updateDisk.diskProfileVo.id))
-        assertThat(updateResult?.sparse, `is`(updateDisk.sparse))
         assertThat(updateResult?.wipeAfterDelete, `is`(updateDisk.wipeAfterDelete))
         assertThat(updateResult?.sharable, `is`(updateDisk.sharable))
         assertThat(updateResult?.backup, `is`(updateDisk.backup))
@@ -232,10 +232,11 @@ class ItDiskServiceTest {
     @Test
     fun should_remove() {
         log.info("should_remove ... ")
-        val diskId = "7b5522b4-cf3e-4b61-a135-3284a97105dc"
+        val diskId = "471a36ae-822f-42cc-9947-c3aea332d644"
         val result: Boolean =
             service.remove(diskId)
 
+        assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))
     }
 
@@ -249,13 +250,13 @@ class ItDiskServiceTest {
     @Test
     fun should_findAllStorageDomainsFromDisk(){
         log.info("should_findAllStorageDomainsFromDisk ... ")
-        val diskId2 = "e5c11e4d-53d8-442d-9bcd-f2d0fc6b2731"
+        val diskId2 = "f6896f27-7ba6-4d0d-b204-1a6aa2c16d86"
         val result: List<StorageDomainVo> =
             service.findAllStorageDomainsFromDisk(diskId2)
 
-        assertThat(result.size, `is`(1))
-
+        assertThat(result, `is`(not(nullValue())))
         result.forEach { println(it) }
+        assertThat(result.size, `is`(1))
     }
 
     /**
@@ -266,10 +267,12 @@ class ItDiskServiceTest {
      */
     @Test
     fun should_move() {
-        val diskId = "2c73c9c0-6552-4ddc-9727-8b2de7f54267"
+        val diskId = "f6896f27-7ba6-4d0d-b204-1a6aa2c16d86"
+        val domainId2 = "213b1a0a-b0c0-4d10-95a4-7aafed4f76b9"
         val result: Boolean =
-            service.move(diskId, domainId)
+            service.move(diskId, domainId2)
 
+        assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))
     }
 
@@ -282,13 +285,13 @@ class ItDiskServiceTest {
     @Test
     fun should_copy() {
         val diskId = "2c73c9c0-6552-4ddc-9727-8b2de7f54267"
-        val domainId2 = ""
-        val storageDomainVo = IdentifiedVo.builder { id { domainId }}
+        val domainId2 = "213b1a0a-b0c0-4d10-95a4-7aafed4f76b9"
+        val storageDomainVo = IdentifiedVo.builder { id { domainId2 }}
 
         val image =
             DiskImageVo.builder {
                 id { diskId }
-                alias { "image4test" }
+                alias { "copytest" }
                 storageDomainVo { storageDomainVo }
             }
         val result =

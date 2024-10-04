@@ -2,10 +2,7 @@ package com.itinfo.itcloud.service.storage
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.IdentifiedVo
-import com.itinfo.itcloud.model.computing.DataCenterVo
-import com.itinfo.itcloud.model.computing.EventVo
-import com.itinfo.itcloud.model.computing.TemplateVo
-import com.itinfo.itcloud.model.computing.VmVo
+import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.DiskImageVo
 import com.itinfo.itcloud.model.storage.DiskProfileVo
@@ -58,7 +55,7 @@ class ItStorageServiceTest {
 		clusterId = "023c79d8-3819-11ef-bf08-00163e6c8feb"
 		networkId = "00000000-0000-0000-0000-000000000009"
 		host01 = "671e18b2-964d-4cc6-9645-08690c94d249"
-		domainId = "571f10ef-3b23-417d-a954-d6ab90cf9ecb"
+		domainId = "213b1a0a-b0c0-4d10-95a4-7aafed4f76b9"
 		nfs = "06faa572-f1ac-4874-adcc-9d26bb74a54d"
 	}
 
@@ -363,6 +360,24 @@ class ItStorageServiceTest {
 
 
 	/**
+	 * [should_findAllDiskSnapshotsFromStorageDomain]
+	 * [ItStorageService.findAllDiskSnapshotsFromStorageDomain] 의 단위테스트
+	 *
+	 * @see [ItStorageService.findAllDiskSnapshotsFromStorageDomain]
+	 */
+	@Test
+	fun should_findAllDiskSnapshotsFromStorageDomain() {
+		log.debug("should_findAllDiskSnapshotsFromStorageDomain ... ")
+		val result: List<SnapshotDiskVo> =
+			service.findAllDiskSnapshotsFromStorageDomain(domainId)
+
+		assertThat(result, `is`(not(nullValue())))
+		result.forEach { println(it) }
+		assertThat(result.size, `is`(3))
+	}
+
+
+	/**
 	 * [should_findAllEventsFromStorageDomain]
 	 * [ItStorageService.findAllEventsFromStorageDomain] 의 단위테스트
 	 *
@@ -375,7 +390,7 @@ class ItStorageServiceTest {
 			service.findAllEventsFromStorageDomain(domainId)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(33))
+		assertThat(result.size, `is`(26))
 		println(result.size)
 	}
 

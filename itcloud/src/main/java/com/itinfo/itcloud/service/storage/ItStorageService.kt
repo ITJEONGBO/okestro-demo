@@ -193,10 +193,10 @@ interface ItStorageService {
 	 * 스토리지 도메인 - 디스크 스냅샷 목록
 	 *
 	 * @param storageDomainId [String] 스토리지 도메인 Id
-	 * @return List<[DiskImageVo]> 디스크 목록
+	 * @return List<[SnapshotDiskVo]> 디스크 스냅샷 목록
 	 */
 	@Throws(Error::class)
-	fun findAllDiskSnapshotsFromStorageDomain(storageDomainId: String): List<DiskImageVo>
+	fun findAllDiskSnapshotsFromStorageDomain(storageDomainId: String): List<SnapshotDiskVo>
 
 //	/**
 //	 * [ItStorageService.findAllDiskProfilesFromStorageDomain]
@@ -433,10 +433,15 @@ class StorageServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllDiskSnapshotsFromStorageDomain(storageDomainId: String): List<DiskImageVo> {
+	override fun findAllDiskSnapshotsFromStorageDomain(storageDomainId: String): List<SnapshotDiskVo> {
 		log.info("findAllDiskSnapshotsFromStorageDomain ... storageDomainId: {}", storageDomainId)
-		TODO("Not yet implemented")
+		val res: List<DiskSnapshot> =
+			conn.findAllDiskSnapshotsFromStorageDomain(storageDomainId)
+				.getOrDefault(listOf())
+		// TODO 연결대상
+		return res.toSnapshotDiskVos(conn)
 	}
+
 
 //	@Throws(Error::class)
 //	override fun findAllDiskProfilesFromStorageDomain(storageDomainId: String): List<DiskProfileVo> {

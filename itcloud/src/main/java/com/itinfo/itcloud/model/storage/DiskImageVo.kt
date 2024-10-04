@@ -99,17 +99,11 @@ class DiskImageVo(
 	}
 }
 
-//fun Disk.toDiskId(): DiskImageVo = DiskImageVo.builder {
-//	id { this@toDiskId.id() }
-//}
-//fun List<Disk>.toDiskIds(): List<DiskImageVo> =
-//	this@toDiskIds.map { it.toDiskId() }
 
 fun Disk.toDiskIdName(): DiskImageVo = DiskImageVo.builder {
 	id { this@toDiskIdName.id() }
 	alias() { this@toDiskIdName.alias() }
 }
-
 fun List<Disk>.toDiskIdNames(): List<DiskImageVo> =
 	this@toDiskIdNames.map { it.toDiskIdName() }
 
@@ -139,7 +133,7 @@ fun Disk.toDiskImageVo(conn: Connection): DiskImageVo {
 		wipeAfterDelete { this@toDiskImageVo.wipeAfterDelete() }
 		sharable { this@toDiskImageVo.shareable() }
 		backup { this@toDiskImageVo.backup() == DiskBackup.INCREMENTAL }
-//		virtualSize
+		virtualSize { this@toDiskImageVo.provisionedSize() }
 		actualSize { this@toDiskImageVo.actualSize() }
 		status { this@toDiskImageVo.status() }
 		contentType { this@toDiskImageVo.contentType() }
@@ -151,6 +145,27 @@ fun Disk.toDiskImageVo(conn: Connection): DiskImageVo {
 
 fun List<Disk>.toDiskImageVos(conn: Connection): List<DiskImageVo> =
 	this@toDiskImageVos.map { it.toDiskImageVo(conn) }
+
+//fun Disk.toStorageDomain(conn: Connection): DiskImageVo {
+//	val storageDomain: StorageDomain? =
+//		conn.findStorageDomain(this@toStorageDomain.storageDomains().first().id())
+//			.getOrNull()
+//
+//	return DiskImageVo.builder {
+//		id { this@toStorageDomain.id() }
+//		alias { this@toStorageDomain.alias() }
+//		description { this@toStorageDomain.description() }
+//		storageDomainVo { storageDomain?.fromStorageDomainToIdentifiedVo() }
+//		sparse { this@toStorageDomain.sparse()}
+//		sharable { this@toStorageDomain.shareable() }
+//		virtualSize { this@toStorageDomain.provisionedSize() }
+//		actualSize { this@toStorageDomain.actualSize() }
+//		status { this@toStorageDomain.status() }
+//		storageType { this@toStorageDomain.storageType() }
+//		createDate {  }
+//		connectVm {  }
+//	}
+//}
 
 /**
  * 스토리지 - 디스크 생성

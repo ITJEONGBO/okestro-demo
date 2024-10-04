@@ -227,6 +227,19 @@ fun List<StorageDomain>.toStorageDomainVos(conn: Connection): List<StorageDomain
 	this@toStorageDomainVos.map { it.toStorageDomainVo(conn) }
 
 
+fun StorageDomain.toStorageDomainSize(): StorageDomainVo {
+	return StorageDomainVo.builder {
+		id { this@toStorageDomainSize.id() }
+		name { this@toStorageDomainSize.name() }
+		usedSize { this@toStorageDomainSize.used() }
+		availableSize { this@toStorageDomainSize.available() }
+	}
+}
+fun List<StorageDomain>.toStorageDomainSizes(): List<StorageDomainVo> =
+	this@toStorageDomainSizes.map { it.toStorageDomainSize() }
+
+
+
 
 
 // region: 빌더
