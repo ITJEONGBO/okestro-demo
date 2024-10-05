@@ -214,12 +214,11 @@
     }
     .radio_toolbar{
         display: flex;
-        width: 37%;
+        width: 51%;
         justify-content: space-between;
     }
     .setting_part_table_outer{
         height: 53vh;
-        border: 1px solid black;
         border-radius: 2px;
     }
 

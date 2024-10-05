@@ -134,7 +134,7 @@ const AllDisk = () => {
                 <div className="disk_type">
                   <div>
                     <span>디스크유형 : </span>
-                    <div>
+                    <div className='flex'>
                       <button>모두</button>
                       <button>이미지</button>
                       <button className='mr-1'>직접 LUN</button>

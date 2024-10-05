@@ -32,14 +32,15 @@ const AllVm = () => {
  // 모달 관련 상태 및 함수
  const openPopup = (popupType) => {
     setActivePopup(popupType);
+    setActiveSection('common_outer'); // 팝업을 열 때 항상 '일반' 섹션으로 설정
     setIsModalOpen(true); // 모달 창 열림
-  };
-  
-  const closeModal = () => {
+};
+
+const closeModal = () => {
     setIsModalOpen(false); // 모달 창 닫힘
     setActivePopup(null);  // 팝업 상태 초기화
-  };
-  
+    setActiveSection('common_outer'); // 모달 닫을 때 '일반' 섹션으로 초기화
+};
 
 
 
@@ -126,7 +127,7 @@ const AllVm = () => {
            
             {/* 새로만들기팝업 */}
             {activePopup === 'new' && (
-  <Modal
+            <Modal
     isOpen={isModalOpen}
     onRequestClose={closeModal}
     contentLabel="가상머신 편집"
@@ -143,7 +144,7 @@ const AllVm = () => {
             </div>
             
             <div className="edit_body">
-            <div className="edit_aside">
+                <div className="edit_aside">
                 <div
                   className={`edit_aside_item ${activeSection === 'common_outer' ? 'active' : ''}`}
                   id="common_outer_btn"
@@ -187,580 +188,580 @@ const AllVm = () => {
                   <span>부트 옵션</span>
                 </div>
                 
-              </div>
+                </div>
 
 
-                    <form action="#">
-                        {/* 일반 */}
-                        <div id="common_outer" style={{ display: activeSection === 'common_outer' ? 'block' : 'none' }}>
-                            <div className="edit_first_content">
-                                <div>
-                                    <label htmlFor="cluster">클러스터</label>
-                                    <select id="cluster">
-                                        <option value="default">Default</option>
-                                    </select>
-                                    <div>데이터센터 Default</div>
-                                </div>
-
-                                <div>
-                                    <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
-                                    <select id="template" disabled>
-                                        <option value="test02">test02</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label htmlFor="os">운영 시스템</label>
-                                    <select id="os">
-                                        <option value="linux">Linux</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label htmlFor="firmware">칩셋/펌웨어 유형</label>
-                                    <select id="firmware">
-                                        <option value="bios">BIOS의 Q35 칩셋</option>
-                                    </select>
-                                </div>
-                                <div style={{ marginBottom: '2%' }}>
-                                    <label htmlFor="optimization">최적화 옵션</label>
-                                    <select id="optimization">
-                                        <option value="server">서버</option>
-                                    </select>
-                                </div>
+                <form action="#">
+                    {/* 일반 */}
+                    <div id="common_outer" style={{ display: activeSection === 'common_outer' ? 'block' : 'none' }}>
+                        <div className="edit_first_content">
+                            <div>
+                                <label htmlFor="cluster">클러스터</label>
+                                <select id="cluster">
+                                    <option value="default">Default</option>
+                                </select>
+                                <div>데이터센터 Default</div>
                             </div>
 
-                            <div className="edit_second_content">
-                                <div>
-                                    <label htmlFor="name">이름</label>
-                                    <input type="text" id="name" value="test02" />
-                                </div>
-                                <div>
-                                    <label htmlFor="description">설명</label>
-                                    <input type="text" id="description" />
-                                </div>
+                            <div>
+                                <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
+                                <select id="template" disabled>
+                                    <option value="test02">test02</option>
+                                </select>
                             </div>
-                            <div className="edit_third_content">
-                                <div>
-                                    <span>하드디스크</span>
-                                </div>
-                                <div>
-                                    <button>연결</button>
-                                    <button>생성</button>
-                                    <div className='flex'>
-                                        <button>+</button>
-                                        <button>-</button>
-                                    </div>
-                                </div>
+                            <div>
+                                <label htmlFor="os">운영 시스템</label>
+                                <select id="os">
+                                    <option value="linux">Linux</option>
+                                </select>
                             </div>
-                            <div className="edit_fourth_content">
-                                <div className='edit_fourth_content_select flex'>
-                                    <label htmlFor="network_adapter">네트워크 어댑터 1</label>
-                                    <select id="network_adapter">
-                                        <option value="default">Default</option>
-                                    </select>
-                                    
-                                </div>
+                            <div>
+                                <label htmlFor="firmware">칩셋/펌웨어 유형</label>
+                                <select id="firmware">
+                                    <option value="bios">BIOS의 Q35 칩셋</option>
+                                </select>
+                            </div>
+                            <div style={{ marginBottom: '2%' }}>
+                                <label htmlFor="optimization">최적화 옵션</label>
+                                <select id="optimization">
+                                    <option value="server">서버</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="edit_second_content">
+                            <div>
+                                <label htmlFor="name">이름</label>
+                                <input type="text" id="name" value="test02" />
+                            </div>
+                            <div>
+                                <label htmlFor="description">설명</label>
+                                <input type="text" id="description" />
+                            </div>
+                        </div>
+                        <div className="edit_third_content">
+                            <div>
+                                <span>하드디스크</span>
+                            </div>
+                            <div>
+                                <button onClick={() => openPopup('addSystemRole')}>연결</button>
+                                <button>생성</button>
                                 <div className='flex'>
                                     <button>+</button>
                                     <button>-</button>
                                 </div>
                             </div>
                         </div>
-
-                        {/* 시스템 */}
-                        <div id="system_outer" style={{ display: activeSection === 'system_outer' ? 'block' : 'none' }}>
-                            
-                            <div className="edit_second_content">
-                                <div>
-                                    <label htmlFor="memory_size">메모리 크기</label>
-                                    <input type="text" id="memory_size" value="2048 MB" readOnly />
-                                </div>
-                                <div>
-                                    <div>
-                                        <label htmlFor="max_memory">최대 메모리</label>
-                                        <i className="fa fa-info-circle"></i>
-                                    </div>
-                                    <input type="text" id="max_memory" value="8192 MB" readOnly />
-                                </div>
-
-                                <div>
-                                    <div>
-                                        <label htmlFor="actual_memory">할당할 실제 메모리</label>
-                                        <i className="fa fa-info-circle"></i>
-                                    </div>
-                                    <input type="text" id="actual_memory" value="2048 MB" readOnly />
-                                </div>
-
-                                <div>
-                                    <div>
-                                        <label htmlFor="total_cpu">총 가상 CPU</label>
-                                        <i className="fa fa-info-circle"></i>
-                                    </div>
-                                    <input type="text" id="total_cpu" value="1" readOnly />
-                                </div>
-                                <div>
-                                    <div>
-                                        <i className="fa fa-arrow-circle-o-right" style={{ color: 'rgb(56, 56, 56)' }}></i>
-                                        <span>고급 매개 변수</span>
-                                    </div>
-                                </div>
-                                <div style={{ fontWeight: 600 }}>일반</div>
-                                <div style={{ paddingTop: 0, paddingBottom: '4%' }}>
-                                    <div>
-                                        <label htmlFor="time_offset">하드웨어 클릭의 시간 오프셋</label>
-                                        <i className="fa fa-info-circle"></i>
-                                    </div>
-                                    <select id="time_offset">
-                                        <option value="(GMT+09:00) Korea Standard Time">(GMT+09:00) Korea Standard Time</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* 콘솔(삭ㅈ제) */}
-                        {/* <div id="console_outer" style={{ display: activeSection === 'console_outer' ? 'block' : 'none' }}>
-                            <div className="edit_first_content">
-                                <div>
-                                    <label htmlFor="cluster">클러스터</label>
-                                    <select id="cluster">
-                                        <option value="default">Default</option>
-                                    </select>
-                                    <div>데이터센터 Default</div>
-                                </div>
-
-                                <div>
-                                    <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
-                                    <select id="template" disabled>
-                                        <option value="test02">test02</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label htmlFor="os">운영 시스템</label>
-                                    <select id="os">
-                                        <option value="linux">Linux</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label htmlFor="firmware">칩셋/펌웨어 유형</label>
-                                    <select id="firmware">
-                                        <option value="bios">BIOS의 Q35 칩셋</option>
-                                    </select>
-                                </div>
-                                <div style={{ marginBottom: '2%' }}>
-                                    <label htmlFor="optimization">최적화 옵션</label>
-                                    <select id="optimization">
-                                        <option value="server">서버</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="res_alloc_checkbox" style={{ marginBottom: 0 }}>
-                                <span>그래픽 콘솔</span>
-                                <div>
-                                    <input type="checkbox" id="memory_balloon" name="memory_balloon" />
-                                    <label htmlFor="memory_balloon">헤드리스(headless)모드</label>
-                                    <i className="fa fa-info-circle" style={{ color: '#1ba4e4' }}></i>
-                                </div>
-                            </div>
-
-                            <div className="edit_second_content">
-                                <div style={{ paddingTop: 0 }}>
-                                    <label htmlFor="memory_size">비디오 유형</label>
-                                    <input type="text" id="memory_size" value="VGA" readOnly />
-                                </div>
-                                <div>
-                                    <div>
-                                        <label htmlFor="max_memory">그래픽 프로토콜</label>
-                                    </div>
-                                    <input type="text" id="max_memory" value="VNC" readOnly />
-                                </div>
-
-                                <div>
-                                    <div>
-                                        <label htmlFor="actual_memory">VNC 키보드 레이아웃</label>
-                                    </div>
-                                    <input type="text" id="actual_memory" value="기본값[en-us]" readOnly />
-                                </div>
-
-                                <div>
-                                    <div>
-                                        <label htmlFor="total_cpu">콘솔 분리 작업</label>
-                                    </div>
-                                    <input type="text" id="total_cpu" value="화면 잠금" readOnly />
-                                </div>
-                                <div>
-                                    <div>
-                                        <label htmlFor="disconnect_action_delay">Disconnect Action Delay in Minutes</label>
-                                    </div>
-                                    <input type="text" id="disconnect_action_delay" value="0" disabled />
-                                </div>
-                                <div id="monitor">
-                                    <label htmlFor="screen">모니터</label>
-                                    <select id="screen">
-                                        <option value="test02">1</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="console_checkboxs">
-                                <div className="checkbox_group">
-                                    <input type="checkbox" id="memory_balloon" name="memory_balloon" disabled />
-                                    <label style={{ color: '#A1A1A1' }} htmlFor="memory_balloon">USB활성화</label>
-                                </div>
-                                <div className="checkbox_group">
-                                    <input type="checkbox" id="memory_balloon" name="memory_balloon" disabled />
-                                    <label style={{ color: '#A1A1A1' }} htmlFor="memory_balloon">스마트카드 사용가능</label>
-                                </div>
-                                <span>단일 로그인 방식</span>
-                                <div className="checkbox_group">
-                                    <input type="checkbox" id="memory_balloon" name="memory_balloon" />
-                                    <label htmlFor="memory_balloon">USB활성화</label>
-                                </div>
-                                <div className="checkbox_group">
-                                    <input type="checkbox" id="memory_balloon" name="memory_balloon" />
-                                    <label htmlFor="memory_balloon">스마트카드 사용가능</label>
-                                </div>
-                            </div>
-                        </div> */}
-
-                        {/* 호스트 */}
-                        <div id="host_outer" style={{ display: activeSection === 'host_outer' ? 'block' : 'none' }}>
-                         
-
-                            <div id="host_second_content">
-                                <div style={{ fontWeight: 600 }}>실행 호스트:</div>
-                                <div className="form_checks">
-                                    <div>
-                                        <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" checked />
-                                        <label className="form-check-label" htmlFor="flexRadioDefault1">
-                                            클러스터 내의 호스트
-                                        </label>
-                                    </div>
-                                    <div>
-                                        <div>
-                                            <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" />
-                                            <label className="form-check-label" htmlFor="flexRadioDefault2">
-                                                특정 호스트
-                                            </label>
-                                        </div>
-                                        <div>
-                                            <select id="specific_host_select">
-                                                <option value="host02.ititinfo.com">host02.ititinfo.com</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="host_checkboxs">
-                                    <span>CPU 옵션:</span>
-                                    <div className="host_checkbox">
-                                        <input type="checkbox" id="host_cpu_passthrough" name="host_cpu_passthrough" />
-                                        <label htmlFor="host_cpu_passthrough">호스트 CPU 통과</label>
-                                        <i className="fa fa-info-circle"></i>
-                                    </div>
-                                   
-                                </div>
-                            </div>
-
-                            <div id="host_third_content">
-                                <div style={{ fontWeight: 600 }}>마이그레이션 옵션:</div>
-                                <div>
-                                    <div>
-                                        <span>마이그레이션 모드</span>
-                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
-                                    </div>
-                                    <select id="migration_mode">
-                                        <option value="수동 및 자동 마이그레이션 허용">수동 및 자동 마이그레이션 허용</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <div>
-                                        <span>마이그레이션 정책</span>
-                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
-                                    </div>
-                                    <select id="migration_policy">
-                                        <option value="클러스터 기본값(Minimal downtime)">클러스터 기본값(Minimal downtime)</option>
-                                    </select>
-                                </div>
+                        <div className="edit_fourth_content">
+                            <div className='edit_fourth_content_select flex'>
+                                <label htmlFor="network_adapter">네트워크 어댑터 1</label>
+                                <select id="network_adapter">
+                                    <option value="default">Default</option>
+                                </select>
                                 
+                            </div>
+                            <div className='flex'>
+                                <button>+</button>
+                                <button>-</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 시스템 */}
+                    <div id="system_outer" style={{ display: activeSection === 'system_outer' ? 'block' : 'none' }}>
+                        
+                        <div className="edit_second_content">
+                            <div>
+                                <label htmlFor="memory_size">메모리 크기</label>
+                                <input type="text" id="memory_size" value="2048 MB" readOnly />
+                            </div>
+                            <div>
                                 <div>
-                                    <div>
-                                        <span>Parallel Migrations</span>
-                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
-                                    </div>
-                                    <select id="parallel_migrations" readOnly>
-                                        <option value="클러스터 기본값(Disabled)">클러스터 기본값(Disabled)</option>
-                                    </select>
+                                    <label htmlFor="max_memory">최대 메모리</label>
+                                    <i className="fa fa-info-circle"></i>
                                 </div>
-                               
+                                <input type="text" id="max_memory" value="8192 MB" readOnly />
+                            </div>
+
+                            <div>
+                                <div>
+                                    <label htmlFor="actual_memory">할당할 실제 메모리</label>
+                                    <i className="fa fa-info-circle"></i>
+                                </div>
+                                <input type="text" id="actual_memory" value="2048 MB" readOnly />
+                            </div>
+
+                            <div>
+                                <div>
+                                    <label htmlFor="total_cpu">총 가상 CPU</label>
+                                    <i className="fa fa-info-circle"></i>
+                                </div>
+                                <input type="text" id="total_cpu" value="1" readOnly />
+                            </div>
+                            <div>
+                                <div>
+                                    <i className="fa fa-arrow-circle-o-right" style={{ color: 'rgb(56, 56, 56)' }}></i>
+                                    <span>고급 매개 변수</span>
+                                </div>
+                            </div>
+                            <div style={{ fontWeight: 600 }}>일반</div>
+                            <div style={{ paddingTop: 0, paddingBottom: '4%' }}>
+                                <div>
+                                    <label htmlFor="time_offset">하드웨어 클릭의 시간 오프셋</label>
+                                    <i className="fa fa-info-circle"></i>
+                                </div>
+                                <select id="time_offset">
+                                    <option value="(GMT+09:00) Korea Standard Time">(GMT+09:00) Korea Standard Time</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 콘솔(삭ㅈ제) */}
+                    {/* <div id="console_outer" style={{ display: activeSection === 'console_outer' ? 'block' : 'none' }}>
+                        <div className="edit_first_content">
+                            <div>
+                                <label htmlFor="cluster">클러스터</label>
+                                <select id="cluster">
+                                    <option value="default">Default</option>
+                                </select>
+                                <div>데이터센터 Default</div>
+                            </div>
+
+                            <div>
+                                <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
+                                <select id="template" disabled>
+                                    <option value="test02">test02</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label htmlFor="os">운영 시스템</label>
+                                <select id="os">
+                                    <option value="linux">Linux</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label htmlFor="firmware">칩셋/펌웨어 유형</label>
+                                <select id="firmware">
+                                    <option value="bios">BIOS의 Q35 칩셋</option>
+                                </select>
+                            </div>
+                            <div style={{ marginBottom: '2%' }}>
+                                <label htmlFor="optimization">최적화 옵션</label>
+                                <select id="optimization">
+                                    <option value="server">서버</option>
+                                </select>
                             </div>
                         </div>
 
-                        {/* 고가용성 */}
-                        <div id="ha_mode_outer" style={{ display: activeSection === 'ha_mode_outer' ? 'block' : 'none' }}>
-                            {/* <div className="edit_first_content">
-                                <div>
-                                    <label htmlFor="cluster">클러스터</label>
-                                    <select id="cluster">
-                                        <option value="default">Default</option>
-                                    </select>
-                                    <div>데이터센터 Default</div>
-                                </div>
+                        <div className="res_alloc_checkbox" style={{ marginBottom: 0 }}>
+                            <span>그래픽 콘솔</span>
+                            <div>
+                                <input type="checkbox" id="memory_balloon" name="memory_balloon" />
+                                <label htmlFor="memory_balloon">헤드리스(headless)모드</label>
+                                <i className="fa fa-info-circle" style={{ color: '#1ba4e4' }}></i>
+                            </div>
+                        </div>
 
+                        <div className="edit_second_content">
+                            <div style={{ paddingTop: 0 }}>
+                                <label htmlFor="memory_size">비디오 유형</label>
+                                <input type="text" id="memory_size" value="VGA" readOnly />
+                            </div>
+                            <div>
                                 <div>
-                                    <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
-                                    <select id="template" disabled>
-                                        <option value="test02">test02</option>
-                                    </select>
+                                    <label htmlFor="max_memory">그래픽 프로토콜</label>
                                 </div>
-                                <div>
-                                    <label htmlFor="os">운영 시스템</label>
-                                    <select id="os">
-                                        <option value="linux">Linux</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label htmlFor="firmware">칩셋/펌웨어 유형</label>
-                                    <select id="firmware">
-                                        <option value="bios">BIOS의 Q35 칩셋</option>
-                                    </select>
-                                </div>
-                                <div style={{ marginBottom: '2%' }}>
-                                    <label htmlFor="optimization">최적화 옵션</label>
-                                    <select id="optimization">
-                                        <option value="server">서버</option>
-                                    </select>
-                                </div>
-                            </div> */}
+                                <input type="text" id="max_memory" value="VNC" readOnly />
+                            </div>
 
-                            <div id="ha_mode_second_content">
-                                <div className="checkbox_group">
-                                    <input className="check_input" type="checkbox" value="" id="ha_mode_box" />
-                                    <label className="check_label" htmlFor="ha_mode_box">
-                                        고가용성
+                            <div>
+                                <div>
+                                    <label htmlFor="actual_memory">VNC 키보드 레이아웃</label>
+                                </div>
+                                <input type="text" id="actual_memory" value="기본값[en-us]" readOnly />
+                            </div>
+
+                            <div>
+                                <div>
+                                    <label htmlFor="total_cpu">콘솔 분리 작업</label>
+                                </div>
+                                <input type="text" id="total_cpu" value="화면 잠금" readOnly />
+                            </div>
+                            <div>
+                                <div>
+                                    <label htmlFor="disconnect_action_delay">Disconnect Action Delay in Minutes</label>
+                                </div>
+                                <input type="text" id="disconnect_action_delay" value="0" disabled />
+                            </div>
+                            <div id="monitor">
+                                <label htmlFor="screen">모니터</label>
+                                <select id="screen">
+                                    <option value="test02">1</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="console_checkboxs">
+                            <div className="checkbox_group">
+                                <input type="checkbox" id="memory_balloon" name="memory_balloon" disabled />
+                                <label style={{ color: '#A1A1A1' }} htmlFor="memory_balloon">USB활성화</label>
+                            </div>
+                            <div className="checkbox_group">
+                                <input type="checkbox" id="memory_balloon" name="memory_balloon" disabled />
+                                <label style={{ color: '#A1A1A1' }} htmlFor="memory_balloon">스마트카드 사용가능</label>
+                            </div>
+                            <span>단일 로그인 방식</span>
+                            <div className="checkbox_group">
+                                <input type="checkbox" id="memory_balloon" name="memory_balloon" />
+                                <label htmlFor="memory_balloon">USB활성화</label>
+                            </div>
+                            <div className="checkbox_group">
+                                <input type="checkbox" id="memory_balloon" name="memory_balloon" />
+                                <label htmlFor="memory_balloon">스마트카드 사용가능</label>
+                            </div>
+                        </div>
+                    </div> */}
+
+                    {/* 호스트 */}
+                    <div id="host_outer" style={{ display: activeSection === 'host_outer' ? 'block' : 'none' }}>
+                        
+
+                        <div id="host_second_content">
+                            <div style={{ fontWeight: 600 }}>실행 호스트:</div>
+                            <div className="form_checks">
+                                <div>
+                                    <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" checked />
+                                    <label className="form-check-label" htmlFor="flexRadioDefault1">
+                                        클러스터 내의 호스트
                                     </label>
                                 </div>
                                 <div>
                                     <div>
-                                        <span>가상 머신 임대 대상 스토리지 도메인</span>
-                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
-                                    </div>
-                                    <select id="no_lease" disabled>
-                                        <option value="가상 머신 임대 없음">가상 머신 임대 없음</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <div>
-                                        <span>재개 동작</span>
-                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
-                                    </div>
-                                    <select id="force_shutdown">
-                                        <option value="강제 종료">강제 종료</option>
-                                    </select>
-                                </div>
-                                <div className="ha_mode_article">
-                                    <span>실행/마이그레이션 큐에서 우선순위 : </span>
-                                    <div>
-                                        <span>우선 순위</span>
-                                        <select id="priority">
-                                            <option value="낮음">낮음</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div className="ha_mode_article">
-                                    <span>위치독</span>
-                                    <div>
-                                        <span>위치독 모델</span>
-                                        <select id="watchdog_model">
-                                            <option value="감시 장치 없음">감시 장치 없음</option>
-                                        </select>
+                                        <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" />
+                                        <label className="form-check-label" htmlFor="flexRadioDefault2">
+                                            특정 호스트
+                                        </label>
                                     </div>
                                     <div>
-                                        <span style={{ color: 'gray' }}>위치독 작업</span>
-                                        <select id="watchdog_action" disabled>
-                                            <option value="없음">없음</option>
+                                        <select id="specific_host_select">
+                                            <option value="host02.ititinfo.com">host02.ititinfo.com</option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
+                            <div className="host_checkboxs">
+                                <span>CPU 옵션:</span>
+                                <div className="host_checkbox">
+                                    <input type="checkbox" id="host_cpu_passthrough" name="host_cpu_passthrough" />
+                                    <label htmlFor="host_cpu_passthrough">호스트 CPU 통과</label>
+                                    <i className="fa fa-info-circle"></i>
+                                </div>
+                                
+                            </div>
                         </div>
 
-                        {/* 리소스 할당 */}
-                        <div id="res_alloc_outer" style={{ display: activeSection === 'res_alloc_outer' ? 'block' : 'none' }}>
-                            {/* <div className="edit_first_content">
+                        <div id="host_third_content">
+                            <div style={{ fontWeight: 600 }}>마이그레이션 옵션:</div>
+                            <div>
                                 <div>
-                                    <label htmlFor="cluster">클러스터</label>
-                                    <select id="cluster">
-                                        <option value="default">Default</option>
-                                    </select>
-                                    <div>데이터센터 Default</div>
+                                    <span>마이그레이션 모드</span>
+                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
                                 </div>
+                                <select id="migration_mode">
+                                    <option value="수동 및 자동 마이그레이션 허용">수동 및 자동 마이그레이션 허용</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div>
+                                    <span>마이그레이션 정책</span>
+                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                </div>
+                                <select id="migration_policy">
+                                    <option value="클러스터 기본값(Minimal downtime)">클러스터 기본값(Minimal downtime)</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <div>
+                                    <span>Parallel Migrations</span>
+                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                </div>
+                                <select id="parallel_migrations" readOnly>
+                                    <option value="클러스터 기본값(Disabled)">클러스터 기본값(Disabled)</option>
+                                </select>
+                            </div>
+                            
+                        </div>
+                    </div>
 
-                                <div>
-                                    <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
-                                    <select id="template" disabled>
-                                        <option value="test02">test02</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label htmlFor="os">운영 시스템</label>
-                                    <select id="os">
-                                        <option value="linux">Linux</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label htmlFor="firmware">칩셋/펌웨어 유형</label>
-                                    <select id="firmware">
-                                        <option value="bios">BIOS의 Q35 칩셋</option>
-                                    </select>
-                                </div>
-                                <div style={{ marginBottom: '2%' }}>
-                                    <label htmlFor="optimization">최적화 옵션</label>
-                                    <select id="optimization">
-                                        <option value="server">서버</option>
-                                    </select>
-                                </div>
-                            </div> */}
+                    {/* 고가용성 */}
+                    <div id="ha_mode_outer" style={{ display: activeSection === 'ha_mode_outer' ? 'block' : 'none' }}>
+                        {/* <div className="edit_first_content">
+                            <div>
+                                <label htmlFor="cluster">클러스터</label>
+                                <select id="cluster">
+                                    <option value="default">Default</option>
+                                </select>
+                                <div>데이터센터 Default</div>
+                            </div>
 
-                            <div className="res_second_content">
-                                <div className="cpu_res">
-                                    <span style={{ fontWeight: 600 }}>CPU 할당:</span>
-                                    <div className='cpu_res_box'>
-                                        <span>CPU 프로파일</span>
-                                        <select id="watchdog_action">
-                                            <option value="없음">Default</option>
+                            <div>
+                                <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
+                                <select id="template" disabled>
+                                    <option value="test02">test02</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label htmlFor="os">운영 시스템</label>
+                                <select id="os">
+                                    <option value="linux">Linux</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label htmlFor="firmware">칩셋/펌웨어 유형</label>
+                                <select id="firmware">
+                                    <option value="bios">BIOS의 Q35 칩셋</option>
+                                </select>
+                            </div>
+                            <div style={{ marginBottom: '2%' }}>
+                                <label htmlFor="optimization">최적화 옵션</label>
+                                <select id="optimization">
+                                    <option value="server">서버</option>
+                                </select>
+                            </div>
+                        </div> */}
+
+                        <div id="ha_mode_second_content">
+                            <div className="checkbox_group">
+                                <input className="check_input" type="checkbox" value="" id="ha_mode_box" />
+                                <label className="check_label" htmlFor="ha_mode_box">
+                                    고가용성
+                                </label>
+                            </div>
+                            <div>
+                                <div>
+                                    <span>가상 머신 임대 대상 스토리지 도메인</span>
+                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                </div>
+                                <select id="no_lease" disabled>
+                                    <option value="가상 머신 임대 없음">가상 머신 임대 없음</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div>
+                                    <span>재개 동작</span>
+                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                </div>
+                                <select id="force_shutdown">
+                                    <option value="강제 종료">강제 종료</option>
+                                </select>
+                            </div>
+                            <div className="ha_mode_article">
+                                <span>실행/마이그레이션 큐에서 우선순위 : </span>
+                                <div>
+                                    <span>우선 순위</span>
+                                    <select id="priority">
+                                        <option value="낮음">낮음</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="ha_mode_article">
+                                <span>위치독</span>
+                                <div>
+                                    <span>위치독 모델</span>
+                                    <select id="watchdog_model">
+                                        <option value="감시 장치 없음">감시 장치 없음</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <span style={{ color: 'gray' }}>위치독 작업</span>
+                                    <select id="watchdog_action" disabled>
+                                        <option value="없음">없음</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 리소스 할당 */}
+                    <div id="res_alloc_outer" style={{ display: activeSection === 'res_alloc_outer' ? 'block' : 'none' }}>
+                        {/* <div className="edit_first_content">
+                            <div>
+                                <label htmlFor="cluster">클러스터</label>
+                                <select id="cluster">
+                                    <option value="default">Default</option>
+                                </select>
+                                <div>데이터센터 Default</div>
+                            </div>
+
+                            <div>
+                                <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
+                                <select id="template" disabled>
+                                    <option value="test02">test02</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label htmlFor="os">운영 시스템</label>
+                                <select id="os">
+                                    <option value="linux">Linux</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label htmlFor="firmware">칩셋/펌웨어 유형</label>
+                                <select id="firmware">
+                                    <option value="bios">BIOS의 Q35 칩셋</option>
+                                </select>
+                            </div>
+                            <div style={{ marginBottom: '2%' }}>
+                                <label htmlFor="optimization">최적화 옵션</label>
+                                <select id="optimization">
+                                    <option value="server">서버</option>
+                                </select>
+                            </div>
+                        </div> */}
+
+                        <div className="res_second_content">
+                            <div className="cpu_res">
+                                <span style={{ fontWeight: 600 }}>CPU 할당:</span>
+                                <div className='cpu_res_box'>
+                                    <span>CPU 프로파일</span>
+                                    <select id="watchdog_action">
+                                        <option value="없음">Default</option>
+                                    </select>
+                                </div>
+                                <div className='cpu_res_box'>
+                                    <span>CPU 공유</span>
+                                    <div id="cpu_sharing">
+                                        <select id="watchdog_action" style={{ width: '63%' }}>
+                                            <option value="없음">비활성화됨</option>
                                         </select>
+                                        <input type="text" value="0" disabled />
                                     </div>
-                                    <div className='cpu_res_box'>
-                                        <span>CPU 공유</span>
-                                        <div id="cpu_sharing">
-                                            <select id="watchdog_action" style={{ width: '63%' }}>
-                                                <option value="없음">비활성화됨</option>
-                                            </select>
-                                            <input type="text" value="0" disabled />
-                                        </div>
+                                </div>
+                                <div className='cpu_res_box'>
+                                    <span>CPU Pinning Policy</span>
+                                    <select id="watchdog_action">
+                                        <option value="없음">None</option>
+                                    </select>
+                                </div>
+                                <div className='cpu_res_box'>
+                                    <div>
+                                        <span>CPU 피닝 토폴로지</span>
+                                        <i className="fa fa-info-circle"></i>
                                     </div>
-                                    <div className='cpu_res_box'>
-                                        <span>CPU Pinning Policy</span>
-                                        <select id="watchdog_action">
-                                            <option value="없음">None</option>
+                                    <input type="text" disabled />
+                                </div>
+                            </div>
+
+                            <span style={{ fontWeight: 600 }}>메모리 할당:</span>
+                            <div id="threads">
+                                <div className='checkbox_group'>
+                                    <input type="checkbox" id="enableIOThreads" name="enableIOThreads" />
+                                    <label htmlFor="enableIOThreads">메모리 Balloon 활성화</label>
+                                </div>
+                            
+                            </div>
+
+                            <span style={{ fontWeight: 600 }}>I/O 스레드:</span>
+                            <div id="threads">
+                                <div className='checkbox_group'>
+                                    <input type="checkbox" id="enableIOThreads" name="enableIOThreads" />
+                                    <label htmlFor="enableIOThreads">I/O 스레드 활성화</label>
+                                </div>
+                                <div>
+                                    <input type="text" />
+                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/>
+                                </div>
+                            </div>
+
+                            <span className='mb-1' style={{ fontWeight: 600 }}>큐:</span>
+                            
+                                <div className='checkbox_group mb-1'>
+                                    <input type="checkbox" id="enable_multi_queues" name="enable_multi_queues" />
+                                    <label htmlFor="enable_multi_queues">멀티 큐 사용</label>
+                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                </div>
+                                <div className='checkbox_group mb-1'>
+                                    <input type="checkbox" id="enable_virtio_scsi" name="enable_virtio_scsi" />
+                                    <label htmlFor="enable_virtio_scsi">VirtIO-SCSI 활성화</label>
+                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                </div>
+                                <div className='cpu_res_box mb-1' >
+                                    <span>VirtIO-SCSI Multi Queues</span>
+                                    <div id="cpu_sharing">
+                                        <select id="multi_queue_status" style={{ width: '63%' }}>
+                                            <option value="없음">비활성화됨</option>
                                         </select>
+                                        <input type="text" value="0" disabled />
                                     </div>
-                                    <div className='cpu_res_box'>
-                                        <div>
-                                            <span>CPU 피닝 토폴로지</span>
-                                            <i className="fa fa-info-circle"></i>
-                                        </div>
+                                </div>
+                                
+                        </div>
+                    </div>
+
+                    {/* 부트 옵션 */}
+                    <div id="boot_outer" style={{ display: activeSection === 'boot_outer' ? 'block' : 'none' }}>
+                        <div className="res_second_content">
+                            <div className="cpu_res">
+                                <span style={{ fontWeight: 600 }}>부트순서:</span>
+                                <div className='cpu_res_box'>
+                                    <span>첫 번째 장치</span>
+                                    <select id="watchdog_action">
+                                        <option value="없음">하드디스크</option>
+                                    </select>
+                                </div>
+                                <div className='cpu_res_box'>
+                                    <span>두 번째 장치</span>
+                                    <select id="watchdog_action">
+                                        <option value="없음">Default</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="boot_checkboxs">
+                                <div>
+                                    <div className='checkbox_group'>
+                                        <input type="checkbox" id="connectCdDvd" name="connectCdDvd" />
+                                        <label htmlFor="connectCdDvd">CD/DVD 연결</label>
+                                    </div>
+                                    <div>
                                         <input type="text" disabled />
-                                    </div>
-                                </div>
-
-                                <span style={{ fontWeight: 600 }}>메모리 할당:</span>
-                                <div id="threads">
-                                    <div className='checkbox_group'>
-                                        <input type="checkbox" id="enableIOThreads" name="enableIOThreads" />
-                                        <label htmlFor="enableIOThreads">메모리 Balloon 활성화</label>
-                                    </div>
-                                
-                                </div>
-
-                                <span style={{ fontWeight: 600 }}>I/O 스레드:</span>
-                                <div id="threads">
-                                    <div className='checkbox_group'>
-                                        <input type="checkbox" id="enableIOThreads" name="enableIOThreads" />
-                                        <label htmlFor="enableIOThreads">I/O 스레드 활성화</label>
-                                    </div>
-                                    <div>
-                                        <input type="text" />
-                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/>
-                                    </div>
-                                </div>
-
-                                <span className='mb-1' style={{ fontWeight: 600 }}>큐:</span>
-                                
-                                    <div className='checkbox_group mb-1'>
-                                        <input type="checkbox" id="enable_multi_queues" name="enable_multi_queues" />
-                                        <label htmlFor="enable_multi_queues">멀티 큐 사용</label>
                                         <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
                                     </div>
-                                    <div className='checkbox_group mb-1'>
-                                        <input type="checkbox" id="enable_virtio_scsi" name="enable_virtio_scsi" />
-                                        <label htmlFor="enable_virtio_scsi">VirtIO-SCSI 활성화</label>
-                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
-                                    </div>
-                                    <div className='cpu_res_box mb-1' >
-                                        <span>VirtIO-SCSI Multi Queues</span>
-                                        <div id="cpu_sharing">
-                                            <select id="multi_queue_status" style={{ width: '63%' }}>
-                                                <option value="없음">비활성화됨</option>
-                                            </select>
-                                            <input type="text" value="0" disabled />
-                                        </div>
-                                    </div>
-                                    
+                                </div>
+
+                                <div className='checkbox_group mb-1.5'>
+                                    <input type="checkbox" id="enableBootMenu" name="enableBootMenu" />
+                                    <label htmlFor="enableBootMenu">부팅 메뉴를 활성화</label>
+                                </div>
                             </div>
-                        </div>
 
-                        {/* 부트 옵션 */}
-                        <div id="boot_outer" style={{ display: activeSection === 'boot_outer' ? 'block' : 'none' }}>
-                            <div className="res_second_content">
-                                <div className="cpu_res">
-                                    <span style={{ fontWeight: 600 }}>부트순서:</span>
-                                    <div className='cpu_res_box'>
-                                        <span>첫 번째 장치</span>
-                                        <select id="watchdog_action">
-                                            <option value="없음">하드디스크</option>
-                                        </select>
-                                    </div>
-                                    <div className='cpu_res_box'>
-                                        <span>두 번째 장치</span>
-                                        <select id="watchdog_action">
-                                            <option value="없음">Default</option>
-                                        </select>
-                                    </div>
+                            <div className="cpu_res border-t border-gray-500 py-1">
+                                <span style={{ fontWeight: 600 }}>Linux 부팅 옵션:</span>
+                                <div className='cpu_res_box'>
+                                    <label htmlFor="kernel_path">커널 경로</label>
+                                    <input type="text" id="kernel_path" value="2048 MB" readOnly />
                                 </div>
 
-                                <div id="boot_checkboxs">
-                                    <div>
-                                        <div className='checkbox_group'>
-                                            <input type="checkbox" id="connectCdDvd" name="connectCdDvd" />
-                                            <label htmlFor="connectCdDvd">CD/DVD 연결</label>
-                                        </div>
-                                        <div>
-                                            <input type="text" disabled />
-                                            <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
-                                        </div>
-                                    </div>
-
-                                    <div className='checkbox_group mb-1.5'>
-                                        <input type="checkbox" id="enableBootMenu" name="enableBootMenu" />
-                                        <label htmlFor="enableBootMenu">부팅 메뉴를 활성화</label>
-                                    </div>
+                                <div className='cpu_res_box'>
+                                    <label htmlFor="initrd_path">initrd 경로</label>
+                                    <input type="text" id="initrd_path" value="2048 MB" readOnly />
                                 </div>
 
-                                <div className="cpu_res border-t border-gray-500 py-1">
-                                    <span style={{ fontWeight: 600 }}>Linux 부팅 옵션:</span>
-                                    <div className='cpu_res_box'>
-                                        <label htmlFor="kernel_path">커널 경로</label>
-                                        <input type="text" id="kernel_path" value="2048 MB" readOnly />
-                                    </div>
-
-                                    <div className='cpu_res_box'>
-                                        <label htmlFor="initrd_path">initrd 경로</label>
-                                        <input type="text" id="initrd_path" value="2048 MB" readOnly />
-                                    </div>
-
-                                    <div className='cpu_res_box'>
-                                        <label htmlFor="kernel_parameters">커널 매개 변수</label>
-                                        <input type="text" id="kernel_parameters" value="2048 MB" readOnly />
-                                    </div>
-
-
+                                <div className='cpu_res_box'>
+                                    <label htmlFor="kernel_parameters">커널 매개 변수</label>
+                                    <input type="text" id="kernel_parameters" value="2048 MB" readOnly />
                                 </div>
-                                
+
+
                             </div>
+                            
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
+            </div>
 
                 <div className="edit_footer">
                     <button>OK</button>
@@ -1236,8 +1237,8 @@ const AllVm = () => {
             </Modal>
 )}
 
-{/*삭제 팝업 */}
-<Modal
+            {/*삭제 팝업 */}
+            <Modal
         isOpen={activePopup === 'delete'}
         onRequestClose={closeModal}
         contentLabel="디스크 업로드"
@@ -1266,6 +1267,69 @@ const AllVm = () => {
           </div>
         </div>
             </Modal>
+
+             {/* 설정팝업 시스템권한(추가 팝업) */}
+             <Modal
+                        isOpen={activePopup === 'addSystemRole'}
+                        onRequestClose={closeModal}
+                        contentLabel="추가"
+                        className="Modal"
+                        overlayClassName="Overlay newRolePopupOverlay"
+                        shouldCloseOnOverlayClick={false}
+                    >
+                        <div className="setting_system_new_popup">
+                            <div className="popup_header">
+                                <h1>사용자에게 권한 추가</h1>
+                                <button onClick={closeModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                            </div>
+
+                            <div className="power_radio_group">
+                                <input type="radio" id="user" name="option" defaultChecked />
+                                <label htmlFor="user">사용자</label>
+                                
+                                <input type="radio" id="group" name="option" />
+                                <label htmlFor="group">그룹</label>
+                            </div>
+
+                            <div className="power_contents_outer">
+                                <div>
+                                    <label htmlFor="cluster">검색:</label>
+                                    <select id="cluster">
+                                        <option value="default">Default</option>   
+                                    </select>
+                                </div>
+                                <div>
+                                    <label htmlFor="cluster">네임스페이스:</label>
+                                    <select id="cluster">
+                                        <option value="default">Default</option>   
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style={{ color: "white" }}>.</label>
+                                    <input type="text" id="name" value="test02" />
+                                </div>
+                                <div>
+                                    <div style={{ color: "white" }}>.</div>
+                                    <input type="submit" value="검색" />
+                                </div>
+                            </div>
+
+                           
+
+                            <div className="power_last_content" style={{ padding: "0.1rem 0.3rem" }}>
+                                <label htmlFor="cluster">할당된 역할:</label>
+                                <select id="cluster" style={{ width: "65%" }}>
+                                    <option value="default">UserRole</option>   
+                                </select>
+                            </div>
+
+                            <div className="edit_footer">
+                                <button style={{ display: "none" }}></button>
+                                <button>OK</button>
+                                <button onClick={closeModal}>취소</button>
+                            </div>
+                        </div>
+                    </Modal>
               {/* 마이그레이션 팝업(default) */}
               {/* {activePopup === 'migration' && (
         <Modal

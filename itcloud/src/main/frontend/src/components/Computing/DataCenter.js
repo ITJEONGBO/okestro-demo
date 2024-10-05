@@ -562,6 +562,7 @@ const handleTabClickModal = (tab) => {
                     <button onClick={() =>handleCloseModal('cluster_new')}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                 </div>
 
+                <div className='flex'>
                 <div className="network_new_nav">
                 <div
               id="cluster_common_btn"
@@ -803,7 +804,7 @@ const handleTabClickModal = (tab) => {
                     </form>
                   
                 )}
-
+                </div>
                 
                 <div className="edit_footer">
                     <button style={{ display: 'none' }}></button>

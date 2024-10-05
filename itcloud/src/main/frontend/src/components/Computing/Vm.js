@@ -41,12 +41,15 @@ const Vm = () => {
   const [selectedPopupTab, setSelectedPopupTab] = useState('cluster_common_btn');
   const openPopup = (popupType) => {
     setActivePopup(popupType);
-    setSelectedPopupTab('cluster_common_btn'); // 모달을 열 때마다 '일반' 탭을 기본으로 설정
-};
+    setActiveSection('common_outer'); // 팝업을 열 때 '일반' 섹션을 기본으로 설정
+    setIsModalOpen(true); // 팝업 열기
+  };
 const [activePopup, setActivePopup] = useState(null);
 const closePopup = () => {
     setActivePopup(null);
-};
+    setActiveSection('common_outer'); // 팝업을 닫을 때도 상태 초기화
+    setIsModalOpen(false); // 팝업 닫기
+  };
 const handleTabClickModal = (tab) => {
     setSelectedTab(tab);
 };

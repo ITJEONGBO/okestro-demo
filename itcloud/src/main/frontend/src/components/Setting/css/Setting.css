@@ -125,12 +125,13 @@
   display:flex;
 }
   /*설정(설정->시스템권한)*/
+#setting_part_form,
 #setting_system_form,
 #setting_schedule_form,
 #setting_instant_form,
 #setting_mac_form
 {
-  padding-top: 1rem;
+  padding: 1rem 0.4rem;
 }
 #setting_system_form tbody td:first-child,
 #setting_schedule_form tbody td:first-child,
@@ -257,6 +258,7 @@
   /*설정(설정->MAC주소 풀)*/
 #setting_mac_form .setting_part_table_outer{
   height: 27vh;
+  border:1px solid gray;
 }
   /*설정(설정->MAC주소 풀->새로만들기)팝업*/
 .setting_mac_new_outer{

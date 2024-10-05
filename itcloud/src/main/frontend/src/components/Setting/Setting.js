@@ -264,7 +264,8 @@ const Setting = ({ }) => {
                              <h1>설정</h1>
                              <button onClick={closeSettingPopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                          </div>
-         
+
+                    <div className='flex'>
                          <div className="network_new_nav">
                              <div id="setting_part_btn" className={activeSettingForm === 'part' ? 'active' : ''} onClick={() => handleSettingNavClick('part')}>역할</div>
                              <div id="setting_system_btn" className={activeSettingForm === 'system' ? 'active' : ''} onClick={() => handleSettingNavClick('system')}>시스템 권한</div>
@@ -398,7 +399,7 @@ const Setting = ({ }) => {
                                  </div>
                              </form>
                          )}
-         
+                    </div>
                          <div className="edit_footer">
                              <button style={{ display: 'none' }} onClick={closeSettingPopup}></button>
                              <button>OK</button>

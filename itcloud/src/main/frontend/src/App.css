@@ -30,6 +30,9 @@ button{
     cursor:pointer;
     border-radius: 3px;
     padding: 0 0.1rem;
+    display: flex;
+    align-items: center; /* 수직 가운데 정렬 추가 */
+    cursor:pointer;
 }
 form{
     width: 100%;
@@ -109,13 +112,10 @@ form>div{
     margin-right: 0.2rem;
     font-size: 0.4rem;
     padding: 0.1rem 0.1rem;
-    cursor: pointer;
     font-size: 0.3rem;
     font-weight: 600;
     border-radius: 3px;
-    border: 1px solid #14417c;
-    border-radius: 3px;
-    color: rgb(10, 55, 107);
+
     background: white;
 }
 .content_header_right  i{
@@ -399,7 +399,7 @@ form>div{
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 88%;
+    height: 82.4%;
     width: 48%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -407,19 +407,21 @@ form>div{
 }
 
 .network_new_nav{
-    display: flex;
+
     justify-content: space-between;
     border-bottom: 1px solid rgb(206, 206, 206);
-    height: 6%;
+    height: 75vh;
+    width: 30%;
+    border-right:1px solid gray;
 }
 .network_new_nav>div{
     font-weight: 800;
     text-align: center;
     font-size: 0.33rem;
-    width: 34%;
+    width: 100%;
     cursor: pointer;
     padding: 0.25rem;
-    border-right: 1px solid rgb(206, 206, 206);
+
 }
 .active{
     color: #449bff;
@@ -481,12 +483,7 @@ form>div{
     display: flex;
     width: 6%;
 }
-.network_checkbox_type3 button,#network_new_vnic_form button{
-    width: 50%;
-    font-size: 0.4rem;
-    font-weight: 600;
-    cursor: pointer;
-}
+
 .network_new_popup form{
     height: 69vh;
     overflow-y: auto; /* 세로 스크롤 추가 */
@@ -626,9 +623,10 @@ input[type="text"]:focus {
 }
  /*막힌 input*/
 .disabled {
-    cursor: not-allowed;
+    cursor: no-drop;
     color:gray;
-    pointer-events: none;
+
+    
 }
 .host_hidden_parameter>div:first-child{
     font-weight: 800;
@@ -818,6 +816,7 @@ input[type="text"]:focus {
     margin-bottom: 0.2rem;
     border-radius:3px;
     width: 54%;
+    display:flex;
 }
 .network_filter_btns>button{
     padding:0.06rem;
