@@ -298,7 +298,7 @@ class ItDiskServiceTest {
     @Throws(IOException::class)
     fun should_upload() {
         // test환경에서는 실패할 경우 있음
-        val path = "C:/Users/deh22/Documents/Rocky-8.4-x86_64-minimal.iso"
+        val path = "C:/Users/deh22/Documents/iso/Rocky-8.4-x86_64-minimal.iso"
 
         val file = File(path)
         val fileItem: FileItem = DiskFileItem(
@@ -314,27 +314,20 @@ class ItDiskServiceTest {
         IOUtils.copy(inputStream, outputStream)
         val multipartFile: MultipartFile = CommonsMultipartFile(fileItem)
 
-        val storageDomainVo = IdentifiedVo.builder {
-            id { domainId }
-        }
-//		val diskProfileVo = IdentifiedVo.builder {
-//			id { diskProfile }
-//		}
-
         val iVo =
             DiskImageVo.builder {
-                alias { "absc" }
+                alias { "as" }
                 description { "test" }
-                storageDomainVo { storageDomainVo }
-//				diskProfileVo { diskProfileVo }
-                sparse { false }
+                storageDomainVo { IdentifiedVo.builder { id { "213b1a0a-b0c0-4d10-95a4-7aafed4f76b9" } } }
+				diskProfileVo { IdentifiedVo.builder { id { "71ba3cf0-7062-4bff-9b36-e9141857d148" } } }
                 wipeAfterDelete { false }
                 sharable { false }
-                backup { false }
             }
 
         val result =
             service.upload(multipartFile, iVo)
+
+        assertThat(result, `is`(true))
     }
 
 

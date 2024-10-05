@@ -7,7 +7,6 @@ import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.services.*
 import org.ovirt.engine.sdk4.types.*
-import kotlin.math.E
 
 private fun Connection.srvVms(): VmsService =
 	this.systemService.vmsService()

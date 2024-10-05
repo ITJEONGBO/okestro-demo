@@ -4,11 +4,8 @@ import com.itinfo.util.ovirt.error.*
 
 import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.Connection
-import org.ovirt.engine.sdk4.services.AssignedVnicProfileService
-import org.ovirt.engine.sdk4.services.AssignedVnicProfilesService
 import org.ovirt.engine.sdk4.services.VnicProfileService
 import org.ovirt.engine.sdk4.services.VnicProfilesService
-import org.ovirt.engine.sdk4.types.DataCenter
 import org.ovirt.engine.sdk4.types.VnicProfile
 
 private fun Connection.srvVnicProfiles(): VnicProfilesService =

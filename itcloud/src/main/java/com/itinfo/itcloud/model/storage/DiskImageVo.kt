@@ -255,12 +255,25 @@ fun DiskImageVo.toEditDiskBuilder(): Disk =
 		.provisionedSize((this@toEditDiskBuilder.size + this@toEditDiskBuilder.appendSize).toLong() * 1024 * 1024 *1024 )
 		.build()
 
+/**
+ * 디스크 업로드
+ * ISO 이미지 업로드용
+ * (화면표시) 파일 선택시 파일에 있는 포맷, 컨텐츠(파일 확장자로 칭하는건지), 크기 출력
+ * 	파일 크기가 자동으로 디스크 옵션에 추가, 파일 명칭이 파일의 이름으로 지정됨 (+설명)
+ * 	디스크 이미지 업로드
+ *  required: provisioned_size, alias, description, wipe_after_delete, shareable, backup, disk_profile.
+ *
+ */
 fun DiskImageVo.toUploadDiskBuilder(fileSize: Long): Disk =
-	this@toUploadDiskBuilder.toDiskBuilder()
+	DiskBuilder()
+		.contentType(DiskContentType.ISO)
 		.provisionedSize(fileSize)
+		.alias(this@toUploadDiskBuilder.alias)
+		.description(this@toUploadDiskBuilder.description)
+		.storageDomains(*arrayOf(StorageDomainBuilder().id(this@toUploadDiskBuilder.storageDomainVo.id)))
+		.diskProfile(DiskProfileBuilder().id(this@toUploadDiskBuilder.diskProfileVo.id))
+		.shareable(this@toUploadDiskBuilder.sharable)
+		.wipeAfterDelete(this@toUploadDiskBuilder.wipeAfterDelete)
 		.backup(DiskBackup.NONE) // 증분백업 되지 않음
 		.format(DiskFormat.RAW) // 이미지 업로드는 raw 형식만 가능 +front 처리?
-		.contentType(DiskContentType.ISO) // iso 업로드
 		.build()
-
-

@@ -8,7 +8,6 @@ import org.ovirt.engine.sdk4.builders.DataCenterBuilder
 import org.ovirt.engine.sdk4.services.OpenstackNetworkProviderService
 import org.ovirt.engine.sdk4.services.OpenstackNetworkProvidersService
 import org.ovirt.engine.sdk4.services.OpenstackNetworkService
-import org.ovirt.engine.sdk4.types.Network
 import org.ovirt.engine.sdk4.types.OpenStackNetwork
 import org.ovirt.engine.sdk4.types.OpenStackNetworkProvider
 

@@ -165,53 +165,20 @@ fun Connection.refreshLunDisk(diskId: String, hostId: String): Result<Boolean> =
 	this.srvDisk(diskId).refreshLun().host(host).send()
 	true
 }.onSuccess {
-	Term.DISK.logSuccess("refresh Lun")
+	Term.DISK.logSuccess("Lun 새로고침")
 }.onFailure {
-	Term.DISK.logFail("refresh Lun")
-	throw if (it is Error) it.toItCloudException() else it
-}
-
-private fun Connection.srvAllImageTransfer(): ImageTransfersService =
-	systemService.imageTransfersService()
-
-private fun Connection.findAllImageTransfers(): Result<List<ImageTransfer>> = runCatching {
-	this.srvAllImageTransfer().list().send().imageTransfer()
-}.onSuccess {
-	Term.IMAGE_TRANSFER.logSuccess("목록조회")
-}.onFailure {
-	Term.IMAGE_TRANSFER.logFail("목록조회")
+	Term.DISK.logFail("Lun 새로고침")
 	throw if (it is Error) it.toItCloudException() else it
 }
 
 
-private fun Connection.srvImageTransfer(imageId: String): ImageTransferService =
-	this.srvAllImageTransfer().imageTransferService(imageId)
-
-private fun Connection.findImageTransfer(imageId: String): Result<ImageTransfer?> = runCatching {
-	this.srvImageTransfer(imageId).get().send().imageTransfer()
-}.onSuccess {
-	Term.IMAGE_TRANSFER.logSuccess("상세조회")
-}.onFailure {
-	Term.IMAGE_TRANSFER.logFail("상세조회")
-	throw if (it is Error) it.toItCloudException() else it
-}
-
-private fun Connection.addImageTransfer(imageTransferContainer: ImageTransferContainer): Result<ImageTransfer?> = runCatching {
-	this.srvAllImageTransfer().add().imageTransfer(imageTransferContainer).send().imageTransfer()
-}.onSuccess {
-	Term.IMAGE_TRANSFER.logSuccess("업로드")
-}.onFailure {
-	Term.IMAGE_TRANSFER.logFail("업로드")
-	throw if (it is Error) it.toItCloudException() else it
-}
-
-fun Connection.uploadDisk(/*file: MultipartFile?, */disk: Disk): Result<Boolean> = runCatching {
+fun Connection.uploadSetDisk(disk: Disk): Result<String> = runCatching {
 	// 디스크 생성
 	val diskUpload: Disk =
 		this.addDisk(disk)
 			.getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
 
-	this.expectDiskStatus(diskUpload.id())
+	this.expectDiskStatus(diskUpload.id()) // 디스크 ok 상태 -> 이미지 업로드 가능
 
 	val imageContainer = ImageContainer()
 	imageContainer.id(diskUpload.id())
@@ -229,14 +196,48 @@ fun Connection.uploadDisk(/*file: MultipartFile?, */disk: Disk): Result<Boolean>
 		Thread.sleep(1000)
 	}
 
-	val transferUrl = imageTransfer.transferUrl()
-	if(transferUrl != null) this.srvImageTransfer(imageTransfer.id()) // imageSend
-	else throw ErrorPattern.OVIRTUSER_REQUIRED_VALUE_EMPTY.toError()
-	true
+	if(imageTransfer.transferUrl().isNullOrEmpty())
+		throw ErrorPattern.OVIRTUSER_REQUIRED_VALUE_EMPTY.toError()
+	else
+		imageTransfer.id()
 }.onSuccess {
-	Term.DISK.logSuccess("파일 업로드")
+	Term.DISK.logSuccess("파일 업로드 준비완")
 }.onFailure {
-	Term.DISK.logFail("파일 업로드")
+	Term.DISK.logFail("파일 업로드 준비X")
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+
+private fun Connection.srvAllImageTransfer(): ImageTransfersService =
+	systemService.imageTransfersService()
+
+private fun Connection.findAllImageTransfers(): Result<List<ImageTransfer>> = runCatching {
+	this.srvAllImageTransfer().list().send().imageTransfer()
+}.onSuccess {
+	Term.IMAGE_TRANSFER.logSuccess("목록조회")
+}.onFailure {
+	Term.IMAGE_TRANSFER.logFail("목록조회")
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.srvImageTransfer(imageId: String): ImageTransferService =
+	this.srvAllImageTransfer().imageTransferService(imageId)
+
+private fun Connection.findImageTransfer(imageId: String): Result<ImageTransfer?> = runCatching {
+	this.srvImageTransfer(imageId).get().send().imageTransfer()
+}.onSuccess {
+	Term.IMAGE_TRANSFER.logSuccess("상세조회")
+}.onFailure {
+	Term.IMAGE_TRANSFER.logFail("상세조회")
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+private fun Connection.addImageTransfer(imageTransferContainer: ImageTransferContainer): Result<ImageTransfer?> = runCatching {
+	this.srvAllImageTransfer().add().imageTransfer(imageTransferContainer).send().imageTransfer()
+}.onSuccess {
+	Term.IMAGE_TRANSFER.logSuccess("업로드")
+}.onFailure {
+	Term.IMAGE_TRANSFER.logFail("업로드")
 	throw if (it is Error) it.toItCloudException() else it
 }
 
