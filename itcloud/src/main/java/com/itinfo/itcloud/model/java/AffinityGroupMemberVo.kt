@@ -1,10 +1,14 @@
-package com.itinfo.itcloud.model.computing;
+package com.itinfo.itcloud.model.java;
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.fromHostsToIdentifiedVos
 import com.itinfo.itcloud.model.fromVmsToIdentifiedVos
 import com.itinfo.itcloud.gson
+import com.itinfo.itcloud.model.computing.HostVo
+import com.itinfo.itcloud.model.computing.VmVo
+import com.itinfo.itcloud.model.computing.toHostIdName
+import com.itinfo.itcloud.model.computing.toVmIdName
 
 import com.itinfo.util.ovirt.findAllHostsFromAffinityLabel
 import com.itinfo.util.ovirt.findAllVmsFromAffinityLabel
@@ -43,7 +47,7 @@ class AffinityGroupMemberVo(
 
 	companion object {
 		private val log by LoggerDelegate()
-		inline fun builder(block: AffinityGroupMemberVo.Builder.() -> Unit): AffinityGroupMemberVo = AffinityGroupMemberVo.Builder().apply(block).build()
+		inline fun builder(block: Builder.() -> Unit): AffinityGroupMemberVo = Builder().apply(block).build()
 	}
 }
 

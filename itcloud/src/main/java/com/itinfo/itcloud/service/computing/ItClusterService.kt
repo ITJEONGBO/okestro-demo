@@ -6,8 +6,8 @@ import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
-import com.itinfo.itcloud.repository.VmInterfaceSamplesHistoryRepository
-import com.itinfo.itcloud.repository.VmSamplesHistoryRepository
+import com.itinfo.itcloud.repository.history.VmInterfaceSamplesHistoryRepository
+import com.itinfo.itcloud.repository.history.VmSamplesHistoryRepository
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.itcloud.service.network.ItNetworkService
 import com.itinfo.util.ovirt.*

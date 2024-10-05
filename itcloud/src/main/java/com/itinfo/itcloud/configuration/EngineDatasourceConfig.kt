@@ -1,6 +1,7 @@
 package com.itinfo.itcloud.configuration
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.configuration.HistoryDatasourceConfig.Companion
 import com.zaxxer.hikari.HikariDataSource
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
 
@@ -15,6 +16,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
 
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import org.springframework.jdbc.core.JdbcTemplate
 
 import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
@@ -30,11 +32,35 @@ import javax.sql.DataSource
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-	basePackages=["com.itinfo.itcloud.dao.engine"],
+	basePackages=["com.itinfo.itcloud.repository.engine"],
 	entityManagerFactoryRef = "engineEntityManager",
 	transactionManagerRef = "engineTransactionManager"
 )
 class EngineDatasourceConfig {
+
+	@Bean(name=["engineEntityManager"])
+	fun engineEntityManager(builder: EntityManagerFactoryBuilder): LocalContainerEntityManagerFactoryBean {
+		return builder.dataSource(engineDataSource())
+			.packages("com.itinfo.itcloud.repository.engine.entity")
+			.build().apply {
+				setJpaProperties(Properties().apply {
+					put("hibernate.physical_naming_strategy", CamelCaseToUnderscoresNamingStrategy::class.java.canonicalName)
+				})
+			}
+	}
+
+	@Bean
+	fun engineTransactionManager(
+		@Qualifier("engineEntityManager") entityManagerFactoryBean: LocalContainerEntityManagerFactoryBean
+	): PlatformTransactionManager {
+		return JpaTransactionManager(entityManagerFactoryBean.getObject()!!)
+	}
+
+	@Bean
+	fun engineJdbcTemplate(): JdbcTemplate {
+		log.debug("... engineJdbcTemplate")
+		return JdbcTemplate(engineDataSource())
+	}
 
 	@Bean
 	@Primary
@@ -52,31 +78,7 @@ class EngineDatasourceConfig {
 			.initializeDataSourceBuilder()
 			.type(HikariDataSource::class.java)
 			.build()
-//			.driverClassName("org.postgresql.Driver")
-//			.url("jdbc:postgresql://192.168.0.80:5432/engine")
-//			.username("okestro")
-//			.password("okestro2018")
-//			.build()
 	}
-
-	@Bean(name=["engineEntityManager"])
-	fun engineEntityManager(builder: EntityManagerFactoryBuilder): LocalContainerEntityManagerFactoryBean {
-		return builder.dataSource(engineDataSource())
-			.packages("com.itinfo.dao.engine")
-			.build().apply {
-				setJpaProperties(Properties().apply {
-					put("hibernate.physical_naming_strategy", CamelCaseToUnderscoresNamingStrategy::class.java.canonicalName)
-				})
-			}
-	}
-
-	@Bean
-	fun engineTransactionManager(
-		@Qualifier("engineEntityManager") entityManagerFactoryBean: LocalContainerEntityManagerFactoryBean
-	): PlatformTransactionManager {
-		return JpaTransactionManager(entityManagerFactoryBean.getObject()!!)
-	}
-
 
 	companion object {
 		private val log by LoggerDelegate()

@@ -3,13 +3,12 @@ package com.itinfo.itcloud.service.computing
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.computing.DashBoardVo
 import com.itinfo.itcloud.model.computing.toDashboardVo
-import com.itinfo.itcloud.repository.*
-import com.itinfo.itcloud.repository.dto.*
-import com.itinfo.itcloud.repository.entity.*
+import com.itinfo.itcloud.repository.history.*
+import com.itinfo.itcloud.repository.history.dto.*
+import com.itinfo.itcloud.repository.history.entity.*
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.findAllHosts
 import com.itinfo.util.ovirt.findAllStorageDomains
-import org.ovirt.engine.sdk4.services.ClusterService
 import org.ovirt.engine.sdk4.types.Host
 import org.ovirt.engine.sdk4.types.StorageDomain
 import org.springframework.beans.factory.annotation.Autowired

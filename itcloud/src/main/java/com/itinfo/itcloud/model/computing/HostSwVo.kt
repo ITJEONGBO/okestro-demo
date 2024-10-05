@@ -2,8 +2,8 @@ package com.itinfo.itcloud.model.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.gson
-import com.itinfo.itcloud.repository.entity.HostConfigurationEntity
-import com.itinfo.itcloud.repository.entity.toHostSwVo
+import com.itinfo.itcloud.repository.history.entity.HostConfigurationEntity
+import com.itinfo.itcloud.repository.history.entity.toHostSwVo
 import org.ovirt.engine.sdk4.types.Host
 import org.slf4j.LoggerFactory
 import java.io.Serializable

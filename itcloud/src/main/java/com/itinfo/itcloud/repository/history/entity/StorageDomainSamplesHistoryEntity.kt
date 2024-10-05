@@ -1,7 +1,7 @@
-package com.itinfo.itcloud.repository.entity
+package com.itinfo.itcloud.repository.history.entity
 
 import com.itinfo.itcloud.gson
-import com.itinfo.itcloud.repository.dto.StorageUsageDto
+import com.itinfo.itcloud.repository.history.dto.StorageUsageDto
 import org.hibernate.annotations.Type
 import org.slf4j.LoggerFactory
 import java.io.Serializable

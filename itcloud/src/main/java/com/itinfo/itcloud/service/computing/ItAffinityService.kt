@@ -4,9 +4,9 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.*
 import com.itinfo.itcloud.model.computing.*
+import com.itinfo.itcloud.model.java.*
 import com.itinfo.itcloud.model.response.Res
 import com.itinfo.itcloud.service.BaseService
-import com.itinfo.itcloud.service.computing.VmServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.Error

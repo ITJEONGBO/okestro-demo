@@ -1,11 +1,11 @@
-package com.itinfo.itcloud.repository.dto
+package com.itinfo.itcloud.repository.history.dto
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.gson
-import com.itinfo.itcloud.repository.entity.HostSamplesHistoryEntity
-import com.itinfo.itcloud.repository.entity.StorageDomainSamplesHistoryEntity
-import com.itinfo.itcloud.repository.entity.VmSamplesHistoryEntity
+import com.itinfo.itcloud.repository.history.entity.HostSamplesHistoryEntity
+import com.itinfo.itcloud.repository.history.entity.StorageDomainSamplesHistoryEntity
+import com.itinfo.itcloud.repository.history.entity.VmSamplesHistoryEntity
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.util.ovirt.findHost
 import com.itinfo.util.ovirt.findStorageDomain
@@ -50,7 +50,7 @@ class UsageDto (
     }
 }
 
-fun VmSamplesHistoryEntity.toVmCpuUsageDto(conn: Connection): UsageDto {
+fun com.itinfo.itcloud.repository.history.entity.VmSamplesHistoryEntity.toVmCpuUsageDto(conn: Connection): UsageDto {
     val vm: Vm =
         conn.findVm(this@toVmCpuUsageDto.vmId.toString())
             .getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toException()
@@ -60,10 +60,10 @@ fun VmSamplesHistoryEntity.toVmCpuUsageDto(conn: Connection): UsageDto {
     }
 }
 
-fun List<VmSamplesHistoryEntity>.toVmCpuUsageDtos(conn: Connection): List<UsageDto> =
+fun List<com.itinfo.itcloud.repository.history.entity.VmSamplesHistoryEntity>.toVmCpuUsageDtos(conn: Connection): List<UsageDto> =
     this@toVmCpuUsageDtos.map { it.toVmCpuUsageDto(conn) }
 
-fun VmSamplesHistoryEntity.toVmMemUsageDto(conn: Connection): UsageDto? {
+fun com.itinfo.itcloud.repository.history.entity.VmSamplesHistoryEntity.toVmMemUsageDto(conn: Connection): UsageDto? {
     val vm: Vm =
         conn.findVm(this@toVmMemUsageDto.vmId.toString()).getOrNull() ?: return null
     return UsageDto.builder {
@@ -72,7 +72,7 @@ fun VmSamplesHistoryEntity.toVmMemUsageDto(conn: Connection): UsageDto? {
     }
 }
 
-fun List<VmSamplesHistoryEntity>.toVmMemUsageDtos(conn: Connection): List<UsageDto?> =
+fun List<com.itinfo.itcloud.repository.history.entity.VmSamplesHistoryEntity>.toVmMemUsageDtos(conn: Connection): List<UsageDto?> =
     this@toVmMemUsageDtos.map { it.toVmMemUsageDto(conn) }
 
 fun StorageDomainSamplesHistoryEntity.toStorageChart(conn: Connection): UsageDto {

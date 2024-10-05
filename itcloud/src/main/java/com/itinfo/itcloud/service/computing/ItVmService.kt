@@ -8,6 +8,8 @@ import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.model.storage.*
+import com.itinfo.itcloud.repository.engine.DiskVmElementRepository
+import com.itinfo.itcloud.repository.engine.entity.DiskVmElementEntity
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.itcloud.service.computing.HostServiceImpl.Companion
 import com.itinfo.util.ovirt.*
@@ -15,7 +17,9 @@ import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.types.*
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.util.*
 import kotlin.Error
 
 interface ItVmService {
@@ -152,6 +156,8 @@ interface ItVmService {
 class VmServiceImpl(
 
 ) : BaseService(), ItVmService {
+	@Autowired private lateinit var diskVmElementRepository: DiskVmElementRepository
+
 
 	@Throws(Error::class)
 	override fun findAll(): List<VmVo> {
@@ -189,7 +195,8 @@ class VmServiceImpl(
 					it.format() == DiskFormat.COW &&
 					!attDiskIds.contains(it.id())
 				}
-		return res.toDiskImageVos(conn)
+		return res.toDiskIdNames()
+//		return res.toDiskMenus(conn)
 	}
 
 	@Throws(Error::class)

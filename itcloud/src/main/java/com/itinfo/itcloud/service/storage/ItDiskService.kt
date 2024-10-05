@@ -8,15 +8,19 @@ import com.itinfo.itcloud.model.response.Res
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.model.storage.*
+import com.itinfo.itcloud.repository.engine.DiskVmElementRepository
+import com.itinfo.itcloud.repository.engine.entity.DiskVmElementEntity
+import com.itinfo.itcloud.repository.engine.entity.toVmId
 import com.itinfo.itcloud.service.BaseService
-import com.itinfo.itcloud.service.storage.StorageServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.services.ImageTransferService
 import org.ovirt.engine.sdk4.types.*
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
+import java.util.*
 
 interface ItDiskService {
 
@@ -103,16 +107,16 @@ interface ItDiskService {
     @Throws(Error::class)
     fun remove(diskId: String): Boolean
     /**
-     * [ItDiskService.findAllStorageDomainsFromDisk]
+     * [ItDiskService.findAllStorageDomainsToMoveFromDisk]
      * 디스크 이동- 창
      * TODO 디스크 이동시 대상은 디스크가 가지고 있는 스토리지 도메인은 목록에서 제외
      * ItDiskService.findAllStorageDomainsFromDataCenter 에서 disk가 가지고있는 스토리지도메인은 제외
      *
      * @param diskId [String] 디스크 ID
-     * @return List<[StorageDomainVo]> 성공여부
+     * @return List<[StorageDomainVo]>
      */
     @Throws(Error::class)
-    fun findAllStorageDomainsFromDisk(diskId: String): List<StorageDomainVo>
+    fun findAllStorageDomainsToMoveFromDisk(diskId: String): List<StorageDomainVo>
     /**
      * [ItDiskService.move]
      * 디스크 이동
@@ -164,6 +168,15 @@ interface ItDiskService {
     @Throws(Error::class)
     fun findAllVmsFromDisk(diskId: String): List<VmVo>
     /**
+     * [ItDiskService.findAllStorageDomainsFromDisk]
+     * 스토리지도메인 - 스토리지
+     *
+     * @param diskId [String] 디스크 ID
+     * @return List<[StorageDomainVo]>
+     */
+    @Throws(Error::class)
+    fun findAllStorageDomainsFromDisk(diskId: String): List<StorageDomainVo>
+    /**
      * [ItDiskService.findAllPermissionsFromDisk]
      * 스토리지도메인 - 권한
      *
@@ -180,13 +193,24 @@ class DiskServiceImpl(
     
 ): BaseService(), ItDiskService {
 
+    @Autowired private lateinit var diskVmElementRepository: DiskVmElementRepository
+
     @Throws(Error::class)
     override fun findAll(): List<DiskImageVo> {
         log.info("findAll ... ")
         val res: List<Disk> =
             conn.findAllDisks()
                 .getOrDefault(listOf())
-        return res.toDiskImageVos(conn)
+
+        // 디스크 목록을 순회하며 VM 연결 정보를 추가
+        return res.map { disk ->
+            val diskVmElementEntityOpt: Optional<DiskVmElementEntity> =
+                diskVmElementRepository.findByDiskId(UUID.fromString(disk.id()))
+            val vmId: String =
+                diskVmElementEntityOpt.map { it.toVmId() }.orElse("")
+
+            disk.toDiskMenu(conn, vmId)
+        }
     }
 
     @Throws(Error::class)
@@ -195,7 +219,15 @@ class DiskServiceImpl(
         val res: List<Disk> =
             conn.findAllDisksFromStorageDomain(storageDomainId)
                 .getOrDefault(listOf())
-        return res.toDiskImageVos(conn)
+
+        return res.map { disk ->
+            val diskVmElementEntityOpt: Optional<DiskVmElementEntity> =
+                diskVmElementRepository.findByDiskId(UUID.fromString(disk.id()))
+            val vmId: String =
+                diskVmElementEntityOpt.map { it.toVmId() }.orElse("")
+
+            disk.toDiskMenu(conn, vmId)
+        }
     }
 
     @Throws(Error::class)
@@ -204,7 +236,7 @@ class DiskServiceImpl(
         val res: Disk? =
             conn.findDisk(diskId)
                 .getOrNull()
-        return res?.toDiskImageVo(conn)
+        return res?.toDiskInfo(conn)
     }
 
     @Throws(Error::class)
@@ -232,7 +264,7 @@ class DiskServiceImpl(
         val res: Disk? =
             conn.addDisk(image.toAddDiskBuilder())
                 .getOrNull()
-        return res?.toDiskImageVo(conn)
+        return res?.toDiskIdName()
     }
 
     @Throws(Error::class)
@@ -241,7 +273,7 @@ class DiskServiceImpl(
         val res: Disk? =
             conn.updateDisk(image.toEditDiskBuilder())
                 .getOrNull()
-        return res?.toDiskImageVo(conn)
+        return res?.toDiskIdName()
     }
 
     @Throws(Error::class)
@@ -253,12 +285,16 @@ class DiskServiceImpl(
     }
 
     @Throws(Error::class)
-    override fun findAllStorageDomainsFromDisk(diskId: String): List<StorageDomainVo> {
-        log.info("findAllStorageDomainsFromDisk ... diskId: $diskId")
+    override fun findAllStorageDomainsToMoveFromDisk(diskId: String): List<StorageDomainVo> {
+        log.info("findAllStorageDomainsToMoveFromDisk ... diskId: $diskId")
+        val disk: Disk =
+            conn.findDisk(diskId)
+                .getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toException()
         val res: List<StorageDomain> =
-            conn.findAllStorageDomainsFromDisk(diskId)
+            conn.findAllStorageDomains()
                 .getOrDefault(listOf())
-        return res.toStorageDomainVos(conn)
+                .filter { it.id() != disk.storageDomains().first().id() }
+        return res.toStorageDomainSizes()
     }
 
     @Throws(Error::class)
@@ -272,7 +308,8 @@ class DiskServiceImpl(
     @Throws(Error::class)
     override fun copy(diskImageVo: DiskImageVo): Boolean {
         log.info("copy ... diskName: ${diskImageVo.alias}")
-        // vm 연결대상이 있을 경우, 복사 불가능
+
+        // disk에 연결된 vm이 up이면 복사 불가능
         val res: Result<Boolean> =
             conn.copyDisk(
                 diskImageVo.id,
@@ -300,6 +337,9 @@ class DiskServiceImpl(
 
     override fun refreshLun(diskId: String, hostId: String): Boolean {
         log.info("refreshLun ... ")
+        val res: Result<Boolean> =
+            conn.refreshLunDisk(diskId, hostId)
+//        return res.issu
 
         TODO("Not yet implemented")
     }
@@ -314,7 +354,16 @@ class DiskServiceImpl(
         return res.toVmVoInfos(conn)
     }
 
-    @Deprecated("나중구현")
+    @Throws(Error::class)
+    override fun findAllStorageDomainsFromDisk(diskId: String): List<StorageDomainVo> {
+        log.info("findAllStorageDomainsFromDisk ... diskId: $diskId")
+        val res: List<StorageDomain> =
+            conn.findAllStorageDomainsFromDisk(diskId)
+                .getOrDefault(listOf())
+        return res.toStorageDomainsMenu(conn)
+    }
+
+    @Deprecated("")
     @Throws(Error::class)
     override fun findAllPermissionsFromDisk(diskId: String): List<PermissionVo> {
         log.info("findAllPermissionsFromDisk ... diskId: {}", diskId)

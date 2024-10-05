@@ -2,7 +2,7 @@ package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.computing.DashBoardVo
-import com.itinfo.itcloud.repository.dto.HostUsageDto
+import com.itinfo.itcloud.repository.history.dto.HostUsageDto
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.Test

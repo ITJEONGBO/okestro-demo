@@ -1,7 +1,7 @@
-package com.itinfo.itcloud.repository.entity
+package com.itinfo.itcloud.repository.history.entity
 
 import com.itinfo.itcloud.gson
-import com.itinfo.itcloud.repository.dto.UsageDto
+import com.itinfo.itcloud.repository.history.dto.UsageDto
 import org.hibernate.annotations.Type
 import org.slf4j.LoggerFactory
 import java.io.Serializable
@@ -95,11 +95,33 @@ class VmSamplesHistoryEntity(
 		private var bMemoryBufferedKb: BigInteger = BigInteger.ZERO;fun memoryBufferedKb(block: () -> BigInteger?) { bMemoryBufferedKb = block() ?: BigInteger.ZERO }
 		private var bMemoryCachedKb: BigInteger = BigInteger.ZERO;fun memoryCachedKb(block: () -> BigInteger?) { bMemoryCachedKb = block() ?: BigInteger.ZERO }
 		private var bSecondsInStatus: Int = -1;fun secondsInStatus(block: () -> Int?) { bSecondsInStatus = block() ?: -1 }
-		fun build(): VmSamplesHistoryEntity = VmSamplesHistoryEntity(bHistoryId, bHistoryDatetime, bVmId, bVmStatus, bCpuUsagePercent, bMemoryUsagePercent, bVmIp, bCurrentUserName, bCurrentlyRunningOnHost, bVmConfigurationVersion, bCurrentHostConfigurationVersion, bVmClientIp, bUserLoggedInToGuest, bUserCpuUsagePercent, bSystemCpuUsagePercent, bCurrentUserId, bMemoryBufferedKb, bMemoryCachedKb, bSecondsInStatus)
+		fun build(): VmSamplesHistoryEntity =
+			VmSamplesHistoryEntity(
+				bHistoryId,
+				bHistoryDatetime,
+				bVmId,
+				bVmStatus,
+				bCpuUsagePercent,
+				bMemoryUsagePercent,
+				bVmIp,
+				bCurrentUserName,
+				bCurrentlyRunningOnHost,
+				bVmConfigurationVersion,
+				bCurrentHostConfigurationVersion,
+				bVmClientIp,
+				bUserLoggedInToGuest,
+				bUserCpuUsagePercent,
+				bSystemCpuUsagePercent,
+				bCurrentUserId,
+				bMemoryBufferedKb,
+				bMemoryCachedKb,
+				bSecondsInStatus
+			)
 	}
 
 	companion object {
-		inline fun builder(block: VmSamplesHistoryEntity.Builder.() -> Unit): VmSamplesHistoryEntity = VmSamplesHistoryEntity.Builder().apply(block).build()
+		inline fun builder(block: Builder.() -> Unit): VmSamplesHistoryEntity = Builder()
+			.apply(block).build()
 	}
 }
 

@@ -1,19 +1,16 @@
-package com.itinfo.itcloud.repository.dto
+package com.itinfo.itcloud.repository.history.dto
 
 import com.itinfo.itcloud.GB
 import com.itinfo.itcloud.gson
-import com.itinfo.itcloud.repository.entity.HostSamplesHistoryEntity
+import com.itinfo.itcloud.repository.history.entity.HostSamplesHistoryEntity
 import com.itinfo.util.ovirt.findAllHosts
 import com.itinfo.util.ovirt.findAllStatisticsFromHost
 import com.itinfo.util.ovirt.findAllVms
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.types.Host
 import org.ovirt.engine.sdk4.types.Statistic
-import org.ovirt.engine.sdk4.types.Vm
 import org.ovirt.engine.sdk4.types.VmStatus
 import org.slf4j.LoggerFactory
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
 import java.io.Serializable
 import java.time.LocalDateTime
 

@@ -1,6 +1,6 @@
-package com.itinfo.itcloud.repository
+package com.itinfo.itcloud.repository.history
 
-import com.itinfo.itcloud.repository.entity.HostInterfaceSamplesHistoryEntity
+import com.itinfo.itcloud.repository.history.entity.HostInterfaceSamplesHistoryEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.util.UUID

@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.model.computing
+package com.itinfo.itcloud.model.java
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.gson
@@ -18,10 +18,10 @@ import java.io.Serializable
  * @property agMemberVo [AffinityGroupMemberVo]
  **/
 class AffinityLabelVo(
-	val id: String = "",
-	val name: String = "",
-	val clusterName: String = "",
-	val agMemberVo: AffinityGroupMemberVo = AffinityGroupMemberVo(),
+    val id: String = "",
+    val name: String = "",
+    val clusterName: String = "",
+    val agMemberVo: AffinityGroupMemberVo = AffinityGroupMemberVo(),
 ): Serializable {
 	override fun toString(): String =
 		gson.toJson(this)
@@ -36,16 +36,16 @@ class AffinityLabelVo(
 
 	companion object {
 		private val log by LoggerDelegate()
-		inline fun builder(block: AffinityLabelVo.Builder.() -> Unit): AffinityLabelVo = AffinityLabelVo.Builder().apply(block).build()
+		inline fun builder(block: Builder.() -> Unit): AffinityLabelVo = Builder().apply(block).build()
 	}
 }
 
 fun AffinityLabel.toAffinityLabelVo(conn: Connection): AffinityLabelVo = AffinityLabelVo.builder {
-	id { this@toAffinityLabelVo.id() }
-	name { this@toAffinityLabelVo.name() }
-	agMemberVo {
-		this@toAffinityLabelVo.toAffinityGroupMemberVo(conn)
-	}
+    id { this@toAffinityLabelVo.id() }
+    name { this@toAffinityLabelVo.name() }
+    agMemberVo {
+        this@toAffinityLabelVo.toAffinityGroupMemberVo(conn)
+    }
 }
 
 fun List<AffinityLabel>.toAffinityLabelVos(conn: Connection): List<AffinityLabelVo> =

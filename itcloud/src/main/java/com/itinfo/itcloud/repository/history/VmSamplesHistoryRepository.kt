@@ -1,6 +1,6 @@
-package com.itinfo.itcloud.repository
+package com.itinfo.itcloud.repository.history
 
-import com.itinfo.itcloud.repository.entity.VmSamplesHistoryEntity
+import com.itinfo.itcloud.repository.history.entity.VmSamplesHistoryEntity
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -8,26 +8,26 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-interface VmSamplesHistoryRepository: JpaRepository<VmSamplesHistoryEntity, Int> {
+interface VmSamplesHistoryRepository: JpaRepository<com.itinfo.itcloud.repository.history.entity.VmSamplesHistoryEntity, Int> {
 	// 가상머신 개인 cpu, memory
-	fun findFirstByVmIdOrderByHistoryDatetimeDesc(vmId: UUID): VmSamplesHistoryEntity
+	fun findFirstByVmIdOrderByHistoryDatetimeDesc(vmId: UUID): com.itinfo.itcloud.repository.history.entity.VmSamplesHistoryEntity
 
 	@Query(
 		value = """SELECT * FROM Vm_Samples_History v WHERE vm_status=1 and v.history_Datetime = 
           (SELECT MAX(v2.history_Datetime) FROM Vm_Samples_History v2 WHERE v2.vm_Id = v.vm_Id)
    ORDER BY v.cpu_Usage_Percent DESC""", nativeQuery = true
 	)
-	fun findVmCpuChart(page: Pageable?): List<VmSamplesHistoryEntity>
+	fun findVmCpuChart(page: Pageable?): List<com.itinfo.itcloud.repository.history.entity.VmSamplesHistoryEntity>
 
 	@Query(
 		value = """SELECT * FROM Vm_Samples_History v WHERE vm_status=1 and v.history_Datetime = 
           (SELECT MAX(v2.history_Datetime) FROM Vm_Samples_History v2 WHERE v2.vm_Id = v.vm_Id)
    ORDER BY v.memory_Usage_Percent DESC""", nativeQuery = true
 	)
-	fun findVmMemoryChart(page: Pageable?): List<VmSamplesHistoryEntity>
+	fun findVmMemoryChart(page: Pageable?): List<com.itinfo.itcloud.repository.history.entity.VmSamplesHistoryEntity>
 
 	// vm 사용량 순위
-	fun findFirstByVmStatusOrderByCpuUsagePercentDesc(vmStatus: Int): List<VmSamplesHistoryEntity>
+	fun findFirstByVmStatusOrderByCpuUsagePercentDesc(vmStatus: Int): List<com.itinfo.itcloud.repository.history.entity.VmSamplesHistoryEntity>
 	/*
     WITH rounded_times AS (
     SELECT

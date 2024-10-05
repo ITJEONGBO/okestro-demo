@@ -25,7 +25,7 @@ import javax.sql.DataSource
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-	basePackages=["com.itinfo.itcloud.repository"],
+	basePackages=["com.itinfo.itcloud.repository.history"],
 	entityManagerFactoryRef = "historyEntityManager",
 	transactionManagerRef = "historyTransactionManager"
 )
@@ -36,7 +36,7 @@ class HistoryDatasourceConfig {
 	@Bean(name=["historyEntityManager"])
 	fun historyEntityManager(builder: EntityManagerFactoryBuilder): LocalContainerEntityManagerFactoryBean {
 		return builder.dataSource(historyDataSource())
-			.packages("com.itinfo.itcloud.repository.entity") // entity 클래스 패키지
+			.packages("com.itinfo.itcloud.repository.history.entity") // entity 클래스 패키지
 			.build().apply {
 				setJpaProperties(Properties().apply {
 					put("hibernate.physical_naming_strategy", CamelCaseToUnderscoresNamingStrategy::class.java.canonicalName)

@@ -13,9 +13,9 @@ private fun Connection.srvStorageDomains(): StorageDomainsService =
 
 fun Connection.findAllStorageDomains(searchQuery: String = ""): Result<List<StorageDomain>> = runCatching {
 	if (searchQuery.isNotEmpty())
-		srvStorageDomains().list().search(searchQuery).send().storageDomains()
+		srvStorageDomains().list().search(searchQuery).send().storageDomains().filter { it.storage().type() != StorageType.GLANCE }
 	else
-		srvStorageDomains().list().send().storageDomains()
+		srvStorageDomains().list().send().storageDomains().filter { it.storage().type() != StorageType.GLANCE }
 }.onSuccess {
 	Term.STORAGE_DOMAIN.logSuccess("목록조회")
 }.onFailure {

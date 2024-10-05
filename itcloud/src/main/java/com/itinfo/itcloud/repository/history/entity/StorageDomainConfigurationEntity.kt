@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.repository.entity
+package com.itinfo.itcloud.repository.history.entity
 
 import com.itinfo.itcloud.gson
 import org.hibernate.annotations.Type

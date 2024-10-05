@@ -3,9 +3,12 @@ package com.itinfo.itcloud.model.storage
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.*
+import com.itinfo.itcloud.repository.engine.entity.DiskVmElementEntity
+import com.itinfo.itcloud.repository.engine.entity.toVmId
 import com.itinfo.util.ovirt.findDataCenter
 import com.itinfo.util.ovirt.findDiskProfile
 import com.itinfo.util.ovirt.findStorageDomain
+import com.itinfo.util.ovirt.findVm
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.DiskBuilder
 import org.ovirt.engine.sdk4.builders.DiskProfileBuilder
@@ -31,7 +34,6 @@ import java.math.BigInteger
  * @property wipeAfterDelete [Boolean] 삭제 후 초기화
  * @property sharable [Boolean] 공유가능 (공유가능 o 이라면 증분백업 안됨 FRONT에서 막기?)
  * @property backup [Boolean] 증분 백업 사용 (기본이 true)
- *
  * @property virtualSize [BigInteger] 가상크기
  * @property actualSize [BigInteger] 실제크기
  * @property status [DiskStatus] 디스크상태
@@ -39,7 +41,6 @@ import java.math.BigInteger
  * @property storageType [DiskStorageType] 유형
  * @property createDate [String] 생성일자
  * @property connectVm [IdentifiedVo] 연결대상
- *
  * @property diskProfileVos List<[IdentifiedVo]> 디스크 프로파일 목록
  */
 class DiskImageVo(
@@ -55,7 +56,6 @@ class DiskImageVo(
 	val wipeAfterDelete: Boolean = false,
 	val sharable: Boolean = false,
 	val backup: Boolean = false,
-
 	val virtualSize: BigInteger = BigInteger.ZERO,
 	val actualSize: BigInteger = BigInteger.ZERO,
 	val status: DiskStatus = DiskStatus.LOCKED,
@@ -63,7 +63,6 @@ class DiskImageVo(
 	val storageType: DiskStorageType = DiskStorageType.IMAGE,
 	val createDate: String = "",
 	val connectVm: IdentifiedVo = IdentifiedVo(),
-
 	val diskProfileVos: List<IdentifiedVo> = listOf()
 ): Serializable {
 	override fun toString(): String =
@@ -107,6 +106,51 @@ fun Disk.toDiskIdName(): DiskImageVo = DiskImageVo.builder {
 fun List<Disk>.toDiskIdNames(): List<DiskImageVo> =
 	this@toDiskIdNames.map { it.toDiskIdName() }
 
+/**
+ * 디스크 목록
+ * 스토리지도메인 - 디스크 목록
+ */
+fun Disk.toDiskMenu(conn: Connection, vmId: String?): DiskImageVo {
+	val storageDomain: StorageDomain? =
+		conn.findStorageDomain(this.storageDomains().first().id())
+			.getOrNull()
+	val vm: Vm? =
+		vmId?.let { conn.findVm(it).getOrNull() }
+	val i: IdentifiedVo = IdentifiedVo.builder {
+		id { vm?.id() }
+		name { vm?.name() }
+	}
+
+	return DiskImageVo.builder {
+		id { this@toDiskMenu.id() }
+		alias { this@toDiskMenu.alias() }
+		sharable { this@toDiskMenu.shareable() }
+		storageDomainVo { storageDomain?.fromStorageDomainToIdentifiedVo() }
+		virtualSize { this@toDiskMenu.totalSize() }
+		actualSize { this@toDiskMenu.actualSize() }
+		status { this@toDiskMenu.status() }
+		sparse { this@toDiskMenu.sparse() }
+		storageType { this@toDiskMenu.storageType() }
+		description { this@toDiskMenu.description() }
+		connectVm { i }
+//		createDate {  } // 생성일자
+	}
+}
+
+fun Disk.toDiskInfo(conn: Connection): DiskImageVo {
+	val diskProfile: DiskProfile? =
+		if(this@toDiskInfo.diskProfilePresent()) conn.findDiskProfile(this@toDiskInfo.diskProfile().id()).getOrNull()
+		else null
+
+	return DiskImageVo.builder {
+		id { this@toDiskInfo.id() }
+		alias { this@toDiskInfo.alias() }
+		description { this@toDiskInfo.description() }
+		diskProfileVo { diskProfile?.fromDiskProfileToIdentifiedVo() }
+		virtualSize { this@toDiskInfo.totalSize() }
+		actualSize { this@toDiskInfo.actualSize() }
+	}
+}
 
 fun Disk.toDiskImageVo(conn: Connection): DiskImageVo {
 	val storageDomain: StorageDomain? =
@@ -133,39 +177,55 @@ fun Disk.toDiskImageVo(conn: Connection): DiskImageVo {
 		wipeAfterDelete { this@toDiskImageVo.wipeAfterDelete() }
 		sharable { this@toDiskImageVo.shareable() }
 		backup { this@toDiskImageVo.backup() == DiskBackup.INCREMENTAL }
-		virtualSize { this@toDiskImageVo.provisionedSize() }
+		virtualSize { this@toDiskImageVo.totalSize() }
 		actualSize { this@toDiskImageVo.actualSize() }
 		status { this@toDiskImageVo.status() }
 		contentType { this@toDiskImageVo.contentType() }
 		storageType { this@toDiskImageVo.storageType() }
 //		createDate { this@toDiskImageVo. } // TODO
-//		connectVm { this@toDiskImageVo. }  // TODO
+//		connectVm { toConnectVm(conn, diskVmElementEntity) } } }  // TODO
 	}
 }
-
 fun List<Disk>.toDiskImageVos(conn: Connection): List<DiskImageVo> =
 	this@toDiskImageVos.map { it.toDiskImageVo(conn) }
 
-//fun Disk.toStorageDomain(conn: Connection): DiskImageVo {
-//	val storageDomain: StorageDomain? =
-//		conn.findStorageDomain(this@toStorageDomain.storageDomains().first().id())
-//			.getOrNull()
-//
-//	return DiskImageVo.builder {
-//		id { this@toStorageDomain.id() }
-//		alias { this@toStorageDomain.alias() }
-//		description { this@toStorageDomain.description() }
-//		storageDomainVo { storageDomain?.fromStorageDomainToIdentifiedVo() }
-//		sparse { this@toStorageDomain.sparse()}
-//		sharable { this@toStorageDomain.shareable() }
-//		virtualSize { this@toStorageDomain.provisionedSize() }
-//		actualSize { this@toStorageDomain.actualSize() }
-//		status { this@toStorageDomain.status() }
-//		storageType { this@toStorageDomain.storageType() }
-//		createDate {  }
-//		connectVm {  }
-//	}
-//}
+
+
+fun Disk.toDiskVo(conn: Connection, vmId: String): DiskImageVo {
+	val storageDomain: StorageDomain? =
+		conn.findStorageDomain(this@toDiskVo.storageDomains().first().id())
+			.getOrNull()
+
+	val dataCenter: DataCenter? =
+		if(storageDomain?.dataCentersPresent() == true) conn.findDataCenter(storageDomain.dataCenters().first().id()).getOrNull()
+		else null
+
+	val diskProfile: DiskProfile? =
+		if(this@toDiskVo.diskProfilePresent()) conn.findDiskProfile(this@toDiskVo.diskProfile().id()).getOrNull()
+		else null
+
+	return DiskImageVo.builder {
+		id { this@toDiskVo.id() }
+		size { (this@toDiskVo.provisionedSizeAsLong() / 1073741824).toInt() } // 1024^3
+		alias { this@toDiskVo.alias() }
+		description { this@toDiskVo.description() }
+		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
+		storageDomainVo { storageDomain?.fromStorageDomainToIdentifiedVo() }
+		sparse { this@toDiskVo.sparse() }
+		diskProfileVo { diskProfile?.fromDiskProfileToIdentifiedVo() }
+		wipeAfterDelete { this@toDiskVo.wipeAfterDelete() }
+		sharable { this@toDiskVo.shareable() }
+		backup { this@toDiskVo.backup() == DiskBackup.INCREMENTAL }
+		virtualSize { this@toDiskVo.totalSize() }
+		actualSize { this@toDiskVo.actualSize() }
+		status { this@toDiskVo.status() }
+		contentType { this@toDiskVo.contentType() }
+		storageType { this@toDiskVo.storageType() }
+//		createDate { this@toDiskImageVo. } // TODO
+	}
+}
+
+
 
 /**
  * 스토리지 - 디스크 생성

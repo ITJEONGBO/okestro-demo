@@ -92,7 +92,8 @@ fun DiskAttachment.toDiskAttachmentVo(conn: Connection): DiskAttachmentVo {
 		passDiscard { this@toDiskAttachmentVo.passDiscard() }
 		interface_ { this@toDiskAttachmentVo.interface_() }
 		logicalName { this@toDiskAttachmentVo.logicalName() }
-		diskImageVo { disk?.toDiskImageVo(conn) }
+//		diskImageVo { disk?.toDiskImageVo(conn) }
+		diskImageVo { disk?.toDiskIdName() }
 		vmVo { vm?.fromVmToIdentifiedVo() }
 	}
 }

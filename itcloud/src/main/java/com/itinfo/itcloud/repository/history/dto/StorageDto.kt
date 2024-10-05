@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.repository.dto
+package com.itinfo.itcloud.repository.history.dto
 
 import com.itinfo.itcloud.GB
 import com.itinfo.itcloud.gson

@@ -1,6 +1,6 @@
-package com.itinfo.itcloud.repository
+package com.itinfo.itcloud.repository.history
 
-import com.itinfo.itcloud.repository.entity.HostSamplesHistoryEntity
+import com.itinfo.itcloud.repository.history.entity.HostSamplesHistoryEntity
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query

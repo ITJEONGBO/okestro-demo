@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.model.computing
+package com.itinfo.itcloud.model.java
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.gson
@@ -38,27 +38,27 @@ import java.io.Serializable
  * @property alMemberVo [AffinityLabelMemberVo] 레이블
  */
 class AffinityGroupVo(
-	val id: String = "",
-	val name: String = "",
-	val description: String = "",
-	val status: Boolean = false,
-	val priority: Int = 0,
+    val id: String = "",
+    val name: String = "",
+    val description: String = "",
+    val status: Boolean = false,
+    val priority: Int = 0,
 
-	val clusterId: String = "",
+    val clusterId: String = "",
 
-	val isPositive: Boolean = false,
-	val isEnforcing: Boolean = false,
+    val isPositive: Boolean = false,
+    val isEnforcing: Boolean = false,
 
-	val isVmEnabled: Boolean = false,
-	val isVmPositive: Boolean = false,
-	val isVmEnforcing: Boolean = false,
+    val isVmEnabled: Boolean = false,
+    val isVmPositive: Boolean = false,
+    val isVmEnforcing: Boolean = false,
 
-	val isHostEnabled: Boolean = false,
-	val isHostPositive: Boolean = false,
-	val isHostEnforcing: Boolean = false,
+    val isHostEnabled: Boolean = false,
+    val isHostPositive: Boolean = false,
+    val isHostEnforcing: Boolean = false,
 
-	val agMemberVo: AffinityGroupMemberVo = AffinityGroupMemberVo(),
-	val alMemberVo: AffinityLabelMemberVo = AffinityLabelMemberVo(),
+    val agMemberVo: AffinityGroupMemberVo = AffinityGroupMemberVo(),
+    val alMemberVo: AffinityLabelMemberVo = AffinityLabelMemberVo(),
 ): Serializable {
 	override fun toString(): String =
 		gson.toJson(this)
@@ -85,38 +85,38 @@ class AffinityGroupVo(
 
 	companion object {
 		private val log by LoggerDelegate()
-		inline fun builder(block: AffinityGroupVo.Builder.() -> Unit): AffinityGroupVo = AffinityGroupVo.Builder().apply(block).build()
+		inline fun builder(block: Builder.() -> Unit): AffinityGroupVo = Builder().apply(block).build()
 	}
 }
 
 fun AffinityGroup.toAffinityGroupVo(conn: Connection, clusterId: String = ""): AffinityGroupVo {
 	return AffinityGroupVo.builder {
-		clusterId { clusterId }
-		id { this@toAffinityGroupVo.id() }
-		name { this@toAffinityGroupVo.name() }
-		description { this@toAffinityGroupVo.description() }
-		priority { this@toAffinityGroupVo.priority().toInt() }
-		isPositive { this@toAffinityGroupVo.positivePresent() && this@toAffinityGroupVo.positive() }
-		isVmEnabled { this@toAffinityGroupVo.vmsRule().enabled() }
-		isVmPositive { this@toAffinityGroupVo.vmsRule().positive() }
-		isVmEnforcing { this@toAffinityGroupVo.vmsRule().enforcing() }
-		isHostEnabled { this@toAffinityGroupVo.hostsRule().enabled() }
-		isHostPositive { this@toAffinityGroupVo.hostsRule().positive() }
-		isHostEnforcing { this@toAffinityGroupVo.hostsRule().enforcing() }
-		alMemberVo {
-			AffinityLabelMemberVo.builder {
-				hostLabels { this@toAffinityGroupVo.setEdit(conn, "hostLabels") }
-				vmLabels { this@toAffinityGroupVo.setEdit(conn, "vmLabels") }
-			}
-		}
-		agMemberVo {
-			// TODO: IdentifiedVo로 하지 않는다면 보정필요
-			AffinityGroupMemberVo.builder {
-				hostMembers { this@toAffinityGroupVo.setEdit(conn, "hosts") }
-				vmMembers { this@toAffinityGroupVo.setEdit(conn, "vms") }
-			}
-		}
-	}
+        clusterId { clusterId }
+        id { this@toAffinityGroupVo.id() }
+        name { this@toAffinityGroupVo.name() }
+        description { this@toAffinityGroupVo.description() }
+        priority { this@toAffinityGroupVo.priority().toInt() }
+        isPositive { this@toAffinityGroupVo.positivePresent() && this@toAffinityGroupVo.positive() }
+        isVmEnabled { this@toAffinityGroupVo.vmsRule().enabled() }
+        isVmPositive { this@toAffinityGroupVo.vmsRule().positive() }
+        isVmEnforcing { this@toAffinityGroupVo.vmsRule().enforcing() }
+        isHostEnabled { this@toAffinityGroupVo.hostsRule().enabled() }
+        isHostPositive { this@toAffinityGroupVo.hostsRule().positive() }
+        isHostEnforcing { this@toAffinityGroupVo.hostsRule().enforcing() }
+        alMemberVo {
+            AffinityLabelMemberVo.builder {
+                hostLabels { this@toAffinityGroupVo.setEdit(conn, "hostLabels") }
+                vmLabels { this@toAffinityGroupVo.setEdit(conn, "vmLabels") }
+            }
+        }
+        agMemberVo {
+            // TODO: IdentifiedVo로 하지 않는다면 보정필요
+            AffinityGroupMemberVo.builder {
+                hostMembers { this@toAffinityGroupVo.setEdit(conn, "hosts") }
+                vmMembers { this@toAffinityGroupVo.setEdit(conn, "vms") }
+            }
+        }
+    }
 }
 
 fun List<AffinityGroup>.toAffinityGroupVos(conn: Connection, clusterId: String = ""): List<AffinityGroupVo> =

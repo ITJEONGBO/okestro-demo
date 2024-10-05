@@ -144,7 +144,6 @@ fun StorageDomain.toDomainStatus(conn: Connection): StorageDomainVo {
 		status { this@toDomainStatus.status() }
 	}
 }
-
 fun List<StorageDomain>.toDomainStatuss(conn: Connection): List<StorageDomainVo> =
 	this@toDomainStatuss.map { it.toDomainStatus(conn) }
 
@@ -152,8 +151,8 @@ fun List<StorageDomain>.toDomainStatuss(conn: Connection): List<StorageDomainVo>
 
 fun StorageDomain.toStorageDomainMenu(conn: Connection): StorageDomainVo {
 	val dataCenter: DataCenter? =
-		if(this@toStorageDomainMenu.dataCenterPresent())
-			conn.findDataCenter(this@toStorageDomainMenu.dataCenter().id()).getOrNull()
+		if(this@toStorageDomainMenu.dataCentersPresent())
+			conn.findDataCenter(this@toStorageDomainMenu.dataCenters().first().id()).getOrNull()
 		else null
 
 	return StorageDomainVo.builder {
@@ -203,9 +202,8 @@ fun StorageDomain.toStorageDomainVo(conn: Connection): StorageDomainVo {
 	return StorageDomainVo.builder {
 		id { this@toStorageDomainVo.id() }
 		name { this@toStorageDomainVo.name() }
-//		active { isActive }
 		description { this@toStorageDomainVo.description() }
-		status { this@toStorageDomainVo.status() }
+//		status { status }
 		comment { this@toStorageDomainVo.comment() }
 		domainType { this@toStorageDomainVo.type() }
 		domainTypeMaster { if(this@toStorageDomainVo.masterPresent()) this@toStorageDomainVo.master() else false}

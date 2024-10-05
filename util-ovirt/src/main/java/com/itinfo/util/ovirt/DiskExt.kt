@@ -119,7 +119,7 @@ fun Connection.moveDisk(diskId: String, domainId: String): Result<Boolean> = run
 			.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
 
 	this.srvDisk(diskId).move().storageDomain(storageDomain).send()
-	if (!this@moveDisk.expectDiskStatus(diskId)) {
+	if (!expectDiskStatus(diskId)) {
 		log.error("디스크 이동 실패 ... 시간 초과")
 		return Result.failure(Error("디스크 이동 실패 ... 시간 초과"))
 	}
@@ -131,7 +131,7 @@ fun Connection.moveDisk(diskId: String, domainId: String): Result<Boolean> = run
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.copyDisk(diskId: String, diskAlias:String, domainId: String): Result<Boolean> = runCatching {
+fun Connection.copyDisk(diskId: String, diskAlias: String, domainId: String): Result<Boolean> = runCatching {
 	val disk: Disk =
 		this.findDisk(diskId)
 			.getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
@@ -139,9 +139,7 @@ fun Connection.copyDisk(diskId: String, diskAlias:String, domainId: String): Res
 		this.findStorageDomain(domainId)
 			.getOrNull() ?: throw ErrorPattern.STORAGE_DOMAIN_NOT_FOUND.toError()
 
-
 	this.srvDisk(diskId).copy().disk(DiskBuilder().id(diskId).alias(diskAlias)).storageDomain(storageDomain).send()
-	// 복사된 디스크가 같은 ID를 가질까? => x
 	// 근데 복사시 복사대상이 되는 디스크도 같이 Lock 걸리고 같이 잠김
 
 	if (!expectDiskStatus(disk.id())) {
@@ -153,6 +151,23 @@ fun Connection.copyDisk(diskId: String, diskAlias:String, domainId: String): Res
 	Term.DISK.logSuccess("복사")
 }.onFailure {
 	Term.DISK.logFail("복사")
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.refreshLunDisk(diskId: String, hostId: String): Result<Boolean> = runCatching {
+	this@refreshLunDisk.findDisk(diskId)
+		.getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toError()
+
+	val host: Host =
+		this@refreshLunDisk.findHost(hostId)
+			.getOrNull() ?: throw ErrorPattern.HOST_NOT_FOUND.toError()
+
+	this.srvDisk(diskId).refreshLun().host(host).send()
+	true
+}.onSuccess {
+	Term.DISK.logSuccess("refresh Lun")
+}.onFailure {
+	Term.DISK.logFail("refresh Lun")
 	throw if (it is Error) it.toItCloudException() else it
 }
 

@@ -1,4 +1,4 @@
-package com.itinfo.itcloud.model.computing
+package com.itinfo.itcloud.model.java
 
 
 import com.itinfo.itcloud.model.IdentifiedVo
@@ -29,6 +29,6 @@ class AffinityLabelMemberVo(
 	}
 
 	companion object {
-		inline fun builder(block: AffinityLabelMemberVo.Builder.() -> Unit): AffinityLabelMemberVo = AffinityLabelMemberVo.Builder().apply(block).build()
+		inline fun builder(block: Builder.() -> Unit): AffinityLabelMemberVo = Builder().apply(block).build()
 	}
 }

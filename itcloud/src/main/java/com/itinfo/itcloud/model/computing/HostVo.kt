@@ -6,7 +6,7 @@ import com.itinfo.itcloud.model.*
 import com.itinfo.itcloud.model.network.HostNicVo
 import com.itinfo.itcloud.model.network.toHostNicVos
 import com.itinfo.itcloud.model.network.toNetworkHostNicVos
-import com.itinfo.itcloud.repository.dto.UsageDto
+import com.itinfo.itcloud.repository.history.dto.UsageDto
 import com.itinfo.util.ovirt.*
 import org.slf4j.LoggerFactory
 import org.ovirt.engine.sdk4.Connection

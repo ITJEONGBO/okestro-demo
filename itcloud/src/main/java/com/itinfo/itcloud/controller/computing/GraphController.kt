@@ -2,9 +2,9 @@ package com.itinfo.itcloud.controller.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.computing.DashBoardVo
-import com.itinfo.itcloud.repository.dto.HostUsageDto
-import com.itinfo.itcloud.repository.dto.StorageUsageDto
-import com.itinfo.itcloud.repository.dto.UsageDto
+import com.itinfo.itcloud.repository.history.dto.HostUsageDto
+import com.itinfo.itcloud.repository.history.dto.StorageUsageDto
+import com.itinfo.itcloud.repository.history.dto.UsageDto
 import com.itinfo.itcloud.service.computing.ItGraphService
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
