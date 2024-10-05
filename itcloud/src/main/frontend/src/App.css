@@ -814,6 +814,17 @@ input[type="text"]:focus {
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
 }
+.network_filter_btns{
+    margin-bottom: 0.2rem;
+    border-radius:3px;
+    width: 54%;
+}
+.network_filter_btns>button{
+    padding:0.06rem;
+    cursor:pointer;
+    width:50%;
+  
+}
 /*디스크 복사*/
 /* 중복끝 */
 

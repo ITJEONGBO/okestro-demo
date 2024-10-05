@@ -1333,4 +1333,17 @@ input[disabled] {
     font-size: 0.29rem;
 }
 
-/**/
+/*호스트 장치(장치추가 팝업)*/
+.device_add_popup_outer{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 87%;
+    width: 74%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); 
+    z-index: 1000;
+}

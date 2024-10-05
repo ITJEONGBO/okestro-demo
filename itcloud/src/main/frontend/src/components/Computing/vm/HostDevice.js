@@ -1,5 +1,7 @@
+import React, { useEffect, useState } from 'react';
 import { faCheck, faExclamation, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useParams } from 'react-router-dom';
+import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TableOuter from '../../table/TableOuter';
 import TableColumnsInfo from '../../table/TableColumnsInfo';
@@ -7,6 +9,9 @@ import { useHostById, useHostdeviceFromHost } from '../../../api/RQHook';
 
 // 이벤트 섹션
 const EventSection = () => {
+  const [activePopup, setActivePopup] = useState(null);
+  const openPopup = (popupType) => setActivePopup(popupType);
+  const closePopup = () => setActivePopup(null);
   // 호스트 장치
   const { id } = useParams();
   const { 
@@ -41,7 +46,7 @@ const EventSection = () => {
     return (
         <div className="host_btn_outer">
         <div className="content_header_right">
-            <button>장치 추가</button>
+            <button onClick={() => openPopup('add_device')}>장치 추가</button>
             <button>장치 삭제</button>
             <button>vGPU 관리</button>
             <button>View CPU Pinning</button>
@@ -52,6 +57,31 @@ const EventSection = () => {
             onRowClick={() => console.log('Row clicked')} 
           />
       
+
+
+        {/*도메인(도메인 관리)팝업 */}
+        <Modal
+        isOpen={activePopup === 'newDomain'}
+        onRequestClose={closePopup}
+        contentLabel="도메인 관리"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="device_add_popup_outer">
+          <div className="popup_header">
+            <h1>호스트 장치 추가</h1>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+          </div>
+
+          
+          <div className="edit_footer">
+            <button style={{ display: 'none' }}></button>
+            <button>OK</button>
+            <button onClick={closePopup}>취소</button>
+          </div>
+        </div>
+      </Modal>
       </div>
     );
   };

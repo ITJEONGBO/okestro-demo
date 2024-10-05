@@ -9,7 +9,7 @@ import Footer from '../footer/Footer';
 import { useAllTemplates, useAllVMs } from '../../api/RQHook';
 import Templates from './Templates';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle, faInfoCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -46,7 +46,7 @@ const AllVm = () => {
   const buttons = [
     { id: 'new_btn', label: '새로 만들기',onClick:() => openPopup('new')},
     { id: 'edit_btn', label: '편집', onClick:() => openPopup('edit')},
-    { id: 'delete_btn', label: '삭제'},
+    { id: 'delete_btn', label: '삭제',onClick:() => openPopup('delete')},
     { id: 'run_btn', label: <><i className="fa fa-play"></i>실행</>, onClick: () => console.log() },
     { id: 'pause_btn', label: <><i className="fa fa-pause"></i>일시중지</>, onClick: () => console.log() },
     { id: 'stop_btn', label: <><i className="fa fa-stop"></i>종료</>, onClick: () => console.log() },
@@ -136,7 +136,7 @@ const AllVm = () => {
   >
  <div id="edit_popup">
             <div className="popup_header">
-              <h1>가상머신 편집</h1>
+              <h1>가상머신 생성</h1>
               <button onClick={closeModal}>
                 <FontAwesomeIcon icon={faTimes} fixedWidth />
               </button>
@@ -1235,6 +1235,37 @@ const AllVm = () => {
             </div>
             </Modal>
 )}
+
+{/*삭제 팝업 */}
+<Modal
+        isOpen={activePopup === 'delete'}
+        onRequestClose={closeModal}
+        contentLabel="디스크 업로드"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="storage_delete_popup">
+          <div className="popup_header">
+            <h1>디스크 삭제</h1>
+            <button onClick={closeModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+          </div>
+         
+          <div className='disk_delete_box'>
+            <div>
+              <FontAwesomeIcon style={{marginRight:'0.3rem'}} icon={faExclamationTriangle} />
+              <span>다음 항목을 삭제하시겠습니까?</span>
+            </div>
+          </div>
+
+
+          <div className="edit_footer">
+            <button style={{ display: 'none' }}></button>
+            <button>OK</button>
+            <button onClick={closeModal}>취소</button>
+          </div>
+        </div>
+            </Modal>
               {/* 마이그레이션 팝업(default) */}
               {/* {activePopup === 'migration' && (
         <Modal

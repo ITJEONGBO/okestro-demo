@@ -121,17 +121,7 @@
     display: flex;
     gap: 5px;
 }
-.network_filter_btns{
-    margin-bottom: 0.2rem;
-    border-radius:3px;
-    width: 50%;
-}
-.network_filter_btns>button{
-    padding:0.06rem;
-    cursor:pointer;
-    width:50%;
-  
-}
+
 .unconfigured_network{
     display: flex;
     flex-direction: column; /* 세로 방향 정렬 */

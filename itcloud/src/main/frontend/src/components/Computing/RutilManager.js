@@ -9,7 +9,7 @@ import TableColumnsInfo from '../table/TableColumnsInfo';
 import AffinityGroupModal from '../Modal/AffinityGroupModal';
 import NetworkDetail from '../Network/NetworkDetail';
 import Permission from '../Modal/Permission';
-import { useClusterById, useEventFromCluster, useHostFromCluster, useLogicalFromCluster, usePermissionFromCluster, usePermissionromCluster, useVMFromCluster } from '../../api/RQHook';
+import { useAllNetworks, useClusterById, useEventFromCluster, useHostFromCluster, useLogicalFromCluster, usePermissionFromCluster, usePermissionromCluster, useVMFromCluster } from '../../api/RQHook';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faCrown, faUser, faBan,
@@ -20,7 +20,12 @@ import {
   faEllipsisV,
   faCaretUp,
   faGlassWhiskey,
-  faChevronCircleRight
+  faChevronCircleRight,
+  faMinus,
+  faArrowDown,
+  faArrowUp,
+  faPlus,
+  faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons'
 import TableOuter from '../table/TableOuter';
 import logo from '../../img/logo.png'
@@ -63,6 +68,11 @@ function RutilManager() {
           navigate(`/networks/${row.name.props.children}`);  
         }
     };
+    const [activeSection, setActiveSection] = useState('common_outer');
+    const handleSectionChange = (section) => {
+        setActiveSection(section);
+      };
+    
     const [isPermissionModalOpen, setIsPermissionModalOpen] = useState(false); // 권한 모달 상태
     const [isAffinityGroupModalOpen, setIsAffinityGroupModalOpen] = useState(false); // 선호도 그룹 모달 상태
     const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -92,6 +102,38 @@ function RutilManager() {
   const handleLunTabClick = (tab) => {
     setActiveLunTab(tab); 
   };
+  const [활성화된섹션, set활성화된섹션] = useState('일반_섹션');
+  useEffect(() => {
+    const 기본섹션 = document.getElementById('일반_섹션_btn');
+    if (기본섹션) {
+      기본섹션.style.backgroundColor = '#EDEDED';
+      기본섹션.style.color = '#1eb8ff';
+      기본섹션.style.borderBottom = '1px solid blue';
+    }
+  }, []);
+
+  const 섹션변경 = (section) => {
+    set활성화된섹션(section);
+    const 모든섹션들 = document.querySelectorAll('.edit_aside > div');
+    모든섹션들.forEach((el) => {
+      el.style.backgroundColor = '#FAFAFA';
+      el.style.color = 'black';
+      el.style.borderBottom = 'none';
+    });
+
+    const 선택된섹션 = document.getElementById(`${section}_btn`);
+    if (선택된섹션) {
+      선택된섹션.style.backgroundColor = '#EDEDED';
+      선택된섹션.style.color = '#1eb8ff';
+      선택된섹션.style.borderBottom = '1px solid blue';
+    }
+  };
+  const [isHiddenParameterVisible, setHiddenParameterVisible] = useState(false);
+
+  const toggleHiddenParameter = () => {
+    setHiddenParameterVisible(!isHiddenParameterVisible);
+  };
+  
     // 권한 모달 핸들러
     const openPermissionModal = () => setIsPermissionModalOpen(true);
     const closePermissionModal = () => setIsPermissionModalOpen(false);
@@ -237,7 +279,26 @@ function RutilManager() {
           userEventId: event?.userEventId ?? '',   
         };
       }
-
+      // 네트워크
+      const { 
+        networkData,
+        status: networksStatu,
+        isRefetching: isNetworksRefetching,
+        refetch: networksRefetch, 
+        isError: NetworksError, 
+        error: networksError, 
+        isLoading: NetworksLoading,
+      } = useAllNetworks((e) => {
+        return {
+          id: e?.id ?? '',
+          name: e?.name ?? '',
+          description: e?.description ?? '',
+          dataCenter: e?.dataCenterVo?.name ?? '',
+          provider: 'Provider1',
+          portSeparation: e?.portIsolation ? '예' : '아니요',
+        }
+      });
+      
       const data = [
         {
           alias: (
@@ -310,10 +371,8 @@ function RutilManager() {
 
     // HeaderButton 컴포넌트
     const buttons = [
-        { id: 'edit_btn', label: '편집', onClick:() => openPopup('cluster_detail_edit') },
-        { id: 'delete_btn', label: '삭제', onClick: () => console.log('Delete button clicked') },
+       
     ];
-
 
     // nav 컴포넌트
     const sections = [
@@ -506,10 +565,10 @@ function RutilManager() {
                             {activeTab === 'data_center' && (
                                 <>
                                 <div className="content_header_right">
-                                    <button onClick={() => openPopup('newNetwork')}>네트워크 추가</button>
-                                    <button onClick={() => openPopup('cluster_network_popup')}>네트워크 관리</button>
-                                    <button>디스플레이로 설정</button>
-                                    <button>모든 네트워크 동기화</button>
+                                    <button onClick={() => openPopup('datacenter_new')}>새로 만들기</button>
+                                    <button onClick={() => openPopup('datacenter_edit')}>편집</button>
+                                    <button>삭제</button>
+                                    
                                 </div>
                                 <div className="search_box">
                                     <input type="text" />
@@ -527,8 +586,8 @@ function RutilManager() {
                             {activeTab === 'cluster' && (
                               <>
                                <div className="content_header_right">
-                                    <button onClick={() => openPopup('newNetwork')}>새로만들기</button>
-                                    <button onClick={() => openPopup('cluster_network_popup')}>편집</button>
+                                    <button onClick={() => openPopup('cluster_new')}>새로만들기</button>
+                                    <button onClick={() => openPopup('cluster_detail_edit')}>편집</button>
                                     <button>업그레이드</button>
                                 </div>
                                 <div className="search_box">
@@ -549,6 +608,9 @@ function RutilManager() {
                                 <>
                                 <div className="content_header_right">
                                     <button onClick={() => openPopup('host_new')}>새로 만들기</button>
+                                    <button onClick={() => openPopup('host_edit')}>편집</button>
+                                    <button>관리</button>
+                                    <button>설치</button>
                                 </div>
                                 <div className="search_box">
                                     <input type="text" />
@@ -567,8 +629,9 @@ function RutilManager() {
                             {activeTab === 'virtual_machine' && (
                               <>
                               <div className="content_header_right">
-                                    <button onClick={() => openPopup('newNetwork')}>새로만들기</button>
-                                    <button onClick={() => openPopup('cluster_network_popup')}>편집</button>
+                                    <button onClick={() => openPopup('vm_new')}>새로만들기</button>
+                                    <button onClick={() => openPopup('vm_edit')}>편집</button>
+                                    <button onClick={() => openPopup('delete')}>삭제</button>
                                     <button>실행</button>
                                     <button>일시중지</button>
                                     <button>종료</button>
@@ -576,6 +639,17 @@ function RutilManager() {
                                     <button>콘솔</button>
                                     <button>스냅샷 생성</button>
                                     <button>마이그레이션</button>
+                                    <button className="content_header_popup_btn" onClick={togglePopup}>
+                                                <FontAwesomeIcon icon={faEllipsisV} fixedWidth/>
+                                                {isPopupOpen && (
+                                                  <div className="content_header_popup">
+                                                    <div>OVF 업데이트</div>
+                                                    <div>파괴</div>
+                                                    <div>디스크 검사</div>
+                                                    <div>마스터 스토리지 도메인으로 선택</div>
+                                                  </div>
+                                                )}
+                                    </button>
                                 </div>
                               <div className="search_box">
                                     <input type="text" />
@@ -597,7 +671,7 @@ function RutilManager() {
                                               <button id="new_domain_btn" onClick={() => openPopup('newDomain')}>생성</button>
                                               <button id="get_domain_btn" onClick={() => openPopup('newDomain')}>가져오기</button>
                                               <button id="administer_domain_btn" onClick={() => openPopup('manageDomain')}>편집</button>
-                                              <button>삭제</button>
+                                              <button onClick={() => openPopup('delete')}>삭제</button>
                                               <button>Connections</button>
                                               <button className="content_header_popup_btn" onClick={togglePopup}>
                                                 <FontAwesomeIcon icon={faEllipsisV} fixedWidth/>
@@ -624,8 +698,21 @@ function RutilManager() {
                             {/* 네트워크 */}
                             {activeTab === 'network' && (
                                 <>
-                                <div>네트워크 차트 나오게하는부분0</div>
-                                </>
+                                <div className="content_header_right">
+                                    <button onClick={ () => openPopup('makeNetwork') }>새로만들기</button>
+                                    <button onClick={() => openPopup('getNetwork')}>가져오기</button>
+                                    <button onClick={() => openPopup('editNetwork')}>편집</button>
+                                    <button onClick={() => openPopup('delete')}>삭제</button>
+                                  
+                                </div>
+                                <TableOuter
+                                    columns={TableColumnsInfo.NETWORKS} 
+                                    data={networkData} 
+                                    onRowClick={() => console.log('Row clicked')}
+                                    // onRowClick={handleNetworkNameClick} 
+                                    shouldHighlight1stCol={true}
+                                />
+                               </>
                             )}
                           
                         </div>
@@ -633,7 +720,384 @@ function RutilManager() {
                 </>
             )}
 
-            {/*편집 팝업 */}
+        {/* 데이터 센터 편집 모달 */}
+        <Modal
+          isOpen={activePopup === 'datacenter_new'}
+          onRequestClose={closePopup}
+          contentLabel="새로 만들기"
+          className="Modal"
+          overlayClassName="Overlay"
+          shouldCloseOnOverlayClick={false}
+        >
+          <div className="datacenter_new_popup">
+            <div className="popup_header">
+              <h1>새로운 데이터 센터</h1>
+              <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+            </div>
+
+            <div className="datacenter_new_content">
+              <div>
+                <label htmlFor="name1">이름</label>
+                <input type="text" id="name1" />
+              </div>
+              <div>
+                <label htmlFor="comment">설명</label>
+                <input type="text" id="comment" />
+              </div>
+              <div>
+                <label htmlFor="cluster">클러스터</label>
+                <select id="cluster">
+                  <option value="공유됨">공유됨</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="compatibility">호환버전</label>
+                <select id="compatibility">
+                  <option value="4.7">4.7</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="quota_mode">쿼터 모드</label>
+                <select id="quota_mode">
+                  <option value="비활성화됨">비활성화됨</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="comment">코멘트</label>
+                <input type="text" id="comment" />
+              </div>
+            </div>
+
+            <div className="edit_footer">
+              <button style={{ display: 'none' }}></button>
+              <button>OK</button>
+              <button onClick={() => closePopup('edit')}>취소</button>
+            </div>
+          </div>
+        </Modal>
+
+        {/* 데이터 센터 편집 모달 */}
+        <Modal
+          isOpen={activePopup === 'datacenter_edit'}
+          onRequestClose={closePopup}
+          contentLabel="새로 만들기"
+          className="Modal"
+          overlayClassName="Overlay"
+          shouldCloseOnOverlayClick={false}
+        >
+          <div className="datacenter_new_popup">
+            <div className="popup_header">
+              <h1>데이터 센터 수정</h1>
+              <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+            </div>
+
+            <div className="datacenter_new_content">
+              <div>
+                <label htmlFor="name1">이름</label>
+                <input type="text" id="name1" />
+              </div>
+              <div>
+                <label htmlFor="comment">설명</label>
+                <input type="text" id="comment" />
+              </div>
+              <div>
+                <label htmlFor="cluster">클러스터</label>
+                <select id="cluster">
+                  <option value="공유됨">공유됨</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="compatibility">호환버전</label>
+                <select id="compatibility">
+                  <option value="4.7">4.7</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="quota_mode">쿼터 모드</label>
+                <select id="quota_mode">
+                  <option value="비활성화됨">비활성화됨</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="comment">코멘트</label>
+                <input type="text" id="comment" />
+              </div>
+            </div>
+
+            <div className="edit_footer">
+              <button style={{ display: 'none' }}></button>
+              <button>OK</button>
+              <button onClick={() => closePopup('edit')}>취소</button>
+            </div>
+          </div>
+        </Modal>
+        
+            {/* 클러스터 새로 만들기 팝업 */}
+            <Modal
+                        isOpen={activePopup === 'cluster_new'}
+                        onRequestClose={closePopup}
+                        contentLabel="새로 만들기"
+                        className="Modal"
+                        overlayClassName="Overlay"
+                        shouldCloseOnOverlayClick={false}
+                    >
+                        <div className="cluster_new_popup">
+                            <div className="popup_header">
+                                <h1 class="text-sm">새 클러스터</h1>
+                                <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                            </div>
+
+                            <div className="network_new_nav">
+                                <div
+                                    id="cluster_common_btn"
+                                    className={selectedTab === 'cluster_common_btn' ? 'active-tab' : 'inactive-tab'}
+                                    onClick={() => handleTabClick('cluster_common_btn')}
+                                >
+                                    일반
+                                </div>
+                                <div
+                                    id="cluster_migration_btn"
+                                    className={selectedTab === 'cluster_migration_btn' ? 'active-tab' : 'inactive-tab'}
+                                    onClick={() => handleTabClick('cluster_migration_btn')}
+                                >
+                                마이그레이션 정책
+                                </div>
+                            </div>
+
+                            {/* 일반 */}
+                            {selectedTab === 'cluster_common_btn' && (
+                                <form className="cluster_common_form py-1">
+                                    <div className="network_form_group">
+                                    <label htmlFor="data_center">데이터 센터</label>
+                                    <select id="data_center">
+                                        <option value="default">Default</option>
+                                    </select>
+                                    </div>
+                                
+                                    <div className="network_form_group">
+                                    <div>
+                                        <label htmlFor="name">이름</label>
+                                    </div>
+                                    <input type="text" id="name" />
+                                    </div>
+                                
+                                    <div className="network_form_group">
+                                    <label htmlFor="description">설명</label>
+                                    <input type="text" id="description" />
+                                    </div>
+                                
+                                    <div className="network_form_group">
+                                    <label htmlFor="comment">코멘트</label>
+                                    <input type="text" id="comment" />
+                                    </div>
+                            
+                                    {/* id 편집 */}
+                                    <div className="network_form_group">
+                                    <label htmlFor="management_network">관리 네트워크</label>
+                                    <select id="management_network">
+                                        <option value="ovirtmgmt">ovirtmgmt</option>
+                                        <option value="ddd">ddd</option>
+                                        <option value="hosted_engine">hosted_engine</option>
+                                    </select>
+                                    </div>
+                                
+                                    <div className="network_form_group">
+                                    <label htmlFor="cpu_architecture">CPU 아키텍처</label>
+                                    <select id="cpu_architecture">
+                                        <option value="정의되지 않음">정의되지 않음</option>
+                                        <option value="x86_64">x86_64</option>
+                                        <option value="ppc64">ppc64</option>
+                                        <option value="s390x">s390x</option>
+                                    </select>
+                                    </div>
+                                
+                                    <div className="network_form_group">
+                                    <label htmlFor="cpu_type">CPU 유형</label>
+                                    <select id="cpu_type">
+                                        <option value="default">Default</option>
+                                    </select>
+                                    </div>
+                                
+                                    <div className="network_form_group">
+                                    <label htmlFor="chipset_firmware_type">침셋/펌웨어 유형</label>
+                                    <select id="chipset_firmware_type">
+                                        <option value="default">Default</option>
+                                    </select>
+                                    </div>
+                                
+                                    <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="bios_change" name="bios_change" />
+                                    <label htmlFor="bios_change">BIOS를 사용하여 기존 가상 머신/템플릿을 1440fx에서 Q35 칩셋으로 변경</label>
+                                    </div>
+                                
+                                    <div className="network_form_group">
+                                    <label htmlFor="fips_mode">FIPS 모드</label>
+                                    <select id="fips_mode">
+                                        <option value="자동 감지">자동 감지</option>
+                                        <option value="비활성화됨">비활성화됨</option>
+                                        <option value="활성화됨">활성화됨</option>
+                                    </select>
+                                    </div>
+                                
+                                    <div className="network_form_group">
+                                    <label htmlFor="compatibility_version">호환 버전</label>
+                                    <select id="compatibility_version">
+                                        <option value="4.7">4.7</option>
+                                    </select>
+                                    </div>
+                                
+                                    <div className="network_form_group">
+                                    <label htmlFor="switch_type">스위치 유형</label>
+                                    <select id="switch_type">
+                                        <option value="Linux Bridge">Linux Bridge</option>
+                                        <option value="OVS (기술 프리뷰)">OVS (기술 프리뷰)</option>
+                                    </select>
+                                    </div>
+                                
+                                    <div className="network_form_group">
+                                    <label htmlFor="firewall_type">방화벽 유형</label>
+                                    <select id="firewall_type">
+                                        <option value="iptables">iptables</option>
+                                        <option value="firewalld">firewalld</option>
+                                    </select>
+                                    </div>
+                                
+                                    <div className="network_form_group">
+                                    <label htmlFor="default_network_provider">기본 네트워크 공급자</label>
+                                    <select id="default_network_provider">
+                                        <option value="기본 공급자가 없습니다.">기본 공급자가 없습니다.</option>
+                                        <option value="ovirt-provider-ovn">ovirt-provider-ovn</option>
+                                    </select>
+                                    </div>
+                                
+                                    <div className="network_form_group">
+                                    <label htmlFor="max_memory_limit">로그인 최대 메모리 한계</label>
+                                    <select id="max_memory_limit">
+                                        <option value="default">Default</option>
+                                    </select>
+                                    </div>
+                                
+                                    <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="virt_service_enabled" name="virt_service_enabled" />
+                                    <label htmlFor="virt_service_enabled">Virt 서비스 활성화</label>
+                                    </div>
+                                
+                                    <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="gluster_service_enabled" name="gluster_service_enabled" />
+                                    <label htmlFor="gluster_service_enabled">Gluster 서비스 활성화</label>
+                                    </div>
+                                
+                                    <div className="network_checkbox_type2">
+                                    <span>추가 난수 생성기 소스:</span>
+                                    </div>
+                                
+                                    <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="dev_hwrng_source" name="dev_hwrng_source" />
+                                    <label htmlFor="dev_hwrng_source">/dev/hwrng 소스</label>
+                                    </div>
+                                </form>
+                            
+                            )}
+
+                            {/* 마이그레이션 정책 */}
+                            {selectedTab === 'cluster_migration_btn' && (
+                                <form className="py-2">
+                                    <div className="network_form_group">
+                                    <label htmlFor="migration_policy">마이그레이션 정책</label>
+                                    <select id="migration_policy">
+                                        <option value="default">Default</option>
+                                    </select>
+                                    </div>
+                                
+                                    <div class="p-1.5">
+                                    <span class="font-bold">최소 다운타임</span>
+                                    <div>
+                                        일반적인 상황에서 가상 머신을 마이그레이션할 수 있는 정책입니다. 가상 머신에 심각한 다운타임이 발생하면 안 됩니다. 가상 머신 마이그레이션이 오랫동안 수렴되지 않으면 마이그레이션이 중단됩니다. 게스트 에이전트 후크 메커니즘을 사용할 수 있습니다.
+                                    </div>
+                                    </div>
+                                
+                                    <div class="p-1.5 mb-1">
+                                    <span class="font-bold">대역폭</span>
+                                    <div className="cluster_select_box">
+                                        <div class="flex">
+                                        <label htmlFor="bandwidth_policy">마이그레이션 정책</label>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'blue', margin: '0.1rem', cursor: 'pointer' }} />
+                                        </div>
+                                        <select id="bandwidth_policy">
+                                        <option value="default">Default</option>
+                                        </select>
+                                    </div>
+                                    </div>
+                                
+                                    <div className="px-1.5 flex relative">
+                                    <span className="font-bold">복구정책</span>
+                                    <FontAwesomeIcon
+                                        icon={faInfoCircle}
+                                        style={{ color: 'blue', margin: '0.1rem', cursor: 'pointer' }}
+                                        onMouseEnter={() => setShowTooltip(true)} // 마우스를 올리면 툴팁을 보여줌
+                                        onMouseLeave={() => setShowTooltip(false)} // 마우스를 떼면 툴팁을 숨김
+                                    />
+                                    {showTooltip && (
+                                        <div className="tooltip-box">
+                                        마이그레이션 암호화에 대한 설명입니다.
+                                        </div>
+                                    )}
+                                    </div>
+                            
+                                    <div className='host_text_radio_box px-1.5 py-0.5'>
+                                    <input type="radio" id="password_option" name="encryption_option" />
+                                    <label htmlFor="password_option">암호</label>
+                                    </div>
+                                
+                                    <div className='host_text_radio_box px-1.5 py-0.5'>
+                                    <input type="radio" id="certificate_option" name="encryption_option" />
+                                    <label htmlFor="certificate_option">암호</label>
+                                    </div>
+                                
+                                    <div className='host_text_radio_box px-1.5 py-0.5 mb-2'>
+                                    <input type="radio" id="none_option" name="encryption_option" />
+                                    <label htmlFor="none_option">암호</label>
+                                    </div>
+                                
+                                    <div class="m-1.5">
+                                    <span class="font-bold">추가 속성</span>
+                                    <div className="cluster_select_box">
+                                        <label htmlFor="encryption_usage">마이그레이션 암호화 사용</label>
+                                        <select id="encryption_usage">
+                                        <option value="default">시스템 기본값 (암호화하지 마십시오)</option>
+                                        <option value="encrypt">암호화</option>
+                                        <option value="no_encrypt">암호화하지 마십시오</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div className="cluster_select_box">
+                                        <label htmlFor="parallel_migration">마이그레이션 암호화 사용</label>
+                                        <select id="parallel_migration">
+                                        <option value="default">Disabled</option>
+                                        <option value="auto">Auto</option>
+                                        <option value="auto_parallel">Auto Parallel</option>
+                                        <option value="custom">Custom</option>
+                                        </select>
+                                    </div>
+                                
+                                    <div className="cluster_select_box">
+                                        <label htmlFor="migration_encryption_text">마이그레이션 암호화 사용</label>
+                                        <input type="text" id="migration_encryption_text" />
+                                    </div>
+                                    </div>
+                                </form>
+                            
+                            )}
+
+                        
+                            <div className="edit_footer">
+                                <button style={{ display: 'none' }}></button>
+                                <button>OK</button>
+                                <button onClick={closePopup}>취소</button>
+                            </div>
+                        </div>
+            </Modal>
+            {/*클러스터(편집) 팝업 */}
             <Modal
                 isOpen={activePopup === 'cluster_detail_edit'}
                 onRequestClose={closePopup}
@@ -1177,10 +1641,8 @@ function RutilManager() {
                     </div>
                 </div>
             </Modal>
-            {/* 선호도 그룹 모달 컴포넌트 */}
-            <AffinityGroupModal isOpen={isAffinityGroupModalOpen} onRequestClose={closeAffinityGroupModal} />
-            {/* 권한 모달 컴포넌트 */}
-            <Permission isOpen={isPermissionModalOpen} onRequestClose={closePermissionModal} />
+           
+            
             {/*클러스터(네트워크 관리)팝업*/}
             <Modal
                 isOpen={activePopup === 'cluster_network_popup'}
@@ -1210,271 +1672,508 @@ function RutilManager() {
                 </div>
             </Modal>
 
-            {/* 클러스터 새로 만들기 팝업 */}
+            {/* 호스트(편집) 팝업*/}
             <Modal
-                isOpen={activePopup === 'host_new'}
-                onRequestClose={closePopup}
-                contentLabel="새로 만들기"
-                className="Modal"
-                overlayClassName="Overlay"
-                shouldCloseOnOverlayClick={false}
+              isOpen={activePopup === 'host_new'}
+              onRequestClose={closePopup}
+              contentLabel="편집"
+              className="host_new_popup"
+              overlayClassName="host_new_outer"
+              shouldCloseOnOverlayClick={false}
             >
-                <div className="cluster_new_popup">
-                    <div className="popup_header">
-                        <h1 class="text-sm">새 클러스터</h1>
-                        <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-                    </div>
+              <div className="popup_header">
+                <h1>호스트 새로만들기</h1>
+                <button onClick={closePopup}>
+                  <FontAwesomeIcon icon={faTimes} fixedWidth/>
+                </button>
+              </div>
 
-                    <div className="network_new_nav">
-                        <div
-                            id="cluster_common_btn"
-                            className={selectedTab === 'cluster_common_btn' ? 'active-tab' : 'inactive-tab'}
-                            onClick={() => handleTabClick('cluster_common_btn')}
-                        >
-                            일반
-                        </div>
-                        <div
-                            id="cluster_migration_btn"
-                            className={selectedTab === 'cluster_migration_btn' ? 'active-tab' : 'inactive-tab'}
-                            onClick={() => handleTabClick('cluster_migration_btn')}
-                        >
-                           마이그레이션 정책
-                        </div>
-                    </div>
+              <div className="edit_body">
+                <div className="edit_aside">
+                  <div
+                    className={`edit_aside_item`}
+                    id="일반_섹션_btn"
+                    onClick={() => 섹션변경('일반_섹션')}
+                    style={{ backgroundColor: 활성화된섹션 === '일반_섹션' ? '#EDEDED' : '#FAFAFA', color: 활성화된섹션 === '일반_섹션' ? '#1eb8ff' : 'black', borderBottom: 활성화된섹션 === '일반_섹션' ? '1px solid blue' : 'none' }}
+                  >
+                    <span>일반</span>
+                  </div>
+                  <div
+                    className={`edit_aside_item`}
+                    id="전원관리_섹션_btn"
+                    onClick={() => 섹션변경('전원관리_섹션')}
+                    style={{ backgroundColor: 활성화된섹션 === '전원관리_섹션' ? '#EDEDED' : '#FAFAFA', color: 활성화된섹션 === '전원관리_섹션' ? '#1eb8ff' : 'black', borderBottom: 활성화된섹션 === '전원관리_섹션' ? '1px solid blue' : 'none' }}
+                  >
+                    <span>전원 관리</span>
+                  </div>
+                  <div
+                    className={`edit_aside_item`}
+                    id="호스트엔진_섹션_btn"
+                    onClick={() => 섹션변경('호스트엔진_섹션')}
+                    style={{ backgroundColor: 활성화된섹션 === '호스트엔진_섹션' ? '#EDEDED' : '#FAFAFA', color: 활성화된섹션 === '호스트엔진_섹션' ? '#1eb8ff' : 'black', borderBottom: 활성화된섹션 === '호스트엔진_섹션' ? '1px solid blue' : 'none' }}
+                  >
+                    <span>호스트 엔진</span>
+                  </div>
+                  <div
+                    className={`edit_aside_item`}
+                    id="선호도_섹션_btn"
+                    onClick={() => 섹션변경('선호도_섹션')}
+                    style={{ backgroundColor: 활성화된섹션 === '선호도_섹션' ? '#EDEDED' : '#FAFAFA', color: 활성화된섹션 === '선호도_섹션' ? '#1eb8ff' : 'black', borderBottom: 활성화된섹션 === '선호도_섹션' ? '1px solid blue' : 'none' }}
+                  >
+                    <span>선호도</span>
+                  </div>
+                </div>
 
-                    {/* 일반 */}
-                    {selectedTab === 'cluster_common_btn' && (
-                        <form className="cluster_common_form py-1">
-                            <div className="network_form_group">
-                            <label htmlFor="data_center">데이터 센터</label>
-                            <select id="data_center">
-                                <option value="default">Default</option>
+                {/* 폼의 다양한 섹션들 */}
+                <form action="#">
+                  {/* 공통 섹션 */}
+                  <div
+                    id="일반_섹션"
+                    style={{ display: 활성화된섹션 === '일반_섹션' ? 'block' : 'none' }}
+                  >
+                <div className="edit_first_content">
+                        <div>
+                            <label htmlFor="cluster">클러스터</label>
+                            <select id="cluster" disabled>
+                                <option value="default" >Default</option>
                             </select>
-                            </div>
-                        
-                            <div className="network_form_group">
-                            <div>
-                                <label htmlFor="name">이름</label>
-                            </div>
-                            <input type="text" id="name" />
-                            </div>
-                        
-                            <div className="network_form_group">
-                            <label htmlFor="description">설명</label>
-                            <input type="text" id="description" />
-                            </div>
-                        
-                            <div className="network_form_group">
+                            <div>데이터센터 Default</div>
+                        </div>
+                        <div>
+                            <label htmlFor="name1">이름</label>
+                            <input type="text" id="name1" />
+                        </div>
+                        <div>
                             <label htmlFor="comment">코멘트</label>
                             <input type="text" id="comment" />
-                            </div>
-                      
-                            {/* id 편집 */}
-                            <div className="network_form_group">
-                            <label htmlFor="management_network">관리 네트워크</label>
-                            <select id="management_network">
-                                <option value="ovirtmgmt">ovirtmgmt</option>
-                                <option value="ddd">ddd</option>
-                                <option value="hosted_engine">hosted_engine</option>
-                            </select>
-                            </div>
-                        
-                            <div className="network_form_group">
-                            <label htmlFor="cpu_architecture">CPU 아키텍처</label>
-                            <select id="cpu_architecture">
-                                <option value="정의되지 않음">정의되지 않음</option>
-                                <option value="x86_64">x86_64</option>
-                                <option value="ppc64">ppc64</option>
-                                <option value="s390x">s390x</option>
-                            </select>
-                            </div>
-                        
-                            <div className="network_form_group">
-                            <label htmlFor="cpu_type">CPU 유형</label>
-                            <select id="cpu_type">
-                                <option value="default">Default</option>
-                            </select>
-                            </div>
-                        
-                            <div className="network_form_group">
-                            <label htmlFor="chipset_firmware_type">침셋/펌웨어 유형</label>
-                            <select id="chipset_firmware_type">
-                                <option value="default">Default</option>
-                            </select>
-                            </div>
-                        
-                            <div className="network_checkbox_type2">
-                            <input type="checkbox" id="bios_change" name="bios_change" />
-                            <label htmlFor="bios_change">BIOS를 사용하여 기존 가상 머신/템플릿을 1440fx에서 Q35 칩셋으로 변경</label>
-                            </div>
-                        
-                            <div className="network_form_group">
-                            <label htmlFor="fips_mode">FIPS 모드</label>
-                            <select id="fips_mode">
-                                <option value="자동 감지">자동 감지</option>
-                                <option value="비활성화됨">비활성화됨</option>
-                                <option value="활성화됨">활성화됨</option>
-                            </select>
-                            </div>
-                        
-                            <div className="network_form_group">
-                            <label htmlFor="compatibility_version">호환 버전</label>
-                            <select id="compatibility_version">
-                                <option value="4.7">4.7</option>
-                            </select>
-                            </div>
-                        
-                            <div className="network_form_group">
-                            <label htmlFor="switch_type">스위치 유형</label>
-                            <select id="switch_type">
-                                <option value="Linux Bridge">Linux Bridge</option>
-                                <option value="OVS (기술 프리뷰)">OVS (기술 프리뷰)</option>
-                            </select>
-                            </div>
-                        
-                            <div className="network_form_group">
-                            <label htmlFor="firewall_type">방화벽 유형</label>
-                            <select id="firewall_type">
-                                <option value="iptables">iptables</option>
-                                <option value="firewalld">firewalld</option>
-                            </select>
-                            </div>
-                        
-                            <div className="network_form_group">
-                            <label htmlFor="default_network_provider">기본 네트워크 공급자</label>
-                            <select id="default_network_provider">
-                                <option value="기본 공급자가 없습니다.">기본 공급자가 없습니다.</option>
-                                <option value="ovirt-provider-ovn">ovirt-provider-ovn</option>
-                            </select>
-                            </div>
-                        
-                            <div className="network_form_group">
-                            <label htmlFor="max_memory_limit">로그인 최대 메모리 한계</label>
-                            <select id="max_memory_limit">
-                                <option value="default">Default</option>
-                            </select>
-                            </div>
-                        
-                            <div className="network_checkbox_type2">
-                            <input type="checkbox" id="virt_service_enabled" name="virt_service_enabled" />
-                            <label htmlFor="virt_service_enabled">Virt 서비스 활성화</label>
-                            </div>
-                        
-                            <div className="network_checkbox_type2">
-                            <input type="checkbox" id="gluster_service_enabled" name="gluster_service_enabled" />
-                            <label htmlFor="gluster_service_enabled">Gluster 서비스 활성화</label>
-                            </div>
-                        
-                            <div className="network_checkbox_type2">
-                            <span>추가 난수 생성기 소스:</span>
-                            </div>
-                        
-                            <div className="network_checkbox_type2">
-                            <input type="checkbox" id="dev_hwrng_source" name="dev_hwrng_source" />
-                            <label htmlFor="dev_hwrng_source">/dev/hwrng 소스</label>
-                            </div>
-                        </form>
-                      
-                    )}
-
-                    {/* 마이그레이션 정책 */}
-                    {selectedTab === 'cluster_migration_btn' && (
-                        <form className="py-2">
-                            <div className="network_form_group">
-                            <label htmlFor="migration_policy">마이그레이션 정책</label>
-                            <select id="migration_policy">
-                                <option value="default">Default</option>
-                            </select>
-                            </div>
-                        
-                            <div class="p-1.5">
-                            <span class="font-bold">최소 다운타임</span>
-                            <div>
-                                일반적인 상황에서 가상 머신을 마이그레이션할 수 있는 정책입니다. 가상 머신에 심각한 다운타임이 발생하면 안 됩니다. 가상 머신 마이그레이션이 오랫동안 수렴되지 않으면 마이그레이션이 중단됩니다. 게스트 에이전트 후크 메커니즘을 사용할 수 있습니다.
-                            </div>
-                            </div>
-                        
-                            <div class="p-1.5 mb-1">
-                            <span class="font-bold">대역폭</span>
-                            <div className="cluster_select_box">
-                                <div class="flex">
-                                <label htmlFor="bandwidth_policy">마이그레이션 정책</label>
-                                <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'blue', margin: '0.1rem', cursor: 'pointer' }} />
-                                </div>
-                                <select id="bandwidth_policy">
-                                <option value="default">Default</option>
-                                </select>
-                            </div>
-                            </div>
-                        
-                            <div className="px-1.5 flex relative">
-                            <span className="font-bold">복구정책</span>
-                            <FontAwesomeIcon
-                                icon={faInfoCircle}
-                                style={{ color: 'blue', margin: '0.1rem', cursor: 'pointer' }}
-                                onMouseEnter={() => setShowTooltip(true)} // 마우스를 올리면 툴팁을 보여줌
-                                onMouseLeave={() => setShowTooltip(false)} // 마우스를 떼면 툴팁을 숨김
-                            />
-                            {showTooltip && (
-                                <div className="tooltip-box">
-                                마이그레이션 암호화에 대한 설명입니다.
-                                </div>
-                            )}
-                            </div>
-                      
-                            <div className='host_text_radio_box px-1.5 py-0.5'>
-                            <input type="radio" id="password_option" name="encryption_option" />
-                            <label htmlFor="password_option">암호</label>
-                            </div>
-                        
-                            <div className='host_text_radio_box px-1.5 py-0.5'>
-                            <input type="radio" id="certificate_option" name="encryption_option" />
-                            <label htmlFor="certificate_option">암호</label>
-                            </div>
-                        
-                            <div className='host_text_radio_box px-1.5 py-0.5 mb-2'>
-                            <input type="radio" id="none_option" name="encryption_option" />
-                            <label htmlFor="none_option">암호</label>
-                            </div>
-                        
-                            <div class="m-1.5">
-                            <span class="font-bold">추가 속성</span>
-                            <div className="cluster_select_box">
-                                <label htmlFor="encryption_usage">마이그레이션 암호화 사용</label>
-                                <select id="encryption_usage">
-                                <option value="default">시스템 기본값 (암호화하지 마십시오)</option>
-                                <option value="encrypt">암호화</option>
-                                <option value="no_encrypt">암호화하지 마십시오</option>
-                                </select>
-                            </div>
-                            
-                            <div className="cluster_select_box">
-                                <label htmlFor="parallel_migration">마이그레이션 암호화 사용</label>
-                                <select id="parallel_migration">
-                                <option value="default">Disabled</option>
-                                <option value="auto">Auto</option>
-                                <option value="auto_parallel">Auto Parallel</option>
-                                <option value="custom">Custom</option>
-                                </select>
-                            </div>
-                        
-                            <div className="cluster_select_box">
-                                <label htmlFor="migration_encryption_text">마이그레이션 암호화 사용</label>
-                                <input type="text" id="migration_encryption_text" />
-                            </div>
-                            </div>
-                        </form>
-                      
-                    )}
-
-                   
-                    <div className="edit_footer">
-                        <button style={{ display: 'none' }}></button>
-                        <button>OK</button>
-                        <button onClick={closePopup}>취소</button>
+                        </div>
+                        <div>
+                            <label htmlFor="hostname">호스트이름/IP</label>
+                            <input type="text" id="hostname" />
+                        </div>
+                        <div>
+                            <label htmlFor="ssh_port">SSH 포트</label>
+                            <input type="text" id="ssh_port" value="22" />
+                        </div>
                     </div>
+
+          <div className='host_checkboxs'>
+            <div className='host_checkbox'>
+                <input type="checkbox" id="memory_balloon" name="memory_balloon" />
+                <label htmlFor="headless_mode">헤드리스 모드</label>
+            </div>
+            <div className='host_checkbox'>
+                <input type="checkbox" id="headless_mode_info" name="headless_mode_info" />
+                <label htmlFor="headless_mode_info">헤드리스 모드 정보</label>
+                <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }} fixedWidth/>
+            </div>
+          </div>
+
+          <div className='host_checkboxs'>
+            <div className='host_textbox'>
+                <label htmlFor="user_name">사용자 이름</label>
+                <input type="text" id="user_name" />
+            </div>
+
+            <div className='host_text_raido_box'>
+                <div>
+                  <input type="radio" id="password" name="name_option" />
+                  <label htmlFor="password">암호</label>
                 </div>
+                <input type="text" id="radio1_name" />
+            </div>
+
+            <div className='host_radiobox'>
+                <input type="radio" id="ssh_key" name="name_option" />
+                <label htmlFor="ssh_key">SSH 공개키</label>
+            </div>
+
+          </div>
+
+                  </div>{/*일반섹션끝 */}
+
+                  {/* 전원 관리 섹션 */}
+                  <div
+                    id="전원관리_섹션"
+                    style={{ display: 활성화된섹션 === '전원관리_섹션' ? 'block' : 'none' }}
+                  >
+                    
+                    <div className='host_checkboxs'>
+                      <div className='host_checkbox'>
+                          <input type="checkbox" id="enable_forwarding" name="enable_forwarding" />
+                          <label htmlFor="enable_forwarding">전송 관리 활성</label>
+                      </div>
+                      <div className='host_checkbox'>
+                          <input type="checkbox" id="kdump_usage" name="kdump_usage" checked />
+                          <label htmlFor="kdump_usage">Kdump 통합</label>
+                      </div>
+                      <div className='host_checkbox'>
+                          <input type="checkbox" id="disable_forwarding_policy" name="disable_forwarding_policy" />
+                          <label htmlFor="disable_forwarding_policy">전송 관리 정책 제어를 비활성화</label>
+                      </div>
+
+
+                      <span className='sorted_agents'>순서대로 정렬된 에이전트</span>
+                    </div>
+                    
+                    
+                    <div className='addFence_agent'>
+                      <span>펜스 에이전트 추가</span>
+                      <button>+</button>
+                    </div>
+
+                    <div className='advanced_objec_add'>
+                <button onClick={toggleHiddenParameter}>
+                  {isHiddenParameterVisible ? '-' : '+'}
+                </button>
+                <span>고급 매개 변수</span>
+                {isHiddenParameterVisible && (
+                <div className='host_hidden_parameter'>
+                 
+                  <div>전원 관리 프록시 설정</div>
+                  <div>
+                    <div className='proxy_content'>
+                      <div className='font-bold'>1.</div>
+                      <div className='w-6'>cluster</div>
+                      <div>  
+                        <button> <FontAwesomeIcon icon={faArrowUp} fixedWidth /></button>
+                        <button><FontAwesomeIcon icon={faArrowDown} fixedWidth /></button>
+                      </div>
+                      <button><FontAwesomeIcon icon={faMinus} fixedWidth /></button>
+                    </div>
+                    <div className='proxy_content'>
+                      <div className='font-bold'>2.</div>
+                      <div className='w-6'>dc</div>
+                      <div>  
+                        <button> <FontAwesomeIcon icon={faArrowUp} fixedWidth /></button>
+                        <button><FontAwesomeIcon icon={faArrowDown} fixedWidth /></button>
+                      </div>
+                      <button><FontAwesomeIcon icon={faMinus} fixedWidth /></button>
+                    </div>
+                  </div>
+
+                  <div className='proxy_add'>
+                    <div>전원 관리 프록시 추가</div>
+                    <button><FontAwesomeIcon icon={faPlus} fixedWidth /></button>
+                  </div>
+                </div>
+                )}
+              </div>
+                    
+
+                  </div>
+
+                  {/* 호스트 엔진 섹션 */}
+                  <div
+                    id="호스트엔진_섹션"
+                    style={{ display: 활성화된섹션 === '호스트엔진_섹션' ? 'block' : 'none' }}
+                  >
+                    <div className="host_policy">
+                        <label htmlFor="host_action">호스트 연관 전처리 작업 선택</label>
+                        <select id="host_action">
+                            <option value="none">없음</option>
+                        </select>
+                    </div>
+
+
+                  </div>
+
+                  {/* 선호도 섹션 */}
+                  <div
+                    id="선호도_섹션"
+                    style={{ display: 활성화된섹션 === '선호도_섹션' ? 'block' : 'none' }}
+                  >
+                    <div className="preference_outer">
+                      <div className="preference_content">
+                        <label htmlFor="preference_group">선호도 그룹을 선택하십시오</label>
+                          <div>
+                            <select id="preference_group">
+                              <option value="none"></option>
+                            </select>
+                            <button>추가</button>
+                          </div>
+                      </div>
+                      <div className="preference_noncontent">
+                        <div>선택된 선호도 그룹</div>
+                        <div>선택된 선호도 그룹이 없습니다</div>
+                      </div>
+                      <div className="preference_content">
+                        <label htmlFor="preference_label">선호도 레이블 선택</label>
+                        <div>
+                          <select id="preference_label">
+                            <option value="none"></option>
+                          </select>
+                          <button>추가</button>
+                        </div>
+                      </div>
+                      <div className="preference_noncontent">
+                        <div>선택한 선호도 레이블</div>
+                        <div>선호도 레이블이 선택되어있지 않습니다</div>
+                      </div>
+
+                    </div>
+                  </div>
+
+                </form>
+              </div>
+
+              <div className="edit_footer">
+                <button>OK</button>
+                <button onClick={closePopup}>취소</button>
+              </div>
             </Modal>
+            {/* 호스트(편집) 팝업*/}
+            <Modal
+              isOpen={activePopup === 'host_edit'}
+              onRequestClose={closePopup}
+              contentLabel="편집"
+              className="host_new_popup"
+              overlayClassName="host_new_outer"
+              shouldCloseOnOverlayClick={false}
+            >
+              <div className="popup_header">
+                <h1>호스트 수정</h1>
+                <button onClick={closePopup}>
+                  <FontAwesomeIcon icon={faTimes} fixedWidth/>
+                </button>
+              </div>
+
+              <div className="edit_body">
+                <div className="edit_aside">
+                  <div
+                    className={`edit_aside_item`}
+                    id="일반_섹션_btn"
+                    onClick={() => 섹션변경('일반_섹션')}
+                    style={{ backgroundColor: 활성화된섹션 === '일반_섹션' ? '#EDEDED' : '#FAFAFA', color: 활성화된섹션 === '일반_섹션' ? '#1eb8ff' : 'black', borderBottom: 활성화된섹션 === '일반_섹션' ? '1px solid blue' : 'none' }}
+                  >
+                    <span>일반</span>
+                  </div>
+                  <div
+                    className={`edit_aside_item`}
+                    id="전원관리_섹션_btn"
+                    onClick={() => 섹션변경('전원관리_섹션')}
+                    style={{ backgroundColor: 활성화된섹션 === '전원관리_섹션' ? '#EDEDED' : '#FAFAFA', color: 활성화된섹션 === '전원관리_섹션' ? '#1eb8ff' : 'black', borderBottom: 활성화된섹션 === '전원관리_섹션' ? '1px solid blue' : 'none' }}
+                  >
+                    <span>전원 관리</span>
+                  </div>
+                  <div
+                    className={`edit_aside_item`}
+                    id="호스트엔진_섹션_btn"
+                    onClick={() => 섹션변경('호스트엔진_섹션')}
+                    style={{ backgroundColor: 활성화된섹션 === '호스트엔진_섹션' ? '#EDEDED' : '#FAFAFA', color: 활성화된섹션 === '호스트엔진_섹션' ? '#1eb8ff' : 'black', borderBottom: 활성화된섹션 === '호스트엔진_섹션' ? '1px solid blue' : 'none' }}
+                  >
+                    <span>호스트 엔진</span>
+                  </div>
+                  <div
+                    className={`edit_aside_item`}
+                    id="선호도_섹션_btn"
+                    onClick={() => 섹션변경('선호도_섹션')}
+                    style={{ backgroundColor: 활성화된섹션 === '선호도_섹션' ? '#EDEDED' : '#FAFAFA', color: 활성화된섹션 === '선호도_섹션' ? '#1eb8ff' : 'black', borderBottom: 활성화된섹션 === '선호도_섹션' ? '1px solid blue' : 'none' }}
+                  >
+                    <span>선호도</span>
+                  </div>
+                </div>
+
+                {/* 폼의 다양한 섹션들 */}
+                <form action="#">
+                  {/* 공통 섹션 */}
+                  <div
+                    id="일반_섹션"
+                    style={{ display: 활성화된섹션 === '일반_섹션' ? 'block' : 'none' }}
+                  >
+                <div className="edit_first_content">
+                        <div>
+                            <label htmlFor="cluster">클러스터</label>
+                            <select id="cluster" disabled>
+                                <option value="default" >Default</option>
+                            </select>
+                            <div>데이터센터 Default</div>
+                        </div>
+                        <div>
+                            <label htmlFor="name1">이름</label>
+                            <input type="text" id="name1" />
+                        </div>
+                        <div>
+                            <label htmlFor="comment">코멘트</label>
+                            <input type="text" id="comment" />
+                        </div>
+                        <div>
+                            <label htmlFor="hostname">호스트이름/IP</label>
+                            <input type="text" id="hostname" />
+                        </div>
+                        <div>
+                            <label htmlFor="ssh_port">SSH 포트</label>
+                            <input type="text" id="ssh_port" value="22" />
+                        </div>
+                    </div>
+
+          <div className='host_checkboxs'>
+            <div className='host_checkbox'>
+                <input type="checkbox" id="memory_balloon" name="memory_balloon" />
+                <label htmlFor="headless_mode">헤드리스 모드</label>
+            </div>
+            <div className='host_checkbox'>
+                <input type="checkbox" id="headless_mode_info" name="headless_mode_info" />
+                <label htmlFor="headless_mode_info">헤드리스 모드 정보</label>
+                <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }} fixedWidth/>
+            </div>
+          </div>
+
+          <div className='host_checkboxs'>
+            <div className='host_textbox'>
+                <label htmlFor="user_name">사용자 이름</label>
+                <input type="text" id="user_name" />
+            </div>
+
+            <div className='host_text_raido_box'>
+                <div>
+                  <input type="radio" id="password" name="name_option" />
+                  <label htmlFor="password">암호</label>
+                </div>
+                <input type="text" id="radio1_name" />
+            </div>
+
+            <div className='host_radiobox'>
+                <input type="radio" id="ssh_key" name="name_option" />
+                <label htmlFor="ssh_key">SSH 공개키</label>
+            </div>
+
+          </div>
+
+                  </div>{/*일반섹션끝 */}
+
+                  {/* 전원 관리 섹션 */}
+                  <div
+                    id="전원관리_섹션"
+                    style={{ display: 활성화된섹션 === '전원관리_섹션' ? 'block' : 'none' }}
+                  >
+                    
+                    <div className='host_checkboxs'>
+                      <div className='host_checkbox'>
+                          <input type="checkbox" id="enable_forwarding" name="enable_forwarding" />
+                          <label htmlFor="enable_forwarding">전송 관리 활성</label>
+                      </div>
+                      <div className='host_checkbox'>
+                          <input type="checkbox" id="kdump_usage" name="kdump_usage" checked />
+                          <label htmlFor="kdump_usage">Kdump 통합</label>
+                      </div>
+                      <div className='host_checkbox'>
+                          <input type="checkbox" id="disable_forwarding_policy" name="disable_forwarding_policy" />
+                          <label htmlFor="disable_forwarding_policy">전송 관리 정책 제어를 비활성화</label>
+                      </div>
+
+
+                      <span className='sorted_agents'>순서대로 정렬된 에이전트</span>
+                    </div>
+                    
+                    
+                    <div className='addFence_agent'>
+                      <span>펜스 에이전트 추가</span>
+                      <button>+</button>
+                    </div>
+
+                    <div className='advanced_objec_add'>
+                <button onClick={toggleHiddenParameter}>
+                  {isHiddenParameterVisible ? '-' : '+'}
+                </button>
+                <span>고급 매개 변수</span>
+                {isHiddenParameterVisible && (
+                <div className='host_hidden_parameter'>
+                 
+                  <div>전원 관리 프록시 설정</div>
+                  <div>
+                    <div className='proxy_content'>
+                      <div className='font-bold'>1.</div>
+                      <div className='w-6'>cluster</div>
+                      <div>  
+                        <button> <FontAwesomeIcon icon={faArrowUp} fixedWidth /></button>
+                        <button><FontAwesomeIcon icon={faArrowDown} fixedWidth /></button>
+                      </div>
+                      <button><FontAwesomeIcon icon={faMinus} fixedWidth /></button>
+                    </div>
+                    <div className='proxy_content'>
+                      <div className='font-bold'>2.</div>
+                      <div className='w-6'>dc</div>
+                      <div>  
+                        <button> <FontAwesomeIcon icon={faArrowUp} fixedWidth /></button>
+                        <button><FontAwesomeIcon icon={faArrowDown} fixedWidth /></button>
+                      </div>
+                      <button><FontAwesomeIcon icon={faMinus} fixedWidth /></button>
+                    </div>
+                  </div>
+
+                  <div className='proxy_add'>
+                    <div>전원 관리 프록시 추가</div>
+                    <button><FontAwesomeIcon icon={faPlus} fixedWidth /></button>
+                  </div>
+                </div>
+                )}
+              </div>
+                    
+
+                  </div>
+
+                  {/* 호스트 엔진 섹션 */}
+                  <div
+                    id="호스트엔진_섹션"
+                    style={{ display: 활성화된섹션 === '호스트엔진_섹션' ? 'block' : 'none' }}
+                  >
+                    <div className="host_policy">
+                        <label htmlFor="host_action">호스트 연관 전처리 작업 선택</label>
+                        <select id="host_action">
+                            <option value="none">없음</option>
+                        </select>
+                    </div>
+
+
+                  </div>
+
+                  {/* 선호도 섹션 */}
+                  <div
+                    id="선호도_섹션"
+                    style={{ display: 활성화된섹션 === '선호도_섹션' ? 'block' : 'none' }}
+                  >
+                    <div className="preference_outer">
+                      <div className="preference_content">
+                        <label htmlFor="preference_group">선호도 그룹을 선택하십시오</label>
+                          <div>
+                            <select id="preference_group">
+                              <option value="none"></option>
+                            </select>
+                            <button>추가</button>
+                          </div>
+                      </div>
+                      <div className="preference_noncontent">
+                        <div>선택된 선호도 그룹</div>
+                        <div>선택된 선호도 그룹이 없습니다</div>
+                      </div>
+                      <div className="preference_content">
+                        <label htmlFor="preference_label">선호도 레이블 선택</label>
+                        <div>
+                          <select id="preference_label">
+                            <option value="none"></option>
+                          </select>
+                          <button>추가</button>
+                        </div>
+                      </div>
+                      <div className="preference_noncontent">
+                        <div>선택한 선호도 레이블</div>
+                        <div>선호도 레이블이 선택되어있지 않습니다</div>
+                      </div>
+
+                    </div>
+                  </div>
+
+                </form>
+              </div>
+
+              <div className="edit_footer">
+                <button>OK</button>
+                <button onClick={closePopup}>취소</button>
+              </div>
+            </Modal>
+
+          
             {/*도메인(새로운 도메인)팝업 */}
             <Modal
                 isOpen={activePopup === 'newDomain'}
@@ -1932,6 +2631,1675 @@ function RutilManager() {
                 </div>
                 </div>
             </Modal>
+
+        {/* 가상머신( 새로만들기)팝업 */}   
+  <Modal
+    isOpen={activePopup === 'vm_new'}
+    onRequestClose={closePopup}
+    contentLabel="가상머신 편집"
+    className="edit_popup"
+    overlayClassName="edit_popup_outer"
+    shouldCloseOnOverlayClick={false}
+  >
+ <div id="edit_popup">
+            <div className="popup_header">
+              <h1>가상머신 생성</h1>
+              <button onClick={closePopup}>
+                <FontAwesomeIcon icon={faTimes} fixedWidth />
+              </button>
+            </div>
+            
+            <div className="edit_body">
+            <div className="edit_aside">
+                <div
+                  className={`edit_aside_item ${activeSection === 'common_outer' ? 'active' : ''}`}
+                  id="common_outer_btn"
+                  onClick={() => handleSectionChange('common_outer')}
+                >
+                  <span>일반</span>
+                </div>
+                <div
+                  className={`edit_aside_item ${activeSection === 'system_outer' ? 'active' : ''}`}
+                  id="system_outer_btn"
+                  onClick={() => handleSectionChange('system_outer')}
+                >
+                  <span>시스템</span>
+                </div>
+                <div
+                  className={`edit_aside_item ${activeSection === 'host_outer' ? 'active' : ''}`}
+                  id="host_outer_btn"
+                  onClick={() => handleSectionChange('host_outer')}
+                >
+                  <span>호스트</span>
+                </div>
+                <div
+                  className={`edit_aside_item ${activeSection === 'ha_mode_outer' ? 'active' : ''}`}
+                  id="ha_mode_outer_btn"
+                  onClick={() => handleSectionChange('ha_mode_outer')}
+                >
+                  <span>고가용성</span>
+                </div>
+                <div
+                  className={`edit_aside_item ${activeSection === 'res_alloc_outer' ? 'active' : ''}`}
+                  id="res_alloc_outer_btn"
+                  onClick={() => handleSectionChange('res_alloc_outer')}
+                >
+                  <span>리소스 할당</span>
+                </div>
+                <div
+                  className={`edit_aside_item ${activeSection === 'boot_outer' ? 'active' : ''}`}
+                  id="boot_outer_btn"
+                  onClick={() => handleSectionChange('boot_outer')}
+                >
+                  <span>부트 옵션</span>
+                </div>
+                
+              </div>
+
+
+                    <form action="#">
+                        {/* 일반 */}
+                        <div id="common_outer" style={{ display: activeSection === 'common_outer' ? 'block' : 'none' }}>
+                            <div className="edit_first_content">
+                                <div>
+                                    <label htmlFor="cluster">클러스터</label>
+                                    <select id="cluster">
+                                        <option value="default">Default</option>
+                                    </select>
+                                    <div>데이터센터 Default</div>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
+                                    <select id="template" disabled>
+                                        <option value="test02">test02</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label htmlFor="os">운영 시스템</label>
+                                    <select id="os">
+                                        <option value="linux">Linux</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label htmlFor="firmware">칩셋/펌웨어 유형</label>
+                                    <select id="firmware">
+                                        <option value="bios">BIOS의 Q35 칩셋</option>
+                                    </select>
+                                </div>
+                                <div style={{ marginBottom: '2%' }}>
+                                    <label htmlFor="optimization">최적화 옵션</label>
+                                    <select id="optimization">
+                                        <option value="server">서버</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="edit_second_content">
+                                <div>
+                                    <label htmlFor="name">이름</label>
+                                    <input type="text" id="name" value="test02" />
+                                </div>
+                                <div>
+                                    <label htmlFor="description">설명</label>
+                                    <input type="text" id="description" />
+                                </div>
+                            </div>
+                            <div className="edit_third_content">
+                                <div>
+                                    <span>하드디스크</span>
+                                </div>
+                                <div>
+                                    <button>연결</button>
+                                    <button>생성</button>
+                                    <div className='flex'>
+                                        <button>+</button>
+                                        <button>-</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="edit_fourth_content">
+                                <div className='edit_fourth_content_select flex'>
+                                    <label htmlFor="network_adapter">네트워크 어댑터 1</label>
+                                    <select id="network_adapter">
+                                        <option value="default">Default</option>
+                                    </select>
+                                    
+                                </div>
+                                <div className='flex'>
+                                    <button>+</button>
+                                    <button>-</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 시스템 */}
+                        <div id="system_outer" style={{ display: activeSection === 'system_outer' ? 'block' : 'none' }}>
+                            
+                            <div className="edit_second_content">
+                                <div>
+                                    <label htmlFor="memory_size">메모리 크기</label>
+                                    <input type="text" id="memory_size" value="2048 MB" readOnly />
+                                </div>
+                                <div>
+                                    <div>
+                                        <label htmlFor="max_memory">최대 메모리</label>
+                                        <i className="fa fa-info-circle"></i>
+                                    </div>
+                                    <input type="text" id="max_memory" value="8192 MB" readOnly />
+                                </div>
+
+                                <div>
+                                    <div>
+                                        <label htmlFor="actual_memory">할당할 실제 메모리</label>
+                                        <i className="fa fa-info-circle"></i>
+                                    </div>
+                                    <input type="text" id="actual_memory" value="2048 MB" readOnly />
+                                </div>
+
+                                <div>
+                                    <div>
+                                        <label htmlFor="total_cpu">총 가상 CPU</label>
+                                        <i className="fa fa-info-circle"></i>
+                                    </div>
+                                    <input type="text" id="total_cpu" value="1" readOnly />
+                                </div>
+                                <div>
+                                    <div>
+                                        <i className="fa fa-arrow-circle-o-right" style={{ color: 'rgb(56, 56, 56)' }}></i>
+                                        <span>고급 매개 변수</span>
+                                    </div>
+                                </div>
+                                <div style={{ fontWeight: 600 }}>일반</div>
+                                <div style={{ paddingTop: 0, paddingBottom: '4%' }}>
+                                    <div>
+                                        <label htmlFor="time_offset">하드웨어 클릭의 시간 오프셋</label>
+                                        <i className="fa fa-info-circle"></i>
+                                    </div>
+                                    <select id="time_offset">
+                                        <option value="(GMT+09:00) Korea Standard Time">(GMT+09:00) Korea Standard Time</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 콘솔(삭ㅈ제) */}
+                        {/* <div id="console_outer" style={{ display: activeSection === 'console_outer' ? 'block' : 'none' }}>
+                            <div className="edit_first_content">
+                                <div>
+                                    <label htmlFor="cluster">클러스터</label>
+                                    <select id="cluster">
+                                        <option value="default">Default</option>
+                                    </select>
+                                    <div>데이터센터 Default</div>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
+                                    <select id="template" disabled>
+                                        <option value="test02">test02</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label htmlFor="os">운영 시스템</label>
+                                    <select id="os">
+                                        <option value="linux">Linux</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label htmlFor="firmware">칩셋/펌웨어 유형</label>
+                                    <select id="firmware">
+                                        <option value="bios">BIOS의 Q35 칩셋</option>
+                                    </select>
+                                </div>
+                                <div style={{ marginBottom: '2%' }}>
+                                    <label htmlFor="optimization">최적화 옵션</label>
+                                    <select id="optimization">
+                                        <option value="server">서버</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="res_alloc_checkbox" style={{ marginBottom: 0 }}>
+                                <span>그래픽 콘솔</span>
+                                <div>
+                                    <input type="checkbox" id="memory_balloon" name="memory_balloon" />
+                                    <label htmlFor="memory_balloon">헤드리스(headless)모드</label>
+                                    <i className="fa fa-info-circle" style={{ color: '#1ba4e4' }}></i>
+                                </div>
+                            </div>
+
+                            <div className="edit_second_content">
+                                <div style={{ paddingTop: 0 }}>
+                                    <label htmlFor="memory_size">비디오 유형</label>
+                                    <input type="text" id="memory_size" value="VGA" readOnly />
+                                </div>
+                                <div>
+                                    <div>
+                                        <label htmlFor="max_memory">그래픽 프로토콜</label>
+                                    </div>
+                                    <input type="text" id="max_memory" value="VNC" readOnly />
+                                </div>
+
+                                <div>
+                                    <div>
+                                        <label htmlFor="actual_memory">VNC 키보드 레이아웃</label>
+                                    </div>
+                                    <input type="text" id="actual_memory" value="기본값[en-us]" readOnly />
+                                </div>
+
+                                <div>
+                                    <div>
+                                        <label htmlFor="total_cpu">콘솔 분리 작업</label>
+                                    </div>
+                                    <input type="text" id="total_cpu" value="화면 잠금" readOnly />
+                                </div>
+                                <div>
+                                    <div>
+                                        <label htmlFor="disconnect_action_delay">Disconnect Action Delay in Minutes</label>
+                                    </div>
+                                    <input type="text" id="disconnect_action_delay" value="0" disabled />
+                                </div>
+                                <div id="monitor">
+                                    <label htmlFor="screen">모니터</label>
+                                    <select id="screen">
+                                        <option value="test02">1</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="console_checkboxs">
+                                <div className="checkbox_group">
+                                    <input type="checkbox" id="memory_balloon" name="memory_balloon" disabled />
+                                    <label style={{ color: '#A1A1A1' }} htmlFor="memory_balloon">USB활성화</label>
+                                </div>
+                                <div className="checkbox_group">
+                                    <input type="checkbox" id="memory_balloon" name="memory_balloon" disabled />
+                                    <label style={{ color: '#A1A1A1' }} htmlFor="memory_balloon">스마트카드 사용가능</label>
+                                </div>
+                                <span>단일 로그인 방식</span>
+                                <div className="checkbox_group">
+                                    <input type="checkbox" id="memory_balloon" name="memory_balloon" />
+                                    <label htmlFor="memory_balloon">USB활성화</label>
+                                </div>
+                                <div className="checkbox_group">
+                                    <input type="checkbox" id="memory_balloon" name="memory_balloon" />
+                                    <label htmlFor="memory_balloon">스마트카드 사용가능</label>
+                                </div>
+                            </div>
+                        </div> */}
+
+                        {/* 호스트 */}
+                        <div id="host_outer" style={{ display: activeSection === 'host_outer' ? 'block' : 'none' }}>
+                         
+
+                            <div id="host_second_content">
+                                <div style={{ fontWeight: 600 }}>실행 호스트:</div>
+                                <div className="form_checks">
+                                    <div>
+                                        <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" checked />
+                                        <label className="form-check-label" htmlFor="flexRadioDefault1">
+                                            클러스터 내의 호스트
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <div>
+                                            <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" />
+                                            <label className="form-check-label" htmlFor="flexRadioDefault2">
+                                                특정 호스트
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <select id="specific_host_select">
+                                                <option value="host02.ititinfo.com">host02.ititinfo.com</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="host_checkboxs">
+                                    <span>CPU 옵션:</span>
+                                    <div className="host_checkbox">
+                                        <input type="checkbox" id="host_cpu_passthrough" name="host_cpu_passthrough" />
+                                        <label htmlFor="host_cpu_passthrough">호스트 CPU 통과</label>
+                                        <i className="fa fa-info-circle"></i>
+                                    </div>
+                                   
+                                </div>
+                            </div>
+
+                            <div id="host_third_content">
+                                <div style={{ fontWeight: 600 }}>마이그레이션 옵션:</div>
+                                <div>
+                                    <div>
+                                        <span>마이그레이션 모드</span>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                    </div>
+                                    <select id="migration_mode">
+                                        <option value="수동 및 자동 마이그레이션 허용">수동 및 자동 마이그레이션 허용</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <div>
+                                        <span>마이그레이션 정책</span>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                    </div>
+                                    <select id="migration_policy">
+                                        <option value="클러스터 기본값(Minimal downtime)">클러스터 기본값(Minimal downtime)</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <div>
+                                        <span>Parallel Migrations</span>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                    </div>
+                                    <select id="parallel_migrations" readOnly>
+                                        <option value="클러스터 기본값(Disabled)">클러스터 기본값(Disabled)</option>
+                                    </select>
+                                </div>
+                               
+                            </div>
+                        </div>
+
+                        {/* 고가용성 */}
+                        <div id="ha_mode_outer" style={{ display: activeSection === 'ha_mode_outer' ? 'block' : 'none' }}>
+                            {/* <div className="edit_first_content">
+                                <div>
+                                    <label htmlFor="cluster">클러스터</label>
+                                    <select id="cluster">
+                                        <option value="default">Default</option>
+                                    </select>
+                                    <div>데이터센터 Default</div>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
+                                    <select id="template" disabled>
+                                        <option value="test02">test02</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label htmlFor="os">운영 시스템</label>
+                                    <select id="os">
+                                        <option value="linux">Linux</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label htmlFor="firmware">칩셋/펌웨어 유형</label>
+                                    <select id="firmware">
+                                        <option value="bios">BIOS의 Q35 칩셋</option>
+                                    </select>
+                                </div>
+                                <div style={{ marginBottom: '2%' }}>
+                                    <label htmlFor="optimization">최적화 옵션</label>
+                                    <select id="optimization">
+                                        <option value="server">서버</option>
+                                    </select>
+                                </div>
+                            </div> */}
+
+                            <div id="ha_mode_second_content">
+                                <div className="checkbox_group">
+                                    <input className="check_input" type="checkbox" value="" id="ha_mode_box" />
+                                    <label className="check_label" htmlFor="ha_mode_box">
+                                        고가용성
+                                    </label>
+                                </div>
+                                <div>
+                                    <div>
+                                        <span>가상 머신 임대 대상 스토리지 도메인</span>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                    </div>
+                                    <select id="no_lease" disabled>
+                                        <option value="가상 머신 임대 없음">가상 머신 임대 없음</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <div>
+                                        <span>재개 동작</span>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                    </div>
+                                    <select id="force_shutdown">
+                                        <option value="강제 종료">강제 종료</option>
+                                    </select>
+                                </div>
+                                <div className="ha_mode_article">
+                                    <span>실행/마이그레이션 큐에서 우선순위 : </span>
+                                    <div>
+                                        <span>우선 순위</span>
+                                        <select id="priority">
+                                            <option value="낮음">낮음</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="ha_mode_article">
+                                    <span>위치독</span>
+                                    <div>
+                                        <span>위치독 모델</span>
+                                        <select id="watchdog_model">
+                                            <option value="감시 장치 없음">감시 장치 없음</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <span style={{ color: 'gray' }}>위치독 작업</span>
+                                        <select id="watchdog_action" disabled>
+                                            <option value="없음">없음</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 리소스 할당 */}
+                        <div id="res_alloc_outer" style={{ display: activeSection === 'res_alloc_outer' ? 'block' : 'none' }}>
+                            {/* <div className="edit_first_content">
+                                <div>
+                                    <label htmlFor="cluster">클러스터</label>
+                                    <select id="cluster">
+                                        <option value="default">Default</option>
+                                    </select>
+                                    <div>데이터센터 Default</div>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
+                                    <select id="template" disabled>
+                                        <option value="test02">test02</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label htmlFor="os">운영 시스템</label>
+                                    <select id="os">
+                                        <option value="linux">Linux</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label htmlFor="firmware">칩셋/펌웨어 유형</label>
+                                    <select id="firmware">
+                                        <option value="bios">BIOS의 Q35 칩셋</option>
+                                    </select>
+                                </div>
+                                <div style={{ marginBottom: '2%' }}>
+                                    <label htmlFor="optimization">최적화 옵션</label>
+                                    <select id="optimization">
+                                        <option value="server">서버</option>
+                                    </select>
+                                </div>
+                            </div> */}
+
+                            <div className="res_second_content">
+                                <div className="cpu_res">
+                                    <span style={{ fontWeight: 600 }}>CPU 할당:</span>
+                                    <div className='cpu_res_box'>
+                                        <span>CPU 프로파일</span>
+                                        <select id="watchdog_action">
+                                            <option value="없음">Default</option>
+                                        </select>
+                                    </div>
+                                    <div className='cpu_res_box'>
+                                        <span>CPU 공유</span>
+                                        <div id="cpu_sharing">
+                                            <select id="watchdog_action" style={{ width: '63%' }}>
+                                                <option value="없음">비활성화됨</option>
+                                            </select>
+                                            <input type="text" value="0" disabled />
+                                        </div>
+                                    </div>
+                                    <div className='cpu_res_box'>
+                                        <span>CPU Pinning Policy</span>
+                                        <select id="watchdog_action">
+                                            <option value="없음">None</option>
+                                        </select>
+                                    </div>
+                                    <div className='cpu_res_box'>
+                                        <div>
+                                            <span>CPU 피닝 토폴로지</span>
+                                            <i className="fa fa-info-circle"></i>
+                                        </div>
+                                        <input type="text" disabled />
+                                    </div>
+                                </div>
+
+                                <span style={{ fontWeight: 600 }}>메모리 할당:</span>
+                                <div id="threads">
+                                    <div className='checkbox_group'>
+                                        <input type="checkbox" id="enableIOThreads" name="enableIOThreads" />
+                                        <label htmlFor="enableIOThreads">메모리 Balloon 활성화</label>
+                                    </div>
+                                
+                                </div>
+
+                                <span style={{ fontWeight: 600 }}>I/O 스레드:</span>
+                                <div id="threads">
+                                    <div className='checkbox_group'>
+                                        <input type="checkbox" id="enableIOThreads" name="enableIOThreads" />
+                                        <label htmlFor="enableIOThreads">I/O 스레드 활성화</label>
+                                    </div>
+                                    <div>
+                                        <input type="text" />
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/>
+                                    </div>
+                                </div>
+
+                                <span className='mb-1' style={{ fontWeight: 600 }}>큐:</span>
+                                
+                                    <div className='checkbox_group mb-1'>
+                                        <input type="checkbox" id="enable_multi_queues" name="enable_multi_queues" />
+                                        <label htmlFor="enable_multi_queues">멀티 큐 사용</label>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                    </div>
+                                    <div className='checkbox_group mb-1'>
+                                        <input type="checkbox" id="enable_virtio_scsi" name="enable_virtio_scsi" />
+                                        <label htmlFor="enable_virtio_scsi">VirtIO-SCSI 활성화</label>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                    </div>
+                                    <div className='cpu_res_box mb-1' >
+                                        <span>VirtIO-SCSI Multi Queues</span>
+                                        <div id="cpu_sharing">
+                                            <select id="multi_queue_status" style={{ width: '63%' }}>
+                                                <option value="없음">비활성화됨</option>
+                                            </select>
+                                            <input type="text" value="0" disabled />
+                                        </div>
+                                    </div>
+                                    
+                            </div>
+                        </div>
+
+                        {/* 부트 옵션 */}
+                        <div id="boot_outer" style={{ display: activeSection === 'boot_outer' ? 'block' : 'none' }}>
+                            <div className="res_second_content">
+                                <div className="cpu_res">
+                                    <span style={{ fontWeight: 600 }}>부트순서:</span>
+                                    <div className='cpu_res_box'>
+                                        <span>첫 번째 장치</span>
+                                        <select id="watchdog_action">
+                                            <option value="없음">하드디스크</option>
+                                        </select>
+                                    </div>
+                                    <div className='cpu_res_box'>
+                                        <span>두 번째 장치</span>
+                                        <select id="watchdog_action">
+                                            <option value="없음">Default</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div id="boot_checkboxs">
+                                    <div>
+                                        <div className='checkbox_group'>
+                                            <input type="checkbox" id="connectCdDvd" name="connectCdDvd" />
+                                            <label htmlFor="connectCdDvd">CD/DVD 연결</label>
+                                        </div>
+                                        <div>
+                                            <input type="text" disabled />
+                                            <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                        </div>
+                                    </div>
+
+                                    <div className='checkbox_group mb-1.5'>
+                                        <input type="checkbox" id="enableBootMenu" name="enableBootMenu" />
+                                        <label htmlFor="enableBootMenu">부팅 메뉴를 활성화</label>
+                                    </div>
+                                </div>
+
+                                <div className="cpu_res border-t border-gray-500 py-1">
+                                    <span style={{ fontWeight: 600 }}>Linux 부팅 옵션:</span>
+                                    <div className='cpu_res_box'>
+                                        <label htmlFor="kernel_path">커널 경로</label>
+                                        <input type="text" id="kernel_path" value="2048 MB" readOnly />
+                                    </div>
+
+                                    <div className='cpu_res_box'>
+                                        <label htmlFor="initrd_path">initrd 경로</label>
+                                        <input type="text" id="initrd_path" value="2048 MB" readOnly />
+                                    </div>
+
+                                    <div className='cpu_res_box'>
+                                        <label htmlFor="kernel_parameters">커널 매개 변수</label>
+                                        <input type="text" id="kernel_parameters" value="2048 MB" readOnly />
+                                    </div>
+
+
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div className="edit_footer">
+                    <button>OK</button>
+                    <button onClick={closePopup}>취소</button>
+                </div>
+            </div>
+            </Modal>
+            {/* 가상머신(편집)팝업 */}
+            <Modal
+                 isOpen={activePopup === 'vm_edit'}
+                onRequestClose={closePopup}
+                contentLabel="가상머신 편집"
+                className="edit_popup"
+                overlayClassName="edit_popup_outer"
+                shouldCloseOnOverlayClick={false}
+            >
+ <div id="edit_popup">
+            <div className="popup_header">
+              <h1>가상머신 편집</h1>
+              <button onClick={closePopup}>
+                <FontAwesomeIcon icon={faTimes} fixedWidth />
+              </button>
+            </div>
+            
+            <div className="edit_body">
+            <div className="edit_aside">
+                <div
+                  className={`edit_aside_item ${activeSection === 'common_outer' ? 'active' : ''}`}
+                  id="common_outer_btn"
+                  onClick={() => handleSectionChange('common_outer')}
+                >
+                  <span>일반</span>
+                </div>
+                <div
+                  className={`edit_aside_item ${activeSection === 'system_outer' ? 'active' : ''}`}
+                  id="system_outer_btn"
+                  onClick={() => handleSectionChange('system_outer')}
+                >
+                  <span>시스템</span>
+                </div>
+                <div
+                  className={`edit_aside_item ${activeSection === 'host_outer' ? 'active' : ''}`}
+                  id="host_outer_btn"
+                  onClick={() => handleSectionChange('host_outer')}
+                >
+                  <span>호스트</span>
+                </div>
+                <div
+                  className={`edit_aside_item ${activeSection === 'ha_mode_outer' ? 'active' : ''}`}
+                  id="ha_mode_outer_btn"
+                  onClick={() => handleSectionChange('ha_mode_outer')}
+                >
+                  <span>고가용성</span>
+                </div>
+                <div
+                  className={`edit_aside_item ${activeSection === 'res_alloc_outer' ? 'active' : ''}`}
+                  id="res_alloc_outer_btn"
+                  onClick={() => handleSectionChange('res_alloc_outer')}
+                >
+                  <span>리소스 할당</span>
+                </div>
+                <div
+                  className={`edit_aside_item ${activeSection === 'boot_outer' ? 'active' : ''}`}
+                  id="boot_outer_btn"
+                  onClick={() => handleSectionChange('boot_outer')}
+                >
+                  <span>부트 옵션</span>
+                </div>
+              </div>
+
+
+                    <form action="#">
+                        {/* 일반 */}
+                        <div id="common_outer" style={{ display: activeSection === 'common_outer' ? 'block' : 'none' }}>
+                            <div className="edit_first_content">
+                                <div>
+                                    <label htmlFor="cluster">클러스터</label>
+                                    <select id="cluster">
+                                        <option value="default">Default</option>
+                                    </select>
+                                    <div>데이터센터 Default</div>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="template" style={{ color: 'gray' }}>템플릿에 근거</label>
+                                    <select id="template" disabled>
+                                        <option value="test02">test02</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label htmlFor="os">운영 시스템</label>
+                                    <select id="os">
+                                        <option value="linux">Linux</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label htmlFor="firmware">칩셋/펌웨어 유형</label>
+                                    <select id="firmware">
+                                        <option value="bios">BIOS의 Q35 칩셋</option>
+                                    </select>
+                                </div>
+                                <div style={{ marginBottom: '2%' }}>
+                                    <label htmlFor="optimization">최적화 옵션</label>
+                                    <select id="optimization">
+                                        <option value="server">서버</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="edit_second_content">
+                                <div>
+                                    <label htmlFor="name">이름</label>
+                                    <input type="text" id="name" value="test02" />
+                                </div>
+                                <div>
+                                    <label htmlFor="description">설명</label>
+                                    <input type="text" id="description" />
+                                </div>
+                            </div>
+                            <div className="instance_image">
+                                <span>인스턴스 이미지</span><br/>
+                                <div>
+                                    <div>on20-apm_Disk1_c1: (2 GB) 기존</div>
+                                    <div className='flex'>
+                                        <button className='mr-1'>편집</button>
+                                        <button>+</button>
+                                        <button>-</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <span className='edit_fourth_span'>vNIC 프로파일을 선택하여 가상 머신 네트워크 인터페이스를 인스턴스화합니다.</span>
+                            <div className="edit_fourth_content" style={{ borderTop: 'none' }}>
+                               
+                                <div className='edit_fourth_content_select flex'>
+                                    <label htmlFor="network_adapter">네트워크 어댑터 1</label>
+                                    <select id="network_adapter">
+                                        <option value="default">Default</option>
+                                    </select>
+                                </div>
+                                <div className='flex'>
+                                    <button>+</button>
+                                    <button>-</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 시스템 */}
+                        <div id="system_outer" style={{ display: activeSection === 'system_outer' ? 'block' : 'none' }}>
+                            
+                            <div className="edit_second_content">
+                                <div>
+                                    <label htmlFor="memory_size">메모리 크기</label>
+                                    <input type="text" id="memory_size" value="2048 MB" readOnly />
+                                </div>
+                                <div>
+                                    <div>
+                                        <label htmlFor="max_memory">최대 메모리</label>
+                                        <i className="fa fa-info-circle"></i>
+                                    </div>
+                                    <input type="text" id="max_memory" value="8192 MB" readOnly />
+                                </div>
+
+                                <div>
+                                    <div>
+                                        <label htmlFor="actual_memory">할당할 실제 메모리</label>
+                                        <i className="fa fa-info-circle"></i>
+                                    </div>
+                                    <input type="text" id="actual_memory" value="2048 MB" readOnly />
+                                </div>
+
+                                <div>
+                                    <div>
+                                        <label htmlFor="total_cpu">총 가상 CPU</label>
+                                        <i className="fa fa-info-circle"></i>
+                                    </div>
+                                    <input type="text" id="total_cpu" value="1" readOnly />
+                                </div>
+                                <div>
+                                    <div>
+                                        <i className="fa fa-arrow-circle-o-right" style={{ color: 'rgb(56, 56, 56)' }}></i>
+                                        <span>고급 매개 변수</span>
+                                    </div>
+                                </div>
+                                <div style={{ fontWeight: 600 }}>일반</div>
+                                <div style={{ paddingTop: 0, paddingBottom: '4%' }}>
+                                    <div>
+                                        <label htmlFor="time_offset">하드웨어 클릭의 시간 오프셋</label>
+                                        <i className="fa fa-info-circle"></i>
+                                    </div>
+                                    <select id="time_offset">
+                                        <option value="(GMT+09:00) Korea Standard Time">(GMT+09:00) Korea Standard Time</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+   
+                        {/* 호스트 */}
+                        <div id="host_outer" style={{ display: activeSection === 'host_outer' ? 'block' : 'none' }}>
+                            <div id="host_second_content">
+                                <div style={{ fontWeight: 600 }}>실행 호스트:</div>
+                                <div className="form_checks">
+                                    <div>
+                                        <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" checked />
+                                        <label className="form-check-label" htmlFor="flexRadioDefault1">
+                                            클러스터 내의 호스트
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <div>
+                                            <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" />
+                                            <label className="form-check-label" htmlFor="flexRadioDefault2">
+                                                특정 호스트
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <select id="specific_host_select">
+                                                <option value="host02.ititinfo.com">host02.ititinfo.com</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="host_checkboxs">
+                                    <span>CPU 옵션:</span>
+                                    <div className="host_checkbox">
+                                        <input type="checkbox" id="host_cpu_passthrough" name="host_cpu_passthrough" />
+                                        <label htmlFor="host_cpu_passthrough">호스트 CPU 통과</label>
+                                        <i className="fa fa-info-circle"></i>
+                                    </div>
+                                   
+                                </div>
+                            </div>
+
+                            <div id="host_third_content">
+                                <div style={{ fontWeight: 600 }}>마이그레이션 옵션:</div>
+                                <div>
+                                    <div>
+                                        <span>마이그레이션 모드</span>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                    </div>
+                                    <select id="migration_mode">
+                                        <option value="수동 및 자동 마이그레이션 허용">수동 및 자동 마이그레이션 허용</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <div>
+                                        <span>마이그레이션 정책</span>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                    </div>
+                                    <select id="migration_policy">
+                                        <option value="클러스터 기본값(Minimal downtime)">클러스터 기본값(Minimal downtime)</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <div>
+                                        <span>Parallel Migrations</span>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                    </div>
+                                    <select id="parallel_migrations" readOnly>
+                                        <option value="클러스터 기본값(Disabled)">클러스터 기본값(Disabled)</option>
+                                    </select>
+                                </div>
+                               
+                            </div>
+                        </div>
+
+                        {/* 고가용성 */}
+                        <div id="ha_mode_outer" style={{ display: activeSection === 'ha_mode_outer' ? 'block' : 'none' }}>
+                            <div id="ha_mode_second_content">
+                                <div className="checkbox_group">
+                                    <input className="check_input" type="checkbox" value="" id="ha_mode_box" />
+                                    <label className="check_label" htmlFor="ha_mode_box">
+                                        고가용성
+                                    </label>
+                                </div>
+                                <div>
+                                    <div>
+                                        <span>가상 머신 임대 대상 스토리지 도메인</span>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                    </div>
+                                    <select id="no_lease" disabled>
+                                        <option value="가상 머신 임대 없음">가상 머신 임대 없음</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <div>
+                                        <span>재개 동작</span>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                    </div>
+                                    <select id="force_shutdown">
+                                        <option value="강제 종료">강제 종료</option>
+                                    </select>
+                                </div>
+                                <div className="ha_mode_article">
+                                    <span>실행/마이그레이션 큐에서 우선순위 : </span>
+                                    <div>
+                                        <span>우선 순위</span>
+                                        <select id="priority">
+                                            <option value="낮음">낮음</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="ha_mode_article">
+                                    <span>위치독</span>
+                                    <div>
+                                        <span>위치독 모델</span>
+                                        <select id="watchdog_model">
+                                            <option value="감시 장치 없음">감시 장치 없음</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <span style={{ color: 'gray' }}>위치독 작업</span>
+                                        <select id="watchdog_action" disabled>
+                                            <option value="없음">없음</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 리소스 할당 */}
+                        <div id="res_alloc_outer" style={{ display: activeSection === 'res_alloc_outer' ? 'block' : 'none' }}>
+                            <div className="res_second_content">
+                                <div className="cpu_res">
+                                    <span style={{ fontWeight: 600 }}>CPU 할당:</span>
+                                    <div className='cpu_res_box'>
+                                        <span>CPU 프로파일</span>
+                                        <select id="watchdog_action">
+                                            <option value="없음">Default</option>
+                                        </select>
+                                    </div>
+                                    <div className='cpu_res_box'>
+                                        <span>CPU 공유</span>
+                                        <div id="cpu_sharing">
+                                            <select id="watchdog_action" style={{ width: '63%' }}>
+                                                <option value="없음">비활성화됨</option>
+                                            </select>
+                                            <input type="text" value="0" disabled />
+                                        </div>
+                                    </div>
+                                    <div className='cpu_res_box'>
+                                        <span>CPU Pinning Policy</span>
+                                        <select id="watchdog_action">
+                                            <option value="없음">None</option>
+                                        </select>
+                                    </div>
+                                    <div className='cpu_res_box'>
+                                        <div>
+                                            <span>CPU 피닝 토폴로지</span>
+                                            <i className="fa fa-info-circle"></i>
+                                        </div>
+                                        <input type="text" disabled />
+                                    </div>
+                                </div>
+
+                                <span style={{ fontWeight: 600 }}>메모리 할당:</span>
+                                <div id="threads">
+                                    <div className='checkbox_group'>
+                                        <input type="checkbox" id="enableIOThreads" name="enableIOThreads" />
+                                        <label htmlFor="enableIOThreads">메모리 Balloon 활성화</label>
+                                    </div>
+                                
+                                </div>
+
+                                <span style={{ fontWeight: 600 }}>I/O 스레드:</span>
+                                <div id="threads">
+                                    <div className='checkbox_group'>
+                                        <input type="checkbox" id="enableIOThreads" name="enableIOThreads" />
+                                        <label htmlFor="enableIOThreads">I/O 스레드 활성화</label>
+                                    </div>
+                                    <div>
+                                        <input type="text" />
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/>
+                                    </div>
+                                </div>
+
+                                <span className='mb-1' style={{ fontWeight: 600 }}>큐:</span>
+                                
+                                    <div className='checkbox_group mb-1'>
+                                        <input type="checkbox" id="enable_multi_queues" name="enable_multi_queues" />
+                                        <label htmlFor="enable_multi_queues">멀티 큐 사용</label>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                    </div>
+                                    <div className='checkbox_group mb-1'>
+                                        <input type="checkbox" id="enable_virtio_scsi" name="enable_virtio_scsi" />
+                                        <label htmlFor="enable_virtio_scsi">VirtIO-SCSI 활성화</label>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                    </div>
+                                    <div className='cpu_res_box mb-1' >
+                                        <span>VirtIO-SCSI Multi Queues</span>
+                                        <div id="cpu_sharing">
+                                            <select id="multi_queue_status" style={{ width: '63%' }}>
+                                                <option value="없음">비활성화됨</option>
+                                            </select>
+                                            <input type="text" value="0" disabled />
+                                        </div>
+                                    </div>
+                                    
+                            </div>
+                        </div>
+
+                        {/* 부트 옵션 */}
+                        <div id="boot_outer" style={{ display: activeSection === 'boot_outer' ? 'block' : 'none' }}>
+                            <div className="res_second_content">
+                                <div className="cpu_res">
+                                    <span style={{ fontWeight: 600 }}>부트순서:</span>
+                                    <div className='cpu_res_box'>
+                                        <span>첫 번째 장치</span>
+                                        <select id="watchdog_action">
+                                            <option value="없음">하드디스크</option>
+                                        </select>
+                                    </div>
+                                    <div className='cpu_res_box'>
+                                        <span>두 번째 장치</span>
+                                        <select id="watchdog_action">
+                                            <option value="없음">Default</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div id="boot_checkboxs">
+                                    <div>
+                                        <div className='checkbox_group'>
+                                            <input type="checkbox" id="connectCdDvd" name="connectCdDvd" />
+                                            <label htmlFor="connectCdDvd">CD/DVD 연결</label>
+                                        </div>
+                                        <div>
+                                            <input type="text" disabled />
+                                            <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                        </div>
+                                    </div>
+
+                                    <div className='checkbox_group mb-1.5'>
+                                        <input type="checkbox" id="enableBootMenu" name="enableBootMenu" />
+                                        <label htmlFor="enableBootMenu">부팅 메뉴를 활성화</label>
+                                    </div>
+                                </div>
+
+                                <div className="cpu_res border-t border-gray-500 py-1">
+                                    <span style={{ fontWeight: 600 }}>Linux 부팅 옵션:</span>
+                                    <div className='cpu_res_box'>
+                                        <label htmlFor="kernel_path">커널 경로</label>
+                                        <input type="text" id="kernel_path" value="2048 MB" readOnly />
+                                    </div>
+
+                                    <div className='cpu_res_box'>
+                                        <label htmlFor="initrd_path">initrd 경로</label>
+                                        <input type="text" id="initrd_path" value="2048 MB" readOnly />
+                                    </div>
+
+                                    <div className='cpu_res_box'>
+                                        <label htmlFor="kernel_parameters">커널 매개 변수</label>
+                                        <input type="text" id="kernel_parameters" value="2048 MB" readOnly />
+                                    </div>
+
+
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div className="edit_footer">
+                    <button>OK</button>
+                    <button onClick={closePopup}>취소</button>
+                </div>
+            </div>
+            </Modal>
+
+
+
+              {/* 네트워크(새로 만들기) */}
+              <Modal
+                isOpen={activePopup === 'makeNetwork'}
+                onRequestClose={closePopup}
+                contentLabel="새로 만들기"
+                className="Modal"
+                overlayClassName="Overlay"
+                shouldCloseOnOverlayClick={false}
+            >
+                <div className="network_new_popup">
+                    <div className="popup_header">
+                        <h1>새 논리적 네트워크</h1>
+                        <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                    </div>
+
+                    <div className="network_new_nav">
+                        <div
+                            id="network_new_common_btn"
+                            className={selectedTab === 'network_new_common_btn' ? 'active-tab' : 'inactive-tab'}
+                            onClick={() => handleTabClick('network_new_common_btn')}
+                        >
+                            일반
+                        </div>
+                        <div
+                            id="network_new_cluster_btn"
+                            className={selectedTab === 'network_new_cluster_btn' ? 'active-tab' : 'inactive-tab'}
+                            onClick={() => handleTabClick('network_new_cluster_btn')}
+                        >
+                            클러스터
+                        </div>
+                        <div
+                            id="network_new_vnic_btn"
+                            className={selectedTab === 'network_new_vnic_btn' ? 'active-tab' : 'inactive-tab'}
+                            onClick={() => handleTabClick('network_new_vnic_btn')}
+                            style={{ borderRight: 'none' }}
+                        >
+                            vNIC 프로파일
+                        </div>
+                    </div>
+
+                    {/* 일반 */}
+                    {selectedTab === 'network_new_common_btn' && (
+                        <form id="network_new_common_form">
+                            <div className="network_first_contents">
+                                <div className="network_form_group">
+                                    <label htmlFor="cluster">데이터 센터</label>
+                                    <select id="cluster">
+                                        <option value="default">Default</option>
+                                    </select>
+                                </div>
+                                <div className="network_form_group">
+                                    <div  className='checkbox_group'>
+                                        <label htmlFor="name">이름</label>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }}fixedWidth/>
+                                    </div>
+                                    <input type="text" id="name" />
+                                </div>
+                                <div className="network_form_group">
+                                    <label htmlFor="description">설명</label>
+                                    <input type="text" id="description" />
+                                </div>
+                                <div className="network_form_group">
+                                    <label htmlFor="comment">코멘트</label>
+                                    <input type="text" id="comment" />
+                                </div>
+                            </div>
+
+                            <div className="network_second_contents">
+                                <span>네트워크 매개변수</span>
+                                <div className="network_form_group">
+                                    <label htmlFor="network_label">네트워크 레이블</label>
+                                    <input type="text" id="network_label" />
+                                </div>
+                                <div className="network_checkbox_type1">
+                                    <div className='checkbox_group'>
+                                        <input type="checkbox" id="valn_tagging" name="valn_tagging" />
+                                        <label htmlFor="valn_tagging">VALN 태깅 활성화</label>
+                                    </div>
+                                    <input type="text" id="valn_tagging_input" disabled />
+                                </div>
+                                <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="vm_network" name="vm_network" />
+                                    <label htmlFor="vm_network">가상 머신 네트워크</label>
+                                </div>
+                                <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="photo_separation" name="photo_separation" />
+                                    <label htmlFor="photo_separation">포토 분리</label>
+                                </div>
+                                <div className="network_radio_group">
+                                    <div style={{ marginTop: '0.2rem' }}>MTU</div>
+                                    <div>
+                                        <div className="radio_option">
+                                            <input type="radio" id="default_mtu" name="mtu" value="default" checked />
+                                            <label htmlFor="default_mtu">기본값 (1500)</label>
+                                        </div>
+                                        <div className="radio_option">
+                                            <input type="radio" id="user_defined_mtu" name="mtu" value="user_defined" />
+                                            <label htmlFor="user_defined_mtu">사용자 정의</label>
+                                        </div>
+                                    </div>
+                                   
+                                </div>
+                                <div className="network_form_group">
+                                    <label htmlFor="host_network_qos">호스트 네트워크 QoS</label>
+                                    <select id="host_network_qos">
+                                        <option value="default">[제한없음]</option>
+                                    </select>
+                               </div>
+                                <div className='popup_plus_btn'>
+                                    <div className="popup_plus" onClick={() => setSecondModalOpen(true)}>새로만들기</div>
+                                </div>
+                                
+                                    <Modal
+                                        isOpen={secondModalOpen}
+                                        onRequestClose={() => setSecondModalOpen(false)}
+                                        contentLabel="추가 모달"
+                                        className="SecondModal"
+                                        overlayClassName="Overlay"
+                                    >
+                                                            
+                                    <div className="plus_popup_outer">
+                                        <div className="popup_header">
+                                            <h1>새 호스트 네트워크 Qos</h1>
+                                            <button  onClick={() => setSecondModalOpen(false)}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                                        </div>
+                                        
+                                        <div className='p-1' style={{ borderBottom: '1px solid #d3d3d3' }}>
+                                            <div className="network_form_group">
+                                                <label htmlFor="network_provider">네트워크 공급자</label>
+                                                <select id="network_provider">
+                                                <option value="ovirt-provider-ovn">ovirt-provider-ovn</option>
+                                                </select>
+                                            </div>
+                                            <div className="network_form_group">
+                                                <label htmlFor="qos_name">QoS 이름</label>
+                                                <input type="text" id="qos_name" />
+                                            </div>
+                                            <div className="network_form_group">
+                                                <label htmlFor="description">설명</label>
+                                                <input type="text" id="description" />
+                                            </div>
+                                            </div>
+
+                                            <div className='p-1'>
+                                            <span className="network_form_group font-bold">아웃바운드</span>
+                                            <div className="network_form_group">
+                                                <label htmlFor="weighted_share">가중 공유</label>
+                                                <input type="text" id="weighted_share" />
+                                            </div>
+                                            <div className="network_form_group">
+                                                <label htmlFor="speed_limit">속도 제한 [Mbps]</label>
+                                                <input type="text" id="speed_limit" />
+                                            </div>
+                                            <div className="network_form_group">
+                                                <label htmlFor="commit_rate">커밋 속도 [Mbps]</label>
+                                                <input type="text" id="commit_rate" />
+                                            </div>
+                                        </div>
+
+
+                                        <div className="edit_footer">
+                                            <button style={{ display: 'none' }}></button>
+                                            <button>가져오기</button>
+                                            <button onClick={() => setSecondModalOpen(false)}>취소</button>
+                                        </div>
+                                    </div>
+                                     
+                                    </Modal>
+                                <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="dns_settings" name="dns_settings" />
+                                    <label htmlFor="dns_settings">DNS 설정</label>
+                                </div>
+                                <span>DB서버</span>
+                                <div className="network_checkbox_type3">
+                                    <input type="text" id="name" disabled />
+                                    <div>
+                                        <button>+</button>
+                                        <button>-</button>
+                                    </div>
+                                </div>
+                                <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="external_vendor_creation" name="external_vendor_creation" />
+                                    <label htmlFor="external_vendor_creation">외부 업체에서 작성</label>
+                                </div>
+                                <span>외부</span>
+                                <div className="network_form_group" style={{ paddingTop: 0 }}>
+                                    <label htmlFor="external_provider">외부 공급자</label>
+                                    <select id="external_provider">
+                                        <option value="default">ovirt-provider-ovn</option>
+                                    </select>
+                                </div>
+                                <div className="network_form_group">
+                                    <label htmlFor="network_port_security">네트워크 포트 보안</label>
+                                    <select id="network_port_security">
+                                        <option value="default">활성화</option>
+                                    </select>
+                                </div>
+                                <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="connect_to_physical_network" name="connect_to_physical_network" />
+                                    <label htmlFor="connect_to_physical_network">물리적 네트워크에 연결</label>
+                                </div>
+                            </div>
+                        </form>
+                    )}
+
+                    {/* 클러스터 */}
+                    {selectedTab === 'network_new_cluster_btn' && (
+                        <form id="network_new_cluster_form">
+                            <span>클러스터에서 네트워크를 연결/분리</span>
+                            <div>
+                                <table className="network_new_cluster_table">
+                                    <thead>
+                                        <tr>
+                                            <th>이름</th>
+                                            <th>
+                                                <div className="checkbox_group">
+                                                    <input type="checkbox" id="connect_all" />
+                                                    <label htmlFor="connect_all"> 모두 연결</label>
+                                                </div>
+                                            </th>
+                                            <th>
+                                                <div className="checkbox_group">
+                                                    <input type="checkbox" id="require_all" />
+                                                    <label htmlFor="require_all"> 모두 필요</label>
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Default</td>
+                                            <td className="checkbox-group">
+                                                <div className="checkbox_group">
+                                                    <input type="checkbox" id="connect_default" />
+                                                    <label htmlFor="connect_default"> 연결</label>
+                                                </div>
+                                            </td>
+                                            <td className="checkbox-group">
+                                                <div className="checkbox_group">
+                                                    <input type="checkbox" id="require_default" />
+                                                    <label htmlFor="require_default"> 필수</label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </form>
+                    )}
+
+                    {/* vNIC 프로파일 */}
+                    {selectedTab === 'network_new_vnic_btn' && (
+                        <form id="network_new_vnic_form">
+                            <span>vNIC 프로파일</span>
+                            <div>
+                                <input type="text" id="vnic_profile" />
+                                <div className='checkbox_group'>
+                                    <input type="checkbox" id="public" disabled />
+                                    <label htmlFor="public">공개</label>
+                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/>
+                                </div>
+                                <label htmlFor="qos">QoS</label>
+                                <select id="qos">
+                                    <option value="none">제한 없음</option>
+                                </select>
+                                <div className="network_new_vnic_buttons">
+                                    <button>+</button>
+                                    <button>-</button>
+                                </div>
+                            </div>
+                        </form>
+                    )}
+                    <div className="edit_footer">
+                        <button style={{ display: 'none' }}></button>
+                        <button>OK</button>
+                        <button onClick={closePopup}>취소</button>
+                    </div>
+                </div>
+            </Modal>
+            {/* 네트워크(가져오기) */}
+            <Modal
+                isOpen={activePopup === 'getNetwork'}
+                onRequestClose={closePopup}
+                contentLabel="가져오기"
+                className="Modal"
+                overlayClassName="Overlay"
+                shouldCloseOnOverlayClick={false}
+            >
+                <div className="network_bring_popup">
+                    <div className="popup_header">
+                        <h1>네트워크 가져오기</h1>
+                        <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                    </div>
+
+                    <div className="network_form_group">
+                        <label htmlFor="cluster" style={{ fontSize: '0.33rem',fontWeight:'600' }}>네트워크 공급자</label>
+                        <select id="cluster">
+                            <option value="ovirt-provider-ovn">ovirt-provider-ovn</option>
+                        </select>
+                    </div>
+
+                    <div id="network_bring_table_outer">
+                        <span className='font-bold'>공급자 네트워크</span>
+                        <div>
+                            <Table 
+                                columns={[
+                                    { header: '', accessor: 'checkbox' },
+                                    { header: '이름', accessor: 'name' },
+                                    { header: '공급자의 네트워크 ID', accessor: 'networkId' },
+                                ]}
+                                data={[
+                                    { checkbox: <input type="checkbox" id="provider_network_1" defaultChecked />, name: '디스크 활성화', networkId: '디스크 활성화' },
+                                ]}
+                            />
+                        </div>
+                    </div>
+
+                    <div id="network_bring_table_outer">
+                        <span>가져올 네트워크</span>
+                        <div>
+                            <Table 
+                                columns={[
+                                    { header: '', accessor: 'checkbox' },
+                                    { header: '이름', accessor: 'name' },
+                                    { header: '공급자의 네트워크 ID', accessor: 'networkId' },
+                                    { header: '데이터 센터', accessor: 'dataCenter' },
+                                    { header: '모두허용', accessor: 'allowAll' },
+                                ]}
+                                data={[
+                                    { checkbox: <input type="checkbox" id="import_network_1" defaultChecked />, name: '디스크 활성화', networkId: '디스크 활성화', dataCenter: '디스크 활성화', allowAll: '디스크 활성화' },
+                                ]}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="edit_footer">
+                        <button style={{ display: 'none' }}></button>
+                        <button>가져오기</button>
+                        <button onClick={closePopup}>취소</button>
+                    </div>
+                </div>
+            </Modal>
+              {/* 네트워크(편집) 팝업 */}
+              <Modal
+                isOpen={activePopup === 'editNetwork'}
+                onRequestClose={closePopup}
+                contentLabel="편집"
+                className="Modal"
+                overlayClassName="Overlay"
+                shouldCloseOnOverlayClick={false}
+            >
+                <div className="network_edit_popup">
+                    <div className="popup_header">
+                        <h1>논리 네트워크 편집</h1>
+                        <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                    </div>
+                    
+                    <form id="network_new_common_form">
+                    <div className="network_first_contents">
+                                <div className="network_form_group">
+                                    <label htmlFor="cluster">데이터 센터</label>
+                                    <select id="cluster">
+                                        <option value="default">Default</option>
+                                    </select>
+                                </div>
+                                <div className="network_form_group">
+                                    <div  className='checkbox_group'>
+                                        <label htmlFor="name">이름</label>
+                                        <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }}fixedWidth/>
+                                    </div>
+                                    <input type="text" id="name" />
+                                </div>
+                                <div className="network_form_group">
+                                    <label htmlFor="description">설명</label>
+                                    <input type="text" id="description" />
+                                </div>
+                                <div className="network_form_group">
+                                    <label htmlFor="comment">코멘트</label>
+                                    <input type="text" id="comment" />
+                                </div>
+                            </div>
+
+                            <div className="network_second_contents">
+                                <span>네트워크 매개변수</span>
+                                <div className="network_form_group">
+                                    <label htmlFor="network_label">네트워크 레이블</label>
+                                    <input type="text" id="network_label" />
+                                </div>
+                                <div className="network_checkbox_type1">
+                                    <div className='checkbox_group'>
+                                        <input type="checkbox" id="valn_tagging" name="valn_tagging" />
+                                        <label htmlFor="valn_tagging">VALN 태깅 활성화</label>
+                                    </div>
+                                    <input type="text" id="valn_tagging_input" disabled />
+                                </div>
+                                <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="vm_network" name="vm_network" />
+                                    <label htmlFor="vm_network">가상 머신 네트워크</label>
+                                </div>
+                                <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="photo_separation" name="photo_separation" />
+                                    <label htmlFor="photo_separation">포토 분리</label>
+                                </div>
+                                <div className="network_radio_group">
+                                    <div style={{ marginTop: '0.2rem' }}>MTU</div>
+                                    <div>
+                                        <div className="radio_option">
+                                            <input type="radio" id="default_mtu" name="mtu" value="default" checked />
+                                            <label htmlFor="default_mtu">기본값 (1500)</label>
+                                        </div>
+                                        <div className="radio_option">
+                                            <input type="radio" id="user_defined_mtu" name="mtu" value="user_defined" />
+                                            <label htmlFor="user_defined_mtu">사용자 정의</label>
+                                        </div>
+                                    </div>
+                                   
+                                </div>
+                                <div className="network_form_group">
+                                    <label htmlFor="host_network_qos">호스트 네트워크 QoS</label>
+                                    <select id="host_network_qos">
+                                        <option value="default">[제한없음]</option>
+                                    </select>
+                               </div>
+                                <div className='popup_plus_btn'>
+                                    <div className="popup_plus" onClick={() => setSecondModalOpen(true)}>새로만들기</div>
+                                </div>
+                                
+                                    <Modal
+                                        isOpen={secondModalOpen}
+                                        onRequestClose={() => setSecondModalOpen(false)}
+                                        contentLabel="추가 모달"
+                                        className="SecondModal"
+                                        overlayClassName="Overlay"
+                                    >
+                                                            
+                                    <div className="plus_popup_outer">
+                                        <div className="popup_header">
+                                            <h1>새 호스트 네트워크 Qos</h1>
+                                            <button  onClick={() => setSecondModalOpen(false)}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                                        </div>
+                                        
+                                        <div className='p-1' style={{ borderBottom: '1px solid #d3d3d3' }}>
+                                            <div className="network_form_group">
+                                                <label htmlFor="network_provider">네트워크 공급자</label>
+                                                <select id="network_provider">
+                                                <option value="ovirt-provider-ovn">ovirt-provider-ovn</option>
+                                                </select>
+                                            </div>
+                                            <div className="network_form_group">
+                                                <label htmlFor="qos_name">QoS 이름</label>
+                                                <input type="text" id="qos_name" />
+                                            </div>
+                                            <div className="network_form_group">
+                                                <label htmlFor="description">설명</label>
+                                                <input type="text" id="description" />
+                                            </div>
+                                            </div>
+
+                                            <div className='p-1'>
+                                            <span className="network_form_group font-bold">아웃바운드</span>
+                                            <div className="network_form_group">
+                                                <label htmlFor="weighted_share">가중 공유</label>
+                                                <input type="text" id="weighted_share" />
+                                            </div>
+                                            <div className="network_form_group">
+                                                <label htmlFor="speed_limit">속도 제한 [Mbps]</label>
+                                                <input type="text" id="speed_limit" />
+                                            </div>
+                                            <div className="network_form_group">
+                                                <label htmlFor="commit_rate">커밋 속도 [Mbps]</label>
+                                                <input type="text" id="commit_rate" />
+                                            </div>
+                                        </div>
+
+
+                                        <div className="edit_footer">
+                                            <button style={{ display: 'none' }}></button>
+                                            <button>가져오기</button>
+                                            <button onClick={() => setSecondModalOpen(false)}>취소</button>
+                                        </div>
+                                    </div>
+                                     
+                                    </Modal>
+                                <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="dns_settings" name="dns_settings" />
+                                    <label htmlFor="dns_settings">DNS 설정</label>
+                                </div>
+                                <span>DB서버</span>
+                                <div className="network_checkbox_type3">
+                                    <input type="text" id="name" disabled />
+                                    <div>
+                                        <button>+</button>
+                                        <button>-</button>
+                                    </div>
+                                </div>
+                                <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="external_vendor_creation" name="external_vendor_creation" />
+                                    <label htmlFor="external_vendor_creation">외부 업체에서 작성</label>
+                                </div>
+                                <span>외부</span>
+                                <div className="network_form_group" style={{ paddingTop: 0 }}>
+                                    <label htmlFor="external_provider">외부 공급자</label>
+                                    <select id="external_provider">
+                                        <option value="default">ovirt-provider-ovn</option>
+                                    </select>
+                                </div>
+                                <div className="network_form_group">
+                                    <label htmlFor="network_port_security">네트워크 포트 보안</label>
+                                    <select id="network_port_security">
+                                        <option value="default">활성화</option>
+                                    </select>
+                                </div>
+                                <div className="network_checkbox_type2">
+                                    <input type="checkbox" id="connect_to_physical_network" name="connect_to_physical_network" />
+                                    <label htmlFor="connect_to_physical_network">물리적 네트워크에 연결</label>
+                                </div>
+                            </div>
+                        </form>
+                   
+
+                    <div className="edit_footer">
+                        <button style={{ display: 'none' }}></button>
+                        <button>OK</button>
+                        <button onClick={closePopup}>취소</button>
+                    </div>
+                </div>
+            </Modal>
+
+              {/*삭제 팝업 */}
+      <Modal
+        isOpen={activePopup === 'delete'}
+        onRequestClose={closePopup}
+        contentLabel="디스크 업로드"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="storage_delete_popup">
+          <div className="popup_header">
+            <h1>디스크 삭제</h1>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+          </div>
+         
+          <div className='disk_delete_box'>
+            <div>
+              <FontAwesomeIcon style={{marginRight:'0.3rem'}} icon={faExclamationTriangle} />
+              <span>다음 항목을 삭제하시겠습니까?</span>
+            </div>
+          </div>
+
+
+          <div className="edit_footer">
+            <button style={{ display: 'none' }}></button>
+            <button>OK</button>
+            <button onClick={closePopup}>취소</button>
+          </div>
+        </div>
+      </Modal>
         </div>
 
     
