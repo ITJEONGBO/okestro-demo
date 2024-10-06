@@ -544,6 +544,23 @@ export const useAllVnicProfilesFromNetwork = (networkId, mapPredicate) => useQue
   }
 })
 //region: storage -----------------스토리지---------------------
+
+/**
+ * @name useAllStorageDomains
+ * @description 모든 스토리지 도메인 목록조회 useQuery훅
+ * 
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ */
+export const useAllStorageDomains = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['allStorageDomains'],
+  queryFn: async () => {
+    const res = await ApiManager.findAllStorageDomains()
+    return res?.map((e) => mapPredicate(e)) ?? []
+  }
+})
+
 /**
  * @name useAllDisk
  * @description 모든 디스크목록조회 useQuery훅

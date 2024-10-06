@@ -9,7 +9,29 @@ import TableColumnsInfo from '../table/TableColumnsInfo';
 import AffinityGroupModal from '../Modal/AffinityGroupModal';
 import NetworkDetail from '../Network/NetworkDetail';
 import Permission from '../Modal/Permission';
-import { useAllNetworks, useClusterById, useEventFromCluster, useHostFromCluster, useLogicalFromCluster, usePermissionFromCluster, usePermissionromCluster, useVMFromCluster } from '../../api/RQHook';
+import { 
+    useDashboard,
+    useDashboardCpuMemory,
+    useDashboardStorage,
+
+    useAllDataCenters,
+    useAllClusters, 
+    useAllHosts,
+    useAllVMs, 
+    useAllStorageDomains,
+    useAllNetworks,
+
+    useDataCenter, 
+    useNetworkById,
+    
+    useClusterById, 
+    useEventFromCluster, 
+    useHostFromCluster, 
+    useLogicalFromCluster, 
+    usePermissionFromCluster, 
+    usePermissionromCluster, 
+    useVMFromCluster 
+ } from '../../api/RQHook';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faCrown, faUser, faBan,
@@ -32,6 +54,129 @@ import logo from '../../img/logo.png'
 
 function RutilManager() {
     const { id } = useParams();
+
+    const {
+        data: dashboard,
+        status: dashboardStatus,
+        isRefetching: isDashboardRefetching,
+        refetch: dashboardRefetch, 
+        isError: isDashboardError, 
+        error: dashboardError, 
+        isLoading: isDashboardLoading,
+    } = useDashboard()
+
+    const {
+        data: cpuMemory,
+        status: cpuMemoryStatus,
+        isRefetching: isCpuMemoryRefetching,
+        refetch: cpuMemoryRefetch, 
+        isError: isCpuMemoryError, 
+        error: cpuMemoryError, 
+        isLoading: isCpuMemoryLoading,
+      } = useDashboardCpuMemory()
+      
+    const {
+        data: storage,
+        status: storageStatus,
+        isRefetching: isStorageRefetching,
+        refetch: storageRefetch, 
+        isError: isStorageError, 
+        error: storageError, 
+        isLoading: isStorageLoading,
+    } = useDashboardStorage()
+ 
+    // 데이터센터
+    const {
+        data: allDataCenters,        // 데이터센터 목록
+        status: allDataCentersStatus, // 쿼리 상태
+        isRefetching: isAllDataCentersRefetching, // 리패칭 중인지 여부
+        refetch: allDataCentersRefetch,           // 수동으로 리패칭하는 함수
+        isError: isAllDataCentersError,           // 에러가 발생했는지 여부
+        error: allDataCentersError,               // 실제 에러 객체
+        isLoading: isAllDataCentersLoading,       // 로딩 중인지 여부
+    } = useAllDataCenters((dataCenter) => {
+        return {
+            ...dataCenter,
+            storageType: dataCenter.storageType
+        };
+    });
+    
+    // 클러스터
+    const {
+        data: allClusters,
+        status: allClustersStatus,
+        isRefetching: isAllClustersRefetching,
+        refetch: allClustersRefetch,
+        isError: isAllClustersError,
+        error: allClustersError,
+        isLoading: isAllClustersLoading,
+      } = useAllClusters((cluster) => {
+        return {
+          ...cluster,
+        };
+    });
+
+    // 호스트
+    const {
+        data: allHosts,
+        status: allHostsStatus,
+        isRefetching: isAllHostsRefetching,
+        refetch: allHostsRefetch,
+        isError: isAllHostsError,
+        error: allHostsError,
+        isLoading: isAllHostsLoading,
+      } = useAllHosts((host) => {
+        return {
+          ...host,
+        };
+    });
+
+    // 가상머신
+    const {
+        data: allVMs,
+        status: allVmsStatus,
+        isRefetching: isAllVmsRefetching,
+        refetch: allVmsRefetch,
+        isError: isAllVmsError,
+        error: allVmsError,
+        isLoading: isAllVmsLoading,
+      } = useAllVMs((vm) => {
+        return {
+          ...vm,
+        };
+    });
+    
+    // 스토리지 도메인
+    const {
+        data: allStorageDomains,
+        status: allStorageDomainsStatus,
+        isRefetching: isAllStorageDomainsRefetching,
+        refetch: allStorageDomainsRefetch,
+        isError: isAllStorageDomainsError,
+        error: allStorageDomainsError,
+        isLoading: isAllStorageDomainsLoading,
+      } = useAllStorageDomains((storageDomain) => {
+        return {
+          ...storageDomain,
+        };
+    });
+
+    
+    // 네트워크
+    const {
+        data: allNetworks = [],  // 기본값을 빈 배열로 설정
+        status: allNetworksStatus,
+        isRefetching: isAllNetworksRefetching,
+        refetch: allNetworksRefetch,
+        isError: isAllNetworksError,
+        error: allNetworksError,
+        isLoading: isAllNetworksLoading,
+    } = useAllNetworks((network) => {
+        return {
+          ...network,
+        };
+    });
+      
  
     const navigate = useNavigate();
     const location = useLocation();
@@ -150,6 +295,7 @@ function RutilManager() {
     const openAffinityGroupModal = () => setIsAffinityGroupModalOpen(true);
     const closeAffinityGroupModal = () => setIsAffinityGroupModalOpen(false);
     const [showTooltip, setShowTooltip] = useState(false); // hover하면 설명창 뜨게하기
+
     const { 
         data: cluster,
         status: networkStatus,
@@ -158,96 +304,13 @@ function RutilManager() {
         isError: isNetworkError,
         error: networkError, 
         isLoading: isNetworkLoading,
-      } = useClusterById(id);
+    } = useClusterById(id);
       
       useEffect(() => {
         clusterRefetch();  // 함수 이름을 일치시킴
       }, [setShouldRefresh, clusterRefetch]);
 
-    // 논리네트워크
-    const { 
-      data: networks, 
-      status: networksStatus, 
-      isLoading: isNetworksLoading, 
-      isError: isNetworksError 
-    } = useLogicalFromCluster(cluster?.id, (network) => {
-    return {
-        name: network?.name ?? 'Unknown',            
-        status: network?.status ?? 'Unknown',       
-        role: network?.role ? <FontAwesomeIcon icon={faCrown} fixedWidth/> : '', 
-        description: network?.description ?? 'No description', 
-      };
-    });
-      
-
-    // 호스트
-    const { 
-        data: hosts, 
-        status: hostsStatus, 
-        isLoading: isHostsLoading, 
-        isError: isHostsError 
-      } = useHostFromCluster(cluster?.id, toTableItemPredicateHosts);
-      
-      function toTableItemPredicateHosts(host) {
-        return {
-          icon: '', 
-          name: host?.name ?? 'Unknown',  // 호스트 이름, 없으면 'Unknown'
-          hostNameIP: host?.name ?? 'Unknown',
-          status: host?.status ?? 'Unknown',  
-          loading: `${host?.vmCount ?? 0} 대의 가상머신`, // 0으로 기본값 설정
-          displayAddress: host?.displayAddress ?? '아니요',
-        };
-      }
-    // 가상머신
-    const { 
-        data: vms, 
-        status: vmsStatus, 
-        isLoading: isVmsLoading, 
-        isError: isVmsError 
-      } = useVMFromCluster(cluster?.id, toTableItemPredicateVms);
-      
-      function toTableItemPredicateVms(vm) {
-        const statusIcon = vm?.status === 'DOWN' 
-            ? <i class="fa-solid fa-chevron-down text-red-500" fixedWidth/>
-            : vm?.status === 'UP' || vm?.status === '실행 중'
-            ? <i class="fa-solid fa-chevron-up text-green-500" fixedWidth/>
-            : ''; // 기본값
-        return {
-          icon: statusIcon,      
-          name: vm?.name ?? 'Unknown',               
-          status: vm?.status ?? 'Unknown',           
-          upTime: vm?.upTime ?? '',             
-          cpu: vm?.cpu ?? '',                    
-          memory: vm?.memory ?? '',              
-          network: vm?.network ?? '',             
-          ipv4: vm?.ipv4 ?? '',         
-        };
-      }
-        // 도메인 테이블 컴포넌트 
-  const domaindata = [
-    {
-      status: <FontAwesomeIcon icon={faCaretUp} style={{ color: '#1DED00' }}fixedWidth/>,
-      icon: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>,
-      domainName: (
-        <span
-          style={{ color: 'blue', cursor: 'pointer'}}
-          onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
-          onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
-        >
-          ㅇㄻㄹㅇㄻ
-        </span>
-      ),
-      comment: '',
-      domainType: '',
-      storageType: '',
-      format: '',
-      dataCenterStatus: '',
-      totalSpace: '',
-      freeSpace: '',
-      reservedSpace: '',
-      description: '',
-    },
-  ];
+    
     // 권한
     const { 
         data: permissions, 
@@ -285,26 +348,7 @@ function RutilManager() {
           userEventId: event?.userEventId ?? '',   
         };
       }
-      // 네트워크
-      const { 
-        networkData,
-        status: networksStatu,
-        isRefetching: isNetworksRefetching,
-        refetch: networksRefetch, 
-        isError: NetworksError, 
-        error: networksError, 
-        isLoading: NetworksLoading,
-      } = useAllNetworks((e) => {
-        return {
-          id: e?.id ?? '',
-          name: e?.name ?? '',
-          description: e?.description ?? '',
-          dataCenter: e?.dataCenterVo?.name ?? '',
-          provider: 'Provider1',
-          portSeparation: e?.portIsolation ? '예' : '아니요',
-        }
-      });
-      
+
       const data = [
         {
           alias: (
@@ -452,33 +496,49 @@ function RutilManager() {
                                         </div>
                                         <div>
                                             <div className='mb-2'>
-                                                데이터센터 : 2<br/>
-                                                클러스터    : 4<br/>
-                                                호스트       : 4<br/>
-                                                가상머신    : 4 / 12<br/>
-                                                스토리지 도메인 : 2<br/>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                                                    <span>데이터센터:</span>
+                                                    <span>{dashboard?.datacenters ?? 0}</span>
+                                                </div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                                                    <span>클러스터:</span>
+                                                    <span>{dashboard?.clusters ?? 0}</span>
+                                                </div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                                                    <span>호스트:</span>
+                                                    <span>{dashboard?.hosts ?? 0}</span>
+                                                </div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                                                    <span>가상머신:</span>
+                                                    <span>{dashboard?.vmsUp ?? 0} / {dashboard?.vms}</span>
+                                                </div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                                                    <span>스토리지 도메인:</span>
+                                                    <span>{dashboard?.storageDomains ?? 0}</span>
+                                                </div>
                                             </div>
+                                            <br/>
                                             <div>
                                                 부팅시간(업타임)<br/>
-                                                <span className='font-bold'>2024-07-11 20:15:45</span>
+                                                <span className='font-bold'>2024-**-** 20:15:45</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div className='type_info_boxs'>
                                         <div className='type_info_box'>
                                                 <span className='font-bold'>CPU</span><br/>
-                                                100% 사용가능 / 100%<br/>
-                                                가상 리소스 - 사용됨: 25%, 할당됨: 41%
+                                                {Math.floor( 100 - cpuMemory?.totalCpuUsagePercent ?? 0)} % 사용가능<br/>
+                                                가상 리소스 - 사용됨: {Math.floor((cpuMemory?.usedCpuCore)/(cpuMemory?.totalCpuCore)*100 )} %, 할당됨: { Math.floor((cpuMemory?.commitCpuCore)/(cpuMemory?.totalCpuCore)*100 )} % 
                                         </div>
                                         <div className='type_info_box'>
                                                 <span className='font-bold'>메모리</span><br/>
-                                                63.4 사용가능 / 100%<br/>
-                                                가상 리소스 - 사용됨: 25%, 할당됨: 41%
+                                                {Math.floor(100 - cpuMemory?.totalMemoryUsagePercent ?? 0)} % 사용가능<br/>
+                                                가상 리소스 - 사용됨: --%, 할당됨: --%
                                         </div>
                                         <div className='type_info_box'>
                                                 <span className='font-bold'>스토리지</span><br/>
-                                                0.4 사용가능 / 100%<br/>
-                                                가상 리소스 - 사용됨: 25%, 할당됨: 41%
+                                                {Math.floor(100 - storage?.usedPercent ?? 0)} % 사용가능<br/>
+                                                가상 리소스 - 사용됨: --%, 할당됨: --%
                                         </div>
                                     </div>
                                 </div>
@@ -583,7 +643,7 @@ function RutilManager() {
                                 </div>
                                 <TableOuter
                                   columns={TableColumnsInfo.DATACENTERS} 
-                                  data={networks} 
+                                  data={allDataCenters} 
                                   onRowClick={handleRowClick} />
                                 </>
 
@@ -603,7 +663,7 @@ function RutilManager() {
                                 </div>
                                 <TableOuter 
                                   columns={TableColumnsInfo.CLUSTERS_DATA} 
-                                  data={vms} 
+                                  data={allClusters} 
                                   onRowClick={() => console.log('Row clicked')}
                                 />
                              
@@ -625,7 +685,7 @@ function RutilManager() {
                                 </div>
                                   <TableOuter 
                                     columns={TableColumnsInfo.HOSTS_ALL_DATA} 
-                                    data={hosts}
+                                    data={allHosts}
                                     onRowClick={() => console.log('Row clicked')} 
                                   />
                                 
@@ -664,7 +724,7 @@ function RutilManager() {
                                 </div>
                                 <TableOuter 
                                   columns={TableColumnsInfo.VM_CHART} 
-                                  data={vms} 
+                                  data={allVMs} 
                                   onRowClick={() => console.log('Row clicked')}
                                 />
                             
@@ -672,33 +732,33 @@ function RutilManager() {
                             )}
                             {/* 스토리지*/}
                             {activeTab === 'storage' && (
-                                            <>
-                                            <div className="content_header_right">
-                                              <button id="new_domain_btn" onClick={() => openPopup('newDomain')}>생성</button>
-                                              <button id="get_domain_btn" onClick={() => openPopup('newDomain')}>가져오기</button>
-                                              <button id="administer_domain_btn" onClick={() => openPopup('manageDomain')}>편집</button>
-                                              <button onClick={() => openPopup('delete')}>삭제</button>
-                                              <button className='disabled'>Connections</button>
-                                              <button className="content_header_popup_btn" onClick={togglePopup}>
-                                                <FontAwesomeIcon icon={faEllipsisV} fixedWidth/>
-                                                {isPopupOpen && (
-                                                  <div className="content_header_popup">
-                                                    <div className='disabled'>OVF 업데이트</div>
-                                                    <div className='disabled'>파괴</div>
-                                                    <div className='disabled'>디스크 검사</div>
-                                                    <div className='disabled'>마스터 스토리지 도메인으로 선택</div>
-                                                  </div>
-                                                )}
-                                              </button>
-                                            </div>
-                            
-                                            {/* Table 컴포넌트를 이용하여 테이블을 생성합니다. */}
-                                            <TableOuter
-                                              columns={TableColumnsInfo.STORAGE_DOMAINS} 
-                                              data={domaindata} 
-                                              onRowClick={() => console.log('Row clicked')}
-                                            />
-                                          </>
+                                <>
+                                <div className="content_header_right">
+                                    <button id="new_domain_btn" onClick={() => openPopup('newDomain')}>생성</button>
+                                    <button id="get_domain_btn" onClick={() => openPopup('newDomain')}>가져오기</button>
+                                    <button id="administer_domain_btn" onClick={() => openPopup('manageDomain')}>편집</button>
+                                    <button onClick={() => openPopup('delete')}>삭제</button>
+                                    <button className='disabled'>Connections</button>
+                                    <button className="content_header_popup_btn" onClick={togglePopup}>
+                                    <FontAwesomeIcon icon={faEllipsisV} fixedWidth/>
+                                    {isPopupOpen && (
+                                        <div className="content_header_popup">
+                                        <div className='disabled'>OVF 업데이트</div>
+                                        <div className='disabled'>파괴</div>
+                                        <div className='disabled'>디스크 검사</div>
+                                        <div className='disabled'>마스터 스토리지 도메인으로 선택</div>
+                                        </div>
+                                    )}
+                                    </button>
+                                </div>
+                
+                                {/* Table 컴포넌트를 이용하여 테이블을 생성합니다. */}
+                                <TableOuter
+                                    columns={TableColumnsInfo.STORAGE_DOMAINS} 
+                                    data={allStorageDomains} 
+                                    onRowClick={() => console.log('Row clicked')}
+                                />
+                                </>
                             )}
 
                             {/* 네트워크 */}
@@ -713,10 +773,8 @@ function RutilManager() {
                                 </div>
                                 <TableOuter
                                     columns={TableColumnsInfo.NETWORKS} 
-                                    data={networkData} 
+                                    data={allNetworks} 
                                     onRowClick={() => console.log('Row clicked')}
-                                    // onRowClick={handleNetworkNameClick} 
-                                    shouldHighlight1stCol={true}
                                 />
                                </>
                             )}

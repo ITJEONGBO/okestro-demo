@@ -234,7 +234,7 @@ const Dashboard = () => {
                 {vmCpu && <CpuBarChart vmCpu={vmCpu} /> /* BarChart 컴포넌트를 여기에 삽입 */}
               </div>
             </div>
-            <span>USED { (cpuMemory?.usedCpuCore) } Core / COMMIT { (cpuMemory?.commitCpuCore) } Core / Total { (cpuMemory?.totalCpuCore) } Core</span>
+            <span>USED { Math.floor((cpuMemory?.usedCpuCore)/(cpuMemory?.totalCpuCore)*100 )} % / COMMIT { Math.floor((cpuMemory?.commitCpuCore)/(cpuMemory?.totalCpuCore)*100 )} % <br/> Total { (cpuMemory?.totalCpuCore) } Core</span>
             <div className="wave_graph">
               <h2>Per CPU</h2>
               <div><SuperAreaChart /> {/* AreaChart 컴포넌트를 여기에 삽입 */}</div>
@@ -282,15 +282,15 @@ const Dashboard = () => {
         
         <div className="bar">
           <div>
-            <span>CPU(시간 경과에 따른 CPU사용량)</span>
+            <span>CPU</span>
             <div><HeatMapChart /></div>
           </div>
           <div>
-            <span>MEMORY(시간 경과에 따른 Memory사용량)</span>
+            <span>MEMORY</span>
             <div><HeatMapChart /></div>
           </div>
           <div>
-            <span>Ethernet(시간 경과에 따른 Ethernet속도)</span>
+            <span>Ethernet</span>
             <div><HeatMapChart /></div>
           </div>  
         </div>
