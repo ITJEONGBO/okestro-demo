@@ -22,10 +22,6 @@
     padding: 0.08rem;
 }
 
-#popup_box>div>div{
-    padding: 10px 4px;
-
-}
 #popup_box>div:hover{
     background-color: #DDDDDD;
 }

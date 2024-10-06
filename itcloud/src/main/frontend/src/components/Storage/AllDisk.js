@@ -37,7 +37,16 @@ const AllDisk = () => {
     setIsVisible(!isVisible);
   };
 
-  /*
+  const [activeDiskType, setActiveDiskType] = useState('all');
+const handleDiskTypeClick = (type) => {
+  setActiveDiskType(type);  // 여기서 type을 설정해야 함
+};
+const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 유형 상태
+  // 컨텐츠 유형 변경 핸들러
+  const handleContentTypeChange = (event) => {
+    setActiveContentType(event.target.value);
+  };  
+/*
   const [data, setData] = useState([
     {
       status: <FontAwesomeIcon icon={faCaretUp} style={{ color: '#1DED00' }}fixedWidth/>,
@@ -102,7 +111,6 @@ const AllDisk = () => {
     };
 
 
-
   
   return (
     <div id="section">
@@ -122,8 +130,8 @@ const AllDisk = () => {
                   <button onClick={() => openPopup('move')}>이동</button>
                   <button onClick={() => openPopup('copy')}>복사</button>
                   <button id="storage_disk_upload" onClick={() => openPopup('uploadDisk')}>업로드</button>
-                  <button>다운로드</button>
-                  <button>LUN 새로고침</button>
+                  <button className='disabled'>다운로드</button>
+                  <button className='disabled'>LUN 새로고침</button>
                 </div>
                 <div className="search_box">
                   <input type="text" />
@@ -135,35 +143,50 @@ const AllDisk = () => {
                   <div>
                     <span>디스크유형 : </span>
                     <div className='flex'>
-                      <button>모두</button>
-                      <button>이미지</button>
-                      <button className='mr-1'>직접 LUN</button>
+                      <button className={activeDiskType === 'all' ? 'active' : ''} onClick={() => handleDiskTypeClick('all')}>모두</button>
+                      <button className={activeDiskType === 'image' ? 'active' : ''} onClick={() => handleDiskTypeClick('image')}>이미지</button>
+                      <button style={{ marginRight: '0.2rem' }} className={activeDiskType === 'lun' ? 'active' : ''} onClick={() => handleDiskTypeClick('lun')}>직접 LUN</button>
                     </div>
                   </div>
-                      <span className='mt-1'>컨텐츠 유형 : </span>
-                      <div  className="content_type_btn">
-                      <button onClick={toggleContent}>모두<FontAwesomeIcon icon={faChevronDown} fixedWidth /></button>
-                      {isVisible && (
-                        <div className='content_type'>
-                          <div>모두</div>
-                          <div>데이터</div>
-                          <div>OVF 스토어</div>
-                          <div className='border-b border-gray-400'>메모리 덤프</div>
-                          <div>ISO</div>
-                          <div>Hosted Engine</div>
-                          <div>Hosted Engine Sanlock</div>
-                          <div>Hosted Engine Metadata</div>
-                          <div>Hosted Engine Conf.</div>
-                        </div>
-                      )}
+                  <div className="content_type">
+                    <label className='mr-1' htmlFor="contentType">컨텐츠 유형:</label>
+                    <select id="contentType" value={activeContentType} onChange={handleContentTypeChange}>
+                      <option value="all">모두</option>
+                      <option value="data">데이터</option>
+                      <option value="ovfStore">OVF 스토어</option>
+                      <option value="memoryDump">메모리 덤프</option>
+                      <option value="iso">ISO</option>
+                      <option value="hostedEngine">Hosted Engine</option>
+                      <option value="sanlock">Hosted Engine Sanlock</option>
+                      <option value="metadata">Hosted Engine Metadata</option>
+                      <option value="conf">Hosted Engine Conf.</option>
+                    </select>
                   </div>
                 </div>
 
-                <TableOuter 
-                  columns={TableColumnsInfo.ALL_DISK}
-                  data={data}
-                  onRowClick={handleRowClick}
-                />
+                {activeDiskType === 'all' && (
+                  <TableOuter 
+                    columns={TableColumnsInfo.ALL_DISK}
+                    data={data}
+                    onRowClick={handleRowClick}
+                  />
+                )}
+
+                {activeDiskType === 'image' && (
+                  <TableOuter 
+                    columns={TableColumnsInfo.IMG_DISK}
+                    data={data}
+                    onRowClick={handleRowClick}
+                  />
+                )}
+
+                {activeDiskType === 'lun' && (
+                  <TableOuter 
+                    columns={TableColumnsInfo.LUN_DISK}
+                    data={data}
+                    onRowClick={handleRowClick}
+                  />
+                )}
               </>
         </div>
       <Footer/>
@@ -575,7 +598,7 @@ const AllDisk = () => {
       >
         <div className="storage_delete_popup">
           <div className="popup_header">
-            <h1>디스크 삭제</h1>
+            <h1>삭제</h1>
             <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
          
@@ -714,6 +737,6 @@ const AllDisk = () => {
     </div>
     
   );
-};
 
+};
 export default AllDisk;

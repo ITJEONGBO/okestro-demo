@@ -15,7 +15,8 @@ import {
   faArrowUp,
   faArrowDown,
   faMinus,
-  faPlus
+  faPlus,
+  faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons'
 import './css/DataCenterDetail.css';
 import TableOuter from '../table/TableOuter';
@@ -31,6 +32,8 @@ const DataCenterDetail = () => {
   const [activePermissionFilter, setActivePermissionFilter] = useState('all');
   const [showNetworkDetail, setShowNetworkDetail] = useState(false);
   const [활성화된섹션, set활성화된섹션] = useState('일반_섹션');
+  
+
   const [isModalOpen, setIsModalOpen] = useState({
     edit: false,
     permission: false,
@@ -89,7 +92,7 @@ const handleTabClickModal = (tab) => {
 
   const sectionHeaderButtons = [
     { id: 'edit_btn', label: '편집', onClick: () => handleOpenModal('edit') },
-    { id: 'delete_btn', label: '삭제', onClick: () => {} },
+    { id: 'delete_btn', label: '삭제', onClick: () => handleOpenModal('delete') },
   ];
   const [isHiddenParameterVisible, setHiddenParameterVisible] = useState(false);
   const toggleHiddenParameter = () => {
@@ -97,10 +100,7 @@ const handleTabClickModal = (tab) => {
   };
   
   const sectionHeaderPopupItems = [
-    '강제 제거',
-    '가이드',
-    '데이터 센터의 재초기화',
-    '완료된 작업 정리'
+[]
   ];
 
   const [activeTab, setActiveTab] = useState('general');
@@ -737,7 +737,7 @@ const handleTabClickModal = (tab) => {
                         <div className="cluster_select_box">
                             <div class="flex">
                             <label htmlFor="bandwidth_policy">마이그레이션 정책</label>
-                            <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'blue', margin: '0.1rem', cursor: 'pointer' }} />
+                            <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
                             </div>
                             <select id="bandwidth_policy">
                             <option value="default">Default</option>
@@ -748,8 +748,7 @@ const handleTabClickModal = (tab) => {
                         <div className="px-1.5 flex relative">
                         <span className="font-bold">복구정책</span>
                         <FontAwesomeIcon
-                            icon={faInfoCircle}
-                            style={{ color: 'blue', margin: '0.1rem', cursor: 'pointer' }}
+                            icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth
                             onMouseEnter={() => setShowTooltip(true)} // 마우스를 올리면 툴팁을 보여줌
                             onMouseLeave={() => setShowTooltip(false)} // 마우스를 떼면 툴팁을 숨김
                         />
@@ -965,10 +964,12 @@ const handleTabClickModal = (tab) => {
               </div>
 
               <div className='advanced_objec_add'>
-                <button onClick={toggleHiddenParameter}>
-                  {isHiddenParameterVisible ? '-' : '+'}
-                </button>
-                <span>고급 매개 변수</span>
+                <div className='flex'>
+                  <button onClick={toggleHiddenParameter}>
+                    {isHiddenParameterVisible ? '-' : '+'}
+                  </button>
+                  <span>고급 매개 변수</span>
+                </div>
                 {isHiddenParameterVisible && (
                 <div className='host_hidden_parameter'>
                  
@@ -1065,6 +1066,39 @@ const handleTabClickModal = (tab) => {
           <button onClick={() =>handleCloseModal('host_new')}>취소</button>
         </div>
       </Modal>
+
+        {/*디스크(삭제)팝업 */}
+        <Modal
+        isOpen={isModalOpen.delete}
+        onRequestClose={() => handleCloseModal('delete')}
+        contentLabel="디스크 업로드"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="storage_delete_popup">
+          <div className="popup_header">
+            <h1>삭제</h1>
+            <button onClick={() => handleCloseModal('delete')}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+          </div>
+         
+          <div className='disk_delete_box'>
+            <div>
+              <FontAwesomeIcon style={{marginRight:'0.3rem'}} icon={faExclamationTriangle} />
+              <span>다음 항목을 삭제하시겠습니까?</span>
+            </div>
+          </div>
+
+
+          <div className="edit_footer">
+            <button style={{ display: 'none' }}></button>
+            <button>OK</button>
+            <button onClick={() => handleCloseModal('delete')}>취소</button>
+          </div>
+        </div>
+      </Modal>
+
+
       {/* Permission 모달 컴포넌트 */}
       <Permission isOpen={isModalOpen.permission} onRequestClose={() => handleCloseModal('permission')} />
     </div>

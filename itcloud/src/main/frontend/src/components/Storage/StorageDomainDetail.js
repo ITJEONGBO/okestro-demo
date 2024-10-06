@@ -10,10 +10,13 @@ import Permission from '../Modal/Permission';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faExclamation, faPlusCircle, faMinusCircle, faChevronLeft, faCheck
-  , faUser, faTimes, faChevronCircleRight, faDesktop, faAngleDown
+  , faUser, faTimes, faChevronCircleRight, faDesktop, faAngleDown,
+  faGlassWhiskey,
+  faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons'
 import './css/StorageDomainDetail.css';
 import TableOuter from '../table/TableOuter';
+import Footer from '../footer/Footer';
 
 function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const { name } = useParams();
@@ -22,6 +25,11 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     const handlePermissionFilterClick = (filter) => {
       setActivePermissionFilter(filter);
     };
+    const [storageType, setStorageType] = useState('NFS'); // 기본값은 NFS로 설정
+    // 스토리지 유형 변경 핸들러
+  const handleStorageTypeChange = (e) => {
+    setStorageType(e.target.value); // 선택된 옵션의 값을 상태로 저장
+  };
     const [activePopup, setActivePopup] = useState(null); // modal
     const [activePermissionFilter, setActivePermissionFilter] = useState('all');
     const openModal = (popupType) => setActivePopup(popupType);
@@ -35,12 +43,24 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
       setDomainHiddenBox2Visible(!isDomainHiddenBox2Visible);
     };
 
+   
+    const [isDomainHiddenBox4Visible, setDomainHiddenBox4Visible] = useState(false);
+    const toggleDomainHiddenBox4 = () => {
+      setDomainHiddenBox4Visible(!isDomainHiddenBox4Visible);
+    };
+    const [isDomainHiddenBox5Visible, setDomainHiddenBox5Visible] = useState(false);
+    const toggleDomainHiddenBox5 = () => {
+      setDomainHiddenBox5Visible(!isDomainHiddenBox5Visible);
+    };
     const handleRowClick = (row, column) => {
       if (column.accessor === 'domainName') {
         navigate(`/storage-domain/${row.domainName.props.children}`);  
       }
     };
-
+    const [activeLunTab, setActiveLunTab] = useState('target_lun'); 
+  const handleLunTabClick = (tab) => {
+    setActiveLunTab(tab); 
+  };
     
   // 테이블컴포넌트
   // 데이터센터
@@ -150,7 +170,68 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
       inheritedFrom: '(시스템)',
     },
   ];
-
+  const data = [
+    {
+      alias: (
+        <span
+          style={{ color: 'blue', cursor: 'pointer' }}
+          onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
+          onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
+        >
+          he_metadata
+        </span>
+      ),
+      id: '289137398279301798',
+      icon1: '',
+      icon2: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>,
+      connectionTarget: 'on20-ap01',
+      storageDomain: 'VirtIO-SCSI',
+      virtualSize: '/dev/sda',
+      status: 'OK',
+      type: '이미지',
+      description: '',
+    },
+    {
+      alias: (
+        <span
+          style={{ color: 'blue', cursor: 'pointer'}}
+          onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
+          onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
+        >
+          디스크2
+        </span>
+      ),
+      id: '289137398279301798',
+      icon1: '',
+      icon2: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>,
+      connectionTarget: 'on20-ap01',
+      storageDomain: 'VirtIO-SCSI',
+      virtualSize: '/dev/sda',
+      status: 'OK',
+      type: '이미지',
+      description: '',
+    },
+    {
+      alias: (
+        <span
+          style={{ color: 'blue', cursor: 'pointer'}}
+          onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
+          onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
+        >
+          디스크3
+        </span>
+      ),
+      id: '289137398279301798',
+      icon1: '',
+      icon2: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>,
+      connectionTarget: 'on20-ap01',
+      storageDomain: 'VirtIO-SCSI',
+      virtualSize: '/dev/sda',
+      status: 'OK',
+      type: '이미지',
+      description: '',
+    },
+  ];
   //
   const [activeTab, setActiveTab] = useState('general');
 
@@ -166,18 +247,18 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   //headerbutton 컴포넌트
   const buttons = [
     { id: 'manage_domain_btn', label: '도메인 관리', onClick: () => openModal('manageDomain') },
-    { id: 'delete_btn', label: '삭제', onClick: () => console.log('Delete button clicked') },
+    { id: 'delete_btn', label: '삭제', onClick: () => openModal('delete') },
     { id: 'connections_btn', label: 'Connections', onClick: () => console.log('Connections button clicked') },
 ];
 
 
-  const popupItems = [
-    '??'
-    // 'OVF 업데이트',
-    // '파괴',
-    // '디스크 검사',
-    // '마스터 스토리지 도메인으로 선택',
-  ];
+const popupItems = [
+  { label: <div className="disabled">OVF 업데이트</div>, onClick: () => console.log('OVF 업데이트 clicked') },
+  { label: <div className="disabled">파괴</div>, onClick: () => console.log('파괴 clicked') },
+  { label: <div className="disabled">디스크 검사</div>, onClick: () => console.log('디스크 검사 clicked') },
+  { label: <div className="disabled">마스터 스토리지 도메인으로 선택</div>, onClick: () => console.log('마스터 스토리지 도메인으로 선택 clicked') },
+];
+
   // NAV컴포넌트
   const sections = [
     { id: 'general', label: '일반' },
@@ -284,10 +365,10 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
           <>
            
               <div className="content_header_right">
-                <button>연결</button>
-                <button>분리</button>
-                <button>활성</button>
-                <button>유지보수</button>
+                <button className='disabled'>연결</button>
+                <button className='disabled'>분리</button>
+                <button className='disabled'>활성</button>
+                <button onClick={() => openModal('maintenance')}>유지보수</button>
               </div>
               
               <TableOuter 
@@ -384,9 +465,9 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         {activeTab === 'disk' && (
         <>
             <div className="content_header_right">
-                <button>이동</button>
-                <button>복사</button>
-                <button>제거</button>
+                <button  onClick={() => openModal('move')}>이동</button>
+                <button  onClick={() => openModal('copy')}>복사</button>
+                <button  onClick={() => openModal('delete')}>제거</button>
                 <button className='upload_option_boxbtn'>업로드 
                   <i class={faAngleDown} onClick={toggleUploadOptionBox}fixedWidth/>
                 </button>
@@ -413,7 +494,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         {activeTab === 'disk_snapshot' && (
         <>
             <div className="content_header_right">
-                <button>제거</button>
+                <button onClick={() => openModal('delete')}>제거</button>
             </div>
             
             <TableOuter 
@@ -441,7 +522,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
               <>
               <div className="content_header_right">
               <button onClick={() => openModal('permission')}>추가</button>
-                <button>제거</button>
+                <button onClick={() => openModal('delete')}>제거</button>
               </div>
               <div className="host_filter_btns">
                 <span>Permission Filters:</span>
@@ -491,111 +572,492 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
           </div>
 
           <div className="storage_domain_new_first">
-            <div className="domain_new_left">
-              <div className="domain_new_select">
-                <label htmlFor="data_hub_location">데이터 센터</label>
-                <select id="data_hub_location">
-                  <option value="linux">Default(VS)</option>
-                </select>
-              </div>
-              <div className="domain_new_select">
-                <label htmlFor="domain_feature_set">도메인 기능</label>
-                <select id="domain_feature_set">
-                  <option value="linux">데이터</option>
-                </select>
-              </div>
-              <div className="domain_new_select">
-                <label htmlFor="storage_option_type">스토리지 유형</label>
-                <select id="storage_option_type">
-                  <option value="linux">NFS</option>
-                </select>
-              </div>
-              <div className="domain_new_select" style={{ marginBottom: 0 }}>
-                <label htmlFor="host_identifier">호스트</label>
-                <select id="host_identifier">
-                  <option value="linux">host02.ititinfo.com</option>
-                </select>
-              </div>
+                    <div className="domain_new_left">
+                    <div className="domain_new_select">
+                        <label htmlFor="data_hub_location">데이터 센터</label>
+                        <select id="data_hub_location">
+                        <option value="linux">Default(VS)</option>
+                        </select>
+                    </div>
+                    <div className="domain_new_select">
+                        <label htmlFor="domain_feature_set">도메인 기능</label>
+                        <select id="domain_feature_set">
+                            <option value="data">데이터</option>
+                            <option value="iso">ISO</option>
+                            <option value="export">내보내기</option>
+                        </select>
+                    </div>
+                    <div className="domain_new_select">
+                        <label htmlFor="storage_option_type">스토리지 유형</label>
+                        <select 
+                        id="storage_option_type"
+                        value={storageType}
+                        onChange={handleStorageTypeChange} // 선택된 옵션에 따라 상태 변경
+                        >
+                        <option value="NFS">NFS</option>
+                
+                        <option value="iSCSI">iSCSI</option>
+                        <option value="fc">파이버 채널</option>
+                        </select>
+                    </div>
+                    <div className="domain_new_select" style={{ marginBottom: 0 }}>
+                        <label htmlFor="host_identifier">호스트</label>
+                        <select id="host_identifier">
+                        <option value="linux">host02.ititinfo.com</option>
+                        </select>
+                    </div>
+                    </div>
+                    <div className="domain_new_right">
+                    <div className="domain_new_select">
+                        <label>이름</label>
+                        <input type="text" />
+                    </div>
+                    <div className="domain_new_select">
+                        <label>설명</label>
+                        <input type="text" />
+                    </div>
+                    <div className="domain_new_select">
+                        <label>코멘트</label>
+                        <input type="text" />
+                    </div>
+                    </div>
+                </div>
+
+                {storageType === 'NFS' && (
+                <div className="storage_popup_NFS">
+                    <div className ="network_form_group">
+                    <label htmlFor="data_hub">NFS 서버 경로</label>
+                    <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />
+                    </div>
+
+                    <div>
+                    <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn" onClick={toggleDomainHiddenBox}fixedWidth/>
+                    <span>사용자 정의 연결 매개 변수</span>
+                    <div id="domain_hidden_box" style={{ display: isDomainHiddenBoxVisible ? 'block' : 'none' }}>
+                        <span>아래 필드에서 기본값을 변경하지 않을 것을 권장합니다.</span>
+                        <div className="domain_new_select">
+                        <label htmlFor="nfs_version">NFS 버전</label>
+                        <select id="nfs_version">
+                            <option value="host02_ititinfo_com">host02.ititinfo.com</option>
+                        </select>
+                        </div>
+                        {/* <div className="domain_new_select">
+                        <label htmlFor="data_hub">재전송</label>
+                        <input type="text" />
+                        </div>
+                        <div className="domain_new_select">
+                        <label htmlFor="data_hub">제한 시간(데시세컨드)</label>
+                        <input type="text" />
+                        </div>
+                        <div className="domain_new_select">
+                        <label htmlFor="data_hub">추가 마운트 옵션</label>
+                        <input type="text" />
+                        </div> */}
+                    </div>
+                    </div>
+                    <div>
+                    <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn2" onClick={toggleDomainHiddenBox2}fixedWidth/>
+                    <span>고급 매개 변수</span>
+                    <div id="domain_hidden_box2" style={{ display: isDomainHiddenBox2Visible ? 'block' : 'none' }}>
+                        <div className="domain_new_select">
+                        <label>디스크 공간 부족 경고 표시(%)</label>
+                        <input type="text" />
+                        </div>
+                        <div className="domain_new_select">
+                        <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+                        <input type="text" />
+                        </div>
+                        {/* <div className="domain_new_select">
+                        <label>디스크 공간 부족 경고 표시(%)</label>
+                        <input type="text" />
+                        </div>
+                        <div className="domain_new_select">
+                        <label htmlFor="format_type_selector" style={{ color: 'gray' }}>포맷</label>
+                        <select id="format_type_selector" disabled>
+                            <option value="linux">V5</option>
+                        </select>
+                        </div>
+                        <div className="hidden_checkbox">
+                        <input type="checkbox" id="reset_after_deletion"/>
+                        <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
+                        </div>
+                        <div className="hidden_checkbox">
+                        <input type="checkbox" id="backup_vault"/>
+                        <label htmlFor="backup_vault">백업</label>
+                        </div> */}
+
+                    </div>
+                    </div>
+                </div>
+                )}
+
+                
+
+                {storageType === 'iSCSI' && (
+                <div className="storage_popup_NFS">
+                    <div className='target_btns flex'> 
+                    <button 
+                        className={`target_lun ${activeLunTab === 'target_lun' ? 'active' : ''}`}
+                        onClick={() => handleLunTabClick('target_lun')}
+                    >
+                        대상 - LUN
+                    </button>
+                    <button 
+                        className={`lun_target ${activeLunTab === 'lun_target' ? 'active' : ''}`}
+                        onClick={() => handleLunTabClick('lun_target')}
+                    > 
+                        LUN - 대상
+                    </button>
+                    </div>
+
+
+                
+                    {activeLunTab === 'target_lun' &&(
+                    <div className='target_lun_outer'>
+                        <div className="search_target_outer">
+                        <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn4" onClick={toggleDomainHiddenBox4}fixedWidth/>
+                        <span>대상 검색</span>
+                        <div id="domain_hidden_box4" style={{ display: isDomainHiddenBox4Visible ? 'block' : 'none' }}>
+                            <div className="search_target ">
+
+                            <div>
+                                <div className ="network_form_group">
+                                <label htmlFor="data_hub">내보내기 경로</label>
+                                <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />
+                                </div>
+                                <div className ="network_form_group">
+                                <label htmlFor="data_hub">내보내기 경로</label>
+                                <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <div className='input_checkbox'>
+                                <input type="checkbox" id="reset_after_deletion"/>
+                                <label htmlFor="reset_after_deletion">사용자 인증 :</label>
+                                </div>
+                                <div className ="network_form_group">
+                                <label htmlFor="data_hub">내보내기 경로</label>
+                                <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />
+                                </div>
+                                <div className ="network_form_group">
+                                <label htmlFor="data_hub">내보내기 경로</label>
+                                <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />
+                                </div>
+                            </div>
+
+                            
+                            </div>
+                            <button>검색</button>
+                        </div>
+                        </div>
+                    
+
+                        <div>
+                        <button className='all_login'>전체 로그인</button>
+                        <div className='section_table_outer'>
+                            <Table
+                            columns={TableColumnsInfo.CLUSTERS_ALT} 
+                            data={data} 
+                            onRowClick={handleRowClick}
+                            shouldHighlight1stCol={true}
+                            />
+                        </div>
+                        </div>
+                    </div>
+                    )}      
+
+                    {activeLunTab === 'lun_target' && (
+                    <div className='lun_target_outer'>
+                        <div className='section_table_outer'>
+                            <Table
+                            columns={TableColumnsInfo.CLUSTERS_ALT} 
+                            data={data} 
+                            onRowClick={handleRowClick}
+                            shouldHighlight1stCol={true}
+                            />
+                        </div>
+                    </div>
+                    )}
+                    <div>
+                    <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn5" onClick={toggleDomainHiddenBox5}fixedWidth/>
+                    <span>고급 매개 변수</span>
+                    <div id="domain_hidden_box5" style={{ display: isDomainHiddenBox5Visible ? 'block' : 'none' }}>
+                        <div className="domain_new_select">
+                        <label>디스크 공간 부족 경고 표시(%)</label>
+                        <input type="text" />
+                        </div>
+                        <div className="domain_new_select">
+                        <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+                        <input type="text" />
+                        </div>
+
+                        {/* <div className="domain_new_select">
+                        <label>디스크 공간 부족 경고 표시(%)</label>
+                        <input type="text" />
+                        </div>
+                        <div className="domain_new_select">
+                        <label htmlFor="format_type_selector" style={{ color: 'gray' }}>포맷</label>
+                        <select id="format_type_selector" disabled>
+                            <option value="linux">V5</option>
+                        </select>
+                        </div>
+                        <div className="hidden_checkbox">
+                        <input type="checkbox" id="reset_after_deletion"/>
+                        <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
+                        </div>
+                        <div className="hidden_checkbox">
+                        <input type="checkbox" id="backup_vault"/>
+                        <label htmlFor="backup_vault">백업</label>
+                        </div>
+                        <div className="hidden_checkbox">
+                        <input type="checkbox" id="backup_vault"/>
+                        <label htmlFor="backup_vault">삭제 후 폐기</label>
+                        </div> */}
+                    </div>
+                    </div>
+
+                </div>
+                )}
+
+                {storageType === 'fc' && (
+                <div className="storage_popup_NFS">
+                    <div className='section_table_outer'>
+                        <Table
+                        columns={TableColumnsInfo.CLUSTERS_ALT} 
+                        data={data} 
+                        onRowClick={handleRowClick}
+                        shouldHighlight1stCol={true}
+                        />
+                    </div>
+                    <div>
+                    <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn5" onClick={toggleDomainHiddenBox5}fixedWidth/>
+                    <span>고급 매개 변수</span>
+                    <div id="domain_hidden_box5" style={{ display: isDomainHiddenBox5Visible ? 'block' : 'none' }}>
+                        <div className="domain_new_select">
+                        <label>디스크 공간 부족 경고 표시(%)</label>
+                        <input type="text" />
+                        </div>
+                        <div className="domain_new_select">
+                        <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
+                        <input type="text" />
+                        </div>
+                        <div className="domain_new_select">
+                        <label>디스크 공간 부족 경고 표시(%)</label>
+                        <input type="text" />
+                        </div>
+                        <div className="domain_new_select">
+                        <label htmlFor="format_type_selector" style={{ color: 'gray' }}>포맷</label>
+                        <select id="format_type_selector" disabled>
+                            <option value="linux">V5</option>
+                        </select>
+                        </div>
+                        <div className="hidden_checkbox">
+                        <input type="checkbox" id="reset_after_deletion"/>
+                        <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
+                        </div>
+                        <div className="hidden_checkbox">
+                        <input type="checkbox" id="backup_vault"/>
+                        <label htmlFor="backup_vault">백업</label>
+                        </div>
+                        <div className="hidden_checkbox">
+                        <input type="checkbox" id="backup_vault"/>
+                        <label htmlFor="backup_vault">삭제 후 폐기</label>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                )}
+
+          <div className="edit_footer">
+            <button style={{ display: 'none' }}></button>
+            <button>OK</button>
+            <button onClick={closeModal}>취소</button>
+          </div>
+        </div>
+      </Modal>
+
+       {/*유지보수 팝업 */}
+       <Modal
+        isOpen={activePopup === 'maintenance'}
+        onRequestClose={closeModal}
+        contentLabel="디스크 업로드"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="maintenance_popup">
+          <div className="popup_header">
+            <h1>스토리지 도메인 관리</h1>
+            <button onClick={closeModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+          </div>
+         
+          <div className='disk_delete_box'>
+            <div>
+              <FontAwesomeIcon style={{marginRight:'0.3rem'}} icon={faExclamationTriangle} />
+              <span>다음 스토리지 도메인을 유지 관리 모드로 설정하시겠습니까?</span>
             </div>
-            <div className="domain_new_right">
-              <div className="domain_new_select">
-                <label>이름</label>
-                <input type="text" />
+
+          </div>
+            
+          <div className='hosted_storage'>
+              <div>- hosted_storage</div>
+              <div className='host_checkbox'>
+                <input type="checkbox" id="ignore_ovf_update_failure" name="ignore_ovf_update_failure" />
+                <label htmlFor="ignore_ovf_update_failure">OVF 업데이트 실패 무시</label>
               </div>
-              <div className="domain_new_select">
-                <label>설명</label>
-                <input type="text" />
-              </div>
-              <div className="domain_new_select">
-                <label>코멘트</label>
-                <input type="text" />
-              </div>
+
+              <div className='host_textbox'>
+                <label htmlFor="reason">이유</label>
+                <input type="text" id="user_name" />
             </div>
           </div>
 
-          <div className="storage_domain_new_second">
+          <div className="edit_footer">
+            <button style={{ display: 'none' }}></button>
+            <button>OK</button>
+            <button onClick={closeModal}>취소</button>
+          </div>
+        </div>
+        </Modal>
+        {/*삭제 팝업 */}
+        <Modal
+        isOpen={activePopup === 'delete'}
+        onRequestClose={closeModal}
+        contentLabel="디스크 업로드"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="storage_delete_popup">
+          <div className="popup_header">
+            <h1>삭제</h1>
+            <button onClick={closeModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+          </div>
+         
+          <div className='disk_delete_box'>
             <div>
-              <label htmlFor="data_hub">내보내기 경로</label>
-              <input type="text" placeholder="예:myserver.mydomain.com/my/local/path" />
+              <FontAwesomeIcon style={{marginRight:'0.3rem'}} icon={faExclamationTriangle} />
+              <span>다음 항목을 삭제하시겠습니까?</span>
             </div>
+          </div>
 
-            <div>
-              <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn" onClick={toggleDomainHiddenBox}fixedWidth/>
-              <span>사용자 정의 연결 매개 변수</span>
-              <div id="domain_hidden_box" style={{ display: isDomainHiddenBoxVisible ? 'block' : 'none' }}>
-                <span>아래 필드에서 기본값을 변경하지 않을 것을 권장합니다.</span>
-                <div className="domain_new_select">
-                  <label htmlFor="nfs_version">NFS 버전</label>
-                  <select id="nfs_version" disabled style={{cursor:'no-drop'}}>
-                    <option value="host02_ititinfo_com" >자동 협상(기본)</option>
-                  </select>
-                </div>
-                <div className="domain_new_select">
-                  <label htmlFor="data_hub">재전송(#)</label>
-                  <input type="text" />
-                </div>
-                <div className="domain_new_select">
-                  <label htmlFor="data_hub">제한 시간(데시세컨드)</label>
-                  <input type="text" />
-                </div>
-                <div className="domain_new_select">
-                  <label htmlFor="data_hub">추가 마운트 옵션</label>
-                  <input type="text" />
-                </div>
-              </div>
-            </div>
-            <div>
-              <FontAwesomeIcon icon={faChevronCircleRight} id="domain_hidden_box_btn2" onClick={toggleDomainHiddenBox2}fixedWidth/>
-              <span>고급 매개 변수</span>
-              <div id="domain_hidden_box2" style={{ display: isDomainHiddenBox2Visible ? 'block' : 'none' }}>
-                <div className="domain_new_select">
-                  <label>디스크 공간 부족 경고 표시(%)</label>
-                  <input type="text" />
-                </div>
-                <div className="domain_new_select">
-                  <label>심각히 부족한 디스크 공간의 동작 차단(GB)</label>
-                  <input type="text" />
-                </div>
-                <div className="domain_new_select">
-                  <label>디스크 공간 부족 경고 표시(%)</label>
-                  <input type="text" />
-                </div>
-                <div className="domain_new_select">
-                  <label htmlFor="format_type_selector" style={{ color: 'gray' }}>포맷</label>
-                  <select id="format_type_selector" disabled>
-                    <option value="linux">V5</option>
-                  </select>
-                </div>
-                <div className="hidden_checkbox">
-                  <input type="checkbox" id="reset_after_deletion"/>
-                  <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
-                </div>
-                <div className="hidden_checkbox">
-                  <input type="checkbox" id="backup_vault"/>
-                  <label htmlFor="backup_vault">백업</label>
-                </div>
-              </div>
-            </div>
+
+          <div className="edit_footer">
+            <button style={{ display: 'none' }}></button>
+            <button>OK</button>
+            <button onClick={closeModal}>취소</button>
+          </div>
+        </div>
+        </Modal>
+        {/*디스크(이동)팝업 */}
+        <Modal
+        isOpen={activePopup === 'move'}
+        onRequestClose={closeModal}
+        contentLabel="디스크 이동"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="disk_move_popup">
+          <div className="popup_header">
+            <h1>디스크 이동</h1>
+            <button onClick={closeModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+          </div>
+
+          <div className="section_table_outer py-1">
+              <table >
+        <thead>
+          <tr>
+            <th>별칭</th>
+            <th>가상 크기</th>
+            <th>소스</th>
+            <th>대상</th>
+            <th>디스크 프로파일</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>he_sanlock</td>
+            <td>1 GiB</td>
+            <td>hosted_storage</td>
+            <td>
+              <select>
+                <option>NFS (499 GiB)</option>
+                <option>Option 2</option>
+              </select>
+            </td>
+            <td>
+              <select>
+                <option>NFS</option>
+                <option>Option 2</option>
+              </select>
+            </td>
+          </tr>
+        </tbody>
+              </table>
+          </div>
+
+          <div className="edit_footer">
+            <button style={{ display: 'none' }}></button>
+            <button>OK</button>
+            <button onClick={closeModal}>취소</button>
+          </div>
+        </div>
+        </Modal>
+        {/*디스크(복사)팝업 */}
+        <Modal
+        isOpen={activePopup === 'copy'}
+        onRequestClose={closeModal}
+        contentLabel="디스크 복사"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="disk_move_popup">
+          <div className="popup_header">
+            <h1>디스크 복사</h1>
+            <button onClick={closeModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+          </div>
+
+          <div className="section_table_outer py-1">
+              <table >
+                <thead>
+                  <tr>
+                    <th>별칭</th>
+                    <th>가상 크기</th>
+                    <th>소스</th>
+                    <th>대상</th>
+                    <th>디스크 프로파일</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <input type='text' value={'별칭'}/>
+                    </td>
+                    <td>1 GiB</td>
+                    <td>
+                      <select>
+                        <option>hosted_storage</option>
+                     
+                      </select>
+                    </td>
+                    <td>
+                      <select>
+                        <option>NFS (499 GiB)</option>
+                        <option>Option 2</option>
+                      </select>
+                    </td>
+                    <td>
+                      <select>
+                        <option>NFS</option>
+                     
+                      </select>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
           </div>
 
           <div className="edit_footer">
@@ -606,7 +1068,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         </div>
       </Modal>
 
-      
+      <Footer/>
       {/* 모달 컴포넌트 */}
       <Permission isOpen={activePopup === 'permission'} onRequestClose={closeModal} />
     </div>

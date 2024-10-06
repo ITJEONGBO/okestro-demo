@@ -174,11 +174,18 @@ form>div{
     border-bottom: 2px solid rgb(35, 132, 243);
 }
 
-
+.img_input_box input, .img_select_box select{
+    width: 55%;
+    height: 3.5vh;
+    border: 1px solid #8b8989;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem; 
+    outline: none;
+}
 .table_container_left{
     width: 33%;
     border-right: 1px solid #d1d1d1;
-    /* padding-right: 0.14rem; */
     padding: 0.4rem 0.2rem;
 }
 .table_container_left>h2{
@@ -407,20 +414,20 @@ form>div{
 }
 
 .network_new_nav{
-
     justify-content: space-between;
     border-bottom: 1px solid rgb(206, 206, 206);
     height: 75vh;
     width: 30%;
-    border-right:1px solid gray;
+    background-color: #FAFAFA;
+    border-right: 1px solid #ddd;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 .network_new_nav>div{
     font-weight: 800;
-    text-align: center;
     font-size: 0.33rem;
     width: 100%;
     cursor: pointer;
-    padding: 0.25rem;
+    padding: 0.4rem 0.2rem;
 
 }
 .active{
@@ -540,6 +547,10 @@ input[type="text"]:focus {
     box-shadow: 0 0 8px rgba(22, 90, 190, 0.8);
     outline: none;
 }
+
+.section_table_outer input[type="text"],.section_table_outer select{
+    border:none !important;
+}
     /*info 설명박스*/
 .tooltip-box {
     background-color: #333; 
@@ -625,8 +636,6 @@ input[type="text"]:focus {
 .disabled {
     cursor: no-drop;
     color:gray;
-
-    
 }
 .host_hidden_parameter>div:first-child{
     font-weight: 800;
@@ -752,7 +761,7 @@ input[type="text"]:focus {
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 38.4vh;
+    height: 26.4vh;
     width: 38%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -764,8 +773,8 @@ input[type="text"]:focus {
 }
 .disk_delete_box>div{
     padding: 0.4rem;
-    border:2px solid blue;
-    color:blue;
+    border: 2px solid #87abd4;
+    color: #3737ba;
 }
 .disk_type{
     display:flex;
@@ -780,17 +789,7 @@ input[type="text"]:focus {
     display:block;
     margin-right:0.2rem;
 }
-.content_type_btn{
-    position:relative;
-}
-.content_type{
-    position: absolute;
-    width: 11vw;
-    top: 0.77rem;
-    border-radius: 1px;
-    border: 1px solid gray;
-    background: white;
-}
+
 .content_type>div{
     padding: 0.1rem;
     cursor:pointer;
@@ -807,7 +806,7 @@ input[type="text"]:focus {
     background: #fff;
     top: 50%;
     height: 48.4vh;
-    width: 38%;
+    width: 42%;
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
@@ -821,10 +820,58 @@ input[type="text"]:focus {
 .network_filter_btns>button{
     padding:0.06rem;
     cursor:pointer;
-    width:50%;
+    display: flex;
+    align-items: center;
+    text-align: center;
   
 }
-/*디스크 복사*/
+.svg-inline--fa{
+    cursor:pointer;
+}
+
+
+.storage_disk_new_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 74%;
+    width: 58%;
+    left: 50%;
+    z-index:99999;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75); /* 배경을 어둡게 */
+    z-index: 1000; /* z-index 값 설정 */
+}
+.vm_select_box{
+    display: flex;
+    justify-content: space-between;
+    padding: 0.3rem;
+}
+.vm_select_box select,.vm_select_box input[type='text']{
+        width: 55%;
+        height: 3.5vh;
+        border: 1px solid #8b8989;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 0.29rem; 
+        outline: none;
+}
+.vm_select_box label{
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
 /* 중복끝 */
 
 
@@ -1703,10 +1750,7 @@ input[type="text"]:focus {
 .content_header_popup>div:hover{
     background-color: #ececec;
 }
-.content_header_popup>div:first-child,
-.content_header_popup>div:nth-child(4){
-    color: #a5a5a5;
-}
+
 /*content_info*/
 
 /*네트워크 인터페이스*/
@@ -1932,15 +1976,7 @@ input[type="text"]:focus {
     justify-content: center; /* 수평 가운데 정렬 */
     align-items: center; /* 수직 가운데 정렬 */
 }
-.img_input_box input, .img_select_box select{
-    width: 55%;
-    height: 3.5vh;
-    border: 1px solid #8b8989;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem; 
-    outline: none;
-}
+
 input[disabled] {
     background-color: #f0f0f0; /* 회색 배경색 */
     color: #a0a0a0; /* 회색 글자색 */

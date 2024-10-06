@@ -40,12 +40,18 @@ function HostDetail() {
   const handlePermissionFilterClick = (filter) => {
     setActivePermissionFilter(filter);
   };
-
+  const [areAllBoxesVisible, setAreAllBoxesVisible] = useState(false);
   const [activePopup, setActivePopup] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [활성화된섹션, set활성화된섹션] = useState('일반_섹션');
   const [activeButton, setActiveButton] = useState('network');
   const [isLabelVisible, setIsLabelVisible] = useState(false); // 라벨 표시 상태 관리
+  
+  const toggleAllBoxes = () => {
+    setAreAllBoxesVisible(!areAllBoxesVisible);
+  };
+  
+  
   const openPopup = (type) => {
     setActivePopup(type); // 'new' 또는 'edit' 등으로 설정
   };
@@ -231,7 +237,7 @@ function HostDetail() {
     //headerbutton 컴포넌트
     const buttons = [
         { id: 'edit_btn', label: '편집', onClick: () => openPopup('host_edit') },
-        { id: 'delete_btn', label: '삭제', onClick: () => console.log('Delete button clicked') },
+        { id: 'delete_btn', label: '삭제', onClick: () => openPopup('delete')},
         { id: 'manage_btn', label: '관리', onClick: () => console.log('Manage button clicked') },
         { id: 'install_btn', label: '설치', onClick: () => console.log('Install button clicked') }
       ];
@@ -529,41 +535,42 @@ function HostDetail() {
                 <div className="host_btn_outer">
                   <div className="content_header_right">
                     <button>VF 보기</button>
-                    <button>모두 확장</button>
+                    <button onClick={toggleAllBoxes}>
+                      {areAllBoxesVisible ? '모두 숨기기' : '모두 확장'}
+                    </button>
                     <button onClick={() => openPopup('host_network_popup')}>호스트 네트워크 설정</button>
-                    <button>네트워크 설정 저장</button>
-                    <button>모든 네트워크 동기화</button>
+                    <button className='disabled'>네트워크 설정 저장</button>
+                    <button className='disabled'>모든 네트워크 동기화</button>
                   </div>
 
                   {[0, 1].map((index) => (
-                    
-                    <div className='host_network_boxs' key={index}>
-                      <div
-                        className='host_network_firstbox'
-                        onClick={() => toggleHiddenBox(index)}
-                      >
-                        <div className="section_table_outer">
-                          <Table
-                            columns={TableColumnsInfo.HOST_NETWORK_INTERFACE}
-                            data={networkInterfaceData}
-                            onRowClick={() => console.log('Row clicked')}
-                          />
-                         </div>
-                      </div>
-                      <div
-                        className='host_network_hiddenbox'
-                        style={{ display: visibleBoxes.includes(index) ? 'block' : 'none' }}
-                      >
-                        <div className="section_table_outer">
-                          <Table
-                            columns={TableColumnsInfo.NETWORKS_FROM_HOST}
-                            data={networkdata}
-                            onRowClick={() => console.log('Row clicked')}
-                          />
-                         </div>
-                      </div>
-                    </div>
-                  ))}
+    <div className="host_network_boxs" key={index}>
+      <div
+        className="host_network_firstbox"
+        onClick={() => toggleHiddenBox(index)}
+      >
+        <div className="section_table_outer">
+          <Table
+            columns={TableColumnsInfo.HOST_NETWORK_INTERFACE}
+            data={networkInterfaceData}
+            onRowClick={() => console.log("Row clicked")}
+          />
+        </div>
+      </div>
+      <div
+        className="host_network_hiddenbox"
+        style={{ display: areAllBoxesVisible ? "block" : "none" }} // 모든 박스의 상태를 한 번에 제어
+      >
+        <div className="section_table_outer">
+          <Table
+            columns={TableColumnsInfo.NETWORKS_FROM_HOST}
+            data={networkdata}
+            onRowClick={() => console.log("Row clicked")}
+          />
+        </div>
+      </div>
+    </div>
+  ))}
                 </div>
                 )}
                 {/* 호스트 장치 */}
@@ -778,42 +785,44 @@ function HostDetail() {
                     </div>
 
                     <div className='advanced_objec_add'>
-                <button onClick={toggleHiddenParameter}>
-                  {isHiddenParameterVisible ? '-' : '+'}
-                </button>
-                <span>고급 매개 변수</span>
-                {isHiddenParameterVisible && (
-                <div className='host_hidden_parameter'>
-                 
-                  <div>전원 관리 프록시 설정</div>
-                  <div>
-                    <div className='proxy_content'>
-                      <div className='font-bold'>1.</div>
-                      <div className='w-6'>cluster</div>
-                      <div>  
-                        <button> <FontAwesomeIcon icon={faArrowUp} fixedWidth /></button>
-                        <button><FontAwesomeIcon icon={faArrowDown} fixedWidth /></button>
+                      <div className='flex'>
+                        <button style={{marginRight:'0.2rem'}}onClick={toggleHiddenParameter} >
+                          {isHiddenParameterVisible ? '-' : '+'}
+                        </button>
+                        <span >고급 매개 변수</span>
                       </div>
-                      <button><FontAwesomeIcon icon={faMinus} fixedWidth /></button>
-                    </div>
-                    <div className='proxy_content'>
-                      <div className='font-bold'>2.</div>
-                      <div className='w-6'>dc</div>
-                      <div>  
-                        <button> <FontAwesomeIcon icon={faArrowUp} fixedWidth /></button>
-                        <button><FontAwesomeIcon icon={faArrowDown} fixedWidth /></button>
-                      </div>
-                      <button><FontAwesomeIcon icon={faMinus} fixedWidth /></button>
-                    </div>
-                  </div>
+                      {isHiddenParameterVisible && (
+                      <div className='host_hidden_parameter'>
+                      
+                        <div>전원 관리 프록시 설정</div>
+                        <div>
+                          <div className='proxy_content'>
+                            <div className='font-bold'>1.</div>
+                            <div className='w-6'>cluster</div>
+                            <div>  
+                              <button> <FontAwesomeIcon icon={faArrowUp} fixedWidth /></button>
+                              <button><FontAwesomeIcon icon={faArrowDown} fixedWidth /></button>
+                            </div>
+                            <button><FontAwesomeIcon icon={faMinus} fixedWidth /></button>
+                          </div>
+                          <div className='proxy_content'>
+                            <div className='font-bold'>2.</div>
+                            <div className='w-6'>dc</div>
+                            <div>  
+                              <button> <FontAwesomeIcon icon={faArrowUp} fixedWidth /></button>
+                              <button><FontAwesomeIcon icon={faArrowDown} fixedWidth /></button>
+                            </div>
+                            <button><FontAwesomeIcon icon={faMinus} fixedWidth /></button>
+                          </div>
+                        </div>
 
-                  <div className='proxy_add'>
-                    <div>전원 관리 프록시 추가</div>
-                    <button><FontAwesomeIcon icon={faPlus} fixedWidth /></button>
-                  </div>
-                </div>
-                )}
-              </div>
+                        <div className='proxy_add'>
+                          <div>전원 관리 프록시 추가</div>
+                          <button><FontAwesomeIcon icon={faPlus} fixedWidth /></button>
+                        </div>
+                      </div>
+                      )}
+                   </div>
                     
 
                   </div>
@@ -1019,6 +1028,37 @@ function HostDetail() {
                 </div>
               </div>
             </Modal>
+
+               {/*삭제 팝업 */}
+      <Modal
+        isOpen={activePopup === 'delete'}
+        onRequestClose={closePopup}
+        contentLabel="디스크 업로드"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="storage_delete_popup">
+          <div className="popup_header">
+            <h1>삭제</h1>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+          </div>
+         
+          <div className='disk_delete_box'>
+            <div>
+              <FontAwesomeIcon style={{marginRight:'0.3rem'}} icon={faExclamationTriangle} />
+              <span>다음 항목을 삭제하시겠습니까?</span>
+            </div>
+          </div>
+
+
+          <div className="edit_footer">
+            <button style={{ display: 'none' }}></button>
+            <button>OK</button>
+            <button onClick={closePopup}>취소</button>
+          </div>
+        </div>
+      </Modal>
             <Footer/>
         </div>
     );

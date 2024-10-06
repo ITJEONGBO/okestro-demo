@@ -16,14 +16,7 @@
     overflow-x: hidden;
     font-size: 0.33rem;
 }    
-.cluster_new_popup .network_new_nav>div{
-    font-weight: 800;
-    text-align: center;
-    font-size: 0.33rem;
-    width: 100%;
-    cursor: pointer;
-    padding: 0.25rem;
-}
+
 .cluster_select_box{
     display: flex;
     padding: 0.1rem 0;

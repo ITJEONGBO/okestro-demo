@@ -1,8 +1,9 @@
-import { faCaretUp, faEllipsisV, faExclamationTriangle, faExternalLink, faGlassWhiskey, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faCaretUp, faChevronDown, faEllipsisV, faExclamationTriangle, faExternalLink, faGlassWhiskey, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import TableOuter from '../../table/TableOuter';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 
 
 // 디스크
@@ -13,7 +14,15 @@ const DiskSection = () => {
   
     const handleTabClick = (tab) => setActiveTab(tab);
   
-   
+    const [isVisible, setIsVisible] = useState(false);
+    const toggleContent = () => {
+      setIsVisible(!isVisible);
+    };
+  
+    const [activeDiskType, setActiveDiskType] = useState('all');
+  const handleDiskTypeClick = (type) => {
+    setActiveDiskType(type);  // 여기서 type을 설정해야 함
+  };
   
     // 연결 팝업 열기/닫기 핸들러
 
@@ -26,6 +35,13 @@ const DiskSection = () => {
     const closePopup = () => {
         setActivePopup(null);
     };
+
+    const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 유형 상태
+
+  // 컨텐츠 유형 변경 핸들러
+  const handleContentTypeChange = (event) => {
+    setActiveContentType(event.target.value);
+  };
     // 테이블 컴포넌트
     const columns = [
       { header: '', accessor: 'statusIcon', clickable: false },
@@ -65,7 +81,7 @@ const DiskSection = () => {
                     <button id="join_popup_btn" onClick={() => openPopup('disk_connection')}>연결</button>
                     <button onClick={() => openPopup('disk_edit')}>편집</button>
                     <button onClick={() => openPopup('delete')}>제거</button>
-                    <button className="content_header_popup_btn">
+                    {/* <button className="content_header_popup_btn">
                         <FontAwesomeIcon icon={faEllipsisV} fixedWidth/>
                         <div className="content_header_popup" style={{ display: 'none' }}>
                             <div>활성</div>
@@ -73,23 +89,56 @@ const DiskSection = () => {
                             <div>이동</div>
                             <div>LUN 새로고침</div>
                         </div>
-                    </button>
+                    </button> */}
                 </div>
-                <div className='disk_type'>
-                    <div>
-                      <span>디스크유형 : </span>
-                      <div className='flex'>
-                        <button>모두</button>
-                        <button>이미지</button>
-                        <button className='mr-1'>직접 LUN</button>
-                      </div>
+                <div className="disk_type">
+                  <div>
+                    <span>디스크유형 : </span>
+                    <div className='flex'>
+                      <button className={activeDiskType === 'all' ? 'active' : ''} onClick={() => handleDiskTypeClick('all')}>모두</button>
+                      <button className={activeDiskType === 'image' ? 'active' : ''} onClick={() => handleDiskTypeClick('image')}>이미지</button>
+                      <button style={{ marginRight: '0.2rem' }} className={activeDiskType === 'lun' ? 'active' : ''} onClick={() => handleDiskTypeClick('lun')}>직접 LUN</button>
                     </div>
+                  </div>
+                  <div className="content_type">
+                    <label className='mr-1' htmlFor="contentType">컨텐츠 유형:</label>
+                    <select id="contentType" value={activeContentType} onChange={handleContentTypeChange}>
+                      <option value="all">모두</option>
+                      <option value="data">데이터</option>
+                      <option value="ovfStore">OVF 스토어</option>
+                      <option value="memoryDump">메모리 덤프</option>
+                      <option value="iso">ISO</option>
+                      <option value="hostedEngine">Hosted Engine</option>
+                      <option value="sanlock">Hosted Engine Sanlock</option>
+                      <option value="metadata">Hosted Engine Metadata</option>
+                      <option value="conf">Hosted Engine Conf.</option>
+                    </select>
+                  </div>
                 </div>
-                <TableOuter
-                  columns={columns}
-                  data={data}
-                  onRowClick={() => console.log('Row clicked')} 
-                />
+
+                {activeDiskType === 'all' && (
+                  <TableOuter 
+                    columns={TableColumnsInfo.ALL_DISK}
+                    data={data}
+                    onRowClick={() => console.log('Row clicked')}
+                  />
+                )}
+
+                {activeDiskType === 'image' && (
+                  <TableOuter 
+                    columns={TableColumnsInfo.IMG_DISK}
+                    data={data}
+                    onRowClick={() => console.log('Row clicked')}
+                  />
+                )}
+
+                {activeDiskType === 'lun' && (
+                  <TableOuter 
+                    columns={TableColumnsInfo.LUN_DISK}
+                    data={data}
+                    onRowClick={() => console.log('Row clicked')}
+                  />
+                )}
            {/*디스크(새로만들기)팝업 */}
         <Modal
       isOpen={activePopup === 'newDisk'}

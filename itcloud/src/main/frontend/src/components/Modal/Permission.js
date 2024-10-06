@@ -6,9 +6,19 @@ import {
   faTimes
 } from '@fortawesome/free-solid-svg-icons'
 import './css/Permission.css';
+import TableColumnsInfo from '../table/TableColumnsInfo';
+import TableOuter from '../table/TableOuter';
 
 const Permission = ({ isOpen, onRequestClose }) => {
+  const permissionData = [
+    {
+      icon: '3204',
+      name: 'admin',
+      description: 'internal-authz'
+    },
+  ];
   return (
+
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
@@ -60,19 +70,12 @@ const Permission = ({ isOpen, onRequestClose }) => {
           <input type="submit" value="검색" />
         </div>
       </div>
-
-      <div className="power_table">
-        <Table 
-          columns={[
-            { header: '이름', accessor: 'firstName' },
-            { header: '성', accessor: 'lastName' },
-            { header: '사용자 이름', accessor: 'username' },
-          ]}
-          data={[
-            { firstName: 'dddddddddddddddddddddd', lastName: '2024. 1. 17. PM 3:14:39', username: "Snapshot 'on2o-ap01-Snapshot-2024_01_17' been completed." }
-          ]}
-        />
-      </div>
+      
+      <TableOuter
+        columns={TableColumnsInfo.PERMISSIONS}
+        data={permissionData} 
+        onRowClick={() => console.log('Row clicked')} 
+      />
 
       <div className="power_last_content">
         <label htmlFor="assigned_role">할당된 역할:</label>

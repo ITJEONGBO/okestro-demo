@@ -117,6 +117,33 @@ const TableColumnsInfo = {
     { header: '유형', accessor: 'type', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],
+  IMG_DISK:  [
+    { header: '이름', accessor: 'alias', clickable: true },
+    { header: 'ID', accessor: 'id', clickable: false },
+    { header: '', accessor: 'icon1', clickable: false },
+    { header: '연결 대상', accessor: 'connectionTarget', clickable: false },
+    { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
+    { header: '가상 크기', accessor: 'virtualSize', clickable: false },
+    { header: '할당 정책', accessor: 'allocationPolicy', clickable: false },
+    { header: '생성 일자', accessor: 'creationDate', clickable: false },
+    { header: '최근 업데이트', accessor: 'lastUpdate', clickable: false },
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '콘텐츠', accessor: 'content', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false },
+  ],
+  LUN_DISK:  [
+    { header: '이름', accessor: 'alias', clickable: true },
+    { header: 'ID', accessor: 'id', clickable: false },
+    { header: '', accessor: 'icon1', clickable: false },
+    { header: '연결 대상', accessor: 'connectionTarget', clickable: false },
+    { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
+    { header: '가상 크기', accessor: 'virtualSize', clickable: false },
+    { header: 'LUN ID', accessor: 'lunId', clickable: false },
+    { header: '시리얼', accessor: 'serial', clickable: false },
+    { header: '벤더 ID', accessor: 'vendorId', clickable: false },
+    { header: '제품 ID', accessor: 'productId', clickable: false },    
+    { header: '설명', accessor: 'description', clickable: false },
+  ],
 
   DEVICE_FROM_HOST: [
     { header: '이름', accessor: 'name', clickable: false },
@@ -222,6 +249,12 @@ const TableColumnsInfo = {
     { header: '총 Rx', accessor: 'totalRx', clickable: false },
     { header: '총 Tx', accessor: 'totalTx', clickable: false },
   ],
+  HOSTS_DISCONNECTION: [
+    { header: '', accessor: 'icon', clickable: false },
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '클러스터', accessor: 'cluster', clickable: false },
+    { header: '데이터 센터', accessor: 'dataCenter', clickable: false },
+  ],
   HOSTS_ALT: [
     { header: '상태', accessor: 'status', clickable: false },
     { header: '', accessor: 'iconWarning', clickable: false },
@@ -285,7 +318,6 @@ const TableColumnsInfo = {
     { header: '설명', accessor: 'description', clickable: false },
   ],
   VMS: [
-    { header: '', accessor: 'icon', clickable: false, style: { textAlign: 'center' } },
     { header: '이름', accessor: 'name', clickable: false },
     { header: '클러스터', accessor: 'cluster', clickable: false },
     { header: 'IP 주소', accessor: 'ipAddress', clickable: false },
@@ -296,6 +328,18 @@ const TableColumnsInfo = {
     { header: 'vNIC Tx', accessor: 'vnicTx', clickable: false },
     { header: '총 Rx', accessor: 'totalRx', clickable: false },
     { header: '총 Tx', accessor: 'totalTx', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false }
+  ],
+  VM_BRING_POPUP:[
+    { header: '이름', accessor: 'name', clickable: false },
+  ],
+  VMS_STOP: [
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '클러스터', accessor: 'cluster', clickable: false },
+    { header: 'IP 주소', accessor: 'ipAddress', clickable: false },
+    { header: 'FQDN', accessor: 'fqdn', clickable: false },
+    { header: 'vNIC 상태', accessor: 'vnicStatus', clickable: false },
+    { header: 'vNIC', accessor: 'vnic', clickable: false },
     { header: '설명', accessor: 'description', clickable: false }
   ],
   VMS_FROM_HOST: [
@@ -328,7 +372,10 @@ const TableColumnsInfo = {
     { header: '클러스터', accessor: 'clusterName', clickable: false },
     { header: 'vNic', accessor: 'nicName', clickable: false },
   ],
-  
+  SNAPSHOT_NEW:[
+    { header: '이름', accessor: 'name', clickable: false },
+    { header: '설명', accessor: 'description', clickable: false }
+  ],
   PERMISSIONS: [
     { header: '', accessor: 'icon', clickable: false },
     { header: '사용자', accessor: 'user', clickable: false },

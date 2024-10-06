@@ -45,7 +45,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   const handlePermissionFilterClick = (filter) => {
     setActivePermissionFilter(filter);
     
-  
+ 
    
     setActivePermissionFilter(filter);
     if (filter === 'direct') {
@@ -220,13 +220,15 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
       name: 'Default',
       allAssigned: (
         <>
-          <input type="checkbox" checked /> <label>할당</label>
+          <div className='flex'>
+            <input type="checkbox" checked /> <label>할당</label>
+          </div>
         </>
       ),
       allRequired: (
-        <>
-          <input type="checkbox" checked/> <label>필요</label>
-        </>
+          <div className='flex'>
+            <input type="checkbox" checked /> <label>필요</label>
+          </div>
       ),
       vmNetMgmt: (
         <>
@@ -246,7 +248,11 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
-
+  const [activeVmFilter, setActiveVmFilter] = useState('running');
+  const handleVmFilterClick = (filter) => {
+    setActiveVmFilter(filter);
+  };
+  
   //headerbutton 컴포넌트
   const buttons = [
     { 
@@ -265,7 +271,10 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     
   ];
   
-
+  const [activeFilter, setActiveFilter] = useState('connected'); 
+  const handleFilterClick = (filter) => {
+    setActiveFilter(filter);
+  };
 
   // 모달 관련 상태 및 함수
   const [activePopup, setActivePopup] = useState(null);
@@ -310,7 +319,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
           <div className="content_header_right">
               <button onClick={() => openPopup('vnic_new_popup')}>새로 만들기</button>
               <button onClick={() => openPopup('vnic_eidt_popup')}>편집</button>
-              <button>제거</button>
+              <button onClick={() => openPopup('delete')} >제거</button>
           </div>
           {/* vNIC 프로파일 */}
           <TableOuter
@@ -343,21 +352,33 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
             </div>
             <div className="host_filter_btns">
               <button
-                 
+                className={activeFilter === 'connected' ? 'active' : ''}
+                onClick={() => handleFilterClick('connected')}
               >
-                  연결됨
+                연결됨
               </button>
               <button
-                  
+                className={activeFilter === 'disconnected' ? 'active' : ''}
+                onClick={() => handleFilterClick('disconnected')}
               >
-                  연결 해제
+                연결 해제
               </button>
             </div>
-            <TableOuter 
-              columns={TableColumnsInfo.HOSTS}
-              data={hosts}
-              onRowClick={() => console.log('Row clicked')} 
-            />
+            {activeFilter === 'connected' && (
+              <TableOuter
+                columns={TableColumnsInfo.HOSTS}
+                data={hosts}
+                onRowClick={() => console.log('Row clicked')}
+              />
+            )}
+
+            {activeFilter === 'disconnected' && (
+              <TableOuter
+                columns={TableColumnsInfo.HOSTS_DISCONNECTION}
+                data={hosts}
+                onRowClick={() => console.log('Row clicked')}
+              />
+            )}
        </>
        
         )}
@@ -365,32 +386,46 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         {activeTab === 'virtual_machine' && (
         <>
               <div className="content_header_right">
-                  <button>제거</button>
+                  <button onClick={() => openPopup('delete')}>제거</button>
               </div>
               <div className="host_filter_btns">
                 <button
-              
+                  className={activeVmFilter === 'running' ? 'active' : ''}
+                  onClick={() => handleVmFilterClick('running')}
                 >
-                    실행중
+                  실행중
                 </button>
                 <button
-                
+                  className={activeVmFilter === 'stopped' ? 'active' : ''}
+                  onClick={() => handleVmFilterClick('stopped')}
                 >
-                    정지중
+                  정지중
                 </button>
-            </div>
-            <TableOuter 
-              columns={TableColumnsInfo.VMS}
-              data={vms}
-              onRowClick={() => console.log('Row clicked')}
-            />
-       </>
+              </div>
+              {activeVmFilter === 'running' && (
+                  <TableOuter
+                    columns={TableColumnsInfo.VMS}
+                    data={vms}
+                    onRowClick={() => console.log('Row clicked')}
+                  />
+                )}
+
+                {/* 정지중 테이블 */}
+                {activeVmFilter === 'stopped' && (
+                  <TableOuter
+                    columns={TableColumnsInfo.VMS_STOP}
+                    data={vms}
+                    onRowClick={() => console.log('Row clicked')}
+                  />
+                )}
+              </>
+       
         )}
 
         {activeTab === 'template' && (
         <>
             <div className="content_header_right">
-                <button>제거</button>
+                <button onClick={() => openPopup('delete')}>제거</button>
             </div>
 
             <TableOuter 
@@ -406,7 +441,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         <>
               <div className="content_header_right">
                 <button onClick={() => openPopup('permission')}>추가</button>
-                <button>제거</button>
+                <button onClick={() => openPopup('delete')}>제거</button>
               </div>
               
      

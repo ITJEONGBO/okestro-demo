@@ -8,8 +8,7 @@
 .section_table_outer th { padding: 0.04rem;text-align: center;background-color: #d1e2eb; }
 .section_table_outer td { padding: 0.02rem 0.1rem; }
 .section_table_outer td:nth-child(2) { width: 10%;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; }
-.section_table_outer td:nth-child(3),
-.section_table_outer td:nth-child(4) { text-align: center; }
+.section_table_outer input[type="checkbox"]{ text-align: center; }
 .section_table_outer > button {
     display: flex;
     cursor: pointer;

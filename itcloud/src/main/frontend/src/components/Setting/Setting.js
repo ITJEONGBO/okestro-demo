@@ -139,7 +139,7 @@ const Setting = ({ }) => {
                 {activeTab === 'host' && (
                     <>
                       <div className="content_header_right"> 
-                          <button>세션 종료</button>
+                          <button className='disabled'>세션 종료</button>
                       </div>
 
                       <div className="section_table_outer">

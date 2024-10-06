@@ -159,6 +159,7 @@
   
     .storage_popup_NFS>div{
         margin-bottom: 0.2rem;
+
     }
     #domain_hidden_box_btn,#domain_hidden_box_btn2{
         cursor: pointer;   
@@ -359,8 +360,8 @@
 }
 .target_btns{
     border-radius:3px;
-    border:1px solid gray;
-    width: 18%;
+
+    width: 19%;
 }
 .target_btns>button{
     padding:0.15rem;

@@ -58,10 +58,10 @@ const closeModal = () => {
   ];
 
   const popupItems = [
-    '가져오기',
-    '가상 머신 복제',
-    '템플릿 생성',
-    'OVA로 내보내기',
+    { label: '가져오기', onClick: () => console.log('가져오기 clicked') },
+    { label: '가상 머신 복제', onClick: () => console.log('가상 머신 복제 clicked') },
+    { label: '템플릿 생성', onClick: () => console.log('템플릿 생성 clicked') },
+    { label: 'OVA로 내보내기', onClick: () => console.log('OVA로 내보내기 clicked') },
   ];
 
   const handleRowClick = (row, column) => {

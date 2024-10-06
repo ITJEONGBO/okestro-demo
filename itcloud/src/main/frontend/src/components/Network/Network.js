@@ -428,7 +428,7 @@ const Network = ({ }) => {
                     </div>
 
                     <div id="network_bring_table_outer">
-                        <span>가져올 네트워크</span>
+                        <span className='font-bold'>가져올 네트워크</span>
                         <div>
                             <Table 
                                 columns={[

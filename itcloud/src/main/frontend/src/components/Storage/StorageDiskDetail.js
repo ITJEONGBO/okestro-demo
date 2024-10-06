@@ -47,7 +47,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
   const buttons = [
     { id: 'edit_btn', label: '수정', onClick: () => openPopup('editDisk') },
     { id: 'new_btn', label: '제거', onClick: () => openPopup('delete') },
-    { id: 'get_btn', label: '이동', onClick: () => console.log('move') },
+    { id: 'get_btn', label: '이동', onClick: () => openPopup('move') },
     { id: 'new_btn', label: '복사', onClick: () => openPopup('copy') },
     { id: 'get_btn', label: '업로드', onClick: () => console.log('Move button clicked') },
     { id: 'edit_btn', label: '다운로드', onClick: () => openPopup('editDisk') },

@@ -593,15 +593,7 @@
     justify-content: center; /* 수평 가운데 정렬 */
     align-items: center; /* 수직 가운데 정렬 */
 }
-.img_input_box input, .img_select_box select{
-    width: 55%;
-    height: 3.5vh;
-    border: 1px solid #8b8989;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem; 
-    outline: none;
-}
+
 input[disabled] {
     background-color: #f0f0f0; /* 회색 배경색 */
     color: #a0a0a0; /* 회색 글자색 */
@@ -1336,11 +1328,12 @@ input[disabled] {
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); 
     z-index: 1000;
 }
+
 .able_host_device_table{
     height: 26vh;
     overflow-y: auto; /* 세로 스크롤 추가 */
     overflow-x: hidden; /* 가로 스크롤 숨김 */
-    border:1px solid black;
+    border:1px solid gray;
 }
 /*호스트 장치(View CPU Pinning 팝업)*/
 .device_view_popup_outer{
@@ -1375,4 +1368,55 @@ input[disabled] {
     border-raius:3px;
     height: 15vh;
     padding: 0.1rem;
+}
+/*스냅샷 생성*/
+.snapshot_new_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    font-size: 0.34rem;
+    height: 52%;
+    width: 32%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); 
+    z-index: 1000;
+}
+.snapshot_new_table{
+    height:30vh;
+    overflow-y: auto; /* 세로 스크롤 추가 */
+    overflow-x: hidden; /* 가로 스크롤 숨김 */
+}
+/*..버튼*/
+.vm_bring_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    font-size: 0.34rem;
+    height: 91%;
+    width: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+.load_btn{
+    width:3.5%;
+    padding:0.1rem;
+    border:1px solid gray;
+    display: flex;
+    align-items: center;
+    cursor:pointer;
+}
+.vm_bring_table{
+   display:flex;
+   justify-content:space-between;
+   padding: 0.3rem;
+}
+.vm_bring_table>div{
+    width:44%;
 }

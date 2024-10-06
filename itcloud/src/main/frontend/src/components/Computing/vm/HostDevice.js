@@ -47,8 +47,8 @@ const EventSection = () => {
         <div className="host_btn_outer">
         <div className="content_header_right">
             <button onClick={() => openPopup('add_device')}>장치 추가</button>
-            <button>장치 삭제</button>
-            <button >vGPU 관리</button>
+            <button className='disabled'>장치 삭제</button>
+            <button className='disabled'>vGPU 관리</button>
             <button onClick={() => openPopup('view_cpu')}>View CPU Pinning</button>
           </div>
           <TableOuter 

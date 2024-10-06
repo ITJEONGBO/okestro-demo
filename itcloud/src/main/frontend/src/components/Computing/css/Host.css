@@ -46,7 +46,11 @@
 .host_radiobox input[type="radio"] {
     vertical-align: middle; /* 수직 정렬 */
 }
-.sorted_agents,.advanced_objec_add{
+.sorted_agents{
+    display: block;
+    padding: 0.1rem 0.4rem;
+}
+.advanced_objec_add{
     display: block;
     padding: 0.1rem 0.4rem;
 }
@@ -99,6 +103,7 @@
     height: 3.5vh;
     padding: 0 3px;
     cursor: pointer;
+    width:15%;
 }
 .preference_noncontent{
     display: flex;
