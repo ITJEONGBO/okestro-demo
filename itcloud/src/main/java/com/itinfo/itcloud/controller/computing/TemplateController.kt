@@ -29,7 +29,7 @@ class TemplateController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="템플릿 목록",
+		value="템플릿 목록 조회",
 		notes="전체 템플릿 목록을 조회한다"
 	)
 	@ApiResponses(
@@ -39,13 +39,13 @@ class TemplateController: BaseController() {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	fun findAll(): ResponseEntity<List<TemplateVo>> {
-		log.info("--- TemplateController:findAll 목록")
+		log.info("/computing/templates ... 템플릿 목록")
 		return ResponseEntity.ok(iTemplate.findAll())
 	}
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="템플릿 상세정보",
+		value="템플릿의 정보 상세조회",
 		notes="템플릿의 상세정보를 조회한다"
 	)
 	@ApiImplicitParams(
@@ -62,7 +62,7 @@ class TemplateController: BaseController() {
 	): ResponseEntity<TemplateVo?> {
 		if (templateId.isNullOrEmpty())
 			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
-		log.info("--- template 일반")
+		log.info("/computing/templates/{} ...  템플릿 상세정보", templateId)
 		return ResponseEntity.ok(iTemplate.findOne(templateId))
 	}
 
@@ -121,7 +121,6 @@ class TemplateController: BaseController() {
 		return ResponseEntity.ok(iTemplate.update(template))
 	}
 
-
 	@ApiOperation(
 		httpMethod="DELETE",
 		value="템플릿 삭제",
@@ -159,7 +158,7 @@ class TemplateController: BaseController() {
 	@GetMapping("/{templateId}/vms")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAllVmsFromTemplate(
+	fun vms(
 		@PathVariable templateId: String? = null,
 	): ResponseEntity<List<VmVo>> {
 		if (templateId.isNullOrEmpty())
@@ -182,7 +181,7 @@ class TemplateController: BaseController() {
 	@GetMapping("/{templateId}/nics")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAllNicsFromTemplate(
+	fun nics(
 		@PathVariable templateId: String? = null,
 	): ResponseEntity<List<NicVo>> {
 		if (templateId.isNullOrEmpty())
@@ -191,9 +190,89 @@ class TemplateController: BaseController() {
 		return ResponseEntity.ok(iTemplate.findAllNicsFromTemplate(templateId))
 	}
 
-	// addNicFromTemplate
-	// updateNicFromTemplate
-	// removeNicFromTemplate
+	@ApiOperation(
+		httpMethod="POST",
+		value="템플릿 Nic 생성",
+		notes="템플릿의 Nic를 생성한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="templateId", value="템플릿 Id", dataTypeClass= String::class, paramType="path"),
+		ApiImplicitParam(name="nicVo", value="NicVo", dataTypeClass= NicVo::class, paramType="body"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
+	@PostMapping("/{templateId}/nics")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	fun addNic(
+		@PathVariable templateId: String? = null,
+		@RequestBody nicVo: NicVo? = null
+	): ResponseEntity<NicVo?> {
+		if (templateId.isNullOrEmpty())
+			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
+		if (nicVo == null)
+			throw ErrorPattern.NIC_VO_INVALID.toException()
+		log.info("/computing/templates/{}/nics ... 템플릿 Nic 생성", templateId)
+		return ResponseEntity.ok(iTemplate.addNicFromTemplate(templateId, nicVo))
+	}
+
+
+	@ApiOperation(
+		httpMethod="PUT",
+		value="템플릿 Nic 편집",
+		notes="템플릿의 Nic를 편집한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="templateId", value="템플릿 Id", dataTypeClass= String::class, paramType="path"),
+		ApiImplicitParam(name="nicVo", value="NicVo", dataTypeClass= NicVo::class, paramType="body"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
+	@PostMapping("/{templateId}/nics/{nicId}") // TODO 이상함
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	fun updateNic(
+		@PathVariable templateId: String? = null,
+		@RequestBody nicVo: NicVo? = null
+	): ResponseEntity<NicVo?> {
+		if (templateId.isNullOrEmpty())
+			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
+		if (nicVo == null)
+			throw ErrorPattern.NIC_VO_INVALID.toException()
+		log.info("/computing/templates/{}/nics ... 템플릿 Nic 편집", templateId)
+		return ResponseEntity.ok(iTemplate.updateNicFromTemplate(templateId, nicVo))
+	}
+
+	@ApiOperation(
+		httpMethod="DELETE",
+		value="템플릿 Nic 삭제",
+		notes="템플릿을 Nic 삭제한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="templateId", value="템플릿 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="nicId", value="nic ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@DeleteMapping("/{templateId}/nics/{nicId}")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun removeNic(
+		@RequestBody templateId: String? = null,
+		@RequestBody nicId: String? = null,
+	): ResponseEntity<Boolean> {
+		if (templateId.isNullOrEmpty())
+			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
+		if (nicId.isNullOrEmpty())
+			throw ErrorPattern.NIC_VO_INVALID.toException()
+		log.info("/computing/templates/{}/nics/{} ... 템플릿 삭제", templateId, nicId)
+		return ResponseEntity.ok(iTemplate.removeNicFromTemplate(templateId, nicId))
+	}
 
 	@ApiOperation(
 		httpMethod="GET",
@@ -209,7 +288,7 @@ class TemplateController: BaseController() {
 	@GetMapping("/{templateId}/disks")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAllDisksFromTemplate(
+	fun disks(
 		@PathVariable templateId: String? = null,
 	): ResponseEntity<List<DiskAttachmentVo>> {
 		if (templateId.isNullOrEmpty())
@@ -230,7 +309,7 @@ class TemplateController: BaseController() {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@GetMapping("/{templateId}/storagedomains")
+	@GetMapping("/{templateId}/storageDomains")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	fun findAllStorageDomainsFromTemplate(
@@ -242,28 +321,28 @@ class TemplateController: BaseController() {
 		return ResponseEntity.ok(iTemplate.findAllStorageDomainsFromTemplate(templateId))
 	}
 
-	@ApiOperation(
-		httpMethod="GET",
-		value="템플릿 권한 목록",
-		notes="선택된 템플릿의 권한 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="templateId", value="템플릿 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{templateId}/permissions")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun findAllPermissions(
-		@PathVariable templateId: String? = null,
-	): ResponseEntity<List<PermissionVo>> {
-		if (templateId.isNullOrEmpty())
-			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
-		log.info("--- template 권한")
-		return ResponseEntity.ok(iTemplate.findAllPermissionsFromTemplate(templateId))
-	}
+//	@ApiOperation(
+//		httpMethod="GET",
+//		value="템플릿 권한 목록",
+//		notes="선택된 템플릿의 권한 목록을 조회한다"
+//	)
+//	@ApiImplicitParams(
+//		ApiImplicitParam(name="templateId", value="템플릿 ID", dataTypeClass=String::class, required=true, paramType="path"),
+//	)
+//	@ApiResponses(
+//		ApiResponse(code = 200, message = "OK")
+//	)
+//	@GetMapping("/{templateId}/permissions")
+//	@ResponseBody
+//	@ResponseStatus(HttpStatus.OK)
+//	fun findAllPermissions(
+//		@PathVariable templateId: String? = null,
+//	): ResponseEntity<List<PermissionVo>> {
+//		if (templateId.isNullOrEmpty())
+//			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
+//		log.info("--- template 권한")
+//		return ResponseEntity.ok(iTemplate.findAllPermissionsFromTemplate(templateId))
+//	}
 
 	@ApiOperation(
 		httpMethod="GET",
@@ -284,7 +363,7 @@ class TemplateController: BaseController() {
 	): ResponseEntity<List<EventVo>> {
 		if (templateId.isNullOrEmpty())
 			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
-		log.info("--- template 이벤트")
+		log.info("/computing/templates/{}/events 이벤트", templateId)
 		return ResponseEntity.ok(iTemplate.findAllEventsFromTemplate(templateId))
 	}
 

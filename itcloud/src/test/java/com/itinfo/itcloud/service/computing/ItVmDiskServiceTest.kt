@@ -47,15 +47,15 @@ class ItVmDiskServiceTest {
 
     /**
      * [should_findAllDisksFromVm]
-     * [ItVmDiskService.findAllDisksFromVm]에 대한 단위테스트
+     * [ItVmDiskService.findAllDiskAttachmentsFromVm]에 대한 단위테스트
      *
-     * @see [ItVmDiskService.findAllDisksFromVm]
+     * @see [ItVmDiskService.findAllDiskAttachmentsFromVm]
      */
     @Test
     fun should_findAllDisksFromVm(){
         log.debug("should_findAllDisksFromVm")
         val result: List<DiskAttachmentVo> =
-            service.findAllDisksFromVm(apm)
+            service.findAllDiskAttachmentsFromVm(apm)
 
         assertThat(result, `is`(not(nullValue())))
         result.forEach { println(it) }

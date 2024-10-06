@@ -703,7 +703,7 @@ class VmController: BaseController() {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("/computing/vms/{}/disks ... 가상머신 disk 목록", vmId)
-		return ResponseEntity.ok(iVmDisk.findAllDisksFromVm(vmId))
+		return ResponseEntity.ok(iVmDisk.findAllDiskAttachmentsFromVm(vmId))
 	}
 
 	@ApiOperation(

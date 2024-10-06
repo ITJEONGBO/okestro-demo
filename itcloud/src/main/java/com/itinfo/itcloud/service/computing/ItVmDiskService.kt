@@ -17,14 +17,14 @@ import kotlin.jvm.Throws
 
 interface ItVmDiskService {
 	/**
-	 * [ItVmDiskService.findAllDisksFromVm]
+	 * [ItVmDiskService.findAllDiskAttachmentsFromVm]
 	 * 가상머신 디스크 목록
 	 *
 	 * @param vmId [String] 가상머신 Id
 	 * @return List<[DiskAttachmentVo]>
 	 */
 	@Throws(Error::class)
-	fun findAllDisksFromVm(vmId: String): List<DiskAttachmentVo>
+	fun findAllDiskAttachmentsFromVm(vmId: String): List<DiskAttachmentVo>
 	/**
 	 * [ItVmDiskService.findDiskFromVm]
 	 * 가상머신 디스크
@@ -129,7 +129,7 @@ class VmDiskService(
 ): BaseService(), ItVmDiskService {
 
 	@Throws(Error::class)
-	override fun findAllDisksFromVm(vmId: String): List<DiskAttachmentVo> {
+	override fun findAllDiskAttachmentsFromVm(vmId: String): List<DiskAttachmentVo> {
 		log.info("findAllDisksFromVm ... vmId: {}", vmId)
 		val res: List<DiskAttachment> =
 			conn.findAllDiskAttachmentsFromVm(vmId)

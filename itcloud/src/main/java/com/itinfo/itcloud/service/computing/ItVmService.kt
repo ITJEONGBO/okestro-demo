@@ -83,6 +83,7 @@ interface ItVmService {
 	/**
 	 * [ItVmService.add]
 	 * 가상머신 생성
+	 * TODO 템플릿 선택하면 인스턴스 이미지와 vnic 프로파일 선택 불가
 	 *
 	 * @param vmVo [VmVo]
 	 * @return [VmVo]

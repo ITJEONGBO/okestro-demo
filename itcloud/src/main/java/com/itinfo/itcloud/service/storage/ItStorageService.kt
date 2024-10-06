@@ -198,15 +198,15 @@ interface ItStorageService {
 	@Throws(Error::class)
 	fun findAllDiskSnapshotsFromStorageDomain(storageDomainId: String): List<SnapshotDiskVo>
 
-//	/**
-//	 * [ItStorageService.findAllDiskProfilesFromStorageDomain]
-//	 * 스토리지 도메인 - 디스크 프로파일 목록
-//	 *
-//	 * @param storageDomainId [String] 스토리지 도메인 Id
-//	 * @return List<[DiskProfileVo]> 디스크 프로파일 목록
-//	 */
-//	@Throws(Error::class)
-//	fun findAllDiskProfilesFromStorageDomain(storageDomainId: String): List<DiskProfileVo>
+	/**
+	 * [ItStorageService.findAllDiskProfilesFromStorageDomain]
+	 * 스토리지 도메인 - 디스크 프로파일 목록
+	 *
+	 * @param storageDomainId [String] 스토리지 도메인 Id
+	 * @return List<[DiskProfileVo]> 디스크 프로파일 목록
+	 */
+	@Throws(Error::class)
+	fun findAllDiskProfilesFromStorageDomain(storageDomainId: String): List<DiskProfileVo>
 //	/**
 //	 * [ItStorageService.addDiskProfileFromStorageDomain]
 //	 * 스토리지 도메인 - 디스크 프로파일 생성
@@ -429,7 +429,7 @@ class StorageServiceImpl(
 		val res: List<Template> =
 			conn.findAllTemplatesFromStorageDomain(storageDomainId)
 				.getOrDefault(listOf())
-		return res.toTemplateVos(conn)
+		return res.toTemplateMenus(conn)
 	}
 
 	@Throws(Error::class)
@@ -443,15 +443,15 @@ class StorageServiceImpl(
 	}
 
 
-//	@Throws(Error::class)
-//	override fun findAllDiskProfilesFromStorageDomain(storageDomainId: String): List<DiskProfileVo> {
-//		log.info("findAllDiskProfilesFromStorageDomain ... storageDomainId: {}", storageDomainId)
-//		val res: List<DiskProfile> =
-//			conn.findAllDiskProfilesFromStorageDomain(storageDomainId)
-//				.getOrDefault(listOf())
-//		return res.toDiskProfileVos()
-//	}
-//
+	@Throws(Error::class)
+	override fun findAllDiskProfilesFromStorageDomain(storageDomainId: String): List<DiskProfileVo> {
+		log.info("findAllDiskProfilesFromStorageDomain ... storageDomainId: {}", storageDomainId)
+		val res: List<DiskProfile> =
+			conn.findAllDiskProfilesFromStorageDomain(storageDomainId)
+				.getOrDefault(listOf())
+		return res.toDiskProfileVos()
+	}
+
 //	@Throws(Error::class)
 //	override fun addDiskProfileFromStorageDomain(diskProfileVo: DiskProfileVo): DiskProfileVo? {
 //		log.info("addDiskProfileFromStorageDomain ...")

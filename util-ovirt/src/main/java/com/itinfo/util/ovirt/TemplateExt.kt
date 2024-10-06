@@ -203,6 +203,27 @@ fun Connection.findNicFromTemplate(templateId: String, nicId: String): Result<Ni
 	throw if (it is Error) it.toItCloudException() else it
 }
 
+fun Connection.addNicFromTemplate(templateId: String, nic: Nic): Result<Nic?> = runCatching {
+	this.srvNicsFromTemplate(templateId).add().nic(nic).send().nic()
+
+}.onSuccess {
+	Term.TEMPLATE.logSuccessWithin(Term.NIC, "생성", templateId)
+}.onFailure {
+	Term.TEMPLATE.logFailWithin(Term.NIC,"생성", it, templateId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.updateNicFromTemplate(templateId: String, nic: Nic): Result<Nic?> = runCatching {
+	this.srvNicFromTemplate(templateId, nic.id()).update().nic(nic).send().nic()
+
+}.onSuccess {
+	Term.TEMPLATE.logSuccessWithin(Term.NIC, "편집", templateId)
+}.onFailure {
+	Term.TEMPLATE.logFailWithin(Term.NIC,"편집", it, templateId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+
 fun Connection.removeNicFromTemplate(templateId: String, nicId: String): Result<Boolean> = runCatching {
 	this.srvNicFromTemplate(templateId, nicId).remove().send()
 	true

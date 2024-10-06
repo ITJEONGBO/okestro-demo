@@ -13,6 +13,7 @@ import org.ovirt.engine.sdk4.types.*
 import org.slf4j.LoggerFactory
 import java.io.Serializable
 import java.math.BigInteger
+import java.util.Date
 
 private val log = LoggerFactory.getLogger(VmVo::class.java)
 
@@ -23,6 +24,7 @@ private val log = LoggerFactory.getLogger(VmVo::class.java)
  * @property name [String]
  * @property status [String]
  * @property upTime [String]
+ * @property creationTime [Date]
  *
  * <statistic>
  * @property memoryInstalled [BigInteger]
@@ -39,7 +41,6 @@ private val log = LoggerFactory.getLogger(VmVo::class.java)
  * @property placement [String] 호스트에 부착 여부 ( 호스트에 고정, 호스트에서 실행중, 호스트에서 고정 및 실행)
  * @property hostVo [HostVo]  실행 호스트 정보 (현재 실행되고 있는 호스트의 정보)
  * @property snapshotVos List<[IdentifiedVo]>
-// * @property diskAttachmentVos List<[DiskAttachmentVo]> // 출력용
  * @property nicVos List<[NicVo]>
  *
  *
@@ -133,6 +134,7 @@ class VmVo (
     val name: String = "",
     val status: VmStatus = VmStatus.UNKNOWN,
     val upTime: String = "",
+    val creationTime: Date = Date(),
     val memoryInstalled: BigInteger = BigInteger.ZERO,
     val memoryUsed: BigInteger = BigInteger.ZERO,
     val memoryBuffered: BigInteger = BigInteger.ZERO,
@@ -217,6 +219,7 @@ class VmVo (
         private var bName: String = ""; fun name(block: () -> String?) { bName = block() ?: ""}
         private var bStatus: VmStatus = VmStatus.UNKNOWN; fun status(block: () -> VmStatus?) { bStatus = block() ?: VmStatus.UNKNOWN }
         private var bUpTime: String = ""; fun upTime(block: () -> String?) { bUpTime = block() ?: "" }
+        private var bCreationTime: Date = Date(); fun creationTime(block: () -> Date?) { bCreationTime = block() ?: Date() }
         private var bMemoryInstalled: BigInteger = BigInteger.ZERO; fun memoryInstalled(block: () -> BigInteger?) { bMemoryInstalled = block() ?: BigInteger.ZERO }
         private var bMemoryUsed: BigInteger = BigInteger.ZERO; fun memoryUsed(block: () -> BigInteger?) { bMemoryUsed = block() ?: BigInteger.ZERO }
         private var bMemoryBuffered: BigInteger = BigInteger.ZERO; fun memoryBuffered(block: () -> BigInteger?) { bMemoryBuffered = block() ?: BigInteger.ZERO }
@@ -289,7 +292,7 @@ class VmVo (
         private var bDeviceList: List<String> = listOf(); fun deviceList(block: () -> List<String>?) { bDeviceList = block() ?: listOf() }
         private var bConnVo: IdentifiedVo = IdentifiedVo(); fun connVo(block: () -> IdentifiedVo?) { bConnVo = block() ?: IdentifiedVo() }
         private var bBootingMenu: Boolean = false; fun bootingMenu(block: () -> Boolean?) { bBootingMenu = block() ?: false }
-        fun build(): VmVo = VmVo(bId, bName, bStatus, bUpTime, bMemoryInstalled, bMemoryUsed, bMemoryBuffered, bMemoryCached, bMemoryFree, bMemoryUnused, bFqdn, bIpv4, bIpv6, bHostEngineVm, bPlacement, bHostVo, bSnapshotVos, bNicVos, bDataCenterVo, bClusterVo, bTemplateVo, bDescription, bComment, bOsSystem, bChipsetFirmwareType, bOptimizeOption, bStateless, bStartPaused, bDeleteProtected, bDiskAttachmentVos, bVnicProfileVos, bDiskAttachmentVo, bMemorySize, bMemoryMax, bMemoryActual, bCpuArc, bCpuTopologyCnt, bCpuTopologyCore, bCpuTopologySocket, bCpuTopologyThread, /*bUserEmulation, bUserCpu, bUserVersion,*/ bInstanceType, bTimeOffset, bCloudInit, bHostName, bTimeStandard, bScript, bMonitor, bUsb, bHostInCluster, bHostVos, bMigrationMode, bMigrationPolicy, bMigrationEncrypt, bParallelMigration, bHa, bStorageDomainVo, bResumeOperation, bPriority, bWatchDogModel, bWatchDogAction, bCpuProfileVo, bCpuShare, bCpuPinningPolicy, bMemoryBalloon, bIoThreadCnt, bMultiQue, bVirtSCSIEnable, bVirtIoCnt, bFirstDevice, bSecDevice, bDeviceList, bConnVo, bBootingMenu)
+        fun build(): VmVo = VmVo(bId, bName, bStatus, bUpTime, bCreationTime, bMemoryInstalled, bMemoryUsed, bMemoryBuffered, bMemoryCached, bMemoryFree, bMemoryUnused, bFqdn, bIpv4, bIpv6, bHostEngineVm, bPlacement, bHostVo, bSnapshotVos, bNicVos, bDataCenterVo, bClusterVo, bTemplateVo, bDescription, bComment, bOsSystem, bChipsetFirmwareType, bOptimizeOption, bStateless, bStartPaused, bDeleteProtected, bDiskAttachmentVos, bVnicProfileVos, bDiskAttachmentVo, bMemorySize, bMemoryMax, bMemoryActual, bCpuArc, bCpuTopologyCnt, bCpuTopologyCore, bCpuTopologySocket, bCpuTopologyThread, /*bUserEmulation, bUserCpu, bUserVersion,*/ bInstanceType, bTimeOffset, bCloudInit, bHostName, bTimeStandard, bScript, bMonitor, bUsb, bHostInCluster, bHostVos, bMigrationMode, bMigrationPolicy, bMigrationEncrypt, bParallelMigration, bHa, bStorageDomainVo, bResumeOperation, bPriority, bWatchDogModel, bWatchDogAction, bCpuProfileVo, bCpuShare, bCpuPinningPolicy, bMemoryBalloon, bIoThreadCnt, bMultiQue, bVirtSCSIEnable, bVirtIoCnt, bFirstDevice, bSecDevice, bDeviceList, bConnVo, bBootingMenu)
     }
 
     companion object {
@@ -801,8 +804,7 @@ fun Vm.toVmVo(conn: Connection): VmVo {
         name { this@toVmVo.name() }
         status { this@toVmVo.status() }
         upTime { this@toVmVo.findVmUptime(conn) }
-//        upTime { this@toVmVo.statistics().findVmUpTime() }
-//        memoryInstalled { this@toVmVo.statistics().findMemory("memory.installed") }
+        creationTime { this@toVmVo.creationTime() }
         memoryInstalled { statistics.findMemory("memory.installed") }
         memoryUsed { statistics.findMemory("memory.used") }
         memoryBuffered { statistics.findMemory("memory.buffered") }

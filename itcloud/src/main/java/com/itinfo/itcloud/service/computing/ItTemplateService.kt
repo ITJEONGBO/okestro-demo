@@ -2,8 +2,7 @@ package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.computing.*
-import com.itinfo.itcloud.model.network.NicVo
-import com.itinfo.itcloud.model.network.toNicVosFromTemplate
+import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.model.storage.*
@@ -14,17 +13,20 @@ import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.builders.TemplateBuilder
 import org.ovirt.engine.sdk4.types.Template
 import org.ovirt.engine.sdk4.types.Cluster
+import org.ovirt.engine.sdk4.types.Disk
 import org.ovirt.engine.sdk4.types.Vm
 import org.ovirt.engine.sdk4.types.Nic
 import org.ovirt.engine.sdk4.types.DiskAttachment
 import org.ovirt.engine.sdk4.types.Event
 import org.ovirt.engine.sdk4.types.Permission
+import org.ovirt.engine.sdk4.types.StorageDomain
 import org.springframework.stereotype.Service
 
 interface ItTemplateService {
 	/**
 	 * [ItTemplateService.findAll]
 	 * 템플릿 목록
+	 *
 	 * @return 템플릿 목록
 	 */
 	@Throws(Error::class)
@@ -39,15 +41,29 @@ interface ItTemplateService {
 	fun findOne(templateId: String): TemplateVo?
 
 	// 템플릿 생성창 - 클러스터 목록 [ItClusterService.findAll]
+	// 템플릿 생성창 - cpuProfile 목록 []
+
+	/**
+	 * [ItTemplateService.findAllDisksFromVm]
+	 * 디스크 목록(가상머신) [ItVmDiskService.findAllDiskAttachmentsFromVm] 약간 다름
+	 *
+	 * @param vmId [String] 가상머신 Id
+	 * @return List<[DiskImageVo]>
+	 */
+	@Throws(Error::class)
+	fun findAllDisksFromVm(vmId: String): List<DiskImageVo>
+
+	// 템플릿 생성창 - 스토리지 목록(가상머신) [ItStorageService.findAllFromDataCenter]
+	// 템플릿 생성창 - 디스크 프로파일 목록(가상머신) [ItStorageService.findAllDiskProfilesFromStorageDomain]
 
 	/**
 	 * [ItTemplateService.add]
 	 * 템플릿 생성 (Vm Status != up)
-	 *
 	 * 템플릿 디스크 붙이는 작업 (if, 도메인 용량이 초과 되었을 때, ovirt에서 알아서 다른 도메인을 설정해주는지는 알 수 없음)
-	 * 이부분은 나중에
-	 * @param vmId [String] // TemplateVo 내부에  vm이 있어서 이걸로 id값을 가져와도 될거같음
-	 * @return [TemplateVo]
+	 *
+	 * @param vmId [String] TemplateVo 내부에  vm이 있어서 이걸로 id값을 가져와도 될거같음
+	 * @param templateVo [TemplateVo]
+	 * @return [TemplateVo]?
 	 */
 	@Throws(Error::class)
 	fun add(vmId: String, templateVo: TemplateVo): TemplateVo?
@@ -56,7 +72,7 @@ interface ItTemplateService {
 	 * 템플릿 편집
 	 *
 	 * @param templateVo [TemplateVo] 템플릿 객체
-	 * @return [TemplateVo]
+	 * @return [TemplateVo]?
 	 */
 	@Throws(Error::class)
 	fun update(templateVo: TemplateVo): TemplateVo?
@@ -73,6 +89,7 @@ interface ItTemplateService {
 	/**
 	 * [ItTemplateService.findAllVmsFromTemplate]
 	 * 템플릿 가상머신 목록
+	 * 가상머신에서 생성시 템플릿 선택하면 나오는 항목같음 => 아님 이거 뭐임?
 	 *
 	 * @param templateId [String] 템플릿 id
 	 * @return List<[VmVo]>
@@ -87,22 +104,25 @@ interface ItTemplateService {
 	 * @return 네트워크 인터페이스 목록
 	 */
 	fun findAllNicsFromTemplate(templateId: String): List<NicVo>
+	// TODO NIC 생성, 편집, 삭제 테스트 안해봄
 	/**
 	 * [ItTemplateService.addNicFromTemplate]
 	 * 템플릿 nic 생성
 	 *
 	 * @param templateId [String] 템플릿 아이디
+	 * @param nicVo [NicVo]
 	 * @return [NicVo]
 	 */
-	fun addNicFromTemplate(templateId: String): NicVo?
+	fun addNicFromTemplate(templateId: String, nicVo: NicVo): NicVo?
 	/**
 	 * [ItTemplateService.updateNicFromTemplate]
 	 * 템플릿 nic 편집
 	 *
+	 * @param templateId [String] 템플릿 아이디
 	 * @param nicVo [NicVo] 템플릿 아이디
 	 * @return [NicVo]
 	 */
-	fun updateNicFromTemplate(nicVo: NicVo): NicVo?
+	fun updateNicFromTemplate(templateId: String, nicVo: NicVo): NicVo?
 	/**
 	 * [ItTemplateService.removeNicFromTemplate]
 	 * 템플릿 nic 제거
@@ -125,25 +145,25 @@ interface ItTemplateService {
 	 * 템플릿 스토리지 도메인 목록
 	 *
 	 * @param templateId [String] 템플릿 id
-	 * @return 스토리지 도메인 목록
+	 * @return List<[StorageDomainVo]> 스토리지 도메인 목록
 	 */
 	@Throws(Error::class)
 	fun findAllStorageDomainsFromTemplate(templateId: String): List<StorageDomainVo>
-	/**
-	 * [ItTemplateService.findAllPermissionsFromTemplate]
-	 * 템플릿 권한 목록
-	 *
-	 * @param templateId [String] 템플릿 id
-	 * @return 권한 목록
-	 */
-	@Throws(Error::class)
-	fun findAllPermissionsFromTemplate(templateId: String): List<PermissionVo>
+//	/**
+//	 * [ItTemplateService.findAllPermissionsFromTemplate]
+//	 * 템플릿 권한 목록
+//	 *
+//	 * @param templateId [String] 템플릿 id
+//	 * @return 권한 목록
+//	 */
+//	@Throws(Error::class)
+//	fun findAllPermissionsFromTemplate(templateId: String): List<PermissionVo>
 	 /**
 	  * [ItTemplateService.findAllEventsFromTemplate]
 	  * 템플릿 이벤트 목록
 	  *
 	  * @param templateId [String] 템플릿 id
-	  * @return 이벤트 목록
+	  * @return List<[EventVo]> 이벤트 목록
 	  */
 	 @Throws(Error::class)
 	fun findAllEventsFromTemplate(templateId: String): List<EventVo>
@@ -153,50 +173,63 @@ interface ItTemplateService {
 class TemplateServiceImpl(
 ): BaseService(), ItTemplateService {
 
-	companion object {
-		private val log by LoggerDelegate()
-	}
-
 	@Throws(Error::class)
 	override fun findAll(): List<TemplateVo> {
 		log.info("findAll ... ")
-		val templates: List<Template> =
+		val res: List<Template> =
 			conn.findAllTemplates()
 				.getOrDefault(listOf())
-		return templates.toTemplateVos(conn)
+		return res.toTemplateMenus(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findOne(templateId: String): TemplateVo? {
-		log.info("findOne ... ")
-		val template: Template? =
+		log.info("findOne ... templateId: {}", templateId)
+		val res: Template? =
 			conn.findTemplate(templateId)
 				.getOrNull()
-		return template?.toTemplateVo(conn)
+		return res?.toTemplateInfo(conn)
+	}
+
+	@Throws(Error::class)
+	override fun findAllDisksFromVm(vmId: String): List<DiskImageVo> {
+		log.info("findAllDisksFromVm ... vmId: {}", vmId)
+		val res: List<Disk> =
+			conn.findAllDiskAttachmentsFromVm(vmId)
+				.getOrDefault(listOf())
+				.mapNotNull { diskAttachment ->
+					conn.findDisk(diskAttachment.disk().id())
+						.getOrNull()
+				}
+		return res.toDiskImageVos(conn)
 	}
 
 	@Throws(Error::class)
 	override fun add(vmId: String, templateVo: TemplateVo): TemplateVo? {
 		log.info("add ... ")
-		val templateBuilder: TemplateBuilder = templateVo.toTemplateBuilder4Add()
 		val res: Template? =
-			conn.addTemplate(vmId, templateVo.name, templateBuilder.build())
-				.getOrNull()
-		return res?.toTemplateVo(conn)
+			conn.addTemplate(
+				vmId,
+				templateVo.name,
+				templateVo.toAddTemplateBuilder()
+			).getOrNull()
+		return res?.toTemplateInfo(conn)
 	}
 
 	@Throws(Error::class)
 	override fun update(templateVo: TemplateVo): TemplateVo? {
-		log.info("update ... ")
+		log.info("update ... templateId: {}", templateVo.id)
 		val res: Template? =
-			conn.updateTemplate(templateVo.id, templateVo.toTemplateBuilder4Edit().build())
-				.getOrNull()
-		return res?.toTemplateVo(conn)
+			conn.updateTemplate(
+				templateVo.id,
+				templateVo.toEditTemplateBuilder()
+			).getOrNull()
+		return res?.toTemplateInfo(conn)
 	}
 
 	@Throws(Error::class)
 	override fun remove(templateId: String): Boolean {
-		log.info("remove ... ")
+		log.info("remove ... templateId: {}", templateId)
 		val res: Result<Boolean> =
 			conn.removeTemplate(templateId)
 		return res.isSuccess
@@ -204,7 +237,7 @@ class TemplateServiceImpl(
 
 	@Throws(Error::class)
 	override fun findAllVmsFromTemplate(templateId: String): List<VmVo> {
-		log.info("findAllVmsFromTemplate ... ")
+		log.info("findAllVmsFromTemplate ... templateId: {}", templateId)
 		val vms: List<Vm> =
 			conn.findAllVms()
 				.getOrDefault(listOf())
@@ -214,24 +247,34 @@ class TemplateServiceImpl(
 
 	@Throws(Error::class)
 	override fun findAllNicsFromTemplate(templateId: String): List<NicVo> {
-		log.info("findAllNicsFromTemplate ... ")
+		log.info("findAllNicsFromTemplate ... templateId: {}", templateId)
 		val res: List<Nic> =
 			conn.findAllNicsFromTemplate(templateId)
 				.getOrDefault(listOf())
 		return res.toNicVosFromTemplate(conn)
 	}
 
-	override fun addNicFromTemplate(templateId: String): NicVo? {
-		TODO("Not yet implemented")
+	@Throws(Error::class)
+	override fun addNicFromTemplate(templateId: String, nicVo: NicVo): NicVo? {
+		log.info("addNicFromTemplate ... templateId: {}", templateId)
+		val res: Nic? =
+			conn.addNicFromTemplate(templateId, nicVo.toAddNicBuilder())
+				.getOrNull()
+		return res?.toNicVoFromTemplate(conn)
 	}
 
-	override fun updateNicFromTemplate(nicVo: NicVo): NicVo? {
-		TODO("Not yet implemented")
+	@Throws(Error::class)
+	override fun updateNicFromTemplate(templateId: String, nicVo: NicVo): NicVo? {
+		log.info("updateNicFromTemplate ... templateId: {}", templateId)
+		val res: Nic? =
+			conn.updateNicFromTemplate(templateId, nicVo.toEditNicBuilder())
+				.getOrNull()
+		return res?.toNicVoFromTemplate(conn)
 	}
 
 	@Throws(Error::class)
 	override fun removeNicFromTemplate(templateId: String, nicId: String): Boolean {
-		log.info("removeNicFromTemplate ... ")
+		log.info("removeNicFromTemplate ... templateId: {}", templateId)
 		val res: Result<Boolean> =
 			conn.removeNicFromTemplate(templateId, nicId)
 		return res.isSuccess
@@ -239,33 +282,42 @@ class TemplateServiceImpl(
 
 	@Throws(Error::class)
 	override fun findAllDisksFromTemplate(templateId: String): List<DiskAttachmentVo> {
-		log.info("findAllDisksFromTemplate ... ")
+		log.info("findAllDisksFromTemplate ... templateId: {}", templateId)
 		val res: List<DiskAttachment> =
 			conn.findAllDiskAttachmentsFromTemplate(templateId)
 				.getOrDefault(listOf())
 				.filter { it.diskPresent() }
-		return res.toDiskAttachmentVos(conn)
+		return res.toDiskAttachmentsToTemplate(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findAllStorageDomainsFromTemplate(templateId: String): List<StorageDomainVo> {
-//		log.info("findAllStorageDomainsFromTemplate ... ")
-//		val res: List<DiskAttachment> =
-//			conn.findAllDiskAttachmentsFromTemplate(templateId)
-//				.getOrDefault(listOf())
-//		return res.toDiskAttachMentStorageDomainVos(conn)
-		TODO("")
+		log.info("findAllStorageDomainsFromTemplate ... ")
+		val res: List<StorageDomain> =
+			conn.findAllDiskAttachmentsFromTemplate(templateId)
+				.getOrDefault(listOf())
+				.mapNotNull { diskAttachment ->
+					val disk: Disk? =
+						conn.findDisk(diskAttachment.disk().id())
+						.getOrNull()
+
+					disk?.storageDomains()?.first()?.let {
+						conn.findStorageDomain(it.id())
+							.getOrNull()
+					}
+				}
+				.distinctBy { it.id() } // ID를 기준으로 중복 제거
+		return res.toStorageDomainSizes()
 	}
 
-	@Throws(Error::class)
-	override fun findAllPermissionsFromTemplate(templateId: String): List<PermissionVo> {
-		log.info("findAllPermissionsFromTemplate ... ")
-		// TODO: clusterId로 조회해야 하는거 아닌가?
-		val res: List<Permission> =
-			conn.findAllPermissionsFromCluster(templateId)
-				.getOrDefault(listOf())
-		return res.toPermissionVos(conn)
-	}
+//	@Throws(Error::class)
+//	override fun findAllPermissionsFromTemplate(templateId: String): List<PermissionVo> {
+//		log.info("findAllPermissionsFromTemplate ... ")
+//		val res: List<Permission> =
+//			conn.findAllPermissionsFromCluster(templateId)
+//				.getOrDefault(listOf())
+//		return res.toPermissionVos(conn)
+//	}
 
 	@Throws(Error::class)
 	override fun findAllEventsFromTemplate(templateId: String): List<EventVo> {
@@ -279,4 +331,10 @@ class TemplateServiceImpl(
 				.filter { it.templatePresent() && it.template().name() == template?.name() }
 		return res.toEventVos()
 	}
+
+
+	companion object {
+		private val log by LoggerDelegate()
+	}
+
 }
