@@ -221,51 +221,6 @@ class VmController: BaseController() {
 	}
 
 	@ApiOperation(
-		value="가상머신 게스트 목록",
-		notes="선택된 가상머신의 게스트 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{vmId}/guest")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun guest(
-		@PathVariable vmId: String? = null,
-	): ResponseEntity<GuestInfoVo?> {
-		if (vmId.isNullOrEmpty())
-			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		log.info("/computing/vms/{}/guest ... 가상머신 게스트", vmId)
-		return ResponseEntity.ok(iVm.findGuestFromVm(vmId))
-	}
-
-	@ApiOperation(
-		httpMethod="GET",
-		value="가상머신 권한 목록",
-		notes="선택된 가상머신의 권한 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{vmId}/permissions")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun permissions(
-		@PathVariable vmId: String? = null,
-	): ResponseEntity<List<PermissionVo>> {
-		if (vmId.isNullOrEmpty())
-			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-		log.info("/computing/vms/{}/permissions ... 가상머신 권한", vmId)
-		return ResponseEntity.ok(iVm.findAllPermissionsFromVm(vmId))
-	}
-
-	@ApiOperation(
 		httpMethod="GET",
 		value="가상머신 이벤트 목록",
 		notes="선택된 가상머신의 이벤트 목록을 조회한다"
@@ -288,31 +243,52 @@ class VmController: BaseController() {
 		return ResponseEntity.ok(iVm.findAllEventsFromVm(vmId))
 	}
 
+
+	@Deprecated("필요없음")
 	@ApiOperation(
-		value="가상머신 콘솔",
-		notes="선택된 가상머신의 콘솔을 출력한다"
+		value="가상머신 게스트 목록",
+		notes="선택된 가상머신의 게스트 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
-		// ApiImplicitParam(name="console", value="콘솔", dataTypeClass=ConsoleVo::class, paramType="body"),
 	)
 	@ApiResponses(
-		ApiResponse(code = 201, message = "CREATED"),
-		ApiResponse(code = 404, message = "NOT_FOUND")
+		ApiResponse(code = 200, message = "OK")
 	)
-	@PostMapping("/{vmId}/console")
+	@GetMapping("/{vmId}/guest")
 	@ResponseBody
-	@ResponseStatus(HttpStatus.CREATED)
-	fun console(
+	@ResponseStatus(HttpStatus.OK)
+	fun guest(
 		@PathVariable vmId: String? = null,
-		// @RequestBody console: ConsoleVo? = null,
-	): ResponseEntity<ConsoleVo?> {
+	): ResponseEntity<GuestInfoVo?> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
-//		if (console == null)
-//			throw ErrorPattern.CONSOLE_VO_INVALID.toException()
-		log.info("/computing/vms/{}/console ... 가상머신 콘솔", vmId)
-		return ResponseEntity.ok(iVm.findConsole(vmId))
+		log.info("/computing/vms/{}/guest ... 가상머신 게스트", vmId)
+		return ResponseEntity.ok(iVm.findGuestFromVm(vmId))
+	}
+
+	@Deprecated("필요없음")
+	@ApiOperation(
+		httpMethod="GET",
+		value="가상머신 권한 목록",
+		notes="선택된 가상머신의 권한 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{vmId}/permissions")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun permissions(
+		@PathVariable vmId: String? = null,
+	): ResponseEntity<List<PermissionVo>> {
+		if (vmId.isNullOrEmpty())
+			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/permissions ... 가상머신 권한", vmId)
+		return ResponseEntity.ok(iVm.findAllPermissionsFromVm(vmId))
 	}
 
 
@@ -541,6 +517,34 @@ class VmController: BaseController() {
 		log.info("/computing/vms/{}/export ... 가상머신 생성", vmId)
 		return ResponseEntity.ok(iVmOp.exportOva(vmId, vmExport))
 	}
+
+	@ApiOperation(
+		value="가상머신 콘솔",
+		notes="선택된 가상머신의 콘솔을 출력한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		// ApiImplicitParam(name="console", value="콘솔", dataTypeClass=ConsoleVo::class, paramType="body"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
+	@PostMapping("/{vmId}/console")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	fun console(
+		@PathVariable vmId: String? = null,
+		// @RequestBody console: ConsoleVo? = null,
+	): ResponseEntity<ConsoleVo?> {
+		if (vmId.isNullOrEmpty())
+			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+//		if (console == null)
+//			throw ErrorPattern.CONSOLE_VO_INVALID.toException()
+		log.info("/computing/vms/{}/console ... 가상머신 콘솔", vmId)
+		return ResponseEntity.ok(iVmOp.findConsole(vmId))
+	}
+
 
 	//endregion
 

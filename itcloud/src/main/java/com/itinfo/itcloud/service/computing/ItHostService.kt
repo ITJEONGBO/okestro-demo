@@ -76,6 +76,15 @@ interface ItHostService {
 	 */
 	@Throws(Error::class)
 	fun findAllVmsFromHost(hostId: String): List<VmVo>
+	// 생성
+	// 편집
+	// 삭제
+	// 실행
+	// 일시중지
+	// 종료
+	// 재부팅
+	// 마이그레이션
+
 	/**
 	 * [ItHostService.findAllNicsFromHost]
 	 * 호스트 네트워크 인터페이스 목록
@@ -105,15 +114,6 @@ interface ItHostService {
 	@Throws(Error::class)
 	fun findAllHostDevicesFromHost(hostId: String): List<HostDeviceVo>
 	/**
-	 * [ItHostService.findAllPermissionsFromHost]
-	 * 호스트 권한 목록
-	 *
-	 *  @param hostId [String] 호스트 Id
-	 *  @return List<[PermissionVo]> 권한 목록
-	 */
-	@Throws(Error::class)
-	fun findAllPermissionsFromHost(hostId: String): List<PermissionVo>
-	/**
 	 * [ItHostService.findAllEventsFromHost]
 	 * 호스트 이벤트 목록
 	 *
@@ -122,6 +122,17 @@ interface ItHostService {
 	 */
 	@Throws(Error::class)
 	fun findAllEventsFromHost(hostId: String): List<EventVo>
+
+	/**
+	 * [ItHostService.findAllPermissionsFromHost]
+	 * 호스트 권한 목록
+	 *
+	 *  @param hostId [String] 호스트 Id
+	 *  @return List<[PermissionVo]> 권한 목록
+	 */
+	@Deprecated("필요없음")
+	@Throws(Error::class)
+	fun findAllPermissionsFromHost(hostId: String): List<PermissionVo>
 }
 
 @Service
@@ -218,15 +229,6 @@ class HostServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllPermissionsFromHost(hostId: String): List<PermissionVo> {
-		log.info("findAllPermissionsFromHost ... hostId: {}", hostId)
-		val res: List<Permission> =
-			conn.findAllPermissionFromHost(hostId)
-				.getOrDefault(listOf())
-		return res.toPermissionVos(conn)
-	}
-
-	@Throws(Error::class)
 	override fun findAllEventsFromHost(hostId: String): List<EventVo> {
 		log.info("findAllEventsFromHost ... ")
 		val host: Host =
@@ -246,6 +248,15 @@ class HostServiceImpl(
 		return res.toEventVos()
 	}
 
+	@Deprecated("필요없음")
+	@Throws(Error::class)
+	override fun findAllPermissionsFromHost(hostId: String): List<PermissionVo> {
+		log.info("findAllPermissionsFromHost ... hostId: {}", hostId)
+		val res: List<Permission> =
+			conn.findAllPermissionFromHost(hostId)
+				.getOrDefault(listOf())
+		return res.toPermissionVos(conn)
+	}
 
 
 	companion object {

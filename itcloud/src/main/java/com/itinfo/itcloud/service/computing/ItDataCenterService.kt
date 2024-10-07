@@ -72,33 +72,10 @@ interface ItDataCenterService {
 	 */
 	@Throws(Error::class)
 	fun findAllClustersFromDataCenter(dataCenterId: String): List<ClusterVo>
-	/**
-	 * [ItDataCenterService.findAllHostsFromDataCenter]
-	 * 데이터센터가 가지고있는 호스트 목록
-	 *
-	 * @param dataCenterId [String] 데이터센터 Id
-	 * @return List<[HostVo]> 호스트 목록
-	 */
-	@Throws(Error::class)
-	fun findAllHostsFromDataCenter(dataCenterId: String): List<HostVo>
-	/**
-	 * [ItDataCenterService.findAllVmsFromDataCenter]
-	 * 데이터센터가 가지고있는 가상머신 목록
-	 *
-	 * @param dataCenterId [String] 데이터센터 Id
-	 * @return List<[VmVo]> 가상머신 목록
-	 */
-	@Throws(Error::class)
-	fun findAllVmsFromDataCenter(dataCenterId: String): List<VmVo>
-	/**
-	 * [ItDataCenterService.findAllNetworksFromDataCenter]
-	 * 데이터센터가 가지고있는 네트워크 목록
-	 *
-	 * @param dataCenterId [String] 데이터센터 Id
-	 * @return List<[NetworkVo]> 네트워크 목록
-	 */
-	@Throws(Error::class)
-	fun findAllNetworksFromDataCenter(dataCenterId: String): List<NetworkVo>
+	// 생성
+	// 편집
+	// 삭제
+
 	/**
 	 * [ItDataCenterService.findAllStorageDomainsFromDataCenter]
 	 * 데이터센터가 가지고있는 스토리지 도메인 목록
@@ -108,15 +85,24 @@ interface ItDataCenterService {
 	 */
 	@Throws(Error::class)
 	fun findAllStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo>
+	// 생성
+	// 분리
+	// 활성
+	// 유지보수
+
 	/**
-	 * [ItDataCenterService.findAllPermissionsFromDataCenter]
-	 * 데이터센터가 가지고 있는 권한 목록
+	 * [ItDataCenterService.findAllNetworksFromDataCenter]
+	 * 데이터센터가 가지고있는 네트워크 목록
 	 *
 	 * @param dataCenterId [String] 데이터센터 Id
-	 * @return List<[PermissionVo]> 권한 목록
+	 * @return List<[NetworkVo]> 네트워크 목록
 	 */
 	@Throws(Error::class)
-	fun findAllPermissionsFromDataCenter(dataCenterId: String): List<PermissionVo>
+	fun findAllNetworksFromDataCenter(dataCenterId: String): List<NetworkVo>
+	// 생성
+	// 편집
+	// 삭제
+
 	/**
 	 * [ItDataCenterService.findAllEventsFromDataCenter]
 	 * 데이터센터가 가지고 있는 이벤트 목록
@@ -127,6 +113,37 @@ interface ItDataCenterService {
 	@Throws(Error::class)
 	fun findAllEventsFromDataCenter(dataCenterId: String): List<EventVo>
 
+
+	/**
+	 * [ItDataCenterService.findAllHostsFromDataCenter]
+	 * 데이터센터가 가지고있는 호스트 목록
+	 *
+	 * @param dataCenterId [String] 데이터센터 Id
+	 * @return List<[HostVo]> 호스트 목록
+	 */
+	@Deprecated("필요없음")
+	@Throws(Error::class)
+	fun findAllHostsFromDataCenter(dataCenterId: String): List<HostVo>
+	/**
+	 * [ItDataCenterService.findAllVmsFromDataCenter]
+	 * 데이터센터가 가지고있는 가상머신 목록
+	 *
+	 * @param dataCenterId [String] 데이터센터 Id
+	 * @return List<[VmVo]> 가상머신 목록
+	 */
+	@Deprecated("필요없음")
+	@Throws(Error::class)
+	fun findAllVmsFromDataCenter(dataCenterId: String): List<VmVo>
+	/**
+	 * [ItDataCenterService.findAllPermissionsFromDataCenter]
+	 * 데이터센터가 가지고 있는 권한 목록
+	 *
+	 * @param dataCenterId [String] 데이터센터 Id
+	 * @return List<[PermissionVo]> 권한 목록
+	 */
+	@Deprecated("필요없음")
+	@Throws(Error::class)
+	fun findAllPermissionsFromDataCenter(dataCenterId: String): List<PermissionVo>
 
 	/**
 	 * [ItDataCenterService.dashboardComputing]
@@ -209,21 +226,12 @@ class DataCenterServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllHostsFromDataCenter(dataCenterId: String): List<HostVo> {
-		log.debug("findAllHostsFromDataCenter ... dataCenterId: {}", dataCenterId)
-		val res: List<Host> =
-			conn.findAllHostsFromDataCenter(dataCenterId)
+	override fun findAllStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
+		log.info("findAllStorageDomainsFromDataCenter ... dataCenterId: {}", dataCenterId)
+		val res: List<StorageDomain> =
+			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
 				.getOrDefault(listOf())
-		return res.toHostsMenu(conn)
-	}
-
-	@Throws(Error::class)
-	override fun findAllVmsFromDataCenter(dataCenterId: String): List<VmVo> {
-		log.debug("findAllVmsFromDataCenter ... dataCenterId: {}", dataCenterId)
-		val res: List<Vm> =
-			conn.findAllVmsFromDataCenter(dataCenterId)
-				.getOrDefault(listOf())
-		return res.toVmsMenu(conn)
+		return res.toStorageDomainsMenu(conn)
 	}
 
 	@Throws(Error::class)
@@ -237,24 +245,6 @@ class DataCenterServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
-		log.info("findAllStorageDomainsFromDataCenter ... dataCenterId: {}", dataCenterId)
-		val res: List<StorageDomain> =
-			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
-				.getOrDefault(listOf())
-		return res.toStorageDomainsMenu(conn)
-	}
-
-	@Throws(Error::class)
-	override fun findAllPermissionsFromDataCenter(dataCenterId: String): List<PermissionVo> {
-		log.info("findAllPermissionsFromDataCenter ... dataCenterId: {}", dataCenterId)
-		val res: List<Permission> =
-			conn.findAllPermissionsFromDataCenter(dataCenterId)
-				.getOrDefault(listOf())
-		return res.toPermissionVos(conn)
-	}
-
-	@Throws(Error::class)
 	override fun findAllEventsFromDataCenter(dataCenterId: String): List<EventVo> {
 		log.info("findAllEventsFromDataCenter ... dataCenterId: {}", dataCenterId)
 		val dataCenter: DataCenter =
@@ -265,11 +255,42 @@ class DataCenterServiceImpl(
 				.getOrDefault(listOf())
 				.filter { (
 						it.dataCenterPresent() && (
-							(it.dataCenter().idPresent() && it.dataCenter().id() == dataCenterId) ||
-							(it.dataCenter().namePresent() && it.dataCenter().name() == dataCenter.name())
-						)
-				)}
+								(it.dataCenter().idPresent() && it.dataCenter().id() == dataCenterId) ||
+										(it.dataCenter().namePresent() && it.dataCenter().name() == dataCenter.name())
+								)
+						)}
 		return res.toEventVos()
+	}
+
+
+	@Deprecated("필요없음")
+	@Throws(Error::class)
+	override fun findAllHostsFromDataCenter(dataCenterId: String): List<HostVo> {
+		log.debug("findAllHostsFromDataCenter ... dataCenterId: {}", dataCenterId)
+		val res: List<Host> =
+			conn.findAllHostsFromDataCenter(dataCenterId)
+				.getOrDefault(listOf())
+		return res.toHostsMenu(conn)
+	}
+
+	@Deprecated("필요없음")
+	@Throws(Error::class)
+	override fun findAllVmsFromDataCenter(dataCenterId: String): List<VmVo> {
+		log.debug("findAllVmsFromDataCenter ... dataCenterId: {}", dataCenterId)
+		val res: List<Vm> =
+			conn.findAllVmsFromDataCenter(dataCenterId)
+				.getOrDefault(listOf())
+		return res.toVmsMenu(conn)
+	}
+
+	@Deprecated("필요없음")
+	@Throws(Error::class)
+	override fun findAllPermissionsFromDataCenter(dataCenterId: String): List<PermissionVo> {
+		log.info("findAllPermissionsFromDataCenter ... dataCenterId: {}", dataCenterId)
+		val res: List<Permission> =
+			conn.findAllPermissionsFromDataCenter(dataCenterId)
+				.getOrDefault(listOf())
+		return res.toPermissionVos(conn)
 	}
 
 

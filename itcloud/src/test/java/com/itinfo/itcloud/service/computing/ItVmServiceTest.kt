@@ -448,23 +448,6 @@ class  ItVmServiceTest {
 		assertThat(result.size, `is`(12))
 	}
 
-	/**
-	 * [should_findConsole]
-	 * [ItVmService.findConsole]에 대한 단위테스트
-	 *
-	 * @see ItVmService.findConsole
-	 */
-	@Test
-	fun should_findConsole() {
-		log.debug("should_findConsole ... ")
-		val result: ConsoleVo? =
-			service.findConsole(hostVm)
-
-		assertThat(result, `is`(not(nullValue())))
-		print(result)
-	}
-		
-
 	companion object {
 		private val log by LoggerDelegate()
 	}

@@ -1,11 +1,11 @@
 package com.itinfo.itcloud.service.auth
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.itcloud.aaarepository.OvirtUserRepository
-import com.itinfo.itcloud.aaarepository.RefreshTokenRepository
-import com.itinfo.itcloud.aaarepository.UserDetailRepository
-import com.itinfo.itcloud.aaarepository.dto.TokenDto
-import com.itinfo.itcloud.aaarepository.entity.*
+import com.itinfo.itcloud.repository.aaarepository.OvirtUserRepository
+import com.itinfo.itcloud.repository.aaarepository.RefreshTokenRepository
+import com.itinfo.itcloud.repository.aaarepository.UserDetailRepository
+import com.itinfo.itcloud.repository.aaarepository.dto.TokenDto
+import com.itinfo.itcloud.repository.aaarepository.entity.*
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.auth.UserVo
 import com.itinfo.itcloud.ovirt.hashPassword
@@ -19,8 +19,6 @@ import org.springframework.http.HttpHeaders
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.util.LinkedMultiValueMap
-import org.springframework.util.MultiValueMap
 
 import java.time.LocalDateTime
 import java.util.*

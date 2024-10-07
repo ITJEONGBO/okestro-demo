@@ -11,13 +11,15 @@ import org.ovirt.engine.sdk4.types.Event
 private fun Connection.srvEvents(): EventsService =
 	systemService.eventsService()
 
-fun Connection.findAllEvents(searchQuery: String = "", follow: String = ""): Result<List<Event>> = runCatching {
-	if (searchQuery.isNotEmpty() && follow.isNotEmpty())
-		this.srvEvents().list().search(searchQuery).follow(follow).caseSensitive(false).send().events()
+fun Connection.findAllEvents(searchQuery: String = "", follow: String = "", max: String = ""): Result<List<Event>> = runCatching {
+	if (searchQuery.isNotEmpty() && follow.isNotEmpty() && max.isNotEmpty())
+		this.srvEvents().list().max(max.toInt()).search(searchQuery).follow(follow).caseSensitive(false).send().events()
 	else if (searchQuery.isNotEmpty())
 		this.srvEvents().list().search(searchQuery).caseSensitive(false).send().events()
 	else if (follow.isNotEmpty())
 		this.srvEvents().list().follow(follow).caseSensitive(false).send().events()
+	else if (max.isNotEmpty())
+		this.srvEvents().list().max(max.toInt()).send().events()
 	else
 		this.srvEvents().list().send().events()
 }.onSuccess {

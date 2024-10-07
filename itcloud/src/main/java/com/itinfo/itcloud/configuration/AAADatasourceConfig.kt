@@ -1,7 +1,6 @@
 package com.itinfo.itcloud.configuration
 
 import com.itinfo.common.LoggerDelegate
-
 import com.zaxxer.hikari.HikariDataSource
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
 
@@ -13,6 +12,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.transaction.PlatformTransactionManager
@@ -25,11 +25,37 @@ import javax.sql.DataSource
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-	basePackages=["com.itinfo.itcloud.aaarepository"],
+	basePackages=["com.itinfo.itcloud.repository.aaarepository"],
 	entityManagerFactoryRef = "aaaEntityManager",
 	transactionManagerRef = "aaaTransactionManager"
 )
 class AAADatasourceConfig {
+
+	@Bean(name=["aaaEntityManager"])
+	fun aaaEntityManager(builder: EntityManagerFactoryBuilder): LocalContainerEntityManagerFactoryBean {
+		log.debug("... aaaEntityManager")
+		return builder.dataSource(aaaDataSource())
+			.packages("com.itinfo.itcloud.repository.aaarepository.entity")
+			.build().apply {
+				setJpaProperties(Properties().apply {
+					put("hibernate.physical_naming_strategy", CamelCaseToUnderscoresNamingStrategy::class.java.canonicalName)
+				})
+			}
+	}
+
+	@Bean
+	fun aaaTransactionManager(
+		@Qualifier("aaaEntityManager") entityManagerFactoryBean: LocalContainerEntityManagerFactoryBean
+	): PlatformTransactionManager {
+		return JpaTransactionManager(entityManagerFactoryBean.getObject()!!)
+	}
+
+	@Bean
+	fun aaaJdbcTemplate(): JdbcTemplate {
+		log.debug("... aaaJdbcTemplate")
+		return JdbcTemplate(aaaDataSource())
+	}
+
 	@Bean
 	@Primary
 	@ConfigurationProperties("spring.datasource.aaa")
@@ -45,34 +71,8 @@ class AAADatasourceConfig {
 		return aaaDataSourceProperties()
 			.initializeDataSourceBuilder()
 			.type(HikariDataSource::class.java)
-//			.driverClassName("org.postgresql.Driver")
-//			.url("jdbc:postgresql://192.168.0.80:5432/engine")
-//			.username("okestro")
-//			.password("okestro2018")
 			.build()
 	}
-
-	@Bean(name=["aaaEntityManager"])
-	fun aaaEntityManager(builder: EntityManagerFactoryBuilder): LocalContainerEntityManagerFactoryBean {
-		log.debug("... aaaEntityManager")
-		return builder.dataSource(aaaDataSource())
-			.packages("com.itinfo.itcloud.aaarepository.entity")
-			.build().apply {
-				setJpaProperties(Properties().apply {
-					put("hibernate.physical_naming_strategy", CamelCaseToUnderscoresNamingStrategy::class.java.canonicalName)
-				})
-			}
-	}
-
-	@Bean
-	fun aaaTransactionManager(
-		@Qualifier("aaaEntityManager") entityManagerFactoryBean: LocalContainerEntityManagerFactoryBean
-	): PlatformTransactionManager {
-		log.debug("... aaaTransactionManager")
-
-		return JpaTransactionManager(entityManagerFactoryBean.getObject()!!)
-	}
-
 
 	companion object {
 		private val log by LoggerDelegate()

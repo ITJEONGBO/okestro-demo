@@ -1,7 +1,7 @@
 package com.itinfo.itcloud.service.auth
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.itcloud.aaarepository.entity.OvirtUser
+import com.itinfo.itcloud.repository.aaarepository.entity.OvirtUser
 import com.itinfo.itcloud.model.auth.UserVo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*

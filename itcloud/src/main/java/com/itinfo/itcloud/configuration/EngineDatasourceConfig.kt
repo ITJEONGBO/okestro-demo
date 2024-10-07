@@ -1,33 +1,26 @@
 package com.itinfo.itcloud.configuration
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.itcloud.configuration.HistoryDatasourceConfig.Companion
 import com.zaxxer.hikari.HikariDataSource
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
 
 import org.springframework.beans.factory.annotation.Qualifier
-
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder
-
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
-
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.jdbc.core.JdbcTemplate
-
 import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
-
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.EnableTransactionManagement
 
 import java.sql.SQLException
 import java.util.*
 import javax.sql.DataSource
-
 
 @Configuration
 @EnableTransactionManagement
@@ -40,6 +33,7 @@ class EngineDatasourceConfig {
 
 	@Bean(name=["engineEntityManager"])
 	fun engineEntityManager(builder: EntityManagerFactoryBuilder): LocalContainerEntityManagerFactoryBean {
+		log.debug("... engineEntityManager")
 		return builder.dataSource(engineDataSource())
 			.packages("com.itinfo.itcloud.repository.engine.entity")
 			.build().apply {

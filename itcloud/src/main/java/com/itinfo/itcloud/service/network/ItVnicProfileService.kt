@@ -9,6 +9,14 @@ import org.springframework.stereotype.Service
 
 interface ItVnicProfileService{
     /**
+     * [ItVnicProfileService.findAll]
+     * 네트워크 - vNIC Profile 목록
+     *
+     * @return List<[VnicProfileVo]>
+     */
+    @Throws(Error::class)
+    fun findAll(): List<VnicProfileVo>
+    /**
      * [ItVnicProfileService.findAllVnicProfilesFromNetwork]
      * 네트워크 - vNIC Profile 목록
      *
@@ -59,6 +67,15 @@ interface ItVnicProfileService{
 class VnicProfileServiceImpl(
 
 ): BaseService(), ItVnicProfileService {
+
+    @Throws(Error::class)
+    override fun findAll(): List<VnicProfileVo> {
+        log.info("findAll ... ")
+        val res: List<VnicProfile> =
+            conn.findAllVnicProfiles()
+                .getOrDefault(listOf())
+        return res.toVnicProfileVos(conn)
+    }
 
     @Throws(Error::class)
     override fun findAllVnicProfilesFromNetwork(networkId: String): List<VnicProfileVo> {

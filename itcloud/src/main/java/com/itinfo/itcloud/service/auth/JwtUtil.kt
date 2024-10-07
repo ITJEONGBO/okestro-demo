@@ -1,11 +1,11 @@
 package com.itinfo.itcloud.service.auth
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.itcloud.aaarepository.OvirtUserRepository
-import com.itinfo.itcloud.aaarepository.RefreshTokenRepository
-import com.itinfo.itcloud.aaarepository.dto.TokenDto
-import com.itinfo.itcloud.aaarepository.entity.RefreshToken
-import com.itinfo.itcloud.aaarepository.entity.toUserDetails
+import com.itinfo.itcloud.repository.aaarepository.OvirtUserRepository
+import com.itinfo.itcloud.repository.aaarepository.RefreshTokenRepository
+import com.itinfo.itcloud.repository.aaarepository.dto.TokenDto
+import com.itinfo.itcloud.repository.aaarepository.entity.RefreshToken
+import com.itinfo.itcloud.repository.aaarepository.entity.toUserDetails
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys

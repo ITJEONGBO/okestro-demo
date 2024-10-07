@@ -348,6 +348,23 @@ class NetworkController: BaseController() {
 
 	@Autowired private lateinit var iVnic: ItVnicProfileService
 
+	
+	@ApiOperation(
+		httpMethod="GET",
+		value="전체 vnicProfile 목록 조회",
+		notes="전체 vnicProfile 목록을 조회한다"
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/vnicProfiles")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun vnicProfiles(): ResponseEntity<List<VnicProfileVo>> {
+		log.info("/vnicProfiles ... 네트워크 목록")
+		return ResponseEntity.ok(iVnic.findAll())
+	}
+
 	@ApiOperation(
 		httpMethod="GET",
 		value="네트워크 vnic 프로파일 목록",

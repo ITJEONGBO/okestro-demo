@@ -1,6 +1,6 @@
 package com.itinfo.itcloud.security
 
-import com.itinfo.itcloud.aaarepository.entity.OvirtUser
+import com.itinfo.itcloud.repository.aaarepository.entity.OvirtUser
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 

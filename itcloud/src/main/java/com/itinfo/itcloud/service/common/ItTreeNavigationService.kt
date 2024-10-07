@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 
 interface ItTreeNavigationService {
     /**
-     * [ItTreeNavigationService.findAllDashDataCenters]
+     * [ItTreeNavigationService.findAllNavigationalsWithClusters]
      * 컴퓨팅 목록이 담긴 네비게이션 정보조회
      *
      * @return List<[TreeNavigationalDataCenter]>

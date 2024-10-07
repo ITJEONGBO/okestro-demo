@@ -120,11 +120,21 @@ interface ItVmService {
 	@Throws(Error::class)
 	fun findAllApplicationsFromVm(vmId: String): List<IdentifiedVo>
 	/**
+	 * [ItVmService.findAllEventsFromVm]
+	 * 가상머신 이벤트
+	 *
+	 * @param vmId [String] 가상머신 Id
+	 */
+	@Throws(Error::class)
+	fun findAllEventsFromVm(vmId: String): List<EventVo>
+
+	/**
 	 * [ItVmService.findGuestFromVm]
 	 * 가상머신 게스트 정보
 	 *
 	 * @param vmId [String] 가상머신 Id
 	 */
+	@Deprecated("필요없음")
 	@Throws(Error::class)
 	fun findGuestFromVm(vmId: String): GuestInfoVo?
 	/**
@@ -133,24 +143,9 @@ interface ItVmService {
 	 *
 	 * @param vmId [String] 가상머신 Id
 	 */
+	@Deprecated("필요없음")
 	@Throws(Error::class)
 	fun findAllPermissionsFromVm(vmId: String): List<PermissionVo>
-	/**
-	 * [ItVmService.findAllEventsFromVm]
-	 * 가상머신 이벤트
-	 *
-	 * @param vmId [String] 가상머신 Id
-	 */
-	@Throws(Error::class)
-	fun findAllEventsFromVm(vmId: String): List<EventVo>
-	/**
-	 * [ItVmService.findConsole]
-	 * 가상머신 콘솔
-	 *
-	 * @param vmId [String] 가상머신 Id
-	 */
-	@Throws(Error::class)
-	fun findConsole(vmId: String): ConsoleVo?
 }
 
 @Service
@@ -311,28 +306,6 @@ class VmServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findGuestFromVm(vmId: String): GuestInfoVo? {
-		log.info("findGuestFromVm ... vmId: {}", vmId)
-		val res: Vm =
-			conn.findVm(vmId)
-				.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toException()
-		if (!res.guestOperatingSystemPresent()) {
-			log.warn("게스트 운영 체제 정보가 없습니다.")
-			return null
-		}
-		return res.toGuestInfoVo()
-	}
-
-	@Throws(Error::class)
-	override fun findAllPermissionsFromVm(vmId: String): List<PermissionVo> {
-		log.info("findAllPermissionsFromVm ... vmId: {}", vmId)
-		val res: List<Permission> =
-			conn.findAllAssignedPermissionsFromVm(vmId)
-				.getOrDefault(listOf())
-		return res.toPermissionVos(conn)
-	}
-
-	@Throws(Error::class)
 	override fun findAllEventsFromVm(vmId: String): List<EventVo> {
 		log.info("findAllEventsFromVm ... vmId: {}", vmId)
 		val vm: Vm =
@@ -345,14 +318,30 @@ class VmServiceImpl(
 		return res.toEventVos()
 	}
 
+	@Deprecated("필요없음")
 	@Throws(Error::class)
-	override fun findConsole(vmId: String): ConsoleVo? {
-		log.info("findConsole ... vmId: {}", vmId)
+	override fun findGuestFromVm(vmId: String): GuestInfoVo? {
+		log.info("findGuestFromVm ... vmId: {}", vmId)
 		val res: Vm =
 			conn.findVm(vmId)
 				.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toException()
-		return res.toConsoleVo(conn, systemPropertiesVo)
+		if (!res.guestOperatingSystemPresent()) {
+			log.warn("게스트 운영 체제 정보가 없습니다.")
+			return null
+		}
+		return res.toGuestInfoVo()
 	}
+
+	@Deprecated("필요없음")
+	@Throws(Error::class)
+	override fun findAllPermissionsFromVm(vmId: String): List<PermissionVo> {
+		log.info("findAllPermissionsFromVm ... vmId: {}", vmId)
+		val res: List<Permission> =
+			conn.findAllAssignedPermissionsFromVm(vmId)
+				.getOrDefault(listOf())
+		return res.toPermissionVos(conn)
+	}
+
 
 	companion object {
 		private val log by LoggerDelegate()

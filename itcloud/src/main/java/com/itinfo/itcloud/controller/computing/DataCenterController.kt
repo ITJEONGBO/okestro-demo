@@ -166,52 +166,6 @@ class DataCenterController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="호스트 목록 조회",
-		notes="선택된 데이터센터의 호스트 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{dataCenterId}/hosts")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun hosts(
-		@PathVariable dataCenterId: String? = null,
-	): ResponseEntity<List<HostVo>> {
-		if (dataCenterId.isNullOrEmpty())
-			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-		log.info("/computing/dataCenters/{}/hosts ... 데이터센터 호스트 목록", dataCenterId)
-		return ResponseEntity.ok(iDataCenter.findAllHostsFromDataCenter(dataCenterId))
-	}
-
-	@ApiOperation(
-		httpMethod="GET",
-		value="가상머신 목록 조회",
-		notes="선택된 데이터센터의 가상머신 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{dataCenterId}/vms")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun vms(
-		@PathVariable dataCenterId: String? = null
-	): ResponseEntity<List<VmVo>> {
-		if (dataCenterId.isNullOrEmpty())
-			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-		log.info("/computing/dataCenters/{}/vms ... 데이터센터 가상머신 목록", dataCenterId)
-		return ResponseEntity.ok(iDataCenter.findAllVmsFromDataCenter(dataCenterId))
-	}
-
-	@ApiOperation(
-		httpMethod="GET",
 		value="네트워크 목록 조회",
 		notes="선택된 데이터센터의 네트워크 목록을 조회한다"
 	)
@@ -258,29 +212,6 @@ class DataCenterController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="권한 목록 조회",
-		notes="선택된 데이터센터의 권한 목록울 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{dataCenterId}/permissions")
-	@ResponseStatus(HttpStatus.OK)
-	@ResponseBody
-	fun permissions(
-		@PathVariable dataCenterId: String? = null,
-	): ResponseEntity<List<PermissionVo>> {
-		if (dataCenterId.isNullOrEmpty())
-			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-		log.info("/computing/dataCenters/{}/permissions ... 데이터센터 권한 목록", dataCenterId)
-		return ResponseEntity.ok(iDataCenter.findAllPermissionsFromDataCenter(dataCenterId))
-	}
-
-	@ApiOperation(
-		httpMethod="GET",
 		value="이벤트 목록조회",
 		notes="선택된 데이터센터의 이벤트 목록을 조회한다"
 	)
@@ -300,6 +231,79 @@ class DataCenterController: BaseController() {
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/computing/datacenters/{}/events ... 데이터센터 이벤트 목록", dataCenterId)
 		return ResponseEntity.ok(iDataCenter.findAllEventsFromDataCenter(dataCenterId))
+	}
+
+
+	@Deprecated("필요없음")
+	@ApiOperation(
+		httpMethod="GET",
+		value="호스트 목록 조회",
+		notes="선택된 데이터센터의 호스트 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{dataCenterId}/hosts")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun hosts(
+		@PathVariable dataCenterId: String? = null,
+	): ResponseEntity<List<HostVo>> {
+		if (dataCenterId.isNullOrEmpty())
+			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
+		log.info("/computing/dataCenters/{}/hosts ... 데이터센터 호스트 목록", dataCenterId)
+		return ResponseEntity.ok(iDataCenter.findAllHostsFromDataCenter(dataCenterId))
+	}
+
+	@Deprecated("필요없음")
+	@ApiOperation(
+		httpMethod="GET",
+		value="가상머신 목록 조회",
+		notes="선택된 데이터센터의 가상머신 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{dataCenterId}/vms")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun vms(
+		@PathVariable dataCenterId: String? = null
+	): ResponseEntity<List<VmVo>> {
+		if (dataCenterId.isNullOrEmpty())
+			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
+		log.info("/computing/dataCenters/{}/vms ... 데이터센터 가상머신 목록", dataCenterId)
+		return ResponseEntity.ok(iDataCenter.findAllVmsFromDataCenter(dataCenterId))
+	}
+
+	@Deprecated("필요없음")
+	@ApiOperation(
+		httpMethod="GET",
+		value="권한 목록 조회",
+		notes="선택된 데이터센터의 권한 목록울 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{dataCenterId}/permissions")
+	@ResponseStatus(HttpStatus.OK)
+	@ResponseBody
+	fun permissions(
+		@PathVariable dataCenterId: String? = null,
+	): ResponseEntity<List<PermissionVo>> {
+		if (dataCenterId.isNullOrEmpty())
+			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
+		log.info("/computing/dataCenters/{}/permissions ... 데이터센터 권한 목록", dataCenterId)
+		return ResponseEntity.ok(iDataCenter.findAllPermissionsFromDataCenter(dataCenterId))
 	}
 
 

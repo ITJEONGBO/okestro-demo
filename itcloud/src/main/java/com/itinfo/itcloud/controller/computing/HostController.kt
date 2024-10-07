@@ -232,29 +232,6 @@ class HostController {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="호스트 권한 목록",
-		notes="선택된 호스트의 권한 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{hostId}/permissions")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun permissions(
-		@PathVariable hostId: String? = null
-	): ResponseEntity<List<PermissionVo>> {
-		log.info("/computing/hosts/{}/permissions ... 호스트 권한 목록", hostId)
-		if (hostId.isNullOrEmpty())
-			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		return ResponseEntity.ok(iHost.findAllPermissionsFromHost(hostId))
-	}
-
-	@ApiOperation(
-		httpMethod="GET",
 		value="호스트 이벤트 목록",
 		notes="선택된 호스트의 이벤트 목록을 조회한다")
 	@ApiImplicitParams(
@@ -275,6 +252,29 @@ class HostController {
 		return ResponseEntity.ok(iHost.findAllEventsFromHost(hostId))
 	}
 
+	@Deprecated("필요없음")
+	@ApiOperation(
+		httpMethod="GET",
+		value="호스트 권한 목록",
+		notes="선택된 호스트의 권한 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{hostId}/permissions")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun permissions(
+		@PathVariable hostId: String? = null
+	): ResponseEntity<List<PermissionVo>> {
+		log.info("/computing/hosts/{}/permissions ... 호스트 권한 목록", hostId)
+		if (hostId.isNullOrEmpty())
+			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
+		return ResponseEntity.ok(iHost.findAllPermissionsFromHost(hostId))
+	}
 
 
 	@Autowired private lateinit var iHostOp: ItHostOperationService

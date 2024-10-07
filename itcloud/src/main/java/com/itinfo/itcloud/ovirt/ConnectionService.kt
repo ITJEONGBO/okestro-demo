@@ -1,7 +1,7 @@
 package com.itinfo.itcloud.ovirt
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.itcloud.service.admin.ItSystemPropertiesService
+import com.itinfo.itcloud.service.setting.ItSystemPropertiesService
 import com.itinfo.util.model.SystemPropertiesVo
 
 import org.ovirt.engine.sdk4.Connection

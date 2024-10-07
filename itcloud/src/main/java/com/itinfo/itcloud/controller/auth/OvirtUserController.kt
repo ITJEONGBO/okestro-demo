@@ -2,7 +2,7 @@ package com.itinfo.itcloud.controller.auth
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.ItCloudOutput
-import com.itinfo.itcloud.aaarepository.entity.OvirtUser
+import com.itinfo.itcloud.repository.aaarepository.entity.OvirtUser
 import com.itinfo.itcloud.controller.BaseController
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.auth.UserVo

@@ -1,9 +1,9 @@
 package com.itinfo.itcloud.configuration
 
 import com.itinfo.common.LoggerDelegate
-// import com.itinfo.service.engine.WorkloadPredictionService
 import com.zaxxer.hikari.HikariDataSource
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -17,10 +17,10 @@ import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.EnableTransactionManagement
+
 import java.sql.SQLException
 import java.util.*
 import javax.sql.DataSource
-
 
 @Configuration
 @EnableTransactionManagement
@@ -31,10 +31,9 @@ import javax.sql.DataSource
 )
 class HistoryDatasourceConfig {
 
-	// castanets-core-context.xml
-	// query-postgresql-context.xml
-	@Bean(name=["historyEntityManager"])
+	@Bean(name = ["historyEntityManager"])
 	fun historyEntityManager(builder: EntityManagerFactoryBuilder): LocalContainerEntityManagerFactoryBean {
+		log.debug("... historyEntityManager")
 		return builder.dataSource(historyDataSource())
 			.packages("com.itinfo.itcloud.repository.history.entity") // entity 클래스 패키지
 			.build().apply {

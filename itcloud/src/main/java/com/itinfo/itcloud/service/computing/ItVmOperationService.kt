@@ -3,9 +3,12 @@ package com.itinfo.itcloud.service.computing
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.IdentifiedVo
+import com.itinfo.itcloud.model.computing.ConsoleVo
 import com.itinfo.itcloud.model.computing.VmExportVo
+import com.itinfo.itcloud.model.computing.toConsoleVo
 import com.itinfo.itcloud.model.fromHostsToIdentifiedVos
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.computing.VmServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.Error
@@ -102,6 +105,15 @@ interface ItVmOperationService {
 	 */
 	@Throws(Error::class)
 	fun exportOva(vmId: String, vmExportVo: VmExportVo): Boolean
+
+	/**
+	 * [ItVmOperationService.findConsole]
+	 * 가상머신 콘솔
+	 *
+	 * @param vmId [String] 가상머신 Id
+	 */
+	@Throws(Error::class)
+	fun findConsole(vmId: String): ConsoleVo?
 }
 
 @Service
@@ -189,6 +201,16 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 			)
 		return res.isSuccess
 	}
+
+	@Throws(Error::class)
+	override fun findConsole(vmId: String): ConsoleVo? {
+		log.info("findConsole ... vmId: {}", vmId)
+		val res: Vm =
+			conn.findVm(vmId)
+				.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toException()
+		return res.toConsoleVo(conn, systemPropertiesVo)
+	}
+
 
 	companion object {
 		private val log by LoggerDelegate()

@@ -99,7 +99,7 @@ interface ItVmDiskService {
 	fun deactivateDisksFromVm(vmId: String, diskAttachmentIds: List<String>): Boolean
 	/**
 	 * [ItVmDiskService.findAllStorageDomains]
-	 * 보류:[ItStorageService.findAllDomainsFromDataCenter] 와 다른점은 내가 가지고 있는 도메인은 제외하고 출력
+	 * 보류:[ItStorageService.findAllFromDataCenter] 와 다른점은 내가 가지고 있는 도메인은 제외하고 출력
 	 * 가상머신 디스크 이동창- 스토리지 도메인
 	 *
 	 * @param vmId [String] 가상머신 Id

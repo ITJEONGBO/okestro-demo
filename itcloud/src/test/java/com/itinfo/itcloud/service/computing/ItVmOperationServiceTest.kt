@@ -2,7 +2,9 @@ package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.IdentifiedVo
+import com.itinfo.itcloud.model.computing.ConsoleVo
 import com.itinfo.itcloud.model.computing.VmExportVo
+import com.itinfo.itcloud.service.computing.ItVmServiceTest.Companion
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.BeforeEach
@@ -185,6 +187,23 @@ class ItVmOperationServiceTest {
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))
     }
+
+    /**
+     * [should_findConsole]
+     * [ItVmOperationService.findConsole]에 대한 단위테스트
+     *
+     * @see ItVmOperationService.findConsole
+     */
+    @Test
+    fun should_findConsole() {
+        log.debug("should_findConsole ... ")
+        val result: ConsoleVo? =
+            service.findConsole(hostVm)
+
+        assertThat(result, `is`(not(nullValue())))
+        print(result)
+    }
+
 
 
     companion object {

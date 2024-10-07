@@ -1,7 +1,7 @@
 package com.itinfo.itcloud.controller.setting
 
 import com.itinfo.common.LoggerDelegate
-import com.itinfo.itcloud.service.admin.ItSystemPropertiesService
+import com.itinfo.itcloud.service.setting.ItSystemPropertiesService
 import com.itinfo.util.model.SystemPropertiesVo
 
 import io.swagger.annotations.Api

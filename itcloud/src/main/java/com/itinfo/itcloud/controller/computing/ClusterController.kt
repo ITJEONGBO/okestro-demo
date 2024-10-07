@@ -282,7 +282,31 @@ class ClusterController: BaseController() {
 //		return ResponseEntity.ok(iCluster.manageNetworksFromCluster(clusterId, networkVos = ))
 //	}
 
+	@ApiOperation(
+		httpMethod="GET",
+		value="이벤트 목록",
+		notes="선택된 클러스터의 이벤트 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{clusterId}/events")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun events(
+		@PathVariable clusterId: String? = null
+	): ResponseEntity<List<EventVo>> {
+		if (clusterId.isNullOrEmpty())
+			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
+		log.info("/computing/clusters/{}/events ... 클러스터 이벤트", clusterId)
+		return ResponseEntity.ok(iCluster.findAllEventsFromCluster(clusterId))
+	}
 
+
+	@Deprecated("필요없음")
 	@ApiOperation(
 		httpMethod="GET",
 		value="Cpu Profile 목록",
@@ -306,6 +330,7 @@ class ClusterController: BaseController() {
 		return ResponseEntity.ok(iCluster.findAllCpuProfilesFromCluster(clusterId))
 	}
 
+	@Deprecated("필요없음")
 	@ApiOperation(
 		httpMethod="GET",
 		value="권한 목록",
@@ -327,29 +352,6 @@ class ClusterController: BaseController() {
 			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
 		log.info("/computing/clusters/{}/permissions ... 클러스터 권한", clusterId)
 		return ResponseEntity.ok(iCluster.findAllPermissionsFromCluster(clusterId))
-	}
-
-	@ApiOperation(
-		httpMethod="GET",
-		value="이벤트 목록",
-		notes="선택된 클러스터의 이벤트 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{clusterId}/events")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun events(
-		@PathVariable clusterId: String? = null
-	): ResponseEntity<List<EventVo>> {
-		if (clusterId.isNullOrEmpty())
-			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
-		log.info("/computing/clusters/{}/events ... 클러스터 이벤트", clusterId)
-		return ResponseEntity.ok(iCluster.findAllEventsFromCluster(clusterId))
 	}
 
 

@@ -2,7 +2,7 @@ package com.itinfo.itcloud.ovirt
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.itinfo.itcloud.aaarepository.entity.Settings
+import com.itinfo.itcloud.repository.aaarepository.entity.Settings
 
 import org.apache.commons.codec.binary.Base64
 
@@ -95,10 +95,10 @@ object EnvelopePBE {
 
 	@Throws(IOException::class, GeneralSecurityException::class)
 	fun encode(password: String,
-			   algorithm: String = Settings.NAME_PBE_ALGORITHM,
-			   keySize: Int = Settings.NAME_PBE_KEY_SIZE,
-			   iterations: Int = Settings.NAME_PBE_ITERATIONS,
-			   randomProvider: String? = "NativePRNG"): String {
+               algorithm: String = Settings.NAME_PBE_ALGORITHM,
+               keySize: Int = Settings.NAME_PBE_KEY_SIZE,
+               iterations: Int = Settings.NAME_PBE_ITERATIONS,
+               randomProvider: String? = "NativePRNG"): String {
 		log.debug("encode ... \npassword: $password, \nalgorithm: $algorithm, \nkeySize: $keySize, \niterations: $iterations, \nrandomProvider: $randomProvider")
 		val base64 = Base64(0)
 		val map: MutableMap<String, String> = hashMapOf()

@@ -1,6 +1,5 @@
 package com.itinfo.itcloud.model.auth
 
-import com.itinfo.itcloud.aaarepository.entity.OvirtUser
 import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.security.CustomUserDetails
 import org.ovirt.engine.sdk4.builders.Builders

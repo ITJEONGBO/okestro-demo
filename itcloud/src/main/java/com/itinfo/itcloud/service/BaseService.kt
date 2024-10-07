@@ -1,7 +1,7 @@
 package com.itinfo.itcloud.service
 
 import com.itinfo.itcloud.ovirt.AdminConnectionService
-import com.itinfo.itcloud.service.admin.ItSystemPropertiesService
+import com.itinfo.itcloud.service.setting.ItSystemPropertiesService
 import com.itinfo.util.model.SystemPropertiesVo
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.services.SystemService
