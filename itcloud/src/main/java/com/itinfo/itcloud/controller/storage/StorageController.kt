@@ -29,17 +29,16 @@ class StorageController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="스토리지 도메인 목록",
+		value="스토리지 도메인 목록 조회",
 		notes="전체 스토리지 도메인 목록을 보여준다"
 	)
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
 	@GetMapping("/domains")
-	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
-	fun domains(
-	): ResponseEntity<List<StorageDomainVo>> {
+	@ResponseStatus(HttpStatus.OK)
+	fun storageDomains(): ResponseEntity<List<StorageDomainVo>> {
 		log.info("/storages/domains ... 스토리지 도메인 목록")
 		return ResponseEntity.ok(iDomain.findAll())
 	}
@@ -69,6 +68,7 @@ class StorageController: BaseController() {
 
 	// 생성
 
+	@Deprecated("필요없음")
 	@ApiOperation(
 		httpMethod="GET",
 		value="/{storageDomainId}/permissions",
@@ -121,15 +121,15 @@ class StorageController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="/storages/disks",
-		notes="Disk 목록"
+		value="디스크 목록",
+		notes="전체 디스크 목록을 보여준다"
 	)
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
 	@GetMapping("/disks")
 	@ResponseBody
-	fun findAllDisks(
+	fun disks(
 	): ResponseEntity<List<DiskImageVo>> {
 		log.info("/storages/disks ... 스토리지 Disk 목록")
 		return ResponseEntity.ok(iDisk.findAll())

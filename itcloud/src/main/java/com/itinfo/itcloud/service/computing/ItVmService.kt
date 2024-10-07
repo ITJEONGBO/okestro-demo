@@ -161,7 +161,8 @@ class VmServiceImpl(
 		val res: List<Vm> =
 			conn.findAllVms()
 				.getOrDefault(listOf())
-		return res.toVmVos(conn)
+//		val res: List<Vm> = system.vmsService().list().send().vms()
+		return res.toVmsMenu(conn)
 	}
 
 	@Throws(Error::class)

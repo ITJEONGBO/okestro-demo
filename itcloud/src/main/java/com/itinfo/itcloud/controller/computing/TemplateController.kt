@@ -38,7 +38,7 @@ class TemplateController: BaseController() {
 	@GetMapping
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	fun findAll(): ResponseEntity<List<TemplateVo>> {
+	fun templates(): ResponseEntity<List<TemplateVo>> {
 		log.info("/computing/templates ... 템플릿 목록")
 		return ResponseEntity.ok(iTemplate.findAll())
 	}

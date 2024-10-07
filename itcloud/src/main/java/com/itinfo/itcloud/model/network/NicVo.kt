@@ -3,11 +3,11 @@ package com.itinfo.itcloud.model.network
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.IdentifiedVo
-import com.itinfo.itcloud.model.computing.VmVo
-import com.itinfo.itcloud.model.computing.findVmIp
 import com.itinfo.itcloud.model.fromNetworkToIdentifiedVo
 import com.itinfo.itcloud.model.fromVnicProfileToIdentifiedVo
 import com.itinfo.itcloud.gson
+import com.itinfo.itcloud.model.computing.findVmIpv4
+import com.itinfo.itcloud.model.computing.findVmIpv6
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.Connection
@@ -157,8 +157,8 @@ fun Nic.toNicVoFromVm(conn: Connection, vmId: String): NicVo {
 		status { if(this@toNicVoFromVm.linked()) NicStatus.UP else NicStatus.DOWN }
         interface_ { this@toNicVoFromVm.interface_() }
         macAddress { if (this@toNicVoFromVm.macPresent()) this@toNicVoFromVm.mac().address() else null }
-        ipv4 { vm.findVmIp(conn, "v4") }
-        ipv6 { vm.findVmIp(conn, "v6") }
+//        ipv4 { vm.findVmIpv4(conn) }
+//        ipv6 { vm.findVmIpv6(conn) }
 //				.speed()
         rxSpeed { statistics.findSpeed("data.current.rx.bps") }
         txSpeed { statistics.findSpeed("data.current.tx.bps") }
@@ -261,8 +261,8 @@ fun Nic.toNetworkFromVm(conn: Connection, vmId: String): NicVo {
 		vnicProfileVo { vnicProfile.fromVnicProfileToIdentifiedVo() }
 		linked { this@toNetworkFromVm.linked() }
 		status { if(this@toNetworkFromVm.linked()) NicStatus.UP else NicStatus.DOWN }
-		ipv4 { vm.findVmIp(conn, "v4") }
-		ipv6 { vm.findVmIp(conn, "v6") }
+//		ipv4 { vm.findVmIpv4(conn) }
+//		ipv6 { vm.findVmIpv6(conn) }
 		rxSpeed { statistics.findSpeed("data.current.rx.bps") }
 		txSpeed { statistics.findSpeed("data.current.tx.bps") }
 		rxTotalSpeed { statistics.findSpeed("data.total.rx") }

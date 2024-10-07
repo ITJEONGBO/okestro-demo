@@ -31,7 +31,7 @@ class NetworkController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="전체 네트워크 목록 조회",
+		value="네트워크 목록 조회",
 		notes="전체 네트워크 목록을 조회한다"
 	)
 	@ApiResponses(

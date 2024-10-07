@@ -35,8 +35,8 @@ private val log = LoggerFactory.getLogger(VmVo::class.java)
  * @property memoryUnused [BigInteger]
  *
  * @property fqdn [String]
- * @property ipv4 [String]
- * @property ipv6 [String]
+ * @property ipv4 List<[String]>
+ * @property ipv6 List<[String]>
  * @property hostEngineVm [Boolean] 금장/은장 vm().origin() == "managed_hosted_engine"
  * @property placement [String] 호스트에 부착 여부 ( 호스트에 고정, 호스트에서 실행중, 호스트에서 고정 및 실행)
  * @property hostVo [HostVo]  실행 호스트 정보 (현재 실행되고 있는 호스트의 정보)
@@ -142,8 +142,8 @@ class VmVo (
     val memoryFree: BigInteger = BigInteger.ZERO,
     val memoryUnused: BigInteger = BigInteger.ZERO,
     val fqdn: String = "",
-    val ipv4: String = "",
-    val ipv6: String = "",
+    val ipv4: List<String> = listOf(),
+    val ipv6: List<String> = listOf(),
     val hostEngineVm: Boolean = false,
     val placement: String = "",
     val hostVo: IdentifiedVo = IdentifiedVo(),
@@ -227,8 +227,8 @@ class VmVo (
         private var bMemoryFree: BigInteger = BigInteger.ZERO; fun memoryFree(block: () -> BigInteger?) { bMemoryFree = block() ?: BigInteger.ZERO }
         private var bMemoryUnused: BigInteger = BigInteger.ZERO; fun memoryUnused(block: () -> BigInteger?) { bMemoryUnused = block() ?: BigInteger.ZERO }
         private var bFqdn: String = ""; fun fqdn(block: () -> String?) { bFqdn = block() ?: "" }
-        private var bIpv4: String = ""; fun ipv4(block: () -> String?) { bIpv4 = block() ?: "" }
-        private var bIpv6: String = ""; fun ipv6(block: () -> String?) { bIpv6 = block() ?: "" }
+        private var bIpv4: List<String> = listOf(); fun ipv4(block: () -> List<String>?) { bIpv4 = block() ?: listOf() }
+        private var bIpv6: List<String> = listOf(); fun ipv6(block: () -> List<String>?) { bIpv6 = block() ?: listOf() }
         private var bHostEngineVm: Boolean = false; fun hostEngineVm(block: () -> Boolean?) { bHostEngineVm = block() ?: false }
         private var bPlacement: String = ""; fun placement(block: () -> String?) { bPlacement = block() ?: "" }
         private var bHostVo: IdentifiedVo = IdentifiedVo(); fun hostVo(block: () -> IdentifiedVo?) { bHostVo = block() ?: IdentifiedVo() }
@@ -324,8 +324,8 @@ fun Vm.toVmMenu(conn: Connection): VmVo {
         id { this@toVmMenu.id() }
         name { this@toVmMenu.name() }
         comment { this@toVmMenu.comment() }
-        ipv4 { this@toVmMenu.findVmIp(conn, "v4") }
-        ipv6 { this@toVmMenu.findVmIp(conn, "v6") }
+        ipv4 { this@toVmMenu.findVmIpv4(conn) }
+        ipv6 { this@toVmMenu.findVmIpv6(conn) }
         fqdn { this@toVmMenu.fqdn() }
         status { this@toVmMenu.status() }
         description { this@toVmMenu.description() }
@@ -387,8 +387,8 @@ fun Vm.toVmVoInfo(conn: Connection/*, graph: ItGraphService*/): VmVo {
         status { this@toVmVoInfo.status() }
         hostEngineVm { this@toVmVoInfo.origin() == "managed_hosted_engine" } // 엔진여부
         upTime { this@toVmVoInfo.findVmUptime(conn) }
-        ipv4 { this@toVmVoInfo.findVmIp(conn, "v4") }
-        ipv6 { this@toVmVoInfo.findVmIp(conn, "v6") }
+        ipv4 { this@toVmVoInfo.findVmIpv4(conn) }
+        ipv6 { this@toVmVoInfo.findVmIpv6(conn) }
         fqdn { this@toVmVoInfo.fqdn() }
         hostVo { host?.fromHostToIdentifiedVo() }
         clusterVo { cluster?.fromClusterToIdentifiedVo() }
@@ -757,27 +757,47 @@ fun Vm.findVmUptime(conn: Connection): String {
 
 
 /**
- * [Vm.findVmIp]
+ * [Vm.findVmIpv4]
  * Vm ip 알아내기
  * vms/{id}/nic/{id}/statistic
- * TODO 검증해야함
+ * @param conn
+ * @return
+ */
+fun Vm.findVmIpv4(conn: Connection): List<String> {
+    if(this@findVmIpv4.status() == VmStatus.DOWN)
+        return listOf()
+    val nics: List<Nic> =
+        conn.findAllNicsFromVm(this@findVmIpv4.id()).getOrDefault(listOf())
+
+    return nics.flatMap { nic ->
+        val reports: List<ReportedDevice> =
+            conn.findAllReportedDeviceFromVmNic(this@findVmIpv4.id(), nic.id())
+                .getOrDefault(listOf())
+        reports.map { it.ips()[0].address() }
+    }.distinct()
+}
+/**
+ * [Vm.findVmIpv6]
+ * Vm ip 알아내기
+ * vms/{id}/nic/{id}/statistic
  * @param conn
  * @param version [String] ipv4, ipv6
  * @return
  */
-fun Vm.findVmIp(conn: Connection, version: String): String {
-    val vm: Vm? = conn.findVm(this@findVmIp.id(), "nics").getOrNull()
-    return vm?.nics()?.flatMap {
-        conn.findAllReportedDeviceFromVmNic(vm.id(), it.id())
-            .getOrDefault(listOf())
-            .filter { rd: ReportedDevice -> rd.vm().status()?.value() != "down" }
-    }?.map {
-        if ("v4" == version)
-            return@map it.ips()[0].address()
-        else
-            return@map it.ips()[1].address()
-    }?.firstOrNull() ?: ""
+fun Vm.findVmIpv6(conn: Connection): List<String> {
+    if(this@findVmIpv6.status() == VmStatus.DOWN)
+        return listOf()
+    val nics: List<Nic> =
+        conn.findAllNicsFromVm(this@findVmIpv6.id()).getOrDefault(listOf())
+
+    return nics.flatMap { nic ->
+        val reports: List<ReportedDevice> =
+            conn.findAllReportedDeviceFromVmNic(this@findVmIpv6.id(), nic.id())
+                .getOrDefault(listOf())
+        reports.map { it.ips()[1].address() }
+    }.distinct()
 }
+
 
 
 /**
@@ -812,8 +832,8 @@ fun Vm.toVmVo(conn: Connection): VmVo {
         memoryFree { statistics.findMemory("memory.free") }
         memoryUnused { statistics.findMemory("memory.unused") }
         fqdn { this@toVmVo.fqdn() }
-        ipv4 { this@toVmVo.findVmIp(conn, "v4") }
-        ipv6 { this@toVmVo.findVmIp(conn, "v6") }
+        ipv4 { this@toVmVo.findVmIpv4(conn) }
+        ipv6 { this@toVmVo.findVmIpv6(conn) }
         hostEngineVm { this@toVmVo.origin() == "managed_hosted_engine" } // 엔진여부
 //        placement { this@toVmVo. }
         hostVo { host?.fromHostToIdentifiedVo() }

@@ -27,7 +27,8 @@ class VmController: BaseController() {
 	@Autowired private lateinit var iVm: ItVmService
 
 	@ApiOperation(
-		value="가상머신 목록",
+		httpMethod="GET",
+		value="가상머신 목록 조회",
 		notes="전체 가상머신 목록을 조회한다"
 	)
 	@ApiResponses(

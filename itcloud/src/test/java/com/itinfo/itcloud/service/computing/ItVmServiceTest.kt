@@ -63,11 +63,14 @@ class  ItVmServiceTest {
 	@Test
 	fun should_findAll() {
 		log.debug("should_findAll ...")
+		val start = System.currentTimeMillis()
 		val result: List<VmVo> =
 			service.findAll()
+		val end = System.currentTimeMillis()
 
+		log.info("수행시간: {}", end-start)
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(6))
+		assertThat(result.size, `is`(8))
 
 		result.forEach { println(it) }
 	}
