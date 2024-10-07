@@ -53,6 +53,7 @@ const closeModal = () => {
     { id: 'stop_btn', label: <><i className="fa fa-stop"></i>종료</>, onClick: () => console.log() },
     { id: 'reboot_btn', label: <><i className="fa fa-repeat"></i>재부팅</>, onClick: () => console.log() },
     { id: 'console_btn', label: <><i className="fa fa-desktop"></i>콘솔</>, onClick: () => console.log() },
+    { id: 'template_btn', label: <><i className="fa fa-desktop"></i>템플릿</>, onClick: () => navigate('/computing/templates') },
     { id: 'snapshot_btn', label: '스냅샷 생성', onClick: () => console.log() },
     { id: 'migration_btn', label: '마이그레이션', onClick:() => openPopup('migration')} ,
   ];

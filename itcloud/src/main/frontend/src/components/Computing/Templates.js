@@ -126,8 +126,8 @@ const Templates = () => {
     return (
         <div id="section">
             <HeaderButton
-            title="Host > "
-            subtitle="Template"
+            title="Template "
+            subtitle=""
             buttons={buttons}
             popupItems={popupItems}
             openModal={openModal}

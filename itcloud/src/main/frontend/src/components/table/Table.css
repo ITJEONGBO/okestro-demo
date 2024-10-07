@@ -1,1 +1,42 @@
 /* Table.css */
+.pagination {
+
+  margin-bottom: 10px; /* 테이블과의 간격 설정 */
+}
+
+.search_box button {
+  padding: 5px 10px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  display: flex;
+  justify-content: center; /* 수평 가운데 정렬 */
+  align-items: center; /* 수직 가운데 정렬 */
+}
+
+.pagination button.active {
+  background-color: rgb(218, 236, 245);
+}
+
+.pagination span {
+  margin-right: auto; /* 페이지 범위를 왼쪽에 배치 */
+  display: flex;
+  align-items: center; /* 세로 가운데 정렬 */
+}
+.paging_btns{
+    display:flex;
+    justify-content: space-between;
+}
+.paging_arrow{
+    font-size: 0.4rem;
+    font-weight: 800;
+    color:gray;
+    border: 1px solid #DDDDDD;
+}
+.paging_btns span{
+    display:block;
+    display: flex;
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    margin: 0 0.2rem;
+}

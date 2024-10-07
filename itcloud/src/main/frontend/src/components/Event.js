@@ -17,7 +17,9 @@ import TableOuter from './table/TableOuter';
 import HeaderButton from './button/HeaderButton';
 import TableColumnsInfo from './table/TableColumnsInfo';
 import Footer from './footer/Footer';
-import { useAllClusters } from '../api/RQHook';
+import { useAllClusters, useAllEvents } from '../api/RQHook';
+import PagingTable from './table/PagingTable';
+import PagingTableOuter from './table/PagingTableOuter';
 
 Modal.setAppElement('#root');
 
@@ -40,38 +42,29 @@ const Event = () => {
     fetchData()
   }, [])
   */
-  // 이벤트
-  const eventData = [
-    {
-      icon: <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'green' }}fixedWidth/>,
-      time: '2024. 8. 7. PM 12:24:14',
-      message: 'Check for available updates on host host01.ittinfo.com was completed successfully with message \'no updates available.\'',
-      correlationId: '2568d791:c08...',
-      source: 'oVirt',
-      userEventId: '',
-    },
-  ];
+
   const { 
-    data: clusters, 
-    status: clustersStatus,
-    isRefetching: isClustersRefetching,
-    refetch: refetchClusters, 
-    isError: isClustersError, 
-    error: clustersError, 
-    isLoading: isClustersLoading,
-  } = useAllClusters((e) => {
-    //CLUSTERS_ALT
+    data: events, 
+    status: eventsStatus,
+    isRefetching: isEventsRefetching,
+    refetch: refetchEvents, 
+    isError: isEventsError, 
+    error: eventsError, 
+    isLoading: isEventsLoading,
+  } = useAllEvents(toTableItemPredicateEvents);
+  
+  function toTableItemPredicateEvents(event) {
     return {
-      id: e?.id ?? '',
-      name: e?.name ?? '',
-      version: e?.version ?? '0.0',
-      cpuType: e?.cpuType ?? 'CPU 정보 없음',
-      hostCount: e?.hostCnt ?? 0,
-      vmCount: e?.vmCnt ?? 0,
-      comment: e?.comment ?? '',
-      description: e?.description ?? '설명없음',
-    }
-  });
+      id: event?.id ?? '',
+      icon: '', 
+      time: event?.time ?? 'Unknown',
+      description: event?.description ?? 'No description',
+      correlationId: event?.correlationId ?? 'N/A',
+      source: event?.source ?? 'Unknown', 
+      customEventId: event?.customEventId ?? 'N/A', 
+    };
+  }
+  
 
   const handleRowClick = (row, column) => {
     if (column.accessor === 'name') { // 이름 컬럼일 때만 네비게이션
@@ -94,15 +87,13 @@ const Event = () => {
       />
       <div className="content_outer">
         <div className="empty_nav_outer">
-            <div className="search_box">
-              <input type="text" />
-              <button><FontAwesomeIcon icon={faSearch} fixedWidth/></button>
-              <button><FontAwesomeIcon icon={faRefresh} fixedWidth/></button>
-            </div>
-            <TableOuter
+            
+            <PagingTableOuter
               columns={TableColumnsInfo.EVENTS}
-              data={eventData}
-              onRowClick={() => console.log('Row clicked')} 
+              data={events}
+              onRowClick={(row, column) => {
+                console.log('Row clicked', row, column); // 이 부분을 이렇게 감싸서 함수로 전달합니다.
+              }}
             />
         </div>
 

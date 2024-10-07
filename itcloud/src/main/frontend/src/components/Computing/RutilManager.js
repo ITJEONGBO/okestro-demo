@@ -163,19 +163,19 @@ function RutilManager() {
 
     
     // 네트워크
-    const {
-        data: allNetworks = [],  // 기본값을 빈 배열로 설정
-        status: allNetworksStatus,
-        isRefetching: isAllNetworksRefetching,
-        refetch: allNetworksRefetch,
-        isError: isAllNetworksError,
-        error: allNetworksError,
-        isLoading: isAllNetworksLoading,
-    } = useAllNetworks((network) => {
-        return {
-          ...network,
-        };
-    });
+    // const {
+    //     data: allNetworks = [],  // 기본값을 빈 배열로 설정
+    //     status: allNetworksStatus,
+    //     isRefetching: isAllNetworksRefetching,
+    //     refetch: allNetworksRefetch,
+    //     isError: isAllNetworksError,
+    //     error: allNetworksError,
+    //     isLoading: isAllNetworksLoading,
+    // } = useAllNetworks((network) => {
+    //     return {
+    //       ...network,
+    //     };
+    // });
       
  
     const navigate = useNavigate();
@@ -638,8 +638,8 @@ function RutilManager() {
                                 </div>
                                 <div className="search_box">
                                     <input type="text" />
+                                    <button><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                                     <button><FontAwesomeIcon icon={faSearch} fixedWidth/></button>
-                                    <button><FontAwesomeIcon icon={faRefresh} fixedWidth/></button>
                                 </div>
                                 <TableOuter
                                   columns={TableColumnsInfo.DATACENTERS} 
@@ -773,7 +773,7 @@ function RutilManager() {
                                 </div>
                                 <TableOuter
                                     columns={TableColumnsInfo.NETWORKS} 
-                                    data={allNetworks} 
+                                    data={[]} 
                                     onRowClick={() => console.log('Row clicked')}
                                 />
                                </>
@@ -2703,8 +2703,8 @@ function RutilManager() {
                 </div>
             </Modal>
 
-        {/* 가상머신( 새로만들기)팝업 */}   
-  <Modal
+            {/* 가상머신( 새로만들기)팝업 */}   
+            <Modal
     isOpen={activePopup === 'vm_new'}
     onRequestClose={closePopup}
     contentLabel="가상머신 편집"

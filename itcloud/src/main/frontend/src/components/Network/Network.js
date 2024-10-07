@@ -17,29 +17,32 @@ import { useAllNetworks } from '../../api/RQHook';
 import './css/Network.css';
 
 Modal.setAppElement('#root');
-const Network = ({ }) => {
+const Network = () => {
     const { 
-      data: data,
-      status: networksStatus,
-      isRefetching: isNetworksRefetching,
-      refetch: networksRefetch, 
-      isError: isNetworksError, 
-      error: networksError, 
-      isLoading: isNetworksLoading,
-    } = useAllNetworks((e) => {
-      return {
-        id: e?.id ?? '',
-        name: e?.name ?? '',
-        description: e?.description ?? '',
-        dataCenter: e?.dataCenterVo?.name ?? '', 
-        provider: 'Provider1',  // TODO: 제공자 뭐 넣어줘야 되지?
-        portSeparation: (e?.portIsolation == true) ? '예' : '아니요',
+        data: networkdata,
+        status: networksStatus,
+        isRefetching: isNetworksRefetching,
+        refetch: refetchNetworks, 
+        isError: isNetworksError, 
+        error: networksError, 
+        isLoading: isNetworksLoading,
+      } = useAllNetworks(toTableItemPredicateNetworks);
+      
+      function toTableItemPredicateNetworks(network) {
+        return {
+          id: network?.id ?? '',
+          name: network?.name ?? '',
+          comment: network?.comment ?? '',  // 코멘트
+          dataCenter: network?.dataCenterVo?.name ?? '',  // 데이터 센터
+          description: network?.description ?? '',  // 설명
+          vlan: network?.vlan ?? '',  // VLAN 태그
+          label: network?.label ?? '',  // 레이블
+          mtu: network?.mtu ?? '',  // MTU
+        };
       }
-    })
-    const [shouldRefresh, setShouldRefresh] = useState(false)
-    useEffect(() => {
-        networksRefetch()
-    }, [setShouldRefresh, networksRefetch])
+      
+      
+      
 
     const [activeSection, setActiveSection] = useState('common_outer');
     const [selectedTab, setSelectedTab] = useState('network_new_common_btn');
@@ -84,6 +87,7 @@ const Network = ({ }) => {
       { id: 'bring_btn', label: '가져오기', onClick: () => openPopup('getNetwork') },   
       { id: 'edit_btn', label: '편집', icon: faPencil, onClick: () => openPopup('editNetwork') },       
       { id: 'delete_btn', label: '삭제', icon: faArrowUp, onClick: () => openPopup('delete') }, 
+      { id: 'delete_btn', label: 'VNIC 프로파일'}
     ];
     
     return (
@@ -98,7 +102,7 @@ const Network = ({ }) => {
                 <div className='empty_nav_outer'>
                   <TableOuter
                     columns={TableColumnsInfo.NETWORKS} 
-                    data={data} 
+                    data={networkdata} 
                     onRowClick={handleNetworkNameClick} 
                     shouldHighlight1stCol={true}
                   />

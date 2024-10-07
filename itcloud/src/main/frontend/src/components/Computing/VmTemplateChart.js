@@ -847,44 +847,7 @@ const VmHostChart = () => {
                 </div>
             </div>
             </div>
-              {/* 마이그레이션 팝업 */}
-                {<Modal
-                    isOpen={isModalOpen}
-                    onRequestClose={closeModal}
-                    contentLabel="마이그레이션"
-                    className="migration_popup"
-                    overlayClassName="migration_popup_outer"
-                    shouldCloseOnOverlayClick={false}
-                >
-                    <div className="popup_header">
-                    <h1>가상머신 마이그레이션</h1>
-                    <button onClick={closeModal}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-                    </div>
-                    <div id="migration_article_outer">
-                    <span>1대의 가상 머신이 마이그레이션되는 호스트를 선택하십시오.</span>
-                    <div id="migration_article">
-                        <div>
-                        <div id="migration_dropdown">
-                            <label htmlFor="host">대상 호스트 <FontAwesomeIcon icon={faInfoCircle} fixedWidth/></label>
-                            <select name="host_dropdown" id="host">
-                            <option value="">호스트 자동 선택</option>
-                            <option value="php">PHP</option>
-                            <option value="java">Java</option>
-                            </select>
-                        </div>
-                        </div>
-                        <div>
-                        <div>가상머신</div>
-                        <div>on20-ap02</div>
-                        </div>
-                    </div>
-                    <div id="migration_footer">
-                        <button>마이그레이션</button>
-                        <button onClick={closeModal}>취소</button>
-                    </div>
-                    </div>
-                </Modal> 
-               }
+            
       <Footer/>
     </div>
   );

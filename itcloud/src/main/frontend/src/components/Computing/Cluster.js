@@ -124,7 +124,8 @@ const Cluster = () => {
                         <h1 class="text-sm">새 클러스터</h1>
                         <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                     </div>
-
+                    
+                    <div className='flex'>
                     <div className="network_new_nav">
                         <div
                             id="cluster_common_btn"
@@ -366,7 +367,7 @@ const Cluster = () => {
                         </form>
                       
                     )}
-
+</div>
                    
                     <div className="edit_footer">
                         <button style={{ display: 'none' }}></button>

@@ -16,11 +16,13 @@ import {
   faArrowDown,
   faMinus,
   faPlus,
-  faExclamationTriangle
+  faExclamationTriangle,
+  faArrowRight
 } from '@fortawesome/free-solid-svg-icons'
 import './css/DataCenterDetail.css';
 import TableOuter from '../table/TableOuter';
 import { useDataCenter, useNetworkById } from '../../api/RQHook';
+import Path from '../Header/Path';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -103,7 +105,7 @@ const handleTabClickModal = (tab) => {
 []
   ];
 
-  const [activeTab, setActiveTab] = useState('general');
+  const [activeTab, setActiveTab] = useState('cluster');
 
 
   //api
@@ -137,17 +139,12 @@ const handleTabClickModal = (tab) => {
 
   // Nav 컴포넌트
   const sections = [
-    { id: 'general', label: '일반' },
     { id: 'cluster', label: '클러스터' },
-    { id: 'host', label: '호스트' },
-    { id: 'vm', label: '가상머신' },
-    { id: 'logical_network', label: '논리 네트워크' },
     { id: 'storage', label: '스토리지 도메인' },
-    { id: 'permission', label: '권한' },
-    { id: 'event', label: '이벤트' }
-
-
+    { id: 'logical_network', label: '논리 네트워크' },
+    { id: 'event', label: '이벤트' },
   ];
+  const pathData = [dataCenter?.name, sections.find(section => section.id === activeTab)?.label];
 
   // 테이블 컴포넌트 데이터
   const storagedata = [
@@ -265,6 +262,7 @@ const handleTabClickModal = (tab) => {
 
   return (
     <div className="content_detail_section">
+
       <HeaderButton
         title="데이터센터 "
         subtitle={dataCenter?.name}
@@ -272,14 +270,16 @@ const handleTabClickModal = (tab) => {
         popupItems={sectionHeaderPopupItems}
       />
       <div className="content_outer">
+  
         <NavButton 
           sections={sections} 
           activeSection={activeTab} 
           handleSectionClick={handleTabClick} 
         />
-
+        
         <div className="empty_nav_outer">
-        {activeTab === 'general' && (
+          <Path pathElements={pathData} />
+          {/* {activeTab === 'general' && (
             <>
              <div className="cluster_general">
                 <div className="table_container_center">
@@ -363,8 +363,23 @@ const handleTabClickModal = (tab) => {
                 </div>
             </div>
             </>
+          )} */}
+           {activeTab === 'cluster' && (
+              <>
+                <div className="content_header_right">
+                  <button onClick={() => handleOpenModal('cluster_new')}>새로 만들기</button>
+                  <button>편집</button>
+                  <button>삭제</button>
+                </div>
+                <TableOuter
+                  columns={TableColumnsInfo.CLUSTERS_FROM_DATACENTER}
+                  data={clusterdata}
+                  onRowClick={handleRowClick} 
+                />
+            </>
+          
           )}
-          {activeTab === 'storage' && (
+           {activeTab === 'storage' && (
             <>
               <div className="content_header_right">
                 <button>데이터 연결</button>
@@ -395,32 +410,31 @@ const handleTabClickModal = (tab) => {
               />
             </>
           )}
-          {activeTab === 'cluster' && (
-              <>
-                <div className="content_header_right">
-                  <button onClick={() => handleOpenModal('cluster_new')}>새로 만들기</button>
-                  <button>편집</button>
-                  <button>삭제</button>
-                </div>
-                <TableOuter
-                  columns={TableColumnsInfo.CLUSTERS_FROM_DATACENTER}
-                  data={clusterdata}
-                  onRowClick={handleRowClick} 
-                />
-            </>
-          
-          )}
-          {/* {activeTab === 'Qos' && (
+            {activeTab === 'event' && (
             <>
               <div className="host_empty_outer">
                 <TableOuter
-                  columns={TableColumnsInfo.QOSS_FROM_DATACENTER} 
-                  data={Qosdata}
-                  onRowClick={handleRowClick} 
+                  columns={TableColumnsInfo.EVENTS}
+                  data={eventData} 
+                  onRowClick={() => console.log('Row clicked')} 
                 />
               </div>
             </>
-          )} */}
+          )}
+
+          
+          {/*삭제예정 */}
+          {activeTab === 'vm' && (
+            <>
+            <div className="host_empty_outer">
+              <TableOuter 
+                columns={TableColumnsInfo.CLUSTER_VM} 
+                data={vms} 
+                onRowClick={() => console.log('Row clicked')}
+              />
+            </div>
+            </>
+          )}
           {activeTab === 'permission' && (
             <>
             <div className="content_header_right">
@@ -451,28 +465,6 @@ const handleTabClickModal = (tab) => {
              />
           </>
           )}
-          {activeTab === 'event' && (
-            <>
-              <div className="host_empty_outer">
-                <TableOuter
-                  columns={TableColumnsInfo.EVENTS}
-                  data={eventData} 
-                  onRowClick={() => console.log('Row clicked')} 
-                />
-              </div>
-            </>
-          )}
-          {activeTab === 'vm' && (
-            <>
-            <div className="host_empty_outer">
-              <TableOuter 
-                columns={TableColumnsInfo.CLUSTER_VM} 
-                data={vms} 
-                onRowClick={() => console.log('Row clicked')}
-              />
-            </div>
-            </>
-          )}
           {activeTab === 'host' && (
             <>
             <div className="content_header_right">
@@ -486,6 +478,7 @@ const handleTabClickModal = (tab) => {
             
             </>
           )}
+
         </div>
         
       </div>

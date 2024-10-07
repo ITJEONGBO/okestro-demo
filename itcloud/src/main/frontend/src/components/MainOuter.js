@@ -808,7 +808,7 @@ useEffect(() => {
        <FontAwesomeIcon icon={faServer} fixedWidth/>
     </div>
 </Link>
-<Link to='/storage' className="link-no-underline">
+<Link to='/storages/domains' className="link-no-underline">
     <div
         id="aside_popup_storage_btn"
         className={getClassNames('storage')}

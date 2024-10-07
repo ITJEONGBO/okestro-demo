@@ -397,6 +397,10 @@ FIND_ALL_TEMPLATES:[
         userEventId: '',
       },
     ],
+//region: Storage ----------------------이벤트
+FIND_ALL_EVENT:[
+
+],
 }
 
 

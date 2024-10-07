@@ -371,6 +371,16 @@ const ApiManager = {
     defaultValues: DEFAULT_VALUES.FIND_ALL_STORAGE_DOMAINS
   }),
   //endregion: StorageDomain
+
+
+  //region: event
+  findAllEvent: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_ALL_EVENT(),
+    defaultValues: DEFAULT_VALUES.FIND_ALL_EVENT
+  }),
+  //endregion: event
+
 }
 
 

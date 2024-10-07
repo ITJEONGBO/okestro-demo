@@ -6,7 +6,7 @@ import Dashboard from './components/Dashboard';
 import Header from './components/Header/Header';
 import Computing from './components/Computing/Computing';
 import MainOuter from './components/MainOuter';
-import Storage from './components/Storage/Storage';
+import AllDomain from './components/Storage/AllDomain';
 import Network from './components/Network/Network';
 import Setting from './components/Setting/Setting';
 import Vm from './components/Computing/Vm';
@@ -99,10 +99,10 @@ const App = () => {
             <Routes>
             <Route path="/" element={<Dashboard />} />
               <Route path="/computing/datacenters" element={<Computing />} />
-              <Route path="/storage" element={<AllDisk />} />
+              <Route path="/storages/disks" element={<AllDisk />} />
               <Route path="/computing/data-center" element={<DataCenter />} />
               <Route path="/computing/datacenters/:id" element={<DataCenter />} />
-              {/* <Route path="/storage" element={<Storage />} /> */}
+              <Route path="/storages/domains" element={<AllDomain />} />
               <Route path="/settings" element={<Setting />} />
               <Route path="/computing/vms/:id" element={<Vm />} />
               <Route path="/computing/vms/:id/:section" element={<Vm />} />
@@ -123,7 +123,7 @@ const App = () => {
 
  
               {/*임시 */}
-              <Route path="/아이디추가/storage" element={<Storage />} />
+         
               <Route path="/computing/rutil-manager" element={<RutilManager />} />
               <Route path="/computing/vm-template-chart" element={<VmTemplateChart />} />
             </Routes>

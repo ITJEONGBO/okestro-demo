@@ -35,10 +35,13 @@ const TableColumnsInfo = {
   ],
   NETWORKS: [
     { header: '이름',       accessor: 'name',          clickable: true },
-    { header: '설명',       accessor: 'description',    clickable: false },
+    { header: '코멘트', accessor: 'comment', clickable: false },
     { header: '데이터센터',  accessor: 'dataCenter',     clickable: false },
-    { header: '공급자',     accessor: 'provider',       clickable: false },
-    { header: '포트분리',   accessor: 'portSeparation', clickable: false },
+    { header: '설명',       accessor: 'description',    clickable: false },
+    { header: 'VLAN 태그', accessor: 'vlan' ,clickable: false },
+    { header: '레이블', accessor: 'label', clickable: false },
+    { header: 'MTU',     accessor: 'mtu',       clickable: false },
+
   ],
   NETWORKS_FROM_HOST: [
     { header: '', accessor: 'icon' },
@@ -77,10 +80,10 @@ const TableColumnsInfo = {
     { header: '도메인 유형', accessor: 'domainType' },
     { header: '스토리지 유형', accessor: 'storageType' },
     { header: '포맷', accessor: 'format' },
-    // { header: '데이터 센터간 상태', accessor: 'dataCenterStatus' },
+    { header: '데이터 센터간 상태', accessor: 'dataCenterStatus' },
     { header: '전체 공간(GB)', accessor: 'diskSize' },
     { header: '여유 공간(GB)', accessor: 'availableSize' },
-    // { header: '확보된 여유 공간(GB)', accessor: 'reservedSpace' },
+    { header: '확보된 여유 공간(GB)', accessor: 'reservedSpace' },
     { header: '설명', accessor: 'description' },
   ],
   STORAGES_FROM_DATACENTER: [

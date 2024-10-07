@@ -63,8 +63,12 @@ const ENDPOINTS = {
 
   //region: StorageDomain
   FIND_ALL_DISK: () =>      `/api/v1/storages/disks`,
-  FIND_ALL_STORAGE_DOMAINS: async () => `/api/v1/storages/domains`,
+  FIND_ALL_STORAGE_DOMAINS: () => `/api/v1/storages/domains`,
   //endregion: StorageDomain
+
+  //region: Event
+  FIND_ALL_EVENT: () => `/api/v1/events`,
+  //endregion: Event
 }
 
 export default ENDPOINTS

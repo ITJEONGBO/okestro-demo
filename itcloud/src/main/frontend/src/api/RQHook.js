@@ -561,6 +561,7 @@ export const useAllStorageDomains = (mapPredicate) => useQuery({
   }
 })
 
+
 /**
  * @name useAllDisk
  * @description 모든 디스크목록조회 useQuery훅
@@ -573,6 +574,22 @@ export const useAllDisk = (mapPredicate) => useQuery({
   queryKey: ['useAllDisk'],
   queryFn: async () => {
     const res = await ApiManager.findAllDisk()
+    return res?.map((e) => mapPredicate(e)) ?? []
+  }
+})
+//region: event -----------------이벤트---------------------
+/**
+ * @name useAllEvents
+ * @description 모든 이벤트 목록조회 useQuery훅
+ * 
+ * @param {function} mapPredicate 
+ * @returns useQuery훅
+ */
+export const useAllEvents = (mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['allEvents'],
+  queryFn: async () => {
+    const res = await ApiManager.findAllEvent()
     return res?.map((e) => mapPredicate(e)) ?? []
   }
 })

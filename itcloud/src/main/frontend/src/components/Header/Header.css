@@ -117,3 +117,12 @@
     width: 22%;
     margin: 0 0.2rem;
 }
+.path{
+    font-size:0.32rem;
+}
+.path_icon{
+    color:gray;
+    font-weight:800;
+    font-size:0.25rem;
+    margin:0 0.14rem;
+}

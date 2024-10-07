@@ -12,8 +12,9 @@ import TableOuter from '../table/TableOuter';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
 import Permission from '../Modal/Permission';
-import './css/Storage.css';
+import './css/AllDomain.css';
 import Table from '../table/Table';
+import { useAllStorageDomains } from '../../api/RQHook';
 
 Modal.setAppElement('#root'); // React 16 이상에서는 필수
 
@@ -38,7 +39,7 @@ const Storage = () => {
     setActiveLunTab(tab); 
   };
 
-  // 테이블 컴포넌트
+  // 팝업 테이블 컴포넌트
   const data = [
     {
       alias: (
@@ -108,31 +109,35 @@ const Storage = () => {
     }
   };
 
-  // 도메인 테이블 컴포넌트 
-  const domaindata = [
-    {
-      status: <FontAwesomeIcon icon={faCaretUp} style={{ color: '#1DED00' }}fixedWidth/>,
-      icon: <FontAwesomeIcon icon={faGlassWhiskey} fixedWidth/>,
-      domainName: (
-        <span
-          style={{ color: 'blue', cursor: 'pointer'}}
-          onMouseEnter={(e) => (e.target.style.fontWeight = 'bold')}
-          onMouseLeave={(e) => (e.target.style.fontWeight = 'normal')}
-        >
-          ㅇㄻㄹㅇㄻ
-        </span>
-      ),
-      comment: '',
-      domainType: '',
-      storageType: '',
-      format: '',
-      dataCenterStatus: '',
-      totalSpace: '',
-      freeSpace: '',
-      reservedSpace: '',
-      description: '',
-    },
-  ];
+// 도메인 테이블 컴포넌트 
+const { 
+  data: domaindata, 
+  status: domainStatus,
+  isRefetching: isDomainsRefetching,
+  refetch: refetchDomains, 
+  isError: isDomainsError, 
+  error: domainsError, 
+  isLoading: isDomainsLoading,
+} = useAllStorageDomains(toTableItemPredicateDomains);
+
+function toTableItemPredicateDomains(domaindata) {
+  return {
+    id: domaindata?.id ?? '',
+    status: domaindata?.status ?? '',
+    icon: '',  // 아이콘이 제공되면 해당 값으로 교체
+    name: domaindata?.name ?? 'Unknown',
+    comment: domaindata?.comment ?? '',
+    domainType: domaindata?.domainType ?? 'Unknown',
+    storageType: domaindata?.storageType ?? 'Unknown',
+    format: domaindata?.format ?? 'Unknown',
+    dataCenterStatus: domaindata?.dataCenterStatus ?? 'Unknown',
+    diskSize: domaindata?.diskSize ?? 'Unknown',
+    availableSize: domaindata?.availableSize ?? 'Unknown',
+    reservedSpace: domaindata?.reservedSpace ?? 'Unknown',
+    description: domaindata?.description ?? '',
+  };
+}
+
 
 
   // 행 클릭 시 도메인 이름을 이용하여 이동하는 함수
@@ -186,21 +191,19 @@ const Storage = () => {
 
 
   const sectionHeaderButtons = [
-    { id: 'new_btn', label: '편집', icon: faPencil, onClick: () => {} },
-    { id: 'edit_btn', label: '삭제', icon: faArrowUp, onClick: () => {} },
+    { id: 'new_domain_btn', label: '새로운 도메인', onClick : () => openPopup('newDomain')}, 
+    { id: 'get_domain_btn', label: '도메인 가져오기', onClick : () => openPopup('newDomain')},   
+    { id: 'administer_domain_btn', label: '도메인 관리', onClick : () => openPopup('manageDomain')},       
+    { id: 'delete_btn', label: '삭제', onClick: () => openPopup('delete') }, 
+    { id: 'delete_btn', label: 'LUN 새로고침'}, 
+    { id: 'disk_btn', label: '디스크',onClick: () => navigate('/storages/disks') }, 
   ];
+  const popupItems = [
+    { id: 'activate', label: '활성' },
+    { id: 'deactivate', label: '비활성화' },
+    { id: 'move', label: '이동' },
+];
 
-  const sectionHeaderPopupItems = [
-    '가져오기',
-    '가상 머신 복제',
-    '삭제',
-    '마이그레이션 취소',
-    '변환 취소',
-    '템플릿 생성',
-    '도메인으로 내보내기',
-    'Export to Data Domai',
-    'OVA로 내보내기',
-  ];
 
   return (
     <div id="storage_section">
@@ -208,33 +211,14 @@ const Storage = () => {
         <HeaderButton
           title="스토리지 도메인"
           subtitle=""
-          buttons={[]}
-          popupItems={[]}
+          buttons={sectionHeaderButtons}
+          popupItems={popupItems}
         />
         
         <div className="content_outer">
 
           <div className="empty_nav_outer">
               <>
-                <div className="content_header_right">
-                  <button id="new_domain_btn" onClick={() => openPopup('newDomain')}>새로운 도메인</button>
-                  <button id="get_domain_btn" onClick={() => openPopup('newDomain')}>도메인 가져오기</button>
-                  <button id="administer_domain_btn" onClick={() => openPopup('manageDomain')}>도메인 관리</button>
-                  <button>삭제</button>
-                  <button>Connections</button>
-                  <button className="content_header_popup_btn" onClick={togglePopup}>
-                    <FontAwesomeIcon icon={faEllipsisV} fixedWidth/>
-                    {isPopupOpen && (
-                      <div className="content_header_popup">
-                        <div>활성</div>
-                        <div>비활성화</div>
-                        <div>이동</div>
-                        <div>LUN 새로고침</div>
-                      </div>
-                    )}
-                  </button>
-                </div>
-
                 {/* Table 컴포넌트를 이용하여 테이블을 생성합니다. */}
                 <TableOuter
                   columns={TableColumnsInfo.STORAGE_DOMAINS} 

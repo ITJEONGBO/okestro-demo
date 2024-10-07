@@ -15,8 +15,3 @@
     padding: 0.07rem 0.1rem;
     margin-bottom: 0.13rem;
 }
-.section_table_outer{
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
-    max-height: 63vh;
-}
