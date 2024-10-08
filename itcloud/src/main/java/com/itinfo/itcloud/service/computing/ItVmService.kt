@@ -164,6 +164,7 @@ class VmServiceImpl(
 	override fun findAll(): List<VmVo> {
 		log.info("findAll ... ")
 		val res: List<Vm> = conn.findVms()
+		return res.toVmsMenu(conn)
 //		return res.map { vm ->
 //			val nic: Nic? =
 //				conn.findAllNicsFromVm(vm.id()).getOrDefault(listOf()).firstOrNull()
@@ -174,7 +175,6 @@ class VmServiceImpl(
 //			}
 //			vm.toVmMenu(conn, usageDto)
 //		}
-		return res.toVmsMenu(conn)
 	}
 
 	@Throws(Error::class)

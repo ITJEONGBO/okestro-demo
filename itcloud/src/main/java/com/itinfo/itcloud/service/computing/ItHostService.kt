@@ -212,8 +212,7 @@ class HostServiceImpl(
 		val res: List<Vm> =
 			conn.findAllVmsFromHost(hostId)
 				.getOrDefault(listOf())
-//		return res.toVmsMenu(conn)
-		TODO()
+		return res.toVmsMenu(conn)
 	}
 
 	@Throws(Error::class)

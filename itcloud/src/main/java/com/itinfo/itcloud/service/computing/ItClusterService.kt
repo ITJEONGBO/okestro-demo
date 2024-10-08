@@ -8,6 +8,7 @@ import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.repository.history.VmInterfaceSamplesHistoryRepository
 import com.itinfo.itcloud.repository.history.VmSamplesHistoryRepository
+import com.itinfo.itcloud.repository.history.dto.UsageDto
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.itcloud.service.network.ItNetworkService
 import com.itinfo.util.ovirt.*
@@ -189,6 +190,7 @@ interface ItClusterService {
 class ClusterServiceImpl(
 
 ) : BaseService(), ItClusterService {
+	@Autowired private lateinit var itGraphService: ItGraphService
 
 	@Throws(Error::class)
 	override fun findAll(): List<ClusterVo> {
@@ -241,8 +243,13 @@ class ClusterServiceImpl(
 		val res: List<Host> =
 			conn.findAllHostsFromCluster(clusterId)
 				.getOrDefault(listOf())
-//		return res.toHostsMenu(conn)
-		TODO()
+		return res.map { host ->
+			val hostNic: HostNic? =
+				conn.findAllNicsFromHost(host.id()).getOrDefault(listOf()).firstOrNull()
+			val usageDto: UsageDto? = hostNic?.id()?.let { itGraphService.hostPercent(host.id(), it) }
+			host.toHostMenu(conn, usageDto)
+		}
+//		return res.toHostsMenu(conn)y
 	}
 
 	@Throws(Error::class)
