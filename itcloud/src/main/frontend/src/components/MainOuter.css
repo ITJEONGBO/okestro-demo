@@ -79,7 +79,7 @@
     width: 13.8vw;
     background-color: white;
     display: none;
-    position: relative;
+
     overflow-y: auto;   /* 세로 스크롤 자동 생성 */
     max-height: 100%;   /* 최대 높이를 지정하여 스크롤이 필요한 경우 동작하게 설정 */
 }
@@ -90,15 +90,18 @@
     padding-top: 0.1rem;
 }
 #aside_popup_btn{
-    font-size: 0.23rem;
-    position: absolute;
+    font-size: 0.5rem;
     right: 0;
-    border-right: none;
+    border:none;
     top: 1px;
     color: #407885;
-    height: 3.1%;
+    font-weight:800;
+    width: 100%;
     cursor: pointer;
-    padding: 0.03rem;
+    padding: 0.35rem 0;
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
 }
 .aside_popup_content i:first-child,
 .aside_popup_second_content i:first-child,

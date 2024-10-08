@@ -3,22 +3,7 @@
     height: 98%;
 }
 
-.search_box{
-    width: 20%;
-    display: flex;
-    margin-bottom: 0.15rem;
-}
-.search_box input{
-    height: 3.1vh;
-    width: 92%;
-    outline: none;   
-}
-.search_box>button{
-    height: 3.1vh;
-    width: 10%;
-    cursor: pointer;
-    font-size: 0.3rem;
-}
+
 .content_header {
     border-right: 1px solid #dddddd;
  

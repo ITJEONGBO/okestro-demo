@@ -17,7 +17,8 @@ import {
   faMinus,
   faPlus,
   faExclamationTriangle,
-  faArrowRight
+  faArrowRight,
+  faLayerGroup
 } from '@fortawesome/free-solid-svg-icons'
 import './css/DataCenterDetail.css';
 import TableOuter from '../table/TableOuter';
@@ -264,6 +265,7 @@ const handleTabClickModal = (tab) => {
     <div className="content_detail_section">
 
       <HeaderButton
+        titleIcon={faLayerGroup}
         title="데이터센터 "
         subtitle={dataCenter?.name}
         buttons={sectionHeaderButtons}
@@ -366,7 +368,7 @@ const handleTabClickModal = (tab) => {
           )} */}
            {activeTab === 'cluster' && (
               <>
-                <div className="content_header_right">
+                <div className="header_right_btns">
                   <button onClick={() => handleOpenModal('cluster_new')}>새로 만들기</button>
                   <button>편집</button>
                   <button>삭제</button>
@@ -381,7 +383,7 @@ const handleTabClickModal = (tab) => {
           )}
            {activeTab === 'storage' && (
             <>
-              <div className="content_header_right">
+              <div className="header_right_btns">
                 <button>데이터 연결</button>
                 <button>ISP 연결</button>
                 <button>내보내기 연결</button>
@@ -398,7 +400,7 @@ const handleTabClickModal = (tab) => {
           )}
           {activeTab === 'logical_network' && (
             <>
-              <div className="content_header_right">
+              <div className="header_right_btns">
                 <button>새로 만들기</button>
                 <button>편집</button>
                 <button>삭제</button>

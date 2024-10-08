@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faGlassWhiskey, faCaretUp, faEllipsisV, faSearch, faChevronCircleRight
-  , faTimes, faPencil, faArrowUp
+  , faTimes, faPencil, faArrowUp,
+  faDatabase
 } from '@fortawesome/free-solid-svg-icons'
 import { adjustFontSize } from '../../UIEvent';
 import HeaderButton from '../button/HeaderButton';
@@ -191,7 +192,7 @@ function toTableItemPredicateDomains(domaindata) {
 
 
   const sectionHeaderButtons = [
-    { id: 'new_domain_btn', label: '새로운 도메인', onClick : () => openPopup('newDomain')}, 
+    { id: 'new_domain_btn', label: '도메인 생성', onClick : () => openPopup('newDomain')}, 
     { id: 'get_domain_btn', label: '도메인 가져오기', onClick : () => openPopup('newDomain')},   
     { id: 'administer_domain_btn', label: '도메인 관리', onClick : () => openPopup('manageDomain')},       
     { id: 'delete_btn', label: '삭제', onClick: () => openPopup('delete') }, 
@@ -209,6 +210,7 @@ function toTableItemPredicateDomains(domaindata) {
     <div id="storage_section">
       <div>
         <HeaderButton
+          titleIcon={faDatabase}
           title="스토리지 도메인"
           subtitle=""
           buttons={sectionHeaderButtons}
@@ -224,6 +226,7 @@ function toTableItemPredicateDomains(domaindata) {
                   columns={TableColumnsInfo.STORAGE_DOMAINS} 
                   data={domaindata} 
                   onRowClick={handleDomainClick} 
+                  showSearchBox={true} // 검색 박스를 표시
                 />
               </>
         

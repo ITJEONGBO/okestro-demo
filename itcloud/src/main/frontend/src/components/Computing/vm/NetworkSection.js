@@ -50,7 +50,7 @@ const NetworkSection = () => {
     return (
       <>
       
-          <div className="content_header_right">
+          <div className="header_right_btns">
             <button id="network_popup_new" onClick={() => openPopup('network_interface_new')}>새로 만들기</button>
             <button onClick={() => openPopup('network_interface_edit')}>편집</button>
             <button className='disabled'>제거</button>

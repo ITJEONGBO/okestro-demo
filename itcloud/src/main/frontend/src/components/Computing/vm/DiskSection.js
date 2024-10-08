@@ -76,7 +76,7 @@ const DiskSection = () => {
     ];
     return (
         <>
-                <div className="content_header_right">
+                <div className="header_right_btns">
                     <button id="disk_popup_new"  onClick={() => openPopup('newDisk')}>새로 만들기</button>
                     <button id="join_popup_btn" onClick={() => openPopup('disk_connection')}>연결</button>
                     <button onClick={() => openPopup('disk_edit')}>편집</button>

@@ -14,10 +14,12 @@ import {
   faCrown, faUser, faBan,
   faTimes,
   faInfoCircle,
-  faExclamationTriangle
+  faExclamationTriangle,
+  faEarthAmericas
 } from '@fortawesome/free-solid-svg-icons'
 import './css/ClusterName.css';
 import TableOuter from '../table/TableOuter';
+import Path from '../Header/Path';
 
 function ClusterName() {
     const { id } = useParams();
@@ -204,6 +206,7 @@ function ClusterName() {
         { id: 'permission', label: '권한' },
         { id: 'event', label: '이벤트' }
     ];
+    const pathData = [cluster?.name, sections.find(section => section.id === activeTab)?.label];
   // 클러스터 팝업(보류)
   const clusterPopupData = [
     {
@@ -238,6 +241,7 @@ function ClusterName() {
             ) : (
                 <>
                     <HeaderButton
+                        titleIcon={faEarthAmericas}
                         title="클러스터"
                         subtitle={cluster?.name}
                         additionalText="목록이름"
@@ -253,6 +257,7 @@ function ClusterName() {
                             handleSectionClick={handleTabClick}
                         />
                         <div className="host_btn_outer">
+                            {activeTab !== 'general' && <Path pathElements={pathData} />}
                             {/* 일반 */}
                             {activeTab === 'general' && (
                                 <div className="cluster_general">
@@ -340,7 +345,7 @@ function ClusterName() {
                             {/* 논리 네트워크 */}
                             {activeTab === 'logical_network' && (
                                 <>
-                                <div className="content_header_right">
+                                <div className="header_right_btns">
                                     <button onClick={() => openPopup('newNetwork')}>네트워크 추가</button>
                                     <button onClick={() => openPopup('cluster_network_popup')}>네트워크 관리</button>
                                     <button>디스플레이로 설정</button>
@@ -410,7 +415,7 @@ function ClusterName() {
                             {/* 권한 */}
                             {activeTab === 'permission' && (
                                 <>
-                                <div className="content_header_right">
+                                <div className="header_right_btns">
                                 <button onClick={openPermissionModal}>추가</button> {/* 추가 버튼 */}
                                 <button>제거</button>
                                 </div>

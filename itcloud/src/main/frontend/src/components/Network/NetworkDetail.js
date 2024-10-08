@@ -32,9 +32,11 @@ import {
   faInfoCircle,
   faCaretDown,
   faNetworkWired,
-  faTag
+  faTag,
+  faFileEdit
 } from '@fortawesome/free-solid-svg-icons'
 import TableOuter from '../table/TableOuter';
+import Path from '../Header/Path';
 
 const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) => {
   // 테이블컴포넌트
@@ -292,10 +294,11 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     { id: 'template', label: '템플릿' },
     { id: 'permission', label: '권한' },
   ];
-
+  const pathData = [network?.name, sections.find(section => section.id === activeTab)?.label];
   return (
     <div className="content_detail_section">
       <HeaderButton
+        titleIcon={faFileEdit}
         title="네트워크"
         subtitle={network?.name}
         buttons={buttons}
@@ -313,10 +316,11 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         {
           activeTab === 'general' && <NetworkDetailGeneral network={network} />
         }
+        {activeTab !== 'general' && <Path pathElements={pathData} />}
         {
           activeTab === 'vNIC_profile' && (
         <>
-          <div className="content_header_right">
+          <div className="header_right_btns">
               <button onClick={() => openPopup('vnic_new_popup')}>새로 만들기</button>
               <button onClick={() => openPopup('vnic_eidt_popup')}>편집</button>
               <button onClick={() => openPopup('delete')} >제거</button>
@@ -332,7 +336,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
 
         {activeTab === 'cluster' && (
         <>
-            <div className="content_header_right">
+            <div className="header_right_btns">
                 <button onClick={() => openPopup('cluster_network_popup')}>네트워크 관리</button>
             </div>
           
@@ -347,7 +351,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         
         {activeTab === 'host' && (
         <>
-            <div className="content_header_right">
+            <div className="header_right_btns">
                     <button onClick={() => openPopup('host_network_popup')}>호스트 네트워크 설정</button>
             </div>
             <div className="host_filter_btns">
@@ -385,7 +389,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
 
         {activeTab === 'virtual_machine' && (
         <>
-              <div className="content_header_right">
+              <div className="header_right_btns">
                   <button onClick={() => openPopup('delete')}>제거</button>
               </div>
               <div className="host_filter_btns">
@@ -424,7 +428,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
 
         {activeTab === 'template' && (
         <>
-            <div className="content_header_right">
+            <div className="header_right_btns">
                 <button onClick={() => openPopup('delete')}>제거</button>
             </div>
 
@@ -439,7 +443,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
         {activeTab === 'permission' && (
 
         <>
-              <div className="content_header_right">
+              <div className="header_right_btns">
                 <button onClick={() => openPopup('permission')}>추가</button>
                 <button onClick={() => openPopup('delete')}>제거</button>
               </div>

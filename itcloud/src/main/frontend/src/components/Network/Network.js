@@ -4,7 +4,8 @@ import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faTimes, faInfoCircle, faPencil, faArrowUp,
-  faExclamationTriangle
+  faExclamationTriangle,
+  faServer
 } from '@fortawesome/free-solid-svg-icons'
 import TableOuter from '../table/TableOuter';
 import Table from '../table/Table';
@@ -93,7 +94,8 @@ const Network = () => {
     return (
         <div id="network_section">
             <HeaderButton
-              title="Network Chart"
+              titleIcon={faServer}
+              title="네트워크"
               buttons={sectionHeaderButtons}
               popupItems={[]}
             />

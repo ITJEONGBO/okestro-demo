@@ -356,7 +356,7 @@ const {
                                                       }}
                                                       onClick={() => {
                                                           setSelectedDiv(host.id);
-                                                          navigate(`/computing/host/${host.id}`);
+                                                          navigate(`/computing/hosts/${host.id}`);
                                                       }}
                                                   >
                                                       <FontAwesomeIcon
@@ -736,7 +736,7 @@ useEffect(() => {
     };
 
     const handleAsidePopupBtnClick = () => {
-        setAsidePopupVisible(false);
+        setAsidePopupVisible(!asidePopupVisible);
     };
 
     const handleSettingNavClick = (form) => {
@@ -750,7 +750,7 @@ useEffect(() => {
     
 
     const handleUserIconClick = (name) => {
-        navigate(`/computing/host/${name}`);
+        navigate(`/computing/hosts/${name}`);
         setSelectedDiv(name);
     };
 
@@ -832,20 +832,22 @@ useEffect(() => {
                         </div>
                     </Link>
                 </div>
-                <Link to='/settings' className="link-no-underline">
-                    <div id="setting_icon" 
-                    className={getClassNames('setting')}
-                    style={{ backgroundColor: asidePopupBackgroundColor.setting }} onClick={handleSettingIconClick}>
-                    <FontAwesomeIcon icon={faCog} fixedWidth/>
-                    </div>
-                </Link>
-
-
+                <div>
+                    <Link to='/settings' className="link-no-underline">
+                        <div id="setting_icon" 
+                        className={getClassNames('setting')}
+                        style={{ backgroundColor: asidePopupBackgroundColor.setting }} onClick={handleSettingIconClick}>
+                        <FontAwesomeIcon icon={faCog} fixedWidth/>
+                        </div>
+                    </Link>
+                    <button id='aside_popup_btn' onClick={handleAsidePopupBtnClick}>
+                        <FontAwesomeIcon icon={asidePopupVisible ? faChevronLeft : faChevronRight} fixedWidth />
+                    </button>
+                </div>
             </div>
             <div id="aside_popup" style={{ display: asidePopupVisible ? 'block' : 'none' }}>
-                <button id='aside_popup_btn' onClick={handleAsidePopupBtnClick}><FontAwesomeIcon icon={faChevronLeft} fixedWidth/></button>
+               
                 {renderAsidePopupContent()}
-              
             </div>
         </div>
 

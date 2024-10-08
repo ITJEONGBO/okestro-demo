@@ -9,7 +9,8 @@ import Footer from '../footer/Footer';
 import { useAllTemplates, useAllVMs } from '../../api/RQHook';
 import Templates from './Templates';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle, faInfoCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faDesktop, faExclamationTriangle, faInfoCircle, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
+import TableOuter from '../table/TableOuter';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -83,6 +84,7 @@ const closeModal = () => {
   
   function toTableItemPredicateVMs(vm) {
     return {
+      status: vm?.status ?? 'Unknown',       
       id: vm?.id ?? '',
       icon: '',                                   
       name: vm?.name ?? 'Unknown',               
@@ -92,7 +94,9 @@ const closeModal = () => {
       fqdn: vm?.fqdn ?? '',                      
       cluster: vm?.cluster ?? 'Unknown',          
       datacenter: vm?.datacenter ?? 'Unknown',
-      status: vm?.status ?? 'Unknown',             
+      memory: vm?.memory ?? '',  
+      cpu: vm?.cpu ?? '',  
+      network: vm?.network ?? '',  
       upTime: vm?.upTime ?? '',                    
       description: vm?.description ?? 'No description',  
     };
@@ -103,7 +107,8 @@ const closeModal = () => {
   return (
     <div id="section">
       <HeaderButton
-        title="Virtual Machine Chart"
+        titleIcon={faDesktop}
+        title="가상머신"
         subtitle=""
         buttons={buttons}
         popupItems={popupItems}
@@ -114,11 +119,13 @@ const closeModal = () => {
         <div className="empty_nav_outer">
 
           <div className="section_table_outer">
-              <Table 
+                
+              <TableOuter
                 columns={TableColumnsInfo.VM_CHART} 
                 data={vms} onRowClick={handleRowClick} 
                 className='machine_chart' 
                 clickableColumnIndex={[1]} 
+                showSearchBox={true}
               /> 
            
           </div>

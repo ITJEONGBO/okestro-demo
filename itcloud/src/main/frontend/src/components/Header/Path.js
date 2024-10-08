@@ -8,7 +8,9 @@ const Path = ({ pathElements }) => {
     <div className='path'>
       {pathElements.map((element, index) => (
         <React.Fragment key={index}>
-          <span>{element}</span>
+          <span className={index === pathElements.length - 1 ? 'last-path-element' : ''}>
+            {element}
+          </span>
           {index !== pathElements.length - 1 && (
             <FontAwesomeIcon className='path_icon' icon={faChevronRight} fixedWidth />
           )}

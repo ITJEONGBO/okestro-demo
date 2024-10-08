@@ -297,6 +297,7 @@ const TableColumnsInfo = {
     { header: 'SPM', accessor: 'spmStatus', clickable: false }
   ],
   VM_CHART:[
+
     { header: '', accessor: 'icon', clickable: false },  // 이모티콘 칸
     { header: '이름', accessor: 'name', clickable: true },
     { header: '코멘트', accessor: 'comment', clickable: false },
@@ -304,8 +305,11 @@ const TableColumnsInfo = {
     { header: 'IP주소', accessor: 'ipv4', clickable: false },
     { header: 'FQDN', accessor: 'fqdn', clickable: false },
     { header: '클러스터', accessor: 'cluster', clickable: true },
-    { header: '데이터센터', accessor: 'datacenter', clickable: true },
     { header: '상태', accessor: 'status', clickable: false },
+    { header: '데이터센터', accessor: 'datacenter', clickable: true },
+    { header: '메모리', accessor: 'memory', clickable: false },
+    { header: 'CPU', accessor: 'cpu', clickable: false },
+    { header: '네트워크', accessor: 'network', clickable: false },
     { header: '업타임', accessor: 'upTime', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],

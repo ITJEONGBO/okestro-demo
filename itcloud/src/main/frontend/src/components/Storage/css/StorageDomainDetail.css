@@ -7,18 +7,8 @@
     /* margin: 20px;*/
     width: 31%;
  }
- .content_header_right {  
-    display: flex;
-    margin-bottom: 0.3rem;
-    align-items: center;
-    justify-content: right;
-}
 
 
-.host_empty_outer{
-    width: 100%;
-    padding: 1rem 0;
-}
 .storage_right_btns{
     display: flex;
     font-size: 0.34rem;

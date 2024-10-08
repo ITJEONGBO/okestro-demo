@@ -3,10 +3,7 @@
     /* margin: 20px;*/
     width: 31%;
  }
- .host_empty_outer{
-    width: 100%;
-    padding: 1rem 0;
-}
+
 .storage_right_btns{
     display: flex;
     font-size: 0.34rem;

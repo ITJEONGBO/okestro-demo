@@ -294,14 +294,18 @@ export const useAllHosts = (mapPredicate) => useQuery({
  */
 export const useHostById = (hostId) => useQuery({
   refetchOnWindowFocus: true,
-  queryKey: ['useHostById'],
+  queryKey: ['HostById',hostId],
   queryFn: async () => {
+    if (!hostId) return {};
     console.log(`useHostById ... ${hostId}`)
     const res = await ApiManager.findAllHostById(hostId)
-    // setShouldRefresh(prevValue => false)
     return res ?? {}
-  }
+  },
+  staleTime: 0, 
+  cacheTime: 0,
 })
+
+
 /**
  * @name useHostFromCluster
  * @description 호스트 내 가상머신 목록조회 useQuery훅
@@ -571,7 +575,7 @@ export const useAllStorageDomains = (mapPredicate) => useQuery({
  */
 export const useAllDisk = (mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
-  queryKey: ['useAllDisk'],
+  queryKey: ['AllDisk'],
   queryFn: async () => {
     const res = await ApiManager.findAllDisk()
     return res?.map((e) => mapPredicate(e)) ?? []

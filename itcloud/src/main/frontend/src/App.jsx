@@ -111,7 +111,7 @@ const App = () => {
               {/* 데이터센터아이디 추가<Route path="/computing/vms" element={<VmTemplateChart />} /> */}
               <Route path="/computing/templates" element={<Templates />} />
               <Route path="/computing/templates/:id" element={<TemplateDetail />} />
-              <Route path="/computing/host/:id" element={<HostDetail />}/>
+              <Route path="/computing/hosts/:id" element={<HostDetail />}/>
               <Route path="/computing/clusters" element={<Cluster />} />
               <Route path="/computing/clusters/:id" element={<ClusterName />} /> 
               <Route path="/networks" element={<Network />} />

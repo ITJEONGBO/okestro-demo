@@ -293,7 +293,6 @@ const popupItems = [
       <HeaderButton
       title="스토리지도메인 > "
       subtitle={name}
-     
       buttons={buttons}
       popupItems={popupItems}
     />
@@ -364,7 +363,7 @@ const popupItems = [
         {activeTab === 'datacenter' && (
           <>
            
-              <div className="content_header_right">
+              <div className="header_right_btns">
                 <button className='disabled'>연결</button>
                 <button className='disabled'>분리</button>
                 <button className='disabled'>활성</button>
@@ -464,7 +463,7 @@ const popupItems = [
 
         {activeTab === 'disk' && (
         <>
-            <div className="content_header_right">
+            <div className="header_right_btns">
                 <button  onClick={() => openModal('move')}>이동</button>
                 <button  onClick={() => openModal('copy')}>복사</button>
                 <button  onClick={() => openModal('delete')}>제거</button>
@@ -493,7 +492,7 @@ const popupItems = [
 
         {activeTab === 'disk_snapshot' && (
         <>
-            <div className="content_header_right">
+            <div className="header_right_btns">
                 <button onClick={() => openModal('delete')}>제거</button>
             </div>
             
@@ -520,7 +519,7 @@ const popupItems = [
                 {/* 권한 */}
                 {activeTab === 'permission' && (
               <>
-              <div className="content_header_right">
+              <div className="header_right_btns">
               <button onClick={() => openModal('permission')}>추가</button>
                 <button onClick={() => openModal('delete')}>제거</button>
               </div>

@@ -16,7 +16,7 @@ const SnapshotSection = () => {
   };
     return (
       <>
-          <div className="content_header_right">
+          <div className="header_right_btns">
             <button className="snap_create_btn" onClick={() => openPopup('new')}>생성</button>
             <button className='disabled'>미리보기</button>
             <button className='disabled'>커밋</button>

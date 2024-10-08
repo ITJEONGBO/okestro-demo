@@ -1,16 +1,18 @@
 import Table from './Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRefresh, faSearch } from '@fortawesome/free-solid-svg-icons';
-import './TableOuter.css';
+import './Table.css';
 
-const TableOuter = ({ columns, data, onRowClick, shouldHighlight1stCol = false, clickableColumnIndex = [0] }) => {
+const TableOuter = ({ columns, data, onRowClick, shouldHighlight1stCol = false, clickableColumnIndex = [0], showSearchBox = false }) => {
   return (
     <div className="section_table_outer">
-      {/* <div className="search_box">
-        <input type="text" />
-        <button><FontAwesomeIcon icon={faSearch} fixedWidth/></button>
-        <button><FontAwesomeIcon icon={faRefresh} fixedWidth/></button>
-      </div> */}
+      {showSearchBox && ( // showSearchBox가 true일 때만 렌더링
+        <div className="search_box">
+          <input type="text" />
+          <button><FontAwesomeIcon icon={faSearch} fixedWidth /></button>
+          <button><FontAwesomeIcon icon={faRefresh} fixedWidth /></button>
+        </div>
+      )}
       
       <Table 
         columns={columns} 
@@ -22,4 +24,5 @@ const TableOuter = ({ columns, data, onRowClick, shouldHighlight1stCol = false, 
     </div>
   );
 }
+
 export default TableOuter;

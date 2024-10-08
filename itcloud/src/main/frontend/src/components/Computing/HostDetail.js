@@ -30,6 +30,8 @@ import {
 import './css/HostDetail.css';
 import TableOuter from '../table/TableOuter';
 import { useHostById, useHostdeviceFromHost, usePermissionFromHost, useVmFromHost } from '../../api/RQHook';
+import PagingTableOuter from '../table/PagingTableOuter';
+import Path from '../Header/Path';
 
 
 
@@ -253,11 +255,12 @@ function HostDetail() {
         { id: 'permission', label: '권한' },
         { id: 'event', label: '이벤트' }
       ];
-
+      const pathData = [host?.name, sections.find(section => section.id === activeTab)?.label];
       
     return (
         <div id='section'>
              <HeaderButton
+      titleIcon={faUser}
       title="호스트"
       subtitle={host?.name}
       additionalText="목록이름"
@@ -275,7 +278,7 @@ function HostDetail() {
                     handleSectionClick={handleTabClick} 
                 />
                 
-                  
+                
                 {/* 일반 */}
                 {activeTab === 'general' && (
                 <div className="host_content_outer">
@@ -502,11 +505,12 @@ function HostDetail() {
                 </div>
                
                 )}
+                
                 {/* 가상머신 */}
                 {activeTab === 'machine' && (
                 <div className="host_btn_outer">
-                    
-                        <div className="content_header_right">
+                    <Path pathElements={pathData}/>
+                      <div className="header_right_btns">
                             <button>실행</button>
                             <button>일시중지</button>
                             <button>종료</button>
@@ -533,7 +537,8 @@ function HostDetail() {
                 {/* 네트워크 인터페이스 */}
                 {activeTab === 'networkinterface' && (
                 <div className="host_btn_outer">
-                  <div className="content_header_right">
+                  <Path pathElements={pathData}/>
+                  <div className="header_right_btns">
                     <button>VF 보기</button>
                     <button onClick={toggleAllBoxes}>
                       {areAllBoxesVisible ? '모두 숨기기' : '모두 확장'}
@@ -576,11 +581,13 @@ function HostDetail() {
                 {/* 호스트 장치 */}
                 {activeTab === 'hostdevice' && (
                 <div className="host_btn_outer">
+                  <Path pathElements={pathData}/>
                   <div className="host_empty_outer">
-                    <TableOuter 
+                    <PagingTableOuter
                       columns={TableColumnsInfo.DEVICE_FROM_HOST} 
                       data={hostDevices} 
                       onRowClick={() => console.log('Row clicked')} 
+                      
                     />
                   </div>
                 </div>
@@ -589,7 +596,8 @@ function HostDetail() {
                 {/* 권한 */}
                 {activeTab === 'permission' && (
               <div className="host_btn_outer">
-              <div className="content_header_right">
+                
+              <div className="header_right_btns">
                 <button>추가</button>
                 <button>제거</button>
               </div>
@@ -621,6 +629,7 @@ function HostDetail() {
                 {/* 이벤트 */}
                 {activeTab === 'event' && (
                 <div className="host_btn_outer">
+                  <Path pathElements={pathData}/>
                   <div className="host_empty_outer">
                     <TableOuter
                       columns={TableColumnsInfo.EVENTS}

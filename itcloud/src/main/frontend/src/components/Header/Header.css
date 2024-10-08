@@ -119,6 +119,7 @@
 }
 .path{
     font-size:0.32rem;
+    margin-bottom: 0.2rem;
 }
 .path_icon{
     color:gray;
@@ -126,3 +127,8 @@
     font-size:0.25rem;
     margin:0 0.14rem;
 }
+.last-path-element {
+    color: #0b4db5;
+    font-weight: bold;
+    font-size: 0.4rem
+  }

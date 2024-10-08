@@ -8,10 +8,11 @@ import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
 import ApiManager from '../../api/ApiManager';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowDown, faChevronDown, faExclamationTriangle, faRefresh, faSearch, faTimes} from '@fortawesome/free-solid-svg-icons'
+import { faArrowDown, faChevronDown, faDatabase, faExclamationTriangle, faRefresh, faSearch, faTimes} from '@fortawesome/free-solid-svg-icons'
 import TableOuter from '../table/TableOuter';
 import './css/AllDisk.css';
 import { useAllDisk } from '../../api/RQHook';
+import Path from '../Header/Path';
 
 Modal.setAppElement('#root');
 
@@ -72,6 +73,18 @@ const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 
     fetchData()
   }, [])
   */
+  const sectionHeaderButtons = [
+    { id: 'storage_disk_new_btn', label: '새로 만들기', onClick: () => openPopup('newDisk') },
+    { id: 'disk_edit_btn', label: '편집', onClick: () => openPopup('disk_edit') },
+    { id: 'storage_delete_btn', label: '제거', onClick: () => openPopup('delete') },
+    { id: 'move_btn', label: '이동', onClick: () => openPopup('move') },
+    { id: 'copy_btn', label: '복사', onClick: () => openPopup('copy') },
+    { id: 'storage_disk_upload', label: '업로드', onClick: () => openPopup('uploadDisk') },
+    { id: 'disabled_download_btn', label: '다운로드', disabled: true },
+    { id: 'disabled_lun_refresh_btn', label: 'LUN 새로고침', disabled: true }
+  ];
+  
+  const pathData = ['스토리지','디스크'];
 
   const { 
     data: data,
@@ -115,30 +128,16 @@ const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 
   return (
     <div id="section">
       <HeaderButton
-        title="Disk Chart"
+        titleIcon={faDatabase}
+        title="스토리지"
         subtitle=""
-        buttons={[]} 
+        buttons={sectionHeaderButtons} 
         popupItems={[]} 
         togglePopup={() => {}}
       />
        <div className="host_btn_outer">
+       <Path pathElements={pathData} />
        <>
-                <div className="content_header_right">
-                  <button id="storage_disk_new_btn" onClick={() => openPopup('newDisk')}>새로 만들기</button>
-                  <button onClick={() => openPopup('disk_edit')}>편집</button>
-                  <button id="storage_delete_btn" onClick={() => openPopup('delete')}>제거</button>
-                  <button onClick={() => openPopup('move')}>이동</button>
-                  <button onClick={() => openPopup('copy')}>복사</button>
-                  <button id="storage_disk_upload" onClick={() => openPopup('uploadDisk')}>업로드</button>
-                  <button className='disabled'>다운로드</button>
-                  <button className='disabled'>LUN 새로고침</button>
-                </div>
-                <div className="search_box">
-                  <input type="text" />
-                  <button><FontAwesomeIcon icon={faSearch} fixedWidth/></button>
-                  <button><FontAwesomeIcon icon={faRefresh} fixedWidth/></button>
-                </div>
-
                 <div className="disk_type">
                   <div>
                     <span>디스크유형 : </span>
@@ -169,6 +168,7 @@ const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 
                     columns={TableColumnsInfo.ALL_DISK}
                     data={data}
                     onRowClick={handleRowClick}
+                    showSearchBox={true}
                   />
                 )}
 
@@ -177,6 +177,7 @@ const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 
                     columns={TableColumnsInfo.IMG_DISK}
                     data={data}
                     onRowClick={handleRowClick}
+                    showSearchBox={true}
                   />
                 )}
 
@@ -185,6 +186,7 @@ const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 
                     columns={TableColumnsInfo.LUN_DISK}
                     data={data}
                     onRowClick={handleRowClick}
+                    showSearchBox={true}
                   />
                 )}
               </>

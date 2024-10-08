@@ -6,6 +6,9 @@ import VmTemplateChart from './VmTemplateChart';
 import Table from "../table/Table";
 import TableColumnsInfo from "../table/TableColumnsInfo";
 import HeaderButton from "../button/HeaderButton";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDesktop, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
+import Path from '../Header/Path';
 
 // 애플리케이션 섹션
 const Templates = () => {
@@ -94,7 +97,7 @@ const Templates = () => {
       '템플릿 생성',
       'OVA로 내보내기',
     ];
-
+    const pathData = ['가상머신','템플릿'];
     const handleRowClick = (row, column) => {
         if (column.accessor === 'name') {
           navigate(`/computing/templates/${row.id}`); // 해당 이름을 URL로 전달하며 HostDetail로 이동합니다.
@@ -126,18 +129,22 @@ const Templates = () => {
     return (
         <div id="section">
             <HeaderButton
-            title="Template "
+            titleIcon={faDesktop}
+            title="가상머신 "
             subtitle=""
             buttons={buttons}
             popupItems={popupItems}
             openModal={openModal}
             togglePopup={() => {}}
             />
+           
             <div className="content_outer">
+           
                 <div className="empty_nav_outer">
+                <Path pathElements={pathData} />
                     {/* TODO: TableOuter화 */}
                 <div className="section_table_outer">
-                    <div className='host_filter_btns'>
+                    {/* <div className='host_filter_btns'>
                         <button
                         onClick={() => {
                         navigate('/computing/vms'); // 가상머신 목록 경로로 이동
@@ -154,9 +161,23 @@ const Templates = () => {
                         >
                         템플릿 목록
                         </button>
+                    </div> */}
+                    <div className="content_header_right">
+                        <div className="search_box">
+                            <input type="text" />
+                            <button><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                            <button><FontAwesomeIcon icon={faSearch} fixedWidth/></button>
+                        </div>
+
+                        <div className='header_right_btns'>
+                            <button>가져오기</button>
+                            <button>편집</button>
+                            <button>삭제</button>
+                            <button className='disabled'>내보내기</button>
+                            <button className='disabled'>새 가상머신</button>
+                        </div>        
                     </div>
-                
-                   
+                    
                     <Table 
                     columns={TableColumnsInfo.TEMPLATE_CHART} 
                     data={templates} onRowClick={handleRowClick} 

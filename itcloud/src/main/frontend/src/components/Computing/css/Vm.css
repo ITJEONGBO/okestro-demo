@@ -72,35 +72,6 @@
 #storage_section>div{
     height: 98%;
 }
-.section_header{
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid #6999D9;
-    align-items: center; /* 수직 가운데 정렬 추가 */
-    padding: 0.05rem 0.2rem;
-}
-.section_header_left{
-    display: flex;
-    align-items: center; /* 수직 가운데 정렬 추가 */
-    color: #0b4db5;
-}
-.section_header_left span,
-.section_header_left div,
-.section_header_left button {
-    margin-right: 10px; /* 요소 간 간격 조정 */
-}
-.section_header_left>span,.section_header_left>button{
-    font-size: 0.31rem;
-    color: #0b4db5;
-    display: flex; /* Flexbox 설정 추가 */
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-    margin-top: 0.1rem;
-}
-.section_header_left>div{
-    font-size: 0.7rem;
-}
 
 
 /*article*/
@@ -318,25 +289,11 @@
     margin-left: 4%;
     font-size: 0.34rem;
 }
-.host_empty_outer{
-    width: 100%;
-    padding: 1rem 0;
-}
+
 #migration_footer>button:last-child{
     color:#0066CC ;
 }
-.content_header_right {  
-    display: flex;
-    margin-bottom: 0.3rem;
-    align-items: center;
-    justify-content: right;
-}
 
-
-.content_header_right  i{
-    font-size: 0.3rem;
-    font-weight: 800;
-}
 
 /*네트워크 인터페이스*/
 .network_content{

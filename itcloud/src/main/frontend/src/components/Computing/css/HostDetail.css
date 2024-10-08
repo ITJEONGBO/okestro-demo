@@ -27,12 +27,6 @@
 }
 .host_table tr{
     width: 100%;
-
-}
-
-.host_empty_outer{
-    width: 100%;
-    padding: 1rem 0;
 }
 
 .host_network_boxs:hover{
@@ -51,7 +45,7 @@
     font-size: 0.55rem;
 }
 .host_network_boxs{
-    border:1px solid #DDDDDD;
+
     margin-bottom:0.2rem;
 }
 .host_network_firstbox>div{
