@@ -160,7 +160,10 @@ class HostServiceImpl(
 		return hosts.map { host ->
 			val hostNic: HostNic? =
 				conn.findAllNicsFromHost(host.id()).getOrDefault(listOf()).firstOrNull()
-			val usageDto: UsageDto? = hostNic?.id()?.let { itGraphService.hostPercent(host.id(), it) }
+
+			val usageDto: UsageDto? =
+				if(host.status() == HostStatus.UP) hostNic?.id()?.let { itGraphService.hostPercent(host.id(), it) }
+				else null
 			host.toHostMenu(conn, usageDto)
 		}
 	}

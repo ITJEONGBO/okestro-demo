@@ -323,31 +323,38 @@ fun Vm.toVmMenu(conn: Connection): VmVo {
             .getOrNull()
     val dataCenter: DataCenter? =
         cluster?.dataCenter()?.id()?.let { conn.findDataCenter(it).getOrNull() }
-    val host: Host? =
-        if (this@toVmMenu.hostPresent()) conn.findHost(this@toVmMenu.host().id()).getOrNull()
-        else null
-
-    val nics: List<Nic> =
-        conn.findAllNicsFromVm(this@toVmMenu.id()).getOrDefault(listOf())
-
-    val statistics: List<Statistic> =
-        conn.findAllStatisticsFromVm(this@toVmMenu.id())
 
     return VmVo.builder {
         id { this@toVmMenu.id() }
         name { this@toVmMenu.name() }
         comment { this@toVmMenu.comment() }
-        ipv4 { nics.findVmIpv4(conn, this@toVmMenu.id()) }
-        ipv6 { nics.findVmIpv6(conn, this@toVmMenu.id()) }
-        fqdn { this@toVmMenu.fqdn() }
         status { this@toVmMenu.status() }
         description { this@toVmMenu.description() }
         hostEngineVm { this@toVmMenu.origin() == "managed_hosted_engine" } // 엔진여부
-        upTime { statistics.findVmUptime(conn) }
-        hostVo { host?.fromHostToIdentifiedVo() }
+
         clusterVo { cluster?.fromClusterToIdentifiedVo() }
         dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
-        usageDto { statistics.toVmUsage() }
+        if (this@toVmMenu.status() == VmStatus.UP) {
+            val statistics: List<Statistic> =
+                conn.findAllStatisticsFromVm(this@toVmMenu.id())
+            val nics: List<Nic> =
+                conn.findAllNicsFromVm(this@toVmMenu.id()).getOrDefault(listOf())
+            val host: Host? =
+                conn.findHost(this@toVmMenu.host().id()).getOrNull()
+            fqdn { this@toVmMenu.fqdn() }
+            upTime { statistics.findVmUptime(conn) }
+            hostVo { host?.fromHostToIdentifiedVo() }
+            ipv4 { nics.findVmIpv4(conn, this@toVmMenu.id()) }
+            ipv6 { nics.findVmIpv6(conn, this@toVmMenu.id()) }
+            usageDto { statistics.toVmUsage() }
+        } else {
+            fqdn { null }
+            upTime { null }
+            hostVo { null }
+            ipv4 { null }
+            ipv6 { null }
+            usageDto { null }
+        }
     }
 }
 fun List<Vm>.toVmsMenu(conn: Connection): List<VmVo> =
