@@ -155,11 +155,14 @@ fun StorageDomain.toStorageDomainMenu(conn: Connection): StorageDomainVo {
 			conn.findDataCenter(this@toStorageDomainMenu.dataCenters().first().id()).getOrNull()
 		else null
 
+	val s: StorageDomain? =
+		dataCenter?.let { conn.findAttachedStorageDomainFromDataCenter(it.id(), this@toStorageDomainMenu.id()).getOrNull() }
+
 	return StorageDomainVo.builder {
 		id { this@toStorageDomainMenu.id() }
 		name { this@toStorageDomainMenu.name() }
 		description { this@toStorageDomainMenu.description() }
-		status { this@toStorageDomainMenu.status() }
+		status { s?.status() }
 		comment { this@toStorageDomainMenu.comment() }
 		domainType { this@toStorageDomainMenu.type() }
 		domainTypeMaster {
@@ -173,12 +176,7 @@ fun StorageDomain.toStorageDomainMenu(conn: Connection): StorageDomainVo {
 		format { this@toStorageDomainMenu.storageFormat() }
 		usedSize { this@toStorageDomainMenu.used() }
 		availableSize { this@toStorageDomainMenu.available() }
-		diskSize {
-			if (this@toStorageDomainMenu.availablePresent())
-				this@toStorageDomainMenu.available().add(this@toStorageDomainMenu.used())
-			else
-				BigInteger.ZERO
-		}
+		diskSize { this@toStorageDomainMenu.available().add(this@toStorageDomainMenu.used()) }
 		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
 	}
 }

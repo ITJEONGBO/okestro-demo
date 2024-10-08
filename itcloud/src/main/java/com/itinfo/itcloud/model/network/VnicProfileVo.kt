@@ -91,7 +91,6 @@ fun VnicProfile.toVnicProfileVo(conn: Connection): VnicProfileVo {
 		name { this@toVnicProfileVo.name() }
 		description { this@toVnicProfileVo.description() }
 		passThrough { this@toVnicProfileVo.passThrough().mode() }
-//		passThrough { this@toVnicProfileVo.passThrough().mode().findVnicPass() }
 		portMirroring { this@toVnicProfileVo.portMirroring() }
 		migration { if(this@toVnicProfileVo.migratablePresent()) this@toVnicProfileVo.migratable() else null }
 		networkFilterVo { networkFilter?.fromNetworkFilterToIdentifiedVo() }

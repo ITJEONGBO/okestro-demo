@@ -13,6 +13,7 @@ import com.itinfo.itcloud.model.storage.DiskAttachmentVo
 import com.itinfo.itcloud.model.storage.DiskImageVo
 import com.itinfo.itcloud.ovirtDf
 import com.itinfo.util.ovirt.findCluster
+import com.itinfo.util.ovirt.findDataCenter
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.types.*
@@ -298,11 +299,9 @@ class TemplateVo(
 
 fun Template.toTemplateMenu(conn: Connection): TemplateVo {
 	val cluster: Cluster? =
-		if(this@toTemplateMenu.clusterPresent()) {
-			conn.findCluster(this@toTemplateMenu.cluster().id()).getOrNull()
-		}else{
-			null
-		}
+		if(this@toTemplateMenu.clusterPresent()) conn.findCluster(this@toTemplateMenu.cluster().id()).getOrNull()
+		else null
+	val dataCenter: DataCenter? = cluster?.dataCenter()?.let { conn.findDataCenter(it.id()).getOrNull() }
 
 	return TemplateVo.builder {
 		id { this@toTemplateMenu.id() }
@@ -310,10 +309,8 @@ fun Template.toTemplateMenu(conn: Connection): TemplateVo {
 		description { this@toTemplateMenu.description() }
 		creationTime { this@toTemplateMenu.creationTime() }
 		status { this@toTemplateMenu.status() }
-		versionName { if (this@toTemplateMenu.versionPresent()) this@toTemplateMenu.version().versionName() else "" }
-		versionNum { if (this@toTemplateMenu.versionPresent()) this@toTemplateMenu.version().versionNumberAsInteger() else 0 }
 		clusterVo { cluster?.fromClusterToIdentifiedVo() }
-		dataCenterVo { cluster?.dataCenter()?.fromDataCenterToIdentifiedVo() }
+		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
 	}
 }
 fun List<Template>.toTemplateMenus(conn: Connection): List<TemplateVo> =

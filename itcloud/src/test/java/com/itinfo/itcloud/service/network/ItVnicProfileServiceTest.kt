@@ -43,6 +43,23 @@ class ItVnicProfileServiceTest {
     }
 
     /**
+     * [should_findAll]
+     * [ItVnicProfileService.findAll]에 대한 단위테스트
+     *
+     * @see ItVnicProfileService.findAll
+     */
+    @Test
+    fun should_findAll() {
+        log.debug("findAll ... ")
+        val result: List<VnicProfileVo> =
+            service.findAll()
+
+        assertThat(result, `is`(not(nullValue())))
+        result.forEach { println(it) }
+        assertThat(result.size, `is`(9))
+    }
+
+    /**
      * [should_findAllVnicProfilesFromNetwork]
      * [ItVnicProfileService.findAllVnicProfilesFromNetwork]에 대한 단위테스트
      *

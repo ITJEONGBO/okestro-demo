@@ -5,10 +5,7 @@ import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.*
 import com.itinfo.itcloud.repository.engine.entity.DiskVmElementEntity
 import com.itinfo.itcloud.repository.engine.entity.toVmId
-import com.itinfo.util.ovirt.findDataCenter
-import com.itinfo.util.ovirt.findDiskProfile
-import com.itinfo.util.ovirt.findStorageDomain
-import com.itinfo.util.ovirt.findVm
+import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.builders.DiskBuilder
 import org.ovirt.engine.sdk4.builders.DiskProfileBuilder
@@ -112,15 +109,19 @@ fun List<Disk>.toDiskIdNames(): List<DiskImageVo> =
  * 디스크 목록
  * 스토리지도메인 - 디스크 목록
  */
-fun Disk.toDiskMenu(conn: Connection, vmId: String?): DiskImageVo {
+fun Disk.toDiskMenu(conn: Connection, id: String): DiskImageVo {
 	val storageDomain: StorageDomain? =
 		conn.findStorageDomain(this.storageDomains().first().id())
 			.getOrNull()
-	val vm: Vm? =
-		vmId?.let { conn.findVm(it).getOrNull() }
+
+	// ID가 주어진 경우 해당 ID로 VM과 템플릿을 구분하여 조회
+	val vm: Vm? = id.let { conn.findVm(it).getOrNull() }
+	val template: Template? = id.let { conn.findTemplate(it).getOrNull() }
+
+	// VM이 있으면 VM 정보를, 없으면 템플릿 정보를 사용
 	val i: IdentifiedVo = IdentifiedVo.builder {
-		id { vm?.id() }
-		name { vm?.name() }
+		id { vm?.id() ?: template?.id() }
+		name { vm?.name() ?: template?.name() }
 	}
 
 	return DiskImageVo.builder {
@@ -135,7 +136,6 @@ fun Disk.toDiskMenu(conn: Connection, vmId: String?): DiskImageVo {
 		storageType { this@toDiskMenu.storageType() }
 		description { this@toDiskMenu.description() }
 		connectVm { i }
-//		createDate {  } // 생성일자
 	}
 }
 

@@ -62,7 +62,7 @@ class ItNetworkServiceTest {
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { print(it) }
-		assertThat(result.size, `is`(5))
+		assertThat(result.size, `is`(9))
 	}
 
 	/**

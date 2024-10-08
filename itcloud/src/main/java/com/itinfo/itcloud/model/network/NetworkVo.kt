@@ -112,23 +112,27 @@ fun List<Network>.toNetworksIdName(): List<NetworkVo> =
 	this@toNetworksIdName.map { it.toNetworkIdName() }
 
 
-fun Network.toNetworkMenu(conn: Connection): NetworkVo = NetworkVo.builder {
-	id { this@toNetworkMenu.id() }
-	name { this@toNetworkMenu.name() }
-	description { this@toNetworkMenu.description() }
-	comment { this@toNetworkMenu.comment() }
-	mtu { this@toNetworkMenu.mtu().toInt() }
-	portIsolation { this@toNetworkMenu.portIsolation() }
-	dataCenter { conn.findDataCenter(this@toNetworkMenu.dataCenter().id()).getOrNull()?.fromDataCenterToIdentifiedVo() }
-	openStackNetwork {
-		if(this@toNetworkMenu.externalProviderPresent())
-			conn.findOpenStackNetworkProvider(this@toNetworkMenu.externalProvider().id())
-				.getOrNull()
-				?.toOpenStackNetworkVo(conn)
-		else
-			null
+fun Network.toNetworkMenu(conn: Connection): NetworkVo {
+	val dataCenter: DataCenter? =
+		conn.findDataCenter(this@toNetworkMenu.dataCenter().id()).getOrNull()
+ 	return NetworkVo.builder {
+		id { this@toNetworkMenu.id() }
+		name { this@toNetworkMenu.name() }
+		description { this@toNetworkMenu.description() }
+		comment { this@toNetworkMenu.comment() }
+		mtu { this@toNetworkMenu.mtu().toInt() }
+		portIsolation { this@toNetworkMenu.portIsolation() }
+		dataCenter { dataCenter?.fromDataCenterToIdentifiedVo() }
+//		openStackNetwork {
+//			if (this@toNetworkMenu.externalProviderPresent())
+//				conn.findOpenStackNetworkProvider(this@toNetworkMenu.externalProvider().id())
+//					.getOrNull()
+//					?.toOpenStackNetworkVo(conn)
+//			else
+//				null
+//		}
+		vlan { if (this@toNetworkMenu.vlanPresent()) this@toNetworkMenu.vlan().idAsInteger() else 0 }
 	}
-	vlan { if (this@toNetworkMenu.vlanPresent()) this@toNetworkMenu.vlan().idAsInteger() else 0}
 }
 fun List<Network>.toNetworksMenu(conn: Connection): List<NetworkVo> =
 	this@toNetworksMenu.map { it.toNetworkMenu(conn) }

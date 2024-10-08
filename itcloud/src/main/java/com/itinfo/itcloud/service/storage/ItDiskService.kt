@@ -209,19 +209,18 @@ class DiskServiceImpl(
     @Throws(Error::class)
     override fun findAll(): List<DiskImageVo> {
         log.info("findAll ... ")
-        val res: List<Disk> =
-            conn.findAllDisks()
-                .getOrDefault(listOf())
-
-        // 디스크 목록을 순회하며 VM 연결 정보를 추가
-        return res.map { disk ->
-            val diskVmElementEntityOpt: Optional<DiskVmElementEntity> =
-                diskVmElementRepository.findByDiskId(UUID.fromString(disk.id()))
-            val vmId: String =
-                diskVmElementEntityOpt.map { it.toVmId() }.orElse("")
-
-            disk.toDiskMenu(conn, vmId)
-        }
+        val res: List<Disk> = conn.findAllDisks().getOrDefault(listOf())
+        // tODO(vm, template 혼용뮨제)
+        return res.toDiskImageVos(conn)
+//        return res.map { disk ->
+//            // diskVmElementEntity에서 VM 또는 템플릿 ID를 가져옴
+//            val diskVmElementEntityOpt: Optional<DiskVmElementEntity> =
+//                diskVmElementRepository.findByDiskId(UUID.fromString(disk.id()))
+//
+//            // ID가 템플릿일 수도, VM일 수도 있으므로 먼저 템플릿과 VM을 구분하여 조회
+//            val id: String = diskVmElementEntityOpt.map { it.toVmId() }.orElse("")
+//            disk.toDiskMenu(conn, id)
+//        }
     }
 
     @Throws(Error::class)
