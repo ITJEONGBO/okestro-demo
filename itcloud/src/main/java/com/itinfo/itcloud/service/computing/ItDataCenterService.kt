@@ -270,7 +270,8 @@ class DataCenterServiceImpl(
 		val res: List<Host> =
 			conn.findAllHostsFromDataCenter(dataCenterId)
 				.getOrDefault(listOf())
-		return res.toHostsMenu(conn)
+//		return res.toHostsMenu(conn)
+		TODO()
 	}
 
 	@Deprecated("필요없음")
@@ -280,7 +281,8 @@ class DataCenterServiceImpl(
 		val res: List<Vm> =
 			conn.findAllVmsFromDataCenter(dataCenterId)
 				.getOrDefault(listOf())
-		return res.toVmsMenu(conn)
+//		return res.toVmsMenu(conn)
+		TODO()
 	}
 
 	@Deprecated("필요없음")

@@ -27,6 +27,9 @@ import org.ovirt.engine.sdk4.types.Permission
 private fun Connection.srvClusters(): ClustersService =
 	this.systemService.clustersService()
 
+fun Connection.findClusters(): List<Cluster> =
+	systemService.clustersService().list().send().clusters()
+
 fun Connection.findAllClusters(searchQuery: String = "", follow: String = ""): Result<List<Cluster>> = runCatching {
 	if (searchQuery.isNotEmpty() && follow.isNotEmpty())
 		this.srvClusters().list().search(searchQuery).follow(follow).caseSensitive(false).send().clusters() ?: listOf()

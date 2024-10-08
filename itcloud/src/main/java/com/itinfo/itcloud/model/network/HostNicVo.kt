@@ -100,7 +100,8 @@ fun HostNic.toHostNicVo(conn: Connection): HostNicVo {
 	val host: Host? =
 		conn.findHost(this@toHostNicVo.host().id()).getOrNull()
 	val network: Network? =
-		conn.findNetwork(this@toHostNicVo.network().id()).getOrNull()
+		if (this@toHostNicVo.networkPresent()) conn.findNetwork(this@toHostNicVo.network().id()).getOrNull()
+		else null
 	val statistics: List<Statistic> =
 		 conn.findAllStatisticsFromHostNic(this@toHostNicVo.host().id(), this@toHostNicVo.id())
 			 .getOrDefault(listOf())
@@ -109,8 +110,8 @@ fun HostNic.toHostNicVo(conn: Connection): HostNicVo {
 		id { this@toHostNicVo.id() }
 		name { this@toHostNicVo.name() }
 		bridged { this@toHostNicVo.bridged() }
-		ipv4 { this@toHostNicVo.ip().address() }
-		ipv6 { if(this@toHostNicVo.ipv6().addressPresent()) this@toHostNicVo.ipv6().address() else null }
+		ipv4 { if(this@toHostNicVo.ipPresent()) this@toHostNicVo.ip().address() else null}
+		ipv6 { if(this@toHostNicVo.ipv6Present()) this@toHostNicVo.ipv6().address() else null }
 		macAddress { this@toHostNicVo.mac().address() }
 		mtu { this@toHostNicVo.mtuAsInteger() }
 		status { this@toHostNicVo.status() }

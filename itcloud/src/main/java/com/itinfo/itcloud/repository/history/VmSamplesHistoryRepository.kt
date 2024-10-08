@@ -8,26 +8,26 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-interface VmSamplesHistoryRepository: JpaRepository<com.itinfo.itcloud.repository.history.entity.VmSamplesHistoryEntity, Int> {
+interface VmSamplesHistoryRepository: JpaRepository<VmSamplesHistoryEntity, Int> {
 	// 가상머신 개인 cpu, memory
-	fun findFirstByVmIdOrderByHistoryDatetimeDesc(vmId: UUID): com.itinfo.itcloud.repository.history.entity.VmSamplesHistoryEntity
+	fun findFirstByVmIdOrderByHistoryDatetimeDesc(vmId: UUID): VmSamplesHistoryEntity
 
 	@Query(
 		value = """SELECT * FROM Vm_Samples_History v WHERE vm_status=1 and v.history_Datetime = 
           (SELECT MAX(v2.history_Datetime) FROM Vm_Samples_History v2 WHERE v2.vm_Id = v.vm_Id)
    ORDER BY v.cpu_Usage_Percent DESC""", nativeQuery = true
 	)
-	fun findVmCpuChart(page: Pageable?): List<com.itinfo.itcloud.repository.history.entity.VmSamplesHistoryEntity>
+	fun findVmCpuChart(page: Pageable?): List<VmSamplesHistoryEntity>
 
 	@Query(
 		value = """SELECT * FROM Vm_Samples_History v WHERE vm_status=1 and v.history_Datetime = 
           (SELECT MAX(v2.history_Datetime) FROM Vm_Samples_History v2 WHERE v2.vm_Id = v.vm_Id)
    ORDER BY v.memory_Usage_Percent DESC""", nativeQuery = true
 	)
-	fun findVmMemoryChart(page: Pageable?): List<com.itinfo.itcloud.repository.history.entity.VmSamplesHistoryEntity>
+	fun findVmMemoryChart(page: Pageable?): List<VmSamplesHistoryEntity>
 
 	// vm 사용량 순위
-	fun findFirstByVmStatusOrderByCpuUsagePercentDesc(vmStatus: Int): List<com.itinfo.itcloud.repository.history.entity.VmSamplesHistoryEntity>
+	fun findFirstByVmStatusOrderByCpuUsagePercentDesc(vmStatus: Int): List<VmSamplesHistoryEntity>
 	/*
     WITH rounded_times AS (
     SELECT

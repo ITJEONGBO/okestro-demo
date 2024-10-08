@@ -10,6 +10,11 @@ import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.model.storage.*
 import com.itinfo.itcloud.repository.engine.DiskVmElementRepository
 import com.itinfo.itcloud.repository.engine.entity.DiskVmElementEntity
+import com.itinfo.itcloud.repository.history.VmInterfaceSamplesHistoryRepository
+import com.itinfo.itcloud.repository.history.VmSamplesHistoryRepository
+import com.itinfo.itcloud.repository.history.dto.UsageDto
+import com.itinfo.itcloud.repository.history.entity.VmInterfaceSamplesHistoryEntity
+import com.itinfo.itcloud.repository.history.entity.getUsage
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.itcloud.service.computing.HostServiceImpl.Companion
 import com.itinfo.util.ovirt.*
@@ -153,15 +158,22 @@ class VmServiceImpl(
 
 ) : BaseService(), ItVmService {
 	@Autowired private lateinit var diskVmElementRepository: DiskVmElementRepository
-
+	@Autowired private lateinit var itGraphService: ItGraphService
 
 	@Throws(Error::class)
 	override fun findAll(): List<VmVo> {
 		log.info("findAll ... ")
-		val res: List<Vm> =
-			conn.findAllVms()
-				.getOrDefault(listOf())
-//		val res: List<Vm> = system.vmsService().list().send().vms()
+		val res: List<Vm> = conn.findVms()
+//		return res.map { vm ->
+//			val nic: Nic? =
+//				conn.findAllNicsFromVm(vm.id()).getOrDefault(listOf()).firstOrNull()
+//			val usageDto: UsageDto? = if (vm.status() == VmStatus.UP) {
+//				nic?.id()?.let { itGraphService.vmPercent(vm.id(), it) }
+//			} else {
+//				UsageDto() // 상태가 UP이 아닌 경우 기본값
+//			}
+//			vm.toVmMenu(conn, usageDto)
+//		}
 		return res.toVmsMenu(conn)
 	}
 

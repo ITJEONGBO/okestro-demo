@@ -27,6 +27,9 @@ fun Connection.findAllVms(searchQuery: String = "", follow: String = ""): Result
 	throw if (it is Error) it.toItCloudException() else it
 }
 
+fun Connection.findVms(): List<Vm> =
+	systemService.vmsService().list().send().vms()
+
 fun Connection.srvVm(vmId: String): VmService =
 	this.srvVms().vmService(vmId)
 
@@ -394,6 +397,8 @@ fun Connection.findAllNicsFromVm(vmId: String, follow: String = ""): Result<List
 	throw if (it is Error) it.toItCloudException() else it
 }
 
+fun Connection.findNicsFromVm(vmId: String): List<Nic> =
+	this.srvNicsFromVm(vmId).list().send().nics()
 
 
 fun Connection.srvNicFromVm(vmId: String, nicId: String): VmNicService =
@@ -974,8 +979,8 @@ fun Connection.findAllReportedDeviceFromVmNic(vmId: String, nicId: String, follo
 }.onFailure {
 	Term.VM.logFailWithin(Term.NIC, "보고된 디바이스 목록조회", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
-
 }
+
 
 private fun Connection.srvApplicationsFromVm(vmId: String): VmApplicationsService =
 	this.srvVm(vmId).applicationsService()

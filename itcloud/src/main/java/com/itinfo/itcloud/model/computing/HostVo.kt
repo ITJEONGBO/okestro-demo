@@ -7,6 +7,10 @@ import com.itinfo.itcloud.model.network.HostNicVo
 import com.itinfo.itcloud.model.network.toHostNicVos
 import com.itinfo.itcloud.model.network.toNetworkHostNicVos
 import com.itinfo.itcloud.repository.history.dto.UsageDto
+import com.itinfo.itcloud.repository.history.entity.HostInterfaceSamplesHistoryEntity
+import com.itinfo.itcloud.repository.history.entity.HostSamplesHistoryEntity
+import com.itinfo.itcloud.repository.history.entity.getUsage
+import com.itinfo.itcloud.service.computing.ItGraphService
 import com.itinfo.util.ovirt.*
 import org.slf4j.LoggerFactory
 import org.ovirt.engine.sdk4.Connection
@@ -14,7 +18,7 @@ import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.types.*
 import java.io.Serializable
 import java.math.BigInteger
-import java.util.Date
+import java.util.*
 
 private val log = LoggerFactory.getLogger(HostVo::class.java)
 
@@ -68,7 +72,7 @@ private val log = LoggerFactory.getLogger(HostVo::class.java)
  * @property dataCenterVo [DataCenterVo]
  * @property hostNicVos List<[HostNicVo]>
  * @property vmVos List<[VmVo]>
-// * @property usageDto [UsageDto]
+ * @property usageDto [UsageDto]
  */
 class HostVo (
     val id: String = "",
@@ -112,7 +116,9 @@ class HostVo (
     val clusterVo: IdentifiedVo = IdentifiedVo(),
     val dataCenterVo: IdentifiedVo = IdentifiedVo(),
     val hostNicVos: List<HostNicVo> = listOf(),
-    val vmVos: List<IdentifiedVo> = listOf()
+    val vmVos: List<IdentifiedVo> = listOf(),
+    val usageDto: UsageDto = UsageDto(),
+
 ): Serializable{
     override fun toString(): String = gson.toJson(this)
 
@@ -161,8 +167,9 @@ class HostVo (
         private var bDataCenterVo: IdentifiedVo = IdentifiedVo(); fun dataCenterVo(block: () -> IdentifiedVo?) { bDataCenterVo = block() ?: IdentifiedVo() }
         private var bHostNicVos: List<HostNicVo> = listOf(); fun hostNicVos(block: () -> List<HostNicVo>?) { bHostNicVos = block() ?: listOf() }
         private var bVmVos: List<IdentifiedVo> = listOf(); fun vmVos(block: () -> List<IdentifiedVo>?) { bVmVos = block() ?: listOf() }
+        private var bUsageDto: UsageDto = UsageDto(); fun usageDto(block: () -> UsageDto?) { bUsageDto = block() ?: UsageDto() }
 
-        fun build(): HostVo = HostVo(bId, bName, bComment, bAddress, bDevicePassThrough, bHostedActive, bHostedScore, bIscsi, bKdump, bKsm, bSeLinux, bHostedEngine, bSpmPriority, bSpmStatus, bSshFingerPrint, bSshPort, bSshPublicKey, bSshName, bSshPassWord, bStatus, bTransparentPage, /*bVmTotalCnt, bVmActiveCnt,*/ bVmSizeVo, bVmMigratingCnt, bMemoryTotal, bMemoryUsed, bMemoryFree, bMemoryMax, bMemoryShared, bSwapTotal, bSwapUsed, bSwapFree, bHugePage2048Free, bHugePage2048Total, bHugePage1048576Free, bHugePage1048576Total, bBootingTime, bHostHwVo, bHostSwVo, bClusterVo, bDataCenterVo, bHostNicVos, bVmVos)
+        fun build(): HostVo = HostVo(bId, bName, bComment, bAddress, bDevicePassThrough, bHostedActive, bHostedScore, bIscsi, bKdump, bKsm, bSeLinux, bHostedEngine, bSpmPriority, bSpmStatus, bSshFingerPrint, bSshPort, bSshPublicKey, bSshName, bSshPassWord, bStatus, bTransparentPage, /*bVmTotalCnt, bVmActiveCnt,*/ bVmSizeVo, bVmMigratingCnt, bMemoryTotal, bMemoryUsed, bMemoryFree, bMemoryMax, bMemoryShared, bSwapTotal, bSwapUsed, bSwapFree, bHugePage2048Free, bHugePage2048Total, bHugePage1048576Free, bHugePage1048576Total, bBootingTime, bHostHwVo, bHostSwVo, bClusterVo, bDataCenterVo, bHostNicVos, bVmVos, bUsageDto)
     }
     companion object {
         inline fun builder(block: HostVo.Builder.() -> Unit): HostVo = HostVo.Builder().apply(block).build()
@@ -182,7 +189,7 @@ fun List<Host>.toHostsIdName(): List<HostVo> =
 /**
  * 호스트 목록
  */
-fun Host.toHostMenu(conn: Connection): HostVo {
+fun Host.toHostMenu(conn: Connection, usageDto: UsageDto?): HostVo {
     val cluster: Cluster? =
         conn.findCluster(this@toHostMenu.cluster().id())
             .getOrNull()
@@ -206,14 +213,12 @@ fun Host.toHostMenu(conn: Connection): HostVo {
                 downCnt { this@toHostMenu.summary().totalAsInteger() - this@toHostMenu.summary().activeAsInteger() }
             }
         }
-        // 메모리
-        // cpu
-        // 네트워크
+        usageDto { usageDto }
         spmStatus { this@toHostMenu.spm().status() }
     }
 }
-fun List<Host>.toHostsMenu(conn: Connection): List<HostVo> =
-    this@toHostsMenu.map { it.toHostMenu(conn) }
+fun List<Host>.toHostsMenu(conn: Connection, usageDto: UsageDto): List<HostVo> =
+    this@toHostsMenu.map { it.toHostMenu(conn, usageDto) }
 
 /**
  * 네트워크에서 호스트 볼때

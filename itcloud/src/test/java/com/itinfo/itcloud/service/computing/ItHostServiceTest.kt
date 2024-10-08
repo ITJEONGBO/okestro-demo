@@ -51,8 +51,14 @@ class ItHostServiceTest {
 	@Test
 	fun should_findAll() {
 		log.debug("should_findAll ...")
+		val start = System.currentTimeMillis()
+
 		val result: List<HostVo> =
 			service.findAll()
+
+		val end = System.currentTimeMillis()
+
+		log.info("수행시간: {}", end-start)
 
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(2))

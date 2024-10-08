@@ -10,6 +10,10 @@ import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.repository.*
 import com.itinfo.itcloud.repository.history.*
+import com.itinfo.itcloud.repository.history.dto.UsageDto
+import com.itinfo.itcloud.repository.history.entity.HostInterfaceSamplesHistoryEntity
+import com.itinfo.itcloud.repository.history.entity.HostSamplesHistoryEntity
+import com.itinfo.itcloud.repository.history.entity.getUsage
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
@@ -17,6 +21,7 @@ import org.ovirt.engine.sdk4.Error
 import org.ovirt.engine.sdk4.types.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.util.*
 
 interface ItHostService {
 	/**
@@ -144,6 +149,7 @@ class HostServiceImpl(
 	@Autowired private lateinit var hostInterfaceSampleHistoryRepository: HostInterfaceSampleHistoryRepository
 	@Autowired private lateinit var vmSamplesHistoryRepository: VmSamplesHistoryRepository
 	@Autowired private lateinit var vmInterfaceSamplesHistoryRepository: VmInterfaceSamplesHistoryRepository
+	@Autowired private lateinit var itGraphService: ItGraphService
 
 	@Throws(Error::class)
 	override fun findAll(): List<HostVo> {
@@ -151,7 +157,12 @@ class HostServiceImpl(
 		val hosts: List<Host> =
 			conn.findAllHosts()
 				.getOrDefault(listOf()) // hosted Engine의 정보가 나온다
-		return hosts.toHostVos(conn)
+		return hosts.map { host ->
+			val hostNic: HostNic? =
+				conn.findAllNicsFromHost(host.id()).getOrDefault(listOf()).firstOrNull()
+			val usageDto: UsageDto? = hostNic?.id()?.let { itGraphService.hostPercent(host.id(), it) }
+			host.toHostMenu(conn, usageDto)
+		}
 	}
 
 	@Throws(Error::class)
@@ -201,7 +212,8 @@ class HostServiceImpl(
 		val res: List<Vm> =
 			conn.findAllVmsFromHost(hostId)
 				.getOrDefault(listOf())
-		return res.toVmsMenu(conn)
+//		return res.toVmsMenu(conn)
+		TODO()
 	}
 
 	@Throws(Error::class)

@@ -241,7 +241,8 @@ class ClusterServiceImpl(
 		val res: List<Host> =
 			conn.findAllHostsFromCluster(clusterId)
 				.getOrDefault(listOf())
-		return res.toHostsMenu(conn)
+//		return res.toHostsMenu(conn)
+		TODO()
 	}
 
 	@Throws(Error::class)

@@ -41,9 +41,12 @@ class ItDataCenterServiceTest {
 	@Test
 	fun should_findAll() {
 		log.debug("should_findAll ... ")
+		val start = System.currentTimeMillis()
 		val result: List<DataCenterVo> =
 			service.findAll()
+		val end = System.currentTimeMillis()
 
+		log.info("수행시간: {}", end-start)
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(2)) // 데이터센터 목록의 개수가 2인지 확인
 		result.forEach { println(it) }
