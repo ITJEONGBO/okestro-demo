@@ -51,8 +51,17 @@
 .custom-table tr {
   cursor: pointer; /* 모든 tr에 cursor: pointer 적용 */
 }
-.section_table_outer { font-size: 0.3rem; }
-.section_table_outer table { width:100%;border-collapse:collapse; }
+.section_table_outer { 
+  font-size: 0.3rem; 
+}
+.custom_outer{
+  max-height: 62.4vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.section_table_outer table { 
+  width:100%;border-collapse:collapse; 
+}
 .section_table_outer table tbody tr { cursor: pointer; }
 .section_table_outer table tbody tr:hover { background-color: #ebececd8; }
 .section_table_outer th,

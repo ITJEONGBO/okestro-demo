@@ -39,51 +39,52 @@ const Table = ({ columns, data, onRowClick = () => {}, clickableColumnIndex = []
 
   return (
     <>
-      <table className="custom-table" ref={tableRef}>
-        <thead>
-          <tr>
-            {columns.map((column, index) => (
-              <th key={index}>{column.header}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data && data.map((row, rowIndex) => (
-            <tr key={rowIndex}
-              onClick={() => setSelectedRowIndex(rowIndex)} // 클릭한 행의 인덱스를 상태에 저장
-              style={{
-                backgroundColor: selectedRowIndex === rowIndex ? 'rgb(218, 236, 245)' : 'transparent', // 선택된 행의 배경색을 변경
-              }}
-            >
-              {columns.map((column, colIndex) => (
-                <td
-                  key={colIndex}
-                  data-tooltip-id={`tooltip-${rowIndex}-${colIndex}`} // 각 셀에 고유한 tooltip id 설정
-                  data-tooltip-content={row[column.accessor]} // 툴팁에 표시할 전체 내용
-                  style={{
-                    maxWidth: '200px', // 최대 넓이 설정
-                    whiteSpace: 'nowrap', // 한 줄로 표시
-                    overflow: 'hidden', // 넘치는 텍스트 숨기기
-                    textOverflow: 'ellipsis', // 넘치는 텍스트는 ...으로 표시
-                    textAlign: typeof row[column.accessor] === 'object' ? 'center' : 'left',
-                    cursor: clickableColumnIndex.includes(colIndex) ? 'pointer' : 'default'
-                  }}
-                  onMouseEnter={(e) => handleMouseEnter(e, rowIndex, colIndex, row[column.accessor])} // 마우스를 올렸을 때 툴팁 설정
-                  onClick={(e) => {
-                    if (clickableColumnIndex.includes(colIndex)) {
-                      e.stopPropagation();
-                      onRowClick(row, column); // 클릭 시 특정 컬럼에만 이벤트 적용
-                    }
-                  }}
-                >
-                  {row[column.accessor]}
-                </td>
+      <div className='custom_outer'>
+        <table className="custom-table" ref={tableRef}>
+          <thead>
+            <tr>
+              {columns.map((column, index) => (
+                <th key={index}>{column.header}</th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-
+          </thead>
+          <tbody>
+            {data && data.map((row, rowIndex) => (
+              <tr key={rowIndex}
+                onClick={() => setSelectedRowIndex(rowIndex)} // 클릭한 행의 인덱스를 상태에 저장
+                style={{
+                  backgroundColor: selectedRowIndex === rowIndex ? 'rgb(218, 236, 245)' : 'transparent', // 선택된 행의 배경색을 변경
+                }}
+              >
+                {columns.map((column, colIndex) => (
+                  <td
+                    key={colIndex}
+                    data-tooltip-id={`tooltip-${rowIndex}-${colIndex}`} // 각 셀에 고유한 tooltip id 설정
+                    data-tooltip-content={row[column.accessor]} // 툴팁에 표시할 전체 내용
+                    style={{
+                      maxWidth: '200px', // 최대 넓이 설정
+                      whiteSpace: 'nowrap', // 한 줄로 표시
+                      overflow: 'hidden', // 넘치는 텍스트 숨기기
+                      textOverflow: 'ellipsis', // 넘치는 텍스트는 ...으로 표시
+                      textAlign: typeof row[column.accessor] === 'object' ? 'center' : 'left',
+                      cursor: clickableColumnIndex.includes(colIndex) ? 'pointer' : 'default'
+                    }}
+                    onMouseEnter={(e) => handleMouseEnter(e, rowIndex, colIndex, row[column.accessor])} // 마우스를 올렸을 때 툴팁 설정
+                    onClick={(e) => {
+                      if (clickableColumnIndex.includes(colIndex)) {
+                        e.stopPropagation();
+                        onRowClick(row, column); // 클릭 시 특정 컬럼에만 이벤트 적용
+                      }
+                    }}
+                  >
+                    {row[column.accessor]}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {/* 각 셀에 대한 Tooltip 컴포넌트 */}
       {data && data.map((row, rowIndex) =>
         columns.map((column, colIndex) => (

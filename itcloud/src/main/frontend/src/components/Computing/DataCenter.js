@@ -141,12 +141,21 @@ const handleTabClickModal = (tab) => {
   // Nav 컴포넌트
   const sections = [
     { id: 'cluster', label: '클러스터' },
-    { id: 'storage', label: '스토리지 도메인' },
+    { id: 'host', label: '호스트' },
+    { id: 'vm', label: '가상머신' },
+    { 
+      id: 'storage', 
+      label: '스토리지', 
+      isActive: activeTab === 'storage' || activeTab === 'storage_disk' 
+    },
     { id: 'logical_network', label: '논리 네트워크' },
     { id: 'event', label: '이벤트' },
   ];
-  const pathData = [dataCenter?.name, sections.find(section => section.id === activeTab)?.label];
-
+  const pathData = [
+    dataCenter?.name || 'Default',  // 데이터센터 이름이 없으면 'Default'로 대체
+    activeTab === 'storage' || activeTab === 'storage_disk' ? '스토리지' : sections.find(section => section.id === activeTab)?.label,
+    activeTab === 'storage_disk' ? '디스크' : '' // storage_disk일 때만 '디스크' 추가
+  ].filter(Boolean); 
   // 테이블 컴포넌트 데이터
   const storagedata = [
     {
@@ -381,15 +390,38 @@ const handleTabClickModal = (tab) => {
             </>
           
           )}
+          {activeTab === 'host' && (
+            <>
+            <div className="header_right_btns">
+                <button onClick={() => handleOpenModal('host_new')}>새로 만들기</button>
+            </div>
+              <TableOuter 
+                columns={TableColumnsInfo.HOSTS_FROM_CLUSTER} 
+                data={hosts}
+                onRowClick={() => console.log('Row clicked')} 
+              />
+            
+            </>
+          )}
+          {activeTab === 'vm' && (
+            <>
+            <div className="host_empty_outer">
+              <TableOuter 
+                columns={TableColumnsInfo.CLUSTER_VM} 
+                data={vms} 
+                onRowClick={() => console.log('Row clicked')}
+              />
+            </div>
+            </>
+          )}
            {activeTab === 'storage' && (
             <>
               <div className="header_right_btns">
-                <button>데이터 연결</button>
-                <button>ISP 연결</button>
-                <button>내보내기 연결</button>
-                <button>분리</button>
-                <button>활성</button>
+                <button>새로 만들기</button>
+                <button className='disabled'>분리</button>
+                <button className='disabled'>활성</button>
                 <button>유지보수</button>
+                <button onClick={() => setActiveTab('storage_disk')}>디스크</button>
               </div>
               <TableOuter 
                 columns={TableColumnsInfo.STORAGES_FROM_DATACENTER} 
@@ -398,6 +430,23 @@ const handleTabClickModal = (tab) => {
               />
             </>
           )}
+           {activeTab === 'storage_disk' && (
+            <>
+              <div className="header_right_btns">
+                <button>새로 만들기</button>
+                <button className='disabled'>분리</button>
+                <button className='disabled'>활성</button>
+                <button>유지보수</button>
+                <button>디스크</button>
+              </div>
+              <TableOuter 
+                columns={TableColumnsInfo.STORAGES_FROM_DATACENTER} 
+                data={storagedata}
+                onRowClick={handleRowClick}
+              />
+            </>
+          )}
+
           {activeTab === 'logical_network' && (
             <>
               <div className="header_right_btns">
@@ -426,17 +475,7 @@ const handleTabClickModal = (tab) => {
 
           
           {/*삭제예정 */}
-          {activeTab === 'vm' && (
-            <>
-            <div className="host_empty_outer">
-              <TableOuter 
-                columns={TableColumnsInfo.CLUSTER_VM} 
-                data={vms} 
-                onRowClick={() => console.log('Row clicked')}
-              />
-            </div>
-            </>
-          )}
+          
           {activeTab === 'permission' && (
             <>
             <div className="content_header_right">
@@ -467,19 +506,7 @@ const handleTabClickModal = (tab) => {
              />
           </>
           )}
-          {activeTab === 'host' && (
-            <>
-            <div className="content_header_right">
-                <button onClick={() => handleOpenModal('host_new')}>새로 만들기</button>
-            </div>
-              <TableOuter 
-                columns={TableColumnsInfo.HOSTS_FROM_CLUSTER} 
-                data={hosts}
-                onRowClick={() => console.log('Row clicked')} 
-              />
-            
-            </>
-          )}
+          
 
         </div>
         
