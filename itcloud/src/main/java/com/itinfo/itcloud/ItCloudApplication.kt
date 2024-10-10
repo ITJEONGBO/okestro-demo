@@ -22,7 +22,6 @@ private val log = LoggerFactory.getLogger(ItCloudApplication::class.java)
 	// "com.itinfo.security",
 	"com.itinfo.itcloud.service",
 	"com.itinfo.itcloud.repository",
-	"com.itinfo.itcloud.aaarepository"
 ])
 @ServletComponentScan
 class ItCloudApplication: SpringBootServletInitializer() {

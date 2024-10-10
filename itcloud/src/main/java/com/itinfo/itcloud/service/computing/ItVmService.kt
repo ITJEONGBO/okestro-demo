@@ -165,23 +165,12 @@ class VmServiceImpl(
 		log.info("findAll ... ")
 		val res: List<Vm> = conn.findVms()
 		return res.toVmsMenu(conn)
-//		return res.map { vm ->
-//			val nic: Nic? =
-//				conn.findAllNicsFromVm(vm.id()).getOrDefault(listOf()).firstOrNull()
-//			val usageDto: UsageDto? = if (vm.status() == VmStatus.UP) {
-//				nic?.id()?.let { itGraphService.vmPercent(vm.id(), it) }
-//			} else {
-//				UsageDto() // 상태가 UP이 아닌 경우 기본값
-//			}
-//			vm.toVmMenu(conn, usageDto)
-//		}
 	}
 
 	@Throws(Error::class)
 	override fun findOne(vmId: String): VmVo? {
 		log.info("findOne ... vmId : {}", vmId)
-		val res: Vm? =
-			conn.findVm(vmId).getOrNull()
+		val res: Vm? = conn.findVm(vmId).getOrNull()
 		return res?.toVmVo(conn)
 	}
 

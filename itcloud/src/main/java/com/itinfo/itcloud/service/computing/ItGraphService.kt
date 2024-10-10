@@ -80,7 +80,7 @@ class GraphServiceImpl(
 	override fun totalCpuMemory(): HostUsageDto {
 		log.info("totalCpuMemory ... ")
 		val hosts: List<Host> =
-			conn.findAllHosts()
+			conn.findAllHosts(searchQuery = "status=up")
 				.getOrDefault(listOf())
 		val hostSamplesHistoryEntities: List<HostSamplesHistoryEntity> = hosts.map {
 			hostSamplesHistoryRepository.findFirstByHostIdOrderByHistoryDatetimeDesc(UUID.fromString(it.id()))

@@ -335,12 +335,9 @@ fun Vm.toVmMenu(conn: Connection): VmVo {
         clusterVo { cluster?.fromClusterToIdentifiedVo() }
         dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
         if (this@toVmMenu.status() == VmStatus.UP) {
-            val statistics: List<Statistic> =
-                conn.findAllStatisticsFromVm(this@toVmMenu.id())
-            val nics: List<Nic> =
-                conn.findAllNicsFromVm(this@toVmMenu.id()).getOrDefault(listOf())
-            val host: Host? =
-                conn.findHost(this@toVmMenu.host().id()).getOrNull()
+            val statistics: List<Statistic> = conn.findAllStatisticsFromVm(this@toVmMenu.id())
+            val nics: List<Nic> = conn.findAllNicsFromVm(this@toVmMenu.id()).getOrDefault(listOf())
+            val host: Host? = conn.findHost(this@toVmMenu.host().id()).getOrNull()
             fqdn { this@toVmMenu.fqdn() }
             upTime { statistics.findVmUptime(conn) }
             hostVo { host?.fromHostToIdentifiedVo() }

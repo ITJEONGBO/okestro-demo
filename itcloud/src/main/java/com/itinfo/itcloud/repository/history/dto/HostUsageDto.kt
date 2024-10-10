@@ -8,6 +8,7 @@ import com.itinfo.util.ovirt.findAllStatisticsFromHost
 import com.itinfo.util.ovirt.findAllVms
 import org.ovirt.engine.sdk4.Connection
 import org.ovirt.engine.sdk4.types.Host
+import org.ovirt.engine.sdk4.types.HostStatus
 import org.ovirt.engine.sdk4.types.Statistic
 import org.ovirt.engine.sdk4.types.VmStatus
 import org.slf4j.LoggerFactory
@@ -80,8 +81,10 @@ fun List<HostSamplesHistoryEntity>.toHostUsageDtos(): List<HostUsageDto> =
     this@toHostUsageDtos.map { it.toHostUsageDto() }
 
 fun List<Host>.toHostUsageDto(conn: Connection, hostSamplesHistoryEntities: List<HostSamplesHistoryEntity>): HostUsageDto {
+    val hostAll: List<Host> = conn.findAllHosts().getOrDefault(listOf())
+
     val hostCnt = this@toHostUsageDto.size
-    val total: Double = this@toHostUsageDto.sumOf { it.memoryAsLong()?.toDouble() ?: 0.0 } / GB
+    val total: Double = hostAll.sumOf { it.memoryAsLong()?.toDouble() ?: 0.0 } / GB
 
     val used: Double = this@toHostUsageDto
         .flatMap { conn.findAllStatisticsFromHost(it.id()).getOrDefault(listOf()) }
@@ -113,7 +116,6 @@ fun List<Host>.toHostUsageDto(conn: Connection, hostSamplesHistoryEntities: List
                 }else
                     0
             }
-
 
     val free = total - used
     var totalCpu = 0.0

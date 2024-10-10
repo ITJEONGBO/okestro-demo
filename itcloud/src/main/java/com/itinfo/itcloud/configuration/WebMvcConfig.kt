@@ -110,7 +110,7 @@ class WebMvcConfig : WebMvcConfigurer {
 		registry.addResourceHandler("/swagger-ui/**").addResourceLocations("classpath:/META-INF/resources/webjars/springfox-swagger-ui/")
 		registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/")
 
-		// this.serveDirectory(registry, "/", "classpath:/static/")
+		this.serveDirectory(registry, "/", "classpath:/static/")
 		super.addResourceHandlers(registry)
 	}
 
