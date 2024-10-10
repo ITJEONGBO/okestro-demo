@@ -232,9 +232,7 @@ const TableColumnsInfo = {
     { header: '모두 할당', accessor: 'allAssigned', clickable: false },
     { header: '모두 필요', accessor: 'allRequired', clickable: false },
     { header: '가상 머신 네트 관리', accessor: 'vmNetMgmt', clickable: false, style: { textAlign: 'center' } },
-    { header: '네트워크 출력', accessor: 'networkOutput', clickable: false },
     { header: '마이그레이션 네트워크', accessor: 'migrationNetwork', clickable: false },
-    { header: 'Gluster 네트워크', accessor: 'glusterNetwork', clickable: false },
     { header: '기본 라우팅', accessor: 'defaultRouting', clickable: false },
   ],
 

@@ -522,7 +522,7 @@ const Setting = ({ }) => {
                     </Modal> */}
 
                     {/* 설정팝업 시스템권한(추가 팝업) */}
-                    {/* <Modal
+                  {/* <Modal
                         isOpen={activePopup === 'addSystemRole'}
                         onRequestClose={closePopup}
                         contentLabel="추가"
@@ -584,7 +584,7 @@ const Setting = ({ }) => {
                                 <button onClick={closePopup}>취소</button>
                             </div>
                         </div>
-                    </Modal> */}
+                    </Modal>  */}
                     
                     {/* 설정팝업 스케줄링정책(새로만들기 팝업) */}
                     {/* <Modal

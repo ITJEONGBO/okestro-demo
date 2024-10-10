@@ -176,3 +176,43 @@
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 }
+/*호스트네트워크설정(추가모달)*/
+.network_backup_edit{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 60.4vh;
+    width: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+   
+}
+.network_backup_edit_nav{
+    font-size: 0.33rem;
+    height: 48vh;
+    width: 30%;
+    background-color: #FAFAFA;
+    border-right: 1px solid #ddd;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    font-weight:800;
+}
+.network_backup_edit_nav>div{
+    padding: 0.4rem 0.2rem;
+    cursor:pointer;
+}
+.backup_edit_content{
+    padding:0.2rem 0;
+    font-size: 0.33rem;
+    width: 86%;
+}
+.backup_edit_radiobox{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding:0.2rem;
+    height:16vh;
+}
