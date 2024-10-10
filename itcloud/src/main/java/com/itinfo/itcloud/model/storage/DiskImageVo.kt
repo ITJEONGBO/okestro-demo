@@ -61,6 +61,7 @@ class DiskImageVo(
 	val storageType: DiskStorageType = DiskStorageType.IMAGE,
 	val createDate: String = "",
 	val connectVm: IdentifiedVo = IdentifiedVo(),
+	val connectTemplate: IdentifiedVo = IdentifiedVo(),
 	val diskProfileVos: List<IdentifiedVo> = listOf()
 ): Serializable {
 	override fun toString(): String =
@@ -87,9 +88,10 @@ class DiskImageVo(
 		private var bStorageType: DiskStorageType = DiskStorageType.IMAGE;fun storageType(block: () -> DiskStorageType?) { bStorageType = block() ?: DiskStorageType.IMAGE }
 		private var bCreateDate: String = "";fun createDate(block: () -> String?) { bCreateDate = block() ?: "" }
 		private var bConnectVm: IdentifiedVo = IdentifiedVo();fun connectVm(block: () -> IdentifiedVo?) { bConnectVm = block() ?: IdentifiedVo() }
+		private var bConnectTemplate: IdentifiedVo = IdentifiedVo();fun connectTemplate(block: () -> IdentifiedVo?) { bConnectTemplate = block() ?: IdentifiedVo() }
 		private var bDiskProfileVos: List<IdentifiedVo> = listOf();fun diskProfileVos(block: () -> List<IdentifiedVo>?) { bDiskProfileVos = block() ?: listOf() }
 
-        fun build(): DiskImageVo = DiskImageVo(bId, bSize, bAppendSize, bAlias, bDescription, bDataCenterVo, bStorageDomainVo, bSparse, bDiskProfileVo, bWipeAfterDelete, bSharable, bBackup, bFormat, bVirtualSize, bActualSize, bStatus, bContentType, bStorageType, bCreateDate, bConnectVm, bDiskProfileVos)
+        fun build(): DiskImageVo = DiskImageVo(bId, bSize, bAppendSize, bAlias, bDescription, bDataCenterVo, bStorageDomainVo, bSparse, bDiskProfileVo, bWipeAfterDelete, bSharable, bBackup, bFormat, bVirtualSize, bActualSize, bStatus, bContentType, bStorageType, bCreateDate, bConnectVm, bConnectTemplate, bDiskProfileVos)
 	}
 	companion object {
 		private val log by LoggerDelegate()
@@ -111,19 +113,38 @@ fun List<Disk>.toDiskIdNames(): List<DiskImageVo> =
  */
 fun Disk.toDiskMenu(conn: Connection, id: String): DiskImageVo {
 	val storageDomain: StorageDomain? =
-		conn.findStorageDomain(this.storageDomains().first().id())
-			.getOrNull()
+		conn.findStorageDomain(this.storageDomains().first().id()).getOrNull()
 
-	// ID가 주어진 경우 해당 ID로 VM과 템플릿을 구분하여 조회
-	val vm: Vm? = id.let { conn.findVm(it).getOrNull() }
-	val template: Template? = id.let { conn.findTemplate(it).getOrNull() }
+	var vmIdentifiedVo: IdentifiedVo? = null
+	var templateIdentifiedVo: IdentifiedVo? = null
 
-	// VM이 있으면 VM 정보를, 없으면 템플릿 정보를 사용
-	val i: IdentifiedVo = IdentifiedVo.builder {
-		id { vm?.id() ?: template?.id() }
-		name { vm?.name() ?: template?.name() }
+	if (id.isNotEmpty()) {
+		val vm: Vm? =
+			try { conn.findVm(id).getOrNull() }
+			catch (e: Exception) { null }
+
+		// VM이 없을 경우에만 템플릿 조회
+		val template: Template? =
+			if (vm == null) {
+				try { conn.findTemplate(id).getOrNull() }
+				catch (e: Exception) { null }
+			} else { null }
+
+		vmIdentifiedVo = vm?.let {
+			IdentifiedVo.builder {
+				id { it.id() }
+				name { it.name() }
+			}
+		}
+		templateIdentifiedVo = template?.let {
+			IdentifiedVo.builder {
+				id { it.id() }
+				name { it.name() }
+			}
+		}
 	}
 
+	// DiskImageVo를 반환
 	return DiskImageVo.builder {
 		id { this@toDiskMenu.id() }
 		alias { this@toDiskMenu.alias() }
@@ -135,7 +156,8 @@ fun Disk.toDiskMenu(conn: Connection, id: String): DiskImageVo {
 		sparse { this@toDiskMenu.sparse() }
 		storageType { this@toDiskMenu.storageType() }
 		description { this@toDiskMenu.description() }
-		connectVm { i }
+		connectVm { vmIdentifiedVo }
+		connectTemplate { templateIdentifiedVo }
 	}
 }
 

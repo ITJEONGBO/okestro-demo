@@ -26,17 +26,18 @@ class TreeNavigationalStorageDomain (
     }
 }
 
-fun StorageDomain.toNavigationalWithStorageDomains(conn: Connection): TreeNavigationalStorageDomain {
-    val disks: List<Disk> =
-        conn.findAllDisksFromStorageDomain(this@toNavigationalWithStorageDomains.id())
-            .getOrDefault(listOf())
+fun StorageDomain.toNavigationalWithStorageDomains(/*conn: Connection*/): TreeNavigationalStorageDomain {
+    // 디스크 목록 출력삭제
+//    val disks: List<Disk> =
+//        conn.findAllDisksFromStorageDomain(this@toNavigationalWithStorageDomains.id())
+//            .getOrDefault(listOf())
 
     return TreeNavigationalStorageDomain.builder {
         id { this@toNavigationalWithStorageDomains.id() }
         name { this@toNavigationalWithStorageDomains.name() }
-        disks { disks.fromDisksToTreeNavigationals() }
+//        disks { disks.fromDisksToTreeNavigationals() }
     }
 }
 
-fun List<StorageDomain>.fromDisksToTreeNavigationals(conn: Connection): List<TreeNavigationalStorageDomain> =
-    this@fromDisksToTreeNavigationals.map { it.toNavigationalWithStorageDomains(conn) }
+fun List<StorageDomain>.fromDisksToTreeNavigationals(/*conn: Connection*/): List<TreeNavigationalStorageDomain> =
+    this@fromDisksToTreeNavigationals.map { it.toNavigationalWithStorageDomains(/*conn*/) }

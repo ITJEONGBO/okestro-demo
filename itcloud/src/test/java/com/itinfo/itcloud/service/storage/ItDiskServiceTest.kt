@@ -70,9 +70,12 @@ class ItDiskServiceTest {
     @Test
     fun should_findAll() {
         log.debug("should_findAll ... ")
+        val start = System.currentTimeMillis()
         val result: List<DiskImageVo> =
             service.findAll()
+        val end = System.currentTimeMillis()
 
+        log.info("수행시간: {}", end-start)
         assertThat(result, `is`(not(nullValue())))
         result.forEach { println(it) }
         assertThat(result.size, `is`(49))
@@ -87,9 +90,12 @@ class ItDiskServiceTest {
     @Test
     fun should_findAllFromStorageDomain() {
         log.debug("should_findAllFromStorageDomain ... ")
+        val start = System.currentTimeMillis()
         val result: List<DiskImageVo> =
             service.findAllFromStorageDomain(domainId)
+        val end = System.currentTimeMillis()
 
+//        log.info("수행시간: {}", end-start)
         assertThat(result, `is`(not(nullValue())))
         result.forEach { println(it) }
         assertThat(result.size, `is`(15))
