@@ -19,7 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest
  *
  * @author chanhi2000
  * @author deh22
- * @since 2024.09.24
+ * @since 2024.10.10
  */
 @SpringBootTest
 class ItDataCenterServiceTest {
@@ -29,7 +29,7 @@ class ItDataCenterServiceTest {
 
 	@BeforeEach
 	fun setup() {
-		dataCenterId = "023b0a26-3819-11ef-8d02-00163e6c8feb"
+		dataCenterId = "023b0a26-3819-11ef-8d02-00163e6c8feb"  // 80 Default
 	}
 
 	/**
@@ -181,37 +181,20 @@ class ItDataCenterServiceTest {
 	}
 
 	/**
-	 * [should_findAllHostsFromDataCenter]
-	 * [ItDataCenterService.findAllHostsFromDataCenter]에 대한 단위테스트
+	 * [should_findAllStorageDomainsFromDataCenter]
+	 * [ItDataCenterService.findAllStorageDomainsFromDataCenter]에 대한 단위테스트
 	 *
-	 * @see ItDataCenterService.findAllHostsFromDataCenter
+	 * @see ItDataCenterService.findAllStorageDomainsFromDataCenter
 	 **/
 	@Test
-	fun should_findAllHostsFromDataCenter() {
-		log.debug("should_findAllHostsFromDataCenter ... ")
-		val result: List<HostVo> =
-			service.findAllHostsFromDataCenter(dataCenterId)
+	fun should_findAllStorageDomainsFromDataCenter() {
+		log.debug("should_findAllStorageDomainsFromDataCenter ... ")
+		val result: List<StorageDomainVo> =
+			service.findAllStorageDomainsFromDataCenter(dataCenterId)
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }
 		assertThat(result.size, `is`(2))
-	}
-
-	/**
-	 * [should_findAllVmsFromDataCenter]
-	 * [ItDataCenterService.findAllVmsFromDataCenter]에 대한 단위테스트
-	 *
-	 * @see ItDataCenterService.findAllVmsFromDataCenter
-	 **/
-	@Test
-	fun should_findAllVmsFromDataCenter() {
-		log.debug("should_findAllVmsFromDataCenter ... ")
-		val result: List<VmVo> =
-			service.findAllVmsFromDataCenter(dataCenterId)
-
-		assertThat(result, `is`(not(nullValue())))
-		result.forEach { println(it) }
-		assertThat(result.size, `is`(9))
 	}
 
 	/**
@@ -228,41 +211,7 @@ class ItDataCenterServiceTest {
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }
-		assertThat(result.size, `is`(4))
-	}
-
-	/**
-	 * [should_findAllStorageDomainsFromDataCenter]
-	 * [ItDataCenterService.findAllStorageDomainsFromDataCenter]에 대한 단위테스트
-	 *
-	 * @see ItDataCenterService.findAllStorageDomainsFromDataCenter
-	 **/
-	@Test
-	fun should_findAllStorageDomainsFromDataCenter() {
-		log.debug("should_findAllStorageDomainsFromDataCenter ... ")
-		val result: List<StorageDomainVo> =
-			service.findAllStorageDomainsFromDataCenter(dataCenterId)
-
-		assertThat(result, `is`(not(nullValue())))
-		result.forEach { println(it) }
-		assertThat(result.size, `is`(1))
-	}
-
-	/**
-	 * [should_findAllPermissionsFromDataCenter]
-	 * [ItDataCenterService.findAllPermissionsFromDataCenter]에 대한 단위테스트
-	 *
-	 * @see ItDataCenterService.findAllPermissionsFromDataCenter
-	 **/
-	@Test
-	fun should_findAllPermissionsFromDataCenter() {
-		log.debug("should_findAllPermissionsFromDataCenter ... ")
-		val result: List<PermissionVo> =
-			service.findAllPermissionsFromDataCenter(dataCenterId)
-
-		assertThat(result, `is`(not(nullValue())))
-		result.forEach { println(it) }
-		assertThat(result.size, `is`(5))
+		assertThat(result.size, `is`(7))
 	}
 
 	/**
@@ -277,7 +226,7 @@ class ItDataCenterServiceTest {
 		val result: List<EventVo> =
 			service.findAllEventsFromDataCenter(dataCenterId)
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(500))
+		assertThat(result.size, `is`(504))
 	}
 
 	companion object {

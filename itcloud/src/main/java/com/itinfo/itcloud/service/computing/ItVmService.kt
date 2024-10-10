@@ -189,12 +189,11 @@ class VmServiceImpl(
 			conn.findAllDisks()
 				.getOrDefault(listOf())
 				.filter {
-					it.contentType() == DiskContentType.DATA &&
 					it.format() == DiskFormat.COW &&
-					!attDiskIds.contains(it.id())
+					!attDiskIds.contains(it.id()) &&
+					it.quotaPresent()
 				}
-		return res.toDiskIdNames()
-//		return res.toDiskMenus(conn)
+		return res.toDiskInfos(conn)
 	}
 
 	@Throws(Error::class)
@@ -207,16 +206,13 @@ class VmServiceImpl(
 		val res: List<VnicProfile> =
 			conn.findAllNetworks()
 				.getOrDefault(listOf())
-				.filter { it.dataCenter().id() == cluster.dataCenter().id() && !it.externalProviderPresent() }
+				.filter { it.dataCenter().id() == cluster.dataCenter().id() }
 				.flatMap { network ->
 					conn.findAllVnicProfilesFromNetwork(network.id())
 						.getOrDefault(listOf())
-						.filter { vnicProfile ->
-							log.debug("{} -> {}", vnicProfile.network().id(), network.id())
-							vnicProfile.network().id() == network.id()
-						}
+						.filter { it.network().id() == network.id() }
 				}
-		return res.toVnicProfileVos(conn)
+		return res.toVnicProfileToVmVos(conn)
 	}
 
 	@Throws(Error::class)
@@ -237,7 +233,7 @@ class VmServiceImpl(
 			log.error("디스크 부팅가능은 한개만 가능")
 			throw ErrorPattern.VM_VO_INVALID.toException()
 		}
-
+		// TODO vnicprofile 없는거도 고려해봐야함
 		val res: Vm? =
 			conn.addVm(
 				vmVo.toAddVmBuilder(conn),

@@ -4,6 +4,7 @@ import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.*
 import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.model.storage.*
+import com.itinfo.itcloud.ovirtDf
 import com.itinfo.itcloud.repository.history.dto.UsageDto
 import com.itinfo.itcloud.repository.history.dto.toVmUsage
 import com.itinfo.util.ovirt.*
@@ -944,3 +945,4 @@ fun Vm.toVmVo(conn: Connection): VmVo {
 }
 fun List<Vm>.toVmVos(conn: Connection/*, graph: ItGraphService*/): List<VmVo> =
     this@toVmVos.map { it.toVmVo(conn/*, graph*/) }
+

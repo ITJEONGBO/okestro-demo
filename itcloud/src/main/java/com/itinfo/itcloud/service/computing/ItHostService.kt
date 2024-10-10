@@ -224,7 +224,6 @@ class HostServiceImpl(
 		val res: List<HostNic> =
 			conn.findAllNicsFromHost(hostId)
 				.getOrDefault(listOf())
-		// TODO
 		return res.toHostNicVos(conn)
 	}
 
@@ -249,16 +248,9 @@ class HostServiceImpl(
 			conn.findHost(hostId)
 				.getOrNull()?: throw ErrorPattern.HOST_NOT_FOUND.toException()
 
-		// TODO 호스트 이벤트 불러오기 애매 + power management 처리
 		val res: List<Event> =
 			conn.findAllEvents("host.name= ${host.name()}")
 				.getOrDefault(listOf())
-				.filter {
-					!(
-					  it.severity().value() == "alert" &&
-					  it.description().contains("Failed to verify Power Management configuration for Host")
-					)
-				}
 		return res.toEventVos()
 	}
 

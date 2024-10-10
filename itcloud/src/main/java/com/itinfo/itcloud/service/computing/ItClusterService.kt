@@ -6,6 +6,8 @@ import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
+import com.itinfo.itcloud.model.storage.StorageDomainVo
+import com.itinfo.itcloud.model.storage.toStorageDomainsMenu
 import com.itinfo.itcloud.repository.history.VmInterfaceSamplesHistoryRepository
 import com.itinfo.itcloud.repository.history.VmSamplesHistoryRepository
 import com.itinfo.itcloud.repository.history.dto.UsageDto
@@ -113,6 +115,16 @@ interface ItClusterService {
 	// OVA로 내보내기
 
 	/**
+	 * [ItClusterService.findAllStorageDomainsFromCluster]
+	 * 클러스터가 가지고있는 스토리지 도메인 목록
+	 *
+	 * @param clusterId [String] 클러스터 Id
+	 * @return List<[StorageDomainVo]> 네트워크 목록
+	 */
+	@Throws(Error::class)
+	fun findAllStorageDomainsFromCluster(clusterId: String): List<StorageDomainVo>
+
+	/**
 	 * [ItClusterService.findAllNetworksFromCluster]
 	 * 클러스터가 가지고있는 네트워크 목록
 	 *
@@ -198,7 +210,6 @@ class ClusterServiceImpl(
 		val res: List<Cluster> =
 			conn.findAllClusters()
 				.getOrDefault(listOf())
-				.filter { it.cpuPresent() }
 		return res.toClustersMenu(conn)
 	}
 
@@ -252,7 +263,6 @@ class ClusterServiceImpl(
 				else null
 			host.toHostMenu(conn, usageDto)
 		}
-//		return res.toHostsMenu(conn)y
 	}
 
 	@Throws(Error::class)
@@ -262,6 +272,20 @@ class ClusterServiceImpl(
 			conn.findAllVmsFromCluster(clusterId)
 				.getOrDefault(listOf())
 		return res.toVmVos(conn)
+	}
+
+	@Throws(Error::class)
+	override fun findAllStorageDomainsFromCluster(clusterId: String): List<StorageDomainVo> {
+		log.info("findAllStorageDomainsFromCluster ... clusterId: {}", clusterId)
+		val cluster: Cluster? = conn.findCluster(clusterId).getOrNull()
+		if(cluster?.dataCenterPresent() == true){
+			val res: List<StorageDomain> =
+				conn.findAllAttachedStorageDomainsFromDataCenter(cluster.dataCenter().id())
+					.getOrDefault(listOf())
+			return res.toStorageDomainsMenu(conn)
+		} else{
+			return listOf()
+		}
 	}
 
 	@Throws(Error::class)

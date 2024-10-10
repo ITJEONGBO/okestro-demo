@@ -166,7 +166,7 @@ fun Cluster.toClusterMenu(conn: Connection): ClusterVo = ClusterVo.builder {
 	comment { this@toClusterMenu.comment() }
 	version { this@toClusterMenu.version().major().toString() + "." + this@toClusterMenu.version().minor() }
 	description { this@toClusterMenu.description() }
-	cpuType { this@toClusterMenu.cpu().type().toString() }
+	cpuType { if(this@toClusterMenu.cpuPresent()) this@toClusterMenu.cpu().type().toString() else null }
 	hostSize { this@toClusterMenu.findHostCntFromCluster(conn) }
 	vmSize { this@toClusterMenu.findVmCntFromCluster(conn) }
 }

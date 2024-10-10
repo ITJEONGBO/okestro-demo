@@ -20,11 +20,13 @@ import org.springframework.boot.test.context.SpringBootTest
 class ItHostOperationServiceTest {
     @Autowired private lateinit var service: ItHostOperationService
 
-    private lateinit var host01: String // host01.ititinfo.local
+    private lateinit var host01: String // host01
+    private lateinit var host02: String // host02.ititinfo.local
 
     @BeforeEach
     fun setup() {
         host01 = "671e18b2-964d-4cc6-9645-08690c94d249"
+        host02 = "0d7ba24e-452f-47fe-a006-f4702aa9b37f"
     }
 
     /**
@@ -38,7 +40,7 @@ class ItHostOperationServiceTest {
     fun should_deactivate() {
         log.debug("should_deactivate ...")
         val result: Boolean =
-            service.deactivate(host01)
+            service.deactivate(host02)
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))
@@ -55,7 +57,7 @@ class ItHostOperationServiceTest {
     fun should_activate() {
         log.debug("should_activate ...")
         val result: Boolean =
-            service.activate(host01)
+            service.activate(host02)
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))
@@ -68,15 +70,15 @@ class ItHostOperationServiceTest {
      *
      * @see [ItHostOperationService.refresh]
      */
-    @Test
-    fun should_refresh() {
-        log.debug("should_refresh ...")
-        val result: Boolean =
-            service.refresh(host01)
-
-        assertThat(result, `is`(not(nullValue())))
-        assertThat(result, `is`(true))
-    }
+//    @Test
+//    fun should_refresh() {
+//        log.debug("should_refresh ...")
+//        val result: Boolean =
+//            service.refresh(host02)
+//
+//        assertThat(result, `is`(not(nullValue())))
+//        assertThat(result, `is`(true))
+//    }
 
     /**
      * [should_restart]
@@ -90,7 +92,7 @@ class ItHostOperationServiceTest {
     fun should_restart() {
         log.debug("should_restart ...")
         val result: Boolean =
-            service.restart(host01)
+            service.restart(host02)
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))

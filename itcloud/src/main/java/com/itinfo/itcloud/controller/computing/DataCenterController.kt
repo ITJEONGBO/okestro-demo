@@ -166,29 +166,6 @@ class DataCenterController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="네트워크 목록 조회",
-		notes="선택된 데이터센터의 네트워크 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{dataCenterId}/networks")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun networks(
-		@PathVariable dataCenterId: String? = null
-	): ResponseEntity<List<NetworkVo>> {
-		if (dataCenterId.isNullOrEmpty())
-			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-		log.info("/computing/dataCenters/{}/networks ... 데이터센터 네트워크 목록", dataCenterId)
-		return ResponseEntity.ok(iDataCenter.findAllNetworksFromDataCenter(dataCenterId))
-	}
-
-	@ApiOperation(
-		httpMethod="GET",
 		value="스토리지도메인 목록 조회",
 		notes="선택된 데이터센터의 스토리지도메인 목록을 조회한다"
 	)
@@ -208,6 +185,29 @@ class DataCenterController: BaseController() {
 			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
 		log.info("/computing/dataCenters/{}/storageDomains ... 데이터센터 스토리지 목록", dataCenterId)
 		return ResponseEntity.ok(iDataCenter.findAllStorageDomainsFromDataCenter(dataCenterId))
+	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="네트워크 목록 조회",
+		notes="선택된 데이터센터의 네트워크 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{dataCenterId}/networks")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun networks(
+		@PathVariable dataCenterId: String? = null
+	): ResponseEntity<List<NetworkVo>> {
+		if (dataCenterId.isNullOrEmpty())
+			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
+		log.info("/computing/dataCenters/{}/networks ... 데이터센터 네트워크 목록", dataCenterId)
+		return ResponseEntity.ok(iDataCenter.findAllNetworksFromDataCenter(dataCenterId))
 	}
 
 	@ApiOperation(

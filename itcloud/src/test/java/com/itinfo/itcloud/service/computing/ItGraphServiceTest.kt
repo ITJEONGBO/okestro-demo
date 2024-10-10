@@ -2,6 +2,7 @@ package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.computing.DashBoardVo
+import com.itinfo.itcloud.model.computing.RutilVo
 import com.itinfo.itcloud.repository.history.dto.HostUsageDto
 import com.itinfo.itcloud.repository.history.dto.UsageDto
 import org.hamcrest.MatcherAssert.assertThat
@@ -63,6 +64,18 @@ class ItGraphServiceTest {
         assertThat(result, `is`(not(nullValue())))
         println(result)
     }
+
+    @Test
+    fun should_rutilInfo() {
+        log.debug("should_rutilInfo ... ")
+        val result: RutilVo =
+            service.rutilInfo()
+
+        assertThat(result, `is`(not(nullValue())))
+        println(result)
+    }
+
+
 
 
     companion object{

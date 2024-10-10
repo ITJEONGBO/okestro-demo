@@ -161,20 +161,27 @@ fun Disk.toDiskMenu(conn: Connection, id: String): DiskImageVo {
 	}
 }
 
+
 fun Disk.toDiskInfo(conn: Connection): DiskImageVo {
 	val diskProfile: DiskProfile? =
 		if(this@toDiskInfo.diskProfilePresent()) conn.findDiskProfile(this@toDiskInfo.diskProfile().id()).getOrNull()
 		else null
+	val storageDomain: StorageDomain? =
+		conn.findStorageDomain(this.storageDomains().first().id()).getOrNull()
 
 	return DiskImageVo.builder {
 		id { this@toDiskInfo.id() }
 		alias { this@toDiskInfo.alias() }
 		description { this@toDiskInfo.description() }
+		storageDomainVo { storageDomain?.fromStorageDomainToIdentifiedVo() }
 		diskProfileVo { diskProfile?.fromDiskProfileToIdentifiedVo() }
 		virtualSize { this@toDiskInfo.totalSize() }
 		actualSize { this@toDiskInfo.actualSize() }
 	}
 }
+fun List<Disk>.toDiskInfos(conn: Connection): List<DiskImageVo> =
+	this@toDiskInfos.map { it.toDiskInfo(conn) }
+
 
 fun Disk.toDiskImageVo(conn: Connection): DiskImageVo {
 	val storageDomain: StorageDomain? =

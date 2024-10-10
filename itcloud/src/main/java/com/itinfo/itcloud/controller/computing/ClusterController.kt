@@ -7,6 +7,7 @@ import com.itinfo.itcloud.model.computing.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.setting.PermissionVo
+import com.itinfo.itcloud.model.storage.StorageDomainVo
 import com.itinfo.itcloud.service.computing.ItClusterService
 import io.swagger.annotations.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -183,6 +184,28 @@ class ClusterController: BaseController() {
 		return ResponseEntity.ok(iCluster.findAllVmsFromCluster(clusterId))
 	}
 
+	@ApiOperation(
+		httpMethod="GET",
+		value="스토리지 도메인 목록조회",
+		notes="선택된 클러스터의 스토리지 도메인 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{clusterId}/storageDomains")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun storageDomains(
+		@PathVariable clusterId: String? = null
+	): ResponseEntity<List<StorageDomainVo>> {
+		if (clusterId.isNullOrEmpty())
+			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
+		log.info("/computing/clusters/{}/storageDomains ... 클러스터 스토리지 도메인 목록", clusterId)
+		return ResponseEntity.ok(iCluster.findAllStorageDomainsFromCluster(clusterId))
+	}
 
 	@ApiOperation(
 		httpMethod="GET",

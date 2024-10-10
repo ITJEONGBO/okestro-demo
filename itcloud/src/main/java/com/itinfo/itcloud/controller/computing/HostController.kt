@@ -328,29 +328,29 @@ class HostController {
 	}
 
 
-	@ApiOperation(
-		httpMethod="POST",
-		value="호스트 새로고침",
-		notes="호스트를 새로고침 한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 201, message = "CREATED"),
-		ApiResponse(code = 404, message = "NOT_FOUND")
-	)
-	@PostMapping("/{hostId}/refresh")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.CREATED)
-	fun refresh(
-		@PathVariable hostId: String?
-	): ResponseEntity<Boolean> {
-		if (hostId.isNullOrEmpty())
-			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
-		log.info("/computing/hosts/{}/refresh ... 호스트 새로고침", hostId)
-		return ResponseEntity.ok(iHostOp.refresh(hostId))
-	}
+//	@ApiOperation(
+//		httpMethod="POST",
+//		value="호스트 새로고침",
+//		notes="호스트를 새로고침 한다"
+//	)
+//	@ApiImplicitParams(
+//		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
+//	)
+//	@ApiResponses(
+//		ApiResponse(code = 201, message = "CREATED"),
+//		ApiResponse(code = 404, message = "NOT_FOUND")
+//	)
+//	@PostMapping("/{hostId}/refresh")
+//	@ResponseBody
+//	@ResponseStatus(HttpStatus.CREATED)
+//	fun refresh(
+//		@PathVariable hostId: String?
+//	): ResponseEntity<Boolean> {
+//		if (hostId.isNullOrEmpty())
+//			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
+//		log.info("/computing/hosts/{}/refresh ... 호스트 새로고침", hostId)
+//		return ResponseEntity.ok(iHostOp.refresh(hostId))
+//	}
 
 
 	@ApiOperation(

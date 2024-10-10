@@ -2,20 +2,23 @@ package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.computing.DashBoardVo
+import com.itinfo.itcloud.model.computing.RutilVo
 import com.itinfo.itcloud.model.computing.toDashboardVo
+import com.itinfo.itcloud.ovirtDf
 import com.itinfo.itcloud.repository.history.*
 import com.itinfo.itcloud.repository.history.dto.*
 import com.itinfo.itcloud.repository.history.entity.*
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.findAllHosts
 import com.itinfo.util.ovirt.findAllStorageDomains
+import com.itinfo.util.ovirt.findVms
 import org.ovirt.engine.sdk4.types.Host
 import org.ovirt.engine.sdk4.types.StorageDomain
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import java.util.UUID
+import java.util.*
 
 interface ItGraphService {
 	fun getDashboard(): DashBoardVo
@@ -60,6 +63,9 @@ interface ItGraphService {
 
 	// 가상머신 목록 - 그래프
 	fun vmPercent(vmId: String, vmNicId: String): UsageDto
+
+	// Rutil Manager - 일반 ( 버전, 빌드날짜, 부팅시간(업타임=hostedVM) )
+	fun rutilInfo(): RutilVo
 }
 
 @Service
@@ -169,6 +175,20 @@ class GraphServiceImpl(
 		val networkRate = vmInterfaceSamplesHistoryEntity.receiveRatePercent.toInt()
 		usageDto.networkPercent = networkRate
 		return usageDto
+	}
+
+	override fun rutilInfo(): RutilVo {
+		log.info("rutilInfo ... ")
+		val date: Date =
+			conn.findVms()
+				.first { it.origin() == "managed_hosted_engine" }
+				.creationTime()
+
+		val rutil: RutilVo = RutilVo.builder {
+			bootTime { ovirtDf.format(date) }
+		}
+
+		return rutil
 	}
 
 	companion object {

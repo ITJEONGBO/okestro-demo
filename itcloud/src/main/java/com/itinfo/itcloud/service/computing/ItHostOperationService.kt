@@ -34,6 +34,7 @@ interface ItHostOperationService {
      * @param hostId [String] 호스트 아이디
      * @return [Boolean]
      */
+    @Deprecated("사용안함")
     @Throws(Error::class)
     fun refresh(hostId: String): Boolean
     /**
@@ -69,6 +70,7 @@ class HostOperationServiceImpl: BaseService(), ItHostOperationService {
         return res.isSuccess
     }
 
+    @Deprecated("사용안함")
     @Throws(Error::class)
     override fun refresh(hostId: String): Boolean {
         log.info("refresh ... hostId: {}", hostId)
@@ -82,7 +84,7 @@ class HostOperationServiceImpl: BaseService(), ItHostOperationService {
         log.info("reStart ... hostId: {}", hostId)
     // TODO Host 이름, PW 문제 => application.properties 에 저장해서 불러오는 방식
 //        val userName = ""
-        val hostPw: String = "adminRoot!@#"
+        val hostPw = "adminRoot!@#"
         val res: Result<Boolean> =
             conn.restartHost(hostId, hostPw)
         return res.isSuccess

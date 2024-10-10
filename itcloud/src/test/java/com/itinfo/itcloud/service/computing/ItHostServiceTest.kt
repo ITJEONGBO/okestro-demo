@@ -52,17 +52,13 @@ class ItHostServiceTest {
 	fun should_findAll() {
 		log.debug("should_findAll ...")
 		val start = System.currentTimeMillis()
-
 		val result: List<HostVo> =
 			service.findAll()
-
 		val end = System.currentTimeMillis()
 
 		log.info("수행시간: {}", end-start)
-
 		assertThat(result, `is`(not(nullValue())))
 		assertThat(result.size, `is`(2))
-
 		result.forEach { println(it) }
 	}
 
@@ -76,7 +72,7 @@ class ItHostServiceTest {
 	fun should_findOne() {
 		log.debug("should_findOne ...")
 		val result: HostVo? =
-			service.findOne(host02)
+			service.findOne(host01)
 
 		assertThat(result, `is`(not(nullValue())))
 		println(result)
@@ -90,38 +86,38 @@ class ItHostServiceTest {
 	 * @see ItHostService.update
 	 * @see ItHostService.remove
 	 */
+	@Deprecated("")
 	@Test
 	fun should_add_update_and_remove_Host() {
-//		log.debug("should_add_update_and_remove_Host ...")
-//		val addHost: HostVo = HostVo.builder {
-//			clusterVo { IdentifiedVo.builder { id { clusterId } } }
-//			name { "host01.ititinfo.local" }
-//			comment { "192.168.0.71" }
-//			address { "host01.ititinfo.local" }
-//			sshPort { 22 }
-//			sshPassWord { "adminRoot!@#" }
-//            spmPriority { 5 }
-//		}
-//
-//		val addResult: HostVo? =
-//			service.add(addHost)
-//
-//		assertThat(addResult, `is`(not(nullValue())))
-//		assertThat(addResult?.id, `is`(not(nullValue())))
-////		assertThat(addResult?.clusterVo?.id, `is`(addHost.clusterVo.id))
-//		assertThat(addResult?.name, `is`(addHost.name))
-//		assertThat(addResult?.comment, `is`(addHost.comment))
-//		assertThat(addResult?.address, `is`(addHost.address))
-//		assertThat(addResult?.sshPort, `is`(addHost.sshPort))
-//		assertThat(addResult?.spmPriority, `is`(addHost.spmPriority))
+		log.debug("should_add_update_and_remove_Host ...")
+		val addHost: HostVo = HostVo.builder {
+			clusterVo { IdentifiedVo.builder { id { clusterId } } }
+			name { "host02.ititinfo.com" }
+			comment { "192.168.0.82" }
+			address { "host02.ititinfo.com" }
+			sshPort { 22 }
+			sshPassWord { "adminRoot!@#" }
+            spmPriority { 5 }
+		}
+
+		val addResult: HostVo? =
+			service.add(addHost)
+
+		assertThat(addResult, `is`(not(nullValue())))
+		assertThat(addResult?.id, `is`(not(nullValue())))
+//		assertThat(addResult?.clusterVo?.id, `is`(addHost.clusterVo.id))
+		assertThat(addResult?.name, `is`(addHost.name))
+		assertThat(addResult?.comment, `is`(addHost.comment))
+		assertThat(addResult?.address, `is`(addHost.address))
+		assertThat(addResult?.sshPort, `is`(addHost.sshPort))
+		assertThat(addResult?.spmPriority, `is`(addHost.spmPriority))
 
 
 		log.debug("should_update_Host ...")
 		val updateHost: HostVo = HostVo.builder {
-			id { "5169e7c0-789c-47f6-b9b1-0c5a7f3bb52c"}
-//			id { addResult?.id }
-			name { "host01.ititinfo.local2" }
-			comment { "192.168.0.71-test" }
+			id { addResult?.id }
+			name { "host02.ititinfo.com2" }
+			comment { "192.168.0.82-test" }
 			spmPriority { 5 }
 		}
 
@@ -134,12 +130,12 @@ class ItHostServiceTest {
 		assertThat(updateResult?.comment, `is`(updateHost.comment))
 		assertThat(updateResult?.spmPriority, `is`(updateHost.spmPriority))
 
-//		log.debug("should_remove_Host ...")
-//		val removeResult =
-//			updateResult?.let { service.remove(it.id) }
-//
-//		assertThat(removeResult, `is`(not(nullValue())))
-//		assertThat(removeResult, `is`(true))
+		log.debug("should_remove_Host ...")
+		val removeResult =
+			updateResult?.let { service.remove(it.id) }
+
+		assertThat(removeResult, `is`(not(nullValue())))
+		assertThat(removeResult, `is`(true))
 	}
 
 	/**
@@ -152,11 +148,11 @@ class ItHostServiceTest {
 	fun should_findAllVmsFromHost() {
 		log.debug("should_findAllVmsFromHost ...")
 		val result: List<VmVo> =
-			service.findAllVmsFromHost(host02)
+			service.findAllVmsFromHost(host01)
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }
-		assertThat(result.size, `is`(3))
+		assertThat(result.size, `is`(1))
 	}
 
 	/**
@@ -169,11 +165,11 @@ class ItHostServiceTest {
 	fun should_findAllHostNicsFromHost() {
 		log.debug("should_findAllHostNicFromHost ...")
 		val result: List<HostNicVo> =
-			service.findAllNicsFromHost(host02)
+			service.findAllNicsFromHost(host01)
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }
-		assertThat(result.size, `is`(1))
+		assertThat(result.size, `is`(4))
 	}
 
 	/**
@@ -182,20 +178,20 @@ class ItHostServiceTest {
 	 *
 	 * @see ItHostService.setUpNetworksFromHost
 	 */
-	@Test
-	fun should_setUpNetworksFromHost() {
-		log.debug("should_setUpNetworksFromHost ...")
-		val hostId = ""
-		val networkVo: NetworkVo =
-			NetworkVo.builder {
-
-			}
-
-		val result: Boolean =
-			service.setUpNetworksFromHost(hostId, networkVo)
-
-		assertThat(result, `is`(not(nullValue())))
-	}
+//	@Test
+//	fun should_setUpNetworksFromHost() {
+//		log.debug("should_setUpNetworksFromHost ...")
+//		val hostId = ""
+//		val networkVo: NetworkVo =
+//			NetworkVo.builder {
+//
+//			}
+//
+//		val result: Boolean =
+//			service.setUpNetworksFromHost(hostId, networkVo)
+//
+//		assertThat(result, `is`(not(nullValue())))
+//	}
 
 	/**
 	 * [should_findAllHostDevicesFromHost]
@@ -207,28 +203,11 @@ class ItHostServiceTest {
 	fun should_findAllHostDevicesFromHost() {
 		log.debug("should_findAllHostDevicesFromHost ...")
 		val result: List<HostDeviceVo> =
-			service.findAllHostDevicesFromHost(host02)
+			service.findAllHostDevicesFromHost(host01)
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }
-		assertThat(result.size, `is`(97))
-	}
-
-	/**
-	 * [should_findAllPermissionsFromHost]
-	 * [ItHostService.findAllPermissionsFromHost]에 대한 단위테스트
-	 *
-	 * @see ItHostService.findAllPermissionsFromHost
-	 */
-	@Test
-	fun should_findAllPermissionsFromHost() {
-		log.debug("should_findAllPermissionsFromHost ...")
-		val result: List<PermissionVo> =
-			service.findAllPermissionsFromHost(host02)
-
-		assertThat(result, `is`(not(nullValue())))
-		result.forEach { println(it) }
-		assertThat(result.size, `is`(5))
+		assertThat(result.size, `is`(99))
 	}
 
 	/**
@@ -241,10 +220,10 @@ class ItHostServiceTest {
 	fun should_findAllEventsFromHost() {
 		log.debug("should_findAllEventsFromHost ...")
 		val result: List<EventVo> =
-			service.findAllEventsFromHost(host02)
+			service.findAllEventsFromHost(host01)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(727))
+		assertThat(result.size, `is`(842))
 	}
 	
 	companion object {

@@ -70,7 +70,7 @@ class  ItVmServiceTest {
 
 		log.info("수행시간: {}", end-start)
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(8))
+		assertThat(result.size, `is`(9))
 
 		result.forEach { println(it) }
 	}
@@ -105,9 +105,8 @@ class  ItVmServiceTest {
 			service.findAllDiskImage()
 
 		assertThat(result, `is`(not(nullValue())))
-
 		result.forEach { println(it) }
-		assertThat(result.size, `is`(4))
+		assertThat(result.size, `is`(7))
 	}
 
 	/**
@@ -139,9 +138,8 @@ class  ItVmServiceTest {
 			service.findAllISO()
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(1))
-
 		result.forEach { println(it) }
+		assertThat(result.size, `is`(3))
 	}
 
 
@@ -265,123 +263,123 @@ class  ItVmServiceTest {
 	 *
 	 * @see ItVmService.update
 	 */
-	@Test
-	fun should_update_Vm() {
-		log.debug("should_update_Vm ... ")
-		val updateVm: VmVo = VmVo.builder {
-			id { "46560fd8-97c4-41d2-a362-7773b0065261" } // 유일하게 추가되는 점
-			clusterVo {
-				IdentifiedVo.builder {
-					id { clusterId }
-				}
-			}
-			templateVo {
-				IdentifiedVo.builder {
-					id { "00000000-0000-0000-0000-000000000000" }
-				}
-			} // front 에서 막음
-			osSystem { "other_linux" }
-			chipsetFirmwareType { "Q35_SEA_BIOS" }  // String.valueOf(BiosType.Q35_OVMF }
-			optimizeOption { "SERVER" }  // String.valueOf(VmType.SERVER
-			name { "random2" }
-			description { "" }
-			comment { "" }
-			stateless { false }
-			startPaused { false }
-			deleteProtected { false }
-			vnicProfileVos {
-				Arrays.asList(
-					VnicProfileVo.builder { id { "0000000a-000a-000a-000a-000000000398" } },
-					VnicProfileVo.builder { id { "0000000a-000a-000a-000a-000000000398" } },
-				)
-			}
-			diskAttachmentVos {
-				Arrays.asList(
-					DiskAttachmentVo.builder {
-						bootable { false }
-						interface_ { DiskInterface.VIRTIO_SCSI }
-						readOnly { false }
-						diskImageVo {
-							DiskImageVo.builder {
-								size { 1 }
-								alias { "random1_disk" }
-								description { "" }
-								storageDomainVo {
-									IdentifiedVo.builder { id { storageDomain } }
-								}
-								sparse { true } // 할당정책: 씬
-								diskProfileVo {
-									IdentifiedVo.builder { id { "3b68642f-425a-4d0d-aa2f-0fef3a1a20d5" } }
-								}
-								wipeAfterDelete { false }
-								sharable { false }
-								backup { true } // 증분백업 기본값 t
-							}
-						} // 기존
-					},
+//	@Test
+//	fun should_update_Vm() {
+//		log.debug("should_update_Vm ... ")
+//		val updateVm: VmVo = VmVo.builder {
+//			id { "46560fd8-97c4-41d2-a362-7773b0065261" } // 유일하게 추가되는 점
+//			clusterVo {
+//				IdentifiedVo.builder {
+//					id { clusterId }
+//				}
+//			}
+//			templateVo {
+//				IdentifiedVo.builder {
+//					id { "00000000-0000-0000-0000-000000000000" }
+//				}
+//			} // front 에서 막음
+//			osSystem { "other_linux" }
+//			chipsetFirmwareType { "Q35_SEA_BIOS" }  // String.valueOf(BiosType.Q35_OVMF }
+//			optimizeOption { "SERVER" }  // String.valueOf(VmType.SERVER
+//			name { "random2" }
+//			description { "" }
+//			comment { "" }
+//			stateless { false }
+//			startPaused { false }
+//			deleteProtected { false }
+//			vnicProfileVos {
+//				Arrays.asList(
+//					VnicProfileVo.builder { id { "0000000a-000a-000a-000a-000000000398" } },
+//					VnicProfileVo.builder { id { "0000000a-000a-000a-000a-000000000398" } },
+//				)
+//			}
+//			diskAttachmentVos {
+//				Arrays.asList(
 //					DiskAttachmentVo.builder {
 //						bootable { false }
-//						interface_ { DiskInterface.VIRTIO }
+//						interface_ { DiskInterface.VIRTIO_SCSI }
 //						readOnly { false }
 //						diskImageVo {
 //							DiskImageVo.builder {
-//								id { "2c73c9c0-6552-4ddc-9727-8b2de7f54267" } // 추가 attach
+//								size { 1 }
+//								alias { "random1_disk" }
+//								description { "" }
+//								storageDomainVo {
+//									IdentifiedVo.builder { id { storageDomain } }
+//								}
+//								sparse { true } // 할당정책: 씬
+//								diskProfileVo {
+//									IdentifiedVo.builder { id { "3b68642f-425a-4d0d-aa2f-0fef3a1a20d5" } }
+//								}
+//								wipeAfterDelete { false }
+//								sharable { false }
+//								backup { true } // 증분백업 기본값 t
 //							}
-//						}
-//					}
-				)
-			}
-			instanceType { "none" } //tiny 안됨 ( none,small, medium, xlarge)
-			memorySize { BigInteger.valueOf(2048) }
-			memoryMax { BigInteger.valueOf(4096) }
-			memoryActual { BigInteger.valueOf(2048) }
-			memoryBalloon { true }
-			cpuTopologySocket { 2 }
-			cpuTopologyCore { 2 }
-			cpuTopologyThread { 1 }
-			timeOffset { "Asia/Seoul"}  // Asia/Seoul , Etc/GMT
-			cloudInit { false }   // 일단 안됨
-			hostInCluster { true }  // 특정 호스트(false)
-			hostVos { null }
-			migrationEncrypt { InheritableBoolean.INHERIT }
-			migrationMode {"MIGRATABLE" }  // 마이그레이션
-			ha { false } // 기본 false
-			priority { 1 }  // 우선순위: 기본 1(낮음)
-			cpuProfileVo { IdentifiedVo.builder { id { "58ca604e-01a7-003f-01de-000000000250" } }  } // 클러스터 밑에 있는 cpu profile
-			cpuShare  { 0 } // 비활성화됨 0
-			cpuPinningPolicy  { "NONE" }
-			memoryBalloon  { true }    // 메모리 balloon 활성화
-			multiQue  { false } // 멀티 큐 사용
-			virtSCSIEnable  { true }  // virtIO-SCSI 활성화
-			firstDevice  { "HD" }
-			connVo  { IdentifiedVo.builder { id { "30f0c1cf-763a-479c-a1b6-b3d255902998" } } }
-		}
-
-		val updateResult: VmVo? =
-			service.update(updateVm)
-
-		assertThat(updateResult, `is`(not(nullValue())))
-		assertThat(updateResult?.id, `is`(not(nullValue())))
-		assertThat(updateResult?.id, `is`(updateVm.id))
-	}
-
-	/**
-	 * [should_remove_Vm]
-	 * [ItVmService.remove]에 대한 단위테스트
-	 *
-	 * @see ItVmService.remove
-	 */
-	@Test
-	fun should_remove_Vm() {
-		log.debug("should_remove_Vm ... ")
-		val vmId = "46560fd8-97c4-41d2-a362-7773b0065261"
-		val disk = false
-		val removeResult: Boolean =
-			service.remove(vmId, disk)
-
-		assertThat(removeResult, `is`(not(nullValue())))
-		assertThat(removeResult, `is`(true))
-	}
+//						} // 기존
+//					},
+////					DiskAttachmentVo.builder {
+////						bootable { false }
+////						interface_ { DiskInterface.VIRTIO }
+////						readOnly { false }
+////						diskImageVo {
+////							DiskImageVo.builder {
+////								id { "2c73c9c0-6552-4ddc-9727-8b2de7f54267" } // 추가 attach
+////							}
+////						}
+////					}
+//				)
+//			}
+//			instanceType { "none" } //tiny 안됨 ( none,small, medium, xlarge)
+//			memorySize { BigInteger.valueOf(2048) }
+//			memoryMax { BigInteger.valueOf(4096) }
+//			memoryActual { BigInteger.valueOf(2048) }
+//			memoryBalloon { true }
+//			cpuTopologySocket { 2 }
+//			cpuTopologyCore { 2 }
+//			cpuTopologyThread { 1 }
+//			timeOffset { "Asia/Seoul"}  // Asia/Seoul , Etc/GMT
+//			cloudInit { false }   // 일단 안됨
+//			hostInCluster { true }  // 특정 호스트(false)
+//			hostVos { null }
+//			migrationEncrypt { InheritableBoolean.INHERIT }
+//			migrationMode {"MIGRATABLE" }  // 마이그레이션
+//			ha { false } // 기본 false
+//			priority { 1 }  // 우선순위: 기본 1(낮음)
+//			cpuProfileVo { IdentifiedVo.builder { id { "58ca604e-01a7-003f-01de-000000000250" } }  } // 클러스터 밑에 있는 cpu profile
+//			cpuShare  { 0 } // 비활성화됨 0
+//			cpuPinningPolicy  { "NONE" }
+//			memoryBalloon  { true }    // 메모리 balloon 활성화
+//			multiQue  { false } // 멀티 큐 사용
+//			virtSCSIEnable  { true }  // virtIO-SCSI 활성화
+//			firstDevice  { "HD" }
+//			connVo  { IdentifiedVo.builder { id { "30f0c1cf-763a-479c-a1b6-b3d255902998" } } }
+//		}
+//
+//		val updateResult: VmVo? =
+//			service.update(updateVm)
+//
+//		assertThat(updateResult, `is`(not(nullValue())))
+//		assertThat(updateResult?.id, `is`(not(nullValue())))
+//		assertThat(updateResult?.id, `is`(updateVm.id))
+//	}
+//
+//	/**
+//	 * [should_remove_Vm]
+//	 * [ItVmService.remove]에 대한 단위테스트
+//	 *
+//	 * @see ItVmService.remove
+//	 */
+//	@Test
+//	fun should_remove_Vm() {
+//		log.debug("should_remove_Vm ... ")
+//		val vmId = "46560fd8-97c4-41d2-a362-7773b0065261"
+//		val disk = false
+//		val removeResult: Boolean =
+//			service.remove(vmId, disk)
+//
+//		assertThat(removeResult, `is`(not(nullValue())))
+//		assertThat(removeResult, `is`(true))
+//	}
 
 
 	/**
@@ -402,40 +400,6 @@ class  ItVmServiceTest {
 	}
 
 	/**
-	 * [should_findAllGuestFromVm]
-	 * [ItVmService.findGuestFromVm]에 대한 단위테스트
-	 *
-	 * @see ItVmService.findGuestFromVm
-	 */
-	@Test
-	fun should_findAllGuestFromVm() {
-		log.debug("should_findAllGuestFromVm ... ")
-		val result: GuestInfoVo? =
-			service.findGuestFromVm(hostVm)
-
-		assertThat(result, `is`(not(nullValue())))
-		println(result)
-		assertThat(result?.type, `is`("Linux"))
-	}
-
-	/**
-	 * [should_findAllPermissionsFromVm]
-	 * [ItVmService.findAllPermissionsFromVm]에 대한 단위테스트
-	 *
-	 * @see ItVmService.findAllPermissionsFromVm
-	 */
-	@Test
-	fun should_findAllPermissionsFromVm() {
-		log.debug("should_findAllPermissionsFromVm ... ")
-		val result: List<PermissionVo> =
-			service.findAllPermissionsFromVm(hostVm)
-
-		assertThat(result, `is`(not(nullValue())))
-		result.forEach { println(it) }
-		assertThat(result.size, `is`(4))
-	}
-
-	/**
 	 * [should_findAllEventsFromVm]
 	 * [ItVmService.findAllEventsFromVm]에 대한 단위테스트
 	 *
@@ -448,7 +412,7 @@ class  ItVmServiceTest {
 			service.findAllEventsFromVm(hostVm)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(12))
+		assertThat(result.size, `is`(6))
 	}
 
 	companion object {

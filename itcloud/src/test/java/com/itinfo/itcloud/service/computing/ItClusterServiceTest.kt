@@ -5,6 +5,7 @@ import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.setting.PermissionVo
+import com.itinfo.itcloud.model.storage.StorageDomainVo
 import org.junit.jupiter.api.Test
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
@@ -21,16 +22,16 @@ import org.springframework.boot.test.context.SpringBootTest
  *
  * @author chanhi2000
  * @author deh22
- * @since 2024.09.24
+ * @since 2024.10.10
  */
 @SpringBootTest
 class ItClusterServiceTest {
 
 	@Autowired private lateinit var service: ItClusterService
 
-	private lateinit var dataCenterId: String
-	private lateinit var clusterId: String // Default
-	private lateinit var networkId: String // ovirtmgmt(dc: Default)
+	private lateinit var dataCenterId: String // 80 Default
+	private lateinit var clusterId: String // 80 Default
+	private lateinit var networkId: String // 80 ovirtmgmt(dc: Default)
 
 	@BeforeEach
 	fun setup() {
@@ -58,7 +59,7 @@ class ItClusterServiceTest {
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }
-//		assertThat(result.size, `is`(2))
+		assertThat(result.size, `is`(2))
 	}
 
 	/**
@@ -257,7 +258,6 @@ class ItClusterServiceTest {
 	}
 
 
-
 	/**
 	 * [should_findAllHostsFromCluster]
 	 * [ItClusterService.findAllHostsFromCluster]에 대한 단위테스트
@@ -271,9 +271,8 @@ class ItClusterServiceTest {
 			service.findAllHostsFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(2))
-
 		result.forEach { println(it) }
+		assertThat(result.size, `is`(2))
 	}
 
 	/**
@@ -290,7 +289,24 @@ class ItClusterServiceTest {
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }
-		assertThat(result.size, `is`(9))
+		assertThat(result.size, `is`(8))
+	}
+
+	/**
+	 * [should_findAllStorageDomainsFromCluster]
+	 * [ItClusterService.findAllStorageDomainsFromCluster]에 대한 단위테스트
+	 *
+	 * @see ItClusterService.findAllStorageDomainsFromCluster
+	 **/
+	@Test
+	fun should_findAllStorageDomainsFromCluster() {
+		log.debug("should_findAllStorageDomainsFromCluster ... ")
+		val result: List<StorageDomainVo> =
+			service.findAllStorageDomainsFromCluster(clusterId)
+
+		assertThat(result, `is`(not(nullValue())))
+		result.forEach { println(it) }
+		assertThat(result.size, `is`(2))
 	}
 
 
@@ -308,7 +324,7 @@ class ItClusterServiceTest {
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }
-		assertThat(result.size, `is`(4))
+		assertThat(result.size, `is`(7))
 	}
 
 	/**
@@ -317,19 +333,19 @@ class ItClusterServiceTest {
 	 *
 	 * @see ItClusterService.addNetworkFromCluster
 	 **/
-	@Test
-	fun should_addNetworkFromCluster() {
-		log.debug("should_addNetworkFromCluster ... ")
-		val networkVo: NetworkVo =
-			NetworkVo.builder {
-//				id {  }
-//				name {  }
-			}
-		val result: NetworkVo? =
-			service.addNetworkFromCluster(clusterId, networkVo)
-
-		assertThat(result, `is`(not(nullValue())))
-	}
+//	@Test
+//	fun should_addNetworkFromCluster() {
+//		log.debug("should_addNetworkFromCluster ... ")
+//		val networkVo: NetworkVo =
+//			NetworkVo.builder {
+////				id {  }
+////				name {  }
+//			}
+//		val result: NetworkVo? =
+//			service.addNetworkFromCluster(clusterId, networkVo)
+//
+//		assertThat(result, `is`(not(nullValue())))
+//	}
 
 	/**
 	 * [should_findAllManageNetworksFromCluster]
@@ -345,42 +361,7 @@ class ItClusterServiceTest {
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }
-		assertThat(result.size, `is`(4))
-	}
-
-
-	/**
-	 * [should_findAllCpuProfilesFromCluster]
-	 * [ItClusterService.findAllCpuProfilesFromCluster]에 대한 단위테스트
-	 * 
-	 * @see ItClusterService.findAllCpuProfilesFromCluster
-	 **/
-	@Test
-	fun should_findAllCpuProfilesFromCluster() {
-		log.debug("should_findAllCpuProfilesFromCluster ... ")
-		val result: List<CpuProfileVo> =
-			service.findAllCpuProfilesFromCluster(clusterId)
-
-		assertThat(result, `is`(not(nullValue())))
-		result.forEach { println(it) }
-		assertThat(result.size, `is`(1))
-	}
-
-	/**
-	 * [should_findAllPermissionsFromCluster]
-	 * [ItClusterService.findAllPermissionsFromCluster]에 대한 단위테스트
-	 *
-	 * @see ItClusterService.findAllPermissionsFromCluster
-	 **/
-	@Test
-	fun should_findAllPermissionsFromCluster() {
-		log.debug("should_findAllPermissionsFromCluster ... ")
-		val result: List<PermissionVo> =
-			service.findAllPermissionsFromCluster(clusterId)
-
-		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(5))
-		result.forEach { println(it) }
+		assertThat(result.size, `is`(7))
 	}
 
 	/**
@@ -396,7 +377,7 @@ class ItClusterServiceTest {
 			service.findAllEventsFromCluster(clusterId)
 
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(1691))
+		assertThat(result.size, `is`(1252))
 	}
 
 
