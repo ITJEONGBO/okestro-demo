@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
     faArrowUp,
   faCheckCircle,
+  faListUl,
   faPencil,
   faRefresh,
   faSearch,
@@ -78,6 +79,7 @@ const Event = () => {
   return (
     <div id="section">
       <HeaderButton
+        titleIcon={faListUl}
         title="Event"
         subtitle="Chart"
         buttons={[]}
@@ -91,6 +93,7 @@ const Event = () => {
             <PagingTableOuter
               columns={TableColumnsInfo.EVENTS}
               data={events}
+              showSearchBox={false}
               onRowClick={(row, column) => {
                 console.log('Row clicked', row, column); // 이 부분을 이렇게 감싸서 함수로 전달합니다.
               }}

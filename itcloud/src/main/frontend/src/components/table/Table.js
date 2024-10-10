@@ -94,7 +94,7 @@ const Table = ({ columns, data, onRowClick = () => {}, clickableColumnIndex = []
               id={`tooltip-${rowIndex}-${colIndex}`}
               place="right"
               effect="solid"
-              delayShow={700} // 1초 지연 후 표시
+              delayShow={400} // 1초 지연 후 표시
               content={tooltips[`${rowIndex}-${colIndex}`]} // 툴팁에 표시할 내용
             />
           )

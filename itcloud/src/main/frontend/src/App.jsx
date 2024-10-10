@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter  as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Login from './page/Login';
 import Dashboard from './components/Dashboard';
@@ -29,6 +29,7 @@ import AllVm from './components/Computing/AllVm';
 import AllDisk from './components/Storage/AllDisk';
 import RutilManager from './components/Computing/RutilManager';
 import Event from './components/Event';
+import Error from './components/Error';
 
 const App = () => {
   const [stompClient, setStompClient] = useState(null);
@@ -120,6 +121,7 @@ const App = () => {
               <Route path="/storage-domainpart" element={<DomainParts />} />
               <Route path="/storages/disks/:id" element={<StorageDiskDetail />} />
               <Route path="/events" element={<Event />} />
+              <Route path="/error" element={<Error />} />
 
  
               {/*임시 */}

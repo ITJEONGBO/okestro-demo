@@ -291,6 +291,11 @@ const ApiManager = {
     url: ENDPOINTS.FIND_PERMISSIONS_FROM_HOST(hostId), 
     defaultValues: DEFAULT_VALUES.FIND_ALL_PERMISSION
   }),
+  findEventsFromHost: async (hostId) => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_EVENT_FROM_HOST(hostId), 
+    defaultValues: DEFAULT_VALUES.FIND_EVNET_FROM_HOST
+  }),
   //endregion: Host
 
 

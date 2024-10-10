@@ -70,10 +70,7 @@ const DataCenterDetail = () => {
     setIsModalOpen((prev) => ({ ...prev, [type]: true }));
     setSelectedTab('cluster_common_btn');
   };
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-    setShowNetworkDetail(false);
-};
+
 const handleTabClickModal = (tab) => {
   setSelectedTab(tab); 
 };
@@ -107,7 +104,21 @@ const handleTabClickModal = (tab) => {
   ];
 
   const [activeTab, setActiveTab] = useState('cluster');
+  useEffect(() => {
+    const savedTab = localStorage.getItem('activeTab');
+    if (savedTab) {
+        setActiveTab(savedTab);  // 로컬스토리지에 저장된 값이 있으면 그 값을 사용
+    } else {
+        setActiveTab('cluster'); 
+        localStorage.setItem('activeTab', 'cluster'); 
+    }
+  }, []);
 
+  const handleTabClick = (tab) => {
+      setActiveTab(tab);
+      setShowNetworkDetail(false);
+      localStorage.setItem('activeTab', tab); // 로컬 스토리지에 선택된 탭 저장
+  };
 
   //api
   const { id } = useParams(); // useParams로 URL에서 name을 가져옴

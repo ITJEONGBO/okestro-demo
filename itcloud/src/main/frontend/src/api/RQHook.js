@@ -345,6 +345,26 @@ export const useHostdeviceFromHost = (hostId, mapPredicate) => useQuery({
   }
 })
 /**
+ * @name useHostFromCluster
+ * @description 호스트 내 이벤트 목록조회 useQuery훅
+ * 
+ * @param {string} clusterId 클러스터ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.useHostFromCluster
+ */
+export const useEventFromHost = (hostId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['EventFromHost', hostId], 
+  queryFn: async () => {
+    console.log(`EventFromHost ... ${hostId}`);
+    const res = await ApiManager.findEventsFromHost(hostId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  }
+})
+
+/**
  * @name usePermissionFromCluster
  * @description 클러스터 내 권한 목록조회 useQuery훅
  * 

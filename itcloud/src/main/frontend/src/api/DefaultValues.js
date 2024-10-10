@@ -339,6 +339,17 @@ FIND_DEVICE_FROM_HOST:[
     vnicProfileVos: '',
   }
 ],
+FIND_EVNET_FROM_HOST:[
+  {
+    id: '40dc4bc6-9016-4a90-ae86-f3d36095a29f',
+    name: 'ovirtmgmt', 
+    description: 'Management Network', 
+    dataCenter: 'DC1', 
+    provider: 'Provider1', 
+    portSeparation: '아니요',
+    vnicProfileVos: '',
+  }
+],
 //region: Vm/Template------가상머신,템플릿-----------
 FIND_ALL_VMS:[
   {

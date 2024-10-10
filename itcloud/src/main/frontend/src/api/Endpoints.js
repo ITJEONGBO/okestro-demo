@@ -43,6 +43,7 @@ const ENDPOINTS = {
   FIND_VM_FROM_HOST:(hostId) =>  `/api/v1/computing/hosts/${hostId}/vms`, 
   FIND_HOSTDEVICE_FROM_HOST:(hostId) =>  `/api/v1/computing/hosts/${hostId}/devices`, 
   FIND_PERMISSIONS_FROM_HOST:(hostId) =>  `/api/v1/computing/hosts/${hostId}/permissions`, 
+  FIND_EVENT_FROM_HOST:(hostId) =>  `/api/v1/computing/hosts/${hostId}/events`, 
   //endregion: Host
 
   //region: Vm/Template

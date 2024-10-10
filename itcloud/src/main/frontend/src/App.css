@@ -888,7 +888,14 @@ input[type="text"]:focus {
 }
 /* 중복끝 */
 
-
+.error_text{
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 97%;
+    color: #b52a2a;
+    font-size:0.7rem;
+}
 
 .link-no-underline {
     text-decoration: none;

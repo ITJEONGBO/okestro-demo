@@ -12,11 +12,13 @@ import {
   faExclamation, faPlusCircle, faMinusCircle, faChevronLeft, faCheck
   , faUser, faTimes, faChevronCircleRight, faDesktop, faAngleDown,
   faGlassWhiskey,
-  faExclamationTriangle
+  faExclamationTriangle,
+  faCloud
 } from '@fortawesome/free-solid-svg-icons'
 import './css/StorageDomainDetail.css';
 import TableOuter from '../table/TableOuter';
 import Footer from '../footer/Footer';
+import Path from '../Header/Path';
 
 function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const { name } = useParams();
@@ -158,18 +160,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   ];
 
 
-  //권한
-  const permissionData = [
-    {
-      icon: <FontAwesomeIcon icon={faUser} fixedWidth/>,
-      user: 'ovirtmgmt',
-      authProvider: '',
-      namespace: '*',
-      role: 'SuperUser',
-      createdDate: '2023.12.29 AM 11:40:58',
-      inheritedFrom: '(시스템)',
-    },
-  ];
+
   const data = [
     {
       alias: (
@@ -264,12 +255,18 @@ const popupItems = [
     { id: 'general', label: '일반' },
     { id: 'datacenter', label: '데이터 센터' },
     { id: 'machine', label: '가상머신' },
-    { id: 'template', label: '템플릿' },
     { id: 'disk', label: '디스크' },
     { id: 'disk_snapshot', label: '디스크 스냅샷' },
+    { id: 'template', label: '템플릿' },
     { id: 'event', label: '이벤트' },
-    { id: 'permission', label: '권한' },
+
   ];
+  const pathData = [
+    '#',
+
+    sections.find(section => section.id === activeTab)?.label,
+ 
+].filter(Boolean);
   // 바탕클릭하면 옵션박스 닫기
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -291,6 +288,7 @@ const popupItems = [
   return (
     <div className="content_detail_section">
       <HeaderButton
+      titleIcon={faCloud}
       title="스토리지도메인 > "
       subtitle={name}
       buttons={buttons}
@@ -304,6 +302,7 @@ const popupItems = [
           handleSectionClick={handleTabClick} 
         />
         <div className="host_btn_outer">
+        <Path pathElements={pathData}/>
         {activeTab === 'general' && (
           <div className="tables">
             <div className="table_storage_domain_detail">
@@ -516,37 +515,37 @@ const popupItems = [
         </>
         )}
 
-                {/* 권한 */}
-                {activeTab === 'permission' && (
-              <>
-              <div className="header_right_btns">
-              <button onClick={() => openModal('permission')}>추가</button>
-                <button onClick={() => openModal('delete')}>제거</button>
+        {/* 권한(삭제예정)*/}
+        {/* {activeTab === 'permission' && (
+            <>
+            <div className="header_right_btns">
+            <button onClick={() => openModal('permission')}>추가</button>
+              <button onClick={() => openModal('delete')}>제거</button>
+            </div>
+            <div className="host_filter_btns">
+              <span>Permission Filters:</span>
+              <div>
+                <button
+                  className={activePermissionFilter === 'all' ? 'active' : ''}
+                  onClick={() => handlePermissionFilterClick('all')}
+                >
+                  All
+                </button>
+                <button
+                  className={activePermissionFilter === 'direct' ? 'active' : ''}
+                  onClick={() => handlePermissionFilterClick('direct')}
+                >
+                  Direct
+                </button>
               </div>
-              <div className="host_filter_btns">
-                <span>Permission Filters:</span>
-                <div>
-                  <button
-                    className={activePermissionFilter === 'all' ? 'active' : ''}
-                    onClick={() => handlePermissionFilterClick('all')}
-                  >
-                    All
-                  </button>
-                  <button
-                    className={activePermissionFilter === 'direct' ? 'active' : ''}
-                    onClick={() => handlePermissionFilterClick('direct')}
-                  >
-                    Direct
-                  </button>
-                </div>
-              </div>
-              <TableOuter
-                columns={TableColumnsInfo.PERMISSIONS}
-                data={activePermissionFilter === 'all' ? permissionData : []}
-                onRowClick={() => console.log('Row clicked')}
-              />
-            </>
-)}
+            </div>
+            <TableOuter
+              columns={TableColumnsInfo.PERMISSIONS}
+              data={activePermissionFilter === 'all' ? permissionData : []}
+              onRowClick={() => console.log('Row clicked')}
+            />
+          </>
+        )} */}
 
 
 
@@ -555,8 +554,8 @@ const popupItems = [
       </div>
 
       </div>
-              {/*도메인(도메인 관리)팝업 */}
-              <Modal
+      {/*도메인(도메인 관리)팝업 */}
+      <Modal
     isOpen={activePopup === 'manageDomain'}
     onRequestClose={closeModal}
     contentLabel="도메인 관리"
@@ -1068,8 +1067,7 @@ const popupItems = [
       </Modal>
 
       <Footer/>
-      {/* 모달 컴포넌트 */}
-      <Permission isOpen={activePopup === 'permission'} onRequestClose={closeModal} />
+     
     </div>
   );
 }

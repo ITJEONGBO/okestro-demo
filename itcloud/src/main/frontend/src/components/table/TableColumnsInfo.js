@@ -466,7 +466,14 @@ const TableColumnsInfo = {
     { header: '이름', accessor: 'name', clickable: false },
     { header: '성', accessor: 'lastName', clickable: false },
     { header: '사용자 이름', accessor: 'username', clickable: false },
-  ]
+  ],
+  SETTING_LICENSING:[
+    { header: '라이센스', accessor: 'license', clickable: false },
+    { header: '라이센스 키', accessor: 'licenseKey', clickable: false },
+    { header: '제품', accessor: 'product', clickable: false },
+    { header: '상태', accessor: 'status', clickable: false },
+    { header: '만료', accessor: 'expiration', clickable: false }
+  ],
 }
 
 export default TableColumnsInfo

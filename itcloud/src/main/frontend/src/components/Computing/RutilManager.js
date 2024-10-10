@@ -55,6 +55,8 @@ import {
 import TableOuter from '../table/TableOuter';
 import logo from '../../img/logo.png'
 import Path from '../Header/Path';
+import TemplateDu from '../duplication/TemplateDu';
+import HostDu from '../duplication/HostDu';
 
 function RutilManager() {
     const { id } = useParams();
@@ -481,7 +483,14 @@ function RutilManager() {
     const handleTabClick = (tab) => {
         setActiveTab(tab);
         setShowNetworkDetail(false); // 탭이 변경되면 NetworkDetail 화면을 숨김
+        localStorage.setItem('activeTab', tab); // 새로고침해도 값유지
     };
+    useEffect(() => {
+        const savedTab = localStorage.getItem('activeTab');
+        if (savedTab) {
+            setActiveTab(savedTab);  // 저장된 값이 있으면 해당 탭을 활성화
+        }
+    }, []);
 
     // HeaderButton 컴포넌트
     const buttons = [
@@ -560,8 +569,8 @@ function RutilManager() {
                                         <div>
                                             <img className='logo_general' src={logo} alt="logo Image" />
                                             <span>
-                                                버전: 2.1.3<br/>
-                                                빌드:2024093011
+                                                버전: ###<br/>
+                                                빌드:###
                                             </span>
                                         </div>
                                         <div>
@@ -649,23 +658,12 @@ function RutilManager() {
                             )}
                             {/* 호스트 */}
                             {activeTab === 'host' && (
-                                <>
-                                <div className="header_right_btns">
-                                    <button onClick={() => openPopup('host_new')}>새로 만들기</button>
-                                    <button onClick={() => openPopup('host_edit')}>편집</button>
-                                    <button>삭제</button>
-                                    <button>관리</button>
-                                    <button>설치</button>
-                                    <button>호스트 네트워크 복사</button>
-                                </div>
-                               
-                                  <TableOuter 
-                                    columns={TableColumnsInfo.HOSTS_ALL_DATA} 
-                                    data={allHosts}
-                                    onRowClick={() => console.log('Row clicked')} 
-                                  />
-                                
-                                </>
+                                <HostDu 
+                                data={allHosts} 
+                                columns={TableColumnsInfo.HOSTS_ALL_DATA} 
+                                handleRowClick={handleRowClick}
+                                openPopup={openPopup}
+                              />
                             )}
                             {/* 가상 머신 */}
                             {activeTab === 'virtual_machine' && (
@@ -705,32 +703,37 @@ function RutilManager() {
                             )}
                             {/*  템플릿 */}
                             {activeTab === 'template' && (
-                              <>
-                            <div className="content_header_right">
-                                <div className="search_box">
-                                    <input type="text" />
-                                    <button><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-                                    <button><FontAwesomeIcon icon={faSearch} fixedWidth/></button>
-                                </div>
+                            //   <>
+                            // <div className="content_header_right">
+                            //     <div className="search_box">
+                            //         <input type="text" />
+                            //         <button><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                            //         <button><FontAwesomeIcon icon={faSearch} fixedWidth/></button>
+                            //     </div>
 
-                                <div className='header_right_btns'>
-                                    <button>가져오기</button>
-                                    <button>편집</button>
-                                    <button>삭제</button>
-                                    <button className='disabled'>내보내기</button>
-                                    <button className='disabled'>새 가상머신</button>
-                                </div>        
-                            </div>
+                            //     <div className='header_right_btns'>
+                            //         <button>가져오기</button>
+                            //         <button>편집</button>
+                            //         <button>삭제</button>
+                            //         <button className='disabled'>내보내기</button>
+                            //         <button className='disabled'>새 가상머신</button>
+                            //     </div>        
+                            // </div>
                                 
-                                <TableOuter
-                                columns={TableColumnsInfo.TEMPLATE_CHART} 
-                                data={templates} 
-                                onRowClick={handleRowClick} 
-                                className='template_chart'
-                                clickableColumnIndex={[0]} 
-                             />
+                            //     <TableOuter
+                            //     columns={TableColumnsInfo.TEMPLATE_CHART} 
+                            //     data={templates} 
+                            //     onRowClick={handleRowClick} 
+                            //     className='template_chart'
+                            //     clickableColumnIndex={[0]} 
+                            //  />
                             
-                              </>
+                            //   </>
+                                    <TemplateDu 
+                                    data={templates} 
+                                    columns={TableColumnsInfo.TEMPLATE_CHART} 
+                                    handleRowClick={handleRowClick}
+                                />
                             )}
                             {/* 스토리지 도메인*/}
                             {activeTab === 'storage_domain' && (
@@ -1815,7 +1818,7 @@ function RutilManager() {
                 </div>
             </Modal>
 
-            {/* 호스트(편집) 팝업*/}
+            {/* 호스트(새로만들기) 팝업*/}
             <Modal
               isOpen={activePopup === 'host_new'}
               onRequestClose={closePopup}

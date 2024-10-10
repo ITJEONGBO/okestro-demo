@@ -10,7 +10,8 @@ import {
   faTimes,
   faHeart,
   faInfoCircle,
-  faUser
+  faUser,
+  faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons'
 import HeaderButton from '../button/HeaderButton';
 import NetworkDetail from '../Network/NetworkDetail';
@@ -18,7 +19,8 @@ import Footer from '../footer/Footer';
 import NavButton from '../navigation/NavButton';
 import './css/Setting.css';
 import { adjustFontSize } from '../../UIEvent';
-import TableOuter from '../table/TableOuter';
+import PagingTableOuter from '../table/PagingTableOuter';
+import Path from '../Header/Path';
 
 const Setting = ({ }) => {
     // 활성사용사세션 데이터
@@ -75,7 +77,7 @@ const Setting = ({ }) => {
   const locationState = location.state; 
 
   const [showNetworkDetail, setShowNetworkDetail] = useState(false);
-  const [activeTab, setActiveTab] = useState('host');
+  const [activeTab, setActiveTab] = useState('user');
   const [settingPopupOpen, setSettingPopupOpen] = useState(false);
   const [activePopup, setActivePopup] = useState(null);
   const [isNewRolePopupOpen, setIsNewRolePopupOpen] = useState(false);
@@ -92,7 +94,7 @@ const Setting = ({ }) => {
   // 새로 만들기 버튼 클릭 시
   const openNewRolePopup = () => setIsNewRolePopupOpen(true); // 새 역할 팝업 열기
   const closeNewRolePopup = () => setIsNewRolePopupOpen(false); // 새 역할 팝업 닫기
-  const closeSettingPopup = () => setActiveTab('host'); // 모달을 닫기 위해 'host'로 탭을 변경
+  const closeSettingPopup = () => setActiveTab('user'); // 모달을 닫기 위해 'host'로 탭을 변경
   const handleSettingNavClick = (form) =>  setActiveSettingForm(form);
   const openPopup = (popupType) => setActivePopup(popupType);
   const closePopup = () => setActivePopup(null);
@@ -105,12 +107,15 @@ const Setting = ({ }) => {
 
   // nav 컴포넌트
   const sections = [
-    { id: 'host', label: '활성 사용자 세션' },
     { id: 'user', label: '사용자' },
-    { id: 'app_settings', label: '설정' },
-    { id: 'user_sessionInfo', label: '계정설정' },
+    { id: 'host', label: '활성 사용자 세션' },
+    { id: 'licensing', label: '라이센싱' },
+    { id: 'firewall', label: '방화벽' },
+    { id: 'certificate', label: '인증서' }
+    // { id: 'app_settings', label: '설정' },
+    // { id: 'user_sessionInfo', label: '계정설정' },
   ];
-  
+  const pathData = ['관리', sections.find(section => section.id === activeTab)?.label];
   // HeaderButton 컴포넌트
 
       return (
@@ -135,26 +140,15 @@ const Setting = ({ }) => {
                   handleSectionClick={handleTabClick}
                 />
                  <div className="host_btn_outer">
-                {/* 사용자 세션 */}
-                {activeTab === 'host' && (
-                    <>
-                      <div className="content_header_right"> 
-                          <button className='disabled'>세션 종료</button>
-                      </div>
-
-                      <div className="section_table_outer">
-                          <Table columns={TableColumnsInfo.ACTIVE_USER_SESSION} data={sessionData}/>
-                      </div>
-                            
-                    </>
-                )}
+                 <Path pathElements={pathData} />
                 {/* 사용자 */}
                 {activeTab === 'user' && (
                      <>
-                     <div className="content_header_right"> 
+                     <div className="header_right_btns"> 
                          <button onClick={() => openPopup('uer_add')}>추가</button>
-                         <button >삭제</button>
-                         <button onClick={() => openPopup('add_tag')}>태그설정</button>
+                         <button >편집</button>
+                         <button onClick={() => openPopup('delete')}>삭제</button>
+                         {/* <button onClick={() => openPopup('add_tag')}>태그설정</button> */}
                      </div>
 
                      <div className="section_table_outer">
@@ -223,7 +217,9 @@ const Setting = ({ }) => {
                             </div>
                         </div>
                     </Modal>  
-                    <Modal
+
+                    {/*태그설정 팝업창 삭제예정 */}
+                    {/* <Modal
                         isOpen={activePopup === 'add_tag'}
                         onRequestClose={closePopup}
                         contentLabel="추가"
@@ -246,11 +242,44 @@ const Setting = ({ }) => {
                                 <button onClick={closePopup}>취소</button>
                             </div>
                         </div>
-                    </Modal>  
+                    </Modal>   */}
                    </>
                 )}
+                {/* 사용자 세션 */}
+                {activeTab === 'host' && (
+                    <>
+                      <div className="header_right_btns"> 
+                          <button className='disabled'>세션 종료</button>
+                      </div>
+
+                      <div className="section_table_outer">
+                          <Table columns={TableColumnsInfo.ACTIVE_USER_SESSION} data={sessionData}/>
+                      </div>
+                            
+                    </>
+                )}
+
+                {/* 라이센싱 */}
+                {activeTab === 'licensing' && (
+                    <>
+                      <div className="header_right_btns"> 
+                          <button>추가</button>
+                          <button onClick={() => openPopup('delete')}>삭제</button>
+                      </div>
+
+                      
+                    <PagingTableOuter 
+                        columns={TableColumnsInfo.SETTING_LICENSING} 
+                        data={sessionData}
+                        showSearchBox={false}
+                    />
+                      
+                            
+                    </>
+                )}
+
                 {/* 설정 */}
-                {activeTab === 'app_settings' && !isNewRolePopupOpen &&(
+                {/* {activeTab === 'app_settings' && !isNewRolePopupOpen &&(
                   <Modal
                      isOpen={true}
                      onRequestClose={closeSettingPopup}
@@ -408,10 +437,10 @@ const Setting = ({ }) => {
          
                      </div>
                   </Modal>
-                )}
+                )} */}
 
                     {/* 설정팝업 역할(새로만들기 팝업) */}
-                    <Modal
+                    {/* <Modal
 
                         isOpen={activePopup === 'newRole'}
                         onRequestClose={closePopup}
@@ -490,10 +519,10 @@ const Setting = ({ }) => {
                                 <button onClick={closePopup}>취소</button>
                             </div>
                         </div>
-                    </Modal>
+                    </Modal> */}
 
                     {/* 설정팝업 시스템권한(추가 팝업) */}
-                    <Modal
+                    {/* <Modal
                         isOpen={activePopup === 'addSystemRole'}
                         onRequestClose={closePopup}
                         contentLabel="추가"
@@ -555,10 +584,10 @@ const Setting = ({ }) => {
                                 <button onClick={closePopup}>취소</button>
                             </div>
                         </div>
-                    </Modal>
+                    </Modal> */}
                     
                     {/* 설정팝업 스케줄링정책(새로만들기 팝업) */}
-                    <Modal
+                    {/* <Modal
                         isOpen={activePopup === 'newSchedule'}
                         onRequestClose={closePopup}
                         contentLabel="새로 만들기"
@@ -641,10 +670,10 @@ const Setting = ({ }) => {
                             </div>
                         </div>
 
-                    </Modal>
+                    </Modal> */}
 
                     {/* 설정팝업 MAC주소 풀(추가 팝업) */}
-                    <Modal
+                    {/* <Modal
                         isOpen={activePopup === 'macNew'}
                         onRequestClose={closePopup}
                         contentLabel="새로만들기"
@@ -701,9 +730,9 @@ const Setting = ({ }) => {
                             </div>
                         </div>
 
-                    </Modal>
+                    </Modal> */}
                     {/* 설정팝업 MAC주소 풀(편집 팝업) */}
-                    <Modal
+                    {/* <Modal
                         isOpen={activePopup === 'macEdit'}
                         onRequestClose={closePopup}
                         contentLabel="새로만들기"
@@ -760,10 +789,10 @@ const Setting = ({ }) => {
                             </div>
                         </div>
 
-                    </Modal>
+                    </Modal> */}
               
               {/* 계정설정 */}
-                {activeTab === 'user_sessionInfo' && (
+                {/* {activeTab === 'user_sessionInfo' && (
                  <Modal
                  isOpen={true}
                  onRequestClose={closeSettingPopup}
@@ -848,7 +877,7 @@ const Setting = ({ }) => {
      
                  </div>
               </Modal>
-              )}
+              )} */}
 
 
 
@@ -856,6 +885,37 @@ const Setting = ({ }) => {
     
               <Footer/>
               </div>
+
+            {/*삭제 팝업 */}
+            <Modal
+        isOpen={activePopup === 'delete'}
+        onRequestClose={closePopup}
+        contentLabel="디스크 업로드"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="storage_delete_popup">
+          <div className="popup_header">
+            <h1>디스크 삭제</h1>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+          </div>
+         
+          <div className='disk_delete_box'>
+            <div>
+              <FontAwesomeIcon style={{marginRight:'0.3rem'}} icon={faExclamationTriangle} />
+              <span>다음 항목을 삭제하시겠습니까?</span>
+            </div>
+          </div>
+
+
+          <div className="edit_footer">
+            <button style={{ display: 'none' }}></button>
+            <button>OK</button>
+            <button onClick={closePopup}>취소</button>
+          </div>
+        </div>
+            </Modal>
     
             </>
           )}

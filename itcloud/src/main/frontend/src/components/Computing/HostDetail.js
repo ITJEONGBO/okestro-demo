@@ -7,6 +7,7 @@ import Footer from '../footer/Footer';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import TemplateDu from '../duplication/TemplateDu.js';
 import {
   faCaretUp, faDesktop, faUniversity, faWrench, faUser
   , faCheckCircle, faExclamation, faFilm, faArrowCircleUp,
@@ -29,15 +30,17 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import './css/HostDetail.css';
 import TableOuter from '../table/TableOuter';
-import { useHostById, useHostdeviceFromHost, usePermissionFromHost, useVmFromHost } from '../../api/RQHook';
+import { useEventFromHost, useHostById, useHostdeviceFromHost, usePermissionFromHost, useVmFromHost } from '../../api/RQHook';
 import PagingTableOuter from '../table/PagingTableOuter';
 import Path from '../Header/Path';
+import VmDu from '../duplication/VmDu';
+import EventDu from '../duplication/EventDu.js';
 
 
 
 function HostDetail() {
   const { id } = useParams();
-  console.log("알멍니ㅏ럼ㄴ리;ㅇ너ㅏㄹ민ㄹ어ㅏㄹ"+id);
+
   //클릭한 이름 받아오기
   const handlePermissionFilterClick = (filter) => {
     setActivePermissionFilter(filter);
@@ -49,10 +52,10 @@ function HostDetail() {
   const [activeButton, setActiveButton] = useState('network');
   const [isLabelVisible, setIsLabelVisible] = useState(false); // 라벨 표시 상태 관리
   
-  const toggleAllBoxes = () => {
-    setAreAllBoxesVisible(!areAllBoxesVisible);
-  };
+
   
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const togglePopup = () => setIsPopupOpen(!isPopupOpen);
   
   const openPopup = (type) => {
     setActivePopup(type); // 'new' 또는 'edit' 등으로 설정
@@ -151,19 +154,49 @@ function HostDetail() {
     });
   };
 
-  const networkInterfaceData =[
+  // 모든 박스를 확장 또는 숨기기
+  const toggleAllBoxes = () => {
+    if (visibleBoxes.length === networkInterfaceData.length) {
+      setVisibleBoxes([]); // 모두 닫기
+    } else {
+      setVisibleBoxes(networkInterfaceData.map((_, index) => index)); // 모두 열기
+    }
+  };
+
+  const networkInterfaceData = [
     {
-      icon: <FontAwesomeIcon icon={faWrench} fixedWidth/>,
-      name: 'Network 2',
-      mac: 'AA:BB:CC:DD:EE:FF',
-      rx: '150',
-      allRx: '1,500,000',
-      tx: '250',
-      allTx: '2,500,000',
-      mbps: '150',
-      pkts: '15,000'
+      icon: <FontAwesomeIcon icon={faWrench} fixedWidth />,
+      name: 'Network 1',
+      mac: 'AA:BB:CC:DD:EE:11',
+      rx: '100',
+      allRx: '1,000,000',
+      tx: '200',
+      allTx: '2,000,000',
+      mbps: '100',
+      pkts: '10,000',
+    },{
+      icon: <FontAwesomeIcon icon={faWrench} fixedWidth />,
+      name: 'Network 1',
+      mac: 'AA:BB:CC:DD:EE:11',
+      rx: '100',
+      allRx: '1,000,000',
+      tx: '200',
+      allTx: '2,000,000',
+      mbps: '100',
+      pkts: '10,000',
     },
-  ]
+  ];
+
+  const networkdata = [
+    {
+      icon: <FontAwesomeIcon icon={faUniversity} fixedWidth />,
+      unmanaged: <FontAwesomeIcon icon={faWrench} fixedWidth />,
+      vlan: 'VLAN',
+      networkName: 'ovirtmgmt',
+      ipv4: '192.168.0.81',
+      ipv6: '',
+    },
+  ];
 
   // 호스트 장치
   const { 
@@ -172,7 +205,6 @@ function HostDetail() {
     isLoading: isHostDevicesLoading,  
     isError: isHostDevicesError       
   } = useHostdeviceFromHost(host?.id, toTableItemPredicateHostDevices);  
-  
   function toTableItemPredicateHostDevices(device) {
     return {
       name: device?.name ?? 'Unknown',
@@ -188,52 +220,57 @@ function HostDetail() {
   }
   
 
-  const networkdata = [
-    {
-      icon: <FontAwesomeIcon icon={faUniversity} fixedWidth/>,
-      unmanaged: <FontAwesomeIcon icon={faWrench} fixedWidth/>,
-      vlan: 'VLAN',
-      networkName: 'ovirtmgmt',
-      ipv4: '192.168.0.81',
-      ipv6: ''
-    }
-  ];
-    // 권한
-    const { 
-      data: permissions, 
-      status: permissionsStatus, 
-      isLoading: isPermissionsLoading, 
-      isError: isPermissionsError 
-    } = usePermissionFromHost(host?.id, toTableItemPredicatePermissions);
+    // 권한(삭제예정)
+    // const { 
+    //   data: permissions, 
+    //   status: permissionsStatus, 
+    //   isLoading: isPermissionsLoading, 
+    //   isError: isPermissionsError 
+    // } = usePermissionFromHost(host?.id, toTableItemPredicatePermissions);
+    // function toTableItemPredicatePermissions(permission) {
+    //   return {
+    //     icon: <FontAwesomeIcon icon={faUser} fixedWidth/>, 
+    //     user: permission?.user ?? '없음',  
+    //     provider: permission?.provider ?? '없음',  
+    //     nameSpace: permission?.nameSpace ?? '없음', 
+    //     role: permission?.role ?? '없음',  
+    //     createDate: permission?.createDate ?? '없음',  
+    //     inheritedFrom: permission?.inheritedFrom ?? '없음', 
+    //   };
+    // }
 
-    function toTableItemPredicatePermissions(permission) {
-      return {
-        icon: <FontAwesomeIcon icon={faUser} fixedWidth/>, 
-        user: permission?.user ?? '없음',  
-        provider: permission?.provider ?? '없음',  
-        nameSpace: permission?.nameSpace ?? '없음', 
-        role: permission?.role ?? '없음',  
-        createDate: permission?.createDate ?? '없음',  
-        inheritedFrom: permission?.inheritedFrom ?? '없음', 
-      };
-    }
       // 이벤트
-      const eventData = [
-        {
-          icon: <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'green' }}fixedWidth/>,
-          time: '2024. 8. 7. PM 12:24:14',
-          message: 'Check for available updates on host host01.ittinfo.com was completed successfully with message \'no updates available.\'',
-          correlationId: '2568d791:c08...',
-          source: 'oVirt',
-          userEventId: '',
-        },
-      ];
-      
+      const { 
+        data: events, 
+        status: eventsStatus, 
+        isLoading: isEventsLoading, 
+        isError: isEventsError 
+      } = useEventFromHost(host?.id, toTableItemPredicateEvents);
+      function toTableItemPredicateEvents(event) {
+        return {
+          icon: <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'green' }} fixedWidth />,
+          time: event?.time ?? 'Unknown',
+          description: event?.description ?? 'No message available',
+          correlationId: event?.correlationId ?? 'N/A',
+          source: event?.source ?? 'Unknown',
+          userEventId: event?.userEventId ?? 'N/A',
+        };
+      }
+
     //
     const [activeTab, setActiveTab] = useState('general');
     const handleTabClick = (tab) => {
         setActiveTab(tab);
+        localStorage.setItem('activeTab', tab); // 새로고침해도 값유지
     };
+    useEffect(() => {
+      const savedTab = localStorage.getItem('activeTab');
+      if (savedTab) {
+          setActiveTab(savedTab);  // 저장된 값이 있으면 해당 탭을 활성화
+      } else {
+          setActiveTab('general');  // 저장된 값이 없으면 '일반' 탭을 기본값으로 설정
+      }
+  }, []);
 
 
     //headerbutton 컴포넌트
@@ -252,10 +289,15 @@ function HostDetail() {
         { id: 'machine', label: '가상머신' },
         { id: 'networkinterface', label: '네트워크 인터페이스' },
         { id: 'hostdevice', label: '호스트 장치' },
-        { id: 'permission', label: '권한' },
         { id: 'event', label: '이벤트' }
       ];
-      const pathData = [host?.name, sections.find(section => section.id === activeTab)?.label];
+      const pathData = [
+        host?.name || 'Default',  // 호스트 이름이 없으면 'Default'로 대체
+        activeTab === 'machine' || activeTab === 'template' ? '가상머신' : sections.find(section => section.id === activeTab)?.label,
+        activeTab === 'template' ? '템플릿' : '' // 템플릿일 때만 '템플릿' 추가
+      ].filter(Boolean);
+      
+      
       
     return (
         <div id='section'>
@@ -510,73 +552,72 @@ function HostDetail() {
                 {activeTab === 'machine' && (
                 <div className="host_btn_outer">
                     <Path pathElements={pathData}/>
-                      <div className="header_right_btns">
-                            <button>실행</button>
-                            <button>일시중지</button>
-                            <button>종료</button>
-                            <button>전원 끔</button>
-                            <button>콘솔</button>
-                            <button>마이그레이션</button>
-                        </div>
-                        <div className="host_filter_btns">
-                            <span>가상 머신 필터:</span>
-                            <div>
-                                <button>현재 호스트에서 실행 중</button>
-                                <button>현재 호스트에 고정</button>
-                                <button>모두</button>
-                            </div>
-                        </div>
-                        <TableOuter 
-                          columns={TableColumnsInfo.VMS_FROM_HOST}
-                          data={vms}
-                          onRowClick={() => console.log('Row clicked')}
-                        />
+                    <VmDu 
+                      data={vms} 
+                      columns={TableColumnsInfo.VM_CHART} 
+                      handleRowClick={() => console.log("Row clicked")}  
+                      openPopup={openPopup} 
+                      setActiveTab={setActiveTab}
+                      togglePopup={togglePopup} 
+                      isPopupOpen={isPopupOpen} 
+                    />
                 </div>
                 )}
-             
+                  {/* 템플릿 */}
+                  {activeTab === 'template' && (
+                    <div className="host_btn_outer">
+                    <Path pathElements={pathData}/>
+                                    
+                                    <TemplateDu 
+                                    data={['#']} 
+                                    columns={TableColumnsInfo.TEMPLATE_CHART} 
+                                    handleRowClick={() => console.log("Row clicked")}  
+                                />
+                                </div>
+                   )}
+
                 {/* 네트워크 인터페이스 */}
                 {activeTab === 'networkinterface' && (
-                <div className="host_btn_outer">
-                  <Path pathElements={pathData}/>
-                  <div className="header_right_btns">
-                    <button>VF 보기</button>
-                    <button onClick={toggleAllBoxes}>
-                      {areAllBoxesVisible ? '모두 숨기기' : '모두 확장'}
-                    </button>
-                    <button onClick={() => openPopup('host_network_popup')}>호스트 네트워크 설정</button>
-                    <button className='disabled'>네트워크 설정 저장</button>
-                    <button className='disabled'>모든 네트워크 동기화</button>
+                    <div className="host_btn_outer">
+                    <Path pathElements={pathData} />
+                    <div className="header_right_btns">
+                      <button>VF 보기</button>
+                      <button onClick={toggleAllBoxes}>
+                        {visibleBoxes.length === networkInterfaceData.length ? '모두 숨기기' : '모두 확장'}
+                      </button>
+                      <button onClick={() => console.log('호스트 네트워크 설정')}>호스트 네트워크 설정</button>
+                      <button className="disabled">네트워크 설정 저장</button>
+                      <button className="disabled">모든 네트워크 동기화</button>
+                    </div>
+              
+                    {networkInterfaceData.map((data, index) => (
+                      <div className="host_network_boxs" key={index}>
+                        <div
+                          className="host_network_firstbox"
+                          onClick={() => toggleHiddenBox(index)} // 클릭 시 해당 박스만 열리거나 닫힘
+                        >
+                          <div className="section_table_outer">
+                            <Table
+                              columns={TableColumnsInfo.HOST_NETWORK_INTERFACE}
+                              data={networkInterfaceData}
+                              onRowClick={() => console.log('Row clicked')}
+                            />
+                          </div>
+                        </div>
+                        {visibleBoxes.includes(index) && ( // 박스가 열려 있을 때만 보임
+                          <div className="host_network_hiddenbox">
+                            <div className="section_table_outer">
+                              <Table
+                                columns={TableColumnsInfo.NETWORKS_FROM_HOST}
+                                data={networkdata}
+                                onRowClick={() => console.log('Row clicked')}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
-
-                  {[0, 1].map((index) => (
-    <div className="host_network_boxs" key={index}>
-      <div
-        className="host_network_firstbox"
-        onClick={() => toggleHiddenBox(index)}
-      >
-        <div className="section_table_outer">
-          <Table
-            columns={TableColumnsInfo.HOST_NETWORK_INTERFACE}
-            data={networkInterfaceData}
-            onRowClick={() => console.log("Row clicked")}
-          />
-        </div>
-      </div>
-      <div
-        className="host_network_hiddenbox"
-        style={{ display: areAllBoxesVisible ? "block" : "none" }} // 모든 박스의 상태를 한 번에 제어
-      >
-        <div className="section_table_outer">
-          <Table
-            columns={TableColumnsInfo.NETWORKS_FROM_HOST}
-            data={networkdata}
-            onRowClick={() => console.log("Row clicked")}
-          />
-        </div>
-      </div>
-    </div>
-  ))}
-                </div>
                 )}
                 {/* 호스트 장치 */}
                 {activeTab === 'hostdevice' && (
@@ -593,8 +634,8 @@ function HostDetail() {
                 </div>
                 )}
                
-                {/* 권한 */}
-                {activeTab === 'permission' && (
+                {/* 권한(삭제예정) */}
+                {/* {activeTab === 'permission' && (
               <div className="host_btn_outer">
                 
               <div className="header_right_btns">
@@ -624,19 +665,17 @@ function HostDetail() {
                 onRowClick={() => console.log('Row clicked')}
               />
             </div>
-            )}
+                )} */}
           
                 {/* 이벤트 */}
                 {activeTab === 'event' && (
                 <div className="host_btn_outer">
                   <Path pathElements={pathData}/>
-                  <div className="host_empty_outer">
-                    <TableOuter
-                      columns={TableColumnsInfo.EVENTS}
-                      data={eventData}
-                      onRowClick={() => console.log('Row clicked')} 
-                      />
-                  </div>
+                  <EventDu 
+                    columns={TableColumnsInfo.EVENTS}
+                    data={events}
+                    handleRowClick={() => console.log('Row clicked')}
+                  />
                 </div>
                 )}
                
