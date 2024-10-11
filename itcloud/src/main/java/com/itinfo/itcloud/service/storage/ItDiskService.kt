@@ -43,7 +43,6 @@ interface ItDiskService {
      */
     @Throws(Error::class)
     fun findAll(): List<DiskImageVo>
-
     /**
      * [ItDiskService.findAllFromStorageDomain]
      * 스토리지 도메인 - 디스크 목록

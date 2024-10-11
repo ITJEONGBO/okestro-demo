@@ -7,13 +7,18 @@ import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.network.toNetworkVos
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
+import com.itinfo.itcloud.model.storage.DiskImageVo
 import com.itinfo.itcloud.model.storage.StorageDomainVo
+import com.itinfo.itcloud.model.storage.toDiskImageVos
 import com.itinfo.itcloud.model.storage.toStorageDomainsMenu
+import com.itinfo.itcloud.repository.history.dto.UsageDto
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.storage.ItDiskService
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.types.*
 import org.ovirt.engine.sdk4.Error
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import kotlin.jvm.Throws
 
@@ -77,6 +82,25 @@ interface ItDataCenterService {
 	// 삭제
 
 	/**
+	 * [ItDataCenterService.findAllHostsFromDataCenter]
+	 * 데이터센터가 가지고있는 호스트 목록
+	 *
+	 * @param dataCenterId [String] 데이터센터 Id
+	 * @return List<[HostVo]> 호스트 목록
+	 */
+	@Throws(Error::class)
+	fun findAllHostsFromDataCenter(dataCenterId: String): List<HostVo>
+	/**
+	 * [ItDataCenterService.findAllVmsFromDataCenter]
+	 * 데이터센터가 가지고있는 가상머신 목록
+	 *
+	 * @param dataCenterId [String] 데이터센터 Id
+	 * @return List<[VmVo]> 가상머신 목록
+	 */
+	@Throws(Error::class)
+	fun findAllVmsFromDataCenter(dataCenterId: String): List<VmVo>
+
+	/**
 	 * [ItDataCenterService.findAllStorageDomainsFromDataCenter]
 	 * 데이터센터가 가지고있는 스토리지 도메인 목록
 	 *
@@ -89,6 +113,18 @@ interface ItDataCenterService {
 	// 분리
 	// 활성
 	// 유지보수
+
+	/**
+	 * [ItDiskService.findAllDisksFromDataCenter]
+	 * 스토리지 도메인 - 디스크 목록 (데이터센터가 가진)
+	 * 데이터센터가 가진 스토리지도메인이 가진 디스크
+	 *
+	 * @param dataCenterId [String] 데이터센터 Id
+	 * @return List<[DiskImageVo]> 디스크 목록
+	 */
+	@Throws(Error::class)
+	fun findAllDisksFromDataCenter(dataCenterId: String): List<DiskImageVo>
+
 
 	/**
 	 * [ItDataCenterService.findAllNetworksFromDataCenter]
@@ -114,26 +150,6 @@ interface ItDataCenterService {
 	fun findAllEventsFromDataCenter(dataCenterId: String): List<EventVo>
 
 
-	/**
-	 * [ItDataCenterService.findAllHostsFromDataCenter]
-	 * 데이터센터가 가지고있는 호스트 목록
-	 *
-	 * @param dataCenterId [String] 데이터센터 Id
-	 * @return List<[HostVo]> 호스트 목록
-	 */
-	@Deprecated("필요없음")
-	@Throws(Error::class)
-	fun findAllHostsFromDataCenter(dataCenterId: String): List<HostVo>
-	/**
-	 * [ItDataCenterService.findAllVmsFromDataCenter]
-	 * 데이터센터가 가지고있는 가상머신 목록
-	 *
-	 * @param dataCenterId [String] 데이터센터 Id
-	 * @return List<[VmVo]> 가상머신 목록
-	 */
-	@Deprecated("필요없음")
-	@Throws(Error::class)
-	fun findAllVmsFromDataCenter(dataCenterId: String): List<VmVo>
 	/**
 	 * [ItDataCenterService.findAllPermissionsFromDataCenter]
 	 * 데이터센터가 가지고 있는 권한 목록
@@ -169,6 +185,7 @@ interface ItDataCenterService {
 class DataCenterServiceImpl(
 
 ): BaseService(), ItDataCenterService {
+	@Autowired private lateinit var itGraphService: ItGraphService
 
 	@Throws(Error::class)
 	override fun findAll(): List<DataCenterVo> {
@@ -226,12 +243,49 @@ class DataCenterServiceImpl(
 	}
 
 	@Throws(Error::class)
+	override fun findAllHostsFromDataCenter(dataCenterId: String): List<HostVo> {
+		log.debug("findAllHostsFromDataCenter ... dataCenterId: {}", dataCenterId)
+		val res: List<Host> =
+			conn.findAllHostsFromDataCenter(dataCenterId)
+				.getOrDefault(listOf())
+		return res.map { host ->
+			val hostNic: HostNic? =
+				conn.findAllNicsFromHost(host.id()).getOrDefault(listOf()).firstOrNull()
+
+			val usageDto: UsageDto? =
+				if(host.status() == HostStatus.UP) hostNic?.id()?.let { itGraphService.hostPercent(host.id(), it) }
+				else null
+			host.toHostMenu(conn, usageDto)
+		}
+	}
+
+	@Throws(Error::class)
+	override fun findAllVmsFromDataCenter(dataCenterId: String): List<VmVo> {
+		log.debug("findAllVmsFromDataCenter ... dataCenterId: {}", dataCenterId)
+		val res: List<Vm> =
+			conn.findAllVmsFromDataCenter(dataCenterId)
+				.getOrDefault(listOf())
+		return res.toVmsMenu(conn)
+	}
+
+	@Throws(Error::class)
 	override fun findAllStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
 		log.info("findAllStorageDomainsFromDataCenter ... dataCenterId: {}", dataCenterId)
 		val res: List<StorageDomain> =
 			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
 				.getOrDefault(listOf())
 		return res.toStorageDomainsMenu(conn)
+	}
+
+	@Throws(Error::class)
+	override fun findAllDisksFromDataCenter(dataCenterId: String): List<DiskImageVo> {
+		val res: List<Disk> =
+			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
+				.getOrDefault(listOf())
+				.flatMap {
+					conn.findAllDisksFromStorageDomain(it.id()).getOrDefault(listOf())
+				}
+		return res.toDiskImageVos(conn)
 	}
 
 	@Throws(Error::class)
@@ -262,28 +316,6 @@ class DataCenterServiceImpl(
 		return res.toEventVos()
 	}
 
-
-	@Deprecated("필요없음")
-	@Throws(Error::class)
-	override fun findAllHostsFromDataCenter(dataCenterId: String): List<HostVo> {
-		log.debug("findAllHostsFromDataCenter ... dataCenterId: {}", dataCenterId)
-		val res: List<Host> =
-			conn.findAllHostsFromDataCenter(dataCenterId)
-				.getOrDefault(listOf())
-//		return res.toHostsMenu(conn)
-		TODO()
-	}
-
-	@Deprecated("필요없음")
-	@Throws(Error::class)
-	override fun findAllVmsFromDataCenter(dataCenterId: String): List<VmVo> {
-		log.debug("findAllVmsFromDataCenter ... dataCenterId: {}", dataCenterId)
-		val res: List<Vm> =
-			conn.findAllVmsFromDataCenter(dataCenterId)
-				.getOrDefault(listOf())
-//		return res.toVmsMenu(conn)
-		TODO()
-	}
 
 	@Deprecated("필요없음")
 	@Throws(Error::class)

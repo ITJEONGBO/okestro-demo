@@ -179,11 +179,11 @@ interface ItClusterService {
 	/**
 	 * [ItClusterService.findAllCpuProfilesFromCluster]
 	 * 클러스터가 가지고있는 cpuProfile 목록
+	 * vm 생성시 사용
 	 *
 	 * @param clusterId [String] 클러스터 Id
 	 * @return List<[CpuProfileVo]> cpuProfile 목록
 	 */
-	@Deprecated("필요없음")
 	@Throws(Error::class)
 	fun findAllCpuProfilesFromCluster(clusterId: String): List<CpuProfileVo>
 	/**
@@ -389,7 +389,6 @@ class ClusterServiceImpl(
 		return res.toEventVos()
 	}
 
-	@Deprecated("필요없음")
 	@Throws(Error::class)
 	override fun findAllCpuProfilesFromCluster(clusterId: String): List<CpuProfileVo> {
 		log.info("findAllCpuProfilesFromCluster ... clusterId: {}", clusterId)

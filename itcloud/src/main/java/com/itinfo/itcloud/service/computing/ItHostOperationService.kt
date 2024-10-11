@@ -49,6 +49,16 @@ interface ItHostOperationService {
         Error::class
     )
     fun restart(hostId: String): Boolean
+    /**
+     * [ItHostOperationService.registerCertificate]
+     * 설치 - 인증서 등록
+     *
+     * @param hostId [String] 호스트 아이디
+     * @return [Boolean]
+     */
+    @Throws(Error::class)
+    fun registerCertificate(hostId: String): Boolean
+
 }
 
 @Service
@@ -88,6 +98,11 @@ class HostOperationServiceImpl: BaseService(), ItHostOperationService {
         val res: Result<Boolean> =
             conn.restartHost(hostId, hostPw)
         return res.isSuccess
+    }
+
+    @Throws(Error::class)
+    override fun registerCertificate(hostId: String): Boolean {
+        TODO("Not yet implemented")
     }
 
 

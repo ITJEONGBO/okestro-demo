@@ -4,6 +4,7 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.setting.PermissionVo
+import com.itinfo.itcloud.model.storage.DiskImageVo
 import com.itinfo.itcloud.model.storage.StorageDomainVo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
@@ -198,6 +199,23 @@ class ItDataCenterServiceTest {
 	}
 
 	/**
+	 * [should_findAllDisksFromDataCenter]
+	 * [ItDataCenterService.findAllDisksFromDataCenter]에 대한 단위테스트
+	 *
+	 * @see ItDataCenterService.findAllDisksFromDataCenter
+	 **/
+	@Test
+	fun should_findAllDisksFromDataCenter() {
+		log.debug("should_findAllDisksFromDataCenter ... ")
+		val result: List<DiskImageVo> =
+			service.findAllDisksFromDataCenter(dataCenterId)
+
+		assertThat(result, `is`(not(nullValue())))
+		result.forEach { println(it) }
+		assertThat(result.size, `is`(50))
+	}
+
+	/**
 	 * [should_findAllNetworksFromDataCenter]
 	 * [ItDataCenterService.findAllNetworksFromDataCenter]에 대한 단위테스트
 	 *
@@ -226,7 +244,7 @@ class ItDataCenterServiceTest {
 		val result: List<EventVo> =
 			service.findAllEventsFromDataCenter(dataCenterId)
 		assertThat(result, `is`(not(nullValue())))
-		assertThat(result.size, `is`(504))
+		assertThat(result.size, `is`(529))
 	}
 
 	companion object {
