@@ -316,26 +316,7 @@ button{
     display: none;
 }
 
-.edit_third_content{
-    padding: 2.3% 2% 0 2%;
-    margin-bottom: 0.4rem;
-    display:flex;
-    justify-content: space-between;
-}
-.edit_third_content>div:nth-child(2){
-    display: flex;
-    justify-content: right;
 
-}
-.edit_third_content>div:nth-child(2)>button{
-    margin-right:0.2rem;
-}
-.edit_third_content button{
-    padding: 0.08rem 0.15rem;
-    font-size: 0.3rem;
-    font-weight: 600;
-    cursor: pointer;
-}
 .edit_fourth_content{
     padding: 2.3% 2% 0 2%;
     display:flex;
@@ -359,21 +340,7 @@ button{
     padding: 2.3% 2% 0 2%;
     font-weight:600;
 }
-.instance_image{
-    padding: 2.3% 2% 0 2%;
-    margin-bottom:0.2rem;
-}
-.instance_image>div{
 
-    display:flex;
-    justify-content: space-between;
-}
-.instance_image button{
-    padding: 0.08rem 0.15rem;
-    font-size: 0.3rem;
-    font-weight: 600;
-    cursor: pointer;
-}
 /**/
 .network_new_outer {
     position: absolute; /* 시작 지점을 버튼 위, 0픽셀부터 시작하려고 주는 것*/
@@ -1385,54 +1352,7 @@ input[type="text"]:focus {
     vertical-align: middle;
 }
 /*마이그레이션 팝업*/
-.migration_popup_outer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
 
-.migration_popup {
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 37%;
-    width: 54%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-}
-#migration_article_outer{
-    padding: 30px 16px;
-    height: 86%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-#migration_article{
-    display: flex;
-    height: 40%;
-    flex-direction: column;
-    justify-content: space-between;
-}
-#migration_article_outer>span{
-    font-size: 0.36rem;
-}
-#migration_dropdown{
-    display: flex;
-    justify-content: space-between;
-}
-#migration_dropdown>label{
-    padding:11px 0;
-}
-#migration_dropdown>label,#migration_article>div:last-child>div:first-child{
-    font-size: 0.36rem;
-    font-weight: 600;
-}
 #host{
     width: 87.5%;
     height: 5vh;

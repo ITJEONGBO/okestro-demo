@@ -26,7 +26,8 @@ import {
   faPencilAlt,
   faCaretDown,
   faNetworkWired,
-  faTag
+  faTag,
+  faChevronDown
 } from '@fortawesome/free-solid-svg-icons'
 import './css/HostDetail.css';
 import TableOuter from '../table/TableOuter';
@@ -275,13 +276,19 @@ function HostDetail() {
 
     //headerbutton 컴포넌트
     const buttons = [
-        { id: 'edit_btn', label: '편집', onClick: () => openPopup('host_edit') },
+        { id: 'edit_btn', label: '호스트 편집', onClick: () => openPopup('host_edit') },
         { id: 'delete_btn', label: '삭제', onClick: () => openPopup('delete')},
-        { id: 'manage_btn', label: '관리', onClick: () => console.log('Manage button clicked') },
-        { id: 'install_btn', label: '설치', onClick: () => console.log('Install button clicked') }
+        { id: 'manage_btn', label: <>관리 <FontAwesomeIcon icon={faChevronDown} /></>, onClick: () => openPopup('manage_toggle_box') },
+        
       ];
     
-      const popupItems = []; // 현재 팝업 아이템이 없으므로 빈 배열로 설정
+      const popupItems = [    
+        { id: 'checkReboot', label: '호스트가 재부팅 되어 있는지 확인' },
+        { id: 'approve', label: '승인' },
+        { id: 'enableGlobalHA', label: '글로벌 HA 유지 관리를 활성화' },
+        { id: 'disableGlobalHA', label: '글로벌 HA 유지 관리를 비활성화' },
+      ];
+      
       const uploadOptions = []; // 현재 업로드 옵션이 없으므로 빈 배열로 설정
     // nav컴포넌트
     const sections = [
@@ -681,7 +688,10 @@ function HostDetail() {
                
             </div>
 
-
+            {/*토글박스 */}
+            <Modal>
+              <div></div>
+            </Modal>
             {/* 편집 팝업*/}
             <Modal
               isOpen={activePopup === 'host_edit'}
@@ -1078,35 +1088,35 @@ function HostDetail() {
             </Modal>
 
                {/*삭제 팝업 */}
-      <Modal
-        isOpen={activePopup === 'delete'}
-        onRequestClose={closePopup}
-        contentLabel="디스크 업로드"
-        className="Modal"
-        overlayClassName="Overlay"
-        shouldCloseOnOverlayClick={false}
-      >
-        <div className="storage_delete_popup">
-          <div className="popup_header">
-            <h1>삭제</h1>
-            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-          </div>
-         
-          <div className='disk_delete_box'>
-            <div>
-              <FontAwesomeIcon style={{marginRight:'0.3rem'}} icon={faExclamationTriangle} />
-              <span>다음 항목을 삭제하시겠습니까?</span>
-            </div>
-          </div>
+              <Modal
+                isOpen={activePopup === 'delete'}
+                onRequestClose={closePopup}
+                contentLabel="디스크 업로드"
+                className="Modal"
+                overlayClassName="Overlay"
+                shouldCloseOnOverlayClick={false}
+              >
+                <div className="storage_delete_popup">
+                  <div className="popup_header">
+                    <h1>삭제</h1>
+                    <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                  </div>
+                
+                  <div className='disk_delete_box'>
+                    <div>
+                      <FontAwesomeIcon style={{marginRight:'0.3rem'}} icon={faExclamationTriangle} />
+                      <span>다음 항목을 삭제하시겠습니까?</span>
+                    </div>
+                  </div>
 
 
-          <div className="edit_footer">
-            <button style={{ display: 'none' }}></button>
-            <button>OK</button>
-            <button onClick={closePopup}>취소</button>
-          </div>
-        </div>
-      </Modal>
+                  <div className="edit_footer">
+                    <button style={{ display: 'none' }}></button>
+                    <button>OK</button>
+                    <button onClick={closePopup}>취소</button>
+                  </div>
+                </div>
+              </Modal>
             <Footer/>
         </div>
     );

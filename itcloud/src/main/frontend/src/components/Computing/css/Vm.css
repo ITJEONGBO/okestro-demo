@@ -137,54 +137,7 @@
     width: 100%;
 }
 /*마이그레이션 팝업*/
-.migration_popup_outer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
 
-.migration_popup {
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 37%;
-    width: 54%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-}
-#migration_article_outer{
-    padding: 30px 16px;
-    height: 86%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-#migration_article{
-    display: flex;
-    height: 40%;
-    flex-direction: column;
-    justify-content: space-between;
-}
-#migration_article_outer>span{
-    font-size: 0.36rem;
-}
-#migration_dropdown{
-    display: flex;
-    justify-content: space-between;
-}
-#migration_dropdown>label{
-    padding:11px 0;
-}
-#migration_dropdown>label,#migration_article>div:last-child>div:first-child{
-    font-size: 0.36rem;
-    font-weight: 600;
-}
 #host{
     width: 87.5%;
     height: 5vh;
@@ -982,7 +935,7 @@ input[disabled] {
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 80.4vh;
+    height: 84.4vh;
     width: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -1338,7 +1291,7 @@ input[disabled] {
     z-index: 1000;
 }
 .snapshot_new_table{
-    height:30vh;
+    max-height: 21vh;
     overflow-y: auto; /* 세로 스크롤 추가 */
     overflow-x: hidden; /* 가로 스크롤 숨김 */
 }
@@ -1418,10 +1371,9 @@ input[disabled] {
 }
 
 .vm_edit_select_tab {
-    padding: 0.2rem 0;
     font-size: 0.33rem;
     width: 86%;
-    height: 69vh;
+    height: 72vh;
     overflow-y: auto; /* 세로 스크롤 추가 */
     overflow-x: hidden; /* 가로 스크롤 숨김 */
 }
@@ -1436,50 +1388,25 @@ input[disabled] {
 
 .vm_edit_popup_content {
     display: flex;
-}
-.edit_first_content{
-    border-bottom: 1px solid #cecece;
-    padding: 3% 2% 5% 2%;
-}
-.edit_first_content>div:first-child{
 
 }
 .edit_first_content>div{
     display: flex;
     justify-content: space-between;
-
+    padding: 0.24rem;
 }
-
-.edit_first_content select{
-    width: 47%;
-    height: 3.3vh;
-    padding: 0 3px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
+.edit_first_content>div:first-child{
+    margin-bottom: 0.4rem;
+    padding-top: 0.4rem;
 }
-
 .edit_first_content{
     border-bottom: 1px solid #cecece;
     font-size: 0.32rem;
 }
-.edit_first_content>div:first-child{
-    padding: 3% 2% 5% 2%;
-}
-.edit_first_content>div{
-    display: flex;
-    justify-content: space-between;
-    padding: 1.2% 2%;
-
-}
-.edit_first_content>div:first-child{
-    position: relative;
-}
-.edit_first_content>div>div{
-    position: absolute;
-    top: 62%;
-    right: 32.5%;
-    font-style: italic;
+.datacenter_span{
+    position:absolute;
+    right: 21%;
+    top: 15%;
 }
 
 .edit_first_content select{
@@ -1490,4 +1417,87 @@ input[disabled] {
     cursor: pointer;
     font-size: 0.29rem;
     border: 1px solid #a7a6a6;
+}
+
+.edit_third_content{
+    padding: 2.3% 2% 2% 2%;
+    margin-bottom: 0.4rem;
+    display:flex;
+    justify-content: space-between;
+}
+.edit_third_content>div:nth-child(2){
+    display: flex;
+    justify-content: right;
+
+}
+.edit_third_content>div:nth-child(2)>button{
+    margin-right:0.2rem;
+}
+.edit_third_content button{
+    padding: 0.08rem 0.15rem;
+    font-size: 0.3rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.text_icon_box{
+    display: flex; /* Flexbox 설정 추가 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.boot_outer_content{
+    padding:0.2rem;
+}
+.instance_image{
+    padding: 2.3% 2% 2% 2%;
+    margin-bottom:0.2rem;
+    border-bottom:1px solid gray;
+}
+.instance_image>div{
+
+    display:flex;
+    justify-content: space-between;
+}
+.instance_image button{
+    padding: 0.08rem 0.15rem;
+    font-size: 0.3rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.migration_popup_content{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 45%;
+    width: 70%;
+    font-size: 0.33rem;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+#migration_article_outer{
+    padding: 0.4rem;
+}
+#migration_article{
+    display: flex;
+    height: 40%;
+    flex-direction: column;
+    justify-content: space-between;
+}
+#migration_article_outer>span{
+    font-size: 0.36rem;
+    margin-bottom: 0.4rem;
+    display: block;
+}
+#migration_dropdown{
+    display: flex;
+    justify-content: space-between;
+}
+#migration_dropdown>label{
+    padding:11px 0;
+}
+#migration_dropdown>label{
+    font-size: 0.36rem;
+    font-weight: 600;
 }
