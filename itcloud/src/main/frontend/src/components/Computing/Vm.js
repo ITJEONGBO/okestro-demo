@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import Table from '../table/Table';
 import HeaderButton from '../button/HeaderButton';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faTimes,
@@ -12,19 +11,17 @@ import {
   faRepeat, 
   faPlay, 
   faPause,
-  faBan,
   faStop,
-  faExclamationTriangle
+  faExclamationTriangle,
+  faMicrochip
 } from '@fortawesome/free-solid-svg-icons';
 import './css/Vm.css';
 import Footer from '../footer/Footer';
 import ApplicationSection from './vm/ApplicationSection';
 import DiskSection from './vm/DiskSection';
 import EventSection from './vm/EventSection';
-import GuestInfoSection from './vm/GuestInfoSection';
 import NetworkSection from './vm/NetworkSection';
 import SnapshotSection from './vm/SnapshotSection';
-import PowerSection from './vm/PowerSection'; 
 import HostDevice from './vm/HostDevice'; 
 import TableOuter from '../table/TableOuter';
 import TableColumnsInfo from '../table/TableColumnsInfo';
@@ -58,14 +55,15 @@ const [activeSection, setActiveSection] = useState('common_outer');
 
   const sections = [
     { id: 'general', label: '일반' },
-    { id: 'network', label: '네트워크 인터페이스' },
     { id: 'disk', label: '디스크' },
     { id: 'snapshot', label: '스냅샷' },
+    { id: 'network', label: '네트워크 인터페이스' },
     { id: 'application', label: '애플리케이션' },
     // { id: 'guest_info', label: '게스트 정보' },
     // { id: 'power', label: '권한' },
-    { id: 'event', label: '이벤트' },
-    { id: 'host_device', label: '호스트 장치' }
+    { id: 'host_device', label: '호스트 장치' },
+    { id: 'event', label: '이벤트' }
+
   ];
   
   // headerbutton 컴포넌트
@@ -394,8 +392,9 @@ const buttons = [
   return (
     <div id="section">
        <HeaderButton
+      titleIcon={faMicrochip}
       title="가상머신"
-      subtitle="d"
+      subtitle="#"
       buttons={buttons}
       popupItems={popupItems}
     />
@@ -414,6 +413,7 @@ const buttons = [
           </div>
         </div>
         <div className="host_btn_outer">
+            
           {renderSectionContent()}
         </div>
       </div>
@@ -421,23 +421,23 @@ const buttons = [
 
             {/* 가상머신( 새로만들기)팝업 */}   
             <Modal
-    isOpen={activePopup === 'vm_new'}
-    onRequestClose={closePopup}
-    contentLabel="가상머신 편집"
-    className="edit_popup"
-    overlayClassName="edit_popup_outer"
-    shouldCloseOnOverlayClick={false}
-  >
- <div id="edit_popup">
-            <div className="popup_header">
-              <h1>가상머신 생성</h1>
-              <button onClick={closePopup}>
-                <FontAwesomeIcon icon={faTimes} fixedWidth />
-              </button>
-            </div>
+                isOpen={activePopup === 'vm_new'}
+                 onRequestClose={closePopup}
+                contentLabel="새로만들기"
+                className="Modal"
+                overlayClassName="Overlay"
+                shouldCloseOnOverlayClick={false}
+            >
+            <div className="vm_edit_popup">
+                <div className="popup_header">
+                    <h1>가상머신 생성</h1>
+                    <button onClick={closePopup}>
+                        <FontAwesomeIcon icon={faTimes} fixedWidth />
+                    </button>
+                </div>
             
-            <div className="edit_body">
-            <div className="edit_aside">
+            <div className="edit_body flex">
+                <div className="edit_aside">
                 <div
                   className={`edit_aside_item ${activeSection === 'common_outer' ? 'active' : ''}`}
                   id="common_outer_btn"
@@ -481,7 +481,7 @@ const buttons = [
                   <span>부트 옵션</span>
                 </div>
                 
-              </div>
+                </div>
 
 
                     <form action="#">
@@ -950,7 +950,7 @@ const buttons = [
                             </div>
                         </div>
                     </form>
-                </div>
+            </div>
 
                 <div className="edit_footer">
                     <button>OK</button>
@@ -958,143 +958,7 @@ const buttons = [
                 </div>
             </div>
             </Modal>
-              {/*디스크(새로만들기)팝업 */}
-            <Modal
-            isOpen={activePopup === 'newDisk'}
-            onRequestClose={closePopup}
-            contentLabel="새 가상 디스크"
-            className="Modal"
-            overlayClassName="Overlay"
-            shouldCloseOnOverlayClick={false}
-            >
-            <div className="storage_disk_new_popup">
-                <div className="popup_header">
-                <h1>새 가상 디스크</h1>
-                <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-                </div>
-                <div className="disk_new_nav">
-                <div
-                    id="storage_img_btn"
-                    onClick={() => handleTabClick('img')}
-                    className={activeTab === 'img' ? 'active' : ''}
-                >
-                    이미지
-                </div>
-                <div
-                    id="storage_directlun_btn"
-                    onClick={() => handleTabClick('directlun')}
-                    className={activeTab === 'directlun' ? 'active' : ''}
-                >
-                    직접LUN
-                </div>
-                
-                </div>
-                {/*이미지*/}
-                {activeTab === 'img' && (
-                <div className="disk_new_img">
-                    <div className="disk_new_img_left">
-                    <div className="img_input_box">
-                        <span>크기(GIB)</span>
-                        <input type="text" />
-                    </div>
-                    <div className="img_input_box">
-                        <span>별칭</span>
-                        <input type="text" />
-                    </div>
-                    <div className="img_input_box">
-                        <span>설명</span>
-                        <input type="text" />
-                    </div>
-                    <div className="img_select_box">
-                        <label htmlFor="os">데이터 센터</label>
-                        <select id="os">
-                        <option value="linux">Linux</option>
-                        </select>
-                    </div>
-                    <div className="img_select_box">
-                        <label htmlFor="os">스토리지 도메인</label>
-                        <select id="os">
-                        <option value="linux">Linux</option>
-                        </select>
-                    </div>
-                    <div className="img_select_box">
-                        <label htmlFor="os">할당 정책</label>
-                        <select id="os">
-                        <option value="linux">Linux</option>
-                        </select>
-                    </div>
-                    <div className="img_select_box">
-                        <label htmlFor="os">디스크 프로파일</label>
-                        <select id="os">
-                        <option value="linux">Linux</option>
-                        </select>
-                    </div>
-                    </div>
-                    <div className="disk_new_img_right">
-                    <div>
-                        <input type="checkbox" id="reset_after_deletion" />
-                        <label htmlFor="reset_after_deletion">삭제 후 초기화</label>
-                    </div>
-                    <div>
-                        <input type="checkbox" className="shareable" />
-                        <label htmlFor="shareable">공유 가능</label>
-                    </div>
-                    <div>
-                        <input type="checkbox" id="incremental_backup" defaultChecked />
-                        <label htmlFor="incremental_backup">중복 백업 사용</label>
-                    </div>
-                    </div>
-                </div>
-                )}
-                {/*직접LUN*/}
-                {activeTab === 'directlun' && (
-                <div id="storage_directlun_outer">
-                    <div id="storage_lun_first">
-                    <div className="disk_new_img_left">
-                        <div className="img_input_box">
-                        <span>별칭</span>
-                        <input type="text" />
-                        </div>
-                        <div className="img_input_box">
-                        <span>설명</span>
-                        <input type="text" />
-                        </div>
-                        <div className="img_select_box">
-                        <label htmlFor="os">데이터 센터</label>
-                        <select id="os">
-                            <option value="linux">Linux</option>
-                        </select>
-                        </div>
-                        <div className="img_select_box">
-                        <label htmlFor="os">호스트</label>
-                        <select id="os">
-                            <option value="linux">Linux</option>
-                        </select>
-                        </div>
-                        <div className="img_select_box">
-                        <label htmlFor="os">스토리지 타입</label>
-                        <select id="os">
-                            <option value="linux">Linux</option>
-                        </select>
-                        </div>
-                    </div>
-                    <div className="disk_new_img_right">
-                        <div>
-                        <input type="checkbox" className="shareable" />
-                        <label htmlFor="shareable">공유 가능</label>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                )}
-            
-                <div className="edit_footer">
-                <button style={{ display: 'none' }}></button>
-                <button>OK</button>
-                <button onClick={closePopup}>취소</button>
-                </div>
-            </div>
-            </Modal>
+              
             {/* 가상머신(편집)팝업 */}
             <Modal
                  isOpen={activePopup === 'vm_edit'}
@@ -2335,7 +2199,7 @@ const buttons = [
       >
         <div className="storage_delete_popup">
           <div className="popup_header">
-            <h1>디스크 삭제</h1>
+            <h1>삭제</h1>
             <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
           </div>
          

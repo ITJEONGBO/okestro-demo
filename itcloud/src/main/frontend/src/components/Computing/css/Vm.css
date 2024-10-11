@@ -8,11 +8,11 @@
 .detail_general_box{
     border: 1px solid #dedede;
     width: 33%;
-    height: 36vh;
+    height: 38vh;
 }
 .detail_general_mini_box{
     width: 15%;
-    height: 36vh;
+    height: 38vh;
     border: 1px solid #dedede;
 }
 .detail_general_mini_box>div:first-child,
@@ -50,24 +50,6 @@
     border: 1px solid #dedede;
 }
 /**/
-.network_new_popup form{
-    height: 69vh;
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    overflow-x: hidden; /* 가로 스크롤 숨김 */
-    font-size: 0.33rem;
-}
-.Overlay {
-    /* 오버레이 스타일 */
-    background-color: rgba(116, 115, 115, 0.555); /* 회색 배경 */
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
 
 #storage_section>div{
     height: 98%;
@@ -356,17 +338,7 @@
         cursor: pointer;
         font-size: 0.29rem; 
     }
-    .radio_outer>div{
-        width: 100%;
-        display: flex;
-        justify-content: left;
-    }
-    .radio_outer input{
-        cursor: pointer;
-    }
-    .radio_outer input, .radio_outer img{
-        margin-right: 0.3rem;
-    }
+
     .plug_radio_btn span{
         display: flex; /* Flexbox 설정 추가 */
         justify-content: center; /* 수평 가운데 정렬 */
@@ -1003,28 +975,43 @@ input[disabled] {
 
 /*편집*/
 /*편집버튼 팝업*/
-#edit_popup_bg{
-    display: none;
-    position: fixed; /* fixed로 변경하여 스크롤 시에도 고정되도록 함 */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999; /* 다른 요소들보다 위에 표시되도록 z-index 설정 */
-}
-#edit_popup{
+.vm_edit_popup{
+    border: 1px solid #dfdddd;
     position: absolute;
     box-sizing: border-box;
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 87%;
-    width: 48%;
+    height: 80.4vh;
+    width: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-    z-index: 1000; /* #edit_popup_bg 보다 위에 표시되도록 z-index 설정 */
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+.edit_aside {
+    width: 30%;
+    height: 100%;
+    background-color: #FAFAFA;
+    border-right: 1px solid #ddd;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    font-weight: 800;
+    text-align: center;
+}
+
+.edit_aside > div {
+    display: flex;
+    width: 100%;
+    text-align: left;
+    align-items: center;
+    padding-left: 0.2rem;
+    border-bottom: none;
+    cursor: pointer;
+    padding: 0.4rem 0.2rem;
+    outline: none;
+}
+
+.edit_aside > div span {
+    font-size: 0.33rem;
 }
 .edit_header{
     background-color: #ebebeb;
@@ -1054,8 +1041,29 @@ input[disabled] {
     background-color: #DDDDDD;
 }
 /*중간*/
+.vm_edit_popup form{
+    width: 100%;
+  
+}
+.vm_edit_popup form>div{
+    font-size: 0.32rem;
+}
+#host_outer,
+#ha_mode_outer,
+#res_alloc_outer,
+#common_outer,
+#console_outer {
+    height: 69vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+#common_outer {
+    height: 100%;
+    max-height: 69vh; /* 원하는 높이로 설정 */
+    overflow-y: auto;
+}
 .edit_body{
-    height: 84%;
+    height: 80vh;
     font-size: 0.36rem;
 }
 
@@ -1063,36 +1071,7 @@ input[disabled] {
     border-top: 1px solid gray;
 }
 
-.edit_first_content{
-    border-bottom: 1px solid #cecece;
-}
-.edit_first_content>div:first-child{
-    padding: 3% 2% 5% 2%;
-}
-.edit_first_content>div{
-    display: flex;
-    justify-content: space-between;
-    padding: 1.2% 2%;
-}
-.edit_first_content>div:first-child{
-    position: relative;
-}
-.edit_first_content>div>div{
-    position: absolute;
-    top: 62%;
-    right: 32.5%;
-    font-style: italic;
-}
 
-
-.edit_first_content select{
-    width: 47%;
-    height: 3.3vh;
-    padding: 0 3px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
-}
 .edit_second_content>div,#host_third_content>div{
     display: flex;
     justify-content: space-between;
@@ -1393,4 +1372,122 @@ input[disabled] {
 }
 .vm_bring_table>div{
     width:44%;
+}
+/*가상머신세부 -네트워크인터페이스 - 새로만들기*/
+.new_network_interface{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 45%;
+    width: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+.radio_outer{
+    width: 100%;
+    justify-content: left;
+}
+.radio_outer>div{
+    display: flex; /* Flexbox 설정 추가 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.radio_outer input{
+    cursor: pointer;
+}
+.radio_outer input, .radio_outer img{
+    margin-right: 0.3rem;
+}
+// 새로만들기(수정해야됨)
+.vm_new_nav{
+    font-size: 0.33rem;
+    height: 48vh;
+    width: 60%;
+    background-color: #FAFAFA;
+    border-right: 1px solid #ddd;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    font-weight: 800;
+}
+.vm_new_nav>div {
+    padding: 0.4rem 0.2rem;
+    cursor: pointer;
+    width: 100%;
+    font-size: 0.33rem;
+}
+
+.vm_edit_select_tab {
+    padding: 0.2rem 0;
+    font-size: 0.33rem;
+    width: 86%;
+    height: 69vh;
+    overflow-y: auto; /* 세로 스크롤 추가 */
+    overflow-x: hidden; /* 가로 스크롤 숨김 */
+}
+
+.backup_edit_radiobox {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0.2rem;
+    height: 16vh;
+}
+
+.vm_edit_popup_content {
+    display: flex;
+}
+.edit_first_content{
+    border-bottom: 1px solid #cecece;
+    padding: 3% 2% 5% 2%;
+}
+.edit_first_content>div:first-child{
+
+}
+.edit_first_content>div{
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.edit_first_content select{
+    width: 47%;
+    height: 3.3vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+}
+
+.edit_first_content{
+    border-bottom: 1px solid #cecece;
+    font-size: 0.32rem;
+}
+.edit_first_content>div:first-child{
+    padding: 3% 2% 5% 2%;
+}
+.edit_first_content>div{
+    display: flex;
+    justify-content: space-between;
+    padding: 1.2% 2%;
+
+}
+.edit_first_content>div:first-child{
+    position: relative;
+}
+.edit_first_content>div>div{
+    position: absolute;
+    top: 62%;
+    right: 32.5%;
+    font-style: italic;
+}
+
+.edit_first_content select{
+    width: 47%;
+    height: 3.3vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+    border: 1px solid #a7a6a6;
 }

@@ -3,6 +3,7 @@ import { HashRouter  as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Login from './page/Login';
 import Dashboard from './components/Dashboard';
+import Example from './components/Example';
 import Header from './components/Header/Header';
 import Computing from './components/Computing/Computing';
 import MainOuter from './components/MainOuter';
@@ -30,6 +31,7 @@ import AllDisk from './components/Storage/AllDisk';
 import RutilManager from './components/Computing/RutilManager';
 import Event from './components/Event';
 import Error from './components/Error';
+
 
 const App = () => {
   const [stompClient, setStompClient] = useState(null);
@@ -128,6 +130,8 @@ const App = () => {
          
               <Route path="/computing/rutil-manager" element={<RutilManager />} />
               <Route path="/computing/vm-template-chart" element={<VmTemplateChart />} />
+              <Route path="/example" element={<Example />} />
+              
             </Routes>
           </MainOuter>
           </>

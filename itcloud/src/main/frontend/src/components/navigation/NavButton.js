@@ -1,28 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { useLocation } from 'react-router-dom';
 
 const NavButton = ({ sections, handleSectionClick }) => {
-  const [activeSection, setActiveSection] = useState('');
+  const { pathname } = useLocation(); // URL 경로 추적
+  const [prevPath, setPrevPath] = useState(pathname); // 이전 경로 저장
+  const [activeSection, setActiveSection] = useState(() => {
+    return localStorage.getItem('activeSection') || 'general'; // 기본값 'general' 설정
+  });
 
   useEffect(() => {
-    // 로컬 스토리지에서 저장된 섹션이 있는지 확인
-    const savedSection = localStorage.getItem('activeSection');
-    
-    if (savedSection && sections.some(section => section.id === savedSection)) {
-      // 저장된 섹션이 있고, 해당 섹션이 존재하면 그 섹션을 활성화
-      setActiveSection(savedSection);
-    } else if (sections.length > 0) {
-      // 저장된 섹션이 없고 섹션 배열이 비어있지 않으면 첫 번째 섹션을 기본값으로 설정
-      const firstSectionId = sections[0]?.id;
-      setActiveSection(firstSectionId);
-      localStorage.setItem('activeSection', firstSectionId); // 첫 번째 섹션을 로컬 스토리지에 저장
-      handleSectionClick(firstSectionId);  // 첫 번째 섹션을 선택했음을 부모 컴포넌트에 알림
+    if (pathname !== prevPath) {
+      // URL 경로가 변경된 경우에만 'general'로 초기화
+      setActiveSection('general');
+      setPrevPath(pathname); // 이전 경로를 현재 경로로 업데이트
     }
-  }, [sections]);
+    // 경로가 동일한 경우(즉, 새로고침)에는 activeSection을 유지
+  }, [pathname, prevPath]);
+
+  useEffect(() => {
+    // activeSection을 로컬스토리지에 저장
+    localStorage.setItem('activeSection', activeSection);
+  }, [activeSection]);
 
   const handleClick = (sectionId) => {
-    setActiveSection(sectionId);
-    localStorage.setItem('activeSection', sectionId); // 클릭한 섹션을 로컬 스토리지에 저장
+    setActiveSection(sectionId); // 선택된 섹션을 업데이트
     handleSectionClick(sectionId); // 선택한 섹션을 부모 컴포넌트에 알림
   };
 

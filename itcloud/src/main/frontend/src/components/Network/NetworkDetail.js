@@ -73,6 +73,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     
   
   const location = useLocation();
+  const [prevPath, setPrevPath] = useState(location.pathname);
   const locationState = location.state  
   const { id } = useParams(); // useParams로 URL에서 name을 가져옴
   const [shouldRefresh, setShouldRefresh] = useState(false);
@@ -255,9 +256,24 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   
 
   // 
-  const [activeTab, setActiveTab] = useState('general');
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem('activeTab') || 'general'; 
+  });
+  useEffect(() => {
+    if (location.pathname !== prevPath) {
+      // URL이 변경되었을 때 'general'로 초기화
+      setActiveTab('general');
+      setPrevPath(location.pathname); // 이전 경로 업데이트
+    }
+  }, [location.pathname, prevPath]);
+
+  useEffect(() => {
+    localStorage.setItem('activeTab', activeTab); // activeTab 상태를 localStorage에 저장
+  }, [activeTab]);
+
   const handleTabClick = (tab) => {
-    setActiveTab(tab);
+    setActiveTab(tab); // 탭 클릭 시 상태 업데이트
+    localStorage.setItem('activeTab', tab); // 클릭된 탭을 localStorage에 저장
   };
   const [activeVmFilter, setActiveVmFilter] = useState('running');
   const handleVmFilterClick = (filter) => {
@@ -508,7 +524,7 @@ const openSecondModal = () => {
 
       {/*header 편집버튼 팝업 */}
       <Modal
-                isOpen={activePopup === 'editNetwork'}
+                isOpen={activePopup === 'edit_popup'}
                 onRequestClose={closePopup}
                 contentLabel="편집"
                 className="Modal"
@@ -861,20 +877,7 @@ const openSecondModal = () => {
       </div>
 
       <div className="network_separation_right">
-      <div className="network_filter_btns">
-  <button
-    className={`btn ${activeButton === 'network' ? 'bg-gray-200' : ''}`}
-    onClick={() => handleButtonClick('network')}
-  >
-    네트워크
-  </button>
-  <button
-    className={`btn border-l border-gray-800 ${activeButton === 'label' ? 'bg-gray-200' : ''}`}
-    onClick={() => handleButtonClick('label')}
-  >
-    레이블
-  </button>
-</div>
+
 
   {/* unconfigured_network는 네트워크 버튼이 클릭된 경우만 보임 */}
   {!isLabelVisible && (
@@ -907,15 +910,7 @@ const openSecondModal = () => {
     </div>
   )}
 
-  {/* lable_part는 레이블 버튼이 클릭된 경우만 보임 */}
-  {isLabelVisible && (
 
-      <div class="lable_part">
-        <FontAwesomeIcon icon={faTag} style={{ color: 'orange', marginRight: '0.2rem' }} />
-        <span>[새 레이블]</span>
-      </div>
-
-  )}
 </div>
 
 {/*연필아이콘 클릭하면 추가모달 */}
@@ -929,7 +924,7 @@ const openSecondModal = () => {
 >
   <div className="network_backup_edit">
     <div className="popup_header">
-      <h1>사용자에게 권한 추가</h1>
+      <h1>관리 네트워크 인터페이스 수정:ovirtmgmt</h1>
       <button onClick={closeSecondModal}>
         <FontAwesomeIcon icon={faTimes} fixedWidth />
       </button>
@@ -970,33 +965,123 @@ const openSecondModal = () => {
           </div>
 
           <div className='backup_edit_radiobox'>
-            <div>부트 프로토콜</div>
+            <div className='font-bold'>부트 프로토콜</div>
             <div className="radio_option">
               <input type="radio" id="default_mtu" name="mtu" value="default" checked />
               <label htmlFor="default_mtu">없음</label>
             </div>
             <div className="radio_option">
-              <input type="radio" id="user_defined_mtu" name="mtu" value="user_defined" />
-              <label htmlFor="user_defined_mtu">DHCP</label>
+              <input type="radio" id="dhcp_mtu" name="mtu" value="dhcp" />
+              <label htmlFor="dhcp_mtu">DHCP</label>
             </div>
             <div className="radio_option">
-              <input type="radio" id="user_defined_mtu" name="mtu" value="user_defined" />
-              <label htmlFor="user_defined_mtu">정적</label>
+              <input type="radio" id="static_mtu" name="mtu" value="static" />
+              <label htmlFor="static_mtu">정적</label>
             </div>
+
           </div>
 
           <div>
             <div className="vnic_new_box">
-                <label htmlFor="data_center">데이터 센터</label>
-                <select id="data_center" disabled>
-                  <option value="none">Default</option>
-                </select>
+              <label htmlFor="ip_address">IP</label>
+              <select id="ip_address" disabled>
+                <option value="#">#</option>
+              </select>
+            </div>
+            <div className="vnic_new_box">
+              <label htmlFor="netmask">넷마스크 / 라우팅 접두사</label>
+              <select id="netmask" disabled>
+                <option value="#">#</option>
+              </select>
+            </div>
+            <div className="vnic_new_box">
+              <label htmlFor="gateway">게이트웨이</label>
+              <select id="gateway" disabled>
+                <option value="#">#</option>
+              </select>
             </div>
           </div>
           </>
         }
-        {selectedModalTab === 'ipv6' && <div>IPv6 설정 내용</div>}
-        {selectedModalTab === 'dns' && <div>DNS 설정 내용</div>}
+        {selectedModalTab === 'ipv6' && 
+        <>
+        <div className="vnic_new_checkbox" style={{ borderBottom: '1px solid gray' }}>
+            <input type="checkbox" id="allow_all_users" className='disabled' />
+            <label htmlFor="allow_all_users" className='disabled'>네트워크 동기화</label>
+        </div>
+
+        <div className='backup_edit_radiobox'>
+          <div className='font-bold mb-0.5'>부트 프로토콜</div>
+          <div className="radio_option mb-0.5">
+            <input type="radio" id="default_mtu" name="mtu" value="default" checked />
+            <label htmlFor="default_mtu">없음</label>
+          </div>
+          <div className="radio_option mb-0.5">
+            <input type="radio" id="dhcp_mtu" name="mtu" value="dhcp" />
+            <label htmlFor="dhcp_mtu">DHCP</label>
+          </div>
+          <div className="radio_option mb-0.5">
+            <input type="radio" id="slaac_mtu" name="mtu" value="slaac" />
+            <label htmlFor="slaac_mtu">상태 비저장 주소 자동 설정</label>
+          </div>
+          <div className="radio_option mb-0.5">
+            <input type="radio" id="dhcp_slaac_mtu" name="mtu" value="dhcp_slaac" />
+            <label htmlFor="dhcp_slaac_mtu">DHCP 및 상태 비저장 주소 자동 설정</label>
+          </div>
+          <div className="radio_option mb-0.5">
+            <input type="radio" id="static_mtu" name="mtu" value="static" />
+            <label htmlFor="static_mtu">정적</label>
+          </div>
+        </div>
+
+        <div className='mt-3'>
+          <div className="vnic_new_box">
+            <label htmlFor="ip_address" className='disabled'>IP</label>
+            <select id="ip_address" className='disabled' disabled>
+              <option value="#">#</option>
+            </select>
+          </div>
+          <div className="vnic_new_box">
+            <label htmlFor="netmask" className='disabled'>넷마스크 / 라우팅 접두사</label>
+            <select id="netmask"className='disabled' disabled>
+              <option value="#">#</option>
+            </select>
+          </div>
+          <div className="vnic_new_box">
+            <label htmlFor="gateway" className='disabled'>게이트웨이</label>
+            <select id="gateway"className='disabled' disabled>
+              <option value="#">#</option>
+            </select>
+          </div>
+        </div>
+        </>
+        }
+        {selectedModalTab === 'dns' && 
+        <>
+        <div className="vnic_new_checkbox" style={{ borderBottom: '1px solid gray' }}>
+          <input type="checkbox" id="network_sync" className='disabled' />
+          <label htmlFor="network_sync" className='disabled'>네트워크 동기화</label>
+        </div>
+        <div className="vnic_new_checkbox">
+          <input type="checkbox" id="qos_override"/>
+          <label htmlFor="qos_override">QoS 덮어쓰기</label>
+        </div>
+        <div className='p-1 font-bold'>아웃바운드</div>
+        <div className="network_form_group">
+          <label htmlFor="weighted_share" className='disabled'>가중 공유</label>
+          <input type="text" id="weighted_share" disabled />
+        </div>
+        <div className="network_form_group">
+          <label htmlFor="rate_limit disabled">속도 제한 [Mbps]</label>
+          <input type="text" id="rate_limit" disabled />
+        </div>
+        <div className="network_form_group">
+          <label htmlFor="commit_rate disabled">커밋 속도 [Mbps]</label>
+          <input type="text" id="commit_rate" disabled/>
+        </div>
+
+        </>
+        }
       </div>
     </div>
 
@@ -1021,6 +1106,37 @@ const openSecondModal = () => {
             <button onClick={closePopup}>취소</button>
           </div>
         </div>
+      </Modal>
+
+      {/*삭제 팝업 */}
+      <Modal
+      isOpen={activePopup === 'delete'}
+      onRequestClose={closePopup}
+      contentLabel="디스크 업로드"
+      className="Modal"
+      overlayClassName="Overlay"
+      shouldCloseOnOverlayClick={false}
+    >
+      <div className="storage_delete_popup">
+        <div className="popup_header">
+          <h1>디스크 삭제</h1>
+          <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+        </div>
+        
+        <div className='disk_delete_box'>
+          <div>
+            <FontAwesomeIcon style={{marginRight:'0.3rem'}} icon={faExclamationTriangle} />
+            <span>다음 항목을 삭제하시겠습니까?</span>
+          </div>
+        </div>
+
+
+        <div className="edit_footer">
+          <button style={{ display: 'none' }}></button>
+          <button>OK</button>
+          <button onClick={closePopup}>취소</button>
+        </div>
+      </div>
       </Modal>
 
       {/*호스트(호스트 네트워크 설정 Before)*/}
@@ -1164,36 +1280,6 @@ const openSecondModal = () => {
       </Modal> */}
    
 
-      {/*삭제 팝업 */}
-      <Modal
-      isOpen={activePopup === 'delete'}
-      onRequestClose={closePopup}
-      contentLabel="디스크 업로드"
-      className="Modal"
-      overlayClassName="Overlay"
-      shouldCloseOnOverlayClick={false}
-    >
-      <div className="storage_delete_popup">
-        <div className="popup_header">
-          <h1>디스크 삭제</h1>
-          <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-        </div>
-        
-        <div className='disk_delete_box'>
-          <div>
-            <FontAwesomeIcon style={{marginRight:'0.3rem'}} icon={faExclamationTriangle} />
-            <span>다음 항목을 삭제하시겠습니까?</span>
-          </div>
-        </div>
-
-
-        <div className="edit_footer">
-          <button style={{ display: 'none' }}></button>
-          <button>OK</button>
-          <button onClick={closePopup}>취소</button>
-        </div>
-      </div>
-      </Modal>
       <Footer/>
     </div>
   );

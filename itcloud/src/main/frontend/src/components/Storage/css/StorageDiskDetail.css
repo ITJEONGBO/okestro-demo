@@ -29,3 +29,18 @@
     color: rgb(10, 55, 107);
     font-weight: 600;
 }
+.storage_upload_popup{
+    border: 1px solid #dfdddd;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    height: 41%;
+    width: 28%;
+    left: 50%;
+    z-index:99999;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+    font-size:0.33rem;
+}

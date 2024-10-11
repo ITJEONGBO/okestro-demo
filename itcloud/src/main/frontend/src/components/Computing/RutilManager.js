@@ -478,19 +478,16 @@ function RutilManager() {
         },
       ];
 
-    const [activeTab, setActiveTab] = useState('general');
-
+    
+    const [activeTab, setActiveTab] = useState(() => {
+        return localStorage.getItem('activeTab') || 'general';
+      });
     const handleTabClick = (tab) => {
         setActiveTab(tab);
-        setShowNetworkDetail(false); // 탭이 변경되면 NetworkDetail 화면을 숨김
         localStorage.setItem('activeTab', tab); // 새로고침해도 값유지
     };
-    useEffect(() => {
-        const savedTab = localStorage.getItem('activeTab');
-        if (savedTab) {
-            setActiveTab(savedTab);  // 저장된 값이 있으면 해당 탭을 활성화
-        }
-    }, []);
+ 
+    
 
     // HeaderButton 컴포넌트
     const buttons = [

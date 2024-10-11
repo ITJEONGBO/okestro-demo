@@ -219,9 +219,7 @@ const Network = () => {
                                             <option value="default">[제한없음]</option>
                                         </select>
                                 </div>
-                                    <div className='popup_plus_btn'>
-                                        <div className="popup_plus" onClick={() => setSecondModalOpen(true)}>새로만들기</div>
-                                    </div>
+                                 
                                
                                     <div className="network_checkbox_type2">
                                         <input type="checkbox" id="dns_settings" name="dns_settings" />

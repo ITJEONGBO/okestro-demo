@@ -75,13 +75,12 @@ const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 
   */
   const sectionHeaderButtons = [
     { id: 'storage_disk_new_btn', label: '새로 만들기', onClick: () => openPopup('newDisk') },
-    { id: 'disk_edit_btn', label: '편집', onClick: () => openPopup('disk_edit') },
+    { id: 'disk_edit_btn', label: '수정', onClick: () => openPopup('disk_edit') },
     { id: 'storage_delete_btn', label: '제거', onClick: () => openPopup('delete') },
     { id: 'move_btn', label: '이동', onClick: () => openPopup('move') },
     { id: 'copy_btn', label: '복사', onClick: () => openPopup('copy') },
     { id: 'storage_disk_upload', label: '업로드', onClick: () => openPopup('uploadDisk') },
     { id: 'disabled_download_btn', label: '다운로드', disabled: true },
-    { id: 'disabled_lun_refresh_btn', label: 'LUN 새로고침', disabled: true }
   ];
   
   const pathData = ['스토리지','디스크'];

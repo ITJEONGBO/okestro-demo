@@ -1,6 +1,8 @@
 import { faCheck, faExclamation, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TableOuter from '../../table/TableOuter';
+import EventDu from '../../duplication/EventDu';
+import TableColumnsInfo from '../../table/TableColumnsInfo';
 
 // 이벤트 섹션
 const EventSection = () => {
@@ -26,13 +28,14 @@ const EventSection = () => {
       { icon: <FontAwesomeIcon icon={faCheck} fixedWidth/>, time: '2023. 12. 29. PM 12:53:53', message: 'VM on2o-ap01 has been successfully imported from the given configuration.', correlationId: 'ede53bc8-c6...', source: 'oVirt', customEventId: '' }
     ];
     return (
-      <div className="host_empty_outer">
-          <TableOuter 
-            columns={columns}
-            data={data}
-            onRowClick={() => console.log('Row clicked')} 
-          />
-      </div>
+      <>
+        <EventDu 
+          columns={TableColumnsInfo.EVENTS}
+          data={data}
+          handleRowClick={() => console.log('Row clicked')}
+          showSearchBox={false}
+        />
+      </>
     );
   };
   

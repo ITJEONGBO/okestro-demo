@@ -25,6 +25,13 @@
     text-rendering:optimizeLegibility; 
 }
 /*-----중복 */
+form{
+    width: 100%;
+  
+}
+form>div{
+    font-size: 0.32rem;
+}
 button{
     border:1px solid gray;
     cursor:pointer;
@@ -34,12 +41,7 @@ button{
     align-items: center; /* 수직 가운데 정렬 추가 */
     cursor:pointer;
 }
-form{
-    width: 100%;
-}
-form>div{
-    font-size: 0.32rem;
-}
+
 .Overlay {
  
     background-color: rgba(116, 115, 115, 0.555); /* 회색 배경 */
@@ -68,38 +70,6 @@ form>div{
     padding: 0.6rem 0.3rem;
 }
 
-.edit_first_content{
-    border-bottom: 1px solid #cecece;
-    font-size: 0.32rem;
-}
-.edit_first_content>div:first-child{
-    padding: 3% 2% 5% 2%;
-}
-.edit_first_content>div{
-    display: flex;
-    justify-content: space-between;
-    padding: 1.2% 2%;
-
-}
-.edit_first_content>div:first-child{
-    position: relative;
-}
-.edit_first_content>div>div{
-    position: absolute;
-    top: 62%;
-    right: 32.5%;
-    font-style: italic;
-}
-
-.edit_first_content select{
-    width: 47%;
-    height: 3.3vh;
-    padding: 0 3px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.29rem;
-    border: 1px solid #a7a6a6;
-}
 
 .content_header_right {  
     display: flex;
@@ -205,22 +175,15 @@ form>div{
 }
 /*네트워크 인터페이스 팝업창들*/
 /*새로만들기*/
-.network_popup_outer{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
+
 .network_popup{
     position: absolute;
     box-sizing: border-box;
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 65%;
-    width: 50%;
+    height: 43%;
+    width: 44%;
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
@@ -237,6 +200,26 @@ form>div{
     justify-content: space-between;
     padding-bottom: 1.3%;
 }
+.network_new_popup form{
+    height: 69vh;
+    overflow-y: auto; /* 세로 스크롤 추가 */
+    overflow-x: hidden; /* 가로 스크롤 숨김 */
+    font-size: 0.33rem;
+    width:100%;
+}
+.Overlay {
+    /* 오버레이 스타일 */
+    background-color: rgba(116, 115, 115, 0.555); /* 회색 배경 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
 /*새로만들기 팝업*/
 .host_new_outer {
     position: absolute;
@@ -332,16 +315,7 @@ form>div{
 #system_outer,#host_outer,#ha_mode_outer,#res_alloc_outer{
     display: none;
 }
-#host_outer,
-#ha_mode_outer,
-#res_alloc_outer,
-#common_outer,
-#console_outer
-{
-    height: 73.4vh;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
+
 .edit_third_content{
     padding: 2.3% 2% 0 2%;
     margin-bottom: 0.4rem;
@@ -545,6 +519,7 @@ input[type="checkbox"],input[type="radio"]{
 input[type="text"],select{
     border: 1px solid rgb(206, 206, 206);
     border-radius: 3px;
+    padding:0 0.1rem;
 }
 input[type="submit"]{
     border:1px solid gray;
@@ -610,31 +585,7 @@ input[type="text"]:focus {
     background: #e4e4e4;
     color: #449bff;
 }
-.edit_aside {
-    width: 30%;
-    height: 100%;
-    background-color: #FAFAFA;
-    border-right: 1px solid #ddd;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    font-weight: 800;
-    text-align: center;
-}
-
-.edit_aside > div {
-    display: flex;
-    width: 100%;
-    text-align: left;
-    align-items: center;
-    padding-left: 0.2rem;
-    border-bottom: none;
-    cursor: pointer;
-    padding: 0.4rem 0.2rem;
-    outline: none;
-}
-
-.edit_aside > div span {
-    font-size: 0.33rem;
-}
+/*  */
 /*체크박스*/  
 .checkbox_group{
     display:flex;
@@ -770,7 +721,7 @@ input[type="text"]:focus {
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 26.4vh;
+    height: 22.4vh;
     width: 38%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -782,7 +733,7 @@ input[type="text"]:focus {
 }
 .disk_delete_box>div{
     padding: 0.4rem;
-    border: 2px solid #87abd4;
+
     color: #3737ba;
 }
 .disk_type{
@@ -847,7 +798,7 @@ input[type="text"]:focus {
     background: #fff;
     top: 50%;
     height: 74%;
-    width: 58%;
+    width: 50%;
     left: 50%;
     z-index:99999;
     transform: translate(-50%, -50%);
@@ -922,13 +873,7 @@ input[type="text"]:focus {
     background-color: #dbdada;
 }
 
-/*section(중간)*/
 
-.edit_body{
-    height: 84%;
-    font-size: 0.36rem;
-    display:flex;
-}
 /*article*/
 
 /*nav*/
@@ -2355,30 +2300,7 @@ input[disabled] {
     font-weight: 600;
 }
 
-/*편집버튼 팝업*/
-#edit_popup_bg{
-    display: none;
-    position: fixed; /* fixed로 변경하여 스크롤 시에도 고정되도록 함 */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999; /* 다른 요소들보다 위에 표시되도록 z-index 설정 */
-}
-#edit_popup{
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 4px;
-    background: #fff;
-    top: 50%;
-    height: 87%;
-    width: 48%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
-    z-index: 1000; /* #edit_popup_bg 보다 위에 표시되도록 z-index 설정 */
-}
+
 
 /*중간*/
 

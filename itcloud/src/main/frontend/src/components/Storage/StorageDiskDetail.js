@@ -11,10 +11,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUser, fa1, fa2,
   faTimes,
-  faExclamationTriangle
+  faExclamationTriangle,
+  faHdd
 } from '@fortawesome/free-solid-svg-icons'
 import './css/StorageDiskDetail.css';
 import { useAllDisk } from '../../api/RQHook';
+import Path from '../Header/Path';
+import PagingTableOuter from '../table/PagingTableOuter';
 
 function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const { name } = useParams();
@@ -49,7 +52,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
     { id: 'new_btn', label: '제거', onClick: () => openPopup('delete') },
     { id: 'get_btn', label: '이동', onClick: () => openPopup('move') },
     { id: 'new_btn', label: '복사', onClick: () => openPopup('copy') },
-    { id: 'get_btn', label: '업로드', onClick: () => console.log('Move button clicked') },
+    { id: 'get_btn', label: '업로드',onClick: () => openPopup('upload') },
     { id: 'edit_btn', label: '다운로드', onClick: () => openPopup('editDisk') },
    
   ];
@@ -67,31 +70,20 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
     { id: 'machine', label: '가상머신' },
     { id: 'storage', label: '스토리지' }
   ];
+  const pathData = ['#', sections.find(section => section.id === activeTab)?.label];
 
   const vmData = [];
   const storageData = [
     {
-      icon1: <FontAwesomeIcon icon={fa1} fixedWidth/>,
-      icon2: <FontAwesomeIcon icon={fa2} fixedWidth/>,
-      domainName: name,
-      domainType: '데이터 (마스터)',
-      status: '활성화',
-      freeSpace: '83 GiB',
-      usedSpace: '16 GiB',
-      totalSpace: '99 GiB',
-      description: '',
-    },
-  ];
-
-  const permissionData = [
-    {
-      icon: <FontAwesomeIcon icon={faUser} fixedWidth/>,
-      user: 'ovirtmgmt',
-      authProvider: '',
-      namespace: '*',
-      role: 'SuperUser',
-      createdDate: '2023.12.29 AM 11:40:58',
-      inheritedFrom: '(시스템)',
+      icon1: '#',
+      icon2: '#',
+      domainName: '#',
+      domainType: '#',
+      status: '#',
+      freeSpace: '#',
+      usedSpace: '#',
+      totalSpace: '#',
+      description: '#',
     },
   ];
 
@@ -131,8 +123,9 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
   return (
     <div className="content_detail_section">
       <HeaderButton
+        titleIcon={faHdd}
         title="디스크"
-        subtitle="디스크이름"
+        subtitle="#"
         additionalText={name}
         buttons={buttons}
         popupItems={[]}
@@ -140,12 +133,14 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
       />
 
       <div className="content_outer">
+        
         <NavButton 
           sections={sections} 
           activeSection={activeTab} 
           handleSectionClick={handleTabClick} 
         />
         <div className="host_btn_outer">
+          <Path pathElements={pathData} />
           {activeTab === 'general' && (
             <div className="tables">
               <div className="table_container_center">
@@ -153,28 +148,28 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
                   <tbody>
                     <tr>
                       <th>별칭:</th>
-                      <td>{name}</td>
+                      <td>#</td>
                     </tr>
                     <tr>
                       <th>설명:</th>
-                      <td>Hosted-Engine metadata disk</td>
+                      <td>#</td>
                     </tr>
                     <tr>
                       <th>ID:</th>
-                      <td>b7bad714-6d4d-4fbf-83a4-f4b1eff449b3</td>
+                      <td>#</td>
                     </tr>
                     <tr>
                       <th>디스크 프로파일:</th>
-                      <td>hosted_storage</td>
+                      <td>#</td>
                     </tr>
                     
                     <tr>
                       <th>가상 크기:</th>
-                      <td>&lt; 1 GiB</td>
+                      <td>&lt; #</td>
                     </tr>
                     <tr>
                       <th>실제 크기:</th>
-                      <td>&lt; 1 GiB</td>
+                      <td>&lt; #</td>
                     </tr>
                   </tbody>
                 </table>
@@ -183,30 +178,31 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
           )}
 
           {activeTab === 'machine' && (
-            <div className="host_empty_outer">
-              <TableOuter 
+           
+              <PagingTableOuter 
                 columns={TableColumnsInfo.VMS_FROM_DISK} 
                 data={vmData}
                 onRowClick={() => console.log('Row clicked')} 
+                showSearchBox={false}
               />
-            </div>
+           
           )}
 
           {activeTab === 'storage' && (
-            <div className="host_empty_outer">
-              <TableOuter 
+              <PagingTableOuter 
                 columns={TableColumnsInfo.STORAGES_FROM_DISK} 
                 data={storageData}
                 onRowClick={() => console.log('Row clicked')} 
+                showSearchBox={false}
               />
-            </div>
+            
           )}
 
         
         </div>
       </div>
-           {/*디스크(편집)팝업 */}
-           <Modal
+        {/*디스크(편집)팝업 */}
+        <Modal
         isOpen={activePopup === 'editDisk'}
         onRequestClose={closePopup}
         contentLabel="새 가상 디스크"
@@ -235,18 +231,10 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
               onClick={(e) => e.preventDefault()} // 클릭 불가
               className={`disabled ${modalTab === 'directlun' ? 'active' : ''}`}
             >
-              직접LUN
+              <span className='disabled'>직접LUN</span>
             </div>
 
-            {/* 관리되는 블록 탭 - 클릭 불가 */}
-            <div
-              id="storage_managed_btn"
-              onClick={(e) => e.preventDefault()} // 클릭 불가
-          
-              className={`disabled ${modalTab === 'managed' ? 'active' : ''}`}
-            >
-              관리되는 블록
-            </div>
+           
           </div>
 
 
@@ -256,38 +244,42 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
               <div className="disk_new_img_left">
                 <div className="img_input_box">
                   <span>크기(GIB)</span>
-                  <input type="text" />
+                  <input type="text" value={'#'}/>
+                </div>
+                <div className="img_input_box">
+                  <span>크기 확장(GIB)</span>
+                  <input type="text" value={'#'}/>
                 </div>
                 <div className="img_input_box">
                   <span>별칭</span>
-                  <input type="text" />
+                  <input type="text"value={'#'} />
                 </div>
                 <div className="img_input_box">
                   <span>설명</span>
                   <input type="text" />
                 </div>
                 <div className="img_select_box">
-                  <label htmlFor="os">데이터 센터</label>
-                  <select id="os">
-                    <option value="linux">Linux</option>
+                  <label htmlFor="dataCenter">데이터 센터</label>
+                  <select id="dataCenter">
+                    <option value="#">#</option>
                   </select>
                 </div>
                 <div className="img_select_box">
-                  <label htmlFor="os">스토리지 도메인</label>
-                  <select id="os">
-                    <option value="linux">Linux</option>
+                  <label htmlFor="storageDomain">스토리지 도메인</label>
+                  <select id="storageDomain">
+                    <option value="#">#</option>
                   </select>
                 </div>
                 <div className="img_select_box">
-                  <label htmlFor="os">할당 정책</label>
-                  <select id="os">
-                    <option value="linux">Linux</option>
+                  <label htmlFor="allocationPolicy">할당 정책</label>
+                  <select id="allocationPolicy">
+                    <option value="#">#</option>
                   </select>
                 </div>
                 <div className="img_select_box">
-                  <label htmlFor="os">디스크 프로파일</label>
-                  <select id="os">
-                    <option value="linux">Linux</option>
+                  <label htmlFor="diskProfile">디스크 프로파일</label>
+                  <select id="diskProfile">
+                    <option value="#">#</option>
                   </select>
                 </div>
               </div>
@@ -348,8 +340,8 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
               </div>
             </div>
           )}
-          {/*관리되는 블록 */}
-          {modalTab === 'managed' && (
+          {/*관리되는 블록(삭제예정) */}
+          {/* {modalTab === 'managed' && (
             <div id="storage_managed_outer">
               <div id="disk_managed_block_left">
                 <div className="img_input_box">
@@ -385,7 +377,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
                 </div>
               </div>
             </div>
-          )}
+          )} */}
           <div className="edit_footer">
             <button style={{ display: 'none' }}></button>
             <button>OK</button>
@@ -540,10 +532,36 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
           </div>
         </div>
       </Modal>
+       {/*디스크(업로드)팝업 */}
+       <Modal
+        isOpen={activePopup === 'upload'}
+        onRequestClose={closePopup}
+        contentLabel="디스크 업로드"
+        className="Modal"
+        overlayClassName="Overlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="storage_upload_popup">
+          <div className="popup_header">
+            <h1>작업이 취소되었습니다</h1>
+            <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+          </div>
+         
+          <div className='p-2'>
+            작업을 실행하는 동안 오류가 발생했습니다: 가상 디스크을/를 전송할 수 없습니다. 대상 스토리지 도메인 상태가 Unknown입니다.
+          </div>
+
+
+          <div className="edit_footer">
+            <button style={{ display: 'none' }}></button>
+            <button>OK</button>
+            <button onClick={closePopup}>취소</button>
+          </div>
+        </div>
+      </Modal>
       <Footer/>
 
-      {/* 모달 컴포넌트 */}
-      <Permission isOpen={isModalOpen} onRequestClose={handleCloseModal} />
+
     
     </div>
   );

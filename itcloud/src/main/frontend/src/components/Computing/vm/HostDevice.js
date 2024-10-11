@@ -44,7 +44,7 @@ const EventSection = () => {
     };
   }
     return (
-        <div className="host_btn_outer">
+        <>
         <div className="header_right_btns">
             <button onClick={() => openPopup('add_device')}>장치 추가</button>
             <button className='disabled'>장치 삭제</button>
@@ -182,7 +182,7 @@ const EventSection = () => {
           </div>
         </div>
       </Modal>
-      </div>
+      </>
     );
   };
   
