@@ -11,9 +11,7 @@ import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.repository.*
 import com.itinfo.itcloud.repository.history.*
 import com.itinfo.itcloud.repository.history.dto.UsageDto
-import com.itinfo.itcloud.repository.history.entity.HostInterfaceSamplesHistoryEntity
-import com.itinfo.itcloud.repository.history.entity.HostSamplesHistoryEntity
-import com.itinfo.itcloud.repository.history.entity.getUsage
+import com.itinfo.itcloud.repository.history.entity.HostConfigurationEntity
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
@@ -42,7 +40,8 @@ interface ItHostService {
 	@Throws(Error::class)
 	fun findOne(hostId: String): HostVo?
 
-	// 호스트 생성창 - 클러스터 목록 [ItClusterService.findAll]
+	// 호스트 생성창
+	// 		클러스터 목록 [ItClusterService.findAll]
 
 	/**
 	 * [ItHostService.add]
@@ -72,6 +71,7 @@ interface ItHostService {
 	 */
 	@Throws(Error::class)
 	fun remove(hostId: String): Boolean
+
 	/**
 	 * [ItHostService.findAllVmsFromHost]
 	 * 호스트 가상머신 목록
@@ -81,24 +81,17 @@ interface ItHostService {
 	 */
 	@Throws(Error::class)
 	fun findAllVmsFromHost(hostId: String): List<VmVo>
-	// 생성
-	// 편집
-	// 삭제
-	// 실행
-	// 일시중지
-	// 종료
-	// 재부팅
-	// 마이그레이션
+	// 생성, 편집, 삭제, 실행, 일시중지, 종료, 호스트 네트워크 복사, 재부팅, 콘솔, 템플릿 목록, 스냅샷 생성, 마이그레이션
 
 	/**
-	 * [ItHostService.findAllNicsFromHost]
+	 * [ItHostService.findAllHostNicsFromHost]
 	 * 호스트 네트워크 인터페이스 목록
 	 *
 	 * @param hostId [String] 호스트 Id
 	 * @return List<[HostNicVo]> 네트워크 인터페이스 목록
 	 */
 	@Throws(Error::class)
-	fun findAllNicsFromHost(hostId: String): List<HostNicVo>
+	fun findAllHostNicsFromHost(hostId: String): List<HostNicVo>
 	/**
 	 * [ItHostService.setUpNetworksFromHost]
 	 * 호스트 네트워크 설정
@@ -155,8 +148,7 @@ class HostServiceImpl(
 	override fun findAll(): List<HostVo> {
 		log.info("findAll ... ")
 		val hosts: List<Host> =
-			conn.findAllHosts()
-				.getOrDefault(listOf()) // hosted Engine의 정보가 나온다
+			conn.findAllHosts().getOrDefault(listOf())
 		return hosts.map { host ->
 			val hostNic: HostNic? =
 				conn.findAllNicsFromHost(host.id()).getOrDefault(listOf()).firstOrNull()
@@ -172,9 +164,10 @@ class HostServiceImpl(
 	override fun findOne(hostId: String): HostVo? {
 		log.info("findOne ... hostId: {}", hostId)
 		val res: Host? =
-			conn.findHost(hostId)
-				.getOrNull()
-		return res?.toHostVo(conn)
+			conn.findHost(hostId).getOrNull()
+		val sw: HostConfigurationEntity =
+			hostConfigurationRepository.findFirstByHostIdOrderByUpdateDateDesc(UUID.fromString(hostId))
+		return res?.toHostInfo(conn, sw)
 	}
 
 	@Throws(Error::class)
@@ -184,8 +177,7 @@ class HostServiceImpl(
 			conn.addHost(
 				hostVo.toAddHostBuilder(),
 				hostVo.hostedEngine
-			)
-			.getOrNull()
+			).getOrNull()
 		return res?.toHostVo(conn)
 	}
 
@@ -196,8 +188,9 @@ class HostServiceImpl(
 		//  com.itinfo.util.ovirt.error.ItCloudException: Fault reason is 'Operation Failed'. Fault detail is '[Cannot edit Host. Host parameters cannot be modified while Host is operational.
 		//  Please switch Host to Maintenance mode first.]'. HTTP response code is '409'. HTTP response message is 'Conflict'.
 		val res: Host? =
-			conn.updateHost(hostVo.toEditHostBuilder())
-				.getOrNull()
+			conn.updateHost(
+				hostVo.toEditHostBuilder()
+			).getOrNull()
 		return res?.toHostVo(conn)
 	}
 
@@ -213,17 +206,15 @@ class HostServiceImpl(
 	override fun findAllVmsFromHost(hostId: String): List<VmVo> {
 		log.info("findAllVmsFromHost ... hostId: {}", hostId)
 		val res: List<Vm> =
-			conn.findAllVmsFromHost(hostId)
-				.getOrDefault(listOf())
+			conn.findAllVmsFromHost(hostId).getOrDefault(listOf())
 		return res.toVmsMenu(conn)
 	}
 
 	@Throws(Error::class)
-	override fun findAllNicsFromHost(hostId: String): List<HostNicVo> {
-		log.info("findAllNicsFromHost ... hostId: {}", hostId)
+	override fun findAllHostNicsFromHost(hostId: String): List<HostNicVo> {
+		log.info("findAllHostNicsFromHost ... hostId: {}", hostId)
 		val res: List<HostNic> =
-			conn.findAllNicsFromHost(hostId)
-				.getOrDefault(listOf())
+			conn.findAllNicsFromHost(hostId).getOrDefault(listOf())
 		return res.toHostNicVos(conn)
 	}
 
@@ -236,8 +227,7 @@ class HostServiceImpl(
 	override fun findAllHostDevicesFromHost(hostId: String): List<HostDeviceVo> {
 		log.info("findAllHostDevicesFromHost ... hostId: {}", hostId)
 		val res: List<HostDevice> =
-			conn.findAllHostDeviceFromHost(hostId)
-				.getOrDefault(listOf())
+			conn.findAllHostDeviceFromHost(hostId).getOrDefault(listOf())
 		return res.toHostDeviceVos(conn)
 	}
 
@@ -245,12 +235,11 @@ class HostServiceImpl(
 	override fun findAllEventsFromHost(hostId: String): List<EventVo> {
 		log.info("findAllEventsFromHost ... ")
 		val host: Host =
-			conn.findHost(hostId)
-				.getOrNull()?: throw ErrorPattern.HOST_NOT_FOUND.toException()
+			conn.findHost(hostId).getOrNull()
+				?: throw ErrorPattern.HOST_NOT_FOUND.toException()
 
 		val res: List<Event> =
-			conn.findAllEvents("host.name= ${host.name()}")
-				.getOrDefault(listOf())
+			conn.findAllEvents("host.name= ${host.name()}").getOrDefault(listOf())
 		return res.toEventVos()
 	}
 
@@ -259,8 +248,7 @@ class HostServiceImpl(
 	override fun findAllPermissionsFromHost(hostId: String): List<PermissionVo> {
 		log.info("findAllPermissionsFromHost ... hostId: {}", hostId)
 		val res: List<Permission> =
-			conn.findAllPermissionFromHost(hostId)
-				.getOrDefault(listOf())
+			conn.findAllPermissionFromHost(hostId).getOrDefault(listOf())
 		return res.toPermissionVos(conn)
 	}
 

@@ -1,7 +1,5 @@
 package com.itinfo.itcloud.model.network
 
-import com.itinfo.itcloud.model.computing.HostVo
-import com.itinfo.itcloud.model.computing.toHostIdName
 import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.fromHostToIdentifiedVo

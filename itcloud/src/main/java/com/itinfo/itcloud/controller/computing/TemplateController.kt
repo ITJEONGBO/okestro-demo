@@ -2,15 +2,12 @@ package com.itinfo.itcloud.controller.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.controller.BaseController
-import com.itinfo.itcloud.controller.computing.ClusterController.Companion
 import com.itinfo.itcloud.error.toException
-import com.itinfo.itcloud.model.computing.ClusterVo
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.model.computing.EventVo
 import com.itinfo.itcloud.model.computing.TemplateVo
 import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.network.NicVo
-import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.DiskAttachmentVo
 import com.itinfo.itcloud.model.storage.StorageDomainVo
 import com.itinfo.itcloud.service.computing.ItTemplateService
@@ -270,7 +267,7 @@ class TemplateController: BaseController() {
 			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
 		if (nicId.isNullOrEmpty())
 			throw ErrorPattern.NIC_VO_INVALID.toException()
-		log.info("/computing/templates/{}/nics/{} ... 템플릿 삭제", templateId, nicId)
+		log.info("/computing/templates/{}/nics/{} ... 템플릿 nic 삭제", templateId, nicId)
 		return ResponseEntity.ok(iTemplate.removeNicFromTemplate(templateId, nicId))
 	}
 
@@ -293,7 +290,7 @@ class TemplateController: BaseController() {
 	): ResponseEntity<List<DiskAttachmentVo>> {
 		if (templateId.isNullOrEmpty())
 			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
-		log.info("--- template 디스크")
+		log.info("/computing/templates/{}/disks 디스크", templateId)
 		return ResponseEntity.ok(iTemplate.findAllDisksFromTemplate(templateId))
 	}
 
@@ -317,32 +314,9 @@ class TemplateController: BaseController() {
 	): ResponseEntity<List<StorageDomainVo>> {
 		if (templateId.isNullOrEmpty())
 			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
-		log.info("--- template 스토리지 도메인")
+		log.info("/computing/templates/{}/storageDomains 스토리지 도메인", templateId)
 		return ResponseEntity.ok(iTemplate.findAllStorageDomainsFromTemplate(templateId))
 	}
-
-//	@ApiOperation(
-//		httpMethod="GET",
-//		value="템플릿 권한 목록",
-//		notes="선택된 템플릿의 권한 목록을 조회한다"
-//	)
-//	@ApiImplicitParams(
-//		ApiImplicitParam(name="templateId", value="템플릿 ID", dataTypeClass=String::class, required=true, paramType="path"),
-//	)
-//	@ApiResponses(
-//		ApiResponse(code = 200, message = "OK")
-//	)
-//	@GetMapping("/{templateId}/permissions")
-//	@ResponseBody
-//	@ResponseStatus(HttpStatus.OK)
-//	fun findAllPermissions(
-//		@PathVariable templateId: String? = null,
-//	): ResponseEntity<List<PermissionVo>> {
-//		if (templateId.isNullOrEmpty())
-//			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
-//		log.info("--- template 권한")
-//		return ResponseEntity.ok(iTemplate.findAllPermissionsFromTemplate(templateId))
-//	}
 
 	@ApiOperation(
 		httpMethod="GET",
@@ -366,6 +340,30 @@ class TemplateController: BaseController() {
 		log.info("/computing/templates/{}/events 이벤트", templateId)
 		return ResponseEntity.ok(iTemplate.findAllEventsFromTemplate(templateId))
 	}
+
+
+//	@ApiOperation(
+//		httpMethod="GET",
+//		value="템플릿 권한 목록",
+//		notes="선택된 템플릿의 권한 목록을 조회한다"
+//	)
+//	@ApiImplicitParams(
+//		ApiImplicitParam(name="templateId", value="템플릿 ID", dataTypeClass=String::class, required=true, paramType="path"),
+//	)
+//	@ApiResponses(
+//		ApiResponse(code = 200, message = "OK")
+//	)
+//	@GetMapping("/{templateId}/permissions")
+//	@ResponseBody
+//	@ResponseStatus(HttpStatus.OK)
+//	fun findAllPermissions(
+//		@PathVariable templateId: String? = null,
+//	): ResponseEntity<List<PermissionVo>> {
+//		if (templateId.isNullOrEmpty())
+//			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
+//		log.info("--- template 권한")
+//		return ResponseEntity.ok(iTemplate.findAllPermissionsFromTemplate(templateId))
+//	}
 
 	companion object {
 		private val log by LoggerDelegate()

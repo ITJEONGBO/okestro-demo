@@ -6,13 +6,8 @@ import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.*
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
-import com.itinfo.itcloud.model.storage.StorageDomainVo
-import com.itinfo.itcloud.model.storage.toStorageDomainsMenu
-import com.itinfo.itcloud.repository.history.VmInterfaceSamplesHistoryRepository
-import com.itinfo.itcloud.repository.history.VmSamplesHistoryRepository
 import com.itinfo.itcloud.repository.history.dto.UsageDto
 import com.itinfo.itcloud.service.BaseService
-import com.itinfo.itcloud.service.network.ItNetworkService
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.Error
@@ -40,8 +35,9 @@ interface ItClusterService {
 	@Throws(Error::class)
 	fun findOne(clusterId: String): ClusterVo?
 
-	// 클러스터 생성창 - 데이터센터 목록 [ItDataCenterService.findAll]
-	// 클러스터 생성창 - 네트워크 목록 [ItDataCenterService.findAllNetworksFromDataCenter]
+	// 클러스터 생성창
+	// 		데이터센터 목록	[ItDataCenterService.findAll]
+	//		네트워크 목록	[ItDataCenterService.findAllNetworksFromDataCenter]
 
 	/**
 	 * [ItClusterService.add]
@@ -80,15 +76,7 @@ interface ItClusterService {
 	 */
 	@Throws(Error::class)
 	fun findAllHostsFromCluster(clusterId: String): List<HostVo>
-	// 생성
-	// 편집
-	// 삭제
-	// 유지보수
-	// 활성
-	// 새로고침
-	// 재시작
-	// 설치
-	// 호스트 네트워크 복사
+	// 생성, 편집, 삭제, 유지보수, 활성, 재시작, 호스트 네트워크 복사
 
 	/**
 	 * [ItClusterService.findAllVmsFromCluster]
@@ -99,30 +87,7 @@ interface ItClusterService {
 	 */
 	@Throws(Error::class)
 	fun findAllVmsFromCluster(clusterId: String): List<VmVo>
-	// 생성
-	// 편집
-	// 삭제
-	// 실행
-	// 일시중지
-	// 종료
-	// 재부팅
-	// 콘솔
-	// 스냅샷 생성
-	// 템플릿 목록
-	// 마이그레이션
-	// 가져오기
-	// 가상머신 복제
-	// OVA로 내보내기
-
-	/**
-	 * [ItClusterService.findAllStorageDomainsFromCluster]
-	 * 클러스터가 가지고있는 스토리지 도메인 목록
-	 *
-	 * @param clusterId [String] 클러스터 Id
-	 * @return List<[StorageDomainVo]> 네트워크 목록
-	 */
-	@Throws(Error::class)
-	fun findAllStorageDomainsFromCluster(clusterId: String): List<StorageDomainVo>
+	// 생성, 편집, 삭제, 실행, 일시중지, 종료, 호스트 네트워크 복사, 재부팅, 콘솔, 템플릿 목록, 스냅샷 생성, 마이그레이션
 
 	/**
 	 * [ItClusterService.findAllNetworksFromCluster]
@@ -133,8 +98,7 @@ interface ItClusterService {
 	 */
 	@Throws(Error::class)
 	fun findAllNetworksFromCluster(clusterId: String): List<NetworkVo>
-	// 생성
-	// 편집
+	// 생성, 편집, 삭제
 
 	/**
 	 * [ItClusterService.addNetworkFromCluster]
@@ -177,16 +141,6 @@ interface ItClusterService {
 	fun findAllEventsFromCluster(clusterId: String): List<EventVo>
 
 	/**
-	 * [ItClusterService.findAllCpuProfilesFromCluster]
-	 * 클러스터가 가지고있는 cpuProfile 목록
-	 * vm 생성시 사용
-	 *
-	 * @param clusterId [String] 클러스터 Id
-	 * @return List<[CpuProfileVo]> cpuProfile 목록
-	 */
-	@Throws(Error::class)
-	fun findAllCpuProfilesFromCluster(clusterId: String): List<CpuProfileVo>
-	/**
 	 * [ItClusterService.findAllPermissionsFromCluster]
 	 * 클러스터가 가지고있는 권한 목록
 	 *
@@ -208,8 +162,7 @@ class ClusterServiceImpl(
 	override fun findAll(): List<ClusterVo> {
 		log.info("findAll ... ")
 		val res: List<Cluster> =
-			conn.findAllClusters()
-				.getOrDefault(listOf())
+			conn.findAllClusters().getOrDefault(listOf())
 		return res.toClustersMenu(conn)
 	}
 
@@ -217,17 +170,17 @@ class ClusterServiceImpl(
 	override fun findOne(clusterId: String): ClusterVo? {
 		log.info("findOne ... clusterId: {}", clusterId)
 		val res: Cluster? =
-			conn.findCluster(clusterId)
-				.getOrNull()
-		return res?.toClusterVo(conn)
+			conn.findCluster(clusterId).getOrNull()
+		return res?.toClusterInfo(conn)
 	}
 
 	@Throws(Error::class)
 	override fun add(clusterVo: ClusterVo): ClusterVo? {
 		log.info("add ... ")
 		val res: Cluster? =
-			conn.addCluster(clusterVo.toAddClusterBuilder(conn))
-				.getOrNull()
+			conn.addCluster(
+				clusterVo.toAddClusterBuilder(conn)
+			).getOrNull()
 		return res?.toClusterVo(conn)
 	}
 
@@ -235,8 +188,9 @@ class ClusterServiceImpl(
 	override fun update(clusterVo: ClusterVo): ClusterVo? {
 		log.info("update ... clusterName: {}", clusterVo.name)
 		val res: Cluster? =
-			conn.updateCluster(clusterVo.toEditClusterBuilder(conn))
-				.getOrNull()
+			conn.updateCluster(
+				clusterVo.toEditClusterBuilder(conn)
+			).getOrNull()
 		return res?.toClusterVo(conn)
 	}
 
@@ -252,8 +206,8 @@ class ClusterServiceImpl(
 	override fun findAllHostsFromCluster(clusterId: String): List<HostVo> {
 		log.info("findAllHostsFromCluster ... clusterId: {}", clusterId)
 		val res: List<Host> =
-			conn.findAllHostsFromCluster(clusterId)
-				.getOrDefault(listOf())
+			conn.findAllHostsFromCluster(clusterId).getOrDefault(listOf())
+
 		return res.map { host ->
 			val hostNic: HostNic? =
 				conn.findAllNicsFromHost(host.id()).getOrDefault(listOf()).firstOrNull()
@@ -269,31 +223,15 @@ class ClusterServiceImpl(
 	override fun findAllVmsFromCluster(clusterId: String): List<VmVo> {
 		log.info("findAllVmsFromCluster ... clusterId: {}", clusterId)
 		val res: List<Vm> =
-			conn.findAllVmsFromCluster(clusterId)
-				.getOrDefault(listOf())
-		return res.toVmVos(conn)
-	}
-
-	@Throws(Error::class)
-	override fun findAllStorageDomainsFromCluster(clusterId: String): List<StorageDomainVo> {
-		log.info("findAllStorageDomainsFromCluster ... clusterId: {}", clusterId)
-		val cluster: Cluster? = conn.findCluster(clusterId).getOrNull()
-		if(cluster?.dataCenterPresent() == true){
-			val res: List<StorageDomain> =
-				conn.findAllAttachedStorageDomainsFromDataCenter(cluster.dataCenter().id())
-					.getOrDefault(listOf())
-			return res.toStorageDomainsMenu(conn)
-		} else{
-			return listOf()
-		}
+			conn.findAllVmsFromCluster(clusterId).getOrDefault(listOf())
+		return res.toVmsMenu(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findAllNetworksFromCluster(clusterId: String): List<NetworkVo> {
 		log.info("findAllNetworksFromCluster ... clusterId: {}", clusterId)
 		val res: List<Network> =
-			conn.findAllNetworksFromCluster(clusterId)
-				.getOrDefault(listOf())
+			conn.findAllNetworksFromCluster(clusterId).getOrDefault(listOf())
 		return res.toClusterNetworkVos(conn)
 	}
 
@@ -375,27 +313,13 @@ class ClusterServiceImpl(
 	override fun findAllEventsFromCluster(clusterId: String): List<EventVo> {
 		log.info("findAllEventsFromCluster ... clusterId: {}", clusterId)
 		val cluster: Cluster =
-			conn.findCluster(clusterId)
-				.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
+			conn.findCluster(clusterId).getOrNull()
+				?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
 
 		val res: List<Event> =
-			conn.findAllEvents("cluster.name=${cluster.name()}")
-				.getOrDefault(listOf())
-				.filter {
-					it.clusterPresent() &&
-					it.cluster().idPresent() &&
-					it.cluster().id().equals(clusterId)
-				}
+			conn.findAllEvents("cluster.name=${cluster.name()}").getOrDefault(listOf())
+				.filter { it.clusterPresent() && it.cluster().idPresent() && it.cluster().id().equals(clusterId) }
 		return res.toEventVos()
-	}
-
-	@Throws(Error::class)
-	override fun findAllCpuProfilesFromCluster(clusterId: String): List<CpuProfileVo> {
-		log.info("findAllCpuProfilesFromCluster ... clusterId: {}", clusterId)
-		val res: List<CpuProfile> =
-			conn.findAllCpuProfilesFromCluster(clusterId)
-				.getOrDefault(listOf())
-		return res.toCpuProfileVos()
 	}
 
 	@Deprecated("필요없음")
@@ -403,8 +327,7 @@ class ClusterServiceImpl(
 	override fun findAllPermissionsFromCluster(clusterId: String): List<PermissionVo> {
 		log.info("findAllPermissionsFromCluster ... clusterId: {}", clusterId)
 		val res: List<Permission> =
-			conn.findAllPermissionsFromCluster(clusterId)
-				.getOrDefault(listOf())
+			conn.findAllPermissionsFromCluster(clusterId).getOrDefault(listOf())
 		return res.toPermissionVos(conn)
 	}
 

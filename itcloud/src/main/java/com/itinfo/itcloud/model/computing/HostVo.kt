@@ -7,10 +7,7 @@ import com.itinfo.itcloud.model.network.HostNicVo
 import com.itinfo.itcloud.model.network.toHostNicVos
 import com.itinfo.itcloud.model.network.toNetworkHostNicVos
 import com.itinfo.itcloud.repository.history.dto.UsageDto
-import com.itinfo.itcloud.repository.history.entity.HostInterfaceSamplesHistoryEntity
-import com.itinfo.itcloud.repository.history.entity.HostSamplesHistoryEntity
-import com.itinfo.itcloud.repository.history.entity.getUsage
-import com.itinfo.itcloud.service.computing.ItGraphService
+import com.itinfo.itcloud.repository.history.entity.HostConfigurationEntity
 import com.itinfo.util.ovirt.*
 import org.slf4j.LoggerFactory
 import org.ovirt.engine.sdk4.Connection
@@ -217,8 +214,44 @@ fun Host.toHostMenu(conn: Connection, usageDto: UsageDto?): HostVo {
         spmStatus { this@toHostMenu.spm().status() }
     }
 }
-fun List<Host>.toHostsMenu(conn: Connection, usageDto: UsageDto): List<HostVo> =
-    this@toHostsMenu.map { it.toHostMenu(conn, usageDto) }
+
+
+fun Host.toHostInfo(conn: Connection, hostConfigurationEntity: HostConfigurationEntity): HostVo {
+    val statistics: List<Statistic> =
+        conn.findAllStatisticsFromHost(this@toHostInfo.id()).getOrDefault(listOf())
+
+    return HostVo.builder {
+        id { this@toHostInfo.id() }
+        name { this@toHostInfo.name() }
+        comment { this@toHostInfo.comment() }
+        address { this@toHostInfo.address() }
+        hostedActive { if(this@toHostInfo.hostedEnginePresent()) this@toHostInfo.hostedEngine().active() else false }
+        hostedScore { if(this@toHostInfo.hostedEnginePresent()) this@toHostInfo.hostedEngine().scoreAsInteger() else 0 }
+        iscsi { if(this@toHostInfo.iscsiPresent()) this@toHostInfo.iscsi().initiator() else "" }
+        kdump { this@toHostInfo.kdumpStatus() }
+        ksm { this@toHostInfo.ksm().enabled() }
+        seLinux { this@toHostInfo.seLinux().mode() }
+//        hostedEngine { this@toHostVo.spm().status().equals(SpmStatus.SPM) } //다시 알아보기 (우선순위 숫자에 따라 다른건지?)
+        spmPriority { this@toHostInfo.spm().priorityAsInteger() }
+        transparentPage { this@toHostInfo.transparentHugePages().enabled() }
+        memoryTotal { statistics.findMemory("memory.total") }
+        memoryUsed { statistics.findMemory("memory.used") }
+        memoryFree { statistics.findMemory("memory.free") }
+        memoryMax { this@toHostInfo.maxSchedulingMemory() }
+        memoryShared { statistics.findSpeed("memory.shared") } // 문제잇음
+        swapTotal { statistics.findSpeed("swap.total") }
+        swapFree { statistics.findSpeed("swap.free") }
+        swapUsed { statistics.findSpeed("swap.used") }
+        hugePage2048Total { statistics.findPage("hugepages.2048.total") }
+        hugePage2048Free { statistics.findPage("hugepages.2048.free") }
+        hugePage1048576Total { statistics.findPage("hugepages.1048576.total") }
+        hugePage1048576Free { statistics.findPage("hugepages.1048576.free") }
+        bootingTime { ovirtDf.format(Date(statistics.findBootTime())) }
+        hostHwVo { this@toHostInfo.toHostHwVo() }
+        hostSwVo { this@toHostInfo.toHostSwVo(hostConfigurationEntity) }
+    }
+}
+
 
 /**
  * 네트워크에서 호스트 볼때
@@ -247,6 +280,44 @@ fun List<Host>.toNetworkHostVos(conn: Connection): List<HostVo> =
     this@toNetworkHostVos.map { it.toNetworkHostVo(conn) }
 
 
+
+/**
+ * 호스트 빌더
+ */
+fun HostVo.toHostBuilder(): HostBuilder {
+    return HostBuilder()
+        .cluster(ClusterBuilder().id(this@toHostBuilder.clusterVo.id))
+        .name(this@toHostBuilder.name)
+        .comment(this@toHostBuilder.comment)
+        .address(this@toHostBuilder.address)
+        .ssh(SshBuilder().port(this@toHostBuilder.sshPort)) // 기본값이 22 포트 연결은 더 테스트 해봐야함(ovirt 내에서 한적은 없음)
+        .rootPassword(this@toHostBuilder.sshPassWord)   // 비밀번호 잘못되면 보여줄 코드?
+        .powerManagement(PowerManagementBuilder().enabled(false)) // 전원관리 비활성화 (기본)
+        .spm(SpmBuilder().priority(this@toHostBuilder.spmPriority))
+//        .port()
+        // ssh port가 22면 .ssh() 설정하지 않아도 알아서 지정됨. port 변경을 cmd 에서만 하심
+    // deployHostedEngine은 ext에서
+}
+
+/**
+ * 호스트 생성 빌더
+ */
+fun HostVo.toAddHostBuilder(): Host =
+    this@toAddHostBuilder.toHostBuilder().build()
+
+/**
+ * 호스트 편집 빌더
+ */
+fun HostVo.toEditHostBuilder(): Host =
+    this@toEditHostBuilder.toHostBuilder()
+        .id(this@toEditHostBuilder.id)
+        .os(OperatingSystemBuilder().customKernelCmdline("vfio_iommu_type1.allow_unsafe_interrupts=1").build()) //?
+        .build()
+
+
+/**
+ * 호스트 전체 출력
+ */
 fun Host.toHostVo(conn: Connection): HostVo {
     val statistics: List<Statistic> =
         conn.findAllStatisticsFromHost(this@toHostVo.id())
@@ -322,37 +393,3 @@ fun Host.toHostVo(conn: Connection): HostVo {
 }
 fun List<Host>.toHostVos(conn: Connection): List<HostVo> =
     this@toHostVos.map { it.toHostVo(conn) }
-
-
-/**
- * 호스트 빌더
- */
-fun HostVo.toHostBuilder(): HostBuilder {
-    return HostBuilder()
-        .cluster(ClusterBuilder().id(this@toHostBuilder.clusterVo.id))
-        .name(this@toHostBuilder.name)
-        .comment(this@toHostBuilder.comment)
-        .address(this@toHostBuilder.address)
-        .ssh(SshBuilder().port(this@toHostBuilder.sshPort)) // 기본값이 22 포트 연결은 더 테스트 해봐야함(ovirt 내에서 한적은 없음)
-        .rootPassword(this@toHostBuilder.sshPassWord)   // 비밀번호 잘못되면 보여줄 코드?
-        .powerManagement(PowerManagementBuilder().enabled(false)) // 전원관리 비활성화 (기본)
-        .spm(SpmBuilder().priority(this@toHostBuilder.spmPriority))
-//        .port()
-        // ssh port가 22면 .ssh() 설정하지 않아도 알아서 지정됨. port 변경을 cmd 에서만 하심
-    // deployHostedEngine은 ext에서
-}
-
-/**
- * 호스트 생성 빌더
- */
-fun HostVo.toAddHostBuilder(): Host =
-    this@toAddHostBuilder.toHostBuilder().build()
-
-/**
- * 호스트 편집 빌더
- */
-fun HostVo.toEditHostBuilder(): Host =
-    this@toEditHostBuilder.toHostBuilder()
-        .id(this@toEditHostBuilder.id)
-        .os(OperatingSystemBuilder().customKernelCmdline("vfio_iommu_type1.allow_unsafe_interrupts=1").build()) //?
-        .build()

@@ -28,16 +28,6 @@ interface ItHostOperationService {
     @Throws(Error::class)
     fun activate(hostId: String): Boolean
     /**
-     * [ItHostOperationService.refresh]
-     * 호스트 관리 - 새로고침
-     *
-     * @param hostId [String] 호스트 아이디
-     * @return [Boolean]
-     */
-    @Deprecated("사용안함")
-    @Throws(Error::class)
-    fun refresh(hostId: String): Boolean
-    /**
      * [ItHostOperationService.restart]
      * 호스트 ssh 관리 - 재시작
      *
@@ -58,34 +48,53 @@ interface ItHostOperationService {
      */
     @Throws(Error::class)
     fun registerCertificate(hostId: String): Boolean
+    /**
+     * [ItHostOperationService.globalHaActivate]
+     * 글로벌 HA 유지관리를 활성화
+     *
+     * @param hostId [String] 호스트 아이디
+     * @return [Boolean]
+     */
+    @Throws(Error::class)
+    fun globalHaActivate(hostId: String): Boolean
+    /**
+     * [ItHostOperationService.globalHaDeactivate]
+     * 글로벌 HA 유지관리를 비활성화
+     *
+     * @param hostId [String] 호스트 아이디
+     * @return [Boolean]
+     */
+    @Throws(Error::class)
+    fun globalHaDeactivate(hostId: String): Boolean
 
+    /**
+     * [ItHostOperationService.refresh]
+     * 호스트 관리 - 새로고침
+     *
+     * @param hostId [String] 호스트 아이디
+     * @return [Boolean]
+     */
+    @Deprecated("사용안함")
+    @Throws(Error::class)
+    fun refresh(hostId: String): Boolean
 }
 
 @Service
-class HostOperationServiceImpl: BaseService(), ItHostOperationService {
+class HostOperationServiceImpl(
+
+): BaseService(), ItHostOperationService {
 
     @Throws(Error::class)
     override fun deactivate(hostId: String): Boolean {
         log.info("deactivate ... hostId: {}", hostId)
-        val res: Result<Boolean> =
-            conn.deactivateHost(hostId)
+        val res: Result<Boolean> = conn.deactivateHost(hostId)
         return res.isSuccess
     }
 
     @Throws(Error::class)
     override fun activate(hostId: String): Boolean {
         log.info("activate ... hostId: {}", hostId)
-        val res: Result<Boolean> =
-            conn.activateHost(hostId)
-        return res.isSuccess
-    }
-
-    @Deprecated("사용안함")
-    @Throws(Error::class)
-    override fun refresh(hostId: String): Boolean {
-        log.info("refresh ... hostId: {}", hostId)
-        val res: Result<Boolean> =
-            conn.refreshHost(hostId)
+        val res: Result<Boolean> = conn.activateHost(hostId)
         return res.isSuccess
     }
 
@@ -95,8 +104,7 @@ class HostOperationServiceImpl: BaseService(), ItHostOperationService {
     // TODO Host 이름, PW 문제 => application.properties 에 저장해서 불러오는 방식
 //        val userName = ""
         val hostPw = "adminRoot!@#"
-        val res: Result<Boolean> =
-            conn.restartHost(hostId, hostPw)
+        val res: Result<Boolean> = conn.restartHost(hostId, hostPw)
         return res.isSuccess
     }
 
@@ -105,6 +113,24 @@ class HostOperationServiceImpl: BaseService(), ItHostOperationService {
         TODO("Not yet implemented")
     }
 
+    @Throws(Error::class)
+    override fun globalHaActivate(hostId: String): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    @Throws(Error::class)
+    override fun globalHaDeactivate(hostId: String): Boolean {
+        TODO("Not yet implemented")
+    }
+
+
+    @Deprecated("사용안함")
+    @Throws(Error::class)
+    override fun refresh(hostId: String): Boolean {
+        log.info("refresh ... hostId: {}", hostId)
+        val res: Result<Boolean> = conn.refreshHost(hostId)
+        return res.isSuccess
+    }
 
     companion object {
         private val log by LoggerDelegate()

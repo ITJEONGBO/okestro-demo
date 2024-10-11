@@ -1400,7 +1400,7 @@ input[disabled] {
 .radio_outer input, .radio_outer img{
     margin-right: 0.3rem;
 }
-// 새로만들기(수정해야됨)
+/* 새로만들기(수정해야됨) */
 .vm_new_nav{
     font-size: 0.33rem;
     height: 48vh;

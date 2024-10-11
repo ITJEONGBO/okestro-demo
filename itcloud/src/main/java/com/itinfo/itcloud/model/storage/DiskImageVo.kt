@@ -144,7 +144,6 @@ fun Disk.toDiskMenu(conn: Connection, id: String): DiskImageVo {
 		}
 	}
 
-	// DiskImageVo를 반환
 	return DiskImageVo.builder {
 		id { this@toDiskMenu.id() }
 		alias { this@toDiskMenu.alias() }
@@ -179,8 +178,8 @@ fun Disk.toDiskInfo(conn: Connection): DiskImageVo {
 		actualSize { this@toDiskInfo.actualSize() }
 	}
 }
-fun List<Disk>.toDiskInfos(conn: Connection): List<DiskImageVo> =
-	this@toDiskInfos.map { it.toDiskInfo(conn) }
+fun List<Disk>.toDisksInfo(conn: Connection): List<DiskImageVo> =
+	this@toDisksInfo.map { it.toDiskInfo(conn) }
 
 
 fun Disk.toDiskImageVo(conn: Connection): DiskImageVo {

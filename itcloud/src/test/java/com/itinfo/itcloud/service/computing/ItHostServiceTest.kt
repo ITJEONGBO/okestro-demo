@@ -157,15 +157,15 @@ class ItHostServiceTest {
 
 	/**
 	 * [should_findAllHostNicsFromHost]
-	 * [ItHostService.findAllNicsFromHost]에 대한 단위테스트
+	 * [ItHostService.findAllHostNicsFromHost]에 대한 단위테스트
 	 *
-	 * @see ItHostService.findAllNicsFromHost
+	 * @see ItHostService.findAllHostNicsFromHost
 	 */
 	@Test
 	fun should_findAllHostNicsFromHost() {
 		log.debug("should_findAllHostNicFromHost ...")
 		val result: List<HostNicVo> =
-			service.findAllNicsFromHost(host01)
+			service.findAllHostNicsFromHost(host01)
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }

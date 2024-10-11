@@ -46,16 +46,12 @@ interface ItVmService {
 	@Throws(Error::class)
 	fun findOne(vmId: String): VmVo?
 
-	// 가상머신 생성창 - 클러스터 목록 [ItClusterService.findAll]
-	// 				  - 템플릿 목록 [ItTemplateService.findAll]
-	// 				  - 호스트 목록 [ItClusterService.findAllHostsFromCluster] (vo 다름)
-	// 				  - 스토리지 도메인 목록 [ItStorageService.findAllDomainsFromDataCenter] (vo 다름)
-	// 					인스턴스 이미지 -> 생성 시 필요한 스토리지 도메인
-	// 					고가용성 - 임대 대상 스토리지 도메인 목록
-	// 				  - 디스크 프로파일 목록 [ItStorageService.findAllDiskProfilesFromStorageDomain]
-	//				 	인스턴스 이미지 생성 -> 스토리지 도메인과 연동되어 생기는
-	// 				  - CPU 프로파일 목록 [ItClusterService.findAllCpuProfilesFromCluster]
-	//					리소스할당
+	// 가상머신 생성창
+	// 		클러스터 목록		[ItClusterService.findAll]
+	// 		템플릿 목록			[ItTemplateService.findAll]
+	// 		호스트 목록 			[ItClusterService.findAllHostsFromCluster] (vo 다름)
+	// 		스토리지 도메인 목록 [ItStorageService.findAllDomainsFromDataCenter] (vo 다름)
+	// 		디스크 프로파일 목록 [ItStorageService.findAllDiskProfilesFromStorageDomain]
 
 	/**
 	 * [ItVmService.findAllVnicProfilesFromCluster]
@@ -70,7 +66,7 @@ interface ItVmService {
 	 * [ItVmService.findAllDiskImage]
 	 * 가상머신 생성 - 인스턴스 이미지 - 연결 -> 디스크 목록
 	 * 기준: 아무것도 연결되어 있지 않은 디스크
-	 * TODO 값이 제대로 나오지 않음
+	 * 인스턴스 이미지 -> 생성 시 필요한 스토리지 도메인
 	 *
 	 * @return List<[DiskImageVo]> 디스크  목록
 	 */
@@ -84,6 +80,17 @@ interface ItVmService {
 	 */
     @Throws(Error::class)
 	fun findAllISO(): List<IdentifiedVo>
+
+	/**
+	 * [ItVmService.findAllCpuProfilesFromCluster]
+	 * 클러스터가 가지고있는 CPU 프로파일 목록
+	 * vm 생성시 사용
+	 *
+	 * @param clusterId [String] 클러스터 Id
+	 * @return List<[CpuProfileVo]> cpuProfile 목록
+	 */
+	@Throws(Error::class)
+	fun findAllCpuProfilesFromCluster(clusterId: String): List<CpuProfileVo>
 
 	/**
 	 * [ItVmService.add]
@@ -163,14 +170,16 @@ class VmServiceImpl(
 	@Throws(Error::class)
 	override fun findAll(): List<VmVo> {
 		log.info("findAll ... ")
-		val res: List<Vm> = conn.findVms()
+		val res: List<Vm> =
+			conn.findVms()
 		return res.toVmsMenu(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findOne(vmId: String): VmVo? {
 		log.info("findOne ... vmId : {}", vmId)
-		val res: Vm? = conn.findVm(vmId).getOrNull()
+		val res: Vm? =
+			conn.findVm(vmId).getOrNull()
 		return res?.toVmVo(conn)
 	}
 
@@ -178,38 +187,29 @@ class VmServiceImpl(
 	override fun findAllDiskImage(): List<DiskImageVo> {
 		log.info("findAllDiskImage ... ")
 		val attDiskIds =
-			conn.findAllVms()
-				.getOrDefault(listOf())
+			conn.findAllVms().getOrDefault(listOf())
 				.flatMap {
-					conn.findAllDiskAttachmentsFromVm(it.id()) // vmId
-						.getOrDefault(listOf())
+					conn.findAllDiskAttachmentsFromVm(it.id()).getOrDefault(listOf())
 				}.map { it.id() }
 
 		val res: List<Disk> =
-			conn.findAllDisks()
-				.getOrDefault(listOf())
-				.filter {
-					it.format() == DiskFormat.COW &&
-					!attDiskIds.contains(it.id()) &&
-					it.quotaPresent()
-				}
-		return res.toDiskInfos(conn)
+			conn.findAllDisks().getOrDefault(listOf())
+				.filter { it.format() == DiskFormat.COW &&!attDiskIds.contains(it.id()) && it.quotaPresent() }
+		return res.toDisksInfo(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findAllVnicProfilesFromCluster(clusterId: String): List<VnicProfileVo> {
 		log.info("findAllVnicProfilesFromCluster ... clusterId: {}", clusterId)
 		val cluster: Cluster =
-			conn.findCluster(clusterId)
-				.getOrNull() ?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
+			conn.findCluster(clusterId).getOrNull()
+				?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
 
 		val res: List<VnicProfile> =
-			conn.findAllNetworks()
-				.getOrDefault(listOf())
+			conn.findAllNetworks().getOrDefault(listOf())
 				.filter { it.dataCenter().id() == cluster.dataCenter().id() }
 				.flatMap { network ->
-					conn.findAllVnicProfilesFromNetwork(network.id())
-						.getOrDefault(listOf())
+					conn.findAllVnicProfilesFromNetwork(network.id()).getOrDefault(listOf())
 						.filter { it.network().id() == network.id() }
 				}
 		return res.toVnicProfileToVmVos(conn)
@@ -219,12 +219,18 @@ class VmServiceImpl(
 	override fun findAllISO(): List<IdentifiedVo> {
 		log.info("findAllISO ... ")
 		val res: List<Disk> =
-			conn.findAllDisks()
-				.getOrDefault(listOf())
+			conn.findAllDisks().getOrDefault(listOf())
 				.filter { it.contentType() == DiskContentType.ISO }
 		return res.fromDisksToIdentifiedVos()
 	}
 
+	@Throws(Error::class)
+	override fun findAllCpuProfilesFromCluster(clusterId: String): List<CpuProfileVo> {
+		log.info("findAllCpuProfilesFromCluster ... clusterId: {}", clusterId)
+		val res: List<CpuProfile> =
+			conn.findAllCpuProfilesFromCluster(clusterId).getOrDefault(listOf())
+		return res.toCpuProfileVos()
+	}
 
 	@Throws(Error::class)
 	override fun add(vmVo: VmVo): VmVo? {
@@ -298,8 +304,7 @@ class VmServiceImpl(
 	override fun findAllApplicationsFromVm(vmId: String): List<IdentifiedVo> {
 		log.info("findAllApplicationsFromVm ... vmId: {}", vmId)
 		val res: List<Application> =
-			conn.findAllApplicationsFromVm(vmId)
-				.getOrDefault(listOf())
+			conn.findAllApplicationsFromVm(vmId).getOrDefault(listOf())
 		return res.fromApplicationsToIdentifiedVos()
 	}
 
@@ -307,11 +312,10 @@ class VmServiceImpl(
 	override fun findAllEventsFromVm(vmId: String): List<EventVo> {
 		log.info("findAllEventsFromVm ... vmId: {}", vmId)
 		val vm: Vm =
-			conn.findVm(vmId)
-				.getOrNull()?:throw ErrorPattern.VM_NOT_FOUND.toException()
+			conn.findVm(vmId).getOrNull()
+				?: throw ErrorPattern.VM_NOT_FOUND.toException()
 		val res: List<Event> =
-			conn.findAllEvents()
-				.getOrDefault(listOf())
+			conn.findAllEvents().getOrDefault(listOf())
 				.filter { it.vmPresent() && it.vm().name() == vm.name() }
 		return res.toEventVos()
 	}
@@ -321,8 +325,8 @@ class VmServiceImpl(
 	override fun findGuestFromVm(vmId: String): GuestInfoVo? {
 		log.info("findGuestFromVm ... vmId: {}", vmId)
 		val res: Vm =
-			conn.findVm(vmId)
-				.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toException()
+			conn.findVm(vmId).getOrNull()
+				?: throw ErrorPattern.VM_NOT_FOUND.toException()
 		if (!res.guestOperatingSystemPresent()) {
 			log.warn("게스트 운영 체제 정보가 없습니다.")
 			return null
@@ -335,8 +339,7 @@ class VmServiceImpl(
 	override fun findAllPermissionsFromVm(vmId: String): List<PermissionVo> {
 		log.info("findAllPermissionsFromVm ... vmId: {}", vmId)
 		val res: List<Permission> =
-			conn.findAllAssignedPermissionsFromVm(vmId)
-				.getOrDefault(listOf())
+			conn.findAllAssignedPermissionsFromVm(vmId).getOrDefault(listOf())
 		return res.toPermissionVos(conn)
 	}
 

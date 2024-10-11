@@ -32,34 +32,33 @@ class ItVmSnapshotServiceTest {
     }
 
     /**
-     * [should_findAllSnapshotsFromVm]
-     * [ItVmSnapshotService.findAllSnapshotsFromVm]에 대한 단위테스트
+     * [should_findAllFromVm]
+     * [ItVmSnapshotService.findAllFromVm]에 대한 단위테스트
      *
-     * @see [ItVmSnapshotService.findAllSnapshotsFromVm]
+     * @see [ItVmSnapshotService.findAllFromVm]
      */
     @Test
-    fun should_findAllSnapshotsFromVm(){
-        log.debug("should_findAllSnapshotsFromVm")
+    fun should_findAllFromVm(){
+        log.debug("should_findAllFromVm")
         val result: List<SnapshotVo> =
-            service.findAllSnapshotsFromVm(apm)
+            service.findAllFromVm(apm)
 
         assertThat(result, `is`(not(nullValue())))
         result.forEach { println(it) }
         assertThat(result.size, `is`(3))
     }
 
-
     /**
-     * [should_findSnapshotFromVm]
-     * [ItVmSnapshotService.findSnapshotFromVm]에 대한 단위테스트
+     * [should_findOneFromVm]
+     * [ItVmSnapshotService.findOneFromVm]에 대한 단위테스트
      *
-     * @see [ItVmSnapshotService.findSnapshotFromVm]
+     * @see [ItVmSnapshotService.findOneFromVm]
      */
     @Test
-    fun should_findSnapshotFromVm(){
-        log.debug("should_findSnapshotFromVm")
+    fun should_findOneFromVm(){
+        log.debug("should_findOneFromVm")
         val result: SnapshotVo? =
-            service.findSnapshotFromVm(apm, snapshotId = "2bda4522-5d82-4772-a1bd-65633928bf35")
+            service.findOneFromVm(apm, snapshotId = "2bda4522-5d82-4772-a1bd-65633928bf35")
 
         assertThat(result, `is`(not(nullValue())))
         println(result)

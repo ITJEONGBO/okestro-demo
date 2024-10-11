@@ -61,15 +61,15 @@ class ItVnicProfileServiceTest {
 
     /**
      * [should_findAllVnicProfilesFromNetwork]
-     * [ItVnicProfileService.findAllVnicProfilesFromNetwork]에 대한 단위테스트
+     * [ItVnicProfileService.findAllFromNetwork]에 대한 단위테스트
      *
-     * @see ItVnicProfileService.findAllVnicProfilesFromNetwork
+     * @see ItVnicProfileService.findAllFromNetwork
      */
     @Test
     fun should_findAllVnicProfilesFromNetwork() {
         log.debug("findAllVnicProfilesFromNetwork ... ")
         val result: List<VnicProfileVo> =
-            service.findAllVnicProfilesFromNetwork(networkId)
+            service.findAllFromNetwork(networkId)
 
         assertThat(result, `is`(not(nullValue())))
         result.forEach { println(it) }
@@ -86,7 +86,7 @@ class ItVnicProfileServiceTest {
     fun should_findOne() {
         log.debug("should_findVnicProfile ... ")
         val result: VnicProfileVo? =
-            service.findVnicProfile(vnic)
+            service.findOne(vnic)
 
         assertThat(result, `is`(not(nullValue())))
         println(result)
@@ -97,9 +97,9 @@ class ItVnicProfileServiceTest {
      * [should_add_update_and_remove_network]
      * [ItVnicProfileService.add]에 대한 단위테스트
      *
-     * @see ItVnicProfileService.addVnicProfile
-     * @see ItVnicProfileService.updateVnicProfile
-     * @see ItVnicProfileService.removeVnicProfile
+     * @see ItVnicProfileService.add
+     * @see ItVnicProfileService.update
+     * @see ItVnicProfileService.remove
      */
     @Test
     fun should_add_update_and_remove_network() {
@@ -112,7 +112,7 @@ class ItVnicProfileServiceTest {
         }
 
         val addResult: VnicProfileVo? =
-            service.addVnicProfile(addVnic)
+            service.add(addVnic)
 
         assertThat(addResult, `is`(not(nullValue())))
         assertThat(addResult?.name, `is`(addVnic.name))
@@ -128,7 +128,7 @@ class ItVnicProfileServiceTest {
         }
 
         val updateResult: VnicProfileVo? =
-            service.updateVnicProfile(updateVnic)
+            service.update(updateVnic)
 
         assertThat(updateResult, `is`(not(nullValue())))
         assertThat(updateResult?.name, `is`(updateVnic.name))
@@ -136,7 +136,7 @@ class ItVnicProfileServiceTest {
 
         log.debug("remove... ")
         val removeResult: Boolean =
-            updateResult?.let { service.removeVnicProfile(it.id) } == true
+            updateResult?.let { service.remove(it.id) } == true
 
         assertThat(removeResult, `is`(true))
     }

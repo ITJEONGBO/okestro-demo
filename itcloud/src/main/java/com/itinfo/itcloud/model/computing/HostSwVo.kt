@@ -65,7 +65,6 @@ class HostSwVo(
 /**
  * [Host.toHostSwVo]
  * 호스트 소프트웨어 정보 받기
- * 구하는 방법이 db밖에는 없는건지 확인필요 => db밖에 없음
  * @param hostConfigurationEntity [HostConfigurationEntity] 호스트 객체
  * @return 소프트웨어 정보
  */

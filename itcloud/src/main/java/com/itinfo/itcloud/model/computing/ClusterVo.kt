@@ -174,6 +174,35 @@ fun List<Cluster>.toClustersMenu(conn: Connection): List<ClusterVo> =
 	this@toClustersMenu.map { it.toClusterMenu(conn) }
 
 
+fun Cluster.toClusterInfo(conn: Connection): ClusterVo {
+	val dataCenter: DataCenter? =
+		conn.findDataCenter(this@toClusterInfo.dataCenter().id()).getOrNull()
+
+	return ClusterVo.builder {
+		id { this@toClusterInfo.id() }
+		name { this@toClusterInfo.name() }
+		description {this@toClusterInfo.description() }
+		comment { this@toClusterInfo.comment() }
+		biosType { this@toClusterInfo.biosType() }
+		cpuArc { this@toClusterInfo.cpu().architecture() }
+		cpuType { if (this@toClusterInfo.cpuPresent()) this@toClusterInfo.cpu().type() else null }
+		firewallType { this@toClusterInfo.firewallType() }
+		haReservation { this@toClusterInfo.haReservation() }
+		logMaxMemory { this@toClusterInfo.logMaxMemoryUsedThresholdAsLong() }
+		logMaxMemoryType { this@toClusterInfo.logMaxMemoryUsedThresholdType() }
+		memoryOverCommit { this@toClusterInfo.memoryPolicy().overCommit().percentAsInteger() }
+		migrationPolicy { this@toClusterInfo.migration().autoConverge() }
+		bandwidth { this@toClusterInfo.migration().bandwidth().assignmentMethod() }
+		version { this@toClusterInfo.version().major().toString() + "." + this@toClusterInfo.version().minor() }
+		dataCenter { dataCenter?.fromDataCenterToIdentifiedVo() }
+		vmSize { this@toClusterInfo.findVmCntFromCluster(conn) }
+	}
+}
+fun List<Cluster>.toClustersInfo(conn: Connection): List<ClusterVo> =
+	this@toClustersInfo.map { it.toClusterInfo(conn) }
+
+
+
 fun Cluster.toNetworkClusterVo(conn: Connection, networkId: String): ClusterVo{
 	val network: Network? =
 		conn.findNetworkFromCluster(this@toNetworkClusterVo.id(), networkId)
@@ -191,6 +220,65 @@ fun List<Cluster>.toNetworkClusterVos(conn: Connection, networkId: String): List
 	this@toNetworkClusterVos.map { it.toNetworkClusterVo(conn, networkId) }
 
 
+
+/**
+ * 클러스터 빌더
+ */
+fun ClusterVo.toClusterBuilder(conn: Connection): ClusterBuilder {
+	val ver = this@toClusterBuilder.version.split(".")
+	if (ver.size < 2) throw IllegalArgumentException("잘못된 버전정보 입력")
+
+	val clusterBuilder = ClusterBuilder()
+	clusterBuilder
+		.dataCenter(DataCenterBuilder().id(this@toClusterBuilder.dataCenter.id).build()) // 필수
+		.name(this@toClusterBuilder.name) // 필수
+		.cpu(CpuBuilder().architecture(this@toClusterBuilder.cpuArc).type(this@toClusterBuilder.cpuType)) // 필수
+		.description(this@toClusterBuilder.description)
+		.comment(this@toClusterBuilder.comment)
+		.managementNetwork(NetworkBuilder().id(this@toClusterBuilder.network.id).build())
+		.biosType(this@toClusterBuilder.biosType)
+		.fipsMode(this@toClusterBuilder.fipsMode)
+		.version(VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())
+		.switchType(this@toClusterBuilder.switchType)  // 편집에선 선택불가
+		.firewallType(this@toClusterBuilder.firewallType)
+		.logMaxMemoryUsedThreshold(this@toClusterBuilder.logMaxMemory)
+		.logMaxMemoryUsedThresholdType(this@toClusterBuilder.logMaxMemoryType)
+		.virtService(this@toClusterBuilder.virtService)
+		.glusterService(this@toClusterBuilder.glusterService)
+		.errorHandling(ErrorHandlingBuilder().onError(this@toClusterBuilder.errorHandling))
+		// HELP: 마이그레이션 정책 관련 설정 값 조회 기능 존재여부 확인필요
+		.migration(
+			MigrationOptionsBuilder()
+				.bandwidth(MigrationBandwidthBuilder().assignmentMethod(this@toClusterBuilder.bandwidth))
+				.encrypted(this@toClusterBuilder.encrypted)
+		)
+		.fencingPolicy(
+			FencingPolicyBuilder()
+				.skipIfConnectivityBroken(SkipIfConnectivityBrokenBuilder().enabled(true))
+				.skipIfSdActive(SkipIfSdActiveBuilder().enabled(true))
+		)
+		if (this.networkProvider) {
+			clusterBuilder.externalNetworkProviders(conn.findAllOpenStackNetworkProviders().getOrDefault(listOf()).first())
+		}
+	return clusterBuilder
+}
+
+/**
+ * 클러스터 생성 빌더
+ */
+fun ClusterVo.toAddClusterBuilder(conn: Connection): Cluster =
+	this@toAddClusterBuilder.toClusterBuilder(conn).build()
+
+/**
+ * 클러스터 편집 빌더
+ */
+fun ClusterVo.toEditClusterBuilder(conn: Connection): Cluster =
+	this@toEditClusterBuilder.toClusterBuilder(conn).id(this@toEditClusterBuilder.id).build()
+
+
+/**
+ * 전체 Cluster 정보 출력
+ */
 fun Cluster.toClusterVo(conn: Connection): ClusterVo {
 	val dataCenter: DataCenter? =
 		conn.findDataCenter(this@toClusterVo.dataCenter().id())
@@ -263,59 +351,3 @@ fun Cluster.toClusterVo(conn: Connection): ClusterVo {
 }
 fun List<Cluster>.toClusterVos(conn: Connection): List<ClusterVo> =
 	this@toClusterVos.map { it.toClusterVo(conn) }
-
-
-/**
- * 클러스터 빌더
- */
-fun ClusterVo.toClusterBuilder(conn: Connection): ClusterBuilder {
-	val ver = this@toClusterBuilder.version.split(".")
-	if (ver.size < 2) throw IllegalArgumentException("잘못된 버전정보 입력")
-
-	val clusterBuilder = ClusterBuilder()
-	clusterBuilder
-		.dataCenter(DataCenterBuilder().id(this@toClusterBuilder.dataCenter.id).build()) // 필수
-		.name(this@toClusterBuilder.name) // 필수
-		.cpu(CpuBuilder().architecture(this@toClusterBuilder.cpuArc).type(this@toClusterBuilder.cpuType)) // 필수
-		.description(this@toClusterBuilder.description)
-		.comment(this@toClusterBuilder.comment)
-		.managementNetwork(NetworkBuilder().id(this@toClusterBuilder.network.id).build())
-		.biosType(this@toClusterBuilder.biosType)
-		.fipsMode(this@toClusterBuilder.fipsMode)
-		.version(VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())
-		.switchType(this@toClusterBuilder.switchType)  // 편집에선 선택불가
-		.firewallType(this@toClusterBuilder.firewallType)
-		.logMaxMemoryUsedThreshold(this@toClusterBuilder.logMaxMemory)
-		.logMaxMemoryUsedThresholdType(this@toClusterBuilder.logMaxMemoryType)
-		.virtService(this@toClusterBuilder.virtService)
-		.glusterService(this@toClusterBuilder.glusterService)
-		.errorHandling(ErrorHandlingBuilder().onError(this@toClusterBuilder.errorHandling))
-		// HELP: 마이그레이션 정책 관련 설정 값 조회 기능 존재여부 확인필요
-		.migration(
-			MigrationOptionsBuilder()
-				.bandwidth(MigrationBandwidthBuilder().assignmentMethod(this@toClusterBuilder.bandwidth))
-				.encrypted(this@toClusterBuilder.encrypted)
-		)
-		.fencingPolicy(
-			FencingPolicyBuilder()
-				.skipIfConnectivityBroken(SkipIfConnectivityBrokenBuilder().enabled(true))
-				.skipIfSdActive(SkipIfSdActiveBuilder().enabled(true))
-		)
-		if (this.networkProvider) {
-			clusterBuilder.externalNetworkProviders(conn.findAllOpenStackNetworkProviders().getOrDefault(listOf()).first())
-		}
-	return clusterBuilder
-}
-
-/**
- * 클러스터 생성 빌더
- */
-fun ClusterVo.toAddClusterBuilder(conn: Connection): Cluster =
-	this@toAddClusterBuilder.toClusterBuilder(conn).build()
-
-/**
- * 클러스터 편집 빌더
- */
-fun ClusterVo.toEditClusterBuilder(conn: Connection): Cluster =
-	this@toEditClusterBuilder.toClusterBuilder(conn).id(this@toEditClusterBuilder.id).build()
-

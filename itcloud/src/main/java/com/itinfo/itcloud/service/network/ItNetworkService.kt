@@ -36,8 +36,9 @@ interface ItNetworkService {
 	@Throws(ItemNotFoundException::class, Error::class)
 	fun findOne(networkId: String): NetworkVo?
 
-	// 네트워크 생성창 - 데이터센터 목록 [ItDataCenterService.findAll]
-	// 				  - 클러스터 목록(연결,필수) [ItDataCenterService.findAllClusterFromDataCenter]
+	// 네트워크 생성창
+	// 		데이터센터 목록 [ItDataCenterService.findAll]
+	// 		클러스터 목록(연결,필수) [ItDataCenterService.findAllClusterFromDataCenter]
 
 	/**
 	 * [ItNetworkService.add]

@@ -14,16 +14,16 @@ import kotlin.jvm.Throws
 
 interface ItVmNicService {
 	/**
-	 * [ItVmNicService.findAllNicsFromVm]
+	 * [ItVmNicService.findAllFromVm]
 	 * 네트워크 인터페이스
 	 *
 	 * @param vmId [String] 가상머신 Id
 	 * @return List<[NicVo]>
 	 */
 	@Throws(Error::class)
-	fun findAllNicsFromVm(vmId: String): List<NicVo>
+	fun findAllFromVm(vmId: String): List<NicVo>
 	/**
-	 * [ItVmNicService.findNicFromVm]
+	 * [ItVmNicService.findOneFromVm]
 	 * 네트워크 인터페이스 정보, 편집
 	 *
 	 * @param vmId [String] 가상머신 Id
@@ -31,12 +31,13 @@ interface ItVmNicService {
 	 * @return [NicVo]?
 	 */
 	@Throws(Error::class)
-	fun findNicFromVm(vmId: String, nicId: String): NicVo?
+	fun findOneFromVm(vmId: String, nicId: String): NicVo?
 
-	 // 네트워크 인터페이스 생성창 - VnicProfile 목록 [ItVmService.findAllVnicProfilesFromCluster]
+	 // 네트워크 인터페이스 생성창 -
+	// 		VnicProfile 목록 [ItVmService.findAllVnicProfilesFromCluster]
 
 	/**
-	 * [ItVmNicService.addNicFromVm]
+	 * [ItVmNicService.addFromVm]
 	 * 네트워크 인터페이스 생성
 	 *
 	 * @param vmId [String] 가상머신 Id
@@ -44,9 +45,9 @@ interface ItVmNicService {
 	 * @return [NicVo]?
 	 */
 	@Throws(Error::class)
-	fun addNicFromVm(vmId: String, nicVo: NicVo): NicVo?
+	fun addFromVm(vmId: String, nicVo: NicVo): NicVo?
 	/**
-	 * [ItVmNicService.updateNicFromVm]
+	 * [ItVmNicService.updateFromVm]
 	 * 네트워크 인터페이스 편집
 	 *
 	 * @param vmId [String] 가상머신 Id
@@ -54,9 +55,9 @@ interface ItVmNicService {
 	 * @return [NicVo]?
 	 */
 	@Throws(Error::class)
-	fun updateNicFromVm(vmId: String, nicVo: NicVo): NicVo?
+	fun updateFromVm(vmId: String, nicVo: NicVo): NicVo?
 	/**
-	 * [ItVmNicService.removeNicFromVm]
+	 * [ItVmNicService.removeFromVm]
 	 * 네트워크 인터페이스 삭제
 	 *
 	 * @param vmId [String] 가상머신 Id
@@ -64,7 +65,7 @@ interface ItVmNicService {
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun removeNicFromVm(vmId: String, nicId: String): Boolean
+	fun removeFromVm(vmId: String, nicId: String): Boolean
 }
 
 @Service
@@ -73,49 +74,50 @@ class VmNicServiceImpl(
 ) : BaseService(), ItVmNicService {
 
 	@Throws(Error::class)
-	override fun findAllNicsFromVm(vmId: String): List<NicVo> {
-		log.info("findAllNicsFromVm ... vmId: {}", vmId)
+	override fun findAllFromVm(vmId: String): List<NicVo> {
+		log.info("findAllFromVm ... vmId: {}", vmId)
 		val res: List<Nic> =
-			conn.findAllNicsFromVm(vmId)
-				.getOrDefault(listOf())
+			conn.findAllNicsFromVm(vmId).getOrDefault(listOf())
 		return res.toNicVosFromVm(conn, vmId)
 	}
 
 	@Throws(Error::class)
-	override fun findNicFromVm(vmId: String, nicId: String): NicVo? {
-		log.info("findNicFromVm ... vmId: {}, nicId: {}", vmId, nicId)
+	override fun findOneFromVm(vmId: String, nicId: String): NicVo? {
+		log.info("findOneFromVm ... vmId: {}, nicId: {}", vmId, nicId)
 		val res: Nic? =
-			conn.findNicFromVm(vmId, nicId)
-				.getOrNull()
+			conn.findNicFromVm(vmId, nicId).getOrNull()
 		return res?.toEditNicVoFromVm(conn)
 	}
 
 	@Throws(Error::class)
-	override fun addNicFromVm(vmId: String, nicVo: NicVo): NicVo? {
+	override fun addFromVm(vmId: String, nicVo: NicVo): NicVo? {
 		log.info("addFromVm ... ")
 		val res: Nic? =
-			conn.addNicFromVm(vmId, nicVo.toAddNicBuilder())
-				.getOrNull()
+			conn.addNicFromVm(
+				vmId, nicVo.toAddNicBuilder()
+			).getOrNull()
 		return res?.toNicVoFromVm(conn, vmId)
 
 	}
 
 	@Throws(Error::class)
-	override fun updateNicFromVm(vmId: String, nicVo: NicVo): NicVo? {
+	override fun updateFromVm(vmId: String, nicVo: NicVo): NicVo? {
 		log.info("updateFromVm ... ")
 		val res: Nic? =
-			conn.updateNicFromVm(vmId, nicVo.toEditNicBuilder())
-				.getOrNull()
+			conn.updateNicFromVm(
+				vmId, nicVo.toEditNicBuilder()
+			).getOrNull()
 		return res?.toNicVoFromVm(conn, vmId)
 	}
 
 	@Throws(Error::class)
-	override fun removeNicFromVm(vmId: String, nicId: String): Boolean {
+	override fun removeFromVm(vmId: String, nicId: String): Boolean {
 		log.info("removeFromVm ... ")
 		val res: Result<Boolean> =
 			conn.removeNicFromVm(vmId, nicId)
 		return res.isSuccess
 	}
+
 
 	companion object {
 		private val log by LoggerDelegate()

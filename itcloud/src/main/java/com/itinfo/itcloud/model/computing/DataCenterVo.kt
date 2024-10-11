@@ -25,10 +25,9 @@ private val log = LoggerFactory.getLogger(DataCenterVo::class.java)
  * @property quotaMode [QuotaModeType] 쿼터모드(비활성화됨, 감사, 강제적용)
  * @property status [DataCenterStatus] 상태(contend, maintenance, not_operational, problematic, uninitialized, up)
  * @property version [String]
- *
  * @property clusters List<[IdentifiedVo]>
  * @property networks List<[IdentifiedVo]>
- * @property storageDomains List<[IdentifiedVo]>
+ * @property storageDomains List<[StorageDomainVo]>
  * @property clusterCnt [Int]
  * @property hostCnt [Int]
  *
@@ -45,7 +44,6 @@ class DataCenterVo (
 	val clusters: List<IdentifiedVo> = listOf(),
 	val networks: List<IdentifiedVo> = listOf(),
 	val storageDomains: List<StorageDomainVo> = listOf(),
-//	val storageDomains: List<IdentifiedVo> = listOf(),
 	val clusterCnt: Int = 0,
 	val hostCnt: Int = 0,
 

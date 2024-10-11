@@ -47,15 +47,15 @@ class ItVmDiskServiceTest {
 
     /**
      * [should_findAllDisksFromVm]
-     * [ItVmDiskService.findAllDiskAttachmentsFromVm]에 대한 단위테스트
+     * [ItVmDiskService.findAllFromVm]에 대한 단위테스트
      *
-     * @see [ItVmDiskService.findAllDiskAttachmentsFromVm]
+     * @see [ItVmDiskService.findAllFromVm]
      */
     @Test
     fun should_findAllDisksFromVm(){
         log.debug("should_findAllDisksFromVm")
         val result: List<DiskAttachmentVo> =
-            service.findAllDiskAttachmentsFromVm(apm)
+            service.findAllFromVm(apm)
 
         assertThat(result, `is`(not(nullValue())))
         result.forEach { println(it) }
@@ -64,15 +64,15 @@ class ItVmDiskServiceTest {
 
     /**
      * [should_findDiskFromVm]
-     * [ItVmDiskService.findDiskFromVm]에 대한 단위테스트
+     * [ItVmDiskService.findOneFromVm]에 대한 단위테스트
      *
-     * @see [ItVmDiskService.findDiskFromVm]
+     * @see [ItVmDiskService.findOneFromVm]
      */
     @Test
     fun should_findDiskFromVm(){
         log.debug("should_findDiskFromVm")
         val result: DiskAttachmentVo? =
-            service.findDiskFromVm(apm, diskAttachmentId)
+            service.findOneFromVm(apm, diskAttachmentId)
 
         assertThat(result, `is`(not(nullValue())))
         println(result)
@@ -80,9 +80,9 @@ class ItVmDiskServiceTest {
 
     /**
      * [should_addDisk]
-     * [ItVmDiskService.addDiskFromVm]에 대한 단위테스트
+     * [ItVmDiskService.addFromVm]에 대한 단위테스트
      *
-     * @see [ItVmDiskService.addDiskFromVm]
+     * @see [ItVmDiskService.addFromVm]
      */
     @Test
     fun should_addDisk() {
@@ -112,7 +112,7 @@ class ItVmDiskServiceTest {
         }
 
         val result: DiskAttachmentVo? =
-            service.addDiskFromVm(apm, diskAttachVo)
+            service.addFromVm(apm, diskAttachVo)
 
         assertThat(result, `is`(not(nullValue())))
         println(result)
@@ -120,9 +120,9 @@ class ItVmDiskServiceTest {
 
     /**
      * [should_attachMultiDiskFromVm]
-     * [ItVmDiskService.attachMultiDiskFromVm]에 대한 단위테스트
+     * [ItVmDiskService.attachMultiFromVm]에 대한 단위테스트
      *
-     * @see [ItVmDiskService.attachMultiDiskFromVm]
+     * @see [ItVmDiskService.attachMultiFromVm]
      */
     @Test
     fun should_attachMultiDiskFromVm() {
@@ -152,16 +152,16 @@ class ItVmDiskServiceTest {
             )
 
         val result: Boolean =
-            service.attachMultiDiskFromVm(apm, diskAttachVos)
+            service.attachMultiFromVm(apm, diskAttachVos)
         assertThat(result, `is`(not(nullValue())))
         println(result)
     }
 
     /**
      * [should_activeDisksFromVm]
-     * [ItVmDiskService.activeDisksFromVm]에 대한 단위테스트
+     * [ItVmDiskService.activeMultiFromVm]에 대한 단위테스트
      *
-     * @see [ItVmDiskService.activeDisksFromVm]
+     * @see [ItVmDiskService.activeMultiFromVm]
      */
     @Test
     fun should_activeDisksFromVm(){
@@ -172,8 +172,8 @@ class ItVmDiskServiceTest {
             "05bd71e4-1de7-494a-865d-35aebb7b5d3b"
         )
 
-        val result: Boolean? =
-            service.activeDisksFromVm(apm, ids)
+        val result: Boolean =
+            service.activeMultiFromVm(apm, ids)
 
         assertThat(result, `is`(not(nullValue())))
         print(result)
@@ -181,9 +181,9 @@ class ItVmDiskServiceTest {
 
     /**
      * [should_deactivateDisksFromVm]
-     * [ItVmDiskService.deactivateDisksFromVm]에 대한 단위테스트
+     * [ItVmDiskService.deactivateMultiFromVm]에 대한 단위테스트
      *
-     * @see [ItVmDiskService.deactivateDisksFromVm]
+     * @see [ItVmDiskService.deactivateMultiFromVm]
      */
     @Test
     fun should_deactivateDisksFromVm(){
@@ -195,8 +195,8 @@ class ItVmDiskServiceTest {
                 "05bd71e4-1de7-494a-865d-35aebb7b5d3b"
             )
 
-        val result: Boolean? =
-            service.deactivateDisksFromVm(apm, ids)
+        val result: Boolean =
+            service.deactivateMultiFromVm(apm, ids)
 
         assertThat(result, `is`(not(nullValue())))
         print(result)
@@ -204,9 +204,9 @@ class ItVmDiskServiceTest {
 
     /**
      * [should_findAllDisksFromVm]
-     * [ItVmDiskService.findAllDisksFromVm]에 대한 단위테스트
+     * [ItVmDiskService.findAllStorageDomains]에 대한 단위테스트
      *
-     * @see [ItVmDiskService.findAllDisksFromVm]
+     * @see [ItVmDiskService.findAllStorageDomains]
      */
     @Test
     fun should_findAllDomains(){
@@ -221,9 +221,9 @@ class ItVmDiskServiceTest {
 
     /**
      * [should_moveDisk]
-     * [ItVmDiskService.moveDiskFromVm]에 대한 단위테스트
+     * [ItVmDiskService.moveFromVm]에 대한 단위테스트
      *
-     * @see [ItVmDiskService.moveDiskFromVm]
+     * @see [ItVmDiskService.moveFromVm]
      */
     @Test
     fun should_moveDisk() {
@@ -241,7 +241,7 @@ class ItVmDiskServiceTest {
             }
         }
         val result: Boolean =
-            service.moveDiskFromVm(apm, diskAttachVo)
+            service.moveFromVm(apm, diskAttachVo)
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))

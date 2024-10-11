@@ -2,6 +2,7 @@ package com.itinfo.itcloud.controller.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.controller.BaseController
+import com.itinfo.itcloud.controller.computing.ClusterController.Companion
 import com.itinfo.itcloud.error.toException
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.itcloud.model.IdentifiedVo
@@ -122,6 +123,28 @@ class VmController: BaseController() {
 		return ResponseEntity.ok(iVm.findAllISO())
 	}
 
+	@ApiOperation(
+		httpMethod="GET",
+		value="가상머신 생성창 - Cpu Profile 목록",
+		notes="선택된 클러스터의 Cpu Profile 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/cpuProfiles/{clusterId}")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun cpuProfiles(
+		@PathVariable clusterId: String? = null
+	): ResponseEntity<List<CpuProfileVo>> {
+		if (clusterId.isNullOrEmpty())
+			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/cpuProfiles{} ... 클러스터 Cpu Profile 목록", clusterId)
+		return ResponseEntity.ok(iVm.findAllCpuProfilesFromCluster(clusterId))
+	}
 
 	@ApiOperation(
 		httpMethod="POST",
@@ -570,7 +593,7 @@ class VmController: BaseController() {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("/computing/vms/{}/nics ... 가상머신 nic 목록", vmId)
-		return ResponseEntity.ok(vmNic.findAllNicsFromVm(vmId))
+		return ResponseEntity.ok(vmNic.findAllFromVm(vmId))
 	}
 
 	@ApiOperation(
@@ -594,7 +617,7 @@ class VmController: BaseController() {
 		if (nicId.isNullOrEmpty())
 			throw ErrorPattern.NIC_ID_NOT_FOUND.toException()
 		log.info("/computing/vms/{}/nics/{} ... 가상머신 nic 일반 ", vmId, nicId)
-		return ResponseEntity.ok(vmNic.findNicFromVm(vmId, nicId))
+		return ResponseEntity.ok(vmNic.findOneFromVm(vmId, nicId))
 	}
 
 	@ApiOperation(
@@ -622,7 +645,7 @@ class VmController: BaseController() {
 		if (nic == null)
 			throw ErrorPattern.NIC_VO_INVALID.toException()
 		log.info("/computing/vms/{}/nics ... 가상머신 nic 생성 ", vmId)
-		return ResponseEntity.ok(vmNic.addNicFromVm(vmId, nic))
+		return ResponseEntity.ok(vmNic.addFromVm(vmId, nic))
 	}
 
 	@ApiOperation(
@@ -653,7 +676,7 @@ class VmController: BaseController() {
 		if (nic == null)
 			throw ErrorPattern.NIC_VO_INVALID.toException()
 		log.info("/computing/vms/{}/nics/{} ... 가상머신 nic 편집 ", vmId, nicId)
-		return ResponseEntity.ok(vmNic.updateNicFromVm(vmId, nic))
+		return ResponseEntity.ok(vmNic.updateFromVm(vmId, nic))
 	}
 
 	@ApiOperation(
@@ -680,7 +703,7 @@ class VmController: BaseController() {
 		if (nicId.isNullOrEmpty())
 			throw ErrorPattern.NIC_ID_NOT_FOUND.toException()
 		log.info("/computing/vms/{}/nics/{} ... 가상머신 nic 삭제 ", vmId, nicId)
-		return ResponseEntity.ok(vmNic.removeNicFromVm(vmId, nicId))
+		return ResponseEntity.ok(vmNic.removeFromVm(vmId, nicId))
 	}
 	// endregion
 
@@ -708,7 +731,7 @@ class VmController: BaseController() {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("/computing/vms/{}/disks ... 가상머신 disk 목록", vmId)
-		return ResponseEntity.ok(iVmDisk.findAllDiskAttachmentsFromVm(vmId))
+		return ResponseEntity.ok(iVmDisk.findAllFromVm(vmId))
 	}
 
 	@ApiOperation(
@@ -735,7 +758,7 @@ class VmController: BaseController() {
 		if (diskAttachmentId.isNullOrEmpty())
 			throw ErrorPattern.DISK_ATTACHMENT_ID_NOT_FOUND.toException()
 		log.info("/computing/vms/{}/disks/{} ... 가상머신 disk 목록", vmId, diskAttachmentId)
-		return ResponseEntity.ok(iVmDisk.findDiskFromVm(vmId, diskAttachmentId))
+		return ResponseEntity.ok(iVmDisk.findOneFromVm(vmId, diskAttachmentId))
 	}
 
 	@ApiOperation(
@@ -763,7 +786,7 @@ class VmController: BaseController() {
 		if (diskAttachment == null)
 			throw ErrorPattern.DISK_ATTACHMENT_VO_INVALID.toException()
 		log.info("/computing/vms/{}/disks ... 가상머신 디스크 생성 ", vmId)
-		return ResponseEntity.ok(iVmDisk.addDiskFromVm(vmId, diskAttachment))
+		return ResponseEntity.ok(iVmDisk.addFromVm(vmId, diskAttachment))
 	}
 
 	@ApiOperation(
@@ -791,7 +814,7 @@ class VmController: BaseController() {
 		if (diskAttachments == null)
 			throw ErrorPattern.DISK_ATTACHMENT_VO_INVALID.toException()
 		log.info("/computing/vms/{}/disks/attach ... 가상머신 디스크 연결 ", vmId)
-		return ResponseEntity.ok(iVmDisk.attachMultiDiskFromVm(vmId, diskAttachments))
+		return ResponseEntity.ok(iVmDisk.attachMultiFromVm(vmId, diskAttachments))
 	}
 
 	@ApiOperation(
@@ -822,7 +845,7 @@ class VmController: BaseController() {
 		if (diskAttachment == null)
 			throw ErrorPattern.DISK_ATTACHMENT_VO_INVALID.toException()
 		log.info("/computing/vms/{}/disks/{} ... 가상머신 디스크 편집 ", vmId, diskAttachmentId)
-		return ResponseEntity.ok(iVmDisk.updateDiskFromVm(vmId, diskAttachment))
+		return ResponseEntity.ok(iVmDisk.updateFromVm(vmId, diskAttachment))
 	}
 
 	@ApiOperation(
@@ -849,7 +872,7 @@ class VmController: BaseController() {
 		if (diskAttachments == null)
 			throw ErrorPattern.DISK_ATTACHMENT_NOT_FOUND.toException()
 		log.info("/computing/vms/{}/disks ... 가상머신 디스크 삭제 ", vmId)
-		return ResponseEntity.ok(iVmDisk.removeDisksFromVm(vmId, diskAttachments))
+		return ResponseEntity.ok(iVmDisk.removeMultiFromVm(vmId, diskAttachments))
 	}
 
 	@ApiOperation(
@@ -877,7 +900,7 @@ class VmController: BaseController() {
 		if (diskAttachments == null)
 			throw ErrorPattern.DISK_ATTACHMENT_NOT_FOUND.toException()
 		log.info("/computing/vms/{}/disks/activate ... 가상머신 디스크 활성화", vmId)
-		return ResponseEntity.ok(iVmDisk.activeDisksFromVm(vmId, diskAttachments))
+		return ResponseEntity.ok(iVmDisk.activeMultiFromVm(vmId, diskAttachments))
 	}
 
 	@ApiOperation(
@@ -905,7 +928,7 @@ class VmController: BaseController() {
 		if (diskAttachments == null)
 			throw ErrorPattern.DISK_ATTACHMENT_NOT_FOUND.toException()
 		log.info("/computing/vms/{}/disks/deactivate ... 가상머신 디스크 활성화", vmId)
-		return ResponseEntity.ok(iVmDisk.deactivateDisksFromVm(vmId, diskAttachments))
+		return ResponseEntity.ok(iVmDisk.deactivateMultiFromVm(vmId, diskAttachments))
 	}
 
 
@@ -961,7 +984,7 @@ class VmController: BaseController() {
 		if (diskAttachment == null)
 			throw ErrorPattern.DISK_ATTACHMENT_VO_INVALID.toException()
 		log.info("/computing/vms/{}/disks/move ... 가상머신 디스크 이동", vmId)
-		return ResponseEntity.ok(iVmDisk.moveDiskFromVm(vmId, diskAttachment))
+		return ResponseEntity.ok(iVmDisk.moveFromVm(vmId, diskAttachment))
 	}
 
 	// endregion
@@ -990,7 +1013,7 @@ class VmController: BaseController() {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("/computing/vms/{}/snapshots ... 가상머신 스냅샷 목록", vmId)
-		return ResponseEntity.ok(iVmSnapshot.findAllSnapshotsFromVm(vmId))
+		return ResponseEntity.ok(iVmSnapshot.findAllFromVm(vmId))
 	}
 
 

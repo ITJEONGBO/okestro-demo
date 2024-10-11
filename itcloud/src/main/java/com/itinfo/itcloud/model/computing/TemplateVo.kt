@@ -10,8 +10,6 @@ import com.itinfo.itcloud.model.fromDataCenterToIdentifiedVo
 import com.itinfo.itcloud.model.network.NicVo
 import com.itinfo.itcloud.model.network.VnicProfileVo
 import com.itinfo.itcloud.model.storage.DiskAttachmentVo
-import com.itinfo.itcloud.model.storage.DiskImageVo
-import com.itinfo.itcloud.ovirtDf
 import com.itinfo.util.ovirt.findCluster
 import com.itinfo.util.ovirt.findDataCenter
 import org.ovirt.engine.sdk4.Connection
@@ -313,17 +311,15 @@ fun Template.toTemplateMenu(conn: Connection): TemplateVo {
 		dataCenterVo { dataCenter?.fromDataCenterToIdentifiedVo() }
 	}
 }
-fun List<Template>.toTemplateMenus(conn: Connection): List<TemplateVo> =
-	this@toTemplateMenus.map { it.toTemplateMenu(conn) }
+fun List<Template>.toTemplatesMenu(conn: Connection): List<TemplateVo> =
+	this@toTemplatesMenu.map { it.toTemplateMenu(conn) }
 
 
 fun Template.toTemplateInfo(conn: Connection): TemplateVo {
 	val cluster: Cluster? =
 		if(this@toTemplateInfo.clusterPresent()) {
 			conn.findCluster(this@toTemplateInfo.cluster().id()).getOrNull()
-		}else{
-			null
-		}
+		}else{ null }
 
 	return TemplateVo.builder {
 		id { this@toTemplateInfo.id() }
@@ -352,12 +348,10 @@ fun Template.toTemplateInfo(conn: Connection): TemplateVo {
 		clusterVo { cluster?.fromClusterToIdentifiedVo() }
 	}
 }
-fun List<Template>.toTemplateInfos(conn: Connection): List<TemplateVo> =
-	this@toTemplateInfos.map { it.toTemplateInfo(conn) }
 
-
-
-
+/**
+ * 템플릿 빌더
+ */
 fun TemplateVo.toTemplateBuilder(): TemplateBuilder {
 	return TemplateBuilder()
 		.name(this@toTemplateBuilder.name)

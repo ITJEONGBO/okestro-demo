@@ -17,16 +17,16 @@ import kotlin.jvm.Throws
 
 interface ItVmDiskService {
 	/**
-	 * [ItVmDiskService.findAllDiskAttachmentsFromVm]
+	 * [ItVmDiskService.findAllFromVm]
 	 * 가상머신 디스크 목록
 	 *
 	 * @param vmId [String] 가상머신 Id
 	 * @return List<[DiskAttachmentVo]>
 	 */
 	@Throws(Error::class)
-	fun findAllDiskAttachmentsFromVm(vmId: String): List<DiskAttachmentVo>
+	fun findAllFromVm(vmId: String): List<DiskAttachmentVo>
 	/**
-	 * [ItVmDiskService.findDiskFromVm]
+	 * [ItVmDiskService.findOneFromVm]
 	 * 가상머신 디스크
 	 *
 	 * @param vmId [String] 가상머신 Id
@@ -34,10 +34,10 @@ interface ItVmDiskService {
 	 * @return [DiskAttachmentVo]?
 	 */
 	@Throws(Error::class)
-	fun findDiskFromVm(vmId: String, diskAttachmentId: String): DiskAttachmentVo?
+	fun findOneFromVm(vmId: String, diskAttachmentId: String): DiskAttachmentVo?
 
 	/**
-	 * [ItVmDiskService.addDiskFromVm]
+	 * [ItVmDiskService.addFromVm]
 	 * 가상머신 디스크 생성
 	 *
 	 * @param vmId [String] 가상머신 Id
@@ -45,10 +45,10 @@ interface ItVmDiskService {
 	 * @return [DiskAttachmentVo]?
 	 */
 	@Throws(Error::class)
-	fun addDiskFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo?
+	fun addFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo?
 	//
 	/**
-	 * [ItVmDiskService.attachMultiDiskFromVm]
+	 * [ItVmDiskService.attachMultiFromVm]
 	 * 가상머신 디스크 연결
 	 *
 	 * @param vmId [String] 가상머신 Id
@@ -56,9 +56,9 @@ interface ItVmDiskService {
 	 * @return List<[DiskAttachmentVo]>?
 	 */
 	@Throws(Error::class)
-	fun attachMultiDiskFromVm(vmId: String, diskAttachmentVos: List<DiskAttachmentVo>): Boolean
+	fun attachMultiFromVm(vmId: String, diskAttachmentVos: List<DiskAttachmentVo>): Boolean
 	/**
-	 * [ItVmDiskService.updateDiskFromVm]
+	 * [ItVmDiskService.updateFromVm]
 	 * 가상머신 디스크 편집
 	 *
 	 * @param vmId [String] 가상머신 Id
@@ -66,9 +66,9 @@ interface ItVmDiskService {
 	 * @return [DiskAttachmentVo]?
 	 */
 	@Throws(Error::class)
-	fun updateDiskFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo?
+	fun updateFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo?
 	/**
-	 * [ItVmDiskService.removeDisksFromVm]
+	 * [ItVmDiskService.removeMultiFromVm]
 	 * 가상머신 디스크 삭제
 	 *
 	 * @param vmId [String] 가상머신 Id
@@ -76,9 +76,9 @@ interface ItVmDiskService {
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun removeDisksFromVm(vmId: String, diskAttachmentVos: List<DiskAttachmentVo>): Boolean
+	fun removeMultiFromVm(vmId: String, diskAttachmentVos: List<DiskAttachmentVo>): Boolean
 	/**
-	 * [ItVmDiskService.activeDisksFromVm]
+	 * [ItVmDiskService.activeMultiFromVm]
 	 * 가상머신 디스크 활성화
 	 *
 	 * @param vmId [String] 가상머신 Id
@@ -86,9 +86,9 @@ interface ItVmDiskService {
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun activeDisksFromVm(vmId: String, diskAttachmentIds: List<String>): Boolean
+	fun activeMultiFromVm(vmId: String, diskAttachmentIds: List<String>): Boolean
 	/**
-	 * [ItVmDiskService.deactivateDisksFromVm]
+	 * [ItVmDiskService.deactivateMultiFromVm]
 	 * 가상머신 디스크 비활성화
 	 *
 	 * @param vmId [String] 가상머신 Id
@@ -96,7 +96,7 @@ interface ItVmDiskService {
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun deactivateDisksFromVm(vmId: String, diskAttachmentIds: List<String>): Boolean
+	fun deactivateMultiFromVm(vmId: String, diskAttachmentIds: List<String>): Boolean
 	/**
 	 * [ItVmDiskService.findAllStorageDomains]
 	 * 보류:[ItStorageService.findAllFromDataCenter] 와 다른점은 내가 가지고 있는 도메인은 제외하고 출력
@@ -112,7 +112,7 @@ interface ItVmDiskService {
 	// 가상머신 디스크 이동창- 디스크 프로파일 [ItStorageService.findAllDiskProfilesFromStorageDomain] 사용
 
 	/**
-	 * [ItVmDiskService.moveDiskFromVm]
+	 * [ItVmDiskService.moveFromVm]
 	 * 가상머신 디스크 스토리지 이동
 	 *
 	 * @param vmId [String] 가상머신 Id
@@ -120,7 +120,7 @@ interface ItVmDiskService {
 	 * @return [Boolean]
 	 */
 	@Throws(Error::class)
-	fun moveDiskFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): Boolean
+	fun moveFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): Boolean
 }
 
 @Service
@@ -129,8 +129,8 @@ class VmDiskService(
 ): BaseService(), ItVmDiskService {
 
 	@Throws(Error::class)
-	override fun findAllDiskAttachmentsFromVm(vmId: String): List<DiskAttachmentVo> {
-		log.info("findAllDisksFromVm ... vmId: {}", vmId)
+	override fun findAllFromVm(vmId: String): List<DiskAttachmentVo> {
+		log.info("findAllFromVm ... vmId: {}", vmId)
 		val res: List<DiskAttachment> =
 			conn.findAllDiskAttachmentsFromVm(vmId)
 				.getOrDefault(listOf())
@@ -138,8 +138,8 @@ class VmDiskService(
 	}
 
 	@Throws(Error::class)
-	override fun findDiskFromVm(vmId: String, diskAttachmentId: String): DiskAttachmentVo? {
-		log.info("findDiskFromVm ... vmId: {}", vmId)
+	override fun findOneFromVm(vmId: String, diskAttachmentId: String): DiskAttachmentVo? {
+		log.info("findOneFromVm ... vmId: {}", vmId)
 		val res: DiskAttachment? =
 			conn.findDiskAttachmentFromVm(vmId, diskAttachmentId)
 				.getOrNull()
@@ -147,8 +147,8 @@ class VmDiskService(
 	}
 
 	@Throws(Error::class)
-	override fun addDiskFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo? {
-		log.info("addDiskFromVm ... vmId: {}", vmId)
+	override fun addFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo? {
+		log.info("addFromVm ... vmId: {}", vmId)
 		val res: DiskAttachment? =
 			conn.addDiskAttachmentToVm(
 				vmId,
@@ -158,8 +158,8 @@ class VmDiskService(
 	}
 
 	@Throws(Error::class)
-	override fun attachMultiDiskFromVm(vmId: String, diskAttachmentVos: List<DiskAttachmentVo>): Boolean {
-		log.info("attachMultiDiskFromVm ... vmId: {}", vmId)
+	override fun attachMultiFromVm(vmId: String, diskAttachmentVos: List<DiskAttachmentVo>): Boolean {
+		log.info("attachMultiFromVm ... vmId: {}", vmId)
 		val res: Result<Boolean> =
 			conn.addMultipleDiskAttachmentsToVm(
 				vmId,
@@ -169,8 +169,8 @@ class VmDiskService(
 	}
 
 	@Throws(Error::class)
-	override fun updateDiskFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo? {
-		log.info("updateDiskFromVm ... vmId: {}", vmId)
+	override fun updateFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): DiskAttachmentVo? {
+		log.info("updateromVm ... vmId: {}", vmId)
 		val res: DiskAttachment? =
 			conn.updateDiskAttachmentToVm(
 				vmId,
@@ -180,8 +180,8 @@ class VmDiskService(
 	}
 
 	@Throws(Error::class)
-	override fun removeDisksFromVm(vmId: String, diskAttachmentVos: List<DiskAttachmentVo>): Boolean {
-		log.info("removeDiskFromVm ...")
+	override fun removeMultiFromVm(vmId: String, diskAttachmentVos: List<DiskAttachmentVo>): Boolean {
+		log.info("removeMultiFromVm ...")
 		// 상태가 deactivate 상태인지
 //		val res: Result<Boolean> =
 //			diskAttachmentVos.forEach { diskAttachmentVo ->
@@ -196,8 +196,8 @@ class VmDiskService(
 	}
 
 	@Throws(Error::class)
-	override fun activeDisksFromVm(vmId: String, diskAttachmentIds: List<String>): Boolean {
-		log.info("activeDiskFromVm ... vmId: {}", vmId)
+	override fun activeMultiFromVm(vmId: String, diskAttachmentIds: List<String>): Boolean {
+		log.info("activeMultiFromVm ... vmId: {}", vmId)
 		val res: Result<Boolean> =
 			conn.activeDiskAttachmentsToVm(
 				vmId,
@@ -207,8 +207,8 @@ class VmDiskService(
 	}
 
 	@Throws(Error::class)
-	override fun deactivateDisksFromVm(vmId: String, diskAttachmentIds: List<String>): Boolean {
-		log.info("deactivateDiskFromVm ... vmId: {}", vmId)
+	override fun deactivateMultiFromVm(vmId: String, diskAttachmentIds: List<String>): Boolean {
+		log.info("deactivateMultiFromVm ... vmId: {}", vmId)
 		val res: Result<Boolean> =
 			conn.deactivateDiskAttachmentsToVm(
 				vmId,
@@ -235,8 +235,8 @@ class VmDiskService(
 	}
 
 	@Throws(Error::class)
-	override fun moveDiskFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): Boolean {
-		log.info("moveDiskFromVm ... diskAttachmentVo: {}", diskAttachmentVo.id)
+	override fun moveFromVm(vmId: String, diskAttachmentVo: DiskAttachmentVo): Boolean {
+		log.info("moveFromVm ... diskAttachmentVo: {}", diskAttachmentVo.id)
 		val res: Result<Boolean> =
 			conn.moveDisk(
 				diskAttachmentVo.diskImageVo.id,

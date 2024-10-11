@@ -345,7 +345,6 @@ class NetworkController: BaseController() {
 
 
 	// region: vnicProfile
-
 	@Autowired private lateinit var iVnic: ItVnicProfileService
 
 	
@@ -384,7 +383,7 @@ class NetworkController: BaseController() {
 		if (networkId.isNullOrEmpty())
 			throw ErrorPattern.NETWORK_ID_NOT_FOUND.toException()
 		log.info("/networks/{}/vnicProfiles ... 네트워크 vnic profile 목록", networkId)
-		return ResponseEntity.ok(iVnic.findAllVnicProfilesFromNetwork(networkId))
+		return ResponseEntity.ok(iVnic.findAllFromNetwork(networkId))
 	}
 
 	@ApiOperation(
@@ -410,7 +409,7 @@ class NetworkController: BaseController() {
 		if (vnicProfileId.isNullOrEmpty())
 			throw ErrorPattern.VNIC_PROFILE_ID_NOT_FOUND.toException()
 		log.info("/networks/{}/vnicProfiles/{} ... 네트워크 vnic profile", networkId, vnicProfileId)
-		return ResponseEntity.ok(iVnic.findVnicProfile(vnicProfileId))
+		return ResponseEntity.ok(iVnic.findOne(vnicProfileId))
 	}
 
 	@ApiOperation(
@@ -436,7 +435,7 @@ class NetworkController: BaseController() {
 		if (vnicProfile == null)
 			throw ErrorPattern.VNIC_PROFILE_VO_INVALID.toException()
 		log.info("/networks/{}/vnicProfiles ... vnicProfile 생성", networkId)
-		return ResponseEntity.ok(iVnic.addVnicProfile(vnicProfile))
+		return ResponseEntity.ok(iVnic.add(vnicProfile))
 	}
 
 	@ApiOperation(
@@ -467,7 +466,7 @@ class NetworkController: BaseController() {
 			throw ErrorPattern.VNIC_PROFILE_ID_NOT_FOUND.toException()
 		if (vnicProfile == null)
 			throw ErrorPattern.VNIC_PROFILE_NOT_FOUND.toException()
-		return ResponseEntity.ok(iVnic.updateVnicProfile(vnicProfile))
+		return ResponseEntity.ok(iVnic.update(vnicProfile))
 	}
 
 	@ApiOperation(
@@ -494,7 +493,7 @@ class NetworkController: BaseController() {
 		if (vnicProfileId.isNullOrEmpty())
 			throw ErrorPattern.VNIC_PROFILE_ID_NOT_FOUND.toException()
 		log.info("/{}/vnicProfiles/{} ... vnic 프로파일 삭제", networkId, vnicProfileId)
-		return ResponseEntity.ok(iVnic.removeVnicProfile(vnicProfileId))
+		return ResponseEntity.ok(iVnic.remove(vnicProfileId))
 	}
 
 

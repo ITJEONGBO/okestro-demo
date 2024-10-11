@@ -179,7 +179,7 @@ class HostController {
 		if (hostId.isNullOrEmpty())
 			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
 		log.info("/computing/hosts/{}/nics ... 호스트 nic 목록", hostId)
-		return ResponseEntity.ok(iHost.findAllNicsFromHost(hostId))
+		return ResponseEntity.ok(iHost.findAllHostNicsFromHost(hostId))
 	}
 
 	@ApiOperation(

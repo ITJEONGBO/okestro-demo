@@ -293,24 +293,6 @@ class ItClusterServiceTest {
 	}
 
 	/**
-	 * [should_findAllStorageDomainsFromCluster]
-	 * [ItClusterService.findAllStorageDomainsFromCluster]에 대한 단위테스트
-	 *
-	 * @see ItClusterService.findAllStorageDomainsFromCluster
-	 **/
-	@Test
-	fun should_findAllStorageDomainsFromCluster() {
-		log.debug("should_findAllStorageDomainsFromCluster ... ")
-		val result: List<StorageDomainVo> =
-			service.findAllStorageDomainsFromCluster(clusterId)
-
-		assertThat(result, `is`(not(nullValue())))
-		result.forEach { println(it) }
-		assertThat(result.size, `is`(2))
-	}
-
-
-	/**
 	 * [should_findAllNetworksFromCluster]
 	 * [ItClusterService.findAllNetworksFromCluster]에 대한 단위테스트
 	 *

@@ -7,19 +7,19 @@ import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.network.toNetworkVos
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
-import com.itinfo.itcloud.model.storage.DiskImageVo
-import com.itinfo.itcloud.model.storage.StorageDomainVo
-import com.itinfo.itcloud.model.storage.toDiskImageVos
-import com.itinfo.itcloud.model.storage.toStorageDomainsMenu
+import com.itinfo.itcloud.model.storage.*
+import com.itinfo.itcloud.repository.engine.DiskVmElementRepository
+import com.itinfo.itcloud.repository.engine.entity.DiskVmElementEntity
+import com.itinfo.itcloud.repository.engine.entity.toVmId
 import com.itinfo.itcloud.repository.history.dto.UsageDto
 import com.itinfo.itcloud.service.BaseService
-import com.itinfo.itcloud.service.storage.ItDiskService
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.types.*
 import org.ovirt.engine.sdk4.Error
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.util.*
 import kotlin.jvm.Throws
 
 interface ItDataCenterService {
@@ -77,9 +77,7 @@ interface ItDataCenterService {
 	 */
 	@Throws(Error::class)
 	fun findAllClustersFromDataCenter(dataCenterId: String): List<ClusterVo>
-	// 생성
-	// 편집
-	// 삭제
+	// 생성, 편집, 삭제
 
 	/**
 	 * [ItDataCenterService.findAllHostsFromDataCenter]
@@ -90,6 +88,8 @@ interface ItDataCenterService {
 	 */
 	@Throws(Error::class)
 	fun findAllHostsFromDataCenter(dataCenterId: String): List<HostVo>
+	// 생성, 편집, 삭제, 유지보수, 활성, 인증서 등록, 호스트 네트워크 복사
+
 	/**
 	 * [ItDataCenterService.findAllVmsFromDataCenter]
 	 * 데이터센터가 가지고있는 가상머신 목록
@@ -99,6 +99,7 @@ interface ItDataCenterService {
 	 */
 	@Throws(Error::class)
 	fun findAllVmsFromDataCenter(dataCenterId: String): List<VmVo>
+	// 생성, 편집, 삭제, 실행, 일시중지, 종료, 호스트 네트워크 복사, 재부팅, 콘솔, 템플릿 목록, 스냅샷 생성, 마이그레이션, OVA로 내보내기
 
 	/**
 	 * [ItDataCenterService.findAllStorageDomainsFromDataCenter]
@@ -109,22 +110,17 @@ interface ItDataCenterService {
 	 */
 	@Throws(Error::class)
 	fun findAllStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo>
-	// 생성
-	// 분리
-	// 활성
-	// 유지보수
-
+	// 생성, 분리, 활성, 유지보수
 	/**
-	 * [ItDiskService.findAllDisksFromDataCenter]
+	 * [ItDataCenterService.findAllDisksFromDataCenter]
 	 * 스토리지 도메인 - 디스크 목록 (데이터센터가 가진)
-	 * 데이터센터가 가진 스토리지도메인이 가진 디스크
+	 * 데이터센터 - 스토리지도메인이 가진 디스크
 	 *
 	 * @param dataCenterId [String] 데이터센터 Id
 	 * @return List<[DiskImageVo]> 디스크 목록
 	 */
 	@Throws(Error::class)
 	fun findAllDisksFromDataCenter(dataCenterId: String): List<DiskImageVo>
-
 
 	/**
 	 * [ItDataCenterService.findAllNetworksFromDataCenter]
@@ -135,9 +131,7 @@ interface ItDataCenterService {
 	 */
 	@Throws(Error::class)
 	fun findAllNetworksFromDataCenter(dataCenterId: String): List<NetworkVo>
-	// 생성
-	// 편집
-	// 삭제
+	// 생성, 편집, 삭제
 
 	/**
 	 * [ItDataCenterService.findAllEventsFromDataCenter]
@@ -185,14 +179,15 @@ interface ItDataCenterService {
 class DataCenterServiceImpl(
 
 ): BaseService(), ItDataCenterService {
+
+	@Autowired private lateinit var diskVmElementRepository: DiskVmElementRepository
 	@Autowired private lateinit var itGraphService: ItGraphService
 
 	@Throws(Error::class)
 	override fun findAll(): List<DataCenterVo> {
 		log.info("findAll ... ")
 		val res: List<DataCenter> =
-			conn.findAllDataCenters()
-				.getOrDefault(listOf())
+			conn.findAllDataCenters().getOrDefault(listOf())
 		return res.toDataCentersMenu(conn)
 	}
 
@@ -200,8 +195,7 @@ class DataCenterServiceImpl(
 	override fun findOne(dataCenterId: String): DataCenterVo? {
 		log.info("findOne ... dataCenterId: {}", dataCenterId)
 		val res: DataCenter? =
-			conn.findDataCenter(dataCenterId)
-				.getOrNull()
+			conn.findDataCenter(dataCenterId).getOrNull()
 		return res?.toDataCenterVoInfo()
 	}
 
@@ -209,8 +203,9 @@ class DataCenterServiceImpl(
 	override fun add(dataCenterVo: DataCenterVo): DataCenterVo? {
 		log.info("add ... ")
 		val res: DataCenter? =
-			conn.addDataCenter(dataCenterVo.toAddDataCenterBuilder())
-				.getOrNull()
+			conn.addDataCenter(
+				dataCenterVo.toAddDataCenterBuilder()
+			).getOrNull()
 		return res?.toDataCenterVoInfo()
 	}
 
@@ -218,8 +213,9 @@ class DataCenterServiceImpl(
 	override fun update(dataCenterVo: DataCenterVo): DataCenterVo? {
 		log.info("update ... ")
 		val res: DataCenter? =
-			conn.updateDataCenter(dataCenterVo.toEditDataCenterBuilder())
-				.getOrNull()
+			conn.updateDataCenter(
+				dataCenterVo.toEditDataCenterBuilder()
+			).getOrNull()
 		return res?.toDataCenterVoInfo()
 	}
 
@@ -236,8 +232,7 @@ class DataCenterServiceImpl(
 	override fun findAllClustersFromDataCenter(dataCenterId: String): List<ClusterVo> {
 		log.info("findAllClustersFromDataCenter ... dataCenterId: {}", dataCenterId)
 		val res: List<Cluster> =
-			conn.findAllClustersFromDataCenter(dataCenterId)
-				.getOrDefault(listOf())
+			conn.findAllClustersFromDataCenter(dataCenterId).getOrDefault(listOf())
 				.filter { it.cpuPresent() }
 		return res.toClustersMenu(conn)
 	}
@@ -246,8 +241,7 @@ class DataCenterServiceImpl(
 	override fun findAllHostsFromDataCenter(dataCenterId: String): List<HostVo> {
 		log.debug("findAllHostsFromDataCenter ... dataCenterId: {}", dataCenterId)
 		val res: List<Host> =
-			conn.findAllHostsFromDataCenter(dataCenterId)
-				.getOrDefault(listOf())
+			conn.findAllHostsFromDataCenter(dataCenterId).getOrDefault(listOf())
 		return res.map { host ->
 			val hostNic: HostNic? =
 				conn.findAllNicsFromHost(host.id()).getOrDefault(listOf()).firstOrNull()
@@ -263,8 +257,7 @@ class DataCenterServiceImpl(
 	override fun findAllVmsFromDataCenter(dataCenterId: String): List<VmVo> {
 		log.debug("findAllVmsFromDataCenter ... dataCenterId: {}", dataCenterId)
 		val res: List<Vm> =
-			conn.findAllVmsFromDataCenter(dataCenterId)
-				.getOrDefault(listOf())
+			conn.findAllVmsFromDataCenter(dataCenterId).getOrDefault(listOf())
 		return res.toVmsMenu(conn)
 	}
 
@@ -272,28 +265,30 @@ class DataCenterServiceImpl(
 	override fun findAllStorageDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
 		log.info("findAllStorageDomainsFromDataCenter ... dataCenterId: {}", dataCenterId)
 		val res: List<StorageDomain> =
-			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
-				.getOrDefault(listOf())
+			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId).getOrDefault(listOf())
 		return res.toStorageDomainsMenu(conn)
 	}
 
 	@Throws(Error::class)
 	override fun findAllDisksFromDataCenter(dataCenterId: String): List<DiskImageVo> {
 		val res: List<Disk> =
-			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
-				.getOrDefault(listOf())
-				.flatMap {
-					conn.findAllDisksFromStorageDomain(it.id()).getOrDefault(listOf())
-				}
-		return res.toDiskImageVos(conn)
+			conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId).getOrDefault(listOf())
+				.flatMap { conn.findAllDisksFromStorageDomain(it.id()).getOrDefault(listOf()) }
+		return res.map { disk ->
+			val diskVmElementEntityOpt: Optional<DiskVmElementEntity> =
+				diskVmElementRepository.findByDiskId(UUID.fromString(disk.id()))
+
+			// ID가 템플릿일 수도, VM일 수도 있으므로 먼저 템플릿과 VM을 구분하여 조회
+			val id: String = diskVmElementEntityOpt.map { it.toVmId() }.orElse("")
+			disk.toDiskMenu(conn, id)
+		}
 	}
 
 	@Throws(Error::class)
 	override fun findAllNetworksFromDataCenter(dataCenterId: String): List<NetworkVo> {
 		log.info("findAllNetworksFromDataCenter ... dataCenterId: {}", dataCenterId)
 		val res: List<Network> =
-			conn.findAllNetworks()
-				.getOrDefault(listOf())
+			conn.findAllNetworks().getOrDefault(listOf())
 				.filter { it.dataCenter().id() == dataCenterId }
 		return res.toNetworkVos(conn)
 	}
@@ -302,17 +297,14 @@ class DataCenterServiceImpl(
 	override fun findAllEventsFromDataCenter(dataCenterId: String): List<EventVo> {
 		log.info("findAllEventsFromDataCenter ... dataCenterId: {}", dataCenterId)
 		val dataCenter: DataCenter =
-			conn.findDataCenter(dataCenterId)
-				.getOrNull() ?: throw ErrorPattern.DATACENTER_NOT_FOUND.toException()
+			conn.findDataCenter(dataCenterId).getOrNull()
+				?: throw ErrorPattern.DATACENTER_NOT_FOUND.toException()
 		val res: List<Event> =
-			conn.findAllEvents()
-				.getOrDefault(listOf())
-				.filter { (
-						it.dataCenterPresent() && (
+			conn.findAllEvents().getOrDefault(listOf())
+				.filter { (it.dataCenterPresent() && (
 								(it.dataCenter().idPresent() && it.dataCenter().id() == dataCenterId) ||
 										(it.dataCenter().namePresent() && it.dataCenter().name() == dataCenter.name())
-								)
-						)}
+				)) }
 		return res.toEventVos()
 	}
 

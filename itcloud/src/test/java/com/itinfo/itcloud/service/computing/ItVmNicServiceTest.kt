@@ -36,15 +36,15 @@ class ItVmNicServiceTest {
 
     /**
      * [should_findAllNicsFromVm]
-     * [ItVmNicService.findAllNicsFromVm]에 대한 단위테스트
+     * [ItVmNicService.findAllFromVm]에 대한 단위테스트
      *
-     * @see [ItVmNicService.findAllNicsFromVm]
+     * @see [ItVmNicService.findAllFromVm]
      */
     @Test
     fun should_findAllNicsFromVm() {
         log.debug("should_findAllNicsFromVm ...")
         val result: List<NicVo> =
-            service.findAllNicsFromVm(hostVm)
+            service.findAllFromVm(hostVm)
 
         assertThat(result, `is`(not(nullValue())))
         result.forEach { println(it) }
@@ -54,15 +54,15 @@ class ItVmNicServiceTest {
 
     /**
      * [should_findNicFromVm]
-     * [ItVmNicService.findNicFromVm]에 대한 단위테스트
+     * [ItVmNicService.findOneFromVm]에 대한 단위테스트
      *
-     * @see [ItVmNicService.findNicFromVm]
+     * @see [ItVmNicService.findOneFromVm]
      */
     @Test
     fun should_findNicFromVm() {
         log.debug("should_findNicFromVm ...")
         val result: NicVo? =
-            service.findNicFromVm(apm, nicId)
+            service.findOneFromVm(apm, nicId)
 
         assertThat(result, `is`(not(nullValue())))
         println(result)
@@ -71,9 +71,9 @@ class ItVmNicServiceTest {
 
     /**
      * [should_addNicFromVm]
-     * [ItVmNicService.addNicFromVm]에 대한 단위테스트
+     * [ItVmNicService.addFromVm]에 대한 단위테스트
      *
-     * @see ItVmNicService.addNicFromVm
+     * @see ItVmNicService.addFromVm
      */
     @Test
     fun should_addNicFromVm() {
@@ -88,7 +88,7 @@ class ItVmNicServiceTest {
         }
 
         val addResult: NicVo? =
-            service.addNicFromVm(apm, addVmNic)
+            service.addFromVm(apm, addVmNic)
 
         assertThat(addResult?.id, `is`(not(nullValue())))
         assertThat(addResult?.vnicProfileVo?.id, `is`(addVmNic.vnicProfileVo.id))
@@ -100,13 +100,13 @@ class ItVmNicServiceTest {
 
     /**
      * [should_updateNicFromVm]
-     * [ItVmNicService.updateNicFromVm]에 대한 단위테스트
+     * [ItVmNicService.updateFromVm]에 대한 단위테스트
      *
-     * @see ItVmNicService.updateNicFromVm
+     * @see ItVmNicService.updateFromVm
      */
     @Test
     fun should_updateNicFromVm() {
-        log.debug("should_updateNicFromVm ... ")
+        log.debug("should_updateFromVm ... ")
         val nicId = "4b2ee465-599e-423d-9ada-5ea298f7c0a4"
 
         val updateVmNic: NicVo = NicVo.builder {
@@ -119,7 +119,7 @@ class ItVmNicServiceTest {
         }
 
         val updateResult: NicVo? =
-            service.updateNicFromVm(apm, updateVmNic)
+            service.updateFromVm(apm, updateVmNic)
 
         assertThat(updateResult?.id, `is`(not(nullValue())))
         assertThat(updateResult?.vnicProfileVo?.id, `is`(updateVmNic.vnicProfileVo.id))
@@ -130,16 +130,16 @@ class ItVmNicServiceTest {
 
     /**
      * [should_removeNicFromVm]
-     * [ItVmNicService.removeNicFromVm]에 대한 단위테스트
+     * [ItVmNicService.removeFromVm]에 대한 단위테스트
      *
-     * @see ItVmNicService.removeNicFromVm
+     * @see ItVmNicService.removeFromVm
      */
     @Test
     fun should_removeNicFromVm() {
         log.debug("should_removeNicFromVm ... ")
         val nicId = "4b2ee465-599e-423d-9ada-5ea298f7c0a4"
         val removeResult: Boolean =
-            service.removeNicFromVm(apm, nicId)
+            service.removeFromVm(apm, nicId)
 
         assertThat(removeResult, `is`(true))
     }

@@ -8,7 +8,6 @@ import com.itinfo.itcloud.model.computing.VmExportVo
 import com.itinfo.itcloud.model.computing.toConsoleVo
 import com.itinfo.itcloud.model.fromHostsToIdentifiedVos
 import com.itinfo.itcloud.service.BaseService
-import com.itinfo.itcloud.service.computing.VmServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.Error
@@ -93,7 +92,8 @@ interface ItVmOperationService {
 	@Throws(Error::class)
 	fun migrate(vmId: String, hostId: String): Boolean
 
-	// 가상머신 내보내기 창 - 호스트 목록 [ItClusterService.findAllHostsFromCluster] (가상 어플라이언스로 가상머신 내보내기)
+	// 가상머신 내보내기 창
+	// 		호스트 목록 [ItClusterService.findAllHostsFromCluster] (가상 어플라이언스로 가상머신 내보내기)
 
 	/**
 	 * [ItVmOperationService.exportOva]
@@ -122,48 +122,42 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 	@Throws(Error::class)
 	override fun start(vmId: String): Boolean {
 		log.info("start ... vmId: {}", vmId)
-		val res: Result<Boolean> =
-			conn.startVm(vmId)
+		val res: Result<Boolean> = conn.startVm(vmId)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun pause(vmId: String): Boolean {
 		log.info("pause ... vmId: {}", vmId)
-		val res: Result<Boolean> =
-			conn.suspendVm(vmId)
+		val res: Result<Boolean> = conn.suspendVm(vmId)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun powerOff(vmId: String): Boolean {
 		log.info("powerOff ... vmId: {}", vmId)
-		val res: Result<Boolean> =
-			conn.stopVm(vmId)
+		val res: Result<Boolean> = conn.stopVm(vmId)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun shutdown(vmId: String): Boolean {
 		log.info("shutdown ... vmId: {}", vmId)
-		val res: Result<Boolean> =
-			conn.shutdownVm(vmId)
+		val res: Result<Boolean> = conn.shutdownVm(vmId)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun reboot(vmId: String): Boolean {
 		log.info("reboot ... vmId: {}", vmId)
-		val res: Result<Boolean> =
-			conn.rebootVm(vmId)
+		val res: Result<Boolean> = conn.rebootVm(vmId)
 		return res.isSuccess
 	}
 
 	@Throws(Error::class)
 	override fun reset(vmId: String): Boolean {
 		log.info("reset ... vmId: {}", vmId)
-		val res: Result<Boolean> =
-			conn.resetVm(vmId)
+		val res: Result<Boolean> = conn.resetVm(vmId)
 		return res.isSuccess
 	}
 
@@ -171,21 +165,19 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 	override fun migrateHostList(vmId: String): List<IdentifiedVo> {
 		log.info("migrateHostList ... vmId: {}", vmId)
 		val vm: Vm =
-			conn.findVm(vmId)
-				.getOrNull()?: throw ErrorPattern.VM_NOT_FOUND.toException()
+			conn.findVm(vmId).getOrNull()
+				?: throw ErrorPattern.VM_NOT_FOUND.toException()
 
 		val res: List<Host> =
-			conn.findAllHosts()
-				.getOrDefault(listOf())
-				.filter { host -> host.cluster().id() == vm.cluster().id() && host.id() != vm.host().id() }
+			conn.findAllHosts().getOrDefault(listOf())
+				.filter { it.cluster().id() == vm.cluster().id() && it.id() != vm.host().id() }
 		return res.fromHostsToIdentifiedVos()
 	}
 
 	@Throws(Error::class)
 	override fun migrate(vmId: String, hostId: String): Boolean {
 		log.info("migrate ... ")
-		val res: Result<Boolean> =
-			conn.migrationVm(vmId, hostId)
+		val res: Result<Boolean> = conn.migrationVm(vmId, hostId)
 		return res.isSuccess
 	}
 
@@ -206,8 +198,8 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 	override fun findConsole(vmId: String): ConsoleVo? {
 		log.info("findConsole ... vmId: {}", vmId)
 		val res: Vm =
-			conn.findVm(vmId)
-				.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toException()
+			conn.findVm(vmId).getOrNull()
+				?: throw ErrorPattern.VM_NOT_FOUND.toException()
 		return res.toConsoleVo(conn, systemPropertiesVo)
 	}
 
