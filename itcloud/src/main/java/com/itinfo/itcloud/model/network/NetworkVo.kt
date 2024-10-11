@@ -179,6 +179,7 @@ fun List<Network>.toNetworkVos(conn: Connection): List<NetworkVo> =
 
 fun Network.toClusterNetworkVo(conn: Connection): NetworkVo {
 	val usages: List<NetworkUsage> = this@toClusterNetworkVo.usages()
+
 	return NetworkVo.builder {
 		id { this@toClusterNetworkVo.id() }
 		name { this@toClusterNetworkVo.name() }
@@ -186,7 +187,7 @@ fun Network.toClusterNetworkVo(conn: Connection): NetworkVo {
 		portIsolation { this@toClusterNetworkVo.portIsolation() }
 		status { this@toClusterNetworkVo.status() }
 		usage { usages.toUsagesVo() }
-		required { this@toClusterNetworkVo.required() }
+		required { if(this@toClusterNetworkVo.requiredPresent()) this@toClusterNetworkVo.required() else false }
 	}
 }
 fun List<Network>.toClusterNetworkVos(conn: Connection): List<NetworkVo> =
@@ -214,18 +215,28 @@ fun NetworkVo.toNetworkBuilder(): NetworkBuilder = NetworkBuilder()
 			null
 	)
 
+// 필요 name, datacenter_id
+fun NetworkVo.toAddNetworkBuilder(): Network =
+	this@toAddNetworkBuilder.toNetworkBuilder().build()
+
+
+fun NetworkVo.toEditNetworkBuilder(): Network =
+	this@toEditNetworkBuilder.toNetworkBuilder().id(this@toEditNetworkBuilder.id).build()
+
+
+
 // 클러스터 연결.할당 (attach 가 되어잇어야 required 선택가능)
 // 선택되면 clusterVo(id, required=t/f)
 // 이게 ext에 들어가려면 cluster의 개수,  networkid, clusterid, cluster required(tf)
 fun NetworkVo.toAddClusterAttach(conn: Connection, networkId: String) {
-	conn.findNetwork(networkId)
-		.getOrNull()?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
+	conn.findNetwork(networkId).getOrNull()
+		?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
 
 	// TODO:HELP 반환값을 어떻게 할지 의문
 	if (this@toAddClusterAttach.clusters.isNotEmpty()) {
 		this@toAddClusterAttach.clusters.forEach { clusterVo ->
-			conn.findCluster(clusterVo.id)
-				.getOrNull()?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
+			conn.findCluster(clusterVo.id).getOrNull()
+				?: throw ErrorPattern.CLUSTER_NOT_FOUND.toException()
 			conn.addNetworkFromCluster(
 				clusterVo.id,
 				NetworkBuilder().id(networkId).required(clusterVo.required).build()
@@ -243,15 +254,4 @@ fun NetworkVo.toAddNetworkLabel(conn: Connection, networkId: String) {
 		)
 	}
 }
-
-
-// 필요 name, datacenter_id
-fun NetworkVo.toAddNetworkBuilder(): Network =
-	this@toAddNetworkBuilder.toNetworkBuilder().build()
-
-
-fun NetworkVo.toEditNetworkBuilder(): Network =
-	this@toEditNetworkBuilder.toNetworkBuilder().id(this@toEditNetworkBuilder.id).build()
-
-
 

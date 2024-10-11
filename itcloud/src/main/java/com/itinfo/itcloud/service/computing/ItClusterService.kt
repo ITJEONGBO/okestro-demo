@@ -11,6 +11,7 @@ import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.Error
+import org.ovirt.engine.sdk4.builders.NetworkBuilder
 import org.ovirt.engine.sdk4.types.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -227,6 +228,7 @@ class ClusterServiceImpl(
 		return res.toVmsMenu(conn)
 	}
 
+
 	@Throws(Error::class)
 	override fun findAllNetworksFromCluster(clusterId: String): List<NetworkVo> {
 		log.info("findAllNetworksFromCluster ... clusterId: {}", clusterId)
@@ -235,25 +237,21 @@ class ClusterServiceImpl(
 		return res.toClusterNetworkVos(conn)
 	}
 
-	/**
-	 * TODO("클러스터 네트워크 대략 난감")
-	 */
 	@Throws(Error::class)
 	override fun addNetworkFromCluster(clusterId: String, networkVo: NetworkVo): NetworkVo? {
-		// TODO: [ItNetworkService.add] 와 같은 기능이지만 약간 다름
 		log.info("addNetworkFromCluster ... ")
-		val res: Network? =
-			conn.addNetwork(networkVo.toAddNetworkBuilder())
-				.getOrNull()
-		if(res == null){
-			throw ErrorPattern.NETWORK_NOT_FOUND.toException()
-		}
+		val network: Network =
+			conn.addNetwork(
+				networkVo.toAddNetworkBuilder()
+			).getOrNull() ?: throw ErrorPattern.NETWORK_NOT_FOUND.toException()
 
-		// 생성 후에 나온 network Id로 클러스터 네트워크 생성 및 레이블 생성 가능
-		// 기본 단순 생성은 클러스터가 할당되지도 필수도 선택되지 않음
-		networkVo.toAddClusterAttach(conn, res.id())	// 클러스터 연결, 필수 선택
-		networkVo.toAddNetworkLabel(conn, res.id())
-		return res.toNetworkVo(conn)
+		// 네트워크를 생성하고 cluster 에 붙이는 방식
+		val res: Network? =
+			conn.addNetworkFromCluster(
+				clusterId,
+				NetworkBuilder().id(network.id()).build()
+			).getOrNull()
+		return res?.toNetworkVo(conn)
 	}
 
 	// 클러스터 네트워크 - 네트워크 관리창
@@ -261,28 +259,23 @@ class ClusterServiceImpl(
 	override fun findAllManageNetworksFromCluster(clusterId: String): List<NetworkVo> {
 		log.info("findAllManageNetworksFromCluster ... clusterId: {}", clusterId)
 		val cluster: Cluster =
-			conn.findCluster(clusterId)
-				.getOrNull() ?: throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
+			conn.findCluster(clusterId).getOrNull()
+				?: throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
 
 		// 클러스터가 가지고 있는 네트워크
 		val clusterNetworks: List<Network> =
-			conn.findAllNetworksFromCluster(clusterId)
-				.getOrDefault(listOf())
+			conn.findAllNetworksFromCluster(clusterId).getOrDefault(listOf())
 
 		val networks: List<Network> =
-			conn.findAllNetworksFromDataCenter(cluster.dataCenter().id())
-				.getOrDefault(listOf())
-				.filter { network ->
-					clusterNetworks.none { clusterNetwork ->
-						clusterNetwork.id() == network.id()
-					}
+			conn.findAllNetworksFromDataCenter(cluster.dataCenter().id()).getOrDefault(listOf())
+				.filter {
+					clusterNetworks.none { clusterNetwork -> clusterNetwork.id() == it.id() }
 				}
 
 		val mergedNetworks = clusterNetworks + networks
 		return mergedNetworks.toClusterNetworkVos(conn)
 	}
 
-	// networkvo 각각
 	@Throws(Error::class)
 	override fun manageNetworksFromCluster(clusterId: String, networkVos: List<NetworkVo>): Boolean {
 		log.info("manageNetworksFromCluster ... ")
@@ -306,7 +299,8 @@ class ClusterServiceImpl(
                     ).send().network();
                 })
 		 */
-		return false
+//		return false
+		TODO("네트워크 관리 실행")
 	}
 
 	@Throws(Error::class)

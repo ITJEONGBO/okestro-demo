@@ -139,7 +139,7 @@ class VmVo (
     val name: String = "",
     val status: VmStatus = VmStatus.UNKNOWN,
     val upTime: String = "",
-    val creationTime: Date = Date(),
+    val creationTime: String = "",
     val memoryInstalled: BigInteger = BigInteger.ZERO,
     val memoryUsed: BigInteger = BigInteger.ZERO,
     val memoryBuffered: BigInteger = BigInteger.ZERO,
@@ -225,7 +225,7 @@ class VmVo (
         private var bName: String = ""; fun name(block: () -> String?) { bName = block() ?: ""}
         private var bStatus: VmStatus = VmStatus.UNKNOWN; fun status(block: () -> VmStatus?) { bStatus = block() ?: VmStatus.UNKNOWN }
         private var bUpTime: String = ""; fun upTime(block: () -> String?) { bUpTime = block() ?: "" }
-        private var bCreationTime: Date = Date(); fun creationTime(block: () -> Date?) { bCreationTime = block() ?: Date() }
+        private var bCreationTime: String = ""; fun creationTime(block: () -> String?) { bCreationTime = block() ?: "" }
         private var bMemoryInstalled: BigInteger = BigInteger.ZERO; fun memoryInstalled(block: () -> BigInteger?) { bMemoryInstalled = block() ?: BigInteger.ZERO }
         private var bMemoryUsed: BigInteger = BigInteger.ZERO; fun memoryUsed(block: () -> BigInteger?) { bMemoryUsed = block() ?: BigInteger.ZERO }
         private var bMemoryBuffered: BigInteger = BigInteger.ZERO; fun memoryBuffered(block: () -> BigInteger?) { bMemoryBuffered = block() ?: BigInteger.ZERO }
@@ -329,6 +329,7 @@ fun Vm.toVmMenu(conn: Connection): VmVo {
         id { this@toVmMenu.id() }
         name { this@toVmMenu.name() }
         comment { this@toVmMenu.comment() }
+        creationTime {  ovirtDf.format(this@toVmMenu.creationTime()) }
         status { this@toVmMenu.status() }
         description { this@toVmMenu.description() }
         hostEngineVm { this@toVmMenu.origin() == "managed_hosted_engine" } // 엔진여부
@@ -854,7 +855,7 @@ fun Vm.toVmVo(conn: Connection): VmVo {
         name { this@toVmVo.name() }
         status { this@toVmVo.status() }
         upTime { statistics.findVmUptime(conn) }
-        creationTime { this@toVmVo.creationTime() }
+        creationTime { ovirtDf.format(this@toVmVo.creationTime()) }
         memoryInstalled { statistics.findMemory("memory.installed") }
         memoryUsed { statistics.findMemory("memory.used") }
         memoryBuffered { statistics.findMemory("memory.buffered") }

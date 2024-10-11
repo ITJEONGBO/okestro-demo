@@ -4,6 +4,7 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.NetworkVo
+import com.itinfo.itcloud.model.network.UsageVo
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.storage.StorageDomainVo
 import org.junit.jupiter.api.Test
@@ -35,8 +36,8 @@ class ItClusterServiceTest {
 
 	@BeforeEach
 	fun setup() {
-		dataCenterId = "023b0a26-3819-11ef-8d02-00163e6c8feb"
-		clusterId = "023c79d8-3819-11ef-bf08-00163e6c8feb"
+		dataCenterId = "a8943656-879f-11ef-943a-00163e2555f4"
+		clusterId = "a895ad7e-879f-11ef-a5a7-00163e2555f4"
 		networkId = "00000000-0000-0000-0000-000000000009"
 	}
 
@@ -59,7 +60,7 @@ class ItClusterServiceTest {
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }
-		assertThat(result.size, `is`(2))
+		assertThat(result.size, `is`(1))
 	}
 
 	/**
@@ -289,7 +290,7 @@ class ItClusterServiceTest {
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }
-		assertThat(result.size, `is`(8))
+		assertThat(result.size, `is`(5))
 	}
 
 	/**
@@ -315,19 +316,32 @@ class ItClusterServiceTest {
 	 *
 	 * @see ItClusterService.addNetworkFromCluster
 	 **/
-//	@Test
-//	fun should_addNetworkFromCluster() {
-//		log.debug("should_addNetworkFromCluster ... ")
-//		val networkVo: NetworkVo =
-//			NetworkVo.builder {
-////				id {  }
-////				name {  }
-//			}
-//		val result: NetworkVo? =
-//			service.addNetworkFromCluster(clusterId, networkVo)
-//
-//		assertThat(result, `is`(not(nullValue())))
-//	}
+	@Test
+	fun should_addNetworkFromCluster() {
+		log.debug("should_addNetworkFromCluster ... ")
+		val networkVo: NetworkVo =
+			NetworkVo.builder {
+				dataCenter {
+					IdentifiedVo.builder {
+						id { dataCenterId }
+					}
+				}
+				name { "test" }
+				description { "" }
+				portIsolation { false }
+				usage {
+					UsageVo.builder {
+						vm { true }
+					}
+				}
+				mtu { 0 }
+			}
+
+		val result: NetworkVo? =
+			service.addNetworkFromCluster(clusterId, networkVo)
+
+		assertThat(result, `is`(not(nullValue())))
+	}
 
 	/**
 	 * [should_findAllManageNetworksFromCluster]
@@ -343,7 +357,7 @@ class ItClusterServiceTest {
 
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }
-		assertThat(result.size, `is`(7))
+		assertThat(result.size, `is`(4))
 	}
 
 	/**

@@ -182,8 +182,9 @@ class NetworkServiceImpl(
 		// dc 다르면 중복명 가능
 		log.info("addNetwork ... ")
 		val res: Network? =
-			conn.addNetwork(networkVo.toAddNetworkBuilder())
-				.getOrNull()
+			conn.addNetwork(
+				networkVo.toAddNetworkBuilder()
+			).getOrNull()
 
 		if(res == null){
 			throw ErrorPattern.NETWORK_NOT_FOUND.toException()
