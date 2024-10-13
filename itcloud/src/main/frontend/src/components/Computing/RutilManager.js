@@ -57,6 +57,7 @@ import logo from '../../img/logo.png'
 import Path from '../Header/Path';
 import TemplateDu from '../duplication/TemplateDu';
 import HostDu from '../duplication/HostDu';
+import Footer from '../footer/Footer';
 
 function RutilManager() {
     const { id } = useParams();
@@ -4449,6 +4450,7 @@ function RutilManager() {
           </div>
         </div>
       </Modal>
+      <Footer/>
         </div>
 
     

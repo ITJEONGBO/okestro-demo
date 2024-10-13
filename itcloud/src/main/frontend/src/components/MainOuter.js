@@ -577,8 +577,8 @@ const {
                                           <span>{domain.name}</span>
                                       </div>
   
-                                      {/* 네 번째 레벨 (Disks) */}
-                                      {isDomainOpen && Array.isArray(domain.disks) && domain.disks.map((disk) => (
+                                      {/* 네 번째 레벨 삭제예정 (Disks) */}
+                                      {/* {isDomainOpen && Array.isArray(domain.disks) && domain.disks.map((disk) => (
                                           <div
                                               key={disk.id}
                                               className="aside_popup_fourth_content"
@@ -594,7 +594,7 @@ const {
                                               <FontAwesomeIcon icon={faHdd} fixedWidth/>
                                               <span>{disk.name}</span>
                                           </div>
-                                      ))}
+                                      ))} */}
                                   </div>
                               );
                           })}

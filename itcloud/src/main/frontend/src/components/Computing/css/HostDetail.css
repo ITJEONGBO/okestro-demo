@@ -72,3 +72,78 @@
     width: 88%;
 
 }   
+.reboot_check_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    width: 35%;
+    left: 50%;
+    height: 40%;             
+    font-size:0.33rem;                                    
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+}
+
+  
+#manage_btn {
+    position: relative;
+  }
+  .dropdown-menu {
+    position: absolute;
+    top: 0.9rem;
+    right: 0;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    list-style: none;
+    z-index: 1;
+    width: 200px;
+    background: white;
+  }
+  
+  .dropdown-menu li {
+    padding: 0.1rem;
+    cursor: pointer;
+    text-align: left;
+    color: black;
+
+  }
+  
+  .dropdown-menu li:hover {
+    background-color: #f1f1f1;
+  }
+  .manage_maintenance_popup{
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: #fff;
+    top: 50%;
+    width: 35%;
+    left: 50%;
+    height: 35%;             
+    font-size:0.33rem;                                    
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
+  }
+#cluster_first_content{
+    border-bottom:1px solid #DDDDDD;
+    padding-bottom: 0.8rem;
+}
+#cluster_first_content .datacenter_span{
+    right: 6rem;
+    top: 16%;
+}
+.host_select_set{
+    display: flex;
+    justify-content: space-between;
+    padding: 0 0.4rem;
+}
+.host_select_set select{
+    width: 47%;
+    height: 3.3vh;
+    padding: 0 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.29rem;
+    border: 1px solid #a7a6a6;
+}

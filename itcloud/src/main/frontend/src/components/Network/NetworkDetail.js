@@ -254,11 +254,14 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     },
   ];
   
-
-  // 
-  const [activeTab, setActiveTab] = useState(() => {
-    return localStorage.getItem('activeTab') || 'general'; 
-  });
+ 
+  useEffect(() => {
+    setActiveTab('general'); // 처음 렌더링될 때 'general' 탭을 선택
+  }, []);
+  const [activeTab, setActiveTab] = useState('general');
+  // const [activeTab, setActiveTab] = useState(() => {
+  //   return localStorage.getItem('activeTab') || 'general'; 
+  // });
   useEffect(() => {
     if (location.pathname !== prevPath) {
       // URL이 변경되었을 때 'general'로 초기화

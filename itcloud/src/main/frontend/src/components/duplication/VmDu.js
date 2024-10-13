@@ -21,10 +21,16 @@ const VmDu = ({ data, columns, handleRowClick, openPopup, setActiveTab, togglePo
           <FontAwesomeIcon icon={faEllipsisV} fixedWidth />
           {isPopupOpen && (
             <div className="content_header_popup">
-              <div>OVF 업데이트</div>
-              <div>파괴</div>
-              <div>디스크 검사</div>
-              <div>마스터 스토리지 도메인으로 선택</div>
+              <div>가져오기</div>
+              <div>가상 머시 복제</div>
+              <div>삭제</div>
+              <div>마이그레이션 취소</div>
+              <div>변환 취소</div>
+              <div>템플릿 취소</div>
+              <div>템플릿 생성</div>
+              <div>내보내기 도메인으로 내보내기</div>
+              <div>Export to Data Domain</div>
+              <div>OVA로 내보내기</div>
             </div>
           )}
         </button>

@@ -75,7 +75,10 @@ function HostDetail() {
     setActiveButton(button);
     setIsLabelVisible(button === 'label'); // 'label' 버튼을 클릭하면 라벨을 표시
   };
-  
+
+
+
+
   useEffect(() => {
     const 기본섹션 = document.getElementById('일반_섹션_btn');
     if (기본섹션) {
@@ -273,17 +276,90 @@ function HostDetail() {
       }
   }, []);
 
+  // 토글 방식으로 열고 닫기(관리)
+  const [isManageBoxVisible, setIsManageBoxVisible] = useState(false);
+
+  const handleManageClick = () => {
+    setIsManageBoxVisible(!isManageBoxVisible);
+  };
+
+  // 팝업 외부 클릭 시 닫히도록 처리
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const manageBox = document.getElementById('manage_box');
+      const manageBtn = document.getElementById('manage_btn');
+      
+      // 클릭한 요소가 manage_box 내부의 li인지 확인
+      const isLiElement = event.target.tagName === 'LI';
+
+      // manage_box, manage_btn, 그리고 manage_box 내부의 li가 아닌 곳을 클릭했을 때만 팝업 닫기
+      if (
+        manageBox && !manageBox.contains(event.target) &&
+        manageBtn && !manageBtn.contains(event.target) &&
+        !isLiElement // li 요소를 클릭한 경우는 제외
+      ) {
+        setIsManageBoxVisible(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // 연필 추가모달
+  const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
+  useEffect(() => {
+    if (isSecondModalOpen) {
+      handleTabModalClick('ipv4');
+    }
+  }, [isSecondModalOpen]);
+   const [selectedModalTab, setSelectedModalTab] = useState('ipv4');
+   const handleTabModalClick = (tab) => {
+     setSelectedModalTab(tab);
+   };
+  // 추가 모달 닫기 핸들러
+  const closeSecondModal = () => {
+    setIsSecondModalOpen(false);
+    setSelectedModalTab('ipv4'); // 모달이 닫힐 때 첫 번째 탭으로 초기화
+  };
+
+  
+  
 
     //headerbutton 컴포넌트
-    const buttons = [
+      const buttons = [
         { id: 'edit_btn', label: '호스트 편집', onClick: () => openPopup('host_edit') },
         { id: 'delete_btn', label: '삭제', onClick: () => openPopup('delete')},
-        { id: 'manage_btn', label: <>관리 <FontAwesomeIcon icon={faChevronDown} /></>, onClick: () => openPopup('manage_toggle_box') },
-        
+        {
+          id: 'manage_btn',
+          label: (
+            <div className="manage_container">
+              <div id="manage_btn" onClick={handleManageClick} className="btn">
+                관리 <FontAwesomeIcon icon={faChevronDown} />
+              </div>
+            
+              {isManageBoxVisible && (
+                <ul id="manage_box" className="dropdown-menu">
+                  <li onClick={() => openPopup('maintenance')}>유지보수</li>
+                  <li>활성</li>
+                  <li>기능을 새로 고침</li>
+                  <li style={{borderTop:'1px solid #DDDDDD',borderBottom:'1px solid #DDDDDD'}}>인증서 등록</li>
+                  <li>재시작</li>
+                  <li>중지</li>
+                </ul>
+              )}
+            </div>
+          ),
+         
+        }
       ];
+      
     
       const popupItems = [    
-        { id: 'checkReboot', label: '호스트가 재부팅 되어 있는지 확인' },
+        { id: 'checkReboot', label: '호스트가 재부팅 되어 있는지 확인',onClick: () => openPopup('reboot_check') } ,
         { id: 'approve', label: '승인' },
         { id: 'enableGlobalHA', label: '글로벌 HA 유지 관리를 활성화' },
         { id: 'disableGlobalHA', label: '글로벌 HA 유지 관리를 비활성화' },
@@ -330,12 +406,15 @@ function HostDetail() {
                 
                 {/* 일반 */}
                 {activeTab === 'general' && (
+                
                 <div className="host_content_outer">
-
+                    <div className='ml-2'>
+                      <Path pathElements={pathData}/>
+                    </div>
                     <div className="host_tables">
 
                         <div className="table_container_left" style={{paddingTop:0}}>
-                            <h2 style={{color:'white',border:'none'}}>하드웨어</h2>
+                            <h2 className='font-bold'>호스트</h2>
                             <table className="host_table">
                               <tbody>
                                   <tr>
@@ -592,7 +671,7 @@ function HostDetail() {
                       <button onClick={toggleAllBoxes}>
                         {visibleBoxes.length === networkInterfaceData.length ? '모두 숨기기' : '모두 확장'}
                       </button>
-                      <button onClick={() => console.log('호스트 네트워크 설정')}>호스트 네트워크 설정</button>
+                      <button onClick={() => openPopup('host_network_set')}>호스트 네트워크 설정</button>
                       <button className="disabled">네트워크 설정 저장</button>
                       <button className="disabled">모든 네트워크 동기화</button>
                     </div>
@@ -688,10 +767,44 @@ function HostDetail() {
                
             </div>
 
-            {/*토글박스 */}
-            <Modal>
-              <div></div>
-            </Modal>
+            {/*관리(유지보수)*/}
+            <Modal
+                isOpen={activePopup === 'maintenance'}
+                onRequestClose={closePopup}
+                contentLabel="디스크 업로드"
+                className="Modal"
+                overlayClassName="Overlay"
+                shouldCloseOnOverlayClick={false}
+              >
+                <div className="manage_maintenance_popup">
+                  <div className="popup_header">
+                    <h1>호스트 유지관리 모드</h1>
+                    <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                  </div>
+                
+                  <div className='p-2'>
+                    <div className='mb-2'>
+                    다음 호스트를 유지관리 모드로 설정하시겠습니까?
+                    </div>
+                    <div class=" mb-1" >
+                    #
+                    </div>
+
+                    <div className='host_textbox'>
+                      <label htmlFor="user_name">사용자 이름</label>
+                      <input type="text" id="user_name" />
+                  </div>
+
+                  </div>
+
+
+                  <div className="edit_footer">
+                    <button style={{ display: 'none' }}></button>
+                    <button>OK</button>
+                    <button onClick={closePopup}>취소</button>
+                  </div>
+                </div>
+              </Modal>
             {/* 편집 팝업*/}
             <Modal
               isOpen={activePopup === 'host_edit'}
@@ -708,8 +821,9 @@ function HostDetail() {
                 </button>
               </div>
 
-              <div className="edit_body">
-                <div className="edit_aside">
+              <div className="edit_body" style={{height:'70vh'}}>
+            
+                {/* <div className="edit_aside">
                   <div
                     className={`edit_aside_item`}
                     id="일반_섹션_btn"
@@ -742,7 +856,7 @@ function HostDetail() {
                   >
                     <span>선호도</span>
                   </div>
-                </div>
+                </div> */}
 
                 {/* 폼의 다양한 섹션들 */}
                 <form action="#">
@@ -752,13 +866,13 @@ function HostDetail() {
                     style={{ display: 활성화된섹션 === '일반_섹션' ? 'block' : 'none' }}
                   >
                 <div className="edit_first_content">
-                        <div>
-                            <label htmlFor="cluster">클러스터</label>
-                            <select id="cluster" disabled>
-                                <option value="default" >Default</option>
-                            </select>
-                            <div>데이터센터 Default</div>
-                        </div>
+                         <div id='cluster_first_content'>
+                                <label htmlFor="cluster">클러스터</label>
+                                <select id="cluster">
+                                    <option value="default">Default</option>
+                                </select>
+                                <div className='datacenter_span'>데이터센터 Default</div>
+                            </div>
                         <div>
                             <label htmlFor="name1">이름</label>
                             <input type="text" id="name1" />
@@ -779,23 +893,32 @@ function HostDetail() {
 
           <div className='host_checkboxs'>
             <div className='host_checkbox'>
-                <input type="checkbox" id="memory_balloon" name="memory_balloon" />
-                <label htmlFor="headless_mode">헤드리스 모드</label>
+              <input type="checkbox" id="host_activation" name="host_activation" checked/>
+              <label htmlFor="host_activation">설치 후 호스트를 활성화</label>
             </div>
             <div className='host_checkbox'>
-                <input type="checkbox" id="headless_mode_info" name="headless_mode_info" />
-                <label htmlFor="headless_mode_info">헤드리스 모드 정보</label>
-                <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }} fixedWidth/>
+              <input type="checkbox" id="host_restart" name="host_restart" checked />
+              <label htmlFor="host_restart">설치 후 호스트를 다시 시작</label>
+              <FontAwesomeIcon icon={faInfoCircle} style={{ color: '#1ba4e4' }} fixedWidth/>
             </div>
           </div>
-
-          <div className='host_checkboxs'>
-            <div className='host_textbox'>
-                <label htmlFor="user_name">사용자 이름</label>
-                <input type="text" id="user_name" />
+          
+          <div>
+            <span className='font-bold px-1.5'>인증</span>
+            <div className='host_checkboxs'>
+              <div className='host_textbox disabled'>
+                  <label htmlFor="user_name">사용자 이름</label>
+                  <input type="text" id="user_name" />
+              </div>
             </div>
-
-            <div className='host_text_raido_box'>
+            <div className="host_select_set">
+              <label htmlFor="host_related_action">호스트 연관 배피 작업 선택</label>
+              <select id="host_related_action">
+                <option value="none">없음</option>
+              </select>
+            </div>
+          </div>
+            {/* <div className='host_text_raido_box'>
                 <div>
                   <input type="radio" id="password" name="name_option" />
                   <label htmlFor="password">암호</label>
@@ -806,9 +929,9 @@ function HostDetail() {
             <div className='host_radiobox'>
                 <input type="radio" id="ssh_key" name="name_option" />
                 <label htmlFor="ssh_key">SSH 공개키</label>
-            </div>
+            </div> */}
 
-          </div>
+          
 
                   </div>{/*일반섹션끝 */}
 
@@ -1086,27 +1209,35 @@ function HostDetail() {
                 </div>
               </div>
             </Modal>
-
-               {/*삭제 팝업 */}
-              <Modal
-                isOpen={activePopup === 'delete'}
+            {/*호스트...박스(호스트가 재부팅되어있는지확인) 팝업 */}
+            <Modal
+                isOpen={activePopup === 'reboot_check'}
                 onRequestClose={closePopup}
                 contentLabel="디스크 업로드"
                 className="Modal"
                 overlayClassName="Overlay"
                 shouldCloseOnOverlayClick={false}
               >
-                <div className="storage_delete_popup">
+                <div className="reboot_check_popup">
                   <div className="popup_header">
-                    <h1>삭제</h1>
+                    <h1>정말로 진행하시겠습니까?</h1>
                     <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
                   </div>
                 
-                  <div className='disk_delete_box'>
-                    <div>
-                      <FontAwesomeIcon style={{marginRight:'0.3rem'}} icon={faExclamationTriangle} />
-                      <span>다음 항목을 삭제하시겠습니까?</span>
+                  <div className='p-2'>
+                    <div className='mb-2'>
+                    호스트 ' rutilvm-test.host01 '이 수동으로 종료 또는 재부팅되어 있는지 확인하십시오.
                     </div>
+                    <div class="text-red-500 mb-1" >
+                    이 호스트는 SPM 입니다. 적절한 수동 재부팅이 이루어 지지 않은 이 호스트에 이 동작을 실행할 경우 스토리지의 데이터를 손실할 수 있습니다.<br/><br/>
+                    만약 이 호스트가 수동으로 재부팅 되지 않았다면 '취소'를 눌러주십시오.
+                    </div>
+
+                    <div className='host_checkbox'>
+                      <input type="checkbox" id="action_check" name="action_check" />
+                      <label htmlFor="action_check">동작 확인</label>
+                    </div>
+
                   </div>
 
 
@@ -1117,6 +1248,320 @@ function HostDetail() {
                   </div>
                 </div>
               </Modal>
+            {/*삭제 팝업 */}
+            <Modal
+              isOpen={activePopup === 'delete'}
+              onRequestClose={closePopup}
+              contentLabel="디스크 업로드"
+              className="Modal"
+              overlayClassName="Overlay"
+              shouldCloseOnOverlayClick={false}
+            >
+              <div className="storage_delete_popup">
+                <div className="popup_header">
+                  <h1>삭제</h1>
+                  <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                </div>
+              
+                <div className='disk_delete_box'>
+                  <div>
+                    <FontAwesomeIcon style={{marginRight:'0.3rem'}} icon={faExclamationTriangle} />
+                    <span>다음 항목을 삭제하시겠습니까?</span>
+                  </div>
+                </div>
+
+
+                <div className="edit_footer">
+                  <button style={{ display: 'none' }}></button>
+                  <button>OK</button>
+                  <button onClick={closePopup}>취소</button>
+                </div>
+              </div>
+            </Modal>
+
+            {/*호스트(호스트 네트워크 설정 After)*/}
+            <Modal
+              isOpen={activePopup === 'host_network_set'}
+              onRequestClose={closePopup}
+              contentLabel="호스트 네트워크 설정"
+              className="Modal"
+              overlayClassName="Overlay"
+              shouldCloseOnOverlayClick={false}
+            >
+              <div className="vnic_new_content_popup">
+                <div className="popup_header">
+                  <h1>호스트 host01.ititinfo.com 네트워크 설정</h1>
+                  <button onClick={closePopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                </div>
+                
+                <div className="host_network_outer px-1.5 text-sm">
+                <div className="py-2 font-bold underline">드래그 하여 변경</div>
+
+                <div className="host_network_separation">
+            <div className="network_separation_left">
+              <div>
+                <div>인터페이스</div>
+                <div>할당된 논리 네트워크</div>
+              </div>
+
+              <div className="separation_left_content">
+                <div className="container gap-1">
+                  <FontAwesomeIcon icon={faCircle} style={{ fontSize: '0.1rem', color: '#00FF00' }} />
+                  <FontAwesomeIcon icon={faDesktop} />
+                  <span>ens192</span>
+                </div>
+                <div className="flex items-center justify-center">
+                  <FontAwesomeIcon icon={faArrowsAltH} style={{ color: 'grey', width: '5vw', fontSize: '0.6rem' }} />
+                </div>
+
+                <div className="container">
+                  <div className="left-section">
+                    <FontAwesomeIcon icon={faCheck} className="icon green-icon" />
+                    <span className="text">ovirtmgmt</span>
+                  </div>
+                  <div className="right-section">
+                    <FontAwesomeIcon icon={faFan} className="icon" />
+                    <FontAwesomeIcon icon={faDesktop} className="icon" />
+                    <FontAwesomeIcon icon={faDesktop} className="icon" />
+                    <FontAwesomeIcon icon={faBan} className="icon" />
+                    <FontAwesomeIcon icon={faExclamationTriangle} className="icon" />
+                    <FontAwesomeIcon icon={faPencilAlt} className="icon" onClick={() => setIsSecondModalOpen(true)} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="network_separation_right">
+
+
+        {/* unconfigured_network는 네트워크 버튼이 클릭된 경우만 보임 */}
+        {!isLabelVisible && (
+          <div className="unconfigured_network">
+            <div>할당되지 않은 논리 네트워크</div>
+            <div style={{ backgroundColor: '#d1d1d1' }}>필수</div>
+            <div className="unconfigured_content flex items-center space-x-2">
+              <div>
+                <FontAwesomeIcon icon={faCaretDown} style={{ color: 'red', marginRight: '0.2rem' }} />
+                <span>ddd</span>
+              </div>
+              <FontAwesomeIcon icon={faNetworkWired} style={{ color: 'green', fontSize: '20px' }} />
+            </div>
+            <div className="unconfigured_content flex items-center space-x-2">
+              <div>
+                <FontAwesomeIcon icon={faCaretDown} style={{ color: 'red', marginRight: '0.2rem' }} />
+                <span>ddd</span>
+              </div>
+              <FontAwesomeIcon icon={faNetworkWired} style={{ color: 'green', fontSize: '20px' }} />
+            </div>
+            <div className="unconfigured_content flex items-center space-x-2">
+              <div>
+                <FontAwesomeIcon icon={faCaretDown} style={{ color: 'red', marginRight: '0.2rem' }} />
+                <span>ddd</span>
+              </div>
+              <FontAwesomeIcon icon={faNetworkWired} style={{ color: 'green', fontSize: '20px' }} />
+            </div>
+            <div style={{ backgroundColor: '#d1d1d1' }}>필요하지 않음</div>
+            
+          </div>
+        )}
+
+
+      </div>
+
+      {/*연필아이콘 클릭하면 추가모달 */}
+      <Modal
+        isOpen={isSecondModalOpen}
+        onRequestClose={closeSecondModal} // 모달 닫기 핸들러 연결
+        contentLabel="추가"
+        className="Modal"
+        overlayClassName="Overlay newRolePopupOverlay"
+        shouldCloseOnOverlayClick={false}
+      >
+        <div className="network_backup_edit">
+          <div className="popup_header">
+            <h1>관리 네트워크 인터페이스 수정:ovirtmgmt</h1>
+            <button onClick={closeSecondModal}>
+              <FontAwesomeIcon icon={faTimes} fixedWidth />
+            </button>
+          </div>
+
+          <div className='flex'>
+            <div className="network_backup_edit_nav">
+              <div
+                id="ipv4_tab"
+                className={selectedModalTab === 'ipv4' ? 'active-tab' : 'inactive-tab'}
+                onClick={() => setSelectedModalTab('ipv4')}
+              >
+                IPv4
+              </div>
+              <div
+                id="ipv6_tab"
+                className={selectedModalTab === 'ipv6' ? 'active-tab' : 'inactive-tab'}
+                onClick={() => setSelectedModalTab('ipv6')}
+              >
+                IPv6
+              </div>
+              <div
+                id="dns_tab"
+                className={selectedModalTab === 'dns' ? 'active-tab' : 'inactive-tab'}
+                onClick={() => setSelectedModalTab('dns')}
+              >
+                DNS 설정
+              </div>
+            </div>
+
+            {/* 탭 내용 */}
+            <div className="backup_edit_content">
+              {selectedModalTab === 'ipv4' && 
+              <>
+                <div className="vnic_new_checkbox" style={{ borderBottom: '1px solid gray' }}>
+                    <input type="checkbox" id="allow_all_users" checked />
+                    <label htmlFor="allow_all_users">네트워크 동기화</label>
+                </div>
+
+                <div className='backup_edit_radiobox'>
+                  <div className='font-bold'>부트 프로토콜</div>
+                  <div className="radio_option">
+                    <input type="radio" id="default_mtu" name="mtu" value="default" checked />
+                    <label htmlFor="default_mtu">없음</label>
+                  </div>
+                  <div className="radio_option">
+                    <input type="radio" id="dhcp_mtu" name="mtu" value="dhcp" />
+                    <label htmlFor="dhcp_mtu">DHCP</label>
+                  </div>
+                  <div className="radio_option">
+                    <input type="radio" id="static_mtu" name="mtu" value="static" />
+                    <label htmlFor="static_mtu">정적</label>
+                  </div>
+
+                </div>
+
+                <div>
+                  <div className="vnic_new_box">
+                    <label htmlFor="ip_address">IP</label>
+                    <select id="ip_address" disabled>
+                      <option value="#">#</option>
+                    </select>
+                  </div>
+                  <div className="vnic_new_box">
+                    <label htmlFor="netmask">넷마스크 / 라우팅 접두사</label>
+                    <select id="netmask" disabled>
+                      <option value="#">#</option>
+                    </select>
+                  </div>
+                  <div className="vnic_new_box">
+                    <label htmlFor="gateway">게이트웨이</label>
+                    <select id="gateway" disabled>
+                      <option value="#">#</option>
+                    </select>
+                  </div>
+                </div>
+                </>
+              }
+              {selectedModalTab === 'ipv6' && 
+              <>
+              <div className="vnic_new_checkbox" style={{ borderBottom: '1px solid gray' }}>
+                  <input type="checkbox" id="allow_all_users" className='disabled' />
+                  <label htmlFor="allow_all_users" className='disabled'>네트워크 동기화</label>
+              </div>
+
+              <div className='backup_edit_radiobox'>
+                <div className='font-bold mb-0.5'>부트 프로토콜</div>
+                <div className="radio_option mb-0.5">
+                  <input type="radio" id="default_mtu" name="mtu" value="default" checked />
+                  <label htmlFor="default_mtu">없음</label>
+                </div>
+                <div className="radio_option mb-0.5">
+                  <input type="radio" id="dhcp_mtu" name="mtu" value="dhcp" />
+                  <label htmlFor="dhcp_mtu">DHCP</label>
+                </div>
+                <div className="radio_option mb-0.5">
+                  <input type="radio" id="slaac_mtu" name="mtu" value="slaac" />
+                  <label htmlFor="slaac_mtu">상태 비저장 주소 자동 설정</label>
+                </div>
+                <div className="radio_option mb-0.5">
+                  <input type="radio" id="dhcp_slaac_mtu" name="mtu" value="dhcp_slaac" />
+                  <label htmlFor="dhcp_slaac_mtu">DHCP 및 상태 비저장 주소 자동 설정</label>
+                </div>
+                <div className="radio_option mb-0.5">
+                  <input type="radio" id="static_mtu" name="mtu" value="static" />
+                  <label htmlFor="static_mtu">정적</label>
+                </div>
+              </div>
+
+              <div className='mt-3'>
+                <div className="vnic_new_box">
+                  <label htmlFor="ip_address" className='disabled'>IP</label>
+                  <select id="ip_address" className='disabled' disabled>
+                    <option value="#">#</option>
+                  </select>
+                </div>
+                <div className="vnic_new_box">
+                  <label htmlFor="netmask" className='disabled'>넷마스크 / 라우팅 접두사</label>
+                  <select id="netmask"className='disabled' disabled>
+                    <option value="#">#</option>
+                  </select>
+                </div>
+                <div className="vnic_new_box">
+                  <label htmlFor="gateway" className='disabled'>게이트웨이</label>
+                  <select id="gateway"className='disabled' disabled>
+                    <option value="#">#</option>
+                  </select>
+                </div>
+              </div>
+              </>
+              }
+              {selectedModalTab === 'dns' && 
+              <>
+              <div className="vnic_new_checkbox" style={{ borderBottom: '1px solid gray' }}>
+                <input type="checkbox" id="network_sync" className='disabled' />
+                <label htmlFor="network_sync" className='disabled'>네트워크 동기화</label>
+              </div>
+              <div className="vnic_new_checkbox">
+                <input type="checkbox" id="qos_override"/>
+                <label htmlFor="qos_override">QoS 덮어쓰기</label>
+              </div>
+              <div className='p-1 font-bold'>아웃바운드</div>
+              <div className="network_form_group">
+                <label htmlFor="weighted_share" className='disabled'>가중 공유</label>
+                <input type="text" id="weighted_share" disabled />
+              </div>
+              <div className="network_form_group">
+                <label htmlFor="rate_limit disabled">속도 제한 [Mbps]</label>
+                <input type="text" id="rate_limit" disabled />
+              </div>
+              <div className="network_form_group">
+                <label htmlFor="commit_rate disabled">커밋 속도 [Mbps]</label>
+                <input type="text" id="commit_rate" disabled/>
+              </div>
+
+              </>
+              }
+            </div>
+          </div>
+
+          <div className="edit_footer">
+            <button style={{ display: 'none' }}></button>
+            <button>OK</button>
+            <button onClick={closeSecondModal}>취소</button>
+          </div>
+        </div>
+      </Modal>
+
+              </div>
+
+                
+                </div>
+                
+
+
+                <div className="edit_footer">
+                  <button style={{ display: 'none' }}></button>
+                  <button>OK</button>
+                  <button onClick={closePopup}>취소</button>
+                </div>
+              </div>
+            </Modal>
             <Footer/>
         </div>
     );
