@@ -46,7 +46,7 @@ class ItVmOperationServiceTest {
     fun should_startVm() {
         log.debug("should_start_Vm ... ")
         val result: Boolean =
-            service.start(apm)
+            service.start("cc15993e-41cf-464f-94c4-9da562c7b0d1")
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))
@@ -62,7 +62,7 @@ class ItVmOperationServiceTest {
     fun should_pause_Vm() {
         log.debug("should_pause_Vm ... ")
         val result: Boolean =
-            service.pause(apm)
+            service.pause("cc15993e-41cf-464f-94c4-9da562c7b0d1")
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))
@@ -78,7 +78,7 @@ class ItVmOperationServiceTest {
     fun should_powerOff_Vm() {
         log.debug("should_powerOff_Vm ... ")
         val result: Boolean =
-            service.powerOff(apm)
+            service.powerOff("cc15993e-41cf-464f-94c4-9da562c7b0d1")
 
         assertThat(result, `is`(not(nullValue())))
         assertThat(result, `is`(true))
@@ -190,15 +190,15 @@ class ItVmOperationServiceTest {
 
     /**
      * [should_findConsole]
-     * [ItVmOperationService.findConsole]에 대한 단위테스트
+     * [ItVmOperationService.console]에 대한 단위테스트
      *
-     * @see ItVmOperationService.findConsole
+     * @see ItVmOperationService.console
      */
     @Test
     fun should_findConsole() {
         log.debug("should_findConsole ... ")
         val result: ConsoleVo? =
-            service.findConsole(hostVm)
+            service.console("9181fa0b-d031-4dbd-a031-6de2e2913eb6")
 
         assertThat(result, `is`(not(nullValue())))
         print(result)

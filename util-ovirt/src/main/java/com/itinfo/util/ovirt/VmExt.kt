@@ -178,9 +178,15 @@ fun Connection.addVm(
 		this.srvVms().add().vm(vm).send().vm()
 			?: throw ErrorPattern.VM_NOT_FOUND.toError()
 
-	this.addMultipleDiskAttachmentsToVm(vmAdded.id(), diskAttachments)
-	this.addMultipleNicsFromVm(vmAdded.id(), vnicIds)
-	this.selectCdromFromVm(vmAdded.id(), connId)
+	if(diskAttachments.isNotEmpty()) {
+		this.addMultipleDiskAttachmentsToVm(vmAdded.id(), diskAttachments)
+	}
+	if(vnicIds.isNotEmpty()) {
+		this.addMultipleNicsFromVm(vmAdded.id(), vnicIds)
+	}
+	if(connId.isNotEmpty()) {
+		this.selectCdromFromVm(vmAdded.id(), connId)
+	}
 
 	if (!this.expectVmStatus(vmAdded.id(), VmStatus.DOWN)) {
 		log.error("가상머신 생성 시간 초과: {}", vmAdded.name())
@@ -228,15 +234,19 @@ fun Connection.updateVm(
 	throw if (it is Error) it.toItCloudException() else it
 }
 
-fun Connection.removeVm(vmId: String, detachOnly: Boolean = false): Result<Boolean> = runCatching {
+fun Connection.removeVm(vmId: String, diskDelete: Boolean = false): Result<Boolean> = runCatching {
 	val vm: Vm =
-		this.findVm(vmId)
-			.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+		this.findVm(vmId).getOrNull()
+			?: throw ErrorPattern.VM_NOT_FOUND.toError()
 
 	if (vm.deleteProtected())
 		throw ErrorPattern.VM_PROTECTED.toError()
+	if(vm.status() == VmStatus.UP) {
+		log.debug("가상머신이 실행중인 상태")
+		throw ErrorPattern.VM_STATUS_UP.toError()
+	}
 
-	this.srvVm(vmId).remove().detachOnly(!detachOnly).send()
+	this.srvVm(vmId).remove().detachOnly(!diskDelete).send()
 	this.expectVmDeleted(vmId)
 }.onSuccess {
 	Term.VM.logSuccess("삭제", vmId)

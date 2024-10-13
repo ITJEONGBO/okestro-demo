@@ -95,7 +95,7 @@ interface ItVmService {
 	/**
 	 * [ItVmService.add]
 	 * 가상머신 생성
-	 * TODO 템플릿 선택하면 인스턴스 이미지와 vnic 프로파일 선택 불가
+	 * TODO 템플릿 선택하면 인스턴스 이미지 선택 불가
 	 *
 	 * @param vmVo [VmVo]
 	 * @return [VmVo]
@@ -116,12 +116,12 @@ interface ItVmService {
 	 * 가상머신 삭제
 	 *
 	 * @param vmId [String] 가상머신 Id
-	 * @param disk [Boolean] disk 삭제여부, disk가 true면 디스크 삭제하라는 말
+	 * @param diskDelete [Boolean] disk 삭제여부, disk가 true면 디스크 삭제하라는 말
 	 * @return [Boolean]
 	 * detachOnly => true==가상머신만 삭제/ false==가상머신+디스크 삭제
 	 */
 	@Throws(Error::class)
-	fun remove(vmId: String, disk: Boolean): Boolean
+	fun remove(vmId: String, diskDelete: Boolean): Boolean
 
 	/**
 	 * [ItVmService.findAllApplicationsFromVm]
@@ -235,11 +235,10 @@ class VmServiceImpl(
 	@Throws(Error::class)
 	override fun add(vmVo: VmVo): VmVo? {
 		log.info("add ... ")
-		if(vmVo.diskAttachmentVos.filter { it.bootable }.size != 1){
-			log.error("디스크 부팅가능은 한개만 가능")
-			throw ErrorPattern.VM_VO_INVALID.toException()
-		}
-		// TODO vnicprofile 없는거도 고려해봐야함
+//		if(vmVo.diskAttachmentVos.filter { it.bootable }.size != 1){
+//			log.error("디스크 부팅가능은 한개만 가능")
+//			throw ErrorPattern.VM_VO_INVALID.toException()
+//		}
 		val res: Vm? =
 			conn.addVm(
 				vmVo.toAddVmBuilder(conn),
@@ -247,7 +246,6 @@ class VmServiceImpl(
 				vmVo.vnicProfileVos.map { it.id },
 				vmVo.connVo.id
 			).getOrNull()
-
 		return res?.toVmVo(conn)
 	}
 
@@ -291,11 +289,13 @@ class VmServiceImpl(
 		return res?.toVmVo(conn)
 	}
 
+	// diskDelete가 detachOnly
+	// diskDelete가 false 면 디스크는 삭제 안함, true면 삭제
 	@Throws(Error::class)
-	override fun remove(vmId: String, disk: Boolean): Boolean {
-		log.info("remove ...  vmName: {}", conn.findVmName(vmId).isSuccess)
+	override fun remove(vmId: String, diskDelete: Boolean): Boolean {
+		log.info("remove ...  vmId: {}", vmId)
 		val res: Result<Boolean> =
-			conn.removeVm(vmId, disk)
+			conn.removeVm(vmId, diskDelete)
 		return res.isSuccess
 	}
 

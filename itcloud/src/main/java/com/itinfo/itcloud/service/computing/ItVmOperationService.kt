@@ -107,13 +107,13 @@ interface ItVmOperationService {
 	fun exportOva(vmId: String, vmExportVo: VmExportVo): Boolean
 
 	/**
-	 * [ItVmOperationService.findConsole]
+	 * [ItVmOperationService.console]
 	 * 가상머신 콘솔
 	 *
 	 * @param vmId [String] 가상머신 Id
 	 */
 	@Throws(Error::class)
-	fun findConsole(vmId: String): ConsoleVo?
+	fun console(vmId: String): ConsoleVo?
 }
 
 @Service
@@ -195,8 +195,8 @@ class VmOperationServiceImpl: BaseService(), ItVmOperationService {
 	}
 
 	@Throws(Error::class)
-	override fun findConsole(vmId: String): ConsoleVo? {
-		log.info("findConsole ... vmId: {}", vmId)
+	override fun console(vmId: String): ConsoleVo? {
+		log.info("console ... vmId: {}", vmId)
 		val res: Vm =
 			conn.findVm(vmId).getOrNull()
 				?: throw ErrorPattern.VM_NOT_FOUND.toException()

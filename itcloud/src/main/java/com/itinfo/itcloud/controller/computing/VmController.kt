@@ -213,12 +213,14 @@ class VmController: BaseController() {
 	@ResponseStatus(HttpStatus.OK)
 	fun remove(
 		@PathVariable vmId: String? = null,
-//		@PathVariable disk: Boolean? = null // disk 삭제여부
+		@PathVariable diskDelete: Boolean? = null // disk 삭제여부
 	): ResponseEntity<Boolean> {
 		if (vmId.isNullOrEmpty())
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		if (diskDelete == null)
+			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("/computing/vms/{} ... 가상머신 삭제", vmId)
-		return ResponseEntity.ok(iVm.remove(vmId, true))
+		return ResponseEntity.ok(iVm.remove(vmId, diskDelete))
 	}
 
 	@ApiOperation(
@@ -566,7 +568,7 @@ class VmController: BaseController() {
 //		if (console == null)
 //			throw ErrorPattern.CONSOLE_VO_INVALID.toException()
 		log.info("/computing/vms/{}/console ... 가상머신 콘솔", vmId)
-		return ResponseEntity.ok(iVmOp.findConsole(vmId))
+		return ResponseEntity.ok(iVmOp.console(vmId))
 	}
 
 
