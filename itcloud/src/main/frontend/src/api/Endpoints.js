@@ -21,9 +21,12 @@ const ENDPOINTS = {
   FIND_ALL_DATA_CENTERS: () =>  `/api/v1/computing/datacenters`,
   FIND_DATA_CENTER: (dataCenterId) =>  `/api/v1/computing/datacenters/${dataCenterId}`, 
   FIND_CLUSTERS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/datacenters/${dataCenterId}/clusters`, 
-  FIND_STORAGE_DOMAINS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/datacenters/${dataCenterId}/domains`, 
-  FIND_EVENTS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/datacenters/${dataCenterId}/events`, 
+  FIND_HOSTS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/datacenters/${dataCenterId}/hosts`, 
+  FIND_VMS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/datacenters/${dataCenterId}/vms`, 
+  FIND_STORAGE_DOMAINS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/datacenters/${dataCenterId}/storageDomains`, 
   FIND_NETWORKS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/datacenters/${dataCenterId}/networks`, 
+  FIND_EVENTS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/computing/datacenters/${dataCenterId}/events`, 
+  ADD_DATA_CENTER: () => '/api/v1/computing/datacenters',
   //endregion: DataCenter
 
   // region: Cluster

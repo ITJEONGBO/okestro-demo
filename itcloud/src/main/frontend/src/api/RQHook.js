@@ -129,6 +129,65 @@ export const useDataCenter = (dataCenterId) => useQuery({
   cacheTime: 0, 
 });
 
+/**
+ * @name useClusterFromDataCenter
+ * @description 데이터센터 내 클러스터 목록조회 useQuery훅
+ * 
+ * @param {string} dataCenterId 데이터센터ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.
+ */
+export const useClusterFromDataCenter = (dataCenterId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['clustersFromDataCenter', dataCenterId], 
+  queryFn: async () => {
+    console.log(`clustersFromDataCenter ... ${dataCenterId}`);
+    const res = await ApiManager.findAllClustersFromDataCenter(dataCenterId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  }
+})
+/**
+ * @name useHostFromDataCenter
+ * @description 데이터센터 내 호스트 목록조회 useQuery훅
+ * 
+ * @param {string} dataCenterId 데이터센터ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.
+ */
+export const useHostFromDataCenter = (dataCenterId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['hostsFromDataCenter', dataCenterId], 
+  queryFn: async () => {
+    console.log(`hostsFromDataCenter ... ${dataCenterId}`);
+    const res = await ApiManager.findAllHostsFromDataCenter(dataCenterId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  }
+})
+/**
+ * @name useVMFromDataCenter
+ * @description 데이터센터 내 가상머신 목록조회 useQuery훅
+ * 
+ * @param {string} dataCenterId 데이터센터ID
+ * @param {function} mapPredicate 목록객체 변형 처리
+ * @returns useQuery훅
+ * 
+ * @see ApiManager.
+ */
+export const useVMFromDataCenter = (dataCenterId, mapPredicate) => useQuery({
+  refetchOnWindowFocus: true,
+  queryKey: ['vmsFromDataCenter', dataCenterId], 
+  queryFn: async () => {
+    console.log(`vmsFromDataCenter ... ${dataCenterId}`);
+    const res = await ApiManager.findAllVmsFromDataCenter(dataCenterId); 
+    return res?.map((e) => mapPredicate(e)) ?? []; // 데이터 가공
+  }
+})
+
+
 
 
 //endregion: DataCenter

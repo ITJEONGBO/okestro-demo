@@ -182,6 +182,28 @@ const ApiManager = {
     defaultValues: DEFAULT_VALUES.FIND_CLUSTERS_FROM_DATA_CENTER
   }),
   /**
+   * @name findAllHostsFromDataCenter
+   * @description 
+   * 
+   * @returns 
+   */
+  findAllHostsFromDataCenter: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_HOSTS_FROM_DATA_CENTER(), 
+    defaultValues: DEFAULT_VALUES.FIND_HOSTS_FROM_DATA_CENTER
+  }),
+  /**
+   * @name findAllVmsFromDataCenter
+   * @description 
+   * 
+   * @returns 
+   */
+  findAllVmsFromDataCenter: async () => makeAPICall({
+    method: "GET", 
+    url: ENDPOINTS.FIND_VMS_FROM_DATA_CENTER(), 
+    defaultValues: DEFAULT_VALUES.FIND_ALL_VMS
+  }),
+  /**
    * @name findAllDomainsFromDataCenter
    * @description 
    * 
@@ -190,7 +212,7 @@ const ApiManager = {
   findAllDomainsFromDataCenter: async () => makeAPICall({
     method: "GET", 
     url: ENDPOINTS.FIND_STORAGE_DOMAINS_FROM_DATA_CENTER(), 
-    defaultValues: DEFAULT_VALUES.FIND_ALL_CLUSTERS
+    defaultValues: DEFAULT_VALUES.FIND_ALL_STORAGE_DOMAINS
   }),
   /**
    * @name findAllEventsFromDataCenter
@@ -214,6 +236,22 @@ const ApiManager = {
       url: ENDPOINTS.FIND_NETWORKS_FROM_DATA_CENTER(), 
       defaultValues: DEFAULT_VALUES.FIND_NETWORKS_FROM_DATA_CENTER
     }),
+
+    /**
+   * @name ApiManager.addDataCenter
+   * @description 새 데이터센터 추가
+   * 
+   * @param {Object} dataCenterData - 추가할 데이터센터 정보
+   * @returns {Promise<Object>} API 응답 결과
+   */
+  addDataCenter: async (dataCenterData) => {
+    return makeAPICall({
+      method: "POST",
+      url: ENDPOINTS.ADD_DATA_CENTER(),
+      data: dataCenterData, // POST 요청 시 전송할 데이터
+      defaultValues: DEFAULT_VALUES.ADD_DATA_CENTER
+    });
+  },
 
   //endregion: DataCenter
 
