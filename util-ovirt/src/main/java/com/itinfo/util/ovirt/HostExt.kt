@@ -356,6 +356,20 @@ fun Connection.findNicFromHost(hostId: String, hostNicId: String): Result<HostNi
 	throw if (it is Error) it.toItCloudException() else it
 }
 
+fun Connection.setUpNetworks(hostId: String): Result<Boolean> = runCatching {
+	this.srvHost(hostId).setupNetworks().send()
+
+	true
+	TODO("호스트 -> 네트워크 인터페이스")
+}.onSuccess {
+	Term.HOST_NIC.logSuccessWithin(Term.STATISTIC,"호스트 네트워크 설정", hostId)
+}.onFailure {
+	Term.HOST_NIC.logFailWithin(Term.STATISTIC,"호스트 네트워크 설정", it, hostId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+
+
 fun Connection.findAllStatisticsFromHostNic(hostId: String, hostNicId: String): Result<List<Statistic>> = runCatching {
 	this.srvNicFromHost(hostId, hostNicId).statisticsService().list().send().statistics()
 }.onSuccess {

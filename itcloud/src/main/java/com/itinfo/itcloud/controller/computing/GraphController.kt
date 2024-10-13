@@ -55,6 +55,18 @@ class GraphController {
 		return ResponseEntity.ok(graph.totalStorage())
 	}
 
+//	@ApiOperation(
+//		httpMethod="GET",
+//		value="호스트 cpu, memory 물결그래프 정보",
+//		notes="스토리지 총 사용량 정보를 조회한다"
+//	)
+//	@GetMapping("/totalCpuMemory")
+//	@ResponseBody
+//	fun totalCpuMemoryList(): ResponseEntity<List<HostUsageDto>> {
+//		log.info("----- totalCpuMemoryList")
+//		return ResponseEntity.ok(graph.totalCpuMemoryList())
+//	}
+
 	@ApiOperation(
 		httpMethod="GET",
 		value="VM의 CPU 총 사용량 정보",

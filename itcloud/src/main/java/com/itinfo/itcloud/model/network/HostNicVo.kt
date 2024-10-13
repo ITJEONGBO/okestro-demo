@@ -6,6 +6,8 @@ import com.itinfo.itcloud.model.fromHostToIdentifiedVo
 import com.itinfo.itcloud.model.fromNetworkToIdentifiedVo
 import com.itinfo.util.ovirt.*
 import org.ovirt.engine.sdk4.Connection
+import org.ovirt.engine.sdk4.builders.BondingBuilder
+import org.ovirt.engine.sdk4.builders.HostNicBuilder
 import org.ovirt.engine.sdk4.types.*
 import org.slf4j.LoggerFactory
 import java.io.Serializable
@@ -150,3 +152,46 @@ fun HostNic.toNetworkHostNicVo(conn: Connection): HostNicVo {
 }
 fun List<HostNic>.toNetworkHostNicVos(conn: Connection): List<HostNicVo> =
 	this@toNetworkHostNicVos.map { it.toNetworkHostNicVo(conn) }
+
+
+fun HostNic.toSetHostNicVo(conn: Connection): HostNicVo {
+	val host: Host? =
+		conn.findHost(this@toSetHostNicVo.host().id()).getOrNull()
+	val network: Network? =
+		if (this@toSetHostNicVo.networkPresent()) conn.findNetwork(this@toSetHostNicVo.network().id()).getOrNull()
+		else null
+
+	return HostNicVo.builder {
+		id { this@toSetHostNicVo.id() }
+		name { this@toSetHostNicVo.name() }
+		bridged { this@toSetHostNicVo.bridged() }
+		status { this@toSetHostNicVo.status() }
+		hostVo { host?.fromHostToIdentifiedVo() }
+		networkVo { network?.fromNetworkToIdentifiedVo() }
+	}
+}
+fun List<HostNic>.toSetHostNicVos(conn: Connection): List<HostNicVo> =
+	this@toSetHostNicVos.map { it.toSetHostNicVo(conn) }
+
+
+fun HostNicVo.toHostNicBuilder(): HostNicBuilder {
+	return HostNicBuilder()
+		.id(this@toHostNicBuilder.id)
+		.name(this@toHostNicBuilder.name)
+		.bonding(
+			BondingBuilder()
+				.options(
+					listOf()
+//					OptionBuilder().name().value().build())
+				)
+				.slaves(
+					listOf()
+//					HostNicBuilder().name().build()
+				)
+				.build()
+
+		)
+}
+
+
+

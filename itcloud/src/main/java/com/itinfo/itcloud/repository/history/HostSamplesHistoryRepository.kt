@@ -29,4 +29,6 @@ interface HostSamplesHistoryRepository : JpaRepository<HostSamplesHistoryEntity,
 				"ORDER BY h.memory_Usage_Percent DESC", nativeQuery = true
 	)
 	fun findHostMemoryChart(page: Pageable?): List<HostSamplesHistoryEntity>
+
+	
 }

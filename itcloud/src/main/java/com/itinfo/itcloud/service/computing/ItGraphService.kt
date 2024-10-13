@@ -66,6 +66,7 @@ interface ItGraphService {
 
 	// Rutil Manager - 일반 ( 버전, 빌드날짜, 부팅시간(업타임=hostedVM) )
 	fun rutilInfo(): RutilVo
+
 }
 
 @Service
@@ -116,6 +117,7 @@ class GraphServiceImpl(
 		}
 		return hostSamplesHistoryEntities.toTotalCpuMemoryUsages(conn, host)
 	}
+
 
 	override fun vmCpuChart(): List<UsageDto> {
 		log.info("vmCpuChart ... ")

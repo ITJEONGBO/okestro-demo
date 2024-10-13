@@ -63,9 +63,9 @@ fun VmSamplesHistoryEntity.toVmCpuUsageDto(conn: Connection): UsageDto {
         cpuPercent { this@toVmCpuUsageDto.cpuUsagePercent }
     }
 }
-
 fun List<VmSamplesHistoryEntity>.toVmCpuUsageDtos(conn: Connection): List<UsageDto> =
     this@toVmCpuUsageDtos.map { it.toVmCpuUsageDto(conn) }
+
 
 fun VmSamplesHistoryEntity.toVmMemUsageDto(conn: Connection): UsageDto? {
     val vm: Vm =
@@ -75,9 +75,9 @@ fun VmSamplesHistoryEntity.toVmMemUsageDto(conn: Connection): UsageDto? {
         memoryPercent { this@toVmMemUsageDto.memoryUsagePercent }
     }
 }
-
 fun List<VmSamplesHistoryEntity>.toVmMemUsageDtos(conn: Connection): List<UsageDto?> =
     this@toVmMemUsageDtos.map { it.toVmMemUsageDto(conn) }
+
 
 fun StorageDomainSamplesHistoryEntity.toStorageChart(conn: Connection): UsageDto {
     val storageDomain: StorageDomain =
@@ -89,7 +89,6 @@ fun StorageDomainSamplesHistoryEntity.toStorageChart(conn: Connection): UsageDto
         memoryPercent { ((this@toStorageChart.usedDiskSizeGb / totalGB) * 100).toInt() }
     }
 }
-
 fun List<StorageDomainSamplesHistoryEntity>.toStorageCharts(conn: Connection) =
     this@toStorageCharts.map { it.toStorageChart(conn) }
 
@@ -103,7 +102,6 @@ fun HostSamplesHistoryEntity.toHostCpuChart(conn: Connection): UsageDto {
         cpuPercent { this@toHostCpuChart.cpuUsagePercent }
     }
 }
-
 fun List<HostSamplesHistoryEntity>.toHostCpuCharts(conn: Connection): List<UsageDto> =
     this@toHostCpuCharts.map { it.toHostCpuChart(conn) }
 
@@ -116,7 +114,6 @@ fun HostSamplesHistoryEntity.toHostMemChart(conn: Connection): UsageDto {
         memoryPercent { this@toHostMemChart.memoryUsagePercent }
     }
 }
-
 fun List<HostSamplesHistoryEntity>.toHostMemCharts(conn: Connection): List<UsageDto> =
     this@toHostMemCharts.map { it.toHostMemChart(conn) }
 

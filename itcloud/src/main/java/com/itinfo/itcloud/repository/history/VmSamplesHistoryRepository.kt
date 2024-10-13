@@ -26,6 +26,8 @@ interface VmSamplesHistoryRepository: JpaRepository<VmSamplesHistoryEntity, Int>
 	)
 	fun findVmMemoryChart(page: Pageable?): List<VmSamplesHistoryEntity>
 
+
+
 	// vm 사용량 순위
 	fun findFirstByVmStatusOrderByCpuUsagePercentDesc(vmStatus: Int): List<VmSamplesHistoryEntity>
 	/*

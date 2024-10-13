@@ -6,6 +6,7 @@ import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.network.HostNicVo
 import com.itinfo.itcloud.model.network.NetworkVo
 import com.itinfo.itcloud.model.network.toHostNicVos
+import com.itinfo.itcloud.model.network.toSetHostNicVos
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.repository.*
@@ -16,6 +17,7 @@ import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.Error
+import org.ovirt.engine.sdk4.builders.HostNicBuilder
 import org.ovirt.engine.sdk4.types.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -92,6 +94,15 @@ interface ItHostService {
 	 */
 	@Throws(Error::class)
 	fun findAllHostNicsFromHost(hostId: String): List<HostNicVo>
+	/**
+	 * [ItHostService.setHostNicsFromHost]
+	 * 호스트 네트워크 설정창
+	 *
+	 * @param hostId [String] 호스트 Id
+	 * @return List<[HostNicVo]> 네트워크 인터페이스 목록
+	 */
+	@Throws(Error::class)
+	fun setHostNicsFromHost(hostId: String): List<HostNicVo>
 	/**
 	 * [ItHostService.setUpNetworksFromHost]
 	 * 호스트 네트워크 설정
@@ -219,8 +230,22 @@ class HostServiceImpl(
 		return res.toHostNicVos(conn)
 	}
 
+	override fun setHostNicsFromHost(hostId: String): List<HostNicVo> {
+		log.info("setHostNicsFromHost ... hostId: {}", hostId)
+		val res: List<HostNic> =
+			conn.findAllNicsFromHost(hostId).getOrDefault(listOf())
+		return res.toSetHostNicVos(conn)
+	}
+
 	@Throws(Error::class)
 	override fun setUpNetworksFromHost(hostId: String, network: NetworkVo): Boolean {
+		// 할당되지 않은 논리 네트워크 목록
+		// 인터페이스 <-> 할당된 논리 네트워크
+		log.info("setUpNetworksFromHost ... hostId: {}", hostId)
+
+//		val modifiedBonds: List<HostNic> =
+
+
 		TODO("Not yet implemented")
 	}
 

@@ -183,6 +183,29 @@ class HostController {
 	}
 
 	@ApiOperation(
+		httpMethod="GET",
+		value="호스트 네트워크 설정창 ",
+		notes="선택된 호스트의 네트워크 설정창 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="hostId", value="호스트 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{hostId}/network")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun networkSet(
+		@PathVariable hostId: String? = null
+	): ResponseEntity<List<HostNicVo>> {
+		if (hostId.isNullOrEmpty())
+			throw ErrorPattern.HOST_ID_NOT_FOUND.toException()
+		log.info("/computing/hosts/{}/network ... 호스트 네트워크 설정창 목록", hostId)
+		return ResponseEntity.ok(iHost.setHostNicsFromHost(hostId))
+	}
+
+	@ApiOperation(
 		httpMethod="POST",
 		value="호스트 네트워크 설정",
 		notes="선택된 호스트의 네트워크를 설정한다"
