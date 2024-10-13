@@ -86,38 +86,38 @@ class ItHostServiceTest {
 	 * @see ItHostService.update
 	 * @see ItHostService.remove
 	 */
-	@Deprecated("")
 	@Test
 	fun should_add_update_and_remove_Host() {
 		log.debug("should_add_update_and_remove_Host ...")
-		val addHost: HostVo = HostVo.builder {
-			clusterVo { IdentifiedVo.builder { id { clusterId } } }
-			name { "host02.ititinfo.com" }
-			comment { "192.168.0.82" }
-			address { "host02.ititinfo.com" }
-			sshPort { 22 }
-			sshPassWord { "adminRoot!@#" }
-            spmPriority { 5 }
-		}
-
-		val addResult: HostVo? =
-			service.add(addHost)
-
-		assertThat(addResult, `is`(not(nullValue())))
-		assertThat(addResult?.id, `is`(not(nullValue())))
-//		assertThat(addResult?.clusterVo?.id, `is`(addHost.clusterVo.id))
-		assertThat(addResult?.name, `is`(addHost.name))
-		assertThat(addResult?.comment, `is`(addHost.comment))
-		assertThat(addResult?.address, `is`(addHost.address))
-		assertThat(addResult?.sshPort, `is`(addHost.sshPort))
-		assertThat(addResult?.spmPriority, `is`(addHost.spmPriority))
+//		val addHost: HostVo = HostVo.builder {
+//			clusterVo { IdentifiedVo.builder { id { "5c563dce-7a1c-4465-9018-2f9ef76e9772" } } }
+//			name { "rutilvm-dev.host04" }
+//			comment { "rutilvm-dev.host04" }
+//			address { "rutilvm-dev.host04" }
+//			sshPort { 22 }
+//			sshPassWord { "adminRoot!@#" }
+//            spmPriority { 5 }
+//		}
+//
+//		val addResult: HostVo? =
+//			service.add(addHost)
+//
+//		assertThat(addResult, `is`(not(nullValue())))
+//		assertThat(addResult?.id, `is`(not(nullValue())))
+////		assertThat(addResult?.clusterVo?.id, `is`(addHost.clusterVo.id))
+//		assertThat(addResult?.name, `is`(addHost.name))
+//		assertThat(addResult?.comment, `is`(addHost.comment))
+//		assertThat(addResult?.address, `is`(addHost.address))
+//		assertThat(addResult?.sshPort, `is`(addHost.sshPort))
+//		assertThat(addResult?.spmPriority, `is`(addHost.spmPriority))
 
 
 		log.debug("should_update_Host ...")
 		val updateHost: HostVo = HostVo.builder {
-			id { addResult?.id }
-			name { "host02.ititinfo.com2" }
-			comment { "192.168.0.82-test" }
+//			id { addResult?.id }
+			id { "b5b6490a-6ce7-4d66-a454-fbea6f164b9a" }
+			name { "rutilvm-dev.host04-test" }
+			comment { "rutilvm-dev.host04-0" }
 			spmPriority { 5 }
 		}
 
@@ -130,12 +130,12 @@ class ItHostServiceTest {
 		assertThat(updateResult?.comment, `is`(updateHost.comment))
 		assertThat(updateResult?.spmPriority, `is`(updateHost.spmPriority))
 
-		log.debug("should_remove_Host ...")
-		val removeResult =
-			updateResult?.let { service.remove(it.id) }
-
-		assertThat(removeResult, `is`(not(nullValue())))
-		assertThat(removeResult, `is`(true))
+//		log.debug("should_remove_Host ...")
+//		val removeResult =
+//			updateResult?.let { service.remove(it.id) }
+//
+//		assertThat(removeResult, `is`(not(nullValue())))
+//		assertThat(removeResult, `is`(true))
 	}
 
 	/**

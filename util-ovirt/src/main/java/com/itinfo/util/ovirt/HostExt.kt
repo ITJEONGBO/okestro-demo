@@ -265,6 +265,19 @@ fun InetAddress.rebootHostViaSSH(username: String, password: String, port: Int):
 	throw if (it is Error) it.toItCloudException() else it
 }
 
+fun Connection.enrollCertificate(hostId: String): Result<Boolean> = runCatching {
+	if(this.findHost(hostId).isFailure){
+		throw ErrorPattern.HOST_NOT_FOUND.toError()
+	}
+	this.srvHost(hostId).enrollCertificate().send()
+	true
+}.onSuccess {
+	Term.HOST.logSuccess("인증서 등록", hostId)
+}.onFailure {
+	Term.HOST.logFail("인증서 등록", it, hostId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
 
 fun Connection.findPowerManagementFromHost(hostId: String, fenceType: FenceType): Result<PowerManagement?> = runCatching {
 	val res = srvHost(hostId).fence().fenceType(fenceType.name).send().powerManagement()

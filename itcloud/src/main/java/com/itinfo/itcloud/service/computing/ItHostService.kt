@@ -25,7 +25,7 @@ interface ItHostService {
 	/**
 	 * [ItHostService.findAll]
 	 * 호스트 목록
-	 * 
+	 *
 	 * @return List<[HostVo]> 호스트 목록
 	 */
 	@Throws(Error::class)
@@ -187,6 +187,7 @@ class HostServiceImpl(
 		// TODO
 		//  com.itinfo.util.ovirt.error.ItCloudException: Fault reason is 'Operation Failed'. Fault detail is '[Cannot edit Host. Host parameters cannot be modified while Host is operational.
 		//  Please switch Host to Maintenance mode first.]'. HTTP response code is '409'. HTTP response message is 'Conflict'.
+		//  Host.Ext 에서 async(true) 사용해서 일단 편집기능은 되지않고 테스트는 가능
 		val res: Host? =
 			conn.updateHost(
 				hostVo.toEditHostBuilder()

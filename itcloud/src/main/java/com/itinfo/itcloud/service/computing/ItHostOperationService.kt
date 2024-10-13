@@ -40,14 +40,14 @@ interface ItHostOperationService {
     )
     fun restart(hostId: String): Boolean
     /**
-     * [ItHostOperationService.registerCertificate]
+     * [ItHostOperationService.enrollCertificate]
      * 설치 - 인증서 등록
      *
      * @param hostId [String] 호스트 아이디
      * @return [Boolean]
      */
     @Throws(Error::class)
-    fun registerCertificate(hostId: String): Boolean
+    fun enrollCertificate(hostId: String): Boolean
     /**
      * [ItHostOperationService.globalHaActivate]
      * 글로벌 HA 유지관리를 활성화
@@ -87,30 +87,37 @@ class HostOperationServiceImpl(
     @Throws(Error::class)
     override fun deactivate(hostId: String): Boolean {
         log.info("deactivate ... hostId: {}", hostId)
-        val res: Result<Boolean> = conn.deactivateHost(hostId)
+        val res: Result<Boolean> =
+            conn.deactivateHost(hostId)
         return res.isSuccess
     }
 
     @Throws(Error::class)
     override fun activate(hostId: String): Boolean {
         log.info("activate ... hostId: {}", hostId)
-        val res: Result<Boolean> = conn.activateHost(hostId)
+        val res: Result<Boolean> =
+            conn.activateHost(hostId)
         return res.isSuccess
     }
 
     @Throws(UnknownHostException::class, Error::class)
     override fun restart(hostId: String): Boolean {
         log.info("reStart ... hostId: {}", hostId)
-    // TODO Host 이름, PW 문제 => application.properties 에 저장해서 불러오는 방식
+        // TODO Host 이름, PW 문제 => application.properties 에 저장해서 불러오는 방식
 //        val userName = ""
         val hostPw = "adminRoot!@#"
-        val res: Result<Boolean> = conn.restartHost(hostId, hostPw)
+        val res: Result<Boolean> =
+            conn.restartHost(hostId, hostPw)
         return res.isSuccess
     }
 
+    // TODO 인증서 등록에 대한 조건이 뭔지 모르겠음 (활성화 조건을 모름)
     @Throws(Error::class)
-    override fun registerCertificate(hostId: String): Boolean {
-        TODO("Not yet implemented")
+    override fun enrollCertificate(hostId: String): Boolean {
+        log.info("enrollCertificate ... hostId: {}", hostId)
+        val res: Result<Boolean> =
+            conn.enrollCertificate(hostId)
+        return res.isSuccess
     }
 
     @Throws(Error::class)
@@ -128,7 +135,8 @@ class HostOperationServiceImpl(
     @Throws(Error::class)
     override fun refresh(hostId: String): Boolean {
         log.info("refresh ... hostId: {}", hostId)
-        val res: Result<Boolean> = conn.refreshHost(hostId)
+        val res: Result<Boolean> =
+            conn.refreshHost(hostId)
         return res.isSuccess
     }
 
