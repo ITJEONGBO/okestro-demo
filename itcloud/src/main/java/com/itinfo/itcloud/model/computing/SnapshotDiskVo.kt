@@ -1,19 +1,8 @@
 package com.itinfo.itcloud.model.computing
 
-import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.gson
 import com.itinfo.itcloud.model.IdentifiedVo
-import com.itinfo.itcloud.model.storage.StorageDomainVo
-import com.itinfo.itcloud.model.storage.toDiskIdName
-import com.itinfo.util.ovirt.error.ErrorPattern
-import com.itinfo.util.ovirt.error.toError
-import com.itinfo.util.ovirt.findDisk
-import com.itinfo.util.ovirt.findDiskAttachmentFromVm
-import com.itinfo.util.ovirt.findSnapshotFromVm
 import org.ovirt.engine.sdk4.Connection
-import org.ovirt.engine.sdk4.Error
-import org.ovirt.engine.sdk4.builders.DiskAttachmentBuilder
-import org.ovirt.engine.sdk4.builders.DiskBuilder
 import org.ovirt.engine.sdk4.types.*
 import org.slf4j.LoggerFactory
 import java.io.Serializable
@@ -61,7 +50,7 @@ class SnapshotDiskVo (
     val status: DiskStatus = DiskStatus.LOCKED,
     val storageType: DiskStorageType = DiskStorageType.IMAGE,
     val wipeAfterDelete: Boolean = false,
-    val snapshotVo: SnapshotVo = SnapshotVo(),
+    val snapshotVo: IdentifiedVo = IdentifiedVo(),
     val storageDomainVo: IdentifiedVo = IdentifiedVo(),
 
     ): Serializable {
@@ -84,7 +73,7 @@ class SnapshotDiskVo (
         private var bStatus: DiskStatus = DiskStatus.LOCKED; fun status(block: () -> DiskStatus?) { bStatus = block() ?: DiskStatus.LOCKED }
         private var bStorageType: DiskStorageType = DiskStorageType.IMAGE; fun storageType(block: () -> DiskStorageType?) { bStorageType = block() ?: DiskStorageType.IMAGE }
         private var bWipeAfterDelete: Boolean = false; fun wipeAfterDelete(block: () -> Boolean?) { bWipeAfterDelete = block() ?: false }
-        private var bSnapshotVo: SnapshotVo =  SnapshotVo(); fun snapshotVo(block: () -> SnapshotVo?) { bSnapshotVo = block() ?: SnapshotVo() }
+        private var bSnapshotVo: IdentifiedVo =  IdentifiedVo(); fun snapshotVo(block: () -> IdentifiedVo?) { bSnapshotVo = block() ?: IdentifiedVo() }
         private var bStorageDomainVo: IdentifiedVo = IdentifiedVo(); fun storageDomainVo(block: () -> IdentifiedVo?) { bStorageDomainVo = block() ?: IdentifiedVo() }
 
         fun build(): SnapshotDiskVo = SnapshotDiskVo(bId, bName, bDescription, bAlias, bBackup, bContentType, bFormat, bImageId, bPropagateErrors, bActualSize, bProvisionedSize, bShareable, bSparse, bStatus, bStorageType, bWipeAfterDelete, bSnapshotVo, bStorageDomainVo,)

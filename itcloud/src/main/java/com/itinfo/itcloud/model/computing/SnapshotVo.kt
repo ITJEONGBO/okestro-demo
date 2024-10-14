@@ -12,6 +12,7 @@ import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.util.ovirt.error.toError
 import org.ovirt.engine.sdk4.Connection
+import org.ovirt.engine.sdk4.builders.SnapshotBuilder
 import org.ovirt.engine.sdk4.types.*
 import org.slf4j.LoggerFactory
 import java.io.Serializable
@@ -65,19 +66,23 @@ class SnapshotVo (
     }
 }
 
+fun Snapshot.toSnapshotIdName(): SnapshotVo = SnapshotVo.builder {
+    id { this@toSnapshotIdName.id() }
+    description { this@toSnapshotIdName.description() }
+}
+fun List<Snapshot>.toSnapshotsIdName(): List<SnapshotVo> =
+    this@toSnapshotsIdName.map { it.toSnapshotIdName() }
+
 
 fun Snapshot.toSnapshotVo(conn: Connection, vmId: String): SnapshotVo {
     val vm: Vm =
-        conn.findVm(vmId)
-            .getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+        conn.findVm(vmId).getOrNull()
+            ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 
     val disks: List<Disk> =
-        conn.findAllSnapshotDisksFromVm(vmId, this@toSnapshotVo.id())
-            .getOrDefault(listOf())
+        conn.findAllSnapshotDisksFromVm(vmId, this@toSnapshotVo.id()).getOrDefault(listOf())
     val nics: List<Nic> =
-        conn.findAllSnapshotNicsFromVm(vmId, this@toSnapshotVo.id())
-            .getOrDefault(listOf())
-
+        conn.findAllSnapshotNicsFromVm(vmId, this@toSnapshotVo.id()).getOrDefault(listOf())
     val applications: List<Application> =
         conn.findAllApplicationsFromVm(vmId).getOrDefault(listOf())
 
@@ -95,4 +100,14 @@ fun Snapshot.toSnapshotVo(conn: Connection, vmId: String): SnapshotVo {
 }
 fun List<Snapshot>.toSnapshotVos(conn: Connection, vmId: String): List<SnapshotVo> =
     this@toSnapshotVos.map { it.toSnapshotVo(conn, vmId) }
+
+
+fun SnapshotVo.toSnapshotBuilder(): SnapshotBuilder {
+    return SnapshotBuilder()
+        .description(this@toSnapshotBuilder.description)
+        .persistMemorystate(this@toSnapshotBuilder.persistMemory)
+}
+
+fun SnapshotVo.toAddSnapshot(): Snapshot =
+    this@toAddSnapshot.toSnapshotBuilder().build()
 

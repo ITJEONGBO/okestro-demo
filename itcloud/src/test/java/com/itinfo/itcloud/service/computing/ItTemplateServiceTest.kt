@@ -41,8 +41,8 @@ class ItTemplateServiceTest {
 	@BeforeEach
 	fun setup() {
 		origin = "00000000-0000-0000-0000-000000000000"
-		tempId = "01eb13c4-b103-46c3-b4fd-9bee86c84018"
-		vmId = "d561cd88-9614-4afa-893b-a26c7be45065"
+		tempId = "57d00a15-c510-466b-b3e2-02cf5450441b"
+		vmId = "9181fa0b-d031-4dbd-a031-6de2e2913eb6"
 	}
 
 	/**

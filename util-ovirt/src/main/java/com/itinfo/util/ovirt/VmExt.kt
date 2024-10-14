@@ -777,8 +777,7 @@ private fun Connection.srvSnapshotFromVm(vmId: String, snapshotId: String): Snap
 	this.srvSnapshotsFromVm(vmId).snapshotService(snapshotId)
 
 fun Connection.findSnapshotFromVm(vmId: String, snapshotId: String): Result<Snapshot?> = runCatching {
-	this.findVm(vmId)
-		.getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 
 	this.srvSnapshotFromVm(vmId, snapshotId).get().send().snapshot()
 }.onSuccess {
@@ -790,8 +789,10 @@ fun Connection.findSnapshotFromVm(vmId: String, snapshotId: String): Result<Snap
 }
 
 fun Connection.addSnapshotFromVm(vmId: String, snapshot: Snapshot): Result<Snapshot> = runCatching {
-	/*val vm: Vm = */this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
-	val snapshotAdded: Snapshot = this.srvSnapshotsFromVm(vmId).add().snapshot(snapshot).send().snapshot()
+	this.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	val snapshotAdded: Snapshot =
+		this.srvSnapshotsFromVm(vmId).add().snapshot(snapshot).send().snapshot()
+
 	this@addSnapshotFromVm.expectSnapshotStatusFromVm(vmId, snapshotAdded.id(), SnapshotStatus.OK)
 	snapshotAdded
 }.onSuccess {
@@ -805,14 +806,49 @@ fun Connection.addSnapshotFromVm(vmId: String, snapshot: Snapshot): Result<Snaps
 fun Connection.removeSnapshotFromVm(vmId: String, snapshotId: String): Result<Boolean> = runCatching {
 	this.srvSnapshotFromVm(vmId, snapshotId).remove().send()
 	if (!this@removeSnapshotFromVm.isSnapshotDeletedFromVm(vmId, snapshotId))
-		return Result.failure(Error("스냅샷 생성 시간 초과"))
+		return Result.failure(Error("스냅샷 삭제 시간 초과"))
 	true
 }.onSuccess {
 	Term.VM.logSuccessWithin(Term.SNAPSHOT, "삭제", vmId)
 }.onFailure {
 	Term.VM.logFailWithin(Term.SNAPSHOT, "삭제", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
+}
 
+fun Connection.removeMultiSnapshotFromVm(vmId: String, snapshotIds: List<String>): Result<Boolean> = runCatching {
+	val results = snapshotIds.map { removeSnapshotFromVm(vmId, it) }
+	val allSuccessful = results.all { it.isSuccess }
+
+	if (!allSuccessful) {
+		val failedResults = results.filter { it.isFailure }
+		log.warn("일부 스냅샷 삭제 실패: ${failedResults.size}개")
+	}
+	allSuccessful
+}.onSuccess {
+	Term.VM.logSuccessWithin(Term.SNAPSHOT, "삭제", vmId)
+}.onFailure {
+	Term.VM.logFailWithin(Term.SNAPSHOT, "삭제", it, vmId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.previewSnapshotFromVm(vmId: String, snapshot: Snapshot/*, restoreMemory: Boolean*/): Result<Boolean> = runCatching {
+	this.srvVm(vmId).previewSnapshot()/*.restoreMemory(restoreMemory)*/.snapshot(snapshot).send()
+	true
+}.onSuccess {
+	Term.VM.logSuccessWithin(Term.SNAPSHOT, "미리보기", vmId)
+}.onFailure {
+	Term.VM.logFailWithin(Term.SNAPSHOT, "미리보기", it, vmId)
+	throw if (it is Error) it.toItCloudException() else it
+}
+
+fun Connection.commitSnapshotFromVm(vmId: String): Result<Boolean> = runCatching {
+	this.srvVm(vmId).commitSnapshot().send()
+	true
+}.onSuccess {
+	Term.VM.logSuccessWithin(Term.SNAPSHOT, "커밋", vmId)
+}.onFailure {
+	Term.VM.logFailWithin(Term.SNAPSHOT, "커밋", it, vmId)
+	throw if (it is Error) it.toItCloudException() else it
 }
 
 fun Connection.undoSnapshotFromVm(vmId: String): Result<Boolean> = runCatching {
@@ -826,23 +862,13 @@ fun Connection.undoSnapshotFromVm(vmId: String): Result<Boolean> = runCatching {
 
 }
 
-fun Connection.commitSnapshotFromVm(vmId: String): Result<Boolean> = runCatching {
-	this.srvVm(vmId).commitSnapshot().send()
+fun Connection.cloneSnapshotFromVm(vmId: String, vm: Vm): Result<Boolean> = runCatching {
+	this.srvVm(vmId).clone_().vm(vm).send()
 	true
 }.onSuccess {
-	Term.VM.logSuccessWithin(Term.SNAPSHOT, "커밋", vmId)
+	Term.VM.logSuccessWithin(Term.SNAPSHOT, "복제", vmId)
 }.onFailure {
-	Term.VM.logFailWithin(Term.SNAPSHOT, "커밋", it, vmId)
-	throw if (it is Error) it.toItCloudException() else it
-}
-
-fun Connection.previewSnapshotFromVm(vmId: String, snapshot: Snapshot, restoreMemory: Boolean): Result<Boolean> = runCatching {
-	this.srvVm(vmId).previewSnapshot().restoreMemory(restoreMemory).snapshot(snapshot).send()
-	true
-}.onSuccess {
-	Term.VM.logSuccessWithin(Term.SNAPSHOT, "미리보기", vmId)
-}.onFailure {
-	Term.VM.logFailWithin(Term.SNAPSHOT, "미리보기", it, vmId)
+	Term.VM.logFailWithin(Term.SNAPSHOT, "복제", it, vmId)
 	throw if (it is Error) it.toItCloudException() else it
 }
 

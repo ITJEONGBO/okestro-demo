@@ -1017,6 +1017,193 @@ class VmController: BaseController() {
 		log.info("/computing/vms/{}/snapshots ... 가상머신 스냅샷 목록", vmId)
 		return ResponseEntity.ok(iVmSnapshot.findAllFromVm(vmId))
 	}
+	
+	@ApiOperation(
+		httpMethod="GET",
+		value="가상머신 스냅샷 상세조회",
+		notes="선택된 가상머신의 스냅샷을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="snapshotId", value="스냅샷 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{vmId}/snapshots/{snapshotId}")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun snapshot(
+		@PathVariable vmId: String? = null,
+		@PathVariable snapshotId: String? = null,
+	): ResponseEntity<SnapshotVo> {
+		if (vmId.isNullOrEmpty())
+			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		if (snapshotId.isNullOrEmpty())
+			throw ErrorPattern.TEMPLATE_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/snapshots/{} ... 가상머신 스냅샷 조회", vmId, snapshotId)
+		return ResponseEntity.ok(iVmSnapshot.findOneFromVm(vmId, snapshotId))
+	}
+
+
+	@ApiOperation(
+		httpMethod="POST",
+		value="가상머신 스냅샷 생성",
+		notes="가상머신에 스냅샷을 생성한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="snapshot", value="스냅샷", dataTypeClass=SnapshotVo::class, paramType="body"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
+	@PostMapping("/{vmId}/snapshots")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	fun addSnapshot(
+		@PathVariable vmId: String? = null,
+		@RequestBody snapshot: SnapshotVo? = null,
+	): ResponseEntity<SnapshotVo?> {
+		if (vmId.isNullOrEmpty())
+			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		if (snapshot == null)
+			throw ErrorPattern.SNAPSHOT_VO_INVALID.toException()
+		log.info("/computing/vms/{}/snapshots ... 가상머신 스냅샷 생성", vmId)
+		return ResponseEntity.ok(iVmSnapshot.addFromVm(vmId, snapshot))
+	}
+	
+	@ApiOperation(
+		httpMethod="DELETE",
+		value="가상머신 스냅샷 삭제",
+		notes="가상머신에 있는 스냅샷을 삭제한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="snapshotIds", value="스냅샷 ID 목록", dataTypeClass=Array::class, required=true, paramType="body"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@DeleteMapping("/{vmId}/snapshots")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun removeSnapshot(
+		@PathVariable vmId: String? = null,
+		@RequestBody snapshotIds: List<String>? = null 
+	): ResponseEntity<Boolean> {
+		if (vmId.isNullOrEmpty())
+			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		if (snapshotIds == null)
+			throw ErrorPattern.SNAPSHOT_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/snapshots ... 가상머신 스냅샷 삭제", vmId)
+		return ResponseEntity.ok(iVmSnapshot.removeFromVm(vmId, snapshotIds))
+	}
+
+	@ApiOperation(
+		httpMethod="POST",
+		value="가상머신 스냅샷 미리보기",
+		notes="선택된 가상머신의 스냅샷 미리보기 기능을 실행한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="snapshotId", value="스냅샷 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
+	@PostMapping("/{vmId}/snapshots/{snapshotId}/preview")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	fun preview(
+		@PathVariable vmId: String? = null,
+		@PathVariable snapshotId: String? = null,
+	): ResponseEntity<Boolean> {
+		if (vmId.isNullOrEmpty())
+			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		if (snapshotId.isNullOrEmpty())
+			throw ErrorPattern.SNAPSHOT_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/snapshots/{}/preview ... 가상머신 미리보기", vmId, snapshotId)
+		return ResponseEntity.ok(iVmSnapshot.previewFromVm(vmId, snapshotId))
+	}
+
+	@ApiOperation(
+		httpMethod="POST",
+		value="가상머신 스냅샷 커밋",
+		notes="선택된 가상머신의 스냅샷 커밋 기능을 실행한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
+	@PostMapping("/{vmId}/snapshots/commit")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	fun commit(
+		@PathVariable vmId: String? = null,
+	): ResponseEntity<Boolean> {
+		if (vmId.isNullOrEmpty())
+			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/snapshots/commit ... 가상머신 커밋", vmId)
+		return ResponseEntity.ok(iVmSnapshot.commitFromVm(vmId))
+	}
+
+	@ApiOperation(
+		httpMethod="POST",
+		value="가상머신 스냅샷 되돌리기",
+		notes="선택된 가상머신의 스냅샷 되돌리기 기능을 실행한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
+	@PostMapping("/{vmId}/snapshots/undo")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	fun undo(
+		@PathVariable vmId: String? = null,
+	): ResponseEntity<Boolean> {
+		if (vmId.isNullOrEmpty())
+			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/snapshots/undo ... 가상머신 커밋", vmId)
+		return ResponseEntity.ok(iVmSnapshot.undoFromVm(vmId))
+	}
+
+	@ApiOperation(
+		httpMethod="POST",
+		value="가상머신 스냅샷 복제",
+		notes="선택된 가상머신의 스냅샷 복제 기능을 실행한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
+		ApiImplicitParam(name="name", value="가상머신 이름", dataTypeClass=String::class, required=true, paramType="body"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED"),
+		ApiResponse(code = 404, message = "NOT_FOUND")
+	)
+	@PostMapping("/{vmId}/snapshots/clone")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	fun clone(
+		@PathVariable vmId: String? = null,
+		@RequestBody name: String? = null,
+	): ResponseEntity<Boolean> {
+		if (vmId.isNullOrEmpty())
+			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		if (name.isNullOrEmpty())
+			throw ErrorPattern.VM_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/snapshots/clone ... 가상머신 복제", vmId)
+		return ResponseEntity.ok(iVmSnapshot.cloneFromVm(vmId, name))
+	}
 
 
 	// endregion

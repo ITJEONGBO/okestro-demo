@@ -56,11 +56,13 @@ fun Connection.exportTemplate(templateId: String, exclusive: Boolean, toStorageD
 }
 
 @Throws(Error::class)
-fun Connection.addTemplate(vmId: String,
-						   templateName: String,
-						   template: Template,
-						   clonePermissions: Boolean = false,
-						   seal: Boolean = false): Result<Template?> = runCatching {
+fun Connection.addTemplate(
+	vmId: String,
+	templateName: String,
+	template: Template,
+	clonePermissions: Boolean = false,
+	seal: Boolean = false
+): Result<Template?> = runCatching {
 	val vm: Vm = this@addTemplate.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
 	if (vm.status() == VmStatus.UP) {
 		log.error("addTemplate ... 가상머신 up 상태에서는 템플릿 생성 불가")

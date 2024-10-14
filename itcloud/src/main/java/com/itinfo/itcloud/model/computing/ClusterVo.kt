@@ -237,7 +237,7 @@ fun ClusterVo.toClusterBuilder(conn: Connection): ClusterBuilder {
 		.comment(this@toClusterBuilder.comment)
 		.managementNetwork(NetworkBuilder().id(this@toClusterBuilder.network.id).build())
 		.biosType(this@toClusterBuilder.biosType)
-		.fipsMode(this@toClusterBuilder.fipsMode)
+		.fipsMode(FipsMode.DISABLED)
 		.version(VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())
 		.switchType(this@toClusterBuilder.switchType)  // 편집에선 선택불가
 		.firewallType(this@toClusterBuilder.firewallType)

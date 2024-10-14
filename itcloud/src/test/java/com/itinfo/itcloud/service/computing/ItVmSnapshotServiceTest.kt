@@ -1,12 +1,16 @@
 package com.itinfo.itcloud.service.computing
 
 import com.itinfo.common.LoggerDelegate
+import com.itinfo.itcloud.model.IdentifiedVo
 import com.itinfo.itcloud.model.computing.SnapshotVo
+import com.itinfo.itcloud.model.network.NicVo
 import com.itinfo.itcloud.model.storage.DiskAttachmentVo
+import com.itinfo.itcloud.service.computing.ItVmNicServiceTest.Companion
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.ovirt.engine.sdk4.types.NicInterface
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
@@ -23,12 +27,12 @@ class ItVmSnapshotServiceTest {
     @Autowired private lateinit var service: ItVmSnapshotService
 
     private lateinit var hostVm: String // hostVm
-    private lateinit var apm: String // apm
+    private lateinit var apmTest1: String // apm
 
     @BeforeEach
     fun setup() {
-        hostVm = "c2ae1da5-ce4f-46df-b337-7c471bea1d8d" // HostedEngine
-        apm = "fceb0fe4-2927-4340-a970-401fe55781e6"
+        hostVm = "a57c99eb-b786-4420-b7e9-23e6503cacd9" // HostedEngine
+        apmTest1 = "918773c9-1ad5-4a23-9b23-269bb60083a2"
     }
 
     /**
@@ -41,11 +45,11 @@ class ItVmSnapshotServiceTest {
     fun should_findAllFromVm(){
         log.debug("should_findAllFromVm")
         val result: List<SnapshotVo> =
-            service.findAllFromVm(apm)
+            service.findAllFromVm(apmTest1)
 
         assertThat(result, `is`(not(nullValue())))
         result.forEach { println(it) }
-        assertThat(result.size, `is`(3))
+        assertThat(result.size, `is`(4))
     }
 
     /**
@@ -58,12 +62,119 @@ class ItVmSnapshotServiceTest {
     fun should_findOneFromVm(){
         log.debug("should_findOneFromVm")
         val result: SnapshotVo? =
-            service.findOneFromVm(apm, snapshotId = "2bda4522-5d82-4772-a1bd-65633928bf35")
+            service.findOneFromVm(apmTest1, "58264ac4-768b-4867-aa50-e88bb4587a02")
 
         assertThat(result, `is`(not(nullValue())))
         println(result)
     }
 
+
+    /**
+     * [should_addFromVm]
+     * [ItVmSnapshotService.addFromVm]에 대한 단위테스트
+     *
+     * @see ItVmSnapshotService.addFromVm
+     */
+    @Test
+    fun should_addFromVm() {
+        log.debug("should_addFromVm ... ")
+        val addSnapshot: SnapshotVo = SnapshotVo.builder {
+            description { "36" }
+//            persistMemory { false } // 기본은 없음
+        }
+
+        val addResult: SnapshotVo? =
+            service.addFromVm(apmTest1, addSnapshot)
+
+        assertThat(addResult?.id, `is`(not(nullValue())))
+        assertThat(addResult?.description, `is`(addSnapshot.description))
+    }
+
+    /**
+     * [should_removeFromVm]
+     * [ItVmSnapshotService.removeFromVm]에 대한 단위테스트
+     *
+     * @see ItVmSnapshotService.removeFromVm
+     */
+    @Test
+    fun should_removeFromVm() {
+        log.debug("should_removeFromVm ... ")
+        val snapshotIds: List<String> =
+            listOf(
+                "3fc86b34-b2a2-4b3f-93cb-dff3ec04d20b",
+                "d972f7cf-5539-4c2b-9553-6fbed1136b5d"
+            )
+        val removeResult: Boolean =
+            service.removeFromVm(apmTest1, snapshotIds)
+
+        assertThat(removeResult, `is`(not(nullValue())))
+        assertThat(removeResult, `is`(true))
+    }
+
+
+    /**
+     * [should_previewFromVm]
+     * [ItVmSnapshotService.previewFromVm]에 대한 단위테스트
+     *
+     * @see ItVmSnapshotService.previewFromVm
+     */
+    @Test
+    fun should_previewFromVm() {
+        log.debug("should_previewFromVm ... ")
+        val result: Boolean =
+            service.previewFromVm(apmTest1, "ae6daa9c-20b0-451c-864a-8186f3dbc542")
+
+        assertThat(result, `is`(not(nullValue())))
+        assertThat(result, `is`(true))
+    }
+
+    /**
+     * [should_commitFromVm]
+     * [ItVmSnapshotService.commitFromVm]에 대한 단위테스트
+     *
+     * @see ItVmSnapshotService.commitFromVm
+     */
+    @Test
+    fun should_commitFromVm() {
+        log.debug("should_commitFromVm ... ")
+        val result: Boolean =
+            service.commitFromVm(apmTest1)
+
+        assertThat(result, `is`(not(nullValue())))
+        assertThat(result, `is`(true))
+    }
+
+    /**
+     * [should_undoFromVm]
+     * [ItVmSnapshotService.undoFromVm]에 대한 단위테스트
+     *
+     * @see ItVmSnapshotService.undoFromVm
+     */
+    @Test
+    fun should_undoFromVm() {
+        log.debug("should_undoFromVm ... ")
+        val result: Boolean =
+            service.undoFromVm(apmTest1)
+
+        assertThat(result, `is`(not(nullValue())))
+        assertThat(result, `is`(true))
+    }
+
+    /**
+     * [should_cloneFromVm]
+     * [ItVmSnapshotService.cloneFromVm]에 대한 단위테스트
+     *
+     * @see ItVmSnapshotService.cloneFromVm
+     */
+    @Test
+    fun should_cloneFromVm() {
+        log.debug("should_cloneFromVm ... ")
+        val result: Boolean =
+            service.cloneFromVm(apmTest1, "name")
+
+        assertThat(result, `is`(not(nullValue())))
+        assertThat(result, `is`(true))
+    }
 
 
 
