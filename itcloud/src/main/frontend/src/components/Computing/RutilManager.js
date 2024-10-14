@@ -58,6 +58,7 @@ import Path from '../Header/Path';
 import TemplateDu from '../duplication/TemplateDu';
 import HostDu from '../duplication/HostDu';
 import Footer from '../footer/Footer';
+import VmDu from '../duplication/VmDu';
 
 function RutilManager() {
     const { id } = useParams();
@@ -269,11 +270,26 @@ function RutilManager() {
         setActivePermissionFilter(filter);
       };
       const [activePermissionFilter, setActivePermissionFilter] = useState('all');
+
       const handleRowClick = (row, column) => {
         if (column.accessor === 'name') {
-          navigate(`/networks/${row.name.props.children}`);  
+          navigate(`/networks/${row.name.props.children}`);
         }
     };
+
+    // 데이터센터 클릭
+    const handleDatacenterClick = (row, column) => {
+        if (column.accessor === 'name') {
+          navigate(`/computing/datacenters/${row.id}`);
+        }
+      };
+    // 호스트 클릭
+    const handleHostClick = (row, column) => {
+        if (column.accessor === 'name') {
+          navigate(`/computing/hosts/${row.id}`);
+        }
+      };
+
     const [activeSection, setActiveSection] = useState('common_outer');
     const handleSectionChange = (section) => {
         setActiveSection(section);
@@ -281,9 +297,9 @@ function RutilManager() {
     
     const [isPermissionModalOpen, setIsPermissionModalOpen] = useState(false); // 권한 모달 상태
     const [isAffinityGroupModalOpen, setIsAffinityGroupModalOpen] = useState(false); // 선호도 그룹 모달 상태
-    const [isPopupOpen, setIsPopupOpen] = useState(false);
-   
+
     // 버튼 클릭 시 팝업의 열림/닫힘 상태를 토글하는 함수
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
     const togglePopup = () => {
       setIsPopupOpen(!isPopupOpen);
     };
@@ -377,7 +393,7 @@ function RutilManager() {
         clusterRefetch();  // 함수 이름을 일치시킴
       }, [setShouldRefresh, clusterRefetch]);
 
-    
+
     // 권한
     const { 
         data: permissions, 
@@ -633,7 +649,7 @@ function RutilManager() {
                                 <TableOuter
                                   columns={TableColumnsInfo.DATACENTERS} 
                                   data={allDataCenters} 
-                                  onRowClick={handleRowClick} />
+                                  onRowClick={handleDatacenterClick} />
                                 </>
 
                             )}
@@ -654,48 +670,28 @@ function RutilManager() {
                              
                               </>
                             )}
-                            {/* 호스트 */}
+                            {/* 호스트(수정필요 값 안넘어감) */}
                             {activeTab === 'host' && (
                                 <HostDu 
                                 data={allHosts} 
                                 columns={TableColumnsInfo.HOSTS_ALL_DATA} 
-                                handleRowClick={handleRowClick}
+                                handleRowClick={handleHostClick}
                                 openPopup={openPopup}
                               />
                             )}
                             {/* 가상 머신 */}
                             {activeTab === 'virtual_machine' && (
                               <>
-                              <div className="header_right_btns">
-                                    <button onClick={() => openPopup('vm_new')}>새로만들기</button>
-                                    <button onClick={() => openPopup('vm_edit')}>편집</button>
-                                    <button onClick={() => openPopup('delete')}>삭제</button>
-                                    <button>실행</button>
-                                    <button>일시중지</button>
-                                    <button>종료</button>
-                                    <button>재부팅</button>
-                                    <button>콘솔</button>
-                                    <button>스냅샷 생성</button>
-                                    <button>마이그레이션</button>
-                                    {/* <button className="content_header_popup_btn" onClick={togglePopup}>
-                                                <FontAwesomeIcon icon={faEllipsisV} fixedWidth/>
-                                                {isPopupOpen && (
-                                                  <div className="content_header_popup">
-                                                    <div>OVF 업데이트</div>
-                                                    <div>파괴</div>
-                                                    <div>디스크 검사</div>
-                                                    <div>마스터 스토리지 도메인으로 선택</div>
-                                                  </div>
-                                                )}
-                                    </button> */}
-                                </div>
-                              
-                                <TableOuter 
-                                  columns={TableColumnsInfo.VM_CHART} 
-                                  data={allVMs} 
-                                  onRowClick={() => console.log('Row clicked')}
-                                  showSearchBox={true}
-                                />
+                              <VmDu 
+                                  
+                                    columns={TableColumnsInfo.VM_CHART} 
+                                    handleRowClick={() => console.log("Row clicked")}  
+                                    openPopup={openPopup} 
+                                    setActiveTab={setActiveTab}
+                                    togglePopup={togglePopup} 
+                                    isPopupOpen={isPopupOpen}
+                                    showTemplateButton={false} 
+                                    />
                             
                               </>
                             )}

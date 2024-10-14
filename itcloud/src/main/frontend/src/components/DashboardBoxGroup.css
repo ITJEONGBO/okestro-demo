@@ -71,3 +71,10 @@
   color: #4d4d4d; 
   margin-top: 2px; 
 }
+.box_icon_title {
+  display: flex;
+  align-items: center;   /* 수직 가운데 정렬 */
+  justify-content: center; /* 수평 가운데 정렬 */
+  gap: 2px; /* 아이콘과 텍스트 사이에 간격 */
+}
+

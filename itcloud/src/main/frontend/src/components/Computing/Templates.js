@@ -119,11 +119,12 @@ const Templates = () => {
           id: template?.id ?? '',
           name: template?.name ?? 'Unknown', 
           status: template?.status ?? 'Unknown',                // 템플릿 상태
-          version: template?.version ?? 'N/A',                  // 템플릿 버전 정보
+          versionName: template?.versionName ?? 'N/A',           // 템플릿 버전 정보
           description: template?.description ?? 'No description',// 템플릿 설명
-          cpuType: template?.cpuType ?? 'CPU 정보 없음',         // CPU 유형 정보
-          hostCount: template?.hostCount ?? 0,                  // 템플릿에 연결된 호스트 수
-          vmCount: template?.vmCount ?? 0,                      // 템플릿에 연결된 VM 수
+          cluster: template?.clusterVo?.name ?? 'Unknown', 
+          datacenter: template?.dataCenterVo?.name ?? 'Unknown', 
+          creationTime: template?.creationTime ?? '',
+          comment: template?.comment ?? ''
         };
       }
       

@@ -1074,8 +1074,9 @@ input[disabled] {
     padding: 2%;
 }
 #host_third_content{
-    padding: 0 2%;
+    padding: 0 2% 2% 0%;
 }
+
 #host_third_content>div{
     padding: 1% 0;
 }
@@ -1373,7 +1374,7 @@ input[disabled] {
 .vm_edit_select_tab {
     font-size: 0.33rem;
     width: 86%;
-    height: 72vh;
+    height: 71vh;
     overflow-y: auto; /* 세로 스크롤 추가 */
     overflow-x: hidden; /* 가로 스크롤 숨김 */
 }
@@ -1405,8 +1406,8 @@ input[disabled] {
 }
 .datacenter_span{
     position:absolute;
-    right: 21%;
-    top: 15%;
+    right: 21.5%;
+    top: 14%;
 }
 
 .edit_first_content select{
@@ -1533,3 +1534,4 @@ input[disabled] {
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
 }
+/**/

@@ -665,7 +665,15 @@ const buttons = [
                                     <option value="클러스터 기본값(Minimal downtime)">클러스터 기본값(Minimal downtime)</option>
                                 </select>
                             </div>
-                            
+                            <div>
+                                <div>
+                                    <span>마이그레이션 암호화 사용</span>
+                                </div>
+                                <select id="migration_encryption">
+                                    <option value="클러스터 기본값(Minimal downtime)">클러스터 기본값(암호화하지 마십시오)</option>
+                                </select>
+                            </div>
+
                             <div>
                                 <div>
                                     <span>Parallel Migrations</span>
@@ -1255,7 +1263,14 @@ const buttons = [
                                     <option value="클러스터 기본값(Minimal downtime)">클러스터 기본값(Minimal downtime)</option>
                                 </select>
                             </div>
-                            
+                            <div>
+                                <div>
+                                    <span>마이그레이션 암호화 사용</span>
+                                </div>
+                                <select id="migration_encryption">
+                                    <option value="클러스터 기본값(Minimal downtime)">클러스터 기본값(암호화하지 마십시오)</option>
+                                </select>
+                            </div>
                             <div>
                                 <div>
                                     <span>Parallel Migrations</span>

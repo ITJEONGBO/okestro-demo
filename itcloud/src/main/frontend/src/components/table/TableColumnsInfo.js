@@ -313,13 +313,13 @@ const TableColumnsInfo = {
   ],
   TEMPLATE_CHART:[
     { header: '이름', accessor: 'name', clickable: true },
-    { header: '호환 버전', accessor: 'version', clickable: false },
+    { header: '호환 버전', accessor: 'versionName', clickable: false },
     { header: '코멘트', accessor: 'comment', clickable: false },
-    { header: '생성일자', accessor: 'status', clickable: false },
+    { header: '생성일자', accessor: 'creationTime', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },
     { header: '보관', accessor: 'status', clickable: false },
-    { header: '클러스터', accessor: 'status', clickable: false },
-    { header: '데이터센터', accessor: 'status', clickable: false },
+    { header: '클러스터', accessor: 'cluster', clickable: false },
+    { header: '데이터센터', accessor: 'datacenter', clickable: false },
     { header: '설명', accessor: 'description', clickable: false },
   ],
   VMS: [

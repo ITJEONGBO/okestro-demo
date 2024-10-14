@@ -2277,12 +2277,7 @@ input[disabled] {
 #host_second_content{
     padding: 2%;
 }
-#host_third_content{
-    padding: 0 2%;
-}
-#host_third_content>div{
-    padding: 1% 0;
-}
+
 #ha_mode_second_content{
     padding: 2%;
 }

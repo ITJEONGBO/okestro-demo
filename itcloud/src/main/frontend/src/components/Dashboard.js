@@ -14,6 +14,7 @@ import {
 import RadialBarChart from './Chart/RadialBarChart';
 import BarChart from './Chart/BarChart';
 import AreaChart from './Chart/AreaChart';
+import { faCloud, faEarthAmericas, faLayerGroup, faListUl, faMicrochip, faUser } from '@fortawesome/free-solid-svg-icons';
 
 //region: RadialBarChart
 const CpuApexChart = ({ cpu }) => { return (<RadialBarChart percentage={cpu} />); }
@@ -211,13 +212,13 @@ const Dashboard = () => {
       <div className="dash_board">
         {dashboard && <DashboardBoxGroup 
           boxItems={[
-            { title: "Datacenter", cntTotal: dashboard?.datacenters ?? [], cntUp: dashboard?.datacentersUp === 0 ? "" : dashboard?.datacentersUp, cntDown: dashboard?.datacentersDown === 0 ? "" : dashboard?.datacentersDown, navigatePath: '/computing/datacenter' },
-            { title: "Cluster",    cntTotal: dashboard?.clusters ?? 0, navigatePath: '/computing/datacenter' },
-            { title: "Host",       cntTotal: dashboard?.hosts ?? 0, cntUp: dashboard?.hostsUp === 0 ? "" : dashboard?.hostsUp, cntDown: dashboard?.hostsDown === 0 ? "" : dashboard?.hostsDown, navigatePath: '/computing/host' },
-            { title: "StorageDomain", cntTotal: dashboard?.storageDomains ?? 0, navigatePath: '/storage-domainpart' },
+            { icon: faLayerGroup,title: "Datacenter", cntTotal: dashboard?.datacenters ?? [], cntUp: dashboard?.datacentersUp === 0 ? "" : dashboard?.datacentersUp, cntDown: dashboard?.datacentersDown === 0 ? "" : dashboard?.datacentersDown, navigatePath: '/computing/datacenter' },
+            { icon: faEarthAmericas, title: "Cluster",    cntTotal: dashboard?.clusters ?? 0, navigatePath: '/computing/datacenter' },
+            {icon: faUser, title: "Host",       cntTotal: dashboard?.hosts ?? 0, cntUp: dashboard?.hostsUp === 0 ? "" : dashboard?.hostsUp, cntDown: dashboard?.hostsDown === 0 ? "" : dashboard?.hostsDown, navigatePath: '/computing/host' },
+            {icon: faCloud, title: "StorageDomain", cntTotal: dashboard?.storageDomains ?? 0, navigatePath: '/storages/domains' },
             /*편집해야됨 */
-            { title: "Virtual machine", cntTotal: dashboard?.vms ?? 0, cntUp: dashboard?.vmsUp === 0 ? "" : dashboard?.vmsUp, cntDown: dashboard?.vmsDown === 0 ? "" : dashboard?.vmsDown, navigatePath: '/computing/vmhost-chart' },
-            { title: "Event",       cntTotal: dashboard?.events ?? 0, alert: dashboard?.eventsAlert === 0 ? "" : dashboard?.eventsAlert, error: dashboard?.eventsError === 0 ? "" : dashboard?.eventsError, warning: dashboard?.eventsWarning === 0 ? "" : dashboard?.eventsWarning, navigatePath: '/events' }
+            {icon: faMicrochip, title: "Virtual machine", cntTotal: dashboard?.vms ?? 0, cntUp: dashboard?.vmsUp === 0 ? "" : dashboard?.vmsUp, cntDown: dashboard?.vmsDown === 0 ? "" : dashboard?.vmsDown, navigatePath: '/computing/vms' },
+            {icon: faListUl, title: "Event",       cntTotal: dashboard?.events ?? 0, alert: dashboard?.eventsAlert === 0 ? "" : dashboard?.eventsAlert, error: dashboard?.eventsError === 0 ? "" : dashboard?.eventsError, warning: dashboard?.eventsWarning === 0 ? "" : dashboard?.eventsWarning, navigatePath: '/events' }
           ]}
 
         />}

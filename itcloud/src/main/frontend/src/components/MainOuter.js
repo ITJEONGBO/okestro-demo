@@ -247,157 +247,162 @@ const {
       <>
         {/*가상머신*/} 
         {selected === 'computing' && (
-          <div id="virtual_machine_chart">
-              {/* 첫 번째 레벨 (Rutil Manager) */}
-              <div
-                  className="aside_popup_content"
-                  id="aside_popup_first"
-                  style={{ backgroundColor: selectedDiv === 'rutil-manager' ? 'rgb(218, 236, 245)' : '' }}
-                  onClick={() => {
-                      if (selectedDiv !== 'rutil-manager') {
-                          setSelectedDiv('rutil-manager');
-                          navigate('/computing/rutil-manager');
-                    
+  <div id="virtual_machine_chart">
+      {/* 첫 번째 레벨 (Rutil Manager) */}
+      <div
+          className="aside_popup_content"
+          id="aside_popup_first"
+          style={{ backgroundColor: selectedDiv === 'rutil-manager' ? 'rgb(218, 236, 245)' : '' }}
+          onClick={() => {
+              if (selectedDiv !== 'rutil-manager') {
+                  setSelectedDiv('rutil-manager');
+                  navigate('/computing/rutil-manager');
+        
+              }
+          }}
+      >
+          <FontAwesomeIcon
+              style={{ fontSize: '0.3rem', marginRight: '0.04rem' }}
+              icon={isSecondVisible ? faChevronDown : faChevronRight}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsSecondVisible(!isSecondVisible);
+                setIsThirdVisible(false); // 하위 항목들 모두 접기
+                setIsFourthVisible(false); // 하위 항목들 모두 접기
+                setIsLastVisible(false);   // 하위 항목들 모두 접기
+              }}
+              fixedWidth
+          />
+          <FontAwesomeIcon icon={faBuilding} fixedWidth />
+          <span>Rutil manager</span>
+      </div>
 
-                      }
-                  }}
-              >
-                  <FontAwesomeIcon
-                      style={{ fontSize: '0.3rem', marginRight: '0.04rem' }}
-                      icon={isSecondVisible ? faChevronDown : faChevronRight}
-                      onClick={(e) => {
-                          e.stopPropagation();
-                          setIsSecondVisible(!isSecondVisible);
-                          setIsThirdVisible(false); // 하위 항목들 모두 접기
-                          setIsFourthVisible(false); // 하위 항목들 모두 접기
-                          setIsLastVisible(false);   // 하위 항목들 모두 접기
+      {/* 두 번째 레벨 (Data Center) */}
+      {isSecondVisible && navClusters && navClusters.map((dataCenter) => {
+          const isDataCenterOpen = openDataCenters[dataCenter.id] || false;
+          const hasClusters = Array.isArray(dataCenter.clusters) && dataCenter.clusters.length > 0;
+          return (
+              <div key={dataCenter.id}>
+                  <div
+                      className="aside_popup_second_content"
+                      style={{
+                          backgroundColor: selectedDiv === dataCenter.id ? 'rgb(218, 236, 245)' : '',
+                          paddingLeft: hasClusters ? '0.4rem' : '0.8rem'
                       }}
-                      fixedWidth
-                  />
-                  <FontAwesomeIcon icon={faBuilding} fixedWidth />
-                  <span>Rutil manager</span>
-              </div>
-  
-              {/* 두 번째 레벨 (Data Center) */}
-              {isSecondVisible && navClusters && navClusters.map((dataCenter) => {
-                  const isDataCenterOpen = openDataCenters[dataCenter.id] || false;
-                  const hasClusters = Array.isArray(dataCenter.clusters) && dataCenter.clusters.length > 0; // 클러스터 여부
-                  return (
-                      <div key={dataCenter.id}>
-                          <div
-                              className="aside_popup_second_content"
-                              style={{ 
-                                  backgroundColor: selectedDiv === dataCenter.id ? 'rgb(218, 236, 245)' : '', 
-                                  paddingLeft: hasClusters ? '0.4rem' : '0.8rem' 
+                      onClick={() => {
+                          setSelectedDiv(dataCenter.id);
+                          navigate(`/computing/datacenters/${dataCenter.id}`);
+                      }}
+                  >
+                      {hasClusters && (
+                          <FontAwesomeIcon
+                              style={{ fontSize: '0.3rem', marginRight: '0.04rem' }}
+                              icon={isDataCenterOpen ? faChevronDown : faChevronRight}
+                              onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleDataCenter(dataCenter.id); // Data Center 열림/닫힘 토글
                               }}
-                              onClick={() => {
-                                  setSelectedDiv(dataCenter.id);
-                                  navigate(`/computing/datacenters/${dataCenter.id}`);
-                              }}
-                          >
-                              {hasClusters && ( // 클러스터가 있는 경우에만 아이콘 표시
-                                  <FontAwesomeIcon
-                                      style={{ fontSize: '0.3rem', marginRight: '0.04rem' }}
-                                      icon={isDataCenterOpen ? faChevronDown : faChevronRight}
-                                      onClick={(e) => {
-                                          e.stopPropagation();
-                                          toggleDataCenter(dataCenter.id); // Data Center 열림/닫힘 토글
-                                      }}
-                                      fixedWidth
-                                  />
-                              )}
-                              <FontAwesomeIcon icon={faLayerGroup} fixedWidth />
-                              <span>{dataCenter.name}</span>
-                          </div>
-  
-                          {/* 세 번째 레벨 (Clusters) */}
-                          {isDataCenterOpen && Array.isArray(dataCenter.clusters) && dataCenter.clusters.map((cluster) => {
-                              const isClusterOpen = openClusters[cluster.id] || false;
-                              const hasHosts = Array.isArray(cluster.hosts) && cluster.hosts.length > 0; // 호스트가 있는지 여부 확인
-                              return (
-                                  <div key={cluster.id}>
-                                      <div
-                                          className="aside_popup_third_content"
-                                          style={{ 
-                                              backgroundColor: selectedDiv === cluster.id ? 'rgb(218, 236, 245)' : '', 
-                                              paddingLeft: hasHosts ? '0.6rem' : '1rem' // 호스트가 없으면 더 많은 padding 적용
+                              fixedWidth
+                          />
+                      )}
+                      <FontAwesomeIcon icon={faLayerGroup} fixedWidth />
+                      <span>{dataCenter.name}</span>
+                  </div>
+
+                  {/* 세 번째 레벨 (Clusters) */}
+                  {isDataCenterOpen && Array.isArray(dataCenter.clusters) && dataCenter.clusters.map((cluster) => {
+                      const isClusterOpen = openClusters[cluster.id] || false;
+                      const hasHosts = Array.isArray(cluster.hosts) && cluster.hosts.length > 0;
+                      return (
+                          <div key={cluster.id}>
+                              <div
+                                  className="aside_popup_third_content"
+                                  style={{
+                                      backgroundColor: selectedDiv === cluster.id ? 'rgb(218, 236, 245)' : '',
+                                      paddingLeft: hasHosts ? '0.6rem' : '1rem'
+                                  }}
+                                  onClick={() => {
+                                      setSelectedDiv(cluster.id);
+                                      navigate(`/computing/clusters/${cluster.id}`);
+                                  }}
+                              >
+                                  {hasHosts && (
+                                      <FontAwesomeIcon
+                                          style={{ fontSize: '0.3rem', marginRight: '0.04rem' }}
+                                          icon={isClusterOpen ? faChevronDown : faChevronRight}
+                                          onClick={(e) => {
+                                              e.stopPropagation();
+                                              toggleCluster(cluster.id); // Cluster 열림/닫힘 토글
                                           }}
-                                          onClick={() => {
-                                              setSelectedDiv(cluster.id);
-                                              navigate(`/computing/clusters/${cluster.id}`);
-                                          }}
-                                      >
-                                      {hasHosts && ( // 호스트가 있는 경우에만 아이콘 표시
-                                              <FontAwesomeIcon
-                                                  style={{ fontSize: '0.3rem', marginRight: '0.04rem' }}
-                                                  icon={isClusterOpen ? faChevronDown : faChevronRight}
-                                                  onClick={(e) => {
-                                                      e.stopPropagation();
-                                                      toggleCluster(cluster.id); // Cluster 열림/닫힘 토글
+                                          fixedWidth
+                                      />
+                                  )}
+                                  <FontAwesomeIcon icon={faEarthAmericas} fixedWidth />
+                                  <span>{cluster.name}</span>
+                              </div>
+
+                              {/* 네 번째 레벨 (Hosts) */}
+                              {isClusterOpen && Array.isArray(cluster.hosts) && cluster.hosts.map((host) => {
+                                  const isHostOpen = openHosts[host.id] || false;
+                                  const hasVMs = Array.isArray(host.vms) && host.vms.length > 0;
+                                  return (
+                                      <div key={host.id}>
+                                          <div
+                                              className="aside_popup_fourth_content"
+                                              style={{
+                                                  backgroundColor: selectedDiv === host.id ? 'rgb(218, 236, 245)' : '',
+                                                  paddingLeft: hasVMs ? '0.8rem' : '1.2rem'
+                                              }}
+                                              onClick={() => {
+                                                  setSelectedDiv(host.id);
+                                                  navigate(`/computing/hosts/${host.id}`);
+                                              }}
+                                          >
+                                             {hasVMs && (
+                                                <FontAwesomeIcon
+                                                    style={{ fontSize: '0.3rem', marginRight: '0.04rem'}}
+                                                    icon={isHostOpen ? faChevronDown : faChevronRight}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        toggleHost(host.id); // Host 열림/닫힘 토글
+                                                    }}
+                                                    fixedWidth
+                                                />
+                                            )}
+                                              <FontAwesomeIcon icon={faUser} fixedWidth />
+                                              <span>{host.name}</span>
+                                          </div>
+
+                                          {/* 다섯 번째 레벨 (VMs) */}
+                                          {isHostOpen && Array.isArray(host.vms) && host.vms.map((vm) => (
+                                              <div
+                                                  key={vm.id}
+                                                  className="aside_popup_last_content"
+                                                  style={{
+                                                      backgroundColor: selectedDiv === vm.id ? 'rgb(218, 236, 245)' : '',
+                                                      paddingLeft: '1.5rem'
                                                   }}
-                                                  fixedWidth
-                                              />
-                                          )}
-                                          <FontAwesomeIcon icon={faEarthAmericas} fixedWidth />
-                                          <span>{cluster.name}</span>
-                                      </div>
-  
-                                      {/* 네 번째 레벨 (Hosts) */}
-                                      {isClusterOpen && Array.isArray(cluster.hosts) && cluster.hosts.map((host) => {
-                                          const isHostOpen = openHosts[host.id] || false;
-                                          const hasVMs = Array.isArray(host.vms) && host.vms.length > 0; //vm여부
-                                          return (
-                                              <div key={host.id}>
-                                                  <div
-                                                      className="aside_popup_fourth_content"
-                                                      style={{ 
-                                                          backgroundColor: selectedDiv === host.id ? 'rgb(218, 236, 245)' : '', 
-                                                          paddingLeft: hasVMs ? '0.8rem' : '1.2rem' 
-                                                      }}
-                                                      onClick={() => {
-                                                          setSelectedDiv(host.id);
-                                                          navigate(`/computing/hosts/${host.id}`);
-                                                      }}
-                                                  >
-                                                      <FontAwesomeIcon
-                                                          style={{ fontSize: '0.3rem', marginRight: '0.04rem'}}
-                                                          icon={isHostOpen ? faChevronDown : faChevronRight}
-                                                          onClick={(e) => {
-                                                              e.stopPropagation();
-                                                              toggleHost(host.id); // Host 열림/닫힘 토글
-                                                          }}
-                                                          fixedWidth
-                                                      />
-                                                      <FontAwesomeIcon icon={faUser} fixedWidth />
-                                                      <span>{host.name}</span>
-                                                  </div>
-  
-                                                  {/* 다섯 번째 레벨 (VMs) */}
-                                                  {isHostOpen && Array.isArray(host.vms) && host.vms.map((vm) => (
-                                                      <div
-                                                          key={vm.id}
-                                                          className="aside_popup_last_content"
-                                                          style={{ backgroundColor: selectedDiv === vm.id ? 'rgb(218, 236, 245)': '',paddingLeft: '1.5rem'}}
-                                                          onClick={() => {
-                                                              setSelectedDiv(vm.id);
-                                                              navigate(`/computing/vms/${vm.id}`);
-                                                          }}
-                                                      >
-                                                          <FontAwesomeIcon icon={faMicrochip} fixedWidth />
-                                                          <span>{vm.name}</span>
-                                                      </div>
-                                                  ))}
+                                                  onClick={() => {
+                                                      setSelectedDiv(vm.id);
+                                                      navigate(`/computing/vms/${vm.id}`);
+                                                  }}
+                                              >
+                                                  <FontAwesomeIcon icon={faMicrochip} fixedWidth />
+                                                  <span>{vm.name}</span>
                                               </div>
-                                          );
-                                      })}
-                                  </div>
-                              );
-                          })}
-                      </div>
-                  );
-              })}
-          </div>
-        )}
+                                          ))}
+                                      </div>
+                                  );
+                              })}
+                          </div>
+                      );
+                  })}
+              </div>
+          );
+      })}
+  </div>
+)}
+
   
         {/* 네트워크 섹션 */}
         {selected === 'network' && (

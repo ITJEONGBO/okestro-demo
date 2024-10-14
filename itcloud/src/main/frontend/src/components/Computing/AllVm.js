@@ -9,8 +9,9 @@ import Footer from '../footer/Footer';
 import { useAllTemplates, useAllVMs } from '../../api/RQHook';
 import Templates from './Templates';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDesktop, faExclamationTriangle, faInfoCircle, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faDesktop, faInfoCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
 import TableOuter from '../table/TableOuter';
+import VmDu from '../duplication/VmDu';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -48,31 +49,13 @@ const handleTabClick = (tab) => {
 const [isConnectionPopupOpen, setIsConnectionPopupOpen] = useState(false); // 연결 팝업 상태
 const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false); // 생성 팝업 상태
 const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 상태
-  const buttons = [
-    { id: 'new_btn', label: '새로 만들기',onClick:() => openPopup('new')},
-    { id: 'edit_btn', label: '편집', onClick:() => openPopup('edit')},
-    { id: 'delete_btn', label: '삭제',onClick:() => openPopup('delete')},
-    { id: 'run_btn', className:'disabled',label: <><i className="fa fa-play"></i>실행</>, onClick: () => console.log() },
-    { id: 'pause_btn', label: <><i className="fa fa-pause"></i>일시중지</>, onClick: () => console.log() },
-    { id: 'stop_btn', label: <><i className="fa fa-stop"></i>종료</>, onClick: () => console.log() },
-    { id: 'reboot_btn', label: <><i className="fa fa-repeat"></i>재부팅</>, onClick: () => console.log() },
-    { id: 'console_btn', label: <><i className="fa fa-desktop"></i>콘솔</>, onClick: () => console.log() },
-    { id: 'template_btn', label: <><i className="fa fa-desktop"></i>템플릿</>, onClick: () => navigate('/computing/templates') },
-    { id: 'snapshot_btn', label: '스냅샷 생성', onClick:() => openPopup('snapshot')},
-    { id: 'migration_btn', label: '마이그레이션', onClick:() => openPopup('migration')} ,
-  ];
 
-  const popupItems = [
-    { id: 'import', label: '가져오기', onClick: () => openPopup('bring') },
-    { id: 'clone_vm', label: '가상 머신 복제',onClick: () => openPopup('vm_copy')  },
-    { id: 'delete', label: '삭제',onClick: () => openPopup('delete')  },
-    { id: 'cancel_migration', label: '마이그레이션 취소' },
-    { id: 'cancel_conversion', label: '변환 취소' },
-    { id: 'create_template', label: '템플릿 생성' },
-    { id: 'export_to_domain', label: '내보내기 도메인으로 내보내기' },
-    { id: 'export_to_data', label: 'Export to Data Domain' },
-    { id: 'export_ova', label: 'OVA로 내보내기' ,onClick: () => openPopup('OVA') }
-  ];
+ // ...버튼
+ const [isPopupOpen, setIsPopupOpen] = useState(false);
+ const togglePopup = () => {
+   setIsPopupOpen(!isPopupOpen);
+ };
+
 
   const handleRowClick = (row, column) => {
     if (column.accessor === 'name') {
@@ -89,35 +72,36 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
  
  
 
-  const { 
-    data: vms, 
-    status: vmsStatus,
-    isRefetching: isVMsRefetching,
-    refetch: refetchVMs, 
-    isError: isVMsError, 
-    error: vmsError, 
-    isLoading: isVMsLoading,
-  } = useAllVMs(toTableItemPredicateVMs);
-  
-  function toTableItemPredicateVMs(vm) {
-    return {
-      status: vm?.status ?? 'Unknown',       
-      id: vm?.id ?? '',
-      icon: '',                                   
-      name: vm?.name ?? 'Unknown',               
-      comment: vm?.comment ?? '',                 
-      host: vm?.host ?? 'Unknown',           
-      ipv4: vm?.ipv4 ?? 'Unknown',              
-      fqdn: vm?.fqdn ?? '',                      
-      cluster: vm?.cluster ?? 'Unknown',          
-      datacenter: vm?.datacenter ?? 'Unknown',
-      memory: vm?.memory ?? '',  
-      cpu: vm?.cpu ?? '',  
-      network: vm?.network ?? '',  
-      upTime: vm?.upTime ?? '',                    
-      description: vm?.description ?? 'No description',  
-    };
-  }
+//    const { 
+//     data: vms, 
+//     status: vmsStatus,
+//     isRefetching: isVMsRefetching,
+//     refetch: refetchVMs, 
+//     isError: isVMsError, 
+//     error: vmsError, 
+//     isLoading: isVMsLoading,
+// } = useAllVMs(toTableItemPredicateVMs);
+
+// function toTableItemPredicateVMs(vm) {
+//     return {
+//         status: vm?.status ?? 'Unknown',       
+//         id: vm?.id ?? '',
+//         icon: '',                                   
+//         name: vm?.name ?? 'Unknown',               
+//         comment: vm?.comment ?? '',                 
+//         host: vm?.hostVo?.name ?? 'Unknown',         
+//         ipv4: vm?.ipv4?.[0] ?? 'Unknown', 
+//         fqdn: vm?.fqdn ?? '',                      
+//         cluster: vm?.clusterVo?.name ?? 'Unknown',        
+//         datacenter: vm?.dataCenterVo?.name ?? 'Unknown', 
+//         memory: vm?.memoryInstalled ?? '',  
+//         cpu: vm?.cpu ?? '',  
+//         clusterVo: vm?.clusterVo?.id ?? '',
+//         network: vm?.network ?? '',  
+//         upTime: vm?.upTime ?? '',                    
+//         description: vm?.description ?? 'No description',  
+//     };
+// }
 
 
 
@@ -127,14 +111,43 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
         titleIcon={faDesktop}
         title="가상머신"
         subtitle=""
-        buttons={buttons}
-        popupItems={popupItems}
+        buttons={[]}
+        popupItems={[]}
         openModal={openModal}
         togglePopup={() => {}}
       />
-      <div className="content_outer">
-        <div className="empty_nav_outer">
-
+      <div className="host_btn_outer">
+        {/* <div className="host_btn_outer">
+          <div className="header_right_btns">
+            <button id="new_btn" onClick={() => openPopup('new')}>새로 만들기</button>
+            <button id="edit_btn" onClick={() => openPopup('edit')}>편집</button>
+            <button id="delete_btn" onClick={() => openPopup('delete')}>삭제</button>
+            <button id="run_btn" className="disabled" onClick={() => console.log()}><i className="fa fa-play"></i>실행</button>
+            <button id="pause_btn" onClick={() => console.log()}><i className="fa fa-pause"></i>일시중지</button>
+            <button id="stop_btn" onClick={() => console.log()}><i className="fa fa-stop"></i>종료</button>
+            <button id="reboot_btn" onClick={() => console.log()}><i className="fa fa-repeat"></i>재부팅</button>
+            <button id="console_btn" onClick={() => console.log()}><i className="fa fa-desktop"></i>콘솔</button>
+            <button id="template_btn" onClick={() => navigate('/computing/templates')}><i className="fa fa-desktop"></i>템플릿</button>
+            <button id="snapshot_btn" onClick={() => openPopup('snapshot')}>스냅샷 생성</button>
+            <button id="migration_btn" onClick={() => openPopup('migration')}>마이그레이션</button>
+            <button className="content_header_popup_btn" onClick={togglePopup}>
+              <FontAwesomeIcon icon={faEllipsisV} fixedWidth/>
+              {isPopupOpen && (
+                 <div className="content_header_popup">
+                  <div id="import" onClick={() => openPopup('bring')}>가져오기</div>
+                  <div id="clone_vm" onClick={() => openPopup('vm_copy')}>가상 머신 복제</div>
+                  <div id="delete" onClick={() => openPopup('delete')}>삭제</div>
+                  <div id="cancel_migration">마이그레이션 취소</div>
+                  <div id="cancel_conversion">변환 취소</div>
+                  <div id="create_template">템플릿 생성</div>
+                  <div id="export_to_domain">내보내기 도메인으로 내보내기</div>
+                  <div id="export_to_data">Export to Data Domain</div>
+                  <div id="export_ova" onClick={() => openPopup('OVA')}>OVA로 내보내기</div>
+                </div>
+             
+              )}
+              </button>
+          </div>
           <div className="section_table_outer">
                 
               <TableOuter
@@ -146,12 +159,21 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
               /> 
            
           </div>
-        </div>
+        </div> */}
+        <VmDu 
+            // data={vms} 
+            columns={TableColumnsInfo.VM_CHART} 
+            handleRowClick={() => console.log("Row clicked")}  
+            openPopup={openPopup} 
+            setActiveTab={setActiveTab}
+            togglePopup={togglePopup} 
+            isPopupOpen={isPopupOpen} 
+          />
       </div>
   
            
         {/* 새로만들기팝업 */}
-        <Modal
+        {/* <Modal
             isOpen={activePopup === 'new'}
             onRequestClose={closeModal}
             contentLabel="가상머신 편집"
@@ -221,7 +243,7 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
 
                 </div>
 
-            {/* 탭 내용 */}
+           
             <div className="vm_edit_select_tab">
               <div className="edit_first_content">
                           <div>
@@ -259,8 +281,7 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
                 </div>
                 {selectedModalTab === 'common' && 
                 <>
-              
-
+            
                         <div className="edit_second_content mb-1">
                             <div>
                                 <label htmlFor="name">이름</label>
@@ -388,7 +409,14 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
                                     <option value="클러스터 기본값(Minimal downtime)">클러스터 기본값(Minimal downtime)</option>
                                 </select>
                             </div>
-                            
+                            <div>
+                                <div>
+                                    <span>마이그레이션 암호화 사용</span>
+                                </div>
+                                <select id="migration_encryption">
+                                    <option value="클러스터 기본값(Minimal downtime)">클러스터 기본값(암호화하지 마십시오)</option>
+                                </select>
+                            </div>
                             <div>
                                 <div>
                                     <span>Parallel Migrations</span>
@@ -549,9 +577,9 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
             <button onClick={closeModal}>취소</button>
             </div>
         </div>
-        </Modal>
+        </Modal> */}
         {/*새로만들기(연결)추가팝업*/}
-        <Modal
+        {/* <Modal
      isOpen={isConnectionPopupOpen}
      onRequestClose={() => setIsConnectionPopupOpen(false)}
       contentLabel="새 가상 디스크"
@@ -581,7 +609,7 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
           </div>
           
         </div>
-        {/*이미지(내용바꿔야함)*/}
+      
         {activeTab === 'img' && (
             <TableOuter 
             columns={TableColumnsInfo.VMS_FROM_HOST}
@@ -589,7 +617,7 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
             onRowClick={() => console.log('Row clicked')}
       />
         )}
-        {/*직접LUN(내용바꿔야함)*/}
+       
         {activeTab === 'directlun' && (
             <TableOuter 
             columns={TableColumnsInfo.VMS_STOP}
@@ -604,9 +632,9 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
           <button onClick={() => setIsConnectionPopupOpen(false)}>취소</button>
         </div>
       </div>
-        </Modal>
+        </Modal> */}
         {/*새로만들기(생성)추가팝업 */}
-        <Modal
+        {/* <Modal
        isOpen={isCreatePopupOpen}
        onRequestClose={() => setIsCreatePopupOpen(false)}
       contentLabel="새 가상 디스크"
@@ -636,7 +664,7 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
           </div>
           
         </div>
-        {/*이미지*/}
+
         {activeTab === 'img' && (
           <div className="disk_new_img">
             <div className="disk_new_img_left">
@@ -693,7 +721,7 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
             </div>
           </div>
         )}
-        {/*직접LUN*/}
+
         {activeTab === 'directlun' && (
           <div id="storage_directlun_outer">
             <div id="storage_lun_first">
@@ -741,9 +769,9 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
           <button onClick={() => setIsCreatePopupOpen(false)}>취소</button>
         </div>
       </div>
-        </Modal>
+        </Modal> */}
         {/* 편집팝업 */}
-        <Modal
+        {/* <Modal
             isOpen={activePopup === 'edit'}
     onRequestClose={closeModal}
     contentLabel="가상머신 편집"
@@ -813,7 +841,7 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
 
                 </div>
 
-            {/* 탭 내용 */}
+            
             <div className="vm_edit_select_tab">
               <div className="edit_first_content">
                             <div>
@@ -978,7 +1006,14 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
                                     <option value="클러스터 기본값(Minimal downtime)">클러스터 기본값(Minimal downtime)</option>
                                 </select>
                             </div>
-                            
+                            <div>
+                                <div>
+                                    <span>마이그레이션 암호화 사용</span>
+                                </div>
+                                <select id="migration_encryption">
+                                    <option value="클러스터 기본값(Minimal downtime)">클러스터 기본값(암호화하지 마십시오)</option>
+                                </select>
+                            </div>
                             <div>
                                 <div>
                                     <span>Parallel Migrations</span>
@@ -1139,9 +1174,9 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
             <button onClick={closeModal}>취소</button>
             </div>
         </div>
-        </Modal>
+        </Modal> */}
         {/*편집(편집)추가팝업 */}
-        <Modal
+        {/* <Modal
        isOpen={isEditPopupOpen}
        onRequestClose={() => setIsEditPopupOpen(false)}
       contentLabel="새 가상 디스크"
@@ -1175,7 +1210,7 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
           </div>
           
         </div>
-        {/*이미지*/}
+
         {activeTab === 'img' && (
           <div className="disk_new_img">
             <div className="disk_new_img_left">
@@ -1232,7 +1267,7 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
             </div>
           </div>
         )}
-        {/*직접LUN*/}
+
         {activeTab === 'directlun' && (
           <div id="storage_directlun_outer">
             <div id="storage_lun_first">
@@ -1280,9 +1315,9 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
           <button onClick={() => setIsEditPopupOpen(false)}>취소</button>
         </div>
       </div>
-        </Modal>
+        </Modal>  */}
         {/*삭제 팝업 */}
-        <Modal
+        {/* <Modal
     isOpen={activePopup === 'delete'}
     onRequestClose={closeModal}
     contentLabel="디스크 업로드"
@@ -1310,10 +1345,10 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
         <button onClick={closeModal}>취소</button>
       </div>
     </div>
-        </Modal>
+        </Modal> */}
 
         {/*스냅샷 팝업(default) */}
-        <Modal
+        {/* <Modal
         isOpen={activePopup === 'snapshot'}
           onRequestClose={closeModal}
           contentLabel="마이그레이션"
@@ -1358,7 +1393,7 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
           </div>
         </div>
         </Modal>
-        
+         */}
         {/* 마이그레이션 팝업*/}
         <Modal
         isOpen={activePopup === 'migration'}
@@ -1414,8 +1449,8 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
       </div>
           </div>
         </Modal>
-{/*...버튼 가져오기 팝업 */}
-<Modal
+        {/*...버튼 가져오기 팝업 */}
+        {/* <Modal
         isOpen={activePopup === 'bring'}
         onRequestClose={closeModal}
         contentLabel="디스크 업로드"
@@ -1487,10 +1522,10 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
             <button onClick={closeModal}>취소</button>
           </div>
         </div>
-        </Modal>
+        </Modal> */}
 
         {/*...버튼 가상머신복제 팝업 */}
-        <Modal
+        {/* <Modal
         isOpen={activePopup === 'vm_copy'}
         onRequestClose={closeModal}
         contentLabel="디스크 업로드"
@@ -1591,9 +1626,9 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
             <button onClick={closeModal}>취소</button>
           </div>
         </div>
-        </Modal>
+        </Modal> */}
         {/*...버튼 OVA로내보내기 팝업 */}
-        <Modal
+        {/* <Modal
         isOpen={activePopup === 'OVA'}
         onRequestClose={closeModal}
         contentLabel="디스크 업로드"
@@ -1635,7 +1670,7 @@ const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // 생성 팝업 
             <button onClick={closeModal}>취소</button>
           </div>
         </div>
-        </Modal>
+        </Modal> */}
                
       <Footer/>
     </div>

@@ -5,8 +5,9 @@ import { faTimes, faSearch, faExclamationTriangle } from '@fortawesome/free-soli
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import TableOuter from '../table/TableOuter';
 import './css/TemplateDu.css';
+import { useAllTemplates } from '../../api/RQHook';
 
-const TemplateDu = ({ data, columns, handleRowClick }) => {
+const TemplateDu = ({ columns, handleRowClick }) => {
   const [activePopup, setActivePopup] = useState(null);
   const [selectedModalTab, setSelectedModalTab] = useState('ipv4');
 
@@ -21,7 +22,29 @@ const TemplateDu = ({ data, columns, handleRowClick }) => {
     setActivePopup(null);
     setSelectedModalTab('general'); // 모달이 닫힐 때 첫 번째 탭으로 초기화
   };
-
+  const { 
+    data: templates, 
+    status: templatesStatus,
+    isRefetching: isTemplatesRefetching,
+    refetch: refetchTemplates, 
+    isError: isTemplatesError, 
+    error: templatesError, 
+    isLoading: isTemplatesLoading,
+  } = useAllTemplates(toTableItemPredicateTemplates);
+  
+  function toTableItemPredicateTemplates(template) {
+    return {
+      id: template?.id ?? '',
+      name: template?.name ?? 'Unknown', 
+      status: template?.status ?? 'Unknown',                // 템플릿 상태
+      versionName: template?.versionName ?? 'N/A',           // 템플릿 버전 정보
+      description: template?.description ?? 'No description',// 템플릿 설명
+      cluster: template?.clusterVo?.name ?? 'Unknown', 
+      datacenter: template?.dataCenterVo?.name ?? 'Unknown', 
+      creationTime: template?.creationTime ?? '',
+      comment: template?.comment ?? ''
+    };
+  }
     return (
       <>
         <div className="content_header_right">
@@ -42,7 +65,7 @@ const TemplateDu = ({ data, columns, handleRowClick }) => {
           
         <TableOuter
           columns={columns} 
-          data={data} 
+          data={templates} 
           onRowClick={handleRowClick} 
           className="template_chart"
           clickableColumnIndex={[0]} 

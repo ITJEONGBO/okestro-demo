@@ -58,27 +58,41 @@ const Table = ({ columns, data, onRowClick = () => {}, clickableColumnIndex = []
               >
                 {columns.map((column, colIndex) => (
                   <td
-                    key={colIndex}
-                    data-tooltip-id={`tooltip-${rowIndex}-${colIndex}`} // 각 셀에 고유한 tooltip id 설정
-                    data-tooltip-content={row[column.accessor]} // 툴팁에 표시할 전체 내용
-                    style={{
-                      maxWidth: '200px', // 최대 넓이 설정
-                      whiteSpace: 'nowrap', // 한 줄로 표시
-                      overflow: 'hidden', // 넘치는 텍스트 숨기기
-                      textOverflow: 'ellipsis', // 넘치는 텍스트는 ...으로 표시
-                      textAlign: typeof row[column.accessor] === 'object' ? 'center' : 'left',
-                      cursor: clickableColumnIndex.includes(colIndex) ? 'pointer' : 'default'
-                    }}
-                    onMouseEnter={(e) => handleMouseEnter(e, rowIndex, colIndex, row[column.accessor])} // 마우스를 올렸을 때 툴팁 설정
-                    onClick={(e) => {
-                      if (clickableColumnIndex.includes(colIndex)) {
-                        e.stopPropagation();
-                        onRowClick(row, column); // 클릭 시 특정 컬럼에만 이벤트 적용
-                      }
-                    }}
-                  >
-                    {row[column.accessor]}
-                  </td>
+                  key={colIndex}
+                  data-tooltip-id={`tooltip-${rowIndex}-${colIndex}`}
+                  data-tooltip-content={row[column.accessor]}
+                  style={{
+                    maxWidth: '200px',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    textAlign: typeof row[column.accessor] === 'object' ? 'center' : 'left',
+                    cursor: clickableColumnIndex.includes(colIndex) ? 'pointer' : 'default',
+                    color: clickableColumnIndex.includes(colIndex) ? 'blue' : 'inherit', // 클릭 가능한 컬럼일 때 파란색으로 강조
+                    fontWeight: clickableColumnIndex.includes(colIndex) ? '800' : 'normal',
+                    textDecoration: clickableColumnIndex.includes(colIndex) ? 'none' : 'none' // 기본적으로 밑줄 없음
+                  }}
+                  onMouseEnter={(e) => handleMouseEnter(e, rowIndex, colIndex, row[column.accessor])}
+                  onClick={(e) => {
+                    if (clickableColumnIndex.includes(colIndex)) {
+                      e.stopPropagation();
+                      onRowClick(row, column);
+                    }
+                  }}
+                  onMouseOver={(e) => {
+                    if (clickableColumnIndex.includes(colIndex)) {
+                      e.target.style.textDecoration = 'underline'; // 마우스를 올렸을 때 밑줄 추가
+                    }
+                  }}
+                  onMouseOut={(e) => {
+                    if (clickableColumnIndex.includes(colIndex)) {
+                      e.target.style.textDecoration = 'none'; // 마우스가 벗어나면 밑줄 제거
+                    }
+                  }}
+                >
+                  {row[column.accessor]}
+                </td>
+                
                 ))}
               </tr>
             ))}

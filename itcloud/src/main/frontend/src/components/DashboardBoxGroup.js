@@ -3,12 +3,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faArrowDown, faBatteryEmpty, faStarOfLife, faLink, faWarning, faEraser, faMessage } from '@fortawesome/free-solid-svg-icons'
 import './DashboardBoxGroup.css'
 
-const DashboardBox = ({ title, cntTotal, cntUp, cntDown, alert, error, warning, navigatePath }) => {
+const DashboardBox = ({ icon,title, cntTotal, cntUp, cntDown, alert, error, warning, navigatePath }) => {
   const navigate = useNavigate();
   
   return (
     <div className="box" onClick={() => navigatePath && navigate(navigatePath)}>
-      <span><p>{title}</p></span>
+       <span className='box_icon_title'>
+        {icon && <FontAwesomeIcon icon={icon} fixedWidth />}
+        <p>{title}</p>
+      </span>
       <h1>{cntTotal}</h1>
       <div className="arrows">
         {cntUp && <><FontAwesomeIcon icon={faArrowUp} fixedWidth/> {cntUp}&nbsp;</>}
@@ -27,6 +30,7 @@ const DashboardBoxGroup = ({ boxItems }) => {
       {boxItems && boxItems.map((e, i) => (
         <DashboardBox  
           key={i}
+          icon={e.icon}
           title={e.title}
           cntTotal={e.cntTotal}
           cntUp={e.cntUp}

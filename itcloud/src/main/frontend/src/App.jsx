@@ -95,7 +95,7 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        {authenticated ? (
+        {/* {authenticated ? ( */}
           <>
           <Header setAuthenticated={setAuthenticated} />
           <MainOuter>
@@ -135,11 +135,11 @@ const App = () => {
             </Routes>
           </MainOuter>
           </>
-          ) :
+          {/* ) :
           (<Routes>
             <Route path="/" element={<Login setAuthenticated={setAuthenticated} />} />
           </Routes>)
-        }
+        } */}
       </Router>
       <Toaster 
         position="top-center"

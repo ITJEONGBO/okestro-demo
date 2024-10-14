@@ -22,7 +22,7 @@ const HostDu = ({ data, columns, handleRowClick, openPopup }) => {
         data={data} 
         onRowClick={handleRowClick} 
         className="host_table"
-        clickableColumnIndex={[0]} 
+        clickableColumnIndex={[2]} 
       />
 
       

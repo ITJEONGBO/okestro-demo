@@ -39,7 +39,7 @@
     justify-content: space-between;
     border-bottom: 1px solid #6999D9;
     align-items: center; /* 수직 가운데 정렬 추가 */
-    padding: 0.05rem 0.2rem;
+    padding: 0.05rem 0.4rem;
 }
 .section_header_left{
     display: flex;
