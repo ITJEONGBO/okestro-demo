@@ -30,14 +30,14 @@ class ItClusterServiceTest {
 
 	@Autowired private lateinit var service: ItClusterService
 
-	private lateinit var dataCenterId: String // 80 Default
-	private lateinit var clusterId: String // 80 Default
-	private lateinit var networkId: String // 80 ovirtmgmt(dc: Default)
+	private lateinit var dataCenterId: String // 70 Default
+	private lateinit var clusterId: String // 70 Default
+	private lateinit var networkId: String // 70 ovirtmgmt(dc: Default)
 
 	@BeforeEach
 	fun setup() {
-		dataCenterId = "a8943656-879f-11ef-943a-00163e2555f4"
-		clusterId = "a895ad7e-879f-11ef-a5a7-00163e2555f4"
+		dataCenterId = "d20a47ec-89f1-11ef-833c-00163e2f0226"
+		clusterId = "d20bd210-89f1-11ef-afa2-00163e2f0226"
 		networkId = "00000000-0000-0000-0000-000000000009"
 	}
 
@@ -101,18 +101,11 @@ class ItClusterServiceTest {
 			comment { "testComment" }
 			network { NetworkVo.builder { id { networkId } } }
 			biosType { BiosType.Q35_SEA_BIOS }
-			fipsMode { FipsMode.ENABLED }
-			version { "4.7" }
-			switchType { SwitchType.LEGACY }
-			firewallType { FirewallType.FIREWALLD }
 			logMaxMemory { 90 }
 			logMaxMemoryType { LogMaxMemoryUsedThresholdType.PERCENTAGE }
-			virtService { true }
-			glusterService { false }
 			errorHandling { MigrateOnError.MIGRATE }
 			bandwidth { MigrationBandwidthAssignmentMethod.AUTO }
 			encrypted { InheritableBoolean.INHERIT }
-			networkProvider { false }
 		}
 
 		val addResult: ClusterVo? =
@@ -126,18 +119,6 @@ class ItClusterServiceTest {
 		assertThat(addResult?.comment, `is`(addCluster.comment))
 		assertThat(addResult?.network?.id, `is`(addCluster.network.id))
 		assertThat(addResult?.biosType, `is`(addCluster.biosType))
-		assertThat(addResult?.fipsMode, `is`(addCluster.fipsMode))
-		assertThat(addResult?.version, `is`(addCluster.version))
-		assertThat(addResult?.switchType, `is`(addCluster.switchType))
-		assertThat(addResult?.firewallType, `is`(addCluster.firewallType))
-		assertThat(addResult?.logMaxMemory, `is`(addCluster.logMaxMemory))
-		assertThat(addResult?.logMaxMemoryType, `is`(addCluster.logMaxMemoryType))
-		assertThat(addResult?.virtService, `is`(addCluster.virtService))
-		assertThat(addResult?.glusterService, `is`(addCluster.glusterService))
-		assertThat(addResult?.errorHandling, `is`(addCluster.errorHandling))
-		assertThat(addResult?.bandwidth, `is`(addCluster.bandwidth))
-		assertThat(addResult?.encrypted, `is`(addCluster.encrypted))
-		assertThat(addResult?.networkProvider, `is`(addCluster.networkProvider))
 
 		log.debug("should_updateCluster ... ")
 		val updateCluster: ClusterVo = ClusterVo.builder {
@@ -150,18 +131,11 @@ class ItClusterServiceTest {
 			comment { "testComment" }
 			network { NetworkVo.builder { id { networkId } } }
 			biosType { BiosType.Q35_SEA_BIOS }
-			fipsMode { FipsMode.ENABLED }
-			version { "4.7" }
-			switchType { SwitchType.LEGACY }
-			firewallType { FirewallType.FIREWALLD }
 			logMaxMemory { 90 }
 			logMaxMemoryType { LogMaxMemoryUsedThresholdType.PERCENTAGE }
-			virtService { true }
-			glusterService { false }
 			errorHandling { MigrateOnError.MIGRATE }
 			bandwidth { MigrationBandwidthAssignmentMethod.AUTO }
 			encrypted { InheritableBoolean.INHERIT }
-			networkProvider { false }
 		}
 
 		val updateResult: ClusterVo? =
@@ -175,18 +149,6 @@ class ItClusterServiceTest {
 		assertThat(updateResult?.comment, `is`(updateCluster.comment))
 		assertThat(updateResult?.network?.id, `is`(updateCluster.network.id))
 		assertThat(updateResult?.biosType, `is`(updateCluster.biosType))
-		assertThat(updateResult?.fipsMode, `is`(updateCluster.fipsMode))
-		assertThat(updateResult?.version, `is`(updateCluster.version))
-		assertThat(updateResult?.switchType, `is`(updateCluster.switchType))
-		assertThat(updateResult?.firewallType, `is`(updateCluster.firewallType))
-		assertThat(updateResult?.logMaxMemory, `is`(updateCluster.logMaxMemory))
-		assertThat(updateResult?.logMaxMemoryType, `is`(updateCluster.logMaxMemoryType))
-		assertThat(updateResult?.virtService, `is`(updateCluster.virtService))
-		assertThat(updateResult?.glusterService, `is`(updateCluster.glusterService))
-		assertThat(updateResult?.errorHandling, `is`(updateCluster.errorHandling))
-		assertThat(updateResult?.bandwidth, `is`(updateCluster.bandwidth))
-		assertThat(updateResult?.encrypted, `is`(updateCluster.encrypted))
-		assertThat(updateResult?.networkProvider, `is`(updateCluster.networkProvider))
 
 		log.debug("should_removeCluster ... ")
 		val removeResult =

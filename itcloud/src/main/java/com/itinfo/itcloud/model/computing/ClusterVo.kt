@@ -225,11 +225,7 @@ fun List<Cluster>.toNetworkClusterVos(conn: Connection, networkId: String): List
  * 클러스터 빌더
  */
 fun ClusterVo.toClusterBuilder(conn: Connection): ClusterBuilder {
-	val ver = this@toClusterBuilder.version.split(".")
-	if (ver.size < 2) throw IllegalArgumentException("잘못된 버전정보 입력")
-
-	val clusterBuilder = ClusterBuilder()
-	clusterBuilder
+	return ClusterBuilder()
 		.dataCenter(DataCenterBuilder().id(this@toClusterBuilder.dataCenter.id).build()) // 필수
 		.name(this@toClusterBuilder.name) // 필수
 		.cpu(CpuBuilder().architecture(this@toClusterBuilder.cpuArc).type(this@toClusterBuilder.cpuType)) // 필수
@@ -238,13 +234,13 @@ fun ClusterVo.toClusterBuilder(conn: Connection): ClusterBuilder {
 		.managementNetwork(NetworkBuilder().id(this@toClusterBuilder.network.id).build())
 		.biosType(this@toClusterBuilder.biosType)
 		.fipsMode(FipsMode.DISABLED)
-		.version(VersionBuilder().major(Integer.parseInt(ver[0])).minor(Integer.parseInt(ver[1])).build())
-		.switchType(this@toClusterBuilder.switchType)  // 편집에선 선택불가
-		.firewallType(this@toClusterBuilder.firewallType)
+		.version(VersionBuilder().major(4).minor(7).build())
+		.switchType(SwitchType.LEGACY)  // 편집에선 선택불가
+		.firewallType(FirewallType.FIREWALLD)
 		.logMaxMemoryUsedThreshold(this@toClusterBuilder.logMaxMemory)
 		.logMaxMemoryUsedThresholdType(this@toClusterBuilder.logMaxMemoryType)
-		.virtService(this@toClusterBuilder.virtService)
-		.glusterService(this@toClusterBuilder.glusterService)
+		.virtService(true)
+		.glusterService(false)
 		.errorHandling(ErrorHandlingBuilder().onError(this@toClusterBuilder.errorHandling))
 		// HELP: 마이그레이션 정책 관련 설정 값 조회 기능 존재여부 확인필요
 		.migration(
@@ -257,16 +253,14 @@ fun ClusterVo.toClusterBuilder(conn: Connection): ClusterBuilder {
 				.skipIfConnectivityBroken(SkipIfConnectivityBrokenBuilder().enabled(true))
 				.skipIfSdActive(SkipIfSdActiveBuilder().enabled(true))
 		)
-		if (this.networkProvider) {
-			clusterBuilder.externalNetworkProviders(conn.findAllOpenStackNetworkProviders().getOrDefault(listOf()).first())
-		}
-	return clusterBuilder
+		.externalNetworkProviders(conn.findAllOpenStackNetworkProviders().getOrDefault(listOf()).first())
 }
 
 /**
  * 클러스터 생성 빌더
  */
 fun ClusterVo.toAddClusterBuilder(conn: Connection): Cluster =
+	// 생성시 fips 모드, 호환버전, 스위치 유형, 방화벽유형, 기본네트워크 공급자, virt 서비스 활성화, gluster 서비스 활성화 기본설정
 	this@toAddClusterBuilder.toClusterBuilder(conn).build()
 
 /**
