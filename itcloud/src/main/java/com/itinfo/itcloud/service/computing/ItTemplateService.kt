@@ -41,14 +41,14 @@ interface ItTemplateService {
 	// 템플릿 생성창 - cpuProfile 목록 []
 
 	/**
-	 * [ItTemplateService.findAllDisksFromVm]
+	 * [ItTemplateService.findAllDiskAttachmentsFromVm]
 	 * 디스크 목록(가상머신) [ItVmDiskService.findAllFromVm] 약간 다름
 	 *
 	 * @param vmId [String] 가상머신 Id
-	 * @return List<[DiskImageVo]>
+	 * @return List<[DiskAttachmentVo]>
 	 */
 	@Throws(Error::class)
-	fun findAllDisksFromVm(vmId: String): List<DiskImageVo>
+	fun findAllDiskAttachmentsFromVm(vmId: String): List<DiskAttachmentVo>
 
 	// 템플릿 생성창
 	// 		스토리지 목록(가상머신) [ItStorageService.findAllFromDataCenter]
@@ -190,14 +190,12 @@ class TemplateServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllDisksFromVm(vmId: String): List<DiskImageVo> {
+	override fun findAllDiskAttachmentsFromVm(vmId: String): List<DiskAttachmentVo> {
 		log.info("findAllDisksFromVm ... vmId: {}", vmId)
-		val res: List<Disk> =
+		val res: List<DiskAttachment> =
 			conn.findAllDiskAttachmentsFromVm(vmId).getOrDefault(listOf())
-				.mapNotNull { diskAttachment ->
-					conn.findDisk(diskAttachment.disk().id()).getOrNull()
-				}
-		return res.toDiskImageVos(conn)
+
+		return res.toDiskAttachmentsToTemplate(conn)
 	}
 
 	@Throws(Error::class)
@@ -206,7 +204,6 @@ class TemplateServiceImpl(
 		val res: Template? =
 			conn.addTemplate(
 				vmId,
-				templateVo.name,
 				templateVo.toAddTemplateBuilder()
 			).getOrNull()
 		return res?.toTemplateInfo(conn)
@@ -236,7 +233,9 @@ class TemplateServiceImpl(
 		log.info("findAllVmsFromTemplate ... templateId: {}", templateId)
 		val vms: List<Vm> =
 			conn.findAllVms().getOrDefault(listOf())
-				.filter { it.templatePresent() && it.template().id() == templateId }
+				.filter {
+					it.templatePresent() && it.template().id() == templateId
+				}
 		return vms.toVmVos(conn)
 	}
 
@@ -253,7 +252,8 @@ class TemplateServiceImpl(
 		log.info("addNicFromTemplate ... templateId: {}", templateId)
 		val res: Nic? =
 			conn.addNicFromTemplate(
-				templateId, nicVo.toAddNicBuilder()
+				templateId,
+				nicVo.toAddNicBuilder()
 			).getOrNull()
 		return res?.toNicVoFromTemplate(conn)
 	}
@@ -263,7 +263,8 @@ class TemplateServiceImpl(
 		log.info("updateNicFromTemplate ... templateId: {}", templateId)
 		val res: Nic? =
 			conn.updateNicFromTemplate(
-				templateId, nicVo.toEditNicBuilder()
+				templateId,
+				nicVo.toEditNicBuilder()
 			).getOrNull()
 		return res?.toNicVoFromTemplate(conn)
 	}

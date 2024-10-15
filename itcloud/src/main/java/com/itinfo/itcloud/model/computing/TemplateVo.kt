@@ -206,8 +206,46 @@ fun TemplateVo.toTemplateBuilder(): TemplateBuilder {
 	return TemplateBuilder()
 		.name(this@toTemplateBuilder.name)
 		.description(this@toTemplateBuilder.description)
+		.comment(this@toTemplateBuilder.comment)
 		.cluster(ClusterBuilder().id(this@toTemplateBuilder.clusterVo.id))
+		.cpuProfile(CpuProfileBuilder().id(this@toTemplateBuilder.cpuProfileVo.id))
 }
+
+fun TemplateVo.toAddTemplateBuilder(): Template {
+
+	val diskAttachments: List<DiskAttachment> =
+		this@toAddTemplateBuilder.diskAttachmentVos.map { disk ->
+			DiskAttachmentBuilder()
+				.disk(
+					DiskBuilder()
+						.id(disk.diskImageVo.id)
+						.alias(disk.diskImageVo.alias)
+						.format(disk.diskImageVo.format)
+						.sparse(false)
+						.storageDomains(*arrayOf(StorageDomainBuilder().id(disk.diskImageVo.storageDomainVo.id).build()))
+						.diskProfile(DiskProfileBuilder().id(disk.diskImageVo.diskProfileVo.id).build())
+						.build()
+				).build()
+		}
+	return this@toAddTemplateBuilder.toTemplateBuilder()
+		.vm(
+			VmBuilder()
+				.id(this@toAddTemplateBuilder.vmVo.id)
+				.diskAttachments(diskAttachments)
+				.build()
+		)
+		.build()
+}
+
+fun TemplateVo.toEditTemplateBuilder(): Template {
+	return TemplateBuilder()
+		.id(this@toEditTemplateBuilder.id)
+		.os(OperatingSystemBuilder().type(this@toEditTemplateBuilder.osSystem))
+		.bios(BiosBuilder().type(BiosType.valueOf(this@toEditTemplateBuilder.chipsetFirmwareType)))
+		.type(VmType.valueOf(this@toEditTemplateBuilder.optimizeOption))
+		.build()
+}
+
 
 /**
  * <template>
@@ -225,33 +263,3 @@ fun TemplateVo.toTemplateBuilder(): TemplateBuilder {
  *   </vm>
  * </template>
  */
-fun TemplateVo.toAddTemplateBuilder(): Template {
-	val diskAttachments: List<DiskAttachment> =
-		this@toAddTemplateBuilder.diskAttachmentVos.map { disk ->
-			DiskAttachmentBuilder()
-				.disk(
-					DiskBuilder()
-						.id(disk.diskImageVo.id)
-						.format(disk.diskImageVo.format)
-						.storageDomains(*arrayOf(StorageDomainBuilder().id(disk.diskImageVo.storageDomainVo.id).build()))
-						.diskProfile(DiskProfileBuilder().id(disk.diskImageVo.diskProfileVo.id).build())
-						.build()
-				).build()
-		}
-
-	return TemplateBuilder()
-		.comment(this@toAddTemplateBuilder.comment)
-		.cpuProfile(CpuProfileBuilder().id(this@toAddTemplateBuilder.cpuProfileVo.id))
-		.vm(VmBuilder().id(this@toAddTemplateBuilder.vmVo.id))
-		.diskAttachments(diskAttachments)
-		.build()
-}
-
-fun TemplateVo.toEditTemplateBuilder(): Template {
-	return TemplateBuilder()
-		.id(this@toEditTemplateBuilder.id)
-		.os(OperatingSystemBuilder().type(this@toEditTemplateBuilder.osSystem))
-		.bios(BiosBuilder().type(BiosType.valueOf(this@toEditTemplateBuilder.chipsetFirmwareType)))
-		.type(VmType.valueOf(this@toEditTemplateBuilder.optimizeOption))
-		.build()
-}

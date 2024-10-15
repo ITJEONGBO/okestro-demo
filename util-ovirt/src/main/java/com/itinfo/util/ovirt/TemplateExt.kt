@@ -58,23 +58,24 @@ fun Connection.exportTemplate(templateId: String, exclusive: Boolean, toStorageD
 @Throws(Error::class)
 fun Connection.addTemplate(
 	vmId: String,
-	templateName: String,
-	template: Template,
-	clonePermissions: Boolean = false,
-	seal: Boolean = false
+	template: Template
 ): Result<Template?> = runCatching {
-	val vm: Vm = this@addTemplate.findVm(vmId).getOrNull() ?: throw ErrorPattern.VM_NOT_FOUND.toError()
+	val vm: Vm =
+		this@addTemplate.findVm(vmId).getOrNull()
+			?: throw ErrorPattern.VM_NOT_FOUND.toError()
+
 	if (vm.status() == VmStatus.UP) {
 		log.error("addTemplate ... 가상머신 up 상태에서는 템플릿 생성 불가")
 		return Result.failure(Error("가상머신 UP 상태에서는 템플릿 생성 불가"))
 	}
 
-	if (this@addTemplate.templateHasDuplicateName(templateName)) {
+	if (this@addTemplate.templateHasDuplicateName(template.name())) {
 		log.error("addTemplate ... 템플릿 이름 중복")
 		return Result.failure(Error("템플릿 이름 중복"))
 	}
 
-	val templateAdded: Template? = this.srvTemplates().add().template(template).clonePermissions(clonePermissions).seal(seal).send().template()
+	val templateAdded: Template? =
+		this.srvTemplates().add().template(template)/*.clonePermissions(f).seal(seal)*/.send().template()
 	val templateIdAdded: String = templateAdded?.id() ?: ""
 
 	if (templateAdded != null && this@addTemplate.expectTemplateStatus(templateIdAdded))
@@ -104,7 +105,8 @@ fun Connection.updateTemplate(templateId: String, template: Template): Result<Te
 }
 
 fun Connection.removeTemplate(templateId: String): Result<Boolean> = runCatching {
-	this@removeTemplate.findTemplate(templateId).getOrNull() ?: throw ErrorPattern.TEMPLATE_NOT_FOUND.toError()
+	this@removeTemplate.findTemplate(templateId).getOrNull()
+		?: throw ErrorPattern.TEMPLATE_NOT_FOUND.toError()
 
 	this@removeTemplate.srvTemplate(templateId).remove().send()
 	true
