@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisV, faExclamationTriangle, faInfoCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import { useAllVMs } from '../../api/RQHook';
+import VncViewer from '../Vnc/VncViewer';
+
 
 const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActiveTab: parentSetActiveTab, togglePopup, isPopupOpen, showTemplateButton = true }) => {
   const navigate = useNavigate();
@@ -62,7 +64,11 @@ const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActi
   const handleTabModalClick = (tab) => {
     setSelectedModalTab(tab);
   };
-  
+
+  const [showVnc, setShowVnc] = useState(false);
+  const handleButtonClick = () => {
+    setShowVnc(true);  // 버튼 클릭 시 VNC 뷰어를 보여줌
+  };
 
     
     function toTableItemPredicateVMs(vm) {
@@ -99,7 +105,8 @@ const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActi
         {showTemplateButton && (
           <button onClick={() => navigate('/computing/templates')}>템플릿</button>
         )}
-        <button>콘솔</button>
+        <button onClick={handleButtonClick}>콘솔</button>
+        {showVnc && <VncViewer />}
         <button onClick={() => handleOpenPopup('snapshot')}>스냅샷 생성</button>
         <button onClick={() => handleOpenPopup('migration')}>마이그레이션</button>
         <button className="content_header_popup_btn" onClick={togglePopup}>

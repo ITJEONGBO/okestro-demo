@@ -31,6 +31,8 @@ import AllDisk from './components/Storage/AllDisk';
 import RutilManager from './components/Computing/RutilManager';
 import Event from './components/Event';
 import Error from './components/Error';
+// import VncViewerPage from './components/Vnc/VncViewerPage';
+
 
 
 const App = () => {
@@ -124,7 +126,7 @@ const App = () => {
               <Route path="/storages/disks/:id" element={<StorageDiskDetail />} />
               <Route path="/events" element={<Event />} />
               <Route path="/error" element={<Error />} />
-
+              {/* <Route path="/vncviewer" element={<VncViewerPage />} /> */}
  
               {/*임시 */}
          
@@ -149,5 +151,6 @@ const App = () => {
     </QueryClientProvider>
   );
 }
+
 
 export default App;

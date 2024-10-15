@@ -1,6 +1,7 @@
 // VncViewer.jsx
 import React, { useEffect, useRef, useState } from 'react';
-import RFB from '@novnc/novnc/core/rfb';
+// import RFB from '@novnc/novnc/core/rfb';
+import RFB from '@novnc/novnc';
 import './VncViewer.css'; // Create a CSS file to style your component
 
 const VncViewer = () => {
