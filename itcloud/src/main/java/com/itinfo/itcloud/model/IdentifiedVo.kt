@@ -133,6 +133,15 @@ fun List<DiskProfile>.fromDiskProfilesToIdentifiedVos(): List<IdentifiedVo> =
 	this@fromDiskProfilesToIdentifiedVos.map { it.fromDiskProfileToIdentifiedVo() }
 
 
+fun Domain.fromDomainToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
+	id { this@fromDomainToIdentifiedVo.id() }
+	name { this@fromDomainToIdentifiedVo.name() }
+}
+fun List<Domain>.fromDomainsToIdentifiedVo(): List<IdentifiedVo> =
+	this@fromDomainsToIdentifiedVo.map { it.fromDomainToIdentifiedVo() }
+
+
+
 
 fun AffinityGroup.fromAffinityGroupToIdentifiedVo(): IdentifiedVo = IdentifiedVo.builder {
 	id { id() }
