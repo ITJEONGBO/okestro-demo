@@ -48,7 +48,7 @@ class  ItVmServiceTest {
 		networkId = "00000000-0000-0000-0000-000000000009"
 		host01 = "1d3a2fdb-0873-4837-8eaa-28cca20ffb12"
 //		host02 = "0d7ba24e-452f-47fe-a006-f4702aa9b37f"
-		hostVm = "9181fa0b-d031-4dbd-a031-6de2e2913eb6"
+		hostVm = "d427e182-cfd7-44a8-8b63-ce3841fe7c47"
 //		apm = "fceb0fe4-2927-4340-a970-401fe55781e6"
 		storageDomain = "789b0566-39da-42c5-b5d2-bf6a6e3662cf"
 	}
@@ -398,6 +398,23 @@ class  ItVmServiceTest {
 		assertThat(result, `is`(not(nullValue())))
 		result.forEach { println(it) }
 		assertThat(result.size, `is`(2))
+	}
+
+	/**
+	 * [should_findAllHostDevicesFromVm]
+	 * [ItVmService.findAllHostDevicesFromVm]에 대한 단위테스트
+	 *
+	 * @see ItVmService.findAllHostDevicesFromVm
+	 */
+	@Test
+	fun should_findAllHostDevicesFromVm() {
+		log.debug("should_findAllHostDevicesFromVm ... ")
+		val result: List<HostDeviceVo> =
+			service.findAllHostDevicesFromVm(hostVm)
+
+		assertThat(result, `is`(not(nullValue())))
+		result.forEach { println(it) }
+		assertThat(result.size, `is`(0))
 	}
 
 	/**

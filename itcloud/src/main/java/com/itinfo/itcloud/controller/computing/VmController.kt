@@ -124,29 +124,6 @@ class VmController: BaseController() {
 	}
 
 	@ApiOperation(
-		httpMethod="GET",
-		value="가상머신 생성창 - Cpu Profile 목록",
-		notes="선택된 클러스터의 Cpu Profile 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/cpuProfiles/{clusterId}")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun cpuProfiles(
-		@PathVariable clusterId: String? = null
-	): ResponseEntity<List<CpuProfileVo>> {
-		if (clusterId.isNullOrEmpty())
-			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
-		log.info("/computing/vms/cpuProfiles{} ... 클러스터 Cpu Profile 목록", clusterId)
-		return ResponseEntity.ok(iVm.findAllCpuProfilesFromCluster(clusterId))
-	}
-
-	@ApiOperation(
 		httpMethod="POST",
 		value="가상머신 생성",
 		notes="가상머신을 생성한다"
@@ -244,6 +221,29 @@ class VmController: BaseController() {
 			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
 		log.info("/computing/vms/{}/applications ... 가상머신 어플리케이션 목록", vmId)
 		return ResponseEntity.ok(iVm.findAllApplicationsFromVm(vmId))
+	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="가상머신 내 호스트 장치 목록",
+		notes="선택된 가상머신의 호스트 장치 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="vmId", value="가상머신 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{vmId}/hostDevices")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun hostDevices(
+		@PathVariable vmId: String? = null,
+	): ResponseEntity<List<HostDeviceVo>> {
+		if (vmId.isNullOrEmpty())
+			throw ErrorPattern.VM_ID_NOT_FOUND.toException()
+		log.info("/computing/vms/{}/hostDevices ... 가상머신 호스트 장치 목록", vmId)
+		return ResponseEntity.ok(iVm.findAllHostDevicesFromVm(vmId))
 	}
 
 	@ApiOperation(

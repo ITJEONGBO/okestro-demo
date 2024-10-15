@@ -8,6 +8,7 @@ import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.repository.history.dto.UsageDto
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.computing.VmServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.Error
@@ -131,6 +132,17 @@ interface ItClusterService {
 	 */
 	@Throws(Error::class)
 	fun manageNetworksFromCluster(clusterId: String, networkVos: List<NetworkVo>): Boolean
+
+	/**
+	 * [ItClusterService.findAllCpuProfilesFromCluster]
+	 * 클러스터가 가지고있는 CPU 프로파일 목록
+	 * vm 생성시 사용
+	 *
+	 * @param clusterId [String] 클러스터 Id
+	 * @return List<[CpuProfileVo]> cpuProfile 목록
+	 */
+	@Throws(Error::class)
+	fun findAllCpuProfilesFromCluster(clusterId: String): List<CpuProfileVo>
 	/**
 	 * [ItClusterService.findAllEventsFromCluster]
 	 * 클러스터가 가지고있는 이벤트 목록
@@ -301,6 +313,14 @@ class ClusterServiceImpl(
 		 */
 //		return false
 		TODO("네트워크 관리 실행")
+	}
+
+	@Throws(Error::class)
+	override fun findAllCpuProfilesFromCluster(clusterId: String): List<CpuProfileVo> {
+		log.info("findAllCpuProfilesFromCluster ... clusterId: {}", clusterId)
+		val res: List<CpuProfile> =
+			conn.findAllCpuProfilesFromCluster(clusterId).getOrDefault(listOf())
+		return res.toCpuProfileVos()
 	}
 
 	@Throws(Error::class)

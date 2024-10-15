@@ -82,17 +82,6 @@ interface ItVmService {
 	fun findAllISO(): List<IdentifiedVo>
 
 	/**
-	 * [ItVmService.findAllCpuProfilesFromCluster]
-	 * 클러스터가 가지고있는 CPU 프로파일 목록
-	 * vm 생성시 사용
-	 *
-	 * @param clusterId [String] 클러스터 Id
-	 * @return List<[CpuProfileVo]> cpuProfile 목록
-	 */
-	@Throws(Error::class)
-	fun findAllCpuProfilesFromCluster(clusterId: String): List<CpuProfileVo>
-
-	/**
 	 * [ItVmService.add]
 	 * 가상머신 생성
 	 * TODO 템플릿 선택하면 인스턴스 이미지 선택 불가
@@ -131,6 +120,14 @@ interface ItVmService {
 	 */
 	@Throws(Error::class)
 	fun findAllApplicationsFromVm(vmId: String): List<IdentifiedVo>
+	/**
+	 * [ItVmService.findAllHostDevicesFromVm]
+	 * 가상머신 호스트 장치
+	 *
+	 * @param vmId [String] 가상머신 Id
+	 */
+	@Throws(Error::class)
+	fun findAllHostDevicesFromVm(vmId: String): List<HostDeviceVo>
 	/**
 	 * [ItVmService.findAllEventsFromVm]
 	 * 가상머신 이벤트
@@ -225,14 +222,6 @@ class VmServiceImpl(
 	}
 
 	@Throws(Error::class)
-	override fun findAllCpuProfilesFromCluster(clusterId: String): List<CpuProfileVo> {
-		log.info("findAllCpuProfilesFromCluster ... clusterId: {}", clusterId)
-		val res: List<CpuProfile> =
-			conn.findAllCpuProfilesFromCluster(clusterId).getOrDefault(listOf())
-		return res.toCpuProfileVos()
-	}
-
-	@Throws(Error::class)
 	override fun add(vmVo: VmVo): VmVo? {
 		log.info("add ... ")
 //		if(vmVo.diskAttachmentVos.filter { it.bootable }.size != 1){
@@ -306,6 +295,14 @@ class VmServiceImpl(
 		val res: List<Application> =
 			conn.findAllApplicationsFromVm(vmId).getOrDefault(listOf())
 		return res.fromApplicationsToIdentifiedVos()
+	}
+
+	@Throws(Error::class)
+	override fun findAllHostDevicesFromVm(vmId: String): List<HostDeviceVo> {
+		log.info("findAllHostDevicesFromVm ... vmId: {}", vmId)
+		val res: List<HostDevice> =
+			conn.findAllHostDevicesFromVm(vmId).getOrDefault(listOf())
+		return res.toHostDeviceVos(conn)
 	}
 
 	@Throws(Error::class)

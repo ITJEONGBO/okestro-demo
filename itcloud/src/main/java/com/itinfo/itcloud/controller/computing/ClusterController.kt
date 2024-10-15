@@ -2,6 +2,7 @@ package com.itinfo.itcloud.controller.computing
 
 import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.controller.BaseController
+import com.itinfo.itcloud.controller.computing.VmController.Companion
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.computing.*
 import com.itinfo.util.ovirt.error.ErrorPattern
@@ -256,6 +257,7 @@ class ClusterController: BaseController() {
 		return ResponseEntity.ok(iCluster.findAllManageNetworksFromCluster(clusterId))
 	}
 
+
 	// manageNetworksFromCluster
 //	@ApiOperation(
 //		httpMethod="POST",
@@ -279,6 +281,29 @@ class ClusterController: BaseController() {
 //		log.info("/computing/clusters/{}/networks/manageNetworks ... 클러스터 생성\n{}", clusterId, network())
 //		return ResponseEntity.ok(iCluster.manageNetworksFromCluster(clusterId, networkVos = ))
 //	}
+
+	@ApiOperation(
+		httpMethod="GET",
+		value="가상머신 생성창 - Cpu Profile 목록",
+		notes="선택된 클러스터의 Cpu Profile 목록을 조회한다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name="clusterId", value="클러스터 ID", dataTypeClass=String::class, required=true, paramType="path"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 200, message = "OK")
+	)
+	@GetMapping("/{clusterId}/cpuProfiles")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	fun cpuProfiles(
+		@PathVariable clusterId: String? = null
+	): ResponseEntity<List<CpuProfileVo>> {
+		if (clusterId.isNullOrEmpty())
+			throw ErrorPattern.CLUSTER_ID_NOT_FOUND.toException()
+		log.info("/computing/clusters/{}/cpuProfiles ... 클러스터 Cpu Profile 목록", clusterId)
+		return ResponseEntity.ok(iCluster.findAllCpuProfilesFromCluster(clusterId))
+	}
 
 	@ApiOperation(
 		httpMethod="GET",

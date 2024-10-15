@@ -1037,6 +1037,21 @@ fun Connection.findAllApplicationsFromVm(vmId: String, follow: String = ""): Res
 
 }
 
+private fun Connection.srvHostDevicesFromVm(vmId: String): VmHostDevicesService =
+	this.srvVm(vmId).hostDevicesService()
+
+fun Connection.findAllHostDevicesFromVm(vmId: String): Result<List<HostDevice>> = runCatching {
+	this.srvHostDevicesFromVm(vmId).list().send().device()
+}.onSuccess {
+	Term.VM.logSuccessWithin(Term.HOST_DEVICES, "목록조회", vmId)
+}.onFailure {
+	Term.VM.logFailWithin(Term.HOST_DEVICES, "목록조회", it, vmId)
+	throw if (it is Error) it.toItCloudException() else it
+
+}
+
+
+
 fun List<Vm>.nameDuplicateVm(name: String, id: String? = null): Boolean =
 	this.filter { it.id() != id }.any { it.name() == name }
 
