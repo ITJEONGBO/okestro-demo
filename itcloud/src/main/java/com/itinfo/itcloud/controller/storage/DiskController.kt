@@ -93,30 +93,29 @@ class DiskController: BaseController() {
 		log.info("/storages/disks/{} ... 스토리지 도메인 목록", dataCenterId)
 		return ResponseEntity.ok(iDisk.findAllDomainsFromDataCenter(dataCenterId))
 	}
-	
-	@ApiOperation(
-		httpMethod="GET",
-		value="스토리지 도메인 디스크 프로파일 목록",
-		notes="선택된 스토리지 도메인의 디스크 프로파일 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name = "storageDomainId", value = "스토리지 도메인 ID", dataTypeClass = String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{storageDomainId}")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun diskProfilesFromStorageDomains(
-		@PathVariable storageDomainId: String? = null,
-	): ResponseEntity<List<DiskProfileVo>> {
-		if (storageDomainId == null)
-			throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toException()
-		log.info("/storages/disks/{} ... 디스크 프로파일 목록", storageDomainId)
-		return ResponseEntity.ok(iDisk.findAllDiskProfilesFromStorageDomain(storageDomainId))
-	}
 
+//	@ApiOperation(
+//		httpMethod="GET",
+//		value="스토리지 도메인 디스크 프로파일 목록",
+//		notes="선택된 스토리지 도메인의 디스크 프로파일 목록을 조회한다"
+//	)
+//	@ApiImplicitParams(
+//		ApiImplicitParam(name = "storageDomainId", value = "스토리지 도메인 ID", dataTypeClass = String::class, required=true, paramType="path"),
+//	)
+//	@ApiResponses(
+//		ApiResponse(code = 200, message = "OK")
+//	)
+//	@GetMapping("/{storageDomainId}")
+//	@ResponseBody
+//	@ResponseStatus(HttpStatus.OK)
+//	fun diskProfilesFromStorageDomains(
+//		@PathVariable storageDomainId: String? = null,
+//	): ResponseEntity<List<DiskProfileVo>> {
+//		if (storageDomainId == null)
+//			throw ErrorPattern.STORAGE_DOMAIN_ID_NOT_FOUND.toException()
+//		log.info("/storages/disks/{} ... 디스크 프로파일 목록", storageDomainId)
+//		return ResponseEntity.ok(iDisk.findAllDiskProfilesFromStorageDomain(storageDomainId))
+//	}
 
 	@ApiOperation(
 		httpMethod="POST",
