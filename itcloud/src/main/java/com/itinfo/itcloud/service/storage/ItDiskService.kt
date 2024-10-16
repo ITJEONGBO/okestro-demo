@@ -4,6 +4,7 @@ import com.itinfo.common.LoggerDelegate
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.computing.VmVo
 import com.itinfo.itcloud.model.computing.toVmVoInfos
+import com.itinfo.itcloud.model.computing.toVmsMenu
 import com.itinfo.itcloud.model.response.Res
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
@@ -198,7 +199,8 @@ class DiskServiceImpl(
     @Throws(Error::class)
     override fun findAll(): List<DiskImageVo> {
         log.info("findAll ... ")
-        val res: List<Disk> = conn.findAllDisks().getOrDefault(listOf())
+        val res: List<Disk> =
+            conn.findAllDisks().getOrDefault(listOf())
         return res.map { disk ->
             val diskVmElementEntityOpt: Optional<DiskVmElementEntity> =
                 diskVmElementRepository.findByDiskId(UUID.fromString(disk.id()))
@@ -209,13 +211,11 @@ class DiskServiceImpl(
         }
     }
 
-
     @Throws(Error::class)
     override fun findOne(diskId: String): DiskImageVo? {
         log.info("findOne ... diskId: $diskId")
         val res: Disk? =
-            conn.findDisk(diskId)
-                .getOrNull()
+            conn.findDisk(diskId).getOrNull()
         return res?.toDiskInfo(conn)
     }
 
@@ -223,8 +223,7 @@ class DiskServiceImpl(
     override fun findAllDomainsFromDataCenter(dataCenterId: String): List<StorageDomainVo> {
         log.info("findAllStorageDomainsFromDataCenter ... dataCenterId: $dataCenterId")
         val res: List<StorageDomain> =
-            conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId)
-                .getOrDefault(listOf())
+            conn.findAllAttachedStorageDomainsFromDataCenter(dataCenterId).getOrDefault(listOf())
                 .filter { it.status() == StorageDomainStatus.ACTIVE }
         return res.toStorageDomainSizes()
     }
@@ -233,8 +232,7 @@ class DiskServiceImpl(
     override fun findAllDiskProfilesFromStorageDomain(storageDomainId: String): List<DiskProfileVo> {
         log.info("findAllDiskProfilesFromStorageDomain ... domainId: $storageDomainId")
         val res: List<DiskProfile> =
-            conn.findAllDiskProfilesFromStorageDomain(storageDomainId)
-                .getOrDefault(listOf())
+            conn.findAllDiskProfilesFromStorageDomain(storageDomainId).getOrDefault(listOf())
         return res.toDiskProfileVos()
     }
 
@@ -242,8 +240,9 @@ class DiskServiceImpl(
     override fun add(image: DiskImageVo): DiskImageVo? {
         log.info("addDisk ... image: $image")
         val res: Disk? =
-            conn.addDisk(image.toAddDiskBuilder())
-                .getOrNull()
+            conn.addDisk(
+                image.toAddDiskBuilder()
+            ).getOrNull()
         return res?.toDiskIdName()
     }
 
@@ -251,8 +250,9 @@ class DiskServiceImpl(
     override fun update(image: DiskImageVo): DiskImageVo? {
         log.info("updateDisk ... image: $image")
         val res: Disk? =
-            conn.updateDisk(image.toEditDiskBuilder())
-                .getOrNull()
+            conn.updateDisk(
+                image.toEditDiskBuilder()
+            ).getOrNull()
         return res?.toDiskIdName()
     }
 
@@ -268,11 +268,10 @@ class DiskServiceImpl(
     override fun findAllStorageDomainsToMoveFromDisk(diskId: String): List<StorageDomainVo> {
         log.info("findAllStorageDomainsToMoveFromDisk ... diskId: $diskId")
         val disk: Disk =
-            conn.findDisk(diskId)
-                .getOrNull() ?: throw ErrorPattern.DISK_NOT_FOUND.toException()
+            conn.findDisk(diskId).getOrNull()
+                ?: throw ErrorPattern.DISK_NOT_FOUND.toException()
         val res: List<StorageDomain> =
-            conn.findAllStorageDomains()
-                .getOrDefault(listOf())
+            conn.findAllStorageDomains().getOrDefault(listOf())
                 .filter { it.id() != disk.storageDomains().first().id() }
         return res.toStorageDomainSizes()
     }
@@ -424,17 +423,15 @@ class DiskServiceImpl(
     override fun findAllVmsFromDisk(diskId: String): List<VmVo> {
         log.info("findAllVmsFromDisk ... ")
         val res: List<Vm> =
-            conn.findAllVmsFromDisk(diskId)
-                .getOrDefault(listOf())
-        return res.toVmVoInfos(conn)
+            conn.findAllVmsFromDisk(diskId).getOrDefault(listOf())
+        return res.toVmsMenu(conn)
     }
 
     @Throws(Error::class)
     override fun findAllStorageDomainsFromDisk(diskId: String): List<StorageDomainVo> {
         log.info("findAllStorageDomainsFromDisk ... diskId: $diskId")
         val res: List<StorageDomain> =
-            conn.findAllStorageDomainsFromDisk(diskId)
-                .getOrDefault(listOf())
+            conn.findAllStorageDomainsFromDisk(diskId).getOrDefault(listOf())
         return res.toStorageDomainsMenu(conn)
     }
 
@@ -443,8 +440,7 @@ class DiskServiceImpl(
     override fun findAllPermissionsFromDisk(diskId: String): List<PermissionVo> {
         log.info("findAllPermissionsFromDisk ... diskId: {}", diskId)
         val res: List<Permission> =
-            conn.findAllPermissionsFromDisk(diskId)
-                .getOrDefault(listOf())
+            conn.findAllPermissionsFromDisk(diskId).getOrDefault(listOf())
         return res.toPermissionVos(conn)
     }
 

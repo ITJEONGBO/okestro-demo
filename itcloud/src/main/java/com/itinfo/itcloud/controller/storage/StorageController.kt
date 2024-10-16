@@ -46,8 +46,8 @@ class StorageController: BaseController() {
 	
 	@ApiOperation(
 		httpMethod="GET",
-		value="",
-		notes="스토리지 도메인 정보"
+		value="스토리지 도메인",
+		notes="선택된 스토리지 도메인의 정보를 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name = "storageDomainId", value = "스토리지 도메인 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -68,8 +68,8 @@ class StorageController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="",
-		notes="데이터센터 밑에 있는 스토리지 도메인 목록"
+		value="데이터센터 - 스토리지 도메인 목록",
+		notes="선택된 데이터센터가 가지고 있는 스토리지 도메인 목록"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="dataCenterId", value="데이터센터 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -135,10 +135,11 @@ class StorageController: BaseController() {
 	}
 
 	// 생성
+
 	@ApiOperation(
 		httpMethod="POST",
 		value="스토리지 도메인 생성",
-		notes="스토리지 도메인 생성"
+		notes="스토리지 도메인을 생성"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name = "storageDomain", value = "스토리지도메인", dataTypeClass = StorageDomainVo::class, required=true, paramType="body"),
@@ -159,9 +160,32 @@ class StorageController: BaseController() {
 	}
 
 	@ApiOperation(
+		httpMethod="POST",
+		value="스토리지 도메인 가져오기",
+		notes="스토리지 도메인을 가져온다"
+	)
+	@ApiImplicitParams(
+		ApiImplicitParam(name = "storageDomain", value = "스토리지도메인", dataTypeClass = StorageDomainVo::class, required=true, paramType="body"),
+	)
+	@ApiResponses(
+		ApiResponse(code = 201, message = "CREATED")
+	)
+	@PostMapping("/import")
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	fun importStorageDomain(
+		@RequestBody storageDomain: StorageDomainVo? = null,
+	): ResponseEntity<StorageDomainVo?> {
+		if (storageDomain == null)
+			throw ErrorPattern.STORAGE_DOMAIN_VO_INVALID.toException()
+		log.info("/storages/domains/import ... 스토리지 도메인 가져오기")
+		return ResponseEntity.ok(iDomain.import(storageDomain))
+	}
+
+	@ApiOperation(
 		httpMethod="PUT",
 		value="스토리지 도메인 편집",
-		notes="스토리지 도메인 편집"
+		notes="선택된 스토리지 도메인을 편집한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name = "storageDomainId", value = "스토리지 도메인 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -188,7 +212,7 @@ class StorageController: BaseController() {
 	@ApiOperation(
 		httpMethod="DELETE",
 		value="스토리지 도메인 삭제",
-		notes="스토리지 도메인 삭제"
+		notes="선택된 스토리지 도메인을 삭제한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name = "storageDomainId", value = "스토리지 도메인 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -211,7 +235,7 @@ class StorageController: BaseController() {
 	@ApiOperation(
 		httpMethod="POST",
 		value="스토리지 도메인 파괴",
-		notes="스토리지 도메인 파괴"
+		notes="선택된 스토리지 도메인을 파괴한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name = "storageDomainId", value = "스토리지 도메인 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -234,8 +258,8 @@ class StorageController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="",
-		notes="스토리지 도메인 밑에 붙어있는 데이터센터 목록"
+		value="스토리지 도메인 데이터센터 목록",
+		notes="선택된 스토리지 도메인의 데이터센터 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name = "storageDomainId", value = "스토리지 도메인 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -256,8 +280,8 @@ class StorageController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="POST",
-		value="",
-		notes="스토리지 도메인 - 데이터센터 연결 attach"
+		value="스토리지 도메인 - 데이터센터 연결",
+		notes="선택된 스토리지 도메인의 데이터센터 연결(??) 말을어캐하지"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name = "storageDomainId", value = "스토리지 도메인 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -281,8 +305,8 @@ class StorageController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="POST",
-		value="",
-		notes="스토리지 도메인 - 데이터센터 분리 detach"
+		value="스토리지 도메인 - 데이터센터 분리",
+		notes="스토리지 도메인 - 데이터센터 분리"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name = "storageDomainId", value = "스토리지 도메인 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -306,7 +330,7 @@ class StorageController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="POST",
-		value="",
+		value="스토리지 도메인 - 데이터센터 활성",
 		notes="스토리지 도메인 - 데이터센터 활성 activate"
 	)
 	@ApiImplicitParams(
@@ -331,7 +355,7 @@ class StorageController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="POST",
-		value="",
+		value="스토리지 도메인 - 데이터센터 유지보수",
 		notes="스토리지 도메인 - 데이터센터 유지보수 maintenance"
 	)
 	@ApiImplicitParams(
@@ -357,8 +381,8 @@ class StorageController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="",
-		notes="스토리지 도메인 밑에 붙어있는 가상머신 목록"
+		value="스토리지 도메인 가상머신 목록",
+		notes="선택된 스토리지 도메인의 가상머신 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name = "storageDomainId", value = "스토리지 도메인 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -379,8 +403,8 @@ class StorageController: BaseController() {
 	
 	@ApiOperation(
 		httpMethod="GET",
-		value="",
-		notes="스토리지 도메인 밑에 붙어있는 디스크 목록"
+		value="스토리지 도메인 디스크 목록",
+		notes="선택된 스토리지 도메인의 디스크 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name = "storageDomainId", value = "스토리지 도메인 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -401,8 +425,8 @@ class StorageController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="",
-		notes="스토리지 도메인 밑에 붙어있는 디스크 스냅샷 목록"
+		value="스토리지 도메인 디스크 스냅샷 목록",
+		notes="선택된 스토리지 도메인의 디스크 스냅샷 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name = "storageDomainId", value = "스토리지 도메인 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -423,8 +447,8 @@ class StorageController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="",
-		notes="스토리지 도메인 밑에 붙어있는 템플릿 목록"
+		value="스토리지 도메인 템플릿 목록",
+		notes="선택된 스토리지 도메인의 템플릿 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name = "storageDomainId", value = "스토리지 도메인 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -446,8 +470,8 @@ class StorageController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="",
-		notes="스토리지 도메인 밑에 붙어있는 디스크 프로파일 목록"
+		value="스토리지 도메인 밑에 붙어있는 디스크 프로파일 목록",
+		notes="선택된 스토리지 도메인의 디스크 프로파일 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name = "storageDomainId", value = "스토리지 도메인 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -469,8 +493,8 @@ class StorageController: BaseController() {
 
 	@ApiOperation(
 		httpMethod="GET",
-		value="",
-		notes = "Event(s) 목록"
+		value="스토리지 도메인 이벤트 목록",
+		notes = "선택된 스토리지 도메인의 이벤트 목록을 조회한다"
 	)
 	@ApiImplicitParams(
 		ApiImplicitParam(name="storageDomainId", value="스토리지 도메인 ID", dataTypeClass=String::class, required=true, paramType="path"),
@@ -514,7 +538,6 @@ class StorageController: BaseController() {
 		log.info("/storages/{}/permissions ... Permission(s) 목록", storageDomainId)
 		return ResponseEntity.ok(iDomain.findAllPermissionsFromStorageDomain(storageDomainId))
 	}
-
 
 
 	companion object {
