@@ -71,28 +71,28 @@ class DiskController: BaseController() {
 	}
 
 
-	@ApiOperation(
-		httpMethod="GET",
-		value="데이터센터 스토리지 도메인 목록",
-		notes="선택된 데이터센터의 스토리지 도메인 목록을 조회한다"
-	)
-	@ApiImplicitParams(
-		ApiImplicitParam(name = "dataCenterId", value = "데이터센터 ID", dataTypeClass = String::class, required=true, paramType="path"),
-	)
-	@ApiResponses(
-		ApiResponse(code = 200, message = "OK")
-	)
-	@GetMapping("/{dataCenterId}")
-	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	fun storageDomainsFromDataCenter(
-		@PathVariable dataCenterId: String? = null,
-	): ResponseEntity<List<StorageDomainVo>> {
-		if (dataCenterId == null)
-			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
-		log.info("/storages/disks/{} ... 스토리지 도메인 목록", dataCenterId)
-		return ResponseEntity.ok(iDisk.findAllDomainsFromDataCenter(dataCenterId))
-	}
+//	@ApiOperation(
+//		httpMethod="GET",
+//		value="데이터센터 스토리지 도메인 목록",
+//		notes="선택된 데이터센터의 스토리지 도메인 목록을 조회한다"
+//	)
+//	@ApiImplicitParams(
+//		ApiImplicitParam(name = "dataCenterId", value = "데이터센터 ID", dataTypeClass = String::class, required=true, paramType="path"),
+//	)
+//	@ApiResponses(
+//		ApiResponse(code = 200, message = "OK")
+//	)
+//	@GetMapping("/{dataCenterId}")
+//	@ResponseBody
+//	@ResponseStatus(HttpStatus.OK)
+//	fun storageDomainsFromDataCenter(
+//		@PathVariable dataCenterId: String? = null,
+//	): ResponseEntity<List<StorageDomainVo>> {
+//		if (dataCenterId == null)
+//			throw ErrorPattern.DATACENTER_ID_NOT_FOUND.toException()
+//		log.info("/storages/disks/{} ... 스토리지 도메인 목록", dataCenterId)
+//		return ResponseEntity.ok(iDisk.findAllDomainsFromDataCenter(dataCenterId))
+//	}
 
 //	@ApiOperation(
 //		httpMethod="GET",

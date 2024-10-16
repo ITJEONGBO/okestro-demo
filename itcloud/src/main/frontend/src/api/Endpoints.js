@@ -168,15 +168,43 @@ const ENDPOINTS = {
   //region: StorageDomain
   FIND_ALL_STORAGE_DOMAINS: () => `/api/v1/storages/domains`,
   FIND_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}`,
-  FIND_STORAGE_DOMAINS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/storages/${dataCenterId}/domains`,
+  FIND_STORAGE_DOMAINS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/storages/${dataCenterId}/storageDomains`,
 
-  
-  FIND_EVENTS_FROM_STORAGE_DOMAINS: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/events`,
+  FIND_DATA_CENTERS_FROM_STORAGE_DOMAINS: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/dataCenters`,
+  ACTIVATE_FROM_DATACENTER: (storageDomainId, dataCenterId) => `/api/v1/storages/domains/${storageDomainId}/dataCenters/${dataCenterId}/activate`,
+  ATTACH_FROM_DATACENTER: (storageDomainId, dataCenterId) => `/api/v1/storages/domains/${storageDomainId}/dataCenters/${dataCenterId}/attach`,
+  DETACH_FROM_DATACENTER: (storageDomainId, dataCenterId) => `/api/v1/storages/domains/${storageDomainId}/dataCenters/${dataCenterId}/detach`,
+  MAINTENANCE_FROM_DATACENTER: (storageDomainId, dataCenterId) => `/api/v1/storages/domains/${storageDomainId}/dataCenters/${dataCenterId}/maintenance`,
 
-  FIND_ALL_DISK: () =>      `/api/v1/storages/disks`,
+  FIND_VMS_FROM_STORAGE_DOMAINS: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/vms`,
   FIND_DISKS_FROM_STORAGE_DOMAINS: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/disks`,
+  FIND_DISK_SNAPSHOTS_FROM_STORAGE_DOMAINS: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/diskSnapshots`,
+  FIND_TEMPLATES_FROM_STORAGE_DOMAINS: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/templates`,
+  FIND_EVENTS_FROM_STORAGE_DOMAINS: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/events`,
   
+  ADD_STORAGE_DOMAIN: () => `/api/v1/storages/domains`,
+  EDIT_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}`,
+  DELETE_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}`,
+  DESTORY_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/destory`,
+  IMPORT_STORAGE_DOMAIN: () => `/api/v1/storages/domains/import`,
   //endregion: StorageDomain
+
+  //region: Disk
+  FIND_ALL_DISKS: () =>      `/api/v1/storages/disks`,
+  FIND_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}`,
+  FIND_VMS_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}/vms`,
+  FIND_STORAGE_DOMAINS_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}/storagdDomains`,
+  
+  ADD_DISK: () =>      `/api/v1/storages/disks`,
+  EDIT_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}`,
+  DELETE_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}`,
+  COPY_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}/copy`,
+  FIND_STORAGE_DOMAINS_TO_MOVE_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}/move`,
+  MOVE_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}/move`,
+  REFRESH_LUN_DISK: (diskId) =>      `/api/v1/storages/disks/${diskId}/refreshLun`,
+  UPLOAD_DISK: (diskId) =>      `/api/v1/storages/disks/upload`,
+  //endregion: Disk
+  
 
   //region: Event
   FIND_ALL_EVENT: () => `/api/v1/events`,
