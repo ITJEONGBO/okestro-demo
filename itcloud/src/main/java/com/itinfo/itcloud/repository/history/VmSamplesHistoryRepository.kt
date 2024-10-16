@@ -13,23 +13,32 @@ interface VmSamplesHistoryRepository: JpaRepository<VmSamplesHistoryEntity, Int>
 	fun findFirstByVmIdOrderByHistoryDatetimeDesc(vmId: UUID): VmSamplesHistoryEntity
 
 	@Query(
-		value = """SELECT * FROM Vm_Samples_History v WHERE vm_status=1 and v.history_Datetime = 
-          (SELECT MAX(v2.history_Datetime) FROM Vm_Samples_History v2 WHERE v2.vm_Id = v.vm_Id)
-   ORDER BY v.cpu_Usage_Percent DESC""", nativeQuery = true
+//		value = """SELECT * FROM Vm_Samples_History v WHERE vm_status=1 and v.history_Datetime =
+//          (SELECT MAX(v2.history_Datetime) FROM Vm_Samples_History v2 WHERE v2.vm_Id = v.vm_Id)
+//   ORDER BY v.cpu_Usage_Percent DESC""", nativeQuery = true
+		value = """SELECT DISTINCT v.vm_id, v.* 
+			FROM Vm_Samples_History v 
+			JOIN vm_configuration c ON v.vm_id = c.vm_id WHERE v.vm_status = 1 
+			AND v.history_Datetime = ( SELECT MAX(v2.history_Datetime) FROM Vm_Samples_History v2 WHERE v2.vm_Id = v.vm_Id) 
+			AND NOT EXISTS (SELECT 1 FROM vm_configuration c2 WHERE c2.vm_id = v.vm_id AND c2.vm_name LIKE '%HostedEngineLocal%') 
+			ORDER BY v.cpu_Usage_Percent DESC""", nativeQuery = true
 	)
 	fun findVmCpuChart(page: Pageable?): List<VmSamplesHistoryEntity>
 
 	@Query(
-		value = """SELECT * FROM Vm_Samples_History v WHERE vm_status=1 and v.history_Datetime = 
-          (SELECT MAX(v2.history_Datetime) FROM Vm_Samples_History v2 WHERE v2.vm_Id = v.vm_Id)
-   ORDER BY v.memory_Usage_Percent DESC""", nativeQuery = true
+		value = """SELECT DISTINCT v.vm_id, v.* 
+			FROM Vm_Samples_History v 
+			JOIN vm_configuration c ON v.vm_id = c.vm_id WHERE v.vm_status = 1 
+			AND v.history_Datetime = ( SELECT MAX(v2.history_Datetime) FROM Vm_Samples_History v2 WHERE v2.vm_Id = v.vm_Id) 
+			AND NOT EXISTS (SELECT 1 FROM vm_configuration c2 WHERE c2.vm_id = v.vm_id AND c2.vm_name LIKE '%HostedEngineLocal%') 
+			ORDER BY v.cpu_Usage_Percent DESC""", nativeQuery = true
 	)
 	fun findVmMemoryChart(page: Pageable?): List<VmSamplesHistoryEntity>
 
 
-
 	// vm 사용량 순위
 	fun findFirstByVmStatusOrderByCpuUsagePercentDesc(vmStatus: Int): List<VmSamplesHistoryEntity>
+
 	/*
     WITH rounded_times AS (
     SELECT

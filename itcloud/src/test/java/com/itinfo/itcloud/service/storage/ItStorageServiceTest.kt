@@ -8,6 +8,7 @@ import com.itinfo.itcloud.model.storage.DiskImageVo
 import com.itinfo.itcloud.model.storage.DiskProfileVo
 import com.itinfo.itcloud.model.storage.HostStorageVo
 import com.itinfo.itcloud.model.storage.StorageDomainVo
+import com.itinfo.itcloud.service.storage.ItDiskServiceTest.Companion
 import org.apache.commons.fileupload.FileItem
 import org.apache.commons.fileupload.disk.DiskFileItem
 import org.apache.commons.io.IOUtils
@@ -358,6 +359,27 @@ class ItStorageServiceTest {
 		assertThat(result.size, `is`(0))
 	}
 
+
+
+	/**
+	 * [should_findAllDisksFromStorageDomain]
+	 * [ItStorageService.findAllDisksFromStorageDomain] 의 단위테스트
+	 *
+	 * @see [ItStorageService.findAllDisksFromStorageDomain]
+	 */
+	@Test
+	fun should_findAllDisksFromStorageDomain() {
+		log.debug("should_findAllDisksFromStorageDomain ... ")
+		val start = System.currentTimeMillis()
+		val result: List<DiskImageVo> =
+			service.findAllDisksFromStorageDomain(domainId)
+		val end = System.currentTimeMillis()
+
+//        log.info("수행시간: {}", end-start)
+		assertThat(result, `is`(not(nullValue())))
+		result.forEach { println(it) }
+		assertThat(result.size, `is`(15))
+	}
 
 	/**
 	 * [should_findAllDiskSnapshotsFromStorageDomain]

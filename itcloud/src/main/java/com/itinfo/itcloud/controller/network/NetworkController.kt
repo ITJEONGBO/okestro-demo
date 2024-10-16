@@ -168,7 +168,7 @@ class NetworkController: BaseController() {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@GetMapping("/import/settings/{}")
+	@GetMapping("/import/settings/{providerId}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	fun providers(
@@ -191,7 +191,7 @@ class NetworkController: BaseController() {
 	@ApiResponses(
 		ApiResponse(code = 200, message = "OK")
 	)
-	@GetMapping("/import/settingDatacenter/{}")
+	@GetMapping("/import/datacenters/{openstackNetworkId}")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	fun providersDatacenter(
@@ -334,6 +334,7 @@ class NetworkController: BaseController() {
 	@GetMapping("/{networkId}/permissions")
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
+	@Deprecated("사용안함")
 	fun permissions(
 		@PathVariable networkId: String? = null,
 	): ResponseEntity<List<PermissionVo>> {
@@ -495,7 +496,6 @@ class NetworkController: BaseController() {
 		log.info("/{}/vnicProfiles/{} ... vnic 프로파일 삭제", networkId, vnicProfileId)
 		return ResponseEntity.ok(iVnic.remove(vnicProfileId))
 	}
-
 
 
 	// endregion

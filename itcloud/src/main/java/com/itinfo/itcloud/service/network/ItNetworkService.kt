@@ -150,6 +150,7 @@ interface ItNetworkService {
 	 * @param networkId [String] 네트워크 아이디
 	 * @return List<[PermissionVo]>
 	 */
+	@Deprecated("사용안")
 	@Throws(Error::class)
 	fun findAllPermissionsFromNetwork(networkId: String): List<PermissionVo>
 }
@@ -320,6 +321,7 @@ class NetworkServiceImpl(
 		}
 	}
 
+	@Deprecated("사용안함")
 	@Throws(Error::class)
 	override fun findAllPermissionsFromNetwork(networkId: String): List<PermissionVo> {
 		log.info("findAllPermissionsFromNetwork ... ")

@@ -138,27 +138,44 @@ const ENDPOINTS = {
   ADD_TEMPLATE: () => `/api/v1/computing/templates`, 
   EDIT_TEMPLATE: (templateId) => `/api/v1/computing/templates/${templateId}`, 
   DELETE_TEMPLATE: (templateId) => `/api/v1/computing/templates/${templateId}`, 
-
   //endregion: Template
 
   //region: Network
   FIND_ALL_NETWORKS: () => `/api/v1/networks`,
   FIND_NETWORK: (networkId) => `/api/v1/networks/${networkId}`,
-  FIND_ALL_VNIC_PROFILES_FROM_NETWORK: (networkId) =>  `/api/v1/networks/${networkId}/vnics`,
-  FIND_ALL_CLUSTERS_FROM_NETWORK:(networkId) => `/api/v1/networks/${networkId}/clusters`,
-  FIND_ALL_HOST_FROM_NETWORK:(networkId) => `/api/v1/networks/${networkId}/hosts`,
-  FIND_ALL_VMS_FROM_NETWORK:(networkId) => `/api/v1/networks/${networkId}/vms`,
-  FIND_ALL_TEMPLATES_NETWORK:(networkId) => `/api/v1/networks/${networkId}/templates`,
-  FIND_ALL_PERMISSION_NETWORK:(networkId) => `/api/v1/networks/${networkId}/permissions`,
 
-  ADD_ALL_NETWORKS: () => `/api/v1/networks`,
+  FIND_ALL_VNIC_PROFILES: () =>  `/api/v1/networks/vnicProfiles`,
+  FIND_VNIC_PROFILES_FROM_NETWORK: (networkId) =>  `/api/v1/networks/${networkId}/vnicProfiles`,
+  FIND_VNIC_PROFILE_FROM_NETWORK: (networkId, vnicProfileId) =>  `/api/v1/networks/${networkId}/vnicProfiles/${vnicProfileId}`,
+  ADD_VNIC_PROFILE_FROM_NETWORK: (networkId) =>  `/api/v1/networks/${networkId}/vnicProfiles`,
+  EDIT_VNIC_PROFILE_FROM_NETWORK: (networkId, vnicProfileId) =>  `/api/v1/networks/${networkId}/vnicProfiles/${vnicProfileId}`,
+  DELETE_VNIC_PROFILE_FROM_NETWORK: (networkId, vnicProfileId) =>  `/api/v1/networks/${networkId}/vnicProfiles/${vnicProfileId}`,
+
+  FIND_CLUSTERS_FROM_NETWORK:(networkId) => `/api/v1/networks/${networkId}/clusters`,
+  FIND_HOSTS_FROM_NETWORK:(networkId) => `/api/v1/networks/${networkId}/hosts`,
+  FIND_VMS_FROM_NETWORK:(networkId) => `/api/v1/networks/${networkId}/vms`,
+  FIND_TEMPLATES_NETWORK:(networkId) => `/api/v1/networks/${networkId}/templates`,
+
+  ADD_NETWORK: () => `/api/v1/networks`,
   EDIT_NETWORK: (networkId) => `/api/v1/networks/${networkId}`,
   DELETE_NETWORK: (networkId) => `/api/v1/networks/${networkId}`,
+  FIND_NETWORK_PROVIDERS: () => `/api/v1/networks/import/settings`,
+  FIND_NETWORKS_FROM_PROVIDERS: (providerId) => `/api/v1/networks/import/settings/${providerId}`,
+  FIND_DATA_CENTERS_FROM_NETWORK: (openstackNetworkId) => `/api/v1/networks/import/datacenters/${openstackNetworkId}`,
+  IMPORT_NETWORK: () => `/api/v1/networks/import`,
   //endregion: Network
 
   //region: StorageDomain
-  FIND_ALL_DISK: () =>      `/api/v1/storages/disks`,
   FIND_ALL_STORAGE_DOMAINS: () => `/api/v1/storages/domains`,
+  FIND_STORAGE_DOMAIN: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}`,
+  FIND_STORAGE_DOMAINS_FROM_DATA_CENTER: (dataCenterId) => `/api/v1/storages/${dataCenterId}/domains`,
+
+  
+  FIND_EVENTS_FROM_STORAGE_DOMAINS: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/events`,
+
+  FIND_ALL_DISK: () =>      `/api/v1/storages/disks`,
+  FIND_DISKS_FROM_STORAGE_DOMAINS: (storageDomainId) => `/api/v1/storages/domains/${storageDomainId}/disks`,
+  
   //endregion: StorageDomain
 
   //region: Event

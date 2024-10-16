@@ -8,11 +8,13 @@ import com.itinfo.itcloud.repository.aaarepository.dto.TokenDto
 import com.itinfo.itcloud.repository.aaarepository.entity.*
 import com.itinfo.itcloud.error.toException
 import com.itinfo.itcloud.model.auth.UserVo
+import com.itinfo.itcloud.model.setting.UsersVo
 import com.itinfo.itcloud.ovirt.hashPassword
 import com.itinfo.itcloud.ovirt.validatePassword
 import com.itinfo.itcloud.service.BaseService
 import com.itinfo.util.ovirt.error.ErrorPattern
 import com.itinfo.util.ovirt.error.ItCloudException
+import org.ovirt.engine.sdk4.Error
 import org.postgresql.util.PSQLException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
@@ -117,6 +119,25 @@ interface ItOvirtUserService {
 	 */
 	@Throws(PSQLException::class)
 	fun remove(username: String, shouldDeleteAdminByForce: Boolean = false): Boolean
+
+	/**
+	 * [ItSettingService.findAllUser]
+	 * 활성 사용자 세션 목록
+	 *
+	 * @return List<[UsersVo]>
+	 */
+	@Throws(Error::class)
+	fun findAllUserSessions(): List<UsersVo>
+
+//    /**
+//     * [ItSettingService.findAllLicence]
+//     * 라이선스 목록
+//     *
+//     * @return List<[UsersVo]>
+//     */
+//    @Deprecated("나중구현")
+//    fun findAllLicence(): List<>
+
 }
 
 @Service
@@ -258,6 +279,10 @@ class OvirtUserServiceImpl(
 			userDetails.findByExternalId(user2Remove.uuid.toString()) ?: throw ErrorPattern.OVIRTUSER_NOT_FOUND.toException()
 		userDetails.delete(userDetail2Remove)
 		return true
+	}
+
+	override fun findAllUserSessions(): List<UsersVo> {
+		TODO("Not yet implemented")
 	}
 
 	companion object {

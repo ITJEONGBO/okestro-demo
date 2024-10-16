@@ -81,25 +81,6 @@ class ItDiskServiceTest {
         assertThat(result.size, `is`(49))
     }
 
-    /**
-     * [should_findAllFromStorageDomain]
-     * [ItDiskService.findAllFromStorageDomain] 의 단위테스트
-     *
-     * @see [ItDiskService.findAllFromStorageDomain]
-     */
-    @Test
-    fun should_findAllFromStorageDomain() {
-        log.debug("should_findAllFromStorageDomain ... ")
-        val start = System.currentTimeMillis()
-        val result: List<DiskImageVo> =
-            service.findAllFromStorageDomain(domainId)
-        val end = System.currentTimeMillis()
-
-//        log.info("수행시간: {}", end-start)
-        assertThat(result, `is`(not(nullValue())))
-        result.forEach { println(it) }
-        assertThat(result.size, `is`(15))
-    }
 
     /**
      * [should_findOne]

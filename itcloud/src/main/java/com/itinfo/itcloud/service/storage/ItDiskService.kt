@@ -44,16 +44,6 @@ interface ItDiskService {
     @Throws(Error::class)
     fun findAll(): List<DiskImageVo>
     /**
-     * [ItDiskService.findAllFromStorageDomain]
-     * 스토리지 도메인 - 디스크 목록
-     *
-     * @param storageDomainId [String] 스토리지 도메인 Id
-     * @return List<[DiskImageVo]> 디스크 목록
-     */
-    @Throws(Error::class)
-    fun findAllFromStorageDomain(storageDomainId: String): List<DiskImageVo>
-
-    /**
      * [ItDiskService.findOne]
      * 디스크 정보
      *
@@ -219,22 +209,6 @@ class DiskServiceImpl(
         }
     }
 
-    @Throws(Error::class)
-    override fun findAllFromStorageDomain(storageDomainId: String): List<DiskImageVo> {
-        log.info("findAllFromStorageDomain ... storageDomainId: {}", storageDomainId)
-        val res: List<Disk> =
-            conn.findAllDisksFromStorageDomain(storageDomainId)
-                .getOrDefault(listOf())
-
-        return res.map { disk ->
-            val diskVmElementEntityOpt: Optional<DiskVmElementEntity> =
-                diskVmElementRepository.findByDiskId(UUID.fromString(disk.id()))
-            val vmId: String =
-                diskVmElementEntityOpt.map { it.toVmId() }.orElse("")
-
-            disk.toDiskMenu(conn, vmId)
-        }
-    }
 
     @Throws(Error::class)
     override fun findOne(diskId: String): DiskImageVo? {

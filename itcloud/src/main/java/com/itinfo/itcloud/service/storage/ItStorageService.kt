@@ -7,13 +7,19 @@ import com.itinfo.itcloud.model.computing.*
 import com.itinfo.itcloud.model.setting.PermissionVo
 import com.itinfo.itcloud.model.setting.toPermissionVos
 import com.itinfo.itcloud.model.storage.*
+import com.itinfo.itcloud.repository.engine.DiskVmElementRepository
+import com.itinfo.itcloud.repository.engine.entity.DiskVmElementEntity
+import com.itinfo.itcloud.repository.engine.entity.toVmId
 import com.itinfo.itcloud.service.BaseService
+import com.itinfo.itcloud.service.storage.DiskServiceImpl.Companion
 import com.itinfo.util.ovirt.*
 import com.itinfo.util.ovirt.error.ErrorPattern
 import org.ovirt.engine.sdk4.builders.*
 import org.ovirt.engine.sdk4.services.*
 import org.ovirt.engine.sdk4.types.*
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.util.*
 
 import javax.net.ssl.*
 import kotlin.Error
@@ -103,7 +109,6 @@ interface ItStorageService {
 	 */
 	@Throws(Error::class)
 	fun remove(storageDomainId: String): Boolean
-	// Connection (?)
 	/**
 	 * [ItStorageService.destroy]
 	 * 도메인 파괴
@@ -176,6 +181,24 @@ interface ItStorageService {
 	@Throws(Error::class)
 	fun findAllVmsFromStorageDomain(storageDomainId: String): List<VmVo>
 	/**
+	 * [ItStorageService.findAllDisksFromStorageDomain]
+	 * 스토리지 도메인 - 디스크 목록
+	 *
+	 * @param storageDomainId [String] 스토리지 도메인 Id
+	 * @return List<[DiskImageVo]> 디스크 목록
+	 */
+	@Throws(Error::class)
+	fun findAllDisksFromStorageDomain(storageDomainId: String): List<DiskImageVo>
+	/**
+	 * [ItStorageService.findAllDiskSnapshotsFromStorageDomain]
+	 * 스토리지 도메인 - 디스크 스냅샷 목록
+	 *
+	 * @param storageDomainId [String] 스토리지 도메인 Id
+	 * @return List<[SnapshotDiskVo]> 디스크 스냅샷 목록
+	 */
+	@Throws(Error::class)
+	fun findAllDiskSnapshotsFromStorageDomain(storageDomainId: String): List<SnapshotDiskVo>
+	/**
 	 * [ItStorageService.findAllTemplatesFromStorageDomain]
 	 * 스토리지도메인 - 템플릿 목록
 	 *
@@ -186,16 +209,6 @@ interface ItStorageService {
 	fun findAllTemplatesFromStorageDomain(storageDomainId: String): List<TemplateVo>
 
 	// 스토리지 도메인 - 디스크 목록
-
-	/**
-	 * [ItStorageService.findAllDiskSnapshotsFromStorageDomain]
-	 * 스토리지 도메인 - 디스크 스냅샷 목록
-	 *
-	 * @param storageDomainId [String] 스토리지 도메인 Id
-	 * @return List<[SnapshotDiskVo]> 디스크 스냅샷 목록
-	 */
-	@Throws(Error::class)
-	fun findAllDiskSnapshotsFromStorageDomain(storageDomainId: String): List<SnapshotDiskVo>
 
 	/**
 	 * [ItStorageService.findAllDiskProfilesFromStorageDomain]
@@ -260,6 +273,8 @@ interface ItStorageService {
 class StorageServiceImpl(
 
 ): BaseService(), ItStorageService {
+
+	@Autowired private lateinit var diskVmElementRepository: DiskVmElementRepository
 
 	@Throws(Error::class)
 	override fun findAll(): List<StorageDomainVo> {
@@ -417,12 +432,22 @@ class StorageServiceImpl(
 		return res.toStorageDomainVms(conn, storageDomainId)
 	}
 
+
 	@Throws(Error::class)
-	override fun findAllTemplatesFromStorageDomain(storageDomainId: String): List<TemplateVo> {
-		log.info("findAllTemplatesFromStorageDomain ... storageDomainId: {}", storageDomainId)
-		val res: List<Template> =
-			conn.findAllTemplatesFromStorageDomain(storageDomainId).getOrDefault(listOf())
-		return res.toTemplatesMenu(conn)
+	override fun findAllDisksFromStorageDomain(storageDomainId: String): List<DiskImageVo> {
+		log.info("findAllDisksFromStorageDomain ... storageDomainId: {}", storageDomainId)
+		val res: List<Disk> =
+			conn.findAllDisksFromStorageDomain(storageDomainId)
+				.getOrDefault(listOf())
+
+		return res.map { disk ->
+			val diskVmElementEntityOpt: Optional<DiskVmElementEntity> =
+				diskVmElementRepository.findByDiskId(UUID.fromString(disk.id()))
+			val vmId: String =
+				diskVmElementEntityOpt.map { it.toVmId() }.orElse("")
+
+			disk.toDiskMenu(conn, vmId)
+		}
 	}
 
 	@Throws(Error::class)
@@ -434,6 +459,13 @@ class StorageServiceImpl(
 		return res.toSnapshotDiskVos(conn)
 	}
 
+	@Throws(Error::class)
+	override fun findAllTemplatesFromStorageDomain(storageDomainId: String): List<TemplateVo> {
+		log.info("findAllTemplatesFromStorageDomain ... storageDomainId: {}", storageDomainId)
+		val res: List<Template> =
+			conn.findAllTemplatesFromStorageDomain(storageDomainId).getOrDefault(listOf())
+		return res.toTemplatesMenu(conn)
+	}
 
 	@Throws(Error::class)
 	override fun findAllDiskProfilesFromStorageDomain(storageDomainId: String): List<DiskProfileVo> {
