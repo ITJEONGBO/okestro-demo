@@ -20,22 +20,31 @@ import Path from '../Header/Path';
 import PagingTableOuter from '../table/PagingTableOuter';
 
 function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
-  const {id, name } = useParams();
+  const {id, name,section } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('general');
 
   const handleTabClick = (tab) => {
-    setActiveTab(tab); // 탭 상태 업데이트
-    navigate(`/storages/domains/${id}/${tab}`); // URL을 탭에 맞게 업데이트
-  };
-  useEffect(() => {
-    const pathSection = location.pathname.split('/').pop();
-    if (pathSection !== activeTab) {
-      setActiveTab(pathSection);
+    setActiveTab(tab);
+    if (tab !== 'general') {
+      navigate(`/storages/domains/${id}/${tab}`); // 'general'이 아닐 경우 해당 탭을 URL에 추가
+    } else {
+      navigate(`/storages/domains/${id}`); // 'general' 탭은 URL에 아무것도 추가하지 않음
     }
-  }, [location.pathname, activeTab]);
+  };
+
+  // URL의 마지막 부분에 따라 탭 설정
+  useEffect(() => {
+    if (!section) {
+      setActiveTab('general'); // section이 없으면 기본적으로 'general'
+    } else {
+      setActiveTab(section); // section이 있으면 해당 값으로 탭 설정
+    }
+  }, [section]); // section이 변경될 때마다 실행
   
+
+
     //클릭한 이름 받아오기
     const handlePermissionFilterClick = (filter) => {
       setActivePermissionFilter(filter);

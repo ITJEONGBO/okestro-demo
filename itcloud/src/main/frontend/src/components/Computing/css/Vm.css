@@ -1394,7 +1394,7 @@ input[disabled] {
 .edit_first_content>div{
     display: flex;
     justify-content: space-between;
-    padding: 0.24rem;
+    padding: 0.25rem 0.29rem;
 }
 .edit_first_content>div:first-child{
     margin-bottom: 0.4rem;
@@ -1470,7 +1470,7 @@ input[disabled] {
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 45%;
+    height: 42%;
     width: 70%;
     font-size: 0.33rem;
     left: 50%;
@@ -1494,6 +1494,7 @@ input[disabled] {
 #migration_dropdown{
     display: flex;
     justify-content: space-between;
+    margin-bottom:0.2rem;
 }
 #migration_dropdown>label{
     padding:11px 0;

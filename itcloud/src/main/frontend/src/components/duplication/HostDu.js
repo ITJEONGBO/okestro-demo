@@ -151,7 +151,7 @@ const closePopup = () => {
                   </div>
             </div>
 
-          <div className='py-1'>
+          <div className='px-0.5 py-1'>
             <div className='host_checkboxs'>
               <div className='host_checkbox'>
                   <input type="checkbox" id="memory_balloon" name="memory_balloon" />

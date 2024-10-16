@@ -108,7 +108,7 @@ const Host = () => {
   const handleRowClick = (row, column) => {
     if (column.accessor === 'name') {
       navigate(       
-        `/computing/host/${row.id}`,
+        `/computing/hosts/${row.id}`,
         { state: { name: row.name } });
     }
   };

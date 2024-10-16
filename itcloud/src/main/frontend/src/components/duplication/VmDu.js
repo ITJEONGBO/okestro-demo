@@ -1416,7 +1416,7 @@ const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActi
                   </div>
                 </div>
 
-                <div className="checkbox_group">
+                <div className="checkbox_group mb-2">
                     <input className="check_input" type="checkbox" value="" id="ha_mode_box" />
                     <label className="check_label" htmlFor="ha_mode_box">
                     선택한 가상 머신을 사용하여 양극 강제 연결 그룹의 모든 가상 시스템을 마이그레이션합니다.

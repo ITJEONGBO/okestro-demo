@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {useLocation } from 'react-router-dom';
+import {useParams, useNavigate, useLocation } from 'react-router-dom';
 import Modal from 'react-modal';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
@@ -23,6 +23,28 @@ import PagingTableOuter from '../table/PagingTableOuter';
 import Path from '../Header/Path';
 
 const Setting = ({ }) => {
+    const { section } = useParams();
+    const navigate = useNavigate();
+
+    const [activeTab, setActiveTab] = useState('user');
+    const handleTabClick = (tab) => {
+        setActiveTab(tab); 
+        if (tab !== 'user') {
+          navigate(`/settings/${tab}`); 
+        } else {
+          navigate('/settings'); 
+        }
+      };
+    
+      useEffect(() => {
+        if (!section) {
+          setActiveTab('user'); 
+        } else {
+          setActiveTab(section);
+        }
+      }, [section]);
+
+
     // 활성사용사세션 데이터
     const sessionData = [
       {
@@ -47,7 +69,6 @@ const Setting = ({ }) => {
             email: 'dfajkdf@3kfakdl', 
         },
     ];
-    // 설정팝업!!!
     //스케줄링정책
     const userRadioData = [
         {
@@ -73,23 +94,14 @@ const Setting = ({ }) => {
         },
     ];
 
-  const location = useLocation();
-  const locationState = location.state; 
 
   const [showNetworkDetail, setShowNetworkDetail] = useState(false);
-  const [activeTab, setActiveTab] = useState('user');
   const [settingPopupOpen, setSettingPopupOpen] = useState(false);
   const [activePopup, setActivePopup] = useState(null);
   const [isNewRolePopupOpen, setIsNewRolePopupOpen] = useState(false);
   const [activeSettingForm, setActiveSettingForm] = useState('part');
 
-  const handleTabClick = (tab) => {
-    if (tab === 'app_settings') {
-      setActiveTab(tab); // 설정 탭 클릭 시 모달 표시
-    } else {
-      setActiveTab(tab); // 다른 탭 클릭 시 기본 동작
-    }
-  };
+
   const openSettingPopup = () => setSettingPopupOpen(true);
   // 새로 만들기 버튼 클릭 시
   const openNewRolePopup = () => setIsNewRolePopupOpen(true); // 새 역할 팝업 열기
@@ -278,166 +290,166 @@ const Setting = ({ }) => {
                     </>
                 )}
 
-                {/* 설정 */}
-                {/* {activeTab === 'app_settings' && !isNewRolePopupOpen &&(
-                  <Modal
-                     isOpen={true}
-                     onRequestClose={closeSettingPopup}
-                     contentLabel="설정"
-                     className="Modal"
-                     overlayClassName="Overlay"
-                     shouldCloseOnOverlayClick={true}
-                 >
-                     <div className="setting_setting_popup">
-                         <div className="popup_header">
-                             <h1>설정</h1>
-                             <button onClick={closeSettingPopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-                         </div>
+                    {/* 설정 */}
+                    {/* {activeTab === 'app_settings' && !isNewRolePopupOpen &&(
+                    <Modal
+                        isOpen={true}
+                        onRequestClose={closeSettingPopup}
+                        contentLabel="설정"
+                        className="Modal"
+                        overlayClassName="Overlay"
+                        shouldCloseOnOverlayClick={true}
+                    >
+                        <div className="setting_setting_popup">
+                            <div className="popup_header">
+                                <h1>설정</h1>
+                                <button onClick={closeSettingPopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                            </div>
 
-                    <div className='flex'>
-                         <div className="network_new_nav">
-                             <div id="setting_part_btn" className={activeSettingForm === 'part' ? 'active' : ''} onClick={() => handleSettingNavClick('part')}>역할</div>
-                             <div id="setting_system_btn" className={activeSettingForm === 'system' ? 'active' : ''} onClick={() => handleSettingNavClick('system')}>시스템 권한</div>
-                             <div id="setting_schedule_btn" className={activeSettingForm === 'schedule' ? 'active' : ''} onClick={() => handleSettingNavClick('schedule')}>스케줄링 정책</div>
-                             <div id="setting_instant_btn" className={activeSettingForm === 'instant' ? 'active' : ''} onClick={() => handleSettingNavClick('instant')}>인스턴스 유형</div>
-                             <div id="setting_mac_btn" className={activeSettingForm === 'mac' ? 'active' : ''} onClick={() => handleSettingNavClick('mac')}>MAC주소 풀</div>
-                         </div>
-         
-                         {activeSettingForm === 'part' && (
-                             <form id="setting_part_form">
-                                 <div>보기</div>
-                                 <div className="setting_part_nav">
-                                     <div className="radio_toolbar">
-                                         <div>
-                                             <input type="radio" id="all_roles" name="roles" value="all" defaultChecked />
-                                             <label htmlFor="all_roles">모든역할</label>
-                                         </div>
-                                         <div>
-                                             <input type="radio" id="admin_roles" name="roles" value="admin" />
-                                             <label htmlFor="admin_roles">관리자 역할</label>
-                                         </div>
-                                         <div>
-                                             <input type="radio" id="user_roles" name="roles" value="user" />
-                                             <label htmlFor="user_roles">사용자 역할</label>
-                                         </div>
-                                     </div>
-         
-                                     <div className="setting_buttons">
-                                         <div id="setting_part_new_btn" onClick={() => openPopup('newRole')}>새로 만들기</div>
-                                         <div>편집</div>
-                                         <div>복사</div>
-                                         <div>삭제</div>
-                                     </div>
-                                 </div>
-         
-                                 <div className="setting_part_table_outer" style={{ borderBottom: 'none' }}>
-                                     <TableOuter
-                                        columns={TableColumnsInfo.SETTING_ROLE}
-                                        data={userRadioData}
-                                        onRowClick={() => console.log('Row clicked')}
-                                    />
-                                 </div>
-                             </form>
-                         )}
-         
-                         {activeSettingForm === 'system' && (
-                             <form id="setting_system_form">
-                                 <div className="setting_part_nav">
-                                     <div className="setting_buttons">
-                                         <div id="setting_system_add_btn" onClick={() => openPopup('addSystemRole')}>추가</div>
-                                         <div>제거</div>
-                                     </div>
-                                 </div>
-         
-                                 <div className="setting_part_table_outer" style={{ borderBottom: 'none' }}>
-                                     <TableOuter
-                                        columns={TableColumnsInfo.SETTING_SYSTEM}
-                                        data={systemData}
-                                        onRowClick={() => console.log('Row clicked')}
-                                    />
-                                 </div>
-                             </form>
-                         )}
-         
-                         {activeSettingForm === 'schedule' && (
-                             <form id="setting_schedule_form">
-                                 <div className="setting_part_nav">
-                                     <div className="setting_buttons">
-                                         <div id="setting_schedule_new_btn" onClick={() => openPopup('newSchedule')}>새로 만들기</div>
-                                         <div>편집</div>
-                                         <div>복사</div>
-                                         <div>제거</div>
-                                         <div id="setting_schedule_unit">정책 유닛 관리</div>
-                                     </div>
-                                 </div>
-         
-                                 <div className="setting_part_table_outer" style={{ borderBottom: 'none' }}>
-                                     <TableOuter
-                                        columns={TableColumnsInfo.SETTING_ROLE}
-                                        data={userRadioData}
-                                        onRowClick={() => console.log('Row clicked')}
-                                    />
-                                 </div>
-                             </form>
-                         )}
-                 
-                         {activeSettingForm === 'instant' && (
-                             <form id="setting_instant_form">
-                                 <div className="setting_part_nav">
-                                     <div className="setting_buttons">
-                                         <div id="setting_instant_new_btn">새로 만들기</div>
-                                         <div>편집</div>
-                                         <div>제거</div>
-                                     </div>
-                                 </div>
-         
-                                 <div className="setting_part_table_outer">
-                                 <TableOuter
-                                        columns={TableColumnsInfo.SETTING_INSTANCE}
-                                        data={instanceData}
-                                        onRowClick={() => console.log('Row clicked')}
-                                    />
-                                 </div>
-                             </form>
-                         )}
-         
-                         {activeSettingForm === 'mac' && (
-                             <form id="setting_mac_form">
-                                 <div className="setting_part_nav">
-                                     <div className="setting_buttons">
-                                         <div id="setting_mac_new_btn" onClick={() => openPopup('macNew')}>추가</div>
-                                         <div id="setting_mac_edit_btn" onClick={() => openPopup('macEdit')}>편집</div>
-                                         <div>제거</div>
-                                     </div>
-                                 </div>
-                               
-                                 <div className="setting_part_table_outer" style={{ borderBottom: 'none' }}>
-                                     <TableOuter
-                                        columns={TableColumnsInfo.SETTING_USER}
-                                        data={userRadioData}
-                                        onRowClick={() => console.log('Row clicked')}
-                                    />
-                                 </div>
-         
-                                 <div className="setting_part_table_outer">
+                        <div className='flex'>
+                            <div className="network_new_nav">
+                                <div id="setting_part_btn" className={activeSettingForm === 'part' ? 'active' : ''} onClick={() => handleSettingNavClick('part')}>역할</div>
+                                <div id="setting_system_btn" className={activeSettingForm === 'system' ? 'active' : ''} onClick={() => handleSettingNavClick('system')}>시스템 권한</div>
+                                <div id="setting_schedule_btn" className={activeSettingForm === 'schedule' ? 'active' : ''} onClick={() => handleSettingNavClick('schedule')}>스케줄링 정책</div>
+                                <div id="setting_instant_btn" className={activeSettingForm === 'instant' ? 'active' : ''} onClick={() => handleSettingNavClick('instant')}>인스턴스 유형</div>
+                                <div id="setting_mac_btn" className={activeSettingForm === 'mac' ? 'active' : ''} onClick={() => handleSettingNavClick('mac')}>MAC주소 풀</div>
+                            </div>
+            
+                            {activeSettingForm === 'part' && (
+                                <form id="setting_part_form">
+                                    <div>보기</div>
+                                    <div className="setting_part_nav">
+                                        <div className="radio_toolbar">
+                                            <div>
+                                                <input type="radio" id="all_roles" name="roles" value="all" defaultChecked />
+                                                <label htmlFor="all_roles">모든역할</label>
+                                            </div>
+                                            <div>
+                                                <input type="radio" id="admin_roles" name="roles" value="admin" />
+                                                <label htmlFor="admin_roles">관리자 역할</label>
+                                            </div>
+                                            <div>
+                                                <input type="radio" id="user_roles" name="roles" value="user" />
+                                                <label htmlFor="user_roles">사용자 역할</label>
+                                            </div>
+                                        </div>
+            
+                                        <div className="setting_buttons">
+                                            <div id="setting_part_new_btn" onClick={() => openPopup('newRole')}>새로 만들기</div>
+                                            <div>편집</div>
+                                            <div>복사</div>
+                                            <div>삭제</div>
+                                        </div>
+                                    </div>
+            
+                                    <div className="setting_part_table_outer" style={{ borderBottom: 'none' }}>
+                                        <TableOuter
+                                            columns={TableColumnsInfo.SETTING_ROLE}
+                                            data={userRadioData}
+                                            onRowClick={() => console.log('Row clicked')}
+                                        />
+                                    </div>
+                                </form>
+                            )}
+            
+                            {activeSettingForm === 'system' && (
+                                <form id="setting_system_form">
+                                    <div className="setting_part_nav">
+                                        <div className="setting_buttons">
+                                            <div id="setting_system_add_btn" onClick={() => openPopup('addSystemRole')}>추가</div>
+                                            <div>제거</div>
+                                        </div>
+                                    </div>
+            
+                                    <div className="setting_part_table_outer" style={{ borderBottom: 'none' }}>
+                                        <TableOuter
+                                            columns={TableColumnsInfo.SETTING_SYSTEM}
+                                            data={systemData}
+                                            onRowClick={() => console.log('Row clicked')}
+                                        />
+                                    </div>
+                                </form>
+                            )}
+            
+                            {activeSettingForm === 'schedule' && (
+                                <form id="setting_schedule_form">
+                                    <div className="setting_part_nav">
+                                        <div className="setting_buttons">
+                                            <div id="setting_schedule_new_btn" onClick={() => openPopup('newSchedule')}>새로 만들기</div>
+                                            <div>편집</div>
+                                            <div>복사</div>
+                                            <div>제거</div>
+                                            <div id="setting_schedule_unit">정책 유닛 관리</div>
+                                        </div>
+                                    </div>
+            
+                                    <div className="setting_part_table_outer" style={{ borderBottom: 'none' }}>
+                                        <TableOuter
+                                            columns={TableColumnsInfo.SETTING_ROLE}
+                                            data={userRadioData}
+                                            onRowClick={() => console.log('Row clicked')}
+                                        />
+                                    </div>
+                                </form>
+                            )}
+                    
+                            {activeSettingForm === 'instant' && (
+                                <form id="setting_instant_form">
+                                    <div className="setting_part_nav">
+                                        <div className="setting_buttons">
+                                            <div id="setting_instant_new_btn">새로 만들기</div>
+                                            <div>편집</div>
+                                            <div>제거</div>
+                                        </div>
+                                    </div>
+            
+                                    <div className="setting_part_table_outer">
                                     <TableOuter
-                                        columns={TableColumnsInfo.SETTING_SYSTEM}
-                                        data={systemData}
-                                        onRowClick={() => console.log('Row clicked')}
-                                    />
-                                 </div>
-                             </form>
-                         )}
-                    </div>
-                         <div className="edit_footer">
-                             <button style={{ display: 'none' }} onClick={closeSettingPopup}></button>
-                             <button>OK</button>
-                             <button onClick={closeSettingPopup}>취소</button>
-                         </div>
-         
-                     </div>
-                  </Modal>
-                )} */}
+                                            columns={TableColumnsInfo.SETTING_INSTANCE}
+                                            data={instanceData}
+                                            onRowClick={() => console.log('Row clicked')}
+                                        />
+                                    </div>
+                                </form>
+                            )}
+            
+                            {activeSettingForm === 'mac' && (
+                                <form id="setting_mac_form">
+                                    <div className="setting_part_nav">
+                                        <div className="setting_buttons">
+                                            <div id="setting_mac_new_btn" onClick={() => openPopup('macNew')}>추가</div>
+                                            <div id="setting_mac_edit_btn" onClick={() => openPopup('macEdit')}>편집</div>
+                                            <div>제거</div>
+                                        </div>
+                                    </div>
+                                
+                                    <div className="setting_part_table_outer" style={{ borderBottom: 'none' }}>
+                                        <TableOuter
+                                            columns={TableColumnsInfo.SETTING_USER}
+                                            data={userRadioData}
+                                            onRowClick={() => console.log('Row clicked')}
+                                        />
+                                    </div>
+            
+                                    <div className="setting_part_table_outer">
+                                        <TableOuter
+                                            columns={TableColumnsInfo.SETTING_SYSTEM}
+                                            data={systemData}
+                                            onRowClick={() => console.log('Row clicked')}
+                                        />
+                                    </div>
+                                </form>
+                            )}
+                        </div>
+                            <div className="edit_footer">
+                                <button style={{ display: 'none' }} onClick={closeSettingPopup}></button>
+                                <button>OK</button>
+                                <button onClick={closeSettingPopup}>취소</button>
+                            </div>
+            
+                        </div>
+                    </Modal>
+                    )} */}
 
                     {/* 설정팝업 역할(새로만들기 팝업) */}
                     {/* <Modal
@@ -522,7 +534,7 @@ const Setting = ({ }) => {
                     </Modal> */}
 
                     {/* 설정팝업 시스템권한(추가 팝업) */}
-                  {/* <Modal
+                    {/* <Modal
                         isOpen={activePopup === 'addSystemRole'}
                         onRequestClose={closePopup}
                         contentLabel="추가"
@@ -791,93 +803,93 @@ const Setting = ({ }) => {
 
                     </Modal> */}
               
-              {/* 계정설정 */}
-                {/* {activeTab === 'user_sessionInfo' && (
-                 <Modal
-                 isOpen={true}
-                 onRequestClose={closeSettingPopup}
-                 contentLabel="계정 설정"
-                 className="Modal"
-                 overlayClassName="Overlay"
-                 shouldCloseOnOverlayClick={true}
-             >
-                 <div className="user_sessionInfo_popup">
-                     <div className="popup_header">
-                         <h1>계정 설정</h1>
-                         <button onClick={closeSettingPopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
-                     </div>
-     
-                     <div className="network_new_nav">
-                         <div id="setting_part_btn" className={activeSettingForm === 'part' ? 'active' : ''} onClick={() => handleSettingNavClick('part')}>일반</div>
-                         <div id="setting_system_btn" className={activeSettingForm === 'system' ? 'active' : ''} onClick={() => handleSettingNavClick('system')}>Confirmations</div>
-                     </div>
-     
-                     {activeSettingForm === 'part' && (
-                         <form>
-                             <div className='setting_name_email'>
-                                <div>
-                                    <span>사용자 이름</span>
-                                    <span>admin</span>
-                                </div>
-                                <div>
-                                    <span>이메일</span>
-                                    <span>admin@localhost</span>
-                                </div>
-                             </div>
-                             <div className='setting_homepage'>
-                                <div className='font-extrabold'>Home Page</div>
-                                <div className='host_radiobox'>
-                                    <input type="radio" id="ssh_key" name="name_option" />
-                                    <label htmlFor="ssh_key">Default (#dashboard-main)</label>
-                                </div>
-                                <div className='host_radiobox'>
-                                    <input type="radio" id="ssh_key" name="name_option" />
-                                    <label htmlFor="ssh_key">Custom home page</label>
-                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
-                                </div>
-                                <input type='text'/>
-                             </div>
+                    {/* 계정설정 */}
+                        {/* {activeTab === 'user_sessionInfo' && (
+                        <Modal
+                        isOpen={true}
+                        onRequestClose={closeSettingPopup}
+                        contentLabel="계정 설정"
+                        className="Modal"
+                        overlayClassName="Overlay"
+                        shouldCloseOnOverlayClick={true}
+                    >
+                        <div className="user_sessionInfo_popup">
+                            <div className="popup_header">
+                                <h1>계정 설정</h1>
+                                <button onClick={closeSettingPopup}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                            </div>
+            
+                            <div className="network_new_nav">
+                                <div id="setting_part_btn" className={activeSettingForm === 'part' ? 'active' : ''} onClick={() => handleSettingNavClick('part')}>일반</div>
+                                <div id="setting_system_btn" className={activeSettingForm === 'system' ? 'active' : ''} onClick={() => handleSettingNavClick('system')}>Confirmations</div>
+                            </div>
+            
+                            {activeSettingForm === 'part' && (
+                                <form>
+                                    <div className='setting_name_email'>
+                                        <div>
+                                            <span>사용자 이름</span>
+                                            <span>admin</span>
+                                        </div>
+                                        <div>
+                                            <span>이메일</span>
+                                            <span>admin@localhost</span>
+                                        </div>
+                                    </div>
+                                    <div className='setting_homepage'>
+                                        <div className='font-extrabold'>Home Page</div>
+                                        <div className='host_radiobox'>
+                                            <input type="radio" id="ssh_key" name="name_option" />
+                                            <label htmlFor="ssh_key">Default (#dashboard-main)</label>
+                                        </div>
+                                        <div className='host_radiobox'>
+                                            <input type="radio" id="ssh_key" name="name_option" />
+                                            <label htmlFor="ssh_key">Custom home page</label>
+                                            <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                        </div>
+                                        <input type='text'/>
+                                    </div>
 
-                             <div className='serial_console'>
-                                <div className='font-extrabold'>Serial Console</div>
-                                <div>
-                                    사용자의 공개키
-                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
-                                </div>
-                                <input className='serial_console_text' type='text'/>
-                             </div>
-                             <div className='serial_console'>
-                                <div className='font-extrabold'>Tables</div>
-                                <div className='flex'>
-                                    <input type="checkbox" id="enable_forwarding" name="enable_forwarding" />
-                                    <label htmlFor="enable_forwarding">그리드 설정을 유지</label>
-                                    <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
-                                </div>
+                                    <div className='serial_console'>
+                                        <div className='font-extrabold'>Serial Console</div>
+                                        <div>
+                                            사용자의 공개키
+                                            <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                        </div>
+                                        <input className='serial_console_text' type='text'/>
+                                    </div>
+                                    <div className='serial_console'>
+                                        <div className='font-extrabold'>Tables</div>
+                                        <div className='flex'>
+                                            <input type="checkbox" id="enable_forwarding" name="enable_forwarding" />
+                                            <label htmlFor="enable_forwarding">그리드 설정을 유지</label>
+                                            <FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/> 
+                                        </div>
+                                        
+                                    </div>
+            
                                 
-                             </div>
-     
-                           
-                         </form>
-                     )}
-     
-                    {activeSettingForm === 'system' && (
-                    <div className='text-sm p-1.5 flex'>
-                        <input type="checkbox" id="enable_forwarding" name="enable_forwarding" />
-                        <label htmlFor="enable_forwarding">Show confirmation dialog on Suspend VM</label>
-                    </div>
-                     )}
-     
-                
-     
-                     <div className="edit_footer">
-                         <button style={{ display: 'none' }} onClick={closeSettingPopup}></button>
-                         <button>OK</button>
-                         <button onClick={closeSettingPopup}>취소</button>
-                     </div>
-     
-                 </div>
-              </Modal>
-              )} */}
+                                </form>
+                            )}
+            
+                            {activeSettingForm === 'system' && (
+                            <div className='text-sm p-1.5 flex'>
+                                <input type="checkbox" id="enable_forwarding" name="enable_forwarding" />
+                                <label htmlFor="enable_forwarding">Show confirmation dialog on Suspend VM</label>
+                            </div>
+                            )}
+            
+                        
+            
+                            <div className="edit_footer">
+                                <button style={{ display: 'none' }} onClick={closeSettingPopup}></button>
+                                <button>OK</button>
+                                <button onClick={closeSettingPopup}>취소</button>
+                            </div>
+            
+                        </div>
+                    </Modal>
+                    )} */}
 
 
 

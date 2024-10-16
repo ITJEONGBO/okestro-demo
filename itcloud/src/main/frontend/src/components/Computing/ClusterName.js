@@ -23,10 +23,27 @@ import VmDu from '../duplication/VmDu.js';
 import EventDu from '../duplication/EventDu.js';
 
 function ClusterName() {
-    const { id } = useParams();
+    const { id , section} = useParams();
     const [activeTab, setActiveTab] = useState('general');
     const navigate = useNavigate();
     const location = useLocation();
+
+    const handleTabClick = (tab) => {
+        setActiveTab(tab);
+        if (tab !== 'general') {
+          navigate(`/computing/clusters/${id}/${tab}`); 
+        } else {
+          navigate(`/computing/clusters/${id}`); 
+        }
+      };
+      useEffect(() => {
+        if (!section) {
+          setActiveTab('general'); 
+        } else {
+          setActiveTab(section);
+        }
+      }, [section]);
+
     const locationState = location.state; 
     const [shouldRefresh, setShouldRefresh] = useState(false);
     const [showNetworkDetail, setShowNetworkDetail] = useState(false);
@@ -34,19 +51,7 @@ function ClusterName() {
     const [selectedTab, setSelectedTab] = useState('network_new_common_btn');
     const [selectedPopupTab, setSelectedPopupTab] = useState('cluster_common_btn');
     const [secondModalOpen, setSecondModalOpen] = useState(false); // 추가 모달 상태
-    const handleTabClick = (tab) => {
-        setActiveTab(tab);
-        setShowNetworkDetail(false); // 탭이 변경되면 NetworkDetail 화면을 숨김
-        localStorage.setItem('activeTab', tab); // 새로고침해도 값유지
-    };
-    useEffect(() => {
-        const savedTab = localStorage.getItem('activeTab');
-        if (savedTab) {
-            setActiveTab(savedTab);  // 저장된 값이 있으면 해당 탭을 활성화
-        } else {
-            setActiveTab('general');  // 저장된 값이 없으면 '일반' 탭을 기본값으로 설정
-        }
-    }, []);
+
 
     // 모달 관련 상태 및 함수
     const openPopup = (popupType) => {

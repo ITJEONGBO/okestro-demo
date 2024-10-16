@@ -49,7 +49,7 @@ const Network = () => {
         console.log(`handleNetworkNameClick ... id: ${row.id}`)
         if (column.accessor === 'name') {
             navigate(
-              `/networks/${row.id}/general`, 
+              `/networks/${row.id}`, 
               { state: { name: row.name } }
             );
         }

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
 import TableOuter from '../table/TableOuter';
@@ -21,7 +20,7 @@ import PagingTableOuter from '../table/PagingTableOuter';
 function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
   const navigate = useNavigate();
   const { name, id,section } = useParams();
-
+  const location = useLocation();
 
   const [activeTab, setActiveTab] = useState('general'); // 초기값을 URL의 section으로 설정
   const [activePermissionFilter, setActivePermissionFilter] = useState('all');
@@ -30,18 +29,23 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
   const [modalTab, setModalTab] = useState('img'); // 모달 창 내 탭 관리
 
   const handlePermissionFilterClick = (filter) => setActivePermissionFilter(filter);
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-    navigate(`/storages/disks/${id}/${tab}`);
-  };
   useEffect(() => {
-    if (section) {
-      setActiveTab(section);
+    if (!section) {
+      setActiveTab('general'); // section이 없으면 기본적으로 general 설정
     } else {
-      setActiveTab('general'); // section 값이 없을 때 기본값으로 'general'
+      setActiveTab(section);
     }
   }, [section]);
-  
+
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    if (tab !== 'general') {
+      navigate(`/storages/disks/${id}/${tab}`);
+    } else {
+      navigate(`/storages/disks/${id}`);
+    }
+  };
+
   const handleOpenModal = () => setIsModalOpen(true); // 모달 열기
   const handleCloseModal = () => setIsModalOpen(false); // 모달 닫기
 
@@ -136,7 +140,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
       <HeaderButton
         titleIcon={faHdd}
         title="디스크"
-        subtitle="#"
+        subtitle={disk?.name}
         additionalText={name}
         buttons={buttons}
         popupItems={[]}
@@ -150,9 +154,10 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
           activeSection={activeTab} 
           handleSectionClick={handleTabClick} 
         />
+        
         <div className="host_btn_outer">
           <Path pathElements={pathData} />
-          {activeTab === 'general' && (
+          {activeTab ===  'general' && (
             <div className="tables">
               <div className="table_container_center">
                 <table className="table">

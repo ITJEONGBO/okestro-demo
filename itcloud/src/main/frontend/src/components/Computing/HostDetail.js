@@ -1,5 +1,5 @@
 import React, { useState , useEffect} from 'react';
-import { useParams } from 'react-router-dom';
+import {useParams, useNavigate, useLocation } from 'react-router-dom';
 import Modal from 'react-modal';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
@@ -40,7 +40,26 @@ import EventDu from '../duplication/EventDu.js';
 
 
 function HostDetail() {
-  const { id } = useParams();
+  const { id,section } = useParams();
+  const [activeTab, setActiveTab] = useState('general');
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    if (tab !== 'general') {
+      navigate(`/computing/hosts/${id}/${tab}`); 
+    } else {
+      navigate(`/computing/hosts/${id}`); 
+    }
+  };
+  useEffect(() => {
+    if (!section) {
+      setActiveTab('general'); 
+    } else {
+      setActiveTab(section);
+    }
+  }, [section]);
 
   //클릭한 이름 받아오기
   const handlePermissionFilterClick = (filter) => {
@@ -114,7 +133,6 @@ function HostDetail() {
     error: networkError, 
     isLoading: isNetworkLoading,
   } = useHostById(id);
-
 
   const [activePermissionFilter, setActivePermissionFilter] = useState('all');
     //테이블컴포넌트
@@ -262,19 +280,8 @@ function HostDetail() {
       }
 
     //
-    const [activeTab, setActiveTab] = useState('general');
-    const handleTabClick = (tab) => {
-        setActiveTab(tab);
-        localStorage.setItem('activeTab', tab); // 새로고침해도 값유지
-    };
-    useEffect(() => {
-      const savedTab = localStorage.getItem('activeTab');
-      if (savedTab) {
-          setActiveTab(savedTab);  // 저장된 값이 있으면 해당 탭을 활성화
-      } else {
-          setActiveTab('general');  // 저장된 값이 없으면 '일반' 탭을 기본값으로 설정
-      }
-  }, []);
+ 
+
 
   // 토글 방식으로 열고 닫기(관리)
   const [isManageBoxVisible, setIsManageBoxVisible] = useState(false);
@@ -649,18 +656,17 @@ function HostDetail() {
                     />
                 </div>
                 )}
-                  {/* 템플릿 */}
-                  {activeTab === 'template' && (
-                    <div className="host_btn_outer">
-                    <Path pathElements={pathData}/>
-                                    
-                                    <TemplateDu 
-                                    data={['#']} 
-                                    columns={TableColumnsInfo.TEMPLATE_CHART} 
-                                    handleRowClick={() => console.log("Row clicked")}  
-                                />
-                                </div>
-                   )}
+                {/* 템플릿 */}
+                {activeTab === 'template' && (
+                  <div className="host_btn_outer">
+                    <Path pathElements={pathData}/>  
+                    <TemplateDu 
+                      data={['#']} 
+                      columns={TableColumnsInfo.TEMPLATE_CHART} 
+                      handleRowClick={() => console.log("Row clicked")}  
+                    />
+                   </div>
+                  )}
 
                 {/* 네트워크 인터페이스 */}
                 {activeTab === 'networkinterface' && (

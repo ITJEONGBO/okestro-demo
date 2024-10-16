@@ -104,25 +104,38 @@ const App = () => {
             <Route path="/" element={<Dashboard />} />
               <Route path="/computing/datacenters" element={<Computing />} />
               <Route path="/computing/datacenters/:id" element={<DataCenter />} />
-              <Route path="/settings" element={<Setting />} />
+              
               <Route path="/computing/vms" element={<AllVm />} />
               <Route path="/computing/vms/:id" element={<Vm />} />
               <Route path="/computing/vms/:id/:section" element={<Vm />} />
+              
               <Route path="/computing/host" element={<Host />} />
               <Route path="/computing/hosts/:id" element={<HostDetail />}/>
-              {/* 데이터센터아이디 추가<Route path="/computing/vms" element={<VmTemplateChart />} /> */}
+              <Route path="/computing/hosts/:id/:section" element={<HostDetail />}/>
+
               <Route path="/computing/templates" element={<Templates />} />
               <Route path="/computing/templates/:id" element={<TemplateDetail />} />
+
               <Route path="/computing/clusters" element={<Cluster />} />
-              <Route path="/computing/clusters/:id" element={<ClusterName />} /> 
+              <Route path="/computing/clusters/:id" element={<ClusterName />} />
+              <Route path="/computing/clusters/:id/:section" element={<ClusterName />} />  
+
               <Route path="/networks" element={<Network />} />
+              <Route path="/networks/:id" element={<NetworkDetail />} /> 
               <Route path="/networks/:id/:section" element={<NetworkDetail />} /> 
+
               <Route path="/storages/domains" element={<AllDomain />} />
+              <Route path="/storages/domains/:id" element={<StorageDomainDetail />} /> 
               <Route path="/storages/domains/:id/:section" element={<StorageDomainDetail />} /> 
               <Route path="/storage-domainpart" element={<DomainParts />} />
+
               <Route path="/storages/disks" element={<AllDisk />} />
+              <Route path="/storages/disks/:id" element={<StorageDiskDetail />} />
               <Route path="/storages/disks/:id/:section" element={<StorageDiskDetail />} />
+
               <Route path="/events" element={<Event />} />
+              <Route path="/settings" element={<Setting />} />
+              <Route path="/settings/:section" element={<Setting />} />
               <Route path="/error" element={<Error />} />
  
               {/*임시(삭제예정) */}

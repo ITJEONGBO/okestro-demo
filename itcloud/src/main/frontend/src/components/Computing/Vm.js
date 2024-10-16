@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
-import Table from '../table/Table';
 import HeaderButton from '../button/HeaderButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faTimes,
   faInfoCircle,
-  faDesktop, 
-  faRepeat, 
-  faPlay, 
-  faPause,
-  faStop,
   faExclamationTriangle,
   faMicrochip
 } from '@fortawesome/free-solid-svg-icons';

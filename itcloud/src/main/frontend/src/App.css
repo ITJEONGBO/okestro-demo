@@ -84,7 +84,7 @@ button{
     padding: 0.1rem 0.1rem;
     font-size: 0.3rem;
     font-weight: 600;
-    border-radius: 3px;
+    border-radius: 2px;
     height: 3.3vh;
     background: white;
     display: flex; /* Flexbox 설정 추가 */
@@ -361,7 +361,7 @@ button{
     background: #fff;
     top: 50%;
     height: 82.4%;
-    width: 48%;
+    width: 44%;
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
@@ -451,7 +451,7 @@ button{
     overflow-x: hidden; /* 가로 스크롤 숨김 */
 }
 #network_new_cluster_form{
-    padding: 1rem;
+    padding: 0.2rem 0.4rem;
 }
 #network_new_cluster_form>span,#network_new_vnic_form>span{
     font-size: 0.35rem;
@@ -596,8 +596,8 @@ input[type="text"]:focus {
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 80.4vh;
-    width: 45%;
+    height: 66.4vh;
+    width: 39%;
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);

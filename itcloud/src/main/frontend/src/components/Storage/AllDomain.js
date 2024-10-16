@@ -43,7 +43,7 @@ const Storage = () => {
 
   const handleDomainNameClick = (row, column) => {
         if (column.accessor === 'name') {
-          navigate(`/storage-domain/${row.id}/general`);
+          navigate(`/storages/domains/${row.id}`);
           }
         }
 

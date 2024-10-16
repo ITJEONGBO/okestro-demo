@@ -290,8 +290,8 @@
     border-radius: 4px;
     background: #fff;
     top: 50%;
-    height: 75%;
-    width: 42%;
+    height: 69%;
+    width: 39%;
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/

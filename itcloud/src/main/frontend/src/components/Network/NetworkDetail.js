@@ -40,21 +40,27 @@ import Path from '../Header/Path';
 
 const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) => {
   
-  const { id} = useParams(); // URL의 id와 section 파라미터 가져오기
+  const { id,section} = useParams(); 
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState('general');
-  
-  const handleTabClick = (tab) => {
-    setActiveTab(tab); // 탭 상태 업데이트
-    navigate(`/networks/${id}/${tab}`); // URL을 탭에 맞게 업데이트
-  };
-  useEffect(() => {
-    const pathSection = location.pathname.split('/').pop();
-    if (pathSection !== activeTab) {
-      setActiveTab(pathSection);
-    }
-  }, [location.pathname, activeTab]);
+  const [activeTab, setActiveTab] = useState('general'); 
+
+
+ const handleTabClick = (tab) => {
+  setActiveTab(tab);
+  if (tab !== 'general') {
+    navigate(`/networks/${id}/${tab}`);
+  } else {
+    navigate(`/networks/${id}`);
+  }
+};
+useEffect(() => {
+  if (!section) {
+    setActiveTab('general');
+  } else {
+    setActiveTab(section);
+  }
+}, [section]); 
 
 
   // 테이블컴포넌트
@@ -325,11 +331,11 @@ const openSecondModal = () => {
 
   const sections = [
     { id: 'general', label: '일반' },
-    { id: 'vNIC_profile', label: 'vNIC 프로파일' },
-    { id: 'cluster', label: '클러스터' },
-    { id: 'host', label: '호스트' },
-    { id: 'virtual_machine', label: '가상 머신' },
-    { id: 'template', label: '템플릿' },
+    { id: 'vnicProfiles', label: 'vNIC 프로파일' },
+    { id: 'clusters', label: '클러스터' },
+    { id: 'hosts', label: '호스트' },
+    { id: 'vms', label: '가상 머신' },
+    { id: 'templates', label: '템플릿' },
 
   ];
   const pathData = [network?.name, sections.find(section => section.id === activeTab)?.label];
@@ -356,7 +362,7 @@ const openSecondModal = () => {
         }
         {activeTab !== 'general' && <Path pathElements={pathData} />}
         {
-          activeTab === 'vNIC_profile' && (
+          activeTab === 'vnicProfiles' && (
         <>
           <div className="header_right_btns">
               <button onClick={() => openPopup('vnic_new_popup')}>새로 만들기</button>
@@ -372,7 +378,7 @@ const openSecondModal = () => {
        </>
         )}
 
-        {activeTab === 'cluster' && (
+        {activeTab === 'clusters' && (
         <>
             <div className="header_right_btns">
                 <button onClick={() => openPopup('cluster_network_popup')}>네트워크 관리</button>
@@ -387,7 +393,7 @@ const openSecondModal = () => {
        
         )}
         
-        {activeTab === 'host' && (
+        {activeTab === 'hosts' && (
         <>
             <div className="header_right_btns">
                     <button onClick={() => openPopup('host_network_popup')}>호스트 네트워크 설정</button>
@@ -425,7 +431,7 @@ const openSecondModal = () => {
        
         )}
 
-        {activeTab === 'virtual_machine' && (
+        {activeTab === 'vms' && (
         <>
               <div className="header_right_btns">
                   <button onClick={() => openPopup('delete')}>제거</button>
@@ -464,7 +470,7 @@ const openSecondModal = () => {
        
         )}
 
-        {activeTab === 'template' && (
+        {activeTab === 'templates' && (
         <>
             <div className="header_right_btns">
                 <button onClick={() => openPopup('delete')}>제거</button>
