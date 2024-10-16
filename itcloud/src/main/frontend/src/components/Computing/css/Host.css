@@ -13,7 +13,7 @@
     border: 1px solid #a7a6a6;
 }
 .host_checkboxs>div,.addFence_agent{
-    padding: 0.3rem 0.4rem;
+    padding: 0.2rem;
 }
 .host_checkbox{
     display: flex;

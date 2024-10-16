@@ -89,11 +89,10 @@
   
 #manage_btn {
     position: relative;
+
   }
   .dropdown-menu {
     position: absolute;
-    top: 0.9rem;
-    right: 0;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     list-style: none;
     z-index: 1;
@@ -102,26 +101,29 @@
   }
   
   .dropdown-menu li {
-    padding: 0.1rem;
+    padding: 0.18rem 0.1rem;
     cursor: pointer;
     text-align: left;
     color: black;
-
+    font-size: 0.3rem;
+    font-weight:400
   }
-  
   .dropdown-menu li:hover {
     background-color: #f1f1f1;
+  }
+  #manage_box{
+    right: -0.1rem;
+    top: 0.8rem;
   }
   .manage_maintenance_popup{
     position: absolute;
     box-sizing: border-box;
     border-radius: 4px;
     background: #fff;
-    top: 50%;
     width: 35%;
-    left: 50%;
     height: 35%;             
-    font-size:0.33rem;                                    
+    font-size:0.33rem; 
+                               
     transform: translate(-50%, -50%);
     box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); /*x y 번짐 색상*/
   }

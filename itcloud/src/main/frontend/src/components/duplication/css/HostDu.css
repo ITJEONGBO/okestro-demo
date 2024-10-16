@@ -1,0 +1,16 @@
+
+#manage_hidden_box{
+    right: 5.5rem;
+    top: 3.7rem;
+}
+/* ellipsis 버튼 스타일 */
+.ellipsis_container {
+    position: relative;
+    width: 0.64rem;
+  }
+#ellipsis_hidden_box{
+    display:block;
+    right: 0rem;
+    top: 0.7rem;
+    min-width: 15vw;
+}

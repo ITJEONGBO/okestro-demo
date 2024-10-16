@@ -3,25 +3,17 @@ import PropTypes from 'prop-types';
 import { useLocation } from 'react-router-dom';
 
 const NavButton = ({ sections, handleSectionClick }) => {
-  const { pathname } = useLocation(); // URL 경로 추적
-  const [prevPath, setPrevPath] = useState(pathname); // 이전 경로 저장
+  const { pathname } = useLocation(); // 현재 URL 경로 가져오기
   const [activeSection, setActiveSection] = useState(() => {
-    return localStorage.getItem('activeSection') || 'general'; // 기본값 'general' 설정
+    const pathSection = pathname.split('/').pop(); // URL의 마지막 부분을 추출
+    return pathSection || 'general'; // URL의 끝부분이 없으면 'general'을 기본값으로 설정
   });
 
   useEffect(() => {
-    if (pathname !== prevPath) {
-      // URL 경로가 변경된 경우에만 'general'로 초기화
-      setActiveSection('general');
-      setPrevPath(pathname); // 이전 경로를 현재 경로로 업데이트
-    }
-    // 경로가 동일한 경우(즉, 새로고침)에는 activeSection을 유지
-  }, [pathname, prevPath]);
-
-  useEffect(() => {
-    // activeSection을 로컬스토리지에 저장
-    localStorage.setItem('activeSection', activeSection);
-  }, [activeSection]);
+    // URL이 변경되면 해당 URL의 끝부분을 activeSection으로 설정
+    const pathSection = pathname.split('/').pop();
+    setActiveSection(pathSection || 'general'); // 경로가 없으면 'general'로 설정
+  }, [pathname]);
 
   const handleClick = (sectionId) => {
     setActiveSection(sectionId); // 선택된 섹션을 업데이트

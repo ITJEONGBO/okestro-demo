@@ -912,7 +912,7 @@ function HostDetail() {
               </div>
             </div>
             <div className="host_select_set">
-              <label htmlFor="host_related_action">호스트 연관 배치 작업 선택</label>
+              <label htmlFor="host_related_action">호스트 연관 배포 작업 선택</label>
               <select id="host_related_action">
                 <option value="none">없음</option>
               </select>

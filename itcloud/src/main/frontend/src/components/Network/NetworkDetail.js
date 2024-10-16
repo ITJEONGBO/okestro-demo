@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import Modal from 'react-modal';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
@@ -39,6 +39,24 @@ import TableOuter from '../table/TableOuter';
 import Path from '../Header/Path';
 
 const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) => {
+  
+  const { id} = useParams(); // URL의 id와 section 파라미터 가져오기
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState('general');
+  
+  const handleTabClick = (tab) => {
+    setActiveTab(tab); // 탭 상태 업데이트
+    navigate(`/networks/${id}/${tab}`); // URL을 탭에 맞게 업데이트
+  };
+  useEffect(() => {
+    const pathSection = location.pathname.split('/').pop();
+    if (pathSection !== activeTab) {
+      setActiveTab(pathSection);
+    }
+  }, [location.pathname, activeTab]);
+
+
   // 테이블컴포넌트
   const [activePermissionFilter, setActivePermissionFilter] = useState('all');
   const [activeButton, setActiveButton] = useState('network');
@@ -46,9 +64,7 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   const [secondModalOpen, setSecondModalOpen] = useState(false); // 추가 모달 상태
   const handlePermissionFilterClick = (filter) => {
     setActivePermissionFilter(filter);
-    
- 
-   
+
     setActivePermissionFilter(filter);
     if (filter === 'direct') {
       setIsLabelVisible(true); // 레이블 버튼을 누르면 라벨을 보이게 함
@@ -72,10 +88,10 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     };
     
   
-  const location = useLocation();
+
   const [prevPath, setPrevPath] = useState(location.pathname);
   const locationState = location.state  
-  const { id } = useParams(); // useParams로 URL에서 name을 가져옴
+
   const [shouldRefresh, setShouldRefresh] = useState(false);
 
   const { 
@@ -255,29 +271,6 @@ const NetworkDetail = ({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
   ];
   
  
-  useEffect(() => {
-    setActiveTab('general'); // 처음 렌더링될 때 'general' 탭을 선택
-  }, []);
-  const [activeTab, setActiveTab] = useState('general');
-  // const [activeTab, setActiveTab] = useState(() => {
-  //   return localStorage.getItem('activeTab') || 'general'; 
-  // });
-  useEffect(() => {
-    if (location.pathname !== prevPath) {
-      // URL이 변경되었을 때 'general'로 초기화
-      setActiveTab('general');
-      setPrevPath(location.pathname); // 이전 경로 업데이트
-    }
-  }, [location.pathname, prevPath]);
-
-  useEffect(() => {
-    localStorage.setItem('activeTab', activeTab); // activeTab 상태를 localStorage에 저장
-  }, [activeTab]);
-
-  const handleTabClick = (tab) => {
-    setActiveTab(tab); // 탭 클릭 시 상태 업데이트
-    localStorage.setItem('activeTab', tab); // 클릭된 탭을 localStorage에 저장
-  };
   const [activeVmFilter, setActiveVmFilter] = useState('running');
   const handleVmFilterClick = (filter) => {
     setActiveVmFilter(filter);

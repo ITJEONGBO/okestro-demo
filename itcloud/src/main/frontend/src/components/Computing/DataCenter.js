@@ -4,26 +4,22 @@ import { useParams, useNavigate } from 'react-router-dom';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
 import Footer from '../footer/Footer';
-import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import Permission from '../Modal/Permission';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faUser, faCheck, faRefresh, faTimes,
+  faUser, faCheck,faTimes,
   faInfoCircle,
-  faBan,
-  faArrowUp,
-  faArrowDown,
-  faMinus,
-  faPlus,
   faExclamationTriangle,
-  faArrowRight,
   faLayerGroup
 } from '@fortawesome/free-solid-svg-icons'
-import './css/DataCenterDetail.css';
+import './css/DataCenter.css';
 import TableOuter from '../table/TableOuter';
 import { useDataCenter, useNetworkById } from '../../api/RQHook';
 import Path from '../Header/Path';
+import HostDu from '../duplication/HostDu';
+import VmDu from '../duplication/VmDu';
+import EventDu from '../duplication/EventDu';
 
 // React Modal 설정
 Modal.setAppElement('#root');
@@ -34,46 +30,48 @@ const DataCenterDetail = () => {
   const navigate = useNavigate();
   const [activePermissionFilter, setActivePermissionFilter] = useState('all');
   const [showNetworkDetail, setShowNetworkDetail] = useState(false);
-  const [활성화된섹션, set활성화된섹션] = useState('일반_섹션');
+  // const [활성화된섹션, set활성화된섹션] = useState('일반_섹션');
   
 
   const [isModalOpen, setIsModalOpen] = useState({
     edit: false,
     permission: false,
   });
-  useEffect(() => {
-    const 기본섹션 = document.getElementById('일반_섹션_btn');
-    if (기본섹션) {
-      기본섹션.style.backgroundColor = '#EDEDED';
-      기본섹션.style.color = '#1eb8ff';
-      기본섹션.style.borderBottom = '1px solid blue';
-    }
-  }, []);
 
-  const 섹션변경 = (section) => {
-    set활성화된섹션(section);
-    const 모든섹션들 = document.querySelectorAll('.edit_aside > div');
-    모든섹션들.forEach((el) => {
-      el.style.backgroundColor = '#FAFAFA';
-      el.style.color = 'black';
-      el.style.borderBottom = 'none';
-    });
+  // useEffect(() => {
+  //   const 기본섹션 = document.getElementById('일반_섹션_btn');
+  //   if (기본섹션) {
+  //     기본섹션.style.backgroundColor = '#EDEDED';
+  //     기본섹션.style.color = '#1eb8ff';
+  //     기본섹션.style.borderBottom = '1px solid blue';
+  //   }
+  // }, []);
 
-    const 선택된섹션 = document.getElementById(`${section}_btn`);
-    if (선택된섹션) {
-      선택된섹션.style.backgroundColor = '#EDEDED';
-      선택된섹션.style.color = '#1eb8ff';
-      선택된섹션.style.borderBottom = '1px solid blue';
-    }
-  };
+  // const 섹션변경 = (section) => {
+  //   set활성화된섹션(section);
+  //   const 모든섹션들 = document.querySelectorAll('.edit_aside > div');
+  //   모든섹션들.forEach((el) => {
+  //     el.style.backgroundColor = '#FAFAFA';
+  //     el.style.color = 'black';
+  //     el.style.borderBottom = 'none';
+  //   });
+
+  //   const 선택된섹션 = document.getElementById(`${section}_btn`);
+  //   if (선택된섹션) {
+  //     선택된섹션.style.backgroundColor = '#EDEDED';
+  //     선택된섹션.style.color = '#1eb8ff';
+  //     선택된섹션.style.borderBottom = '1px solid blue';
+  //   }
+  // };
+
   const handleOpenModal = (type) => {
     setIsModalOpen((prev) => ({ ...prev, [type]: true }));
-    setSelectedTab('cluster_common_btn');
+    // setSelectedTab('cluster_common_btn');
   };
 
-const handleTabClickModal = (tab) => {
-  setSelectedTab(tab); 
-};
+// const handleTabClickModal = (tab) => {
+//   setSelectedTab(tab); 
+// };
   const handleCloseModal = (type) => {
     setIsModalOpen((prev) => ({ ...prev, [type]: false }));
   };
@@ -87,11 +85,11 @@ const handleTabClickModal = (tab) => {
   const handleInputChange = (event) => {
     setInputName(event.target.value); // input의 값을 상태로 업데이트
   };
-  const [selectedTab, setSelectedTab] = useState('cluster_common_btn');
+
   const [showTooltip, setShowTooltip] = useState(false); // hover하면 설명창 뜨게하기
 
   const sectionHeaderButtons = [
-    { id: 'edit_btn', label: '편집', onClick: () => handleOpenModal('edit') },
+    { id: 'edit_btn', label: '데이터센터 편집', onClick: () => handleOpenModal('edit') },
     { id: 'delete_btn', label: '삭제', onClick: () => handleOpenModal('delete') },
   ];
   const [isHiddenParameterVisible, setHiddenParameterVisible] = useState(false);
@@ -99,9 +97,12 @@ const handleTabClickModal = (tab) => {
     setHiddenParameterVisible(!isHiddenParameterVisible);
   };
   
-  const sectionHeaderPopupItems = [
-[]
-  ];
+  // VmDu...버튼
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const togglePopup = () => {
+      setIsPopupOpen(!isPopupOpen);
+    };
+ 
 
   const [activeTab, setActiveTab] = useState('cluster');
   useEffect(() => {
@@ -289,7 +290,7 @@ const handleTabClickModal = (tab) => {
         title="데이터센터 "
         subtitle={dataCenter?.name}
         buttons={sectionHeaderButtons}
-        popupItems={sectionHeaderPopupItems}
+        popupItems={[]}
       />
       <div className="content_outer">
   
@@ -390,8 +391,8 @@ const handleTabClickModal = (tab) => {
               <>
                 <div className="header_right_btns">
                   <button onClick={() => handleOpenModal('cluster_new')}>새로 만들기</button>
-                  <button>편집</button>
-                  <button>삭제</button>
+                  <button onClick={() => handleOpenModal('cluster_new')}>편집</button>
+                  <button onClick={() => handleOpenModal('delete')}>삭제</button>
                 </div>
                 <TableOuter
                   columns={TableColumnsInfo.CLUSTERS_FROM_DATACENTER}
@@ -403,26 +404,46 @@ const handleTabClickModal = (tab) => {
           )}
           {activeTab === 'host' && (
             <>
-            <div className="header_right_btns">
+            {/* <div className="header_right_btns">
                 <button onClick={() => handleOpenModal('host_new')}>새로 만들기</button>
+                <button onClick={() => handleOpenModal('host_new')}>편집</button>
+                <button onClick={() => handleOpenModal('host_new')}>삭제</button>
+                <button onClick={() => handleOpenModal('host_new')}>관리</button>
+                <button onClick={() => handleOpenModal('host_new')}>설치</button>
+                <button onClick={() => handleOpenModal('host_new')}>호스트 네트워크 복사</button>
             </div>
               <TableOuter 
                 columns={TableColumnsInfo.HOSTS_FROM_CLUSTER} 
                 data={hosts}
                 onRowClick={() => console.log('Row clicked')} 
               />
-            
+             */}
+             <HostDu 
+                data={hosts} 
+                columns={TableColumnsInfo.HOSTS_ALL_DATA} 
+                handleRowClick={handleRowClick}
+                openPopup={[]}
+              />
             </>
           )}
           {activeTab === 'vm' && (
             <>
-            <div className="host_empty_outer">
+            {/* <div className="host_empty_outer">
               <TableOuter 
                 columns={TableColumnsInfo.CLUSTER_VM} 
                 data={vms} 
                 onRowClick={() => console.log('Row clicked')}
               />
-            </div>
+            </div> */}
+            <VmDu 
+                data={vms} 
+                columns={TableColumnsInfo.VM_CHART} 
+                handleRowClick={handleRowClick} 
+                openPopup={handleOpenModal}
+                setActiveTab={setActiveTab}
+                togglePopup={togglePopup}
+                isPopupOpen={isPopupOpen}
+              />
             </>
           )}
            {activeTab === 'storage' && (
@@ -473,20 +494,16 @@ const handleTabClickModal = (tab) => {
             </>
           )}
             {activeTab === 'event' && (
-            <>
-              <div className="host_empty_outer">
-                <TableOuter
-                  columns={TableColumnsInfo.EVENTS}
-                  data={eventData} 
-                  onRowClick={() => console.log('Row clicked')} 
-                />
-              </div>
-            </>
+              <EventDu 
+                columns={TableColumnsInfo.EVENTS}
+                data={eventData}
+                handleRowClick={() => console.log('Row clicked')}
+              />
+        
           )}
 
           
-          {/*삭제예정 */}
-          
+          {/*삭제예정 */}      
           {activeTab === 'permission' && (
             <>
             <div className="content_header_right">
@@ -579,9 +596,137 @@ const handleTabClickModal = (tab) => {
             </div>
           </div>
         </Modal>
+        {/* 클러스터 새로 만들기 팝업After */}
+        <Modal
+            isOpen={isModalOpen.cluster_new}
+            onRequestClose={handleCloseModal}
+            contentLabel="새로 만들기"
+            className="Modal"
+            overlayClassName="Overlay"
+            shouldCloseOnOverlayClick={false}
+        >
+            <div className="cluster_new_popup">
+                <div className="popup_header">
+                    <h1>새 클러스터</h1>
+                    <button onClick={() =>handleCloseModal('cluster_new')}><FontAwesomeIcon icon={faTimes} fixedWidth/></button>
+                </div>
 
-         {/* 클러스터 새로 만들기 팝업 */}
-         <Modal
+               
+                
+
+                {/* 일반 */}
+              
+                    <form className="cluster_common_form py-1">
+                        <div className="network_form_group">
+                        <label htmlFor="data_center">데이터 센터</label>
+                        <select id="data_center">
+                            <option value="default">Default</option>
+                        </select>
+                        </div>
+                    
+                        <div className="network_form_group">
+                        <div>
+                            <label htmlFor="name">이름</label>
+                        </div>
+                        <input type="text" id="name" />
+                        </div>
+                    
+                        <div className="network_form_group">
+                        <label htmlFor="description">설명</label>
+                        <input type="text" id="description" />
+                        </div>
+                    
+                        <div className="network_form_group">
+                        <label htmlFor="comment">코멘트</label>
+                        <input type="text" id="comment" />
+                        </div>
+                  
+                        <div className="network_form_group">
+                        <label htmlFor="management_network">관리 네트워크</label>
+                        <select id="management_network">
+                            <option value="ovirtmgmt">ovirtmgmt</option>
+                            <option value="ddd">ddd</option>
+                            <option value="hosted_engine">hosted_engine</option>
+                        </select>
+                        </div>
+                    
+                        <div className="network_form_group">
+                        <label htmlFor="cpu_architecture">CPU 아키텍처</label>
+                        <select id="cpu_architecture">
+                            <option value="정의되지 않음">정의되지 않음</option>
+                            <option value="x86_64">x86_64</option>
+                            <option value="ppc64">ppc64</option>
+                            <option value="s390x">s390x</option>
+                        </select>
+                        </div>
+                    
+                        <div className="network_form_group">
+                        <label htmlFor="cpu_type">CPU 유형</label>
+                        <select id="cpu_type">
+                            <option value="default">Default</option>
+                        </select>
+                        </div>
+                    
+                        <div className="network_form_group">
+                        <label htmlFor="chipset_firmware_type">침셋/펌웨어 유형</label>
+                        <select id="chipset_firmware_type">
+                            <option value="default">Default</option>
+                        </select>
+                        </div>
+                    
+                        <div className="network_checkbox_type2">
+                        <input type="checkbox" id="bios_change" name="bios_change" />
+                        <label htmlFor="bios_change">BIOS를 사용하여 기존 가상 머신/템플릿을 1440fx에서 Q35 칩셋으로 변경</label>
+                        </div>
+                    
+                        <div className="network_form_group">
+                        <label htmlFor="default_network_provider">기본 네트워크 공급자</label>
+                        <select id="default_network_provider">
+                            <option value="기본 공급자가 없습니다.">기본 공급자가 없습니다.</option>
+                            <option value="ovirt-provider-ovn">ovirt-provider-ovn</option>
+                        </select>
+                        </div>
+                    
+                        <div className="network_form_group">
+                        <label htmlFor="max_memory_limit">로그인 최대 메모리 한계</label>
+                        <select id="max_memory_limit">
+                            <option value="default">Default</option>
+                        </select>
+                        </div>
+
+                        <div>
+                          <div className='font-bold px-1.5 py-0.5'>복구 정책<FontAwesomeIcon icon={faInfoCircle} style={{ color: 'rgb(83, 163, 255)' }}fixedWidth/></div>
+                          <div className='host_text_radio_box px-1.5 py-0.5'>
+                            <input type="radio" id="migration_option" name="recovery_policy" />
+                            <label htmlFor="migration_option">가상 머신을 마이그레이션함</label>
+                          </div>
+
+                          <div className='host_text_radio_box px-1.5 py-0.5'>
+                            <input type="radio" id="high_usage_migration_option" name="recovery_policy" />
+                            <label htmlFor="high_usage_migration_option">고가용성 가상 머신만 마이그레이션</label>
+                          </div>
+
+                          <div className='host_text_radio_box px-1.5 py-0.5'>
+                            <input type="radio" id="no_migration_option" name="recovery_policy" />
+                            <label htmlFor="no_migration_option">가상 머신은 마이그레이션 하지 않음</label>
+                          </div>
+                        </div>
+          
+                    </form>
+                  
+                
+              
+            
+                
+                <div className="edit_footer">
+                    <button style={{ display: 'none' }}></button>
+                    <button>OK</button>
+                    <button onClick={() =>handleCloseModal('cluster_new')}>취소</button>
+                </div>
+            </div>
+        </Modal>
+         {/* 클러스터 새로 만들기 팝업Before(삭제예정) */}
+         {/* <Modal
             isOpen={isModalOpen.cluster_new}
             onRequestClose={handleCloseModal}
             contentLabel="새로 만들기"
@@ -613,7 +758,7 @@ const handleTabClickModal = (tab) => {
             </div>
                 </div>
 
-                {/* 일반 */}
+                
                 {selectedTab === 'cluster_common_btn' && (
                     <form className="cluster_common_form py-1">
                         <div className="network_form_group">
@@ -640,7 +785,7 @@ const handleTabClickModal = (tab) => {
                         <input type="text" id="comment" />
                         </div>
                   
-                        {/* id 편집 */}
+                       
                         <div className="network_form_group">
                         <label htmlFor="management_network">관리 네트워크</label>
                         <select id="management_network">
@@ -748,7 +893,7 @@ const handleTabClickModal = (tab) => {
                   
                 )}
 
-                {/* 마이그레이션 정책 */}
+                
                 {selectedTab === 'cluster_migration_btn' && (
                     <form className="py-2">
                         <div className="network_form_group">
@@ -844,9 +989,10 @@ const handleTabClickModal = (tab) => {
                     <button onClick={() =>handleCloseModal('cluster_new')}>취소</button>
                 </div>
             </div>
-        </Modal>
-        {/* 호스트 새로 만들기 팝업 */}
-        <Modal
+        </Modal> */}
+
+        {/* 호스트 새로 만들기 팝업Before(삭제예정) */}
+        {/* <Modal
         isOpen={isModalOpen.host_new}
         onRequestClose={handleCloseModal}
         contentLabel="새로 만들기"
@@ -898,9 +1044,9 @@ const handleTabClickModal = (tab) => {
             </div>
           </div>
 
-          {/* 폼의 다양한 섹션들 */}
+         
           <form action="#">
-            {/* 공통 섹션 */}
+          
             <div
               id="일반_섹션"
               style={{ display: 활성화된섹션 === '일반_섹션' ? 'block' : 'none' }}
@@ -964,9 +1110,9 @@ const handleTabClickModal = (tab) => {
 
     </div>
 
-            </div>{/*일반섹션끝 */}
+            </div>
 
-            {/* 전원 관리 섹션 */}
+           
             <div
               id="전원관리_섹션"
               style={{ display: 활성화된섹션 === '전원관리_섹션' ? 'block' : 'none' }}
@@ -1039,7 +1185,7 @@ const handleTabClickModal = (tab) => {
 
             </div>
 
-            {/* 호스트 엔진 섹션 */}
+           
             <div
               id="호스트엔진_섹션"
               style={{ display: 활성화된섹션 === '호스트엔진_섹션' ? 'block' : 'none' }}
@@ -1054,7 +1200,7 @@ const handleTabClickModal = (tab) => {
 
             </div>
 
-            {/* 선호도 섹션 */}
+         
             <div
               id="선호도_섹션"
               style={{ display: 활성화된섹션 === '선호도_섹션' ? 'block' : 'none' }}
@@ -1098,9 +1244,10 @@ const handleTabClickModal = (tab) => {
           <button>OK</button>
           <button onClick={() =>handleCloseModal('host_new')}>취소</button>
         </div>
-      </Modal>
+      </Modal> */}
 
-        {/*디스크(삭제)팝업 */}
+       
+       {/*삭제팝업 */}
         <Modal
         isOpen={isModalOpen.delete}
         onRequestClose={() => handleCloseModal('delete')}

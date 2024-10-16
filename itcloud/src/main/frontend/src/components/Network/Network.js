@@ -8,11 +8,9 @@ import {
   faServer
 } from '@fortawesome/free-solid-svg-icons'
 import TableOuter from '../table/TableOuter';
-import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import HeaderButton from '../button/HeaderButton';
 import Footer from '../footer/Footer';
-import { toast } from 'react-hot-toast';
 import { adjustFontSize } from '../../UIEvent';
 import { useAllNetworks } from '../../api/RQHook';
 import './css/Network.css';
@@ -42,13 +40,8 @@ const Network = () => {
         };
       }
       
-      
-      
-
-    const [activeSection, setActiveSection] = useState('common_outer');
     const [selectedTab, setSelectedTab] = useState('network_new_common_btn');
     const [activePopup, setActivePopup] = useState(null);
-    const [secondModalOpen, setSecondModalOpen] = useState(false); // 추가 모달 상태
     const navigate = useNavigate();
 
     const handleNetworkNameClick = (row, column) => {
@@ -56,7 +49,7 @@ const Network = () => {
         console.log(`handleNetworkNameClick ... id: ${row.id}`)
         if (column.accessor === 'name') {
             navigate(
-              `/networks/${row.id}`, 
+              `/networks/${row.id}/general`, 
               { state: { name: row.name } }
             );
         }
@@ -83,32 +76,30 @@ const Network = () => {
     const closePopup = () => setActivePopup(null);
     const handleTabClick = (tab) => setSelectedTab(tab);
 
-    const sectionHeaderButtons = [
-      { id: 'new_btn', label: '새로 만들기', onClick: () => openPopup('newNetwork') }, 
-    //   { id: 'bring_btn', label: '가져오기', onClick: () => openPopup('getNetwork') },   
-      { id: 'edit_btn', label: '편집', icon: faPencil, onClick: () => openPopup('editNetwork') },       
-      { id: 'delete_btn', label: '삭제', icon: faArrowUp, onClick: () => openPopup('delete') }, 
-    //   { id: 'delete_btn', label: 'VNIC 프로파일'}
-    ];
+
     
     return (
         <div id="network_section">
             <HeaderButton
               titleIcon={faServer}
               title="네트워크"
-              buttons={sectionHeaderButtons}
+              buttons={[]}
               popupItems={[]}
             />
 
-            <div className="content_outer">
-                <div className='empty_nav_outer'>
+            <div className="host_btn_outer">
+                <div className="header_right_btns">
+                    <button onClick={() => openPopup('newNetwork')}>새로 만들기</button>
+                    <button onClick={() => openPopup('editNetwork')}>편집</button>
+                    <button onClick={() => openPopup('delete')}> 삭제</button>
+                </div>
                   <TableOuter
                     columns={TableColumnsInfo.NETWORKS} 
                     data={networkdata} 
                     onRowClick={handleNetworkNameClick} 
-                    shouldHighlight1stCol={true}
+                    clickableColumnIndex={[0,2]} 
                   />
-                </div>
+                
             </div>
 
             <Footer/>

@@ -40,11 +40,13 @@ const Storage = () => {
     setActiveLunTab(tab); 
   };
 
-  const handleRowClick = (row, column) => {
-    if (column.accessor === 'name') {
-      navigate(`/storage-domain/${row.id}`);
-    }
-  };
+
+  const handleDomainNameClick = (row, column) => {
+        if (column.accessor === 'name') {
+          navigate(`/storage-domain/${row.id}/general`);
+          }
+        }
+
   // 팝업 테이블 컴포넌트
   const data = [
     {
@@ -223,7 +225,7 @@ function toTableItemPredicateDomains(domaindata) {
                 <TableOuter
                   columns={TableColumnsInfo.STORAGE_DOMAINS} 
                   data={domaindata} 
-                  onRowClick={handleRowClick} 
+                  onRowClick={handleDomainNameClick} 
                   clickableColumnIndex={[2]} // 첫 번째와 세 번째 컬럼을 클릭 가능하게 설정
                   showSearchBox={true} // 검색 박스를 표시
                 />
@@ -440,7 +442,7 @@ function toTableItemPredicateDomains(domaindata) {
                             <Table
                             columns={TableColumnsInfo.CLUSTERS_ALT} 
                             data={data} 
-                            onRowClick={handleRowClick}
+                            onRowClick={[]}
                             shouldHighlight1stCol={true}
                             />
                         </div>
@@ -454,7 +456,7 @@ function toTableItemPredicateDomains(domaindata) {
                             <Table
                             columns={TableColumnsInfo.CLUSTERS_ALT} 
                             data={data} 
-                            onRowClick={handleRowClick}
+                            onRowClick={[]}
                             shouldHighlight1stCol={true}
                             />
                         </div>
@@ -507,7 +509,7 @@ function toTableItemPredicateDomains(domaindata) {
                         <Table
                         columns={TableColumnsInfo.CLUSTERS_ALT} 
                         data={data} 
-                        onRowClick={handleRowClick}
+                        onRowClick={[]}
                         shouldHighlight1stCol={true}
                         />
                     </div>

@@ -7,7 +7,7 @@ import { faEllipsisV, faExclamationTriangle, faInfoCircle, faTimes } from '@fort
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import { useAllVMs } from '../../api/RQHook';
 import VncViewer from '../Vnc/VncViewer';
-
+import { createRoot } from 'react-dom/client';
 
 const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActiveTab: parentSetActiveTab, togglePopup, isPopupOpen, showTemplateButton = true }) => {
   const navigate = useNavigate();
@@ -17,7 +17,6 @@ const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActi
 
   const openModal = () => setIsModalOpen(true);
 
-  const [selectedPopupTab, setSelectedPopupTab] = useState('cluster_common_btn');
 
  // 가상머신 데이터 가져오기
  const { data: vms, isLoading, isError } = useAllVMs(toTableItemPredicateVMs);
@@ -65,11 +64,41 @@ const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActi
     setSelectedModalTab(tab);
   };
 
-  const [showVnc, setShowVnc] = useState(false);
-  const handleButtonClick = () => {
-    setShowVnc(true);  // 버튼 클릭 시 VNC 뷰어를 보여줌
-  };
 
+  //Vnc 열리게하기
+  const handleButtonClick = () => {
+    const vncWindow = window.open('', '_blank', 'width=800,height=600');
+    
+    // 새 창의 document에 React 앱을 렌더링하기 위한 HTML 구조 작성
+    vncWindow.document.write(`
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>VNC Viewer</title>
+        </head>
+        <body>
+          <div id="vnc-root"></div>
+        </body>
+      </html>
+    `);
+  
+    vncWindow.document.close();
+  
+    // 새 창의 'vnc-root'에 React 컴포넌트를 렌더링
+    const vncRoot = vncWindow.document.getElementById('vnc-root');
+    if (vncRoot) {
+      const root = createRoot(vncRoot);  // createRoot 사용
+      root.render(<VncViewer />);  // 렌더링
+    } else {
+      vncWindow.onload = () => {
+        const root = createRoot(vncWindow.document.getElementById('vnc-root'));
+        root.render(<VncViewer />);
+      };
+    }
+  };
+  
     
     function toTableItemPredicateVMs(vm) {
         return {
@@ -106,7 +135,6 @@ const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActi
           <button onClick={() => navigate('/computing/templates')}>템플릿</button>
         )}
         <button onClick={handleButtonClick}>콘솔</button>
-        {showVnc && <VncViewer />}
         <button onClick={() => handleOpenPopup('snapshot')}>스냅샷 생성</button>
         <button onClick={() => handleOpenPopup('migration')}>마이그레이션</button>
         <button className="content_header_popup_btn" onClick={togglePopup}>
@@ -134,8 +162,8 @@ const VmDu = ({columns, handleRowClick: parentHandleRowClick, openPopup, setActi
         shouldHighlight1stCol={true} // 첫 번째 컬럼을 강조
       />
 
-              {/* 새로만들기팝업 */}
-              <Modal
+        {/* 새로만들기팝업 */}
+        <Modal
             isOpen={activePopup === 'vm_new'}
             onRequestClose={closeModal}
             contentLabel="가상머신 편집"

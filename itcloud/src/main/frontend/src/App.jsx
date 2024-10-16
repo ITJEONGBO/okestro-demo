@@ -31,7 +31,6 @@ import AllDisk from './components/Storage/AllDisk';
 import RutilManager from './components/Computing/RutilManager';
 import Event from './components/Event';
 import Error from './components/Error';
-// import VncViewerPage from './components/Vnc/VncViewerPage';
 
 
 
@@ -104,35 +103,34 @@ const App = () => {
             <Routes>
             <Route path="/" element={<Dashboard />} />
               <Route path="/computing/datacenters" element={<Computing />} />
-              <Route path="/storages/disks" element={<AllDisk />} />
-              <Route path="/computing/data-center" element={<DataCenter />} />
               <Route path="/computing/datacenters/:id" element={<DataCenter />} />
-              <Route path="/storages/domains" element={<AllDomain />} />
               <Route path="/settings" element={<Setting />} />
+              <Route path="/computing/vms" element={<AllVm />} />
               <Route path="/computing/vms/:id" element={<Vm />} />
               <Route path="/computing/vms/:id/:section" element={<Vm />} />
               <Route path="/computing/host" element={<Host />} />
-              <Route path="/computing/vms" element={<AllVm />} />
+              <Route path="/computing/hosts/:id" element={<HostDetail />}/>
               {/* 데이터센터아이디 추가<Route path="/computing/vms" element={<VmTemplateChart />} /> */}
               <Route path="/computing/templates" element={<Templates />} />
               <Route path="/computing/templates/:id" element={<TemplateDetail />} />
-              <Route path="/computing/hosts/:id" element={<HostDetail />}/>
               <Route path="/computing/clusters" element={<Cluster />} />
               <Route path="/computing/clusters/:id" element={<ClusterName />} /> 
               <Route path="/networks" element={<Network />} />
-              <Route path="/networks/:id" element={<NetworkDetail />} /> 
-              <Route path="/storage-domain/:id" element={<StorageDomainDetail />} /> 
+              <Route path="/networks/:id/:section" element={<NetworkDetail />} /> 
+              <Route path="/storages/domains" element={<AllDomain />} />
+              <Route path="/storages/domains/:id/:section" element={<StorageDomainDetail />} /> 
               <Route path="/storage-domainpart" element={<DomainParts />} />
-              <Route path="/storages/disks/:id" element={<StorageDiskDetail />} />
+              <Route path="/storages/disks" element={<AllDisk />} />
+              <Route path="/storages/disks/:id/:section" element={<StorageDiskDetail />} />
               <Route path="/events" element={<Event />} />
               <Route path="/error" element={<Error />} />
-              {/* <Route path="/vncviewer" element={<VncViewerPage />} /> */}
  
-              {/*임시 */}
-         
+              {/*임시(삭제예정) */}
               <Route path="/computing/rutil-manager" element={<RutilManager />} />
               <Route path="/computing/vm-template-chart" element={<VmTemplateChart />} />
               <Route path="/example" element={<Example />} />
+              <Route path="/storages/disks/domain" element={<StorageDomainDetail />} />
+              <Route path="/computing/clusters/detail" element={<ClusterName />} /> 
               
             </Routes>
           </MainOuter>

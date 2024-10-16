@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
@@ -6,10 +7,8 @@ import TableOuter from '../table/TableOuter';
 import TableColumnsInfo from '../table/TableColumnsInfo';
 import Footer from '../footer/Footer';
 import Modal from 'react-modal';
-import Permission from '../Modal/Permission';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faUser, fa1, fa2,
   faTimes,
   faExclamationTriangle,
   faHdd
@@ -20,17 +19,29 @@ import Path from '../Header/Path';
 import PagingTableOuter from '../table/PagingTableOuter';
 
 function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
-  const { name } = useParams();
-  const { id } = useParams();
+  const navigate = useNavigate();
+  const { name, id,section } = useParams();
 
+
+  const [activeTab, setActiveTab] = useState('general'); // 초기값을 URL의 section으로 설정
   const [activePermissionFilter, setActivePermissionFilter] = useState('all');
-  const [activeTab, setActiveTab] = useState('general'); // 초기값은 'general'로 설정
-  const [activePopup, setActivePopup] = useState(null);  // activePopup 선언은 이 아래에 있어야 함
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 추가
+  const [activePopup, setActivePopup] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalTab, setModalTab] = useState('img'); // 모달 창 내 탭 관리
 
   const handlePermissionFilterClick = (filter) => setActivePermissionFilter(filter);
-  const handleTabClick = (tab) => setActiveTab(tab);
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    navigate(`/storages/disks/${id}/${tab}`);
+  };
+  useEffect(() => {
+    if (section) {
+      setActiveTab(section);
+    } else {
+      setActiveTab('general'); // section 값이 없을 때 기본값으로 'general'
+    }
+  }, [section]);
+  
   const handleOpenModal = () => setIsModalOpen(true); // 모달 열기
   const handleCloseModal = () => setIsModalOpen(false); // 모달 닫기
 
@@ -70,7 +81,7 @@ function StorageDisk({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClic
     { id: 'machine', label: '가상머신' },
     { id: 'storage', label: '스토리지' }
   ];
-  const pathData = ['#', sections.find(section => section.id === activeTab)?.label];
+  const pathData = ['#', sections.find((section) => section.id === activeTab)?.label];
 
   const vmData = [];
   const storageData = [

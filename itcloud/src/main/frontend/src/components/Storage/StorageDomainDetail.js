@@ -1,16 +1,14 @@
 import React, { useState,useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import Modal from 'react-modal';
 import NavButton from '../navigation/NavButton';
 import HeaderButton from '../button/HeaderButton';
 import Table from '../table/Table';
 import TableColumnsInfo from '../table/TableColumnsInfo';
-import { useNavigate } from 'react-router-dom';
-import Permission from '../Modal/Permission';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faExclamation, faPlusCircle, faMinusCircle, faChevronLeft, faCheck
-  , faUser, faTimes, faChevronCircleRight, faDesktop, faAngleDown,
+  , faTimes, faChevronCircleRight, faDesktop, faAngleDown,
   faGlassWhiskey,
   faExclamationTriangle,
   faCloud
@@ -22,8 +20,22 @@ import Path from '../Header/Path';
 import PagingTableOuter from '../table/PagingTableOuter';
 
 function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemClick }) {
-  const { name } = useParams();
+  const {id, name } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState('general');
+
+  const handleTabClick = (tab) => {
+    setActiveTab(tab); // 탭 상태 업데이트
+    navigate(`/storages/domains/${id}/${tab}`); // URL을 탭에 맞게 업데이트
+  };
+  useEffect(() => {
+    const pathSection = location.pathname.split('/').pop();
+    if (pathSection !== activeTab) {
+      setActiveTab(pathSection);
+    }
+  }, [location.pathname, activeTab]);
+  
     //클릭한 이름 받아오기
     const handlePermissionFilterClick = (filter) => {
       setActivePermissionFilter(filter);
@@ -45,8 +57,6 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     const toggleDomainHiddenBox2 = () => {
       setDomainHiddenBox2Visible(!isDomainHiddenBox2Visible);
     };
-
-   
     const [isDomainHiddenBox4Visible, setDomainHiddenBox4Visible] = useState(false);
     const toggleDomainHiddenBox4 = () => {
       setDomainHiddenBox4Visible(!isDomainHiddenBox4Visible);
@@ -236,11 +246,7 @@ function StorageDomain({ togglePopupBox, isPopupBoxVisible, handlePopupBoxItemCl
     },
   ];
   //
-  const [activeTab, setActiveTab] = useState('general');
 
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-  };
 
   // 옵션박스 열고닫기
   const [isUploadOptionBoxVisible, setUploadOptionBoxVisible] = useState(false);
@@ -276,7 +282,7 @@ const popupItems = [
   const pathData = [
     '#',
 
-    sections.find(section => section.id === activeTab)?.label,
+  sections.find(section => section.id === activeTab)?.label,
  
 ].filter(Boolean);
   // 바탕클릭하면 옵션박스 닫기
