@@ -36,7 +36,7 @@ const TableColumnsInfo = {
   NETWORKS: [
     { header: '이름',       accessor: 'name',          clickable: true },
     { header: '코멘트', accessor: 'comment', clickable: false },
-    { header: '데이터센터',  accessor: 'dataCenter',     clickable: false },
+    { header: '데이터센터',  accessor: 'dataCenters',     clickable: false },
     { header: '설명',       accessor: 'description',    clickable: false },
     { header: 'VLAN 태그', accessor: 'vlan' ,clickable: false },
     { header: '레이블', accessor: 'label', clickable: false },
@@ -114,7 +114,7 @@ const TableColumnsInfo = {
     { header: '', accessor: 'icon1', clickable: false },
     { header: '', accessor: 'icon2', clickable: false },
     { header: '연결 대상', accessor: 'connectionTarget', clickable: false },
-    { header: '스토리지 도메인', accessor: 'storageDomainVo', clickable: false },
+    { header: '스토리지 도메인', accessor: 'storageDomain', clickable: false },
     { header: '가상 크기', accessor: 'virtualSize', clickable: false },
     { header: '상태', accessor: 'status', clickable: false },
     { header: '유형', accessor: 'storageType', clickable: false },

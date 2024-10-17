@@ -601,7 +601,7 @@ export const useAllTemplates = (mapPredicate) => useQuery({
     // setShouldRefresh(prevValue => false)
     return res?.map((e) => mapPredicate(e)) ?? []
   }
-})
+});
 //endregion: VM/TEMPLATE
 
 
@@ -621,7 +621,7 @@ export const useAllNetworks = (mapPredicate) => useQuery({
     // setShouldRefresh(prevValue => false)
     return res?.map((e) => mapPredicate(e)) ?? []
   }
-})
+});
 
 /**
  * @name useNetworkById
@@ -905,18 +905,18 @@ export const useAllEventFromDomain = (storageDomainId, mapPredicate) => useQuery
 })
 //region: storage -----------------디스크---------------------
 /**
- * @name useAllDisk
+ * @name useAllDisks
  * @description 모든 디스크목록조회 useQuery훅
  * 
  * @param {function} mapPredicate 목록객체 변형 처리
  * @returns useQuery훅
  */
-export const useAllDisk = (mapPredicate) => useQuery({
+export const useAllDisks = (mapPredicate) => useQuery({
   refetchOnWindowFocus: true,
-  queryKey: ['AllDisk'],
+  queryKey: ['allDisks'],
   queryFn: async () => {
-    const res = await ApiManager.findAllDisk()
-    return res?.map((e) => mapPredicate(e)) ?? []
+    const res = await ApiManager.findAllDisks()
+    return res?.map((e) => mapPredicate(e)) ?? [];
   }
 })
 /**

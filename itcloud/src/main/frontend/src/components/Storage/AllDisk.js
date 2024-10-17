@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowDown, faChevronDown, faChevronLeft, faDatabase, faExclamationTriangle, faRefresh, faSearch, faTimes} from '@fortawesome/free-solid-svg-icons'
 import TableOuter from '../table/TableOuter';
 import './css/AllDisk.css';
-import { useAllDisk } from '../../api/RQHook';
+import { useAllDisks } from '../../api/RQHook';
 import Path from '../Header/Path';
 
 Modal.setAppElement('#root');
@@ -86,16 +86,16 @@ const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 
   const pathData = ['스토리지','디스크'];
 
   const { 
-    data: diskdata,
-    status: disksStatus,
-    isRefetching: isDisksRefetching,
-    refetch: disksRefetch, 
-    isError: isDisksError, 
-    error: disksError, 
-    isLoading: isDisksLoading,
-  } = useAllDisk(toTableItemPredicateDisks);
-  function toTableItemPredicateDisks(disk) {
+    data: allDisks,
+    status: allDisksStatus,
+    isRefetching: isAllDisksRefetching,
+    refetch: allDisksRefetch, 
+    isError: isAllDisksError, 
+    error: allDisksError, 
+    isLoading: isAllDiskssLoading,
+  } = useAllDisks((disk) => {
     return {
+      ...disk,
       alias: disk?.alias ?? '',
       id: disk?.id ?? '',
       icon1: <FontAwesomeIcon icon={faChevronLeft} fixedWidth />, 
@@ -107,7 +107,7 @@ const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 
       storageType: disk?.storageType ?? '',
       description: disk?.description ?? '',
     };
-  }
+  });
 
 
   const handleRowClick = (row, column) => {
@@ -162,7 +162,7 @@ const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 
                 {activeDiskType === 'all' && (
                   <TableOuter 
                     columns={TableColumnsInfo.ALL_DISK}
-                    data={diskdata}
+                    data={allDisks}
                     onRowClick={handleRowClick}
                     showSearchBox={true}
                     clickableColumnIndex={[0]} 
@@ -172,20 +172,22 @@ const [activeContentType, setActiveContentType] = useState('all'); // 컨텐츠 
                 {activeDiskType === 'image' && (
                   <TableOuter 
                     columns={TableColumnsInfo.IMG_DISK}
-                    data={diskdata}
+                    data={allDisks}
                     onRowClick={handleRowClick}
                     showSearchBox={true}
                   />
                 )}
 
+              {/*
                 {activeDiskType === 'lun' && (
                   <TableOuter 
                     columns={TableColumnsInfo.LUN_DISK}
-                    data={diskdata}
+                    data={allDisks}
                     onRowClick={handleRowClick}
                     showSearchBox={true}
                   />
                 )}
+                */}
               </>
         </div>
       <Footer/>
